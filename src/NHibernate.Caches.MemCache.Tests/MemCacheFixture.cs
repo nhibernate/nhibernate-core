@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 
 using log4net.Config;
@@ -40,15 +40,15 @@ namespace NHibernate.Caches.MemCache.Tests
 	public class MemCacheFixture
 	{
 		private MemCacheProvider provider;
-		private Hashtable props;
+		private Dictionary<string,string> props;
 
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
 			XmlConfigurator.Configure();
-			props = new Hashtable();
-			props.Add("compression_enabled", false);
-			props.Add("expiration", 20);
+			props = new Dictionary<string, string>();
+			props.Add("compression_enabled", "false");
+			props.Add("expiration", "20");
 			provider = new MemCacheProvider();
 			provider.Start(props);
 		}
@@ -144,7 +144,7 @@ namespace NHibernate.Caches.MemCache.Tests
 		[Test]
 		public void TestEmptyProperties()
 		{
-			ICache cache = new MemCacheClient("nunit", new Hashtable());
+			ICache cache = new MemCacheClient("nunit", new Dictionary<string,string>());
 			Assert.IsNotNull(cache);
 		}
 

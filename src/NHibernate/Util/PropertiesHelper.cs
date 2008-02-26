@@ -47,9 +47,10 @@ namespace NHibernate.Util
 		public static IDictionary<string, string> ToDictionary(string property, string delim, IDictionary<string, string> properties)
 		{
 			IDictionary<string, string> map = new Dictionary<string, string>();
-			string propValue = properties[property];
-			if (propValue != null)
+			
+			if (properties.ContainsKey(property))
 			{
+				string propValue = properties[property];
 				StringTokenizer tokens = new StringTokenizer(propValue, delim, false);
 				IEnumerator<string> en = tokens.GetEnumerator();
 				while (en.MoveNext())

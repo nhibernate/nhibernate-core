@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -62,7 +63,7 @@ namespace NHibernate.Caches.MemCache
 		{
 		}
 
-		public MemCacheClient(string regionName, IDictionary properties)
+		public MemCacheClient(string regionName, IDictionary<string,string> properties)
 		{
 			_region = regionName;
 			_client = new MemcachedClient();
@@ -71,7 +72,7 @@ namespace NHibernate.Caches.MemCache
 
 			if (properties != null)
 			{
-				if (properties["compression_enabled"] != null)
+				if (properties.ContainsKey("compression_enabled"))
 				{
 					_client.EnableCompression = Convert.ToBoolean(properties["compression_enabled"]);
 					if (_log.IsDebugEnabled)
@@ -79,7 +80,7 @@ namespace NHibernate.Caches.MemCache
 						_log.DebugFormat("compression_enabled set to {0}", _client.EnableCompression);
 					}
 				}
-				if (properties["expiration"] != null)
+				if (properties.ContainsKey("expiration"))
 				{
 					_expiry = Convert.ToInt32(properties["expiration"]);
 					if (_log.IsDebugEnabled)
@@ -88,16 +89,7 @@ namespace NHibernate.Caches.MemCache
 					}
 				}
 
-				if (properties["expiration"] != null)
-				{
-					_expiry = Convert.ToInt32(properties["expiration"]);
-					if (_log.IsDebugEnabled)
-					{
-						_log.DebugFormat("using expiration of {0} seconds", _expiry);
-					}
-				}
-
-				if (properties["regionPrefix"] != null)
+				if (properties.ContainsKey("regionPrefix"))
 				{
 					_regionPrefix = properties["regionPrefix"].ToString();
 

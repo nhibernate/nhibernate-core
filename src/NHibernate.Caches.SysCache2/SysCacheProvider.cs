@@ -58,7 +58,7 @@ namespace NHibernate.Caches.SysCache2
 		/// <param name="regionName">the name of the cache region</param>
 		/// <param name="properties">configuration settings</param>
 		/// <returns></returns>
-		public ICache BuildCache(string regionName, IDictionary properties)
+		public ICache BuildCache(string regionName, IDictionary<string,string> properties)
 		{
 			//return a configured cache region if we have one for the region already
 			//the only way this will really happen is if there is a query cache specified for a region that is configured
@@ -116,13 +116,12 @@ namespace NHibernate.Caches.SysCache2
 		{
 			return Timestamper.Next();
 		}
-
 		/// <summary>
 		/// Callback to perform any necessary initialization of the underlying cache implementation
 		/// during ISessionFactory construction.
 		/// </summary>
 		/// <param name="properties">current configuration settings</param>
-		public void Start(IDictionary properties)
+		public void Start(IDictionary<string,string> properties)
 		{
 		}
 

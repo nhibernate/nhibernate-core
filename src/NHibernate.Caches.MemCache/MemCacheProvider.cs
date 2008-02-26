@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Text;
 
@@ -72,7 +73,7 @@ namespace NHibernate.Caches.MemCache
 			}
 		}
 
-		public ICache BuildCache(string regionName, IDictionary properties)
+		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
 		{
 			if (regionName == null)
 			{
@@ -80,17 +81,17 @@ namespace NHibernate.Caches.MemCache
 			}
 			if (properties == null)
 			{
-				properties = new Hashtable();
+				properties = new Dictionary<string, string>();
 			}
 			if (_log.IsDebugEnabled)
 			{
 				StringBuilder sb = new StringBuilder();
-				foreach (DictionaryEntry de in properties)
+				foreach (KeyValuePair<string, string> de in properties)
 				{
 					sb.Append("name=");
-					sb.Append(de.Key.ToString());
+					sb.Append(de.Key);
 					sb.Append("&value=");
-					sb.Append(de.Value.ToString());
+					sb.Append(de.Value);
 					sb.Append(";");
 				}
 				_log.Debug("building cache with region: " + regionName + ", properties: " + sb.ToString());
@@ -103,7 +104,12 @@ namespace NHibernate.Caches.MemCache
 			return Timestamper.Next();
 		}
 
-		public void Start(IDictionary properties)
+		public void Start(IDictionary<string,string> properties)
+		{
+			Start((IDictionary) properties);
+		}
+
+		private void Start(IDictionary properties)
 		{
 			SockIOPool pool = SockIOPool.GetInstance("nhibernate");
 			if (_servers != null && _servers.Length > 0)

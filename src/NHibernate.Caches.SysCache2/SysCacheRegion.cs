@@ -68,7 +68,7 @@ namespace NHibernate.Caches.SysCache2
 		/// </summary>
 		/// <param name="name">The name of the region</param>
 		/// <param name="additionalProperties">additional NHibernate configuration properties</param>
-		public SysCacheRegion(string name, IDictionary additionalProperties) : this(name, null, additionalProperties)
+		public SysCacheRegion(string name, IDictionary<string,string> additionalProperties) : this(name, null, additionalProperties)
 		{
 		}
 
@@ -78,7 +78,7 @@ namespace NHibernate.Caches.SysCache2
 		/// <param name="name">The name of the region</param>
 		/// <param name="settings">The configuration settings for the cache region</param>
 		/// <param name="additionalProperties">additional NHibernate configuration properties</param>
-		public SysCacheRegion(string name, CacheRegionElement settings, IDictionary additionalProperties)
+		public SysCacheRegion(string name, CacheRegionElement settings, IDictionary<string,string> additionalProperties)
 		{
 			//validate the params
 			if (String.IsNullOrEmpty(name))
@@ -297,7 +297,7 @@ namespace NHibernate.Caches.SysCache2
 		/// </summary>
 		/// <param name="settings">Configuration settings for the region</param>
 		/// <param name="additionalProperties">The additional properties supplied by NHibernate engine</param>
-		private void Configure(CacheRegionElement settings, IDictionary additionalProperties)
+		private void Configure(CacheRegionElement settings, IDictionary<string,string> additionalProperties)
 		{
 			_log.Debug("Configuring cache region");
 
@@ -309,12 +309,12 @@ namespace NHibernate.Caches.SysCache2
 			if (additionalProperties != null)
 			{
 				//pick up connection settings that might be used later for data dependencis if any are specified
-				if (additionalProperties.Contains(Environment.ConnectionStringName))
+				if (additionalProperties.ContainsKey(Environment.ConnectionStringName))
 				{
 					connectionName = additionalProperties[Environment.ConnectionStringName].ToString();
 				}
 
-				if (additionalProperties.Contains(Environment.ConnectionString))
+				if (additionalProperties.ContainsKey(Environment.ConnectionString))
 				{
 					connectionString = additionalProperties[Environment.ConnectionString].ToString();
 				}

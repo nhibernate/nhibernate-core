@@ -25,7 +25,7 @@
 #endregion
 
 using System.Collections;
-
+using System.Collections.Generic;
 using log4net.Config;
 
 using NHibernate.Cache;
@@ -38,13 +38,13 @@ namespace NHibernate.Caches.MemCache.Tests
 	public class MemCacheProviderFixture
 	{
 		private ICacheProvider provider;
-		private Hashtable props;
+		private Dictionary<string,string> props;
 
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
 			XmlConfigurator.Configure();
-			props = new Hashtable();
+			props = new Dictionary<string,string>();
 //			props.Add( "failover", true );
 //			props.Add( "initial_connections", 3 );
 //			props.Add( "maintenance_sleep", 30 );

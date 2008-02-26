@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using log4net.Config;
 using NHibernate.Cache;
 using NHibernate.Cfg;
@@ -12,15 +13,15 @@ namespace NHibernate.Caches.MemCache.Tests.NH1086
 	public class Fixture 
 	{
 		private MemCacheProvider provider;
-		private Hashtable props;
+		private Dictionary<string,string> props;
 
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
 			XmlConfigurator.Configure();
-			props = new Hashtable();
-			props.Add("compression_enabled", false);
-			props.Add("expiration", 20);
+			props = new Dictionary<string, string>();
+			props.Add("compression_enabled", "false");
+			props.Add("expiration", "20");
 			provider = new MemCacheProvider();
 			provider.Start(props);
 		}
@@ -37,9 +38,15 @@ namespace NHibernate.Caches.MemCache.Tests.NH1086
 			Configuration config = new Configuration();
 			config.AddResource("NHibernate.Caches.MemCache.Tests.NH1086.Mappings.hbm.xml",
 			                   this.GetType().Assembly);
-
-			ISessionFactoryImplementor sessions = config.BuildSessionFactory() as ISessionFactoryImplementor;
-
+			ISessionFactoryImplementor sessions = null;
+			try
+			{
+				sessions = config.BuildSessionFactory() as ISessionFactoryImplementor;
+			}
+			catch (System.Exception ex)
+			{
+				System.Diagnostics.Debugger.Break();
+			}
 			IClassMetadata classMetadata = sessions.GetClassMetadata(typeof (ClassWithCompId));
 
 			ICache cache = provider.BuildCache("NH1086", props);
