@@ -34,14 +34,14 @@
 		<include name="NHibernate.Test.Performance/NHibernate.Test.Performance.build" />
 		<include name="NHibernate.Examples/NHibernate.Examples.build" />
 		<!--<include name="NHibernate.Caches.SysCache/NHibernate.Caches.SysCache.build" />-->
-		<include name="NHibernate.Caches.SysCache2/NHibernate.Caches.SysCache2.build" />
+		<!--<include name="NHibernate.Caches.SysCache2/NHibernate.Caches.SysCache2.build" />-->
 		<!--<include name="NHibernate.Caches.SysCache.Tests/NHibernate.Caches.SysCache.Tests.build" />-->
-		<include name="NHibernate.Caches.MemCache/NHibernate.Caches.MemCache.build" />
-		<include name="NHibernate.Caches.MemCache.Tests/NHibernate.Caches.MemCache.Tests.build" />
+		<!--<include name="NHibernate.Caches.MemCache/NHibernate.Caches.MemCache.build" />-->
+		<!--<include name="NHibernate.Caches.MemCache.Tests/NHibernate.Caches.MemCache.Tests.build" />-->
 		<!--<include name="NHibernate.JetDriver/NHibernate.JetDriver.build" />-->
-		<include name="NHibernate.Mapping.Attributes/NHibernate.Mapping.Attributes.build" />
-		<include name="NHibernate.Mapping.Attributes.Test/NHibernate.Mapping.Attributes.Test.build" />
-		<include name="NHibernate.Tasks/NHibernate.Tasks.build" />
+		<!--<include name="NHibernate.Mapping.Attributes/NHibernate.Mapping.Attributes.build" />-->
+		<!--<include name="NHibernate.Mapping.Attributes.Test/NHibernate.Mapping.Attributes.Test.build" />-->
+		<!--<include name="NHibernate.Tasks/NHibernate.Tasks.build" />-->
 		<!--<include name="NHibernate.Tool.hbm2net/NHibernate.Tool.hbm2net.build" />-->
 		<!--<include name="NHibernate.Tool.hbm2net.Console/NHibernate.Tool.hbm2net.Console.build" />-->
 		<!--<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />-->
@@ -58,7 +58,7 @@
 		<include name="NHibernate.Test.Performance/NHibernate.Test.Performance.build"
 			if="${run.performance.tests}" />
 		<!--<include name="NHibernate.Caches.SysCache.Tests/NHibernate.Caches.SysCache.Tests.build" />-->
-		<include name="NHibernate.Mapping.Attributes.Test/NHibernate.Mapping.Attributes.Test.build" />
+		<!--<include name="NHibernate.Mapping.Attributes.Test/NHibernate.Mapping.Attributes.Test.build" />-->
 		<!--<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />-->
 		<!--<include name="NHibernate.UserTypes.Tests/NHibernate.UserTypes.Tests.build" />-->
 	</fileset>

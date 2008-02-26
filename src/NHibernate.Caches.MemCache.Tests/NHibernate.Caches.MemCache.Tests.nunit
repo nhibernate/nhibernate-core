@@ -1,9 +1,0 @@
-<NUnitProject>
-	<Settings activeconfig="Debug"/>
-	<Config name="Debug" appbase="bin\Debug" configfile="NHibernate.Caches.MemCache.Tests.dll.config" binpathtype="Auto">
-		<assembly path="NHibernate.Caches.MemCache.Tests.dll"/>
-	</Config>
-	<Config name="Release" appbase="bin\Release" configfile="NHibernate.Caches.MemCache.Tests.dll.config" binpathtype="Auto">
-		<assembly path="NHibernate.Caches.MemCache.Tests.dll"/>
-	</Config>
-</NUnitProject>
