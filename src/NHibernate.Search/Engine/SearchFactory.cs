@@ -101,7 +101,7 @@ Did you forget to call SearchFactory.Initialize(sessionFactory) ? ");
             {
                 throw new SearchException("Failed to instantiate lucene analyzer with type " + analyzerClassName);
             }
-            queueingProcessor = new BatchedQueueingProcessor(this, cfg.Properties);
+            queueingProcessor = new BatchedQueueingProcessor(this, (System.Collections.IDictionary)cfg.Properties);
 
             DirectoryProviderFactory factory = new DirectoryProviderFactory();
 

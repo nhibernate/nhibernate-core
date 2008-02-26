@@ -129,7 +129,7 @@ namespace NHibernate.Driver
 			IDbCommand cmd = CreateCommand();
 			cmd.CommandType = type;
 
-			SetCommandTimeout(cmd, Environment.Properties[Environment.CommandTimeout]);
+			SetCommandTimeout(cmd, PropertiesHelper.GetInt32(Environment.CommandTimeout, Environment.Properties, -1));
 			SetCommandText(cmd, sqlString);
 			SetCommandParameters(cmd, parameterTypes);
 

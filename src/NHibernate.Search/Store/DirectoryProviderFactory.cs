@@ -65,7 +65,7 @@ namespace NHibernate.Search.Storage
 
         private static IDictionary GetDirectoryProperties(Configuration cfg, String directoryProviderName)
         {
-            IDictionary props = cfg.Properties;
+            IDictionary props = (IDictionary)cfg.Properties;
             String indexName = LUCENE_PREFIX + directoryProviderName;
             IDictionary indexProps = new Hashtable();
             IDictionary indexSpecificProps = new Hashtable();

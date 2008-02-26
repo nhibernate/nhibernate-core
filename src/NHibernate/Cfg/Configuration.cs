@@ -1103,7 +1103,7 @@ namespace NHibernate.Cfg
 		/// <returns>The configured value of the property, or <see langword="null" /> if the property was not specified.</returns>
 		public string GetProperty(string name)
 		{
-			return properties[name];
+			return PropertiesHelper.GetString(name, properties, null);
 		}
 
 		private void AddProperties(IHibernateConfiguration hc)

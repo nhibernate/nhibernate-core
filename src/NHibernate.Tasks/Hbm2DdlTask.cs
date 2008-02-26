@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 
 using NAnt.Core;
@@ -179,7 +180,7 @@ namespace NHibernate.Tasks
 		protected override void ExecuteTask()
 		{
 			Configuration config = new Configuration();
-			IDictionary properties = new Hashtable();
+			Dictionary<string, string> properties = new Dictionary<string, string>();
 
 			properties[NHibernate.Cfg.Environment.ConnectionProvider] = ConnectionProvider;
 			properties[NHibernate.Cfg.Environment.Dialect] = Dialect;
