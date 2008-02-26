@@ -42,9 +42,9 @@
 		<include name="NHibernate.Mapping.Attributes/NHibernate.Mapping.Attributes.build" />
 		<include name="NHibernate.Mapping.Attributes.Test/NHibernate.Mapping.Attributes.Test.build" />
 		<include name="NHibernate.Tasks/NHibernate.Tasks.build" />
-		<include name="NHibernate.Tool.hbm2net/NHibernate.Tool.hbm2net.build" />
-		<include name="NHibernate.Tool.hbm2net.Console/NHibernate.Tool.hbm2net.Console.build" />
-		<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />
+		<!--<include name="NHibernate.Tool.hbm2net/NHibernate.Tool.hbm2net.build" />-->
+		<!--<include name="NHibernate.Tool.hbm2net.Console/NHibernate.Tool.hbm2net.Console.build" />-->
+		<!--<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />-->
 		<include name="NHibernate.Tool.HbmXsd/NHibernate.Tool.HbmXsd.build" />
 		<!--<include name="NHibernate.UserTypes.Oracle/NHibernate.UserTypes.Oracle.build" />-->
 		<!--<include name="NHibernate.UserTypes.SqlTypes/NHibernate.UserTypes.SqlTypes.build" />-->
@@ -59,7 +59,7 @@
 			if="${run.performance.tests}" />
 		<!--<include name="NHibernate.Caches.SysCache.Tests/NHibernate.Caches.SysCache.Tests.build" />-->
 		<include name="NHibernate.Mapping.Attributes.Test/NHibernate.Mapping.Attributes.Test.build" />
-		<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />
+		<!--<include name="NHibernate.Tool.hbm2net.Tests/NHibernate.Tool.hbm2net.Tests.build" />-->
 		<!--<include name="NHibernate.UserTypes.Tests/NHibernate.UserTypes.Tests.build" />-->
 	</fileset>
 
