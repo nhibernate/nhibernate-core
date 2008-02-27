@@ -497,7 +497,7 @@ namespace NHibernate.AdoNet
 
 		protected ADOException Convert(Exception sqlException, string message)
 		{
-			return ADOExceptionHelper.Convert(sqlException, message);
+			return ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqlException, message);
 		}
 
 		#region IDisposable Members

@@ -208,9 +208,9 @@ namespace NHibernate.Impl
 			return factory.QueryPlanCache.GetNativeSQLQueryPlan(spec);
 		}
 
-		protected static ADOException Convert(Exception sqlException, string message)
+		protected ADOException Convert(Exception sqlException, string message)
 		{
-			return ADOExceptionHelper.Convert( /*Factory.SQLExceptionConverter,*/ sqlException, message);
+			return ADOExceptionHelper.Convert(factory.SQLExceptionConverter, sqlException, message);
 		}
 
 	}

@@ -1340,7 +1340,7 @@ namespace NHibernate.Persister.Collection
 
 		protected ADOException Convert(Exception sqlException, string message)
 		{
-			return ADOExceptionHelper.Convert(sqlException, message);
+			return ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqlException, message);
 		}
 
 		public override string ToString()

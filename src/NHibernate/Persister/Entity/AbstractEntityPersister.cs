@@ -1810,12 +1810,12 @@ namespace NHibernate.Persister.Entity
 
 		protected ADOException Convert(Exception sqlException, string message)
 		{
-			return ADOExceptionHelper.Convert( /* sqlExceptionConverter, */ sqlException, message);
+			return ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqlException, message);
 		}
 
 		protected ADOException Convert(Exception sqlException, string message, SqlString sql)
 		{
-			return ADOExceptionHelper.Convert( /* sqlExceptionConverter, */ sqlException, message, sql);
+			return ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqlException, message, sql);
 		}
 
 		public abstract SqlString QueryWhereFragment(string alias, bool innerJoin, bool includeSubclasses);
@@ -3653,7 +3653,8 @@ namespace NHibernate.Persister.Entity
 			}
 			catch (Exception sqle)
 			{
-				throw ADOExceptionHelper.Convert(sqle, "unable to select generated column values", selectionSQL);
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "unable to select generated column values",
+				                                 selectionSQL);
 			}
 		}
 

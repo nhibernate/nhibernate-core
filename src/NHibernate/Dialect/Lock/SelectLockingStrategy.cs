@@ -95,7 +95,8 @@ namespace NHibernate.Dialect.Lock
 			}
 			catch (Exception sqle)
 			{
-				throw ADOExceptionHelper.Convert(sqle, "could not lock: " + MessageHelper.InfoString(lockable, id, factory), sql);
+				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
+				                                 "could not lock: " + MessageHelper.InfoString(lockable, id, factory), sql);
 			}
 		}
 

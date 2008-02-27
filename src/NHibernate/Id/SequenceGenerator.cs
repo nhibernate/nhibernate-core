@@ -120,7 +120,7 @@ namespace NHibernate.Id
 			catch (Exception sqle)
 			{
 				log.Error("error generating sequence", sqle);
-				throw ADOExceptionHelper.Convert(sqle, "could not get next sequence value");
+				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "could not get next sequence value");
 			}
 		}
 

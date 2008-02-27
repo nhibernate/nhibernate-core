@@ -561,7 +561,7 @@ namespace NHibernate.Type
 			}
 			catch (Exception sqle)
 			{
-				throw ADOExceptionHelper.Convert( /*Factory.SQLExceptionConverter,*/ sqle, "Error performing LoadByUniqueKey");
+				throw ADOExceptionHelper.Convert(factory.SQLExceptionConverter, sqle, "Error performing LoadByUniqueKey");
 			}
 		}
 

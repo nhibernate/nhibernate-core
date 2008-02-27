@@ -161,7 +161,8 @@ namespace NHibernate.Impl
 			}
 			catch (Exception e)
 			{
-				throw ADOExceptionHelper.Convert(e, "Error executing Enumerable() query", new SqlString(this._cmd.CommandText));
+				throw ADOExceptionHelper.Convert(_sess.Factory.SQLExceptionConverter, e, "Error executing Enumerable() query",
+				                                 new SqlString(_cmd.CommandText));
 			}
 			PostMoveNext(readResult);
 			return _hasNext;

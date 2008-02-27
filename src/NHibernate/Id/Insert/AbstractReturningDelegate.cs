@@ -49,7 +49,8 @@ namespace NHibernate.Id.Insert
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(sqle, "could not insert: " + MessageHelper.InfoString(persister), insertSQL.Text);
+				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
+				                                 "could not insert: " + MessageHelper.InfoString(persister), insertSQL.Text);
 			}
 		}
 

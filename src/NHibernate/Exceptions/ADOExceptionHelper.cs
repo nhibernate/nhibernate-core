@@ -43,29 +43,8 @@ namespace NHibernate.Exceptions
 			return Convert(converter, sqlException, message, new SqlString(SQLNotAvailable));
 		}
 
-		/// <summary>
-		/// Converts the given SQLException into NHibernate's ADOException hierarchy, as well as performing
-		/// appropriate logging.
-		/// </summary>
-		/// <param name="sqlException">The exception to convert.</param>
-		/// <param name="message">An optional error message.</param>
-		/// <returns>The converted ADOException.</returns>
-		public static ADOException Convert( /*ISQLExceptionConverter converter,*/ Exception sqlException, string message)
-		{
-			ADOExceptionReporter.LogExceptions(sqlException, message);
-			// return converter.Convert( sqlException, message );
-			return new ADOException(message, sqlException);
-		}
-
-		public static ADOException Convert(Exception sqlException, string message, SqlString sql)
-		{
-			ADOExceptionReporter.LogExceptions(sqlException, ExtendMessage(message, sql, null, null));
-			return new ADOException(message, sqlException, sql);
-		}
-
-
-		public static ADOException Convert(Exception sqle, string message, SqlString sql, object[] parameterValues,
-																			 IDictionary namedParameters)
+		public static ADOException Convert(ISQLExceptionConverter converter, Exception sqle, string message, SqlString sql,
+			object[] parameterValues, IDictionary namedParameters)
 		{
 			string extendMessage = ExtendMessage(message, sql, parameterValues, namedParameters);
 			ADOExceptionReporter.LogExceptions(sqle, extendMessage);

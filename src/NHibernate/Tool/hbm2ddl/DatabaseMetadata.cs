@@ -18,6 +18,7 @@
 		private readonly IDictionary tables = new Hashtable();
 		private readonly ISet sequences = new HashedSet();
 		private readonly bool extras;
+		private readonly ISQLExceptionConverter sqlExceptionConverter;
 
 		private readonly ISchemaReader schemaReader;
 
@@ -32,6 +33,7 @@
 			schemaReader = new InformationSchemaReader(connection);
 			this.extras = extras;
 			InitSequences(connection, dialect);
+			sqlExceptionConverter = dialect.BuildSQLExceptionConverter();
 		}
 
 		private static readonly String[] Types = {"TABLE", "VIEW"};
@@ -73,10 +75,7 @@
 				}
 				catch (SqlException sqle)
 				{
-					throw ADOExceptionHelper.Convert(
-						sqle,
-						"could not get table metadata: " + name
-						);
+					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle, "could not get table metadata: " + name);
 				}
 			}
 		}

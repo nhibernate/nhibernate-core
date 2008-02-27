@@ -16,7 +16,7 @@ namespace NHibernate
 	[Serializable]
 	public class ADOException : HibernateException
 	{
-		private SqlString sql;
+		private readonly SqlString sql;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ADOException"/> class.
