@@ -9,6 +9,7 @@
 		<property name="clover.instrument" value="false" />
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
 			<include name="System.dll" />
+			<include name="System.Configuration.dll" />
 			<include name="System.XML.dll" />
 			<include name="System.Data.dll" />
 			<include name="Iesi.Collections.dll" />

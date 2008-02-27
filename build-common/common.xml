@@ -13,7 +13,7 @@
 	<property name="visual-studio" value="false" overwrite="false" />
 
 	<if test="${visual-studio}">
-		<property name="key.file" value="..\..\${key.file}" />
+		<property name="key.file" value="../../${key.file}" />
 	</if>
 
 	<!--
@@ -34,14 +34,13 @@
 		Cenqua provided a license of Clover.NET for the NHibernate project to use. 
 	-->
 	<property name="clover.enabled" value="false" overwrite="false" />
-	<property name="clover.src" value="src\CloverSrc" />
-	<property name="clover.db" value="${clover.src}\clover.cdb" />
+	<property name="clover.src" value="src/CloverSrc" />
+	<property name="clover.db" value="${clover.src}/clover.cdb" />
 	
 	<!-- NET 3.5 is using 2.0 runtime, should still work in 2.0 -->
 	<property name="clover.framework" value=".NET 2.0" if="${nant.settings.currentframework == 'net-3.5'}" />
 	
 	<property name="clover.framework" value=".NET 2.0" if="${nant.settings.currentframework == 'net-2.0'}" />
-	<property name="clover.framework" value=".NET 1.1" if="${nant.settings.currentframework == 'mono-1.0'}" />
 
 	<property name="clover.home" value="${environment::get-folder-path('ProgramFiles')}/Cenqua/Clover.NET 2.0 for ${clover.framework}" if="${property::exists('clover.framework')}"/>
 	<property name="clover.assembly" value="CloverNAnt-0.85.dll" />
@@ -185,7 +184,6 @@
 		<property name="merge.targetplatform" value="v2" />
 	</target>
 
-
 	<target name="set-net-2.0-framework-configuration">
 		<property name="nant.settings.currentframework" value="net-2.0" />
 		<property name="current.build.defines" value="${build.defines}NET,NET_2_0" />
@@ -194,10 +192,22 @@
 		<property name="merge.targetplatform" value="v2" />
 	</target>
 
-	<target name="set-mono-1.0-framework-configuration">
-		<property name="nant.settings.currentframework" value="mono-1.0" />
-		<property name="current.build.defines" value="${build.defines}MONO,MONO_1_0" />
-		<property name="link.sdkdoc.version" value="MsdnOnline" />
+
+	<target name="set-mono-3.5-framework-configuration">
+		<property name="nant.settings.currentframework" value="mono-3.5" />
+		<property name="current.build.defines" value="${build.defines}NET,NET_2_0,NET_3_5,MONO" />
+		<!-- not using SDK_v2_0 because ndoc throws an exception -->
+		<property name="link.sdkdoc.version" value="SDK_v1_1" />
+		<!-- merge should work with 2.0 when compiling for 3.5 -->
+		<property name="merge.targetplatform" value="v2" />
+	</target>
+
+	<target name="set-mono-2.0-framework-configuration">
+		<property name="nant.settings.currentframework" value="mono-2.0" />
+		<property name="current.build.defines" value="${build.defines}NET,NET_2_0,MONO" />
+		<!-- not using SDK_v2_0 because ndoc throws an exception -->
+		<property name="link.sdkdoc.version" value="SDK_v1_1" />
+		<property name="merge.targetplatform" value="v2" />
 	</target>
 
 	<target name="display-current-runtime">

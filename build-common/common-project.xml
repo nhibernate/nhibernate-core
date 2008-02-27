@@ -10,7 +10,7 @@
 
 		Usage
 
-		<property name="root.dir" value="..\.." />;
+		<property name="root.dir" value="../.." />;
 		<include buildfile="${root.dir}/build-common/common-project.xml" />;
 
 		These lines should be placed at the top level under the <project>
@@ -51,8 +51,8 @@
 
 	<target name="common.clover-setup" if="${clover.enabled}">
 		<clover-setup 
-			initstring="${root.dir}\${clover.db}"
-			builddir="${root.dir}\${clover.src}\${project::get-name()}"
+			initstring="${root.dir}/${clover.db}"
+			builddir="${root.dir}/${clover.src}/${project::get-name()}"
 			enabled="${clover.instrument}"
 			flushinterval="1000"
 		/>
@@ -182,8 +182,8 @@
 				outputdir="${bin.dir}"
 			/>
 			<test
-				assemblyname="${bin.dir}\${project::get-name()}.dll"
-				appconfig="${bin.dir}\${project::get-name()}.dll.config" />
+				assemblyname="${bin.dir}/${project::get-name()}.dll"
+				appconfig="${bin.dir}/${project::get-name()}.dll.config" />
 		</nunit2>
 
 	</target>
@@ -193,7 +193,7 @@
 
 	<target name="common.put-connection-settings-into-app-config">
 
-		<property name="app.config" value="${bin.dir}\${project::get-name()}.dll.config" />
+		<property name="app.config" value="${bin.dir}/${project::get-name()}.dll.config" />
 
 		<!-- make sure the config file is writable -->
 		<attrib file="${app.config}" readonly="false" />
@@ -219,7 +219,7 @@
 	</target>
 
 	<target name="common.remove-connection-settings-from-app-config">
-		<property name="app.config" value="${bin.dir}\${project::get-name()}.dll.config" />
+		<property name="app.config" value="${bin.dir}/${project::get-name()}.dll.config" />
 
 		<xmlpoke
 			file="${app.config}"

@@ -5,12 +5,13 @@
 		description="NHibernate Search - Integration with Lucene.NET"
 		xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd">
 
-	<property name="root.dir" value="..\.." />
+	<property name="root.dir" value="../.." />
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
 	<target name="init" depends="common.init">
 		<property name="assembly.description" value="NHibernate Search - Integration with Lucene.NET" />
 		<property name="clover.instrument" value="true" />
+		<property name="assembly.is-cls-compliant" value="false" />
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
 			<include name="System.dll" />
