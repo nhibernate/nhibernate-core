@@ -730,6 +730,24 @@ namespace NHibernate.Impl
 			return OpenSession(connection, Timestamper.Next(), interceptor, connectionReleaseMode);
 		}
 
+		public ISession OpenSession(
+			IDbConnection connection,
+			bool flushBeforeCompletionEnabled,
+	        bool autoCloseSessionEnabled,
+	        ConnectionReleaseMode connectionReleaseMode) 
+		{
+			return new SessionImpl(
+					connection,
+					this,
+					true,
+					settings.CacheProvider.NextTimestamp(),
+					interceptor,
+					settings.DefaultEntityMode,
+					flushBeforeCompletionEnabled,
+					autoCloseSessionEnabled,
+					connectionReleaseMode);
+		}
+
 		public IEntityPersister GetEntityPersister(string entityName)
 		{
 			return GetEntityPersister(entityName, true);

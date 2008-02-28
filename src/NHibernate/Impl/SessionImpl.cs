@@ -183,6 +183,46 @@ namespace NHibernate.Impl
 			log.Debug("opened session");
 		}
 
+		/// <summary>
+		/// Constructor used for OpenSession(...) processing, as well as construction
+		/// of sessions for GetCurrentSession().
+		/// </summary>
+		/// <param name="connection">The user-supplied connection to use for this session.</param>
+		/// <param name="factory">The factory from which this session was obtained</param>
+		/// <param name="autoclose">NOT USED</param>
+		/// <param name="timestamp">The timestamp for this session</param>
+		/// <param name="interceptor">The interceptor to be applied to this session</param>
+		/// <param name="entityMode">The entity-mode for this session</param>
+		/// <param name="flushBeforeCompletionEnabled">Should we auto flush before completion of transaction</param>
+		/// <param name="autoCloseSessionEnabled">Should we auto close after completion of transaction</param>
+		/// <param name="connectionReleaseMode">The mode by which we should release JDBC connections.</param>
+		public SessionImpl(
+			IDbConnection connection,
+			SessionFactoryImpl factory,
+			bool autoclose,
+			long timestamp,
+			IInterceptor interceptor,
+			EntityMode entityMode,
+			bool flushBeforeCompletionEnabled,
+			bool autoCloseSessionEnabled,
+			ConnectionReleaseMode connectionReleaseMode)
+			: base(factory)
+		{
+			throw new NotImplementedException();
+
+			//this.rootSession = null;
+			this.timestamp = timestamp;
+			this.entityMode = entityMode;
+			this.interceptor = interceptor;
+			this.listeners = factory.EventListeners;
+			this.actionQueue = new ActionQueue(this);
+			this.persistenceContext = new StatefulPersistenceContext(this);
+			//this.flushBeforeCompletionEnabled = flushBeforeCompletionEnabled;
+			//this.autoCloseSessionEnabled = autoCloseSessionEnabled;
+			//this.connectionReleaseMode = connectionReleaseMode;
+			//this.jdbcContext = new JDBCContext(this, connection, interceptor);
+		}
+
 		/// <summary></summary>
 		public override IBatcher Batcher
 		{
