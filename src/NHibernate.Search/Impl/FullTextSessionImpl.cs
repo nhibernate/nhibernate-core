@@ -385,7 +385,12 @@ namespace NHibernate.Search.Impl
             get { return session.Statistics; }
         }
 
-        public FlushMode FlushMode
+    	public ISession GetSession(EntityMode entityMode)
+    	{
+    		return session.GetSession(entityMode);
+    	}
+
+    	public FlushMode FlushMode
         {
             get { return session.FlushMode; }
             set { session.FlushMode = value; }

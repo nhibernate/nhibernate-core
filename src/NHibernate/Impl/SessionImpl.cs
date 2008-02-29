@@ -66,6 +66,12 @@ namespace NHibernate.Impl
 
 		[NonSerialized]
 		private readonly StatefulPersistenceContext persistenceContext;
+		
+		[NonSerialized]
+		private ISession rootSession;
+
+		[NonSerialized]
+		private IDictionary<EntityMode,ISession> childSessionsByEntityMode;
 
 		#region System.Runtime.Serialization.ISerializable Members
 
@@ -208,9 +214,7 @@ namespace NHibernate.Impl
 			ConnectionReleaseMode connectionReleaseMode)
 			: base(factory)
 		{
-			throw new NotImplementedException();
-
-			//this.rootSession = null;
+			this.rootSession = null;
 			this.timestamp = timestamp;
 			this.entityMode = entityMode;
 			this.interceptor = interceptor;
@@ -221,6 +225,32 @@ namespace NHibernate.Impl
 			//this.autoCloseSessionEnabled = autoCloseSessionEnabled;
 			//this.connectionReleaseMode = connectionReleaseMode;
 			//this.jdbcContext = new JDBCContext(this, connection, interceptor);
+		}
+
+		/// <summary>
+		/// Constructor used in building "child sessions".
+		/// </summary>
+		/// <param name="parent">The parent Session</param>
+		/// <param name="entityMode">The entity mode</param>
+		private SessionImpl(SessionImpl parent, EntityMode entityMode)
+			:base (parent.factory)
+		{
+			this.rootSession = parent;
+			this.timestamp = parent.timestamp;
+			this.connectionManager = parent.connectionManager; //this.jdbcContext = parent.jdbcContext;
+			this.interceptor = parent.interceptor;
+			this.listeners = parent.listeners;
+			this.actionQueue = new ActionQueue(this);
+			this.entityMode = entityMode;
+			this.persistenceContext = new StatefulPersistenceContext(this);
+			//this.flushBeforeCompletionEnabled = false;
+			//this.autoCloseSessionEnabled = false;
+			//this.connectionReleaseMode = null;
+
+			if (factory.Statistics.IsStatisticsEnabled)
+				factory.StatisticsImplementor.OpenSession();
+
+			log.Debug("opened session [" + entityMode + "]");
 		}
 
 		/// <summary></summary>
@@ -255,7 +285,25 @@ namespace NHibernate.Impl
 
 			try
 			{
-				return connectionManager.Close();
+				try
+				{
+					if (childSessionsByEntityMode != null)
+					{
+						foreach (KeyValuePair<EntityMode, ISession> pair in childSessionsByEntityMode)
+						{
+							pair.Value.Close();
+						}
+					}
+				}
+				catch (Exception)
+				{
+					
+				}
+				
+				if (rootSession == null)
+					return connectionManager.Close();
+				else
+					return null;
 			}
 			finally
 			{
@@ -280,8 +328,7 @@ namespace NHibernate.Impl
 			connectionManager.AfterTransaction();
 			persistenceContext.AfterTransactionCompletion();
 			actionQueue.AfterTransactionCompletion(success);
-			if (//rootSession == null && 
-				tx != null)
+			if (rootSession == null && tx != null)
 			{
 				try
 				{
@@ -1010,12 +1057,26 @@ namespace NHibernate.Impl
 
 		public ITransaction BeginTransaction(IsolationLevel isolationLevel)
 		{
+			if (rootSession != null)
+			{
+				// Todo : should seriously consider not allowing a txn to begin from a child session
+				//      can always route the request to the root session...
+				log.Warn("Transaction started on non-root session");
+			}
+
 			ErrorIfClosed();
 			return connectionManager.BeginTransaction(isolationLevel);
 		}
 
 		public ITransaction BeginTransaction()
 		{
+			if (rootSession != null)
+			{
+				// Todo : should seriously consider not allowing a txn to begin from a child session
+				//      can always route the request to the root session...
+				log.Warn("Transaction started on non-root session");
+			}
+
 			ErrorIfClosed();
 			return connectionManager.BeginTransaction();
 		}
@@ -1833,18 +1894,18 @@ namespace NHibernate.Impl
 		public override void BeforeTransactionCompletion(ITransaction tx)
 		{
 			log.Debug("before transaction completion");
-			//if ( rootSession == null ) {
-			try
+			if ( rootSession == null ) 
 			{
-				interceptor.BeforeTransactionCompletion(tx);
+				try
+				{
+					interceptor.BeforeTransactionCompletion(tx);
+				}
+				catch (Exception e)
+				{
+					log.Error("exception in interceptor BeforeTransactionCompletion()", e);
+				}
 			}
-			catch (Exception e)
-			{
-				log.Error("exception in interceptor BeforeTransactionCompletion()", e);
-			}
-			//}
 		}
-
 
 		public ISession SetBatchSize(int batchSize)
 		{
@@ -1858,10 +1919,43 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-
 		public override ISession GetSession()
 		{
 			return this;
+		}
+
+		public ISession GetSession(EntityMode entityMode)
+		{
+			if(this.entityMode.Equals(entityMode))
+			{
+				return this;
+			}
+
+			if(rootSession !=null)
+			{
+				return rootSession.GetSession(entityMode);
+			}
+
+			ErrorIfClosed();
+
+			ISession rtn = null;
+			if (childSessionsByEntityMode == null)
+			{
+				childSessionsByEntityMode = new Dictionary<EntityMode, ISession>();
+			}
+			else
+			{
+				if(childSessionsByEntityMode.ContainsKey(entityMode))
+					rtn = childSessionsByEntityMode[entityMode];
+			}
+
+			if(rtn == null)
+			{
+				rtn = new SessionImpl(this, entityMode);
+				childSessionsByEntityMode.Add(entityMode,rtn);
+			}
+			
+			return rtn;
 		}
 
 		public override IInterceptor Interceptor
