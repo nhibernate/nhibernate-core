@@ -32,7 +32,7 @@ namespace NHibernate.Context
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof (ThreadStaticSessionContext));
 
-		[ThreadStatic] private static IDictionary<ISessionFactory, ISession> context;
+		[ThreadStatic] protected static IDictionary<ISessionFactory, ISession> context;
 
 		protected readonly ISessionFactoryImplementor factory;
 
@@ -49,7 +49,7 @@ namespace NHibernate.Context
 			ISession current = ExistingSession(factory);
 			if (current == null)
 			{
-				current = buildOrObtainSession();
+				current = BuildOrObtainSession();
 
 				// wrap the session in the transaction-protection proxy
 				if (NeedsWrapping(current))
@@ -146,7 +146,7 @@ namespace NHibernate.Context
 			return false;
 		}
 
-		protected ISession buildOrObtainSession()
+		protected ISession BuildOrObtainSession()
 		{
 			return factory.OpenSession(
 				null,

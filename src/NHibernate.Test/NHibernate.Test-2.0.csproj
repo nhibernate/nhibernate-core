@@ -100,6 +100,7 @@
     <Compile Include="ConnectionTest\ConnectionManagementTestCase.cs" />
     <Compile Include="ConnectionTest\Other.cs" />
     <Compile Include="ConnectionTest\Silly.cs" />
+    <Compile Include="ConnectionTest\ThreadLocalCurrentSessionTest.cs" />
     <Compile Include="Criteria\AddNumberProjection.cs" />
     <Compile Include="Criteria\Animal.cs" />
     <Compile Include="Criteria\Course.cs" />

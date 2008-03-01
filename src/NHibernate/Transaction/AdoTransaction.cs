@@ -164,7 +164,7 @@ namespace NHibernate.Transaction
 			}
 
 			session.BeforeTransactionCompletion(this);
-
+			
 			try
 			{
 				trans.Commit();
@@ -265,6 +265,16 @@ namespace NHibernate.Transaction
 		public IsolationLevel IsolationLevel
 		{
 			get { return trans.IsolationLevel; }
+		}
+
+		void CloseIfRequerid()
+		{
+			//bool close = session.ShouldAutoClose() &&
+			//    !transactionContext.isClosed();
+			//if (close)
+			//{
+			//    transactionContext.managedClose();
+			//}
 		}
 
 		#region System.IDisposable Members

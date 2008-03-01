@@ -73,6 +73,11 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private IDictionary<EntityMode,ISession> childSessionsByEntityMode;
 
+
+		//[NonSerialized] private bool flushBeforeCompletionEnabled;
+		[NonSerialized] private bool autoCloseSessionEnabled;
+		//[NonSerialized] private ConnectionReleaseMode connectionReleaseMode;
+
 		#region System.Runtime.Serialization.ISerializable Members
 
 		/// <summary>
@@ -222,7 +227,7 @@ namespace NHibernate.Impl
 			this.actionQueue = new ActionQueue(this);
 			this.persistenceContext = new StatefulPersistenceContext(this);
 			//this.flushBeforeCompletionEnabled = flushBeforeCompletionEnabled;
-			//this.autoCloseSessionEnabled = autoCloseSessionEnabled;
+			this.autoCloseSessionEnabled = autoCloseSessionEnabled;
 			//this.connectionReleaseMode = connectionReleaseMode;
 			//this.jdbcContext = new JDBCContext(this, connection, interceptor);
 		}
@@ -244,7 +249,7 @@ namespace NHibernate.Impl
 			this.entityMode = entityMode;
 			this.persistenceContext = new StatefulPersistenceContext(this);
 			//this.flushBeforeCompletionEnabled = false;
-			//this.autoCloseSessionEnabled = false;
+			this.autoCloseSessionEnabled = false;
 			//this.connectionReleaseMode = null;
 
 			if (factory.Statistics.IsStatisticsEnabled)
@@ -267,6 +272,16 @@ namespace NHibernate.Impl
 		public override long Timestamp
 		{
 			get { return timestamp; }
+		}
+
+		public bool IsAutoCloseSessionEnabled
+		{
+			get { return autoCloseSessionEnabled; }
+		}
+
+		public bool ShouldAutoClose
+		{
+			get { return IsAutoCloseSessionEnabled && !IsClosed; }
 		}
 
 		/// <summary></summary>
