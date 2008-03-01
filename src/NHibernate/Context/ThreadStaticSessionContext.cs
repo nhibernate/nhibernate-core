@@ -1,54 +1,56 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using log4net;
+using NHibernate;
 using NHibernate.Engine;
 
 namespace NHibernate.Context
 {
+	//TODO: refactoring on this class. Maybe using MapBasedSessionContext.
 	/// <summary>
-	/// Provides a <see cref="ISessionFactory.GetCurrentSession()">current session</see>
-	/// for each thread using the [<see cref="ThreadStaticAttribute"/>].
-	/// To avoid if there are two session factories in the same thread.
+	/// A <see cref="ICurrentSessionContext"/> impl which scopes the notion of current
+	/// session by the current thread of execution. Threads do not give us a 
+	/// nice hook to perform any type of cleanup making
+	/// it questionable for this impl to actually generate Session instances.  In
+	/// the interest of usability, it was decided to have this default impl
+	/// actually generate a session upon first request and then clean it up
+	/// after the <see cref="ITransaction"/> associated with that session
+	/// is committed/rolled-back.  In order for ensuring that happens, the sessions
+	/// generated here are unusable until after {@link Session#beginTransaction()}
+	/// has been called. If <tt>Close()</tt> is called on a session managed by
+	/// this class, it will be automatically unbound.
+	/// <p/>
+	/// Additionally, the static <see cref="Bind"/> and <see cref="Unbind"/> methods are
+	/// provided to allow application code to explicitly control opening and
+	/// closing of these sessions.  This, with some from of interception,
+	/// is the preferred approach.  It also allows easy framework integration
+	/// and one possible approach for implementing long-sessions.
+	/// <p/>
 	/// </summary>
 	[Serializable]
-	public class ThreadStaticSessionContext : CurrentSessionContext
+	public class ThreadStaticSessionContext : ICurrentSessionContext
 	{
-		private readonly ILog log = LogManager.GetLogger(typeof (ThreadStaticSessionContext));
+		private static readonly ILog log = LogManager.GetLogger(typeof (ThreadStaticSessionContext));
 
 		[ThreadStatic] private static IDictionary<ISessionFactory, ISession> context;
 
 		protected readonly ISessionFactoryImplementor factory;
 
 
-
-
-		public ThreadStaticSessionContext(Engine.ISessionFactoryImplementor factory)
+		public ThreadStaticSessionContext(ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
 		}
 
-		/// <summary> Gets or sets the currently bound session. </summary>
-		protected override ISession Session
-		{
-			get 
-			{
-				throw new NotImplementedException();
-			}
-			set 
-			{ 
-				throw new NotImplementedException();
-			}
-		}
+		#region ICurrentSessionContext Members
 
-
-		public override ISession CurrentSession()
+		public ISession CurrentSession()
 		{
 			ISession current = ExistingSession(factory);
 			if (current == null)
 			{
 				current = buildOrObtainSession();
-				
+
 				// wrap the session in the transaction-protection proxy
 				if (NeedsWrapping(current))
 				{
@@ -56,14 +58,40 @@ namespace NHibernate.Context
 				}
 				// then bind it
 				DoBind(current, factory);
-
 			}
 			return current;
 		}
 
+		#endregion
+
 		private static void CleanupAnyOrphanedSession(ISessionFactory factory)
 		{
-			throw new NotImplementedException();
+			ISession orphan = DoUnbind(factory, false);
+
+			if (orphan != null)
+			{
+				log.Warn("Already session bound on call to bind(); make sure you clean up your sessions!");
+
+				try
+				{
+					if (orphan.Transaction != null && orphan.Transaction.IsActive)
+					{
+						try
+						{
+							orphan.Transaction.Rollback();
+						}
+						catch (Exception ex)
+						{
+							log.Debug("Unable to rollback transaction for orphaned session", ex);
+						}
+					}
+					orphan.Close();
+				}
+				catch (Exception ex)
+				{
+					log.Debug("Unable to close orphaned session", ex);
+				}
+			}
 		}
 
 		public static void Bind(ISession session)
@@ -94,7 +122,7 @@ namespace NHibernate.Context
 		{
 			ISession session = null;
 
-			if(context != null)
+			if (context != null)
 			{
 				if (context.ContainsKey(factory))
 				{
@@ -102,7 +130,7 @@ namespace NHibernate.Context
 					context.Remove(factory);
 				}
 
-				if(releaseMapIfEmpty && context.Count == 0) 
+				if (releaseMapIfEmpty && context.Count == 0)
 					context = null;
 			}
 			return session;
@@ -120,13 +148,11 @@ namespace NHibernate.Context
 
 		protected ISession buildOrObtainSession()
 		{
-			throw new NotImplementedException();
-
-			//return factory.OpenSession(
-			//  null,
-			//	IsAutoFlushEnabled(),
-			//  IsAutoCloseEnabled(),
-			//  GetConnectionReleaseMode());
+			return factory.OpenSession(
+				null,
+				IsAutoFlushEnabled(),
+				IsAutoCloseEnabled(),
+				GetConnectionReleaseMode());
 		}
 
 		private ConnectionReleaseMode GetConnectionReleaseMode()
@@ -134,16 +160,16 @@ namespace NHibernate.Context
 			return factory.Settings.ConnectionReleaseMode;
 		}
 
-		protected bool IsAutoCloseEnabled()
+		protected virtual bool IsAutoCloseEnabled()
 		{
 			return true;
 		}
 
-		protected bool IsAutoFlushEnabled()
+		protected virtual bool IsAutoFlushEnabled()
 		{
 			return true;
 		}
-		
+
 		private static ISession ExistingSession(ISessionFactory factory)
 		{
 			if (context == null)

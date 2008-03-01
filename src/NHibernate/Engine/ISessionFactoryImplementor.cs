@@ -175,6 +175,27 @@ namespace NHibernate.Engine
 			IDbConnection connection,
 			ConnectionReleaseMode connectionReleaseMode);
 
+		/// <summary>
+		/// Open a session conforming to the given parameters. Used mainly
+		/// for current session processing.
+		/// </summary>
+		/// <param name="connection">The external ado.net connection to use, if one (i.e., optional).</param>
+		/// <param name="flushBeforeCompletionEnabled">
+		/// Should the session be auto-flushed 
+		/// prior to transaction completion?
+		/// </param>
+		/// <param name="autoCloseSessionEnabled">
+		/// Should the session be auto-closed after
+		/// transaction completion?
+		/// </param>
+		/// <param name="connectionReleaseMode">The release mode for managed jdbc connections.</param>
+		/// <returns>An appropriate session.</returns>
+		ISession OpenSession(
+			IDbConnection connection,
+			bool flushBeforeCompletionEnabled,
+			bool autoCloseSessionEnabled,
+			ConnectionReleaseMode connectionReleaseMode);
+
 		/// <summary> 
 		/// Retrieves a set of all the collection roles in which the given entity
 		/// is a participant, as either an index or an element.
