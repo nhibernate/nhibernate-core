@@ -84,7 +84,7 @@ namespace NHibernate.Event.Default
 					.Append(session.ActionQueue.CollectionRemovalsCount).Append(" removals to ")
 					.Append(persistenceContext.CollectionEntries.Count).Append(" collections");
 
-				log.Debug("EntitiesByKey:");
+				log.Debug(sb.ToString());
 				new Printer(session.Factory).ToString(persistenceContext.EntitiesByKey.Values.GetEnumerator());
 			}
 		}
