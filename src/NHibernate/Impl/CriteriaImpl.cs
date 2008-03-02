@@ -16,11 +16,6 @@ namespace NHibernate.Impl
 	[Serializable]
 	public class CriteriaImpl : ICriteria
 	{
-		/// <summary>
-		/// This result transformer is selected implicitly by calling <c>SetProjection()</c>
-		/// </summary>
-		private static IResultTransformer ProjectionTransformer = new PassThroughResultTransformer();
-
 		private IList criteria = new ArrayList();
 		private IList orderEntries = new ArrayList();
 		private IDictionary fetchModes = new Hashtable();
@@ -31,7 +26,7 @@ namespace NHibernate.Impl
 		private int fetchSize = RowSelection.NoValue;
 		private System.Type persistentClass;
 		private ISessionImplementor session;
-		private IResultTransformer resultTransformer = new RootEntityResultTransformer();
+		private IResultTransformer resultTransformer = CriteriaSpecification.RootEntity;
 		private bool cacheable;
 		private string cacheRegion;
 		private CacheMode? cacheMode;
@@ -681,7 +676,7 @@ namespace NHibernate.Impl
 		{
 			this.projection = projection;
 			projectionCriteria = this;
-			SetResultTransformer(ProjectionTransformer);
+			SetResultTransformer(CriteriaSpecification.Projection);
 			return this;
 		}
 
