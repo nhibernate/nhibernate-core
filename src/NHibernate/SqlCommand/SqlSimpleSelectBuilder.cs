@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -12,14 +13,11 @@ namespace NHibernate.SqlCommand
 	{
 		private string tableName;
 
-		private IList columnNames = new ArrayList(); // name of the column
-		private IDictionary aliases = new Hashtable(); //key=column Name, value=column Alias
+		private readonly IList<string> columnNames = new List<string>();
+		private readonly IDictionary<string, string> aliases = new Dictionary<string, string>(); //key=column Name, value=column Alias
 		private LockMode lockMode = LockMode.Read;
 
-		private int versionFragmentIndex = -1; // not used !?!
-		private int identityFragmentIndex = -1; // not used !?!
-
-		private IList whereStrings = new ArrayList();
+		private readonly List<SqlString> whereStrings = new List<SqlString>();
 
 		//these can be plain strings because a forUpdate and orderBy will have
 		// no parameters so using a SqlString will only complicate matters - or 
@@ -27,7 +25,7 @@ namespace NHibernate.SqlCommand
 		private string forUpdateFragment;
 		private string orderBy;
 
-		public SqlSimpleSelectBuilder(Dialect.Dialect dialect, ISessionFactoryImplementor factory)
+		public SqlSimpleSelectBuilder(Dialect.Dialect dialect, IMapping factory)
 			: base(dialect, factory) {}
 
 		/// <summary>
@@ -75,7 +73,8 @@ namespace NHibernate.SqlCommand
 		{
 			for (int i = 0; i < columnNames.Length; i++)
 			{
-				AddColumn(columnNames[i]);
+				if (columnNames[i] != null)
+					AddColumn(columnNames[i]);
 			}
 			return this;
 		}
@@ -90,7 +89,8 @@ namespace NHibernate.SqlCommand
 		{
 			for (int i = 0; i < columnNames.Length; i++)
 			{
-				AddColumn(columnNames[i], aliases[i]);
+				if (columnNames[i] != null)
+					AddColumn(columnNames[i], aliases[i]);
 			}
 			return this;
 		}
@@ -108,7 +108,9 @@ namespace NHibernate.SqlCommand
 		/// <returns>The Alias if one exists, null otherwise</returns>
 		public string GetAlias(string columnName)
 		{
-			return (string) aliases[columnName];
+			string result;
+			aliases.TryGetValue(columnName, out result);
+			return result;
 		}
 
 		/// <summary>
@@ -119,7 +121,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlSimpleSelectBuilder.</returns>
 		public SqlSimpleSelectBuilder SetIdentityColumn(string[] columnNames, IType identityType)
 		{
-			identityFragmentIndex = whereStrings.Add(ToWhereString(columnNames));
+			whereStrings.Add(ToWhereString(columnNames));
 			return this;
 		}
 
@@ -131,7 +133,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlSimpleSelectBuilder.</returns>
 		public SqlSimpleSelectBuilder SetVersionColumn(string[] columnNames, IVersionType versionType)
 		{
-			versionFragmentIndex = whereStrings.Add(ToWhereString(columnNames));
+			whereStrings.Add(ToWhereString(columnNames));
 			return this;
 		}
 
@@ -142,7 +144,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlSimpleSelectBuilder</returns>
 		public SqlSimpleSelectBuilder SetForUpdateFragment(string fragment)
 		{
-			this.forUpdateFragment = fragment;
+			forUpdateFragment = fragment;
 			return this;
 		}
 
@@ -185,7 +187,7 @@ namespace NHibernate.SqlCommand
 
 			for (int i = 0; i < columnNames.Count; i++)
 			{
-				string column = (string) columnNames[i];
+				string column = columnNames[i];
 				string alias = GetAlias(column);
 
 				if (commaNeeded)
@@ -210,15 +212,9 @@ namespace NHibernate.SqlCommand
 			sqlBuilder.Add(" WHERE ");
 
 			if (whereStrings.Count > 1)
-			{
-				sqlBuilder.Add(
-					(SqlString[]) ((ArrayList) whereStrings).ToArray(typeof(SqlString)),
-					null, "AND", null, false);
-			}
+				sqlBuilder.Add(whereStrings.ToArray(), null, "AND", null, false);
 			else
-			{
-				sqlBuilder.Add((SqlString) whereStrings[0]);
-			}
+				sqlBuilder.Add(whereStrings[0]);
 
 			if (forUpdateFragment != null)
 			{

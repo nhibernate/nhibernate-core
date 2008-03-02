@@ -22,12 +22,11 @@ namespace NHibernate.Persister.Entity
 			get { throw new InvalidOperationException("one-to-one is not supported here"); }
 		}
 
-		public abstract string ClassName { get; }
+		protected abstract string EntityName { get; }
 
-		protected void ThrowPropertyException(String propertyName)
+		protected QueryException PropertyException(String propertyName)
 		{
-			throw new QueryException(
-				string.Format("could not resolve property: {0} of: {1}", propertyName, ClassName));
+			return new QueryException(string.Format("could not resolve property: {0} of: {1}", propertyName, EntityName));
 		}
 
 		#region IPropertyMapping Members
@@ -42,7 +41,7 @@ namespace NHibernate.Persister.Entity
 			IType type = typesByPropertyPath[propertyName] as IType;
 			if (type == null)
 			{
-				ThrowPropertyException(propertyName);
+				throw PropertyException(propertyName);
 			}
 			return type;
 		}
@@ -53,7 +52,7 @@ namespace NHibernate.Persister.Entity
 			string[] columns = (string[]) columnsByPropertyPath[propertyName];
 			if (columns == null)
 			{
-				ThrowPropertyException(propertyName);
+				throw PropertyException(propertyName);
 			}
 
 			string[] templates = (string[]) formulaTemplatesByPropertyPath[propertyName];
@@ -61,13 +60,27 @@ namespace NHibernate.Persister.Entity
 			for (int i = 0; i < columns.Length; i++)
 			{
 				if (columns[i] == null)
-				{
 					result[i] = StringHelper.Replace(templates[i], Template.Placeholder, alias);
-				}
 				else
-				{
 					result[i] = StringHelper.Qualify(alias, columns[i]);
-				}
+			}
+			return result;
+		}
+
+		public virtual string[] ToColumns(string propertyName)
+		{
+			string[] columns = (string[])columnsByPropertyPath[propertyName];
+			if (columns == null)
+				throw PropertyException(propertyName);
+
+			string[] templates = (string[])formulaTemplatesByPropertyPath[propertyName];
+			string[] result = new string[columns.Length];
+			for (int i = 0; i < columns.Length; i++)
+			{
+				if (columns[i] == null)
+					result[i] = StringHelper.Replace(templates[i], Template.Placeholder, string.Empty);
+				else
+					result[i] = columns[i];
 			}
 			return result;
 		}
@@ -94,7 +107,7 @@ namespace NHibernate.Persister.Entity
 			{
 				throw new MappingException(
 					string.Format("broken column mapping for: {0} of: {1}, type {2} expects {3} columns, but {4} were mapped",
-					              path, ClassName, type.Name, type.GetColumnSpan(factory), columns.Length));
+					              path, EntityName, type.Name, type.GetColumnSpan(factory), columns.Length));
 			}
 
 			if (type.IsAssociationType)

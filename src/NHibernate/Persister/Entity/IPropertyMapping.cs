@@ -25,6 +25,9 @@ namespace NHibernate.Persister.Entity
 		/// <returns></returns>
 		string[] ToColumns(string alias, string propertyName);
 
+		/// <summary> Given a property path, return the corresponding column name(s).</summary>
+		string[] ToColumns(string propertyName);
+
 		/// <summary>
 		/// Get the type of the thing containing the properties
 		/// </summary>

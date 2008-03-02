@@ -335,7 +335,7 @@ namespace NHibernate.Collection.Generic
 			return true;
 		}
 
-		public override ICollection GetDeletes(IType elemType, bool indexIsFormula)
+		public override IEnumerable GetDeletes(IType elemType, bool indexIsFormula)
 		{
 			IDictionary snap = (IDictionary) GetSnapshot();
 			IList deletes = new ArrayList(snap.Keys);
@@ -486,6 +486,11 @@ namespace NHibernate.Collection.Generic
 				identifiers[i + 1] = identifiers[i];
 			}
 			identifiers.Remove(index);
+		}
+
+		public override IEnumerable Entries(ICollectionPersister persister)
+		{
+			return values;
 		}
 	}
 }

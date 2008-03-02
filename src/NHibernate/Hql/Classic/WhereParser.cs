@@ -426,7 +426,7 @@ namespace NHibernate.Hql.Classic
 				AppendToken(q, pathExpressionParser.GetCollectionSubquery(q.EnabledFilters));
 				CloseExpression(q, string.Empty);
 				// this is ugly here, but needed because its a subquery
-				q.AddQuerySpaces(new string[] { q.GetCollectionPersister(pathExpressionParser.CollectionRole).CollectionSpace });
+				q.AddQuerySpaces(q.GetCollectionPersister(pathExpressionParser.CollectionRole).CollectionSpaces);
 			}
 			else
 			{

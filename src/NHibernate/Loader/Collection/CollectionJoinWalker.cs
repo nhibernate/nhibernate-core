@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Loader.Collection
@@ -19,25 +18,25 @@ namespace NHibernate.Loader.Collection
 		{
 		}
 
-		protected SqlStringBuilder WhereString(string alias, string[] columnNames, IType type, SqlString subselect,
+		protected SqlStringBuilder WhereString(string alias, string[] columnNames, SqlString subselect,
 		                                       int batchSize)
 		{
 			if (subselect == null)
 			{
-				return base.WhereString(alias, columnNames, type, batchSize);
+				return WhereString(alias, columnNames, batchSize);
 			}
 			else
 			{
 				SqlStringBuilder buf = new SqlStringBuilder();
+
 				if (columnNames.Length > 1)
-				{
 					buf.Add("(");
-				}
-				buf.Add(StringHelper.Join(", ", StringHelper.Qualify(alias, columnNames)));
+
+				buf.Add(StringHelper.Join(StringHelper.CommaSpace, StringHelper.Qualify(alias, columnNames)));
+				
 				if (columnNames.Length > 1)
-				{
 					buf.Add(")");
-				}
+
 				buf.Add(" in ")
 					.Add("(")
 					.Add(subselect)

@@ -293,7 +293,7 @@ namespace NHibernate.Collection
 			return result;
 		}
 
-		public override ICollection GetDeletes(IType elemType, bool indexIsFormula)
+		public override IEnumerable GetDeletes(IType elemType, bool indexIsFormula)
 		{
 			IList deletes = new ArrayList();
 			IList sn = (IList) GetSnapshot();
@@ -351,6 +351,11 @@ namespace NHibernate.Collection
 		public override bool EntryExists(object entry, int i)
 		{
 			return entry != null;
+		}
+
+		public override IEnumerable Entries(ICollectionPersister persister)
+		{
+			return list;
 		}
 	}
 }

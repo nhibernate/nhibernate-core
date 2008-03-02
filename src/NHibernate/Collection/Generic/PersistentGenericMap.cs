@@ -168,7 +168,7 @@ namespace NHibernate.Collection.Generic
 			return (e.Value != null && existedBefore && elemType.IsDirty(snValue, e.Value, Session));
 		}
 
-		public override ICollection GetDeletes(IType elemType, bool indexIsFormula)
+		public override IEnumerable GetDeletes(IType elemType, bool indexIsFormula)
 		{
 			IList deletes = new ArrayList();
 			foreach (KeyValuePair<TKey, TValue> e in (IDictionary<TKey, TValue>) GetSnapshot())
@@ -465,5 +465,10 @@ namespace NHibernate.Collection.Generic
 		}
 
 		#endregion
+
+		public override IEnumerable Entries(ICollectionPersister persister)
+		{
+			return map;
+		}
 	}
 }

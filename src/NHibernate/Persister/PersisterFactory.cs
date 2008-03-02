@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using NHibernate.Cache;
+using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Persister.Collection;
@@ -63,16 +64,17 @@ namespace NHibernate.Persister
 			}
 		}
 
-		public static ICollectionPersister CreateCollectionPersister(Mapping.Collection model, ICacheConcurrencyStrategy cache,
+		public static ICollectionPersister CreateCollectionPersister(Configuration cfg, Mapping.Collection model, ICacheConcurrencyStrategy cache,
 		                                                             ISessionFactoryImplementor factory)
 		{
 			System.Type persisterClass = model.CollectionPersisterClass;
 			if (persisterClass == null)
 			{
 				// default behaviour
-				return model.IsOneToMany ?
-				       (ICollectionPersister) new OneToManyPersister(model, cache, factory) :
-				       (ICollectionPersister) new BasicCollectionPersister(model, cache, factory);
+				return
+					model.IsOneToMany
+						? (ICollectionPersister) new OneToManyPersister(model, cache, cfg, factory)
+						: (ICollectionPersister) new BasicCollectionPersister(model, cache, cfg, factory);
 			}
 			else
 			{

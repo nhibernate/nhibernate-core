@@ -400,16 +400,16 @@ namespace NHibernate.Loader
 			bool returnProxies)
 		{
 			RowSelection selection = queryParameters.RowSelection;
-			int maxRows = HasMaxRows(selection) ?
-			              selection.MaxRows :
-			              int.MaxValue;
+			int maxRows = HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
 
 			int entitySpan = EntityPersisters.Length;
 
-			ArrayList hydratedObjects = entitySpan > 0 ? new ArrayList() : null;
+			ArrayList hydratedObjects = entitySpan == 0 ? null : new ArrayList(entitySpan * 10);
+			;
 			IDbCommand st = PrepareQueryCommand(queryParameters, false, session);
 
-			IDataReader rs = GetResultSet(st, queryParameters.HasAutoDiscoverScalarTypes, selection, session);
+			IDataReader rs =
+				GetResultSet(st, queryParameters.HasAutoDiscoverScalarTypes, queryParameters.Callable, selection, session);
 
 			// would be great to move all this below here into another method that could also be used
 			// from the new scrolling stuff.
@@ -441,15 +441,9 @@ namespace NHibernate.Loader
 						log.Debug("result set row: " + count);
 					}
 
-					object result = GetRowFromResultSet(
-						rs,
-						session,
-						queryParameters,
-						lockModeArray,
-						optionalObjectKey,
-						hydratedObjects,
-						keys,
-						returnProxies);
+					object result =
+						GetRowFromResultSet(rs, session, queryParameters, lockModeArray, optionalObjectKey, hydratedObjects, keys,
+						                    returnProxies);
 					results.Add(result);
 
 					if (createSubselects)
@@ -476,7 +470,7 @@ namespace NHibernate.Loader
 				CreateSubselects(subselectResultKeys, queryParameters, session);
 			}
 
-			return results; // GetResultList( results );
+			return results;
 		}
 
 		protected internal virtual bool IsSubselectLoadingEnabled
@@ -577,10 +571,7 @@ namespace NHibernate.Loader
 			}
 		}
 
-		internal void InitializeEntitiesAndCollections(
-			IList hydratedObjects,
-			object resultSetId,
-			ISessionImplementor session, bool readOnly)
+		internal void InitializeEntitiesAndCollections(IList hydratedObjects, object resultSetId, ISessionImplementor session, bool readOnly)
 		{
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
 			if (collectionPersisters != null)
@@ -603,8 +594,8 @@ namespace NHibernate.Loader
 			PostLoadEvent post;
 			if (session.IsEventSource)
 			{
-				pre = new PreLoadEvent((IEventSource)session);
-				post = new PostLoadEvent((IEventSource)session);
+				pre = new PreLoadEvent((IEventSource) session);
+				post = new PostLoadEvent((IEventSource) session);
 			}
 			else
 			{
@@ -643,14 +634,10 @@ namespace NHibernate.Loader
 			}
 		}
 
-		private void EndCollectionLoad(
-			object resultSetId,
-			ISessionImplementor session,
-			ICollectionPersister collectionPersister)
+		private void EndCollectionLoad(object resultSetId, ISessionImplementor session, ICollectionPersister collectionPersister)
 		{
 			//this is a query and we are loading multiple instances of the same collection role
-			session.PersistenceContext.LoadContexts
-				.GetCollectionLoadContext((IDataReader)resultSetId)
+			session.PersistenceContext.LoadContexts.GetCollectionLoadContext((IDataReader) resultSetId)
 				.EndLoadingCollections(collectionPersister);
 		}
 
@@ -1360,8 +1347,9 @@ namespace NHibernate.Loader
 		/// <param name="selection">The <see cref="RowSelection"/> to apply to the <see cref="IDbCommand"/> and <see cref="IDataReader"/>.</param>
 		/// <param name="autoDiscoverTypes">true if result types need to be auto-discovered by the loader; false otherwise.</param>
 		/// <param name="session">The <see cref="ISession" /> to load in.</param>
+		/// <param name="callable"></param>
 		/// <returns>An IDataReader advanced to the first record in RowSelection.</returns>
-		protected IDataReader GetResultSet(IDbCommand st, bool autoDiscoverTypes, RowSelection selection, ISessionImplementor session)
+		protected IDataReader GetResultSet(IDbCommand st, bool autoDiscoverTypes, bool callable, RowSelection selection, ISessionImplementor session)
 		{
 			IDataReader rs = null;
 			try
@@ -1525,6 +1513,25 @@ namespace NHibernate.Loader
 				                                 +
 				                                 MessageHelper.InfoString(persisters[persisters.Length - 1], id, identifierType,
 				                                                          Factory), SqlString);
+			}
+
+			log.Debug("done entity load");
+
+			return result;
+		}
+
+		protected IList LoadEntity(ISessionImplementor session, object key, object index, IType keyType, IType indexType, IEntityPersister persister)
+		{
+			log.Debug("loading collection element by index");
+
+			IList result;
+			try
+			{
+				result = DoQueryAndInitializeNonLazyCollections(session, new QueryParameters(new IType[] { keyType, indexType }, new object[] { key, index }), false);
+			}
+			catch (Exception sqle)
+			{
+				throw ADOExceptionHelper.Convert(factory.SQLExceptionConverter, sqle, "could not collection element by index", SqlString);
 			}
 
 			log.Debug("done entity load");

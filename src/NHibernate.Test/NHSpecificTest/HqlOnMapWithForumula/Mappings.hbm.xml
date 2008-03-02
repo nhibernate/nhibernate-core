@@ -13,7 +13,7 @@
 			<key column="ParentId" />
 			<index column="Name" type="System.String"/>
 			<composite-element class="Info">
-					<property name="RowCount" formula="select count(ID) from A a where A.ID = ID" />
+					<property name="RowCount" formula="(select count(a.ID) from A a where a.ID = ParentId)" />
 			</composite-element>
 		</map>
   </class>

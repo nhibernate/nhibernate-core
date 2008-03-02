@@ -16,51 +16,20 @@ namespace NHibernate.Loader.Entity
 	{
 		private readonly bool batchLoader;
 
-		public EntityLoader(
-			IOuterJoinLoadable persister,
-			LockMode lockMode,
-			ISessionFactoryImplementor factory,
+		public EntityLoader(IOuterJoinLoadable persister, LockMode lockMode, ISessionFactoryImplementor factory,
 			IDictionary<string, IFilter> enabledFilters)
-			: this(persister, 1, lockMode, factory, enabledFilters)
-		{
-		}
+			: this(persister, 1, lockMode, factory, enabledFilters) {}
 
-		public EntityLoader(
-			IOuterJoinLoadable persister,
-			int batchSize,
-			LockMode lockMode,
+		public EntityLoader(IOuterJoinLoadable persister, int batchSize, LockMode lockMode,
 			ISessionFactoryImplementor factory,
 			IDictionary<string, IFilter> enabledFilters)
-			: this(
-				persister,
-				persister.IdentifierColumnNames,
-				persister.IdentifierType,
-				batchSize,
-				lockMode,
-				factory,
-				enabledFilters)
-		{
-		}
+			: this(persister, persister.IdentifierColumnNames, persister.IdentifierType, batchSize, lockMode, factory, enabledFilters) {}
 
-		public EntityLoader(
-			IOuterJoinLoadable persister,
-			string[] uniqueKey,
-			IType uniqueKeyType,
-			int batchSize,
-			LockMode lockMode,
-			ISessionFactoryImplementor factory,
-			IDictionary<string, IFilter> enabledFilters)
+		public EntityLoader(IOuterJoinLoadable persister, string[] uniqueKey, IType uniqueKeyType,
+			int batchSize, LockMode lockMode, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(persister, uniqueKeyType, factory, enabledFilters)
 		{
-			JoinWalker walker = new EntityJoinWalker(
-				persister,
-				uniqueKey,
-				uniqueKeyType,
-				batchSize,
-				lockMode,
-				factory,
-				enabledFilters
-				);
+			JoinWalker walker = new EntityJoinWalker(persister, uniqueKey, batchSize, lockMode, factory, enabledFilters);
 			InitFromWalker(walker);
 
 			PostInstantiate();

@@ -11,8 +11,8 @@ namespace NHibernate.Mapping
 	public class DependantValue : SimpleValue
 	{
 		private readonly IKeyValue wrappedValue;
-		private bool isNullable;
-		private bool isUpdateable;
+		private bool isNullable = true;
+		private bool isUpdateable = true;
 
 		public DependantValue(Table table, IKeyValue prototype)
 			: base(table)

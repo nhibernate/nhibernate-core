@@ -17,9 +17,9 @@ namespace NHibernate.Persister.Entity
 			get { return persister.IdentifierColumnNames; }
 		}
 
-		protected System.Type EntityName
+		protected override string EntityName
 		{
-			get { return persister.MappedClass; }
+			get { return persister.EntityName; }
 		}
 
 		public override IType Type
@@ -29,15 +29,9 @@ namespace NHibernate.Persister.Entity
 
 		public override string[] ToColumns(string alias, string propertyName)
 		{
-			return base.ToColumns(
-					persister.GenerateTableAlias(alias, persister.GetSubclassPropertyTableNumber(propertyName)),
-					propertyName
-				);
-		}
-
-		public override string ClassName
-		{
-			get { return Type.Name; }
+			return
+				base.ToColumns(persister.GenerateTableAlias(alias, persister.GetSubclassPropertyTableNumber(propertyName)),
+				               propertyName);
 		}
 	}
 }

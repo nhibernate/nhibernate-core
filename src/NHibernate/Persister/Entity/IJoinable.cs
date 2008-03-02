@@ -60,11 +60,6 @@ namespace NHibernate.Persister.Entity
 		bool IsCollection { get; }
 
 		/// <summary>
-		/// Is this instance actually a many-to-many association?
-		/// </summary>
-		bool IsManyToMany { get; }
-
-		/// <summary>
 		/// Very, very, very ugly...
 		/// </summary>
 		/// <value>Does this persister "consume" entity column aliases in the result

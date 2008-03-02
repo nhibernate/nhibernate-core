@@ -800,7 +800,7 @@ namespace NHibernate.Hql.Classic
 			foreach (string name in collections.Values)
 			{
 				ICollectionPersister p = GetCollectionPersister(name);
-				AddQuerySpaces(new string[] { p.CollectionSpace });
+				AddQuerySpaces(p.CollectionSpaces);
 			}
 			foreach (string name in typeMap.Keys)
 			{
@@ -1283,7 +1283,7 @@ namespace NHibernate.Hql.Classic
 			IDbCommand cmd = PrepareQueryCommand(parameters, false, session);
 
 			// This IDataReader is disposed of in EnumerableImpl.Dispose
-			IDataReader rs = GetResultSet(cmd, parameters.HasAutoDiscoverScalarTypes, parameters.RowSelection, session);
+			IDataReader rs = GetResultSet(cmd, parameters.HasAutoDiscoverScalarTypes, false, parameters.RowSelection, session);
 			HolderInstantiator hi =
 				HolderInstantiator.CreateClassicHolderInstantiator(holderConstructor, parameters.ResultTransformer);
 			IEnumerable result =

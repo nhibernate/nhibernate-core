@@ -59,7 +59,6 @@ namespace NHibernate.Loader.Collection
 			SqlStringBuilder whereString = WhereString(
 				alias,
 				collectionPersister.KeyColumnNames,
-				collectionPersister.KeyType,
 				subquery,
 				batchSize
 				);

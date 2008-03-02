@@ -1,5 +1,3 @@
-using System;
-
 namespace NHibernate.Persister.Collection
 {
 	public interface ISqlLoadableCollection : IQueryableCollection

@@ -74,6 +74,13 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
+		public SqlDeleteBuilder AddWhereFragment(string[] columnNames, SqlType[] types, string op)
+		{
+			whereStrings.Add(ToWhereString(columnNames, op));
+			parameterTypes.AddRange(types);
+			return this;
+		}
+
 		/// <summary>
 		/// Adds a string to the WhereFragement
 		/// </summary>

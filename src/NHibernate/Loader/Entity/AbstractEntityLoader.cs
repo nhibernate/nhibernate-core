@@ -19,16 +19,18 @@ namespace NHibernate.Loader.Entity
 		protected readonly IType uniqueKeyType;
 		protected readonly System.Type entityName;
 
-		public AbstractEntityLoader(
-			IOuterJoinLoadable persister,
-			IType uniqueKeyType,
-			ISessionFactoryImplementor factory,
-			IDictionary<string, IFilter> enabledFilters)
+		public AbstractEntityLoader(IOuterJoinLoadable persister, IType uniqueKeyType, 
+			ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters)
 		{
 			this.uniqueKeyType = uniqueKeyType;
 			entityName = persister.MappedClass;
 			this.persister = persister;
+		}
+
+		protected override bool IsSingleRowLoader
+		{
+			get { return true; }
 		}
 
 		public object Load(object id, object optionalObject, ISessionImplementor session)
@@ -38,14 +40,7 @@ namespace NHibernate.Loader.Entity
 
 		protected virtual object Load(ISessionImplementor session, object id, object optionalObject, object optionalId)
 		{
-			IList list = LoadEntity(
-				session,
-				id,
-				uniqueKeyType,
-				optionalObject,
-				entityName,
-				optionalId,
-				persister);
+			IList list = LoadEntity(session, id, uniqueKeyType, optionalObject, entityName, optionalId, persister);
 
 			if (list.Count == 1)
 			{
@@ -64,11 +59,8 @@ namespace NHibernate.Loader.Entity
 				else
 				{
 					throw new HibernateException(
-						"More than one row with the given identifier was found: " +
-						id +
-						", for class: " +
-						persister.MappedClass
-						);
+						string.Format("More than one row with the given identifier was found: {0}, for class: {1}", id,
+						              persister.MappedClass));
 				}
 			}
 		}
@@ -77,11 +69,6 @@ namespace NHibernate.Loader.Entity
 		                                               ISessionImplementor session)
 		{
 			return row[row.Length - 1];
-		}
-
-		protected override bool IsSingleRowLoader
-		{
-			get { return true; }
 		}
 	}
 }

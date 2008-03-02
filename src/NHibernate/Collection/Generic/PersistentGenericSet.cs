@@ -380,7 +380,7 @@ namespace NHibernate.Collection.Generic
 			return result;
 		}
 
-		public override ICollection GetDeletes(IType elemType, bool indexIsFormula)
+		public override IEnumerable GetDeletes(IType elemType, bool indexIsFormula)
 		{
 			IList deletes = new ArrayList();
 			IDictionary snapshot = (IDictionary) GetSnapshot();
@@ -544,6 +544,16 @@ namespace NHibernate.Collection.Generic
 		{
 			Read();
 			return ((ICollection) internalSet).GetEnumerator();
+		}
+
+		public override IEnumerable Entries(ICollectionPersister persister)
+		{
+			return internalSet;
+		}
+
+		public override bool RowUpdatePossible
+		{
+			get { return false; }
 		}
 	}
 }

@@ -165,6 +165,17 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
+		public SqlUpdateBuilder AddWhereFragment(string[] columnNames, SqlType[] types, string op)
+		{
+			if (columnNames.Length > 0)
+			{
+				// Don't add empty conditions - we get extra ANDs
+				whereStrings.Add(ToWhereString(columnNames, op));
+				whereParameterTypes.AddRange(types);
+			}
+			return this;
+		}
+
 		/// <summary>
 		/// Adds a string to the WhereFragement
 		/// </summary>

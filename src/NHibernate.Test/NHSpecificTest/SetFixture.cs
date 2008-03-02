@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using Iesi.Collections;
 using NHibernate.Cache;
+using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Id;
@@ -149,6 +150,11 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
+		public bool IsManyToMany
+		{
+			get { throw new NotImplementedException(); }
+		}
+
 		public string GetManyToManyFilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
 		{
 			throw new NotImplementedException();
@@ -259,6 +265,11 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
+		public bool CascadeDeleteEnabled
+		{
+			get { throw new NotImplementedException(); }
+		}
+
 		public object ReadIndex(IDataReader rs, string[] aliases, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.ReadIndex implementation
@@ -285,6 +296,11 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
+		public string[] CollectionSpaces
+		{
+			get { throw new NotImplementedException(); }
+		}
+
 		public bool IsArray
 		{
 			get
@@ -301,6 +317,11 @@ namespace NHibernate.Test.NHSpecificTest
 				// TODO:  Add CollectionPersisterStub.Cache getter implementation
 				return null;
 			}
+		}
+
+		public ICacheEntryStructure CacheEntryStructure
+		{
+			get { throw new NotImplementedException(); }
 		}
 
 		public bool IsPrimitiveArray
@@ -360,11 +381,35 @@ namespace NHibernate.Test.NHSpecificTest
 			return null;
 		}
 
+		public int GetSize(object key, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool IndexExists(object key, object index, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool ElementExists(object key, object element, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public object GetElementByIndex(object key, object index, ISessionImplementor session, object owner)
+		{
+			throw new NotImplementedException();
+		}
+
 		public ISessionFactoryImplementor Factory
 		{
 			get { return null; }
 		}
 
+		public bool IsExtraLazy
+		{
+			get { throw new NotImplementedException(); }
+		}
 
 		public bool IsAffectedByEnabledFilters(ISessionImplementor session)
 		{
@@ -379,6 +424,26 @@ namespace NHibernate.Test.NHSpecificTest
 		public bool IsVersioned
 		{
 			get { return false; }
+		}
+
+		public bool IsMutable
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public string NodeName
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public string ElementNodeName
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public string IndexNodeName
+		{
+			get { throw new NotImplementedException(); }
 		}
 
 		#endregion

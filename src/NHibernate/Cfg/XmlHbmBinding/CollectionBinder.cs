@@ -571,13 +571,19 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					{
 						keyValue = (IKeyValue)model.Owner.GetProperty(propRef).Value;
 					}
-					SimpleValue key = new DependantValue(model.CollectionTable, keyValue);
+					DependantValue key = new DependantValue(model.CollectionTable, keyValue);
 					if (subnode.Attributes["on-delete"] != null)
 						key.IsCascadeDeleteEnabled = "cascade".Equals(subnode.Attributes["on-delete"].Value);
 					BindSimpleValue(subnode, key, model.IsOneToMany, Mapping.Collection.DefaultKeyColumnName);
 					if (key.Type.ReturnedClass.IsArray)
 						throw new MappingException("illegal use of an array as an identifier (arrays don't reimplement Equals)");
 					model.Key = key;
+
+
+					XmlAttribute notNull = subnode.Attributes["not-null"];
+					key.SetNullable(notNull == null || IsFalse(notNull.Value));
+					XmlAttribute updateable = subnode.Attributes["update"];
+					key.SetUpdateable(updateable == null || IsTrue(updateable.Value));
 				}
 				else if ("element".Equals(name))
 				{

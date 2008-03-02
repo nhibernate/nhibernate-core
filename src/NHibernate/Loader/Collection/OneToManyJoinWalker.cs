@@ -10,30 +10,22 @@ namespace NHibernate.Loader.Collection
 {
 	/// <summary>
 	/// Walker for one-to-many associations
-	/// <seealso cref="OneToManyLoader" />
 	/// </summary>
+	/// <seealso cref="OneToManyLoader" />
 	public class OneToManyJoinWalker : CollectionJoinWalker
 	{
 		private readonly IQueryableCollection oneToManyPersister;
 
-		protected override bool IsDuplicateAssociation(
-			string foreignKeyTable,
-			string[] foreignKeyColumns
-			)
+		protected override bool IsDuplicateAssociation(string foreignKeyTable, string[] foreignKeyColumns)
 		{
 			//disable a join back to this same association
-			bool isSameJoin = oneToManyPersister.TableName.Equals(foreignKeyTable) &&
-			                  CollectionHelper.CollectionEquals<string>(foreignKeyColumns, oneToManyPersister.KeyColumnNames);
-			return isSameJoin ||
-			       base.IsDuplicateAssociation(foreignKeyTable, foreignKeyColumns);
+			bool isSameJoin = oneToManyPersister.TableName.Equals(foreignKeyTable)
+			                  && CollectionHelper.CollectionEquals<string>(foreignKeyColumns, oneToManyPersister.KeyColumnNames);
+			return isSameJoin || base.IsDuplicateAssociation(foreignKeyTable, foreignKeyColumns);
 		}
 
-		public OneToManyJoinWalker(
-			IQueryableCollection oneToManyPersister,
-			int batchSize,
-			SqlString subquery,
-			ISessionFactoryImplementor factory,
-			IDictionary<string, IFilter> enabledFilters)
+		public OneToManyJoinWalker(IQueryableCollection oneToManyPersister,int batchSize,SqlString subquery,
+			ISessionFactoryImplementor factory,IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters)
 		{
 			this.oneToManyPersister = oneToManyPersister;
@@ -42,27 +34,16 @@ namespace NHibernate.Loader.Collection
 
 			WalkEntityTree(elementPersister, alias);
 
-			IList allAssociations = new ArrayList();
-			ArrayHelper.AddAll(allAssociations, associations);
-			allAssociations.Add(new OuterJoinableAssociation(
-			                    	oneToManyPersister.CollectionType,
-			                    	null,
-			                    	null,
-			                    	alias,
-			                    	JoinType.LeftOuterJoin,
-			                    	Factory,
-			                    	new CollectionHelper.EmptyMapClass<string, IFilter>()
-			                    	));
+			IList allAssociations = new ArrayList(associations);
+			allAssociations.Add(
+				new OuterJoinableAssociation(oneToManyPersister.CollectionType, null, null, alias, JoinType.LeftOuterJoin, Factory,
+				                             new CollectionHelper.EmptyMapClass<string, IFilter>()));
 
 			InitPersisters(allAssociations, LockMode.None);
 			InitStatementString(elementPersister, alias, batchSize, subquery);
 		}
 
-		private void InitStatementString(
-			IOuterJoinLoadable elementPersister,
-			string alias,
-			int batchSize,
-			SqlString subquery)
+		private void InitStatementString(IOuterJoinLoadable elementPersister, string alias, int batchSize, SqlString subquery)
 		{
 			int joins = CountEntityPersisters(associations);
 			Suffixes = BasicLoader.GenerateSuffixes(joins + 1);
@@ -70,40 +51,24 @@ namespace NHibernate.Loader.Collection
 			int collectionJoins = CountCollectionPersisters(associations) + 1;
 			CollectionSuffixes = BasicLoader.GenerateSuffixes(joins + 1, collectionJoins);
 
-			SqlStringBuilder whereString = WhereString(
-				alias,
-				oneToManyPersister.KeyColumnNames,
-				oneToManyPersister.KeyType,
-				subquery,
-				batchSize
-				);
+			SqlStringBuilder whereString = WhereString(alias, oneToManyPersister.KeyColumnNames, subquery, batchSize);
 			string filter = oneToManyPersister.FilterFragment(alias, EnabledFilters);
 			whereString.Insert(0, StringHelper.MoveAndToBeginning(filter));
 
 			JoinFragment ojf = MergeOuterJoins(associations);
-			SqlSelectBuilder select = new SqlSelectBuilder(Factory)
-				.SetSelectClause(
-				oneToManyPersister.SelectFragment(null, null, alias, Suffixes[joins], CollectionSuffixes[0], true) +
-				SelectString(associations)
-				)
-				.SetFromClause(
-				elementPersister.FromTableFragment(alias) +
-				elementPersister.FromJoinFragment(alias, true, true)
-				)
-				.SetWhereClause(whereString.ToSqlString())
-				.SetOuterJoins(
-				ojf.ToFromFragmentString,
-				ojf.ToWhereFragmentString +
-				elementPersister.WhereJoinFragment(alias, true, true)
-				);
+			SqlSelectBuilder select =
+				new SqlSelectBuilder(Factory).SetSelectClause(
+					oneToManyPersister.SelectFragment(null, null, alias, Suffixes[joins], CollectionSuffixes[0], true)
+					+ SelectString(associations)).SetFromClause(elementPersister.FromTableFragment(alias)
+					                                            + elementPersister.FromJoinFragment(alias, true, true)).SetWhereClause(
+					whereString.ToSqlString()).SetOuterJoins(ojf.ToFromFragmentString,
+					                                         ojf.ToWhereFragmentString
+					                                         + elementPersister.WhereJoinFragment(alias, true, true));
 
 			select.SetOrderByClause(OrderBy(associations, oneToManyPersister.GetSQLOrderByString(alias)));
 
-			// TODO H3:
-//			if ( Factory.Settings.IsCommentsEnabled ) 
-//			{
-//				select.SetComment( "load one-to-many " + oneToManyPersister.Role );
-//			}
+			if (Factory.Settings.IsCommentsEnabled)
+				select.SetComment("load one-to-many " + oneToManyPersister.Role);
 
 			SqlString = select.ToSqlString();
 		}

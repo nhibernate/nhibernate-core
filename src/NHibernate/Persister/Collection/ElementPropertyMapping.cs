@@ -12,11 +12,6 @@ namespace NHibernate.Persister.Collection
 		private readonly string[] elementColumns;
 		private readonly IType type;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="elementColumns"></param>
-		/// <param name="type"></param>
 		public ElementPropertyMapping(string[] elementColumns, IType type)
 		{
 			this.elementColumns = elementColumns;
@@ -25,11 +20,6 @@ namespace NHibernate.Persister.Collection
 
 		#region IPropertyMapping Members
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="propertyName"></param>
-		/// <returns></returns>
 		public IType ToType(string propertyName)
 		{
 			if (propertyName == null || "id".Equals(propertyName))
@@ -42,12 +32,6 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="propertyName"></param>
-		/// <returns></returns>
 		public string[] ToColumns(string alias, string propertyName)
 		{
 			if (propertyName == null || "id".Equals(propertyName))
@@ -60,9 +44,11 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
+		public string[] ToColumns(string propertyName)
+		{
+			throw new System.NotSupportedException("References to collections must be define a SQL alias");
+		}
+
 		public IType Type
 		{
 			get { return type; }

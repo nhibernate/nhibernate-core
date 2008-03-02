@@ -51,6 +51,19 @@ namespace NHibernate.Collection
 		object Owner { get; set; }
 
 		/// <summary>
+		/// Return the user-visible collection (or array) instance
+		/// </summary>
+		/// <returns>
+		/// By default, the NHibernate wrapper is an acceptable collection for
+		/// the end user code to work with because it is interface compatible.
+		/// An NHibernate PersistentList is an IList, an NHibernate PersistentMap is an IDictionary
+		/// and those are the types user code is expecting.
+		/// </returns>
+		object GetValue();
+
+		bool RowUpdatePossible { get;}
+
+		/// <summary>
 		/// Is the initialized collection empty?
 		/// </summary>
 		bool Empty { get; }
@@ -64,17 +77,6 @@ namespace NHibernate.Collection
 		/// any Queued Additions.
 		/// </remarks>
 		void PostAction();
-
-		/// <summary>
-		/// Return the user-visible collection (or array) instance
-		/// </summary>
-		/// <returns>
-		/// By default, the NHibernate wrapper is an acceptable collection for
-		/// the end user code to work with because it is interface compatible.
-		/// An NHibernate PersistentList is an IList, an NHibernate PersistentMap is an IDictionary
-		/// and those are the types user code is expecting.
-		/// </returns>
-		object GetValue();
 
 		/// <summary>
 		/// Called just before reading any rows from the <see cref="IDataReader" />
@@ -135,7 +137,7 @@ namespace NHibernate.Collection
 		/// An <see cref="IEnumerable"/> that gives access to all entries
 		/// in the collection.
 		/// </returns>
-		IEnumerable Entries();
+		IEnumerable Entries(ICollectionPersister persister);
 
 		/// <summary>
 		/// Reads the row from the <see cref="IDataReader"/>.
@@ -236,7 +238,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Get all the elements that need deleting
 		/// </summary>
-		ICollection GetDeletes(IType elemType, bool indexIsFormula);
+		IEnumerable GetDeletes(IType elemType, bool indexIsFormula);
 
 		/// <summary>
 		/// Is this the wrapper for the given underlying collection instance?

@@ -69,7 +69,8 @@ namespace NHibernate.AdoNet
 
 			public int ExpectedRowCount
 			{
-				get { throw new InvalidOperationException("Cannot get ExpectedRowCount of a non-batchable expectation"); }
+				//get { throw new InvalidOperationException("Cannot get ExpectedRowCount of a non-batchable expectation"); }
+				get { return 1; }
 			}
 		} ;
 

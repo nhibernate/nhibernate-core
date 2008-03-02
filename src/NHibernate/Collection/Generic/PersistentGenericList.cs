@@ -308,7 +308,7 @@ namespace NHibernate.Collection.Generic
 			return i < sn.Count && sn[i] != null && list[i] != null && elemType.IsDirty(list[i], sn[i], this.Session);
 		}
 
-		public override ICollection GetDeletes(IType elemType, bool indexIsFormula)
+		public override IEnumerable GetDeletes(IType elemType, bool indexIsFormula)
 		{
 			IList deletes = new ArrayList();
 			IList<T> sn = (IList<T>) GetSnapshot();
@@ -468,5 +468,10 @@ namespace NHibernate.Collection.Generic
 		}
 
 		#endregion
+
+		public override IEnumerable Entries(ICollectionPersister persister)
+		{
+			return list;
+		}
 	}
 }

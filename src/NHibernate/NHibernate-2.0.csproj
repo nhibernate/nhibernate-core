@@ -771,6 +771,7 @@
     <Compile Include="Intercept\IFieldInterceptor.cs" />
     <Compile Include="Intercept\ILazyPropertyInitializer.cs" />
     <Compile Include="IStatelessSession.cs" />
+    <Compile Include="Loader\Entity\CollectionElementLoader.cs" />
     <Compile Include="Mapping\Backref.cs" />
     <Compile Include="Mapping\DenormalizedTable.cs" />
     <Compile Include="Mapping\IMetaAttributable.cs" />

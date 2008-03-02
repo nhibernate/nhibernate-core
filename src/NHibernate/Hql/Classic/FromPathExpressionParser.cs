@@ -23,7 +23,7 @@ namespace NHibernate.Hql.Classic
 				{
 					// default to element set if no elements() specified
 					Token(".", q);
-					Token(CollectionPropertyMapping.CollectionElements, q);
+					Token(CollectionPropertyNames.Elements, q);
 				}
 			}
 			base.End(q);
@@ -31,7 +31,7 @@ namespace NHibernate.Hql.Classic
 
 		protected override void SetExpectingCollectionIndex()
 		{
-			throw new QueryException("expecting .elements or .indices after collection path expression in from");
+			throw new QueryException("illegal syntax near collection-valued path expression in from: " + CollectionName);
 		}
 	}
 }

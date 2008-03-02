@@ -114,7 +114,6 @@ namespace NHibernate.Event.Default
 				IPersistentCollection coll = (IPersistentCollection)me.Key;
 				CollectionEntry ce = (CollectionEntry)me.Value;
 
-				// todo-events : change the Interceptor interface and uncomment lines below
 				if (ce.IsDorecreate)
 				{
 					session.Interceptor.OnCollectionRecreate(coll, ce.CurrentKey);

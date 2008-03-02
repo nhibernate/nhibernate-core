@@ -17,7 +17,7 @@ namespace NHibernate.Collection
 	/// Base class for implementing <see cref="IPersistentCollection"/>.
 	/// </summary>
 	[Serializable]
-	public abstract class AbstractPersistentCollection : IPersistentCollection //, ICollection
+	public abstract class AbstractPersistentCollection : IPersistentCollection
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(AbstractPersistentCollection));
 
@@ -497,7 +497,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Get all the elements that need deleting
 		/// </summary>
-		public abstract ICollection GetDeletes(IType elemType, bool indexIsFormula);
+		public abstract IEnumerable GetDeletes(IType elemType, bool indexIsFormula);
 
 		/// <summary>
 		/// Is this the wrapper for the given underlying collection instance?
@@ -702,6 +702,13 @@ namespace NHibernate.Collection
 				Dirty();
 			}
 			return result;
+		}
+
+		public abstract IEnumerable Entries(ICollectionPersister persister);
+
+		public virtual bool RowUpdatePossible
+		{
+			get { return true; }
 		}
 
 		#region - Hibernate Collection Proxy Classes

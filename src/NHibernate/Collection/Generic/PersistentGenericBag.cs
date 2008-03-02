@@ -351,7 +351,7 @@ namespace NHibernate.Collection.Generic
 			return false;
 		}
 
-		public override ICollection GetDeletes(IType elemType, bool indexIsFormula)
+		public override IEnumerable GetDeletes(IType elemType, bool indexIsFormula)
 		{
 			ArrayList deletes = new ArrayList();
 			IList sn = (IList) GetSnapshot();
@@ -535,6 +535,16 @@ namespace NHibernate.Collection.Generic
 		}
 
 		#endregion
+
+		public override IEnumerable Entries(ICollectionPersister persister)
+		{
+			return bag;
+		}
+
+		public override bool RowUpdatePossible
+		{
+			get { return false; }
+		}
 	}
 }
 

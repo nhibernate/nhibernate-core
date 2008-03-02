@@ -117,7 +117,7 @@ namespace NHibernate.Loader.Criteria
 
 			foreach (ICollectionPersister collectionPersister in criteriaCollectionPersisters)
 			{
-				result.Add(collectionPersister.CollectionSpace);
+				result.AddAll(collectionPersister.CollectionSpaces);
 			}
 			return result;
 		}

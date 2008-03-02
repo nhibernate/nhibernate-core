@@ -82,11 +82,7 @@ namespace NHibernate.Action
 		/// </summary>
 		public object[] PropertySpaces
 		{
-			get
-			{
-				// TODO: H3.2 Different behaviour (CollectionSpace instead CollectionSpaces)
-				return new object[] { Persister.CollectionSpace };
-			}
+			get { return Persister.CollectionSpaces; }
 		}
 
 		/// <summary> Called before executing any actions</summary>

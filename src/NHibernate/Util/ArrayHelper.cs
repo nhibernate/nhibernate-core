@@ -106,6 +106,17 @@ namespace NHibernate.Util
 			return result;
 		}
 
+		public static T[] Join<T>(T[] x, T[] y, bool[] use)
+		{
+			List<T> l = new List<T>(x);
+			for (int i = 0; i < y.Length; i++)
+			{
+				if (use[i])
+					l.Add(y[i]);
+			}
+			return l.ToArray();
+		}
+
 		public static string[] Join(string[] x, string[] y)
 		{
 			string[] result = new string[x.Length + y.Length];

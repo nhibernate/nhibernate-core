@@ -12,21 +12,19 @@ namespace NHibernate.Persister.Collection
 		private readonly IAbstractComponentType compositeType;
 
 		public CompositeElementPropertyMapping(string[] elementColumns, string[] elementFormulaTemplates,
-		                                       IAbstractComponentType compositeType, ISessionFactoryImplementor factory)
+																					 IAbstractComponentType compositeType, IMapping factory)
 		{
 			this.compositeType = compositeType;
 
 			InitComponentPropertyPaths(null, compositeType, elementColumns, elementFormulaTemplates, factory);
 		}
 
-		/// <summary></summary>
 		public override IType Type
 		{
 			get { return compositeType; }
 		}
 
-		/// <summary></summary>
-		public override string ClassName
+		protected override string EntityName
 		{
 			get { return compositeType.Name; }
 		}

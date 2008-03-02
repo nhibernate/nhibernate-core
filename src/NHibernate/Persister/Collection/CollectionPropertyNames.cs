@@ -1,5 +1,3 @@
-using System;
-
 namespace NHibernate.Persister.Collection
 {
 	/// <summary>
@@ -7,13 +5,13 @@ namespace NHibernate.Persister.Collection
 	/// </summary>
 	public class CollectionPropertyNames
 	{
-		public const string CollectionSize = "size";
-		public const string CollectionElements = "elements";
-		public const string CollectionIndices = "indices";
-		public const string CollectionMaxIndex = "maxIndex";
-		public const string CollectionMinIndex = "minIndex";
-		public const string CollectionMaxElement = "maxElement";
-		public const string CollectionMinElement = "minElement";
-		public const string CollectionIndex = "index";
+		public const string Size = "size";
+		public const string Elements = "elements";
+		public const string Indices = "indices";
+		public const string MaxIndex = "maxIndex";
+		public const string MinIndex = "minIndex";
+		public const string MaxElement = "maxElement";
+		public const string MinElement = "minElement";
+		public const string Index = "index";
 	}
 }

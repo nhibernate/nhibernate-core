@@ -2407,10 +2407,14 @@ namespace NHibernate.Persister.Entity
 			return index == -1 ? 0 : GetSubclassPropertyTableNumber(index);
 		}
 
-		// TODO: override
 		public virtual string[] ToColumns(string alias, string propertyName)
 		{
 			return propertyMapping.ToColumns(alias, propertyName);
+		}
+
+		public string[] ToColumns(string propertyName)
+		{
+			return propertyMapping.GetColumnNames(propertyName);
 		}
 
 		public IType ToType(string propertyName)

@@ -8,14 +8,14 @@ namespace NHibernate.Loader.Entity
 {
 	public class CascadeEntityJoinWalker : AbstractEntityJoinWalker
 	{
-		private Cascades.CascadingAction cascadeAction;
+		private readonly Cascades.CascadingAction cascadeAction;
 
 		public CascadeEntityJoinWalker(IOuterJoinLoadable persister, Cascades.CascadingAction action,
 		                               ISessionFactoryImplementor factory)
 			: base(persister, factory, new CollectionHelper.EmptyMapClass<string, IFilter>())
 		{
 			cascadeAction = action;
-			SqlStringBuilder whereCondition = WhereString(Alias, persister.IdentifierColumnNames, persister.IdentifierType, 1)
+			SqlStringBuilder whereCondition = WhereString(Alias, persister.IdentifierColumnNames, 1)
 				//include the discriminator and class-level where, but not filters
 				.Add(persister.FilterFragment(Alias, new CollectionHelper.EmptyMapClass<string, IFilter>()));
 

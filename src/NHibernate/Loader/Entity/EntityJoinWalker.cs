@@ -14,23 +14,17 @@ namespace NHibernate.Loader.Entity
 	{
 		private readonly LockMode lockMode;
 
-		public EntityJoinWalker(
-			IOuterJoinLoadable persister,
-			string[] uniqueKey,
-			IType uniqueKeyType,
-			int batchSize,
-			LockMode lockMode,
-			ISessionFactoryImplementor factory,
-			IDictionary<string, IFilter> enabledFilters)
+		public EntityJoinWalker(IOuterJoinLoadable persister, string[] uniqueKey, int batchSize,
+			LockMode lockMode, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(persister, factory, enabledFilters)
 		{
 			this.lockMode = lockMode;
 
-			SqlStringBuilder whereCondition = WhereString(Alias, uniqueKey, uniqueKeyType, batchSize)
+			SqlStringBuilder whereCondition = WhereString(Alias, uniqueKey, batchSize)
 				//include the discriminator and class-level where, but not filters
 				.Add(persister.FilterFragment(Alias, new CollectionHelper.EmptyMapClass<string, IFilter>()));
 
-			InitAll(whereCondition.ToSqlString(), "", lockMode);
+			InitAll(whereCondition.ToSqlString(), string.Empty, lockMode);
 		}
 
 		/// <summary>

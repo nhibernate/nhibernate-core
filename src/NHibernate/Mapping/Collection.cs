@@ -42,7 +42,7 @@ namespace NHibernate.Mapping
 		private bool sorted;
 		private object comparer;
 		private bool orphanDelete;
-		private int batchSize = 1;
+		private int batchSize = -1;
 		private FetchMode fetchMode;
 		private System.Type collectionPersisterClass;
 		private string referencedPropertyName;

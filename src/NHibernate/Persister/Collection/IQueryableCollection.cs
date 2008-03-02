@@ -7,10 +7,24 @@ namespace NHibernate.Persister.Collection
 	/// </summary>
 	public interface IQueryableCollection : IPropertyMapping, IJoinable, ICollectionPersister
 	{
-		/// <summary>
-		/// Generate a list of collection index and element columns
+		/// <summary> 
+		/// Get the index formulas if this is an indexed collection 
+		/// (optional operation)
 		/// </summary>
-		string SelectFragment(string alias, string columnSuffix);
+		string[] IndexFormulas { get;}
+
+		/// <summary>
+		/// Get the persister of the element class, if this is a
+		/// collection of entities (optional operation).  Note that
+		/// for a one-to-many association, the returned persister
+		/// must be <c>OuterJoinLoadable</c>.
+		/// </summary>
+		IEntityPersister ElementPersister { get; }
+
+		/// <summary>
+		/// Should we load this collection role by outer joining?
+		/// </summary>
+		FetchMode FetchMode { get; }
 
 		/// <summary>
 		/// Get the names of the collection index columns if this is an indexed collection (optional operation)
@@ -23,9 +37,21 @@ namespace NHibernate.Persister.Collection
 		string[] ElementColumnNames { get; }
 
 		/// <summary>
-		/// Get the formulas of the collection elements
+		/// Does this collection role have a where clause filter?
 		/// </summary>
-		string[] ElementForumlas { get; }
+		bool HasWhere { get; }
+
+		/// <summary>
+		/// Generate a list of collection index and element columns
+		/// </summary>
+		string SelectFragment(string alias, string columnSuffix);
+
+		/// <summary> 
+		/// Get the names of the collection index columns if
+		/// this is an indexed collection (optional operation),
+		/// aliased by the given table alias
+		/// </summary>
+		string[] GetIndexColumnNames(string alias);
 
 		/// <summary>
 		/// Get the names of the collection element columns (or the primary
@@ -47,24 +73,6 @@ namespace NHibernate.Persister.Collection
 		/// <param name="alias"></param>
 		/// <returns></returns>
 		string GetSQLOrderByString(string alias);
-
-		/// <summary>
-		/// Does this collection role have a where clause filter?
-		/// </summary>
-		bool HasWhere { get; }
-
-		/// <summary>
-		/// Get the persister of the element class, if this is a
-		/// collection of entities (optional operation).  Note that
-		/// for a one-to-many association, the returned persister
-		/// must be <c>OuterJoinLoadable</c>.
-		/// </summary>
-		IEntityPersister ElementPersister { get; }
-
-		/// <summary>
-		/// Should we load this collection role by outer joining?
-		/// </summary>
-		FetchMode FetchMode { get; }
 
 		/// <summary>
 		/// Get the order-by to be applied at the target table of a many to many

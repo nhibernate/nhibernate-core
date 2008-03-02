@@ -259,7 +259,7 @@ namespace NHibernate.Collection
 			return array;
 		}
 
-		public override ICollection GetDeletes(IType elemType, bool indexIsFormula)
+		public override IEnumerable GetDeletes(IType elemType, bool indexIsFormula)
 		{
 			IList deletes = new ArrayList();
 			Array sn = GetSnapshot() as Array;
@@ -347,6 +347,11 @@ namespace NHibernate.Collection
 		public object SyncRoot
 		{
 			get { return this; }
+		}
+
+		public override IEnumerable Entries(ICollectionPersister persister)
+		{
+			return Elements();
 		}
 	}
 }

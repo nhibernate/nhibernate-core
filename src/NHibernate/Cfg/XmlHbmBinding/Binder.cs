@@ -114,5 +114,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			return null;
 		}
+
+		protected static bool IsTrue(string xmlNodeValue)
+		{
+			return "true".Equals(xmlNodeValue) || "1".Equals(xmlNodeValue);
+		}
+
+		protected static bool IsFalse(string xmlNodeValue)
+		{
+			return "false".Equals(xmlNodeValue) || "0".Equals(xmlNodeValue);
+		}
 	}
 }

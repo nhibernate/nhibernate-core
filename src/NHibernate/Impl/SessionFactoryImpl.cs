@@ -17,6 +17,7 @@ using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
+using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Mapping;
@@ -253,9 +254,8 @@ namespace NHibernate.Impl
 				if (cache != null)
 					allCacheRegions[cache.RegionName] = cache.Cache;
 
-				collectionPersisters[map.Role] = PersisterFactory
-					.CreateCollectionPersister(map, cache, this)
-					.CollectionMetadata;
+				collectionPersisters[map.Role] =
+					PersisterFactory.CreateCollectionPersister(cfg, map, cache, this).CollectionMetadata;
 				ICollectionPersister persister = collectionPersisters[map.Role] as ICollectionPersister;
 				IType indexType = persister.IndexType;
 				if (indexType != null && indexType.IsAssociationType && !indexType.IsAnyType)
@@ -837,8 +837,10 @@ namespace NHibernate.Impl
 
 		// TransactionManager - not ported
 
-		// TODO: SQLExceptionConverter
-		// JNDI Reference - not ported
+		public ISQLExceptionConverter SQLExceptionConverter
+		{
+			get { return settings.SqlExceptionConverter; }
+		}
 
 		#region System.Runtime.Serialization.IObjectReference Members
 
@@ -1484,11 +1486,6 @@ namespace NHibernate.Impl
 		public SQLFunctionRegistry SQLFunctionRegistry
 		{
 			get { return sqlFunctionRegistry; }
-		}
-
-		public ISQLExceptionConverter SQLExceptionConverter
-		{
-			get{return settings.SqlExceptionConverter;}
 		}
 
 		public IEntityNotFoundDelegate EntityNotFoundDelegate

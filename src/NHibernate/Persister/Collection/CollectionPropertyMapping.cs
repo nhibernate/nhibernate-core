@@ -1,6 +1,5 @@
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Persister.Collection
 {
@@ -9,17 +8,7 @@ namespace NHibernate.Persister.Collection
 	/// </summary>
 	public class CollectionPropertyMapping : IPropertyMapping
 	{
-		public const string CollectionSize = "size";
-		public const string CollectionElements = "elements";
-		public const string CollectionIndices = "indices";
-		public const string CollectionMaxIndex = "maxIndex";
-		public const string CollectionMinIndex = "minIndex";
-		public const string CollectionMaxElement = "maxElement";
-		public const string CollectionMinElement = "minElement";
-
 		private readonly IQueryableCollection memberPersister;
-
-		private const string InvalidPropertyMessage = "expecting 'elements' or 'indices' after {0}";
 
 		public CollectionPropertyMapping(IQueryableCollection memberPersister)
 		{
@@ -30,77 +19,82 @@ namespace NHibernate.Persister.Collection
 		{
 			switch (propertyName)
 			{
-				case CollectionElements:
-				case CollectionMaxElement:
-				case CollectionMinElement:
+				case CollectionPropertyNames.Elements:
 					return memberPersister.ElementType;
 
-				case CollectionIndices:
-				case CollectionMaxIndex:
-				case CollectionMinIndex:
-					CheckIndex(propertyName);
+				case CollectionPropertyNames.Indices:
+					if (!memberPersister.HasIndex)
+						throw new QueryException("unindexed collection before indices()");
 					return memberPersister.IndexType;
 
-				case CollectionSize:
+				case CollectionPropertyNames.Size:
 					return NHibernateUtil.Int32;
 
+				case CollectionPropertyNames.MaxIndex:
+				case CollectionPropertyNames.MinIndex:
+					return memberPersister.IndexType;
+
+				case CollectionPropertyNames.MaxElement:
+				case CollectionPropertyNames.MinElement:
+					return memberPersister.ElementType;
 				default:
-					throw new QueryException(string.Format(InvalidPropertyMessage, propertyName));
+					throw new QueryException("illegal syntax near collection: " + propertyName);
 			}
 		}
 
 		public string[] ToColumns(string alias, string propertyName)
 		{
 			string[] cols;
-
 			switch (propertyName)
 			{
-				case CollectionElements:
-					cols = memberPersister.ElementColumnNames;
-					return StringHelper.Qualify(alias, cols, memberPersister.ElementForumlas);
+				case CollectionPropertyNames.Elements:
+					return memberPersister.GetElementColumnNames(alias);
 
-				case CollectionIndices:
-					CheckIndex(propertyName);
-					cols = memberPersister.IndexColumnNames;
-					return StringHelper.Qualify(alias, cols);
+				case CollectionPropertyNames.Indices:
+					if (!memberPersister.HasIndex)
+						throw new QueryException("unindexed collection before indices()");
+					return memberPersister.GetIndexColumnNames(alias);
 
-				case CollectionSize:
-					return new string[] {"count(*)"};
+				case CollectionPropertyNames.Size:
+					cols = memberPersister.KeyColumnNames;
+					return new string[] { "count(" + alias + '.' + cols[0] + ')' };
 
-				case CollectionMaxIndex:
-					CheckIndex(propertyName);
-					return ColumnFunction(propertyName, "max", memberPersister.IndexColumnNames);
+				case CollectionPropertyNames.MaxIndex:
+					if (!memberPersister.HasIndex)
+						throw new QueryException("unindexed collection in maxIndex()");
+					cols = memberPersister.GetIndexColumnNames(alias);
+					if (cols.Length != 1)
+						throw new QueryException("composite collection index in maxIndex()");
+					return new string[] { "max(" + cols[0] + ')' };
 
-				case CollectionMinIndex:
-					CheckIndex(propertyName);
-					return ColumnFunction(propertyName, "min", memberPersister.IndexColumnNames);
+				case CollectionPropertyNames.MinIndex:
+					if (!memberPersister.HasIndex)
+						throw new QueryException("unindexed collection in minIndex()");
+					cols = memberPersister.GetIndexColumnNames(alias);
+					if (cols.Length != 1)
+						throw new QueryException("composite collection index in minIndex()");
+					return new string[] { "min(" + cols[0] + ')' };
 
-				case CollectionMaxElement:
-					return ColumnFunction(propertyName, "max", memberPersister.ElementColumnNames);
+				case CollectionPropertyNames.MaxElement:
+					cols = memberPersister.GetElementColumnNames(alias);
+					if (cols.Length != 1)
+						throw new QueryException("composite collection element in maxElement()");
+					return new string[] { "max(" + cols[0] + ')' };
 
-				case CollectionMinElement:
-					return ColumnFunction(propertyName, "min", memberPersister.ElementColumnNames);
+				case CollectionPropertyNames.MinElement:
+					cols = memberPersister.GetElementColumnNames(alias);
+					if (cols.Length != 1)
+						throw new QueryException("composite collection element in minElement()");
+					return new System.String[] { "min(" + cols[0] + ')' };
 
 				default:
-					throw new QueryException(string.Format(InvalidPropertyMessage, propertyName));
+					throw new QueryException("illegal syntax near collection: " + propertyName);
 			}
 		}
 
-		private void CheckIndex(string propertyName)
+		public string[] ToColumns(string propertyName)
 		{
-			if (!memberPersister.HasIndex)
-			{
-				throw new QueryException(string.Format("unindexed collection before {0}", propertyName));
-			}
-		}
-
-		private string[] ColumnFunction(string propertyName, string function, string[] cols)
-		{
-			if (cols.Length != 1)
-			{
-				throw new QueryException(string.Format("composite collection element in {0}", propertyName));
-			}
-			return new string[] {function + StringHelper.OpenParen + cols[0] + StringHelper.ClosedParen};
+			throw new System.NotSupportedException("References to collections must be define a SQL alias");
 		}
 
 		public IType Type

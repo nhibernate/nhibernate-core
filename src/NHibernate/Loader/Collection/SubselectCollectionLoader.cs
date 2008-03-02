@@ -32,22 +32,15 @@ namespace NHibernate.Loader.Collection
 				keys[i++] = entityKey.Identifier;
 			}
 
-			this.namedParameters = queryParameters.NamedParameters;
-			this.types = queryParameters.FilteredPositionalParameterTypes;
-			this.values = queryParameters.FilteredPositionalParameterValues;
+			namedParameters = queryParameters.NamedParameters;
+			types = queryParameters.FilteredPositionalParameterTypes;
+			values = queryParameters.FilteredPositionalParameterValues;
 			this.namedParameterLocMap = namedParameterLocMap;
 		}
 
 		public override void Initialize(object id, ISessionImplementor session)
 		{
-			LoadCollectionSubselect(
-				session,
-				keys,
-				values,
-				types,
-				namedParameters,
-				KeyType
-				);
+			LoadCollectionSubselect(session, keys, values, types, namedParameters, KeyType);
 		}
 
 		public override int[] GetNamedParameterLocs(string name)

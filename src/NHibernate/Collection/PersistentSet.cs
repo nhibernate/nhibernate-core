@@ -136,7 +136,11 @@ namespace NHibernate.Collection
 			object[] array = (object[]) disassembled;
 			for (int i = 0; i < array.Length; i++)
 			{
-				internalSet.Add(persister.ElementType.Assemble(array[i], Session, owner));
+				object element = persister.ElementType.Assemble(array[i], Session, owner);
+				if (element != null)
+				{
+					internalSet.Add(element);
+				}
 			}
 			SetInitialized();
 		}
@@ -407,7 +411,7 @@ namespace NHibernate.Collection
 			return result;
 		}
 
-		public override ICollection GetDeletes(IType elemType, bool indexIsFormula)
+		public override IEnumerable GetDeletes(IType elemType, bool indexIsFormula)
 		{
 			IList deletes = new ArrayList();
 			IDictionary snapshot = (IDictionary) GetSnapshot();
@@ -469,6 +473,16 @@ namespace NHibernate.Collection
 		public override bool EntryExists(object entry, int i)
 		{
 			return true;
+		}
+
+		public override IEnumerable Entries(ICollectionPersister persister)
+		{
+			return internalSet;
+		}
+
+		public override bool RowUpdatePossible
+		{
+			get { return false; }
 		}
 	}
 }

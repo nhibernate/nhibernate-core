@@ -65,7 +65,7 @@ namespace NHibernate.Collection
 
 		public override void BeforeInitialize(ICollectionPersister persister)
 		{
-			this.bag = (IList) persister.CollectionType.Instantiate();
+			bag = (IList) persister.CollectionType.Instantiate();
 		}
 
 		public override bool EqualsSnapshot(IType elementType)
@@ -187,7 +187,7 @@ namespace NHibernate.Collection
 		// Anyway, here we implement <set> semantics for a
 		// <one-to-many> <bag>!
 
-		public override ICollection GetDeletes(IType elemType, bool indexIsFormula)
+		public override IEnumerable GetDeletes(IType elemType, bool indexIsFormula)
 		{
 			ArrayList deletes = new ArrayList();
 			IList sn = (IList) GetSnapshot();
@@ -413,6 +413,16 @@ namespace NHibernate.Collection
 		public override bool EntryExists(object entry, int i)
 		{
 			return entry != null;
+		}
+
+		public override IEnumerable Entries(ICollectionPersister persister)
+		{
+			return bag;
+		}
+
+		public override bool RowUpdatePossible
+		{
+			get { return false; }
 		}
 	}
 }
