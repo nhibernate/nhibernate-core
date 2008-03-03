@@ -3,13 +3,11 @@ using System.Collections;
 using Iesi.Collections;
 using log4net;
 using NHibernate.Cache;
-using NHibernate.Cfg;
+using NHibernate.Criterion;
 using NHibernate.Engine;
-using NHibernate.Mapping;
 using NHibernate.Persister.Collection;
 using NHibernate.Transform;
 using NUnit.Framework;
-using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.FilterTest
 {
@@ -188,7 +186,7 @@ namespace NHibernate.Test.FilterTest
 
 			log.Info("Criteria query against Product...");
 			IList products = session.CreateCriteria(typeof(Product))
-				.Add(Expressions.Expression.Eq("StockNumber", 124))
+				.Add(Expression.Eq("StockNumber", 124))
 				.List();
 			Assert.AreEqual(1, products.Count, "Incorrect product count");
 
@@ -273,7 +271,7 @@ namespace NHibernate.Test.FilterTest
 
 			Product prod = (Product) session.CreateCriteria(typeof(Product))
 			                         	.SetResultTransformer(new DistinctRootEntityResultTransformer())
-			                         	.Add(Expressions.Expression.Eq("id", testData.prod1Id))
+			                         	.Add(Expression.Eq("id", testData.prod1Id))
 			                         	.UniqueResult();
 
 			Assert.IsNotNull(prod);
@@ -431,7 +429,7 @@ namespace NHibernate.Test.FilterTest
 			ISession session = OpenSession();
 
 			IList result = session.CreateCriteria(typeof(Product))
-				.Add(Expressions.Expression.Eq("id", testData.prod1Id))
+				.Add(Expression.Eq("id", testData.prod1Id))
 				.List();
 
 			Product prod = (Product) result[0];

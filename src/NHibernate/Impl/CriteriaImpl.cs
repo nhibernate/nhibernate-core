@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 using NHibernate.Engine;
-using NHibernate.Expressions;
+using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Util;

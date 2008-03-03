@@ -1,7 +1,7 @@
 using System;
 using NHibernate.DomainModel;
 using NHibernate.DomainModel.NHSpecific;
-using NHibernate.Expressions;
+using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -45,7 +45,7 @@ namespace NHibernate.Test.ExpressionTest
 
 				CreateObjects(typeof(SimpleComponent), session);
 
-				ICriterion andExpression = Expressions.Expression.Eq("Date", now);
+				ICriterion andExpression = Expression.Eq("Date", now);
 
 				SqlString sqlString = andExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
 				string quotedColumn = dialect.QuoteForColumnName("d[at]e_");
@@ -61,7 +61,7 @@ namespace NHibernate.Test.ExpressionTest
 			using (ISession session = factory.OpenSession())
 			{
 				CreateObjects(typeof(Simple), session);
-				ICriterion andExpression = Expressions.Expression.Ge("Date", DateTime.Now);
+				ICriterion andExpression = Expression.Ge("Date", DateTime.Now);
 
 				SqlString sqlString = andExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
 
@@ -78,7 +78,7 @@ namespace NHibernate.Test.ExpressionTest
 			{
 				CreateObjects(typeof(Multi), session);
 
-				ICriterion expression = Expressions.Expression.Eq("MisspelledProperty", DateTime.Now);
+				ICriterion expression = Expression.Eq("MisspelledProperty", DateTime.Now);
 				expression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
 			}
 		}

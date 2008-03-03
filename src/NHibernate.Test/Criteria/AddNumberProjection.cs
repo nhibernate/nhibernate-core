@@ -2,7 +2,7 @@ namespace NHibernate.Test.Criteria
 {
 	using System.Collections.Generic;
 	using Engine;
-	using Expressions;
+	using Criterion;
 	using SqlCommand;
 	using Type;
 

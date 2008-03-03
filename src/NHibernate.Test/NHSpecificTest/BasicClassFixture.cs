@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Globalization;
 using Iesi.Collections;
+using NHibernate.Criterion;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
 
@@ -849,7 +850,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 
 			IList results = s.CreateCriteria(typeof(BasicClass))
-				.Add(Expressions.Expression.Eq("Id", id))
+				.Add(Expression.Eq("Id", id))
 				.List();
 
 			Assert.AreEqual(0, results.Count);

@@ -1,10 +1,9 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-
-using NUnit.Framework;
-using NHibernate.DomainModel;
 using Iesi.Collections;
+using NHibernate.Criterion;
+using NHibernate.DomainModel;
+using NUnit.Framework;
 
 namespace NHibernate.Test.GenericTest.Methods
 {
@@ -69,7 +68,7 @@ namespace NHibernate.Test.GenericTest.Methods
 			using( ITransaction t2 = s2.BeginTransaction() )
 			{
 				IList<One> results2 = s2.CreateCriteria( typeof( One ) )
-					.Add( Expressions.Expression.Eq( "X", 20 ) )
+					.Add( Expression.Eq( "X", 20 ) )
 					.List<One>();
 
 				Assert.AreEqual( 1, results2.Count );

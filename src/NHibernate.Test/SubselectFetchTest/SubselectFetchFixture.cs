@@ -1,6 +1,6 @@
 using System.Collections;
 using NHibernate.Cfg;
-using NHibernate.Expressions;
+using NHibernate.Criterion;
 using NHibernate.Util;
 using NUnit.Framework;
 
@@ -333,7 +333,7 @@ namespace NHibernate.Test.SubselectFetchTest
 			//sessions.Statistics.Clear();
 
 			IList parents = s.CreateCriteria(typeof(Parent))
-				.Add(Expressions.Expression.Between("Name", "bar", "foo"))
+				.Add(Expression.Between("Name", "bar", "foo"))
 				.AddOrder(Order.Desc("Name"))
 				.List();
 			p = (Parent) parents[0];

@@ -1,7 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using NHibernate.Dialect;
+using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
 
@@ -37,9 +36,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1028
 			{
 				ICriteria criteria = s.CreateCriteria(typeof(Item));
 				criteria.CreateCriteria("Ships", "s", JoinType.InnerJoin)
-					 .Add(Expressions.Expression.IsNotNull("s.Id"));
+					 .Add(Expression.IsNotNull("s.Id"));
 				criteria.CreateCriteria("Containers", "c", JoinType.LeftOuterJoin)
-					.Add(Expressions.Expression.IsNull("c.Id"));
+					.Add(Expression.IsNull("c.Id"));
 
 				IList<Item> results = criteria.List<Item>();
 				Assert.AreEqual (1, results.Count);

@@ -1,4 +1,4 @@
-using System;
+using NHibernate.Criterion;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH826
@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH826
 			// This does not
 			ActivitySet loadedActivitySet = (ActivitySet) session
 			                                              	.CreateCriteria(typeof(ActivitySet))
-			                                              	.Add(Expressions.Expression.Eq("Id", activitySet.Id))
+			                                              	.Add(Expression.Eq("Id", activitySet.Id))
 			                                              	.UniqueResult();
 
 			session.Flush();

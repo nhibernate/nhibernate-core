@@ -1,5 +1,5 @@
 using NHibernate.DomainModel;
-using NHibernate.Expressions;
+using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -30,7 +30,7 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			using (ISession session = factory.OpenSession())
 			{
-				ICriterion sqlExpression = Expressions.Expression.Sql(new SqlString("{alias}.address is not null"));
+				ICriterion sqlExpression = Expression.Sql(new SqlString("{alias}.address is not null"));
 
 				CreateObjects(typeof(Simple), session);
 				SqlString sqlString = sqlExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
@@ -53,7 +53,7 @@ namespace NHibernate.Test.ExpressionTest
 				builder.Add("{alias}.address = ");
 				builder.AddParameter();
 
-				ICriterion sqlExpression = Expressions.Expression.Sql(builder.ToSqlString(), "some address", NHibernateUtil.String);
+				ICriterion sqlExpression = Expression.Sql(builder.ToSqlString(), "some address", NHibernateUtil.String);
 
 				CreateObjects(typeof(Simple), session);
 				SqlString sqlString = sqlExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());

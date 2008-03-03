@@ -1,5 +1,5 @@
-using System;
 using System.Collections;
+using NHibernate.Criterion;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH295
@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 			s.BeginTransaction();
 			//Load user with USER NAME: 
 			ICriteria criteria1 = s.CreateCriteria(typeof(User));
-			criteria1.Add(Expressions.Expression.Eq("Name", "User1"));
+			criteria1.Add(Expression.Eq("Name", "User1"));
 			Assert.AreEqual(1, criteria1.List().Count);
 			s.Transaction.Commit();
 			s.Close();
@@ -73,7 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 			s.BeginTransaction();
 			//Load group with USER NAME: 
 			ICriteria criteria2 = s.CreateCriteria(typeof(UserGroup));
-			criteria2.Add(Expressions.Expression.Eq("Name", "User1"));
+			criteria2.Add(Expression.Eq("Name", "User1"));
 			Assert.AreEqual(0, criteria2.List().Count);
 			s.Transaction.Commit();
 			s.Close();
@@ -82,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 			s.BeginTransaction();
 			//Load group with GROUP NAME
 			ICriteria criteria3 = s.CreateCriteria(typeof(UserGroup));
-			criteria3.Add(Expressions.Expression.Eq("Name", "Group1"));
+			criteria3.Add(Expression.Eq("Name", "Group1"));
 			Assert.AreEqual(1, criteria3.List().Count);
 			s.Transaction.Commit();
 			s.Close();
@@ -91,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 			s.BeginTransaction();
 			//Load user with GROUP NAME
 			ICriteria criteria4 = s.CreateCriteria(typeof(User));
-			criteria4.Add(Expressions.Expression.Eq("Name", "Group1"));
+			criteria4.Add(Expression.Eq("Name", "Group1"));
 			Assert.AreEqual(0, criteria4.List().Count);
 			s.Transaction.Commit();
 			s.Close();

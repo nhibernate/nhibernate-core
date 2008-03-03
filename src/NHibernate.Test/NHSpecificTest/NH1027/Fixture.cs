@@ -1,3 +1,4 @@
+using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
@@ -27,9 +28,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1027
 			{
 				ICriteria criteria = s.CreateCriteria(typeof(Item));
 				criteria.CreateCriteria("Ships", "s", JoinType.InnerJoin)
-							.Add(Expressions.Expression.Eq("s.Id", 15));
+							.Add(Expression.Eq("s.Id", 15));
 				criteria.CreateCriteria("Containers", "c", JoinType.LeftOuterJoin)
-				 .Add(Expressions.Expression.Eq("c.Id", 15));
+				 .Add(Expression.Eq("c.Id", 15));
 				criteria.SetMaxResults(2);
 				criteria.List();
 			}

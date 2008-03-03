@@ -1,4 +1,4 @@
-using System;
+using NHibernate.Criterion;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH593
@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 				User user = new User("test");
 				user.UserId = 10;
 				session.CreateCriteria(typeof(Blog))
-					.Add(Expressions.Expression.In("Users", new User[] {user}))
+					.Add(Expression.In("Users", new User[] {user}))
 					.List();
 			}
 		}

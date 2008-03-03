@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.SecondLevelCacheTests
 {
 	using System.Data;
-	using Expressions;
+	using Criterion;
 
 	[TestFixture]
 	public class SecondLevelCacheTest : TestCase

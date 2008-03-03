@@ -1,6 +1,6 @@
 using System;
 using System.Data;
-using System.Diagnostics;
+using NHibernate.Criterion;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -77,7 +77,7 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			{
 				basic = (GuidClass)s.CreateCriteria(typeof(GuidClass))
-														.Add(Expressions.Expression.Eq("GuidValue", val))
+														.Add(Expression.Eq("GuidValue", val))
 														.UniqueResult();
 
 				Assert.IsNotNull(basic);

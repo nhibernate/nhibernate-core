@@ -1,5 +1,5 @@
 using NHibernate.DomainModel;
-using NHibernate.Expressions;
+using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -15,7 +15,7 @@ namespace NHibernate.Test.ExpressionTest
 			ISession session = factory.OpenSession();
 
 			CreateObjects(typeof(Simple), session);
-			ICriterion betweenExpression = Expressions.Expression.Between("Count", 5, 10);
+			ICriterion betweenExpression = Expression.Between("Count", 5, 10);
 			SqlString sqlString = betweenExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
 
 			string expectedSql = "sql_alias.count_ between ? and ?";

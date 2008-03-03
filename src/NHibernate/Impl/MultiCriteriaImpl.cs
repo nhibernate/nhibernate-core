@@ -7,7 +7,7 @@ using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Cache;
 using NHibernate.Engine;
-using NHibernate.Expressions;
+using NHibernate.Criterion;
 using NHibernate.Loader.Criteria;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;

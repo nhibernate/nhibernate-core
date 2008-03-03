@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using NHibernate.DomainModel;
-using NHibernate.Expressions;
+using NHibernate.Criterion;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ExpressionTest
@@ -52,7 +52,7 @@ namespace NHibernate.Test.ExpressionTest
 				Example ex = Example.Create(master).EnableLike();
 
 
-				crit.Add(Expressions.Expression.Or(Expressions.Expression.Not(ex), ex));
+				crit.Add(Expression.Or(Expression.Not(ex), ex));
 
 				IList result = crit.List();
 				Assert.IsNotNull(result);

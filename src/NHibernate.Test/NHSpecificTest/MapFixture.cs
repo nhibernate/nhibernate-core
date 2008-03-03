@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Iesi.Collections;
+using NHibernate.Criterion;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
 
@@ -51,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest
 			ITransaction t = s.BeginTransaction();
 
 			ICriteria chiefsCriteria = s.CreateCriteria(typeof(Team));
-			chiefsCriteria.Add(Expressions.Expression.Eq("Name", "Chiefs"));
+			chiefsCriteria.Add(Expression.Eq("Name", "Chiefs"));
 
 			Team chiefs = (Team) chiefsCriteria.List()[0];
 			IList players = chiefs.Players;

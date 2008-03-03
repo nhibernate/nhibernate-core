@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.Criterion;
 using NUnit.Framework;
 
 namespace NHibernate.Test.CompositeId
@@ -95,7 +96,7 @@ namespace NHibernate.Test.CompositeId
 			Assert.AreEqual(id, theClass2.Id);
 
 			IList results2 = s2.CreateCriteria(typeof(ClassWithCompositeId))
-				.Add(Expressions.Expression.Eq("Id", secondId))
+				.Add(Expression.Eq("Id", secondId))
 				.List();
 
 			Assert.AreEqual(1, results2.Count);
@@ -155,7 +156,7 @@ namespace NHibernate.Test.CompositeId
 			}
 
 			IList results = s4.CreateCriteria(typeof(ClassWithCompositeId))
-				.Add(Expressions.Expression.Eq("Id", secondId))
+				.Add(Expression.Eq("Id", secondId))
 				.List();
 
 			Assert.AreEqual(0, results.Count);
@@ -179,7 +180,7 @@ namespace NHibernate.Test.CompositeId
 
 			s = OpenSession();
 			ICriteria c = s.CreateCriteria(typeof(ClassWithCompositeId));
-			c.Add(Expressions.Expression.Eq("Id", id));
+			c.Add(Expression.Eq("Id", id));
 
 			// right now just want to see if the Criteria is valid
 			IList results = c.List();

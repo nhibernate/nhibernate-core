@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using NHibernate.Expressions;
+using NHibernate.Criterion;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ExpressionTest.SubQueries
@@ -75,7 +75,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 		{
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Post), "posts")
 				.SetProjection(Property.ForName("id"))
-				.Add(Expressions.Expression.Eq("id", post1.PostId))
+				.Add(Expression.Eq("id", post1.PostId))
 				.Add(Property.ForName("posts.Blog.id").EqProperty("blog.id"));
 
 			using (ISession s = sessions.OpenSession())
@@ -93,7 +93,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 			DetachedCriteria comment = DetachedCriteria.For(typeof(Comment), "comment")
 				.SetProjection(Property.ForName("id"))
 				.Add(Property.ForName("Post.id").EqProperty("post.id"))
-				.Add(Expressions.Expression.Eq("Text", "foo"));
+				.Add(Expression.Eq("Text", "foo"));
 
 			using (ISession s = OpenSession())
 			{

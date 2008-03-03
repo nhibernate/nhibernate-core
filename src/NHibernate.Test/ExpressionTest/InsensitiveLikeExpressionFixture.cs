@@ -2,7 +2,7 @@ using System;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NHibernate.Engine;
-using NHibernate.Expressions;
+using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using NUnit.Framework;

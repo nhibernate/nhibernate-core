@@ -1,4 +1,5 @@
 using log4net;
+using NHibernate.Criterion;
 using NUnit.Framework;
 using System;
 using System.Collections;
@@ -356,7 +357,7 @@ namespace NHibernate.Test.Join
 				Person[] people = CreateAndInsertPersons(s, 3);
 
 				ICriteria criteria = s.CreateCriteria(typeof (Person))
-					.Add(Expressions.Expression.Eq("Name", people[1].Name));
+					.Add(Expression.Eq("Name", people[1].Name));
 				IList list = criteria.List();
 
 				Assert.AreEqual(1, list.Count);

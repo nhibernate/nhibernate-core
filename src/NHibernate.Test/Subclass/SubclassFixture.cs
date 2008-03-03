@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.Criterion;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Subclass
@@ -87,7 +88,7 @@ namespace NHibernate.Test.Subclass
 			ITransaction t3 = s3.BeginTransaction();
 
 			IList results3 = s3.CreateCriteria(typeof(SubclassBase))
-				.Add(Expressions.Expression.In("TestString", new string[] {"Did it get updated", "Updated SubclassOne String"}))
+				.Add(Expression.In("TestString", new string[] {"Did it get updated", "Updated SubclassOne String"}))
 				.List();
 
 			Assert.AreEqual(2, results3.Count);

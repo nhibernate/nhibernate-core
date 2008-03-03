@@ -1,6 +1,6 @@
-using System;
 using System.Collections;
 using Iesi.Collections;
+using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NUnit.Framework;
@@ -199,17 +199,17 @@ namespace NHibernate.Test.Legacy
 
 			ICriteria crit = s.CreateCriteria(typeof(Baz));
 			crit.CreateCriteria("TopGlarchez")
-				.Add(Expressions.Expression.IsNotNull("Name"))
+				.Add(Expression.IsNotNull("Name"))
 				.CreateCriteria("ProxyArray")
-				.Add(Expressions.Expression.EqProperty("Name", "Name"))
-				.Add(Expressions.Expression.Eq("Name", "g2"))
-				.Add(Expressions.Expression.Gt("X", -666));
+				.Add(Expression.EqProperty("Name", "Name"))
+				.Add(Expression.Eq("Name", "g2"))
+				.Add(Expression.Gt("X", -666));
 			crit.CreateCriteria("FooSet")
-				.Add(Expressions.Expression.IsNull("Null"))
-				.Add(Expressions.Expression.Eq("String", "a string"))
-				.Add(Expressions.Expression.Lt("Integer", -665));
+				.Add(Expression.IsNull("Null"))
+				.Add(Expression.Eq("String", "a string"))
+				.Add(Expression.Lt("Integer", -665));
 			crit.CreateCriteria("FooArray")
-				.Add(Expressions.Expression.Eq("String", "a string"))
+				.Add(Expression.Eq("String", "a string"))
 				.SetLockMode(lockMode);
 
 			IList list = crit.List();
@@ -228,9 +228,9 @@ namespace NHibernate.Test.Legacy
 			crit = s.CreateCriteria(typeof(Baz))
 				.SetLockMode(lockMode);
 			crit.CreateCriteria("TopGlarchez")
-				.Add(Expressions.Expression.Gt("X", -666));
+				.Add(Expression.Gt("X", -666));
 			crit.CreateCriteria("FooSet")
-				.Add(Expressions.Expression.IsNull("Null"));
+				.Add(Expression.IsNull("Null"));
 			list = crit.List();
 
 			Assert.AreEqual(4, list.Count);
@@ -248,7 +248,7 @@ namespace NHibernate.Test.Legacy
 				.CreateCriteria("FooSet")
 				.CreateCriteria("TheFoo")
 				.CreateCriteria("Component.Glarch")
-				.Add(Expressions.Expression.Eq("Name", "xxx"))
+				.Add(Expression.Eq("Name", "xxx"))
 				.List();
 			Assert.AreEqual(0, list.Count);
 
@@ -256,9 +256,9 @@ namespace NHibernate.Test.Legacy
 				.CreateAlias("FooSet", "foo")
 				.CreateAlias("foo.TheFoo", "foo2")
 				.SetLockMode("foo2", lockMode)
-				.Add(Expressions.Expression.IsNull("foo2.Component.Glarch"))
+				.Add(Expression.IsNull("foo2.Component.Glarch"))
 				.CreateCriteria("foo2.Component.Glarch")
-				.Add(Expressions.Expression.Eq("Name", "xxx"))
+				.Add(Expression.Eq("Name", "xxx"))
 				.List();
 			Assert.AreEqual(0, list.Count);
 
@@ -270,9 +270,9 @@ namespace NHibernate.Test.Legacy
 
 			crit = s.CreateCriteria(typeof(Baz));
 			crit.CreateCriteria("TopGlarchez")
-				.Add(Expressions.Expression.IsNotNull("Name"));
+				.Add(Expression.IsNotNull("Name"));
 			crit.CreateCriteria("FooSet")
-				.Add(Expressions.Expression.IsNull("Null"));
+				.Add(Expression.IsNull("Null"));
 
 			list = crit.List();
 			Assert.AreEqual(2, list.Count);
@@ -313,7 +313,7 @@ namespace NHibernate.Test.Legacy
 			//there is a where condition on Part mapping
 			Assert.AreEqual(1,
 			                s.CreateCriteria(typeof(Part))
-			                	.Add(Expressions.Expression.Eq("Id", p1.Id))
+			                	.Add(Expression.Eq("Id", p1.Id))
 			                	.List().Count);
 			Assert.AreEqual(1, s.CreateQuery("from Part").List().Count);
 			Assert.AreEqual(2, s.CreateQuery("from Baz baz join baz.Parts").List().Count);

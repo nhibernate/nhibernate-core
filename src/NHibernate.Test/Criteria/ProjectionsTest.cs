@@ -1,18 +1,10 @@
+using System.Collections;
+using System.Collections.Generic;
+using NHibernate.Criterion;
+using NUnit.Framework;
+
 namespace NHibernate.Test.Criteria
 {
-	using System;
-	using System.Collections;
-	using System.Collections.Generic;
-	using System.Reflection;
-	using System.Text;
-	using Engine;
-	using Expressions;
-	using Iesi.Collections.Generic;
-	using NUnit.Framework;
-	using SqlCommand;
-	using Type;
-	using TestCase = NHibernate.Test.TestCase;
-
 	[TestFixture]
 	public class ProjectionsTest : TestCase
 	{

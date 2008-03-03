@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.Criterion;
 using NUnit.Framework;
 
 namespace NHibernate.Test.JoinedSubclass
@@ -243,7 +244,7 @@ namespace NHibernate.Test.JoinedSubclass
 			t = s.BeginTransaction();
 
 			IList results = s.CreateCriteria(typeof(Person))
-				.Add(Expressions.Expression.In("Name", new string[] {"Did it get updated", "Updated Employee String"}))
+				.Add(Expression.In("Name", new string[] {"Did it get updated", "Updated Employee String"}))
 				.List();
 
 			Assert.AreEqual(2, results.Count);

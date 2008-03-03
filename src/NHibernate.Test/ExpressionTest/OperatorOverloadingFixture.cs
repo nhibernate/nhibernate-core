@@ -1,6 +1,6 @@
 using System;
 using System.Reflection;
-using NHibernate.Expressions;
+using NHibernate.Criterion;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ExpressionTest

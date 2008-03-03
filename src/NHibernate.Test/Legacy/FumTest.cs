@@ -4,7 +4,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Iesi.Collections;
 using NHibernate.DomainModel;
-using NHibernate.Expressions;
+using NHibernate.Criterion;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -66,7 +66,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Fum b = (Fum) s.CreateCriteria(typeof(Fum))
-				              	.Add(Expressions.Expression.In(
+				              	.Add(Expression.In(
 				              	     	"FumString", new string[] {"a value", "no value"}))
 				              	.UniqueResult();
 				//Assert.IsTrue( NHibernateUtil.IsInitialized( b.MapComponent.Fummap ) );
@@ -75,7 +75,7 @@ namespace NHibernate.Test.Legacy
 				Assert.IsTrue(b.MapComponent.Stringmap.Count == 2);
 
 				int none = s.CreateCriteria(typeof(Fum))
-					.Add(Expressions.Expression.In("FumString", new string[0]))
+					.Add(Expression.In("FumString", new string[0]))
 					.List().Count;
 				Assert.AreEqual(0, none);
 
@@ -107,23 +107,23 @@ namespace NHibernate.Test.Legacy
 				s.Save(fum);
 
 				ICriteria baseCriteria = s.CreateCriteria(typeof(Fum))
-					.Add(Expressions.Expression.Like("FumString", "f", MatchMode.Start));
+					.Add(Expression.Like("FumString", "f", MatchMode.Start));
 				baseCriteria.CreateCriteria("Fo")
-					.Add(Expressions.Expression.IsNotNull("FumString"));
+					.Add(Expression.IsNotNull("FumString"));
 				baseCriteria.CreateCriteria("Friends")
-					.Add(Expressions.Expression.Like("FumString", "g%"));
+					.Add(Expression.Like("FumString", "g%"));
 				IList list = baseCriteria.List();
 
 				Assert.AreEqual(1, list.Count);
 				Assert.AreSame(fum, list[0]);
 
 				baseCriteria = s.CreateCriteria(typeof(Fum))
-					.Add(Expressions.Expression.Like("FumString", "f%"))
+					.Add(Expression.Like("FumString", "f%"))
 					.SetResultTransformer(CriteriaUtil.AliasToEntityMap);
 				baseCriteria.CreateCriteria("Fo", "fo")
-					.Add(Expressions.Expression.IsNotNull("FumString"));
+					.Add(Expression.IsNotNull("FumString"));
 				baseCriteria.CreateCriteria("Friends", "fum")
-					.Add(Expressions.Expression.Like("FumString", "g", MatchMode.Start));
+					.Add(Expression.Like("FumString", "g", MatchMode.Start));
 				IDictionary map = (IDictionary) baseCriteria.UniqueResult();
 
 				Assert.AreSame(fum, map["this"]);
@@ -132,11 +132,11 @@ namespace NHibernate.Test.Legacy
 				Assert.AreEqual(3, map.Count);
 
 				baseCriteria = s.CreateCriteria(typeof(Fum))
-					.Add(Expressions.Expression.Like("FumString", "f%"))
+					.Add(Expression.Like("FumString", "f%"))
 					.SetResultTransformer(CriteriaUtil.AliasToEntityMap)
 					.SetFetchMode("Friends", FetchMode.Eager);
 				baseCriteria.CreateCriteria("Fo", "fo")
-					.Add(Expressions.Expression.Eq("FumString", fum.Fo.FumString));
+					.Add(Expression.Eq("FumString", fum.Fo.FumString));
 				map = (IDictionary) baseCriteria.List()[0];
 
 				Assert.AreSame(fum, map["this"]);
@@ -146,11 +146,11 @@ namespace NHibernate.Test.Legacy
 				list = s.CreateCriteria(typeof(Fum))
 					.CreateAlias("Friends", "fr")
 					.CreateAlias("Fo", "fo")
-					.Add(Expressions.Expression.Like("FumString", "f%"))
-					.Add(Expressions.Expression.IsNotNull("Fo"))
-					.Add(Expressions.Expression.IsNotNull("fo.FumString"))
-					.Add(Expressions.Expression.Like("fr.FumString", "g%"))
-					.Add(Expressions.Expression.EqProperty("fr.id.Short", "id.Short"))
+					.Add(Expression.Like("FumString", "f%"))
+					.Add(Expression.IsNotNull("Fo"))
+					.Add(Expression.IsNotNull("fo.FumString"))
+					.Add(Expression.Like("fr.FumString", "g%"))
+					.Add(Expression.EqProperty("fr.id.Short", "id.Short"))
 					.List();
 				Assert.AreEqual(1, list.Count);
 				Assert.AreSame(fum, list[0]);
@@ -160,11 +160,11 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				ICriteria baseCriteria = s.CreateCriteria(typeof(Fum))
-					.Add(Expressions.Expression.Like("FumString", "f%"));
+					.Add(Expression.Like("FumString", "f%"));
 				baseCriteria.CreateCriteria("Fo")
-					.Add(Expressions.Expression.IsNotNull("FumString"));
+					.Add(Expression.IsNotNull("FumString"));
 				baseCriteria.CreateCriteria("Friends")
-					.Add(Expressions.Expression.Like("FumString", "g%"));
+					.Add(Expression.Like("FumString", "g%"));
 				Fum fum = (Fum) baseCriteria.List()[0];
 				Assert.AreEqual(2, fum.Friends.Count);
 				s.Delete(fum);

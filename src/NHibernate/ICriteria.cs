@@ -1,5 +1,5 @@
 using System.Collections;
-using NHibernate.Expressions;
+using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using System.Collections.Generic;

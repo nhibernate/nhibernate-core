@@ -1,5 +1,5 @@
-using System;
 using System.Collections;
+using NHibernate.Criterion;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH266
@@ -77,7 +77,7 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			// load instance through Criteria
 			s = OpenSession();
 			ICriteria c = s.CreateCriteria(typeof(A));
-			c.Add(Expressions.Expression.Eq("Id", aId));
+			c.Add(Expression.Eq("Id", aId));
 			a = c.UniqueResult() as A;
 
 			Assert.AreEqual("the a", a.Name);
@@ -107,7 +107,7 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			// load a instance of B through Criteria
 			s = OpenSession();
 			ICriteria c = s.CreateCriteria(typeof(B));
-			c.Add(Expressions.Expression.Eq("Id", bId));
+			c.Add(Expression.Eq("Id", bId));
 			b = c.UniqueResult() as B;
 
 			Assert.AreEqual("the b", b.Name);
