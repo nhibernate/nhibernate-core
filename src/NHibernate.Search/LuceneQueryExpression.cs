@@ -1,12 +1,10 @@
-using System;
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using Lucene.Net.Search;
-using NHibernate.Expressions;
+using NHibernate.Criterion;
 using NHibernate.Impl;
 using NHibernate.Search.Engine;
 using NHibernate.Search.Impl;
-using NHibernate.SqlCommand;
 
 namespace NHibernate.Search
 {

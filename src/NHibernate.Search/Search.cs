@@ -1,9 +1,7 @@
-using System;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.QueryParsers;
-using Lucene.Net.Search;
+using NHibernate.Criterion;
 using NHibernate.Engine;
-using NHibernate.Expressions;
 using NHibernate.Search.Impl;
 
 namespace NHibernate.Search

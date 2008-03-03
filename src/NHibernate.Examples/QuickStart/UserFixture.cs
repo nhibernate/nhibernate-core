@@ -49,7 +49,7 @@ namespace NHibernate.Examples.QuickStart
 			session.Flush();
 
 			IList recentUsers = session.CreateCriteria(typeof(User))
-				.Add(Expressions.Expression.Gt("LastLogon", new DateTime(2004, 03, 14, 20, 0, 0)))
+				.Add(Criterion.Expression.Gt("LastLogon", new DateTime(2004, 03, 14, 20, 0, 0)))
 				.List();
 
 			foreach (User user in recentUsers)
