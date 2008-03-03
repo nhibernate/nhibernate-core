@@ -134,7 +134,7 @@ namespace NHibernate.Expressions
 						                		null
 						                	:
 						                		actype.GetPropertyValues(_values[j], EntityMode.Poco)[i];
-						list.Add(new TypedValue(types[i], subval));
+						list.Add(new TypedValue(types[i], subval, EntityMode.Poco));
 					}
 				}
 			}
@@ -142,7 +142,7 @@ namespace NHibernate.Expressions
 			{
 				for (int j = 0; j < _values.Length; j++)
 				{
-					list.Add(new TypedValue(type, _values[j]));
+					list.Add(new TypedValue(type, _values[j], EntityMode.Poco));
 				}
 			}
 

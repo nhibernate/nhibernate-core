@@ -255,7 +255,7 @@ namespace NHibernate.Impl
 				// short-circuit for performance...
 				IEnumerator iter = vals.GetEnumerator();
 				iter.MoveNext();
-				namedParamsCopy[name] = new TypedValue(type, iter.Current);
+				namedParamsCopy[name] = new TypedValue(type, iter.Current, session.EntityMode);
 				return query;
 			}
 
@@ -268,7 +268,7 @@ namespace NHibernate.Impl
 					list.Append(StringHelper.CommaSpace);
 
 				string alias = (isJpaPositionalParam ? 'x' + name : name) + i++ + StringHelper.Underscore;
-				namedParamsCopy[alias] = new TypedValue(type, obj);
+				namedParamsCopy[alias] = new TypedValue(type, obj, session.EntityMode);
 				list.Append(ParserHelper.HqlVariablePrefix).Append(alias);
 			}
 			string paramPrefix = isJpaPositionalParam ? StringHelper.SqlParameter : ParserHelper.HqlVariablePrefix;
@@ -317,7 +317,7 @@ namespace NHibernate.Impl
 			}
 			else
 			{
-				namedParameters[name] = new TypedValue(type, val);
+				namedParameters[name] = new TypedValue(type, val, session.EntityMode);
 				return this;
 			}
 		}
@@ -646,7 +646,7 @@ namespace NHibernate.Impl
 
 				throw new ArgumentException("Parameter " + name + " does not exist as a named parameter in [" + QueryString + "]");
 			}
-			namedParameterLists[name] = new TypedValue(type, vals);
+			namedParameterLists[name] = new TypedValue(type, vals, session.EntityMode);
 			return this;
 		}
 

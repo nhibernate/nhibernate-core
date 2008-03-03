@@ -102,7 +102,7 @@ namespace NHibernate.Impl
 
 		public IDetachedQuery SetParameter(int position, object val, Type.IType type)
 		{
-			posParams[position] = new TypedValue(type, val);
+			posParams[position] = new TypedValue(type, val, EntityMode.Poco);
 			return this;
 		}
 
@@ -110,7 +110,7 @@ namespace NHibernate.Impl
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "Is null or empty.");
-			namedParams[name] = new TypedValue(type, val);
+			namedParams[name] = new TypedValue(type, val, EntityMode.Poco);
 			return this;
 		}
 
@@ -132,7 +132,7 @@ namespace NHibernate.Impl
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "Is null or empty.");
-			namedListParams[name] = new TypedValue(type, vals);
+			namedListParams[name] = new TypedValue(type, vals, EntityMode.Poco);
 			return this;
 		}
 

@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Expressions;
@@ -12,7 +12,6 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Collections.Generic;
 
 namespace NHibernate.Loader.Criteria
 {
@@ -570,11 +569,7 @@ namespace NHibernate.Loader.Criteria
 		public TypedValue GetTypedIdentifierValue(ICriteria subcriteria, object value)
 		{
 			ILoadable loadable = (ILoadable)GetPropertyMapping(GetEntityName(subcriteria));
-			return new TypedValue(
-				loadable.IdentifierType,
-				value
-				// TODO H3: EntityMode.POJO
-				);
+			return new TypedValue(loadable.IdentifierType, value, EntityMode.Poco);
 		}
 
 		private string[] GetColumns(string propertyName, ICriteria subcriteria)
@@ -644,19 +639,11 @@ namespace NHibernate.Loader.Criteria
 
 				if (q != null)
 				{
-					return new TypedValue(
-						q.DiscriminatorType,
-						q.DiscriminatorValue
-						// TODO H3: EntityMode.POJO
-						);
+					return new TypedValue(q.DiscriminatorType, q.DiscriminatorValue, EntityMode.Poco);
 				}
 			}
 			// Otherwise, this is an ordinary value.
-			return new TypedValue(
-				GetTypeUsingProjection(subcriteria, propertyName),
-				value
-				// TODO H3: EntityMode.POJO
-				);
+			return new TypedValue(GetTypeUsingProjection(subcriteria, propertyName), value, EntityMode.Poco);
 		}
 
 		private IPropertyMapping GetPropertyMapping(string entityName)

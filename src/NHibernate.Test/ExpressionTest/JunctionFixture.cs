@@ -1,4 +1,3 @@
-using System;
 using NHibernate.DomainModel;
 using NHibernate.Engine;
 using NHibernate.Expressions;
@@ -55,8 +54,8 @@ namespace NHibernate.Test.ExpressionTest
 			}
 
 			TypedValue[] expectedTV = new TypedValue[2];
-			expectedTV[0] = new TypedValue(NHibernateUtil.Int32, 5);
-			expectedTV[1] = new TypedValue(NHibernateUtil.Int32, 10);
+			expectedTV[0] = new TypedValue(NHibernateUtil.Int32, 5, EntityMode.Poco);
+			expectedTV[1] = new TypedValue(NHibernateUtil.Int32, 10, EntityMode.Poco);
 
 			Assert.AreEqual(2, typedValues.Length);
 

@@ -382,7 +382,7 @@ namespace NHibernate.Expressions
 					}
 					value = stringValue;
 				}
-				list.Add(new TypedValue(type, value));
+				list.Add(new TypedValue(type, value, EntityMode.Poco)); // TODO NH Different behavior: In H3.2 EntityMode is nullable
 			}
 		}
 

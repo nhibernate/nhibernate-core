@@ -93,7 +93,7 @@ namespace NHibernate.Expressions
             TypedValue[] tv = new TypedValue[paramTypes.Length];
             for (int i = 0; i < paramTypes.Length; i++)
             {
-                tv[i] = new TypedValue(paramTypes[i], values[i]);
+							tv[i] = new TypedValue(paramTypes[i], values[i], EntityMode.Poco);
             }
             return tv;
         }

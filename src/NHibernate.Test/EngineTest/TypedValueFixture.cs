@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using NHibernate.Engine;
 using NUnit.Framework;
@@ -17,8 +16,8 @@ namespace NHibernate.Test.EngineTest
 
 			ArrayList value2 = (ArrayList) value1.Clone();
 
-			TypedValue t1 = new TypedValue(NHibernateUtil.Int32, value1);
-			TypedValue t2 = new TypedValue(NHibernateUtil.Int32, value2);
+			TypedValue t1 = new TypedValue(NHibernateUtil.Int32, value1, EntityMode.Poco);
+			TypedValue t2 = new TypedValue(NHibernateUtil.Int32, value2, EntityMode.Poco);
 
 			Assert.IsTrue(t1.Equals(t2));
 		}
@@ -26,7 +25,7 @@ namespace NHibernate.Test.EngineTest
 		[Test]
 		public void ToStringWithNullValue()
 		{
-			Assert.AreEqual("null", new TypedValue(NHibernateUtil.Int32, null).ToString());
+			Assert.AreEqual("null", new TypedValue(NHibernateUtil.Int32, null, EntityMode.Poco).ToString());
 		}
 	}
 }

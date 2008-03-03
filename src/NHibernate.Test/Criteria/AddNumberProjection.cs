@@ -36,12 +36,9 @@ namespace NHibernate.Test.Criteria
 			return new IType[] {projection};
 		}
 
-		public override NHibernate.Engine.TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[]
-				{
-					new TypedValue(NHibernateUtil.Int32, numberToAdd),
-				};
+			return new TypedValue[] {new TypedValue(NHibernateUtil.Int32, numberToAdd, EntityMode.Poco)};
 		}
 	}
 }

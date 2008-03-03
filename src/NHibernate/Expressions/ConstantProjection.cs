@@ -7,8 +7,7 @@ namespace NHibernate.Expressions
 	using Type;
 
 	/// <summary>
-	/// This is useful if we want to send a value
-	/// to the database
+	/// This is useful if we want to send a value to the database
 	/// </summary>
 	[Serializable]
 	public class ConstantProjection : SimpleProjection
@@ -34,12 +33,9 @@ namespace NHibernate.Expressions
 			return new IType[] {NHibernateUtil.GuessType(value)};
 		}
 
-		public override NHibernate.Engine.TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[]
-				{
-					new TypedValue(NHibernateUtil.GuessType(value), value),
-				};
+			return new TypedValue[] {new TypedValue(NHibernateUtil.GuessType(value), value, EntityMode.Poco)};
 		}
 	}
 }

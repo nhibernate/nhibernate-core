@@ -126,7 +126,7 @@ namespace NHibernate.Expressions
 					}
 					else
 					{
-						types.Add(new TypedValue(NHibernateUtil.GuessType((object)value), value));
+						types.Add(new TypedValue(NHibernateUtil.GuessType((object)value), value, EntityMode.Poco));
 					}
 				}
 

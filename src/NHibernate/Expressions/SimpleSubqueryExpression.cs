@@ -25,7 +25,7 @@ namespace NHibernate.Expressions
 			TypedValue[] superTv = base.GetTypedValues(criteria, criteriaQuery);
 			TypedValue[] result = new TypedValue[superTv.Length + 1];
 			superTv.CopyTo(result, 1);
-			result[0] = new TypedValue(GetTypes()[0], value);
+			result[0] = new TypedValue(GetTypes()[0], value, EntityMode.Poco);
 			return result;
 		}
 

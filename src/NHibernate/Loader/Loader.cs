@@ -1745,9 +1745,7 @@ namespace NHibernate.Loader
 		{
 			IQueryCache queryCache = factory.GetQueryCache(queryParameters.CacheRegion);
 
-			ISet filterKeys = FilterKey.CreateFilterKeys(
-				session.EnabledFilters
-				);
+			ISet filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
 			QueryKey key = new QueryKey(Factory, SqlString, queryParameters, filterKeys);
 
 			IList result = GetResultFromQueryCache(session, queryParameters, querySpaces, resultTypes, queryCache, key);
