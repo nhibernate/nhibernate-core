@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
@@ -11,7 +10,7 @@ namespace NHibernate.Loader
 	public abstract class AbstractEntityJoinWalker : JoinWalker
 	{
 		private readonly IOuterJoinLoadable persister;
-		private string alias;
+		private readonly string alias;
 
 		public AbstractEntityJoinWalker(IOuterJoinLoadable persister, ISessionFactoryImplementor factory,
 																		IDictionary<string, IFilter> enabledFilters)
@@ -29,93 +28,53 @@ namespace NHibernate.Loader
 			this.alias = alias;
 		}
 
-		protected void InitAll(
-			SqlString whereString,
-			string orderByString,
-			LockMode lockMode)
+		protected void InitAll(SqlString whereString,string orderByString,LockMode lockMode)
 		{
 			WalkEntityTree(persister, Alias);
-			IList allAssociations = new ArrayList();
-			foreach (object obj in associations)
-			{
-				allAssociations.Add(obj);
-			}
+			IList<OuterJoinableAssociation> allAssociations = new List<OuterJoinableAssociation>(associations);
 			allAssociations.Add(
-				new OuterJoinableAssociation(
-					persister.EntityType,
-					null,
-					null,
-					alias,
-					JoinType.LeftOuterJoin,
-					Factory,
-					new CollectionHelper.EmptyMapClass<string, IFilter>()
-					));
+				new OuterJoinableAssociation(persister.EntityType, null, null, alias, JoinType.LeftOuterJoin, Factory,
+				                             new CollectionHelper.EmptyMapClass<string, IFilter>()));
 
 			InitPersisters(allAssociations, lockMode);
 			InitStatementString(whereString, orderByString, lockMode);
 		}
 
-		protected void InitProjection(
-			SqlString projectionString,
-			SqlString whereString,
-			string orderByString,
-			string groupByString,
-			LockMode lockMode)
-
+		protected void InitProjection(SqlString projectionString, SqlString whereString,
+			string orderByString, string groupByString, LockMode lockMode)
 		{
 			WalkEntityTree(persister, Alias);
 			Persisters = new ILoadable[0];
 			InitStatementString(projectionString, whereString, orderByString, groupByString, lockMode);
 		}
 
-		private void InitStatementString(
-			SqlString condition,
-			string orderBy,
-			LockMode lockMode)
-
+		private void InitStatementString(SqlString condition, string orderBy, LockMode lockMode)
 		{
-			InitStatementString(null, condition, orderBy, "", lockMode);
+			InitStatementString(null, condition, orderBy, string.Empty, lockMode);
 		}
 
-		private void InitStatementString(
-			SqlString projection,
-			SqlString condition,
-			string orderBy,
-			string groupBy,
-			LockMode lockMode)
-
+		private void InitStatementString(SqlString projection,SqlString condition,
+			string orderBy,string groupBy,LockMode lockMode)
 		{
 			int joins = CountEntityPersisters(associations);
 			Suffixes = BasicLoader.GenerateSuffixes(joins + 1);
 			JoinFragment ojf = MergeOuterJoins(associations);
 
-			SqlString selectClause = projection;
-			if(selectClause==null)
-			{
-				selectClause = new SqlString(
-					persister.SelectFragment(alias, Suffixes[joins]) + 
-					SelectString(associations));
-			}
+			SqlString selectClause = projection
+			                         ??
+			                         new SqlString(persister.SelectFragment(alias, Suffixes[joins]) + SelectString(associations));
+			
 			SqlSelectBuilder select = new SqlSelectBuilder(Factory)
 				.SetLockMode(lockMode)
 				.SetSelectClause(selectClause)
-				.SetFromClause(
-				Dialect.AppendLockHint(lockMode, persister.FromTableFragment(alias)) +
-				persister.FromJoinFragment(alias, true, true)
-				)
+				.SetFromClause(Dialect.AppendLockHint(lockMode, persister.FromTableFragment(alias)) +persister.FromJoinFragment(alias, true, true))
 				.SetWhereClause(condition)
-				.SetOuterJoins(
-				ojf.ToFromFragmentString,
-				ojf.ToWhereFragmentString + WhereFragment
-				)
+				.SetOuterJoins(ojf.ToFromFragmentString,ojf.ToWhereFragmentString + WhereFragment)
 				.SetOrderByClause(OrderBy(associations, orderBy))
 				.SetGroupByClause(groupBy);
 
-			// TODO H3:
-//			if( Factory.IsCommentsEnabled )
-//			{
-//				select.SetComment( Comment );
-//			}
+			if (Factory.Settings.IsCommentsEnabled)
+				select.SetComment(Comment);
 
 			SqlString = select.ToSqlString();
 		}

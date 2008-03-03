@@ -505,32 +505,6 @@ namespace NHibernate.Util
 			}
 		}
 
-		public static string[] Qualify(string prefix, string[] names, string[] formula)
-		{
-			// Should we check for prefix == string.Empty rather than a length check?
-			if (prefix != null && prefix.Length > 0)
-			{
-				int len = names.Length;
-				string[] qualified = new string[len];
-				for (int i = 0; i < len; i++)
-				{
-					if (names[i] != null)
-					{
-						qualified[i] = Qualify(prefix, names[i]);
-					}
-					else
-					{
-						qualified[i] = "(" + formula[i] + ")";
-					}
-				}
-				return qualified;
-			}
-			else
-			{
-				return names;
-			}
-		}
-
 		public static int FirstIndexOfChar(string sqlString, string str, int startIndex)
 		{
 			return sqlString.IndexOfAny(str.ToCharArray(), startIndex);
