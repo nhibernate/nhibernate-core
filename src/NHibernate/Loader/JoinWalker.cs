@@ -105,6 +105,11 @@ namespace NHibernate.Loader
 			get { return enabledFilters; }
 		}
 
+		protected virtual bool IsTooManyCollections
+		{
+			get { return false; }
+		}
+
 		protected JoinWalker(ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 		{
 			this.factory = factory;
@@ -218,6 +223,7 @@ namespace NHibernate.Loader
 		{
 			string[] aliasedLhsColumns =
 				JoinHelper.GetAliasedLHSColumnNames(associationType, alias, propertyNumber, persister, Factory);
+
 			string[] lhsColumns = JoinHelper.GetLHSColumnNames(associationType, propertyNumber, persister, Factory);
 			string lhsTable = JoinHelper.GetLHSTableName(associationType, propertyNumber, persister);
 
@@ -268,8 +274,10 @@ namespace NHibernate.Loader
 					IAssociationType associationType = (IAssociationType)types[i];
 					string[] aliasedLhsColumns =
 						JoinHelper.GetAliasedLHSColumnNames(associationType, alias, propertyNumber, begin, persister, Factory);
+
 					string[] lhsColumns = JoinHelper.GetLHSColumnNames(associationType, propertyNumber, begin, persister, Factory);
 					string lhsTable = JoinHelper.GetLHSTableName(associationType, propertyNumber, persister);
+
 					string subpath = SubPath(path, propertyNames[i]);
 					bool[] propertyNullability = componentType.PropertyNullability;
 
@@ -344,13 +352,13 @@ namespace NHibernate.Loader
 		/// association should not be joined. Override on
 		/// subclasses.
 		/// </summary>
-		protected virtual JoinType GetJoinType(IAssociationType type, FetchMode config, String path, String lhsTable,
-			String[] lhsColumns, bool nullable, int currentDepth, Cascades.CascadeStyle cascadeStyle)
+		protected virtual JoinType GetJoinType(IAssociationType type, FetchMode config, string path, string lhsTable,
+			string[] lhsColumns, bool nullable, int currentDepth, Cascades.CascadeStyle cascadeStyle)
 		{
 			if (!IsJoinedFetchEnabled(type, config, cascadeStyle))
 				return JoinType.None;
 
-			if (IsTooDeep(currentDepth) || IsTooManyCollections())
+			if (IsTooDeep(currentDepth) || (type.IsCollectionType && IsTooManyCollections))
 				return JoinType.None;
 
 			bool dupe = IsDuplicateAssociation(lhsTable, lhsColumns, type);
@@ -375,11 +383,6 @@ namespace NHibernate.Loader
 		{
 			int maxFetchDepth = Factory.Settings.MaximumFetchDepth;
 			return maxFetchDepth >= 0 && currentDepth >= maxFetchDepth;
-		}
-
-		protected virtual bool IsTooManyCollections()
-		{
-			return false;
 		}
 
 		/// <summary>
@@ -517,7 +520,7 @@ namespace NHibernate.Loader
 			if (joinType == JoinType.InnerJoin) return true;
 
 			int maxFetchDepth = Factory.Settings.MaximumFetchDepth;
-			bool tooDeep = maxFetchDepth >= null && depth >= maxFetchDepth;
+			bool tooDeep = maxFetchDepth >= 0 && depth >= maxFetchDepth;
 
 			return !tooDeep && !IsDuplicateAssociation(lhsTable, lhsColumnNames, type);
 		}

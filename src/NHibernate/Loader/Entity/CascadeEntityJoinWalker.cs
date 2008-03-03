@@ -29,9 +29,9 @@ namespace NHibernate.Loader.Entity
 			       (cascadeStyle == null || cascadeStyle.DoCascade(cascadeAction));
 		}
 
-		protected override bool IsTooManyCollections()
+		protected override bool IsTooManyCollections
 		{
-			return CountCollectionPersisters(associations) > 1;
+			get { return CountCollectionPersisters(associations) > 1; }
 		}
 
 		public override string Comment

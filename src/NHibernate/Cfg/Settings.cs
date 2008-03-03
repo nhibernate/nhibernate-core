@@ -16,7 +16,7 @@ namespace NHibernate.Cfg
 	{
 		private bool isShowSqlEnabled;
 		private bool isFormatSqlEnabled;
-		private int maximumFetchDepth;
+		private int maximumFetchDepth = -1;
 		private IDictionary<string, string> querySubstitutions;
 		private Dialect.Dialect dialect;
 		private int adoBatchSize;
