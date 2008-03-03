@@ -530,7 +530,7 @@ namespace NHibernate.Loader
 			return MergeOrderings(OrderBy(associations), orderBy);
 		}
 
-		private string MergeOrderings(string ass, string orderBy)
+		protected string MergeOrderings(string ass, string orderBy)
 		{
 			if (ass.Length == 0)
 				return orderBy;

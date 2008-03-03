@@ -100,17 +100,15 @@ namespace NHibernate.Loader
 		private static int GetPosition(string lhsAlias, IList<OuterJoinableAssociation> associations)
 		{
 			int result = 0;
-			for (int i = 0; i < associations.Count; i++)
+			foreach (OuterJoinableAssociation oj in associations)
 			{
-				OuterJoinableAssociation oj = associations[i];
-				if (oj.Joinable.ConsumesEntityAlias() /*|| oj.getJoinable().consumesCollectionAlias() */)
+				if (oj.Joinable.ConsumesEntityAlias())
 				{
 					if (oj.rhsAlias.Equals(lhsAlias))
-					{
 						return result;
-					}
+
 					result++;
-				}
+				}	
 			}
 			return -1;
 		}

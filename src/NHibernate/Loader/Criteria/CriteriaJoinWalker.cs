@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
@@ -25,24 +24,10 @@ namespace NHibernate.Loader.Criteria
 		//the user visible aliases, which are unknown to the superclass,
 		//these are not the actual "physical" SQL aliases
 		private readonly string[] userAliases;
-		private readonly IList userAliasList = new ArrayList();
+		private readonly IList<string> userAliasList = new List<string>();
 
-		public IType[] ResultTypes
-		{
-			get { return resultTypes; }
-		}
-
-		public string[] UserAliases
-		{
-			get { return userAliases; }
-		}
-
-		public CriteriaJoinWalker(
-			IOuterJoinLoadable persister,
-			CriteriaQueryTranslator translator,
-			ISessionFactoryImplementor factory,
-			CriteriaImpl criteria,
-			System.Type rootEntityName,
+		public CriteriaJoinWalker(IOuterJoinLoadable persister,CriteriaQueryTranslator translator,
+			ISessionFactoryImplementor factory, CriteriaImpl criteria, System.Type rootEntityName,
 			IDictionary<string, IFilter> enabledFilters)
 			: base(translator.RootSQLAlias, persister, factory, enabledFilters)
 		{
@@ -73,15 +58,8 @@ namespace NHibernate.Loader.Criteria
 			userAliases = ArrayHelper.ToStringArray(userAliasList);
 		}
 
-		protected override JoinType GetJoinType(
-			IAssociationType type,
-			FetchMode config,
-			string path,
-			string lhsTable,
-			string[] lhsColumns,
-			bool nullable,
-			int currentDepth,
-			Cascades.CascadeStyle cascadeStyle)
+		protected override JoinType GetJoinType(IAssociationType type, FetchMode config, string path,
+			string lhsTable, string[] lhsColumns, bool nullable, int currentDepth, Cascades.CascadeStyle cascadeStyle)
 		{
 			if (translator.IsJoin(path))
 			{
@@ -95,19 +73,10 @@ namespace NHibernate.Loader.Criteria
 				}
 				else
 				{
-					FetchMode fetchMode = translator.RootCriteria
-						.GetFetchMode(path);
+					FetchMode fetchMode = translator.RootCriteria.GetFetchMode(path);
 					if (IsDefaultFetchMode(fetchMode))
 					{
-						return base.GetJoinType(
-							type,
-							config,
-							path,
-							lhsTable,
-							lhsColumns,
-							nullable,
-							currentDepth, cascadeStyle
-							);
+						return base.GetJoinType(type, config, path, lhsTable, lhsColumns, nullable, currentDepth, cascadeStyle);
 					}
 					else
 					{
@@ -130,19 +99,6 @@ namespace NHibernate.Loader.Criteria
 			return fetchMode == FetchMode.Default;
 		}
 
-		/// <summary>
-		/// Use the discriminator, to narrow the select to instances
-		/// of the queried subclass, also applying any filters.
-		/// </summary>
-		protected override SqlString WhereFragment
-		{
-			get
-			{
-				return base.WhereFragment.Append(
-					((IQueryable) Persister).FilterFragment(Alias, EnabledFilters));
-			}
-		}
-
 		protected override string GenerateTableAlias(int n, string path, IJoinable joinable)
 		{
 			if (joinable.ConsumesEntityAlias())
@@ -160,6 +116,33 @@ namespace NHibernate.Loader.Criteria
 				}
 			}
 			return base.GenerateTableAlias(n + translator.SQLAliasCount, path, joinable);
+		}
+
+		protected override string GenerateRootAlias(string description)
+		{
+			return CriteriaQueryTranslator.RootSqlAlias; // NH: really not used (we are using a different ctor to support SubQueryCriteria)
+		}
+
+		public IType[] ResultTypes
+		{
+			get { return resultTypes; }
+		}
+
+		public string[] UserAliases
+		{
+			get { return userAliases; }
+		}
+
+		/// <summary>
+		/// Use the discriminator, to narrow the select to instances
+		/// of the queried subclass, also applying any filters.
+		/// </summary>
+		protected override SqlString WhereFragment
+		{
+			get
+			{
+				return base.WhereFragment.Append(((IQueryable) Persister).FilterFragment(Alias, EnabledFilters));
+			}
 		}
 
 		public ISet<string> QuerySpaces

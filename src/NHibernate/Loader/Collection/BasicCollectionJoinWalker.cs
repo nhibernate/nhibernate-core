@@ -44,6 +44,7 @@ namespace NHibernate.Loader.Collection
 
 			SqlStringBuilder whereString = WhereString(alias, collectionPersister.KeyColumnNames, subquery, batchSize);
 
+			string manyToManyOrderBy = string.Empty;
 			string filter = collectionPersister.FilterFragment(alias, EnabledFilters);
 
 			if (collectionPersister.IsManyToMany)
@@ -60,6 +61,7 @@ namespace NHibernate.Loader.Collection
 					{
 						// we found it
 						filter += collectionPersister.GetManyToManyFilterFragment(oja.RHSAlias, EnabledFilters);
+						manyToManyOrderBy += collectionPersister.GetManyToManyOrderByString(oja.RHSAlias);
 					}
 				}
 			}
@@ -75,7 +77,7 @@ namespace NHibernate.Loader.Collection
 				.SetWhereClause(whereString.ToSqlString())
 				.SetOuterJoins(ojf.ToFromFragmentString, ojf.ToWhereFragmentString);
 
-			select.SetOrderByClause(OrderBy(associations, collectionPersister.GetSQLOrderByString(alias)));
+			select.SetOrderByClause(OrderBy(associations, MergeOrderings(collectionPersister.GetSQLOrderByString(alias), manyToManyOrderBy)));
 
 			if (Factory.Settings.IsCommentsEnabled)
 				select.SetComment("load collection " + collectionPersister.Role);
@@ -87,9 +89,9 @@ namespace NHibernate.Loader.Collection
 		/// We can use an inner join for first many-to-many association
 		/// </summary>
 		protected JoinType GetJoinType(IAssociationType type, FetchMode config, String path, ISet visitedAssociations,
-			string lhsTable, string[] lhsColumns, bool nullable, int currentDepth, Cascades.CascadeStyle cascadeStyle)
+			string lhsTable, string[] lhsColumns, bool nullable, int currentDepth)
 		{
-			JoinType joinType = base.GetJoinType(type, config, path, lhsTable, lhsColumns, nullable, currentDepth, cascadeStyle);
+			JoinType joinType = base.GetJoinType(type, config, path, lhsTable, lhsColumns, nullable, currentDepth, null);
 
 			//we can use an inner join for the many-to-many
 			if (joinType == JoinType.LeftOuterJoin && string.Empty.Equals(path))

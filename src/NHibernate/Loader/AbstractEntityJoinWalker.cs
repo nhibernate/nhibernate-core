@@ -17,15 +17,15 @@ namespace NHibernate.Loader
 			: base(factory, enabledFilters)
 		{
 			this.persister = persister;
-			alias = GenerateRootAlias(persister.MappedClass.FullName);
+			alias = GenerateRootAlias(persister.EntityName);
 		}
 
-		public AbstractEntityJoinWalker(string alias, IOuterJoinLoadable persister, ISessionFactoryImplementor factory,
+		public AbstractEntityJoinWalker(string rootSqlAlias, IOuterJoinLoadable persister, ISessionFactoryImplementor factory,
 																		IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters)
 		{
 			this.persister = persister;
-			this.alias = alias;
+			alias = rootSqlAlias;
 		}
 
 		protected void InitAll(SqlString whereString,string orderByString,LockMode lockMode)
@@ -80,20 +80,20 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Don't bother with the discriminator, unless overridden by subclass
-		/// </summary>
-		protected virtual SqlString WhereFragment
-		{
-			get { return persister.WhereJoinFragment(alias, true, true); }
-		}
-
-		/// <summary>
 		/// The superclass deliberately excludes collections
 		/// </summary>
 		protected override bool IsJoinedFetchEnabled(IAssociationType type, FetchMode config,
 		                                             Cascades.CascadeStyle cascadeStyle)
 		{
 			return IsJoinedFetchEnabledInMapping(config, type);
+		}
+
+		/// <summary>
+		/// Don't bother with the discriminator, unless overridden by subclass
+		/// </summary>
+		protected virtual SqlString WhereFragment
+		{
+			get { return persister.WhereJoinFragment(alias, true, true); }
 		}
 
 		public abstract string Comment { get; }
@@ -110,7 +110,7 @@ namespace NHibernate.Loader
 
 		public override string ToString()
 		{
-			return GetType().FullName + '(' + Persister.ClassName + ')';
+			return GetType().FullName + '(' + Persister.EntityName + ')';
 		}
 	}
 }

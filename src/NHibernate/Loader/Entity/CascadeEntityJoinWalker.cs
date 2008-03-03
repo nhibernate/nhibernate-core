@@ -36,7 +36,7 @@ namespace NHibernate.Loader.Entity
 
 		public override string Comment
 		{
-			get { return "load " + Persister.ClassName; }
+			get { return "load " + Persister.EntityName; }
 		}
 	}
 }
