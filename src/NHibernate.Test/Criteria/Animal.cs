@@ -61,6 +61,14 @@ namespace NHibernate.Test.Criteria
 			set { serialNumber = value; }
 		}
 
+		private bool howHappyIsHe;
+
+		public virtual bool HowHappyIsHe
+		{
+			get { return howHappyIsHe; }
+			set { howHappyIsHe = value; }
+		}
+
 		public Animal()
 		{
 		}

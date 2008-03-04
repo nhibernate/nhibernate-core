@@ -1581,5 +1581,22 @@ namespace NHibernate.Test.Criteria
 			t.Commit();
 			session.Close();
 		}
+
+		[Test]
+		public void PropertyWithFormulaAndPagingTest()
+		{
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			ICriteria crit = s.CreateCriteria(typeof(Animal))
+				.SetFirstResult(0)
+				.SetMaxResults(1)
+				.AddOrder(new Order("bodyWeight", true));
+
+			crit.List<Animal>();
+			
+			t.Rollback();
+			s.Close();
+	}
 	}
 }

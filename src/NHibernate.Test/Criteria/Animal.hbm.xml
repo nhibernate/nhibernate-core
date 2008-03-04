@@ -8,11 +8,16 @@
 		<id name="id">
 			<generator class="native"/>
 		</id>
-		<property name="description"/>
+		<property name="description" />
 		<property name="bodyWeight" column="body_weight"/>
 		<many-to-one name="mother" column="mother_id"/>
 		<many-to-one name="father" column="father_id"/>
 		<property name="serialNumber"/>
+
+		<property name="howHappyIsHe" formula="(case when (exists(select a.Id from Animal a where not(a.Id = Id))) then 'very' else 'not too much' end)"
+				update="false" insert="false"  />
+		
+		
 		<set name="offspring" order-by="father_id">
 			<key column="mother_id"/>
 			<one-to-many class="Animal"/>
