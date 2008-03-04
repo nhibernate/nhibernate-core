@@ -15,12 +15,13 @@ namespace NHibernate.Criterion
 	/// string comparison should not be case sensitive.
 	/// </remarks>
 	[Serializable]
-	public class LikeExpression : ICriterion
+	public class LikeExpression : AbstractCriterion
 	{
 		private readonly string propertyName;
 		private readonly string value;
 		private char? escapeChar;
 		private readonly bool ignoreCase;
+		private readonly IProjection projection;
 
 		public LikeExpression(string propertyName, string value, char? escapeChar, bool ignoreCase)
 		{
@@ -29,6 +30,13 @@ namespace NHibernate.Criterion
 			this.escapeChar = escapeChar;
 			this.ignoreCase = ignoreCase;
 		}
+
+		public LikeExpression(IProjection projection, string value, MatchMode matchMode)
+		{
+			this.projection = projection;
+			this.value = matchMode.ToMatchString(value);
+		}
+
 
 		public LikeExpression(string propertyName, string value)
 			: this(propertyName, value, null, false)
@@ -47,7 +55,7 @@ namespace NHibernate.Criterion
 
 		#region ICriterion Members
 
-		public SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			string[] columns = criteriaQuery.GetColumnsUsingProjection(criteria, propertyName);
 			if (columns.Length != 1)
@@ -69,11 +77,16 @@ namespace NHibernate.Criterion
 			return lhs.ToSqlString();
 		}
 
-		public TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			return new TypedValue[] {criteriaQuery.GetTypedValue(criteria, propertyName, ignoreCase ? value.ToLower() : value)};
 		}
 
 		#endregion
+
+		public override string ToString()
+		{
+			return (projection != null ? projection.ToString() : propertyName) + " like " + value;
+		}
 	}
 }

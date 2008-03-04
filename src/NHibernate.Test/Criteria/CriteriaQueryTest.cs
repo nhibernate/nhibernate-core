@@ -33,11 +33,9 @@ namespace NHibernate.Test.Criteria
 			}
 		}
 
-		[Test, Ignore("EscapeCharacter not implemented yet in NHibernate.Expression.LikeExpression")]
+		[Test]
 		public void EscapeCharacter()
 		{
-			ISession session = OpenSession();
-			ITransaction t = session.BeginTransaction();
 			Course c1 = new Course();
 			c1.CourseCode = "course-1";
 			c1.Description = "%1";
@@ -47,29 +45,46 @@ namespace NHibernate.Test.Criteria
 			Course c3 = new Course();
 			c3.CourseCode = "course-3";
 			c3.Description = "control";
-			session.Save(c1);
-			session.Save(c2);
-			session.Save(c3);
-			session.Flush();
-			session.Clear();
 
-			// finds all courses which have a description equal to '%1'
-			Course example = new Course();
-			example.Description = "&%1";
-			//IList result = session.CreateCriteria(typeof(Course))
-			//    .Add(Example.Create(example).IgnoreCase().EnableLike().EscapeCharacter('&'))
-			//    .List();
-			//Assert.AreEqual(1, result.Count);
-			// finds all courses which contain '%' as the first char in the description 
-			example.Description = "&%%";
-			//result = session.CreateCriteria(typeof(Course))
-			//    .Add(Example.Create(example).IgnoreCase().EnableLike().EscapeCharacter('&'))
-			//    .List();
-			//Assert.AreEqual(2, result.Count);
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
+			{
+				session.Save(c1);
+				session.Save(c2);
+				session.Save(c3);
+				t.Commit();
+			}
 
-			session.Delete(typeof(Course));
-			t.Commit();
-			session.Close();
+			using (ISession session = OpenSession())
+			{
+				// finds all courses which have a description equal to '%1'
+				Course example = new Course();
+				example.Description = "&%1";
+				IList result =
+					session.CreateCriteria(typeof (Course)).Add(
+						Example.Create(example).IgnoreCase().EnableLike().SetEscapeCharacter('&')).List();
+				Assert.AreEqual(1, result.Count);
+			}
+
+			using (ISession session = OpenSession())
+			{
+				// finds all courses which contain '%' as the first char in the description 
+				Course example = new Course();
+				example.Description = "&%%";
+				IList result =
+					session.CreateCriteria(typeof(Course)).Add(
+						Example.Create(example).IgnoreCase().EnableLike().SetEscapeCharacter('&')).List();
+				Assert.AreEqual(2, result.Count);
+			}
+
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
+			{
+				session.Delete(c1);
+				session.Delete(c2);
+				session.Delete(c3);
+				t.Commit();
+			}
 		}
 
 		[Test, Ignore("ScrollableResults not implemented")]

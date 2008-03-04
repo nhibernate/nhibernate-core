@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -13,13 +13,27 @@ namespace NHibernate.Criterion
 	/// <summary>
 	/// Support for <c>Query By Example</c>.
 	/// </summary>
+	/// <example>
+	/// <code>
+	/// List results = session.CreateCriteria(typeof(Parent))
+	/// .Add( Example.Create(parent).IgnoreCase() )
+	/// .CreateCriteria("child")
+	/// .Add( Example.Create( parent.Child ) )
+	/// .List();
+	/// </code>
+	/// </example>
+	/// <remarks>
+	/// "Examples" may be mixed and matched with "Expressions" in the same <see cref="ICriteria"/>
+	/// </remarks>
+	/// <seealso cref="ICriteria"/>
 	[Serializable]
 	public class Example : AbstractCriterion
 	{
 		private readonly object _entity;
-		private readonly ISet _excludedProperties = new HashedSet();
+		private readonly ISet<string> _excludedProperties = new HashedSet<string>();
 		private IPropertySelector _selector;
 		private bool _isLikeEnabled;
+		private char? escapeCharacter;
 		private bool _isIgnoreCaseEnabled;
 		private MatchMode _matchMode;
 
@@ -38,7 +52,7 @@ namespace NHibernate.Criterion
 			/// <see langword="true" /> if the Property should be included in the Query, 
 			/// <see langword="false" /> otherwise.
 			/// </returns>
-			bool Include(object propertyValue, String propertyName, IType type);
+			bool Include(object propertyValue, string propertyName, IType type);
 		}
 
 		//private static readonly IPropertySelector NotNull = new NotNullPropertySelector();
@@ -50,9 +64,10 @@ namespace NHibernate.Criterion
 		/// Implementation of <see cref="IPropertySelector"/> that includes all
 		/// properties regardless of value.
 		/// </summary>
+		[Serializable]
 		private class AllPropertySelector : IPropertySelector
 		{
-			public bool Include(object propertyValue, String propertyName, IType type)
+			public bool Include(object propertyValue, string propertyName, IType type)
 			{
 				return true;
 			}
@@ -66,6 +81,7 @@ namespace NHibernate.Criterion
 		//    }
 		//}
 
+		[Serializable]
 		private class NotNullOrZeroPropertySelector : IPropertySelector
 		{
 			private static bool IsZero(object value)
@@ -106,19 +122,21 @@ namespace NHibernate.Criterion
 		/// This selector is not present in H2.1. It may be useful if nullable types
 		/// are used for some properties.
 		/// </remarks>
+		[Serializable]
 		private class NotNullOrEmptyStringPropertySelector : IPropertySelector
 		{
 			public bool Include(object propertyValue, String propertyName, IType type)
 			{
-				if (propertyValue != null)
-				{
-					return propertyValue.ToString().Length > 0;
-				}
-				else
-				{
-					return false;
-				}
+				if (propertyValue == null) return false;
+				return propertyValue.ToString().Length > 0;
 			}
+		}
+
+		/// <summary> Set escape character for "like" clause</summary>
+		public virtual Example SetEscapeCharacter(char? escapeCharacter)
+		{
+			this.escapeCharacter = escapeCharacter;
+			return this;
 		}
 
 		/// <summary>
@@ -214,9 +232,8 @@ namespace NHibernate.Criterion
 		public static Example Create(object entity)
 		{
 			if (entity == null)
-			{
 				throw new ArgumentNullException("entity", "null example");
-			}
+
 			return new Example(entity, NotNullOrEmptyString);
 		}
 
@@ -234,7 +251,7 @@ namespace NHibernate.Criterion
 
 		public override String ToString()
 		{
-			return _entity.ToString();
+			return "example (" + _entity + ')';
 		}
 
 		/// <summary>
@@ -340,6 +357,7 @@ namespace NHibernate.Criterion
 
 		private EntityMode GetEntityMode(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
+			// TODO H3 EntityMode
 			//IEntityPersister meta = criteriaQuery.Factory.GetEntityPersister(criteriaQuery.GetEntityName(criteria));
 			//EntityMode result = meta.GuessEntityMode(_entity);
 			//if (result == null)
@@ -431,7 +449,7 @@ namespace NHibernate.Criterion
 			{
 				bool isString = propertyValue is String;
 				crit = (_isLikeEnabled && isString) ?
-				       (ICriterion) new LikeExpression(propertyName, propertyValue.ToString(), null, _isIgnoreCaseEnabled) :
+				       (ICriterion) new LikeExpression(propertyName, propertyValue.ToString(), escapeCharacter, _isIgnoreCaseEnabled) :
 							 new SimpleExpression(propertyName, propertyValue, " = ", _isIgnoreCaseEnabled && isString);
 			}
 			else
