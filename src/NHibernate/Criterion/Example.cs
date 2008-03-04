@@ -1,13 +1,12 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Iesi.Collections;
 using NHibernate.Engine;
-using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Collections.Generic;
 
 namespace NHibernate.Criterion
 {
@@ -432,8 +431,8 @@ namespace NHibernate.Criterion
 			{
 				bool isString = propertyValue is String;
 				crit = (_isLikeEnabled && isString) ?
-				       (ICriterion) new LikeExpression(propertyName, propertyValue, _isIgnoreCaseEnabled) :
-				       new EqExpression(propertyName, propertyValue, _isIgnoreCaseEnabled && isString);
+				       (ICriterion) new LikeExpression(propertyName, propertyValue.ToString(), null, _isIgnoreCaseEnabled) :
+							 new SimpleExpression(propertyName, propertyValue, " = ", _isIgnoreCaseEnabled && isString);
 			}
 			else
 			{

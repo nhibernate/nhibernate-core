@@ -11,8 +11,8 @@ namespace NHibernate.Test.ExpressionTest
 		[Test]
 		public void CanUseAndOperatorForExpressions()
 		{
-			AbstractCriterion lhs = new EqExpression("foo", "bar");
-			AbstractCriterion rhs = new GtExpression("date", DateTime.Today);
+			AbstractCriterion lhs = Expression.Eq("foo", "bar");
+			AbstractCriterion rhs = Expression.Gt("date", DateTime.Today);
 
 			AbstractCriterion and = lhs && rhs;
 
@@ -24,8 +24,8 @@ namespace NHibernate.Test.ExpressionTest
 		[Test]
 		public void CanUseOrOperatorForEpressions()
 		{
-			AbstractCriterion lhs = new EqExpression("foo", "bar");
-			AbstractCriterion rhs = new GtExpression("date", DateTime.Today);
+			AbstractCriterion lhs = Expression.Eq("foo", "bar");
+			AbstractCriterion rhs = Expression.Gt("date", DateTime.Today);
 
 			AbstractCriterion or = lhs || rhs;
 
@@ -37,7 +37,7 @@ namespace NHibernate.Test.ExpressionTest
 		[Test]
 		public void CanUseNotOperatorForExpressions()
 		{
-			AbstractCriterion lhs = new EqExpression("foo", "bar");
+			AbstractCriterion lhs = Expression.Eq("foo", "bar");
 			AbstractCriterion not = !lhs;
 
 			Assert.AreEqual(typeof(NotExpression), not.GetType());

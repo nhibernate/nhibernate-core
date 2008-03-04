@@ -1,4 +1,8 @@
 using System;
+using NHibernate.Engine;
+using NHibernate.SqlCommand;
+using System.Collections.Generic;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -11,29 +15,23 @@ namespace NHibernate.Criterion
 	/// string comparison should not be case sensitive.
 	/// </remarks>
 	[Serializable]
-	public class LikeExpression : SimpleExpression
+	public class LikeExpression : ICriterion
 	{
-		public LikeExpression(IProjection projection, object value) : base(projection, value)
+		private readonly string propertyName;
+		private readonly string value;
+		private char? escapeChar;
+		private readonly bool ignoreCase;
+
+		public LikeExpression(string propertyName, string value, char? escapeChar, bool ignoreCase)
 		{
+			this.propertyName = propertyName;
+			this.value = value;
+			this.escapeChar = escapeChar;
+			this.ignoreCase = ignoreCase;
 		}
 
-		public LikeExpression(string propertyName, object value, bool ignoreCase)
-			: base(propertyName, value, ignoreCase)
-		{
-		}
-
-		public LikeExpression(IProjection projection, string value, MatchMode matchMode)
-			: this(projection, matchMode.ToMatchString(value))
-		{
-		}
-
-		/// <summary>
-		/// Initialize a new instance of the <see cref="LikeExpression" /> class for a named
-		/// Property and its value.
-		/// </summary>
-		/// <param name="propertyName">The name of the Property in the class.</param>
-		/// <param name="value">The value for the Property.</param>
-		public LikeExpression(string propertyName, object value) : base(propertyName, value)
+		public LikeExpression(string propertyName, string value)
+			: this(propertyName, value, null, false)
 		{
 		}
 
@@ -42,13 +40,40 @@ namespace NHibernate.Criterion
 		{
 		}
 
-		/// <summary>
-		/// Get the Sql operator to use for the <see cref="LikeExpression"/>.
-		/// </summary>
-		/// <value>The string "<c> like </c>"</value>
-		protected override string Op
+		public LikeExpression(string propertyName, string value, MatchMode matchMode, char? escapeChar, bool ignoreCase)
+			: this(propertyName, matchMode.ToMatchString(value), escapeChar, ignoreCase)
 		{
-			get { return " like "; }
 		}
+
+		#region ICriterion Members
+
+		public SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		{
+			string[] columns = criteriaQuery.GetColumnsUsingProjection(criteria, propertyName);
+			if (columns.Length != 1)
+				throw new HibernateException("Like may only be used with single-column properties");
+
+			SqlStringBuilder lhs = new SqlStringBuilder(6);
+
+			if(ignoreCase)
+			{
+				Dialect.Dialect dialect = criteriaQuery.Factory.Dialect;
+				lhs.Add(dialect.LowercaseFunction).Add(StringHelper.OpenParen).Add(columns[0]).Add(
+					StringHelper.ClosedParen);
+			}
+			else 
+				lhs.Add(columns[0]);
+			lhs.Add(" like ").AddParameter();
+			if (escapeChar.HasValue)
+				lhs.Add(" escape '" + escapeChar + "'");
+			return lhs.ToSqlString();
+		}
+
+		public TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			return new TypedValue[] {criteriaQuery.GetTypedValue(criteria, propertyName, ignoreCase ? value.ToLower() : value)};
+		}
+
+		#endregion
 	}
 }

@@ -11,17 +11,19 @@ namespace NHibernate.Criterion
 	/// to a value.
 	/// </summary>
 	[Serializable]
-	public abstract class SimpleExpression : AbstractCriterion
+	public class SimpleExpression : AbstractCriterion
 	{
 		private readonly IProjection projection;
 		private readonly string propertyName;
 		private readonly object value;
 		private bool ignoreCase;
+		private readonly string op;
 
-		protected SimpleExpression(IProjection projection, object value)
+		protected internal SimpleExpression(IProjection projection, object value, string op)
 		{
 			this.projection = projection;
 			this.value = value;
+			this.op = op;
 		}
 
 		/// <summary>
@@ -30,16 +32,17 @@ namespace NHibernate.Criterion
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="value">The value for the Property.</param>
-		public SimpleExpression(string propertyName, object value)
+		/// <param name="op">The SQL operation.</param>
+		public SimpleExpression(string propertyName, object value, string op)
 		{
 			this.propertyName = propertyName;
 			this.value = value;
+			this.op = op;
 		}
 
-		public SimpleExpression(string propertyName, object value, bool ignoreCase)
+		public SimpleExpression(string propertyName, object value, string op, bool ignoreCase)
+			: this(propertyName, value, op)
 		{
-			this.propertyName = propertyName;
-			this.value = value;
 			this.ignoreCase = ignoreCase;
 		}
 
@@ -134,6 +137,9 @@ namespace NHibernate.Criterion
 		/// Get the Sql operator to use for the specific 
 		/// subclass of <see cref="SimpleExpression"/>.
 		/// </summary>
-		protected abstract string Op { get; }
+		protected virtual string Op
+		{
+			get { return op; }
+		}
 	}
 }
