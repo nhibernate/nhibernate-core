@@ -310,6 +310,8 @@
     <Compile Include="NHSpecificTest\NH1230\FooAssigned.cs" />
     <Compile Include="NHSpecificTest\NH1230\FooIdentity.cs" />
     <Compile Include="NHSpecificTest\NH1230\PreSaveDoVeto.cs" />
+    <Compile Include="NHSpecificTest\NH1250\Model.cs" />
+    <Compile Include="NHSpecificTest\NH1250\PolymorphicJoinFetchFixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
@@ -1154,6 +1156,9 @@
   <ItemGroup>
     <EmbeddedResource Include="ExceptionsTest\Group.hbm.xml" />
     <EmbeddedResource Include="ExceptionsTest\User.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1250\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
