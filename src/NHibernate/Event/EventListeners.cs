@@ -36,7 +36,7 @@ namespace NHibernate.Event
 			eventInterfaceFromType[ListenerType.PreUpdate] = typeof(IPreUpdateEventListener);
 			eventInterfaceFromType[ListenerType.PreDelete] = typeof(IPreDeleteEventListener);
 			eventInterfaceFromType[ListenerType.PreInsert] = typeof(IPreInsertEventListener);
-			eventInterfaceFromType[ListenerType.PreLoad] = typeof(IPostLoadEventListener);
+			eventInterfaceFromType[ListenerType.PostLoad] = typeof(IPostLoadEventListener);
 			eventInterfaceFromType[ListenerType.PostUpdate] = typeof(IPostUpdateEventListener);
 			eventInterfaceFromType[ListenerType.PostDelete] = typeof(IPostDeleteEventListener);
 			eventInterfaceFromType[ListenerType.PostInsert] = typeof(IPostInsertEventListener);
