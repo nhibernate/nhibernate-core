@@ -10,7 +10,7 @@ namespace NHibernate.Criterion
 	/// An identifier constraint
 	/// </summary>
 	[Serializable]
-	public class IdentifierEqExpression : ICriterion
+	public class IdentifierEqExpression : AbstractCriterion
 	{
 		private readonly object value;
 
@@ -27,7 +27,7 @@ namespace NHibernate.Criterion
 
 		#region ICriterion Members
 
-		public SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			//Implementation changed from H3.2 to use SqlString
 			string[] columns = criteriaQuery.GetIdentifierColumns(criteria);
@@ -70,11 +70,16 @@ namespace NHibernate.Criterion
 			}
 		}
 
-		public TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			return new TypedValue[] {criteriaQuery.GetTypedIdentifierValue(criteria, value)};
 		}
 
 		#endregion
+
+		public override string ToString()
+		{
+			return (projection != null ? projection.ToString() : "ID") + " == " + value;
+		}
 	}
 }

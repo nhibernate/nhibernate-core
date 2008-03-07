@@ -23,7 +23,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns>ICriterion</returns>
-		public static ICriterion IdEq(object value)
+		public static AbstractCriterion IdEq(object value)
 		{
 			return new IdentifierEqExpression(value);
 		}
@@ -33,7 +33,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		/// <param name="projection">The projection.</param>
 		/// <returns>ICriterion</returns>
-		public static ICriterion IdEq(IProjection projection)
+		public static AbstractCriterion IdEq(IProjection projection)
 		{
 			return new IdentifierEqExpression(projection);
 		}
@@ -69,7 +69,7 @@ namespace NHibernate.Criterion
 			return new SimpleExpression(propertyName, value, " like ");
 		}
 
-		public static ICriterion Like(string propertyName, string value, MatchMode matchMode, char? escapeChar)
+		public static AbstractCriterion Like(string propertyName, string value, MatchMode matchMode, char? escapeChar)
 		{
 			return new LikeExpression(propertyName, value, escapeChar, false);
 		}
@@ -102,12 +102,12 @@ namespace NHibernate.Criterion
 			return new SimpleExpression(propertyName, matchMode.ToMatchString(value), " like ");
 		}
 
-		public static ICriterion InsensitiveLike(string propertyName, string value, MatchMode matchMode)
+		public static AbstractCriterion InsensitiveLike(string propertyName, string value, MatchMode matchMode)
 		{
 			return new InsensitiveLikeExpression(propertyName, value, matchMode);
 		}
 
-		public static ICriterion InsensitiveLike(IProjection projection, string value, MatchMode matchMode)
+		public static AbstractCriterion InsensitiveLike(IProjection projection, string value, MatchMode matchMode)
 		{
 			return new InsensitiveLikeExpression(projection, value, matchMode);
 		}
@@ -118,7 +118,7 @@ namespace NHibernate.Criterion
 		/// <param name="propertyName">The name of the Property in the class.</param>
 		/// <param name="value">The value for the Property.</param>
 		/// <returns>An <see cref="InsensitiveLikeExpression" />.</returns>
-		public static ICriterion InsensitiveLike(string propertyName, object value)
+		public static AbstractCriterion InsensitiveLike(string propertyName, object value)
 		{
 			return new InsensitiveLikeExpression(propertyName, value);
 		}
@@ -131,7 +131,7 @@ namespace NHibernate.Criterion
 		/// <returns>
 		/// An <see cref="InsensitiveLikeExpression"/>.
 		/// </returns>
-		public static ICriterion InsensitiveLike(IProjection projection, object value)
+		public static AbstractCriterion InsensitiveLike(IProjection projection, object value)
 		{
 			return new InsensitiveLikeExpression(projection, value);
 		}
