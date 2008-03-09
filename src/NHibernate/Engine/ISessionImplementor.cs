@@ -257,6 +257,8 @@ namespace NHibernate.Engine
 
 		FlushMode FlushMode { get; set; }
 
+		string FetchProfile { get;set;}
+
 		/// <summary> The best guess entity name for an entity not in an association</summary>
 		string BestGuessEntityName(object entity);
 

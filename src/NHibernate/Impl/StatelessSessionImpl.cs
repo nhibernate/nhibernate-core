@@ -459,6 +459,12 @@ namespace NHibernate.Impl
 			get { return NHibernate.EntityMode.Poco; }
 		}
 
+		public override string FetchProfile
+		{
+			get { return null; }
+			set { }
+		}
+
 		/// <summary> Close the stateless session and release the ADO.NET connection.</summary>
 		public void Close()
 		{

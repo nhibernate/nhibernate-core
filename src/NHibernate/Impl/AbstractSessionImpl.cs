@@ -104,6 +104,7 @@ namespace NHibernate.Impl
 		public abstract bool IsOpen { get; }
 		public abstract bool IsConnected { get; }
 		public abstract FlushMode FlushMode { get; set; }
+		public abstract string FetchProfile { get; set; }
 		public abstract string BestGuessEntityName(object entity);
 		public abstract string GuessEntityName(object entity);
 		public abstract IDbConnection Connection { get; }

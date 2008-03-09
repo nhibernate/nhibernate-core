@@ -1391,6 +1391,8 @@ namespace NHibernate.Impl
 		/// </summary>
 		private bool _isAlreadyDisposed;
 
+		private string fetchProfile;
+
 		/// <summary>
 		/// Finalizer that ensures the object is correctly disposed of.
 		/// </summary>
@@ -2006,6 +2008,16 @@ namespace NHibernate.Impl
 		public override EntityMode EntityMode
 		{
 			get { return entityMode; }
+		}
+
+		public override string FetchProfile
+		{
+			get { return fetchProfile; }
+			set
+			{
+				ErrorIfClosed();
+				fetchProfile = value;
+			}
 		}
 
 		public void SetReadOnly(object entity, bool readOnly)
