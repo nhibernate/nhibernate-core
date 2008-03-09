@@ -566,7 +566,7 @@ namespace NHibernate.Persister.Entity
 					return (bool) result;
 				}
 			}
-			return entityMetamodel.IdentifierProperty.UnsavedValue.IsUnsaved(id);
+			return entityMetamodel.IdentifierProperty.UnsavedValue.IsUnsaved(id).Value;
 		}
 
 		/// <summary></summary>

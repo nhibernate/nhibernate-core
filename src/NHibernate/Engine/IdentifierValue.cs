@@ -32,7 +32,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Does the given identifier belong to a new instance
 		/// </summary>
-		public virtual bool IsUnsaved(object id)
+		public virtual bool? IsUnsaved(object id)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -49,11 +49,11 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Always assume the transient instance is newly instantiated
 		/// </summary>
-		public static IdentifierValue SaveAny = new SaveAnyClass();
+		public static readonly IdentifierValue SaveAny = new SaveAnyClass();
 
 		private class SaveAnyClass : IdentifierValue
 		{
-			public override bool IsUnsaved(object id)
+			public override bool? IsUnsaved(object id)
 			{
 				log.Debug("unsaved-value strategy ANY");
 				return true;
@@ -68,11 +68,11 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Never assume that transient instance is newly instantiated
 		/// </summary>
-		public static IdentifierValue SaveNone = new SaveNoneClass();
+		public static readonly IdentifierValue SaveNone = new SaveNoneClass();
 
 		private class SaveNoneClass : IdentifierValue
 		{
-			public override bool IsUnsaved(object id)
+			public override bool? IsUnsaved(object id)
 			{
 				log.Debug("unsaved-value strategy NONE");
 				return false;
@@ -88,16 +88,32 @@ namespace NHibernate.Engine
 		/// Assume the transient instance is newly instantiated if the identifier
 		/// is null.
 		/// </summary>
-		public static IdentifierValue SaveNull = new SaveNullClass();
+		public static readonly IdentifierValue SaveNull = new SaveNullClass();
 
 		private class SaveNullClass : IdentifierValue
 		{
-			public override bool IsUnsaved(object id)
+			public override bool? IsUnsaved(object id)
 			{
 				log.Debug("unsaved-value strategy NULL");
 				return id == null;
 			}
 
+			public override object GetDefaultValue(object currentValue)
+			{
+				return null;
+			}
+		}
+
+		/// <summary> Assume nothing.</summary>
+		public static readonly IdentifierValue Undefined = new UndefinedClass();
+
+		public class UndefinedClass : IdentifierValue
+		{
+			public override bool? IsUnsaved(object id)
+			{
+				log.Debug("id unsaved-value strategy UNDEFINED");
+				return null;
+			}
 			public override object GetDefaultValue(object currentValue)
 			{
 				return null;
