@@ -34,7 +34,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Does the given identifier belong to a new instance
 		/// </summary>
-		public virtual object IsUnsaved(object version)
+		public virtual bool? IsUnsaved(object version)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -56,7 +56,7 @@ namespace NHibernate.Engine
 
 		private class VersionSaveNullClass : VersionValue
 		{
-			public override object IsUnsaved(object version)
+			public override bool? IsUnsaved(object version)
 			{
 				log.Debug("version unsaved-value strategy NULL");
 				return version == null;
@@ -76,18 +76,13 @@ namespace NHibernate.Engine
 
 		private class VersionUndefinedClass : VersionValue
 		{
-			public override object IsUnsaved(object version)
+			public override bool? IsUnsaved(object version)
 			{
 				log.Debug("version unsaved-value strategy UNDEFINED");
-				//return version == null ? true : null;
 				if (version == null)
-				{
 					return true;
-				}
 				else
-				{
 					return null;
-				}
 			}
 
 			public override object GetDefaultValue(object currentValue)
@@ -104,7 +99,7 @@ namespace NHibernate.Engine
 
 		private class VersionNegativeClass : VersionValue
 		{
-			public override object IsUnsaved(object version)
+			public override bool? IsUnsaved(object version)
 			{
 				log.Debug("version unsaved-value strategy NEGATIVE");
 				if (version is short || version is int || version is long)
