@@ -16,6 +16,7 @@ namespace NHibernate.SqlCommand
 		private readonly IList<string> columnNames = new List<string>();
 		private readonly IDictionary<string, string> aliases = new Dictionary<string, string>(); //key=column Name, value=column Alias
 		private LockMode lockMode = LockMode.Read;
+		private string comment;
 
 		private readonly List<SqlString> whereStrings = new List<SqlString>();
 
@@ -172,6 +173,12 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
+		public virtual SqlSimpleSelectBuilder SetComment(System.String comment)
+		{
+			this.comment = comment;
+			return this;
+		}
+
 		#region ISqlStringBuilder Members
 
 		/// <summary></summary>
@@ -180,9 +187,12 @@ namespace NHibernate.SqlCommand
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
+			if (comment != null)
+			{
+				sqlBuilder.Add("/* " + comment + " */ ");
+			}
+
 			bool commaNeeded = false;
-
-
 			sqlBuilder.Add("SELECT ");
 
 			for (int i = 0; i < columnNames.Count; i++)
