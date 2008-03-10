@@ -261,9 +261,19 @@ namespace NHibernate
 		/// Persist all reachable transient objects, reusing the current identifier 
 		/// values. Note that this will not trigger the Interceptor of the Session.
 		/// </summary>
-		/// <param name="obj"></param>
+		/// <param name="obj">a detached instance of a persistent class</param>
 		/// <param name="replicationMode"></param>
 		void Replicate(object obj, ReplicationMode replicationMode);
+
+		/// <summary> 
+		/// Persist the state of the given detached instance, reusing the current
+		/// identifier value.  This operation cascades to associated instances if
+		/// the association is mapped with <tt>cascade="replicate"</tt>. 
+		/// </summary>
+		/// <param name="entityName"></param>
+		/// <param name="obj">a detached instance of a persistent class </param>
+		/// <param name="replicationMode"></param>
+		void Replicate(string entityName, object obj, ReplicationMode replicationMode);
 
 		/// <summary>
 		/// Persist the given transient instance, first assigning a generated identifier.
@@ -284,6 +294,20 @@ namespace NHibernate
 		void Save(object obj, object id);
 
 		/// <summary>
+		/// Persist the given transient instance, first assigning a generated identifier. (Or
+		/// using the current value of the identifier property if the <tt>assigned</tt>
+		/// generator is used.)
+		/// </summary>
+		/// <param name="entityName">The Entity name.</param>
+		/// <param name="obj">a transient instance of a persistent class </param>
+		/// <returns> the generated identifier </returns>
+		/// <remarks>
+		/// This operation cascades to associated instances if the
+		/// association is mapped with <tt>cascade="save-update"</tt>. 
+		/// </remarks>
+		object Save(string entityName, object obj);
+
+		/// <summary>
 		/// Either <c>Save()</c> or <c>Update()</c> the given instance, depending upon the value of
 		/// its identifier property.
 		/// </summary>
@@ -293,6 +317,21 @@ namespace NHibernate
 		/// </remarks>
 		/// <param name="obj">A transient instance containing new or updated state</param>
 		void SaveOrUpdate(object obj);
+
+		/// <summary> 
+		/// Either <see cref="Save(String,Object)"/> or <see cref="Update(String,Object)"/>
+		/// the given instance, depending upon resolution of the unsaved-value checks
+		/// (see the manual for discussion of unsaved-value checking).
+		/// </summary>
+		/// <param name="entityName">The name of the entity </param>
+		/// <param name="obj">a transient or detached instance containing new or updated state </param>
+		/// <seealso cref="ISession.Save(String,Object)"/>
+		/// <seealso cref="ISession.Update(String,Object)"/>
+		/// <remarks>
+		/// This operation cascades to associated instances if the association is mapped
+		/// with <tt>cascade="save-update"</tt>. 
+		/// </remarks>
+		void SaveOrUpdate(string entityName, object obj);
 
 		/// <summary>
 		/// Update the persistent instance with the identifier of the given transient instance.
@@ -314,6 +353,67 @@ namespace NHibernate
 		/// <param name="obj">A transient instance containing updated state</param>
 		/// <param name="id">Identifier of persistent instance</param>
 		void Update(object obj, object id);
+
+		/// <summary> 
+		/// Update the persistent instance with the identifier of the given detached
+		/// instance. 
+		/// </summary>
+		/// <param name="entityName">The Entity name.</param>
+		/// <param name="obj">a detached instance containing updated state </param>
+		/// <remarks>
+		/// If there is a persistent instance with the same identifier,
+		/// an exception is thrown. This operation cascades to associated instances
+		/// if the association is mapped with <tt>cascade="save-update"</tt>. 
+		/// </remarks>
+		void Update(string entityName, object obj);
+
+		/// <summary> 
+		/// Copy the state of the given object onto the persistent object with the same
+		/// identifier. If there is no persistent instance currently associated with
+		/// the session, it will be loaded. Return the persistent instance. If the
+		/// given instance is unsaved, save a copy of and return it as a newly persistent
+		/// instance. The given instance does not become associated with the session.
+		/// This operation cascades to associated instances if the association is mapped
+		/// with <tt>cascade="merge"</tt>.<br>
+		/// <br>
+		/// The semantics of this method are defined by JSR-220. 
+		/// </summary>
+		/// <param name="obj">a detached instance with state to be copied </param>
+		/// <returns> an updated persistent instance </returns>
+		object Merge(object obj);
+
+		/// <summary> 
+		/// Copy the state of the given object onto the persistent object with the same
+		/// identifier. If there is no persistent instance currently associated with
+		/// the session, it will be loaded. Return the persistent instance. If the
+		/// given instance is unsaved, save a copy of and return it as a newly persistent
+		/// instance. The given instance does not become associated with the session.
+		/// This operation cascades to associated instances if the association is mapped
+		/// with <tt>cascade="merge"</tt>.<br>
+		/// <br>
+		/// The semantics of this method are defined by JSR-220. 
+		/// </summary>
+		/// <param name="obj">a detached instance with state to be copied </param>
+		/// <returns> an updated persistent instance </returns>
+		object Merge(string entityName, object obj);
+
+		/// <summary> 
+		/// Make a transient instance persistent. This operation cascades to associated
+		/// instances if the association is mapped with <tt>cascade="persist"</tt>.<br>
+		/// <br>
+		/// The semantics of this method are defined by JSR-220. 
+		/// </summary>
+		/// <param name="obj">a transient instance to be made persistent </param>
+		void Persist(object obj);
+
+		/// <summary> 
+		/// Make a transient instance persistent. This operation cascades to associated
+		/// instances if the association is mapped with <tt>cascade="persist"</tt>.<br>
+		/// <br>
+		/// The semantics of this method are defined by JSR-220. 
+		/// </summary>
+		/// <param name="obj">a transient instance to be made persistent </param>
+		void Persist(string entityName, object obj);
 
 		/// <summary>
 		/// Copy the state of the given object onto the persistent object with the same
@@ -522,6 +622,20 @@ namespace NHibernate
 		/// <param name="lockMode">The lock level</param>
 		void Lock(object obj, LockMode lockMode);
 
+		/// <summary> 
+		/// Obtain the specified lock level upon the given object. 
+		/// </summary>
+		/// <param name="entityName">The Entity name.</param>
+		/// <param name="obj">a persistent or transient instance </param>
+		/// <param name="lockMode">the lock level </param>
+		/// <remarks>
+		/// This may be used to perform a version check (<see cref="LockMode.Read"/>), to upgrade to a pessimistic
+		/// lock (<see cref="LockMode.Upgrade"/>), or to simply reassociate a transient instance
+		/// with a session (<see cref="LockMode.None"/>). This operation cascades to associated
+		/// instances if the association is mapped with <tt>cascade="lock"</tt>.
+		/// </remarks>
+		void Lock(string entityName, object obj, LockMode lockMode);
+
 		/// <summary>
 		/// Re-read the state of the given instance from the underlying database.
 		/// </summary>
@@ -697,7 +811,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="obj">a persistent entity</param>
 		/// <returns> the entity name </returns>
-		System.String GetEntityName(object obj);
+		string GetEntityName(object obj);
 
 		/// <summary>
 		/// Enable the named filter for this current session.

@@ -219,13 +219,13 @@ namespace NHibernate.Impl
 			ConnectionReleaseMode connectionReleaseMode)
 			: base(factory)
 		{
-			this.rootSession = null;
+			rootSession = null;
 			this.timestamp = timestamp;
 			this.entityMode = entityMode;
 			this.interceptor = interceptor;
-			this.listeners = factory.EventListeners;
-			this.actionQueue = new ActionQueue(this);
-			this.persistenceContext = new StatefulPersistenceContext(this);
+			listeners = factory.EventListeners;
+			actionQueue = new ActionQueue(this);
+			persistenceContext = new StatefulPersistenceContext(this);
 			//this.flushBeforeCompletionEnabled = flushBeforeCompletionEnabled;
 			this.autoCloseSessionEnabled = autoCloseSessionEnabled;
 			//this.connectionReleaseMode = connectionReleaseMode;
@@ -240,16 +240,16 @@ namespace NHibernate.Impl
 		private SessionImpl(SessionImpl parent, EntityMode entityMode)
 			:base (parent.factory)
 		{
-			this.rootSession = parent;
-			this.timestamp = parent.timestamp;
-			this.connectionManager = parent.connectionManager; //this.jdbcContext = parent.jdbcContext;
-			this.interceptor = parent.interceptor;
-			this.listeners = parent.listeners;
-			this.actionQueue = new ActionQueue(this);
+			rootSession = parent;
+			timestamp = parent.timestamp;
+			connectionManager = parent.connectionManager; //this.jdbcContext = parent.jdbcContext;
+			interceptor = parent.interceptor;
+			listeners = parent.listeners;
+			actionQueue = new ActionQueue(this);
 			this.entityMode = entityMode;
-			this.persistenceContext = new StatefulPersistenceContext(this);
+			persistenceContext = new StatefulPersistenceContext(this);
 			//this.flushBeforeCompletionEnabled = false;
-			this.autoCloseSessionEnabled = false;
+			autoCloseSessionEnabled = false;
 			//this.connectionReleaseMode = null;
 
 			if (factory.Statistics.IsStatisticsEnabled)
@@ -310,11 +310,8 @@ namespace NHibernate.Impl
 						}
 					}
 				}
-				catch (Exception)
-				{
-					
-				}
-				
+				catch {}
+
 				if (rootSession == null)
 					return connectionManager.Close();
 				else
@@ -410,6 +407,11 @@ namespace NHibernate.Impl
 			return FireSave(new SaveOrUpdateEvent(null, obj, this));
 		}
 
+		public object Save(string entityName, object obj)
+		{
+			return FireSave(new SaveOrUpdateEvent(entityName, obj, this));
+		}
+
 		/// <summary>
 		/// Save a transient object with a manually assigned ID
 		/// </summary>
@@ -440,9 +442,19 @@ namespace NHibernate.Impl
 			FireUpdate(new SaveOrUpdateEvent(null, obj, this));
 		}
 
+		public void Update(string entityName, object obj)
+		{
+			FireUpdate(new SaveOrUpdateEvent(entityName, obj, this));
+		}
+
 		public void SaveOrUpdate(object obj)
 		{
 			FireSaveOrUpdate(new SaveOrUpdateEvent(null, obj, this));
+		}
+
+		public void SaveOrUpdate(string entityName, object obj)
+		{
+			FireSaveOrUpdate(new SaveOrUpdateEvent(entityName, obj, this));
 		}
 
 		public void Update(object obj, object id)
@@ -627,6 +639,11 @@ namespace NHibernate.Impl
 			FireLock(new LockEvent(obj, lockMode, this));
 		}
 
+		public void Lock(string entityName, object obj, LockMode lockMode)
+		{
+			FireLock(new LockEvent(entityName, obj, lockMode, this));
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -790,6 +807,36 @@ namespace NHibernate.Impl
 		}
 
 		#endregion
+
+		public object Merge(string entityName, object obj)
+		{
+			return FireMerge(new MergeEvent(entityName, obj, this));
+		}
+
+		public object Merge(object obj)
+		{
+			return Merge(null, obj);
+		}
+
+		public void Persist(string entityName, object obj)
+		{
+			FirePersist(new PersistEvent(entityName, obj, this));
+		}
+
+		public void Persist(object obj)
+		{
+			Persist(null, obj);
+		}
+
+		public void PersistOnFlush(string entityName, object obj)
+		{
+			FirePersistOnFlush(new PersistEvent(entityName, obj, this));
+		}
+
+		public void PersistOnFlush(object obj)
+		{
+			Persist(null, obj);
+		}
 
 		/// <summary></summary>
 		public override FlushMode FlushMode
@@ -1747,6 +1794,11 @@ namespace NHibernate.Impl
 			FireReplicate(new ReplicateEvent(obj, replicationMode, this));
 		}
 
+		public void Replicate(string entityName, object obj, ReplicationMode replicationMode)
+		{
+			FireReplicate(new ReplicateEvent(entityName, obj, replicationMode, this));
+		}
+
 		public ISessionFactory SessionFactory
 		{
 			get { return factory; }
@@ -1817,12 +1869,14 @@ namespace NHibernate.Impl
 		{
 			ErrorIfClosed();
 			string[] parsed = ParseFilterParameterName(filterParameterName);
-			IFilter filter;
-			if (!enabledFilters.TryGetValue(parsed[0], out filter))
+			IFilter ifilter;
+			enabledFilters.TryGetValue(parsed[0], out ifilter);
+			FilterImpl filter = ifilter as FilterImpl;
+			if (filter == null)
 			{
 				throw new ArgumentException("Filter [" + parsed[0] + "] currently not enabled");
 			}
-			return (filter as FilterImpl).GetParameter(parsed[1]);
+			return filter.GetParameter(parsed[1]);
 		}
 
 		public override IType GetFilterParameterType(string filterParameterName)

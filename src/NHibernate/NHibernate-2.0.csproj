@@ -594,6 +594,7 @@
     <Compile Include="Engine\ActionQueue.cs" />
     <Compile Include="Engine\AssociationKey.cs" />
     <Compile Include="Engine\BatchFetchQueue.cs" />
+    <Compile Include="Engine\CascadingAction.cs" />
     <Compile Include="Engine\Collections.cs" />
     <Compile Include="Engine\EntityUniqueKey.cs" />
     <Compile Include="Engine\FilterDefinition.cs" />
