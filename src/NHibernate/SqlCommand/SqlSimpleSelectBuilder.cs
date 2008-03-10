@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -92,6 +91,16 @@ namespace NHibernate.SqlCommand
 			{
 				if (columnNames[i] != null)
 					AddColumn(columnNames[i], aliases[i]);
+			}
+			return this;
+		}
+
+		public SqlSimpleSelectBuilder AddColumns(string[] columns, string[] aliases, bool[] ignore)
+		{
+			for (int i = 0; i < ignore.Length; i++)
+			{
+				if (!ignore[i] && columns[i] != null)
+					AddColumn(columns[i], aliases[i]);
 			}
 			return this;
 		}
