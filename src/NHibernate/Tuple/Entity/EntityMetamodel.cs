@@ -48,7 +48,7 @@ namespace NHibernate.Tuple.Entity
 		private readonly ValueInclusion[] updateInclusions;
 		private readonly bool[] propertyNullability;
 		private readonly bool[] propertyVersionability;
-		private readonly Cascades.CascadeStyle[] cascadeStyles;
+		private readonly CascadeStyle[] cascadeStyles;
 
 		#endregion
 
@@ -118,7 +118,7 @@ namespace NHibernate.Tuple.Entity
 			propertyNullability = new bool[propertySpan];
 			propertyVersionability = new bool[propertySpan];
 			propertyLaziness = new bool[propertySpan];
-			cascadeStyles = new Cascades.CascadeStyle[propertySpan];
+			cascadeStyles = new CascadeStyle[propertySpan];
 
 			#endregion
 
@@ -181,7 +181,7 @@ namespace NHibernate.Tuple.Entity
 					hasLazy = true;
 				}
 
-				if (properties[i].CascadeStyle != Cascades.CascadeStyle.StyleNone)
+				if (properties[i].CascadeStyle != CascadeStyle.None)
 				{
 					foundCascade = true;
 				}
@@ -614,7 +614,7 @@ namespace NHibernate.Tuple.Entity
 			get { return propertyVersionability; }
 		}
 
-		public Cascades.CascadeStyle[] CascadeStyles
+		public CascadeStyle[] CascadeStyles
 		{
 			get { return cascadeStyles; }
 		}

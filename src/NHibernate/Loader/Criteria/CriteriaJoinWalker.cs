@@ -59,7 +59,7 @@ namespace NHibernate.Loader.Criteria
 		}
 
 		protected override JoinType GetJoinType(IAssociationType type, FetchMode config, string path,
-			string lhsTable, string[] lhsColumns, bool nullable, int currentDepth, Cascades.CascadeStyle cascadeStyle)
+			string lhsTable, string[] lhsColumns, bool nullable, int currentDepth, CascadeStyle cascadeStyle)
 		{
 			if (translator.IsJoin(path))
 			{

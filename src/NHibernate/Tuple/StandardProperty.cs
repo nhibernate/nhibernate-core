@@ -20,7 +20,7 @@ namespace NHibernate.Tuple
 		private readonly bool nullable;
 		private readonly bool dirtyCheckable;
 		private readonly bool versionable;
-		private readonly Cascades.CascadeStyle cascadeStyle;
+		private readonly CascadeStyle cascadeStyle;
 		private readonly FetchMode? fetchMode;
 
 		/// <summary>
@@ -53,7 +53,7 @@ namespace NHibernate.Tuple
 			bool nullable,
 			bool checkable,
 			bool versionable,
-			Cascades.CascadeStyle cascadeStyle,
+			CascadeStyle cascadeStyle,
 			FetchMode? fetchMode)
 			: base(name, node, type)
 		{
@@ -114,7 +114,7 @@ namespace NHibernate.Tuple
 			get { return versionable; }
 		}
 
-		public Cascades.CascadeStyle CascadeStyle
+		public CascadeStyle CascadeStyle
 		{
 			get { return cascadeStyle; }
 		}

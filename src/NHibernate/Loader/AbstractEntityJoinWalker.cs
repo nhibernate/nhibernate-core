@@ -83,7 +83,7 @@ namespace NHibernate.Loader
 		/// The superclass deliberately excludes collections
 		/// </summary>
 		protected override bool IsJoinedFetchEnabled(IAssociationType type, FetchMode config,
-		                                             Cascades.CascadeStyle cascadeStyle)
+		                                             CascadeStyle cascadeStyle)
 		{
 			return IsJoinedFetchEnabledInMapping(config, type);
 		}

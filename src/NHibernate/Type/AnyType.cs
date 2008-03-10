@@ -216,9 +216,9 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public Cascades.CascadeStyle GetCascadeStyle(int i)
+		public CascadeStyle GetCascadeStyle(int i)
 		{
-			return Cascades.CascadeStyle.StyleNone;
+			return CascadeStyle.None;
 		}
 
 		public FetchMode GetFetchMode(int i)

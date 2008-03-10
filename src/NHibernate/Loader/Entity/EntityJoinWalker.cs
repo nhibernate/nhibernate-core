@@ -32,7 +32,7 @@ namespace NHibernate.Loader.Entity
 		/// upgrade lock mode
 		/// </summary>
 		protected override bool IsJoinedFetchEnabled(IAssociationType type, FetchMode config,
-		                                             Cascades.CascadeStyle cascadeStyle)
+		                                             CascadeStyle cascadeStyle)
 		{
 			return lockMode.GreaterThan(LockMode.Read) ?
 			       false :

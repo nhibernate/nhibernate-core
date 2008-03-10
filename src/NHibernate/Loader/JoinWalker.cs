@@ -353,7 +353,7 @@ namespace NHibernate.Loader
 		/// subclasses.
 		/// </summary>
 		protected virtual JoinType GetJoinType(IAssociationType type, FetchMode config, string path, string lhsTable,
-			string[] lhsColumns, bool nullable, int currentDepth, Cascades.CascadeStyle cascadeStyle)
+			string[] lhsColumns, bool nullable, int currentDepth, CascadeStyle cascadeStyle)
 		{
 			if (!IsJoinedFetchEnabled(type, config, cascadeStyle))
 				return JoinType.None;
@@ -430,7 +430,7 @@ namespace NHibernate.Loader
 		/// of certain association types
 		/// </summary>
 		protected virtual bool IsJoinedFetchEnabled(IAssociationType type, FetchMode config,
-																								Cascades.CascadeStyle cascadeStyle)
+																								CascadeStyle cascadeStyle)
 		{
 			return type.IsEntityType && IsJoinedFetchEnabledInMapping(config, type);
 		}

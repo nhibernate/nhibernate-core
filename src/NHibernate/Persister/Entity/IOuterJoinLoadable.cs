@@ -33,7 +33,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Get the cascade style of this (subclass closure) property
 		/// </summary>
-		Cascades.CascadeStyle GetCascadeStyle(int i);
+		CascadeStyle GetCascadeStyle(int i);
 
 		/// <summary>
 		/// Is this property defined on a subclass of the mapped class?

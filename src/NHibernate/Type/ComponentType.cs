@@ -18,7 +18,7 @@ namespace NHibernate.Type
 		private readonly string[] propertyNames;
 		private readonly bool[] propertyNullability;
 		private readonly int propertySpan;
-		private readonly Cascades.CascadeStyle[] cascade;
+		private readonly CascadeStyle[] cascade;
 		private readonly FetchMode?[] joinedFetch;
 		private readonly bool isKey;
 		protected internal EntityModeToTuplizerMapping tuplizerMapping;
@@ -57,7 +57,7 @@ namespace NHibernate.Type
 			propertyNames = new string[propertySpan];
 			propertyTypes = new IType[propertySpan];
 			propertyNullability = new bool[propertySpan];
-			cascade = new Cascades.CascadeStyle[propertySpan];
+			cascade = new CascadeStyle[propertySpan];
 			joinedFetch = new FetchMode?[propertySpan];
 
 			for (int i = 0; i < propertySpan; i++)
@@ -403,7 +403,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public Cascades.CascadeStyle GetCascadeStyle(int i)
+		public CascadeStyle GetCascadeStyle(int i)
 		{
 			return cascade[i];
 		}

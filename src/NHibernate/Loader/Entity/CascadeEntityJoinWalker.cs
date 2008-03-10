@@ -23,7 +23,7 @@ namespace NHibernate.Loader.Entity
 		}
 
 		protected override bool IsJoinedFetchEnabled(IAssociationType type, FetchMode config,
-		                                             Cascades.CascadeStyle cascadeStyle)
+		                                             CascadeStyle cascadeStyle)
 		{
 			return (type.IsEntityType || type.IsCollectionType) &&
 			       (cascadeStyle == null || cascadeStyle.DoCascade(cascadeAction));

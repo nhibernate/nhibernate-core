@@ -363,7 +363,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Get the cascade styles of the properties (optional operation)
 		/// </summary>
-		Cascades.CascadeStyle[] PropertyCascadeStyles { get; }
+		CascadeStyle[] PropertyCascadeStyles { get; }
 
 		/// <summary>
 		/// Get the identifier type

@@ -150,7 +150,7 @@ namespace NHibernate.DomainModel
 			return null;
 		}
 
-		public Cascades.CascadeStyle[] PropertyCascadeStyles
+		public CascadeStyle[] PropertyCascadeStyles
 		{
 			get { return null; }
 		}

@@ -175,7 +175,7 @@ namespace NHibernate.Test.NHSpecificTest
 			return null;
 		}
 
-		public Cascades.CascadeStyle[] PropertyCascadeStyles
+		public CascadeStyle[] PropertyCascadeStyles
 		{
 			get
 			{

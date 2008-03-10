@@ -105,9 +105,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public virtual Cascades.CascadeStyle GetCascadeStyle(int i)
+		public virtual CascadeStyle GetCascadeStyle(int i)
 		{
-			return Cascades.CascadeStyle.StyleNone;
+			return CascadeStyle.None;
 		}
 
 		public virtual FetchMode GetFetchMode(int i)

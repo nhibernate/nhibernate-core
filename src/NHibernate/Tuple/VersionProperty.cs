@@ -47,7 +47,7 @@ namespace NHibernate.Tuple
 			bool nullable,
 			bool checkable,
 			bool versionable,
-			Cascades.CascadeStyle cascadeStyle,
+			CascadeStyle cascadeStyle,
 			VersionValue unsavedValue)
 			: base(
 				name, node, type, lazy, insertable, updateable, insertGenerated, updateGenerated, nullable, checkable, versionable,

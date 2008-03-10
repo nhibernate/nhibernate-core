@@ -157,7 +157,7 @@ namespace NHibernate.Persister.Entity
 		// temporarily 'protected' instead of 'private readonly'
 		protected bool[] propertyDefinedOnSubclass;
 
-		private readonly Cascades.CascadeStyle[] subclassPropertyCascadeStyleClosure;
+		private readonly CascadeStyle[] subclassPropertyCascadeStyleClosure;
 		private IDictionary loaders = new Hashtable();
 		private SqlType[] idAndVersionSqlTypes;
 		private SqlType[] idSqlTypes;
@@ -236,7 +236,7 @@ namespace NHibernate.Persister.Entity
 				.ToSqlStringFragment(false);
 		}
 
-		public virtual Cascades.CascadeStyle[] PropertyCascadeStyles
+		public virtual CascadeStyle[] PropertyCascadeStyles
 		{
 			get { return entityMetamodel.CascadeStyles; }
 		}
@@ -1039,9 +1039,9 @@ namespace NHibernate.Persister.Entity
 			//subclassPropertyColumnNumberClosure = ArrayHelper.To2DIntArray(propColumnNumbers);
 			//subclassPropertyFormulaNumberClosure = ArrayHelper.To2DIntArray(propFormulaNumbers);
 
-			subclassPropertyCascadeStyleClosure = new Cascades.CascadeStyle[cascades.Count];
+			subclassPropertyCascadeStyleClosure = new CascadeStyle[cascades.Count];
 			int m = 0;
-			foreach (Cascades.CascadeStyle cs in cascades)
+			foreach (CascadeStyle cs in cascades)
 			{
 				subclassPropertyCascadeStyleClosure[m++] = cs;
 			}
@@ -2831,7 +2831,7 @@ namespace NHibernate.Persister.Entity
 			InitLockers();
 		}
 
-		public Cascades.CascadeStyle GetCascadeStyle(int i)
+		public CascadeStyle GetCascadeStyle(int i)
 		{
 			return subclassPropertyCascadeStyleClosure[i];
 		}

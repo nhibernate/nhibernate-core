@@ -81,7 +81,7 @@ namespace NHibernate.Mapping
 			set { propertyValue = value; }
 		}
 
-		public Cascades.CascadeStyle CascadeStyle
+		public CascadeStyle CascadeStyle
 		{
 			get
 			{
@@ -92,39 +92,39 @@ namespace NHibernate.Mapping
 					int length = actype.Subtypes.Length;
 					for (int i = 0; i < length; i++)
 					{
-						if (actype.GetCascadeStyle(i) != Cascades.CascadeStyle.StyleNone)
+						if (actype.GetCascadeStyle(i) != CascadeStyle.None)
 						{
-							return Cascades.CascadeStyle.StyleAll;
+							return CascadeStyle.All;
 						}
 					}
 
-					return Cascades.CascadeStyle.StyleNone;
+					return CascadeStyle.None;
 				}
 				else
 				{
 					if (cascade.Equals("all"))
 					{
-						return Cascades.CascadeStyle.StyleAll;
+						return CascadeStyle.All;
 					}
 					else if (cascade.Equals("all-delete-orphan"))
 					{
-						return Cascades.CascadeStyle.StyleAllDeleteOrphan;
+						return CascadeStyle.AllDeleteOrphan;
 					}
 					else if (cascade.Equals("none"))
 					{
-						return Cascades.CascadeStyle.StyleNone;
+						return CascadeStyle.None;
 					}
 					else if (cascade.Equals("save-update"))
 					{
-						return Cascades.CascadeStyle.StyleSaveUpdate;
+						return CascadeStyle.Update;
 					}
 					else if (cascade.Equals("delete"))
 					{
-						return Cascades.CascadeStyle.StyleOnlyDelete;
+						return CascadeStyle.Delete;
 					}
 					else if (cascade.Equals("delete-orphan"))
 					{
-						return Cascades.CascadeStyle.StyleDeleteOrphan;
+						return CascadeStyle.DeleteOrphan;
 					}
 					else
 					{

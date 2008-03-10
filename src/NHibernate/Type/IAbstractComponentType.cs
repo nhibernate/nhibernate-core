@@ -38,7 +38,7 @@ namespace NHibernate.Type
 
 		object GetPropertyValue(object component, int i, ISessionImplementor session);
 
-		Cascades.CascadeStyle GetCascadeStyle(int i);
+		CascadeStyle GetCascadeStyle(int i);
 
 		FetchMode GetFetchMode(int i);
 
