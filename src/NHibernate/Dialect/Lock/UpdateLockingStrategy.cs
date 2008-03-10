@@ -92,7 +92,7 @@ namespace NHibernate.Dialect.Lock
 					if (affected < 0)
 					{
 						factory.StatisticsImplementor.OptimisticFailure(lockable.EntityName);
-						throw new StaleObjectStateException(lockable.MappedClass, id);
+						throw new StaleObjectStateException(lockable.EntityName, id);
 					}
 				}
 				finally

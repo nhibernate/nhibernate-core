@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using NHibernate.Impl;
 
 namespace NHibernate
 {
@@ -12,27 +13,27 @@ namespace NHibernate
 	[Serializable]
 	public class StaleObjectStateException : StaleStateException
 	{
-		private System.Type persistentType;
-		private object identifier;
+		private readonly string entityName;
+		private readonly object identifier;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StaleObjectStateException"/> class.
 		/// </summary>
-		/// <param name="persistentType">The <see cref="System.Type"/> that NHibernate was trying to update in the database.</param>
+		/// <param name="entityName">The EntityName that NHibernate was trying to update in the database.</param>
 		/// <param name="identifier">The identifier of the object that is stale.</param>
-		public StaleObjectStateException(System.Type persistentType, object identifier)
+		public StaleObjectStateException(string entityName, object identifier)
 			: base("Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect)")
 		{
-			this.persistentType = persistentType;
+			this.entityName = entityName;
 			this.identifier = identifier;
 		}
 
 		/// <summary>
-		/// Gets the <see cref="System.Type"/> that NHibernate was trying to update in the database.
+		/// Gets the EntityName that NHibernate was trying to update in the database.
 		/// </summary>
-		public System.Type PersistentType
+		public string EntityName
 		{
-			get { return persistentType; }
+			get { return entityName; }
 		}
 
 		/// <summary>
@@ -49,7 +50,10 @@ namespace NHibernate
 		/// <value>The error message that explains the reason for this exception.</value>
 		public override string Message
 		{
-			get { return base.Message + " for " + persistentType.FullName + " instance with identifier: " + identifier; }
+			get
+			{
+				return base.Message + ": " + MessageHelper.InfoString(entityName, identifier);
+			}
 		}
 
 		#region ISerializable Members
@@ -67,7 +71,7 @@ namespace NHibernate
 		/// </param>
 		protected StaleObjectStateException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
-			persistentType = info.GetValue("persistentType", typeof(System.Type)) as System.Type;
+			entityName = info.GetValue("entityName", typeof(string)) as string;
 			identifier = info.GetValue("identifier", typeof(object));
 		}
 
@@ -87,7 +91,7 @@ namespace NHibernate
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);
-			info.AddValue("persistentType", persistentType, typeof(System.Type));
+			info.AddValue("entityName", entityName, typeof(string));
 			info.AddValue("identifier", identifier, typeof(object));
 		}
 

@@ -866,7 +866,7 @@ namespace NHibernate.Loader
 						session.Factory.StatisticsImplementor.OptimisticFailure(persister.EntityName);
 					}
 
-					throw new StaleObjectStateException(persister.MappedClass, id);
+					throw new StaleObjectStateException(persister.EntityName, id);
 				}
 			}
 		}

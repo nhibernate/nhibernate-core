@@ -250,7 +250,7 @@ namespace NHibernate.Event.Default
 					{
 						source.Factory.StatisticsImplementor.OptimisticFailure(entityName);
 					}
-					throw new StaleObjectStateException(persister.MappedClass, id);
+					throw new StaleObjectStateException(persister.EntityName, id);
 				}
 
 				// cascade first, so that all unsaved objects get their 

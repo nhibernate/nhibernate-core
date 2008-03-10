@@ -685,7 +685,7 @@ namespace NHibernate.Persister.Entity
 						Factory.StatisticsImplementor.OptimisticFailure(EntityName);
 					}
 
-					throw new StaleObjectStateException(MappedClass, id);
+					throw new StaleObjectStateException(EntityName, id);
 				}
 			}
 			catch (TooManyRowsAffectedException ex)
@@ -1672,7 +1672,7 @@ namespace NHibernate.Persister.Entity
 					rs = session.Batcher.ExecuteReader(st);
 					if (!rs.Read())
 					{
-						throw new StaleObjectStateException(MappedClass, id);
+						throw new StaleObjectStateException(EntityName, id);
 					}
 					for (int i = 0; i < types.Length; i++)
 					{
