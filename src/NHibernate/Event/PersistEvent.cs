@@ -21,8 +21,6 @@ namespace NHibernate.Event
 		public PersistEvent(string entityName, object original, IEventSource source)
 			: this(original, source)
 		{
-			if (string.IsNullOrEmpty(entityName))
-				throw new ArgumentNullException("entityName");
 			this.entityName = entityName;
 		}
 
