@@ -6,7 +6,7 @@ namespace NHibernate.Loader.Entity
 {
 	public class CascadeEntityLoader : AbstractEntityLoader
 	{
-		public CascadeEntityLoader(IOuterJoinLoadable persister, Cascades.CascadingAction action, ISessionFactoryImplementor factory)
+		public CascadeEntityLoader(IOuterJoinLoadable persister, CascadingAction action, ISessionFactoryImplementor factory)
 			: base(persister, persister.IdentifierType, factory, new CollectionHelper.EmptyMapClass<string, IFilter>())
 		{
 			JoinWalker walker = new CascadeEntityJoinWalker(persister, action, factory);

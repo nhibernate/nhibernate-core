@@ -18,9 +18,9 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultMergeEventListener));
 
-		protected internal override Cascades.CascadingAction CascadeAction
+		protected internal override CascadingAction CascadeAction
 		{
-			get { return Cascades.CascadingAction.ActionCopy; }
+			get { return CascadingAction.Merge; }
 		}
 
 		protected internal override bool? AssumedUnsaved

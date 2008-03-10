@@ -17,9 +17,9 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultPersistEventListener));
 
-		protected internal override Cascades.CascadingAction CascadeAction
+		protected internal override CascadingAction CascadeAction
 		{
-			get { return Cascades.CascadingAction.ActionPersist; }
+			get { return CascadingAction.Persist; }
 		}
 
 		protected internal override bool? AssumedUnsaved

@@ -259,7 +259,7 @@ namespace NHibernate.Engine
 			public override bool DeleteOrphans
 			{
 				// orphans should be deleted during save/update
-				get { return false; }
+				get { return true; }
 			}
 			public override bool PerformOnLazyProperty
 			{

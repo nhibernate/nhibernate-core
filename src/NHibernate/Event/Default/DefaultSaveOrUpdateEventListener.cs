@@ -16,9 +16,9 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultSaveOrUpdateEventListener));
 
-		protected internal override Cascades.CascadingAction CascadeAction
+		protected internal override CascadingAction CascadeAction
 		{
-			get { return Cascades.CascadingAction.ActionSaveUpdate; }
+			get { return CascadingAction.SaveUpdate; }
 		}
 
 		public void OnSaveOrUpdate(SaveOrUpdateEvent @event)
@@ -289,7 +289,7 @@ namespace NHibernate.Event.Default
 			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
-				Cascades.Cascade(source, persister, entity, Cascades.CascadingAction.ActionSaveUpdate, CascadePoint.CascadeOnUpdate);
+				Cascades.Cascade(source, persister, entity, CascadingAction.SaveUpdate, CascadePoint.CascadeOnUpdate);
 			}
 			finally
 			{

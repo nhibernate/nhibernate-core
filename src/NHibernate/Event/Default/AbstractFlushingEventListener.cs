@@ -26,9 +26,9 @@ namespace NHibernate.Event.Default
 			get { return null; }
 		}
 
-		protected virtual internal Cascades.CascadingAction CascadingAction
+		protected virtual internal CascadingAction CascadingAction
 		{
-			get { return Cascades.CascadingAction.ActionSaveUpdate; }
+			get { return CascadingAction.SaveUpdate; }
 		}
 
 		/// <summary> 

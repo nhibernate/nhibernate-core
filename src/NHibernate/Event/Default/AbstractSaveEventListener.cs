@@ -34,7 +34,7 @@ namespace NHibernate.Event.Default
 			get { return null; }
 		}
 
-		protected internal abstract Cascades.CascadingAction CascadeAction { get;}
+		protected internal abstract CascadingAction CascadeAction { get;}
 
 		/// <summary> 
 		/// After the save, will te version number be incremented

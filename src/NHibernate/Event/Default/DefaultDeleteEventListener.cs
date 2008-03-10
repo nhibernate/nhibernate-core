@@ -247,8 +247,8 @@ namespace NHibernate.Event.Default
 			try
 			{
 				// cascade-delete to collections BEFORE the collection owner is deleted
-				Cascades.Cascade(session, persister, entity, Cascades.CascadingAction.ActionDelete,
-							 CascadePoint.CascadeAfterInsertBeforeDelete, null);
+				Cascades.Cascade(session, persister, entity, CascadingAction.Delete,
+							 CascadePoint.CascadeAfterInsertBeforeDelete, transientEntities);
 			}
 			finally
 			{
@@ -266,8 +266,8 @@ namespace NHibernate.Event.Default
 			try
 			{
 				// cascade-delete to many-to-one AFTER the parent was deleted
-				Cascades.Cascade(session, persister, entity, Cascades.CascadingAction.ActionDelete,
-								 CascadePoint.CascadeBeforeInsertAfterDelete);
+				Cascades.Cascade(session, persister, entity, CascadingAction.Delete,
+								 CascadePoint.CascadeBeforeInsertAfterDelete, transientEntities);
 			}
 			finally
 			{

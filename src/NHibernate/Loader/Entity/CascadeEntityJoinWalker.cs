@@ -8,9 +8,9 @@ namespace NHibernate.Loader.Entity
 {
 	public class CascadeEntityJoinWalker : AbstractEntityJoinWalker
 	{
-		private readonly Cascades.CascadingAction cascadeAction;
+		private readonly CascadingAction cascadeAction;
 
-		public CascadeEntityJoinWalker(IOuterJoinLoadable persister, Cascades.CascadingAction action,
+		public CascadeEntityJoinWalker(IOuterJoinLoadable persister, CascadingAction action,
 		                               ISessionFactoryImplementor factory)
 			: base(persister, factory, new CollectionHelper.EmptyMapClass<string, IFilter>())
 		{

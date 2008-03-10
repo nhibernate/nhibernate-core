@@ -117,7 +117,7 @@ namespace NHibernate.Event.Default
 			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
-				Cascades.Cascade(source, persister, entity, Cascades.CascadingAction.ActionReplicate, CascadePoint.CascadeOnUpdate,
+				Cascades.Cascade(source, persister, entity, CascadingAction.Replicate, CascadePoint.CascadeOnUpdate,
 				                 replicationMode);
 			}
 			finally
@@ -131,9 +131,9 @@ namespace NHibernate.Event.Default
 			get { return true; }
 		}
 
-		protected internal override Cascades.CascadingAction CascadeAction
+		protected internal override CascadingAction CascadeAction
 		{
-			get { return Cascades.CascadingAction.ActionReplicate; }
+			get { return CascadingAction.Replicate; }
 		}
 
 		protected internal override bool SubstituteValuesIfNecessary(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source)

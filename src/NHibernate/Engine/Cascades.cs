@@ -75,261 +75,6 @@ namespace NHibernate.Engine
 			// should not be initialized	
 		}
 
-		/// <summary>
-		/// A session action that may be cascaded from parent entity to its children
-		/// </summary>
-		public abstract class CascadingAction
-		{
-			/// <summary>
-			/// Cascade the action to the child object
-			/// </summary>
-			public abstract void Cascade(IEventSource eventSource, object child, object anything);
-
-			/// <summary>
-			/// The children to whom we should cascade.
-			/// </summary>
-			public abstract IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection);
-
-			/// <summary>
-			/// Do we need to handle orphan delete for this action?
-			/// </summary>
-			public abstract bool DeleteOrphans();
-
-			/// <summary></summary>
-			public static CascadingAction ActionDelete = new ActionDeleteClass();
-
-			private class ActionDeleteClass : CascadingAction
-			{
-				public override void Cascade(IEventSource eventSource, object child, object anything)
-				{
-					log.Debug("cascading to delete()");
-					if (eventSource.IsSaved(child))
-					{
-						eventSource.Delete(child);
-					}
-				}
-
-				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
-				{
-					return GetAllElementsIterator(collectionType, collection);
-				}
-
-				public override bool DeleteOrphans()
-				{
-					return true;
-				}
-			}
-
-			/// <summary></summary>
-			public static CascadingAction ActionLock = new ActionLockClass();
-
-			private class ActionLockClass : CascadingAction
-			{
-				public override void Cascade(IEventSource eventSource, object child, object anything)
-				{
-					log.Debug("cascading to lock()");
-					eventSource.Lock(child, (LockMode) anything);
-				}
-
-				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
-				{
-					return GetLoadedElementsIterator(collectionType, collection);
-				}
-
-				public override bool DeleteOrphans()
-				{
-					return false;
-				}
-			}
-
-			/// <summary></summary>
-			public static CascadingAction ActionEvict = new ActionEvictClass();
-
-			private class ActionEvictClass : CascadingAction
-			{
-				public override void Cascade(IEventSource eventSource, object child, object anything)
-				{
-					log.Debug("cascading to evict()");
-					eventSource.Evict(child);
-				}
-
-				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
-				{
-					return GetLoadedElementsIterator(collectionType, collection);
-				}
-
-				public override bool DeleteOrphans()
-				{
-					return false;
-				}
-			}
-
-			/// <summary></summary>
-			public static CascadingAction ActionSaveUpdate = new ActionSaveUpdateClass();
-
-			private class ActionSaveUpdateClass : CascadingAction
-			{
-				public override void Cascade(IEventSource eventSource, object child, object anything)
-				{
-					log.Debug("cascading to SaveOrUpdate()");
-					eventSource.SaveOrUpdate(child);
-				}
-
-				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
-				{
-					return GetLoadedElementsIterator(collectionType, collection);
-				}
-
-				public override bool DeleteOrphans()
-				{
-					return true;
-				}
-			}
-
-			/// <summary></summary>
-			public static CascadingAction ActionCopy = new ActionCopyClass();
-
-			private class ActionCopyClass : CascadingAction
-			{
-				public override void Cascade(IEventSource eventSource, object child, object anything)
-				{
-					log.Debug("cascading to Copy()");
-					eventSource.Copy(child, (IDictionary)anything);
-				}
-
-				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
-				{
-					// saves / updates don't cascade to uninitialized collections
-					return GetLoadedElementsIterator(collectionType, collection);
-				}
-
-				public override bool DeleteOrphans()
-				{
-					// orphans should not be deleted during copy???
-					return false;
-				}
-			}
-
-			/// <summary></summary>
-			public static CascadingAction ActionReplicate = new ActionReplicateClass();
-
-			private class ActionReplicateClass : CascadingAction
-			{
-				public override void Cascade(IEventSource eventSource, object child, object anything)
-				{
-					log.Debug("cascading to Replicate()");
-					eventSource.Replicate(child, (ReplicationMode)anything);
-				}
-
-				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
-				{
-					return GetLoadedElementsIterator(collectionType, collection);
-				}
-
-				public override bool DeleteOrphans()
-				{
-					return false; // I suppose?
-				}
-			}
-
-			public static CascadingAction ActionPersist = new ActionPersistClass();
-			private class ActionPersistClass : CascadingAction
-			{
-				public override void Cascade(IEventSource eventSource, object child, object anything)
-				{
-					if (log.IsDebugEnabled)
-					{
-						//log.Debug("cascading to persist: " + entityName);
-						log.Debug("cascading to persist");
-					}
-					eventSource.Persist(null, child, (IDictionary)anything); // todo-events session.persist(entityName, child, (System.Collections.IDictionary) anything);
-				}
-
-				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
-				{
-					return GetLoadedElementsIterator(collectionType, collection);
-				}
-
-				public override bool DeleteOrphans()
-				{
-					return false;
-				}
-			}
-
-			public static CascadingAction ActionPersistOnFlush = new ActionPersistOnFlushClass();
-			private class ActionPersistOnFlushClass : CascadingAction
-			{
-				public override void Cascade(IEventSource eventSource, object child, object anything)
-				{
-					if (log.IsDebugEnabled)
-					{
-						//log.Debug("cascading to persistOnFlush: " + entityName);
-						log.Debug("cascading to persistOnFlush");
-					}
-					eventSource.PersistOnFlush(null, child, (IDictionary)anything); // todo-events session.persistOnFlush(entityName, child, (System.Collections.IDictionary) anything);
-				}
-
-				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
-				{
-					return GetLoadedElementsIterator(collectionType, collection);
-				}
-
-				public override bool DeleteOrphans()
-				{
-					return true;
-				}
-			}
-
-			public static CascadingAction ActionRefresh = new ActionRefreshClass();
-			private class ActionRefreshClass : CascadingAction
-			{
-				public override void Cascade(IEventSource eventSource, object child, object anything)
-				{
-					if (log.IsDebugEnabled)
-					{
-						//log.Debug("cascading to refresh: " + entityName);
-						log.Debug("cascading to refresh");
-					}
-					eventSource.Refresh(child, (IDictionary)anything);
-				}
-
-				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
-				{
-					return GetLoadedElementsIterator(collectionType, collection);
-				}
-
-				public override bool DeleteOrphans()
-				{
-					return false;
-				}
-			}
-
-			public static CascadingAction ActionSaveUpdateCopy = new ActionSaveUpdateCopyClass();
-			private class ActionSaveUpdateCopyClass : CascadingAction
-			{
-				public override void Cascade(IEventSource eventSource, object child, object anything)
-				{
-					if (log.IsDebugEnabled)
-					{
-						//log.Debug("cascading to saveOrUpdateCopy: " + entityName);
-						log.Debug("cascading to saveOrUpdateCopy");
-					}
-					eventSource.SaveOrUpdateCopy(null, child, (IDictionary)anything); //todo-events source.SaveOrUpdateCopy(entityName, child, (System.Collections.IDictionary)anything);
-				}
-
-				public override IEnumerable CascadableChildrenIterator(CollectionType collectionType, object collection)
-				{
-					return GetLoadedElementsIterator(collectionType, collection);
-				}
-
-				public override bool DeleteOrphans()
-				{
-					// orphans should not be deleted during copy??
-					return false;
-				}
-			}
-		}
-
 		private static bool CollectionIsInitialized(object collection)
 		{
 			return !(collection is IPersistentCollection) || ((IPersistentCollection) collection).WasInitialized;
@@ -394,10 +139,10 @@ namespace NHibernate.Engine
 			{
 				public override bool DoCascade(CascadingAction action)
 				{
-					return action == CascadingAction.ActionSaveUpdate ||
-					       action == CascadingAction.ActionLock ||
-					       action == CascadingAction.ActionReplicate ||
-					       action == CascadingAction.ActionCopy;
+					return action == CascadingAction.SaveUpdate ||
+					       action == CascadingAction.Lock ||
+					       action == CascadingAction.Replicate ||
+					       action == CascadingAction.SaveUpdateCopy;
 				}
 			}
 
@@ -410,7 +155,7 @@ namespace NHibernate.Engine
 			{
 				public override bool DoCascade(CascadingAction action)
 				{
-					return action == CascadingAction.ActionDelete;
+					return action == CascadingAction.Delete;
 				}
 			}
 
@@ -424,7 +169,7 @@ namespace NHibernate.Engine
 			{
 				public override bool DoCascade(CascadingAction action)
 				{
-					return action == CascadingAction.ActionDelete;
+					return action == CascadingAction.Delete;
 				}
 
 				public override bool HasOrphanDelete
@@ -442,7 +187,7 @@ namespace NHibernate.Engine
 			{
 				public override bool DoCascade(CascadingAction action)
 				{
-					return action == CascadingAction.ActionReplicate;
+					return action == CascadingAction.Replicate;
 				}
 			}
 		}
@@ -474,7 +219,8 @@ namespace NHibernate.Engine
 					{
 						if (type.IsEntityType || type.IsAnyType)
 						{
-							action.Cascade(eventSource, child, anything);
+							string entityName = type.IsEntityType ? ((EntityType)type).GetAssociatedEntityName() : null;
+							action.Cascade(eventSource, child, entityName, anything, false);
 						}
 						else if (type.IsCollectionType)
 						{
@@ -591,14 +337,14 @@ namespace NHibernate.Engine
 			{
 				log.Debug("cascading to collection: " + collectionType.Role);
 			}
-			IEnumerable iter = action.CascadableChildrenIterator(collectionType, child);
+			IEnumerable iter = action.GetCascadableChildrenIterator(eventSource, collectionType, child);
 			foreach (object obj in iter)
 			{
 				Cascade(eventSource, obj, elemType, action, style, cascadeVia, anything);
 			}
 
 			// handle oprhaned entities!!
-			if (style.HasOrphanDelete && action.DeleteOrphans() && child is IPersistentCollection)
+			if (style.HasOrphanDelete && action.DeleteOrphans && child is IPersistentCollection)
 			{
 				// We can do the cast since orphan-delete does not apply to:
 				// 1. newly instatiated collections
@@ -651,11 +397,6 @@ namespace NHibernate.Engine
 				// or newly instantiated collections so we can do the cast
 				return ((IPersistentCollection) collection).QueuedAdditionIterator;
 			}
-		}
-
-		private static IEnumerable GetAllElementsIterator(CollectionType collectionType, object collection)
-		{
-			return collectionType.GetElementsIterator(collection);
 		}
 	}
 }

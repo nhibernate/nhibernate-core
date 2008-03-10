@@ -6,9 +6,9 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultSaveOrUpdateCopyEventListener : DefaultMergeEventListener
 	{
-		protected internal override Cascades.CascadingAction CascadeAction
+		protected internal override CascadingAction CascadeAction
 		{
-			get { return Cascades.CascadingAction.ActionSaveUpdateCopy; }
+			get { return CascadingAction.SaveUpdateCopy; }
 		}
 	}
 }
