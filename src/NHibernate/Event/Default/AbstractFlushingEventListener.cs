@@ -85,7 +85,7 @@ namespace NHibernate.Event.Default
 					.Append(persistenceContext.CollectionEntries.Count).Append(" collections");
 
 				log.Debug(sb.ToString());
-				new Printer(session.Factory).ToString(persistenceContext.EntitiesByKey.Values.GetEnumerator());
+				new Printer(session.Factory).ToString(persistenceContext.EntitiesByKey.Values.GetEnumerator(), session.EntityMode);
 			}
 		}
 

@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using log4net;
 using NHibernate.Engine;
@@ -10,15 +9,16 @@ namespace NHibernate.Impl
 {
 	public sealed class Printer
 	{
-		private ISessionFactoryImplementor _factory;
+		private readonly ISessionFactoryImplementor _factory;
 		private static readonly ILog log = LogManager.GetLogger(typeof(Printer));
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="entity">an actual entity object, not a proxy!</param>
+		/// <param name="entityMode"></param>
 		/// <returns></returns>
-		public string ToString(object entity)
+		public string ToString(object entity, EntityMode entityMode)
 		{
 			IClassMetadata cm = _factory.GetClassMetadata(entity.GetType());
 			if (cm == null)
@@ -72,7 +72,7 @@ namespace NHibernate.Impl
 			return CollectionPrinter.ToString(result);
 		}
 
-		public void ToString(IEnumerator enumerator)
+		public void ToString(IEnumerator enumerator, EntityMode entityMode)
 		{
 			if (!log.IsDebugEnabled || !enumerator.MoveNext())
 			{
@@ -89,7 +89,7 @@ namespace NHibernate.Impl
 					log.Debug("more......");
 					break;
 				}
-				log.Debug(ToString(enumerator.Current));
+				log.Debug(ToString(enumerator.Current, entityMode));
 			} while (enumerator.MoveNext());
 		}
 
