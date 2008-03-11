@@ -512,7 +512,9 @@ namespace NHibernate.Engine
 																LockMode lockMode, bool existsInDatabase, IEntityPersister persister,
 																bool disableVersionIncrement, bool lazyPropertiesAreUnfetched)
 		{
-			EntityEntry e = new EntityEntry(status, loadedState, id, version, lockMode, existsInDatabase, persister, disableVersionIncrement);
+			EntityEntry e =
+				new EntityEntry(status, loadedState, null, id, version, lockMode, existsInDatabase, persister, session.EntityMode,
+				                disableVersionIncrement, lazyPropertiesAreUnfetched);
 			entityEntries[entity] = e;
 
 			SetHasNonReadOnlyEnties(status);
@@ -1153,7 +1155,7 @@ namespace NHibernate.Engine
 			{
 				try
 				{
-					e.Persister = session.Factory.GetEntityPersister(e.ClassName);
+					e.Persister = session.Factory.GetEntityPersister(e.EntityName);
 				}
 				catch (MappingException me)
 				{

@@ -1,5 +1,6 @@
 using System;
-using NHibernate.Engine;
+using NHibernate.Impl;
+using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Engine
@@ -13,44 +14,53 @@ namespace NHibernate.Engine
 	{
 		private LockMode lockMode;
 		private Status status;
-		private object id;
+		private readonly object id;
 		private object[] loadedState;
 		private object[] deletedState;
 		private bool existsInDatabase;
 		private object version;
-		// for convenience to save some lookups
+		
 		[NonSerialized]
-		private IEntityPersister persister;
+		private IEntityPersister persister;// for convenience to save some lookups
 
-		private string className;
-		private bool isBeingReplicated;
+		private readonly EntityMode entityMode;
+		private readonly string entityName;
+		private readonly bool isBeingReplicated;
+		private readonly bool loadedWithLazyPropertiesUnfetched;
+
+		[NonSerialized]
+		private readonly object rowId;
 
 		/// <summary>
 		/// Initializes a new instance of EntityEntry.
 		/// </summary>
 		/// <param name="status">The current <see cref="Status"/> of the Entity.</param>
 		/// <param name="loadedState">The snapshot of the Entity's state when it was loaded.</param>
+		/// <param name="rowId"></param>
 		/// <param name="id">The identifier of the Entity in the database.</param>
 		/// <param name="version">The version of the Entity.</param>
 		/// <param name="lockMode">The <see cref="LockMode"/> for the Entity.</param>
 		/// <param name="existsInDatabase">A boolean indicating if the Entity exists in the database.</param>
 		/// <param name="persister">The <see cref="IEntityPersister"/> that is responsible for this Entity.</param>
+		/// <param name="entityMode"></param>
 		/// <param name="disableVersionIncrement"></param>
-		public EntityEntry(Status status, object[] loadedState, object id, object version, LockMode lockMode,
-		                   bool existsInDatabase, IEntityPersister persister, bool disableVersionIncrement)
+		/// <param name="lazyPropertiesAreUnfetched"></param>
+		internal EntityEntry(Status status, object[] loadedState, object rowId, object id, object version, LockMode lockMode,
+			bool existsInDatabase, IEntityPersister persister, EntityMode entityMode,
+			bool disableVersionIncrement, bool lazyPropertiesAreUnfetched)
 		{
 			this.status = status;
 			this.loadedState = loadedState;
+			this.rowId = rowId;
 			this.id = id;
 			this.existsInDatabase = existsInDatabase;
 			this.version = version;
 			this.lockMode = lockMode;
-			this.isBeingReplicated = disableVersionIncrement;
+			isBeingReplicated = disableVersionIncrement;
+			loadedWithLazyPropertiesUnfetched = lazyPropertiesAreUnfetched;
 			this.persister = persister;
-			if (persister != null)
-			{
-				className = persister.ClassName;
-			}
+			this.entityMode = entityMode;
+			entityName = persister == null ? null : persister.EntityName;
 		}
 
 		/// <summary>
@@ -71,7 +81,13 @@ namespace NHibernate.Engine
 		public Status Status
 		{
 			get { return status; }
-			set { status = value; }
+			set
+			{
+				if (value == Status.ReadOnly)
+					loadedState = null; //memory optimization
+
+				status = value;
+			}
 		}
 
 		/// <summary>
@@ -83,7 +99,6 @@ namespace NHibernate.Engine
 		public object Id
 		{
 			get { return id; }
-			set { id = value; }
 		}
 
 		/// <summary>
@@ -96,7 +111,6 @@ namespace NHibernate.Engine
 		public object[] LoadedState
 		{
 			get { return loadedState; }
-			set { loadedState = value; }
 		}
 
 		/// <summary>
@@ -121,7 +135,6 @@ namespace NHibernate.Engine
 		public bool ExistsInDatabase
 		{
 			get { return existsInDatabase; }
-			set { existsInDatabase = value; }
 		}
 
 		/// <summary>
@@ -131,7 +144,6 @@ namespace NHibernate.Engine
 		public object Version
 		{
 			get { return version; }
-			set { version = value; }
 		}
 
 		/// <summary>
@@ -141,24 +153,31 @@ namespace NHibernate.Engine
 		public IEntityPersister Persister
 		{
 			get { return persister; }
-			set { persister = value; }
+			internal set { persister = value; } // For deserialization callback
 		}
 
 		/// <summary>
 		/// Gets the Fully Qualified Name of the class this Entity is an instance of.
 		/// </summary>
 		/// <value>The Fully Qualified Name of the class this Entity is an instance of.</value>
-		public string ClassName
+		public string EntityName
 		{
-			get { return className; }
+			get { return entityName; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public bool IsBeingReplicated
 		{
 			get { return isBeingReplicated; }
+		}
+
+		public object RowId
+		{
+			get { return rowId; }
+		}
+
+		public bool LoadedWithLazyPropertiesUnfetched
+		{
+			get { return loadedWithLazyPropertiesUnfetched; }
 		}
 
 		public object GetLoadedValue(string propertyName)
@@ -182,18 +201,16 @@ namespace NHibernate.Engine
 		/// </summary>
 		public void PostUpdate(object entity, object[] updatedState, object nextVersion)
 		{
-			this.loadedState = updatedState;
+			loadedState = updatedState;
 
 			LockMode = LockMode.Write;
 
 			if (Persister.IsVersioned)
 			{
-				this.version = nextVersion;
-				Persister.SetPropertyValue(
-					entity,
-					Persister.VersionProperty,
-					nextVersion);
+				version = nextVersion;
+				Persister.SetPropertyValue(entity, Persister.VersionProperty, nextVersion);
 			}
+			FieldInterceptionHelper.ClearDirty(entity);
 		}
 
 		/// <summary> 
@@ -216,7 +233,7 @@ namespace NHibernate.Engine
 
 		public bool IsNullifiable(bool earlyInsert, ISessionImplementor session)
 		{
-			return Status == Status.Saving || (earlyInsert ? !ExistsInDatabase : session.PersistenceContext.NullifiableEntityKeys.Contains(new EntityKey(Id, Persister, EntityMode.Poco)));
+			return Status == Status.Saving || (earlyInsert ? !ExistsInDatabase : session.PersistenceContext.NullifiableEntityKeys.Contains(new EntityKey(Id, Persister, entityMode)));
 		}
 
 		public bool RequiresDirtyCheck(object entity)
@@ -250,10 +267,9 @@ namespace NHibernate.Engine
 			}
 		}
 
-		// TODO property lazyness
-		public bool LoadedWithLazyPropertiesUnfetched
+		public override string ToString()
 		{
-			get { return false; }
+			return string.Format("EntityEntry{0}({1})", MessageHelper.InfoString(entityName, id), status);
 		}
 	}
 }
