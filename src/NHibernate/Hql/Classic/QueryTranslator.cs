@@ -1300,6 +1300,8 @@ namespace NHibernate.Hql.Classic
 
 		public static string[] ConcreteQueries(string query, ISessionFactoryImplementor factory)
 		{
+			// TODO H3.2 check if the QuerySplitter can do the work (this method is not present in H3.2)
+
 			//scan the query string for class names appearing in the from clause and replace 
 			//with all persistent implementors of the class/interface, returning multiple 
 			//query strings (make sure we don't pick up a class in the select clause!) 
@@ -1353,7 +1355,7 @@ namespace NHibernate.Hql.Classic
 						System.Type clazz = SessionFactoryHelper.GetImportedClass(factory, token);
 						if (clazz != null)
 						{
-							string[] implementors = factory.GetImplementors(clazz);
+							string[] implementors = factory.GetImplementors(clazz.AssemblyQualifiedName);
 							string placeholder = "$clazz" + count++ + "$";
 
 							if (implementors != null)

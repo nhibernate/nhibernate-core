@@ -965,36 +965,44 @@ namespace NHibernate.Impl
 		/// given class or interface, accounting for implicit/explicit polymorphism settings
 		/// and excluding mapped subclasses/joined-subclasses of other classes in the result.
 		/// </summary>
-		/// <param name="clazz"></param>
-		/// <returns></returns>
-		public string[] GetImplementors(System.Type clazz)
+		public string[] GetImplementors(string className)
 		{
+			System.Type clazz;
+			try
+			{
+				clazz = ReflectHelper.ClassForFullName(className);
+			}
+			catch (Exception)
+			{
+				return new string[] { className }; //for a dynamic-class
+			}
+
 			ArrayList results = new ArrayList();
 			foreach (IEntityPersister p in classPersisters.Values)
 			{
 				if (p is IQueryable)
 				{
 					IQueryable q = (IQueryable) p;
-					string className = q.ClassName;
-					bool isMappedClass = clazz.Equals(q.MappedClass);
+					string testClassName = q.EntityName;
+					bool isMappedClass = className.Equals(testClassName);
 					if (q.IsExplicitPolymorphism)
 					{
 						if (isMappedClass)
 						{
-							return new string[] {className};
+							return new string[] {testClassName};
 						}
 					}
 					else
 					{
 						if (isMappedClass)
 						{
-							results.Add(className);
+							results.Add(testClassName);
 						}
 						else if (
 							clazz.IsAssignableFrom(q.MappedClass) &&
 							(!q.IsInherited || !clazz.IsAssignableFrom(q.MappedSuperclass)))
 						{
-							results.Add(className);
+							results.Add(testClassName);
 						}
 					}
 				}

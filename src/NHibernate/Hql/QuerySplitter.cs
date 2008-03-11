@@ -89,6 +89,7 @@ namespace NHibernate.Hql
 						}
 					}
 
+					// TODO H3.2 Different behavior
 					// NHb: This block is not an exactly port from H3.2 but a port from previous implementation of QueryTranslator
 					if (((last != null && beforeClassTokens.Contains(last)) &&
 					     (next == null || !notAfterClassTokens.Contains(next))) ||
@@ -97,7 +98,7 @@ namespace NHibernate.Hql
 						System.Type clazz = SessionFactoryHelper.GetImportedClass(factory, token);
 						if (clazz != null)
 						{
-							string[] implementors = factory.GetImplementors(clazz);
+							string[] implementors = factory.GetImplementors(clazz.AssemblyQualifiedName);
 							string placeholder = "$clazz" + count++ + "$";
 
 							if (implementors != null)

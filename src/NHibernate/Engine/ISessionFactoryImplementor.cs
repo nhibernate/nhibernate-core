@@ -86,9 +86,9 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Get the names of all persistent classes that implement/extend the given interface/class
 		/// </summary>
-		/// <param name="clazz"></param>
+		/// <param name="className"></param>
 		/// <returns></returns>
-		string[] GetImplementors(System.Type clazz);
+		string[] GetImplementors(string className);
 
 		/// <summary>
 		/// Get a class name, using query language imports
