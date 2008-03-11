@@ -181,7 +181,7 @@ namespace NHibernate.Engine
 			//}
 
 			// let the interceptor inspect the instance to decide
-			bool? isUnsaved = session.Interceptor.IsUnsaved(entity);
+			bool? isUnsaved = session.Interceptor.IsTransient(entity);
 			if (isUnsaved.HasValue)
 				return isUnsaved.Value;
 

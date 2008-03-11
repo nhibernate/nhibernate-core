@@ -48,7 +48,7 @@ namespace NHibernate
 		{
 		}
 
-		public virtual bool? IsUnsaved(object entity)
+		public virtual bool? IsTransient(object entity)
 		{
 			return null;
 		}

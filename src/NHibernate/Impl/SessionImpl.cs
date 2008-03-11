@@ -1302,7 +1302,7 @@ namespace NHibernate.Impl
 				return true;
 			}
 
-			bool? isUnsaved = interceptor.IsUnsaved(obj);
+			bool? isUnsaved = interceptor.IsTransient(obj);
 			if (isUnsaved.HasValue)
 			{
 				return !isUnsaved.Value;
@@ -1340,7 +1340,7 @@ namespace NHibernate.Impl
 				}
 				else
 				{
-					bool? isUnsaved = interceptor.IsUnsaved(obj);
+					bool? isUnsaved = interceptor.IsTransient(obj);
 
 					if (isUnsaved.HasValue && (isUnsaved.Value))
 					{

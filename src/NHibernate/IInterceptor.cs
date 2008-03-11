@@ -115,8 +115,8 @@ namespace NHibernate
 		///	</list>
 		/// </remarks>
 		/// <param name="entity">A transient entity</param>
-		/// <returns></returns>
-		bool? IsUnsaved(object entity);
+		/// <returns>Boolean or <see langword="null" /> to choose default behaviour</returns>
+		bool? IsTransient(object entity);
 
 		/// <summary>
 		/// Called from <c>Flush()</c>. The return value determines whether the entity is updated
