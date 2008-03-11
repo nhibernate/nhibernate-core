@@ -68,7 +68,7 @@ namespace NHibernate.Impl
 			}
 			else
 			{
-				s.Append(persister.ClassName);
+				s.Append(persister.EntityName);
 			}
 			s.Append('#');
 
@@ -78,7 +78,7 @@ namespace NHibernate.Impl
 			}
 			else
 			{
-				s.Append(persister.IdentifierType.ToLoggableString(id, factory));
+				s.Append(id);
 			}
 			s.Append(']');
 
@@ -104,7 +104,7 @@ namespace NHibernate.Impl
 			}
 			else
 			{
-				s.Append(persister.ClassName);
+				s.Append(persister.EntityName);
 			}
 			s.Append('#');
 
@@ -135,7 +135,7 @@ namespace NHibernate.Impl
 			}
 			else
 			{
-				s.Append(persister.ClassName)
+				s.Append(persister.EntityName)
 					.Append("#<");
 
 				for (int i = 0; i < ids.Length; i++)
@@ -169,7 +169,7 @@ namespace NHibernate.Impl
 			}
 			else
 			{
-				s.Append(persister.ClassName);
+				s.Append(persister.EntityName);
 			}
 			s.Append('#');
 
@@ -201,7 +201,7 @@ namespace NHibernate.Impl
 			}
 			else
 			{
-				s.Append(persister.ClassName);
+				s.Append(persister.EntityName);
 			}
 			s.Append(']');
 			return s.ToString();
