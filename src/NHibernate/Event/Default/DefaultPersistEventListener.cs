@@ -72,7 +72,7 @@ namespace NHibernate.Event.Default
 				case EntityState.Detached:
 					throw new PersistentObjectException("detached entity passed to persist: " + GetLoggableName(@event.EntityName, entity));
 				default:
-					throw new ObjectDeletedException("deleted instance passed to merge", null, entity.GetType());
+					throw new ObjectDeletedException("deleted instance passed to merge", null, GetLoggableName(@event.EntityName, entity));
 			}
 		}
 

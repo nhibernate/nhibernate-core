@@ -116,7 +116,7 @@ namespace NHibernate.Event.Default
 							EntityIsDetached(@event, copyCache);
 							break;
 						default:
-							throw new ObjectDeletedException("deleted instance passed to merge", null, entity.GetType());
+							throw new ObjectDeletedException("deleted instance passed to merge", null, GetLoggableName(@event.EntityName, entity));
 					}
 				}
 			}

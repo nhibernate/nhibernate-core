@@ -32,7 +32,7 @@ namespace NHibernate.Event.Default
 				// pessimistic lock
 				if (entry.Status != Status.Loaded)
 				{
-					throw new ObjectDeletedException("attempted to lock a deleted instance", entry.Id, entry.Persister.MappedClass);
+					throw new ObjectDeletedException("attempted to lock a deleted instance", entry.Id, entry.EntityName);
 				}
 
 				IEntityPersister persister = entry.Persister;

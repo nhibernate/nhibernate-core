@@ -387,7 +387,7 @@ namespace NHibernate.Impl
 
 			if (e.Status != Status.Loaded)
 			{
-				throw new ObjectDeletedException("The given object was deleted", e.Id, obj.GetType());
+				throw new ObjectDeletedException("The given object was deleted", e.Id, e.EntityName);
 			}
 			return e.LockMode;
 		}
@@ -761,10 +761,8 @@ namespace NHibernate.Impl
 			if (persistenceContext.CascadeLevel > 0)
 			{
 				throw new ObjectDeletedException(
-					"deleted object would be re-saved by cascade (remove deleted object from associations)", 
-					entityEntry.Id, 
-					entityEntry.Persister.MappedClass); // todo entityname: change with next line
-					//entityEntry.Persister.EntityName);
+					"deleted object would be re-saved by cascade (remove deleted object from associations)", entityEntry.Id,
+					entityEntry.EntityName);
 			}
 
 			Flush();

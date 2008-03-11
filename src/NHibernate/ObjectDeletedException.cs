@@ -12,7 +12,7 @@ namespace NHibernate
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ObjectDeletedException"/> class.
 		/// </summary>
-		public ObjectDeletedException(string message, object identifier, System.Type clazz)
+		public ObjectDeletedException(string message, object identifier, string clazz)
 			: base(message, identifier, clazz)
 		{
 		}

@@ -17,7 +17,7 @@ namespace NHibernate.Event.Default
 			{
 				if (entry.Status == Status.Deleted)
 				{
-					throw new ObjectDeletedException("deleted instance passed to update()", null, @event.Entity.GetType());
+					throw new ObjectDeletedException("deleted instance passed to update()", null, @event.EntityName);
 				}
 				else
 				{
