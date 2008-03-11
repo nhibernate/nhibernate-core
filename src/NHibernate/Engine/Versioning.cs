@@ -1,4 +1,3 @@
-using System;
 using log4net;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
@@ -32,7 +31,9 @@ namespace NHibernate.Engine
 			object next = versionType.Next(version, session);
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Incrementing: " + version + " to " + next);
+				log.Debug(
+					string.Format("Incrementing: {0} to {1}", versionType.ToLoggableString(version, session.Factory),
+												versionType.ToLoggableString(next, session.Factory)));
 			}
 			return next;
 		}
@@ -63,7 +64,7 @@ namespace NHibernate.Engine
 		/// <param name="session">The current session, if any.</param>
 		/// <returns><see langword="true" /> if the version property needs to be seeded with an initial value.</returns>
 		public static bool SeedVersion(object[] fields, int versionProperty, IVersionType versionType, bool force,
-		                               ISessionImplementor session)
+																	 ISessionImplementor session)
 		{
 			object initialVersion = fields[versionProperty];
 			if (initialVersion == null || force)
@@ -82,30 +83,6 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary>
-		/// Gets the value of the version.
-		/// </summary>
-		/// <param name="fields">An array of objects that contains a snapshot of a persistent object.</param>
-		/// <param name="versionProperty">The index of the version property in the <c>fields</c> parameter.</param>
-		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
-		/// <returns>The value of the version.</returns>
-		private static object GetVersion(object[] fields, int versionProperty, IVersionType versionType)
-		{
-			return fields[versionProperty];
-		}
-
-		/// <summary>
-		/// Sets the value of the version.
-		/// </summary>
-		/// <param name="fields">An array of objects that contains a snapshot of a persistent object.</param>
-		/// <param name="version">The value the version should be set to in the <c>fields</c> parameter.</param>
-		/// <param name="versionProperty">The index of the version property in the <c>fields</c> parameter.</param>
-		/// <param name="versionType">The <see cref="IVersionType"/> of the versioned property.</param>
-		private static void SetVersion(object[] fields, object version, int versionProperty, IVersionType versionType)
-		{
-			fields[versionProperty] = version;
-		}
-
-		/// <summary>
 		/// Set the version number of the given instance state snapshot
 		/// </summary>
 		/// <param name="fields">An array of objects that contains a snapshot of a persistent object.</param>
@@ -113,7 +90,10 @@ namespace NHibernate.Engine
 		/// <param name="persister">The <see cref="IEntityPersister"/> that is responsible for persisting the values of the <c>fields</c> parameter.</param>
 		public static void SetVersion(object[] fields, object version, IEntityPersister persister)
 		{
-			SetVersion(fields, version, persister.VersionProperty, persister.VersionType);
+			if (!persister.IsVersioned)
+				return;
+
+			fields[persister.VersionProperty] = version;
 		}
 
 		/// <summary>
@@ -127,30 +107,24 @@ namespace NHibernate.Engine
 		/// </returns>
 		public static object GetVersion(object[] fields, IEntityPersister persister)
 		{
-			return persister.IsVersioned ? GetVersion(fields, persister.VersionProperty, persister.VersionType) : null;
+			return persister.IsVersioned ? fields[persister.VersionProperty] : null;
 		}
 
-		/// <summary>
-		/// Do we need to increment the version number, given the dirty properties?
-		/// </summary>
-		public static bool IsVersionIncrementRequired(
-			int[] dirtyProperties,
-			bool hasDirtyCollections,
-			bool[] propertyVersionability)
+		/// <summary> Do we need to increment the version number, given the dirty properties? </summary>
+		/// <param name="dirtyProperties">The array of property indexes which were deemed dirty </param>
+		/// <param name="hasDirtyCollections">Were any collections found to be dirty (structurally changed) </param>
+		/// <param name="propertyVersionability">An array indicating versionability of each property. </param>
+		/// <returns> True if a version increment is required; false otherwise. </returns>
+		public static bool IsVersionIncrementRequired(int[] dirtyProperties, bool hasDirtyCollections, bool[] propertyVersionability)
 		{
 			if (hasDirtyCollections)
-			{
 				return true;
-			}
 
 			for (int i = 0; i < dirtyProperties.Length; i++)
 			{
 				if (propertyVersionability[dirtyProperties[i]])
-				{
 					return true;
-				}
 			}
-
 			return false;
 		}
 	}

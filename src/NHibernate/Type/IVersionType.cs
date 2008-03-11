@@ -20,7 +20,7 @@ namespace NHibernate.Type
 		/// When implemented by a class, gets an initial version.
 		/// </summary>
 		/// <param name="session">The current session, if available.</param>
-		/// <value>Returns an instance of the <see cref="IType"/></value>
+		/// <returns>An instance of the type.</returns>
 		object Seed(ISessionImplementor session);
 
 		/// <summary> 

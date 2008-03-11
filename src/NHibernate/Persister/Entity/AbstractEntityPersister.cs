@@ -560,10 +560,10 @@ namespace NHibernate.Persister.Entity
 				VersionValue unsavedVersionValue = entityMetamodel.VersionProperty.UnsavedValue;
 				// let this take precedence if defined, since it works for
 				// assigned identifiers
-				object result = unsavedVersionValue.IsUnsaved(GetVersion(obj));
-				if (result != null)
+				bool? result = unsavedVersionValue.IsUnsaved(GetVersion(obj));
+				if (result.HasValue)
 				{
-					return (bool) result;
+					return result.Value;
 				}
 			}
 			return entityMetamodel.IdentifierProperty.UnsavedValue.IsUnsaved(id).Value;
@@ -2441,15 +2441,11 @@ namespace NHibernate.Persister.Entity
 		public bool IsUnsavedVersion(object[] values)
 		{
 			if (!IsVersioned)
-			{
 				return false;
-			}
 
-			object result = entityMetamodel.VersionProperty.UnsavedValue.IsUnsaved(values[VersionProperty]);
-			if (result != null)
-			{
-				return (bool) result;
-			}
+			bool? result = entityMetamodel.VersionProperty.UnsavedValue.IsUnsaved(values[VersionProperty]);
+			if (result.HasValue)
+				return result.Value;
 
 			return true;
 		}

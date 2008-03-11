@@ -105,12 +105,18 @@ namespace NHibernate.Engine
 			{
 				if (constructor != null)
 				{
-					Object defaultValue = versionGetter.Get(Instantiate(constructor));
-					// if the version of a newly instantiated object is not the same
-					// as the version seed value, use that as the unsaved-value
-					return versionType.IsEqual(versionType.Seed(null), defaultValue, EntityMode.Poco) ?
-					       VersionValue.VersionUndefined :
-					       new VersionValue(defaultValue);
+					object defaultValue = versionGetter.Get(Instantiate(constructor));
+					if (defaultValue != null && defaultValue.GetType().IsValueType)
+						return new VersionValue(defaultValue);
+					else
+					{
+						// if the version of a newly instantiated object is not the same
+						// as the version seed value, use that as the unsaved-value
+						return
+							versionType.IsEqual(versionType.Seed(null), defaultValue)
+								? VersionValue.VersionUndefined
+								: new VersionValue(defaultValue);
+					}
 				}
 				else
 				{

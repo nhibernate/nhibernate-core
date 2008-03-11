@@ -332,8 +332,7 @@ namespace NHibernate.Event.Default
 			//keep the existing version number in the case of replicate!
 			if (persister.IsVersioned)
 			{
-				// NH Different behavior (H3.2 use null value for versionProperty; NH ask to persister to know if a valueType mean unversioned)
-				//substitute |= Versioning.SeedVersion(values, persister.VersionProperty, persister.VersionType, false, source);
+				// NH Specific feature (H3.2 use null value for versionProperty; NH ask to persister to know if a valueType mean unversioned)
 				substitute |= Versioning.SeedVersion(values, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion(values), source);
 			}
 			return substitute;
