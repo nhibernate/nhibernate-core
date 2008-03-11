@@ -8,25 +8,25 @@ namespace NHibernate
 	[Serializable]
 	public class PropertyValueException : HibernateException
 	{
-		private readonly System.Type persistentClass;
+		private readonly string entityName;
 		private readonly string propertyName;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PropertyValueException"/> class.
 		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
-		/// <param name="persistentClass">The <see cref="System.Type"/> that NHibernate was trying to access.</param>
+		/// <param name="entityName">The <see cref="System.Type"/> that NHibernate was trying to access.</param>
 		/// <param name="propertyName">The name of the Property that was being get/set.</param>
-		public PropertyValueException(string message, System.Type persistentClass, string propertyName)
+		public PropertyValueException(string message, string entityName, string propertyName)
 			: base(message)
 		{
-			this.persistentClass = persistentClass;
+			this.entityName = entityName;
 			this.propertyName = propertyName;
 		}
 
-		public System.Type PersistentClass
+		public string EntityName
 		{
-			get { return persistentClass; }
+			get { return entityName; }
 		}
 
 		public string PropertyName
@@ -39,7 +39,7 @@ namespace NHibernate
 			get
 			{
 				return base.Message +
-				       StringHelper.Qualify(persistentClass.FullName, propertyName);
+				       StringHelper.Qualify(entityName, propertyName);
 			}
 		}
 
@@ -59,7 +59,7 @@ namespace NHibernate
 		protected PropertyValueException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
-			persistentClass = info.GetValue("persistentClass", typeof(System.Type)) as System.Type;
+			entityName = info.GetValue("entityName", typeof(string)) as string;
 			propertyName = info.GetString("propertyName");
 		}
 
@@ -79,7 +79,7 @@ namespace NHibernate
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);
-			info.AddValue("persistentClass", persistentClass);
+			info.AddValue("entityName", entityName);
 			info.AddValue("propertyName", propertyName);
 		}
 
