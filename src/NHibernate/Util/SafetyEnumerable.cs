@@ -27,8 +27,11 @@ namespace NHibernate.Util
 			while(enumerator.MoveNext())
 			{
 				object element = enumerator.Current;
-				if(typeof(T).IsAssignableFrom(element.GetType()))
-					yield return (T)element;
+				if (element == null)
+					yield return default(T);
+				else
+					if (typeof(T).IsAssignableFrom(element.GetType()))
+						yield return (T) element;
 			}
 		}
 
