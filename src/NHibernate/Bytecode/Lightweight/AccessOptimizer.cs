@@ -4,12 +4,12 @@ namespace NHibernate.Bytecode.Lightweight
 {
 	public class AccessOptimizer : IAccessOptimizer
 	{
-		private GetPropertyValuesInvoker getDelegate;
-		private SetPropertyValuesInvoker setDelegate;
-		private IGetter[] getters;
-		private ISetter[] setters;
-		private GetterCallback getterCallback;
-		private SetterCallback setterCallback;
+		private readonly GetPropertyValuesInvoker getDelegate;
+		private readonly SetPropertyValuesInvoker setDelegate;
+		private readonly IGetter[] getters;
+		private readonly ISetter[] setters;
+		private readonly GetterCallback getterCallback;
+		private readonly SetterCallback setterCallback;
 
 		public AccessOptimizer(GetPropertyValuesInvoker getDelegate, SetPropertyValuesInvoker setDelegate,
 		                       IGetter[] getters, ISetter[] setters)
@@ -18,8 +18,8 @@ namespace NHibernate.Bytecode.Lightweight
 			this.setDelegate = setDelegate;
 			this.getters = getters;
 			this.setters = setters;
-			this.getterCallback = new GetterCallback(OnGetterCallback);
-			this.setterCallback = new SetterCallback(OnSetterCallback);
+			getterCallback = OnGetterCallback;
+			setterCallback = OnSetterCallback;
 		}
 
 		public object[] GetPropertyValues(object target)

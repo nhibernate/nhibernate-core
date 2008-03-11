@@ -257,10 +257,8 @@ namespace NHibernate.Persister.Entity
 				}
 				catch (InvalidCastException e)
 				{
-					throw new MappingException(
-						"Invalid mapping information specified for type " + obj.GetType()
-						+ ", check your mapping file for property type mismatches",
-						e);
+					throw new PropertyAccessException(e,
+						"Invalid Cast (check your mapping for property type mismatches);", true, obj.GetType());
 				}
 			}
 			else

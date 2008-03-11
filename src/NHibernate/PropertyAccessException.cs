@@ -10,9 +10,9 @@ namespace NHibernate
 	[Serializable]
 	public class PropertyAccessException : HibernateException, ISerializable
 	{
-		private System.Type persistentType;
-		private string propertyName;
-		private bool wasSetter;
+		private readonly System.Type persistentType;
+		private readonly string propertyName;
+		private readonly bool wasSetter;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PropertyAccessException"/> class.
@@ -33,6 +33,13 @@ namespace NHibernate
 			this.persistentType = persistentType;
 			this.wasSetter = wasSetter;
 			this.propertyName = propertyName;
+		}
+
+		public PropertyAccessException(Exception innerException, string message, bool wasSetter, System.Type persistentType)
+			: base(message, innerException)
+		{
+			this.persistentType = persistentType;
+			this.wasSetter = wasSetter;
 		}
 
 		/// <summary>
@@ -56,8 +63,7 @@ namespace NHibernate
 			{
 				return base.Message + (wasSetter ? " setter of " : " getter of ") +
 				       (persistentType == null ? "UnknownType" : persistentType.FullName) +
-				       "." +
-				       propertyName;
+				       (string.IsNullOrEmpty(propertyName) ? string.Empty: "." + propertyName);
 			}
 		}
 

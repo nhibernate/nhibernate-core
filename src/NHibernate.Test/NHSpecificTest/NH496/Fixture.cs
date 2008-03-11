@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH496
 		}
 
 		[Test]
-		[ExpectedException(typeof(MappingException))]
+		[ExpectedException(typeof(PropertyAccessException))]
 		public void CRUD()
 		{
 			if (Environment.BytecodeProvider is NullBytecodeProvider)
