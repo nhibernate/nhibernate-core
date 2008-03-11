@@ -137,7 +137,8 @@ namespace NHibernate.Impl
 
 		public override void List(CriteriaImpl criteria, IList results)
 		{
-			System.Type[] implementors = factory.GetImplementorClasses(criteria.CriteriaClass);
+			ErrorIfClosed();
+			string[] implementors = factory.GetImplementors(criteria.EntityOrClassName);
 			int size = implementors.Length;
 
 			CriteriaLoader[] loaders = new CriteriaLoader[size];
@@ -172,13 +173,13 @@ namespace NHibernate.Impl
 			temporaryPersistenceContext.Clear();
 		}
 
-		private IOuterJoinLoadable GetOuterJoinLoadable(System.Type type)
+		private IOuterJoinLoadable GetOuterJoinLoadable(string entityName)
 		{
 			// TODO pull up
-			IEntityPersister persister = factory.GetEntityPersister(type);
+			IEntityPersister persister = factory.GetEntityPersister(entityName);
 			if (!(persister is IOuterJoinLoadable))
 			{
-				throw new MappingException("class persister is not IOuterJoinLoadable: " + type.FullName);
+				throw new MappingException("class persister is not IOuterJoinLoadable: " + entityName);
 			}
 			return (IOuterJoinLoadable)persister;
 		}

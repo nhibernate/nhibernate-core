@@ -32,7 +32,7 @@ namespace NHibernate.Loader.Criteria
 			IOuterJoinLoadable persister,
 			ISessionFactoryImplementor factory,
 			CriteriaImpl rootCriteria,
-			System.Type rootEntityName, // TODO H3: change to string rootEntityName
+			string rootEntityName, 
 			IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters)
 		{

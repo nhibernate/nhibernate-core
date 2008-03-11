@@ -53,7 +53,7 @@ namespace NHibernate.Criterion
                 innerQuery,
                 factory,
                 criteriaImpl,
-                criteriaImpl.CriteriaClass,
+                criteriaImpl.EntityOrClassName,
                 enabledFilters);
 
 
@@ -111,7 +111,7 @@ namespace NHibernate.Criterion
             innerQuery = new CriteriaQueryTranslator(factory,
                                                      this.criteriaImpl,
                 //implicit polymorphism not supported (would need a union) 
-                                                     this.criteriaImpl.CriteriaClass,
+                                                     this.criteriaImpl.EntityOrClassName,
                                                      criteriaQuery.GenerateSQLAlias(),
                                                      criteriaQuery);
 

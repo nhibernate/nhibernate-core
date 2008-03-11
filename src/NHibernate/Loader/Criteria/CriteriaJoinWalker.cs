@@ -27,7 +27,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly IList<string> userAliasList = new List<string>();
 
 		public CriteriaJoinWalker(IOuterJoinLoadable persister,CriteriaQueryTranslator translator,
-			ISessionFactoryImplementor factory, CriteriaImpl criteria, System.Type rootEntityName,
+			ISessionFactoryImplementor factory, CriteriaImpl criteria, string rootEntityName,
 			IDictionary<string, IFilter> enabledFilters)
 			: base(translator.RootSQLAlias, persister, factory, enabledFilters)
 		{

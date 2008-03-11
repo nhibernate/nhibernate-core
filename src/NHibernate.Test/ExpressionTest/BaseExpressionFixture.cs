@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 using NHibernate.Cfg;
 using NHibernate.DomainModel;
@@ -28,7 +27,7 @@ namespace NHibernate.Test.ExpressionTest
 			criteria = (CriteriaImpl) session.CreateCriteria(rootClass);
 			criteriaQuery = new CriteriaQueryTranslator(
 				(ISessionFactoryImplementor) factory,
-				criteria, criteria.CriteriaClass, SqlAlias);
+				criteria, criteria.EntityOrClassName, SqlAlias);
 		}
 
 		[SetUp]

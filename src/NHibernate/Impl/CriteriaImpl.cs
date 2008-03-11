@@ -37,6 +37,7 @@ namespace NHibernate.Impl
 
 		private IDictionary subcriteriaByPath = new Hashtable();
 		private IDictionary subcriteriaByAlias = new Hashtable();
+		private readonly string entityOrClassName;
 
 		// Projection Fields
 		private IProjection projection;
@@ -429,11 +430,13 @@ namespace NHibernate.Impl
 
 		public CriteriaImpl(System.Type persistentClass, string alias, ISessionImplementor session)
 		{
+			// TODO H3.2 EntityName in constructor instead persistentClass
 			this.persistentClass = persistentClass;
 			this.session = session;
 			this.cacheable = false;
 			this.rootAlias = alias;
 			cacheMode = null;
+			entityOrClassName = persistentClass.FullName;
 			subcriteriaByAlias[alias] = this;
 		}
 
@@ -605,6 +608,11 @@ namespace NHibernate.Impl
 		public IDictionary LockModes
 		{
 			get { return lockModes; }
+		}
+
+		public string EntityOrClassName
+		{
+			get { return entityOrClassName; }
 		}
 
 		public IResultTransformer ResultTransformer

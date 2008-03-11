@@ -22,7 +22,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly ICriteriaQuery outerQueryTranslator;
 
 		private readonly CriteriaImpl rootCriteria;
-		private readonly System.Type rootEntityName;
+		private readonly string rootEntityName;
 		private readonly string rootSQLAlias;
 		private readonly int aliasCount = 0;
 
@@ -40,7 +40,7 @@ namespace NHibernate.Loader.Criteria
 		public CriteriaQueryTranslator(
 			ISessionFactoryImplementor factory,
 			CriteriaImpl criteria,
-			System.Type rootEntityName,
+			string rootEntityName,
 			string rootSQLAlias,
 			ICriteriaQuery outerQuery)
 			: this(factory, criteria, rootEntityName, rootSQLAlias)
@@ -51,7 +51,7 @@ namespace NHibernate.Loader.Criteria
 		public CriteriaQueryTranslator(
 			ISessionFactoryImplementor factory,
 			CriteriaImpl criteria,
-			System.Type rootEntityName,
+			string rootEntityName,
 			string rootSQLAlias)
 		{
 			rootCriteria = criteria;
@@ -209,7 +209,7 @@ namespace NHibernate.Loader.Criteria
 
 		private void CreateCriteriaEntityNameMap()
 		{
-			criteriaEntityNames[rootCriteria] = rootEntityName.FullName;
+			criteriaEntityNames[rootCriteria] = rootEntityName;
 
 			foreach (KeyValuePair<string, ICriteria> me in associationPathCriteriaMap)
 			{

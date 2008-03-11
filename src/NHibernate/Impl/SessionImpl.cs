@@ -1598,17 +1598,9 @@ namespace NHibernate.Impl
 
 		public override void List(CriteriaImpl criteria, IList results)
 		{
-			// The body of this method is modified from H2.1 version, because the Java version
-			// used factory.GetImplementors which returns a list of implementor class names
-			// obtained from IEntityPersister.ClassName property.
-			//
-			// In Java, calling ReflectHelper.ClassForName( IEntityPersister.ClassName )
-			// works, but in .NET it does not, because the class name does not include the assembly
-			// name. .NET tries to load the class from NHibernate assembly and fails.
-			//
-			// The solution was to add SessionFactoryImpl.GetImplementorClasses method
-			// which returns an array of System.Types instead of just class names.
-			System.Type[] implementors = factory.GetImplementorClasses(criteria.CriteriaClass);
+			ErrorIfClosed();
+
+			string[] implementors = factory.GetImplementors(criteria.EntityOrClassName);
 			int size = implementors.Length;
 
 			CriteriaLoader[] loaders = new CriteriaLoader[size];
@@ -1656,12 +1648,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		internal IOuterJoinLoadable GetOuterJoinLoadable(System.Type clazz)
+		internal IOuterJoinLoadable GetOuterJoinLoadable(string entityName)
 		{
-			IEntityPersister persister = GetClassPersister(clazz);
+			IEntityPersister persister = factory.GetEntityPersister(entityName);
 			if (!(persister is IOuterJoinLoadable))
 			{
-				throw new MappingException("class persister is not IOuterJoinLoadable: " + clazz.FullName);
+				throw new MappingException("class persister is not OuterJoinLoadable: " + entityName);
 			}
 			return (IOuterJoinLoadable)persister;
 		}

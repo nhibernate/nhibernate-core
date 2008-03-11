@@ -241,7 +241,7 @@ namespace NHibernate.Impl
 			int criteriaIndex = 0;
 			foreach (CriteriaImpl criteria in criteriaQueries)
 			{
-				System.Type[] implementors = factory.GetImplementorClasses(criteria.CriteriaClass);
+				string[] implementors = factory.GetImplementors(criteria.EntityOrClassName);
 				int size = implementors.Length;
 
 				CriteriaLoader[] tmpLoaders = new CriteriaLoader[size];
