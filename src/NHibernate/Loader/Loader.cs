@@ -1473,7 +1473,7 @@ namespace NHibernate.Loader
 			object id,
 			IType identifierType,
 			object optionalObject,
-			System.Type optionalEntityName,
+			string optionalEntityName,
 			object optionalIdentifier,
 			IEntityPersister persister)
 		{
@@ -1489,13 +1489,9 @@ namespace NHibernate.Loader
 
 			try
 			{
-				QueryParameters qp = new QueryParameters(
-					new IType[] {identifierType},
-					new object[] {id},
-					optionalObject,
-					optionalEntityName == null ? null : optionalEntityName.FullName,
-					optionalIdentifier
-					);
+				QueryParameters qp =
+					new QueryParameters(new IType[] {identifierType}, new object[] {id}, optionalObject,
+					                    optionalEntityName ?? null, optionalIdentifier);
 				result = DoQueryAndInitializeNonLazyCollections(
 					session,
 					qp,

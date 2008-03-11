@@ -17,14 +17,14 @@ namespace NHibernate.Loader.Entity
 		protected static readonly ILog log = LogManager.GetLogger(typeof(AbstractEntityLoader));
 		protected readonly IOuterJoinLoadable persister;
 		protected readonly IType uniqueKeyType;
-		protected readonly System.Type entityName;
+		protected readonly string entityName;
 
 		public AbstractEntityLoader(IOuterJoinLoadable persister, IType uniqueKeyType, 
 			ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters)
 		{
 			this.uniqueKeyType = uniqueKeyType;
-			entityName = persister.MappedClass;
+			entityName = persister.EntityName;
 			this.persister = persister;
 		}
 
@@ -60,7 +60,7 @@ namespace NHibernate.Loader.Entity
 				{
 					throw new HibernateException(
 						string.Format("More than one row with the given identifier was found: {0}, for class: {1}", id,
-						              persister.MappedClass));
+						              persister.EntityName));
 				}
 			}
 		}
