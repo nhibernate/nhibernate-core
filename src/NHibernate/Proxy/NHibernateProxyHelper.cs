@@ -62,18 +62,5 @@ namespace NHibernate.Proxy
 				return entity.GetType();
 			}
 		}
-
-		public static object GetIdentifier(object obj, IEntityPersister persister)
-		{
-			INHibernateProxy proxy = obj as INHibernateProxy;
-			if (proxy != null)
-			{
-				return proxy.HibernateLazyInitializer.Identifier;
-			}
-			else
-			{
-				return persister.GetIdentifier(obj);
-			}
-		}
 	}
 }
