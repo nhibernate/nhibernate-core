@@ -11,19 +11,20 @@ namespace NHibernate
 	[Serializable]
 	public class WrongClassException : HibernateException, ISerializable
 	{
-		private object identifier;
-		private System.Type type;
+		private readonly object identifier;
+		private readonly string entityName;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WrongClassException"/> class.
 		/// </summary>
 		/// <param name="message">The message that describes the error. </param>
 		/// <param name="identifier">The identifier of the object that was being loaded.</param>
-		/// <param name="type">The <see cref="System.Type"/> that NHibernate was told to load.</param>
-		public WrongClassException(string message, object identifier, System.Type type) : base(message)
+		/// <param name="entityName">The name of entity that NHibernate was told to load.</param>
+		public WrongClassException(string message, object identifier, string entityName)
+			: base(message)
 		{
 			this.identifier = identifier;
-			this.type = type;
+			this.entityName = entityName;
 		}
 
 		/// <summary>
@@ -35,11 +36,11 @@ namespace NHibernate
 		}
 
 		/// <summary>
-		/// Gets the <see cref="System.Type"/> that NHibernate was told to load.
+		/// Gets the name of entity that NHibernate was told to load.
 		/// </summary>
-		public System.Type Type
+		public string EntityName
 		{
-			get { return type; }
+			get { return entityName; }
 		}
 
 		/// <summary>
@@ -50,9 +51,7 @@ namespace NHibernate
 		{
 			get
 			{
-				return "Object with id: " + identifier
-				       + " was not of the specified sublcass: " + type.FullName
-				       + " (" + base.Message + ")";
+				return string.Format("Object with id: {0} was not of the specified sublcass: {1} ({2})", identifier, entityName, base.Message);
 			}
 		}
 
@@ -71,7 +70,7 @@ namespace NHibernate
 		/// </param>
 		protected WrongClassException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
-			type = info.GetValue("type", typeof(System.Type)) as System.Type;
+			entityName = info.GetValue("entityName", typeof(string)) as string;
 			identifier = info.GetValue("identifier", typeof(object));
 		}
 
@@ -91,7 +90,7 @@ namespace NHibernate
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);
-			info.AddValue("type", type, typeof(System.Type));
+			info.AddValue("entityName", entityName, typeof(string));
 			info.AddValue("identifier", identifier, typeof(object));
 		}
 

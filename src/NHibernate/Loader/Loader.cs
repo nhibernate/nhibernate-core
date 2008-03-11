@@ -942,7 +942,7 @@ namespace NHibernate.Loader
 			if (!persister.IsInstance(obj))
 			{
 				string errorMsg = string.Format("loading object was of wrong class [{0}]", obj.GetType().FullName);
-				throw new WrongClassException(errorMsg, key.Identifier, persister.MappedClass);
+				throw new WrongClassException(errorMsg, key.Identifier, persister.EntityName);
 			}
 
 			if (LockMode.None != lockMode && UpgradeLocks())
@@ -1092,7 +1092,7 @@ namespace NHibernate.Loader
 				if (result == null)
 				{
 					// woops we got an instance of another class hierarchy branch.
-					throw new WrongClassException(string.Format("Discriminator was: '{0}'", discriminatorValue), id, topClass);
+					throw new WrongClassException(string.Format("Discriminator was: '{0}'", discriminatorValue), id, topClass.FullName);
 				}
 
 				return result;

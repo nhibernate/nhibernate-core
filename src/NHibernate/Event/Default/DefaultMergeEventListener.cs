@@ -242,7 +242,8 @@ namespace NHibernate.Event.Default
 				}
 				else if (!source.GetEntityName(target).Equals(entityName))
 				{
-					throw new WrongClassException("class of the given object did not match class of persistent copy", @event.RequestedId, persister.MappedClass);
+					throw new WrongClassException("class of the given object did not match class of persistent copy",
+					                              @event.RequestedId, persister.EntityName);
 				}
 				else if (IsVersionChanged(entity, source, persister, target))
 				{
