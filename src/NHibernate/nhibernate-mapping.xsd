@@ -1056,8 +1056,8 @@
 			<xs:attribute name="cache-mode" type="cacheMode" />
 			<xs:attribute name="cacheable" type="xs:boolean" />
 			<xs:attribute name="cache-region" type="xs:string" />
-			<xs:attribute name="fetch-size" type="xs:positiveInteger" />
-			<xs:attribute name="timeout" type="xs:positiveInteger" />
+			<xs:attribute name="fetch-size" type="xs:int" />
+			<xs:attribute name="timeout" type="xs:int" />
 			<xs:attribute name="read-only" type="xs:boolean" />
 		</xs:complexType>
 	</xs:element>
@@ -1138,8 +1138,8 @@
 			<xs:attribute name="cache-mode" type="cacheMode" />
 			<xs:attribute name="callable" type="xs:boolean" />
 			<xs:attribute name="read-only" type="xs:boolean" />
-			<xs:attribute name="timeout" type="xs:positiveInteger" />
-			<xs:attribute name="fetch-size" type="xs:positiveInteger" />
+			<xs:attribute name="timeout" type="xs:int" />
+			<xs:attribute name="fetch-size" type="xs:int" />
 			<xs:attribute name="cache-region" type="xs:string" />
 			<xs:attribute name="cacheable" type="xs:boolean" />
 		</xs:complexType>

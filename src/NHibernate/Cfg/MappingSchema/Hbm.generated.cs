@@ -3131,6 +3131,9 @@ namespace NHibernate.Cfg.MappingSchema {
         public HbmKey key;
         
         /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("any", typeof(HbmAny))]
+        [System.Xml.Serialization.XmlElementAttribute("component", typeof(HbmComponent))]
+        [System.Xml.Serialization.XmlElementAttribute("dynamic-component", typeof(HbmDynamicComponent))]
         [System.Xml.Serialization.XmlElementAttribute("many-to-one", typeof(HbmManyToOne))]
         [System.Xml.Serialization.XmlElementAttribute("property", typeof(HbmProperty))]
         public object[] Items;
@@ -3544,6 +3547,14 @@ namespace NHibernate.Cfg.MappingSchema {
     public partial class HbmQuery {
         
         /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("query-param")]
+        public HbmQueryParam[] Items;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlTextAttribute()]
+        public string[] Text;
+        
+        /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string name;
         
@@ -3598,10 +3609,24 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool readonlySpecified;
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("HbmXsd", "2.0.0.1001")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:nhibernate-mapping-2.2")]
+    [System.Xml.Serialization.XmlRootAttribute("query-param", Namespace="urn:nhibernate-mapping-2.2", IsNullable=false)]
+    public partial class HbmQueryParam {
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlTextAttribute()]
-        public string[] Text;
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string name;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string type;
     }
     
     /// <remarks/>
@@ -3661,6 +3686,7 @@ namespace NHibernate.Cfg.MappingSchema {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("load-collection", typeof(HbmLoadCollection))]
+        [System.Xml.Serialization.XmlElementAttribute("query-param", typeof(HbmQueryParam))]
         [System.Xml.Serialization.XmlElementAttribute("return", typeof(HbmReturn))]
         [System.Xml.Serialization.XmlElementAttribute("return-join", typeof(HbmReturnJoin))]
         [System.Xml.Serialization.XmlElementAttribute("return-scalar", typeof(HbmReturnScalar))]
