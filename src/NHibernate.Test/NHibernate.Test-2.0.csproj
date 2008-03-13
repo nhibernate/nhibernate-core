@@ -159,6 +159,10 @@
     <Compile Include="FilterTest\Product.cs" />
     <Compile Include="FilterTest\Salesperson.cs" />
     <Compile Include="FilterTest\TestClass.cs" />
+    <Compile Include="Generatedkeys\Identity\IdentityGeneratedKeysTest.cs" />
+    <Compile Include="Generatedkeys\Identity\MyChild.cs" />
+    <Compile Include="Generatedkeys\Identity\MyEntity.cs" />
+    <Compile Include="Generatedkeys\Identity\MySibling.cs" />
     <Compile Include="GeneratedTest\AbstractGeneratedPropertyTest.cs" />
     <Compile Include="GeneratedTest\Component.cs" />
     <Compile Include="GeneratedTest\ComponentOwner.cs" />
@@ -1164,6 +1168,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1252\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Generatedkeys\Identity\MyEntity.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

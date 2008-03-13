@@ -6,6 +6,7 @@ using log4net;
 using log4net.Config;
 using NHibernate.Cfg;
 using NHibernate.Connection;
+using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
@@ -248,6 +249,11 @@ namespace NHibernate.Test
 					prov.CloseConnection(conn);
 				}
 			}
+		}
+
+		protected ISessionFactoryImplementor Sfi
+		{
+			get { return (ISessionFactoryImplementor) sessions; }
 		}
 
 		protected virtual ISession OpenSession()
