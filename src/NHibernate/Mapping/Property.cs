@@ -88,7 +88,7 @@ namespace NHibernate.Mapping
 				IType type = propertyValue.Type;
 				if (type.IsComponentType && !type.IsAnyType)
 				{
-					IAbstractComponentType actype = (IAbstractComponentType) propertyValue.Type;
+					IAbstractComponentType actype = (IAbstractComponentType)propertyValue.Type;
 					int length = actype.Subtypes.Length;
 					for (int i = 0; i < length; i++)
 					{
@@ -100,36 +100,22 @@ namespace NHibernate.Mapping
 
 					return CascadeStyle.None;
 				}
+				else if (string.IsNullOrEmpty(cascade) || cascade.Equals("none"))
+				{
+					return CascadeStyle.None;
+				}
 				else
 				{
-					if (cascade.Equals("all"))
+					string[] tokens = cascade.Split(new char[] { ',' });
+					if (tokens.Length == 0) return CascadeStyle.None;
+					CascadeStyle[] styles = new CascadeStyle[tokens.Length];
+					int i = 0;
+					foreach (string token in tokens)
 					{
-						return CascadeStyle.All;
+						styles[i++] = CascadeStyle.GetCascadeStyle(token.ToLowerInvariant().Trim());
 					}
-					else if (cascade.Equals("all-delete-orphan"))
-					{
-						return CascadeStyle.AllDeleteOrphan;
-					}
-					else if (cascade.Equals("none"))
-					{
-						return CascadeStyle.None;
-					}
-					else if (cascade.Equals("save-update"))
-					{
-						return CascadeStyle.Update;
-					}
-					else if (cascade.Equals("delete"))
-					{
-						return CascadeStyle.Delete;
-					}
-					else if (cascade.Equals("delete-orphan"))
-					{
-						return CascadeStyle.DeleteOrphan;
-					}
-					else
-					{
-						throw new MappingException("Unspported cascade style: " + cascade);
-					}
+					if (tokens.Length == 1) return styles[0];
+					else return new CascadeStyle.MultipleCascadeStyle(styles);
 				}
 			}
 		}
