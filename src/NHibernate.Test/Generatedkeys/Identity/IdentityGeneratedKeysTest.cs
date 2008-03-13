@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Generatedkeys.Identity
 {
-	//[TestFixture] commentend because de mapping not support actual xsd
+	[TestFixture]
 	public class IdentityGeneratedKeysTest : TestCase
 	{
 		protected override IList Mappings

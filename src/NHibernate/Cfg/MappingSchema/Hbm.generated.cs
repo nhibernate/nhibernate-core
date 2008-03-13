@@ -334,8 +334,8 @@ namespace NHibernate.Cfg.MappingSchema {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute("default-cascade")]
-        [System.ComponentModel.DefaultValueAttribute(HbmCascadeStyle.None)]
-        public HbmCascadeStyle defaultcascade;
+        [System.ComponentModel.DefaultValueAttribute("none")]
+        public string defaultcascade;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute("default-access")]
@@ -361,7 +361,7 @@ namespace NHibernate.Cfg.MappingSchema {
         public bool defaultlazy;
         
         public HbmMapping() {
-            this.defaultcascade = HbmCascadeStyle.None;
+            this.defaultcascade = "none";
             this.defaultaccess = "property";
             this.autoimport = true;
             this.defaultlazy = true;
@@ -1110,8 +1110,8 @@ namespace NHibernate.Cfg.MappingSchema {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(HbmCascadeStyle.None)]
-        public HbmCascadeStyle cascade;
+        [System.ComponentModel.DefaultValueAttribute("none")]
+        public string cascade;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -1122,7 +1122,7 @@ namespace NHibernate.Cfg.MappingSchema {
         public string uniquekey;
         
         public HbmAny() {
-            this.cascade = HbmCascadeStyle.None;
+            this.cascade = "none";
         }
     }
     
@@ -1142,37 +1142,6 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string @class;
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("HbmXsd", "2.0.0.1001")]
-    [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
-    public enum HbmCascadeStyle {
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlEnumAttribute("all")]
-        All,
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlEnumAttribute("all-delete-orphan")]
-        AllDeleteOrphan,
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlEnumAttribute("none")]
-        None,
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlEnumAttribute("save-update")]
-        SaveUpdate,
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlEnumAttribute("delete")]
-        Delete,
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlEnumAttribute("delete-orphan")]
-        DeleteOrphan,
     }
     
     /// <remarks/>
@@ -1234,11 +1203,7 @@ namespace NHibernate.Cfg.MappingSchema {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public HbmCascadeStyle cascade;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool cascadeSpecified;
+        public string cascade;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -1410,11 +1375,7 @@ namespace NHibernate.Cfg.MappingSchema {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public HbmCascadeStyle cascade;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool cascadeSpecified;
+        public string cascade;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute("outer-join")]
@@ -1964,11 +1925,7 @@ namespace NHibernate.Cfg.MappingSchema {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public HbmCascadeStyle cascade;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool cascadeSpecified;
+        public string cascade;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -2246,11 +2203,7 @@ namespace NHibernate.Cfg.MappingSchema {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public HbmCascadeStyle cascade;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool cascadeSpecified;
+        public string cascade;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -2443,11 +2396,7 @@ namespace NHibernate.Cfg.MappingSchema {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public HbmCascadeStyle cascade;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool cascadeSpecified;
+        public string cascade;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -2616,11 +2565,7 @@ namespace NHibernate.Cfg.MappingSchema {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public HbmCascadeStyle cascade;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool cascadeSpecified;
+        public string cascade;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute("outer-join")]
@@ -2831,11 +2776,7 @@ namespace NHibernate.Cfg.MappingSchema {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public HbmCascadeStyle cascade;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool cascadeSpecified;
+        public string cascade;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -3012,11 +2953,7 @@ namespace NHibernate.Cfg.MappingSchema {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public HbmCascadeStyle cascade;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool cascadeSpecified;
+        public string cascade;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]

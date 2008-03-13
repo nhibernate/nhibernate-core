@@ -42,7 +42,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void SetMappingsProperties(HbmMapping mappingSchema)
 		{
 			mappings.SchemaName = mappingSchema.schema;
-			mappings.DefaultCascade = GetXmlEnumAttribute(mappingSchema.defaultcascade);
+			mappings.DefaultCascade = mappingSchema.defaultcascade;
 			mappings.DefaultAccess = mappingSchema.defaultaccess;
 			mappings.DefaultLazy = mappingSchema.defaultlazy;
 			mappings.IsAutoImport = mappingSchema.autoimport;

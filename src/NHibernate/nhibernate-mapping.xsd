@@ -40,19 +40,6 @@
 			<xs:enumeration value="always" />
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="cascadeStyle">
-		<xs:annotation>
-			<xs:documentation>Rule as to how to operate on child objects (for more information, read topics about "persistence by reachability" or "transparent/transitive/cascading persistence")</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="all" />
-			<xs:enumeration value="all-delete-orphan" />
-			<xs:enumeration value="none" />
-			<xs:enumeration value="save-update" />
-			<xs:enumeration value="delete" />
-			<xs:enumeration value="delete-orphan" />
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:simpleType name="optimisticLockMode">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="none" />
@@ -128,7 +115,7 @@
 		</xs:attribute>
 		<xs:attribute name="outer-join" type="outerJoinStrategy" use="optional" />
 		<xs:attribute name="fetch" type="collectionFetchMode" use="optional" />
-		<xs:attribute name="cascade" type="cascadeStyle" use="optional" />
+		<xs:attribute name="cascade" type="xs:string" use="optional" />
 		<xs:attribute name="where" type="xs:string" use="optional" />
 		<xs:attribute name="inverse" type="xs:boolean" use="optional" default="false" />
 		<xs:attribute name="persister" type="xs:string" use="optional" />
@@ -245,12 +232,8 @@
 				<xs:element ref="filter-def" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="database-object" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
-			<xs:attribute name="schema" type="xs:string" use="optional">
-				<xs:annotation>
-					<xs:documentation>defaults to none used</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
-			<xs:attribute name="default-cascade" type="cascadeStyle" use="optional" default="none" />
+			<xs:attribute name="schema" type="xs:string" use="optional"/>
+			<xs:attribute name="default-cascade" type="xs:string" use="optional" default="none" />
 			<xs:attribute name="default-access" type="xs:string" use="optional" default="property">
 				<xs:annotation>
 					<xs:documentation>Default property access setting</xs:documentation>
@@ -666,7 +649,7 @@
 			<xs:attribute name="access" type="xs:string" />
 			<xs:attribute name="insert" type="xs:boolean" />
 			<xs:attribute name="update" type="xs:boolean" />
-			<xs:attribute name="cascade" type="cascadeStyle" default="none" />
+			<xs:attribute name="cascade" type="xs:string" default="none" />
 			<xs:attribute name="index" type="xs:string" use="optional" />
 			<xs:attribute name="unique-key" type="xs:string" use="optional" />
 		</xs:complexType>
@@ -694,7 +677,7 @@
 			<xs:attribute name="table" type="xs:string" />
 			<xs:attribute name="schema" type="xs:string" />
 			<xs:attribute name="element-class" type="xs:string" />
-			<xs:attribute name="cascade" type="cascadeStyle" />
+			<xs:attribute name="cascade" type="xs:string" />
 			<xs:attribute name="where" type="xs:string" />
 			<xs:attribute name="optimistic-lock" type="xs:boolean" use="optional" />
 		</xs:complexType>
@@ -962,7 +945,7 @@
 			<xs:attribute name="unique" type="xs:boolean" default="false" />
 			<xs:attribute name="unique-key" type="xs:string" />
 			<xs:attribute name="index" type="xs:string" />
-			<xs:attribute name="cascade" type="cascadeStyle" />
+			<xs:attribute name="cascade" type="xs:string" />
 			<xs:attribute name="outer-join" type="outerJoinStrategy" use="optional" />
 			<xs:attribute name="fetch" type="fetchMode" use="optional" />
 			<xs:attribute name="update" type="xs:boolean" />
@@ -1008,7 +991,7 @@
 			<xs:attribute name="name" type="xs:string" use="required" />
 			<xs:attribute name="access" type="xs:string" />
 			<xs:attribute name="class" type="xs:string" />
-			<xs:attribute name="cascade" type="cascadeStyle" />
+			<xs:attribute name="cascade" type="xs:string" />
 			<xs:attribute name="outer-join" type="outerJoinStrategy" use="optional" />
 			<xs:attribute name="fetch" type="fetchMode" use="optional" />
 			<xs:attribute name="constrained" type="xs:boolean" default="false" />
