@@ -180,7 +180,7 @@ namespace NHibernate.Engine
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("processing cascades for: " + persister.ClassName);
+					log.Debug("processing cascades for: " + persister.EntityName);
 				}
 				IType[] types = persister.PropertyTypes;
 				CascadeStyle[] cascadeStyles = persister.PropertyCascadeStyles;
@@ -189,12 +189,13 @@ namespace NHibernate.Engine
 					CascadeStyle style = cascadeStyles[i];
 					if (style.DoCascade(action))
 					{
-						Cascade(eventSource, persister.GetPropertyValue(parent, i), types[i], action, style, cascadeTo, anything);
+						Cascade(eventSource, persister.GetPropertyValue(parent, i, eventSource.EntityMode), types[i], action, style,
+						        cascadeTo, anything);
 					}
 				}
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("done processing cascades for: " + persister.ClassName);
+					log.Debug("done processing cascades for: " + persister.EntityName);
 				}
 			}
 		}

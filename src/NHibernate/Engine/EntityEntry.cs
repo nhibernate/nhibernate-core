@@ -208,7 +208,7 @@ namespace NHibernate.Engine
 			if (Persister.IsVersioned)
 			{
 				version = nextVersion;
-				Persister.SetPropertyValue(entity, Persister.VersionProperty, nextVersion);
+				Persister.SetPropertyValue(entity, Persister.VersionProperty, nextVersion, entityMode);
 			}
 			FieldInterceptionHelper.ClearDirty(entity);
 		}
@@ -228,7 +228,7 @@ namespace NHibernate.Engine
 			version = nextVersion;
 			loadedState[persister.VersionProperty] = version;
 			LockMode = LockMode.Force;
-			persister.SetPropertyValue(entity, Persister.VersionProperty, nextVersion);
+			persister.SetPropertyValue(entity, Persister.VersionProperty, nextVersion, entityMode);
 		}
 
 		public bool IsNullifiable(bool earlyInsert, ISessionImplementor session)
@@ -240,13 +240,11 @@ namespace NHibernate.Engine
 		{
 			bool isMutableInstance = status != Status.ReadOnly && persister.IsMutable;
 
-			return isMutableInstance;
-			// TODO H3.2 Different behaviour
-			//return
-			//  isMutableInstance
-			//  &&
-			//  (Persister.HasMutableProperties || !FieldInterceptionHelper.isInstrumented(entity)
-			//   || FieldInterceptionHelper.extractFieldInterceptor(entity).Dirty);
+			return
+				isMutableInstance
+				&&
+				(Persister.HasMutableProperties || !FieldInterceptionHelper.IsInstrumented(entity)
+				 || FieldInterceptionHelper.ExtractFieldInterceptor(entity).IsDirty);
 		}
 
 		public void SetReadOnly(bool readOnly, object entity)
@@ -263,7 +261,7 @@ namespace NHibernate.Engine
 			else
 			{
 				Status = Status.Loaded;
-				loadedState = Persister.GetPropertyValues(entity);
+				loadedState = Persister.GetPropertyValues(entity, entityMode);
 			}
 		}
 

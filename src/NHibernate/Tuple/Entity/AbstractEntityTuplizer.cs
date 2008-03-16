@@ -1,8 +1,8 @@
-using System;
 using System.Collections;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Id;
+using NHibernate.Intercept;
 using NHibernate.Mapping;
 using NHibernate.Properties;
 using NHibernate.Proxy;
@@ -64,7 +64,20 @@ namespace NHibernate.Tuple.Entity
 
 			if (entityMetamodel.IsLazy)
 			{
-				proxyFactory = BuildProxyFactory(mappingInfo, idGetter, idSetter);
+				/* NH Different implementation
+				 * When we are using an interface we need to use the interface itself to have
+				 * the getter and setter of the identifier to prevent proxy initialization.
+				 * The BasicLazyInitializer use method.Equals to recognize the the identifier setter.
+				 */
+				IGetter pidGetter = idGetter;
+				ISetter pidSetter = idSetter;
+				if (mappingInfo.HasIdentifierProperty && mappingInfo.ProxyInterface != null)
+				{
+					pidGetter = mappingInfo.IdentifierProperty.GetGetter(mappingInfo.ProxyInterface);
+					pidSetter = mappingInfo.IdentifierProperty.GetSetter(mappingInfo.ProxyInterface);
+				}
+				proxyFactory = BuildProxyFactory(mappingInfo, pidGetter, pidSetter);
+				/*******************************************************************************/
 				if (proxyFactory == null)
 				{
 					entityMetamodel.IsLazy = false;
@@ -187,15 +200,14 @@ namespace NHibernate.Tuple.Entity
 
 		public virtual object[] GetPropertyValuesToInsert(object entity, IDictionary mergeMap, ISessionImplementor session)
 		{
-			throw new NotImplementedException();
-			//int span = entityMetamodel.PropertySpan;
-			//object[] result = new object[span];
+			int span = entityMetamodel.PropertySpan;
+			object[] result = new object[span];
 
-			//for (int j = 0; j < span; j++)
-			//{
-			//  result[j] = getters[j].GetForInsert(entity, mergeMap, session);
-			//}
-			//return result;
+			for (int j = 0; j < span; j++)
+			{
+				result[j] = getters[j].GetForInsert(entity, mergeMap, session);
+			}
+			return result;
 		}
 
 		public object GetPropertyValue(object entity, string propertyPath)
@@ -257,8 +269,7 @@ namespace NHibernate.Tuple.Entity
 				}
 				else
 				{
-					throw new NotSupportedException();
-					//result[j] = LazyPropertyInitializer_Fields.UNFETCHED_PROPERTY;
+					result[j] = LazyPropertyInitializer.UnfetchedProperty;
 				}
 			}
 			return result;
@@ -270,8 +281,7 @@ namespace NHibernate.Tuple.Entity
 
 			for (int j = 0; j < entityMetamodel.PropertySpan; j++)
 			{
-				// TODO : H3.2 Property lazyness
-				//if (setAll || values[j] != org.hibernate.intercept.LazyPropertyInitializer_Fields.UNFETCHED_PROPERTY)
+				if (setAll || values[j] != LazyPropertyInitializer.UnfetchedProperty)
 				{
 					setters[j].Set(entity, values[j]);
 				}

@@ -1,16 +1,18 @@
 using System;
 using System.Collections;
-using System.Reflection;
 using NHibernate.Cache;
+using NHibernate.Cache.Entry;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
+using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest
 {
+
 	public class TestingClassPersister : IEntityPersister
 	{
 		public IType IdentifierType
@@ -18,287 +20,16 @@ namespace NHibernate.Test.NHSpecificTest
 			get { return NHibernateUtil.Int32; }
 		}
 
+		// NOTE:
+		// IdentifierType is what we need for this test.
+		// other properties with a sort of implementation are :
+		// RootEntityName, EntityName, IsBatchLoadable, Factory
+
 		#region IEntityPersister Members
 
-		public object IdentifierSpace
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.IdentifierSpace getter implementation
-				return null;
-			}
-		}
-
-		public IClassMetadata ClassMetadata
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.ClassMetadata getter implementation
-				return null;
-			}
-		}
-
-		public bool HasCache
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.HasCache getter implementation
-				return false;
-			}
-		}
-
-		public object GetCurrentVersion(object id, ISessionImplementor session)
-		{
-			// TODO:  Add TestingClassPersister.GetCurrentVersion implementation
-			return null;
-		}
-
-		public int[] FindDirty(object[] x, object[] y, object owner, ISessionImplementor session)
-		{
-			// TODO:  Add TestingClassPersister.FindDirty implementation
-			return null;
-		}
-
-		public bool IsBatchLoadable
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.IsBatchLoadable getter implementation
-				return false;
-			}
-		}
-
-		public bool IsCacheInvalidationRequired
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.IsCacheInvalidationRequired getter implementation
-				return false;
-			}
-		}
-
-		public bool[] PropertyUpdateability
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.PropertyUpdateability getter implementation
-				return null;
-			}
-		}
-
-		public bool[] PropertyCheckability
+		public ISessionFactoryImplementor Factory
 		{
 			get { return null; }
-		}
-
-		public bool HasCascades
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.HasCascades getter implementation
-				return false;
-			}
-		}
-
-		public object Instantiate(object id)
-		{
-			// TODO:  Add TestingClassPersister.Instantiate implementation
-			return null;
-		}
-
-		public IIdentifierGenerator IdentifierGenerator
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.IdentifierGenerator getter implementation
-				return null;
-			}
-		}
-
-		public bool[] PropertyInsertability
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.PropertyInsertability getter implementation
-				return null;
-			}
-		}
-
-		public bool[] PropertyVersionability
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.PropertyVersionability getter implementation
-				return null;
-			}
-		}
-
-
-		public System.Type MappedClass
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.MappedClass getter implementation
-				return null;
-			}
-		}
-
-		public object Insert(object[] fields, object obj, ISessionImplementor session)
-		{
-			// TODO:  Add TestingClassPersister.Insert implementation
-			return null;
-		}
-
-		void IEntityPersister.Insert(object id, object[] fields, object obj, ISessionImplementor session)
-		{
-			// TODO:  Add TestingClassPersister.NHibernate.Persister.IEntityPersister.Insert implementation
-		}
-
-		public bool IsUnsaved(object obj)
-		{
-			// TODO:  Add TestingClassPersister.IsUnsaved implementation
-			return false;
-		}
-
-		public bool CanExtractIdOutOfEntity
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.CanExtractIdOutOfEntity getter implementation
-				return false;
-			}
-		}
-
-		public object GetVersion(object obj)
-		{
-			// TODO:  Add TestingClassPersister.GetVersion implementation
-			return null;
-		}
-
-		public CascadeStyle[] PropertyCascadeStyles
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.PropertyCascadeStyles getter implementation
-				return null;
-			}
-		}
-
-		public string[] PropertySpaces
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.PropertySpaces getter implementation
-				return null;
-			}
-		}
-
-		public void SetPropertyValues(object obj, object[] values)
-		{
-			// TODO:  Add TestingClassPersister.SetPropertyValues implementation
-		}
-
-		public IType[] PropertyTypes
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.PropertyTypes getter implementation
-				return null;
-			}
-		}
-
-		public object[] GetDatabaseSnapshot(object id, ISessionImplementor session)
-		{
-			// TODO:  Add TestingClassPersister.GetCurrentPersistentState implementation
-			return null;
-		}
-
-		public bool IsIdentifierAssignedByInsert
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.IsIdentifierAssignedByInsert getter implementation
-				return false;
-			}
-		}
-
-		public System.Type ConcreteProxyClass
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.ConcreteProxyClass getter implementation
-				return null;
-			}
-		}
-
-		public object GetIdentifier(object obj)
-		{
-			// TODO:  Add TestingClassPersister.GetIdentifier implementation
-			return null;
-		}
-
-		public object GetPropertyValue(object obj, string name)
-		{
-			// TODO:  Add TestingClassPersister.GetPropertyValue implementation
-			return null;
-		}
-
-		object IEntityPersister.GetPropertyValue(object obj, int i)
-		{
-			// TODO:  Add TestingClassPersister.NHibernate.Persister.IEntityPersister.GetPropertyValue implementation
-			return null;
-		}
-
-		public bool IsVersioned
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.IsVersioned getter implementation
-				return false;
-			}
-		}
-
-		public IComparer VersionComparator
-		{
-			get { return null; }
-		}
-
-		public bool HasProxy
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.HasProxy getter implementation
-				return false;
-			}
-		}
-
-		public void SetIdentifier(object obj, object id)
-		{
-			// TODO:  Add TestingClassPersister.SetIdentifier implementation
-		}
-
-		public bool ImplementsLifecycle
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.ImplementsLifecycle getter implementation
-				return false;
-			}
-		}
-
-		public object[] GetPropertyValues(object obj)
-		{
-			// TODO:  Add TestingClassPersister.GetPropertyValues implementation
-			return null;
-		}
-
-		public string ClassName
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.ClassName getter implementation
-				return null;
-			}
 		}
 
 		public string RootEntityName
@@ -311,187 +42,156 @@ namespace NHibernate.Test.NHSpecificTest
 			get { return null; }
 		}
 
-		public int[] FindModified(object[] old, object[] current, object owner, ISessionImplementor session)
+		public EntityMetamodel EntityMetamodel
 		{
-			// TODO:  Add TestingClassPersister.FindModified implementation
-			return null;
+			get { throw new NotImplementedException(); }
 		}
 
-		public bool HasIdentifierProperty
+		public string[] PropertySpaces
 		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.HasIdentifierProperty getter implementation
-				return false;
-			}
-		}
-
-		public IType GetPropertyType(string propertyName)
-		{
-			// TODO:  Add TestingClassPersister.GetPropertyType implementation
-			return null;
-		}
-
-		public int VersionProperty
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.VersionProperty getter implementation
-				return 0;
-			}
-		}
-
-		public PropertyInfo ProxyIdentifierProperty
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.ProxyIdentifierProperty getter implementation
-				return null;
-			}
-		}
-
-		public bool IsMutable
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.IsMutable getter implementation
-				return false;
-			}
-		}
-
-		public bool HasCollections
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.HasCollections getter implementation
-				return false;
-			}
-		}
-
-		public void Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields,
-		                   object oldVersion, object obj, ISessionImplementor session)
-		{
-			// TODO:  Add TestingClassPersister.Update implementation
-		}
-
-		public void Delete(object id, object version, object obj, ISessionImplementor session)
-		{
-			// TODO:  Add TestingClassPersister.Delete implementation
-		}
-
-		public string[] PropertyNames
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.PropertyNames getter implementation
-				return null;
-			}
-		}
-
-		public void SetPropertyValue(object obj, string name, object value)
-		{
-			// TODO:  Add TestingClassPersister.SetPropertyValue implementation
-		}
-
-		void IEntityPersister.SetPropertyValue(object obj, int i, object value)
-		{
-			// TODO:  Add TestingClassPersister.NHibernate.Persister.IEntityPersister.SetPropertyValue implementation
-		}
-
-		public object Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session)
-		{
-			// TODO:  Add TestingClassPersister.Load implementation
-			return null;
-		}
-
-		public ICacheConcurrencyStrategy Cache
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.Cache getter implementation
-				return null;
-			}
-		}
-
-		public bool ImplementsValidatable
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.ImplementsValidatable getter implementation
-				return false;
-			}
-		}
-
-		public bool IsUnsavedVersion(object[] values)
-		{
-			// TODO:  Add TestingClassPersister.IsDefaultVersion implementation
-			return false;
-		}
-
-		public bool[] PropertyNullability
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.PropertyNullability getter implementation
-				return null;
-			}
-		}
-
-		public void PostInstantiate()
-		{
-			// TODO:  Add TestingClassPersister.PostInstantiate implementation
-		}
-
-		public IVersionType VersionType
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.VersionType getter implementation
-				return null;
-			}
-		}
-
-		public string IdentifierPropertyName
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.IdentifierPropertyName getter implementation
-				return null;
-			}
-		}
-
-		public System.Type[] ProxyInterfaces
-		{
-			get
-			{
-				// TODO:  Add TestingClassPersister.ProxyInterfaces getter implementation
-				return null;
-			}
-		}
-
-		public void Lock(object id, object version, object obj, LockMode lockMode, ISessionImplementor session)
-		{
-			// TODO:  Add TestingClassPersister.Lock implementation
-		}
-
-		public object CreateProxy(object id, ISessionImplementor session)
-		{
-			return null;
+			get { throw new NotImplementedException(); }
 		}
 
 		public string[] QuerySpaces
 		{
-			get { return null; }
+			get { throw new NotImplementedException(); }
 		}
 
-		public ISessionFactoryImplementor Factory
+		public bool IsMutable
 		{
-			get { return null; }
+			get { throw new NotImplementedException(); }
 		}
 
-		public bool IsInstance(object entity)
+		public bool IsInherited
 		{
-			return true;
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool IsIdentifierAssignedByInsert
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		#region IOptimisticCacheSource Members
+
+		public bool IsVersioned
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		bool IEntityPersister.IsVersioned
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public IVersionType VersionType
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public int VersionProperty
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public int[] NaturalIdentifierProperties
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public IIdentifierGenerator IdentifierGenerator
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public IType[] PropertyTypes
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public string[] PropertyNames
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool[] PropertyInsertability
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public ValueInclusion[] PropertyInsertGenerationInclusions
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public ValueInclusion[] PropertyUpdateGenerationInclusions
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool[] PropertyCheckability
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool[] PropertyNullability
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool[] PropertyVersionability
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool[] PropertyLaziness
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public CascadeStyle[] PropertyCascadeStyles
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public string IdentifierPropertyName
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool IsCacheInvalidationRequired
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool IsLazyPropertiesCacheable
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public ICacheConcurrencyStrategy Cache
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public ICacheEntryStructure CacheEntryStructure
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public IClassMetadata ClassMetadata
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool IsBatchLoadable
+		{
+			get { return false; }
+		}
+
+		public bool IsSelectBeforeUpdateRequired
+		{
+			get { throw new NotImplementedException(); }
 		}
 
 		public bool IsVersionPropertyGenerated
@@ -499,9 +199,145 @@ namespace NHibernate.Test.NHSpecificTest
 			get { throw new NotImplementedException(); }
 		}
 
+		public void PostInstantiate()
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool IsSubclassEntityName(string entityName)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool HasProxy
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool HasCollections
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool HasMutableProperties
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool HasSubselectLoadableCollections
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool HasCascades
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public IType GetPropertyType(string propertyName)
+		{
+			throw new NotImplementedException();
+		}
+
+		public int[] FindDirty(object[] currentState, object[] previousState, object entity, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public int[] FindModified(object[] old, object[] current, object entity, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool HasIdentifierProperty
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool CanExtractIdOutOfEntity
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool HasNaturalIdentifier
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public object[] GetNaturalIdentifierSnapshot(object id, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool HasLazyProperties
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public object Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Lock(object id, object version, object obj, LockMode lockMode, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Insert(object id, object[] fields, object obj, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public object Insert(object[] fields, object obj, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Delete(object id, object version, object obj, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields,
+		                   object oldVersion, object obj, object rowId, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool[] PropertyUpdateability
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool HasCache
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public object[] GetDatabaseSnapshot(object id, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public object GetCurrentVersion(object id, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public object ForceVersionIncrement(object id, object currentVersion, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public EntityMode? GuessEntityMode(object obj)
+		{
+			throw new NotImplementedException();
+		}
+
 		public bool IsInstrumented(EntityMode entityMode)
 		{
-			return false;
+			throw new NotImplementedException();
 		}
 
 		public bool HasInsertGeneratedProperties
@@ -514,9 +350,29 @@ namespace NHibernate.Test.NHSpecificTest
 			get { throw new NotImplementedException(); }
 		}
 
-		public bool IsSelectBeforeUpdateRequired
+		public void AfterInitialize(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
 		{
-			get { throw new NotImplementedException(); }
+			throw new NotImplementedException();
+		}
+
+		public void AfterReassociate(object entity, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public object CreateProxy(object id, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool? IsTransient(object obj, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public object[] GetPropertyValuesToInsert(object obj, IDictionary mergeMap, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
 		}
 
 		public void ProcessInsertGeneratedProperties(object id, object entity, object[] state, ISessionImplementor session)
@@ -529,21 +385,104 @@ namespace NHibernate.Test.NHSpecificTest
 			throw new NotImplementedException();
 		}
 
+		public System.Type GetMappedClass(EntityMode entityMode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool ImplementsLifecycle(EntityMode entityMode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool ImplementsValidatable(EntityMode entityMode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public System.Type GetConcreteProxyClass(EntityMode entityMode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SetPropertyValues(object obj, object[] values, EntityMode entityMode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SetPropertyValue(object obj, int i, object value, EntityMode entityMode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public object[] GetPropertyValues(object obj, EntityMode entityMode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public object GetPropertyValue(object obj, int i, EntityMode entityMode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public object GetPropertyValue(object obj, string name, EntityMode entityMode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public object GetIdentifier(object obj, EntityMode entityMode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SetIdentifier(object obj, object id, EntityMode entityMode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public object GetVersion(object obj, EntityMode entityMode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public object Instantiate(object id, EntityMode entityMode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool IsInstance(object entity, EntityMode entityMode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool HasUninitializedLazyProperties(object obj, EntityMode entityMode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void ResetIdentifier(object entity, object currentId, object currentVersion, EntityMode entityMode)
+		{
+			throw new NotImplementedException();
+		}
+
 		public IEntityPersister GetSubclassEntityPersister(object instance, ISessionFactoryImplementor factory,
 		                                                   EntityMode entityMode)
 		{
 			throw new NotImplementedException();
 		}
 
-		public bool IsLazyPropertiesCacheable
+		public bool? IsUnsavedVersion(object version)
 		{
-			get { return true; }
+			throw new NotImplementedException();
 		}
 
-		public object ForceVersionIncrement(object id, object currentVersion, ISessionImplementor session)
+		#endregion
+
+		public IComparer VersionComparator
 		{
-			return null;
+			get { throw new NotImplementedException(); }
 		}
+
 		#endregion
 	}
 

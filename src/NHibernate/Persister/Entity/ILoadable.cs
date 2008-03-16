@@ -16,24 +16,31 @@ namespace NHibernate.Persister.Entity
 	public interface ILoadable : IEntityPersister
 	{
 		/// <summary>
-		/// Does the persistent class have subclasses?
-		/// </summary>
-		bool HasSubclasses { get; }
-
-		/// <summary>
 		/// The discriminator type
 		/// </summary>
 		IType DiscriminatorType { get; }
 
 		/// <summary>
-		/// Get the concrete subclass corresponding to the given discriminator value
-		/// </summary>
-		System.Type GetSubclassForDiscriminatorValue(object value);
-
-		/// <summary>
 		/// Get the names of columns used to persist the identifier
 		/// </summary>
 		string[] IdentifierColumnNames { get; }
+
+		/// <summary>
+		/// Get the name of the column used as a discriminator
+		/// </summary>
+		string DiscriminatorColumnName { get; }
+
+		bool IsAbstract { get; }
+
+		/// <summary>
+		/// Does the persistent class have subclasses?
+		/// </summary>
+		bool HasSubclasses { get; }
+
+		/// <summary>
+		/// Get the concrete subclass corresponding to the given discriminator value
+		/// </summary>
+		string GetSubclassForDiscriminatorValue(object value);
 
 		/// <summary>
 		/// Get the result set aliases used for the identifier columns, given a suffix
@@ -55,34 +62,13 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		string GetDiscriminatorAlias(string suffix);
 
-		/// <summary>
-		/// Get the name of the column used as a discriminator
-		/// </summary>
-		string DiscriminatorColumnName { get; }
-
-		/// <summary>
-		/// Does this entity own any collections which are fetchable by subselect?
-		/// </summary>
-		bool HasSubselectLoadableCollections { get; }
+		/// <summary> Does the result set contain rowids?</summary>
+		bool HasRowId { get;}
 
 		/// <summary>
 		/// Retrieve property values from one row of a result set
 		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="id"></param>
-		/// <param name="obj"></param>
-		/// <param name="rootLoadable"></param>
-		/// <param name="suffixedPropertyColumns"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		object[] Hydrate(
-			IDataReader rs,
-			object id,
-			object obj,
-			ILoadable rootLoadable,
-			string[][] suffixedPropertyColumns,
-			ISessionImplementor session);
-
-		bool IsAbstract { get; }
+		object[] Hydrate(IDataReader rs, object id, object obj, ILoadable rootLoadable, string[][] suffixedPropertyColumns,
+		                 bool allProperties, ISessionImplementor session);
 	}
 }

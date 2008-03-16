@@ -46,7 +46,7 @@ namespace NHibernate.Event.Default
 			if (e == null)
 			{
 				persister = source.GetEntityPersister(obj); //refresh() does not pass an entityName
-				id = persister.GetIdentifier(obj);
+				id = persister.GetIdentifier(obj, source.EntityMode);
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("refreshing transient " + MessageHelper.InfoString(persister, id, source.Factory));
@@ -95,13 +95,12 @@ namespace NHibernate.Event.Default
 
 			EvictCachedCollections(persister, id, source.Factory);
 
-			// todo-events Different behaviour
-			//string previousFetchProfile = source.FetchProfile;
-			//source.FetchProfile = "refresh";
+			string previousFetchProfile = source.FetchProfile;
+			source.FetchProfile = "refresh";
 			object result = persister.Load(id, obj, @event.LockMode, source);
-			//source.FetchProfile = previousFetchProfile;
+			source.FetchProfile = previousFetchProfile;
 
-			UnresolvableObjectException.ThrowIfNull(result, id, persister.MappedClass);
+			UnresolvableObjectException.ThrowIfNull(result, id, persister.EntityName);
 		}
 
 		// Evict collections from the factory-level cache

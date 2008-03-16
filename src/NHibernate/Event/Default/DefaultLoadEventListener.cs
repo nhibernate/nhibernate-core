@@ -96,7 +96,7 @@ namespace NHibernate.Event.Default
 				{
 					throw new PersistentObjectException("attempted to load into an instance that was already associated with the session: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 				}
-				persister.SetIdentifier(@event.InstanceToLoad, @event.EntityId);
+				persister.SetIdentifier(@event.InstanceToLoad, @event.EntityId, @event.Session.EntityMode);
 			}
 
 			object entity = DoLoad(@event, persister, keyToLoad, options);
@@ -367,7 +367,7 @@ namespace NHibernate.Event.Default
 				if (options.IsAllowNulls)
 				{
 					IEntityPersister persister = @event.Session.Factory.GetEntityPersister(@event.EntityClassName);
-					if (!persister.IsInstance(old))
+					if (!persister.IsInstance(old, @event.Session.EntityMode))
 					{
 						return InconsistentRTNClassMarker;
 					}

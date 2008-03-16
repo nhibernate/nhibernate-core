@@ -24,12 +24,13 @@ namespace NHibernate.Event.Default
 
 		internal override void Process(object obj, IEntityPersister persister)
 		{
-			System.Object[] values = persister.GetPropertyValues(obj);
+			EntityMode entityMode = Session.EntityMode;
+			System.Object[] values = persister.GetPropertyValues(obj, entityMode);
 			IType[] types = persister.PropertyTypes;
 			ProcessEntityPropertyValues(values, types);
 			if (SubstitutionRequired)
 			{
-				persister.SetPropertyValues(obj, values);
+				persister.SetPropertyValues(obj, values, entityMode);
 			}
 		}
 

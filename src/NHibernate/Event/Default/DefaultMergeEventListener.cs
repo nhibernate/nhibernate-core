@@ -81,7 +81,7 @@ namespace NHibernate.Event.Default
 					if (entry == null)
 					{
 						IEntityPersister persister = source.GetEntityPersister(entity);
-						object id = persister.GetIdentifier(entity);
+						object id = persister.GetIdentifier(entity, source.EntityMode);
 						if (id != null)
 						{
 							EntityKey key = new EntityKey(id, persister, source.EntityMode);
@@ -149,7 +149,7 @@ namespace NHibernate.Event.Default
 			IEntityPersister persister = source.GetEntityPersister(entity);
 			string entityName = persister.EntityName;
 
-			object id = persister.HasIdentifierProperty ? persister.GetIdentifier(entity) : null;
+			object id = persister.HasIdentifierProperty ? persister.GetIdentifier(entity, source.EntityMode) : null;
 
 			// NH : Different behavior (H3.2 don't change the original entity state, NH did)
 			//object copy = persister.Instantiate(id); // should this be Session.instantiate(Persister, ...)?
@@ -197,13 +197,13 @@ namespace NHibernate.Event.Default
 			object id = @event.RequestedId;
 			if (id == null)
 			{
-				id = persister.GetIdentifier(entity);
+				id = persister.GetIdentifier(entity, source.EntityMode);
 			}
 			else
 			{
 				// check that entity id = requestedId
-				object entityId = persister.GetIdentifier(entity);
-				if (!persister.IdentifierType.IsEqual(id, entityId, EntityMode.Poco))
+				object entityId = persister.GetIdentifier(entity, source.EntityMode);
+				if (!persister.IdentifierType.IsEqual(id, entityId, source.EntityMode))
 				{
 					throw new HibernateException("merge requested with id not matching id of passed entity");
 				}
@@ -216,7 +216,7 @@ namespace NHibernate.Event.Default
 			//we must clone embedded composite identifiers, or 
 			//we will get back the same instance that we pass in
 			object clonedIdentifier = persister.IdentifierType.DeepCopy(id, source.EntityMode, source.Factory);
-			object result = source.Get(persister.MappedClass, clonedIdentifier);
+			object result = source.Get(persister.EntityName, clonedIdentifier);
 
 			//source.FetchProfile = previousFetchProfile;
 
@@ -295,8 +295,9 @@ namespace NHibernate.Event.Default
 			// an entity to be merged during the same transaction
 			// (though during a seperate operation) in which it was
 			// originally persisted/saved
-			// todo-events Verify if "IsEquals" in NH work like "IsSame" in H3.2
-			bool changed = !persister.VersionType.IsEqual(persister.GetVersion(target), persister.GetVersion(entity), EntityMode.Poco);
+			bool changed =
+				!persister.VersionType.IsSame(persister.GetVersion(target, source.EntityMode),
+				                              persister.GetVersion(entity, source.EntityMode), source.EntityMode);
 
 			// TODO : perhaps we should additionally require that the incoming entity
 			// version be equivalent to the defined unsaved-value?
@@ -308,7 +309,7 @@ namespace NHibernate.Event.Default
 			EntityEntry entry = source.PersistenceContext.GetEntry(entity);
 			if (entry == null)
 			{
-				object id = persister.GetIdentifier(entity);
+				object id = persister.GetIdentifier(entity, source.EntityMode);
 				if (id != null)
 				{
 					EntityKey key = new EntityKey(id, persister, source.EntityMode);
@@ -331,14 +332,16 @@ namespace NHibernate.Event.Default
 
 		protected internal static void CopyValues(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache)
 		{
-			object[] copiedValues = TypeFactory.Replace(
-				persister.GetPropertyValues(entity), persister.GetPropertyValues(target), 
-				persister.PropertyTypes, source, target, copyCache);
+			object[] copiedValues =
+				TypeFactory.Replace(persister.GetPropertyValues(entity, source.EntityMode),
+				                    persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes, source, target,
+				                    copyCache);
 
-			persister.SetPropertyValues(target, copiedValues);
+			persister.SetPropertyValues(target, copiedValues, source.EntityMode);
 		}
 
-		protected internal static void CopyValues(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
+		protected static void CopyValues(IEntityPersister persister, object entity, object target,
+			ISessionImplementor source, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
 		{
 			object[] copiedValues;
 
@@ -347,18 +350,20 @@ namespace NHibernate.Event.Default
 				// this is the second pass through on a merge op, so here we limit the
 				// replacement to associations types (value types were already replaced
 				// during the first pass)
-				copiedValues = TypeFactory.ReplaceAssociations(persister.GetPropertyValues(entity), 
-					persister.GetPropertyValues(target), 
-					persister.PropertyTypes, source, target, copyCache, foreignKeyDirection);
+				copiedValues =
+					TypeFactory.ReplaceAssociations(persister.GetPropertyValues(entity, source.EntityMode),
+					                                persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes,
+					                                source, target, copyCache, foreignKeyDirection);
 			}
 			else
 			{
-				copiedValues = TypeFactory.Replace(persister.GetPropertyValues(entity), 
-					persister.GetPropertyValues(target), 
-					persister.PropertyTypes, source, target, copyCache, foreignKeyDirection);
+				copiedValues =
+					TypeFactory.Replace(persister.GetPropertyValues(entity, source.EntityMode),
+					                    persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes, source, target,
+					                    copyCache, foreignKeyDirection);
 			}
 
-			persister.SetPropertyValues(target, copiedValues);
+			persister.SetPropertyValues(target, copiedValues, source.EntityMode);
 		}
 
 		/// <summary> 

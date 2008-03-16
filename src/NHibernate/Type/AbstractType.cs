@@ -197,18 +197,6 @@ namespace NHibernate.Type
 		/// /> 
 		public abstract int GetColumnSpan(IMapping mapping);
 
-		/// <summary>
-		/// Determines whether the specified value is represented as <see langword="null" /> in the database.
-		/// </summary>
-		/// <param name="value">The value, may be <see langword="null" />.</param>
-		/// <returns>
-		/// <see langword="true" /> if the specified value is <see langword="null" />; otherwise, <see langword="false" />.
-		/// </returns>
-		public virtual bool IsDatabaseNull(object value)
-		{
-			return value == null;
-		}
-
 		public virtual object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache,
 		                      ForeignKeyDirection foreignKeyDirection)
 		{

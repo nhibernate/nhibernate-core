@@ -834,7 +834,7 @@ namespace NHibernate.Hql.Classic
 				{
 					if (includeInSelect[i])
 					{
-						actualReturnTypes[j++] = NHibernateUtil.Entity(persisters[i].MappedClass);
+						actualReturnTypes[j++] = NHibernateUtil.Entity(persisters[i].EntityName);
 					}
 				}
 			}
@@ -859,7 +859,7 @@ namespace NHibernate.Hql.Classic
 			{
 				string suffix = (size == 1) ? String.Empty : k.ToString() + StringHelper.Underscore;
 				string name = returnedTypes[k];
-				sql.AddSelectFragmentString(persisters[k].PropertySelectFragment(name, suffix));
+				sql.AddSelectFragmentString(persisters[k].PropertySelectFragment(name, suffix, false));
 			}
 		}
 
@@ -878,7 +878,7 @@ namespace NHibernate.Hql.Classic
 				int size = returnedTypes.Count;
 				for (int k = 0; k < size; k++)
 				{
-					scalarTypes.Add(NHibernateUtil.Entity(persisters[k].MappedClass));
+					scalarTypes.Add(NHibernateUtil.Entity(persisters[k].EntityName));
 
 					string[] _names = persisters[k].IdentifierColumnNames;
 					for (int i = 0; i < _names.Length; i++)

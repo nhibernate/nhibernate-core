@@ -98,10 +98,9 @@ namespace NHibernate.Proxy
 
 		public abstract System.Type PersistentClass { get;}
 
-		/// <summary></summary>
 		public bool IsUninitialized
 		{
-			get { return (_target == null); }
+			get { return !initialized; }
 		}
 
 		public bool Unwrap
@@ -144,11 +143,6 @@ namespace NHibernate.Proxy
 		protected internal object Target
 		{
 			get { return _target; }
-		}
-
-		public bool Uninitialized
-		{
-			get { return !initialized; }
 		}
 
 		/// <summary>

@@ -50,9 +50,9 @@ namespace NHibernate.DomainModel.NHSpecific
 			return NullableInt32.Parse(xml);
 		}
 
-		public override bool IsDatabaseNull(object value)
+		public override bool[] ToColumnNullness(object value, Engine.IMapping mapping)
 		{
-			return value == null || NullableInt32.Default.Equals(value);
+			return value == null || NullableInt32.Default.Equals(value) ? new bool[] { false } : new bool[] { true };
 		}
 	}
 }

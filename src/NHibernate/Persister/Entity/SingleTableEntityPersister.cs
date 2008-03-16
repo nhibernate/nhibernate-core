@@ -1,8 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Mapping;
@@ -21,17 +20,13 @@ namespace NHibernate.Persister.Entity
 		// the class hierarchy structure
 		private readonly int joinSpan;
 		private readonly string[] qualifiedTableNames;
-		private readonly string[] tableNames;
 		private readonly bool[] isInverseTable;
 		private readonly bool[] isNullableTable;
 		private readonly string[][] keyColumnNames;
 		private readonly bool[] cascadeDeleteEnabled;
 		private readonly bool hasSequentialSelects;
-
-		private readonly String[] spaces;
-
-		private readonly System.Type[] subclassClosure;
-
+		private readonly string[] spaces;
+		private readonly string[] subclassClosure;
 		private readonly string[] subclassTableNameClosure;
 		private readonly bool[] subclassTableIsLazyClosure;
 		private readonly bool[] isInverseSubclassTable;
@@ -51,7 +46,7 @@ namespace NHibernate.Persister.Entity
 		private readonly int[] subclassFormulaTableNumberClosure;
 
 		// discriminator column
-		private readonly Hashtable subclassesByDiscriminatorValue = new Hashtable();
+		private readonly Dictionary<object, string> subclassesByDiscriminatorValue = new Dictionary<object, string>();
 		private readonly bool forceDiscriminator;
 		private readonly string discriminatorColumnName;
 		private readonly string discriminatorFormula;
@@ -66,32 +61,319 @@ namespace NHibernate.Persister.Entity
 		private readonly string[][] constraintOrderedKeyColumnNames;
 
 		//private readonly IDictionary propertyTableNumbersByName = new Hashtable();
-		private readonly IDictionary propertyTableNumbersByNameAndSubclass = new Hashtable();
+		private readonly Dictionary<string, int> propertyTableNumbersByNameAndSubclass = new Dictionary<string, int>();
 
-		private readonly IDictionary sequentialSelectStringsByEntityName = new Hashtable();
-
+		private readonly Dictionary<string, SqlString> sequentialSelectStringsByEntityName = new Dictionary<string, SqlString>();
 
 		private static readonly object NullDiscriminator = new object();
 		private static readonly object NotNullDiscriminator = new object();
+
+		public SingleTableEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache,
+																			ISessionFactoryImplementor factory, IMapping mapping)
+			: base(persistentClass, cache, factory)
+		{
+			#region CLASS + TABLE
+
+			joinSpan = persistentClass.JoinClosureSpan + 1;
+			qualifiedTableNames = new string[joinSpan];
+			isInverseTable = new bool[joinSpan];
+			isNullableTable = new bool[joinSpan];
+			keyColumnNames = new string[joinSpan][];
+			Table table = persistentClass.RootTable;
+			qualifiedTableNames[0] =
+				table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
+			isInverseTable[0] = false;
+			isNullableTable[0] = false;
+			keyColumnNames[0] = IdentifierColumnNames;
+			cascadeDeleteEnabled = new bool[joinSpan];
+
+			// Custom sql
+			customSQLInsert = new SqlString[joinSpan];
+			customSQLUpdate = new SqlString[joinSpan];
+			customSQLDelete = new SqlString[joinSpan];
+			insertCallable = new bool[joinSpan];
+			updateCallable = new bool[joinSpan];
+			deleteCallable = new bool[joinSpan];
+			insertResultCheckStyles = new ExecuteUpdateResultCheckStyle[joinSpan];
+			updateResultCheckStyles = new ExecuteUpdateResultCheckStyle[joinSpan];
+			deleteResultCheckStyles = new ExecuteUpdateResultCheckStyle[joinSpan];
+
+			customSQLInsert[0] = persistentClass.CustomSQLInsert;
+			insertCallable[0] = customSQLInsert[0] != null && persistentClass.IsCustomInsertCallable;
+			insertResultCheckStyles[0] = persistentClass.CustomSQLInsertCheckStyle
+																	 ?? ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLInsert[0], insertCallable[0]);
+			customSQLUpdate[0] = persistentClass.CustomSQLUpdate;
+			updateCallable[0] = customSQLUpdate[0] != null && persistentClass.IsCustomUpdateCallable;
+			updateResultCheckStyles[0] = persistentClass.CustomSQLUpdateCheckStyle
+																	 ?? ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLUpdate[0], updateCallable[0]);
+			customSQLDelete[0] = persistentClass.CustomSQLDelete;
+			deleteCallable[0] = customSQLDelete[0] != null && persistentClass.IsCustomDeleteCallable;
+			deleteResultCheckStyles[0] = persistentClass.CustomSQLDeleteCheckStyle
+																	 ?? ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLDelete[0], deleteCallable[0]);
+
+			#endregion
+
+			#region JOINS
+			int j = 1;
+			foreach (Join join in persistentClass.JoinClosureIterator)
+			{
+				qualifiedTableNames[j] = join.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
+				isInverseTable[j] = join.IsInverse;
+				isNullableTable[j] = join.IsOptional;
+				cascadeDeleteEnabled[j] = join.Key.IsCascadeDeleteEnabled && factory.Dialect.SupportsCascadeDelete;
+
+				customSQLInsert[j] = join.CustomSQLInsert;
+				insertCallable[j] = customSQLInsert[j] != null && join.IsCustomInsertCallable;
+				insertResultCheckStyles[j] = join.CustomSQLInsertCheckStyle
+																		 ??
+																		 ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLInsert[j], insertCallable[j]);
+				customSQLUpdate[j] = join.CustomSQLUpdate;
+				updateCallable[j] = customSQLUpdate[j] != null && join.IsCustomUpdateCallable;
+				updateResultCheckStyles[j] = join.CustomSQLUpdateCheckStyle
+																		 ??
+																		 ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLUpdate[j], updateCallable[j]);
+				customSQLDelete[j] = join.CustomSQLDelete;
+				deleteCallable[j] = customSQLDelete[j] != null && join.IsCustomDeleteCallable;
+				deleteResultCheckStyles[j] = join.CustomSQLDeleteCheckStyle
+																		 ??
+																		 ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLDelete[j], deleteCallable[j]);
+
+				IEnumerable<Column> enumerableKeyCol = new SafetyEnumerable<Column>(join.Key.ColumnIterator);
+				List<string> kcName = new List<string>(join.Key.ColumnSpan);
+				foreach (Column col in enumerableKeyCol)
+					kcName.Add(col.GetQuotedName(factory.Dialect));
+
+				keyColumnNames[j] = kcName.ToArray();
+
+				j++;
+			}
+
+			constraintOrderedTableNames = new string[qualifiedTableNames.Length];
+			constraintOrderedKeyColumnNames = new string[qualifiedTableNames.Length][];
+			for (int i = qualifiedTableNames.Length - 1, position = 0; i >= 0; i--, position++)
+			{
+				constraintOrderedTableNames[position] = qualifiedTableNames[i];
+				constraintOrderedKeyColumnNames[position] = keyColumnNames[i];
+			}
+
+			spaces = ArrayHelper.Join(qualifiedTableNames, ArrayHelper.ToStringArray(persistentClass.SynchronizedTables));
+
+			bool lazyAvailable = IsInstrumented(EntityMode.Poco);
+
+			bool hasDeferred = false;
+			List<string> subclassTables = new List<string>();
+			List<string[]> joinKeyColumns = new List<string[]>();
+			List<bool> isConcretes = new List<bool>();
+			List<bool> isDeferreds = new List<bool>();
+			List<bool> isInverses = new List<bool>();
+			List<bool> isNullables = new List<bool>();
+			List<bool> isLazies = new List<bool>();
+			subclassTables.Add(qualifiedTableNames[0]);
+			joinKeyColumns.Add(IdentifierColumnNames);
+			isConcretes.Add(true);
+			isDeferreds.Add(false);
+			isInverses.Add(false);
+			isNullables.Add(false);
+			isLazies.Add(false);
+			foreach (Join join in persistentClass.SubclassJoinClosureIterator)
+			{
+				isConcretes.Add(persistentClass.IsClassOrSuperclassJoin(join));
+				isDeferreds.Add(join.IsSequentialSelect);
+				isInverses.Add(join.IsInverse);
+				isNullables.Add(join.IsOptional);
+				isLazies.Add(lazyAvailable && join.IsLazy);
+				if (join.IsSequentialSelect && !persistentClass.IsClassOrSuperclassJoin(join))
+					hasDeferred = true;
+				subclassTables.Add(join.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName));
+				IEnumerable<Column> enumerableKeyCol = new SafetyEnumerable<Column>(join.Key.ColumnIterator);
+				List<string> keyCols = new List<string>(join.Key.ColumnSpan);
+				foreach (Column col in enumerableKeyCol)
+					keyCols.Add(col.GetQuotedName(factory.Dialect));
+
+				joinKeyColumns.Add(keyCols.ToArray());
+			}
+
+			subclassTableSequentialSelect = isDeferreds.ToArray();
+			subclassTableNameClosure = subclassTables.ToArray();
+			subclassTableIsLazyClosure = isLazies.ToArray();
+			subclassTableKeyColumnClosure = joinKeyColumns.ToArray();
+			isClassOrSuperclassTable = isConcretes.ToArray();
+			isInverseSubclassTable = isInverses.ToArray();
+			isNullableSubclassTable = isNullables.ToArray();
+			hasSequentialSelects = hasDeferred;
+
+			#endregion
+
+			#region DISCRIMINATOR
+
+			if (persistentClass.IsPolymorphic)
+			{
+				IValue discrimValue = persistentClass.Discriminator;
+				if (discrimValue == null)
+					throw new MappingException("Discriminator mapping required for single table polymorphic persistence");
+
+				forceDiscriminator = persistentClass.IsForceDiscriminator;
+				IEnumerator<ISelectable> iSel = discrimValue.ColumnIterator.GetEnumerator();
+				iSel.MoveNext();
+				ISelectable selectable = iSel.Current;
+				if (discrimValue.HasFormula)
+				{
+					Formula formula = (Formula)selectable;
+					discriminatorFormula = formula.FormulaString;
+					discriminatorFormulaTemplate = formula.GetTemplate(factory.Dialect, factory.SQLFunctionRegistry);
+					discriminatorColumnName = null;
+					discriminatorAlias = Discriminator_Alias;
+				}
+				else
+				{
+					Column column = (Column)selectable;
+					discriminatorColumnName = column.GetQuotedName(factory.Dialect);
+					discriminatorAlias = column.GetAlias(factory.Dialect, persistentClass.RootTable);
+					discriminatorFormula = null;
+					discriminatorFormulaTemplate = null;
+				}
+				discriminatorType = persistentClass.Discriminator.Type;
+				if (persistentClass.IsDiscriminatorValueNull)
+				{
+					discriminatorValue = NullDiscriminator;
+					discriminatorSQLValue = InFragment.Null;
+					discriminatorInsertable = false;
+				}
+				else if (persistentClass.IsDiscriminatorValueNotNull)
+				{
+					discriminatorValue = NotNullDiscriminator;
+					discriminatorSQLValue = InFragment.NotNull;
+					discriminatorInsertable = false;
+				}
+				else
+				{
+					discriminatorInsertable = persistentClass.IsDiscriminatorInsertable && !discrimValue.HasFormula;
+					try
+					{
+						IDiscriminatorType dtype = (IDiscriminatorType)discriminatorType;
+						discriminatorValue = dtype.StringToObject(persistentClass.DiscriminatorValue);
+						discriminatorSQLValue = dtype.ObjectToSQLString(discriminatorValue, factory.Dialect);
+					}
+					catch (InvalidCastException cce)
+					{
+						throw new MappingException(
+							string.Format("Illegal discriminator type: {0} of entity {1}", discriminatorType.Name, persistentClass.EntityName), cce);
+					}
+					catch (Exception e)
+					{
+						throw new MappingException("Could not format discriminator value to SQL string of entity " + persistentClass.EntityName, e);
+					}
+				}
+			}
+			else
+			{
+				forceDiscriminator = false;
+				discriminatorInsertable = false;
+				discriminatorColumnName = null;
+				discriminatorAlias = null;
+				discriminatorType = null;
+				discriminatorValue = null;
+				discriminatorSQLValue = null;
+				discriminatorFormula = null;
+				discriminatorFormulaTemplate = null;
+			}
+
+			#endregion
+
+			#region PROPERTIES
+
+			propertyTableNumbers = new int[PropertySpan];
+			int i2 = 0;
+			foreach (Property prop in persistentClass.PropertyClosureIterator)
+			{
+				propertyTableNumbers[i2++] = persistentClass.GetJoinNumber(prop);
+			}
+
+			List<int> columnJoinNumbers = new List<int>();
+			List<int> formulaJoinedNumbers = new List<int>();
+			List<int> propertyJoinNumbers = new List<int>();
+			foreach (Property prop in persistentClass.SubclassPropertyClosureIterator)
+			{
+				int join = persistentClass.GetJoinNumber(prop);
+				propertyJoinNumbers.Add(join);
+
+				//propertyTableNumbersByName.put( prop.getName(), join );
+				propertyTableNumbersByNameAndSubclass[prop.PersistentClass.EntityName + '.' + prop.Name] = join;
+				foreach (ISelectable thing in prop.ColumnIterator)
+				{
+					if (thing.IsFormula)
+						formulaJoinedNumbers.Add(join);
+					else
+						columnJoinNumbers.Add(join);
+				}
+			}
+
+			subclassColumnTableNumberClosure = columnJoinNumbers.ToArray();
+			subclassFormulaTableNumberClosure = formulaJoinedNumbers.ToArray();
+			subclassPropertyTableNumberClosure = propertyJoinNumbers.ToArray();
+
+			int subclassSpan = persistentClass.SubclassSpan + 1;
+			subclassClosure = new string[subclassSpan];
+			subclassClosure[0] = EntityName;
+			if (persistentClass.IsPolymorphic)
+				subclassesByDiscriminatorValue[discriminatorValue] = EntityName;
+
+			#endregion
+
+			#region SUBCLASSES
+			if (persistentClass.IsPolymorphic)
+			{
+				int k = 1;
+				foreach (Subclass sc in persistentClass.SubclassIterator)
+				{
+					subclassClosure[k++] = sc.EntityName;
+					if (sc.IsDiscriminatorValueNull)
+					{
+						subclassesByDiscriminatorValue[NullDiscriminator] = sc.EntityName;
+					}
+					else if (sc.IsDiscriminatorValueNotNull)
+					{
+						subclassesByDiscriminatorValue[NotNullDiscriminator] = sc.EntityName;
+					}
+					else
+					{
+						if (discriminatorType == null)
+							throw new MappingException("Not available discriminator type of entity " + persistentClass.EntityName);
+						try
+						{
+							IDiscriminatorType dtype = (IDiscriminatorType)discriminatorType;
+							subclassesByDiscriminatorValue[dtype.StringToObject(sc.DiscriminatorValue)] = sc.EntityName;
+						}
+						catch (InvalidCastException cce)
+						{
+							throw new MappingException(
+								string.Format("Illegal discriminator type: {0} of entity {1}", discriminatorType.Name, persistentClass.EntityName), cce);
+						}
+						catch (Exception e)
+						{
+							throw new MappingException("Error parsing discriminator value of entity " + persistentClass.EntityName, e);
+						}
+					}
+				}
+			}
+
+			#endregion
+
+			InitLockers();
+
+			InitSubclassPropertyAliasesMap(persistentClass);
+
+			PostConstruct(mapping);
+		}
 
 		public override string DiscriminatorColumnName
 		{
 			get { return discriminatorColumnName; }
 		}
 
-		protected override string DiscriminatorAlias
-		{
-			get { return discriminatorAlias; }
-		}
-
 		protected override string DiscriminatorFormulaTemplate
 		{
 			get { return discriminatorFormulaTemplate; }
-		}
-
-		public override string TableName
-		{
-			get { return qualifiedTableNames[0]; }
 		}
 
 		public override IType DiscriminatorType
@@ -109,456 +391,49 @@ namespace NHibernate.Persister.Entity
 			get { return discriminatorValue; }
 		}
 
-		public virtual System.Type[] SubclassClosure
+		public virtual string[] SubclassClosure
 		{
 			get { return subclassClosure; }
 		}
 
-		public override System.Type GetSubclassForDiscriminatorValue(object value)
-		{
-			if (value == null)
-			{
-				return (System.Type) subclassesByDiscriminatorValue[NullDiscriminator];
-			}
-			else
-			{
-				System.Type result = (System.Type) subclassesByDiscriminatorValue[value];
-				if (result == null)
-				{
-					result = (System.Type) subclassesByDiscriminatorValue[NotNullDiscriminator];
-				}
-				return result;
-			}
-		}
-
 		public override string[] PropertySpaces
 		{
-			get { return qualifiedTableNames; }
+			get { return spaces; }
 		}
 
-		protected bool IsDiscriminatorFormula
-		{
-			get { return discriminatorColumnName == null; }
-		}
-
-		protected string DiscriminatorFormula
-		{
-			get { return discriminatorFormula; }
-		}
-
-		// MOVED GenerateInsertString() to AbstractEntityPersister to implement <join>
-		//protected override SqlCommandInfo GenerateInsertString(bool identityInsert, bool[] includeProperty, int j)
-		//{
-		//    base.GenerateInsertString(identityInsert, includeProperty, j);
-		//}
-
-		/// <summary>
-		/// Generate the SQL that selects a row by id using <c>FOR UPDATE</c>
-		/// </summary>
-		/// <returns></returns>
-		protected SqlString GenerateSelectForUpdateString()
-		{
-			return GenerateSelectString(" for update");
-		}
-
-		/// <summary>
-		/// Generate the SQL that selects a row by id using <c>FOR UPDATE NOWAIT</c>
-		/// </summary>
-		/// <returns></returns>
-		protected SqlString GenerateSelectForUpdateNoWaitString()
-		{
-			return GenerateSelectString(" for update nowait");
-		}
-
-		/// <summary>
-		/// Generates an SqlString that selects a row by id
-		/// </summary>
-		/// <param name="forUpdateFragment">SQL containing <c>FOR UPDATE</c> clauses
-		/// to append at the end of the query (optional)</param>
-		/// <returns></returns>
-		protected virtual SqlString GenerateSelectString(string forUpdateFragment)
-		{
-			SqlSimpleSelectBuilder builder = new SqlSimpleSelectBuilder(Factory.Dialect, Factory);
-
-			// set the table name and add the columns to select
-			builder.SetTableName(TableName)
-				.AddColumns(IdentifierColumnNames)
-				.AddColumns(SubclassColumnClosure, SubclassColumnAliasClosure)
-				.AddColumns(SubclassFormulaClosure, SubclassFormulaAliasClosure);
-
-			if (HasSubclasses)
-			{
-				builder.AddColumn(DiscriminatorColumnName, DiscriminatorAlias);
-			}
-
-			// add the parameters to use in the WHERE clause
-			builder.SetIdentityColumn(IdentifierColumnNames, IdentifierType);
-
-			// Ok, render the SELECT statement
-			SqlString selectSqlString = builder.ToSqlString();
-
-			// add any special text that is contained in the forUpdateFragment
-			if (forUpdateFragment != null && forUpdateFragment.Length > 0)
-			{
-				selectSqlString = selectSqlString.Append(forUpdateFragment);
-			}
-
-			return selectSqlString;
-		}
-
-		protected override int[] PropertyTableNumbersInSelect
+		protected internal override int[] PropertyTableNumbersInSelect
 		{
 			get { return propertyTableNumbers; }
 		}
 
-		/// <summary>
-		/// Generate the SQL that updates a row by id, excluding subclasses
-		/// </summary>
-		/// <param name="includeProperty"></param>
-		/// <returns></returns>
-		protected SqlCommandInfo GenerateUpdateString(bool[] includeProperty)
+		protected override int[] SubclassColumnTableNumberClosure
 		{
-			return GenerateUpdateString(includeProperty, 0, null);
+			get { return subclassColumnTableNumberClosure; }
 		}
 
-		//INITIALIZATION:
-
-		public SingleTableEntityPersister(PersistentClass model, ICacheConcurrencyStrategy cache,
-		                                  ISessionFactoryImplementor factory, IMapping mapping)
-			: base(model, cache, factory)
+		protected override int[] SubclassFormulaTableNumberClosure
 		{
-			int i;
+			get { return subclassFormulaTableNumberClosure; }
+		}
 
-			// CLASS + TABLE
-			#region CLASS + TABLE
+		protected internal override int[] PropertyTableNumbers
+		{
+			get { return propertyTableNumbers; }
+		}
 
-			System.Type mappedClass = model.MappedClass;
+		public override bool IsMultiTable
+		{
+			get { return TableSpan > 1; }
+		}
 
-			joinSpan = model.JoinClosureSpan + 1;
-			qualifiedTableNames = new string[joinSpan];
-			isInverseTable = new bool[joinSpan];
-			isNullableTable = new bool[joinSpan];
-			keyColumnNames = new string[joinSpan][];
-			Table table = model.RootTable;
-			qualifiedTableNames[0] = table.GetQualifiedName(Dialect, factory.DefaultSchema);
-			isInverseTable[0] = false;
-			isNullableTable[0] = false;
-			keyColumnNames[0] = this.IdentifierColumnNames;
-			cascadeDeleteEnabled = new bool[joinSpan];
+		public override string[] ConstraintOrderedTableNameClosure
+		{
+			get { return constraintOrderedTableNames; }
+		}
 
-			// Custom sql
-			customSQLInsert = new SqlString[joinSpan];
-			customSQLUpdate = new SqlString[joinSpan];
-			customSQLDelete = new SqlString[joinSpan];
-			insertCallable = new bool[joinSpan];
-			updateCallable = new bool[joinSpan];
-			deleteCallable = new bool[joinSpan];
-			insertResultCheckStyles = new ExecuteUpdateResultCheckStyle[joinSpan];
-			updateResultCheckStyles = new ExecuteUpdateResultCheckStyle[joinSpan];
-			deleteResultCheckStyles = new ExecuteUpdateResultCheckStyle[joinSpan];
-
-			customSQLInsert[0] = model.CustomSQLInsert;
-			insertCallable[0] = customSQLInsert[0] != null && model.IsCustomInsertCallable;
-			insertResultCheckStyles[0] = model.CustomSQLInsertCheckStyle == null
-			                             	?
-			                             ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLInsert[0], insertCallable[0])
-			                             	: model.CustomSQLInsertCheckStyle;
-			customSQLUpdate[0] = model.CustomSQLUpdate;
-			updateCallable[0] = customSQLUpdate[0] != null && model.IsCustomUpdateCallable;
-			updateResultCheckStyles[0] = model.CustomSQLUpdateCheckStyle == null
-			                             	?
-			                             ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLUpdate[0], updateCallable[0])
-			                             	: model.CustomSQLUpdateCheckStyle;
-			customSQLDelete[0] = model.CustomSQLDelete;
-			deleteCallable[0] = customSQLDelete[0] != null && model.IsCustomDeleteCallable;
-			deleteResultCheckStyles[0] = model.CustomSQLDeleteCheckStyle == null
-			                             	?
-			                             ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLDelete[0], deleteCallable[0])
-			                             	: model.CustomSQLDeleteCheckStyle;
-			#endregion
-
-			// JOINS
-			#region JOINS
-
-			int j = 1;
-			foreach (Join join in model.JoinClosureIterator)
-			{
-				qualifiedTableNames[j] = join.Table.GetQualifiedName(
-					factory.Dialect, 
-					factory.Settings.DefaultSchemaName
-				);
-				isInverseTable[j] = join.IsInverse;
-				isNullableTable[j] = join.IsOptional;
-				//cascadeDeleteEnabled[j] = join.Key.IsCascadeDeleteEnabled && factory.Dialect.SupportsCascadeDelete;
-
-				customSQLInsert[j] = join.CustomSQLInsert;
-				insertCallable[j] = customSQLInsert[j] != null && join.IsCustomInsertCallable;
-				insertResultCheckStyles[j] = join.CustomSQLInsertCheckStyle == null
-					? ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLInsert[j], insertCallable[j])
-					: join.CustomSQLInsertCheckStyle;
-				customSQLUpdate[j] = join.CustomSQLUpdate;
-				updateCallable[j] = customSQLUpdate[j] != null && join.IsCustomUpdateCallable;
-				updateResultCheckStyles[j] = join.CustomSQLUpdateCheckStyle == null
-					? ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLUpdate[j], updateCallable[j])
-					: join.CustomSQLUpdateCheckStyle;
-				customSQLDelete[j] = join.CustomSQLDelete;
-				deleteCallable[j] = customSQLDelete[j] != null && join.IsCustomDeleteCallable;
-				deleteResultCheckStyles[j] = join.CustomSQLDeleteCheckStyle == null
-					? ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLDelete[j], deleteCallable[j])
-					: join.CustomSQLDeleteCheckStyle;
-
-				IEnumerable<ISelectable> keyColumns = join.Key.ColumnIterator;
-				keyColumnNames[j] = new string[join.Key.ColumnSpan];
-				i = 0;
-				foreach (Column col in keyColumns)
-				{
-					keyColumnNames[j][i++] = col.GetQuotedName(factory.Dialect);
-				}
-
-				j++;
-			}
-
-			constraintOrderedTableNames = new string[qualifiedTableNames.Length];
-			constraintOrderedKeyColumnNames = new string[qualifiedTableNames.Length][];
-			for (int k = qualifiedTableNames.Length - 1, position = 0; k >= 0; k--, position++)
-			{
-				constraintOrderedTableNames[position] = qualifiedTableNames[k];
-				constraintOrderedKeyColumnNames[position] = keyColumnNames[k];
-			}
-
-			spaces = ArrayHelper.Join(
-				qualifiedTableNames,
-				ArrayHelper.ToStringArray(model.SynchronizedTables));
-
-			// TODO: H3 - IsInstrumented depends on EntityModel
-			//bool lazyAvailable = IsInstrumented();
-
-			bool hasDeferred = false;
-			ArrayList subclassTables = new ArrayList();
-			ArrayList joinKeyColumns = new ArrayList();
-			ArrayList isConcretes = new ArrayList();
-			ArrayList isDeferreds = new ArrayList();
-			ArrayList isInverses = new ArrayList();
-			ArrayList isNullables = new ArrayList();
-			ArrayList isLazies = new ArrayList();
-			subclassTables.Add(qualifiedTableNames[0]);
-			joinKeyColumns.Add(IdentifierColumnNames);
-			isConcretes.Add(false);
-			isDeferreds.Add(false);
-			isInverses.Add(false);
-			isNullables.Add(false);
-			isLazies.Add(false);
-
-			foreach (Join join in model.SubclassJoinClosureIterator)
-			{
-				
-				isConcretes.Add(model.IsClassOrSuperclassJoin(join));
-				isDeferreds.Add(join.IsSequentialSelect);
-				isInverses.Add(join.IsInverse);
-				isNullables.Add(join.IsOptional);
-				// TODO: Fix isLazies when lazy column is implemented
-				isLazies.Add(false); //isLazies.Add(lazyAvailable && join.isLazy);
-				if (join.IsSequentialSelect && !model.IsClassOrSuperclassJoin(join))
-					hasDeferred = true;
-				subclassTables.Add(join.Table.GetQualifiedName(factory.Dialect, factory.DefaultSchema));
-				string[] keyCols = new string[join.Key.ColumnSpan];
-				int k = 0;
-				foreach (Column col in join.Key.ColumnIterator)
-				{
-					keyCols[k++] = col.GetQuotedName(factory.Dialect);
-				}
-				joinKeyColumns.Add(keyCols);
-			}
-
-			subclassTableSequentialSelect = ArrayHelper.ToBooleanArray(isDeferreds);
-			subclassTableNameClosure = ArrayHelper.ToStringArray(subclassTables);
-			subclassTableIsLazyClosure = ArrayHelper.ToBooleanArray(isLazies);
-			subclassTableKeyColumnClosure = ArrayHelper.To2DStringArray(joinKeyColumns);
-			isClassOrSuperclassTable = ArrayHelper.ToBooleanArray(isConcretes);
-			isInverseSubclassTable = ArrayHelper.ToBooleanArray(isInverses);
-			isNullableSubclassTable = ArrayHelper.ToBooleanArray(isNullables);
-			hasSequentialSelects = hasDeferred;
-
-			#endregion
-
-			// detect mapping errors
-			HashedSet distinctColumns = new HashedSet();
-
-			// DISCRIMINATOR
-			#region DISCRIMINATOR
-			if (model.IsPolymorphic)
-			{
-				IValue d = model.Discriminator;
-				if (d == null)
-				{
-					throw new MappingException("A discriminator mapping required for polymorphic persistence of entity " + model.EntityName);
-				}
-				forceDiscriminator = model.IsForceDiscriminator;
-
-				// the discriminator will have only one column 
-				foreach (ISelectable selectable in d.ColumnIterator)
-				{
-					if (d.HasFormula)
-					{
-						Formula formula = (Formula) selectable;
-						discriminatorFormula = formula.FormulaString;
-						discriminatorFormulaTemplate = formula.GetTemplate(factory.Dialect, factory.SQLFunctionRegistry);
-						discriminatorColumnName = null;
-						discriminatorAlias = "clazz_";
-					}
-					else
-					{
-						Column column = (Column) selectable;
-						discriminatorColumnName = column.GetQuotedName(Dialect);
-						discriminatorAlias = column.GetAlias(Dialect);
-						discriminatorFormula = null;
-						discriminatorFormulaTemplate = null;
-					}
-				}
-				discriminatorType = model.Discriminator.Type;
-
-				if (model.IsDiscriminatorValueNull)
-				{
-					discriminatorValue = NullDiscriminator;
-					discriminatorSQLValue = InFragment.Null;
-					discriminatorInsertable = false;
-				}
-				else if (model.IsDiscriminatorValueNotNull)
-				{
-					discriminatorValue = NotNullDiscriminator;
-					discriminatorSQLValue = InFragment.NotNull;
-					discriminatorInsertable = false;
-				}
-				else
-				{
-					discriminatorInsertable = model.IsDiscriminatorInsertable && !d.HasFormula;
-					try
-					{
-						IDiscriminatorType dtype = (IDiscriminatorType) discriminatorType;
-						discriminatorValue = dtype.StringToObject(model.DiscriminatorValue);
-						discriminatorSQLValue = dtype.ObjectToSQLString(discriminatorValue, Dialect);
-					}
-					catch (InvalidCastException)
-					{
-						throw new MappingException(string.Format("Illegal discriminator type: {0}", discriminatorType.Name));
-					}
-					catch (Exception e)
-					{
-						string msg = String.Format("Could not format discriminator value '{0}' to sql string using the IType {1}",
-						                           model.DiscriminatorValue,
-						                           model.Discriminator.Type.ToString());
-
-						throw new MappingException(msg, e);
-					}
-
-					if (discriminatorInsertable)
-					{
-						distinctColumns.Add(discriminatorColumnName);
-					}
-				}
-			}
-			else
-			{
-				forceDiscriminator = false;
-				discriminatorInsertable = false;
-				discriminatorColumnName = null;
-				discriminatorAlias = null;
-				discriminatorType = null;
-				discriminatorValue = null;
-				discriminatorSQLValue = null;
-			}
-			#endregion 
-
-			// PROPERTIES
-			#region PROPERTIES
-
-			propertyTableNumbers = new int[PropertySpan];
-			i = 0;
-			foreach (Mapping.Property prop in model.PropertyClosureIterator)
-			{
-				propertyTableNumbers[i++] = model.GetJoinNumber(prop);
-			}
-
-			ArrayList columnJoinNumbers = new ArrayList();
-			ArrayList formulaJoinedNumbers = new ArrayList();
-			ArrayList propertyJoinNumbers = new ArrayList();
-
-			foreach (Mapping.Property prop in model.SubclassPropertyClosureIterator)
-			{
-				int joinNumber = model.GetJoinNumber(prop);
-				propertyJoinNumbers.Add(joinNumber);
-
-				propertyTableNumbersByNameAndSubclass.Add(
-					prop.PersistentClass.MappedClass.FullName + "." + prop.Name,
-					joinNumber);
-
-				foreach (ISelectable thing in prop.ColumnIterator)
-				{
-					if (thing.IsFormula)
-						formulaJoinedNumbers.Add(joinNumber);
-					else
-						columnJoinNumbers.Add(joinNumber);
-				}
-			}
-			subclassColumnTableNumberClosure = ArrayHelper.ToIntArray(columnJoinNumbers);
-			subclassFormulaTableNumberClosure = ArrayHelper.ToIntArray(formulaJoinedNumbers);
-			subclassPropertyTableNumberClosure = ArrayHelper.ToIntArray(propertyJoinNumbers);
-
-			// SQL string generation moved to PostInstantiate
-
-			int subclassSpan = model.SubclassSpan + 1;
-			subclassClosure = new System.Type[subclassSpan];
-			subclassClosure[0] = mappedClass;
-			if (model.IsPolymorphic)
-			{
-				subclassesByDiscriminatorValue.Add(discriminatorValue, mappedClass);
-			}
-			#endregion
-
-			// SUBCLASSES
-			#region SUBCLASSES
-			if (model.IsPolymorphic)
-			{
-				int k = 1;
-				foreach (Subclass sc in model.SubclassIterator)
-				{
-					subclassClosure[k++] = sc.MappedClass;
-					if (sc.IsDiscriminatorValueNull)
-					{
-						subclassesByDiscriminatorValue.Add(NullDiscriminator, sc.MappedClass);
-					}
-					else if (sc.IsDiscriminatorValueNotNull)
-					{
-						subclassesByDiscriminatorValue.Add(NotNullDiscriminator, sc.MappedClass);
-					}
-					else
-					{
-						try
-						{
-							IDiscriminatorType dtype = discriminatorType as IDiscriminatorType;
-							subclassesByDiscriminatorValue.Add(
-								dtype.StringToObject(sc.DiscriminatorValue),
-								sc.MappedClass);
-						}
-						catch (InvalidCastException)
-						{
-							throw new MappingException(string.Format("Illegal discriminator type: {0}", discriminatorType.Name));
-						}
-						catch (Exception e)
-						{
-							throw new MappingException(string.Format("Error parsing discriminator value: '{0}'", sc.DiscriminatorValue), e);
-						}
-					}
-				}
-			}
-			#endregion
-
-			// This is in PostInstatiate as it needs identifier info
-			//InitLockers();
-
-			InitSubclassPropertyAliasesMap(model);
-
-			PostConstruct(mapping);
+		public override string[][] ContraintOrderedTableKeyColumnClosure
+		{
+			get { return constraintOrderedKeyColumnNames; }
 		}
 
 		protected override bool IsInverseTable(int j)
@@ -571,55 +446,121 @@ namespace NHibernate.Persister.Entity
 			return isInverseSubclassTable[j];
 		}
 
-		public override SqlString QueryWhereFragment(string name, bool innerJoin, bool includeSubclasses)
+		protected internal override string DiscriminatorAlias
 		{
-			if (innerJoin && NeedsDiscriminator)
+			get { return discriminatorAlias; }
+		}
+
+		public override string TableName
+		{
+			get { return qualifiedTableNames[0]; }
+		}
+
+		public override string GetSubclassForDiscriminatorValue(object value)
+		{
+			string result;
+			if (value == null)
 			{
-				SqlStringBuilder builder = new SqlStringBuilder();
-				builder.Add(" and " + DiscriminatorWhereCondition(name));
-
-				if (HasWhere)
-				{
-					builder.Add(" and " + GetSQLWhereString(name));
-				}
-
-				return builder.ToSqlString();
+				subclassesByDiscriminatorValue.TryGetValue(NullDiscriminator, out result);
 			}
 			else
 			{
-				if (HasWhere)
+				if (!subclassesByDiscriminatorValue.TryGetValue(value, out result))
+					subclassesByDiscriminatorValue.TryGetValue(NotNullDiscriminator, out result);
+			}
+			return result;
+		}
+
+		protected bool IsDiscriminatorFormula
+		{
+			get { return discriminatorColumnName == null; }
+		}
+
+		protected string DiscriminatorFormula
+		{
+			get { return discriminatorFormula; }
+		}
+
+		protected override string GetTableName(int table)
+		{
+			return qualifiedTableNames[table];
+		}
+
+		protected override string[] GetKeyColumns(int table)
+		{
+			return keyColumnNames[table];
+		}
+
+		protected override bool IsTableCascadeDeleteEnabled(int j)
+		{
+			return cascadeDeleteEnabled[j];
+		}
+
+		protected override bool IsPropertyOfTable(int property, int table)
+		{
+			return propertyTableNumbers[property] == table;
+		}
+
+		protected override bool IsSubclassTableSequentialSelect(int table)
+		{
+			return subclassTableSequentialSelect[table] && !isClassOrSuperclassTable[table];
+		}
+
+		public override string FromTableFragment(string name)
+		{
+			return TableName + ' ' + name;
+		}
+
+		public override string FilterFragment(string alias)
+		{
+			string result = DiscriminatorFilterFragment(alias);
+			if (HasWhere)
+				result += " and " + GetSQLWhereString(alias);
+
+			return result;
+		}
+
+		public override string OneToManyFilterFragment(string alias)
+		{
+			return forceDiscriminator ? DiscriminatorFilterFragment(alias) : string.Empty;
+		}
+
+		private string DiscriminatorFilterFragment(string alias)
+		{
+			if (NeedsDiscriminator)
+			{
+				InFragment frag = new InFragment();
+
+				if (IsDiscriminatorFormula)
 				{
-					return new SqlString(" and " + GetSQLWhereString(name));
+					frag.SetFormula(alias, DiscriminatorFormulaTemplate);
 				}
 				else
 				{
-					return SqlString.Empty;
+					frag.SetColumn(alias, DiscriminatorColumnName);
 				}
-			}
-		}
 
-		private SqlString DiscriminatorWhereCondition(string alias)
-		{
-			InFragment frag = new InFragment()
-				.SetColumn(alias, DiscriminatorColumnName);
+				string[] subclasses = SubclassClosure;
+				for (int i = 0; i < subclasses.Length; i++)
+				{
+					IQueryable queryable = (IQueryable)Factory.GetEntityPersister(subclasses[i]);
+					if (!queryable.IsAbstract)
+						frag.AddValue(queryable.DiscriminatorSQLValue);
+				}
 
-			if (IsDiscriminatorFormula)
-			{
-				frag.SetFormula(alias, DiscriminatorFormulaTemplate);
+				StringBuilder buf = new StringBuilder(50).Append(" and ").Append(frag.ToFragmentString().ToString());
+
+				return buf.ToString();
 			}
 			else
 			{
-				frag.SetColumn(alias, DiscriminatorColumnName);
+				return string.Empty;
 			}
+		}
 
-			System.Type[] subclasses = SubclassClosure;
-			for (int i = 0; i < subclasses.Length; i++)
-			{
-				IQueryable queryable = (IQueryable) Factory.GetEntityPersister(subclasses[i]);
-				frag.AddValue(queryable.DiscriminatorSQLValue);
-			}
-
-			return frag.ToFragmentString();
+		private bool NeedsDiscriminator
+		{
+			get { return forceDiscriminator || IsInherited; }
 		}
 
 		public override string GetSubclassPropertyTableName(int i)
@@ -627,27 +568,34 @@ namespace NHibernate.Persister.Entity
 			return subclassTableNameClosure[subclassPropertyTableNumberClosure[i]];
 		}
 
-		public override SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
+		protected override void AddDiscriminatorToSelect(SelectFragment select, string name, string suffix)
 		{
-			return SqlString.Empty;
+			if (IsDiscriminatorFormula)
+				select.AddFormula(name, DiscriminatorFormulaTemplate, DiscriminatorAlias);
+			else
+				select.AddColumn(name, DiscriminatorColumnName, DiscriminatorAlias);
 		}
 
-		/// <summary></summary>
-		public override bool IsCacheInvalidationRequired
+		protected override int GetSubclassPropertyTableNumber(int i)
 		{
-			get { return HasFormulaProperties || (!IsVersioned && UseDynamicUpdate); }
+			return subclassPropertyTableNumberClosure[i];
 		}
 
-		/// <summary></summary>
-		protected override string VersionedTableName
+		protected override int TableSpan
 		{
-			get { return qualifiedTableNames[0]; }
+			get { return joinSpan; }
 		}
 
-		protected override bool IsSubclassPropertyDeferred(string propertyName, System.Type entityName)
+		protected override void AddDiscriminatorToInsert(SqlInsertBuilder insert)
 		{
-			return hasSequentialSelects &&
-				IsSubclassTableSequentialSelect(GetSubclassPropertyTableNumber(propertyName, entityName));
+			if (discriminatorInsertable)
+				insert.AddColumn(DiscriminatorColumnName, DiscriminatorSQLValue);
+		}
+
+		protected override bool IsSubclassPropertyDeferred(string propertyName, string entityName)
+		{
+			return
+				hasSequentialSelects && IsSubclassTableSequentialSelect(GetSubclassPropertyTableNumber(propertyName, entityName));
 		}
 
 		public override bool HasSequentialSelect
@@ -655,25 +603,21 @@ namespace NHibernate.Persister.Entity
 			get { return hasSequentialSelects; }
 		}
 
-		public int GetSubclassPropertyTableNumber(string propertyPath, System.Type entityName)
+		public int GetSubclassPropertyTableNumber(string propertyName, string entityName)
 		{
-			IType type = propertyMapping.ToType(propertyPath);
+			IType type = propertyMapping.ToType(propertyName);
 			if (type.IsAssociationType && ((IAssociationType)type).UseLHSPrimaryKey)
 				return 0;
-			string propertyFullName = entityName.FullName + '.' + propertyPath;
-			if (propertyTableNumbersByNameAndSubclass.Contains(propertyFullName))
-			{
-				return (int)propertyTableNumbersByNameAndSubclass[propertyFullName];
-			}
-			else
-			{
-				return 0;
-			}
+			int tabnum;
+			propertyTableNumbersByNameAndSubclass.TryGetValue(entityName + '.' + propertyName, out tabnum);
+			return tabnum;
 		}
 
-		protected override SqlString GetSequentialSelect(System.Type entityName)
+		protected override SqlString GetSequentialSelect(string entityName)
 		{
-			return (SqlString)sequentialSelectStringsByEntityName[entityName];
+			SqlString result;
+			sequentialSelectStringsByEntityName.TryGetValue(entityName, out result);
+			return result;
 		}
 
 		private SqlString GenerateSequentialSelect(ILoadable persister)
@@ -683,9 +627,9 @@ namespace NHibernate.Persister.Entity
 
 			//figure out which tables need to be fetched
 			AbstractEntityPersister subclassPersister = (AbstractEntityPersister)persister;
-			HashedSet tableNumbers = new HashedSet();
+			HashedSet<int> tableNumbers = new HashedSet<int>();
 			string[] props = subclassPersister.PropertyNames;
-			System.Type[] classes = subclassPersister.PropertySubclassNames;
+			string[] classes = subclassPersister.PropertySubclassNames;
 			for (int i = 0; i < props.Length; i++)
 			{
 				int propTableNumber = GetSubclassPropertyTableNumber(props[i], classes[i]);
@@ -694,36 +638,29 @@ namespace NHibernate.Persister.Entity
 					tableNumbers.Add(propTableNumber);
 				}
 			}
-			if (tableNumbers.IsEmpty) return null;
+			if ((tableNumbers.Count == 0))
+				return null;
 
 			//figure out which columns are needed
-			ArrayList columnNumbers = new ArrayList();
+			List<int> columnNumbers = new List<int>();
 			int[] columnTableNumbers = SubclassColumnTableNumberClosure;
 			for (int i = 0; i < SubclassColumnClosure.Length; i++)
 			{
 				if (tableNumbers.Contains(columnTableNumbers[i]))
-				{
 					columnNumbers.Add(i);
-				}
 			}
 
 			//figure out which formulas are needed
-			ArrayList formulaNumbers = new ArrayList();
+			List<int> formulaNumbers = new List<int>();
 			int[] formulaTableNumbers = SubclassColumnTableNumberClosure;
 			for (int i = 0; i < SubclassFormulaTemplateClosure.Length; i++)
 			{
 				if (tableNumbers.Contains(formulaTableNumbers[i]))
-				{
 					formulaNumbers.Add(i);
-				}
 			}
 
 			//render the SQL
-			return RenderSelect(
-				ArrayHelper.ToIntArray(tableNumbers),
-				ArrayHelper.ToIntArray(columnNumbers),
-				ArrayHelper.ToIntArray(formulaNumbers)
-			);
+			return RenderSelect(ArrayHelper.ToIntArray(tableNumbers), columnNumbers.ToArray(), formulaNumbers.ToArray());
 		}
 
 		protected override string[] GetSubclassTableKeyColumns(int j)
@@ -746,142 +683,7 @@ namespace NHibernate.Persister.Entity
 			return isClassOrSuperclassTable[j];
 		}
 
-		protected override void AddDiscriminatorToSelect(SelectFragment select, string name, string suffix)
-		{
-			if (IsDiscriminatorFormula)
-			{
-				select.AddFormula(name, DiscriminatorFormulaTemplate, DiscriminatorAlias);
-			}
-			else
-			{
-				select.AddColumn(name, DiscriminatorColumnName, DiscriminatorAlias);
-			}
-		}
-
-		protected override int GetSubclassPropertyTableNumber(int i)
-		{
-			return subclassPropertyTableNumberClosure[i];
-		}
-
-		protected override void AddDiscriminatorToInsert(SqlInsertBuilder insert)
-		{
-			if (discriminatorInsertable)
-			{
-				insert.AddColumn(DiscriminatorColumnName, DiscriminatorSQLValue);
-			}
-		}
-
-		protected override int[] SubclassColumnTableNumberClosure
-		{
-			get { return this.subclassColumnTableNumberClosure; }
-		}
-
-		protected override int[] SubclassFormulaTableNumberClosure
-		{
-			get { return this.subclassFormulaTableNumberClosure; }
-		}
-
-		public override string GetPropertyTableName(string propertyName)
-		{
-			int? index = EntityMetamodel.GetPropertyIndexOrNull(propertyName);
-			if (!index.HasValue) return null;
-			return qualifiedTableNames[propertyTableNumbers[index.Value]];
-		}
-
-		public override string FilterFragment(string alias)
-		{
-			string result = DiscriminatorFilterFragment(alias);
-			if (HasWhere)
-			{
-				result += " and " + GetSQLWhereString(alias);
-			}
-			return result;
-		}
-
-		private string DiscriminatorFilterFragment(string alias)
-		{
-			if (NeedsDiscriminator)
-			{
-				InFragment frag = new InFragment();
-
-				if (IsDiscriminatorFormula)
-				{
-					frag.SetFormula(alias, DiscriminatorFormulaTemplate);
-				}
-				else
-				{
-					frag.SetColumn(alias, DiscriminatorColumnName);
-				}
-
-				System.Type[] subclasses = SubclassClosure;
-				for (int i = 0; i < subclasses.Length; i++)
-				{
-					IQueryable queryable = (IQueryable) Factory.GetEntityPersister(subclasses[i]);
-
-					// TODO H3:
-//					if ( !queryable.IsAbstract )
-//					{
-					frag.AddValue(queryable.DiscriminatorSQLValue);
-//					}
-				}
-
-				StringBuilder buf = new StringBuilder(50)
-					.Append(" and ")
-					.Append(frag.ToFragmentString().ToString());
-
-				return buf.ToString();
-			}
-			else
-			{
-				return "";
-			}
-		}
-
-		private bool NeedsDiscriminator
-		{
-			get { return forceDiscriminator || IsInherited; }
-		}
-
-		public override string OneToManyFilterFragment(string alias)
-		{
-			return forceDiscriminator
-			       	?
-			       DiscriminatorFilterFragment(alias)
-			       	:
-			       string.Empty;
-		}
-
-		protected override int TableSpan
-		{
-			get { return joinSpan; }
-		}
-
-		protected override bool IsPropertyOfTable(int property, int table)
-		{
-			return propertyTableNumbers[property] == table;
-		}
-
-		protected override bool IsSubclassTableSequentialSelect(int table)
-		{
-			return subclassTableSequentialSelect[table] && !isClassOrSuperclassTable[table];
-		}
-
-		protected override string[] GetKeyColumns(int table)
-		{
-			return keyColumnNames[table];
-		}
-
-		protected override string GetTableName(int table)
-		{
-			return qualifiedTableNames[table];
-		}
-
-		protected override int[] PropertyTableNumbers
-		{
-			get { return propertyTableNumbers; }
-		}
-
-		protected bool IsSubclassTableLazy(int j)
+		protected internal override bool IsSubclassTableLazy(int j)
 		{
 			return subclassTableIsLazyClosure[j];
 		}
@@ -896,29 +698,30 @@ namespace NHibernate.Persister.Entity
 			return isNullableSubclassTable[j];
 		}
 
+		public override string GetPropertyTableName(string propertyName)
+		{
+			int? index = EntityMetamodel.GetPropertyIndexOrNull(propertyName);
+			if (!index.HasValue) return null;
+			return qualifiedTableNames[propertyTableNumbers[index.Value]];
+		}
+
 		public override void PostInstantiate()
 		{
 			base.PostInstantiate();
 			if (hasSequentialSelects)
 			{
-				System.Type[] entityNames = SubclassClosure;
+				string[] entityNames = SubclassClosure;
 				for (int i = 1; i < entityNames.Length; i++)
 				{
 					ILoadable loadable = (ILoadable)Factory.GetEntityPersister(entityNames[i]);
 					if (!loadable.IsAbstract)
-					{ //perhaps not really necessary...
+					{
+						//perhaps not really necessary...
 						SqlString sequentialSelect = GenerateSequentialSelect(loadable);
 						sequentialSelectStringsByEntityName[entityNames[i]] = sequentialSelect;
 					}
 				}
 			}
 		}
-
-		public override bool IsMultiTable
-		{
-			get { return TableSpan > 1; }
-		}
-
-
 	}
 }

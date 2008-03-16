@@ -55,7 +55,7 @@ namespace NHibernate.Action
 				// we need to grab the version value from the entity, otherwise
 				// we have issues with generated-version entities that may have
 				// multiple actions queued during the same flush
-				previousVersion = persister.GetVersion(instance);
+				previousVersion = persister.GetVersion(instance, session.EntityMode);
 			}
 
 			CacheKey ck = null;
@@ -67,7 +67,7 @@ namespace NHibernate.Action
 
 			if (!veto)
 			{
-				persister.Update(id, state, dirtyFields, hasDirtyCollection, previousState, previousVersion, instance, Session);
+				persister.Update(id, state, dirtyFields, hasDirtyCollection, previousState, previousVersion, instance, null, session);
 			}
 
 			EntityEntry entry = Session.PersistenceContext.GetEntry(instance);

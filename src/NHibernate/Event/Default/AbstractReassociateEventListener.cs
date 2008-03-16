@@ -8,8 +8,8 @@ using Status=NHibernate.Engine.Status;
 
 namespace NHibernate.Event.Default
 {
-	/// <summary> A
-	///  convenience base class for listeners that respond to requests to reassociate an entity
+	/// <summary> 
+	/// A convenience base class for listeners that respond to requests to reassociate an entity
 	/// to a session ( such as through lock() or update() ). 
 	/// </summary>
 	[Serializable]
@@ -39,7 +39,7 @@ namespace NHibernate.Event.Default
 			source.PersistenceContext.CheckUniqueness(key, entity);
 
 			//get a snapshot
-			object[] values = persister.GetPropertyValues(entity);
+			object[] values = persister.GetPropertyValues(entity, source.EntityMode);
 			TypeFactory.DeepCopy(values, persister.PropertyTypes, persister.PropertyUpdateability, values, source);
 			object version = Versioning.GetVersion(values, persister);
 
@@ -47,8 +47,7 @@ namespace NHibernate.Event.Default
 
 			new OnLockVisitor(source, id, entity).Process(entity, persister);
 
-			// TODO: H3 - Property Laziness
-			//persister.AfterReassociate(entity, source);
+			persister.AfterReassociate(entity, source);
 
 			return newEntry;
 		}

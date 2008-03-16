@@ -1,8 +1,11 @@
 using NHibernate.Cache;
+using NHibernate.Cache.Entry;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Metadata;
+using NHibernate.Tuple.Entity;
 using NHibernate.Type;
+using System.Collections;
 
 namespace NHibernate.Persister.Entity
 {
@@ -17,94 +20,66 @@ namespace NHibernate.Persister.Entity
 	/// </summary>
 	/// <remarks>
 	/// Implementors must be threadsafe (preferrably immutable) and must provide a constructor of type
-	/// (PersistentClass, SessionFactoryImplementor)
+	/// matching the signature of: (PersistentClass, SessionFactoryImplementor)
 	/// </remarks>
 	public interface IEntityPersister : IOptimisticCacheSource
 	{
 		/// <summary>
-		/// Finish the initialization of this object, once all <c>ClassPersisters</c> have been
-		/// instantiated. Called only once, before any other method.
+		/// The ISessionFactory to which this persister "belongs".
 		/// </summary>
-		void PostInstantiate();
-
-		/// <summary>
-		/// Returns an object that identifies the space in which identifiers of this class hierarchy
-		/// are unique. eg. a table name, etc.
-		/// </summary>
-		object IdentifierSpace { get; }
-
-		/// <summary>
-		/// Returns an array of objects that identifies spaces in which properties of this class
-		/// instance are persisted. eg. table names.
-		/// </summary>
-		/// <returns></returns>
-		string[] PropertySpaces { get; }
-
-		/// <summary>
-		/// The persistent class
-		/// </summary>
-		System.Type MappedClass { get; }
-
-		/// <summary>
-		/// The classname of the persistent class (used only for messages)
-		/// </summary>
-		string ClassName { get; }
+		ISessionFactoryImplementor Factory { get; }
 
 		/// <summary> 
 		/// Returns an object that identifies the space in which identifiers of
 		/// this entity hierarchy are unique.
 		/// </summary>
-		string RootEntityName{get;}
+		string RootEntityName { get;}
 
-		// TODO H3: http://www.hibernate.org/hib_docs/v3/reference/en/html/mapping.html#mapping-entityname
-		// introduced in NH to prepare the work to port the feature during the port of other features (listener+events)
 		/// <summary>
 		/// The entity name which this persister maps.
 		/// </summary>
 		string EntityName { get;}
 
-		/// <summary>
-		/// Does the class implement the <c>ILifecycle</c> inteface?
+		/// <summary> 
+		/// Retrieve the underlying entity metamodel instance... 
 		/// </summary>
-		bool ImplementsLifecycle { get; }
+		/// <returns> The metamodel </returns>
+		EntityMetamodel EntityMetamodel { get;}
 
 		/// <summary>
-		/// Does the class implement the <c>IValidatable</c> interface?
+		/// Returns an array of objects that identify spaces in which properties of
+		/// this entity are persisted, for instances of this class only.
 		/// </summary>
-		bool ImplementsValidatable { get; }
+		/// <returns>The property spaces.</returns>
+		/// <remarks>
+		/// For most implementations, this returns the complete set of table names
+		/// to which instances of the mapped entity are persisted (not accounting
+		/// for superclass entity mappings).
+		/// </remarks>
+		string[] PropertySpaces { get; }
 
 		/// <summary>
-		/// Does this class support dynamic proxies?
+		/// Returns an array of objects that identify spaces in which properties of
+		/// this entity are persisted, for instances of this class and its subclasses.
 		/// </summary>
-		bool HasProxy { get; }
-
-		/// <summary>
-		/// Get the proxy interface that instances of <c>this</c> concrete class will be cast to
-		/// </summary>
-		System.Type ConcreteProxyClass { get; }
-
-		/// <summary>
-		/// Create a new proxy instance
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		object CreateProxy(object id, ISessionImplementor session);
-
-		/// <summary>
-		/// Do instances of this class contain collections?
-		/// </summary>
-		bool HasCollections { get; }
-
-		/// <summary>
-		/// Does this class declare any cascading save/update/deletes?
-		/// </summary>
-		bool HasCascades { get; }
+		/// <remarks>
+		/// Much like <see cref="PropertySpaces"/>, except that here we include subclass
+		/// entity spaces.
+		/// </remarks>
+		/// <returns> The query spaces. </returns>
+		string[] QuerySpaces { get; }
 
 		/// <summary>
 		/// Are instances of this class mutable?
 		/// </summary>
 		bool IsMutable { get; }
+
+		/// <summary> 
+		/// Determine whether the entity is inherited one or more other entities.
+		/// In other words, is this entity a subclass of other entities. 
+		/// </summary>
+		/// <returns> True if other entities extend this entity; false otherwise. </returns>
+		bool IsInherited { get;}
 
 		/// <summary>
 		/// Is the identifier assigned before the insert by an <c>IDGenerator</c> or is it returned
@@ -114,110 +89,6 @@ namespace NHibernate.Persister.Entity
 		/// This determines which form of <c>Insert()</c> will be called.
 		/// </remarks>
 		bool IsIdentifierAssignedByInsert { get; }
-
-		/// <summary>
-		/// Is this a new transient instance?
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
-		bool IsUnsaved(object obj);
-
-		/// <summary>
-		/// Set the given values to the mapped properties of the given object
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="values"></param>
-		void SetPropertyValues(object obj, object[] values);
-
-		/// <summary>
-		/// Return the values of the mapped properties of the object
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
-		object[] GetPropertyValues(object obj);
-
-		/// <summary>
-		/// Set the value of a particular property
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="i"></param>
-		/// <param name="value"></param>
-		void SetPropertyValue(object obj, int i, object value);
-
-		/// <summary>
-		/// Get the value of a particular property
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="i"></param>
-		/// <returns></returns>
-		object GetPropertyValue(object obj, int i);
-
-		/// <summary>
-		/// Get the value of a particular property
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		object GetPropertyValue(object obj, string name);
-
-		/// <summary>
-		/// Get the type of a particular property
-		/// </summary>
-		/// <param name="propertyName"></param>
-		/// <returns></returns>
-		IType GetPropertyType(string propertyName);
-
-		/// <summary>
-		/// Compare two snapshots of the state of an instance to determine if the persistent state
-		/// was modified
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <param name="owner"></param>
-		/// <param name="session"></param>
-		/// <returns><see langword="null" /> or the indices of the dirty properties</returns>
-		int[] FindDirty(object[] x, object[] y, object owner, ISessionImplementor session);
-
-		/// <summary>
-		/// Compare the state of an instance to the current database state
-		/// </summary>
-		/// <param name="old"></param>
-		/// <param name="current"></param>
-		/// <param name="owner"></param>
-		/// <param name="session"></param>
-		/// <returns>return <see langword="null" /> or the indicies of the modified properties</returns>
-		int[] FindModified(object[] old, object[] current, object owner, ISessionImplementor session);
-
-		/// <summary>
-		/// Does the class have a property holding the identifier value?
-		/// </summary>
-		bool HasIdentifierProperty { get; }
-
-		/// <summary> 
-		/// Determine whether detahced instances of this entity carry their own
-		/// identifier value.
-		/// </summary>
-		/// <returns> 
-		/// True if either (1) <see cref="HasIdentifierProperty"/> or
-		/// (2) the identifier is an embedded composite identifier; false otherwise.
-		/// </returns>
-		/// <remarks>
-		/// The other option is the deperecated feature where users could supply
-		/// the id during session calls.
-		/// </remarks>
-		bool CanExtractIdOutOfEntity { get; }
-
-		/// <summary>
-		/// Get the identifier of an instance ( throw an exception if no identifier property)
-		/// </summary>
-		object GetIdentifier(object obj);
-
-		/// <summary>
-		/// Set the identifier of an instance (or do nothing if no identifier property)
-		/// </summary>
-		/// <param name="obj">The object to set the Id property on.</param>
-		/// <param name="id">The value to set the Id property to.</param>
-		void SetIdentifier(object obj, object id);
 
 		/// <summary>
 		/// Are instances of this class versioned by a timestamp or version number column?
@@ -234,85 +105,20 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		int VersionProperty { get; }
 
-		/// <summary>
-		/// Get the version number (or timestamp) from the object's version property (or return null if not versioned)
+		/// <summary> 
+		/// If the entity defines a natural id (<see cref="HasNaturalIdentifier"/>), which
+		/// properties make up the natural id. 
 		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
-		object GetVersion(object obj);
-
-		/// <summary>
-		/// Create a class instance initialized with the given identifier
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		object Instantiate(object id);
+		/// <returns> 
+		/// The indices of the properties making of the natural id; or
+		/// null, if no natural id is defined.
+		/// </returns>
+		int[] NaturalIdentifierProperties { get;}
 
 		/// <summary>
 		/// Return the <c>IIdentifierGenerator</c> for the class
 		/// </summary>
 		IIdentifierGenerator IdentifierGenerator { get; }
-
-		/// <summary>
-		/// Load an insatance of the persistent class.
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="optionalObject"></param>
-		/// <param name="lockMode"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		object Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session);
-
-		/// <summary>
-		/// Do a version check (optional operation)
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="version"></param>
-		/// <param name="obj"></param>
-		/// <param name="lockMode"></param>
-		/// <param name="session"></param>
-		void Lock(object id, object version, object obj, LockMode lockMode, ISessionImplementor session);
-
-		/// <summary>
-		/// Persist an instance
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="fields"></param>
-		/// <param name="obj"></param>
-		/// <param name="session"></param>
-		void Insert(object id, object[] fields, object obj, ISessionImplementor session);
-
-		/// <summary>
-		/// Persist an instance, using a natively generated identifier (optional operation)
-		/// </summary>
-		/// <param name="fields"></param>
-		/// <param name="obj"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		object Insert(object[] fields, object obj, ISessionImplementor session);
-
-		/// <summary>
-		/// Delete a persistent instance
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="version"></param>
-		/// <param name="obj"></param>
-		/// <param name="session"></param>
-		void Delete(object id, object version, object obj, ISessionImplementor session);
-
-		/// <summary>
-		/// Update a persistent instance
-		/// </summary>
-		/// <param name="id">The id.</param>
-		/// <param name="fields">The fields.</param>
-		/// <param name="dirtyFields">The dirty fields.</param>
-		/// <param name="hasDirtyCollection">if set to <see langword="true" /> [has dirty collection].</param>
-		/// <param name="oldFields">The old fields.</param>
-		/// <param name="oldVersion">The old version.</param>
-		/// <param name="obj">The obj.</param>
-		/// <param name="session">The session.</param>
-		void Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields,
-		            object oldVersion, object obj, ISessionImplementor session);
 
 		/// <summary>
 		/// Get the Hibernate types of the class properties
@@ -326,13 +132,19 @@ namespace NHibernate.Persister.Entity
 		string[] PropertyNames { get; }
 
 		/// <summary>
-		/// Gets if the Property is updatable
+		/// Gets if the Property is insertable.
 		/// </summary>
-		/// <value><see langword="true" /> if the Property's value can be updated.</value>
+		/// <value><see langword="true" /> if the Property's value can be inserted.</value>
 		/// <remarks>
-		/// This is for formula columns and if the user sets the update attribute on the &lt;property&gt; element.
+		/// This is for formula columns and if the user sets the insert attribute on the &lt;property&gt; element.
 		/// </remarks>
-		bool[] PropertyUpdateability { get; }
+		bool[] PropertyInsertability { get; }
+
+		/// <summary> Which of the properties of this class are database generated values on insert?</summary>
+		ValueInclusion[] PropertyInsertGenerationInclusions { get;}
+
+		/// <summary> Which of the properties of this class are database generated values on update?</summary>
+		ValueInclusion[] PropertyUpdateGenerationInclusions { get;}
 
 		/// <summary>
 		/// Properties that may be dirty (and thus should be dirty-checked). These
@@ -346,19 +158,12 @@ namespace NHibernate.Persister.Entity
 		bool[] PropertyNullability { get; }
 
 		/// <summary>
-		/// Gets if the Property is insertable.
-		/// </summary>
-		/// <value><see langword="true" /> if the Property's value can be inserted.</value>
-		/// <remarks>
-		/// This is for formula columns and if the user sets the insert attribute on the &lt;property&gt; element.
-		/// </remarks>
-		bool[] PropertyInsertability { get; }
-
-		/// <summary>
 		/// Get the "versionability" of the properties of this class (is the property optimistic-locked)
 		/// </summary>
 		/// <value><see langword="true" /> if the property is optimistic-locked; otherwise, <see langword="false" />.</value>
 		bool[] PropertyVersionability { get; }
+
+		bool[] PropertyLaziness { get;}
 
 		/// <summary>
 		/// Get the cascade styles of the properties (optional operation)
@@ -387,14 +192,12 @@ namespace NHibernate.Persister.Entity
 		bool IsLazyPropertiesCacheable { get;}
 
 		/// <summary>
-		/// Does this class have a cache?
-		/// </summary>
-		bool HasCache { get; }
-
-		/// <summary>
 		/// Get the cache (optional operation)
 		/// </summary>
 		ICacheConcurrencyStrategy Cache { get; }
+
+		/// <summary> Get the cache structure</summary>
+		ICacheEntryStructure CacheEntryStructure { get;}
 
 		/// <summary>
 		/// Get the user-visible metadata for the class (optional operation)
@@ -406,16 +209,8 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		bool IsBatchLoadable { get; }
 
-		/// <summary>
-		/// Returns an array of objects that identify spaces in which properties of this class are persisted,
-		/// for instances of this class and its subclasses.
-		/// </summary>
-		string[] QuerySpaces { get; }
-
-		/// <summary>
-		/// The session factory this instance is associated with.
-		/// </summary>
-		ISessionFactoryImplementor Factory { get; }
+		/// <summary> Is select snapshot before update enabled?</summary>
+		bool IsSelectBeforeUpdateRequired { get; }
 
 		/// <summary>
 		/// Does this entity contain a version property that is defined
@@ -423,21 +218,179 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		bool IsVersionPropertyGenerated { get; }
 
-		/// <summary> Has the class actually been bytecode instrumented?</summary>
-		bool IsInstrumented(EntityMode entityMode);
+		/// <summary>
+		/// Finish the initialization of this object, once all <c>ClassPersisters</c> have been
+		/// instantiated. Called only once, before any other method.
+		/// </summary>
+		void PostInstantiate();
+
+		#region stuff that is persister-centric and/or EntityInfo-centric
+
+		/// <summary> 
+		/// Determine whether the given name represents a subclass entity
+		/// (or this entity itself) of the entity mapped by this persister. 
+		/// </summary>
+		/// <param name="entityName">The entity name to be checked. </param>
+		/// <returns> 
+		/// True if the given entity name represents either the entity mapped by this persister or one of its subclass entities; 
+		/// false otherwise.
+		/// </returns>
+		bool IsSubclassEntityName(string entityName);
 
 		/// <summary>
-		/// Does this entity define any properties as being database-generated on insert?
+		/// Does this class support dynamic proxies?
 		/// </summary>
-		bool HasInsertGeneratedProperties { get; }
+		bool HasProxy { get; }
 
 		/// <summary>
-		/// Does this entity define any properties as being database-generated on update?
+		/// Do instances of this class contain collections?
 		/// </summary>
-		bool HasUpdateGeneratedProperties { get; }
+		bool HasCollections { get; }
 
-		/// <summary> Is select snapshot before update enabled?</summary>
-		bool IsSelectBeforeUpdateRequired { get; }
+		/// <summary> 
+		/// Determine whether any properties of this entity are considered mutable. 
+		/// </summary>
+		/// <returns> 
+		/// True if any properties of the entity are mutable; false otherwise (meaning none are).
+		/// </returns>
+		bool HasMutableProperties { get;}
+
+		/// <summary> 
+		/// Determine whether this entity contains references to persistent collections
+		/// which are fetchable by subselect? 
+		/// </summary>
+		/// <returns> 
+		/// True if the entity contains collections fetchable by subselect; false otherwise.
+		/// </returns>
+		bool HasSubselectLoadableCollections { get;}
+
+		/// <summary>
+		/// Does this class declare any cascading save/update/deletes?
+		/// </summary>
+		bool HasCascades { get; }
+
+		/// <summary>
+		/// Get the type of a particular property
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <returns></returns>
+		IType GetPropertyType(string propertyName);
+
+		/// <summary> Locate the property-indices of all properties considered to be dirty. </summary>
+		/// <param name="currentState">The current state of the entity (the state to be checked). </param>
+		/// <param name="previousState">The previous state of the entity (the state to be checked against). </param>
+		/// <param name="entity">The entity for which we are checking state dirtiness. </param>
+		/// <param name="session">The session in which the check is ccurring. </param>
+		/// <returns> <see langword="null" /> or the indices of the dirty properties </returns>
+		int[] FindDirty(object[] currentState, object[] previousState, object entity, ISessionImplementor session);
+
+		/// <summary> Locate the property-indices of all properties considered to be dirty. </summary>
+		/// <param name="old">The old state of the entity.</param>
+		/// <param name="current">The current state of the entity. </param>
+		/// <param name="entity">The entity for which we are checking state modification. </param>
+		/// <param name="session">The session in which the check is ccurring. </param>
+		/// <returns>return <see langword="null" /> or the indicies of the modified properties</returns>
+		int[] FindModified(object[] old, object[] current, object entity, ISessionImplementor session);
+
+		/// <summary>
+		/// Does the class have a property holding the identifier value?
+		/// </summary>
+		bool HasIdentifierProperty { get; }
+
+		/// <summary> 
+		/// Determine whether detahced instances of this entity carry their own
+		/// identifier value.
+		/// </summary>
+		/// <returns> 
+		/// True if either (1) <see cref="HasIdentifierProperty"/> or
+		/// (2) the identifier is an embedded composite identifier; false otherwise.
+		/// </returns>
+		/// <remarks>
+		/// The other option is the deperecated feature where users could supply
+		/// the id during session calls.
+		/// </remarks>
+		bool CanExtractIdOutOfEntity { get; }
+
+		/// <summary> 
+		/// Determine whether this entity defines a natural identifier. 
+		/// </summary>
+		/// <returns> True if the entity defines a natural id; false otherwise. </returns>
+		bool HasNaturalIdentifier { get; }
+
+		/// <summary> 
+		/// Retrieve the current state of the natural-id properties from the database. 
+		/// </summary>
+		/// <param name="id">
+		/// The identifier of the entity for which to retrieve the naturak-id values.
+		/// </param>
+		/// <param name="session">
+		/// The session from which the request originated.
+		/// </param>
+		/// <returns> The natural-id snapshot. </returns>
+		object[] GetNaturalIdentifierSnapshot(object id, ISessionImplementor session);
+
+		/// <summary> 
+		/// Determine whether this entity defines any lazy properties (ala
+		/// bytecode instrumentation). 
+		/// </summary>
+		/// <returns> 
+		/// True if the entity has properties mapped as lazy; false otherwise.
+		/// </returns>
+		bool HasLazyProperties { get; }
+
+		/// <summary>
+		/// Load an insatance of the persistent class.
+		/// </summary>
+		object Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session);
+
+		/// <summary>
+		/// Do a version check (optional operation)
+		/// </summary>
+		void Lock(object id, object version, object obj, LockMode lockMode, ISessionImplementor session);
+
+		/// <summary>
+		/// Persist an instance
+		/// </summary>
+		void Insert(object id, object[] fields, object obj, ISessionImplementor session);
+
+		/// <summary>
+		/// Persist an instance, using a natively generated identifier (optional operation)
+		/// </summary>
+		object Insert(object[] fields, object obj, ISessionImplementor session);
+
+		/// <summary>
+		/// Delete a persistent instance
+		/// </summary>
+		void Delete(object id, object version, object obj, ISessionImplementor session);
+
+		/// <summary>
+		/// Update a persistent instance
+		/// </summary>
+		/// <param name="id">The id.</param>
+		/// <param name="fields">The fields.</param>
+		/// <param name="dirtyFields">The dirty fields.</param>
+		/// <param name="hasDirtyCollection">if set to <see langword="true" /> [has dirty collection].</param>
+		/// <param name="oldFields">The old fields.</param>
+		/// <param name="oldVersion">The old version.</param>
+		/// <param name="obj">The obj.</param>
+		/// <param name="rowId">The rowId</param>
+		/// <param name="session">The session.</param>
+		void Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields,
+								object oldVersion, object obj, object rowId, ISessionImplementor session);
+
+		/// <summary>
+		/// Gets if the Property is updatable
+		/// </summary>
+		/// <value><see langword="true" /> if the Property's value can be updated.</value>
+		/// <remarks>
+		/// This is for formula columns and if the user sets the update attribute on the &lt;property&gt; element.
+		/// </remarks>
+		bool[] PropertyUpdateability { get; }
+
+		/// <summary>
+		/// Does this class have a cache?
+		/// </summary>
+		bool HasCache { get; }
 
 		/// <summary>
 		/// Get the current database state of the object, in a "hydrated" form, without resolving identifiers
@@ -459,23 +412,45 @@ namespace NHibernate.Persister.Entity
 
 		object ForceVersionIncrement(object id, object currentVersion, ISessionImplementor session);
 
+		/// <summary> Try to discover the entity mode from the entity instance</summary>
+		EntityMode? GuessEntityMode(object obj);
+
+		/// <summary> Has the class actually been bytecode instrumented?</summary>
+		bool IsInstrumented(EntityMode entityMode);
+
 		/// <summary>
+		/// Does this entity define any properties as being database-generated on insert?
 		/// </summary>
-		/// <param name="values"></param>
+		bool HasInsertGeneratedProperties { get; }
+
+		/// <summary>
+		/// Does this entity define any properties as being database-generated on update?
+		/// </summary>
+		bool HasUpdateGeneratedProperties { get; }
+
+		#endregion
+
+		#region stuff that is tuplizer-centric, but is passed a session
+
+		/// <summary> Called just after the entities properties have been initialized</summary>
+		void AfterInitialize(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session);
+
+		/// <summary> Called just after the entity has been reassociated with the session</summary>
+		void AfterReassociate(object entity, ISessionImplementor session);
+
+		/// <summary>
+		/// Create a new proxy instance
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="session"></param>
 		/// <returns></returns>
-		/// <remarks>NHibernate-specific feature, not present in H2.1</remarks>
-		bool IsUnsavedVersion(object[] values);
+		object CreateProxy(object id, ISessionImplementor session);
 
+		/// <summary> Is this a new transient instance?</summary>
+		bool? IsTransient(object obj, ISessionImplementor session);
 
-		/// <summary>
-		/// Determines whether the specified entity is an instance of the class
-		/// managed by this persister.
-		/// </summary>
-		/// <param name="entity">The entity.</param>
-		/// <returns>
-		/// 	<see langword="true"/> if the specified entity is an instance; otherwise, <see langword="false"/>.
-		/// </returns>
-		bool IsInstance(object entity);
+		/// <summary> Return the values of the insertable properties of the object (including backrefs)</summary>
+		object[] GetPropertyValuesToInsert(object obj, IDictionary mergeMap, ISessionImplementor session);
 
 		/// <summary>
 		/// Perform a select to retrieve the values of any generated properties
@@ -509,7 +484,109 @@ namespace NHibernate.Persister.Entity
 		/// <param name="session">The session.</param>
 		void ProcessUpdateGeneratedProperties(object id, object entity, object[] state, ISessionImplementor session);
 
+		#endregion
+
+		#region stuff that is Tuplizer-centric
+
+		/// <summary>
+		/// The persistent class, or null
+		/// </summary>
+		System.Type GetMappedClass(EntityMode entityMode);
+
+		/// <summary>
+		/// Does the class implement the <c>ILifecycle</c> inteface?
+		/// </summary>
+		bool ImplementsLifecycle(EntityMode entityMode);
+
+		/// <summary>
+		/// Does the class implement the <c>IValidatable</c> interface?
+		/// </summary>
+		bool ImplementsValidatable(EntityMode entityMode);
+
+		/// <summary>
+		/// Get the proxy interface that instances of <c>this</c> concrete class will be cast to
+		/// </summary>
+		System.Type GetConcreteProxyClass(EntityMode entityMode);
+
+		/// <summary>
+		/// Set the given values to the mapped properties of the given object
+		/// </summary>
+		void SetPropertyValues(object obj, object[] values, EntityMode entityMode);
+
+		/// <summary>
+		/// Set the value of a particular property
+		/// </summary>
+		void SetPropertyValue(object obj, int i, object value, EntityMode entityMode);
+
+		/// <summary>
+		/// Return the values of the mapped properties of the object
+		/// </summary>
+		object[] GetPropertyValues(object obj, EntityMode entityMode);
+
+		/// <summary>
+		/// Get the value of a particular property
+		/// </summary>
+		object GetPropertyValue(object obj, int i, EntityMode entityMode);
+
+		/// <summary>
+		/// Get the value of a particular property
+		/// </summary>
+		object GetPropertyValue(object obj, string name, EntityMode entityMode);
+
+		/// <summary>
+		/// Get the identifier of an instance ( throw an exception if no identifier property)
+		/// </summary>
+		object GetIdentifier(object obj, EntityMode entityMode);
+
+		/// <summary>
+		/// Set the identifier of an instance (or do nothing if no identifier property)
+		/// </summary>
+		/// <param name="obj">The object to set the Id property on.</param>
+		/// <param name="id">The value to set the Id property to.</param>
+		/// <param name="entityMode">The EntityMode</param>
+		void SetIdentifier(object obj, object id, EntityMode entityMode);
+
+		/// <summary>
+		/// Get the version number (or timestamp) from the object's version property (or return null if not versioned)
+		/// </summary>
+		object GetVersion(object obj, EntityMode entityMode);
+
+		/// <summary>
+		/// Create a class instance initialized with the given identifier
+		/// </summary>
+		object Instantiate(object id, EntityMode entityMode);
+
+		/// <summary>
+		/// Determines whether the specified entity is an instance of the class
+		/// managed by this persister.
+		/// </summary>
+		/// <param name="entity">The entity.</param>
+		/// <param name="entityMode">The EntityMode</param>
+		/// <returns>
+		/// 	<see langword="true"/> if the specified entity is an instance; otherwise, <see langword="false"/>.
+		/// </returns>
+		bool IsInstance(object entity, EntityMode entityMode);
+
+		/// <summary> Does the given instance have any uninitialized lazy properties?</summary>
+		bool HasUninitializedLazyProperties(object obj, EntityMode entityMode);
+
+		/// <summary> 
+		/// Set the identifier and version of the given instance back
+		/// to its "unsaved" value, returning the id
+		/// </summary>
+		void ResetIdentifier(object entity, object currentId, object currentVersion, EntityMode entityMode);
+
 		/// <summary> Get the persister for an instance of this class or a subclass</summary>
 		IEntityPersister GetSubclassEntityPersister(object instance, ISessionFactoryImplementor factory, EntityMode entityMode);
+
+		#endregion
+
+		/// <summary>
+		/// Check the version value trough <see cref="VersionValue"/>.
+		/// </summary>
+		/// <param name="version">The snapshot entity state</param>
+		/// <returns>The result of <see cref="VersionValue.IsUnsaved"/>.</returns>
+		/// <remarks>NHibernate-specific feature, not present in H3.2</remarks>
+		bool? IsUnsavedVersion(object version);
 	}
 }

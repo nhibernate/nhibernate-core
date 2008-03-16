@@ -73,7 +73,7 @@ namespace NHibernate.Proxy.Poco
 				{
 					return IdentityEqualityComparer.GetHashCode(proxy);
 				}
-				else if (Uninitialized && method.Equals(getIdentifierMethod))
+				else if (IsUninitialized && method.Equals(getIdentifierMethod))
 				{
 					return Identifier;
 				}

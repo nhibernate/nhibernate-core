@@ -139,7 +139,7 @@ namespace NHibernate.Loader.Custom
 					collectionOwners.Add(ownerIndex);
 					lockModes.Add(fetchRtn.LockMode);
 					IQueryable ownerPersister = DetermineAppropriateOwnerPersister(ownerDescriptor);
-					String role = ownerPersister.ClassName + '.' + fetchRtn.OwnerProperty;
+					String role = ownerPersister.EntityName + '.' + fetchRtn.OwnerProperty;
 					IQueryableCollection persister = (IQueryableCollection) factory.GetCollectionPersister(role);
 					collectionPersisters.Add(persister);
 					nonScalarReturnList.Add(rtn);

@@ -717,7 +717,7 @@ namespace NHibernate.Impl
 			return plan;
 		}
 
-		public override object Instantiate(System.Type clazz, object id)
+		public override object Instantiate(string clazz, object id)
 		{
 			return Instantiate(factory.GetEntityPersister(clazz), id);
 		}
@@ -740,10 +740,10 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object Instantiate(IEntityPersister persister, object id)
 		{
-			object result = interceptor.Instantiate(persister.MappedClass, id);
+			object result = interceptor.Instantiate(persister.EntityName, entityMode, id);
 			if (result == null)
 			{
-				result = persister.Instantiate(id);
+				result = persister.Instantiate(id, entityMode);
 			}
 			return result;
 		}
@@ -1009,14 +1009,21 @@ namespace NHibernate.Impl
 			EntityEntry entry = persistenceContext.GetEntry(obj);
 			if (entry == null)
 			{
-				ThrowTransientObjectException(obj);
+				throw new TransientObjectException(
+					"object references an unsaved transient instance - save the transient instance before flushing: "
+					+ obj.GetType().FullName);
 			}
 			return entry.Persister.EntityName;
 		}
 
-		public object Get(System.Type clazz, object id)
+		public object Get(System.Type entityClass, object id)
 		{
-			LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, false, this);
+			return Get(entityClass.FullName, id);
+		}
+
+		public object Get(string entityName, object id)
+		{
+			LoadEvent loadEvent = new LoadEvent(id, entityName, false, this);
 			bool success = false;
 			try
 			{
@@ -1293,7 +1300,7 @@ namespace NHibernate.Impl
 		{
 			if (obj is INHibernateProxy)
 			{
-				return true;
+				return true; // NH sure ???
 			}
 
 			EntityEntry entry = persistenceContext.GetEntry(obj);
@@ -1307,63 +1314,13 @@ namespace NHibernate.Impl
 			{
 				return !isUnsaved.Value;
 			}
-
-			return !GetEntityPersister(obj).IsUnsaved(obj);
-		}
-
-		/// <summary>
-		/// Used by OneToOneType and ManyToOneType to determine what id value
-		/// should be used for an object that may or may not be associated with
-		/// the session. This does a "best guess" using any/all info available
-		/// to use (not just the EntityEntry).
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
-		public override object GetEntityIdentifierIfNotUnsaved(object obj)
-		{
-			// TODO : Remove method (entityName)
-			if (obj == null)
+			isUnsaved = GetEntityPersister(obj).IsTransient(obj, this);
+			if (isUnsaved.HasValue)
 			{
-				return null;
+				return !isUnsaved.Value;
 			}
 
-			if (obj is INHibernateProxy)
-			{
-				return ((INHibernateProxy)obj).HibernateLazyInitializer.Identifier;
-			}
-			else
-			{
-				EntityEntry entry = PersistenceContext.GetEntry(obj);
-				if (entry != null)
-				{
-					return entry.Id;
-				}
-				else
-				{
-					bool? isUnsaved = interceptor.IsTransient(obj);
-
-					if (isUnsaved.HasValue && (isUnsaved.Value))
-					{
-						ThrowTransientObjectException(obj);
-					}
-
-					IEntityPersister persister = GetEntityPersister(obj);
-					if (persister.IsUnsaved(obj))
-					{
-						ThrowTransientObjectException(obj);
-					}
-
-					return persister.GetIdentifier(obj);
-				}
-			}
-		}
-
-		private static void ThrowTransientObjectException(object obj)
-		{
-			throw new TransientObjectException(
-				"object references an unsaved transient instance - save the transient instance before flushing: " +
-				obj.GetType().FullName
-				);
+			return false;
 		}
 
 		internal ICollectionPersister GetCollectionPersister(string role)

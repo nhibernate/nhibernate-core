@@ -272,7 +272,7 @@ namespace NHibernate.Loader.Custom.Sql
 
 			if (returnType.IsCollectionType)
 			{
-				string role = ownerPersister.MappedClass.FullName + '.' + fetchReturn.OwnerProperty;
+				string role = ownerPersister.EntityName + '.' + fetchReturn.OwnerProperty;
 				AddCollection(role, alias, fetchReturn.PropertyResultsMap);
 			}
 			else if (returnType.IsEntityType)

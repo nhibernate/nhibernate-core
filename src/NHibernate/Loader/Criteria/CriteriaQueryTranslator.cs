@@ -472,7 +472,9 @@ namespace NHibernate.Loader.Criteria
 
 		public string GetEntityName(ICriteria criteria)
 		{
-			return criteriaEntityNames[criteria];
+			string result;
+			criteriaEntityNames.TryGetValue(criteria, out result);
+			return result;
 		}
 
 		public string GetColumn(ICriteria criteria, string propertyName)
@@ -639,6 +641,7 @@ namespace NHibernate.Loader.Criteria
 
 				if (q != null)
 				{
+					// NH Different implementation : We are using strongly typed parameter for SQL query (see DiscriminatorValue comment)
 					return new TypedValue(q.DiscriminatorType, q.DiscriminatorValue, EntityMode.Poco);
 				}
 			}

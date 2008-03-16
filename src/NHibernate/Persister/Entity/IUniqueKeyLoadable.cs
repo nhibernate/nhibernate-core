@@ -10,10 +10,6 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Load an instance of the persistent class, by a unique key other than the primary key.
 		/// </summary>
-		/// <param name="propertyName"></param>
-		/// <param name="uniqueKey"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		object LoadByUniqueKey(string propertyName, object uniqueKey, ISessionImplementor session);
 
 		/// <summary>

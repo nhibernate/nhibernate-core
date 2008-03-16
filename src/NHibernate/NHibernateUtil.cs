@@ -296,6 +296,13 @@ namespace NHibernate
 			return new ManyToOneType(persistentClass.FullName);
 		}
 
+		/// <summary> A Hibernate persistent object (entity) type. </summary>
+		/// <param name="entityName">a mapped entity class </param>
+		public static IType Entity(string entityName)
+		{
+			// not really a many-to-one association *necessarily*
+			return new ManyToOneType(entityName);
+		}
 		/// <summary>
 		/// A NHibernate custom type
 		/// </summary>

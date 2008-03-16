@@ -58,7 +58,7 @@ namespace NHibernate.Engine
 					if (!nullability[i] && value == null)
 					{
 						//check basic level one nullablilty
-						throw new PropertyValueException("not-null property references a null or transient value", persister.MappedClass.FullName, persister.PropertyNames[i]);
+						throw new PropertyValueException("not-null property references a null or transient value", persister.EntityName, persister.PropertyNames[i]);
 					}
 					else if (value != null)
 					{
@@ -66,7 +66,7 @@ namespace NHibernate.Engine
 						string breakProperties = CheckSubElementsNullability(propertyTypes[i], value);
 						if (breakProperties != null)
 						{
-							throw new PropertyValueException("not-null property references a null or transient value", persister.MappedClass.FullName, BuildPropertyPath(persister.PropertyNames[i], breakProperties));
+							throw new PropertyValueException("not-null property references a null or transient value", persister.EntityName, BuildPropertyPath(persister.PropertyNames[i], breakProperties));
 						}
 					}
 				}

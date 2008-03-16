@@ -33,7 +33,6 @@ using NHibernate.Type;
 using NHibernate.Util;
 using Environment=NHibernate.Cfg.Environment;
 using HibernateDialect = NHibernate.Dialect.Dialect;
-using NHibernate.Exceptions;
 
 namespace NHibernate.Impl
 {
@@ -998,11 +997,26 @@ namespace NHibernate.Impl
 						{
 							results.Add(testClassName);
 						}
-						else if (
-							clazz.IsAssignableFrom(q.MappedClass) &&
-							(!q.IsInherited || !clazz.IsAssignableFrom(q.MappedSuperclass)))
+						else
 						{
-							results.Add(testClassName);
+							System.Type mappedClass = q.GetMappedClass(EntityMode.Poco);
+							if (mappedClass != null && clazz.IsAssignableFrom(mappedClass))
+							{
+								bool assignableSuperclass;
+								if (q.IsInherited)
+								{
+									System.Type mappedSuperclass = GetEntityPersister(q.MappedSuperclass).GetMappedClass(EntityMode.Poco);
+									assignableSuperclass = clazz.IsAssignableFrom(mappedSuperclass);
+								}
+								else
+								{
+									assignableSuperclass = false;
+								}
+								if (!assignableSuperclass)
+								{
+									results.Add(testClassName);
+								}
+							}
 						}
 					}
 				}
@@ -1121,7 +1135,7 @@ namespace NHibernate.Impl
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("evicting second-level cache: " + p.ClassName);
+					log.Debug("evicting second-level cache: " + p.EntityName);
 				}
 				p.Cache.Clear();
 			}

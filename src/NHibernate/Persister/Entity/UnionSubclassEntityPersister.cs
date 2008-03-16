@@ -1,8 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Iesi.Collections.Generic;
 using NHibernate.Cache;
+using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Mapping;
@@ -14,16 +14,16 @@ namespace NHibernate.Persister.Entity
 {
 	public class UnionSubclassEntityPersister : AbstractEntityPersister
 	{
-		private readonly string tableName;
-		private readonly string discriminatorSQLValue;
-		private readonly string[] subclassClosure;
-		private readonly Dictionary<int, System.Type> subclassByDiscriminatorValue = new Dictionary<int, System.Type>();
-		private readonly string[] spaces;
-		private string[] subclassSpaces;
 		private readonly string subquery;
-		private string[] constraintOrderedTableNames;
-		private string[][] constraintOrderedKeyColumnNames;
-		private readonly int discriminatorValue;
+		private readonly string tableName;
+		private readonly string[] subclassClosure;
+		private readonly string[] spaces;
+		private readonly string[] subclassSpaces;
+		private readonly string discriminatorSQLValue;
+		private readonly object discriminatorValue;
+		private readonly Dictionary<int, string> subclassByDiscriminatorValue = new Dictionary<int, string>();
+		private readonly string[] constraintOrderedTableNames;
+		private readonly string[][] constraintOrderedKeyColumnNames;
 
 		public UnionSubclassEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache, 
 			ISessionFactoryImplementor factory, IMapping mapping):base(persistentClass, cache, factory)
@@ -35,14 +35,11 @@ namespace NHibernate.Persister.Entity
 
 			// TABLE
 
-			tableName = persistentClass.Table.GetQualifiedName(factory.Dialect, factory.DefaultSchema);
-			/*rootTableName = persistentClass.getRootTable().getQualifiedName( 
-			factory.getDialect(), 
-			factory.getDefaultCatalog(), 
-			factory.getDefaultSchema() 
-			);*/
+			tableName =
+				persistentClass.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName,
+				                                       factory.Settings.DefaultSchemaName);
 
-			//Custom SQL
+			#region Custom SQL
 
 			SqlString sql;
 			bool callable;
@@ -50,61 +47,83 @@ namespace NHibernate.Persister.Entity
 
 			sql = persistentClass.CustomSQLInsert;
 			callable = sql != null && persistentClass.IsCustomInsertCallable;
-			checkStyle = sql == null ? ExecuteUpdateResultCheckStyle.Count: 
-				(persistentClass.CustomSQLInsertCheckStyle ?? ExecuteUpdateResultCheckStyle.DetermineDefault(sql, callable));
+			checkStyle = sql == null
+			             	? ExecuteUpdateResultCheckStyle.Count
+			             	: (persistentClass.CustomSQLInsertCheckStyle
+			             	   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(sql, callable));
 			customSQLInsert = new SqlString[] { sql };
 			insertCallable = new bool[] { callable };
 			insertResultCheckStyles = new ExecuteUpdateResultCheckStyle[] { checkStyle };
 
 			sql = persistentClass.CustomSQLUpdate;
 			callable = sql != null && persistentClass.IsCustomUpdateCallable;
-			checkStyle = sql == null ? ExecuteUpdateResultCheckStyle.Count : 
-				(persistentClass.CustomSQLUpdateCheckStyle ?? ExecuteUpdateResultCheckStyle.DetermineDefault(sql, callable));
+			checkStyle = sql == null
+			             	? ExecuteUpdateResultCheckStyle.Count
+			             	: (persistentClass.CustomSQLUpdateCheckStyle
+			             	   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(sql, callable));
 			customSQLUpdate = new SqlString[] { sql };
 			updateCallable = new bool[] { callable };
 			updateResultCheckStyles = new ExecuteUpdateResultCheckStyle[] { checkStyle };
 
 			sql = persistentClass.CustomSQLDelete;
 			callable = sql != null && persistentClass.IsCustomDeleteCallable;
-			checkStyle = sql == null ? ExecuteUpdateResultCheckStyle.Count : 
-				(persistentClass.CustomSQLDeleteCheckStyle ?? ExecuteUpdateResultCheckStyle.DetermineDefault(sql, callable));
+			checkStyle = sql == null
+			             	? ExecuteUpdateResultCheckStyle.Count
+			             	: (persistentClass.CustomSQLDeleteCheckStyle
+			             	   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(sql, callable));
 			customSQLDelete = new SqlString[] { sql };
 			deleteCallable = new bool[] { callable };
 			deleteResultCheckStyles = new ExecuteUpdateResultCheckStyle[] { checkStyle };
 
-			discriminatorSQLValue = persistentClass.SubclassId.ToString();
-			discriminatorValue = persistentClass.SubclassId;
+			#endregion
 
-			// PROPERTIES
+			discriminatorValue = persistentClass.SubclassId;
+			discriminatorSQLValue = persistentClass.SubclassId.ToString();
+
+			#region PROPERTIES
 
 			int subclassSpan = persistentClass.SubclassSpan + 1;
 			subclassClosure = new string[subclassSpan];
 			subclassClosure[0] = EntityName;
 
-			// SUBCLASSES
-			subclassByDiscriminatorValue[persistentClass.SubclassId] = persistentClass.MappedClass;
+			#endregion
+
+			#region SUBCLASSES
+
+			subclassByDiscriminatorValue[persistentClass.SubclassId] = persistentClass.EntityName;
 			if (persistentClass.IsPolymorphic)
 			{
 				int k = 1;
 				foreach (Subclass sc in persistentClass.SubclassIterator)
 				{
 					subclassClosure[k++] = sc.EntityName;
-					subclassByDiscriminatorValue[sc.SubclassId] = sc.MappedClass;
+					subclassByDiscriminatorValue[sc.SubclassId] = sc.EntityName;
 				}
 			}
 
-			//SPACES
-			//TODO: i'm not sure, but perhaps we should exclude
-			//      abstract denormalized tables?
-			spaces = ArrayHelper.Join(new string[] { tableName },
-				ArrayHelper.ToStringArray(persistentClass.SynchronizedTables));
+			#endregion
+
+			#region SPACES
+			//TODO: i'm not sure, but perhaps we should exclude abstract denormalized tables?
+
+			int spacesSize = 1 + persistentClass.SynchronizedTables.Count;
+			spaces = new string[spacesSize];
+			spaces[0] = tableName;
+			IEnumerator<string> iSyncTab = persistentClass.SynchronizedTables.GetEnumerator();
+			for (int i = 1; i < spacesSize; i++)
+			{
+				iSyncTab.MoveNext();
+				spaces[i] = iSyncTab.Current;
+			}
 
 			HashedSet<string> subclassTables = new HashedSet<string>();
 			foreach (Table table in persistentClass.SubclassTableClosureIterator)
 			{
-				subclassTables.Add(table.GetQualifiedName(factory.Dialect, factory.DefaultSchema));				
+				subclassTables.Add(
+					table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName));
 			}
-			subclassSpaces = ArrayHelper.ToStringArray((ICollection<string>)subclassTables);
+			subclassSpaces = new string[subclassSpaces.Length];
+			subclassTables.CopyTo(subclassSpaces, 0);
 
 			subquery = GenerateSubquery(persistentClass, mapping);
 
@@ -112,7 +131,7 @@ namespace NHibernate.Persister.Entity
 			{
 				int idColumnSpan = IdentifierColumnSpan;
 				List<string> tableNames = new List<string>();
-				ArrayList keyColumns = new ArrayList();
+				List<string[]> keyColumns = new List<string[]>();
 				if (!IsAbstract)
 				{
 					tableNames.Add(tableName);
@@ -122,27 +141,27 @@ namespace NHibernate.Persister.Entity
 				{
 					if (!tab.IsAbstractUnionTable)
 					{
-						string tName = tab.GetQualifiedName(factory.Dialect, factory.DefaultSchema);
-						tableNames.Add(tName);
-						string[] key = new string[idColumnSpan];
-						int k = 0;
-						foreach (Column col in tab.PrimaryKey.ColumnIterator)
-						{
-							key[k++] = col.GetQuotedName(factory.Dialect);
-							if(k>idColumnSpan) break;
-						}
-						keyColumns.Add(key);
-					}
-					
+						string _tableName =
+							tab.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
+						tableNames.Add(_tableName);
+
+						List<string> key = new List<string>(idColumnSpan);
+						foreach (Column column in tab.PrimaryKey.ColumnIterator)
+							key.Add(column.GetQuotedName(factory.Dialect));
+
+						keyColumns.Add(key.ToArray());
+					}					
 				}
-				constraintOrderedTableNames = ArrayHelper.ToStringArray((ICollection<string>)tableNames);
-				constraintOrderedKeyColumnNames = ArrayHelper.To2DStringArray(keyColumns);
+
+				constraintOrderedTableNames = tableNames.ToArray();
+				constraintOrderedKeyColumnNames = keyColumns.ToArray();
 			}
 			else
 			{
 				constraintOrderedTableNames = new string[] { tableName };
 				constraintOrderedKeyColumnNames = new string[][] { IdentifierColumnNames };
 			}
+			#endregion
 
 			InitLockers();
 
@@ -151,13 +170,188 @@ namespace NHibernate.Persister.Entity
 			PostConstruct(mapping);
 		}
 
-		private string GenerateSubquery(PersistentClass model, IMapping mapping)
+		public override string[] QuerySpaces
+		{
+			get { return subclassSpaces; }
+		}
+
+		public override Type.IType DiscriminatorType
+		{
+			get { return NHibernateUtil.Int32; }
+		}
+
+		public override string DiscriminatorSQLValue
+		{
+			get { return discriminatorSQLValue;}
+		}
+
+		public override object DiscriminatorValue
+		{
+			get { return discriminatorValue; }
+		}
+
+		public string[] SubclassClosure
+		{
+			get { return subclassClosure; }
+		}
+
+		public override string[] PropertySpaces
+		{
+			get { return spaces; }
+		}
+
+		protected internal override int[] PropertyTableNumbersInSelect
+		{
+			get { return new int[PropertySpan]; }
+		}
+
+		public override bool IsMultiTable
+		{
+			get
+			{
+				// This could also just be true all the time...
+				return IsAbstract || HasSubclasses;
+			}
+		}
+
+		protected override int[] SubclassColumnTableNumberClosure
+		{
+			get { return new int[SubclassColumnClosure.Length]; }
+		}
+
+		protected override int[] SubclassFormulaTableNumberClosure
+		{
+			get { return new int[SubclassFormulaClosure.Length]; }
+		}
+
+		protected internal override int[] PropertyTableNumbers
+		{
+			get { return new int[PropertySpan]; }
+		}
+
+		public override string[] ConstraintOrderedTableNameClosure
+		{
+			get { return constraintOrderedTableNames; }
+		}
+
+		public override string[][] ContraintOrderedTableKeyColumnClosure
+		{
+			get { return constraintOrderedKeyColumnNames; }
+		}
+
+		public override string TableName
+		{
+			get { return subquery; }
+		}
+
+		public override string GetSubclassForDiscriminatorValue(object value)
+		{
+			string result;
+			subclassByDiscriminatorValue.TryGetValue((int)value, out result);
+			return result;
+		}
+
+		protected internal virtual bool IsDiscriminatorFormula
+		{
+			get { return false; }
+		}
+
+		/// <summary> Generate the SQL that selects a row by id</summary>
+		protected internal virtual SqlString GenerateSelectString(LockMode lockMode)
+		{
+			SqlSimpleSelectBuilder select = new SqlSimpleSelectBuilder(Factory.Dialect, Factory)
+				.SetLockMode(lockMode)
+				.SetTableName(TableName)
+				.AddColumns(IdentifierColumnNames)
+				.AddColumns(SubclassColumnClosure, SubclassColumnAliasClosure, SubclassColumnLazyiness)
+				.AddColumns(SubclassFormulaClosure, SubclassFormulaAliasClosure, SubclassFormulaLazyiness);
+			//TODO: include the rowids!!!!
+			if (HasSubclasses)
+			{
+				if (IsDiscriminatorFormula)
+				{
+					select.AddColumn(DiscriminatorFormula, DiscriminatorAlias);
+				}
+				else
+				{
+					select.AddColumn(DiscriminatorColumnName, DiscriminatorAlias);
+				}
+			}
+			if (Factory.Settings.IsCommentsEnabled)
+			{
+				select.SetComment("load " + EntityName);
+			}
+			return select.AddWhereFragment(IdentifierColumnNames, IdentifierType, "=").ToSqlString();
+		}
+
+		protected internal string DiscriminatorFormula
+		{
+			get { return null; } // NH : what this mean ? (see GenerateSelectString) 
+		}
+
+		protected override string GetTableName(int table)
+		{
+			return tableName;
+		}
+
+		protected override string[] GetKeyColumns(int table)
+		{
+			return IdentifierColumnNames;
+		}
+
+		protected override bool IsTableCascadeDeleteEnabled(int j)
+		{
+			return false;
+		}
+
+		protected override bool IsPropertyOfTable(int property, int j)
+		{
+			return true;
+		}
+
+		public override string FromTableFragment(string name)
+		{
+			return TableName + ' ' + name;
+		}
+
+		public override string FilterFragment(string alias)
+		{
+			return HasWhere ? " and " + GetSQLWhereString(alias) : string.Empty;
+		}
+
+		public override string GetSubclassPropertyTableName(int i)
+		{
+			return TableName; //ie. the subquery! yuck!
+		}
+
+		protected override void AddDiscriminatorToSelect(SelectFragment select, string name, string suffix)
+		{
+			select.AddColumn(name, DiscriminatorColumnName, DiscriminatorAlias);
+		}
+
+		protected override int GetSubclassPropertyTableNumber(int i)
+		{
+			return 0;
+		}
+
+		public override int GetSubclassPropertyTableNumber(string propertyName)
+		{
+			return 0;
+		}
+
+		protected override int TableSpan
+		{
+			get { return 1; }
+		}
+
+		protected string GenerateSubquery(PersistentClass model, IMapping mapping)
 		{
 			Dialect.Dialect dialect = Factory.Dialect;
+			Settings settings = Factory.Settings;
 
 			if (!model.HasSubclasses)
 			{
-				return model.Table.GetQualifiedName(dialect, Factory.DefaultSchema);
+				return model.Table.GetQualifiedName(dialect, settings.DefaultCatalogName, settings.DefaultSchemaName);
 			}
 
 			HashedSet<Column> columns = new HashedSet<Column>();
@@ -166,14 +360,14 @@ namespace NHibernate.Persister.Entity
 				if (!table.IsAbstractUnionTable)
 				{
 					foreach (Column column in table.ColumnIterator)
-					{
 						columns.Add(column);
-					}
 				}
 			}
 
 			StringBuilder buf = new StringBuilder().Append("( ");
-			IEnumerable siter = new JoinedEnumerable(new SingletonEnumerable<PersistentClass>(model), model.SubclassIterator);
+			IEnumerable<PersistentClass> siter =
+				new JoinedEnumerable<PersistentClass>(new SingletonEnumerable<PersistentClass>(model),
+				                                      new SafetyEnumerable<PersistentClass>(model.SubclassIterator));
 
 			foreach (PersistentClass clazz in siter)
 			{
@@ -189,7 +383,7 @@ namespace NHibernate.Persister.Entity
 							buf.Append(dialect.GetSelectClauseNullString(sqlType)).Append(" as ");
 						}
 						buf.Append(col.Name);
-						buf.Append(", ");
+						buf.Append(StringHelper.CommaSpace);
 					}
 					buf.Append(clazz.SubclassId).Append(" as clazz_");
 					buf.Append(" from ").Append(table.GetQualifiedName(dialect, Factory.DefaultSchema));
@@ -208,11 +402,6 @@ namespace NHibernate.Persister.Entity
 			return buf.Append(" )").ToString();
 		}
 
-		public override string GetSubclassTableName(int j)
-		{
-			return TableName; //ie. the subquery! yuck!
-		}
-
 		protected override string[] GetSubclassTableKeyColumns(int j)
 		{
 			if (j != 0)
@@ -220,102 +409,16 @@ namespace NHibernate.Persister.Entity
 			return IdentifierColumnNames;
 		}
 
-		protected override string DiscriminatorAlias
+		public override string GetSubclassTableName(int j)
 		{
-			get { return DiscriminatorColumnName; }
+			if (j != 0)
+				throw new AssertionFailure("only one table");
+			return tableName;
 		}
 
-		protected override string VersionedTableName
+		protected override int SubclassTableSpan
 		{
-			get { return GetTableName(0); }
-		}
-
-		public override SqlString QueryWhereFragment(string alias, bool innerJoin, bool includeSubclasses)
-		{
-			throw new System.Exception("The method or operation is not implemented.");
-		}
-
-		public override string DiscriminatorSQLValue
-		{
-			get { return discriminatorSQLValue;}
-		}
-
-		public override object DiscriminatorValue
-		{
-			get { return discriminatorValue; }
-		}
-
-		public override string[] PropertySpaces
-		{
-			get { return spaces; }
-		}
-
-		public override Type.IType DiscriminatorType
-		{
-			get { return NHibernateUtil.Int32; }
-		}
-
-		public override System.Type GetSubclassForDiscriminatorValue(object value)
-		{
-			System.Type result;
-			subclassByDiscriminatorValue.TryGetValue((int)value,out result);
-			return result;
-		}
-
-		protected override int[] SubclassColumnTableNumberClosure
-		{
-			get { return new int[SubclassColumnClosure.Length]; }
-		}
-
-		protected override int[] SubclassFormulaTableNumberClosure
-		{
-			get { return new int[SubclassFormulaClosure.Length]; }
-		}
-
-		public override string TableName
-		{
-			get { return subquery; }
-		}
-
-		public override SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
-		{
-			return new SqlString("");
-		}
-
-		public override string DiscriminatorColumnName
-		{
-			get { return "clazz_"; }
-		}
-
-		public override string GetSubclassPropertyTableName(int i)
-		{
-			return TableName; //ie. the subquery! yuck!
-		}
-
-		public override bool IsCacheInvalidationRequired
-		{
-			get { return HasFormulaProperties || (!IsVersioned && (UseDynamicUpdate || TableSpan > 1)); }
-		}
-
-		protected override int GetSubclassPropertyTableNumber(int i)
-		{
-			return 0;
-		}
-
-		public override string GetPropertyTableName(string propertyName)
-		{
-			//TODO: check this....
-			return TableName;
-		}
-
-		protected override int[] PropertyTableNumbersInSelect
-		{
-			get { return new int[PropertySpan]; }
-		}
-
-		public override string FilterFragment(string alias)
-		{
-			return HasWhere ? " and " + GetSQLWhereString(alias) : "";
+			get { return 1; }
 		}
 
 		protected override bool IsClassOrSuperclassTable(int j)
@@ -325,39 +428,10 @@ namespace NHibernate.Persister.Entity
 			return true;
 		}
 
-		protected override int SubclassTableSpan
+		public override string GetPropertyTableName(string propertyName)
 		{
-			get { return 1; }
-		}
-
-		protected override int TableSpan
-		{
-			get { return 1; }
-		}
-
-		protected override string GetTableName(int table)
-		{
-			return tableName;
-		}
-
-		protected override string[] GetKeyColumns(int table)
-		{
-			return IdentifierColumnNames;
-		}
-
-		protected override bool IsPropertyOfTable(int property, int table)
-		{
-			return true;
-		}
-
-		protected override int[] PropertyTableNumbers
-		{
-			get { return new int[PropertySpan]; }
-		}
-
-		public override string[] QuerySpaces
-		{
-			get { return subclassSpaces; }
+			//TODO: check this....
+			return TableName;
 		}
 	}
 }

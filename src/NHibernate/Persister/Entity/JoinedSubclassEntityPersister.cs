@@ -1,13 +1,11 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Engine;
-using NHibernate.Hql.Classic;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-using Array=System.Array;
 
 namespace NHibernate.Persister.Entity
 {
@@ -18,18 +16,19 @@ namespace NHibernate.Persister.Entity
 	{
 		// the class hierarchy structure
 		private readonly int tableSpan;
-		private readonly string qualifiedTableName;
 
 		// all of the table names that this Persister uses for just its data 
 		// it is indexed as tableNames[tableIndex]
 		// for both the superclass and subclass the index of 0=basetable
 		// for the base class there is only 1 table
 		private readonly string[] tableNames;
-		private readonly string[] naturalOrderTableNames;
 
+		private readonly string[] naturalOrderTableNames;
 		// two dimensional array that is indexed as tableKeyColumns[tableIndex][columnIndex]
 		private readonly string[][] tableKeyColumns;
 		private readonly string[][] naturalOrderTableKeyColumns;
+		private readonly bool[] naturalOrderCascadeDeleteEnabled;
+		private readonly string[] spaces;
 
 		// the Type of objects for the subclass
 		// the array is indexed as subclassClosure[subclassIndex].  
@@ -38,7 +37,7 @@ namespace NHibernate.Persister.Entity
 		// in the example of JoinedSubclassBase/One the values are :
 		// subclassClosure[0] = JoinedSubclassOne
 		// subclassClosure[1] = JoinedSubclassBase
-		private readonly System.Type[] subclassClosure;
+		private readonly string[] subclassClosure;
 
 		// the names of the tables for the subclasses
 		// the array is indexed as subclassTableNameColsure[tableIndex] = "tableName"
@@ -49,8 +48,8 @@ namespace NHibernate.Persister.Entity
 		// the names of the columns that are the Keys for the table - I don't know why they would
 		// be different - I thought the subclasses didn't have their own PK, but used the one generated
 		// by the base class??
-		// the array is indexed as subclassTableKeyColumns[tableIndex][columnIndex] = "columnName"
-		private readonly string[][] subclassTableKeyColumns;
+		// the array is indexed as subclassTableKeyColumnClosure[tableIndex][columnIndex] = "columnName"
+		private readonly string[][] subclassTableKeyColumnClosure;
 
 		// TODO: figure out what this is being used for - when initializing the base class the values
 		// are isClassOrSuperclassTable[0] = true, isClassOrSuperclassTable[1] = false
@@ -59,237 +58,131 @@ namespace NHibernate.Persister.Entity
 		// I would guess this is telling us specifically which tables this Persister will write information to.
 		private readonly bool[] isClassOrSuperclassTable;
 
+		// properties of this class, including inherited properties
+		private readonly int[] naturalOrderPropertyTableNumbers;
+
 		// the index of the table that the property is coming from
 		// the array is indexed as propertyTables[propertyIndex] = tableIndex 
-		private readonly int[] propertyTables;
-		private readonly int[] naturalOrderPropertyTables;
+		private readonly int[] propertyTableNumbers;
 
+		// the closure of all properties in the entire hierarchy including
+		// subclasses and superclasses of this class
 		private readonly int[] subclassPropertyTableNumberClosure;
+
+		// the closure of all columns used by the entire hierarchy including
+		// subclasses and superclasses of this class
 		private readonly int[] subclassColumnTableNumberClosure;
-
-		private readonly Hashtable tableNumberByPropertyPath = new Hashtable();
-
 		private readonly int[] subclassFormulaTableNumberClosure;
 
-		// subclass discrimination works by assigning particular values to certain 
-		// combinations of null primary key values in the outer join using an SQL CASE
-
-		// key = DiscrimatorValue, value = SubclassType Type
-		private readonly Hashtable subclassesByDiscriminatorValue = new Hashtable();
+		// subclass discrimination works by assigning particular
+		// values to certain combinations of null primary key
+		// values in the outer join using an SQL CASE
+		private readonly Dictionary<object, string> subclassesByDiscriminatorValue = new Dictionary<object, string>();
 		private readonly string[] discriminatorValues;
-		private readonly string[] notNullColumns;
-		private readonly int[] tableNumbers;
+		private readonly string[] notNullColumnNames;
+		private readonly int[] notNullColumnTableNumbers;
 
-		private readonly IDiscriminatorType discriminatorType;
+		private readonly string[] constraintOrderedTableNames;
+		private readonly string[][] constraintOrderedKeyColumnNames;
 		private readonly string discriminatorSQLString;
 		private readonly object discriminatorValue;
-		private readonly string discriminatorColumnName;
-
-		public override string DiscriminatorColumnName
-		{
-			get { return discriminatorColumnName; }
-		}
-
-		protected override string DiscriminatorAlias
-		{
-			// Is always "clazz_", so just use columnName
-			get { return DiscriminatorColumnName; }
-		}
-
-		public override string GetSubclassPropertyTableName(int i)
-		{
-			return subclassTableNameClosure[subclassPropertyTableNumberClosure[i]];
-		}
-
-		public override IType DiscriminatorType
-		{
-			get { return discriminatorType; }
-		}
-
-		public override string DiscriminatorSQLValue
-		{
-			get { return discriminatorSQLString; }
-		}
-
-		public override object DiscriminatorValue
-		{
-			get { return discriminatorValue; }
-		}
-
-		public override System.Type GetSubclassForDiscriminatorValue(object value)
-		{
-			return (System.Type) subclassesByDiscriminatorValue[value];
-		}
-
-		public override string[] PropertySpaces
-		{
-			get
-			{
-				// don't need subclass tables, because they can't appear in conditions
-				return tableNames;
-			}
-		}
-
-		// Generate all the SQL
-
-		protected override bool IsPropertyOfTable(int property, int table)
-		{
-			return naturalOrderPropertyTables[property] == table;
-		}
-
-		protected override SqlCommandInfo GenerateInsertString(bool identityInsert, bool[] includeProperty, int j)
-		{
-			SqlInsertBuilder builder = new SqlInsertBuilder(Factory);
-			builder.SetTableName(naturalOrderTableNames[j]);
-
-			for (int i = 0; i < PropertyTypes.Length; i++)
-			{
-				if (includeProperty[i] && IsPropertyOfTable(i, j))
-				{
-					builder.AddColumns(GetPropertyColumnNames(i), PropertyColumnInsertable[i], PropertyTypes[i]);
-				}
-			}
-
-			if (identityInsert && j == 0)
-			{
-				// make sure the Dialect has an identity insert string because we don't want
-				// to add the column when there is no value to supply the SqlBuilder
-				if (Dialect.IdentityInsertString != null)
-				{
-					// only 1 column if there is IdentityInsert enabled.
-					builder.AddColumn(naturalOrderTableKeyColumns[j][0], Dialect.IdentityInsertString);
-				}
-			}
-			else
-			{
-				builder.AddColumns(naturalOrderTableKeyColumns[j], null, IdentifierType);
-			}
-
-			return builder.ToSqlCommandInfo();
-		}
-
-		private const string ConcreteAlias = "x";
-
-		//INITIALIZATION:
 
 		/// <summary>
 		/// Constructs the NormalizedEntityPerister for the PersistentClass.
 		/// </summary>
-		/// <param name="model">The PeristentClass to create the EntityPersister for.</param>
+		/// <param name="persistentClass">The PeristentClass to create the EntityPersister for.</param>
 		/// <param name="cache">The configured <see cref="ICacheConcurrencyStrategy" />.</param>
 		/// <param name="factory">The SessionFactory that this EntityPersister will be stored in.</param>
 		/// <param name="mapping">The mapping used to retrieve type information.</param>
-		public JoinedSubclassEntityPersister(PersistentClass model, ICacheConcurrencyStrategy cache,
+		public JoinedSubclassEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache,
 		                                     ISessionFactoryImplementor factory, IMapping mapping)
-			: base(model, cache, factory)
+			: base(persistentClass, cache, factory)
 		{
-			// I am am making heavy use of the "this." just to help me with debugging what is a local variable to the 
-			// constructor versus what is an class scoped variable.  I am only doing this when we are using fields 
-			// instead of properties because it is easy to tell properties by the Case.
+			#region DISCRIMINATOR
 
-			// CLASS + TABLE
-
-			Table table = model.RootTable;
-			this.qualifiedTableName = table.GetQualifiedName(Dialect, Factory.DefaultSchema);
-
-			// DISCRIMINATOR
-
-			if (model.IsPolymorphic)
+			if (persistentClass.IsPolymorphic)
 			{
-				// when we have a Polymorphic model then we are going to add a column "clazz_" to 
-				// the sql statement that will be a large CASE statement where we will use the 
-				// integer value to tell us which class to instantiate for the record.
-				this.discriminatorColumnName = "clazz_";
-
 				try
 				{
-					discriminatorType = (IDiscriminatorType) NHibernateUtil.Int32;
-					discriminatorValue = model.SubclassId;
-					discriminatorSQLString = discriminatorType.ObjectToSQLString(discriminatorValue, Dialect);
+					discriminatorValue = persistentClass.SubclassId;
+					discriminatorSQLString = discriminatorValue.ToString();
 				}
 				catch (Exception e)
 				{
-					throw new MappingException(
-						"Could not format discriminator value '0' to sql string using the IType NHibernate.Types.Int32Type", e);
+					throw new MappingException("Could not format discriminator value to SQL string", e);
 				}
 			}
 			else
 			{
-				this.discriminatorColumnName = null;
-				this.discriminatorType = null;
 				discriminatorValue = null;
-				this.discriminatorSQLString = null;
+				discriminatorSQLString = null;
 			}
 
-			if (OptimisticLockMode != Versioning.OptimisticLock.Version)
+			if (OptimisticLockMode > Versioning.OptimisticLock.Version)
+				throw new MappingException(string.Format("optimistic-lock=all|dirty not supported for joined-subclass mappings [{0}]", EntityName));
+
+			#endregion
+
+			#region MULTITABLES
+			int idColumnSpan = IdentifierColumnSpan;
+
+			List<string> tables = new List<string>();
+			List<string[]> keyColumns = new List<string[]>();
+			List<bool> cascadeDeletes = new List<bool>();
+			IEnumerator<IKeyValue> kiter = persistentClass.KeyClosureIterator.GetEnumerator();
+			foreach (Table tab in persistentClass.TableClosureIterator)
 			{
-				throw new MappingException("optimistic-lock attribute not supported for joined-subclass mappings: " + ClassName);
+				kiter.MoveNext();
+				IKeyValue key = kiter.Current;
+				string tabname = tab.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
+				tables.Add(tabname);
+
+				List<string> keyCols = new List<string>(idColumnSpan);
+				IEnumerable<Column> enumerableKCols = new SafetyEnumerable<Column>(key.ColumnIterator);
+				foreach (Column kcol in enumerableKCols)
+					keyCols.Add(kcol.GetQuotedName(factory.Dialect));
+
+				keyColumns.Add(keyCols.ToArray());
+				cascadeDeletes.Add(key.IsCascadeDeleteEnabled && factory.Dialect.SupportsCascadeDelete);				
 			}
+			naturalOrderTableNames = tables.ToArray();
+			naturalOrderTableKeyColumns = keyColumns.ToArray();
+			naturalOrderCascadeDeleteEnabled = cascadeDeletes.ToArray();
 
-			//MULTITABLES
-
-			// these two will later be converted into arrays for the fields tableNames and tableKeyColumns
-			ArrayList tables = new ArrayList();
-			ArrayList keyColumns = new ArrayList();
-			tables.Add(this.qualifiedTableName);
-			keyColumns.Add(base.IdentifierColumnNames);
-
-			// move through each table that contains the data for this entity.
-			foreach (Table tab in model.TableClosureIterator)
+			List<string> subtables = new List<string>();
+			List<bool> isConcretes = new List<bool>();
+			keyColumns = new List<string[]>();
+			foreach (Table tab in persistentClass.SubclassTableClosureIterator)
 			{
-				string tabname = tab.GetQualifiedName(Dialect, factory.DefaultSchema);
-				if (!tabname.Equals(qualifiedTableName))
-				{
-					tables.Add(tabname);
-					string[] key = new string[tab.PrimaryKey.ColumnSpan];
-					int k = 0;
-					foreach (Column col in tab.PrimaryKey.ColumnIterator)
-					{
-						key[k++] = col.GetQuotedName(Dialect);
-					}
-					keyColumns.Add(key);
-				}
+				isConcretes.Add(persistentClass.IsClassOrSuperclassTable(tab));
+				string tabname = tab.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
+				subtables.Add(tabname);
+				List<string> key = new List<string>(idColumnSpan);
+				foreach (Column column in tab.PrimaryKey.ColumnIterator)
+					key.Add(column.GetQuotedName(factory.Dialect));
+
+				keyColumns.Add(key.ToArray());				
 			}
+			subclassTableNameClosure = subtables.ToArray();
+			subclassTableKeyColumnClosure = keyColumns.ToArray();
+			isClassOrSuperclassTable = isConcretes.ToArray();
 
-			this.naturalOrderTableNames = (string[]) tables.ToArray(typeof(string));
-			this.naturalOrderTableKeyColumns = (string[][]) keyColumns.ToArray(typeof(string[]));
-
-			// the description of these variables is the same as before
-			ArrayList subtables = new ArrayList();
-			keyColumns = new ArrayList();
-			subtables.Add(this.qualifiedTableName);
-			keyColumns.Add(base.IdentifierColumnNames);
-			foreach (Table tab in model.SubclassTableClosureIterator)
+			constraintOrderedTableNames = new string[subclassTableNameClosure.Length];
+			constraintOrderedKeyColumnNames = new string[subclassTableNameClosure.Length][];
+			int currentPosition = 0;
+			for (int i = subclassTableNameClosure.Length - 1; i >= 0; i--, currentPosition++)
 			{
-				string tabname = tab.GetQualifiedName(Dialect, factory.DefaultSchema);
-				if (!tabname.Equals(qualifiedTableName))
-				{
-					subtables.Add(tabname);
-					string[] key = new string[tab.PrimaryKey.ColumnSpan];
-					int k = 0;
-					foreach (Column col in tab.PrimaryKey.ColumnIterator)
-					{
-						key[k++] = col.GetQuotedName(Dialect);
-					}
-					keyColumns.Add(key);
-				}
+				constraintOrderedTableNames[currentPosition] = subclassTableNameClosure[i];
+				constraintOrderedKeyColumnNames[currentPosition] = subclassTableKeyColumnClosure[i];
 			}
 
-			// convert the local ArrayList variables into arrays for the fields in the class
-			this.subclassTableNameClosure = (string[]) subtables.ToArray(typeof(string));
-			this.subclassTableKeyColumns = (string[][]) keyColumns.ToArray(typeof(string[]));
-			this.isClassOrSuperclassTable = new bool[this.subclassTableNameClosure.Length];
-			for (int j = 0; j < subclassTableNameClosure.Length; j++)
-			{
-				this.isClassOrSuperclassTable[j] = tables.Contains(this.subclassTableNameClosure[j]);
-			}
-
-			int len = naturalOrderTableNames.Length;
 			tableSpan = naturalOrderTableNames.Length;
 			tableNames = Reverse(naturalOrderTableNames);
 			tableKeyColumns = Reverse(naturalOrderTableKeyColumns);
-			Array.Reverse(subclassTableNameClosure, 0, len);
-			Array.Reverse(subclassTableKeyColumns, 0, len);
+			Reverse(subclassTableNameClosure, tableSpan);
+			Reverse(subclassTableKeyColumnClosure, tableSpan);
+
+			spaces = ArrayHelper.Join(tableNames, ArrayHelper.ToStringArray(persistentClass.SynchronizedTables));
 
 			// Custom sql
 			customSQLInsert = new SqlString[tableSpan];
@@ -302,28 +195,25 @@ namespace NHibernate.Persister.Entity
 			updateResultCheckStyles = new ExecuteUpdateResultCheckStyle[tableSpan];
 			deleteResultCheckStyles = new ExecuteUpdateResultCheckStyle[tableSpan];
 
-			PersistentClass pc = model;
+			PersistentClass pc = persistentClass;
 			int jk = tableSpan - 1;
 			while (pc != null)
 			{
 				customSQLInsert[jk] = pc.CustomSQLInsert;
 				insertCallable[jk] = customSQLInsert[jk] != null && pc.IsCustomInsertCallable;
-				insertResultCheckStyles[jk] = pc.CustomSQLInsertCheckStyle == null
-				                              	?
-				                              ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLInsert[jk], insertCallable[jk])
-				                              	: pc.CustomSQLInsertCheckStyle;
+				insertResultCheckStyles[jk] = pc.CustomSQLInsertCheckStyle
+				                              ??
+				                              ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLInsert[jk], insertCallable[jk]);
 				customSQLUpdate[jk] = pc.CustomSQLUpdate;
 				updateCallable[jk] = customSQLUpdate[jk] != null && pc.IsCustomUpdateCallable;
-				updateResultCheckStyles[jk] = pc.CustomSQLUpdateCheckStyle == null
-				                              	?
-				                              ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLUpdate[jk], updateCallable[jk])
-				                              	: pc.CustomSQLUpdateCheckStyle;
+				updateResultCheckStyles[jk] = pc.CustomSQLUpdateCheckStyle
+				                              ??
+				                              ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLUpdate[jk], updateCallable[jk]);
 				customSQLDelete[jk] = pc.CustomSQLDelete;
 				deleteCallable[jk] = customSQLDelete[jk] != null && pc.IsCustomDeleteCallable;
-				deleteResultCheckStyles[jk] = pc.CustomSQLDeleteCheckStyle == null
-				                              	?
-				                              ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLDelete[jk], deleteCallable[jk])
-				                              	: pc.CustomSQLDeleteCheckStyle;
+				deleteResultCheckStyles[jk] = pc.CustomSQLDeleteCheckStyle
+				                              ??
+				                              ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLDelete[jk], deleteCallable[jk]);
 				jk--;
 				pc = pc.Superclass;
 			}
@@ -332,222 +222,252 @@ namespace NHibernate.Persister.Entity
 				throw new AssertionFailure("Tablespan does not match height of joined-subclass hiearchy.");
 			}
 
-			// PROPERTIES
+			#endregion
 
-			// initialize the lengths of all of the Property related fields in the class
-			this.propertyTables = new int[HydrateSpan];
-			this.naturalOrderPropertyTables = new int[HydrateSpan];
+			#region PROPERTIES
 
-			int i = 0;
-			foreach (Mapping.Property prop in model.PropertyClosureIterator)
+			int hydrateSpan = PropertySpan;
+			naturalOrderPropertyTableNumbers = new int[hydrateSpan];
+			propertyTableNumbers = new int[hydrateSpan];
+			int i2 = 0;
+			foreach (Property prop in persistentClass.PropertyClosureIterator)
 			{
-				Table tab = prop.Value.Table;
-				string tabname = tab.GetQualifiedName(Dialect, factory.DefaultSchema);
-				this.propertyTables[i] = GetTableId(tabname, this.tableNames);
-				this.naturalOrderPropertyTables[i] = GetTableId(tabname, this.naturalOrderTableNames);
-				i++;
+				string tabname = prop.Value.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
+				propertyTableNumbers[i2] = GetTableId(tabname, tableNames);
+				naturalOrderPropertyTableNumbers[i2] = GetTableId(tabname, naturalOrderTableNames);
+				i2++;
 			}
 
-			// SUBCLASS CLOSURE PROPERTIES
-
-			ArrayList columnTableNumbers = new ArrayList(); //this.subclassColumnTableNumberClosure
-			ArrayList formulaTableNumbers = new ArrayList();
-			ArrayList propTableNumbers = new ArrayList(); // this.subclassPropertyTableNameClosure
-
-			foreach (Mapping.Property prop in model.SubclassPropertyClosureIterator)
+			// subclass closure properties
+			List<int> columnTableNumbers = new List<int>();
+			List<int> formulaTableNumbers = new List<int>();
+			List<int> propTableNumbers = new List<int>();
+			foreach (Property prop in persistentClass.SubclassPropertyClosureIterator)
 			{
 				Table tab = prop.Value.Table;
-				String tabname = tab.GetQualifiedName(
-					factory.Dialect,
-					factory.DefaultSchema);
+				string tabname = tab.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
 				int tabnum = GetTableId(tabname, subclassTableNameClosure);
 				propTableNumbers.Add(tabnum);
 
 				foreach (ISelectable thing in prop.ColumnIterator)
 				{
 					if (thing.IsFormula)
-					{
 						formulaTableNumbers.Add(tabnum);
-					}
 					else
-					{
 						columnTableNumbers.Add(tabnum);
-					}
 				}
 			}
 
-			subclassColumnTableNumberClosure = ArrayHelper.ToIntArray(columnTableNumbers);
-			subclassPropertyTableNumberClosure = ArrayHelper.ToIntArray(propTableNumbers);
-			subclassFormulaTableNumberClosure = ArrayHelper.ToIntArray(formulaTableNumbers);
+			subclassColumnTableNumberClosure = columnTableNumbers.ToArray();
+			subclassPropertyTableNumberClosure = propTableNumbers.ToArray();
+			subclassFormulaTableNumberClosure = formulaTableNumbers.ToArray();
+			#endregion
 
-			// ****** Moved the sql generation to PostInstantiate *****
+			#region SUBCLASSES
 
-			System.Type mappedClass = model.MappedClass;
-
-			// SUBCLASSES
-
-			// all of the classes spanned, so even though there might be 2 subclasses we need to 
-			// add in the baseclass - so we add 1 to the Closure
-			int subclassSpan = model.SubclassSpan + 1;
-			this.subclassClosure = new System.Type[subclassSpan];
-
-			// start with the mapped class as the last element in the subclassClosure
-			this.subclassClosure[subclassSpan - 1] = mappedClass;
-
-			if (model.IsPolymorphic)
+			int subclassSpan = persistentClass.SubclassSpan + 1;
+			subclassClosure = new string[subclassSpan];
+			subclassClosure[subclassSpan - 1] = EntityName;
+			if (persistentClass.IsPolymorphic)
 			{
-				this.subclassesByDiscriminatorValue.Add(discriminatorValue, mappedClass);
-				this.discriminatorValues = new string[subclassSpan];
-				this.discriminatorValues[subclassSpan - 1] = discriminatorSQLString;
-
-				this.tableNumbers = new int[subclassSpan];
-				int id = GetTableId(
-					model.Table.GetQualifiedName(Dialect, factory.DefaultSchema),
-					this.subclassTableNameClosure);
-
-				this.tableNumbers[subclassSpan - 1] = id;
-				this.notNullColumns = new string[subclassSpan];
-				this.notNullColumns[subclassSpan - 1] = subclassTableKeyColumns[id][0];
-				/*
-				foreach( Column col in model.Table.PrimaryKey.ColumnIterator )
-				{
-					notNullColumns[ subclassSpan - 1 ] = col.GetQuotedName( Dialect ); //only once
-				}
-				*/
+				subclassesByDiscriminatorValue[discriminatorValue] = EntityName;
+				discriminatorValues = new string[subclassSpan];
+				discriminatorValues[subclassSpan - 1] = discriminatorSQLString;
+				notNullColumnTableNumbers = new int[subclassSpan];
+				int id =
+					GetTableId(
+						persistentClass.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName,
+						                                       factory.Settings.DefaultSchemaName), subclassTableNameClosure);
+				notNullColumnTableNumbers[subclassSpan - 1] = id;
+				notNullColumnNames = new string[subclassSpan];
+				notNullColumnNames[subclassSpan - 1] = subclassTableKeyColumnClosure[id][0]; 
+				//( (Column) model.getTable().getPrimaryKey().getColumnIterator().next() ).getName();
 			}
 			else
 			{
 				discriminatorValues = null;
-				tableNumbers = null;
-				notNullColumns = null;
+				notNullColumnTableNumbers = null;
+				notNullColumnNames = null;
 			}
 
-			int p = 0;
-			foreach (Subclass sc in model.SubclassIterator)
+			int k2 = 0;
+			foreach (Subclass sc in persistentClass.SubclassIterator)
 			{
-				subclassClosure[p] = sc.MappedClass;
+				subclassClosure[k2] = sc.EntityName;
 				try
 				{
-					if (model.IsPolymorphic)
+					if (persistentClass.IsPolymorphic)
 					{
-						int disc = sc.SubclassId;
-						subclassesByDiscriminatorValue.Add(disc, sc.MappedClass);
-						discriminatorValues[p] = disc.ToString();
-						int id = GetTableId(
-							sc.Table.GetQualifiedName(Dialect, factory.DefaultSchema),
-							this.subclassTableNameClosure);
-						tableNumbers[p] = id;
-						notNullColumns[p] = subclassTableKeyColumns[id][0];
-						/*
-						foreach( Column col in sc.Table.PrimaryKey.ColumnIterator )
-						{
-							notNullColumns[ p ] = col.GetQuotedName( Dialect ); //only once;
-						}
-						*/
+						// we now use subclass ids that are consistent across all
+						// persisters for a class hierarchy, so that the use of 
+						// "foo.class = Bar" works in HQL
+						int subclassId = sc.SubclassId; //new Integer(k+1);
+						subclassesByDiscriminatorValue[subclassId] = sc.EntityName;
+						discriminatorValues[k2] = subclassId.ToString();
+						int id =
+							GetTableId(
+								sc.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName,
+								                          factory.Settings.DefaultSchemaName), subclassTableNameClosure);
+						notNullColumnTableNumbers[k2] = id;
+						notNullColumnNames[k2] = subclassTableKeyColumnClosure[id][0]; 
+						//( (Column) sc.getTable().getPrimaryKey().getColumnIterator().next() ).getName();
 					}
 				}
 				catch (Exception e)
 				{
 					throw new MappingException("Error parsing discriminator value", e);
 				}
-				p++;
+				k2++;				
 			}
 
-			// moved the propertyHasColumns into PostInstantiate as it needs the SQL strings
+			#endregion
 
-			// needs identifier info so moved to PostInstatiate
-			//InitLockers( );
+			InitLockers();
 
-			InitSubclassPropertyAliasesMap(model);
+			InitSubclassPropertyAliasesMap(persistentClass);
+
 			PostConstruct(mapping);
 		}
 
-		/// <summary>
-		/// Create a new one dimensional array sorted in the Reverse order of the original array.
-		/// </summary>
-		/// <param name="objects">The original array.</param>
-		/// <returns>A new array in the reverse order of the original array.</returns>
+		public override IType DiscriminatorType
+		{
+			get { return NHibernateUtil.Int32; }
+		}
+
+		public override string DiscriminatorSQLValue
+		{
+			get { return discriminatorSQLString; }
+		}
+
+		public override object DiscriminatorValue
+		{
+			get { return discriminatorValue; }
+		}
+
+		public override string[] PropertySpaces
+		{
+			get
+			{
+				// don't need subclass tables, because they can't appear in conditions
+				return spaces;
+			}
+		}
+
+		public override string[] IdentifierColumnNames
+		{
+			get { return tableKeyColumns[0]; }
+		}
+
+		protected internal override int[] PropertyTableNumbersInSelect
+		{
+			get { return propertyTableNumbers; }
+		}
+
+		public override bool IsMultiTable
+		{
+			get { return true; }
+		}
+
+		protected override int[] SubclassColumnTableNumberClosure
+		{
+			get { return subclassColumnTableNumberClosure; }
+		}
+
+		protected override int[] SubclassFormulaTableNumberClosure
+		{
+			get { return subclassFormulaTableNumberClosure; }
+		}
+
+		protected internal override int[] PropertyTableNumbers
+		{
+			get { return naturalOrderPropertyTableNumbers; }
+		}
+
+		public override string[] ConstraintOrderedTableNameClosure
+		{
+			get { return constraintOrderedTableNames; }
+		}
+
+		public override string[][] ContraintOrderedTableKeyColumnClosure
+		{
+			get { return constraintOrderedKeyColumnNames; }
+		}
+
+		public override string RootTableName
+		{
+			get { return naturalOrderTableNames[0]; }
+		}
+
+		public override string GetSubclassPropertyTableName(int i)
+		{
+			return subclassTableNameClosure[subclassPropertyTableNumberClosure[i]];
+		}
+
+		public override string GetSubclassForDiscriminatorValue(object value)
+		{
+			string result;
+			subclassesByDiscriminatorValue.TryGetValue(value, out result);
+			return result;
+		}
+
+		protected override string GetTableName(int table)
+		{
+			return naturalOrderTableNames[table];
+		}
+
+		protected override string[] GetKeyColumns(int table)
+		{
+			return naturalOrderTableKeyColumns[table];
+		}
+
+		protected override bool IsTableCascadeDeleteEnabled(int j)
+		{
+			return naturalOrderCascadeDeleteEnabled[j];
+		}
+
+		protected override bool IsPropertyOfTable(int property, int table)
+		{
+			return naturalOrderPropertyTableNumbers[property] == table;
+		}
+
+		private static void Reverse(object[] objects, int len)
+		{
+			object[] temp = new object[len];
+			for (int i = 0; i < len; i++)
+				temp[i] = objects[len - i - 1];
+
+			for (int i = 0; i < len; i++)
+				objects[i] = temp[i];
+		}
+
 		private static string[] Reverse(string[] objects)
 		{
 			int len = objects.Length;
 			string[] temp = new string[len];
 			for (int i = 0; i < len; i++)
-			{
 				temp[i] = objects[len - i - 1];
-			}
+
 			return temp;
 		}
 
-		/// <summary>
-		/// Create a new two dimensional array sorted in the Reverse order of the original array. The 
-		/// second dimension is not reversed.
-		/// </summary>
-		/// <param name="objects">The original array.</param>
-		/// <returns>A new array in the reverse order of the original array.</returns>
 		private static string[][] Reverse(string[][] objects)
 		{
 			int len = objects.Length;
 			string[][] temp = new string[len][];
 			for (int i = 0; i < len; i++)
-			{
 				temp[i] = objects[len - i - 1];
-			}
+
 			return temp;
 		}
 
-		protected int GetPropertyTableNumber(string propertyName)
+		public override string FromTableFragment(string alias)
 		{
-			string[] propertyNames = PropertyNames;
-
-			for (int i = 0; i < propertyNames.Length; i++)
-			{
-				if (propertyName.Equals(propertyNames[i]))
-				{
-					return propertyTables[i];
-				}
-			}
-			return 0;
-		}
-
-		// TODO: override
-		protected void HandlePath(string path, IType type)
-		{
-			if (type.IsAssociationType && ((IAssociationType) type).UseLHSPrimaryKey)
-			{
-				tableNumberByPropertyPath[path] = 0;
-			}
-			else
-			{
-				string propertyName = StringHelper.Root(path);
-				tableNumberByPropertyPath[path] = GetPropertyTableNumber(propertyName);
-			}
+			return TableName + ' ' + alias;
 		}
 
 		public override string TableName
 		{
-			get { return subclassTableNameClosure[0]; }
-		}
-
-		private JoinFragment Outerjoin(string name, bool innerJoin, bool includeSubclasses)
-		{
-			JoinFragment outerjoin = Factory.Dialect.CreateOuterJoinFragment();
-			for (int i = 1; i < subclassTableNameClosure.Length; i++)
-			{
-				if (includeSubclasses || isClassOrSuperclassTable[i])
-				{
-					outerjoin.AddJoin(
-						subclassTableNameClosure[i],
-						Alias(name, i),
-						StringHelper.Qualify(name, IdentifierColumnNames),
-						subclassTableKeyColumns[i],
-						innerJoin && isClassOrSuperclassTable[i]
-							?
-						JoinType.InnerJoin
-							:
-						JoinType.LeftOuterJoin);
-				}
-			}
-			return outerjoin;
+			get { return tableNames[0]; }
 		}
 
 		/// <summary>
@@ -557,23 +477,50 @@ namespace NHibernate.Persister.Entity
 		/// <param name="tables">The array of table names</param>
 		/// <returns>The Index of the table in the array.</returns>
 		/// <exception cref="AssertionFailure">Thrown when the tableName specified can't be found</exception>
-		private int GetTableId(string tableName, string[] tables)
+		private static int GetTableId(string tableName, string[] tables)
 		{
-			for (int tableIndex = 0; tableIndex < tables.Length; tableIndex++)
+			for (int i = 0; i < tables.Length; i++)
 			{
-				if (tableName.Equals(tables[tableIndex]))
-				{
-					return tableIndex;
-				}
+				if (tableName.Equals(tables[i]))
+					return i;
 			}
 
-			throw new AssertionFailure(string.Format("table [{0}] not found", tableName));
+			throw new AssertionFailure(string.Format("Table [{0}] not found", tableName));
 		}
 
-		// TODO: override
-		public override string[] ToColumns(string alias, string property)
+		protected override void AddDiscriminatorToSelect(SelectFragment select, string name, string suffix)
 		{
-			if (PathExpressionParser.EntityClass.Equals(property))
+			if (HasSubclasses)
+			{
+				select.SetExtraSelectList(DiscriminatorFragment(name), DiscriminatorAlias);
+			}
+		}
+
+		private CaseFragment DiscriminatorFragment(string alias)
+		{
+			CaseFragment cases = Factory.Dialect.CreateCaseFragment();
+
+			for (int i = 0; i < discriminatorValues.Length; i++)
+			{
+				cases.AddWhenColumnNotNull(GenerateTableAlias(alias, notNullColumnTableNumbers[i]), notNullColumnNames[i],
+				                           discriminatorValues[i]);
+			}
+			return cases;
+		}
+
+		public override string FilterFragment(string alias)
+		{
+			return HasWhere ? " and " + GetSQLWhereString(GenerateFilterConditionAlias(alias)) : string.Empty;
+		}
+
+		public override string GenerateFilterConditionAlias(string rootAlias)
+		{
+			return GenerateTableAlias(rootAlias, tableSpan - 1);
+		}
+
+		public override string[] ToColumns(string alias, string propertyName)
+		{
+			if (EntityClass.Equals(propertyName))
 			{
 				// This doesn't actually seem to work but it *might* 
 				// work on some dbs. Also it doesn't work if there 
@@ -587,65 +534,8 @@ namespace NHibernate.Persister.Entity
 			}
 			else
 			{
-				return base.ToColumns(alias, property);
+				return base.ToColumns(alias, propertyName);
 			}
-		}
-
-		protected override int[] PropertyTableNumbersInSelect
-		{
-			get { return propertyTables; }
-		}
-
-		private CaseFragment DiscriminatorFragment(string alias)
-		{
-			CaseFragment cases = Dialect.CreateCaseFragment();
-
-			for (int i = 0; i < discriminatorValues.Length; i++)
-			{
-				cases.AddWhenColumnNotNull(
-					Alias(alias, tableNumbers[i]),
-					notNullColumns[i],
-					discriminatorValues[i]
-					);
-			}
-			return cases;
-		}
-
-		public override SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
-		{
-			return Outerjoin(alias, innerJoin, includeSubclasses).ToFromFragmentString;
-		}
-
-		public override SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
-		{
-			return Outerjoin(alias, innerJoin, includeSubclasses).ToWhereFragmentString;
-		}
-
-		public override SqlString QueryWhereFragment(string alias, bool innerJoin, bool includeSubclasses)
-		{
-			SqlString result = WhereJoinFragment(alias, innerJoin, includeSubclasses);
-			string rootAlias = Alias(alias, naturalOrderTableNames.Length - 1); // urgh, ugly!!
-			if (HasWhere)
-			{
-				result = result.Append(" and " + GetSQLWhereString(rootAlias));
-			}
-
-			return result;
-		}
-
-		public override string[] IdentifierColumnNames
-		{
-			get { return tableKeyColumns[0]; }
-		}
-
-		public override bool IsCacheInvalidationRequired
-		{
-			get { return HasFormulaProperties || (!IsVersioned && UseDynamicUpdate); }
-		}
-
-		protected override string VersionedTableName
-		{
-			get { return qualifiedTableName; }
 		}
 
 		protected override int GetSubclassPropertyTableNumber(int i)
@@ -653,55 +543,14 @@ namespace NHibernate.Persister.Entity
 			return subclassPropertyTableNumberClosure[i];
 		}
 
-		protected override void AddDiscriminatorToSelect(SelectFragment select, string name, string suffix)
-		{
-			select.SetExtraSelectList(DiscriminatorFragment(name), DiscriminatorAlias);
-		}
-
-		protected override int[] SubclassColumnTableNumberClosure
-		{
-			get { return subclassColumnTableNumberClosure; }
-		}
-
-		protected override int[] SubclassFormulaTableNumberClosure
-		{
-			get { return subclassFormulaTableNumberClosure; }
-		}
-
-		public override string GetPropertyTableName(string propertyName)
-		{
-			int? index = EntityMetamodel.GetPropertyIndexOrNull(propertyName);
-			if (!index.HasValue) return null;
-			return tableNames[propertyTables[index.Value]];
-		}
-
-		public override string FilterFragment(string alias)
-		{
-			return HasWhere
-			       	?
-			       " and " + GetSQLWhereString(GenerateFilterConditionAlias(alias))
-			       	:
-			       "";
-		}
-
-		public override string GenerateFilterConditionAlias(string rootAlias)
-		{
-			return GenerateTableAlias(rootAlias, tableSpan - 1);
-		}
-
 		protected override int TableSpan
 		{
 			get { return tableSpan; }
 		}
 
-		public override bool IsMultiTable
-		{
-			get { return true; }
-		}
-
 		protected override string[] GetSubclassTableKeyColumns(int j)
 		{
-			return subclassTableKeyColumns[j];
+			return subclassTableKeyColumnClosure[j];
 		}
 
 		public override string GetSubclassTableName(int j)
@@ -719,24 +568,11 @@ namespace NHibernate.Persister.Entity
 			return isClassOrSuperclassTable[j];
 		}
 
-		protected override string[] GetKeyColumns(int table)
+		public override string GetPropertyTableName(string propertyName)
 		{
-			return naturalOrderTableKeyColumns[table];
-		}
-
-		protected override string GetTableName(int table)
-		{
-			return naturalOrderTableNames[table];
-		}
-
-		protected override int[] PropertyTableNumbers
-		{
-			get { return naturalOrderPropertyTables; }
-		}
-
-		public override string RootTableName
-		{
-			get { return naturalOrderTableNames[0]; }
+			int? index = EntityMetamodel.GetPropertyIndexOrNull(propertyName);
+			if (!index.HasValue) return null;
+			return tableNames[propertyTableNumbers[index.Value]];
 		}
 
 		public override string GetRootTableAlias(string drivingAlias)
@@ -744,5 +580,14 @@ namespace NHibernate.Persister.Entity
 			return GenerateTableAlias(drivingAlias, GetTableId(RootTableName, tableNames));
 		}
 
+		public override Declarer GetSubclassPropertyDeclarer(string propertyPath)
+		{
+			if ("class".Equals(propertyPath))
+			{
+				// special case where we need to force incloude all subclass joins
+				return Declarer.SubClass;
+			}
+			return base.GetSubclassPropertyDeclarer(propertyPath);
+		}
 	}
 }

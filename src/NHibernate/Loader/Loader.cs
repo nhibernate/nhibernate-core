@@ -939,7 +939,7 @@ namespace NHibernate.Loader
 			LockMode lockMode,
 			ISessionImplementor session)
 		{
-			if (!persister.IsInstance(obj))
+			if (!persister.IsInstance(obj, session.EntityMode))
 			{
 				string errorMsg = string.Format("loading object was of wrong class [{0}]", obj.GetType().FullName);
 				throw new WrongClassException(errorMsg, key.Identifier, persister.EntityName);
@@ -970,7 +970,7 @@ namespace NHibernate.Loader
 		{
 			object obj;
 
-			System.Type instanceClass = GetInstanceClass(dr, i, persister, key.Identifier, session);
+			string instanceClass = GetInstanceClass(dr, i, persister, key.Identifier, session);
 
 			if (optionalObjectKey != null && key.Equals(optionalObjectKey))
 			{
@@ -1001,15 +1001,8 @@ namespace NHibernate.Loader
 		/// an array of "hydrated" values (do not resolve associations yet),
 		/// and pass the hydrated state to the session.
 		/// </summary>
-		private void LoadFromResultSet(
-			IDataReader rs,
-			int i,
-			object obj,
-			System.Type instanceClass,
-			EntityKey key,
-			LockMode lockMode,
-			ILoadable rootPersister,
-			ISessionImplementor session)
+		private void LoadFromResultSet(IDataReader rs, int i, object obj, string instanceClass,
+			EntityKey key, LockMode lockMode, ILoadable rootPersister, ISessionImplementor session)
 		{
 			object id = key.Identifier;
 
@@ -1027,44 +1020,38 @@ namespace NHibernate.Loader
 			TwoPhaseLoad.AddUninitializedEntity(key, obj, persister, lockMode, false, session);
 
 			// This is not very nice (and quite slow):
-			string[][] cols = persister == rootPersister ?
-			                  EntityAliases[i].SuffixedPropertyAliases :
-			                  EntityAliases[i].GetSuffixedPropertyAliases(persister);
+			string[][] cols = persister == rootPersister
+			                  	? EntityAliases[i].SuffixedPropertyAliases
+			                  	: EntityAliases[i].GetSuffixedPropertyAliases(persister);
 
-			object[] values = persister.Hydrate(
-				rs,
-				id,
-				obj,
-				rootPersister,
-				cols,
-				session);
+			object[] values = persister.Hydrate(rs, id, obj, rootPersister, cols, true, session);
 
 			// TODO H3:
-//			IAssociationType[] ownerAssociationTypes = OwnerAssociationTypes;
-//
-//			if ( ownerAssociationTypes != null && ownerAssociationTypes[i] != null ) 
-//			{
-//				string ukName = ownerAssociationTypes[i].RHSUniqueKeyPropertyName;
-//				if (ukName!=null) 
-//				{
-//					int index = ( (IUniqueKeyLoadable) persister ).GetPropertyIndex(ukName);
-//					IType type = persister.PropertyTypes[index];
-//	
-//					// polymorphism not really handled completely correctly,
-//					// perhaps...well, actually its ok, assuming that the
-//					// entity name used in the lookup is the same as the
-//					// the one used here, which it will be
-//	
-//					EntityUniqueKey euk = new EntityUniqueKey( 
-//						rootPersister.MappedClass, //polymorphism comment above
-//						ukName,
-//						type.SemiResolve( values[ index ], session, obj ),
-//						type,
-//						session.EntityMode, session.Factory
-//						);
-//					session.AddEntity( euk, obj );
-//				}
-//			}
+			//			IAssociationType[] ownerAssociationTypes = OwnerAssociationTypes;
+			//
+			//			if ( ownerAssociationTypes != null && ownerAssociationTypes[i] != null ) 
+			//			{
+			//				string ukName = ownerAssociationTypes[i].RHSUniqueKeyPropertyName;
+			//				if (ukName!=null) 
+			//				{
+			//					int index = ( (IUniqueKeyLoadable) persister ).GetPropertyIndex(ukName);
+			//					IType type = persister.PropertyTypes[index];
+			//	
+			//					// polymorphism not really handled completely correctly,
+			//					// perhaps...well, actually its ok, assuming that the
+			//					// entity name used in the lookup is the same as the
+			//					// the one used here, which it will be
+			//	
+			//					EntityUniqueKey euk = new EntityUniqueKey( 
+			//						rootPersister.MappedClass, //polymorphism comment above
+			//						ukName,
+			//						type.SemiResolve( values[ index ], session, obj ),
+			//						type,
+			//						session.EntityMode, session.Factory
+			//						);
+			//					session.AddEntity( euk, obj );
+			//				}
+			//			}
 
 			TwoPhaseLoad.PostHydrate(persister, id, values, obj, lockMode, false, session);
 		}
@@ -1072,34 +1059,28 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Determine the concrete class of an instance for the <c>IDataReader</c>
 		/// </summary>
-		private System.Type GetInstanceClass(
-			IDataReader rs,
-			int i,
-			ILoadable persister,
-			object id,
-			ISessionImplementor session)
+		private string GetInstanceClass(IDataReader rs, int i, ILoadable persister, object id, ISessionImplementor session)
 		{
-			System.Type topClass = persister.MappedClass;
-
 			if (persister.HasSubclasses)
 			{
 				// code to handle subclasses of topClass
-				object discriminatorValue = persister.DiscriminatorType.NullSafeGet(
-					rs, EntityAliases[i].SuffixedDiscriminatorAlias, session, null);
+				object discriminatorValue =
+					persister.DiscriminatorType.NullSafeGet(rs, EntityAliases[i].SuffixedDiscriminatorAlias, session, null);
 
-				System.Type result = persister.GetSubclassForDiscriminatorValue(discriminatorValue);
+				string result = persister.GetSubclassForDiscriminatorValue(discriminatorValue);
 
 				if (result == null)
 				{
 					// woops we got an instance of another class hierarchy branch.
-					throw new WrongClassException(string.Format("Discriminator was: '{0}'", discriminatorValue), id, topClass.FullName);
+					throw new WrongClassException(string.Format("Discriminator was: '{0}'", discriminatorValue), id,
+					                              persister.EntityName);
 				}
 
 				return result;
 			}
 			else
 			{
-				return topClass;
+				return persister.EntityName;
 			}
 		}
 

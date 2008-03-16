@@ -50,7 +50,7 @@ namespace NHibernate.Event.Default
 		{
 			// Sub-insertions should occur before containing insertion so
 			// Try to do the callback now
-			if (persister.ImplementsLifecycle)
+			if (persister.ImplementsLifecycle(source.EntityMode))
 			{
 				log.Debug("calling OnSave()");
 				if (((ILifecycle)entity).OnSave(source) == LifecycleVeto.Veto)
@@ -64,7 +64,7 @@ namespace NHibernate.Event.Default
 
 		protected internal void Validate(object entity, IEntityPersister persister, IEventSource source)
 		{
-			if (persister.ImplementsValidatable)
+			if (persister.ImplementsValidatable(source.EntityMode))
 			{
 				((IValidatable)entity).Validate();
 			}
@@ -172,7 +172,7 @@ namespace NHibernate.Event.Default
 						throw new NonUniqueObjectException(id, persister.EntityName);
 					}
 				}
-				persister.SetIdentifier(entity, id);
+				persister.SetIdentifier(entity, id, source.EntityMode);
 			}
 			else
 			{
@@ -229,9 +229,7 @@ namespace NHibernate.Event.Default
 				source.ActionQueue.ExecuteInserts();
 			}
 
-			// H3.2 Different behaviour
-			//object[] values = persister.GetPropertyValuesToInsert(entity, GetMergeMap(anything), source);
-			object[] values = persister.GetPropertyValues(entity);
+			object[] values = persister.GetPropertyValuesToInsert(entity, GetMergeMap(anything), source);
 			IType[] types = persister.PropertyTypes;
 
 			bool substitute = SubstituteValuesIfNecessary(entity, id, values, persister, source);
@@ -243,7 +241,7 @@ namespace NHibernate.Event.Default
 
 			if (substitute)
 			{
-				persister.SetPropertyValues(entity, values);
+				persister.SetPropertyValues(entity, values, source.EntityMode);
 			}
 
 			TypeFactory.DeepCopy(values, types, persister.PropertyUpdateability, values, source);
@@ -333,7 +331,8 @@ namespace NHibernate.Event.Default
 			if (persister.IsVersioned)
 			{
 				// NH Specific feature (H3.2 use null value for versionProperty; NH ask to persister to know if a valueType mean unversioned)
-				substitute |= Versioning.SeedVersion(values, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion(values), source);
+				object versionValue = values[persister.VersionProperty];
+				substitute |= Versioning.SeedVersion(values, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion(versionValue), source);
 			}
 			return substitute;
 		}

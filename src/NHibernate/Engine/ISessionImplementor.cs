@@ -157,18 +157,12 @@ namespace NHibernate.Engine
 		/// </summary>
 		object GetContextEntityIdentifier(object obj);
 
-		/// <summary>
-		/// Return the identifer of the persistent or transient object, or throw
-		/// an exception if the instance is "unsaved"
-		/// </summary>
-		object GetEntityIdentifierIfNotUnsaved(object obj);
-
 		bool IsSaved(object obj); // NH specific
 
 		/// <summary>
 		/// Instantiate the entity class, initializing with the given identifier
 		/// </summary>
-		object Instantiate(System.Type clazz, object id);
+		object Instantiate(string entityName, object id);
 
 		/// <summary>
 		/// Execute an SQL Query

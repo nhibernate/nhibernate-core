@@ -84,7 +84,7 @@ namespace NHibernate.Engine
 				}
 			}
 
-			persister.SetPropertyValues(entity, hydratedState);
+			persister.SetPropertyValues(entity, hydratedState, session.EntityMode);
 			
 			ISessionFactoryImplementor factory = session.Factory;
 
@@ -124,8 +124,7 @@ namespace NHibernate.Engine
 				persistenceContext.SetEntryStatus(entityEntry, Status.Loaded);
 			}
 
-			// TODO H3.2 properties lazyness
-			//persister.AfterInitialize(entity, entityEntry.LoadedWithLazyPropertiesUnfetched, session);
+			persister.AfterInitialize(entity, entityEntry.LoadedWithLazyPropertiesUnfetched, session);
 
 			if (session.IsEventSource)
 			{
@@ -150,10 +149,8 @@ namespace NHibernate.Engine
 
 		private static bool UseMinimalPuts(ISessionImplementor session, EntityEntry entityEntry)
 		{
-			return session.Factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh;
-			// TODO H3.2 Different behaviour property lazyness
-			//return (session.Factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh)
-			//|| (entityEntry.Persister.HasLazyProperties && entityEntry.LoadedWithLazyPropertiesUnfetched && entityEntry.Persister.LazyPropertiesCacheable);
+			return (session.Factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh)
+			|| (entityEntry.Persister.HasLazyProperties && entityEntry.LoadedWithLazyPropertiesUnfetched && entityEntry.Persister.IsLazyPropertiesCacheable);
 		}
 
 		/// <summary> 

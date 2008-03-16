@@ -1,7 +1,6 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
-using NHibernate.Hql.Classic;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -13,9 +12,9 @@ namespace NHibernate.Persister.Entity
 	/// </summary>
 	public abstract class AbstractPropertyMapping : IPropertyMapping
 	{
-		private readonly Hashtable typesByPropertyPath = new Hashtable();
-		private readonly Hashtable columnsByPropertyPath = new Hashtable();
-		private readonly Hashtable formulaTemplatesByPropertyPath = new Hashtable();
+		private readonly Dictionary<string, IType> typesByPropertyPath = new Dictionary<string, IType>();
+		private readonly Dictionary<string, string[]> columnsByPropertyPath = new Dictionary<string, string[]>();
+		private readonly Dictionary<string, string[]> formulaTemplatesByPropertyPath = new Dictionary<string, string[]>();
 
 		public virtual string[] IdentifierColumnNames
 		{
@@ -24,38 +23,33 @@ namespace NHibernate.Persister.Entity
 
 		protected abstract string EntityName { get; }
 
-		protected QueryException PropertyException(String propertyName)
+		protected QueryException PropertyException(string propertyName)
 		{
 			return new QueryException(string.Format("could not resolve property: {0} of: {1}", propertyName, EntityName));
 		}
 
 		#region IPropertyMapping Members
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="propertyName"></param>
-		/// <returns></returns>
 		public IType ToType(string propertyName)
 		{
-			IType type = typesByPropertyPath[propertyName] as IType;
-			if (type == null)
+			try
+			{
+				IType type = typesByPropertyPath[propertyName];
+				return type;
+			}
+			catch(KeyNotFoundException)
 			{
 				throw PropertyException(propertyName);
 			}
-			return type;
 		}
 
 		public virtual string[] ToColumns(string alias, string propertyName)
 		{
 			//TODO: *two* hashmap lookups here is one too many...
-			string[] columns = (string[]) columnsByPropertyPath[propertyName];
-			if (columns == null)
-			{
-				throw PropertyException(propertyName);
-			}
+			string[] columns = GetColumns(propertyName);
 
-			string[] templates = (string[]) formulaTemplatesByPropertyPath[propertyName];
+			string[] templates;
+			formulaTemplatesByPropertyPath.TryGetValue(propertyName, out templates);
 			string[] result = new string[columns.Length];
 			for (int i = 0; i < columns.Length; i++)
 			{
@@ -67,13 +61,26 @@ namespace NHibernate.Persister.Entity
 			return result;
 		}
 
+		private string[] GetColumns(string propertyName)
+		{
+			string[] columns;
+			try
+			{
+				columns = columnsByPropertyPath[propertyName];
+			}
+			catch (KeyNotFoundException)
+			{
+				throw PropertyException(propertyName);
+			}
+			return columns;
+		}
+
 		public virtual string[] ToColumns(string propertyName)
 		{
-			string[] columns = (string[])columnsByPropertyPath[propertyName];
-			if (columns == null)
-				throw PropertyException(propertyName);
+			string[] columns = GetColumns(propertyName);
 
-			string[] templates = (string[])formulaTemplatesByPropertyPath[propertyName];
+			string[] templates;
+			formulaTemplatesByPropertyPath.TryGetValue(propertyName, out templates);
 			string[] result = new string[columns.Length];
 			for (int i = 0; i < columns.Length; i++)
 			{
@@ -95,10 +102,7 @@ namespace NHibernate.Persister.Entity
 			columnsByPropertyPath[path] = columns;
 
 			if (formulaTemplates != null)
-			{
 				formulaTemplatesByPropertyPath[path] = formulaTemplates;
-			}
-			HandlePath(path, type);
 		}
 
 		protected internal void InitPropertyPaths( string path, IType type, string[] columns, string[] formulaTemplates, IMapping factory )
@@ -122,7 +126,10 @@ namespace NHibernate.Persister.Entity
 					string foreignKeyProperty = actType.LHSPropertyName;
 					if (foreignKeyProperty != null)
 					{
-						columns = (string[])columnsByPropertyPath[foreignKeyProperty];
+						//TODO: this requires that the collection is defined after the
+						//      referenced property in the mapping file (ok?)
+						if (!columnsByPropertyPath.TryGetValue(foreignKeyProperty, out columns))
+							return; //get em on the second pass!
 					}
 				}
 			}
@@ -134,7 +141,12 @@ namespace NHibernate.Persister.Entity
 
 			if (type.IsComponentType)
 			{
-				InitComponentPropertyPaths(path, (IAbstractComponentType) type, columns, formulaTemplates, factory);
+				IAbstractComponentType actype = (IAbstractComponentType)type;
+				InitComponentPropertyPaths(path, actype, columns, formulaTemplates, factory);
+				if (actype.IsEmbedded)
+				{
+					InitComponentPropertyPaths(path == null ? null : StringHelper.Qualifier(path), actype, columns, formulaTemplates, factory);
+				}
 			}
 			else if (type.IsEntityType)
 			{
@@ -142,30 +154,42 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="path"></param>
-		/// <param name="etype"></param>
-		/// <param name="columns"></param>
-		/// <param name="factory"></param>
 		protected void InitIdentifierPropertyPaths(string path, EntityType etype, string[] columns, IMapping factory)
 		{
 			IType idtype = etype.GetIdentifierOrUniqueKeyType(factory);
+			string idPropName = etype.GetIdentifierOrUniqueKeyPropertyName(factory);
+			bool hasNonIdentifierPropertyNamedId = HasNonIdentifierPropertyNamedId(etype, factory);
 
-			if (!etype.IsUniqueKeyReference)
+			if (etype.IsReferenceToPrimaryKey)
 			{
-				string idpath1 = ExtendPath(path, PathExpressionParser.EntityID);
-				AddPropertyPath(idpath1, idtype, columns, null);
-				InitPropertyPaths(idpath1, idtype, columns, null, factory);
+				if (!hasNonIdentifierPropertyNamedId)
+				{
+					string idpath1 = ExtendPath(path, EntityPersister.EntityID);
+					AddPropertyPath(idpath1, idtype, columns, null);
+					InitPropertyPaths(idpath1, idtype, columns, null, factory);
+				}
 			}
 
-			string idPropName = etype.GetIdentifierOrUniqueKeyPropertyName(factory);
 			if (idPropName != null)
 			{
 				string idpath2 = ExtendPath(path, idPropName);
 				AddPropertyPath(idpath2, idtype, columns, null);
 				InitPropertyPaths(idpath2, idtype, columns, null, factory);
+			}
+		}
+
+		private bool HasNonIdentifierPropertyNamedId(EntityType entityType, IMapping factory)
+		{
+			// TODO : would be great to have a Mapping#hasNonIdentifierPropertyNamedId method
+			// I don't believe that Mapping#getReferencedPropertyType accounts for the identifier property; so
+			// if it returns for a property named 'id', then we should have a non-id field named id
+			try
+			{
+				return factory.GetReferencedPropertyType(entityType.GetAssociatedEntityName(), EntityPersister.EntityID) != null;
+			}
+			catch (MappingException)
+			{
+				return false;
 			}
 		}
 
@@ -197,33 +221,24 @@ namespace NHibernate.Persister.Entity
 
 		private static string ExtendPath(string path, string property)
 		{
-			if (path == null)
-			{
+			if (string.IsNullOrEmpty(path))
 				return property;
-			}
 			else
-			{
 				return StringHelper.Qualify(path, property);
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="path"></param>
-		/// <param name="type"></param>
-		protected virtual void HandlePath(string path, IType type)
-		{
 		}
 
 		public string[] GetColumnNames(string propertyName)
 		{
-			string[] cols = (string[]) columnsByPropertyPath[propertyName];
-			if (cols == null)
+			try
 			{
-				throw new MappingException("unknown property: " + propertyName);
+				string[] columns;
+				columns = columnsByPropertyPath[propertyName];
+				return columns;
 			}
-			return cols;
+			catch (KeyNotFoundException)
+			{
+				throw new MappingException(string.Format("unknown property: {0} of: {1}", propertyName, EntityName));
+			}
 		}
 	}
 }

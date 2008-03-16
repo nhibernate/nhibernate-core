@@ -18,6 +18,7 @@ namespace NHibernate.Mapping
 		private bool isSequentialSelect;
 		private bool isInverse;
 		private bool isOptional;
+		private bool? isLazy;
 
 		// Custom SQL
 		private SqlString customSQLInsert;
@@ -140,6 +141,25 @@ namespace NHibernate.Mapping
 		{
 			get { return isInverse; }
 			set { isInverse = value; }
+		}
+
+		public bool IsLazy
+		{
+			get
+			{
+				if (!isLazy.HasValue)
+				{
+					IEnumerator<Property> iter = PropertyIterator.GetEnumerator();
+					while (iter.MoveNext() && !isLazy.HasValue)
+					{
+						if (!iter.Current.IsLazy)
+							isLazy = false;
+					}
+					isLazy = true;
+				}
+				return isLazy.Value;
+			}
+
 		}
 
 		public virtual bool IsOptional

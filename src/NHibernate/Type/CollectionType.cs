@@ -487,8 +487,7 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					id = entityEntry.Persister.GetPropertyValue(owner, foreignKeyPropertyName);
-					//id = entityEntry.Persister.GetPropertyValue(owner, foreignKeyPropertyName, session.EntityMode);
+					id = entityEntry.Persister.GetPropertyValue(owner, foreignKeyPropertyName, session.EntityMode);
 				}
 
 				// NOTE VERY HACKISH WORKAROUND!!

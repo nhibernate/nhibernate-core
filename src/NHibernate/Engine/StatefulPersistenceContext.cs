@@ -692,13 +692,13 @@ namespace NHibernate.Engine
 		/// <returns> An appropriately narrowed instance. </returns>
 		public object NarrowProxy(INHibernateProxy proxy, IEntityPersister persister, EntityKey key, object obj)
 		{
-			bool alreadyNarrow = persister.ConcreteProxyClass.IsAssignableFrom(proxy.GetType());
+			bool alreadyNarrow = persister.GetConcreteProxyClass(session.EntityMode).IsAssignableFrom(proxy.GetType());
 
 			if (!alreadyNarrow)
 			{
 				if (ProxyWarnLog.IsWarnEnabled)
 				{
-					ProxyWarnLog.Warn("Narrowing proxy to " + persister.ConcreteProxyClass + " - this operation breaks ==");
+					ProxyWarnLog.Warn("Narrowing proxy to " + persister.GetConcreteProxyClass(session.EntityMode) + " - this operation breaks ==");
 				}
 
 				if (obj != null)

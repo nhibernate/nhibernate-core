@@ -28,7 +28,7 @@ namespace NHibernate.Test.Generatedkeys.Identity
 			configuration.SetProperty(Environment.GenerateStatistics, "true");
 		}
 
-		[Test, Ignore("Not supported yet.")]
+		[Test]
 		public void IdentityColumnGeneratedIds()
 		{
 			ISession s = OpenSession();

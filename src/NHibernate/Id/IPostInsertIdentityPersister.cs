@@ -1,4 +1,5 @@
 using NHibernate.Persister.Entity;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Id
 {
@@ -26,6 +27,6 @@ namespace NHibernate.Id
 		/// column(s) to use in the select statement restriction.
 		/// </param>
 		/// <returns> The SQL select string </returns>
-		string GetSelectByUniqueKeyString(string propertyName);
+		SqlString GetSelectByUniqueKeyString(string propertyName);
 	}
 }

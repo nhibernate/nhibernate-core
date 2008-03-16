@@ -63,11 +63,11 @@ namespace NHibernate.Engine
 		/// <param name="force">Force the version to initialize</param>
 		/// <param name="session">The current session, if any.</param>
 		/// <returns><see langword="true" /> if the version property needs to be seeded with an initial value.</returns>
-		public static bool SeedVersion(object[] fields, int versionProperty, IVersionType versionType, bool force,
+		public static bool SeedVersion(object[] fields, int versionProperty, IVersionType versionType, bool? force,
 																	 ISessionImplementor session)
 		{
 			object initialVersion = fields[versionProperty];
-			if (initialVersion == null || force)
+			if (initialVersion == null || !force.HasValue || force.Value)
 			{
 				fields[versionProperty] = Seed(versionType, session);
 				return true;

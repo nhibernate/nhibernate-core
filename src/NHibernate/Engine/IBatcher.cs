@@ -68,6 +68,12 @@ namespace NHibernate.Engine
 		void CloseCommand(IDbCommand cmd, IDataReader reader);
 
 		/// <summary>
+		/// Close a <see cref="IDataReader"/> opened using <see cref="ExecuteReader"/>
+		/// </summary>
+		/// <param name="reader">The <see cref="IDataReader"/> to ensure is closed.</param>
+		void CloseReader(IDataReader reader);
+
+		/// <summary>
 		/// Get a batchable <see cref="IDbCommand"/> to use for inserting / deleting / updating
 		/// (might be called many times before a single call to <c>ExecuteBatch()</c>
 		/// </summary>

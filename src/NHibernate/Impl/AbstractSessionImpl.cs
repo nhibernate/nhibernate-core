@@ -64,9 +64,8 @@ namespace NHibernate.Impl
 		public abstract void BeforeTransactionCompletion(ITransaction tx);
 		public abstract void AfterTransactionCompletion(bool successful, ITransaction tx);
 		public abstract object GetContextEntityIdentifier(object obj);
-		public abstract object GetEntityIdentifierIfNotUnsaved(object obj);
 		public abstract bool IsSaved(object obj);
-		public abstract object Instantiate(System.Type clazz, object id);
+		public abstract object Instantiate(string clazz, object id);
 		public abstract IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters);
 		public abstract void List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results);
 		public abstract IList<T> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters);

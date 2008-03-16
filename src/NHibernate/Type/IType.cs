@@ -142,16 +142,6 @@ namespace NHibernate.Type
 		/// <returns> the value to be merged </returns>
 		object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection);
 
-		/// <summary>
-		/// Determines whether the specified value is represented as <see langword="null" /> in the database.
-		/// </summary>
-		/// <param name="value">The value, may be <see langword="null" />.</param>
-		/// <returns>
-		/// <see langword="true" /> if the specified value is represented as <see langword="null" /> in the database;
-		/// otherwise, <see langword="false" />.
-		/// </returns>
-		bool IsDatabaseNull(object value);
-
 		/// <summary> 
 		/// Compare two instances of the class mapped by this type for persistence
 		/// "equality" - equality of persistent state - taking a shortcut for

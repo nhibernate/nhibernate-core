@@ -289,12 +289,7 @@ namespace NHibernate.AdoNet
 			commandsToClose.Remove(st);
 			try
 			{
-				if (reader != null)
-				{
-					ResultSetWrapper rsw = reader as ResultSetWrapper;
-					readersToClose.Remove(rsw == null ? reader : rsw.Target);
-					CloseReader(reader);
-				}
+				CloseReader(reader);
 			}
 			finally
 			{
@@ -302,7 +297,25 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		private void CloseReader(IDataReader reader)
+		public void CloseReader(IDataReader reader)
+		{
+			/* This method was added because PrepareCommand don't really prepare the command
+			 * with its connection. 
+			 * In some case we need to manage a reader outsite the command scope. 
+			 * To do it we need to use the Batcher.ExecuteReader and then we need something
+			 * to close the opened reader.
+			 */
+			// TODO NH: Study a way to use directly IDbCommand.ExecuteReader() outsite the batcher
+			// An example of it's use is the management of generated ID.
+			if (reader != null)
+			{
+				ResultSetWrapper rsw = reader as ResultSetWrapper;
+				readersToClose.Remove(rsw == null ? reader : rsw.Target);
+				CloseDataReader(reader);
+			}
+		}
+
+		private void CloseDataReader(IDataReader reader)
 		{
 			reader.Dispose();
 			LogCloseReader();

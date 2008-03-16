@@ -255,20 +255,15 @@ namespace NHibernate.Impl
 			return null;
 		}
 
-		public override object GetEntityIdentifierIfNotUnsaved(object obj)
-		{
-			throw new NotImplementedException();
-		}
-
 		public override bool IsSaved(object obj)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override object Instantiate(System.Type clazz, object id)
+		public override object Instantiate(string clazz, object id)
 		{
 			ErrorIfClosed();
-			return Factory.GetEntityPersister(clazz).Instantiate(id);
+			return Factory.GetEntityPersister(clazz).Instantiate(id, EntityMode.Poco);
 		}
 
 		public override IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
@@ -500,13 +495,14 @@ namespace NHibernate.Impl
 			ErrorIfClosed();
 			IEntityPersister persister = GetEntityPersister(entity);
 			object id = persister.IdentifierGenerator.Generate(this, entity);
-			object[] state = persister.GetPropertyValues(entity);
+			object[] state = persister.GetPropertyValues(entity, EntityMode.Poco);
 			if (persister.IsVersioned)
 			{
-				bool substitute = Versioning.SeedVersion(state, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion(state), this);
+				object versionValue = state[persister.VersionProperty];
+				bool substitute = Versioning.SeedVersion(state, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion(versionValue), this);
 				if (substitute)
 				{
-					persister.SetPropertyValues(entity, state);
+					persister.SetPropertyValues(entity, state, EntityMode.Poco);
 				}
 			}
 			if (id == IdentifierGeneratorFactory.PostInsertIndicator)
@@ -517,7 +513,7 @@ namespace NHibernate.Impl
 			{
 				persister.Insert(id, state, entity, this);
 			}
-			persister.SetIdentifier(entity, id);
+			persister.SetIdentifier(entity, id, EntityMode.Poco);
 			return id;
 		}
 
@@ -536,21 +532,21 @@ namespace NHibernate.Impl
 		{
 			ErrorIfClosed();
 			IEntityPersister persister = GetEntityPersister(entity);
-			object id = persister.GetIdentifier(entity);
-			object[] state = persister.GetPropertyValues(entity);
+			object id = persister.GetIdentifier(entity, EntityMode.Poco);
+			object[] state = persister.GetPropertyValues(entity, EntityMode.Poco);
 			object oldVersion;
 			if (persister.IsVersioned)
 			{
-				oldVersion = persister.GetVersion(entity);
+				oldVersion = persister.GetVersion(entity, EntityMode.Poco);
 				object newVersion = Versioning.Increment(oldVersion, persister.VersionType, this);
 				Versioning.SetVersion(state, newVersion, persister);
-				persister.SetPropertyValues(entity, state);
+				persister.SetPropertyValues(entity, state, EntityMode.Poco);
 			}
 			else
 			{
 				oldVersion = null;
 			}
-			persister.Update(id, state, null, false, null, oldVersion, entity, this);
+			persister.Update(id, state, null, false, null, oldVersion, entity, null, this);
 		}
 
 		/// <summary> Delete a entity. </summary>
@@ -568,8 +564,8 @@ namespace NHibernate.Impl
 		{
 			ErrorIfClosed();
 			IEntityPersister persister = GetEntityPersister(entity);
-			object id = persister.GetIdentifier(entity);
-			object version = persister.GetVersion(entity);
+			object id = persister.GetIdentifier(entity, EntityMode.Poco);
+			object version = persister.GetVersion(entity, EntityMode.Poco);
 			persister.Delete(id, version, entity, this);
 		}
 
@@ -654,7 +650,7 @@ namespace NHibernate.Impl
 		public void Refresh(string entityName, object entity, LockMode lockMode)
 		{
 			IEntityPersister persister = GetEntityPersister(entity);
-			object id = persister.GetIdentifier(entity);
+			object id = persister.GetIdentifier(entity, EntityMode);
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("refreshing transient " + MessageHelper.InfoString(persister, id, Factory));

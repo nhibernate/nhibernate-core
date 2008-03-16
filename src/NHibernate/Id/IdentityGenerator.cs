@@ -66,20 +66,19 @@ namespace NHibernate.Id
 
 			protected internal override IDbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session)
 			{
-				SqlString insertSelectSQL = factory.Dialect.AppendIdentitySelectToInsert(insertSQL.Text);
-				return session.Batcher.PrepareCommand(CommandType.Text, insertSelectSQL, insertSQL.ParameterTypes);
+				return session.Batcher.PrepareCommand(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes);
 			}
 
 			public override object ExecuteAndExtract(IDbCommand insert, ISessionImplementor session)
 			{
-				IDataReader rs = insert.ExecuteReader();
+				IDataReader rs = session.Batcher.ExecuteReader(insert);
 				try
 				{
 					return IdentifierGeneratorFactory.GetGeneratedIdentity(rs, persister.IdentifierType, session);
 				}
 				finally
 				{
-					rs.Close();
+					session.Batcher.CloseReader(rs);
 				}
 			}
 

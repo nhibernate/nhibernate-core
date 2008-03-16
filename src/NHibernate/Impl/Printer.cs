@@ -31,19 +31,19 @@ namespace NHibernate.Impl
 			if (cm.HasIdentifierProperty)
 			{
 				result[cm.IdentifierPropertyName] =
-					cm.IdentifierType.ToLoggableString(cm.GetIdentifier(entity), _factory);
+					cm.IdentifierType.ToLoggableString(cm.GetIdentifier(entity, entityMode), _factory);
 			}
 
 			IType[] types = cm.PropertyTypes;
 			string[] names = cm.PropertyNames;
-			object[] values = cm.GetPropertyValues(entity);
+			object[] values = cm.GetPropertyValues(entity, entityMode);
 
 			for (int i = 0; i < types.Length; i++)
 			{
 				result[names[i]] = types[i].ToLoggableString(values[i], _factory);
 			}
 
-			return cm.MappedClass.FullName + CollectionPrinter.ToString(result);
+			return cm.EntityName + CollectionPrinter.ToString(result);
 		}
 
 		public string ToString(IType[] types, object[] values)

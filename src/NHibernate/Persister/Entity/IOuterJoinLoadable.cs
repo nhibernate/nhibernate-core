@@ -1,6 +1,4 @@
-using System;
 using NHibernate.Engine;
-using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Persister.Entity
@@ -16,6 +14,16 @@ namespace NHibernate.Persister.Entity
 		// Get the name of the column used as a discriminator
 		// </summary>
 		//string DiscriminatorColumnName { get; }
+
+		EntityType EntityType { get; }
+
+		/// <summary>
+		/// Generate a list of collection index and element columns
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="suffix"></param>
+		/// <returns></returns>
+		string SelectFragment(string alias, string suffix);
 
 		/// <summary>
 		/// How many properties are there, for this class and all subclasses? (optional operation)
@@ -92,14 +100,6 @@ namespace NHibernate.Persister.Entity
 		string FromTableFragment(string alias);
 
 		/// <summary>
-		/// Generate a list of collection index and element columns
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="suffix"></param>
-		/// <returns></returns>
-		string SelectFragment(string alias, string suffix);
-
-		/// <summary>
 		/// Get the column names for the given property path
 		/// </summary>
 		string[] GetPropertyColumnNames(string propertyPath);
@@ -108,7 +108,5 @@ namespace NHibernate.Persister.Entity
 		/// Get the table name for the given property path
 		/// </summary>
 		string GetPropertyTableName(string propertyName);
-
-		EntityType EntityType { get; }
 	}
 }

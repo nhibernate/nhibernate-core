@@ -42,7 +42,7 @@ namespace NHibernate.Id
 
 			object associatedObject = sessionImplementor.Factory
 				.GetClassMetadata(obj.GetType())
-				.GetPropertyValue(obj, propertyName);
+				.GetPropertyValue(obj, propertyName, sessionImplementor.EntityMode);
 
 			if (associatedObject == null)
 			{

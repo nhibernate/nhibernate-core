@@ -16,6 +16,16 @@ namespace NHibernate.Persister.Entity
 		string Name { get; }
 
 		/// <summary>
+		/// The columns to join on.
+		/// </summary>
+		string[] KeyColumnNames { get; }
+
+		/// <summary>
+		/// Is this instance actually a ICollectionPersister?
+		/// </summary>
+		bool IsCollection { get; }
+
+		/// <summary>
 		/// The table to join to.
 		/// </summary>
 		string TableName { get; }
@@ -45,19 +55,11 @@ namespace NHibernate.Persister.Entity
 		SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
 
 		/// <summary>
-		/// The columns to join on.
-		/// </summary>
-		string[] KeyColumnNames { get; }
-
-		/// <summary>
 		/// Get the where clause filter, given a query alias and considering enabled session filters
 		/// </summary>
 		string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters);
 
-		/// <summary>
-		/// Is this instance actually a ICollectionPersister?
-		/// </summary>
-		bool IsCollection { get; }
+		string OneToManyFilterFragment(string alias);
 
 		/// <summary>
 		/// Very, very, very ugly...
@@ -72,7 +74,5 @@ namespace NHibernate.Persister.Entity
 		/// <value>Does this persister "consume" collection column aliases in the result
 		/// set?</value>
 		bool ConsumesCollectionAlias();
-
-		string OneToManyFilterFragment(string alias);
 	}
 }

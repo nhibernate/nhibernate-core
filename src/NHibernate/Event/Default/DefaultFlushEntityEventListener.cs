@@ -28,11 +28,12 @@ namespace NHibernate.Event.Default
 			IEventSource session = @event.Session;
 			IEntityPersister persister = entry.Persister;
 			Status status = entry.Status;
+			EntityMode entityMode = session.EntityMode;
 			IType[] types = persister.PropertyTypes;
 
 			bool mightBeDirty = entry.RequiresDirtyCheck(entity);
 
-			object[] values = GetValues(entity, entry, mightBeDirty, session);
+			object[] values = GetValues(entity, entry, entityMode, mightBeDirty, session);
 
 			@event.PropertyValues = values;
 
@@ -48,7 +49,7 @@ namespace NHibernate.Event.Default
 			{
 				// now update the object .. has to be outside the main if block above (because of collections)
 				if (substitute)
-					persister.SetPropertyValues(entity, values);
+					persister.SetPropertyValues(entity, values, entityMode);
 
 				// Search for collections by reachability, updating their role.
 				// We don't want to touch collections reachable from a deleted object
@@ -59,7 +60,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		private object[] GetValues(object entity, EntityEntry entry, bool mightBeDirty, ISessionImplementor session)
+		private object[] GetValues(object entity, EntityEntry entry, EntityMode entityMode, bool mightBeDirty, ISessionImplementor session)
 		{
 			object[] loadedState = entry.LoadedState;
 			Status status = entry.Status;
@@ -77,10 +78,10 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
-				CheckId(entity, persister, entry.Id);
+				CheckId(entity, persister, entry.Id, entityMode);
 
 				// grab its current state
-				values = persister.GetPropertyValues(entity);
+				values = persister.GetPropertyValues(entity, session.EntityMode);
 
 				CheckNaturalId(persister, entry.Id, values, loadedState, session);
 			}
@@ -93,7 +94,7 @@ namespace NHibernate.Event.Default
 		/// <param name="obj"></param>
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
-		public virtual void CheckId(object obj, IEntityPersister persister, object id)
+		public virtual void CheckId(object obj, IEntityPersister persister, object id, EntityMode entityMode)
 		{
 			if (id != null && id is DelayedPostInsertIdentifier)
 			{
@@ -104,7 +105,7 @@ namespace NHibernate.Event.Default
 
 			if (persister.CanExtractIdOutOfEntity)
 			{
-				object oid = persister.GetIdentifier(obj);
+				object oid = persister.GetIdentifier(obj, entityMode);
 				if (id == null)
 				{
 					throw new AssertionFailure("null id in " + persister.EntityName + " entry (don't flush the Session after an exception occurs)");
@@ -193,6 +194,7 @@ namespace NHibernate.Event.Default
 		{
 			EntityEntry entry = @event.EntityEntry;
 			IEventSource session = @event.Session;
+			EntityMode entityMode = session.EntityMode;
 			object entity = @event.Entity;
 			Status status = entry.Status;
 			IEntityPersister persister = entry.Persister;
@@ -223,7 +225,7 @@ namespace NHibernate.Event.Default
 				intercepted = false;
 			}
 
-			Validate(entity, persister, status);
+			Validate(entity, persister, status, entityMode);
 
 			// increment the version number (if necessary)
 			object nextVersion = GetNextVersion(@event);
@@ -253,10 +255,10 @@ namespace NHibernate.Event.Default
 			return intercepted;
 		}
 
-		protected internal void Validate(object entity, IEntityPersister persister, Status status)
+		protected virtual void Validate(object entity, IEntityPersister persister, Status status, EntityMode entityMode)
 		{
 			// validate() instances of Validatable
-			if (status == Status.Loaded && persister.ImplementsValidatable)
+			if (status == Status.Loaded && persister.ImplementsValidatable(entityMode))
 			{
 				((IValidatable)entity).Validate();
 			}

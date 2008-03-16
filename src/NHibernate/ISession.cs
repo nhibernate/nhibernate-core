@@ -796,6 +796,16 @@ namespace NHibernate
 		/// <returns>a persistent instance or null</returns>
 		object Get(System.Type clazz, object id, LockMode lockMode);
 
+		/// <summary> 
+		/// Return the persistent instance of the given named entity with the given identifier,
+		/// or null if there is no such persistent instance. (If the instance, or a proxy for the
+		/// instance, is already associated with the session, return that instance or proxy.) 
+		/// </summary>
+		/// <param name="entityName">the entity name </param>
+		/// <param name="id">an identifier </param>
+		/// <returns> a persistent instance or null </returns>
+		object Get(string entityName, object id);
+
 		/// <summary>
 		/// Strongly-typed version of <see cref="Get(System.Type, object)" />
 		/// </summary>

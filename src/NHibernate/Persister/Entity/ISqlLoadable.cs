@@ -8,6 +8,11 @@ namespace NHibernate.Persister.Entity
 	public interface ISqlLoadable : ILoadable
 	{
 		/// <summary>
+		/// Get the type
+		/// </summary>
+		IType Type { get; }
+
+		/// <summary>
 		/// Returns the column alias names used to persist/query the numbered property of the class or a subclass (optional operation).
 		/// </summary>
 		string[] GetSubclassPropertyColumnAliases(string propertyName, string suffix);
@@ -21,10 +26,5 @@ namespace NHibernate.Persister.Entity
 		/// All columns to select, when loading.
 		/// </summary>
 		string SelectFragment(string alias, string suffix);
-
-		/// <summary>
-		/// Get the type
-		/// </summary>
-		IType Type { get; }
 	}
 }

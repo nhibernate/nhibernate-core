@@ -35,7 +35,7 @@ namespace NHibernate.Impl
 		private static readonly IType UNSET_TYPE = null;
 		private object optionalId;
 		private object optionalObject;
-		private System.Type optionalEntityName;
+		private string optionalEntityName;
 		private FlushMode flushMode = FlushMode.Unspecified;
 		private FlushMode sessionFlushMode = FlushMode.Unspecified;
 		private object collectionKey;
@@ -801,7 +801,7 @@ namespace NHibernate.Impl
 			this.optionalObject = optionalObject;
 		}
 
-		public void SetOptionalEntityName(System.Type optionalEntityName)
+		public void SetOptionalEntityName(string optionalEntityName)
 		{
 			this.optionalEntityName = optionalEntityName;
 		}
@@ -918,7 +918,7 @@ namespace NHibernate.Impl
 					string.Empty,
 					collectionKey == null ? null : new object[] { collectionKey },
 					optionalObject,
-					optionalEntityName == null ? null : optionalEntityName.FullName,
+					optionalEntityName ?? null,
 					optionalId,
 					resultTransformer);
 		}

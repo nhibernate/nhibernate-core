@@ -49,8 +49,7 @@ namespace NHibernate.Tuple
 			hasIdentifierMapper = false;
 			this.unsavedValue = unsavedValue;
 			this.identifierGenerator = identifierGenerator;
-			// TODO H3 identifierAssignedByInsert = identifierGenerator is IPostInsertIdentifierGenerator;
-			identifierAssignedByInsert = identifierGenerator is IdentityGenerator;
+			identifierAssignedByInsert = identifierGenerator is IPostInsertIdentifierGenerator;
 		}
 
 		/// <summary>
@@ -70,8 +69,7 @@ namespace NHibernate.Tuple
 			this.hasIdentifierMapper = hasIdentifierMapper;
 			this.unsavedValue = unsavedValue;
 			this.identifierGenerator = identifierGenerator;
-			// TODO H3 identifierAssignedByInsert = identifierGenerator is IPostInsertIdentifierGenerator;
-			identifierAssignedByInsert = identifierGenerator is IdentityGenerator;
+			identifierAssignedByInsert = identifierGenerator is IPostInsertIdentifierGenerator;
 		}
 
 		public bool IsVirtual

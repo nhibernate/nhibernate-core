@@ -91,7 +91,7 @@ namespace NHibernate.Cache.Entry
 				listeners[i].OnPreLoad(preLoadEvent);
 			}
 
-			persister.SetPropertyValues(result, assembledProps);
+			persister.SetPropertyValues(result, assembledProps, session.EntityMode);
 
 			return assembledProps;
 		}

@@ -60,7 +60,7 @@ namespace NHibernate.Loader.Entity
 						smallBatch,
 						idType,
 						optionalObject,
-						persister.MappedClass.FullName,
+						persister.EntityName,
 						id,
 						persister);
 

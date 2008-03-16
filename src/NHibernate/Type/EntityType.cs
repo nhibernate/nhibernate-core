@@ -70,7 +70,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				xid = persister.GetIdentifier(x); // TODO NH: persister.GetIdentifier(x, entityMode);
+				xid = persister.GetIdentifier(x, entityMode);
 			}
 
 			object yid;
@@ -81,7 +81,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				yid = persister.GetIdentifier(x); // TODO NH: persister.GetIdentifier(x, entityMode);
+				yid = persister.GetIdentifier(x, entityMode);
 			}
 
 			return persister.IdentifierType.IsEqual(xid, yid, entityMode, factory);
@@ -147,7 +147,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				return persister.GetIdentifier(obj); // TODO NH:persister.GetIdentifier(obj, entityMode);
+				return persister.GetIdentifier(obj, entityMode);
 			}
 		}
 
@@ -169,8 +169,7 @@ namespace NHibernate.Type
 			else
 			{
 				IEntityPersister entityPersister = session.Factory.GetEntityPersister(GetAssociatedEntityName());
-				object propertyValue = entityPersister.GetPropertyValue(value, uniqueKeyPropertyName);
-				 // TODO NH: entityPersister.GetPropertyValue(value, uniqueKeyPropertyName, session.EntityMode);
+				object propertyValue = entityPersister.GetPropertyValue(value, uniqueKeyPropertyName, session.EntityMode);
 
 				// We now have the value of the property-ref we reference.  However,
 				// we need to dig a little deeper, as that property might also be
@@ -202,7 +201,7 @@ namespace NHibernate.Type
 
 			if (persister.HasIdentifierProperty)
 			{
-				EntityMode? entityMode = EntityMode.Poco; //TODO NH: persister.GuessEntityMode(value);
+				EntityMode? entityMode = persister.GuessEntityMode(value);
 				object id;
 				if (!entityMode.HasValue)
 				{
@@ -489,7 +488,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				id = persister.GetIdentifier(x);// TODO NH: persister.GetIdentifier(x, entityMode);
+				id = persister.GetIdentifier(x, entityMode);
 			}
 			return persister.IdentifierType.GetHashCode(id, entityMode, factory);
 		}

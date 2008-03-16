@@ -35,17 +35,14 @@ namespace NHibernate.Id
 		{
 			if (obj is IPersistentCollection)
 			{
-				throw new IdentifierGenerationException(
-					"Illegal use of assigned id generation for a toplevel collection"
-					);
+				throw new IdentifierGenerationException("Illegal use of assigned id generation for a toplevel collection");
 			}
 
-			object id = session.GetEntityPersister(obj).GetIdentifier(obj);
+			object id = session.GetEntityPersister(obj).GetIdentifier(obj, session.EntityMode);
 			if (id == null)
 			{
-				throw new IdentifierGenerationException(
-					"ids for this class must be manually assigned before calling save(): " + obj.GetType().FullName
-					);
+				throw new IdentifierGenerationException("ids for this class must be manually assigned before calling save(): "
+																								+ obj.GetType().FullName);
 			}
 			return id;
 		}

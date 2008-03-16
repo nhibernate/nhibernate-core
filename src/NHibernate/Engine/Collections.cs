@@ -52,7 +52,7 @@ namespace NHibernate.Engine
 			bool hasOrphanDelete = loadedPersister != null && loadedPersister.HasOrphanDelete;
 			if (hasOrphanDelete)
 			{
-				object ownerId = loadedPersister.OwnerEntityPersister.GetIdentifier(coll.Owner);
+				object ownerId = loadedPersister.OwnerEntityPersister.GetIdentifier(coll.Owner, session.EntityMode);
 				//if (ownerId == null)
 				//{
 				//  // the owning entity may have been deleted and its identifier unset due to

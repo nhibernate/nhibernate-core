@@ -172,13 +172,12 @@ namespace NHibernate.Engine
 		/// </remarks>
 		public static bool IsTransient(string entityName, object entity, bool? assumed, ISessionImplementor session)
 		{
-			// todo-events: verify
-			//if (entity == org.hibernate.intercept.LazyPropertyInitializer.UNFETCHED_PROPERTY)
-			//{
-			//  // an unfetched association can only point to
-			//  // an entity that already exists in the db
-			//  return false;
-			//}
+			if (entity == Intercept.LazyPropertyInitializer.UnfetchedProperty)
+			{
+				// an unfetched association can only point to
+				// an entity that already exists in the db
+				return false;
+			}
 
 			// let the interceptor inspect the instance to decide
 			bool? isUnsaved = session.Interceptor.IsTransient(entity);
@@ -187,17 +186,19 @@ namespace NHibernate.Engine
 
 			// let the persister inspect the instance to decide
 			IEntityPersister persister = session.GetEntityPersister(entity);
-			return persister.IsUnsaved(entity);
+			isUnsaved = persister.IsTransient(entity, session);
+			if (isUnsaved.HasValue)
+				return isUnsaved.Value;
 
-			// NH : Different behavior (the persister.IsUnsaved return a value any way)
 			// we use the assumed value, if there is one, to avoid hitting
 			// the database
-			//if (assumed.HasValue)
-			//  return assumed.Value;
+			if (assumed.HasValue)
+				return assumed.Value;
 
 			// hit the database, after checking the session cache for a snapshot
-			//System.Object[] snapshot = session.PersistenceContext.getDatabaseSnapshot(persister.getIdentifier(entity, session.EntityMode), persister);
-			//return snapshot == null;
+			System.Object[] snapshot =
+				session.PersistenceContext.GetDatabaseSnapshot(persister.GetIdentifier(entity, session.EntityMode), persister);
+			return snapshot == null;
 		}
 
 		/// <summary> 
@@ -242,15 +243,11 @@ namespace NHibernate.Engine
 						// the check was put here to have les possible impact
 						/**********************************************/
 
-						// TODO H3.2 EntityName
-						//throw new TransientObjectException("object references an unsaved transient instance - save the transient instance before flushing: " + 
-						//  (entityName ?? session.GuessEntityName(entity)));
-						throw new TransientObjectException("object references an unsaved transient instance - save the transient instance before flushing: " +
-							(entityName ?? session.GetEntityPersister(entity).EntityName));
+						throw new TransientObjectException(
+							"object references an unsaved transient instance - save the transient instance before flushing: "
+							+ (entityName ?? session.GuessEntityName(entity)));
 					}
-					// TODO H3.2 EntityName
-					//id = session.GetEntityPersister(entityName, entity).GetIdentifier(entity);
-					id = session.GetEntityPersister(entity).GetIdentifier(entity);
+					id = session.GetEntityPersister(entityName, entity).GetIdentifier(entity, session.EntityMode);
 				}
 				return id;
 			}

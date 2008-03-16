@@ -39,7 +39,7 @@ namespace NHibernate.Event.Default
 			/*if ( persister.isUnsaved(entity, source) ) {
 			throw new TransientObjectException("transient instance passed to replicate()");
 			}*/
-			object id = persister.GetIdentifier(entity);
+			object id = persister.GetIdentifier(entity, source.EntityMode);
 			if (id == null)
 			{
 				throw new TransientObjectException("instance with null id passed to replicate()");
@@ -68,7 +68,10 @@ namespace NHibernate.Event.Default
 				// HHH-2378
 				object realOldVersion = persister.IsVersioned ? oldVersion : null;
 
-				bool canReplicate = replicationMode.ShouldOverwriteCurrentVersion(entity, realOldVersion, persister.GetVersion(entity), persister.VersionType);
+				bool canReplicate =
+					replicationMode.ShouldOverwriteCurrentVersion(entity, realOldVersion,
+					                                              persister.GetVersion(entity, source.EntityMode),
+					                                              persister.VersionType);
 
 				if (canReplicate)
 				{

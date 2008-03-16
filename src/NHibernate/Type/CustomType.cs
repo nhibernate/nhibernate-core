@@ -19,7 +19,6 @@ namespace NHibernate.Type
 	public class CustomType : AbstractType, IDiscriminatorType, IVersionType
 	{
 		private readonly IUserType userType;
-		private readonly INullableUserType userTypeAsNullable;
 		private readonly string name;
 		private readonly SqlType[] sqlTypes;
 
@@ -36,7 +35,6 @@ namespace NHibernate.Type
 			try
 			{
 				userType = (IUserType) Activator.CreateInstance(userTypeClass);
-				userTypeAsNullable = userType as INullableUserType;
 			}
 			catch (ArgumentNullException ane)
 			{
@@ -200,18 +198,6 @@ namespace NHibernate.Type
 		public IComparer Comparator
 		{
 			get { return (IComparer) userType; }
-		}
-
-		public override bool IsDatabaseNull(object value)
-		{
-			if (userTypeAsNullable != null)
-			{
-				return userTypeAsNullable.IsDatabaseNull(value);
-			}
-			else
-			{
-				return base.IsDatabaseNull(value);
-			}
 		}
 
 		public override object Replace(object original, object current, ISessionImplementor session, object owner,

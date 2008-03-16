@@ -57,7 +57,7 @@ namespace NHibernate.Event.Default
 					PerformDetachedEntityDeletionCheck(@event);
 				}
 
-				id = persister.GetIdentifier(entity);
+				id = persister.GetIdentifier(entity, source.EntityMode);
 
 				if (id == null)
 				{
@@ -70,9 +70,11 @@ namespace NHibernate.Event.Default
 
 				new OnUpdateVisitor(source, id, entity).Process(entity, persister);
 
-				version = persister.GetVersion(entity);
+				version = persister.GetVersion(entity, source.EntityMode);
 
-				entityEntry = persistenceContext.AddEntity(entity, Status.Loaded, persister.GetPropertyValues(entity), key, version, LockMode.None, true, persister, false, false);
+				entityEntry =
+					persistenceContext.AddEntity(entity, Status.Loaded, persister.GetPropertyValues(entity, source.EntityMode), key,
+					                             version, LockMode.None, true, persister, false, false);
 			}
 			else
 			{
@@ -102,23 +104,20 @@ namespace NHibernate.Event.Default
 
 			DeleteEntity(source, entity, entityEntry, @event.CascadeDeleteEnabled, persister, transientEntities);
 
-			// TODO H3.2 Not ported
-			//if (source.Factory.Settings.IsIdentifierRollbackEnabled)
-			//{
-			//  persister.ResetIdentifier(entity, id, version);
-			//}
+			if (source.Factory.Settings.IsIdentifierRollbackEnabled)
+			{
+				persister.ResetIdentifier(entity, id, version, source.EntityMode);
+			}
 		}
 
 		#endregion
-		/// <summary> Called when we have recognized an attempt to delete a detached entity.
-		/// <p/>
+		/// <summary> Called when we have recognized an attempt to delete a detached entity. </summary>
+		/// <param name="event">The event. </param>
+		/// <remarks>
 		/// This is perfectly valid in Hibernate usage; JPA, however, forbids this.
 		/// Thus, this is a hook for HEM to affect this behavior.
-		/// 
-		/// </summary>
-		/// <param name="event">The event.
-		/// </param>
-		protected internal void PerformDetachedEntityDeletionCheck(DeleteEvent @event)
+		/// </remarks>
+		protected internal virtual void PerformDetachedEntityDeletionCheck(DeleteEvent @event)
 		{
 			// ok in normal Hibernate usage to delete a detached entity; JPA however
 			// forbids it, thus this is a hook for HEM to affect this behavior
@@ -180,7 +179,7 @@ namespace NHibernate.Event.Default
 			if (entityEntry.LoadedState == null)
 			{
 				//ie. the entity came in from update()
-				currentState = persister.GetPropertyValues(entity);
+				currentState = persister.GetPropertyValues(entity, session.EntityMode);
 			}
 			else
 			{
@@ -224,9 +223,9 @@ namespace NHibernate.Event.Default
 			return deletedState;
 		}
 
-		protected internal bool InvokeDeleteLifecycle(IEventSource session, object entity, IEntityPersister persister)
+		protected internal virtual bool InvokeDeleteLifecycle(IEventSource session, object entity, IEntityPersister persister)
 		{
-			if (persister.ImplementsLifecycle)
+			if (persister.ImplementsLifecycle(session.EntityMode))
 			{
 				log.Debug("calling onDelete()");
 				if (((ILifecycle)entity).OnDelete(session) == LifecycleVeto.Veto)
@@ -238,7 +237,7 @@ namespace NHibernate.Event.Default
 			return false;
 		}
 
-		protected internal void CascadeBeforeDelete(IEventSource session, IEntityPersister persister, object entity, EntityEntry entityEntry, ISet transientEntities)
+		protected virtual void CascadeBeforeDelete(IEventSource session, IEntityPersister persister, object entity, EntityEntry entityEntry, ISet transientEntities)
 		{
 			ISessionImplementor si = session;
 			CacheMode cacheMode = si.CacheMode;
@@ -257,7 +256,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected internal void CascadeAfterDelete(IEventSource session, IEntityPersister persister, object entity, ISet transientEntities)
+		protected virtual void CascadeAfterDelete(IEventSource session, IEntityPersister persister, object entity, ISet transientEntities)
 		{
 			ISessionImplementor si = session;
 			CacheMode cacheMode = si.CacheMode;

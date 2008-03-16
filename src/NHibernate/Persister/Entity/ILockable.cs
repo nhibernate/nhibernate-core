@@ -38,6 +38,12 @@ namespace NHibernate.Persister.Entity
 		/// <returns> The root table alias. </returns>
 		string GetRootTableAlias(string drivingAlias);
 
+		#region NH Specific
+		/// <summary>
+		/// To build the SQL command in pessimistic lock
+		/// </summary>
 		SqlType[] IdAndVersionSqlTypes { get;}
+
+		#endregion
 	}
 }

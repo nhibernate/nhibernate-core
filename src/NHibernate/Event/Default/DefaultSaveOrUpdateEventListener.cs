@@ -181,7 +181,7 @@ namespace NHibernate.Event.Default
 
 			IEntityPersister persister = @event.Session.GetEntityPersister(entity);
 
-			@event.RequestedId = GetUpdateId(entity, persister, @event.RequestedId);
+			@event.RequestedId = GetUpdateId(entity, persister, @event.RequestedId, @event.Session.EntityMode);
 
 			PerformUpdate(@event, entity, persister);
 		}
@@ -190,11 +190,12 @@ namespace NHibernate.Event.Default
 		/// <param name="entity">The entity. </param>
 		/// <param name="persister">The entity persister </param>
 		/// <param name="requestedId">The requested identifier </param>
+		/// <param name="entityMode">The entity mode. </param>
 		/// <returns> The id. </returns>
-		protected internal virtual object GetUpdateId(object entity, IEntityPersister persister, object requestedId)
+		protected internal virtual object GetUpdateId(object entity, IEntityPersister persister, object requestedId, EntityMode entityMode)
 		{
 			// use the id assigned to the instance
-			object id = persister.GetIdentifier(entity);
+			object id = persister.GetIdentifier(entity, entityMode);
 			if (id == null)
 			{
 				// assume this is a newly instantiated transient object
@@ -249,7 +250,9 @@ namespace NHibernate.Event.Default
 				entry.getState(); //TODO: half-assemble this stuff
 				}*/
 
-				source.PersistenceContext.AddEntity(entity, Status.Loaded, null, key, persister.GetVersion(entity), LockMode.None, true, persister, false, true);
+				source.PersistenceContext.AddEntity(entity, Status.Loaded, null, key,
+				                                    persister.GetVersion(entity, source.EntityMode), LockMode.None, true, persister,
+				                                    false, true);
 
 				//persister.AfterReassociate(entity, source); TODO H3.2 not ported
 
@@ -264,7 +267,7 @@ namespace NHibernate.Event.Default
 
 		protected internal bool InvokeUpdateLifecycle(object entity, IEntityPersister persister, IEventSource source)
 		{
-			if (persister.ImplementsLifecycle)
+			if (persister.ImplementsLifecycle(source.EntityMode))
 			{
 				log.Debug("calling onUpdate()");
 				if (((ILifecycle)entity).OnUpdate(source) == LifecycleVeto.Veto)

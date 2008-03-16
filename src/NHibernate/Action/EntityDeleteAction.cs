@@ -42,7 +42,7 @@ namespace NHibernate.Action
 				// we need to grab the version value from the entity, otherwise
 				// we have issues with generated-version entities that may have
 				// multiple actions queued during the same flush
-				tmpVersion = persister.GetVersion(instance);
+				tmpVersion = persister.GetVersion(instance, session.EntityMode);
 			}
 
 			CacheKey ck;

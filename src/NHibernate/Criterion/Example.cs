@@ -279,7 +279,7 @@ namespace NHibernate.Criterion
 			IEntityPersister meta = criteriaQuery.Factory.GetEntityPersister(criteriaQuery.GetEntityName(criteria));
 			String[] propertyNames = meta.PropertyNames;
 			IType[] propertyTypes = meta.PropertyTypes;
-			object[] propertyValues = meta.GetPropertyValues(_entity);
+			object[] propertyValues = meta.GetPropertyValues(_entity, GetEntityMode(criteria, criteriaQuery));
 			for (int i = 0; i < propertyNames.Length; i++)
 			{
 				object propertyValue = propertyValues[i];
@@ -328,7 +328,7 @@ namespace NHibernate.Criterion
 			IEntityPersister meta = criteriaQuery.Factory.GetEntityPersister(criteriaQuery.GetEntityName(criteria));
 			string[] propertyNames = meta.PropertyNames;
 			IType[] propertyTypes = meta.PropertyTypes;
-			object[] values = meta.GetPropertyValues(_entity);
+			object[] values = meta.GetPropertyValues(_entity, GetEntityMode(criteria, criteriaQuery));
 
 			ArrayList list = new ArrayList();
 			for (int i = 0; i < propertyNames.Length; i++)
@@ -357,15 +357,13 @@ namespace NHibernate.Criterion
 
 		private EntityMode GetEntityMode(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			// TODO H3 EntityMode
-			//IEntityPersister meta = criteriaQuery.Factory.GetEntityPersister(criteriaQuery.GetEntityName(criteria));
-			//EntityMode result = meta.GuessEntityMode(_entity);
-			//if (result == null)
-			//{
-			//  throw new InvalidCastException(_entity.GetType().FullName);
-			//}
-			//return result;
-			return EntityMode.Poco;
+			IEntityPersister meta = criteriaQuery.Factory.GetEntityPersister(criteriaQuery.GetEntityName(criteria));
+			EntityMode? result = meta.GuessEntityMode(_entity);
+			if (!result.HasValue)
+			{
+				throw new InvalidCastException(_entity.GetType().FullName);
+			}
+			return result.Value;
 		}
 
 		/// <summary>
