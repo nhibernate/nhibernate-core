@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Unionsubclass
 {
-	[TestFixture, Ignore("Not completly ported yet.")]
+	[TestFixture]
 	public class UnionSubclassFixture : TestCase
 	{
 		protected override string MappingsAssembly

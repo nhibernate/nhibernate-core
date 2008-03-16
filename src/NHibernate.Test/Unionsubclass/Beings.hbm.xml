@@ -7,11 +7,11 @@
 	<class name="Being" abstract="true">
 
 		<id name="id" unsaved-value="0" column="bid">
-			<generator class="increment"/>
-			<!--generator class="hilo">
+			<!--generator class="increment"/-->
+			<generator class="hilo">
 				<param name="table">being_id</param>
 				<param name="column">next_id</param>
-			</generator-->
+			</generator>
 		</id>
 
 		<property name="identity" not-null="true" column="ident"/>
@@ -49,11 +49,11 @@
 	<class name="Hive" table="hives">
 
 		<id name="id" unsaved-value="0">
-			<generator class="increment"/>
-			<!--generator class="hilo">
+			<!--generator class="increment"/-->
+			<generator class="hilo">
 				<param name="table">location_id</param>
 				<param name="column">next_id</param>
-			</generator-->
+			</generator>
 		</id>
 
 		<many-to-one name="location" not-null="true"/>
@@ -68,11 +68,11 @@
 	<class name="Location" table="locations">
 
 		<id name="id" unsaved-value="0">
-			<generator class="increment"/>
-			<!--generator class="hilo">
+			<!--generator class="increment"/-->
+			<generator class="hilo">
 				<param name="table">location_id</param>
 				<param name="column">next_id</param>
-			</generator-->
+			</generator>
 		</id>
 
 		<property name="name" not-null="true"/>
@@ -88,11 +88,11 @@
 	<class name="Thing" table="things">
 
 		<id name="id" unsaved-value="0">
-			<generator class="increment"/>
-			<!--generator class="hilo">
+			<!--generator class="increment"/-->
+			<generator class="hilo">
 				<param name="table">thing_id</param>
 				<param name="column">next_id</param>
-			</generator-->
+			</generator>
 		</id>
 
 		<property name="description"/>

@@ -122,7 +122,7 @@ namespace NHibernate.Persister.Entity
 				subclassTables.Add(
 					table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName));
 			}
-			subclassSpaces = new string[subclassSpaces.Length];
+			subclassSpaces = new string[subclassTables.Count];
 			subclassTables.CopyTo(subclassSpaces, 0);
 
 			subquery = GenerateSubquery(persistentClass, mapping);
