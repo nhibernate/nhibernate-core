@@ -205,7 +205,7 @@ namespace NHibernate.Event.Default
 			session.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
-				Cascades.Cascade(session, persister, key, CascadingAction, CascadePoint.CascadeBeforeFlush, anything);
+				Cascades.Cascade(session, persister, key, CascadingAction, CascadePoint.BeforeFlush, anything);
 			}
 			finally
 			{

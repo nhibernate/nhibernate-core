@@ -378,7 +378,7 @@ namespace NHibernate.Event.Default
 			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
-				Cascades.Cascade(source, persister, entity, CascadeAction, CascadePoint.CascadeOnCopy, copyCache);
+				Cascades.Cascade(source, persister, entity, CascadeAction, CascadePoint.BeforeMerge, copyCache);
 			}
 			finally
 			{

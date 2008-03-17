@@ -72,7 +72,7 @@ namespace NHibernate.Event.Default
 				new EvictVisitor(session).Process(obj, persister);
 			}
 
-			Cascades.Cascade(session, persister, obj, CascadingAction.Evict, CascadePoint.CascadeOnEvict);
+			Cascades.Cascade(session, persister, obj, CascadingAction.Evict, CascadePoint.AfterEvict);
 		}
 	}
 }

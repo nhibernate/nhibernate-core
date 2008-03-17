@@ -16,7 +16,7 @@ namespace NHibernate.Type
 		{
 			public override bool CascadeNow(CascadePoint cascadePoint)
 			{
-				return cascadePoint != CascadePoint.CascadeBeforeInsertAfterDelete;
+				return cascadePoint != CascadePoint.BeforeInsertAfterDelete;
 			}
 		}
 
@@ -24,7 +24,7 @@ namespace NHibernate.Type
 		{
 			public override bool CascadeNow(CascadePoint cascadePoint)
 			{
-				return cascadePoint != CascadePoint.CascadeAfterInsertBeforeDelete;
+				return cascadePoint != CascadePoint.AfterInsertBeforeDelete;
 			}
 		}
 

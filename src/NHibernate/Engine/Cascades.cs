@@ -18,49 +18,50 @@ namespace NHibernate.Engine
 		/// A cascade point that occurs just after the insertion of the parent
 		/// entity and just before deletion
 		/// </summary>
-		CascadeAfterInsertBeforeDelete = 1,
+		AfterInsertBeforeDelete = 1,
 
 		/// <summary>
 		/// A cascade point that occurs just before the insertion of the parent entity
 		/// and just after deletion
 		/// </summary>
-		CascadeBeforeInsertAfterDelete = 2,
+		BeforeInsertAfterDelete = 2,
 
 		/// <summary>
 		/// A cascade point that occurs just after the insertion of the parent entity
 		/// and just before deletion, inside a collection
 		/// </summary>
-		CascadeAfterInsertBeforeDeleteViaCollection = 3,
-
-		/// <summary> A cascade point that occurs just before the session is flushed</summary>
-		CascadeBeforeFlush = 0,
+		AfterInsertBeforeDeleteViaCollection = 3,
 
 		/// <summary>
 		/// A cascade point that occurs just after the update of the parent entity
 		/// </summary>
-		CascadeOnUpdate = 0,
+		AfterUpdate = 0,
+
+		/// <summary> A cascade point that occurs just before the session is flushed</summary>
+		BeforeFlush = 0,
 
 		/// <summary>
 		/// A cascade point that occurs just after eviction of the parent entity from the
 		/// session cache
 		/// </summary>
-		CascadeOnEvict = 0, //-1
-
-		/// <summary>
-		/// A cascade point that occurs just after locking a transient parent entity into the session cache
-		/// </summary>
-		CascadeOnLock = 0,
-
-		/// <summary>
-		/// A cascade point that occurs just after copying from a transient parent entity into the object in the session cache
-		/// </summary>
-		CascadeOnCopy = 0,
+		AfterEvict = 0,
 
 		/// <summary> 
 		/// A cascade point that occurs just after locking a transient parent entity into the
 		/// session cache
 		/// </summary>
-		CascadeBeforeRefresh = 0
+		BeforeRefresh = 0,
+
+		/// <summary>
+		/// A cascade point that occurs just after locking a transient parent entity into the session cache
+		/// </summary>
+		AfterLock = 0,
+
+		/// <summary>
+		/// A cascade point that occurs just before merging from a transient parent entity into
+		/// the object in the session cache
+		/// </summary>
+		BeforeMerge = 0,
 	}
 
 	/// <summary>
@@ -113,9 +114,9 @@ namespace NHibernate.Engine
 						else if (type.IsCollectionType)
 						{
 							CascadePoint cascadeVia;
-							if (cascadeTo == CascadePoint.CascadeAfterInsertBeforeDelete)
+							if (cascadeTo == CascadePoint.AfterInsertBeforeDelete)
 							{
-								cascadeVia = CascadePoint.CascadeAfterInsertBeforeDeleteViaCollection;
+								cascadeVia = CascadePoint.AfterInsertBeforeDeleteViaCollection;
 							}
 							else
 							{
