@@ -545,8 +545,11 @@
     <Compile Include="NHSpecificTest\VersionTest.cs" />
     <Compile Include="ObjectAssertion.cs" />
     <Compile Include="Ondelete\Address.cs" />
+    <Compile Include="Ondelete\Child.cs" />
     <Compile Include="Ondelete\Employee.cs" />
     <Compile Include="Ondelete\OnDeleteFixture.cs" />
+    <Compile Include="Ondelete\Parent.cs" />
+    <Compile Include="Ondelete\ParentChildFixture.cs" />
     <Compile Include="Ondelete\Person.cs" />
     <Compile Include="Ondelete\Salesperson.cs" />
     <Compile Include="PropertyRef\A.cs" />
@@ -1187,6 +1190,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Ondelete\Person.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Ondelete\ParentChild.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
