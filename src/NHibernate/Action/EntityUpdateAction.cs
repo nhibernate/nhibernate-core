@@ -105,11 +105,8 @@ namespace NHibernate.Action
 				}
 				else
 				{
-					CacheEntry ce = new CacheEntry(state, persister, false, nextVersion, Session, instance);
-					cacheEntry = ce;
-					// TODO H3.2 Different behaviour
-					//CacheEntry ce = new CacheEntry(state, persister, persister.HasUninitializedLazyProperties(instance, session.EntityMode), nextVersion, Session, instance);
-					//cacheEntry = persister.CacheEntryStructure.structure(ce);
+					CacheEntry ce = new CacheEntry(state, persister, persister.HasUninitializedLazyProperties(instance, session.EntityMode), nextVersion, Session, instance);
+					cacheEntry = persister.CacheEntryStructure.Structure(ce);
 
 					bool put = persister.Cache.Update(ck, cacheEntry, nextVersion, previousVersion);
 

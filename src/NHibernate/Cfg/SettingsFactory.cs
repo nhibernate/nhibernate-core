@@ -227,7 +227,6 @@ namespace NHibernate.Cfg
 			settings.CacheRegionPrefix = cacheRegionPrefix;
 			settings.IsMinimalPutsEnabled = useMinimalPuts;
 			// Not ported - JdbcBatchVersionedData
-			// TODO: SQLExceptionConverter
 
 			// NHibernate-specific:
 			settings.IsolationLevel = isolation;

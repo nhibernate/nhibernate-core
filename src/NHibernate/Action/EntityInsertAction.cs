@@ -37,6 +37,7 @@ namespace NHibernate.Action
 		public override void Execute()
 		{
 			IEntityPersister persister = Persister;
+			ISessionImplementor session = Session;
 			object instance = Instance;
 			object id = Id;
 
@@ -72,11 +73,8 @@ namespace NHibernate.Action
 
 			if (IsCachePutEnabled(persister))
 			{
-				CacheEntry ce = new CacheEntry(state, persister, false, version, Session, instance);
-				cacheEntry = ce;
-				// TODO H3.2 Different behaviour
-				//CacheEntry ce = new CacheEntry(state, persister, persister.HasUninitializedLazyProperties(instance), version, session, instance);
-				//cacheEntry = persister.CacheEntryStructure.structure(ce);
+				CacheEntry ce = new CacheEntry(state, persister, persister.HasUninitializedLazyProperties(instance, session.EntityMode), version, session, instance);
+				cacheEntry = persister.CacheEntryStructure.Structure(ce);
 
 				CacheKey ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, Session.EntityMode, Session.Factory);
 				bool put = persister.Cache.Insert(ck, cacheEntry, version);
@@ -155,8 +153,9 @@ namespace NHibernate.Action
 
 		private bool IsCachePutEnabled(IEntityPersister persister)
 		{
-			return persister.HasCache && !persister.IsCacheInvalidationRequired && 
-				((Session.CacheMode & CacheMode.Put) == CacheMode.Put);
+			return
+				persister.HasCache && !persister.IsCacheInvalidationRequired
+				&& ((Session.CacheMode & CacheMode.Put) == CacheMode.Put);
 		}
 
 		public override int CompareTo(EntityAction other)
