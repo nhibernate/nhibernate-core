@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Ondelete
 {
-	[TestFixture, Ignore("Not supported yet.")]
+	[TestFixture]
 	public class ParentChildFixture : TestCase
 	{
 		protected override string MappingsAssembly
@@ -54,8 +54,8 @@ namespace NHibernate.Test.Ondelete
 			s.Delete(q);
 			t.Commit();
 
-			Assert.AreEqual(2, statistics.EntityDeleteCount);
 			Assert.AreEqual(2, statistics.PrepareStatementCount);
+			Assert.AreEqual(6, statistics.EntityDeleteCount);
 
 			t = s.BeginTransaction();
 			IList names = s.CreateQuery("from Parent p").List();
