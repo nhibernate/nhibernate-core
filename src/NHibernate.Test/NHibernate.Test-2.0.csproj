@@ -687,6 +687,11 @@
     <Compile Include="Unconstrained\SimplyManyToOneIgnoreTest.cs" />
     <Compile Include="Unconstrained\UnconstrainedNoLazyTest.cs" />
     <Compile Include="Unconstrained\UnconstrainedTest.cs" />
+    <Compile Include="Unionsubclass2\Address.cs" />
+    <Compile Include="Unionsubclass2\Customer.cs" />
+    <Compile Include="Unionsubclass2\Employee.cs" />
+    <Compile Include="Unionsubclass2\Person.cs" />
+    <Compile Include="Unionsubclass2\UnionSubclassFixture.cs" />
     <Compile Include="Unionsubclass\Alien.cs" />
     <Compile Include="Unionsubclass\Being.cs" />
     <Compile Include="Unionsubclass\Employee.cs" />
@@ -1173,8 +1178,10 @@
     <EmbeddedResource Include="Generatedkeys\Identity\MyEntity.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Unionsubclass2\Person.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Properties\" />
-    <Folder Include="Unionsubclass2\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

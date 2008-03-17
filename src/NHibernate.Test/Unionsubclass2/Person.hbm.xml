@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!-- 
+
+  This mapping demonstrates 
+
+     (1) a table-per-subclass mapping strategy
+         
+     (2) a simple component mapping
+     
+     (3) recursive associations withing an inheritance tree
+     
+-->
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.Unionsubclass2"
+    default-access="field">
+
+	<class name="Person" table="UPerson">
+		
+		<id name="id" 
+			column="person_id" 
+			unsaved-value="0">
+			<generator class="hilo"/>
+		</id>
+				
+		<property name="name" 
+			unique-key="NameUniqueKey"
+			not-null="true"
+			length="80"/>
+		<property name="sex" 
+			not-null="true"
+			update="false"/>
+		
+		<component name="address">
+			<property name="address" index="AddressIndex"/>
+			<property name="zip" index="AddressIndex"/>
+			<property name="country"/>
+		</component>
+		
+		<union-subclass name="Employee" table="UEmployee">
+				<property name="title" 
+					not-null="true" 
+					length="20"/>
+				<property name="salary" />
+				<many-to-one name="manager"/>
+		</union-subclass>
+		
+		<union-subclass name="Customer" table="UCustomer">
+				<property name="comments"/>
+				<many-to-one name="salesperson"/>
+		</union-subclass>
+		
+	</class>
+	
+
+</hibernate-mapping>
