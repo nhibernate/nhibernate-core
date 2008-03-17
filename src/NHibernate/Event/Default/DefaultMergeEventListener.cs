@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
@@ -267,15 +268,14 @@ namespace NHibernate.Event.Default
 
 		private void MarkInterceptorDirty(object entity, object target)
 		{
-			// TODO H3.2 not ported
-			//if (FieldInterceptionHelper.isInstrumented(entity))
-			//{
-			//  FieldInterceptor interceptor = FieldInterceptionHelper.extractFieldInterceptor(target);
-			//  if (interceptor != null)
-			//  {
-			//    interceptor.dirty();
-			//  }
-			//}
+			if (FieldInterceptionHelper.IsInstrumented(entity))
+			{
+				IFieldInterceptor interceptor = FieldInterceptionHelper.ExtractFieldInterceptor(target);
+				if (interceptor != null)
+				{
+					interceptor.MarkDirty();
+				}
+			}
 		}
 
 		private static bool IsVersionChanged(object entity, IEventSource source, IEntityPersister persister, object target)
