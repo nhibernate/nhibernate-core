@@ -1257,6 +1257,29 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute("property-ref")]
         public string propertyref;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("on-delete")]
+        public HbmOndelete ondelete;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool ondeleteSpecified;
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("HbmXsd", "2.0.0.1001")]
+    [System.SerializableAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
+    public enum HbmOndelete {
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("cascade")]
+        Cascade,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("noaction")]
+        Noaction,
     }
     
     /// <remarks/>

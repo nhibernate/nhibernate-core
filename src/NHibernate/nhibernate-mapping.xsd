@@ -232,7 +232,7 @@
 				<xs:element ref="filter-def" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="database-object" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
-			<xs:attribute name="schema" type="xs:string" use="optional"/>
+			<xs:attribute name="schema" type="xs:string" use="optional" />
 			<xs:attribute name="default-cascade" type="xs:string" use="optional" default="none" />
 			<xs:attribute name="default-access" type="xs:string" use="optional" default="property">
 				<xs:annotation>
@@ -877,6 +877,7 @@
 			<xs:attribute name="column" type="xs:string" />
 			<xs:attribute name="foreign-key" type="xs:string" use="optional" />
 			<xs:attribute name="property-ref" type="xs:string" use="optional" />
+			<xs:attribute name="on-delete" type="ondelete" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="key-many-to-one">
@@ -1292,4 +1293,10 @@
 			<xs:attribute name="type" type="xs:string" use="required" />
 		</xs:complexType>
 	</xs:element>
+	<xs:simpleType name="ondelete">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="cascade" />
+			<xs:enumeration value="noaction" />
+		</xs:restriction>
+	</xs:simpleType>
 </xs:schema>
