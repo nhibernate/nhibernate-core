@@ -8,7 +8,7 @@
 
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
 	assembly="NHibernate.Test"
-	namespace="NHibernate.Test.OnDelete"
+	namespace="NHibernate.Test.Ondelete"
     default-access="field">	
 	
 	<class name="Person" table="ODPerson">
@@ -40,8 +40,7 @@
 			<property name="title" 
 					not-null="true" 
 					length="20"/>
-			<property name="salary" 
-					length="0"/>
+			<property name="salary" />
 			<many-to-one name="manager"/>
 			
 			<joined-subclass name="Salesperson" table="ODSalesperson">

@@ -44,9 +44,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			log.InfoFormat("Mapping joined-subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);
 
+			// KEY
 			XmlNode keyNode = subnode.SelectSingleNode(HbmConstants.nsKey, namespaceManager);
 			SimpleValue key = new DependantValue(mytable, subclass.Identifier);
 			subclass.Key = key;
+			if (keyNode.Attributes["on-delete"] != null)
+				key.IsCascadeDeleteEnabled = "cascade".Equals(keyNode.Attributes["on-delete"].Value);
 			BindSimpleValue(keyNode, key, false, subclass.EntityName);
 
 			subclass.CreatePrimaryKey(dialect);

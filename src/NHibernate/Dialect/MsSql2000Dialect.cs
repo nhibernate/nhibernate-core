@@ -460,5 +460,16 @@ namespace NHibernate.Dialect
 				return NHibernateUtil.Int64;
 			}
 		}
+
+		public override bool SupportsCircularCascadeDeleteConstraints
+		{
+			get
+			{
+				// SQL Server (at least up through 2005) does not support defining
+				// cascade delete constraints which can circel back to the mutating
+				// table
+				return false;
+			}
+		}
 	}
 }

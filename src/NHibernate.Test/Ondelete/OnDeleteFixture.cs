@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Ondelete
 {
-	[TestFixture, Ignore("Not supported yet")]
+	[TestFixture]
 	public class OnDeleteFixture : TestCase
 	{
 		protected override string MappingsAssembly
@@ -22,14 +22,14 @@ namespace NHibernate.Test.Ondelete
 			cfg.SetProperty(Cfg.Environment.GenerateStatistics, "true");
 		}
 
+		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
+		{
+			return dialect.SupportsCircularCascadeDeleteConstraints;
+		}
+
 		[Test]
 		public void JoinedSubclass()
 		{
-			if (!Dialect.SupportsCircularCascadeDeleteConstraints)
-			{
-				Assert.Ignore("The dialect don't support 'on delete cascade'");
-			}
-
 			IStatistics statistics = sessions.Statistics;
 			statistics.Clear();
 
@@ -69,7 +69,7 @@ namespace NHibernate.Test.Ondelete
 			Assert.AreEqual(1, statistics.PrepareStatementCount);
 
 			t = s.BeginTransaction();
-			IList names = s.CreateQuery("select name from Person").List();
+			IList names = s.CreateQuery("select p.name from Person p").List();
 			Assert.AreEqual(0, names.Count);
 			t.Commit();
 
