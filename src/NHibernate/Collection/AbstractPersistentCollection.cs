@@ -404,12 +404,7 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		public abstract void BeforeInitialize(ICollectionPersister persister);
 
-		/// <summary>
-		/// Does the current state exactly match the snapshot?
-		/// </summary>
-		/// <param name="elementType"></param>
-		/// <returns></returns>
-		public abstract bool EqualsSnapshot(IType elementType);
+		public abstract bool EqualsSnapshot(ICollectionPersister persister);
 
 		/// <summary>
 		/// Return a new snapshot of the current state

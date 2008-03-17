@@ -234,18 +234,10 @@ namespace NHibernate.Collection.Generic
 			list = (IList<T>) persister.CollectionType.Instantiate();
 		}
 
-		/// <summary>
-		/// Does the current state of the list exactly match the snapshot?
-		/// </summary>
-		/// <param name="elementType">The <see cref="IType"/> to compare the elements of the Collection.</param>
-		/// <returns>
-		/// <see langword="true" /> if the wrapped list is different than the snapshot
-		/// of the list or if one of the elements in the collection is
-		/// dirty.
-		/// </returns>
-		public override bool EqualsSnapshot(IType elementType)
+		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
-			IList<T> sn = (IList<T>) GetSnapshot();
+			IType elementType = persister.ElementType;
+			IList<T> sn = (IList<T>)GetSnapshot();
 			if (sn.Count != list.Count)
 			{
 				return false;

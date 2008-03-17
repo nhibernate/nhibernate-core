@@ -68,9 +68,10 @@ namespace NHibernate.Collection
 			bag = (IList) persister.CollectionType.Instantiate();
 		}
 
-		public override bool EqualsSnapshot(IType elementType)
+		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
-			IList sn = (IList) GetSnapshot();
+			IType elementType = persister.ElementType;
+			IList sn = (IList)GetSnapshot();
 			if (sn.Count != bag.Count)
 			{
 				return false;

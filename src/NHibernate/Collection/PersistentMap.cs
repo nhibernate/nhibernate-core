@@ -39,9 +39,10 @@ namespace NHibernate.Collection
 			return result;
 		}
 
-		public override bool EqualsSnapshot(IType elementType)
+		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
-			IDictionary xmap = (IDictionary) GetSnapshot();
+			IType elementType = persister.ElementType;
+			IDictionary xmap = (IDictionary)GetSnapshot();
 			if (xmap.Count != this.map.Count)
 			{
 				return false;

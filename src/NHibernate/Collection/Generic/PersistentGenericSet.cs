@@ -76,9 +76,10 @@ namespace NHibernate.Collection.Generic
 			return GetOrphans(sn.Keys, (ICollection) internalSet, Session);
 		}
 
-		public override bool EqualsSnapshot(IType elementType)
+		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
-			IDictionary snapshot = (IDictionary) GetSnapshot();
+			IType elementType = persister.ElementType;
+			IDictionary snapshot = (IDictionary)GetSnapshot();
 			if (snapshot.Count != internalSet.Count)
 			{
 				return false;

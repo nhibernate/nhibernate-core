@@ -308,9 +308,10 @@ namespace NHibernate.Collection.Generic
 			return entry != null;
 		}
 
-		public override bool EqualsSnapshot(IType elementType)
+		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
-			IDictionary snap = (IDictionary) GetSnapshot();
+			IType elementType = persister.ElementType;
+			IDictionary snap = (IDictionary)GetSnapshot();
 			if (snap.Count != values.Count)
 			{
 				return false;

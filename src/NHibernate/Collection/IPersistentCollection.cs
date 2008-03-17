@@ -179,13 +179,13 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Does the current state exactly match the snapshot?
 		/// </summary>
-		/// <param name="elementType">The <see cref="IType"/> to compare the elements of the Collection.</param>
+		/// <param name="persister">The <see cref="ICollectionPersister"/> to compare the elements of the Collection.</param>
 		/// <returns>
 		/// <see langword="true" /> if the wrapped collection is different than the snapshot
 		/// of the collection or if one of the elements in the collection is
 		/// dirty.
 		/// </returns>
-		bool EqualsSnapshot(IType elementType);
+		bool EqualsSnapshot(ICollectionPersister persister);
 
 		/// <summary>
 		/// Disassemble the collection, ready for the cache

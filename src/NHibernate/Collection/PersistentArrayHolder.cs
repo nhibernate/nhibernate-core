@@ -110,13 +110,9 @@ namespace NHibernate.Collection
 			return array == collection;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="elementType"></param>
-		/// <returns></returns>
-		public override bool EqualsSnapshot(IType elementType)
+		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
+			IType elementType = persister.ElementType;
 			Array snapshot = GetSnapshot() as Array;
 
 			int xlen = snapshot.Length;

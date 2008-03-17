@@ -127,7 +127,7 @@ namespace NHibernate.Engine
 		public CollectionEntry(IPersistentCollection collection)
 		{
 			// New collections that get found and wrapped during flush shouldn't be ignored
-			this.ignore = false;
+			ignore = false;
 
 			//a newly wrapped collection is NOT dirty (or we get unnecessary version updates)
 			collection.ClearDirty();
@@ -151,7 +151,7 @@ namespace NHibernate.Engine
 		{
 			//this.dirty = false;
 			//this.initialized = false;
-			this.loadedKey = loadedID;
+			loadedKey = loadedID;
 			SetLoadedPersister(loadedPersister);
 			this.ignore = ignore;
 		}
@@ -183,25 +183,27 @@ namespace NHibernate.Engine
 		public CollectionEntry(ICollectionSnapshot cs, ISessionFactoryImplementor factory)
 		{
 			//this.dirty = cs.Dirty;
-			this.snapshot = cs.Snapshot;
-			this.loadedKey = cs.Key;
+			snapshot = cs.Snapshot;
+			loadedKey = cs.Key;
 			//this.initialized = true;
 			// Detached collections that get found and reattached during flush
 			// shouldn't be ignored
-			this.ignore = false;
+			ignore = false;
 			SetLoadedPersister(factory.GetCollectionPersister(cs.Role));
 		}
 
+		/// <summary> 
+		/// Determine if the collection is "really" dirty, by checking dirtiness
+		/// of the collection elements, if necessary
+		/// </summary>
 		private void Dirty(IPersistentCollection collection)
 		{
 			// if the collection is initialized and it was previously persistent
 			// initialize the dirty flag
-			bool forceDirty = collection.WasInitialized &&
-			                  !collection.IsDirty && //optimization
-			                  LoadedPersister != null &&
-			                  // TODO H3: LoadedPersister.IsMutable && //optimization
-			                  (collection.IsDirectlyAccessible || LoadedPersister.ElementType.IsMutable) && //optimization
-			                  !collection.EqualsSnapshot(LoadedPersister.ElementType);
+			bool forceDirty = collection.WasInitialized && !collection.IsDirty && LoadedPersister != null
+			                  && LoadedPersister.IsMutable
+			                  && (collection.IsDirectlyAccessible || LoadedPersister.ElementType.IsMutable)
+			                  && !collection.EqualsSnapshot(LoadedPersister);
 
 			if (forceDirty)
 			{

@@ -106,8 +106,9 @@ namespace NHibernate.Collection.Generic
 			this.map = (IDictionary<TKey, TValue>) persister.CollectionType.Instantiate();
 		}
 
-		public override bool EqualsSnapshot(IType elementType)
+		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
+			IType elementType = persister.ElementType;
 			IDictionary<TKey, TValue> xmap = (IDictionary<TKey, TValue>) GetSnapshot();
 			if (xmap.Count != this.map.Count)
 			{
