@@ -71,7 +71,6 @@ namespace NHibernate.Test.NHSpecificTest
 
 		[Test]
 		[ExpectedException(typeof(StaleObjectStateException))]
-		[Ignore("Not implemented yet, throws HibernateException instead of StaleObjectStateException")]
 		public void StaleObjectStateCheckWithEntityPersisterAndOptimisticLock()
 		{
 			Optimistic optimistic = new Optimistic();
