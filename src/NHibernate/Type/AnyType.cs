@@ -376,7 +376,7 @@ namespace NHibernate.Type
 			return 0; //TODO: entities CAN be compared, by PK and entity name, fix this!
 		}
 
-		public virtual bool IsMethodOf(MethodInfo method)
+		public virtual bool IsMethodOf(MethodBase method)
 		{
 			return false;
 		}

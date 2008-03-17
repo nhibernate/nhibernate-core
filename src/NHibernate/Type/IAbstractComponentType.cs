@@ -44,6 +44,6 @@ namespace NHibernate.Type
 
 		bool IsEmbedded { get;}
 
-		bool IsMethodOf(MethodInfo method);
+		bool IsMethodOf(MethodBase method);
 	}
 }

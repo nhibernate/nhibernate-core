@@ -292,7 +292,7 @@ namespace NHibernate.Type
 			return userType.Equals(x, y);
 		}
 
-		public virtual bool IsMethodOf(MethodInfo method)
+		public virtual bool IsMethodOf(MethodBase method)
 		{
 			return false;
 		}

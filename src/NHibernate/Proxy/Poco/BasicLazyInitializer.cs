@@ -127,11 +127,10 @@ namespace NHibernate.Proxy.Poco
 			}
 
 			//if it is a property of an embedded component, invoke on the "identifier"
-			// TODO H3.2 IsMethodOf in IAbstractComponentType
-			//if (componentIdType != null && componentIdType.IsMethodOf(method))
-			//{
-			//  return method.Invoke(Identifier, args);
-			//}
+			if (componentIdType != null && componentIdType.IsMethodOf(method))
+			{
+				return method.Invoke(Identifier, args);
+			}
 
 			return InvokeImplementation;
 		}

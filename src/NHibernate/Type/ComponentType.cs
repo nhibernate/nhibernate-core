@@ -617,7 +617,7 @@ namespace NHibernate.Type
 			return true;
 		}
 
-		public virtual bool IsMethodOf(MethodInfo method)
+		public virtual bool IsMethodOf(MethodBase method)
 		{
 			return false;
 		}

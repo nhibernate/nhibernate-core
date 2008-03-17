@@ -49,7 +49,11 @@ namespace NHibernate.Tuple.Component
 
 		public override object[] GetPropertyValues(object component)
 		{
-			// TODO: H3.2 BackrefPropertyAccessor
+			if (component == BackrefPropertyAccessor.Unknown)
+			{
+				return new object[propertySpan];
+			}
+
 			if (optimizer != null && optimizer.AccessOptimizer != null)
 			{
 				return optimizer.AccessOptimizer.GetPropertyValues(component);
