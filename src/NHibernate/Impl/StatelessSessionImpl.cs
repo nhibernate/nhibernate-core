@@ -671,7 +671,17 @@ namespace NHibernate.Impl
 				persister.Cache.Remove(ck);
 			}
 
-			object result = persister.Load(id, entity, lockMode, this);
+			string previousFetchProfile = FetchProfile;
+			object result;
+			try
+			{
+				FetchProfile = "refresh";
+				result = persister.Load(id, entity, lockMode, this);
+			}
+			finally
+			{
+				FetchProfile = previousFetchProfile;
+			}
 			UnresolvableObjectException.ThrowIfNull(result, id, persister.EntityName);
 		}
 

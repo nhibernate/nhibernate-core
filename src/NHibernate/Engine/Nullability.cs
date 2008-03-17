@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Text;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
@@ -96,7 +94,7 @@ namespace NHibernate.Engine
 				{
 					//check for all components values in the collection
 					IAbstractComponentType componentType = (IAbstractComponentType)collectionElementType;
-					IEnumerable ec = Cascades.GetLoadedElementsIterator(collectionType, value);
+					IEnumerable ec = CascadingAction.GetLoadedElementsIterator(session, collectionType, value);
 					foreach (object compValue in ec)
 					{
 						if (compValue != null)

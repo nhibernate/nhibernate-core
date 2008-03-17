@@ -45,7 +45,7 @@ namespace NHibernate.Event.Default
 
 			if (e == null)
 			{
-				persister = source.GetEntityPersister(obj); //refresh() does not pass an entityName
+				persister = source.GetEntityPersister(null, obj); //refresh() does not pass an entityName
 				id = persister.GetIdentifier(obj, source.EntityMode);
 				if (log.IsDebugEnabled)
 				{
@@ -73,11 +73,10 @@ namespace NHibernate.Event.Default
 				id = e.Id;
 			}
 
-			// NH Different behavior (H3.2 the cascade is explicit in events; NH are implicit in loader and so on)
+			// TODO H3.2 Differente behavior
 			// cascade the refresh prior to refreshing this entity
 			//refreshedAlready[obj] = obj;
-			//Cascades.Cascade(source, persister, obj, Cascades.CascadingAction.ActionRefresh, CascadePoint.CascadeBeforeRefresh,
-			//                 refreshedAlready);
+			//new Cascade(CascadingAction.Refresh, CascadePoint.BeforeRefresh, source).CascadeOn(persister, obj, refreshedAlready);
 
 			if (e != null)
 			{

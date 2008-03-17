@@ -292,7 +292,7 @@ namespace NHibernate.Event.Default
 			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
-				Cascades.Cascade(source, persister, entity, CascadingAction.SaveUpdate, CascadePoint.AfterUpdate);
+				new Cascade(CascadingAction.SaveUpdate, CascadePoint.AfterUpdate, source).CascadeOn(persister, entity);
 			}
 			finally
 			{

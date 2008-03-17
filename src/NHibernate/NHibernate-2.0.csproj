@@ -127,7 +127,7 @@
     <Compile Include="Driver\SqlClientDriver.cs" />
     <Compile Include="Driver\SQLiteDriver.cs" />
     <Compile Include="Driver\SybaseClientDriver.cs" />
-    <Compile Include="Engine\Cascades.cs" />
+    <Compile Include="Engine\Cascade.cs" />
     <Compile Include="Engine\IBatcher.cs" />
     <Compile Include="Engine\ICollectionSnapshot.cs" />
     <Compile Include="Engine\IMapping.cs" />

@@ -348,7 +348,7 @@ namespace NHibernate.Event.Default
 			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
-				Cascades.Cascade(source, persister, entity, CascadeAction, CascadePoint.BeforeInsertAfterDelete, anything);
+				new Cascade(CascadeAction, CascadePoint.BeforeInsertAfterDelete, source).CascadeOn(persister, entity, anything);
 			}
 			finally
 			{
@@ -367,7 +367,7 @@ namespace NHibernate.Event.Default
 			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
-				Cascades.Cascade(source, persister, entity, CascadeAction, CascadePoint.AfterInsertBeforeDelete, anything);
+				new Cascade(CascadeAction, CascadePoint.AfterInsertBeforeDelete, source).CascadeOn(persister, entity, anything);
 			}
 			finally
 			{

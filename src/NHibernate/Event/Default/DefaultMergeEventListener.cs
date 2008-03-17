@@ -209,16 +209,15 @@ namespace NHibernate.Event.Default
 				}
 			}
 
-			// TODO H3.2 Not ported
-			//string previousFetchProfile = source.FetchProfile;
-			//source.FetchProfile = "merge";
+			string previousFetchProfile = source.FetchProfile;
+			source.FetchProfile = "merge";
 
 			//we must clone embedded composite identifiers, or 
 			//we will get back the same instance that we pass in
 			object clonedIdentifier = persister.IdentifierType.DeepCopy(id, source.EntityMode, source.Factory);
 			object result = source.Get(persister.EntityName, clonedIdentifier);
 
-			//source.FetchProfile = previousFetchProfile;
+			source.FetchProfile = previousFetchProfile;
 
 			if (result == null)
 			{
@@ -378,7 +377,7 @@ namespace NHibernate.Event.Default
 			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
-				Cascades.Cascade(source, persister, entity, CascadeAction, CascadePoint.BeforeMerge, copyCache);
+				new Cascade(CascadeAction, CascadePoint.BeforeMerge, source).CascadeOn(persister, entity, copyCache);
 			}
 			finally
 			{
