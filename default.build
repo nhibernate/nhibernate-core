@@ -286,7 +286,19 @@
 		</copy>
 	</target>
 
-	<target name="binaries-zip" depends="init binaries copy-release-notes copy-xml-schemas">
+	<target name="copy-config-templates" depends="init">
+		<!--
+			TODO: I don't like where these are put now.  Should think of a better 
+			place for these.
+		-->
+		<copy todir="${build.dir}/config.templates">
+			<fileset basedir="src/NHibernate.Config.Templates">
+				<include name="*"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="binaries-zip" depends="init binaries copy-release-notes copy-xml-schemas copy-config-templates">
 		<zip zipfile="${build.dir}/bin/NHibernate-${project.version}-bin.zip">
 			<fileset basedir="${build.dir}">
 				<include name="releasenotes.txt" />
