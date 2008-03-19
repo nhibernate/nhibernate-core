@@ -1237,6 +1237,7 @@ namespace NHibernate.Test.Legacy
 		public void PolymorphicCriteria()
 		{
 			ISession s = OpenSession();
+			ITransaction txn = s.BeginTransaction();
 			Category f = new Category();
 			Single b = new Single();
 			b.Id = "asdfa";
@@ -1249,7 +1250,7 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(list.Contains(b));
 			s.Delete(f);
 			s.Delete(b);
-			s.Flush();
+			txn.Commit();
 			s.Close();
 		}
 

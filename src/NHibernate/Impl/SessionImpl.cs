@@ -927,12 +927,11 @@ namespace NHibernate.Impl
 		private bool AutoFlushIfRequired(ISet<string> querySpaces)
 		{
 			ErrorIfClosed();
-			// NH different behavior (H3.2 use transaction any way)
-			//if (!TransactionInProgress)
-			//{
-			//  // do not auto-flush while outside a transaction
-			//  return false;
-			//}
+			if (!TransactionInProgress)
+			{
+				// do not auto-flush while outside a transaction
+				return false;
+			}
 			AutoFlushEvent autoFlushEvent = new AutoFlushEvent(querySpaces, this);
 			IAutoFlushEventListener[] autoFlushEventListener = listeners.AutoFlushEventListeners;
 			for (int i = 0; i < autoFlushEventListener.Length; i++)

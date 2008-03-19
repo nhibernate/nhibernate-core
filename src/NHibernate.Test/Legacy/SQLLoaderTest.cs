@@ -40,6 +40,7 @@ namespace NHibernate.Test.Legacy
 			}
 
 			ISession session = OpenSession();
+			ITransaction txn = session.BeginTransaction();
 
 			Simple sim = new Simple();
 			sim.Date = DateTime.Today; // NB We don't use Now() due to the millisecond alignment problem with SQL Server
@@ -48,7 +49,7 @@ namespace NHibernate.Test.Legacy
 			q.SetTimestamp(0, sim.Date);
 			Assert.AreEqual(1, q.List().Count, "q.List.Count");
 			session.Delete(sim);
-			session.Flush();
+			txn.Commit();
 			session.Close();
 		}
 
@@ -61,6 +62,7 @@ namespace NHibernate.Test.Legacy
 			}
 
 			ISession session = OpenSession();
+			ITransaction txn = session.BeginTransaction();
 
 			Simple sim = new Simple();
 			sim.Date = DateTime.Today; // NB We don't use Now() due to the millisecond alignment problem with SQL Server
@@ -70,7 +72,7 @@ namespace NHibernate.Test.Legacy
 			q.SetTimestamp("fred", sim.Date);
 			Assert.AreEqual(1, q.List().Count, "q.List.Count");
 			session.Delete(sim);
-			session.Flush();
+			txn.Commit();
 			session.Close();
 		}
 

@@ -58,6 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH637
 			holder.Point = new Point(20, 10);
 
 			using (ISession s = OpenSession())
+			using(ITransaction t = s.BeginTransaction())
 			{
 				s.Save(holder);
 
@@ -69,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.NH637
 				Assert.AreSame(holder, result);
 
 				s.Delete(holder);
-				s.Flush();
+				t.Commit();
 			}
 		}
 	}

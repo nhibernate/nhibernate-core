@@ -29,7 +29,7 @@ namespace NHibernate.Test.JoinedSubclass
 		public void TestJoinedSubclass()
 		{
 			ISession s = OpenSession();
-
+			ITransaction t = s.BeginTransaction();
 			Employee mark = new Employee();
 			mark.Name = "Mark";
 			mark.Title = "internal sales";
@@ -55,17 +55,13 @@ namespace NHibernate.Test.JoinedSubclass
 			s.Save(mark);
 			s.Save(joe);
 
-			s.Flush();
-
 			Assert.AreEqual(3, s.CreateQuery("from Person").List().Count);
 			IQuery query = s.CreateQuery("from Customer");
 			IList results = query.List();
 			Assert.AreEqual(1, results.Count);
 			Assert.IsTrue(results[0] is Customer, "should be a customer");
 
-			// in later versions of hibernate a Clear method was added to session
-			s.Close();
-			s = OpenSession();
+			s.Clear();
 
 			IList customers = s.CreateQuery("from Customer c left join fetch c.Salesperson").List();
 			foreach (Customer c in customers)
@@ -75,20 +71,16 @@ namespace NHibernate.Test.JoinedSubclass
 				Assert.AreEqual("Mark", c.Salesperson.Name);
 			}
 			Assert.AreEqual(1, customers.Count);
-			s.Close();
-			s = OpenSession();
+			s.Clear();
 
 			customers = s.CreateQuery("from Customer").List();
 			foreach (Customer c in customers)
 			{
-				//TODO: proxies make this work
 				Assert.IsFalse(NHibernateUtil.IsInitialized(c.Salesperson));
 				Assert.AreEqual("Mark", c.Salesperson.Name);
 			}
 			Assert.AreEqual(1, customers.Count);
-
-			s.Close();
-			s = OpenSession();
+			s.Clear();
 
 			mark = (Employee) s.Load(typeof(Employee), mark.Id);
 			joe = (Customer) s.Load(typeof(Customer), joe.Id);
@@ -101,6 +93,7 @@ namespace NHibernate.Test.JoinedSubclass
 			s.Delete(mark);
 
 			Assert.AreEqual(0, s.CreateQuery("from Person").List().Count);
+			t.Commit();
 			s.Close();
 		}
 
@@ -138,6 +131,7 @@ namespace NHibernate.Test.JoinedSubclass
 			s.Close();
 
 			s = OpenSession();
+			t = s.BeginTransaction();
 			IQuery q = s.CreateQuery("from Employee as e where e.Manager = :theMgr");
 			q.SetParameter("theMgr", pointyhair);
 			IList results = q.List();
@@ -149,6 +143,7 @@ namespace NHibernate.Test.JoinedSubclass
 			s.Delete(pointyhair);
 			s.Delete(dilbert);
 			s.Flush();
+			t.Commit();
 			s.Close();
 		}
 

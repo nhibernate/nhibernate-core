@@ -88,6 +88,7 @@ namespace NHibernate.Test.Legacy
 		public void Criteria()
 		{
 			using (ISession s = OpenSession())
+			using (ITransaction txn = s.BeginTransaction())
 			{
 				Fum fum = new Fum(FumKey("fum"));
 				fum.Fo = new Fum(FumKey("fo"));
@@ -154,10 +155,11 @@ namespace NHibernate.Test.Legacy
 					.List();
 				Assert.AreEqual(1, list.Count);
 				Assert.AreSame(fum, list[0]);
-				s.Flush();
+				txn.Commit();
 			}
 
 			using (ISession s = OpenSession())
+			using (ITransaction txn = s.BeginTransaction())
 			{
 				ICriteria baseCriteria = s.CreateCriteria(typeof(Fum))
 					.Add(Expression.Like("FumString", "f%"));
@@ -174,7 +176,7 @@ namespace NHibernate.Test.Legacy
 				{
 					s.Delete(friend);
 				}
-				s.Flush();
+				txn.Commit();
 			}
 		}
 
@@ -182,6 +184,7 @@ namespace NHibernate.Test.Legacy
 		public void ListIdentifiers()
 		{
 			ISession s = OpenSession();
+			ITransaction txn = s.BeginTransaction();
 			Fum fum = new Fum(FumKey("fum"));
 			fum.FumString = "fo fee fi";
 			s.Save(fum);
@@ -212,7 +215,7 @@ namespace NHibernate.Test.Legacy
 			// clean up by deleting the 2 Fum objects that were added.
 			s.Delete(s.Load(typeof(Fum), list[0]));
 			s.Delete(s.Load(typeof(Fum), list[1]));
-			s.Flush();
+			txn.Commit();
 			s.Close();
 		}
 

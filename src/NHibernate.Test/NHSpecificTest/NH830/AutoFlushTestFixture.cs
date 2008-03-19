@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH830
 		public void AutoFlushTest()
 		{
 			ISession sess = OpenSession();
-
+			ITransaction t = sess.BeginTransaction();
 			//Setup the test data
 			Cat mum = new Cat();
 			Cat son = new Cat();
@@ -35,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH830
 
 			sess.Delete(mum);
 			sess.Delete(son);
-			sess.Flush();
+			t.Commit();
 			sess.Close();
 		}
 	}
