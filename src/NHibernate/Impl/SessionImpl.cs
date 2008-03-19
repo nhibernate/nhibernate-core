@@ -1768,14 +1768,6 @@ namespace NHibernate.Impl
 			return FireSaveOrUpdateCopy(new MergeEvent(null, obj, this));
 		}
 
-		public override object Copy(object obj, IDictionary copiedAlready)
-		{
-			// TODO H3.2 Different behavior
-			MergeEvent mergeEvent = new MergeEvent(null, obj, this);
-			FireMerge(copiedAlready, mergeEvent);
-			return mergeEvent.Result;
-		}
-
 		public object SaveOrUpdateCopy(object obj, object id)
 		{
 			return FireSaveOrUpdateCopy(new MergeEvent(null, obj, id, this));

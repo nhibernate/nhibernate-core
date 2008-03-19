@@ -71,7 +71,6 @@ namespace NHibernate.Impl
 		public abstract IList<T> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters);
 		public abstract void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results);
 		public abstract IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters);
-		public abstract object Copy(object obj, IDictionary copiedAlready);
 		public abstract object GetFilterParameterValue(string filterParameterName);
 		public abstract IType GetFilterParameterType(string filterParameterName);
 		public abstract ISession GetSession();

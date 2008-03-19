@@ -182,14 +182,6 @@ namespace NHibernate.Engine
 		IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters);
 
 		/// <summary>
-		/// new in 2.1 no javadoc
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="copiedAlready"></param>
-		/// <returns></returns>
-		object Copy(object obj, IDictionary copiedAlready); // NH specific : TODO Remove when port Cascade behavior from H3.2.5
-
-		/// <summary>
 		/// Retreive the currently set value for a filter parameter.
 		/// </summary>
 		/// <param name="filterParameterName">The filter parameter name in the format 

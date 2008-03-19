@@ -320,11 +320,6 @@ namespace NHibernate.Impl
 			return results;
 		}
 
-		public override object Copy(object obj, IDictionary copiedAlready)
-		{
-			throw new NotSupportedException();
-		}
-
 		public override object GetFilterParameterValue(string filterParameterName)
 		{
 			throw new NotSupportedException();
