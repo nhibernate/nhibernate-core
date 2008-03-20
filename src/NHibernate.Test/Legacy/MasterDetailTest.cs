@@ -127,17 +127,22 @@ namespace NHibernate.Test.Legacy
 			newSubCat.Name = "new sub";
 			newCat.Subcategories.Add(newSubCat);
 
+			Category copiedCat;
 			using (ISession s = OpenSession())
 			{
-				s.SaveOrUpdateCopy(cat);
+				copiedCat = (Category)s.SaveOrUpdateCopy(cat);
 				s.Flush();
 			}
+			Assert.IsFalse(copiedCat == cat);
+			Assert.IsTrue(cat.Subcategories.Contains(newCat));
+
 			using (ISession s = OpenSession())
 			{
 				cat = (Category) s.CreateQuery("from Category cat where cat.Name='new foo'").UniqueResult();
-				newSubCat = (Category) s.CreateQuery("from Category cat where cat.Name='new sub'").UniqueResult();
-				newSubCat.Subcategories.Add(cat);
+				newSubCat = (Category)s.CreateQuery("from Category cat left join fetch cat.Subcategories where cat.Name='new sub'").UniqueResult();
+				Assert.AreEqual("new sub", newSubCat.Name);
 			}
+			newSubCat.Subcategories.Add(cat);
 			cat.Name="new new foo";
 
 			using (ISession s = OpenSession())
@@ -179,7 +184,7 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 
 			s = OpenSession();
-			s.Delete(parent);
+			s.Delete(persistentParent);
 			s.Flush();
 			s.Close();
 		}

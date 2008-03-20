@@ -618,14 +618,15 @@ namespace NHibernate.Engine
 			//{
 			//  maybeProxy = wrapper.Element;
 			//}
-			if (maybeProxy is INHibernateProxy)
+
+			INHibernateProxy proxy = maybeProxy as INHibernateProxy;
+			if (proxy != null)
 			{
-				INHibernateProxy proxy = (INHibernateProxy)maybeProxy;
 				ILazyInitializer li = proxy.HibernateLazyInitializer;
 				if (li.IsUninitialized)
 					throw new PersistentObjectException("object was an uninitialized proxy for " + li.PersistentClass.FullName);
 
-				return li.GetImplementation(); //initialize + unwrap the object 
+				return li.GetImplementation(); // unwrap the object 
 			}
 			else
 			{

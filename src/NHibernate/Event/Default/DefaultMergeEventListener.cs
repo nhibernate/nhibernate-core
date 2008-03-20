@@ -81,7 +81,7 @@ namespace NHibernate.Event.Default
 					EntityEntry entry = source.PersistenceContext.GetEntry(entity);
 					if (entry == null)
 					{
-						IEntityPersister persister = source.GetEntityPersister(entity);
+						IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
 						object id = persister.GetIdentifier(entity, source.EntityMode);
 						if (id != null)
 						{
@@ -152,10 +152,7 @@ namespace NHibernate.Event.Default
 
 			object id = persister.HasIdentifierProperty ? persister.GetIdentifier(entity, source.EntityMode) : null;
 
-			// NH : Different behavior (H3.2 don't change the original entity state, NH did)
-			//object copy = persister.Instantiate(id); // should this be Session.instantiate(Persister, ...)?
-			object copy = entity;
-
+			object copy = persister.Instantiate(id, source.EntityMode); // should this be Session.instantiate(Persister, ...)?
 			copyCache[entity] = copy; //before cascade!
 
 			// cascade first, so that all unsaved objects get their
@@ -192,7 +189,7 @@ namespace NHibernate.Event.Default
 			object entity = @event.Entity;
 			IEventSource source = @event.Session;
 
-			IEntityPersister persister = source.GetEntityPersister(entity);
+			IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
 			string entityName = persister.EntityName;
 
 			object id = @event.RequestedId;
@@ -204,7 +201,7 @@ namespace NHibernate.Event.Default
 			{
 				// check that entity id = requestedId
 				object entityId = persister.GetIdentifier(entity, source.EntityMode);
-				if (!persister.IdentifierType.IsEqual(id, entityId, source.EntityMode))
+				if (!persister.IdentifierType.IsEqual(id, entityId, source.EntityMode, source.Factory))
 				{
 					throw new HibernateException("merge requested with id not matching id of passed entity");
 				}

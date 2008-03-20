@@ -117,17 +117,18 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			b2.Name = "b2";
 			a.Items[ "b2" ] = b2;
 
+			A copiedA;
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				s.SaveOrUpdateCopy( a );
+				copiedA = (A) s.SaveOrUpdateCopy( a );
 				t.Commit();
 			}
 
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				A loadedA = s.Get<A>( a.Id );
+				A loadedA = s.Get<A>( copiedA.Id );
 				Assert.IsNotNull( loadedA );
 				s.Delete( loadedA );
 				t.Commit();

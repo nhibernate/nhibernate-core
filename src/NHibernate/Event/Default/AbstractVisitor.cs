@@ -56,8 +56,6 @@ namespace NHibernate.Event.Default
 			}
 			else if (type.IsComponentType)
 			{
-				//TODO: what about a null component with a collection!
-				//      we also need to clean up that "null collection"
 				return ProcessComponent(value, (IAbstractComponentType)type);
 			}
 			else
@@ -131,9 +129,7 @@ namespace NHibernate.Event.Default
 
 		internal bool IncludeProperty(object[] values, int i)
 		{
-			// TODO H3.2 Lazy properties 
-			//return values[i] != org.hibernate.intercept.LazyPropertyInitializer_Fields.UNFETCHED_PROPERTY;
-			return true;
+			return values[i] != Intercept.LazyPropertyInitializer.UnfetchedProperty;
 		}
 	}
 }

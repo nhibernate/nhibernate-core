@@ -90,31 +90,6 @@ namespace NHibernate.Type
 		// Not ported - ToString( object value, ISessionFactoryImplementor factory )
 		// - PesistentCollectionType implementation is able to handle arrays too in .NET
 
-		public override object Replace(object original, object target, ISessionImplementor session, object owner,
-		                               IDictionary copyCache)
-		{
-			Array originalArray = (Array) original;
-			Array targetArray = (Array) target;
-
-			int length = originalArray.Length;
-			if (length != targetArray.Length)
-			{
-				//note: this affects the return value!
-				targetArray = (Array) InstantiateResult(original);
-			}
-
-			IType elemType = GetElementType(session.Factory);
-
-			for (int i = 0; i < length; i++)
-			{
-				targetArray.SetValue(
-					elemType.Replace(originalArray.GetValue(i), null, session, owner, copyCache),
-					i);
-			}
-
-			return targetArray;
-		}
-
 		public override object InstantiateResult(object original)
 		{
 			return Array.CreateInstance(elementClass, ((Array) original).Length);
@@ -151,21 +126,22 @@ namespace NHibernate.Type
 		public override object ReplaceElements(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session)
 		{
 			Array org = (Array) original;
-			Array targ = (Array)target;
+			Array result = (Array)target;
+
 			int length = org.Length;
-			if (length != targ.Length)
+			if (length != result.Length)
 			{
 				//note: this affects the return value!
-				target = InstantiateResult(original);
+				result = (Array) InstantiateResult(original);
 			}
 
 			IType elemType = GetElementType(session.Factory);
 			for (int i = 0; i < length; i++)
 			{
-				targ.SetValue(elemType.Replace(org.GetValue(i), null, session, owner, copyCache), i);
+				result.SetValue(elemType.Replace(org.GetValue(i), null, session, owner, copyCache), i);
 			}
 
-			return target;
+			return result;
 		}
 
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
