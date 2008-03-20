@@ -138,14 +138,11 @@ namespace NHibernate.Hql.Classic
 					// Is a nested function
 					funcStack.Push(GetFunction(lctoken, q));
 					q.AppendScalarSelectToken(token);
-					if (!funcStack.SqlFunction.HasArguments)
+					if (!funcStack.SqlFunction.HasArguments && !funcStack.SqlFunction.HasParenthesesIfNoArguments)
 					{
 						q.AddSelectScalar(funcStack.GetReturnType());
-						if (!funcStack.SqlFunction.HasParenthesesIfNoArguments)
-						{
-							funcStack.Pop();
-							readyForAliasOrExpression = funcStack.HasFunctions;
-						}
+						funcStack.Pop();
+						readyForAliasOrExpression = funcStack.HasFunctions;
 					}
 				}
 			}

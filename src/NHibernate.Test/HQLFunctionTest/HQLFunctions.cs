@@ -593,7 +593,12 @@ namespace NHibernate.Test.HQLFunctionTest
 		public void Current_TimeStamp()
 		{
 			IgnoreIfNotSupported("current_timestamp");
-			// test only the parser and render
+			using (ISession s = OpenSession())
+			{
+				Animal a1 = new Animal("abcdef", 1.3f);
+				s.Save(a1);
+				s.Flush();
+			}
 			using (ISession s = OpenSession())
 			{
 				string hql = "select current_timestamp() from Animal";
