@@ -5,6 +5,7 @@ using NHibernate.Exceptions;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using System.Data.Common;
 
 namespace NHibernate.Id.Insert
 {
@@ -42,7 +43,7 @@ namespace NHibernate.Id.Insert
 					session.Batcher.CloseCommand(insert, null);
 				}
 			}
-			catch (Exception sqle)
+			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
 				                                 "could not insert: " + MessageHelper.InfoString(persister), insertSQL.Text);
@@ -71,7 +72,7 @@ namespace NHibernate.Id.Insert
 					session.Batcher.CloseCommand(idSelect, null);
 				}
 			}
-			catch (Exception sqle)
+			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
 				                                 "could not retrieve generated id after insert: "

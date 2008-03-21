@@ -73,7 +73,7 @@
 					log.Info("table not found: " + name);
 					return null;
 				}
-				catch (SqlException sqle)
+				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle, "could not get table metadata: " + name);
 				}

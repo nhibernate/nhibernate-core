@@ -10,6 +10,7 @@ using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Data.Common;
 
 namespace NHibernate.Id
 {
@@ -117,7 +118,7 @@ namespace NHibernate.Id
 					session.Batcher.CloseCommand(cmd, reader);
 				}
 			}
-			catch (Exception sqle)
+			catch (DbException sqle)
 			{
 				log.Error("error generating sequence", sqle);
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "could not get next sequence value");

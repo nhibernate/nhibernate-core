@@ -23,6 +23,7 @@ using NHibernate.Util;
 using Array=NHibernate.Mapping.Array;
 using System.Collections.Generic;
 using NHibernate.SqlTypes;
+using System.Data.Common;
 
 namespace NHibernate.Persister.Collection
 {
@@ -951,7 +952,7 @@ namespace NHibernate.Persister.Collection
 						log.Debug("done deleting collection");
 					}
 				}
-				catch (Exception sqle)
+				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle, "could not delete collection: " + MessageHelper.InfoString(this, id));
 				}
@@ -1053,7 +1054,7 @@ namespace NHibernate.Persister.Collection
 							log.Debug("collection was empty");
 					}
 				}
-				catch (Exception sqle)
+				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle,
 					                                 "could not insert collection: " + MessageHelper.InfoString(this, id));
@@ -1156,7 +1157,7 @@ namespace NHibernate.Persister.Collection
 						}
 					}
 				}
-				catch (Exception sqle)
+				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle,
 					                                 "could not delete collection rows: " + MessageHelper.InfoString(this, id));
@@ -1240,7 +1241,7 @@ namespace NHibernate.Persister.Collection
 						log.Debug(string.Format("done inserting rows: {0} inserted", count));
 					}
 				}
-				catch (Exception sqle)
+				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle, "could not insert collection rows: " + MessageHelper.InfoString(this, id));
 				}
@@ -1419,7 +1420,7 @@ namespace NHibernate.Persister.Collection
 					session.Batcher.CloseCommand(st, rs);
 				}
 			}
-			catch (Exception sqle)
+			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
 																					"could not retrieve collection size: "
@@ -1468,7 +1469,7 @@ namespace NHibernate.Persister.Collection
 					session.Batcher.CloseCommand(st, rs);
 				}
 			}
-			catch (System.Data.OleDb.OleDbException sqle)
+			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not check row existence: " + MessageHelper.InfoString(this, key, Factory), sqlSelectSizeString);
 			}
@@ -1504,7 +1505,7 @@ namespace NHibernate.Persister.Collection
 					session.Batcher.CloseCommand(st, rs);
 				}
 			}
-			catch (System.Data.OleDb.OleDbException sqle)
+			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not read row: " + MessageHelper.InfoString(this, key, Factory), sqlSelectSizeString);
 			}

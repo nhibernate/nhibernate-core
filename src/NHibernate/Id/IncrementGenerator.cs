@@ -9,6 +9,7 @@ using NHibernate.Exceptions;
 using NHibernate.Mapping;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Data.Common;
 
 namespace NHibernate.Id
 {
@@ -127,7 +128,7 @@ namespace NHibernate.Id
 					session.Factory.CloseConnection(conn);
 				}
 			}
-			catch (Exception sqle)
+			catch (DbException sqle)
 			{
 				log.Error("could not get increment value", sqle);
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,

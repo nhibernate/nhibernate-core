@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
@@ -298,7 +299,7 @@ namespace NHibernate.Persister.Collection
 				}
 				return count;
 			}
-			catch (Exception sqle)
+			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(SQLExceptionConverter, sqle,
 				                                 "could not update collection rows: " + MessageHelper.InfoString(this, id));

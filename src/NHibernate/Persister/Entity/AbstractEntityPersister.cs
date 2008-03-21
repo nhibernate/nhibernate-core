@@ -1267,7 +1267,7 @@ namespace NHibernate.Persister.Entity
 
 				return result;
 			}
-			catch (Exception sqle)
+			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not initialize lazy properties: " + MessageHelper.InfoString(this, id, Factory), SQLLazySelectString);
 			}
@@ -1430,7 +1430,7 @@ namespace NHibernate.Persister.Entity
 					session.Batcher.CloseCommand(st, rs);
 				}
 			}
-			catch (Exception sqle)
+			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not retrieve snapshot: " + MessageHelper.InfoString(this, id, Factory), SQLSnapshotSelectString);
 			}
@@ -1606,7 +1606,7 @@ namespace NHibernate.Persister.Entity
 					session.Batcher.CloseCommand(st, null);
 				}
 			}
-			catch (Exception sqle)
+			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
 																				 "could not retrieve version: " + MessageHelper.InfoString(this, id, Factory),
@@ -1662,7 +1662,7 @@ namespace NHibernate.Persister.Entity
 					session.Batcher.CloseCommand(st, rs);
 				}
 			}
-			catch (Exception sqle)
+			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
 																				 "could not retrieve version: " + MessageHelper.InfoString(this, id, Factory),
@@ -2595,7 +2595,7 @@ namespace NHibernate.Persister.Entity
 					}
 				}
 			}
-			catch (Exception sqle)
+			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
 																				 "could not insert: " + MessageHelper.InfoString(this), sql.Text);
@@ -2832,7 +2832,7 @@ namespace NHibernate.Persister.Entity
 					}
 				}
 			}
-			catch (Exception sqle)
+			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not delete: " + MessageHelper.InfoString(this, id, Factory), sql.Text);
 			}
@@ -3878,7 +3878,7 @@ namespace NHibernate.Persister.Entity
 					session.Batcher.CloseCommand(cmd, rs);
 				}
 			}
-			catch (Exception sqle)
+			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "unable to select generated column values",
 																				 selectionSQL);
@@ -3958,7 +3958,7 @@ namespace NHibernate.Persister.Entity
 					session.Batcher.CloseCommand(ps, rs);
 				}
 			}
-			catch (Exception sqle)
+			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not retrieve snapshot: " + MessageHelper.InfoString(this, id, Factory), sql);
 			}

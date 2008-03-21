@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Data.Common;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
@@ -159,7 +160,7 @@ namespace NHibernate.Impl
 			{
 				readResult = _reader.Read();
 			}
-			catch (Exception e)
+			catch (DbException e)
 			{
 				throw ADOExceptionHelper.Convert(_sess.Factory.SQLExceptionConverter, e, "Error executing Enumerable() query",
 				                                 new SqlString(_cmd.CommandText));
