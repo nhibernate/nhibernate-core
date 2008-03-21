@@ -1790,10 +1790,7 @@ namespace NHibernate.Impl
 		{
 			ErrorIfClosed();
 			FilterImpl filter = new FilterImpl(factory.GetFilterDefinition(filterName));
-			if (!enabledFilters.ContainsKey(filterName))
-			{
-				enabledFilters.Add(filterName, filter);
-			}
+			enabledFilters[filterName] = filter;
 			return filter;
 		}
 

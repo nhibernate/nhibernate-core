@@ -827,14 +827,14 @@ namespace NHibernate
 		/// Enable the named filter for this current session.
 		/// </summary>
 		/// <param name="filterName">The name of the filter to be enabled.</param>
-		/// <returns>The Filter instance representing the enabled fiter.</returns>
+		/// <returns>The Filter instance representing the enabled filter.</returns>
 		IFilter EnableFilter(string filterName);
 
 		/// <summary>
 		/// Retrieve a currently enabled filter by name.
 		/// </summary>
 		/// <param name="filterName">The name of the filter to be retrieved.</param>
-		/// <returns>The Filter instance representing the enabled fiter.</returns>
+		/// <returns>The Filter instance representing the enabled filter.</returns>
 		IFilter GetEnabledFilter(string filterName);
 
 		/// <summary>

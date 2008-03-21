@@ -65,7 +65,7 @@ namespace NHibernate.Impl
 			{
 				throw new ArgumentException(name, "Incorrect type for parameter [" + name + "]");
 			}
-			parameters.Add(name, value);
+			parameters[name] = value;
 			return this;
 		}
 
@@ -97,7 +97,7 @@ namespace NHibernate.Impl
 					throw new HibernateException("Incorrect type for parameter [" + name + "]");
 				}
 			}
-			parameters.Add(name, values);
+			parameters[name] = values;
 			return this;
 		}
 
@@ -115,7 +115,9 @@ namespace NHibernate.Impl
 
 		public object GetParameter(string name)
 		{
-			return parameters[name];
+			object result;
+			parameters.TryGetValue(name, out result);
+			return result;
 		}
 
 		/// <summary>
@@ -124,13 +126,11 @@ namespace NHibernate.Impl
 		/// </summary>
 		public void Validate()
 		{
-			foreach (string parameterName in  definition.ParameterNames)
+			foreach (string parameterName in definition.ParameterNames)
 			{
 				if (!parameters.ContainsKey(parameterName))
 				{
-					throw new HibernateException(
-						"Filter [" + Name + "] parameter [" + parameterName + "] value not set"
-						);
+					throw new HibernateException("Filter [" + Name + "] parameter [" + parameterName + "] value not set");
 				}
 			}
 		}
