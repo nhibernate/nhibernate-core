@@ -1610,7 +1610,7 @@ namespace NHibernate.Cfg
 		{
 			if (listener == null)
 			{
-				SetListener(type, null);
+				ClearListeners(type);
 			}
 			else
 			{
@@ -1620,289 +1620,190 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		public void SetListeners(ListenerType type, object[] listeners)
+		private void ClearListeners(ListenerType type)
 		{
+
 			switch (type)
 			{
 				case ListenerType.Autoflush:
-					if (listeners == null)
-					{
-						eventListeners.AutoFlushEventListeners = new IAutoFlushEventListener[] {};
-					}
-					else
-					{
-						eventListeners.AutoFlushEventListeners = (IAutoFlushEventListener[]) listeners;
-					}
+						eventListeners.AutoFlushEventListeners = new IAutoFlushEventListener[] { };
 					break;
 				case ListenerType.Merge:
-					if (listeners == null)
-					{
 						eventListeners.MergeEventListeners = new IMergeEventListener[] { };
-					}
-					else
-					{
-						eventListeners.MergeEventListeners = (IMergeEventListener[])listeners;
-					}
 					break;
 				case ListenerType.Create:
-					if (listeners == null)
-					{
 						eventListeners.PersistEventListeners = new IPersistEventListener[] { };
-					}
-					else
-					{
-						eventListeners.PersistEventListeners = (IPersistEventListener[])listeners;
-					}
 					break;
 				case ListenerType.CreateOnFlush:
-					if (listeners == null)
-					{
 						eventListeners.PersistOnFlushEventListeners = new IPersistEventListener[] { };
-					}
-					else
-					{
-						eventListeners.PersistOnFlushEventListeners = (IPersistEventListener[])listeners;
-					}
 					break;
 				case ListenerType.Delete:
-					if (listeners == null)
-					{
 						eventListeners.DeleteEventListeners = new IDeleteEventListener[] { };
-					}
-					else
-					{
-						eventListeners.DeleteEventListeners = (IDeleteEventListener[])listeners;
-					}
 					break;
 				case ListenerType.DirtyCheck:
-					if (listeners == null)
-					{
 						eventListeners.DirtyCheckEventListeners = new IDirtyCheckEventListener[] { };
-					}
-					else
-					{
-						eventListeners.DirtyCheckEventListeners = (IDirtyCheckEventListener[])listeners;
-					}
 					break;
 				case ListenerType.Evict:
-					if (listeners == null)
-					{
 						eventListeners.EvictEventListeners = new IEvictEventListener[] { };
-					}
-					else
-					{
-						eventListeners.EvictEventListeners = (IEvictEventListener[])listeners;
-					}
 					break;
 				case ListenerType.Flush:
-					if (listeners == null)
-					{
 						eventListeners.FlushEventListeners = new IFlushEventListener[] { };
-					}
-					else
-					{
-						eventListeners.FlushEventListeners = (IFlushEventListener[])listeners;
-					}
 					break;
 				case ListenerType.FlushEntity:
-					if (listeners == null)
-					{
 						eventListeners.FlushEntityEventListeners = new IFlushEntityEventListener[] { };
-					}
-					else
-					{
-						eventListeners.FlushEntityEventListeners = (IFlushEntityEventListener[])listeners;
-					}
 					break;
 				case ListenerType.Load:
-					if (listeners == null)
-					{
 						eventListeners.LoadEventListeners = new ILoadEventListener[] { };
-					}
-					else
-					{
-						eventListeners.LoadEventListeners = (ILoadEventListener[])listeners;
-					}
 					break;
 				case ListenerType.LoadCollection:
-					if (listeners == null)
-					{
 						eventListeners.InitializeCollectionEventListeners = new IInitializeCollectionEventListener[] { };
-					}
-					else
-					{
-						eventListeners.InitializeCollectionEventListeners = (IInitializeCollectionEventListener[])listeners;
-					}
 					break;
 				case ListenerType.Lock:
-					if (listeners == null)
-					{
 						eventListeners.LockEventListeners = new ILockEventListener[] { };
-					}
-					else
-					{
-						eventListeners.LockEventListeners = (ILockEventListener[])listeners;
-					}
 					break;
 				case ListenerType.Refresh:
-					if (listeners == null)
-					{
 						eventListeners.RefreshEventListeners = new IRefreshEventListener[] { };
-					}
-					else
-					{
-						eventListeners.RefreshEventListeners = (IRefreshEventListener[])listeners;
-					}
 					break;
 				case ListenerType.Replicate:
-					if (listeners == null)
-					{
 						eventListeners.ReplicateEventListeners = new IReplicateEventListener[] { };
-					}
-					else
-					{
-						eventListeners.ReplicateEventListeners = (IReplicateEventListener[])listeners;
-					}
 					break;
 				case ListenerType.SaveUpdate:
-					if (listeners == null)
-					{
 						eventListeners.SaveOrUpdateEventListeners = new ISaveOrUpdateEventListener[] { };
-					}
-					else
-					{
-						eventListeners.SaveOrUpdateEventListeners = (ISaveOrUpdateEventListener[])listeners;
-					}
 					break;
 				case ListenerType.Save:
-					if (listeners == null)
-					{
 						eventListeners.SaveEventListeners = new ISaveOrUpdateEventListener[] { };
-					}
-					else
-					{
-						eventListeners.SaveEventListeners = (ISaveOrUpdateEventListener[])listeners;
-					}
 					break;
 				case ListenerType.PreUpdate:
-					if (listeners == null)
-					{
 						eventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { };
-					}
-					else
-					{
-						eventListeners.PreUpdateEventListeners = (IPreUpdateEventListener[])listeners;
-					}
 					break;
 				case ListenerType.Update:
-					if (listeners == null)
-					{
 						eventListeners.UpdateEventListeners = new ISaveOrUpdateEventListener[] { };
-					}
-					else
-					{
-						eventListeners.UpdateEventListeners = (ISaveOrUpdateEventListener[])listeners;
-					}
 					break;
 				case ListenerType.PreLoad:
-					if (listeners == null)
-					{
 						eventListeners.PreLoadEventListeners = new IPreLoadEventListener[] { };
-					}
-					else
-					{
-						eventListeners.PreLoadEventListeners = (IPreLoadEventListener[])listeners;
-					}
 					break;
 				case ListenerType.PreDelete:
-					if (listeners == null)
-					{
 						eventListeners.PreDeleteEventListeners = new IPreDeleteEventListener[] { };
-					}
-					else
-					{
-						eventListeners.PreDeleteEventListeners = (IPreDeleteEventListener[])listeners;
-					}
 					break;
 				case ListenerType.PreInsert:
-					if (listeners == null)
-					{
 						eventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { };
-					}
-					else
-					{
-						eventListeners.PreInsertEventListeners = (IPreInsertEventListener[])listeners;
-					}
 					break;
 				case ListenerType.PostLoad:
-					if (listeners == null)
-					{
 						eventListeners.PostLoadEventListeners = new IPostLoadEventListener[] { };
-					}
-					else
-					{
-						eventListeners.PostLoadEventListeners = (IPostLoadEventListener[])listeners;
-					}
 					break;
 				case ListenerType.PostInsert:
-					if (listeners == null)
-					{
 						eventListeners.PostInsertEventListeners = new IPostInsertEventListener[] { };
-					}
-					else
-					{
-						eventListeners.PostInsertEventListeners = (IPostInsertEventListener[])listeners;
-					}
 					break;
 				case ListenerType.PostUpdate:
-					if (listeners == null)
-					{
 						eventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[] { };
-					}
-					else
-					{
-						eventListeners.PostUpdateEventListeners = (IPostUpdateEventListener[])listeners;
-					}
 					break;
 				case ListenerType.PostDelete:
-					if (listeners == null)
-					{
 						eventListeners.PostDeleteEventListeners = new IPostDeleteEventListener[] { };
-					}
-					else
-					{
-						eventListeners.PostDeleteEventListeners = (IPostDeleteEventListener[])listeners;
-					}
 					break;
 				case ListenerType.PostCommitUpdate:
-					if (listeners == null)
-					{
 						eventListeners.PostCommitUpdateEventListeners = new IPostUpdateEventListener[] { };
-					}
-					else
-					{
-						eventListeners.PostCommitUpdateEventListeners = (IPostUpdateEventListener[])listeners;
-					}
 					break;
 				case ListenerType.PostCommitInsert:
-					if (listeners == null)
-					{
 						eventListeners.PostCommitInsertEventListeners = new IPostInsertEventListener[] { };
-					}
-					else
-					{
-						eventListeners.PostCommitInsertEventListeners = (IPostInsertEventListener[])listeners;
-					}
 					break;
 				case ListenerType.PostCommitDelete:
-					if (listeners == null)
-					{
 						eventListeners.PostCommitDeleteEventListeners = new IPostDeleteEventListener[] { };
-					}
-					else
-					{
+					break;
+				default:
+					log.Warn("Unrecognized listener type [" + type + "]");
+					break;
+			}
+		}
+
+		public void SetListeners(ListenerType type, object[] listeners)
+		{
+			if (listeners == null)
+				ClearListeners(type);
+			switch (type)
+			{
+				case ListenerType.Autoflush:
+						eventListeners.AutoFlushEventListeners = (IAutoFlushEventListener[]) listeners;
+					break;
+				case ListenerType.Merge:
+						eventListeners.MergeEventListeners = (IMergeEventListener[])listeners;
+					break;
+				case ListenerType.Create:
+						eventListeners.PersistEventListeners = (IPersistEventListener[])listeners;
+					break;
+				case ListenerType.CreateOnFlush:
+						eventListeners.PersistOnFlushEventListeners = (IPersistEventListener[])listeners;
+					break;
+				case ListenerType.Delete:
+						eventListeners.DeleteEventListeners = (IDeleteEventListener[])listeners;
+					break;
+				case ListenerType.DirtyCheck:
+						eventListeners.DirtyCheckEventListeners = (IDirtyCheckEventListener[])listeners;
+					break;
+				case ListenerType.Evict:
+						eventListeners.EvictEventListeners = (IEvictEventListener[])listeners;
+					break;
+				case ListenerType.Flush:
+						eventListeners.FlushEventListeners = (IFlushEventListener[])listeners;
+					break;
+				case ListenerType.FlushEntity:
+						eventListeners.FlushEntityEventListeners = (IFlushEntityEventListener[])listeners;
+					break;
+				case ListenerType.Load:
+						eventListeners.LoadEventListeners = (ILoadEventListener[])listeners;
+					break;
+				case ListenerType.LoadCollection:
+						eventListeners.InitializeCollectionEventListeners = (IInitializeCollectionEventListener[])listeners;
+					break;
+				case ListenerType.Lock:
+						eventListeners.LockEventListeners = (ILockEventListener[])listeners;
+					break;
+				case ListenerType.Refresh:
+						eventListeners.RefreshEventListeners = (IRefreshEventListener[])listeners;
+					break;
+				case ListenerType.Replicate:
+						eventListeners.ReplicateEventListeners = (IReplicateEventListener[])listeners;
+					break;
+				case ListenerType.SaveUpdate:
+						eventListeners.SaveOrUpdateEventListeners = (ISaveOrUpdateEventListener[])listeners;
+					break;
+				case ListenerType.Save:
+						eventListeners.SaveEventListeners = (ISaveOrUpdateEventListener[])listeners;
+					break;
+				case ListenerType.PreUpdate:
+						eventListeners.PreUpdateEventListeners = (IPreUpdateEventListener[])listeners;
+					break;
+				case ListenerType.Update:
+						eventListeners.UpdateEventListeners = (ISaveOrUpdateEventListener[])listeners;
+					break;
+				case ListenerType.PreLoad:
+						eventListeners.PreLoadEventListeners = (IPreLoadEventListener[])listeners;
+					break;
+				case ListenerType.PreDelete:
+						eventListeners.PreDeleteEventListeners = (IPreDeleteEventListener[])listeners;
+					break;
+				case ListenerType.PreInsert:
+						eventListeners.PreInsertEventListeners = (IPreInsertEventListener[])listeners;
+					break;
+				case ListenerType.PostLoad:
+						eventListeners.PostLoadEventListeners = (IPostLoadEventListener[])listeners;
+					break;
+				case ListenerType.PostInsert:
+						eventListeners.PostInsertEventListeners = (IPostInsertEventListener[])listeners;
+					break;
+				case ListenerType.PostUpdate:
+						eventListeners.PostUpdateEventListeners = (IPostUpdateEventListener[])listeners;
+					break;
+				case ListenerType.PostDelete:
+						eventListeners.PostDeleteEventListeners = (IPostDeleteEventListener[])listeners;
+					break;
+				case ListenerType.PostCommitUpdate:
+						eventListeners.PostCommitUpdateEventListeners = (IPostUpdateEventListener[])listeners;
+					break;
+				case ListenerType.PostCommitInsert:
+						eventListeners.PostCommitInsertEventListeners = (IPostInsertEventListener[])listeners;
+					break;
+				case ListenerType.PostCommitDelete:
 						eventListeners.PostCommitDeleteEventListeners = (IPostDeleteEventListener[])listeners;
-					}
 					break;
 				default:
 					log.Warn("Unrecognized listener type [" + type + "]");
