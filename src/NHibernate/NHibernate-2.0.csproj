@@ -556,6 +556,7 @@
     <Compile Include="Context\WebSessionContext.cs" />
     <Compile Include="CriteriaTransformer.cs" />
     <Compile Include="Criterion\Restrictions.cs" />
+    <Compile Include="Criterion\RowCountInt64Projection.cs" />
     <Compile Include="DebugHelpers\DictionaryProxy.cs" />
     <Compile Include="DebugHelpers\CollectionProxy.cs" />
     <Compile Include="Dialect\Function\AnsiExtractFunction.cs" />

@@ -668,6 +668,14 @@ namespace NHibernate.Test.Criteria
 
 			Assert.AreEqual(7, array.Length);
 
+			ProjectionList pp1 = Projections.ProjectionList().Add(Projections.RowCountInt64());
+
+
+			object r = s.CreateCriteria(typeof(Enrolment))
+											.SetProjection(pp1)
+											.UniqueResult();
+			Assert.AreEqual(typeof (Int64), r.GetType());
+
 			IList list = s.CreateCriteria(typeof(Enrolment))
 				.CreateAlias("Student", "st")
 				.CreateAlias("Course", "co")

@@ -42,10 +42,19 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// The query row count, ie. <tt>count(*)</tt>
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>The RowCount projection mapped to an <see cref="Int32"/>.</returns>
 		public static IProjection RowCount()
 		{
 			return new RowCountProjection();
+		}
+
+		/// <summary>
+		/// The query row count, ie. <tt>count(*)</tt>
+		/// </summary>
+		/// <returns>The RowCount projection mapped to an <see cref="Int64"/>.</returns>
+		public static IProjection RowCountInt64()
+		{
+			return new RowCountInt64Projection();
 		}
 
 		/// <summary>
