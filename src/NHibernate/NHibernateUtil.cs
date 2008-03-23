@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using NHibernate.Collection;
 using NHibernate.Impl;
+using NHibernate.Intercept;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.UserTypes;
@@ -481,6 +482,48 @@ namespace NHibernate
 				throw new ArgumentException("Not a NHibernate enumerable", "enumerable");
 			}
 			hibernateEnumerable.Dispose();
+		}
+
+
+		/// <summary> 
+		/// Check if the property is initialized. If the named property does not exist
+		/// or is not persistent, this method always returns <tt>true</tt>. 
+		/// </summary>
+		/// <param name="proxy">The potential proxy </param>
+		/// <param name="propertyName">the name of a persistent attribute of the object </param>
+		/// <returns> 
+		/// true if the named property of the object is not listed as uninitialized;
+		/// false if the object is an uninitialized proxy, or the named property is uninitialized 
+		/// </returns>
+		public static bool IsPropertyInitialized(object proxy, string propertyName)
+		{
+			object entity;
+			if (proxy is INHibernateProxy)
+			{
+				ILazyInitializer li = ((INHibernateProxy)proxy).HibernateLazyInitializer;
+				if (li.IsUninitialized)
+				{
+					return false;
+				}
+				else
+				{
+					entity = li.GetImplementation();
+				}
+			}
+			else
+			{
+				entity = proxy;
+			}
+
+			if (FieldInterceptionHelper.IsInstrumented(entity))
+			{
+				IFieldInterceptor interceptor = FieldInterceptionHelper.ExtractFieldInterceptor(entity);
+				return interceptor == null || interceptor.IsInitializedField(propertyName);
+			}
+			else
+			{
+				return true;
+			}
 		}
 	}
 }
