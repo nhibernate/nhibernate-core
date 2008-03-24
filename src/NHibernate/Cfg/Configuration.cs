@@ -1589,23 +1589,52 @@ namespace NHibernate.Cfg
 			set { schemas = value; }
 		}
 
+		/// <summary>
+		/// Set or clear listener for a given <see cref="ListenerType"/>.
+		/// </summary>
+		/// <param name="type">The <see cref="ListenerType"/>.</param>
+		/// <param name="listenerClasses">The array of AssemblyQualifiedName of each listener for <paramref name="type"/>.</param>
+		/// <remarks>
+		/// <paramref name="listenerClasses"/> must implements the interface related with <paramref name="type"/>.
+		/// All listeners of the given <see cref="ListenerType"/> will be cleared if the <paramref name="listenerClasses"/> 
+		/// is null or empty.
+		/// </remarks>
+		/// <exception cref="MappingException">
+		/// when an element of <paramref name="listenerClasses"/> have an invalid value or cant be instantiated.
+		/// </exception>
 		public void SetListeners(ListenerType type, string[] listenerClasses)
 		{
-			object[] listeners = (object[])System.Array.CreateInstance(eventListeners.GetListenerClassFor(type), listenerClasses.Length);
-			for (int i = 0; i < listeners.Length; i++)
+			if (listenerClasses == null || listenerClasses.Length == 0)
 			{
-				try
-				{
-					listeners[i] = Activator.CreateInstance(ReflectHelper.ClassForName(listenerClasses[i]));
-				}
-				catch (Exception e)
-				{
-					throw new MappingException("Unable to instantiate specified event (" + type + ") listener class: " + listenerClasses[i], e);
-				}
+				ClearListeners(type);
 			}
-			SetListeners(type, listeners);
+			else
+			{
+				object[] listeners =
+					(object[]) System.Array.CreateInstance(eventListeners.GetListenerClassFor(type), listenerClasses.Length);
+				for (int i = 0; i < listeners.Length; i++)
+				{
+					try
+					{
+						listeners[i] = Activator.CreateInstance(ReflectHelper.ClassForName(listenerClasses[i]));
+					}
+					catch (Exception e)
+					{
+						throw new MappingException(
+							"Unable to instantiate specified event (" + type + ") listener class: " + listenerClasses[i], e);
+					}
+				}
+				SetListeners(type, listeners);
+			}
 		}
 
+		/// <summary>
+		/// Set or clear listener for a given <see cref="ListenerType"/>.
+		/// </summary>
+		/// <param name="type">The <see cref="ListenerType"/>.</param>
+		/// <param name="listener">The listener for <paramref name="type"/> or null to clear.</param>
+		/// <remarks><paramref name="listener"/> must implements the interface related with <paramref name="type"/>.</remarks>
+		/// <seealso cref="NHibernate.Event"/>
 		public void SetListener(ListenerType type, object listener)
 		{
 			if (listener == null)
@@ -1715,6 +1744,13 @@ namespace NHibernate.Cfg
 			}
 		}
 
+		/// <summary>
+		/// Set or clear listeners for a given <see cref="ListenerType"/>.
+		/// </summary>
+		/// <param name="type">The <see cref="ListenerType"/>.</param>
+		/// <param name="listeners">The listener for <paramref name="type"/> or null to clear.</param>
+		/// <remarks>Listners of <paramref name="listeners"/> must implements one of the interface of event listenesr.</remarks>
+		/// <seealso cref="NHibernate.Event"/>
 		public void SetListeners(ListenerType type, object[] listeners)
 		{
 			if (listeners == null)
