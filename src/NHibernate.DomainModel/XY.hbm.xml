@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
+	<class name="NHibernate.DomainModel.X, NHibernate.DomainModel">
+		<id name="Id" unsaved-value="0">
+			<generator class="foreign">
+				<param name="property">Y</param>
+			</generator>
+		</id>
+		<one-to-one name="Y" constrained="true" cascade="all" />
+	</class>
+	<class name="NHibernate.DomainModel.Y, NHibernate.DomainModel">
+		<id name="Id">
+			<generator class="hilo" />
+		</id>
+		<property name="X" />
+		<one-to-one name="TheX" cascade="save-update" />
+	</class>
+</hibernate-mapping>

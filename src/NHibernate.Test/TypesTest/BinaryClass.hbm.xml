@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
+
+    <class 
+		name="NHibernate.Test.TypesTest.BinaryClass, NHibernate.Test" 
+		table="bc_bin">
+		
+		<id name="Id" column="id">
+			<generator class="assigned" />
+		</id>
+		
+		<property name="DefaultSize" column="bin_def"/>
+		<property name="WithSize" type="Byte[](2048880)" column="bin_size" />
+	</class>
+</hibernate-mapping>

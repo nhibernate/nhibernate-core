@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.NHSpecificTest.NH898">
+    <subclass name="ClassB" discriminator-value="2" extends="ClassBParent">
+        <many-to-one
+            name="A"
+            column="AId" />
+    </subclass>
+</hibernate-mapping>

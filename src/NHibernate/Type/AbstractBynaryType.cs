@@ -1,0 +1,179 @@
+using System;
+using System.Collections;
+using System.Data;
+using System.Text;
+using NHibernate.Engine;
+using NHibernate.SqlTypes;
+using NHibernate.Util;
+
+namespace NHibernate.Type
+{
+	/// <summary> Logic to bind stream of byte into a VARBINARY </summary>
+	[Serializable]
+	public abstract class AbstractBynaryType : MutableType, IVersionType, IComparer
+	{
+		internal AbstractBynaryType() : this(new BinarySqlType())
+		{
+		}
+
+		internal AbstractBynaryType(BinarySqlType sqlType)
+			: base(sqlType)
+		{
+		}
+
+
+		#region IVersionType Members
+		//      Note : simply returns null for seed() and next() as the only known
+		//      application of binary types for versioning is for use with the
+		//      TIMESTAMP datatype supported by Sybase and SQL Server, which
+		//      are completely db-generated values...
+
+		public object Next(object current, ISessionImplementor session)
+		{
+			return current;
+		}
+
+		public object Seed(ISessionImplementor session)
+		{
+			return null;
+		}
+
+		public override bool IsEqual(object x, object y)
+		{
+			if (x == y)
+				return true;
+
+			if (x == null || y == null)
+				return false;
+
+			return CollectionHelper.CollectionEquals<byte>(ToInternalFormat(x), ToInternalFormat(y));
+		}
+
+		public IComparer Comparator
+		{
+			get { return this; }
+		}
+
+		#endregion
+
+		#region IComparer Members
+
+		public virtual int Compare(object x, object y)
+		{
+			return Compare(x, y, null);
+		}
+
+		#endregion
+
+		public abstract override string Name { get;}
+
+		/// <summary> Convert the byte[] into the expected object type</summary>
+		protected internal abstract object ToExternalFormat(byte[] bytes);
+
+		/// <summary> Convert the object into the internal byte[] representation</summary>
+		protected internal abstract byte[] ToInternalFormat(object bytes);
+
+		public override void Set(IDbCommand cmd, object value, int index)
+		{
+			byte[] internalValue = ToInternalFormat(value);
+			((IDataParameter)cmd.Parameters[index]).Value = internalValue;
+		}
+
+		public override object Get(IDataReader rs, int index)
+		{
+			int length = (int)rs.GetBytes(index, 0, null, 0, 0);
+			byte[] buffer = new byte[length];
+
+			int offset = 0;
+
+			while (length - offset > 0)
+			{
+				int countRead = (int)rs.GetBytes(index, offset, buffer, offset, length - offset);
+				offset += countRead;
+
+				if (countRead == 0)
+				{
+					// Should never happen
+					throw new AssertionFailure("Error in BinaryType.Get, IDataRecord.GetBytes read zero bytes");
+				}
+			}
+			return ToExternalFormat(buffer);
+		}
+
+		public override object Get(IDataReader rs, string name)
+		{
+			return Get(rs, rs.GetOrdinal(name));
+		}
+
+		public override int GetHashCode(object x, EntityMode entityMode)
+		{
+			byte[] bytes = ToInternalFormat(x);
+			int hashCode = 1;
+			unchecked
+			{
+				for (int j = 0; j < bytes.Length; j++)
+				{
+					hashCode = 31 * hashCode + bytes[j];
+				}
+			}
+			return hashCode;
+		}
+
+		public override int Compare(object x, object y, EntityMode? entityMode)
+		{
+			byte[] xbytes = ToInternalFormat(x);
+			byte[] ybytes = ToInternalFormat(y);
+			if (xbytes.Length < ybytes.Length)
+				return -1;
+			if (xbytes.Length > ybytes.Length)
+				return 1;
+			for (int i = 0; i < xbytes.Length; i++)
+			{
+				if (xbytes[i] < ybytes[i])
+					return -1;
+				if (xbytes[i] > ybytes[i])
+					return 1;
+			}
+			return 0;
+		}
+
+		public override string ToString(object val)
+		{
+			// convert to HEX string
+			byte[] bytes = ToInternalFormat(val);
+			StringBuilder buf = new StringBuilder();
+			for (int i = 0; i < bytes.Length; i++)
+			{
+				String hexStr = Convert.ToString(bytes[i] - Byte.MinValue, 16);
+				if (hexStr.Length == 1)
+					buf.Append('0');
+				buf.Append(hexStr);
+			}
+			return buf.ToString();
+		}
+
+		public override object DeepCopyNotNull(object value)
+		{
+			byte[] bytes = ToInternalFormat(value);
+			byte[] result = new byte[bytes.Length];
+			Array.Copy(bytes, 0, result, 0, bytes.Length);
+			return ToExternalFormat(result);
+		}
+
+		public override object FromStringValue(string xml)
+		{
+			if (xml == null)
+				return null;
+			if (xml.Length % 2 != 0)
+				throw new ArgumentException("The string is not a valid xml representation of a binary content.");
+
+			byte[] bytes = new byte[xml.Length / 2];
+			for (int i = 0; i < bytes.Length; i++)
+			{
+				string hexStr = xml.Substring(i * 2, ((i + 1) * 2) - (i * 2));
+				bytes[i] = (byte)(Convert.ToInt32(hexStr, 16) + Byte.MinValue);
+			}
+			return ToExternalFormat(bytes);
+		}
+	}
+}

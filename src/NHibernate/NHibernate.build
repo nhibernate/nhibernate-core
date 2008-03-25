@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+
+<project 
+	name="NHibernate" 
+	default="build" 
+	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
+>
+
+	<property name="root.dir" value="../.." />
+	<include buildfile="${root.dir}/build-common/common-project.xml" />
+
+	<target name="init" depends="common.init">
+		<property name="assembly.description" value="An object persistence library for relational databases." />
+		<property name="assembly.allow-partially-trusted-callers" value="true" />
+		<property name="clover.instrument" value="true" />
+
+		<assemblyfileset id="project.references" basedir="${bin.dir}">
+			<include name="System.dll" />
+			<include name="System.Configuration.dll" />
+			<include name="System.XML.dll" />
+			<include name="System.Data.dll" />
+			<include name="System.Web.dll" />
+			<include name="Iesi.Collections.dll" />
+			<include name="log4net.dll" />
+			<include name="Castle.Core.dll" />
+			<include name="Castle.DynamicProxy2.dll" />
+		</assemblyfileset>
+
+		<resourcefileset id="project.resources" prefix="NHibernate" dynamicprefix="true">
+			<include name="*.xsd" />
+			<include name="**/*.xml" />
+			<exclude name="bin/**/*.xml" />
+		</resourcefileset>
+		
+		<fileset id="project.sources">
+			<include name="**/*.cs" />
+		</fileset>
+	</target>
+
+	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
+
+	<target name="build" description="Build NHibernate"
+		depends="generate-assemblyinfo common.compile-dll">
+		<copy file="${bin.dir}/NHibernate.dll" tofile="${root.dir}/${lib.framework.dir}/NHibernate.dll"/>
+	</target>
+
+</project>

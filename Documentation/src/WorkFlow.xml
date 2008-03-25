@@ -1,0 +1,11 @@
+<!-- <!DOCTYPE chapter SYSTEM "../docbook-xml/docbookx.dtd"> -->
+<chapter id="WorkFlow">
+	<title>NHibernate WorkFlow</title>
+
+
+	<abstract id="WorkFlow-abstract">
+		<title>Abstract</title>
+		<para>TODO</para>
+	</abstract>
+
+</chapter>

@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
+	<class 
+		name="NHibernate.DomainModel.Fo, NHibernate.DomainModel" 
+		table="foes"
+	>
+		<composite-id 
+			class="NHibernate.DomainModel.FumCompositeID, NHibernate.DomainModel"
+		>
+			<key-property name="String">
+				<column 
+					name="String_" 
+					length="20" 
+				/>
+			</key-property>
+			<key-property 
+				name="Short" 
+				column="short_" 
+			/>
+			<key-property 
+				name="Date" 
+				column="date_" 
+				type="DateTime" 
+			/>
+		</composite-id>
+		
+		<version 
+			name="Version" 
+			type="Int64" 
+		/>
+		
+		
+		<property name="X" />
+	</class>
+</hibernate-mapping>

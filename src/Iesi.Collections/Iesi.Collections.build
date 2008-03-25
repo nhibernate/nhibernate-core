@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" ?>
+
+<project 
+	name="Iesi.Collections" 
+	default="build" 
+	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
+>
+
+	<property name="root.dir" value="../.." />
+	<include buildfile="${root.dir}/build-common/common-project.xml" />
+
+	<target name="init" depends="common.init">
+
+		<property name="assembly.is-cls-compliant" value="true" />
+		<property name="assembly.description"
+			value="Enhanced Collections for .NET.  Code was published at http://www.codeproject.com/csharp/sets.asp" />
+		<property name="assembly.copyright"
+			value="Declaration of code in public domain can be found in comment by Jason Smith at http://www.codeproject.com/csharp/sets.asp#xx703510xx.  Copyright © 2002-2004 by Aidant Systems, Inc., and by Jason Smith." />
+		<property name="assembly.version" value="1.0.0.3" />
+		<property name="assembly.version.informational" value="1.0" />
+		<property name="assembly.allow-partially-trusted-callers" value="true" />
+
+		<property name="clover.instrument" value="true" />
+
+		<assemblyfileset basedir="${bin.dir}" id="project.references">
+			<include name="System.dll" />
+			<include name="System.XML.dll" />
+			<include name="System.Data.dll" />
+		</assemblyfileset>
+
+	</target>
+
+	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
+	<target name="build" depends="init generate-assemblyinfo common.compile-dll" description="Build Iesi.Collections" />
+
+</project>

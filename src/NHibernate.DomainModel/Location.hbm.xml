@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
+	<class 
+		name="NHibernate.DomainModel.Location, NHibernate.DomainModel"
+	>
+		<composite-id>
+			<key-property name="StreetNumber"  />
+			<key-property 
+				name="StreetName" 
+				length="20" 
+			/>
+			<key-property 
+				name="City" 
+				length="20" 
+			/>
+			<key-property 
+				name="CountryCode" 
+				length="2" 
+			/>
+		</composite-id>
+		<property name="Locale" />
+		<property name="Description" />
+	</class>
+</hibernate-mapping>

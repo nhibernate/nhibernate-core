@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.SubselectFetchTest">
+
+	<class name="Child">
+		<id name="Name" unsaved-value="any">
+			<generator class="assigned" />
+		</id>
+		<bag name="Friends" fetch="subselect" table="ChildChild">
+			<key column="childName1" /><!-- H3 has not-null="true" -->
+			<many-to-many class="Child" column="childName2"/>
+		</bag>
+	</class>
+
+	<class name="Parent">
+		<id name="Name" unsaved-value="any">
+			<generator class="assigned" />
+		</id>
+		<list name="Children" fetch="subselect" cascade="all">
+			<key column="parentName" /><!-- H3 has not-null="true" -->
+			<index column="loc"/>
+			<one-to-many class="Child"/>
+		</list>
+		<list name="MoreChildren" table="ParentChild" fetch="subselect">
+			<key column="parentName" /><!-- H3 has not-null="true" -->
+			<index column="loc"/>
+			<many-to-many class="Child" column="childName"/>
+		</list>
+	</class>
+
+</hibernate-mapping>

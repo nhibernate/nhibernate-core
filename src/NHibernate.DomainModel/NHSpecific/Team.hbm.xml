@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
+
+    <class 
+		name="NHibernate.DomainModel.NHSpecific.Team, NHibernate.DomainModel"
+	>
+		<id 
+			name="Id" 
+			column="team_id"
+		>
+			<generator class="native" />
+		</id>
+		<property 
+			name="Name" 
+			type="String" 
+			column="team_name" 
+		/>
+		<list 
+			name="Players" 
+			lazy="true"
+		>
+			<key column="team_id" />
+			<index 
+				column="player_index" 
+				type="Int32" 
+			/>
+			<one-to-many 
+				class="NHibernate.DomainModel.NHSpecific.Child, NHibernate.DomainModel" 
+			/>
+		</list>
+
+	</class>
+</hibernate-mapping>

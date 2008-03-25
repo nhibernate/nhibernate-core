@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.BulkManipulation"
+				   assembly="NHibernate.Test"
+				   default-lazy="false">
+
+	<class name="Vehicle" table="VEHICLE" discriminator-value="0">
+		<id name="Id" type="long">
+			<generator class="assigned"/>
+		</id>
+		<discriminator column="TofC" type="int"/>
+		<property name="Vin" type="string"/>
+		<property name="Owner" type="string"/>
+		<subclass name="Car" discriminator-value="10"/>
+
+		<subclass name="Truck" discriminator-value="20">
+			<subclass name="SUV" discriminator-value="21"/>
+			<subclass name="Pickup" discriminator-value="22"/>
+		</subclass>
+
+	</class>
+
+	<sql-query name="native-delete-car">
+		<synchronize table="VEHICLE"/>
+		delete from VEHICLE where (TofC = 10) and (Owner = ?)
+	</sql-query>
+</hibernate-mapping>

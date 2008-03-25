@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
+	<class 
+		name="NHibernate.DomainModel.Many, NHibernate.DomainModel" 
+		table="many"
+	>
+		<id 
+			name="Key" 
+			column="many_key"
+			unsaved-value="0"
+		>
+			<generator class="native" />
+		</id>
+		<version name="V" />
+		<property name="X" />
+		<many-to-one 
+			name="One" 
+			column="one_key" 
+			class="NHibernate.DomainModel.One, NHibernate.DomainModel" 
+		/>
+	</class>
+</hibernate-mapping>

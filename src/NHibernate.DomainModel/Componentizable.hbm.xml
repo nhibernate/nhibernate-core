@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="NHibernate.DomainModel" assembly="NHibernate.DomainModel" default-lazy="false">
+	<class name="NHibernate.DomainModel.Componentizable">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="NickName"/>
+		<component name="Component" access="property" class="NHibernate.DomainModel.Component">
+			<property name="Name"/>
+			<component name="SubComponent" class="NHibernate.DomainModel.SubComponent">
+				<property name="SubName"/>
+				<property name="SubName1"/>
+			</component>
+		</component>
+	</class>
+</hibernate-mapping>

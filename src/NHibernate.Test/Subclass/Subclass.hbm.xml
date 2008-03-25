@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
+	<class 
+		name="NHibernate.Test.Subclass.SubclassBase, NHibernate.Test" 
+		table="one_tab" 
+		discriminator-value="SUPER"	
+	>
+		<id 
+			name="Id" 
+			type="Int32" 
+			unsaved-value="0" 
+			column="class_id" 
+			access="nosetter.camelcase-underscore"
+		>
+			<generator class="native" />
+		</id>
+		
+		<discriminator column="disc_column" type="String" />
+		
+		<property name="TestLong" column="test_long" type="Int64" />
+		<property name="TestString" column="test_string" type="String" />
+		<property name="TestDateTime" column="test_date_time" type="DateTime" />
+		
+		<subclass 
+			name="NHibernate.Test.Subclass.SubclassOne, NHibernate.Test" 
+			discriminator-value="SUB"
+		>
+			<property name="OneTestLong" column="one_test_long" type="Int64" />
+		</subclass>
+	</class>
+	
+</hibernate-mapping>

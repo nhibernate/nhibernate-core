@@ -1,0 +1,11 @@
+<!-- <!DOCTYPE chapter SYSTEM "../docbook-xml/docbookx.dtd"> -->
+<chapter id="Application.Windows">
+	<title>Building Windows Applications</title>
+
+
+	<abstract id="Application.Windows-abstract">
+		<title>Abstract</title>
+		<para>TODO</para>
+	</abstract>
+
+</chapter>

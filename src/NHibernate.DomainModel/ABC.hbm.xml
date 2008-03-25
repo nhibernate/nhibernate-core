@@ -1,0 +1,85 @@
+<?xml version="1.0" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
+	<class 
+		name="NHibernate.DomainModel.A, NHibernate.DomainModel" 
+		discriminator-value="0"
+	>
+		<id 
+			name="Id" column="identifier_column"
+			unsaved-value="0"
+		>
+			<generator class="increment" />
+			<!-- unsaved-value used to be null and generator was increment in h2.0.3 -->
+		</id>
+		
+		<discriminator 
+			column="clazz_discriminata" 
+			type="Int32" 
+			not-null="false" 
+		/>
+		
+		<property name="Name" >
+			<column name="name" index="indx_a_name" />
+		</property>
+
+		<property name="AnotherName" index="indx_a_anothername" />
+
+		<subclass 
+			name="NHibernate.DomainModel.B, NHibernate.DomainModel" 
+			discriminator-value="-1"
+		>
+			<property 
+				name="Count" 
+				column="count_" 
+				type="Int32" 
+			/>
+			
+			<map name="Map"
+				where="(select a.clazz_discriminata from A a where a.identifier_column = bid) &lt; 0">
+				<key column="BID"/>
+				<index column="MAPKEY" type="string"/>
+				<element column="MAPVAL" type="string"/>
+			</map>
+
+			<subclass 
+				name="NHibernate.DomainModel.C1, NHibernate.DomainModel" 
+				discriminator-value="null"
+			>
+				<property 
+					name="Address" 
+					column="c1" 
+				/>
+				<one-to-one 
+					name="D" 
+					class="NHibernate.DomainModel.D, NHibernate.DomainModel" 
+				/>
+			</subclass>
+			<subclass 
+				name="NHibernate.DomainModel.C2, NHibernate.DomainModel" 
+				discriminator-value="2"
+			>
+				<property 
+					name="Address" 
+					column="c2" 
+					type="System.String"
+				/>
+			</subclass>
+		</subclass>
+	</class>
+	<class 
+		name="NHibernate.DomainModel.D, NHibernate.DomainModel"
+		proxy="NHibernate.DomainModel.D, NHibernate.DomainModel" 
+		discriminator-value="0"
+	>
+		<id 
+			name="Id" 
+			unsaved-value="0"
+		>
+			<generator class="assigned" />
+		</id>
+		<property 
+			name="Amount" 
+			type="Double" 
+		/>
+	</class>
+</hibernate-mapping>

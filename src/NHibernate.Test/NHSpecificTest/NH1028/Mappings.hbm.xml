@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH1028"
+>
+	<class name="Item">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<property name="Name"/>
+		<property name="Name1"/>
+		<property name="Name2"/>
+		<property name="Name3"/>
+		<property name="Name4"/>
+		<property name="Name5"/>
+		<property name="Name6"/>
+		<property name="Name7"/>
+
+		<set name="Ships" table="ShipsToItems">
+			<key column="SomeVeryLongItemId"/>
+			<many-to-many class="Ship" column="Ship"/>
+		</set>
+		<set name="Containers" table="ContainersToItems">
+			<key column="SomeVeryLongItemId"/>
+			<many-to-many class="Container" column="Container"/>
+		</set>
+	</class>
+	<class name="Ship">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<property name="Name"/>
+	</class>
+	<class name="Container">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<property name="Name"/>
+	</class>
+</hibernate-mapping>

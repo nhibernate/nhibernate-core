@@ -1,0 +1,71 @@
+<?xml version="1.0" ?>
+
+<project 
+	name="NHibernate Documentation" 
+	default="doc"
+	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
+>
+
+	<property name="root.dir" value=".." />
+	<include buildfile="${root.dir}/build-common/common-project.xml" />
+
+	<target name="init" depends="common.init">
+		<property name="doc.out.dir" value="${build.dir}/doc" />
+		<property name="doc.help2.out.dir" value="${doc.out.dir}/help2" />
+		<property name="doc.chm.out.dir" value="${doc.out.dir}" />
+		<property name="doc.tmp.dir" value="${path::get-full-path(doc.out.dir)}/temp" />
+	</target>
+
+	<target name="doc" depends="init manual api" />
+
+	<target name="clean" depends="init">
+		<nant target="clean" buildfile="reference/reference.build" />
+		<delete dir="${doc.out.dir}" />
+		<delete file="NHibernate.ndoc" />
+	</target>
+
+	<target name="manual" depends="init">
+		<property name="lang" value="en" />
+		<nant target="build" buildfile="reference/reference.build">
+			<properties>
+				<property name="lang" value="${lang}" />
+			</properties>
+		</nant>
+	</target>
+
+	<target name="ndoc-project" depends="init">
+		<copy file="NHibernate.ndoc.in" tofile="NHibernate.ndoc" overwrite="true">
+			<filterchain>
+				<expandproperties />
+			</filterchain>
+		</copy>
+	</target>
+
+	<target name="api" depends="init ndoc-project" description="Generates the API documentation (in MSDN style and VS.NET 2003 if available)">
+		<uptodate property="api.uptodate">
+			<sourcefiles>
+				<include name="${bin.dir}/*.dll" />
+				<include name="${bin.dir}/*.xml" />
+			</sourcefiles>
+			<targetfiles>
+				<include name="${doc.help2.out.dir}/**" />
+				<include name="${doc.chm.out.dir}/NHibernate.API.chm" />
+			</targetfiles>
+		</uptodate>
+
+		<echo if="${api.uptodate}">API documentation is up to date, skipping generation step.</echo>
+
+		<if test="${not api.uptodate}">
+			<property name="ndocconsole.exe" value="C:\net\NDoc2Alpha\NDocConsole.exe" />
+			<exec program="${ndocconsole.exe}">
+				<arg line="-documenter=MSDN-Help2" />
+				<arg line="-project=NHibernate.ndoc" />
+			</exec>
+			<exec program="${ndocconsole.exe}">
+				<arg line="-documenter=MSDN-CHM" />
+				<arg line="-project=NHibernate.ndoc" />
+			</exec>
+		</if>
+	</target>
+
+</project>

@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
+	<class name="NHibernate.DomainModel.Holder, NHibernate.DomainModel">
+		<id name="Id" 
+			column="id_" 
+			type="String(32)" 
+			length="32" 
+			unsaved-value="null"
+		>
+			<generator class="uuid.hex" />
+		</id>
+		<property 
+			name="Name" 
+			unique="true" 
+			not-null="true" 
+			length="36" 
+		/>
+		<list name="Ones">
+			<key column="holder" />
+			<index column="i" />
+			<one-to-many 
+				class="NHibernate.DomainModel.One, NHibernate.DomainModel" 
+			/>
+		</list>
+		<array name="FooArray">
+			<key column="holder1" />
+			<index column="j1" />
+			<one-to-many 
+				class="NHibernate.DomainModel.Foo, NHibernate.DomainModel" 
+			/>
+		</array>
+		<set name="Foos">
+			<key column="holder2" />
+			<one-to-many 
+				class="NHibernate.DomainModel.Foo, NHibernate.DomainModel" 
+			/>
+		</set>
+		<many-to-one name="OtherHolder" property-ref="Name" cascade="all" />
+	</class>
+</hibernate-mapping>

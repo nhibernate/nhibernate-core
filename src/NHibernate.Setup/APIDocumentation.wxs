@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="771D1A4D-322B-4683-A95C-B505EF09619C"
+			 Name="NHibernate $(var.ShortVersion) API Documentation"
+			 Language="1033"
+			 Version="$(var.NumericVersion)"
+			 Manufacturer="JBoss, a division of Red Hat"
+			 UpgradeCode="34BC7653-111A-4C7D-B4EB-2B92DFE205B4">
+		
+		<Package InstallerVersion="200" Compressed="yes" />
+
+		<Media Id="1" Cabinet="VSDocumentation.cab" EmbedCab="yes" />
+
+		<Upgrade Id="34BC7653-111A-4C7D-B4EB-2B92DFE205B4" />
+
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="NHibernate" Name="NHibernate" FileSource="$(var.BuildDir)">
+					<Directory Id="INSTALLLOCATION" Name="doc">
+						<Directory Id="help2" Name="help2">
+							<Merge SourceFile="C:\Program Files\Visual Studio 2005 SDK\2006.09\VisualStudioIntegration\Redistributables\VSIPCC_Collection_Files_RTL_---_---.msm"
+								   DiskId="1" Language="1033" Id="Merge.VSIPCC" />
+							<Merge SourceFile="C:\Program Files\Visual Studio 2005 SDK\2006.09\VisualStudioIntegration\Redistributables\HTML_Help_Registration__RTL_X86_---.msm"
+								   DiskId="1" Language="1033" Id="Merge.HelpReg" />
+
+							<Component Id="NHibernate.API.VSHelp" Guid="{49536A11-87CD-4035-A21D-D866CE3C8DB5}">
+								<File Id="NHibernate.API.HxS" Name="NHibernate.API.HxS" KeyPath="yes">
+									<HelpFile Id="NHibernate.API" Name="NHibernate.API" xmlns="http://schemas.microsoft.com/wix/VSExtension"
+											  Index="NHibernate.API.HxI" Language="1033" />
+								</File>
+								<File Id="NHibernate.API.HxI" Name="NHibernate.API.HxI" />
+								<File Id="NHibernate.APICollection.HxC" Name="NHibernate.APICollection.HxC">
+									<HelpCollection xmlns="http://schemas.microsoft.com/wix/VSExtension"
+													Id="NHibernate12"
+													Name="NHibernate.1.2"
+													Description="NHibernate 1.2 documentation">
+										<HelpFileRef Id="NHibernate.API" />
+										<PlugCollectionInto TableOfContents="NHibernate.APICollection.HxT"
+															TargetCollection="MS_VSIPCC_v80"
+															TargetTableOfContents="FL_vsipcc_hxt_86880________.3643236F_FC70_11D3_A536_0090278A1BB8" />
+									</HelpCollection>
+								</File>
+								<File Id="NHibernate.APICollection.HxT" Name="NHibernate.APICollection.HxT" />
+								<File Id="NHibernate.APICollection_A.HxK" Name="NHibernate.APICollection_A.HxK" />
+								<File Id="NHibernate.APICollection_F.HxK" Name="NHibernate.APICollection_F.HxK" />
+								<File Id="NHibernate.APICollection_K.HxK" Name="NHibernate.APICollection_K.HxK" />
+							</Component>
+						</Directory>
+						<Component Id="NHibernate.API.chm" Guid="{5E218CF6-F36A-4F54-98C2-27728A79DB56}">
+							<File Id="NHibernate.API.chm" Name="NHibernate.API.chm" KeyPath="yes" />
+						</Component>
+					</Directory>
+				</Directory>
+			</Directory>
+		</Directory>
+
+		<Feature
+				Id="Complete"
+				Title="NHibernate API Documentation"
+				Description="NHibernate API documentation for version $(var.Version)"
+				Display="expand"
+				ConfigurableDirectory="INSTALLLOCATION"
+				Absent="disallow"
+				AllowAdvertise="no"
+				Level="1">
+			<Feature Id="Standalone" Title="Standalone (.chm)" Level="1"
+				Description="NHibernate API documentation in HTML Help (.chm) format">
+				<ComponentRef Id="NHibernate.API.chm" />
+			</Feature>
+
+			<Feature Id="Integrated2005" Title="Integrated (.HxS)" Level="1"
+					 Description="NHibernate API documentation in HTML Help2 (.HxS) format, integrated into Visual Studio 2005">
+				<MergeRef Id="Merge.HelpReg"/>
+				<MergeRef Id="Merge.VSIPCC" />
+				<ComponentRef Id="NHibernate.API.VSHelp" />
+			</Feature>
+		</Feature>
+
+		<WixVariable Id="WixUILicenseRtf" Value="lgpl.rtf" />
+		<UIRef Id="WixUI_FeatureTree" />
+		<UIRef Id="WixUI_ErrorProgressText" />
+
+		<InstallExecuteSequence>
+			<InstallFinalize Sequence="7800" />
+		</InstallExecuteSequence>
+	</Product>
+</Wix>

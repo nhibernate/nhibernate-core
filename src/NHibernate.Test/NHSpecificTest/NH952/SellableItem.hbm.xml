@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+					namespace="NHibernate.Test.NHSpecificTest.NH952"
+					assembly="NHibernate.Test"
+					default-cascade="save-update">
+
+	<joined-subclass name="SellableItem"
+						extends="Item"
+						table="SELLABLEITEM">
+		
+		<key column="UNIQUE_ID" /> 
+
+	</joined-subclass>
+
+</hibernate-mapping>

@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='utf-8'?>
+<hibernate-mapping
+	assembly='NHibernate.Test'
+	namespace='NHibernate.Test.SubclassFilterTest'
+	xmlns='urn:nhibernate-mapping-2.2'>
+	<class name="Person" discriminator-value="0" table="SPerson">
+
+		<id name="Id" column="person_id">
+			<generator class="native"/>
+		</id>
+
+		<discriminator type="int"
+			formula="CASE WHEN company is null THEN 0 WHEN company = 'JBoss' THEN 1 ELSE 2 END"/>
+
+		<property name="Name"/>
+		<property name="Company"/>
+		<property name="Region"/>
+
+		<subclass name="Employee" discriminator-value="1">
+			<property name="Title"/>
+			<property name="Department" column="dept"/>
+			<many-to-one name="Manager" column="mgr_id" class="Employee" cascade="none"/>
+			<set name="Minions" inverse="true" lazy="true" cascade="all">
+				<key column="mgr_id"/>
+				<one-to-many class="Employee"/>
+				<filter name="region" condition="Region = :userRegion"/>
+			</set>
+		</subclass>
+
+		<subclass name="Customer" discriminator-value="2">
+			<many-to-one name="ContactOwner" class="Employee"/>
+		</subclass>
+
+		<filter name="region" condition="Region = :userRegion"/>
+
+	</class>
+
+	<filter-def name="region">
+		<filter-param name="userRegion" type="string"/>
+	</filter-def>
+</hibernate-mapping>

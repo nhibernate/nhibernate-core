@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.Stateless"
+	default-lazy="false">
+
+	<class name="Document">
+		<id name="Name">
+			<generator class="assigned"/>
+		</id>
+		<timestamp name="LastModified"/>
+		<property name="Text"/>
+	</class>
+
+	<class name="Paper">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Color"/>
+	</class>
+
+</hibernate-mapping>

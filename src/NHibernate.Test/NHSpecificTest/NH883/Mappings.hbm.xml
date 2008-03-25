@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.NHSpecificTest.NH883" 
+				   default-lazy="false">
+	<class name="Cat">
+		<id name="Id" type="Int32"  unsaved-value="0" >
+			<generator class="native" />
+		</id>
+
+		<bag name="Children" cascade="all-delete-orphan" lazy="true" inverse="true">
+			<key column="parentId" />
+			<one-to-many class="Cat"  />
+		</bag>
+		<many-to-one name="Mother" class="Cat" column="parentId" />
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,238 @@
+<?xml version="1.0" ?>
+<project xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd">
+
+	<!-- 
+		Use this to determine if the key file NHibernate.snk should be used to 
+		sign the assemblies. Defaults to true since private key is present
+		in CVS.
+	-->
+	<property name="sign" value="true" overwrite="false" />
+	<property name="key.file" value="${root.dir}/src/NHibernate.snk" />
+
+	<!-- Generating AssemblyInfo files for Visual Studio -->
+	<property name="visual-studio" value="false" overwrite="false" />
+
+	<if test="${visual-studio}">
+		<property name="key.file" value="../../${key.file}" />
+	</if>
+
+	<!--
+		if Visual Studio Help Integration Kit has been installed
+		then change this to true or include -D:vshik.installed=true in the command line.
+		It generates Visual Studio.NET 2003 documentation.
+	-->
+	<property name="vshik.installed" value="false" overwrite="false" />
+	<property name="vshik.path" value="${environment::get-folder-path('ProgramFiles')}/Microsoft Help 2.0 SDK" />
+
+	<!-- 
+		if nunit2report tasks from http://nunit2report.sourceforge.net/ has been installed
+		then change this to true.  It generates a nice looking html report for the test files
+	-->
+	<property name="nunit2report.installed" value="false" overwrite="false" />
+
+	<!--
+		Cenqua provided a license of Clover.NET for the NHibernate project to use. 
+	-->
+	<property name="clover.enabled" value="false" overwrite="false" />
+	<property name="clover.src" value="src/CloverSrc" />
+	<property name="clover.db" value="${clover.src}/clover.cdb" />
+	
+	<!-- NET 3.5 is using 2.0 runtime, should still work in 2.0 -->
+	<property name="clover.framework" value=".NET 2.0" if="${nant.settings.currentframework == 'net-3.5'}" />
+	
+	<property name="clover.framework" value=".NET 2.0" if="${nant.settings.currentframework == 'net-2.0'}" />
+
+	<property name="clover.home" value="${environment::get-folder-path('ProgramFiles')}/Cenqua/Clover.NET 2.0 for ${clover.framework}" if="${property::exists('clover.framework')}"/>
+	<property name="clover.assembly" value="CloverNAnt-0.85.dll" />
+
+	<if test="${clover.enabled}">
+		<loadtasks assembly="${clover.home}/${clover.assembly}" />
+	</if>
+
+	<!-- 
+		Path to the folder that contain the external assemblies.  For net-2.0 the values will
+		be lib, lib/net, and lib/net/2.0 respectively.
+	-->
+	<property name="lib.dir" value="lib" dynamic="true" />
+	<property name="lib.family.dir" value="${path::combine(lib.dir, framework::get-family(framework::get-target-framework()))}" dynamic="true" />
+	<property name="lib.framework.dir" value="${path::combine(lib.family.dir, version::to-string(framework::get-version(framework::get-target-framework())))}" dynamic="true" />
+
+	<!-- 
+		These are used to set the correct attributes in AssemblyInfo.cs.  
+	-->
+	<property name="project.company" value="NHibernate.org" />
+
+	<!--
+		Version number computation
+		
+		JBoss product versioning guidelines (http://wiki.jboss.org/wiki/Wiki.jsp?page=JBossProductVersioning)
+		say we are supposed to use version numbers formatted like major.minor.patch.qualifier, where
+		qualifier is alphanumeric (Alpha#, Beta#, CR#, GA, SP#), and the numeric part may be anything, e.g.
+		a time/date stamp, a SVN revision number and so on.
+		
+		I'm only going to use simple sequential numbers for now and the script below is used to translate
+		the alphanumeric version into a numeric assembly version: x.y.z.qN is translated into x.y.z.(base+N)
+		where base is 1000 for Alpha, 2000 for Beta, 3000 for CR, and 4000 for both GA and SP (so GA is
+		effectively SP0).
+	-->
+
+	<property name="project.version" value="2.0.0.Alpha1" overwrite="false" />
+
+	<!-- Compute short project version (major.minor) using a regex -->
+	<regex input="${project.version}" pattern="^(?'shortversion'\d+\.\d+)" />
+	<property name="project.version.short" value="${shortversion}" />
+
+	<!-- Compute and set project.version.numeric from project.version if it hasn't been set already -->
+	<if test="${not property::exists('project.version.numeric')}">
+
+		<script language="C#">
+			<code><![CDATA[
+				public const int BaseAlpha = 1000;
+				public const int BaseBeta  = 2000;
+				public const int BaseCR    = 3000;
+				public const int BaseGA    = 4000;
+				// SP is same as GA because GA has no number and SP's start with 1.
+				public const int BaseSP    = 4000;
+
+				public static void ScriptMain(Project project)
+				{
+					project.Properties["project.version.numeric"] = ToNumericVersion(
+						project.Properties["project.version"]);
+				}
+
+				public static string ToNumericVersion(string version)
+				{
+					int qualifierStart = version.LastIndexOf('.') + 1;
+					int qualifierNumberStart = version.IndexOfAny(
+						"0123456789".ToCharArray(),
+						qualifierStart);
+
+					if (qualifierNumberStart < 0) qualifierNumberStart = version.Length;
+
+					string qualifier = version.Substring(qualifierStart, qualifierNumberStart - qualifierStart);
+					int qualifierNumber = qualifierNumberStart < version.Length
+						? int.Parse(version.Substring(qualifierNumberStart))
+						: 0;
+
+					int revisionBase;
+
+					switch (qualifier)
+					{
+						case "Alpha": revisionBase = BaseAlpha; break;
+						case "Beta":  revisionBase = BaseBeta; break;
+						case "CR":    revisionBase = BaseCR; break;
+						case "GA":    revisionBase = BaseGA; break;
+						case "SP":    revisionBase = BaseSP; break;
+
+						default: throw new BuildException("Unknown version qualifier " + qualifier);
+					}
+
+					string revisionNumber = (revisionBase + qualifierNumber).ToString();
+
+					return version.Substring(0, qualifierStart) + revisionNumber;
+				}
+			]]></code>
+		</script>
+	</if>
+
+	<!-- debug|release -->
+	<property name="build.defines" value="" />
+
+	<!-- platform specific properties. These are the defaults -->
+	<property name="current.build.defines" value="${build.defines}" />
+
+	<!-- properties used to connect to database for testing -->
+	<include buildfile="nhibernate-properties.xml" />
+
+	<!-- named project configurations -->
+	<target name="set-debug-project-configuration" description="Perform a 'debug' build">
+		<property name="build.debug" value="true" />
+		<property name="build.name" value="NHibernate-${project.version}-${project.config}" />
+	</target>
+	
+	<target name="set-release-project-configuration" description="Perform a 'release' build">
+		<property name="build.debug" value="false" />
+		<property name="build.name" value="NHibernate-${project.version}" />
+	</target>
+
+	<target name="set-project-configuration">
+		<property name="project.config" value="debug" overwrite="false" />
+		<if test="${not(target::exists('set-' + project.config + '-project-configuration'))}">
+			<fail message="Unknown configuration: '${project.config}'" />
+		</if>
+
+		<call target="set-${project.config}-project-configuration" />
+
+		<property name="build.root.dir" value="${root.dir}/build/${build.name}" />
+		<property name="build.dir" value="${build.root.dir}" />
+		<property name="bin.dir" value="${build.dir}/bin/${nant.settings.currentframework}" dynamic="true" />
+	</target>
+
+	<target name="set-framework-configuration">
+		<if test="${not(target::exists('set-'+framework::get-target-framework()+'-framework-configuration'))}">
+			<fail message="The '${framework::get-target-framework()}' framework is not supported by this version of NHibernate." />
+		</if>
+		<call target="set-${framework::get-target-framework()}-framework-configuration" />
+	</target>
+
+	<target name="set-net-3.5-framework-configuration">
+		<property name="nant.settings.currentframework" value="net-3.5" />
+		<property name="current.build.defines" value="${build.defines}NET,NET_2_0,NET_3_5" />
+		<!-- not using SDK_v2_0 because ndoc throws an exception -->
+		<property name="link.sdkdoc.version" value="SDK_v1_1" />
+		<!-- merge should work with 2.0 when compiling for 3.5 -->
+		<property name="merge.targetplatform" value="v2" />
+	</target>
+
+	<target name="set-net-2.0-framework-configuration">
+		<property name="nant.settings.currentframework" value="net-2.0" />
+		<property name="current.build.defines" value="${build.defines}NET,NET_2_0" />
+		<!-- not using SDK_v2_0 because ndoc throws an exception -->
+		<property name="link.sdkdoc.version" value="SDK_v1_1" />
+		<property name="merge.targetplatform" value="v2" />
+	</target>
+
+
+	<target name="set-mono-3.5-framework-configuration">
+		<property name="nant.settings.currentframework" value="mono-3.5" />
+		<property name="current.build.defines" value="${build.defines}NET,NET_2_0,NET_3_5,MONO" />
+		<!-- not using SDK_v2_0 because ndoc throws an exception -->
+		<property name="link.sdkdoc.version" value="SDK_v1_1" />
+		<!-- merge should work with 2.0 when compiling for 3.5 -->
+		<property name="merge.targetplatform" value="v2" />
+	</target>
+
+	<target name="set-mono-2.0-framework-configuration">
+		<property name="nant.settings.currentframework" value="mono-2.0" />
+		<property name="current.build.defines" value="${build.defines}NET,NET_2_0,MONO" />
+		<!-- not using SDK_v2_0 because ndoc throws an exception -->
+		<property name="link.sdkdoc.version" value="SDK_v1_1" />
+		<property name="merge.targetplatform" value="v2" />
+	</target>
+
+	<target name="display-current-runtime">
+		<echo message="" />
+		<echo message="----------------------------------------------------------" />
+		<echo message=" ${framework::get-description(framework::get-target-framework())}" />
+		<echo message="----------------------------------------------------------" />
+		<echo message="" />
+		<echo message="framework : ${framework::get-target-framework()}" />
+		<echo message="description : ${framework::get-description(framework::get-target-framework())}" />
+		<echo message="sdk directory : ${framework::get-sdk-directory(framework::get-target-framework())}" />
+		<echo message="framework directory : ${framework::get-framework-directory(framework::get-target-framework())}" />
+		<echo message="assembly directory : ${framework::get-assembly-directory(framework::get-target-framework())}" />
+		<echo message="runtime engine : ${framework::get-runtime-engine(framework::get-target-framework())}" />
+		<echo message="" />
+	</target>
+
+	<target name="common.init"
+		depends="set-framework-configuration set-project-configuration"
+		description="Initializes build properties">
+
+		<fileset id="project.sources" failonempty="true">
+			<include name="**/*.cs" />
+		</fileset>
+		<resourcefileset id="project.resources" />
+	</target>
+
+</project>

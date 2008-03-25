@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.GenericTest.MapGeneric" default-lazy="false">
+	<class name="A" table="a">
+		<id name="Id" column="id" unsaved-value="null">
+			<generator class="native" />
+		</id>
+		<property name="Name" column="aname" />
+		<map name="Items" cascade="all-delete-orphan">
+			<key column="a_id" />
+			<index column="idx" type="String" />
+			<one-to-many class="B" />
+		</map>
+
+		<map name="SortedList" collection-type="sorted-list" sort="natural">
+			<key column="a_id" />
+			<index column="idx" type="string" />
+			<element column="elt" type="int" />
+		</map>
+
+		<map name="SortedDictionary" collection-type="sorted-dictionary" sort="natural">
+			<key column="a_id" />
+			<index column="idx" type="string" />
+			<element column="elt" type="int" />
+		</map>
+	</class>
+	<class name="B" table="b" lazy="false">
+		<id name="Id" column="id" unsaved-value="null">
+			<generator class="native" />
+		</id>
+		<property name="Name" column="aname" />
+	</class>
+</hibernate-mapping>

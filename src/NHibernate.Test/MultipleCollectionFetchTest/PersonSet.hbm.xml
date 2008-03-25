@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.MultipleCollectionFetchTest">
+	<class name="Person">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<many-to-one name="Parent" />
+		<set name="Children" cascade="all">
+			<key column="parent_id" />
+			<one-to-many class="Person" />
+		</set>
+		<set name="Friends" cascade="save-update">
+			<key column="friend_id" />
+			<one-to-many class="Person" />
+		</set>
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH364"
+	default-lazy="false">
+
+	<class name="Category" table="Category364">
+		<id name="Id" column="CategoryId" type="Int32" unsaved-value="0">
+			<generator class="native" />
+		</id>
+		<property name="Name" column="CategoryName" type="String" length="100"/>
+		<many-to-one name="Parent" column="ParentCategoryId" class="Category"/>
+	</class>
+
+	<class name="Link" table="Link364">
+		<id name="Id" column="LinkId" type="Int32" unsaved-value="0">
+			<generator class="native"/>
+		</id>
+		<property name="Name" column="LinkName" type="String" not-null="true"/>
+		<idbag name="Categories" table="CategoryLink364" lazy="true">
+			<collection-id column="CategoryLinkId" type="Int32">
+				<generator class="native"/>
+			</collection-id>
+			<key column="LinkId" />
+			<many-to-many class="Category" column="CategoryId" />
+		</idbag>
+		<!--
+		This version works, but we don't get a single PK from it
+		<bag name="Categories" table="CategoryLink364" lazy="true">
+			<key column="LinkId" />
+			<many-to-many class="Category" column="CategoryId" />
+		</bag>
+		-->
+	</class>
+
+	<class name="Invoice" table="Invoice364">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Number"/>
+		<idbag name="Items" table="InvoiceItem364" lazy="true" access="field.pascalcase-underscore">
+			<collection-id column="Id" type="Int32">
+				<generator class="native"/>
+			</collection-id>
+			<key column="InvoiceId"/>
+			<composite-element class="InvoiceItem">
+				<property name="Quantity"/>
+				<!-- Could add more properties, but for testing, this would suffice -->
+				<many-to-one name="Product" column="ProductId"/>
+			</composite-element>
+		</idbag>
+	</class>
+
+	<class name="Product" table="Product364">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Name"/>
+	</class>
+</hibernate-mapping>

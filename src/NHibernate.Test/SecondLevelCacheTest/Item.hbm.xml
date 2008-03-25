@@ -1,0 +1,28 @@
+﻿<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2">
+	<class name="NHibernate.Test.SecondLevelCacheTests.Item, NHibernate.Test">
+		<cache usage="read-write"/>
+		<id name="Id">
+			<generator class="assigned"/>
+		</id>
+		<property name="Name"/>
+		<many-to-one name="Parent" column="ParentId"
+					 lazy="proxy" not-found="ignore"
+					 class="NHibernate.Test.SecondLevelCacheTests.Item, NHibernate.Test"/>
+		<bag name="Children"
+			 table="Item"
+			 lazy="true">
+			<cache usage="read-write"/>
+			<key column="ParentId"/>
+			<one-to-many class="NHibernate.Test.SecondLevelCacheTests.Item, NHibernate.Test"/>
+		</bag>
+	</class>
+
+	<class name="NHibernate.Test.SecondLevelCacheTests.AnotherItem, NHibernate.Test">
+		<cache usage="read-write"/>
+		<id name="Id">
+			<generator class="assigned"/>
+		</id>
+		<property name="Name"/>
+	</class>
+</hibernate-mapping>

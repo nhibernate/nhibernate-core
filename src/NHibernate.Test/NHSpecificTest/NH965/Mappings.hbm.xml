@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH965">
+	<class name="Container">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+
+		<bag name="Elements">
+			<key column="ID"/>
+			<composite-element class="CompositeElement">
+				<property name="Prop" formula="( 'DUMMY -' || PROP2 )" />
+			</composite-element>
+		</bag>
+	</class>
+</hibernate-mapping>

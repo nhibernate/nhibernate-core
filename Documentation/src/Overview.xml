@@ -1,0 +1,11 @@
+<!-- <!DOCTYPE chapter SYSTEM "../docbook-xml/docbookx.dtd"> -->
+<chapter id="Overview">
+	<title>Overview of NHibernate</title>
+
+
+	<abstract id="Overview-abstract">
+		<title>What is NHibernate?</title>
+		<para>TODO</para>
+	</abstract>
+
+</chapter>

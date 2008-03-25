@@ -1,0 +1,192 @@
+<?xml version="1.0" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" auto-import="false" default-lazy="false">
+	<import 
+		class="NHibernate.DomainModel.Container, NHibernate.DomainModel" 
+		rename="ContainerX" 
+	/>
+	<import 
+		class="NHibernate.DomainModel.Contained, NHibernate.DomainModel" 
+	/>
+	<import 
+		class="System.Object" 
+		rename="Universe" 
+	/>
+	<class 
+		name="NHibernate.DomainModel.Container, NHibernate.DomainModel" 
+		proxy="NHibernate.DomainModel.Container, NHibernate.DomainModel"
+	>
+		<id 
+			name="Id" 
+			column="container_id"
+			unsaved-value="0"
+		>
+			<generator class="native" />
+		</id>
+		
+		<list 
+			name="OneToMany" 
+			lazy="true"
+		>
+			<key column="container_id1" />
+			<index column="list_index" />
+			<one-to-many 
+				class="NHibernate.DomainModel.Simple, NHibernate.DomainModel" 
+			/>
+		</list>
+		<list 
+			name="ManyToMany" 
+			lazy="true"
+		>
+			<key column="container_id2" />
+			<index column="list_index" />
+			<many-to-many 
+				class="NHibernate.DomainModel.Simple, NHibernate.DomainModel" 
+			/>
+		</list>
+		<list 
+			name="Components" 
+			lazy="true"
+		>
+			<key column="container_id" />
+			<index column="list_index" />
+			<composite-element 
+				class="NHibernate.DomainModel.Container+ContainerInnerClass, NHibernate.DomainModel"
+			>
+				<property name="Name" />
+				<property 
+					name="Count" 
+					column="count_" 
+				/>
+				<many-to-one name="Simple" />
+				<many-to-one name="One" />
+				<many-to-one name="Many" />
+			</composite-element>
+		</list>
+		<set 
+			name="Composites" 
+			lazy="true"
+		>
+			<key column="container_id" />
+			<composite-element 
+				class="NHibernate.DomainModel.Container+ContainerInnerClass, NHibernate.DomainModel"
+			>
+				<property name="Name" />
+				<many-to-one name="Simple" />
+				<many-to-one name="One" />
+				<many-to-one name="Many" />
+			</composite-element>
+		</set>
+		<bag 
+			name="Cascades" 
+			cascade="all" 
+			table="abcd"
+		>
+			<key column="container_id" />
+			<composite-element 
+				class="NHibernate.DomainModel.Container+ContainerInnerClass, NHibernate.DomainModel"
+			>
+				<property name="Name" />
+				<many-to-one 
+					name="Simple" 
+					cascade="all" 
+				/>
+				<many-to-one 
+					name="One" 
+					cascade="all" 
+					not-null="true" 
+				/>
+				<many-to-one 
+					name="Many" 
+					cascade="all" 
+					not-null="true" 
+				/>
+			</composite-element>
+		</bag>
+		<bag 
+			name="Bag" 
+			inverse="true" 
+			cascade="save-update" 
+			table="CCBAG"
+		>
+			<key column="container_id" />
+			<many-to-many 
+				column="contained_id" 
+				class="NHibernate.DomainModel.Contained, NHibernate.DomainModel" 
+				outer-join="true" 
+			/>
+		</bag>
+		<bag 
+			name="LazyBag" 
+			inverse="true" 
+			lazy="true" 
+			table="LCCBAG" 
+			cascade="save-update"
+		>
+			<jcs-cache usage="read-write" />
+			<key column="container_id" />
+			<many-to-many 
+				column="contained_id" 
+				class="NHibernate.DomainModel.Contained, NHibernate.DomainModel" 
+			/>
+		</bag>
+		<map name="TernaryMap">
+			<key column="container_id" />
+			<index 
+				column="idx" 
+				type="String(32)" 
+				length="32" 
+			/>
+			<composite-element 
+				class="NHibernate.DomainModel.Container+Ternary, NHibernate.DomainModel"
+			>
+				<property name="Name" />
+				<many-to-one name="Foo" />
+				<many-to-one name="Glarch" />
+			</composite-element>
+		</map>
+		<set name="TernarySet">
+			<key column="container_id" />
+			<composite-element 
+				class="NHibernate.DomainModel.Container+Ternary, NHibernate.DomainModel"
+			>
+				<property name="Name" />
+				<many-to-one name="Foo" />
+				<many-to-one name="Glarch" />
+			</composite-element>
+		</set>
+	</class>
+	<class 
+		name="NHibernate.DomainModel.Contained, NHibernate.DomainModel" 
+		proxy="NHibernate.DomainModel.Contained, NHibernate.DomainModel"
+	>
+		<id 
+			name="Id" 
+			column="container_id" 
+			unsaved-value="0"
+		>
+			<generator class="native" />
+		</id>
+		<bag 
+			name="Bag" 
+			table="CCBAG"
+		>
+			<key column="contained_id" />
+			<many-to-many 
+				column="container_id" 
+				class="NHibernate.DomainModel.Container, NHibernate.DomainModel" 
+				outer-join="false" 
+			/>
+		</bag>
+		<bag 
+			name="LazyBag" 
+			lazy="true" 
+			table="LCCBAG"
+		>
+			<key column="contained_id" />
+			<many-to-many 
+				column="container_id" 
+				class="NHibernate.DomainModel.Container, NHibernate.DomainModel" 
+			/>
+		</bag>
+	</class>
+</hibernate-mapping>

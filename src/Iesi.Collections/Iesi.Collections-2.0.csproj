@@ -1,0 +1,66 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Iesi.Collections</RootNamespace>
+    <AssemblyName>Iesi.Collections</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug-2.0\</OutputPath>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>obj\Debug-2.0\</IntermediateOutputPath>
+    <DefineConstants>TRACE;DEBUG;NET_2_0</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release-2.0\</OutputPath>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>obj\Release-2.0\</IntermediateOutputPath>
+    <DefineConstants>TRACE;NET_2_0</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="DictionarySet.cs" />
+    <Compile Include="Generic\DictionarySet.cs" />
+    <Compile Include="Generic\HashedSet.cs" />
+    <Compile Include="Generic\ImmutableSet.cs" />
+    <Compile Include="Generic\ISet.cs" />
+    <Compile Include="Generic\Set.cs" />
+    <Compile Include="Generic\SortedSet.cs" />
+    <Compile Include="Generic\SynchronizedSet.cs" />
+    <Compile Include="HashedSet.cs" />
+    <Compile Include="HybridSet.cs" />
+    <Compile Include="ImmutableSet.cs" />
+    <Compile Include="ISet.cs" />
+    <Compile Include="ListSet.cs" />
+    <Compile Include="Set.cs" />
+    <Compile Include="SortedSet.cs" />
+    <Compile Include="SynchronizedSet.cs" />
+    <None Include="Iesi.Collections.build" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="NamespaceSummary.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

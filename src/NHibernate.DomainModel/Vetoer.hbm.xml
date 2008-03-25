@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
+	<class 
+		name="NHibernate.DomainModel.Vetoer, NHibernate.DomainModel"
+	>
+		<id 
+			type="String(32)" 
+			column="id_" 
+			length="32"
+		>
+			<generator class="uuid.hex" />
+		</id>
+		<property name="Name" />
+		<property name="Strings" /> 
+	</class>
+</hibernate-mapping>

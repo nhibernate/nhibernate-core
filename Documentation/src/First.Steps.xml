@@ -1,0 +1,11 @@
+<!-- <!DOCTYPE chapter SYSTEM "../docbook-xml/docbookx.dtd"> -->
+<chapter id="First.Steps">
+	<title>First Steps to use NHibernate</title>
+
+
+	<abstract id="First.Steps-abstract">
+		<title>Abstract</title>
+		<para>TODO</para>
+	</abstract>
+
+</chapter>

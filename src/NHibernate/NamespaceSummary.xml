@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<namespaces>
+	<namespace name="NHibernate">The core classes and interfaces for working with NHibernate.</namespace> 
+	<namespace name="NHibernate.Cache">The classes and interfaces that make up the second-level cache.</namespace> 
+	<namespace name="NHibernate.Cfg">The classes used to configure an NHibernate ISession and ISessionFactory.</namespace> 
+	<namespace name="NHibernate.Collection">The classes that implement IList, IDictionary, and Iesi.Collections.ISet and the Persister to read/write to the database.</namespace> 
+	<namespace name="NHibernate.Connection">The classes and interfaces that NHibernate uses to get connections to the database.</namespace> 
+	<namespace name="NHibernate.Dialect">The classes and interfaces that NHibernate uses to create SQL Statements that conform to the particular database.</namespace> 
+	<namespace name="NHibernate.Driver">The classes and interfaces that NHibernate uses to interface with the various .NET Data Providers.</namespace> 
+	<namespace name="NHibernate.Engine">The classes and interfaces that NHibernate uses internally.</namespace> 
+	<namespace name="NHibernate.Expression">The classes and interfaces to use for building Queries in an OO style.</namespace>
+	<namespace name="NHibernate.Event">The classes and interfaces o the event framework for NHibernate..</namespace>
+	<namespace name="NHibernate.Hql">The classes and interfaces that are used to parse Queries in the form of HQL.</namespace> 
+	<namespace name="NHibernate.Id">The classes and interfaces that define how NHibernate generates or retreives generated ids.</namespace> 
+	<namespace name="NHibernate.Impl">The classes that implement many of the internal NHibernate interfaces.</namespace> 
+	<namespace name="NHibernate.Loader">The classes and interfaces that define how NHibernate loads data from the database.</namespace> 
+	<namespace name="NHibernate.Mapping">The classes that the hbm.xml files are converted to during Configuration.</namespace> 
+	<namespace name="NHibernate.Metadata">The interfaces to use to retrieve information about Classes and Collections that NHibernate is managing.</namespace>  
+	<namespace name="NHibernate.Persister">The classes and interfaces that NHibernate uses to persist objects.</namespace> 
+	<namespace name="NHibernate.Property">The classes and interfaces that NHibernate uses to get/set values in the objects.</namespace> 
+	<namespace name="NHibernate.Proxy"></namespace> 
+	<namespace name="NHibernate.SqlCommand">The classes that NHibernate uses to build Sql Statements for the Drivers &amp; Dialects to convert to SQL.</namespace> 
+	<namespace name="NHibernate.SqlTypes">The classes that NHibernate uses to add extra information to DbTypes.</namespace>
+	<namespace name="NHibernate.Stat">Exposes statistics about a running NHibernate instance to the application.</namespace>
+	<namespace name="NHibernate.Tool.hbm2ddl">The classes that NHibernate uses to build ddl from the mapped classes.</namespace> 
+	<namespace name="NHibernate.Transaction">The classes and interfaces that NHibernate uses to manage transactions.</namespace> 
+	<namespace name="NHibernate.Type">The classes and interfaces that NHibernate uses to convert .NET objects to database values.</namespace> 
+	<namespace name="NHibernate.Util">Utility classes that NHibernate uses through out.</namespace>
+</namespaces>

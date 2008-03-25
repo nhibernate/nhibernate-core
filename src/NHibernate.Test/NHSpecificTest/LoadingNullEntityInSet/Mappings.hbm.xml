@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet"
+				   assembly="NHibernate.Test">
+
+	<class name="Employee"
+		   table="EMPLOYEES"
+		   lazy="false">
+		<id name="Id"
+			column="EMPLOYEE_ID"
+			type="Int32">
+			<generator class="native" />
+		</id>
+
+		<!--
+		we change those associations in the test, dynamically, because
+		otherwise NH would attempt to generate the matching tables
+		for them, which is wrong
+		-->	  
+		<set name="Primaries" 
+			 table="WantedProfessions_DUMMY_1">
+			<key column="Employee" />
+			<many-to-many column="PrimaryProfession"
+						  class="PrimaryProfession"/>
+
+		</set>
+		<set name="Secondaries" 
+			 table="WantedProfessions_DUMMY_2">
+			<key column="Employee" />
+			<many-to-many column="SecondaryProfession" 
+						  class="SecondaryProfession"/>
+
+		</set>
+	</class>
+
+	<class name="PrimaryProfession"
+		   table="PrimaryProfessions"
+		   lazy="false">
+		<id name="Id"
+			column="ID"
+			type="Int32">
+			<generator class="native" />
+		</id>
+
+	</class>
+
+	<class name="SecondaryProfession"
+		   table="SecondaryProfessions"
+		   lazy="false">
+		<id name="Id"
+			column="ID"
+			type="Int32">
+			<generator class="native" />
+		</id>
+
+	</class>
+
+	<class name="WantedProfession"
+		   table="WantedProfessions"
+		   lazy="false">
+		<id name="Id"
+			column="ID"
+			type="Int32">
+			<generator class="native" />
+		</id>
+		<many-to-one name="PrimaryProfession"
+					 not-null="false"
+					 class="PrimaryProfession"/>
+		<many-to-one name="SecondaryProfession"
+					 not-null="false"
+					 class="SecondaryProfession"/>
+		<many-to-one name="Employee"
+					 not-null="false"
+					 class="Employee"/>
+
+	</class>
+</hibernate-mapping>

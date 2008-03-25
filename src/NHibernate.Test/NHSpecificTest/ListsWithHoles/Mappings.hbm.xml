@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.ListsWithHoles"
+				   assembly="NHibernate.Test">
+
+	<class name="Employee" table="EMPLOYEES" lazy="false">
+		<id name="Id" column="EMPLOYEE_ID" type="Int32">
+			<generator class="native" />
+		</id>
+
+    <list name="Children" cascade="all-delete-orphan">
+      <key column="PARENT_ID"/>
+      <index column="Position"/>
+      <one-to-many class="Employee"/>
+    </list>
+    
+	</class>
+</hibernate-mapping>

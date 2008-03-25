@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
+
+    <class 
+		name="NHibernate.DomainModel.NHSpecific.Parent, NHibernate.DomainModel"
+		table="par"
+	> 
+		<id name="Id" column="id">
+			<generator class="assigned" />
+		</id>
+		
+		<property 
+			name="AdultName" 
+			type="String" 
+			column="adult_name" 
+		/>
+		
+		<set 
+			name="AdultFriends" 
+			table="par_frnd" 
+			sort="NHibernate.DomainModel.NHSpecific.ParentComparer, NHibernate.DomainModel"
+		>
+			<key column="parent_id" />
+			<many-to-many 
+				column="parent_friend_id" 
+				class="NHibernate.DomainModel.NHSpecific.Parent, NHibernate.DomainModel" 
+				outer-join="true" 
+			/>
+		</set>
+
+	</class>
+</hibernate-mapping>
+

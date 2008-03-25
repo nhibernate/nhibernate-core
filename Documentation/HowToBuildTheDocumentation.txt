@@ -1,0 +1,60 @@
+
+						How To Build NHibernate Documentation
+
+================================================================================
+Introduction
+================================================================================
+
+This is the source files used to generate the NHibernate Documentation.
+These files (in /doc/src/) are represented as DocBook (xml) files.
+
+To build the documentation, you have to install some tools; and after that,
+you can simply run "Build.bat" (the result will be in /doc/build/).
+
+
+================================================================================
+Required DLLs and EXEs
+================================================================================
+Download the files at ftp://ftp.zlatkovic.com/pub/libxml/ (or somewhere else ;)
+
+Create a "tools" directory (you can use any directory).
+Add these files to the "tools" directory:
+
+iconv.dll		- from iconv-1.9.1.win32.zip
+libexslt.dll	- from libxslt-1.1.12.win32.zip
+libxml2.dll		- from libxml2-2.6.15.win32.zip
+libxslt.dll		- from libxslt-1.1.12.win32.zip
+xmlcatalog.exe	- from libxml2-2.6.15.win32.zip
+xmllint.exe		- from libxml2-2.6.15.win32.zip
+xsltproc.exe	- from libxslt-1.1.12.win32.zip
+zlib1.dll		- from zlib-1.2.1.win32.zip
+
+Add the "tools" directory to your %PATH% so the NAnt build file can use them.
+
+
+================================================================================
+Quick Start
+================================================================================
+Read this article on Code Project (by Jim Crafton)
+	"Documention with DocBook on Win32"
+	http://www.codeproject.com/winhelp/docbook_howto.asp
+
+
+================================================================================
+Docbook Manual
+================================================================================
+Can be downloaded at http://docbook.org/tdg/en/tdg-en-html-2.0.10.zip
+Can be viewed (online) at
+http://www.oasis-open.org/docbook/documentation/reference/html/docbook.html
+
+
+================================================================================
+Docbook XSL Guide
+================================================================================
+Can be viewed at http://www.sagehill.net/docbookxsl/index.html
+
+
+================================================================================
+URL for htmlhelp parameters
+================================================================================
+http://docbook.sourceforge.net/release/xsl/snapshot/doc/html/

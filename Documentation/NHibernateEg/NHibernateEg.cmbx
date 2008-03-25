@@ -1,0 +1,10 @@
+<Combine fileversion="1.0" name="NHibernateEg" description="">
+  <StartMode startupentry="NHibernateEg.Tutorial1A" single="True" />
+  <Entries>
+    <Entry filename=".\Tutorial1A\Tutorial1A.prjx" />
+  </Entries>
+  <Configurations active="Debug">
+    <Configuration name="Release" />
+    <Configuration name="Debug" />
+  </Configurations>
+</Combine>

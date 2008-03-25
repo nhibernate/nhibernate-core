@@ -1,0 +1,216 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
+	<import class="NHibernate.DomainModel.FooStatus, NHibernate.DomainModel" />
+	<import class="NHibernate.DomainModel.Result, NHibernate.DomainModel" />
+	<import class="NHibernate.DomainModel.INamed, NHibernate.DomainModel" />
+
+	<class 
+  		name="NHibernate.DomainModel.Foo, NHibernate.DomainModel"
+		proxy="NHibernate.DomainModel.FooProxy, NHibernate.DomainModel"
+  		table="`foos`"
+  		discriminator-value="F"
+  		dynamic-update="true"
+  		dynamic-insert="true"
+  		batch-size="4"
+  		select-before-update="false"
+  	>
+  		<cache usage="nonstrict-read-write"/>
+  
+		<id name="Key" type="String">
+			<column name="`foo_id`" length="36"/>
+			<generator class="uuid.hex">
+				<param name="seperator">:</param>
+			</generator>
+		</id>
+		<discriminator column="`$foo_subclass^`" type="Char" length="1"/>
+		<!-- 
+			added length for NH because a Char does not have a direct DbType.Char but instead
+			uses DbType.String so it defaults to 255 if 1 is not found.
+		-->
+		<version name="Version"/>
+		<!--<version name="versionCalendar" type="calendar"/>-->
+		<!--<timestamp name="versionTimestamp"/>-->
+		<many-to-one name="TheFoo" class="NHibernate.DomainModel.Foo, NHibernate.DomainModel">
+			<column name="foo" length="36" index="fbmtoidx"/>
+		</many-to-one>
+		<property name="Long" type="long">
+    		<column name="long_" index="fbmtoidx" unique-key="abc" not-null="true"/>
+		</property>
+		<property name="Integer" type="integer">
+			<column name="`@@##integer_  *`" unique-key="abc" not-null="true"/>
+		</property>
+		<property name="Float" type="float">
+			<column name="float_" unique-key="abc" not-null="true"/>
+		</property>
+		<property name="X"/>
+		<!--<property name="Double" column="double_" type="double"/>-->
+
+		<primitive-array name="Bytes" table="foobytes">
+			<key column="id"/>
+			<index column="i"/>
+			<element column="byte_" type="byte"/>
+		</primitive-array>
+
+		<!-- note: this is a Hibernate "date" which is the same as a NHibernate "DateTime" -->
+		<property name="Date" column="date_" type="date"/>
+		<property name="Timestamp" type="Timestamp" column="timestamp_"/>
+		<property name="Boolean" column="boolean_" type="boolean"/>
+		<property name="Bool" column="bool_"/>
+		<property name="Null" column="null_" type="NHibernate.DomainModel.NHSpecific.NullableInt32Type, NHibernate.DomainModel"/>
+		<property name="Short" column="short_" type="short"/>
+		<property name="Char" column="char_" type="character"/>
+		<property name="Zero" column="zero_"/>
+		<property name="Int" column="int_"/>
+		<property name="String">
+			<column name="string_" length="48" index="fbstridx"/>
+		</property>
+		<property name="Byte" column="byte_"/>
+		<property name="YesNo" type="yes_no"/>
+		
+		<property name="Status" column="`status_@###`" /><!--type="NHibernate.DomainModel.FooStatus, NHibernate.DomainModel" -->
+		<property name="Locale" column="`localeayzabc123!@#$`" access="field.camelcase-underscore" type="locale"/>
+	    
+	    <!-- 
+			h2.0.3 had this a 1/2 * int_ - but with Mssql that was returning 0 (which could be mistaken
+			for an uninitialized Int32
+		-->
+		<property name="Formula" formula="2 * int_"/>
+	    
+		<property name="Custom" type="NHibernate.DomainModel.DoubleStringType, NHibernate.DomainModel" access="field.camelcase">
+			<column name="first_name" length="66"/>
+			<column name="surname" length="66"/>
+		</property>
+		<many-to-one name="Dependent" class="NHibernate.DomainModel.Fee, NHibernate.DomainModel" cascade="all" not-null="true"/>
+		
+		<component name="Component">
+			<property 
+				name="Count" 
+				column="count_" 
+				type="Int32" 
+				not-null="true"
+			/> 
+			<property 
+				name="Name"
+			>
+				<column 
+					name="name_" 
+					length="32" 
+					not-null="true"
+				/> 
+			</property>
+			<many-to-one 
+				name="Glarch" 
+				column="g__" 
+				cascade="all" 
+				class="NHibernate.DomainModel.Glarch, NHibernate.DomainModel"
+				lazy="proxy"
+				outer-join="true"
+			/>
+			
+			<property 
+				name="NullString" 
+				column="cmpnt_null_"
+			/>
+	      
+			<component 
+				name="Subcomponent"
+			>
+				<property 
+					name="Count" 
+					column="subcount"
+				/>
+				<property 
+					name="Name" 
+					column="subname"
+				/>
+				<array name="ImportantDates" table="foo_times">
+					<key column="foo_id"/>
+					<index column="i"/>
+					<element column="date_" type="DateTime"/>
+					<!-- 
+						in the hibernate test this was a type="time", but in nh the functionallity
+						between type="Time" and type="Time" is not quite the same
+					-->
+				</array>
+				
+				<many-to-one 
+					name="Fee" 
+					column="fee_sub" 
+					cascade="all" 
+					class="NHibernate.DomainModel.Fee, NHibernate.DomainModel" 
+					outer-join="false"
+					access="field.camelcase-underscore"
+				/>
+			</component>
+      
+			<array 
+				name="ImportantDates" 
+				table="foo_dates"
+			>
+				<key column="foo_id"/>
+				<index column="i"/>
+				<!--
+					in h2.0.3 this was type="date", but with ADO.NET there is no DbType that
+					is equivalent to the JDBC type DATE and java.sql.Date
+				-->
+				<element column="date_" type="DateTime"/>
+			</array>
+			
+		</component>
+		
+		<component name="NullComponent">
+			<property name="Name" column="null_cmpnt_"/>
+		</component>
+		
+		<subclass
+    		name="NHibernate.DomainModel.Trivial, NHibernate.DomainModel"
+			proxy="NHibernate.DomainModel.FooProxy, NHibernate.DomainModel"
+    		discriminator-value="T"
+    	/>
+		<subclass 
+    		name="NHibernate.DomainModel.Abstract, NHibernate.DomainModel" 
+			proxy="NHibernate.DomainModel.AbstractProxy, NHibernate.DomainModel"
+    		discriminator-value="null"
+    	>
+			<set name="Abstracts" batch-size="2">
+				<key column="abstract_id"/>
+				<one-to-many class="NHibernate.DomainModel.Abstract, NHibernate.DomainModel"/>
+			</set>
+			<property name="Time" column="the_time"/>
+			<subclass 
+        		name="NHibernate.DomainModel.Bar, NHibernate.DomainModel" 
+				proxy="NHibernate.DomainModel.BarProxy, NHibernate.DomainModel"
+        		discriminator-value="B"
+        	>
+				<many-to-one name="Baz"/>
+				<property name="BarString">
+					<column name="bar_String" length="24"/>
+				</property>
+				<property name="Name" column="name_name"/>
+				<component name="BarComponent" class="NHibernate.DomainModel.FooComponent, NHibernate.DomainModel">
+					<parent name="Parent"/>
+					<property name="Count" column="bar_count"/>
+					<property name="Name" length="64"/>
+					<array name="ImportantDates">
+						<key column="id" />
+						<index column="i"/>
+						<element column="date_" type="DateTime"/>
+					</array>
+				</component>
+				<any name="Object" id-type="Int64" cascade="all">
+					<!-- 
+					made clazz 200 instead of 100 because of all the extra info stored
+					such as assembly, key, culture
+					-->
+					<column name="clazz" length="200"/>
+					
+					<!-- Quote gen_id because of Firebird -->
+					<column name="`gen_id`"/>
+				</any>
+			</subclass>
+		</subclass>
+  </class>
+
+
+</hibernate-mapping>
+

@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
+	<class 
+		name="NHibernate.DomainModel.Qux, NHibernate.DomainModel"
+		proxy="NHibernate.DomainModel.Qux, NHibernate.DomainModel" 
+		table="quux" 
+	>
+		<id name="Key" column="qux_key" unsaved-value="0">
+			<generator class="hilo" />
+		</id>
+		<many-to-one 
+			name="Foo" 
+			class="NHibernate.DomainModel.Foo, NHibernate.DomainModel"
+		>
+			<column name="foo" length="36" />
+		</many-to-one>
+		
+		<property name="Deleted" />
+		<property name="Loaded" />
+		<property name="Stored" />
+		<property name="Created" />
+		<property name="ChildKey" type="Int64" />
+		<property name="Stuff" />
+		<set name="Fums" lazy="true">
+			<key column="qux_id" />
+			<many-to-many class="NHibernate.DomainModel.Fum, NHibernate.DomainModel">
+				<column name="fum_string" length="10" not-null="true" />
+				<column name="fum_short" not-null="true" />
+				<column name="fum_date" not-null="true" />
+			</many-to-many>
+		</set>
+		<list name="MoreFums" lazy="true">
+			<key column="qux_id" />
+			<index column="posn" />
+			<one-to-many 
+				class="NHibernate.DomainModel.Fum, NHibernate.DomainModel" 
+			/>
+		</list>
+		<many-to-one name="Holder" column="HOLDER_NAME" property-ref="Name" />
+	</class>
+</hibernate-mapping>

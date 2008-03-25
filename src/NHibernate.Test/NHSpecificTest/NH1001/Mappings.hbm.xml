@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1001"
+				   assembly="NHibernate.Test">
+
+	<class name="Department" table="DEPARTMENTS" lazy="false">
+		<id name="Id" column="DEPARTMENT_ID" type="Int32">
+			<generator class="assigned" />
+		</id>
+
+		<property name="Name" column="DEPARTMENT_NAME" type="String" />
+	</class>
+
+	<class name="Employee" table="EMPLOYEES" lazy="false">
+		<id name="Id" column="EMPLOYEE_ID" type="Int32">
+			<generator class="assigned" />
+		</id>
+
+		<property name="FirstName" column="FIRST_NAME" type="String" />
+		<property name="LastName" column="LAST_NAME" type="String" />
+
+		<many-to-one fetch="join" name="Department" class="Department" column="DEPARTMENT_ID" not-found="ignore"/>
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,37 @@
+<Project name="NHibernateEg.Tutorial1A" standardNamespace="NHibernateEg.Tutorial1A" description="" newfilesearch="None" enableviewstate="True" version="1.1" projecttype="C#">
+  <Contents>
+    <File name=".\AssemblyInfo.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Order.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Program.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Shop.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\App.config" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\App.ico" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\readme.txt" subtype="Code" buildaction="Nothing" dependson="" data="" />
+  </Contents>
+  <References>
+    <Reference type="Assembly" refto="..\..\lib\net-1.1\log4net.dll" localcopy="True" />
+    <Reference type="Assembly" refto="..\..\lib\net-1.1\NHibernate.dll" localcopy="True" />
+    <Reference type="Assembly" refto="..\..\lib\net-1.1\NHibernate.Mapping.Attributes.dll" localcopy="True" />
+    <Reference type="Assembly" refto="..\..\lib\net-1.1\ICSharpCode.SharpZipLib.dll" localcopy="True" />
+    <Reference type="Assembly" refto="..\..\lib\net-1.1\MySql.Data.dll" localcopy="True" />
+    <Reference type="Assembly" refto="..\..\lib\net-1.1\NHibernate.JetDriver.dll" localcopy="True" />
+  </References>
+  <DeploymentInformation target="" script="" strategy="File" />
+  <Configuration runwithwarnings="True" name="Debug">
+    <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" target="Exe" definesymbols="" generatexmldocumentation="False" win32Icon=".\App.ico" noconfig="False" nostdlib="False" />
+    <Execution commandlineparameters="" consolepause="True" />
+    <Output directory=".\bin\Debug" assembly="NHibernateEg.Tutorial1A" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+  </Configuration>
+  <Configurations active="Debug">
+    <Configuration runwithwarnings="True" name="Debug">
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" target="Exe" definesymbols="" generatexmldocumentation="False" win32Icon=".\App.ico" noconfig="False" nostdlib="False" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory=".\bin\Debug" assembly="NHibernateEg.Tutorial1A" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+    <Configuration runwithwarnings="True" name="Release">
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="" warninglevel="4" nowarn="" includedebuginformation="False" optimize="True" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Exe" definesymbols="" generatexmldocumentation="False" win32Icon=".\App.ico" noconfig="False" nostdlib="False" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory=".\bin\Release" assembly="NHibernateEg.Tutorial1A" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+  </Configurations>
+</Project>

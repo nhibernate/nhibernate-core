@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH830" default-lazy="false">
+	<class name="Cat"  >
+		<id name="Id" type="Int32"  unsaved-value="0" >
+			<generator class="native" />
+		</id>
+
+		<set name="Children"   lazy="true" table="ChildrenParents" >
+			<key column="Parent" />
+			<many-to-many class="Cat" column="Child" />
+		</set>
+		<set name="Parents"  lazy="true" inverse="true" table="ChildrenParents" >
+			<key column="Child" />
+			<many-to-many class="Cat" column="Parent" />
+		</set>
+	</class>
+</hibernate-mapping>

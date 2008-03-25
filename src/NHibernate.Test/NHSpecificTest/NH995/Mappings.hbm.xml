@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH995"
+				   assembly="NHibernate.Test">
+
+	<class name="ClassA">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Name"/>
+	</class>
+
+	<class name="ClassB">
+		<composite-id name="Id" class="ClassBId">
+			<key-property name="Code"/>
+			<key-many-to-one name="A"/>
+		</composite-id>
+		<property name="SomeProp"/>
+	</class>
+
+	<class name="ClassC">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<many-to-one name="B">
+			<column name="B_Code"/>
+			<column name="B_A_Id"/>
+		</many-to-one>
+	</class>
+
+</hibernate-mapping>

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	namespace="NHibernate.DomainModel"
+	assembly="NHibernate.DomainModel"
+	default-lazy="false">
+	
+	<class name="Broken" table="BROKE">
+		<!--id name="id" type="long" column="id_">
+            <generator class="hilo"/>
+        </id-->
+		<composite-id>
+			<key-property name="Id"/>
+			<key-property name="OtherId"/>
+		</composite-id>
+		
+		<timestamp name="Timestamp" column="`timestamp`"/>
+		
+		<joined-subclass name="Fixed" table="FIX">
+			<key>
+				<column name="BROKE_ID"/>
+				<column name="OTHER_BROKE_ID"/>
+			</key>
+			<set name="Set" lazy="true" inverse="true">
+				<key>
+					<column name="FIX_ID"/>
+					<column name="OTHER_FIX_ID"/>
+				</key>
+				<one-to-many class="Broken"/>
+			</set>
+			<property name="List" type="serializable"/>
+		</joined-subclass>
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1064"
+				   assembly="NHibernate.Test"
+>
+	<class name="TypeA" table="NH1064_A">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Name"/>
+		<!-- The mapping of "C" must come before the mapping of "Bs" for the bug to manifest itself -->
+		<many-to-one name="C" column="C_Id" lazy="proxy"/>
+		<set name="Bs" lazy="true" cascade="all-delete-orphan">
+			<key column="A_Id"/>
+			<one-to-many class="TypeB"/>
+		</set>
+	</class>
+
+	<class name="TypeB" table="NH1064_B">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Name"/>
+	</class>
+
+	<class name="TypeC" table="NH1064_C">
+		<!-- PK type of C must be a string (or perhaps something other than an int) for the bug to manifest itself -->
+		<id name="Id" type="string">
+			<generator class="assigned"/>
+		</id>
+		<property name="Name"/>
+	</class>
+</hibernate-mapping>
