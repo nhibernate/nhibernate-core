@@ -77,24 +77,36 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void QueryOneToOne()
 		{
-			ISession s = OpenSession();
-			object id = s.Save(new Parent());
-			Assert.AreEqual(1, s.CreateQuery("from Parent p left join fetch p.Child").List().Count);
-			s.Flush();
-			s.Close();
+			ISession s;
+			ITransaction t;
+			object id;
+			using (s = OpenSession())
+			using (t = s.BeginTransaction())
+			{
+				id = s.Save(new Parent());
+				Assert.AreEqual(1, s.CreateQuery("from Parent p left join fetch p.Child").List().Count);
+				t.Commit();
+				s.Close();
+			}
 
-			s = OpenSession();
-			Parent p = (Parent) s.CreateQuery("from Parent p left join fetch p.Child").UniqueResult();
-			Assert.IsNull(p.Child);
-			s.CreateQuery("from Parent p join p.Child c where c.X > 0").List();
-			s.CreateQuery("from Child c join c.Parent p where p.X > 0").List();
-			s.Flush();
-			s.Close();
+			using (s = OpenSession())
+			using (t = s.BeginTransaction())
+			{
+				Parent p = (Parent) s.CreateQuery("from Parent p left join fetch p.Child").UniqueResult();
+				Assert.IsNull(p.Child);
+				s.CreateQuery("from Parent p join p.Child c where c.X > 0").List();
+				s.CreateQuery("from Child c join c.Parent p where p.X > 0").List();
+				t.Commit();
+				s.Close();
+			}
 
-			s = OpenSession();
-			s.Delete(s.Get(typeof(Parent), id));
-			s.Flush();
-			s.Close();
+			using (s = OpenSession())
+			using (t = s.BeginTransaction())
+			{
+				s.Delete(s.Get(typeof (Parent), id));
+				t.Commit();
+				s.Close();
+			}
 		}
 
 		[Test]

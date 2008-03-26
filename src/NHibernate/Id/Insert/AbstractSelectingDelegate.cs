@@ -57,7 +57,7 @@ namespace NHibernate.Id.Insert
 				try
 				{
 					BindParameters(session, idSelect, binder.Entity);
-					IDataReader rs = idSelect.ExecuteReader();
+					IDataReader rs = session.Batcher.ExecuteReader(idSelect);
 					try
 					{
 						return GetResult(session, rs, binder.Entity);
