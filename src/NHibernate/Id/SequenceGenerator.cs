@@ -65,9 +65,11 @@ namespace NHibernate.Id
 		public virtual void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect dialect)
 		{
 			sequenceName = PropertiesHelper.GetString(Sequence, parms, "hibernate_sequence");
-			parameters = parms[Parameters];
-			string schemaName = parms[PersistentIdGeneratorParmsNames.Schema];
-			string catalogName = parms[PersistentIdGeneratorParmsNames.Catalog];
+			string schemaName;
+			string catalogName;
+			parms.TryGetValue(Parameters, out parameters);
+			parms.TryGetValue(PersistentIdGeneratorParmsNames.Schema, out schemaName);
+			parms.TryGetValue(PersistentIdGeneratorParmsNames.Catalog, out catalogName);
 
 			if (sequenceName.IndexOf('.') < 0)
 			{

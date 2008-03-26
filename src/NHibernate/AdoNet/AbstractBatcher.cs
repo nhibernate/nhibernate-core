@@ -121,8 +121,16 @@ namespace NHibernate.AdoNet
 
 		public IDbCommand PrepareBatchCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
 		{
+			/* NH:
+			 * The code inside this block was added for a strange behaviour
+			 * discovered using Firebird (some times for us is external issue).
+			 * The problem is that batchCommandSql as a value, batchCommand is not null
+			 * BUT batchCommand.CommandText is null (I don't know who clear it)
+			 */
+			bool forceCommandRecreate = batchCommand == null || string.IsNullOrEmpty(batchCommand.CommandText);
+			/****************************************/
 			if (sql.Equals(batchCommandSql) &&
-				ArrayHelper.ArrayEquals(parameterTypes, batchCommandParameterTypes))
+				ArrayHelper.ArrayEquals(parameterTypes, batchCommandParameterTypes) && !forceCommandRecreate)
 			{
 				if (log.IsDebugEnabled)
 				{
@@ -166,14 +174,19 @@ namespace NHibernate.AdoNet
 		public void AbortBatch(Exception e)
 		{
 			IDbCommand cmd = batchCommand;
-			batchCommand = null;
-			batchCommandSql = null;
-			batchCommandParameterTypes = null;
+			InvalidateBatchCommand();
 			// close the statement closeStatement(cmd)
 			if (cmd != null)
 			{
 				CloseCommand(cmd, null);
 			}
+		}
+
+		private void InvalidateBatchCommand()
+		{
+			batchCommand = null;
+			batchCommandSql = null;
+			batchCommandParameterTypes = null;
 		}
 
 		public int ExecuteNonQuery(IDbCommand cmd)
@@ -329,9 +342,7 @@ namespace NHibernate.AdoNet
 			if (batchCommand != null)
 			{
 				IDbCommand ps = batchCommand;
-				batchCommand = null;
-				batchCommandSql = null;
-				batchCommandParameterTypes = null;
+				InvalidateBatchCommand();
 				try
 				{
 					DoExecuteBatch(ps);

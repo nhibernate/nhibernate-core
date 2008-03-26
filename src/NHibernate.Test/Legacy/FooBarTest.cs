@@ -2760,50 +2760,50 @@ namespace NHibernate.Test.Legacy
 			txn.Commit();
 			s.Close();
 
-			s = OpenSession();
-			txn = s.BeginTransaction();
-			baz = (Baz)s.CreateQuery("select baz from baz in class NHibernate.DomainModel.Baz order by baz").List()[0];
-			ISession s2 = OpenSession();
-			ITransaction txn2 = s2.BeginTransaction();
-			baz = (Baz)s.CreateQuery("select baz from baz in class NHibernate.DomainModel.Baz order by baz").List()[0];
-			object o = baz.FooComponentToFoo[new FooComponent("name", 123, null, null)];
-			Assert.IsNotNull(o);
-			Assert.AreEqual(o, baz.FooComponentToFoo[new FooComponent("nameName", 12, null, null)]);
-			txn2.Commit();
-			s2.Close();
-			Assert.AreEqual(2, baz.TopFoos.Count);
-			Assert.AreEqual(1, baz.TopGlarchez.Count);
-			enumer = baz.TopFoos.GetEnumerator();
-			Assert.IsTrue(enumer.MoveNext());
-			Assert.IsNotNull(enumer.Current);
-			Assert.AreEqual(1, baz.StringSet.Count);
-			Assert.AreEqual(4, baz.Bag.Count);
-			Assert.AreEqual(2, baz.FooToGlarch.Count);
-			Assert.AreEqual(2, baz.FooComponentToFoo.Count);
-			Assert.AreEqual(1, baz.GlarchToFoo.Count);
-
-			enumer = baz.FooToGlarch.Keys.GetEnumerator();
-			for (int i = 0; i < 2; i++)
+			using(s = OpenSession())
+			using (txn = s.BeginTransaction())
 			{
-				enumer.MoveNext();
-				Assert.IsTrue(enumer.Current is BarProxy);
-			}
-			enumer = baz.FooComponentToFoo.Keys.GetEnumerator();
-			enumer.MoveNext();
-			FooComponent fooComp = (FooComponent) enumer.Current;
-			Assert.IsTrue(
-				(fooComp.Count == 123 && fooComp.Name.Equals("name"))
-				|| (fooComp.Count == 12 && fooComp.Name.Equals("nameName"))
-				);
-			Assert.IsTrue(baz.FooComponentToFoo[fooComp] is BarProxy);
+				baz = (Baz) s.CreateQuery("select baz from baz in class NHibernate.DomainModel.Baz order by baz").List()[0];
+				ISession s2 = OpenSession();
+				ITransaction txn2 = s2.BeginTransaction();
+				baz = (Baz) s.CreateQuery("select baz from baz in class NHibernate.DomainModel.Baz order by baz").List()[0];
+				object o = baz.FooComponentToFoo[new FooComponent("name", 123, null, null)];
+				Assert.IsNotNull(o);
+				Assert.AreEqual(o, baz.FooComponentToFoo[new FooComponent("nameName", 12, null, null)]);
+				txn2.Commit();
+				s2.Close();
+				Assert.AreEqual(2, baz.TopFoos.Count);
+				Assert.AreEqual(1, baz.TopGlarchez.Count);
+				enumer = baz.TopFoos.GetEnumerator();
+				Assert.IsTrue(enumer.MoveNext());
+				Assert.IsNotNull(enumer.Current);
+				Assert.AreEqual(1, baz.StringSet.Count);
+				Assert.AreEqual(4, baz.Bag.Count);
+				Assert.AreEqual(2, baz.FooToGlarch.Count);
+				Assert.AreEqual(2, baz.FooComponentToFoo.Count);
+				Assert.AreEqual(1, baz.GlarchToFoo.Count);
 
-			Glarch g2 = new Glarch();
-			s.Save(g2);
-			g = (GlarchProxy) baz.TopGlarchez['G'];
-			baz.TopGlarchez['H'] = g;
-			baz.TopGlarchez['G'] = g2;
-			txn.Commit();
-			s.Close();
+				enumer = baz.FooToGlarch.Keys.GetEnumerator();
+				for (int i = 0; i < 2; i++)
+				{
+					enumer.MoveNext();
+					Assert.IsTrue(enumer.Current is BarProxy);
+				}
+				enumer = baz.FooComponentToFoo.Keys.GetEnumerator();
+				enumer.MoveNext();
+				FooComponent fooComp = (FooComponent) enumer.Current;
+				Assert.IsTrue((fooComp.Count == 123 && fooComp.Name.Equals("name"))
+				              || (fooComp.Count == 12 && fooComp.Name.Equals("nameName")));
+				Assert.IsTrue(baz.FooComponentToFoo[fooComp] is BarProxy);
+
+				Glarch g2 = new Glarch();
+				s.Save(g2);
+				g = (GlarchProxy) baz.TopGlarchez['G'];
+				baz.TopGlarchez['H'] = g;
+				baz.TopGlarchez['G'] = g2;
+				txn.Commit();
+				s.Close();
+			}
 
 			s = OpenSession();
 			txn = s.BeginTransaction();

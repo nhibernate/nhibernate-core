@@ -1412,7 +1412,7 @@ namespace NHibernate.Persister.Collection
 				try
 				{
 					KeyType.NullSafeSet(st, key, 1, session);
-					rs = st.ExecuteReader();
+					rs = session.Batcher.ExecuteReader(st);
 					return rs.Read() ? rs.GetInt32(0) - baseIndex : 0;
 				}
 				finally
@@ -1450,7 +1450,7 @@ namespace NHibernate.Persister.Collection
 				{
 					KeyType.NullSafeSet(st, key, 1, session);
 					indexOrElementType.NullSafeSet(st, indexOrElement, keyColumnNames.Length + 1, session);
-					rs = st.ExecuteReader();
+					rs = session.Batcher.ExecuteReader(st);
 					try
 					{
 						return rs.Read();
@@ -1487,7 +1487,7 @@ namespace NHibernate.Persister.Collection
 				{
 					KeyType.NullSafeSet(st, key, 1, session);
 					IndexType.NullSafeSet(st, IncrementIndexByBase(index), keyColumnNames.Length + 1, session);
-					rs = st.ExecuteReader();
+					rs = session.Batcher.ExecuteReader(st);
 					try
 					{
 						if (rs.Read())
