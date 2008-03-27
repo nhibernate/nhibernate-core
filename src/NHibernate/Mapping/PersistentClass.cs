@@ -42,7 +42,7 @@ namespace NHibernate.Mapping
 		private readonly List<Join> joins = new List<Join>();
 		private readonly List<Join> subclassJoins = new List<Join>();
 		private readonly IDictionary<string, string> filters = new Dictionary<string, string>();
-		protected readonly ISet<string> synchronizedTables = new HashedSet<string>();
+		private readonly ISet<string> synchronizedTables = new HashedSet<string>();
 		private string loaderName;
 		private bool? isAbstract;
 		private bool hasSubselectLoadableCollections;
@@ -104,7 +104,7 @@ namespace NHibernate.Mapping
 						return null;
 					try
 					{
-						mappedClass= ReflectHelper.ClassForName(className);
+						mappedClass = ReflectHelper.ClassForName(className);
 					}
 					catch (Exception cnfe)
 					{
@@ -132,7 +132,7 @@ namespace NHibernate.Mapping
 						return null;
 					try
 					{
-						proxyInterface= ReflectHelper.ClassForName(proxyInterfaceName);
+						proxyInterface = ReflectHelper.ClassForName(proxyInterfaceName);
 					}
 					catch (Exception cnfe)
 					{
@@ -259,7 +259,7 @@ namespace NHibernate.Mapping
 
 		public virtual string EntityName
 		{
-			get{return entityName;}
+			get { return entityName; }
 			set { entityName = value == null ? null : String.Intern(value); }
 		}
 
@@ -309,7 +309,7 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public abstract IEnumerable<Table> TableClosureIterator { get; }
 
-		public abstract IEnumerable<IKeyValue> KeyClosureIterator { get;}
+		public abstract IEnumerable<IKeyValue> KeyClosureIterator { get; }
 
 		/// <summary>
 		/// Gets an <see cref="IEnumerable"/> of <see cref="Property"/> objects that
@@ -358,7 +358,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// When implemented by a class, gets or sets the <see cref="System.Type"/> of the Persister.
 		/// </summary>
-		public abstract System.Type EntityPersisterClass { get;set;}
+		public abstract System.Type EntityPersisterClass { get; set; }
 
 		/// <summary>
 		/// When implemented by a class, gets the <see cref="Table"/> of the class
@@ -515,7 +515,7 @@ namespace NHibernate.Mapping
 			get { return deleteCheckStyle; }
 		}
 
-		public virtual IDictionary<string,string> FilterMap
+		public virtual IDictionary<string, string> FilterMap
 		{
 			get { return filters; }
 		}
@@ -531,7 +531,13 @@ namespace NHibernate.Mapping
 			set { loaderName = value == null ? null : string.Intern(value); }
 		}
 
-		public abstract ISet<string> SynchronizedTables { get; }
+		public virtual ISet<string> SynchronizedTables
+		{
+			get
+			{
+				return synchronizedTables;
+			}
+		}
 
 		protected internal virtual IEnumerable<Property> NonDuplicatedPropertyIterator
 		{
@@ -893,7 +899,7 @@ namespace NHibernate.Mapping
 					else
 					{
 						//flat recursive algorithm
-						property = ((Component) property.Value).GetProperty(element);
+						property = ((Component)property.Value).GetProperty(element);
 					}
 				}
 			}
@@ -949,7 +955,7 @@ namespace NHibernate.Mapping
 				{
 					throw new MappingException(
 						string.Format("property mapping has wrong number of columns: {0} type: {1}",
-						              StringHelper.Qualify(EntityName, prop.Name), prop.Type.Name));
+									  StringHelper.Qualify(EntityName, prop.Name), prop.Type.Name));
 				}
 			}
 			CheckPropertyDuplication();
@@ -968,7 +974,7 @@ namespace NHibernate.Mapping
 
 		public MetaAttribute GetMetaAttribute(string name)
 		{
-			if(metaAttributes==null)
+			if (metaAttributes == null)
 				return null;
 			MetaAttribute result;
 			metaAttributes.TryGetValue(name, out result);
@@ -1171,13 +1177,13 @@ namespace NHibernate.Mapping
 		{
 			foreach (Property property in RootClazz.PropertyIterator)
 			{
-				if(property.IsNaturalIdentifier)
+				if (property.IsNaturalIdentifier)
 					return true;
 			}
 			return false;
 		}
 
-		public abstract bool IsLazyPropertiesCacheable { get;}
+		public abstract bool IsLazyPropertiesCacheable { get; }
 
 	}
 }

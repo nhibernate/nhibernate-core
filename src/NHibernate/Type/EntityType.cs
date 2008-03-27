@@ -20,7 +20,7 @@ namespace NHibernate.Type
 	{
 		protected readonly string uniqueKeyPropertyName;
 		private readonly bool eager;
-		protected internal bool isEmbeddedInXML;
+		private bool isEmbeddedInXML;
 		private readonly string associatedEntityName;
 		private readonly bool unwrapProxy;
 		private System.Type returnedClass;

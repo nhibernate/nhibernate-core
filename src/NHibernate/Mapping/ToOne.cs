@@ -12,7 +12,7 @@ namespace NHibernate.Mapping
 	{
 		private FetchMode fetchMode;
 		private bool lazy = true;
-		protected internal string referencedPropertyName;
+		internal string referencedPropertyName;
 		private string referencedEntityName;
 		private bool embedded;
 		private bool unwrapProxy;

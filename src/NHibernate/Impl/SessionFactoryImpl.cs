@@ -910,11 +910,6 @@ namespace NHibernate.Impl
 			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="queryName"></param>
-		/// <returns></returns>
 		public NamedSQLQueryDefinition GetNamedSQLQuery(string queryName)
 		{
 			NamedSQLQueryDefinition result;

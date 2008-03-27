@@ -22,7 +22,7 @@ namespace NHibernate.Impl
 		private IList criteriaQueries = new ArrayList();
 
 		private SessionImpl session;
-		private readonly SessionFactoryImpl factory;
+		private readonly ISessionFactoryImplementor factory;
 		private IList translators = new ArrayList();
 		private List<QueryParameters> parameters = new List<QueryParameters>();
 		private ArrayList types = new ArrayList();
@@ -40,7 +40,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="session">The session.</param>
 		/// <param name="factory">The factory.</param>
-		internal MultiCriteriaImpl(SessionImpl session, SessionFactoryImpl factory)
+		internal MultiCriteriaImpl(SessionImpl session, ISessionFactoryImplementor factory)
 		{
 			dialect = session.Factory.Dialect;
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
@@ -338,6 +338,16 @@ namespace NHibernate.Impl
 			this.forceCacheRefresh = forceRefresh;
 			return this;
 		}
+
+		#region IMultiCriteria Members
+
+		public IMultiCriteria SetResultTransformer(IResultTransformer resultTransformer)
+		{
+			this.resultTransformer = resultTransformer;
+			return this;
+		}
+
+		#endregion
 
 		public IMultiCriteria SetCacheRegion(string cacheRegion)
 		{

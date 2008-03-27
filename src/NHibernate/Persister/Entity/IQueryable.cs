@@ -12,9 +12,6 @@ namespace NHibernate.Persister.Entity
 	/// </summary>
 	public interface IQueryable : ILoadable, IPropertyMapping, IJoinable
 	{
-		/// <summary> Is this an abstract class?</summary>
-		bool IsAbstract { get;}
-
 		/// <summary>
 		/// Is this class explicit polymorphism only?
 		/// </summary>
@@ -24,9 +21,6 @@ namespace NHibernate.Persister.Entity
 		/// The class that this class is mapped as a subclass of - not necessarily the direct superclass
 		/// </summary>
 		string MappedSuperclass { get; }
-
-		/// <summary> Get the names of columns used to persist the identifier</summary>
-		string[] IdentifierColumnNames { get;}
 
 		/// <summary>
 		/// The discriminator value for this particular concrete subclass, as a string that may be
@@ -94,6 +88,7 @@ namespace NHibernate.Persister.Entity
 
 		/// <summary>
 		/// Given a query alias and an identifying suffix, render the property select fragment.
+		/// </summary>
 		string PropertySelectFragment(string alias, string suffix, bool allProperties);
 
 		/// <summary> 
@@ -129,7 +124,6 @@ namespace NHibernate.Persister.Entity
 		/// <summary> 
 		/// The alias used for any filter conditions (mapped where-fragments or
 		/// enabled-filters).
-		/// </p>
 		/// </summary>
 		/// <param name="rootAlias">The root alias </param>
 		/// <returns> The alias used for "filter conditions" within the where clause. </returns>

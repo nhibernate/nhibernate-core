@@ -3,7 +3,9 @@ using NHibernate.Cache;
 using NHibernate.Context;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine.Query;
+using NHibernate.Event;
 using NHibernate.Exceptions;
+using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -13,6 +15,7 @@ using NHibernate.Transaction;
 using NHibernate.Type;
 using System.Collections;
 using Iesi.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Engine
 {
@@ -219,5 +222,20 @@ namespace NHibernate.Engine
 
 		QueryPlanCache QueryPlanCache { get;}
 
+		IQueryTranslator[] GetQuery(string queryString, bool shallow, IDictionary<string, IFilter> enabledFilters);
+
+		/// <summary>
+		/// Gets the <c>hql</c> query identified by the <c>name</c>.
+		/// </summary>
+		/// <param name="queryName">The name of that identifies the query.</param>
+		/// <returns>
+		/// A <c>hql</c> query or <see langword="null" /> if the named
+		/// query does not exist.
+		/// </returns>
+		NamedQueryDefinition GetNamedQuery(string queryName);
+
+		EventListeners EventListeners { get; }
+
+		NamedSQLQueryDefinition GetNamedSQLQuery(string queryName);
 	}
 }

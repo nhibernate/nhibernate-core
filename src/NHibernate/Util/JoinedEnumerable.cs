@@ -186,7 +186,7 @@ namespace NHibernate.Util
 
 		IEnumerator<T> IEnumerable<T>.GetEnumerator()
 		{
-			return new JoinedEnumerator<T>(enumerables);
+			return new JoinedEnumerator(enumerables);
 		}
 
 		#endregion
@@ -200,7 +200,7 @@ namespace NHibernate.Util
 
 		#endregion
 
-		private class JoinedEnumerator<T>: IEnumerator<T>
+		private class JoinedEnumerator : IEnumerator<T>
 		{
 			private readonly IEnumerator<T>[] enumerators;
 			private int currentEnumIdx = 0;
@@ -237,7 +237,7 @@ namespace NHibernate.Util
 					if (disposing)
 						for (; currentEnumIdx < enumerators.Length; currentEnumIdx++)
 							enumerators[currentEnumIdx].Dispose();
-
+					GC.SuppressFinalize(this);
 					disposed = true;
 				}
 			}

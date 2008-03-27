@@ -150,7 +150,7 @@ namespace NHibernate.Mapping
 			get
 			{
 				HashedSet<string> result = new HashedSet<string>();
-				result.AddAll(synchronizedTables);
+				result.AddAll(base.SynchronizedTables);
 				result.AddAll(Superclass.SynchronizedTables);
 				return result;
 			}

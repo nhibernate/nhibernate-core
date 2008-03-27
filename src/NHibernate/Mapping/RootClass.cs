@@ -159,11 +159,6 @@ namespace NHibernate.Mapping
 			get { return false; }
 		}
 
-		public override ISet<string> SynchronizedTables
-		{
-			get { return synchronizedTables; }
-		}
-
 		public virtual ISet<Table> IdentityTables
 		{
 			get

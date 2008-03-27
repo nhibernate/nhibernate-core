@@ -32,11 +32,6 @@ namespace NHibernate.Mapping
 			get { return table; }
 		}
 
-		public override ISet<string> SynchronizedTables
-		{
-			get { return synchronizedTables; }
-		}
-
 		protected internal override IEnumerable<Property> NonDuplicatedPropertyIterator
 		{
 			get { return PropertyClosureIterator; }

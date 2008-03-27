@@ -94,8 +94,8 @@ namespace NHibernate.Impl
 		{
 			timestamp = info.GetInt64("timestamp");
 
-			factory = (SessionFactoryImpl)info.GetValue("factory", typeof(SessionFactoryImpl));
-			listeners = factory.EventListeners;
+			Factory = (SessionFactoryImpl)info.GetValue("factory", typeof(SessionFactoryImpl));
+			listeners = Factory.EventListeners;
 			persistenceContext = (StatefulPersistenceContext)info.GetValue("persistenceContext", typeof(StatefulPersistenceContext));
 
 			actionQueue = (ActionQueue)info.GetValue("actionQueue", typeof(ActionQueue));
@@ -131,7 +131,7 @@ namespace NHibernate.Impl
 				throw new InvalidOperationException("Cannot serialize a Session while connected");
 			}
 
-			info.AddValue("factory", factory, typeof(SessionFactoryImpl));
+			info.AddValue("factory", Factory, typeof(SessionFactoryImpl));
 			info.AddValue("persistenceContext", persistenceContext, typeof (StatefulPersistenceContext));
 			info.AddValue("actionQueue", actionQueue, typeof(ActionQueue));
 			info.AddValue("timestamp", timestamp);
@@ -163,7 +163,7 @@ namespace NHibernate.Impl
 			persistenceContext.SetSession(this);
 			foreach (FilterImpl filter in enabledFilters.Values)
 			{
-				filter.AfterDeserialize(factory.GetFilterDefinition(filter.Name));
+				filter.AfterDeserialize(Factory.GetFilterDefinition(filter.Name));
 			}
 		}
 
@@ -238,7 +238,7 @@ namespace NHibernate.Impl
 		/// <param name="parent">The parent Session</param>
 		/// <param name="entityMode">The entity mode</param>
 		private SessionImpl(SessionImpl parent, EntityMode entityMode)
-			:base (parent.factory)
+			:base (parent.Factory)
 		{
 			rootSession = parent;
 			timestamp = parent.timestamp;
@@ -252,8 +252,8 @@ namespace NHibernate.Impl
 			autoCloseSessionEnabled = false;
 			//this.connectionReleaseMode = null;
 
-			if (factory.Statistics.IsStatisticsEnabled)
-				factory.StatisticsImplementor.OpenSession();
+			if (Factory.Statistics.IsStatisticsEnabled)
+				Factory.StatisticsImplementor.OpenSession();
 
 			log.Debug("opened session [" + entityMode + "]");
 		}
@@ -293,9 +293,9 @@ namespace NHibernate.Impl
 				throw new SessionException("Session was already closed");
 			}
 
-			if (factory.Statistics.IsStatisticsEnabled)
+			if (Factory.Statistics.IsStatisticsEnabled)
 			{
-				factory.StatisticsImplementor.CloseSession();
+				Factory.StatisticsImplementor.CloseSession();
 			}
 
 			try
@@ -532,7 +532,7 @@ namespace NHibernate.Impl
 		public override IQueryTranslator[] GetQueries(string query, bool scalar)
 		{
 			// take the union of the query spaces (ie the queried tables)
-			IQueryTranslator[] q = factory.GetQuery(query, scalar, enabledFilters);
+			IQueryTranslator[] q = Factory.GetQuery(query, scalar, enabledFilters);
 			HashedSet<string> qs = new HashedSet<string>();
 			for (int i = 0; i < q.Length; i++)
 			{
@@ -684,13 +684,13 @@ namespace NHibernate.Impl
 				{
 					throw new QueryException("The collection was unreferenced");
 				}
-				plan = factory.QueryPlanCache.GetFilterQueryPlan(filter, roleAfterFlush.Role, shallow, EnabledFilters);
+				plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleAfterFlush.Role, shallow, EnabledFilters);
 			}
 			else
 			{
 				// otherwise, we only need to flush if there are in-memory changes
 				// to the queried tables
-				plan = factory.QueryPlanCache.GetFilterQueryPlan(filter, roleBeforeFlush.Role, shallow, EnabledFilters);
+				plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleBeforeFlush.Role, shallow, EnabledFilters);
 				if (AutoFlushIfRequired(plan.QuerySpaces))
 				{
 					// might need to run a different filter entirely after the flush
@@ -703,7 +703,7 @@ namespace NHibernate.Impl
 						{
 							throw new QueryException("The collection was dereferenced");
 						}
-						plan = factory.QueryPlanCache.GetFilterQueryPlan(filter, roleAfterFlush.Role, shallow, EnabledFilters);
+						plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleAfterFlush.Role, shallow, EnabledFilters);
 					}
 				}
 			}
@@ -719,7 +719,7 @@ namespace NHibernate.Impl
 
 		public override object Instantiate(string clazz, object id)
 		{
-			return Instantiate(factory.GetEntityPersister(clazz), id);
+			return Instantiate(Factory.GetEntityPersister(clazz), id);
 		}
 
 		/// <summary> Get the ActionQueue for this session</summary>
@@ -959,7 +959,7 @@ namespace NHibernate.Impl
 			{
 				FireLoad(loadEvent, LoadEventListener.Load);
 				if (loadEvent.Result == null)
-					factory.EntityNotFoundDelegate.HandleEntityNotFound(clazz.FullName, id);
+					Factory.EntityNotFoundDelegate.HandleEntityNotFound(clazz.FullName, id);
 
 				success = true;
 				return loadEvent.Result;
@@ -1227,7 +1227,7 @@ namespace NHibernate.Impl
 		{
 			if (lastClass != theClass)
 			{
-				lastResultForClass = factory.GetEntityPersister(theClass);
+				lastResultForClass = Factory.GetEntityPersister(theClass);
 				lastClass = theClass;
 			}
 			return lastResultForClass;
@@ -1324,7 +1324,7 @@ namespace NHibernate.Impl
 
 		internal ICollectionPersister GetCollectionPersister(string role)
 		{
-			return factory.GetCollectionPersister(role);
+			return Factory.GetCollectionPersister(role);
 		}
 
 		/// <summary>
@@ -1556,7 +1556,7 @@ namespace NHibernate.Impl
 		{
 			ErrorIfClosed();
 
-			string[] implementors = factory.GetImplementors(criteria.EntityOrClassName);
+			string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
 			int size = implementors.Length;
 
 			CriteriaLoader[] loaders = new CriteriaLoader[size];
@@ -1566,7 +1566,7 @@ namespace NHibernate.Impl
 			{
 				loaders[i] = new CriteriaLoader(
 					GetOuterJoinLoadable(implementors[i]),
-					factory,
+					Factory,
 					criteria,
 					implementors[i],
 					enabledFilters
@@ -1606,7 +1606,7 @@ namespace NHibernate.Impl
 
 		internal IOuterJoinLoadable GetOuterJoinLoadable(string entityName)
 		{
-			IEntityPersister persister = factory.GetEntityPersister(entityName);
+			IEntityPersister persister = Factory.GetEntityPersister(entityName);
 			if (!(persister is IOuterJoinLoadable))
 			{
 				throw new MappingException("class persister is not OuterJoinLoadable: " + entityName);
@@ -1666,13 +1666,13 @@ namespace NHibernate.Impl
 		public IQuery CreateSQLQuery(string sql, string returnAlias, System.Type returnClass)
 		{
 			ErrorIfClosed();
-			return new SqlQueryImpl(sql, new string[] { returnAlias }, new System.Type[] { returnClass }, this, factory.QueryPlanCache.GetSQLParameterMetadata(sql));
+			return new SqlQueryImpl(sql, new string[] { returnAlias }, new System.Type[] { returnClass }, this, Factory.QueryPlanCache.GetSQLParameterMetadata(sql));
 		}
 
 		public IQuery CreateSQLQuery(string sql, string[] returnAliases, System.Type[] returnClasses)
 		{
 			ErrorIfClosed();
-			return new SqlQueryImpl(sql, returnAliases, returnClasses, this, factory.QueryPlanCache.GetSQLParameterMetadata(sql));
+			return new SqlQueryImpl(sql, returnAliases, returnClasses, this, Factory.QueryPlanCache.GetSQLParameterMetadata(sql));
 		}
 
 		public override IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
@@ -1695,7 +1695,7 @@ namespace NHibernate.Impl
 				spec.SqlQueryReturns,
 				spec.QueryString,
 				spec.QuerySpaces,
-				factory);
+				Factory);
 			ListCustomQuery(query, queryParameters, results);
 		}
 
@@ -1703,7 +1703,7 @@ namespace NHibernate.Impl
 		{
 			ErrorIfClosed();
 
-			CustomLoader loader = new CustomLoader(customQuery, factory);
+			CustomLoader loader = new CustomLoader(customQuery, Factory);
 			AutoFlushIfRequired(loader.QuerySpaces);
 
 			bool success = false;
@@ -1747,7 +1747,7 @@ namespace NHibernate.Impl
 
 		public ISessionFactory SessionFactory
 		{
-			get { return factory; }
+			get { return Factory; }
 		}
 
 		public void CancelQuery()
@@ -1789,7 +1789,7 @@ namespace NHibernate.Impl
 		public IFilter EnableFilter(string filterName)
 		{
 			ErrorIfClosed();
-			FilterImpl filter = new FilterImpl(factory.GetFilterDefinition(filterName));
+			FilterImpl filter = new FilterImpl(Factory.GetFilterDefinition(filterName));
 			enabledFilters[filterName] = filter;
 			return filter;
 		}
@@ -1818,7 +1818,7 @@ namespace NHibernate.Impl
 		{
 			ErrorIfClosed();
 			string[] parsed = ParseFilterParameterName(filterParameterName);
-			FilterDefinition filterDef = factory.GetFilterDefinition(parsed[0]);
+			FilterDefinition filterDef = Factory.GetFilterDefinition(parsed[0]);
 			if (filterDef == null)
 			{
 				throw new ArgumentNullException(parsed[0], "Filter [" + parsed[0] + "] not defined");
@@ -1871,7 +1871,7 @@ namespace NHibernate.Impl
 
 		public IMultiCriteria CreateMultiCriteria()
 		{
-			return new MultiCriteriaImpl(this, factory);
+			return new MultiCriteriaImpl(this, Factory);
 		}
 
 		/// <summary> Get the statistics for this session.</summary>
@@ -2256,7 +2256,7 @@ namespace NHibernate.Impl
 			ErrorIfClosed();
 			if (entityName == null)
 			{
-				return factory.GetEntityPersister(GuessEntityName(obj));
+				return Factory.GetEntityPersister(GuessEntityName(obj));
 			}
 			else
 			{
@@ -2267,7 +2267,7 @@ namespace NHibernate.Impl
 				// given entityName
 				try
 				{
-					return factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory, entityMode);
+					return Factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory, entityMode);
 				}
 				catch (HibernateException)
 				{

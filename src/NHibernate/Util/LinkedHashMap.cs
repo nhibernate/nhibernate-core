@@ -21,12 +21,12 @@ namespace NHibernate.Util
 	public class LinkedHashMap<TKey, TValue> : IDictionary<TKey, TValue>
 	{
 		[Serializable]
-		protected class Entry<TKey, TValue>
+		protected class Entry
 		{
 			private readonly TKey key;
 			private TValue evalue;
-			private Entry<TKey, TValue> next = null;
-			private Entry<TKey, TValue> prev = null;
+			private Entry next = null;
+			private Entry prev = null;
 
 			public Entry(TKey key, TValue value)
 			{
@@ -45,13 +45,13 @@ namespace NHibernate.Util
 				set { evalue = value; }
 			}
 
-			public Entry<TKey, TValue> Next
+			public Entry Next
 			{
 				get { return next; }
 				set { next = value; }
 			}
 
-			public Entry<TKey, TValue> Prev
+			public Entry Prev
 			{
 				get { return prev; }
 				set { prev = value; }
@@ -66,7 +66,7 @@ namespace NHibernate.Util
 
 			public override bool Equals(object obj)
 			{
-				Entry<TKey, TValue> other = obj as Entry<TKey, TValue>;
+				Entry other = obj as Entry;
 				if (other == null) return false;
 				if (other == this) return true;
 
@@ -82,8 +82,8 @@ namespace NHibernate.Util
 			#endregion
 		}
 
-		private readonly Entry<TKey, TValue> header;
-		private readonly Dictionary<TKey, Entry<TKey, TValue>> entries;
+		private readonly Entry header;
+		private readonly Dictionary<TKey, Entry> entries;
 		private long version = 0;
 
 		/// <summary>
@@ -122,7 +122,7 @@ namespace NHibernate.Util
 		public LinkedHashMap(int capacity, IEqualityComparer<TKey> equalityComparer)
 		{
 			header = CreateSentinel();
-			entries = new Dictionary<TKey, Entry<TKey, TValue>>(capacity, equalityComparer);
+			entries = new Dictionary<TKey, Entry>(capacity, equalityComparer);
 		}
 
 		#region IDictionary<TKey,TValue> Members
@@ -134,7 +134,7 @@ namespace NHibernate.Util
 
 		public virtual void Add(TKey key, TValue value)
 		{
-			Entry<TKey, TValue> e = new Entry<TKey, TValue>(key, value);
+			Entry e = new Entry(key, value);
 			entries.Add(key, e);
 			version++;
 			InsertEntry(e);
@@ -147,7 +147,7 @@ namespace NHibernate.Util
 
 		public bool TryGetValue(TKey key, out TValue value)
 		{
-			Entry<TKey, TValue> entry;
+			Entry entry;
 			bool result = entries.TryGetValue(key, out entry);
 			if (result)
 				value = entry.Value;
@@ -165,7 +165,7 @@ namespace NHibernate.Util
 			}
 			set
 			{
-				Entry<TKey, TValue> e;
+				Entry e;
 				if (entries.TryGetValue(key, out e))
 					OverrideEntry(e, value);
 				else
@@ -173,7 +173,7 @@ namespace NHibernate.Util
 			}
 		}
 
-		private void OverrideEntry(Entry<TKey, TValue> e, TValue value)
+		private void OverrideEntry(Entry e, TValue value)
 		{
 			version++;
 			RemoveEntry(e);
@@ -297,14 +297,14 @@ namespace NHibernate.Util
 		{
 			if (value == null)
 			{
-				for (Entry<TKey, TValue> entry = header.Next; entry != header; entry = entry.Next)
+				for (Entry entry = header.Next; entry != header; entry = entry.Next)
 				{
 					if (entry.Value == null) return true;
 				}
 			}
 			else
 			{
-				for (Entry<TKey, TValue> entry = header.Next; entry != header; entry = entry.Next)
+				for (Entry entry = header.Next; entry != header; entry = entry.Next)
 				{
 					if (value.Equals(entry.Value)) return true;
 				}
@@ -314,21 +314,21 @@ namespace NHibernate.Util
 
 		#endregion
 
-		private static Entry<TKey, TValue> CreateSentinel()
+		private static Entry CreateSentinel()
 		{
-			Entry<TKey, TValue> s = new Entry<TKey, TValue>(default(TKey), default(TValue));
+			Entry s = new Entry(default(TKey), default(TValue));
 			s.Prev = s;
 			s.Next = s;
 			return s;
 		}
 
-		private static void RemoveEntry(Entry<TKey, TValue> entry)
+		private static void RemoveEntry(Entry entry)
 		{
 			entry.Next.Prev = entry.Prev;
 			entry.Prev.Next = entry.Next;
 		}
 
-		private void InsertEntry(Entry<TKey, TValue> entry)
+		private void InsertEntry(Entry entry)
 		{
 			entry.Next = header;
 			entry.Prev = header.Prev;
@@ -336,12 +336,12 @@ namespace NHibernate.Util
 			header.Prev = entry;
 		}
 
-		private Entry<TKey, TValue> First
+		private Entry First
 		{
 			get { return (IsEmpty) ? null : header.Next; }
 		}
 
-		private Entry<TKey, TValue> Last
+		private Entry Last
 		{
 			get { return (IsEmpty) ? null : header.Prev; }
 		}
@@ -351,7 +351,7 @@ namespace NHibernate.Util
 			bool result;
 			try
 			{
-				Entry<TKey, TValue> e = entries[key];
+				Entry e = entries[key];
 				result = entries.Remove(key);
 				version++;
 				RemoveEntry(e);
@@ -369,7 +369,7 @@ namespace NHibernate.Util
 		{
 			StringBuilder buf = new StringBuilder();
 			buf.Append('[');
-			for (Entry<TKey, TValue> pos = header.Next; pos != header; pos = pos.Next)
+			for (Entry pos = header.Next; pos != header; pos = pos.Next)
 			{
 				buf.Append(pos.Key);
 				buf.Append('=');
@@ -567,7 +567,7 @@ namespace NHibernate.Util
 		private abstract class ForwardEnumerator<T> : IEnumerator<T>
 		{
 			protected readonly LinkedHashMap<TKey, TValue> dictionary;
-			protected Entry<TKey, TValue> current;
+			protected Entry current;
 			protected readonly long version;
 
 			public ForwardEnumerator(LinkedHashMap<TKey, TValue> dictionary)
@@ -638,7 +638,7 @@ namespace NHibernate.Util
 		protected abstract class BackwardEnumerator<T> : IEnumerator<T>
 		{
 			protected readonly LinkedHashMap<TKey, TValue> dictionary;
-			protected Entry<TKey, TValue> current;
+			private Entry current;
 			protected readonly long version;
 
 			public BackwardEnumerator(LinkedHashMap<TKey, TValue> dictionary)

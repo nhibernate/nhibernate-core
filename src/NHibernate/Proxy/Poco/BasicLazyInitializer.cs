@@ -14,7 +14,7 @@ namespace NHibernate.Proxy.Poco
 	{
 		private static readonly IEqualityComparer IdentityEqualityComparer = new IdentityEqualityComparer();
 
-		protected internal System.Type persistentClass;
+		internal System.Type persistentClass;
 		protected internal MethodInfo getIdentifierMethod;
 		protected internal MethodInfo setIdentifierMethod;
 		protected internal bool overridesEquals;

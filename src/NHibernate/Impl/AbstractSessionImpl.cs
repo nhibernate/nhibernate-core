@@ -21,12 +21,12 @@ namespace NHibernate.Impl
 	public abstract class AbstractSessionImpl : ISessionImplementor
 	{
 		[NonSerialized]
-		protected internal SessionFactoryImpl factory;
+		private ISessionFactoryImplementor factory;
 		private bool closed = false;
 
 		internal AbstractSessionImpl() {}
 
-		protected internal AbstractSessionImpl(SessionFactoryImpl factory)
+		protected internal AbstractSessionImpl(ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
 		}
@@ -41,6 +41,7 @@ namespace NHibernate.Impl
 		public ISessionFactoryImplementor Factory
 		{
 			get { return factory; }
+			protected set { factory = value; }
 		}
 		public abstract EntityMode EntityMode { get;}
 

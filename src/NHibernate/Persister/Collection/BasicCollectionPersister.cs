@@ -104,7 +104,7 @@ namespace NHibernate.Persister.Collection
 			}
 			else
 			{
-				string[] cnames = ArrayHelper.Join(keyColumnNames, elementColumnNames, elementColumnIsInPrimaryKey);
+				string[] cnames = ArrayHelper.Join(KeyColumnNames, ElementColumnNames, elementColumnIsInPrimaryKey);
 				SqlType[] ctypes = ArrayHelper.Join(KeyType.SqlTypes(Factory), ElementType.SqlTypes(Factory), elementColumnIsInPrimaryKey);
 				update.AddWhereFragment(cnames, ctypes, " = ");
 			}
@@ -135,7 +135,7 @@ namespace NHibernate.Persister.Collection
 			}
 			else
 			{
-				string[] cnames = ArrayHelper.Join(keyColumnNames, elementColumnNames, elementColumnIsInPrimaryKey);
+				string[] cnames = ArrayHelper.Join(KeyColumnNames, ElementColumnNames, elementColumnIsInPrimaryKey);
 				SqlType[] ctypes = ArrayHelper.Join(KeyType.SqlTypes(Factory), ElementType.SqlTypes(Factory), elementColumnIsInPrimaryKey);
 				delete.AddWhereFragment(cnames, ctypes, " = ");
 			}

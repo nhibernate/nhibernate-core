@@ -138,13 +138,13 @@ namespace NHibernate.Impl
 		public override void List(CriteriaImpl criteria, IList results)
 		{
 			ErrorIfClosed();
-			string[] implementors = factory.GetImplementors(criteria.EntityOrClassName);
+			string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
 			int size = implementors.Length;
 
 			CriteriaLoader[] loaders = new CriteriaLoader[size];
 			for (int i = 0; i < size; i++)
 			{
-				loaders[i] = new CriteriaLoader(GetOuterJoinLoadable(implementors[i]), factory,
+				loaders[i] = new CriteriaLoader(GetOuterJoinLoadable(implementors[i]), Factory,
 					criteria, implementors[i], EnabledFilters);
 			}
 
@@ -176,7 +176,7 @@ namespace NHibernate.Impl
 		private IOuterJoinLoadable GetOuterJoinLoadable(string entityName)
 		{
 			// TODO pull up
-			IEntityPersister persister = factory.GetEntityPersister(entityName);
+			IEntityPersister persister = Factory.GetEntityPersister(entityName);
 			if (!(persister is IOuterJoinLoadable))
 			{
 				throw new MappingException("class persister is not IOuterJoinLoadable: " + entityName);
@@ -225,7 +225,7 @@ namespace NHibernate.Impl
 		public override IEntityPersister GetEntityPersister(object obj)
 		{
 			ErrorIfClosed();
-			return factory.GetEntityPersister(GuessEntityName(obj));
+			return Factory.GetEntityPersister(GuessEntityName(obj));
 			//if (entityName == null)
 			//{
 			//  return factory.GetEntityPersister(GuessEntityName(obj));
@@ -281,7 +281,7 @@ namespace NHibernate.Impl
 				spec.SqlQueryReturns,
 				spec.QueryString,
 				spec.QuerySpaces,
-				factory);
+				Factory);
 			ListCustomQuery(query, queryParameters, results);
 		}
 
@@ -297,7 +297,7 @@ namespace NHibernate.Impl
 		{
 			ErrorIfClosed();
 
-			CustomLoader loader = new CustomLoader(customQuery, factory);
+			CustomLoader loader = new CustomLoader(customQuery, Factory);
 
 			bool success = false;
 			try
@@ -338,7 +338,7 @@ namespace NHibernate.Impl
 		public override IQueryTranslator[] GetQueries(string query, bool scalar)
 		{
 			// take the union of the query spaces (ie the queried tables)
-			IQueryTranslator[] q = factory.GetQuery(query, scalar, EnabledFilters);
+			IQueryTranslator[] q = Factory.GetQuery(query, scalar, EnabledFilters);
 			return q;
 		}
 
@@ -836,11 +836,11 @@ namespace NHibernate.Impl
 			ErrorIfClosed();
 			if (entityName == null)
 			{
-				return factory.GetEntityPersister(GuessEntityName(obj));
+				return Factory.GetEntityPersister(GuessEntityName(obj));
 			}
 			else
 			{
-				return factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory, EntityMode.Poco);
+				return Factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory, EntityMode.Poco);
 			}
 		}
 	}

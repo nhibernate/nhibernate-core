@@ -1,5 +1,6 @@
 using System.Collections;
 using NHibernate.Criterion;
+using NHibernate.Transform;
 
 namespace NHibernate
 {
@@ -46,5 +47,12 @@ namespace NHibernate
 		///<param name="forceRefresh"></param>
 		///<returns></returns>
 		IMultiCriteria ForceCacheRefresh(bool forceRefresh);
+
+		/// <summary>
+		/// Sets the result transformer for all the results in this mutli criteria instance
+		/// </summary>
+		/// <param name="resultTransformer">The result transformer.</param>
+		/// <returns></returns>
+		IMultiCriteria SetResultTransformer(IResultTransformer resultTransformer);
 	}
 }

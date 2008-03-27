@@ -99,7 +99,7 @@ namespace NHibernate.Persister.Collection
 			if (Factory.Settings.IsCommentsEnabled)
 				update.SetComment("create one-to-many row " + Role);
 
-			update.SetIdentityColumn(elementColumnNames, ElementType);
+			update.SetIdentityColumn(ElementColumnNames, ElementType);
 
 			return update.ToSqlCommandInfo();
 		}

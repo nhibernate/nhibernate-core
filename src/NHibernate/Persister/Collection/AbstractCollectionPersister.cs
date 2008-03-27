@@ -71,12 +71,12 @@ namespace NHibernate.Persister.Collection
 
 		#region Columns
 
-		protected readonly string[] keyColumnNames;
-		protected readonly string[] indexColumnNames;
+		private readonly string[] keyColumnNames;
+		private readonly string[] indexColumnNames;
 		protected readonly string[] indexFormulaTemplates;
-		protected readonly string[] indexFormulas;
+		private readonly string[] indexFormulas;
 		protected readonly bool[] indexColumnIsSettable;
-		protected readonly string[] elementColumnNames;
+		private readonly string[] elementColumnNames;
 		protected readonly string[] elementFormulaTemplates;
 		protected readonly string[] elementFormulas;
 		protected readonly bool[] elementColumnIsSettable;

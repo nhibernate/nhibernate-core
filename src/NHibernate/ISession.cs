@@ -374,45 +374,44 @@ namespace NHibernate
 		/// given instance is unsaved, save a copy of and return it as a newly persistent
 		/// instance. The given instance does not become associated with the session.
 		/// This operation cascades to associated instances if the association is mapped
-		/// with <tt>cascade="merge"</tt>.<br>
-		/// <br>
+		/// with <tt>cascade="merge"</tt>.<br/>
 		/// The semantics of this method are defined by JSR-220. 
 		/// </summary>
 		/// <param name="obj">a detached instance with state to be copied </param>
 		/// <returns> an updated persistent instance </returns>
 		object Merge(object obj);
 
-		/// <summary> 
+		/// <summary>
 		/// Copy the state of the given object onto the persistent object with the same
 		/// identifier. If there is no persistent instance currently associated with
 		/// the session, it will be loaded. Return the persistent instance. If the
 		/// given instance is unsaved, save a copy of and return it as a newly persistent
 		/// instance. The given instance does not become associated with the session.
 		/// This operation cascades to associated instances if the association is mapped
-		/// with <tt>cascade="merge"</tt>.<br>
-		/// <br>
-		/// The semantics of this method are defined by JSR-220. 
-		/// </summary>
+		/// with <tt>cascade="merge"</tt>.<br/>
+		/// The semantics of this method are defined by JSR-220.
+		/// <param name="entityName">Name of the entity.</param>
 		/// <param name="obj">a detached instance with state to be copied </param>
-		/// <returns> an updated persistent instance </returns>
+		/// 	<returns> an updated persistent instance </returns>
+		/// </summary>
+		/// <returns></returns>
 		object Merge(string entityName, object obj);
 
 		/// <summary> 
 		/// Make a transient instance persistent. This operation cascades to associated
-		/// instances if the association is mapped with <tt>cascade="persist"</tt>.<br>
-		/// <br>
+		/// instances if the association is mapped with <tt>cascade="persist"</tt>.<br/>
 		/// The semantics of this method are defined by JSR-220. 
 		/// </summary>
 		/// <param name="obj">a transient instance to be made persistent </param>
 		void Persist(object obj);
 
-		/// <summary> 
+		/// <summary>
 		/// Make a transient instance persistent. This operation cascades to associated
-		/// instances if the association is mapped with <tt>cascade="persist"</tt>.<br>
-		/// <br>
-		/// The semantics of this method are defined by JSR-220. 
+		/// instances if the association is mapped with <tt>cascade="persist"</tt>.<br/>
+		/// The semantics of this method are defined by JSR-220.
 		/// </summary>
-		/// <param name="obj">a transient instance to be made persistent </param>
+		/// <param name="entityName">Name of the entity.</param>
+		/// <param name="obj">a transient instance to be made persistent</param>
 		void Persist(string entityName, object obj);
 
 		/// <summary>

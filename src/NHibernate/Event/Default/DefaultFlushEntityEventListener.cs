@@ -91,9 +91,10 @@ namespace NHibernate.Event.Default
 		/// <summary>
 		/// make sure user didn't mangle the id
 		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="persister"></param>
-		/// <param name="id"></param>
+		/// <param name="obj">The obj.</param>
+		/// <param name="persister">The persister.</param>
+		/// <param name="id">The id.</param>
+		/// <param name="entityMode">The entity mode.</param>
 		public virtual void CheckId(object obj, IEntityPersister persister, object id, EntityMode entityMode)
 		{
 			if (id != null && id is DelayedPostInsertIdentifier)

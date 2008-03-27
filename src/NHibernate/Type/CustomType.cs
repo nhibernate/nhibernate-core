@@ -160,6 +160,11 @@ namespace NHibernate.Type
 			return ((CustomType) obj).userType.GetType() == userType.GetType();
 		}
 
+		public override int GetHashCode()
+		{
+			return userType.GetType().GetHashCode();
+		}
+
 		public override int GetHashCode(object x, EntityMode entityMode)
 		{
 			return userType.GetHashCode(x);
