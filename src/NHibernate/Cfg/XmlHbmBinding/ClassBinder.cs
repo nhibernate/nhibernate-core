@@ -797,8 +797,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void BindOneToOne(XmlNode node, OneToOne model)
 		{
 			//BindColumns( node, model, isNullable, false, null, mappings );
-			InitOuterJoinFetchSetting(node, model);
-			InitLaziness(node, model, true);
 
 			XmlAttribute constrNode = node.Attributes["constrained"];
 			bool constrained = constrNode != null && constrNode.Value.Equals("true");
@@ -807,6 +805,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			model.ForeignKeyType = (constrained
 				? ForeignKeyDirection.ForeignKeyFromParent
 				: ForeignKeyDirection.ForeignKeyToParent);
+
+			InitOuterJoinFetchSetting(node, model);
+			InitLaziness(node, model, true);
 
 			XmlAttribute fkNode = node.Attributes["foreign-key"];
 			if (fkNode != null)
