@@ -13,7 +13,7 @@
 			<property name="Color"/>
 			<joined-subclass name="G">
 				<key column="fID" on-delete="cascade"/>
-				<property name="Size"/>
+				<property name="Size" column="fSize"/>
 			</joined-subclass>
 		</joined-subclass>
 	</class>
