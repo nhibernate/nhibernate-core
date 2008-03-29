@@ -42,10 +42,10 @@ namespace NHibernate.Dialect.Lock
 			{
 				select.SetVersionColumn(new string[] { lockable.VersionColumnName }, lockable.VersionType);
 			}
-			//if (factory.Settings.IsCommentsEnabled)
-			//{
-			//  select.SetComment(lockMode + " lock " + lockable.EntityName);
-			//}
+			if (factory.Settings.IsCommentsEnabled)
+			{
+				select.SetComment(lockMode + " lock " + lockable.EntityName);
+			}
 			return select.ToSqlString();
 		}
 
