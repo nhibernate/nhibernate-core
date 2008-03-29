@@ -290,6 +290,7 @@ namespace NHibernate.Test.HQLFunctionTest
 
 				Animal a = new Animal("   abc", 20);
 				s.Save(a);
+				s.Flush();
 				hql = "from Animal a where trim(both from a.Description) = 'abc'";
 				lresult = s.CreateQuery(hql).List();
 				Assert.AreEqual(2, lresult.Count);
