@@ -10,7 +10,7 @@
 
     <list name="Children" cascade="all-delete-orphan">
       <key column="PARENT_ID"/>
-      <index column="Position"/>
+      <index column="fPosition"/>
       <one-to-many class="Employee"/>
     </list>
     
