@@ -13,7 +13,7 @@
 			 table="Item"
 			 lazy="true">
 			<cache usage="read-write"/>
-			<key column="ParentId"/>
+			<key column="ParentId" foreign-key="none"/>
 			<one-to-many class="NHibernate.Test.SecondLevelCacheTests.Item, NHibernate.Test"/>
 		</bag>
 	</class>
