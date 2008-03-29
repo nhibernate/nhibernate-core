@@ -39,6 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH345
 				s.Save(client2);
 				s.Save(project1);
 				s.Save(project2);
+				s.Flush();
 
 				IList listAsc = s.CreateQuery(
 					"select p from Project as p order by p.Client.Name asc").List();
