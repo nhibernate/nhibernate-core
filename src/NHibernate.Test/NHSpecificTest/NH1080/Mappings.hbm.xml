@@ -7,7 +7,7 @@
       </generator>
     </id>
 
-    <property name="Value" not-null="true" length="255" />
+    <property name="Value" column="fValue" not-null="true" length="255" />
 
     <many-to-one name="B1" class="B" not-null="false" column="B1_ID" cascade="all-delete-orphan" lazy="proxy" fetch="select" />
     <many-to-one name="B2" class="B" not-null="false" column="B2_ID" cascade="all-delete-orphan" lazy="proxy" fetch="join" />
@@ -20,16 +20,16 @@
       <generator class="assigned" />
     </id>
 
-    <property name="Value" not-null="true" length="255" />
-  </class>
+    <property name="Value" column="fValue" not-null="true" length="255" />
+</class>
 
 
-  <class name="C">
-    <id name="ID" type="Int32"  unsaved-value="-1">
-      <generator class="assigned" />
-    </id>
+<class name="C">
+	<id name="ID" type="Int32"  unsaved-value="-1">
+		<generator class="assigned" />
+	</id>
 
-    <property name="Value" not-null="true" length="255" />
+	<property name="Value" column="fValue" not-null="true" length="255" />
   </class>
 
 </hibernate-mapping>
