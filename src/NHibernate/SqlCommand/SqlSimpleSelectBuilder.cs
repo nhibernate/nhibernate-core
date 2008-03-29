@@ -22,7 +22,6 @@ namespace NHibernate.SqlCommand
 		//these can be plain strings because a forUpdate and orderBy will have
 		// no parameters so using a SqlString will only complicate matters - or 
 		// maybe simplify because any Sql will be contained in a known object type...
-		private string forUpdateFragment;
 		private string orderBy;
 
 		public SqlSimpleSelectBuilder(Dialect.Dialect dialect, IMapping factory)
@@ -148,17 +147,6 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
-		/// Sets the For Update Fragment to the Select Command
-		/// </summary>
-		/// <param name="fragment">The fragment to set.</param>
-		/// <returns>The SqlSimpleSelectBuilder</returns>
-		public SqlSimpleSelectBuilder SetForUpdateFragment(string fragment)
-		{
-			forUpdateFragment = fragment;
-			return this;
-		}
-
-		/// <summary>
 		/// Set the Order By fragment of the Select Command
 		/// </summary>
 		/// <param name="orderBy">The OrderBy fragment.  It should include the SQL "ORDER BY"</param>
@@ -235,16 +223,14 @@ namespace NHibernate.SqlCommand
 			else
 				sqlBuilder.Add(whereStrings[0]);
 
-			if (forUpdateFragment != null)
-			{
-				sqlBuilder.Add(" ")
-					.Add(forUpdateFragment)
-					.Add(" ");
-			}
-
 			if (orderBy != null)
 			{
 				sqlBuilder.Add(orderBy);
+			}
+
+			if (lockMode != null)
+			{
+				sqlBuilder.Add(Dialect.GetForUpdateString(lockMode));
 			}
 
 			return sqlBuilder.ToSqlString();
