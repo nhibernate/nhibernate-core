@@ -161,6 +161,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				s.Save(new Master());
+				s.Flush();
 				Assert.AreEqual(1, s.CreateCriteria(typeof(Master))
 				                   	.CreateAlias("Details", "detail", JoinType.LeftOuterJoin)
 				                   	.SetFetchMode("Details", FetchMode.Join)
