@@ -5,10 +5,10 @@
 
   <class name="Foo" lazy="false">
     <id name="Id" type="int">
-      <generator class="identity"/>
+      <generator class="native"/>
     </id>
     <property name="Word"/>
-    <property name="Number"/>
+    <property name="Number" column="fNumber"/>
   </class>
   
 </hibernate-mapping>
