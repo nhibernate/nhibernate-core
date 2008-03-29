@@ -92,7 +92,7 @@ namespace NHibernate.Criterion
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return CriterionUtil.GetTypedValues(criteriaQuery, criteria, projection, _propertyName, _value);
+			return CriterionUtil.GetTypedValues(criteriaQuery, criteria, projection, _propertyName, _value.ToString().ToLower());
 		}
 
 		/// <summary></summary>
