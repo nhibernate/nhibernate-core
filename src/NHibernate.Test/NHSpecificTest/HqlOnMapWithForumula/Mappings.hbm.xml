@@ -7,7 +7,7 @@
       </generator>
     </id>
 
-    <property name="Value" not-null="true" length="255" />
+    <property name="Value" column="fValue" not-null="true" length="255" />
 
 		<map name="MyMaps" table="Maps" lazy="false" fetch="subselect" >
 			<key column="ParentId" />
