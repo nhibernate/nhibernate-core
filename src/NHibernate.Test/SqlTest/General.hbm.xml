@@ -151,7 +151,7 @@
 		fld_name as name,
 		fld_model as model,
 		fld_speed as speed,
-		fld_length as length,
+		fld_length as flength,
 		fld_width as width,
 		fld_length * fld_width as surface,
 		fld_length * fld_width *10 as volume
