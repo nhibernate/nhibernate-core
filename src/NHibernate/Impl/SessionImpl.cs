@@ -1883,14 +1883,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private void AfterOperation(bool success)
-		{
-			if (!connectionManager.IsInActiveTransaction)
-			{
-				connectionManager.AfterNonTransactionalQuery(success);
-			}
-		}
-
 		public override void AfterTransactionBegin(ITransaction tx)
 		{
 			ErrorIfClosed();

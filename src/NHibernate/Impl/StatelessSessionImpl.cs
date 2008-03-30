@@ -110,15 +110,6 @@ namespace NHibernate.Impl
 			temporaryPersistenceContext.Clear();
 		}
 
-		private void AfterOperation(bool success)
-		{
-			// TODO pull up
-			if (!connectionManager.IsInActiveTransaction)
-			{
-				connectionManager.AfterNonTransactionalQuery(success);
-			}
-		}
-
 		public override IList<T> List<T>(string query, QueryParameters queryParameters)
 		{
 			// TODO pull up

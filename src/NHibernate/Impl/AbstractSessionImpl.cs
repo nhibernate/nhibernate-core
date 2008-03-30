@@ -213,5 +213,12 @@ namespace NHibernate.Impl
 			return ADOExceptionHelper.Convert(factory.SQLExceptionConverter, sqlException, message);
 		}
 
+		protected void AfterOperation(bool success)
+		{
+			if (!ConnectionManager.IsInActiveTransaction)
+			{
+				ConnectionManager.AfterNonTransactionalQuery(success);
+			}
+		}
 	}
 }
