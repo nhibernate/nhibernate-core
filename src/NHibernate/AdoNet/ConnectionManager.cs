@@ -40,7 +40,7 @@ namespace NHibernate.AdoNet
 		public ConnectionManager(
 			ISessionImplementor session,
 			IDbConnection suppliedConnection,
-			ConnectionReleaseMode connectionReleaseMode, 
+			ConnectionReleaseMode connectionReleaseMode,
 			IInterceptor interceptor)
 		{
 			this.session = session;
@@ -55,7 +55,12 @@ namespace NHibernate.AdoNet
 
 		public bool IsInActiveTransaction
 		{
-			get { return transaction != null && transaction.IsActive; }
+			get
+			{
+				if (System.Transactions.Transaction.Current != null)
+					return true;
+				return transaction != null && transaction.IsActive;
+			}
 		}
 
 		public bool IsConnected
@@ -229,11 +234,11 @@ namespace NHibernate.AdoNet
 				{
 					log.Debug("skipping aggressive-release due to open resources on batcher");
 				}
-					// TODO H3:
-					//else if (borrowedConnection != null)
-					//{
-					//    log.Debug("skipping aggressive-release due to borrowed connection");
-					//}
+				// TODO H3:
+				//else if (borrowedConnection != null)
+				//{
+				//    log.Debug("skipping aggressive-release due to borrowed connection");
+				//}
 				else
 				{
 					AggressiveRelease();
@@ -271,9 +276,9 @@ namespace NHibernate.AdoNet
 		private ConnectionManager(SerializationInfo info, StreamingContext context)
 		{
 			ownConnection = info.GetBoolean("ownConnection");
-			session = (ISessionImplementor) info.GetValue("session", typeof(ISessionImplementor));
+			session = (ISessionImplementor)info.GetValue("session", typeof(ISessionImplementor));
 			connectionReleaseMode =
-				(ConnectionReleaseMode) info.GetValue("connectionReleaseMode", typeof(ConnectionReleaseMode));
+				(ConnectionReleaseMode)info.GetValue("connectionReleaseMode", typeof(ConnectionReleaseMode));
 			interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
 		}
 
@@ -284,7 +289,7 @@ namespace NHibernate.AdoNet
 			info.AddValue("ownConnection", ownConnection);
 			info.AddValue("session", session, typeof(ISessionImplementor));
 			info.AddValue("connectionReleaseMode", connectionReleaseMode, typeof(ConnectionReleaseMode));
-			info.AddValue("interceptor", interceptor, typeof (IInterceptor));
+			info.AddValue("interceptor", interceptor, typeof(IInterceptor));
 		}
 
 		#endregion

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Transactions;
 using NHibernate.AdoNet;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -18,13 +19,15 @@ namespace NHibernate.Impl
 {
 	/// <summary> Functionality common to stateless and stateful sessions </summary>
 	[Serializable]
-	public abstract class AbstractSessionImpl : ISessionImplementor
+	public abstract class AbstractSessionImpl : ISessionImplementor, IEnlistmentNotification
 	{
 		[NonSerialized]
 		private ISessionFactoryImplementor factory;
 		private bool closed = false;
+		private System.Transactions.Transaction ambientTransation;
+		private bool isAlreadyDisposed;
 
-		internal AbstractSessionImpl() {}
+		internal AbstractSessionImpl() { }
 
 		protected internal AbstractSessionImpl(ISessionFactoryImplementor factory)
 		{
@@ -32,6 +35,11 @@ namespace NHibernate.Impl
 		}
 
 		#region ISessionImplementor Members
+
+		public void Initialize()
+		{
+			CheckAndUpdateSessionStatus();
+		}
 
 		public abstract void InitializeCollection(IPersistentCollection coolection, bool writing);
 		public abstract object InternalLoad(string entityName, object id, bool eager, bool isNullable);
@@ -43,7 +51,7 @@ namespace NHibernate.Impl
 			get { return factory; }
 			protected set { factory = value; }
 		}
-		public abstract EntityMode EntityMode { get;}
+		public abstract EntityMode EntityMode { get; }
 
 		public abstract IBatcher Batcher { get; }
 
@@ -79,7 +87,7 @@ namespace NHibernate.Impl
 
 		public virtual IQuery GetNamedSQLQuery(string name)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			NamedSQLQueryDefinition nsqlqd = factory.GetNamedSQLQuery(name);
 			if (nsqlqd == null)
 			{
@@ -112,7 +120,7 @@ namespace NHibernate.Impl
 
 		public virtual IQuery GetNamedQuery(string queryName)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			NamedQueryDefinition nqd = factory.GetNamedQuery(queryName);
 			IQuery query;
 			if (nqd != null)
@@ -141,12 +149,24 @@ namespace NHibernate.Impl
 			get { return closed; }
 		}
 
+		protected internal virtual void CheckAndUpdateSessionStatus()
+		{
+			ErrorIfClosed();
+			EnlistInAmbientTransactionIfNeeded();
+		}
+
 		protected internal virtual void ErrorIfClosed()
 		{
-			if (closed)
+			if (IsClosed || IsAlreadyDisposed)
 			{
-				throw new SessionException("Session is closed!");
+				throw new ObjectDisposedException("ISession", "Session is closed!");
 			}
+		}
+
+		protected bool IsAlreadyDisposed
+		{
+			get { return isAlreadyDisposed; }
+			set { isAlreadyDisposed = value; }
 		}
 
 		public abstract void Flush();
@@ -172,7 +192,7 @@ namespace NHibernate.Impl
 			//{
 			//	query.SetFetchSize(nqd.FetchSize);
 			//}
-			if (nqd.CacheMode.HasValue) 
+			if (nqd.CacheMode.HasValue)
 				query.SetCacheMode(nqd.CacheMode.Value);
 
 			query.SetReadOnly(nqd.IsReadOnly);
@@ -184,7 +204,7 @@ namespace NHibernate.Impl
 
 		public virtual IQuery CreateQuery(string queryString)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			QueryImpl query = new QueryImpl(queryString, this, GetHQLQueryPlan(queryString, false).ParameterMetadata);
 			//query.SetComment(queryString);
 			return query;
@@ -192,7 +212,7 @@ namespace NHibernate.Impl
 
 		public virtual ISQLQuery CreateSQLQuery(string sql)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			SqlQueryImpl query = new SqlQueryImpl(sql, this, factory.QueryPlanCache.GetSQLParameterMetadata(sql));
 			//query.SetComment("dynamic native SQL query");
 			return query;
@@ -220,5 +240,54 @@ namespace NHibernate.Impl
 				ConnectionManager.AfterNonTransactionalQuery(success);
 			}
 		}
+
+		#region IEnlistmentNotification Members
+
+		void IEnlistmentNotification.Prepare(PreparingEnlistment preparingEnlistment)
+		{
+			BeforeTransactionCompletion(null);
+			if (FlushMode != FlushMode.Never)
+			{
+				Flush();
+			} 
+			preparingEnlistment.Prepared();
+		}
+
+		void IEnlistmentNotification.Commit(Enlistment enlistment)
+		{
+			// we have nothing to do here, since it is the actual 
+			// DB connection that will commit the transaction
+			enlistment.Done();
+		}
+
+		void IEnlistmentNotification.Rollback(Enlistment enlistment)
+		{
+			AfterTransactionCompletion(false, null);
+			enlistment.Done();
+		}
+
+		void IEnlistmentNotification.InDoubt(Enlistment enlistment)
+		{
+			AfterTransactionCompletion(false, null);
+			enlistment.Done();
+		}
+
+		protected void EnlistInAmbientTransactionIfNeeded()
+		{
+			if(ambientTransation != null)
+				return;
+			if (System.Transactions.Transaction.Current==null)
+				return;
+			ambientTransation = System.Transactions.Transaction.Current;
+			AfterTransactionBegin(null);
+			ambientTransation.TransactionCompleted += delegate(object sender, TransactionEventArgs e)
+			{
+				bool wasSuccessful = e.Transaction.TransactionInformation.Status == TransactionStatus.Committed;
+				AfterTransactionCompletion(wasSuccessful, null);
+			};
+			ambientTransation.EnlistVolatile(this, EnlistmentOptions.None);
+		}
+
+		#endregion
 	}
 }

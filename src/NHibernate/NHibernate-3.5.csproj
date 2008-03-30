@@ -59,6 +59,7 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -405,7 +406,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="nhibernate-generic.xsd">
-      <SubType>Designer</SubType>
+      <SubType>
+      </SubType>
     </EmbeddedResource>
     <Compile Include="Action\BulkOperationCleanupAction.cs" />
     <Compile Include="Action\CollectionAction.cs" />
@@ -1065,7 +1067,8 @@
     </Compile>
     <Compile Include="Util\XmlHelper.cs" />
     <EmbeddedResource Include="nhibernate-configuration.xsd">
-      <SubType>Designer</SubType>
+      <SubType>
+      </SubType>
     </EmbeddedResource>
     <None Include="nhibernate-configuration.xsx">
       <DependentUpon>nhibernate-configuration.xsd</DependentUpon>
@@ -1074,7 +1077,8 @@
       <DependentUpon>nhibernate-generic.xsd</DependentUpon>
     </None>
     <EmbeddedResource Include="nhibernate-mapping.xsd">
-      <SubType>Designer</SubType>
+      <SubType>
+      </SubType>
     </EmbeddedResource>
     <None Include="nhibernate-mapping.xsx">
       <DependentUpon>nhibernate-mapping.xsd</DependentUpon>

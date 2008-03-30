@@ -36,6 +36,7 @@ namespace NHibernate.Impl
 		{
 			temporaryPersistenceContext = new StatefulPersistenceContext(this);
 			connectionManager = new ConnectionManager(this, connection, ConnectionReleaseMode.AfterTransaction, new EmptyInterceptor());
+			CheckAndUpdateSessionStatus();
 		}
 
 		public override void InitializeCollection(IPersistentCollection coolection, bool writing)
@@ -45,7 +46,7 @@ namespace NHibernate.Impl
 
 		public override object InternalLoad(string entityName, object id, bool eager, bool isNullable)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IEntityPersister persister = Factory.GetEntityPersister(entityName);
 			if (!eager && persister.HasProxy)
 			{
@@ -70,7 +71,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				ErrorIfClosed();
+				CheckAndUpdateSessionStatus();
 				return connectionManager.Batcher;
 			}
 		}
@@ -85,7 +86,7 @@ namespace NHibernate.Impl
 
 		public override void List(string query, QueryParameters queryParameters, IList results)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			queryParameters.ValidateParameters();
 			HQLQueryPlan plan = GetHQLQueryPlan(query, false);
 			bool success = false;
@@ -128,7 +129,7 @@ namespace NHibernate.Impl
 
 		public override void List(CriteriaImpl criteria, IList results)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
 			int size = implementors.Length;
 
@@ -215,7 +216,7 @@ namespace NHibernate.Impl
 
 		public override IEntityPersister GetEntityPersister(object obj)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			return Factory.GetEntityPersister(GuessEntityName(obj));
 			//if (entityName == null)
 			//{
@@ -242,7 +243,7 @@ namespace NHibernate.Impl
 
 		public override object GetContextEntityIdentifier(object obj)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			return null;
 		}
 
@@ -253,7 +254,7 @@ namespace NHibernate.Impl
 
 		public override object Instantiate(string clazz, object id)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			return Factory.GetEntityPersister(clazz).Instantiate(id, EntityMode.Poco);
 		}
 
@@ -286,7 +287,7 @@ namespace NHibernate.Impl
 
 		public override void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 
 			CustomLoader loader = new CustomLoader(customQuery, Factory);
 
@@ -360,7 +361,7 @@ namespace NHibernate.Impl
 
 		public override object GetEntityUsingInterceptor(EntityKey key)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			return null;
 		}
 
@@ -397,7 +398,7 @@ namespace NHibernate.Impl
 
 		public override string GuessEntityName(object entity)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			return entity.GetType().FullName;
 		}
 
@@ -413,7 +414,7 @@ namespace NHibernate.Impl
 
 		public void ManagedFlush()
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			Batcher.ExecuteBatch();
 		}
 
@@ -468,7 +469,7 @@ namespace NHibernate.Impl
 		/// <returns> the identifier of the instance </returns>
 		public object Insert(object entity)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			return Insert(null, entity);
 		}
 
@@ -478,7 +479,7 @@ namespace NHibernate.Impl
 		/// <returns> the identifier of the instance </returns>
 		public object Insert(string entityName, object entity)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IEntityPersister persister = GetEntityPersister(entity);
 			object id = persister.IdentifierGenerator.Generate(this, entity);
 			object[] state = persister.GetPropertyValues(entity, EntityMode.Poco);
@@ -507,7 +508,7 @@ namespace NHibernate.Impl
 		/// <param name="entity">a detached entity instance </param>
 		public void Update(object entity)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			Update(null, entity);
 		}
 
@@ -516,7 +517,7 @@ namespace NHibernate.Impl
 		/// <param name="entity">a detached entity instance </param>
 		public void Update(string entityName, object entity)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IEntityPersister persister = GetEntityPersister(entity);
 			object id = persister.GetIdentifier(entity, EntityMode.Poco);
 			object[] state = persister.GetPropertyValues(entity, EntityMode.Poco);
@@ -539,7 +540,7 @@ namespace NHibernate.Impl
 		/// <param name="entity">a detached entity instance </param>
 		public void Delete(object entity)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			Delete(null, entity);
 		}
 
@@ -548,7 +549,7 @@ namespace NHibernate.Impl
 		/// <param name="entity">a detached entity instance </param>
 		public void Delete(string entityName, object entity)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IEntityPersister persister = GetEntityPersister(entity);
 			object id = persister.GetIdentifier(entity, EntityMode.Poco);
 			object version = persister.GetVersion(entity, EntityMode.Poco);
@@ -583,7 +584,7 @@ namespace NHibernate.Impl
 		/// <returns> a detached entity instance </returns>
 		public object Get(string entityName, object id, LockMode lockMode)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			object result = Factory.GetEntityPersister(entityName).Load(id, null, lockMode, this);
 			temporaryPersistenceContext.Clear();
 			return result;
@@ -680,7 +681,7 @@ namespace NHibernate.Impl
 		/// <remarks>Entities returned by the query are detached.</remarks>
 		public ICriteria CreateCriteria<T>()
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			return new CriteriaImpl(typeof(T), this);
 		}
 
@@ -694,7 +695,7 @@ namespace NHibernate.Impl
 		/// <remarks>Entities returned by the query are detached.</remarks>
 		public ICriteria CreateCriteria<T>(string alias)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			return new CriteriaImpl(typeof(T), alias, this);
 		}
 
@@ -725,7 +726,7 @@ namespace NHibernate.Impl
 		/// <summary> Begin a NHibernate transaction.</summary>
 		public ITransaction BeginTransaction()
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			return connectionManager.BeginTransaction();
 		}
 
@@ -783,7 +784,7 @@ namespace NHibernate.Impl
 
 		public override int ExecuteNativeUpdate(NativeSQLQuerySpecification nativeSQLQuerySpecification, QueryParameters queryParameters)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			queryParameters.ValidateParameters();
 			NativeSQLQueryPlan plan = GetNativeSQLQueryPlan(nativeSQLQuerySpecification);
 
@@ -804,7 +805,7 @@ namespace NHibernate.Impl
 
 		public override int ExecuteUpdate(string query, QueryParameters queryParameters)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			queryParameters.ValidateParameters();
 			HQLQueryPlan plan = GetHQLQueryPlan(query, false);
 			bool success = false;
@@ -824,7 +825,7 @@ namespace NHibernate.Impl
 
 		public override IEntityPersister GetEntityPersister(string entityName, object obj)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			if (entityName == null)
 			{
 				return Factory.GetEntityPersister(GuessEntityName(obj));

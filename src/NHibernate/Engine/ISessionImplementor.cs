@@ -20,6 +20,11 @@ namespace NHibernate.Engine
 	public interface ISessionImplementor
 	{
 		/// <summary>
+		/// Initialize the session after its construction was complete
+		/// </summary>
+		void Initialize();
+
+		/// <summary>
 		/// Initialize the collection (if not already initialized)
 		/// </summary>
 		/// <param name="coolection"></param>

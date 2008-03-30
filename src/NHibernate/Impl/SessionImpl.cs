@@ -230,6 +230,7 @@ namespace NHibernate.Impl
 			this.autoCloseSessionEnabled = autoCloseSessionEnabled;
 			//this.connectionReleaseMode = connectionReleaseMode;
 			//this.jdbcContext = new JDBCContext(this, connection, interceptor);
+			CheckAndUpdateSessionStatus();
 		}
 
 		/// <summary>
@@ -256,6 +257,7 @@ namespace NHibernate.Impl
 				Factory.StatisticsImplementor.OpenSession();
 
 			log.Debug("opened session [" + entityMode + "]");
+			CheckAndUpdateSessionStatus();
 		}
 
 		/// <summary></summary>
@@ -263,7 +265,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				ErrorIfClosed();
+				CheckAndUpdateSessionStatus();
 				return connectionManager.Batcher;
 			}
 		}
@@ -340,7 +342,7 @@ namespace NHibernate.Impl
 			connectionManager.AfterTransaction();
 			persistenceContext.AfterTransactionCompletion();
 			actionQueue.AfterTransactionCompletion(success);
-			if (rootSession == null && tx != null)
+			if (rootSession == null)
 			{
 				try
 				{
@@ -364,7 +366,7 @@ namespace NHibernate.Impl
 
 		public LockMode GetCurrentLockMode(object obj)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 
 			if (obj == null)
 			{
@@ -501,7 +503,7 @@ namespace NHibernate.Impl
 
 		public override void List(string query, QueryParameters queryParameters, IList results)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			queryParameters.ValidateParameters();
 			HQLQueryPlan plan = GetHQLQueryPlan(query, false);
 			AutoFlushIfRequired(plan.QuerySpaces);
@@ -561,7 +563,7 @@ namespace NHibernate.Impl
 
 		public override IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			queryParameters.ValidateParameters();
 			HQLQueryPlan plan = GetHQLQueryPlan(query, true);
 			AutoFlushIfRequired(plan.QuerySpaces);
@@ -579,7 +581,7 @@ namespace NHibernate.Impl
 
 		public override IEnumerable Enumerable(string query, QueryParameters queryParameters)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			queryParameters.ValidateParameters();
 			HQLQueryPlan plan = GetHQLQueryPlan(query, true);
 			AutoFlushIfRequired(plan.QuerySpaces);
@@ -614,7 +616,7 @@ namespace NHibernate.Impl
 				throw new ArgumentNullException("query", "attempt to perform delete-by-query with null query");
 			}
 
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 
 			if (log.IsDebugEnabled)
 			{
@@ -652,9 +654,9 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery CreateFilter(object collection, string queryString)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			CollectionFilterImpl filter =
 				new CollectionFilterImpl(queryString, collection, this,
 				                         GetFilterQueryPlan(collection, queryString, null, false).ParameterMetadata);
@@ -727,7 +729,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				ErrorIfClosed();
+				CheckAndUpdateSessionStatus();
 				return actionQueue;
 			}
 		}
@@ -752,7 +754,7 @@ namespace NHibernate.Impl
 		/// <summary> Force an immediate flush</summary>
 		public void ForceFlush(EntityEntry entityEntry)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("flushing to force deletion of re-saved object: " + MessageHelper.InfoString(entityEntry.Persister, entityEntry.Id, Factory));
@@ -889,7 +891,7 @@ namespace NHibernate.Impl
 
 		public override object GetEntityUsingInterceptor(EntityKey key)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			// todo : should this get moved to PersistentContext?
 			// logically, is PersistentContext the "thing" to which an interceptor gets attached?
 			object result = persistenceContext.GetEntity(key);
@@ -913,7 +915,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				ErrorIfClosed();
+				CheckAndUpdateSessionStatus();
 				return persistenceContext;
 			}
 		}
@@ -926,7 +928,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		private bool AutoFlushIfRequired(ISet<string> querySpaces)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			if (!TransactionInProgress)
 			{
 				// do not auto-flush while outside a transaction
@@ -992,7 +994,7 @@ namespace NHibernate.Impl
 
 		public string GetEntityName(object obj)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			INHibernateProxy proxy = obj as INHibernateProxy;
 			if (proxy != null)
 			{
@@ -1130,7 +1132,7 @@ namespace NHibernate.Impl
 				log.Warn("Transaction started on non-root session");
 			}
 
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			return connectionManager.BeginTransaction(isolationLevel);
 		}
 
@@ -1143,7 +1145,7 @@ namespace NHibernate.Impl
 				log.Warn("Transaction started on non-root session");
 			}
 
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			return connectionManager.BeginTransaction();
 		}
 
@@ -1175,7 +1177,7 @@ namespace NHibernate.Impl
 		/// </remarks>
 		public override void Flush()
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			if (persistenceContext.CascadeLevel > 0)
 			{
 				throw new HibernateException("Flush during cascade is dangerous");
@@ -1197,7 +1199,7 @@ namespace NHibernate.Impl
 
 		public bool IsDirty()
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 
 			log.Debug("checking session dirtiness");
 			if (actionQueue.AreInsertionsOrDeletionsQueued)
@@ -1245,7 +1247,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object GetIdentifier(object obj)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			// Actually the case for proxies will probably work even with
 			// the session closed, but do the check here anyway, so that
 			// the behavior is uniform.
@@ -1334,7 +1336,7 @@ namespace NHibernate.Impl
 		/// <param name="writing"></param>
 		public override void InitializeCollection(IPersistentCollection collection, bool writing)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IInitializeCollectionEventListener[] listener = listeners.InitializeCollectionEventListeners;
 			for (int i = 0; i < listener.Length; i++)
 			{
@@ -1366,31 +1368,26 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public IDbConnection Disconnect()
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			log.Debug("disconnecting session");
 			return connectionManager.Disconnect();
 		}
 
 		public void Reconnect()
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			log.Debug("reconnecting session");
 			connectionManager.Reconnect();
 		}
 
 		public void Reconnect(IDbConnection conn)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			log.Debug("reconnecting session");
 			connectionManager.Reconnect(conn);
 		}
 
 		#region System.IDisposable Members
-
-		/// <summary>
-		/// A flag to indicate if <c>Dispose()</c> has been called.
-		/// </summary>
-		private bool _isAlreadyDisposed;
 
 		private string fetchProfile;
 
@@ -1422,7 +1419,7 @@ namespace NHibernate.Impl
 		/// </remarks>
 		private void Dispose(bool isDisposing)
 		{
-			if (_isAlreadyDisposed)
+			if (IsAlreadyDisposed)
 			{
 				// don't dispose of multiple times.
 				return;
@@ -1437,7 +1434,7 @@ namespace NHibernate.Impl
 
 			// free unmanaged resources here
 
-			_isAlreadyDisposed = true;
+			IsAlreadyDisposed = true;
 			// nothing for Finalizer to do - so tell the GC to ignore it
 			GC.SuppressFinalize(this);
 		}
@@ -1458,7 +1455,7 @@ namespace NHibernate.Impl
 
 		public ICollection Filter(object collection, string filter, object[] values, IType[] types)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 
 			object[] vals = new object[values.Length + 1];
 			IType[] typs = new IType[values.Length + 1];
@@ -1470,7 +1467,7 @@ namespace NHibernate.Impl
 
 		private void Filter(object collection, string filter, QueryParameters queryParameters, IList results)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			FilterQueryPlan plan = GetFilterQueryPlan(collection, filter, queryParameters, false);
 
 			bool success = false;
@@ -1512,28 +1509,28 @@ namespace NHibernate.Impl
 
 		public override IEnumerable EnumerableFilter(object collection, string filter, QueryParameters queryParameters)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			FilterQueryPlan plan = GetFilterQueryPlan(collection, filter, queryParameters, true);
 			return plan.PerformIterate(queryParameters, this);
 		}
 
 		public override IEnumerable<T> EnumerableFilter<T>(object collection, string filter, QueryParameters queryParameters)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			FilterQueryPlan plan = GetFilterQueryPlan(collection, filter, queryParameters, true);
 			return plan.PerformIterate<T>(queryParameters, this);
 		}
 
 		public ICriteria CreateCriteria(System.Type persistentClass)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 
 			return new CriteriaImpl(persistentClass, this);
 		}
 
 		public ICriteria CreateCriteria(System.Type persistentClass, string alias)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 
 			return new CriteriaImpl(persistentClass, alias, this);
 		}
@@ -1554,7 +1551,7 @@ namespace NHibernate.Impl
 
 		public override void List(CriteriaImpl criteria, IList results)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 
 			string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
 			int size = implementors.Length;
@@ -1616,7 +1613,7 @@ namespace NHibernate.Impl
 
 		public bool Contains(object obj)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 
 			if (obj is INHibernateProxy)
 			{
@@ -1659,19 +1656,19 @@ namespace NHibernate.Impl
 
 		public override ISQLQuery CreateSQLQuery(string sql)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			return base.CreateSQLQuery(sql);
 		}
 
 		public IQuery CreateSQLQuery(string sql, string returnAlias, System.Type returnClass)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			return new SqlQueryImpl(sql, new string[] { returnAlias }, new System.Type[] { returnClass }, this, Factory.QueryPlanCache.GetSQLParameterMetadata(sql));
 		}
 
 		public IQuery CreateSQLQuery(string sql, string[] returnAliases, System.Type[] returnClasses)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			return new SqlQueryImpl(sql, returnAliases, returnClasses, this, Factory.QueryPlanCache.GetSQLParameterMetadata(sql));
 		}
 
@@ -1701,7 +1698,7 @@ namespace NHibernate.Impl
 
 		public override void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 
 			CustomLoader loader = new CustomLoader(customQuery, Factory);
 			AutoFlushIfRequired(loader.QuerySpaces);
@@ -1730,7 +1727,7 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public void Clear()
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			actionQueue.Clear();
 			persistenceContext.Clear();
 		}
@@ -1752,7 +1749,7 @@ namespace NHibernate.Impl
 
 		public void CancelQuery()
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 
 			Batcher.CancelLastQuery();
 		}
@@ -1772,23 +1769,15 @@ namespace NHibernate.Impl
 			return FireSaveOrUpdateCopy(new MergeEvent(null, obj, id, this));
 		}
 
-		protected internal override void ErrorIfClosed()
-		{
-			if (_isAlreadyDisposed || IsClosed)
-			{
-				throw new ObjectDisposedException("ISession", "Session was disposed of or closed");
-			}
-		}
-
 		public IFilter GetEnabledFilter(string filterName)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			return enabledFilters[filterName];
 		}
 
 		public IFilter EnableFilter(string filterName)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			FilterImpl filter = new FilterImpl(Factory.GetFilterDefinition(filterName));
 			enabledFilters[filterName] = filter;
 			return filter;
@@ -1796,13 +1785,13 @@ namespace NHibernate.Impl
 
 		public void DisableFilter(string filterName)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			enabledFilters.Remove(filterName);
 		}
 
 		public override Object GetFilterParameterValue(string filterParameterName)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			string[] parsed = ParseFilterParameterName(filterParameterName);
 			IFilter ifilter;
 			enabledFilters.TryGetValue(parsed[0], out ifilter);
@@ -1816,7 +1805,7 @@ namespace NHibernate.Impl
 
 		public override IType GetFilterParameterType(string filterParameterName)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			string[] parsed = ParseFilterParameterName(filterParameterName);
 			FilterDefinition filterDef = Factory.GetFilterDefinition(parsed[0]);
 			if (filterDef == null)
@@ -1836,7 +1825,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				ErrorIfClosed();
+				CheckAndUpdateSessionStatus();
 
 				foreach (IFilter filter in enabledFilters.Values)
 				{
@@ -1885,7 +1874,7 @@ namespace NHibernate.Impl
 
 		public override void AfterTransactionBegin(ITransaction tx)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			interceptor.AfterTransactionBegin(tx);
 		}
 
@@ -1934,7 +1923,7 @@ namespace NHibernate.Impl
 				return rootSession.GetSession(entityMode);
 			}
 
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 
 			ISession rtn = null;
 			if (childSessionsByEntityMode == null)
@@ -1977,7 +1966,7 @@ namespace NHibernate.Impl
 			get { return cacheMode; }
 			set
 			{
-				ErrorIfClosed();
+				CheckAndUpdateSessionStatus();
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("setting cache mode to: " + value);
@@ -1996,20 +1985,20 @@ namespace NHibernate.Impl
 			get { return fetchProfile; }
 			set
 			{
-				ErrorIfClosed();
+				CheckAndUpdateSessionStatus();
 				fetchProfile = value;
 			}
 		}
 
 		public void SetReadOnly(object entity, bool readOnly)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			persistenceContext.SetReadOnly(entity, readOnly);
 		}
 
 		private void FireDelete(DeleteEvent @event)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IDeleteEventListener[] deleteEventListener = listeners.DeleteEventListeners;
 			for (int i = 0; i < deleteEventListener.Length; i++)
 			{
@@ -2019,7 +2008,7 @@ namespace NHibernate.Impl
 
 		private void FireDelete(DeleteEvent @event, ISet transientEntities)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IDeleteEventListener[] deleteEventListener = listeners.DeleteEventListeners;
 			for (int i = 0; i < deleteEventListener.Length; i++)
 			{
@@ -2029,7 +2018,7 @@ namespace NHibernate.Impl
 
 		private void FireEvict(EvictEvent evictEvent)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IEvictEventListener[] evictEventListener = listeners.EvictEventListeners;
 			for (int i = 0; i < evictEventListener.Length; i++)
 			{
@@ -2039,7 +2028,7 @@ namespace NHibernate.Impl
 
 		private void FireLoad(LoadEvent @event, LoadType loadType)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			ILoadEventListener[] loadEventListener = listeners.LoadEventListeners;
 			for (int i = 0; i < loadEventListener.Length; i++)
 			{
@@ -2049,7 +2038,7 @@ namespace NHibernate.Impl
 
 		private void FireLock(LockEvent lockEvent)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			ILockEventListener[] lockEventListener = listeners.LockEventListeners;
 			for (int i = 0; i < lockEventListener.Length; i++)
 			{
@@ -2059,7 +2048,7 @@ namespace NHibernate.Impl
 
 		private object FireMerge(MergeEvent @event)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IMergeEventListener[] mergeEventListener = listeners.MergeEventListeners;
 			for (int i = 0; i < mergeEventListener.Length; i++)
 			{
@@ -2070,7 +2059,7 @@ namespace NHibernate.Impl
 
 		private void FireMerge(IDictionary copiedAlready, MergeEvent @event)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IMergeEventListener[] mergeEventListener = listeners.MergeEventListeners;
 			for (int i = 0; i < mergeEventListener.Length; i++)
 			{
@@ -2080,7 +2069,7 @@ namespace NHibernate.Impl
 
 		private void FirePersist(IDictionary copiedAlready, PersistEvent @event)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IPersistEventListener[] persistEventListener = listeners.PersistEventListeners;
 			for (int i = 0; i < persistEventListener.Length; i++)
 			{
@@ -2090,7 +2079,7 @@ namespace NHibernate.Impl
 
 		private void FirePersist(PersistEvent @event)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IPersistEventListener[] createEventListener = listeners.PersistEventListeners;
 			for (int i = 0; i < createEventListener.Length; i++)
 			{
@@ -2100,7 +2089,7 @@ namespace NHibernate.Impl
 
 		private void FirePersistOnFlush(IDictionary copiedAlready, PersistEvent @event)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IPersistEventListener[] persistEventListener = listeners.PersistOnFlushEventListeners;
 			for (int i = 0; i < persistEventListener.Length; i++)
 			{
@@ -2110,7 +2099,7 @@ namespace NHibernate.Impl
 
 		private void FirePersistOnFlush(PersistEvent @event)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IPersistEventListener[] createEventListener = listeners.PersistOnFlushEventListeners;
 			for (int i = 0; i < createEventListener.Length; i++)
 			{
@@ -2120,7 +2109,7 @@ namespace NHibernate.Impl
 
 		private void FireRefresh(RefreshEvent refreshEvent)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IRefreshEventListener[] refreshEventListener = listeners.RefreshEventListeners;
 			for (int i = 0; i < refreshEventListener.Length; i++)
 			{
@@ -2130,7 +2119,7 @@ namespace NHibernate.Impl
 
 		private void FireRefresh(IDictionary refreshedAlready, RefreshEvent refreshEvent)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IRefreshEventListener[] refreshEventListener = listeners.RefreshEventListeners;
 			for (int i = 0; i < refreshEventListener.Length; i++)
 			{
@@ -2140,7 +2129,7 @@ namespace NHibernate.Impl
 
 		private void FireReplicate(ReplicateEvent @event)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IReplicateEventListener[] replicateEventListener = listeners.ReplicateEventListeners;
 			for (int i = 0; i < replicateEventListener.Length; i++)
 			{
@@ -2150,7 +2139,7 @@ namespace NHibernate.Impl
 
 		private object FireSave(SaveOrUpdateEvent @event)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			ISaveOrUpdateEventListener[] saveEventListener = listeners.SaveEventListeners;
 			for (int i = 0; i < saveEventListener.Length; i++)
 			{
@@ -2161,7 +2150,7 @@ namespace NHibernate.Impl
 
 		private void FireSaveOrUpdate(SaveOrUpdateEvent @event)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			ISaveOrUpdateEventListener[] saveOrUpdateEventListener = listeners.SaveOrUpdateEventListeners;
 			for (int i = 0; i < saveOrUpdateEventListener.Length; i++)
 			{
@@ -2171,7 +2160,7 @@ namespace NHibernate.Impl
 
 		private void FireSaveOrUpdateCopy(IDictionary copiedAlready, MergeEvent @event)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IMergeEventListener[] saveOrUpdateCopyEventListener = listeners.SaveOrUpdateCopyEventListeners;
 			for (int i = 0; i < saveOrUpdateCopyEventListener.Length; i++)
 			{
@@ -2181,7 +2170,7 @@ namespace NHibernate.Impl
 
 		private object FireSaveOrUpdateCopy(MergeEvent @event)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			IMergeEventListener[] saveOrUpdateCopyEventListener = listeners.SaveOrUpdateCopyEventListeners;
 			for (int i = 0; i < saveOrUpdateCopyEventListener.Length; i++)
 			{
@@ -2192,7 +2181,7 @@ namespace NHibernate.Impl
 
 		private void FireUpdate(SaveOrUpdateEvent @event)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			ISaveOrUpdateEventListener[] updateEventListener = listeners.UpdateEventListeners;
 			for (int i = 0; i < updateEventListener.Length; i++)
 			{
@@ -2202,7 +2191,7 @@ namespace NHibernate.Impl
 
 		public override int ExecuteNativeUpdate(NativeSQLQuerySpecification nativeQuerySpecification, QueryParameters queryParameters)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			queryParameters.ValidateParameters();
 			NativeSQLQueryPlan plan = GetNativeSQLQueryPlan(nativeQuerySpecification);
 
@@ -2224,7 +2213,7 @@ namespace NHibernate.Impl
 
 		public override int ExecuteUpdate(string query, QueryParameters queryParameters)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			queryParameters.ValidateParameters();
 			HQLQueryPlan plan = GetHQLQueryPlan(query, false);
 			AutoFlushIfRequired(plan.QuerySpaces);
@@ -2245,7 +2234,7 @@ namespace NHibernate.Impl
 
 		public override IEntityPersister GetEntityPersister(string entityName, object obj)
 		{
-			ErrorIfClosed();
+			CheckAndUpdateSessionStatus();
 			if (entityName == null)
 			{
 				return Factory.GetEntityPersister(GuessEntityName(obj));

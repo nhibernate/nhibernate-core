@@ -700,6 +700,7 @@ namespace NHibernate.Impl
 			bool isSessionScopedInterceptor = this.interceptor!=interceptor;
 			if(isSessionScopedInterceptor)
 				interceptor.SetSession(sessionImpl);
+			sessionImpl.Initialize();
 			return sessionImpl;
 		}
 
