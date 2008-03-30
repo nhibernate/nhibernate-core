@@ -55,6 +55,11 @@ namespace NHibernate.Test.DialectTest
 			Assert.AreEqual(
 				"SELECT TOP 10 * FROM (SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__) as row, query.*, query.__hibernate_sort_expr_1__ FROM (SELECT *, CURRENT_TIMESTAMP as __hibernate_sort_expr_1__ FROM fish WHERE scales = ?) query ) page WHERE page.row > 0 ORDER BY __hibernate_sort_expr_1__",
 				str.ToString());
+
+			str = d.GetLimitString(new SqlString("SELECT f.Type, COUNT(DISTINCT f.Name) AS Name FROM Fish f GROUP BY f.Type ORDER BY COUNT(DISTINCT f.Name)"), 0, 10);
+			Assert.AreEqual(
+				"SELECT TOP 10 Type, Name FROM (SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__) as row, query.Type, query.Name, query.__hibernate_sort_expr_1__ FROM (SELECT f.Type, COUNT(DISTINCT f.Name) AS Name, COUNT(DISTINCT f.Name) as __hibernate_sort_expr_1__ FROM Fish f GROUP BY f.Type) query ) page WHERE page.row > 0 ORDER BY __hibernate_sort_expr_1__",
+				str.ToString());
 		}
 
 		[Test]
@@ -74,10 +79,10 @@ namespace NHibernate.Test.DialectTest
 	}
 
 		[Test]
-		public void QuotedAndParanthesisStringTokenizerTests_WithComma_InQuotes()
+		public void QuotedAndParenthesisStringTokenizerTests_WithComma_InQuotes()
 		{
-			MsSql2005Dialect.QuotedAndParanthesisStringTokenizer tokenizier =
-				new MsSql2005Dialect.QuotedAndParanthesisStringTokenizer(
+			MsSql2005Dialect.QuotedAndParenthesisStringTokenizer tokenizier =
+				new MsSql2005Dialect.QuotedAndParenthesisStringTokenizer(
 					"select concat(a.Description,', ', a.Description) from Animal a");
 			string[] expected = new string[]
 				{
@@ -97,10 +102,10 @@ namespace NHibernate.Test.DialectTest
 		}
 
 		[Test]
-		public void QuotedAndParanthesisStringTokenizerTests_WithFunctionCallContainingComma()
+		public void QuotedAndParenthesisStringTokenizerTests_WithFunctionCallContainingComma()
 		{
-			MsSql2005Dialect.QuotedAndParanthesisStringTokenizer tokenizier =
-				new MsSql2005Dialect.QuotedAndParanthesisStringTokenizer(
+			MsSql2005Dialect.QuotedAndParenthesisStringTokenizer tokenizier =
+				new MsSql2005Dialect.QuotedAndParenthesisStringTokenizer(
 					"SELECT fish.id, cast('astring, with,comma' as string) as bar, f FROM fish");
 			string[] expected = new string[]
 				{

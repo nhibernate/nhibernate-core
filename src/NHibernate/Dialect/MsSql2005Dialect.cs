@@ -4,6 +4,7 @@ using System;
 	using System.Collections;
 	using System.Collections.Generic;
 using System.Data;
+	using System.Text.RegularExpressions;
 	using System.Text;
 	using Mapping;
 	using SqlCommand;
@@ -96,11 +97,8 @@ using System.Data;
 
 			for (int i = 1; i <= sortExpressions.Length; i++)
 			{
-				string sortExpression = sortExpressions[i - 1].Trim().Split(' ')[0];
-				if (sortExpression.EndsWith(")desc", StringComparison.InvariantCultureIgnoreCase))
-				{
-					sortExpression = sortExpression.Remove(sortExpression.Length - 4);
-				}
+				// Drop the ASC/DESC at the end of the sort expression which might look like "count(distinct frog.Id)desc" or "frog.Name asc".
+				string sortExpression = Regex.Replace(sortExpressions[i - 1].Trim(), @"(\)|\s)(?i:asc|desc)$", "$1");
 
 				if (aliasToColumn.ContainsKey(sortExpression))
 					sortExpression = aliasToColumn[sortExpression];
@@ -157,7 +155,7 @@ using System.Data;
 			columnsOrAliases = new List<string>();
 			aliasToColumn = new Dictionary<string, string>();
 
-			IList<string> tokens = new QuotedAndParanthesisStringTokenizer(select.ToString()).GetTokens();
+			IList<string> tokens = new QuotedAndParenthesisStringTokenizer(select.ToString()).GetTokens();
 			int index = 0;
 			while (index < tokens.Count)
 			{
@@ -168,23 +166,25 @@ using System.Data;
 					continue;
 				if ("distinct".Equals(token, StringComparison.InvariantCultureIgnoreCase))
 					continue;
-
+				if ("," == token)
+					continue;
+					
 				if ("from".Equals(token, StringComparison.InvariantCultureIgnoreCase))
 					break;
 
 				//handle composite expressions like 2 * 4 as foo
 				while (index < tokens.Count && 
 					"as".Equals(tokens[index],StringComparison.InvariantCultureIgnoreCase) == false &&
-					"," == tokens[index] == false)
+					"," != tokens[index])
 				{
 					token = token + " " + tokens[index];
 					index += 1;
 				}
 
-				bool isFunctionCallOrQoutedString = token.Contains("'") || token.Contains("(");
+				bool isFunctionCallOrQuotedString = token.Contains("'") || token.Contains("(");
 				// this is heuristic guess, if the expression contains ' or (, it is probably
 				// not appropriate to just slice parts off of it
-				if (isFunctionCallOrQoutedString == false) 
+				if (isFunctionCallOrQuotedString == false) 
 				{
 					int dot = token.IndexOf('.');
 					if (dot != -1)
@@ -256,24 +256,24 @@ using System.Data;
 
 		/// <summary>
 		/// This specialized string tokenizier will break a string to tokens, taking
-		/// into account single quotes, paranthesis and commas and [ ]
+		/// into account single quotes, parenthesis and commas and [ ]
 		/// Notice that we aren't differenciating between [ ) and ( ] on purpose, it would complicate
 		/// the code and it is not legal at any rate.
 		/// </summary>
-		public class QuotedAndParanthesisStringTokenizer : IEnumerable<String>
+		public class QuotedAndParenthesisStringTokenizer : IEnumerable<String>
 		{
 			private readonly string original;
 
-			public QuotedAndParanthesisStringTokenizer(string original)
+			public QuotedAndParenthesisStringTokenizer(string original)
 			{
 				this.original = original;
-	}
+			}
 
 			IEnumerator<string> IEnumerable<string>.GetEnumerator()
 			{
 				StringBuilder currentToken = new StringBuilder();
 				TokenizerState state = TokenizerState.WhiteSpace;
-				int paranthesisCount = 0;
+				int parenthesisCount = 0;
 				bool escapeQuote = false;
 				for (int i = 0; i < original.Length; i++)
 				{
@@ -292,9 +292,9 @@ using System.Data;
 							}
 							else if (ch == '(' || ch == '[')
 							{
-								state = TokenizerState.InParanthesis;
+								state = TokenizerState.InParenthesis;
 								currentToken.Append(ch);
-								paranthesisCount = 1;
+								parenthesisCount = 1;
 							}
 							else if (char.IsWhiteSpace(ch) == false)
 							{
@@ -325,12 +325,12 @@ using System.Data;
 								currentToken.Append(ch);
 							}
 							break;
-						case TokenizerState.InParanthesis:
+						case TokenizerState.InParenthesis:
 							if (ch == ')' || ch == ']')
 							{
 								currentToken.Append(ch);
-								paranthesisCount -= 1;
-								if (paranthesisCount == 0)
+								parenthesisCount -= 1;
+								if (parenthesisCount == 0)
 								{
 									yield return currentToken.ToString();
 									currentToken.Length = 0;
@@ -340,7 +340,7 @@ using System.Data;
 							else if (ch == '(' || ch == '[')
 							{
 								currentToken.Append(ch);
-								paranthesisCount += 1;
+								parenthesisCount += 1;
 							}
 							else
 							{
@@ -363,8 +363,8 @@ using System.Data;
 							}
 							else if (ch == '(' || ch == '[')
 							{
-								state = TokenizerState.InParanthesis;
-								paranthesisCount = 1;
+								state = TokenizerState.InParenthesis;
+								parenthesisCount = 1;
 								currentToken.Append(ch);
 							}
 							else if (ch == '\'')
@@ -394,7 +394,7 @@ using System.Data;
 			{
 				WhiteSpace,
 				Quoted,
-				InParanthesis,
+				InParenthesis,
 				Token
 			}
 
