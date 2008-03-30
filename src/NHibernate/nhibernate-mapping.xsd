@@ -891,6 +891,7 @@
 			<xs:attribute name="column" type="xs:string" />
 			<xs:attribute name="foreign-key" type="xs:string" use="optional" />
 			<xs:attribute name="lazy" type="restrictedLaziness" use="optional" />
+			<xs:attribute name="not-found" type="notFoundMode" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="key-property">
