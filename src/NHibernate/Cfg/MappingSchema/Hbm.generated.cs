@@ -713,6 +713,14 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool lazySpecified;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("not-found")]
+        public HbmNotFoundMode notfound;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool notfoundSpecified;
     }
     
     /// <remarks/>
@@ -778,6 +786,21 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("proxy")]
         Proxy,
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("HbmXsd", "2.0.0.1001")]
+    [System.SerializableAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
+    public enum HbmNotFoundMode {
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("ignore")]
+        Ignore,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("exception")]
+        Exception,
     }
     
     /// <remarks/>
@@ -1494,21 +1517,6 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("join")]
         Join,
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("HbmXsd", "2.0.0.1001")]
-    [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:nhibernate-mapping-2.2")]
-    public enum HbmNotFoundMode {
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlEnumAttribute("ignore")]
-        Ignore,
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlEnumAttribute("exception")]
-        Exception,
     }
     
     /// <remarks/>
