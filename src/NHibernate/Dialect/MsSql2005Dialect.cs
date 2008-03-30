@@ -98,7 +98,7 @@ using System.Data;
 			for (int i = 1; i <= sortExpressions.Length; i++)
 			{
 				// Drop the ASC/DESC at the end of the sort expression which might look like "count(distinct frog.Id)desc" or "frog.Name asc".
-				string sortExpression = Regex.Replace(sortExpressions[i - 1].Trim(), @"(\)|\s)(?i:asc|desc)$", "$1");
+				string sortExpression = Regex.Replace(sortExpressions[i - 1].Trim(), @"(\)|\s)(?i:asc|desc)$", "$1").Trim();
 
 				if (aliasToColumn.ContainsKey(sortExpression))
 					sortExpression = aliasToColumn[sortExpression];
