@@ -452,7 +452,7 @@ namespace NHibernate.Util
 
 		public static bool IsEmpty(string str)
 		{
-			return str == null || str.Length == 0;
+			return string.IsNullOrEmpty(str);
 		}
 
 		public static bool IsNotEmpty(string str)

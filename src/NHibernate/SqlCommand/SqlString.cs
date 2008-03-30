@@ -348,10 +348,10 @@ namespace NHibernate.SqlCommand
 			return result;
 		}
 
-		private SqlString SetCompacted()
+		private void SetCompacted()
 		{
 			isCompacted = true;
-			return this;
+			return;
 		}
 
 		private static int LengthOfPart(object part)

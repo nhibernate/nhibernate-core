@@ -597,7 +597,7 @@ namespace NHibernate.Hql.Classic
 				// a String.Empty can get passed in here.  If that occurs
 				// then don't create a new SqlString for it - just ignore
 				// it since it adds nothing to the sql being generated.
-				if (token != null && token.Length > 0)
+				if (!string.IsNullOrEmpty(token))
 				{
 					q.AppendWhereToken(new SqlString(token));
 				}
