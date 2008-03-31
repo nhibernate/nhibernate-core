@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using NHibernate.Cfg;
 using log4net;
+using NHibernate.Cfg;
 using NHibernate.Util;
 
 namespace NHibernate.Tool.hbm2ddl
@@ -16,7 +15,7 @@ namespace NHibernate.Tool.hbm2ddl
 		private readonly IConnectionHelper connectionHelper;
 		private readonly Configuration configuration;
 		private readonly Dialect.Dialect dialect;
-		private readonly IList exceptions;
+		private readonly List<Exception> exceptions;
 
 		public SchemaUpdate(Configuration cfg)
 			: this(cfg, cfg.Properties)
@@ -33,7 +32,7 @@ namespace NHibernate.Tool.hbm2ddl
 				props[prop.Key] = prop.Value;
 			}
 			connectionHelper = new ManagedProviderConnectionHelper(props);
-			exceptions = new ArrayList();
+			exceptions = new List<Exception>();
 		}
 
 		public SchemaUpdate(Configuration cfg, Settings settings)
@@ -43,10 +42,10 @@ namespace NHibernate.Tool.hbm2ddl
 			connectionHelper = new SuppliedConnectionProviderConnectionHelper(
 				settings.ConnectionProvider
 				);
-			exceptions = new ArrayList();
+			exceptions = new List<Exception>();
 		}
 
-		public static void main(String[] args)
+		public static void Main(string[] args)
 		{
 			try
 			{
@@ -193,7 +192,7 @@ namespace NHibernate.Tool.hbm2ddl
 		///  Returns a List of all Exceptions which occured during the export.
 		/// </summary>
 		/// <returns></returns>
-		public IList Exceptions
+		public IList<Exception> Exceptions
 		{
 			get { return exceptions; }
 		}
