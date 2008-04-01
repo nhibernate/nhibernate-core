@@ -1,18 +1,19 @@
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Connection;
 
 namespace NHibernate.Tool.hbm2ddl
 {
 	/// <summary>
-	/// A <seealso cref="IConnectionHelper"/> implementation based on an internally
-	///  built and managed <seealso cref="ConnectionProvider"/>.
+	/// A <seealso cref="IConnectionHelper"/> implementation based on an internally 
+	/// built and managed <seealso cref="ConnectionProvider"/>.
 	/// </summary>
 	public class ManagedProviderConnectionHelper : IConnectionHelper
 	{
 		private readonly IDictionary<string, string> cfgProperties;
 		private IConnectionProvider connectionProvider;
-		private IDbConnection connection;
+		private DbConnection connection;
 
 		public ManagedProviderConnectionHelper(IDictionary<string, string> cfgProperties)
 		{
@@ -22,12 +23,12 @@ namespace NHibernate.Tool.hbm2ddl
 		public void Prepare()
 		{
 			connectionProvider = ConnectionProviderFactory.NewConnectionProvider(cfgProperties);
-			connection = connectionProvider.GetConnection();
+			connection = (DbConnection) connectionProvider.GetConnection();
 		}
 
-		public IDbConnection GetConnection()
+		public DbConnection Connection
 		{
-			return connection;
+			get { return connection; }
 		}
 
 		public void Release()

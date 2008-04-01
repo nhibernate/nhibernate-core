@@ -338,8 +338,6 @@
     <Compile Include="SqlTypes\StringFixedLengthSqlType.cs" />
     <Compile Include="SqlTypes\StringSqlType.cs" />
     <Compile Include="StaleObjectStateException.cs" />
-    <Compile Include="Tool\hbm2ddl\AdoColumn.cs" />
-    <Compile Include="Tool\hbm2ddl\AdoTable.cs" />
     <Compile Include="Tool\hbm2ddl\SchemaExport.cs" />
     <Compile Include="TransactionException.cs" />
     <Compile Include="Transaction\AdoTransaction.cs" />
@@ -974,9 +972,9 @@
     <Compile Include="Tool\hbm2ddl\ForeignKeyMetadata.cs" />
     <Compile Include="Tool\hbm2ddl\IConnectionHelper.cs" />
     <Compile Include="Tool\hbm2ddl\IndexMetadata.cs" />
-    <Compile Include="Tool\hbm2ddl\ISchemaReader.cs" />
+    <Compile Include="Dialect\Schema\ISchemaReader.cs" />
     <Compile Include="Tool\hbm2ddl\ManagedProviderConnectionHelper.cs" />
-    <Compile Include="Tool\hbm2ddl\InformationSchemaReader.cs" />
+    <Compile Include="Dialect\Schema\SchemaReader.cs" />
     <Compile Include="Tool\hbm2ddl\SchemaUpdate.cs" />
     <Compile Include="Tool\hbm2ddl\SuppliedConnectionHelper.cs" />
     <Compile Include="Tool\hbm2ddl\SuppliedConnectionProviderConnectionHelper.cs" />

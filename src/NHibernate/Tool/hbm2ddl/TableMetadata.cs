@@ -1,23 +1,27 @@
+using System;
+using System.Collections;
+using System.Data;
+using log4net;
+using NHibernate.Dialect.Schema;
+using NHibernate.Util;
+using System.Collections.Generic;
+
 namespace NHibernate.Tool.hbm2ddl
 {
-	using System;
-	using System.Collections;
-	using System.Data;
-	using Iesi.Collections;
-	using log4net;
-	using Util;
-
 	public class TableMetadata
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(TableMetadata));
 
-		private readonly String schema;
-		private readonly String name;
-		private readonly IDictionary columns = new Hashtable();
-		private readonly IDictionary foreignKeys = new Hashtable();
-		private readonly IDictionary indexes = new Hashtable();
+		private readonly string catalog;
+		private readonly string schema;
+		private readonly string name;
+		private readonly Dictionary<string, ColumnMetadata> columns = new Dictionary<string, ColumnMetadata>();
+		private readonly Dictionary<string, ForeignKeyMetadata> foreignKeys = new Dictionary<string, ForeignKeyMetadata>();
+		private readonly Dictionary<string, IndexMetadata> indexes = new Dictionary<string, IndexMetadata>();
+
 		internal TableMetadata(DataRow rs, ISchemaReader meta, bool extras)
 		{
+			schema = (string)rs["TABLE_CATALOG"];
 			schema = (string)rs["TABLE_SCHEMA"];
 			name = (string)rs["TABLE_NAME"];
 			InitColumns(meta);
@@ -26,8 +30,9 @@ namespace NHibernate.Tool.hbm2ddl
 				InitForeignKeys(meta);
 				InitIndexes(meta);
 			}
-			String schem = schema == null ? "" : schema + '.';
-			log.Info("table found: " + schem + name);
+			string cat = catalog == null ? "" : catalog + '.';
+			string schem = schema == null ? "" : schema + '.';
+			log.Info("table found: " + cat + schem + name);
 			log.Info("columns: " + StringHelper.CollectionToString(columns.Keys));
 			if (extras)
 			{
@@ -41,46 +46,57 @@ namespace NHibernate.Tool.hbm2ddl
 			get { return name; }
 		}
 
+		public string Catalog
+		{
+			get { return catalog; }
+		}
 
 		public string Schema
 		{
 			get { return schema; }
 		}
 
-		public override String ToString()
+		public override string ToString()
 		{
 			return "TableMetadata(" + name + ')';
 		}
 
-		public ColumnMetadata GetColumnMetadata(String columnName)
+		public ColumnMetadata GetColumnMetadata(string columnName)
 		{
-			return (ColumnMetadata)columns[columnName.ToLower()];
+			ColumnMetadata result;
+			columns.TryGetValue(columnName.ToLowerInvariant(), out result);
+			return result;
 		}
 
-		public ForeignKeyMetadata GetForeignKeyMetadata(String keyName)
+		public ForeignKeyMetadata GetForeignKeyMetadata(string keyName)
 		{
-			return (ForeignKeyMetadata)foreignKeys[keyName.ToLower()];
+			ForeignKeyMetadata result;
+			foreignKeys.TryGetValue(keyName.ToLowerInvariant(), out result);
+			return result;
 		}
 
-		public IndexMetadata GetIndexMetadata(String indexName)
+		public IndexMetadata GetIndexMetadata(string indexName)
 		{
-			return (IndexMetadata)indexes[indexName.ToLower()];
+			IndexMetadata result;
+			indexes.TryGetValue(indexName.ToLowerInvariant(), out result);
+			return result;
 		}
 
 		private void AddForeignKey(DataRow rs, ISchemaReader meta)
 		{
-			String fk = (string)rs["CONSTRAINT_NAME"];
+			string fk = (string)rs["CONSTRAINT_NAME"];
 
-			if (fk == null) return;
+			if (fk == null)
+				return;
 
 			ForeignKeyMetadata info = GetForeignKeyMetadata(fk);
 			if (info == null)
 			{
 				info = new ForeignKeyMetadata(rs);
-				foreignKeys.Add(info.getName().ToLower(), info);
+				foreignKeys[info.Name.ToLowerInvariant()] = info;
 			}
 
-			foreach (DataRow row in meta.GetIndexColumns(schema, name, fk).Rows)
+			foreach (DataRow row in meta.GetIndexColumns(catalog, schema, name, fk).Rows)
 			{
 				info.AddColumn(GetColumnMetadata((string)row["COLUMN_NAME"]));
 			}
@@ -88,7 +104,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 		private void AddIndex(DataRow rs, ISchemaReader meta)
 		{
-			String index = (string)rs["INDEX_NAME"];
+			string index = (string)rs["INDEX_NAME"];
 
 			if (index == null) return;
 
@@ -96,12 +112,12 @@ namespace NHibernate.Tool.hbm2ddl
 			if (info == null)
 			{
 				info = new IndexMetadata(rs);
-				indexes.Add(info.getName().ToLower(), info);
+				indexes[info.Name.ToLowerInvariant()] = info;
 			}
 
-			foreach (DataRow row in meta.GetIndexColumns(schema, name, index).Rows)
+			foreach (DataRow row in meta.GetIndexColumns(catalog, schema, name, index).Rows)
 			{
-				info.AddColumn(GetColumnMetadata((string)row["COLUMN_NAME"]));
+				info.AddColumn(GetColumnMetadata((string) row["COLUMN_NAME"]));
 			}
 		}
 
@@ -114,13 +130,13 @@ namespace NHibernate.Tool.hbm2ddl
 			if (GetColumnMetadata(column) == null)
 			{
 				ColumnMetadata info = new ColumnMetadata(rs);
-				columns.Add(info.Name.ToLower(), info);
+				columns[info.Name.ToLowerInvariant()] = info;
 			}
 		}
 
 		private void InitForeignKeys(ISchemaReader meta)
 		{
-			foreach (DataRow row in meta.GetForeignKeys(schema, name).Rows)
+			foreach (DataRow row in meta.GetForeignKeys(catalog, schema, name).Rows)
 			{
 				AddForeignKey(row, meta);
 			}
@@ -128,7 +144,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 		private void InitIndexes(ISchemaReader meta)
 		{
-			foreach (DataRow row in meta.GetIndexInfo(schema, name).Rows)
+			foreach (DataRow row in meta.GetIndexInfo(catalog, schema, name).Rows)
 			{
 				AddIndex(row, meta);
 			}
@@ -136,7 +152,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 		private void InitColumns(ISchemaReader meta)
 		{
-			foreach (DataRow row in meta.GetColumns(schema, name).Rows)
+			foreach (DataRow row in meta.GetColumns(catalog, schema, name, null).Rows)
 			{
 				AddColumn(row);
 			}

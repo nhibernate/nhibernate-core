@@ -126,7 +126,7 @@ namespace NHibernate.Tool.hbm2ddl
 				{
 					log.Info("fetching database metadata");
 					connectionHelper.Prepare();
-					connection = (DbConnection) connectionHelper.GetConnection();
+					connection = connectionHelper.Connection;
 					meta = new DatabaseMetadata(connection, dialect);
 					stmt = connection.CreateCommand();
 				}
@@ -139,10 +139,10 @@ namespace NHibernate.Tool.hbm2ddl
 
 				log.Info("updating schema");
 
-				String[] createSQL = configuration.GenerateSchemaUpdateScript(dialect, meta);
+				string[] createSQL = configuration.GenerateSchemaUpdateScript(dialect, meta);
 				for (int j = 0; j < createSQL.Length; j++)
 				{
-					String sql = createSQL[j];
+					string sql = createSQL[j];
 					try
 					{
 						if (script)

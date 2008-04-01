@@ -1,12 +1,11 @@
+using System.Collections.Generic;
+using System.Data;
+
 namespace NHibernate.Tool.hbm2ddl
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Data;
-
 	public class ForeignKeyMetadata
 	{
-		private readonly String name;
+		private readonly string name;
 		private readonly List<ColumnMetadata> columns = new List<ColumnMetadata>();
 
 		public ForeignKeyMetadata(DataRow rs)
@@ -14,9 +13,9 @@ namespace NHibernate.Tool.hbm2ddl
 			name = (string)rs["CONSTRAINT_NAME"];
 		}
 
-		public String getName()
+		public string Name
 		{
-			return name;
+			get { return name; }
 		}
 
 		public void AddColumn(ColumnMetadata column)
@@ -24,12 +23,12 @@ namespace NHibernate.Tool.hbm2ddl
 			if (column != null) columns.Add(column);
 		}
 
-		public ColumnMetadata[] getColumns()
+		public ColumnMetadata[] Columns
 		{
-			return columns.ToArray();
+			get { return columns.ToArray(); }
 		}
 
-		public override String ToString()
+		public override string ToString()
 		{
 			return "ForeignKeyMetadata(" + name + ')';
 		}

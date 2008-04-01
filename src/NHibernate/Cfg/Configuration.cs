@@ -1863,11 +1863,8 @@ namespace NHibernate.Cfg
 			{
 				if (table.IsPhysicalTable)
 				{
-
-					TableMetadata tableInfo = databaseMetadata.GetTableMetadata(
-							table.Name,
-							table.Schema ?? defaultSchema
-						);
+					TableMetadata tableInfo = databaseMetadata.GetTableMetadata(table.Name, table.Schema ?? defaultSchema, 
+						table.Catalog ?? defaultCatalog, table.IsQuoted);
 					if (tableInfo == null)
 					{
 						script.Add(table.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
@@ -1893,11 +1890,8 @@ namespace NHibernate.Cfg
 			{
 				if (table.IsPhysicalTable)
 				{
-
-					TableMetadata tableInfo = databaseMetadata.GetTableMetadata(
-							table.Name,
-							table.Schema
-						);
+					TableMetadata tableInfo =
+						databaseMetadata.GetTableMetadata(table.Name, table.Schema, table.Catalog, table.IsQuoted);
 
 					if (dialect.HasAlterTable)
 					{

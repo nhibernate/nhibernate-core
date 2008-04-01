@@ -1,12 +1,12 @@
+using System;
+using System.IO;
+using System.Reflection;
+using NHibernate.Cfg;
+using NHibernate.Tool.hbm2ddl;
+using NUnit.Framework;
+
 namespace NHibernate.Test.SchemaUpdate
 {
-	using System;
-	using System.IO;
-	using System.Reflection;
-	using Cfg;
-	using NHibernate.Tool.hbm2ddl;
-	using NUnit.Framework;
-
 	[TestFixture]
 	public class MigrationFixture
 	{
@@ -21,7 +21,7 @@ namespace NHibernate.Test.SchemaUpdate
 				v1cfg.AddInputStream(stream);
 			new SchemaExport(v1cfg).Execute(false, true, true, false);
 
-			SchemaUpdate v1schemaUpdate = new SchemaUpdate(v1cfg);
+			Tool.hbm2ddl.SchemaUpdate v1schemaUpdate = new Tool.hbm2ddl.SchemaUpdate(v1cfg);
 			v1schemaUpdate.Execute(true, true);
 
 			Assert.AreEqual(0, v1schemaUpdate.Exceptions.Count);
@@ -31,10 +31,9 @@ namespace NHibernate.Test.SchemaUpdate
 				v2cfg.AddInputStream(stream);
 			
 
-			SchemaUpdate v2schemaUpdate = new SchemaUpdate(v2cfg);
+			Tool.hbm2ddl.SchemaUpdate v2schemaUpdate = new Tool.hbm2ddl.SchemaUpdate(v2cfg);
 			v2schemaUpdate.Execute(true, true);
 			Assert.AreEqual(0, v2schemaUpdate.Exceptions.Count);
-
 		}
 	}
 }

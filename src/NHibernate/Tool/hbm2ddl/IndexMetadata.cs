@@ -15,9 +15,9 @@ namespace NHibernate.Tool.hbm2ddl
 			name = (string) rs["INDEX_NAME"];
 		}
 
-		public String getName()
+		public string Name
 		{
-			return name;
+			get { return name; }
 		}
 
 		public void AddColumn(ColumnMetadata column)

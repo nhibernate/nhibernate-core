@@ -1,16 +1,16 @@
+using System.Data.Common;
+
 namespace NHibernate.Tool.hbm2ddl
 {
-	using System.Data;
-
 	/// <summary>
 	/// A <seealso cref="IConnectionHelper"/> implementation based on an explicitly supplied
 	/// connection.
 	/// </summary>
 	public class SuppliedConnectionHelper : IConnectionHelper
 	{
-		private IDbConnection connection;
+		private DbConnection connection;
 
-		public SuppliedConnectionHelper(IDbConnection connection)
+		public SuppliedConnectionHelper(DbConnection connection)
 		{
 			this.connection = connection;
 		}
@@ -19,9 +19,9 @@ namespace NHibernate.Tool.hbm2ddl
 		{
 		}
 
-		public IDbConnection GetConnection()
+		public DbConnection Connection
 		{
-			return connection;
+			get { return connection; }
 		}
 
 		public void Release()

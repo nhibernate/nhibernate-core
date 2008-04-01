@@ -1,7 +1,8 @@
+using System.Data.Common;
+using NHibernate.Connection;
+
 namespace NHibernate.Tool.hbm2ddl
 {
-	using System.Data;
-	using Connection;
 
 	/// <summary>
 	/// A <seealso cref="IConnectionHelper"/> implementation based on a provided
@@ -12,7 +13,7 @@ namespace NHibernate.Tool.hbm2ddl
 	public class SuppliedConnectionProviderConnectionHelper : IConnectionHelper
 	{
 		private readonly IConnectionProvider provider;
-		private IDbConnection connection;
+		private DbConnection connection;
 
 		public SuppliedConnectionProviderConnectionHelper(IConnectionProvider provider)
 		{
@@ -21,17 +22,17 @@ namespace NHibernate.Tool.hbm2ddl
 
 		public void Prepare()
 		{
-			connection = provider.GetConnection();
+			connection = (DbConnection)provider.GetConnection();
 		}
 
-		public IDbConnection GetConnection()
+		public DbConnection Connection
 		{
-			return connection;
+			get { return connection; }
 		}
 
 		public void Release()
 		{
-			if(connection!=null)
+			if (connection != null)
 			{
 				provider.CloseConnection(connection);
 			}

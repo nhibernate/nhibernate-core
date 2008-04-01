@@ -1,12 +1,10 @@
+using System.Data;
+using System.Data.Common;
+
 namespace NHibernate.Tool.hbm2ddl
 {
-	using System.Collections;
-	using System.Data;
-	using Connection;
-
 	/// <summary>
-	/// Contract for delegates responsible for managing connection used by the
-	///hbm2ddl tools.
+	/// Contract for delegates responsible for managing connection used by the hbm2ddl tools.
 	/// </summary>
 	public interface IConnectionHelper
 	{
@@ -18,7 +16,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <summary>
 		/// Get a reference to the connection we are using.
 		/// </summary>
-		IDbConnection GetConnection();
+		DbConnection Connection { get;}
 
 		/// <summary>
 		/// Release any resources held by this helper.

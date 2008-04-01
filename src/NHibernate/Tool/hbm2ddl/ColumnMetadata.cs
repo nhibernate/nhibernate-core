@@ -1,16 +1,15 @@
+using System;
+using System.Data;
+
 namespace NHibernate.Tool.hbm2ddl
 {
-	using System;
-	using System.Data;
-	using Util;
-
 	public class ColumnMetadata
 	{
-		private readonly String name;
-		private readonly String typeName;
+		private readonly string name;
+		private readonly string typeName;
 		private readonly int columnSize;
 		private readonly int numericalPrecision;
-		private readonly String isNullable;
+		private readonly string isNullable;
 
 		public ColumnMetadata(DataRow rs)
 		{
@@ -48,7 +47,7 @@ namespace NHibernate.Tool.hbm2ddl
 			get { return isNullable; }
 		}
 
-		public override String ToString()
+		public override string ToString()
 		{
 			return "ColumnMetadata(" + name + ')';
 		}
