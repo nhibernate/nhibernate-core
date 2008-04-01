@@ -4,6 +4,7 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Exceptions
 {
+	[Serializable]
 	public class GenericADOException : ADOException
 	{
 		public GenericADOException(SerializationInfo info, StreamingContext context) : base(info, context) { }
