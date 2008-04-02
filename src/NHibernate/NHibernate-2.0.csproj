@@ -590,6 +590,7 @@
     <Compile Include="Dialect\Schema\FirebirdMetaData.cs" />
     <Compile Include="Dialect\Schema\ITableMetadata.cs" />
     <Compile Include="Dialect\Schema\MsSqlMetaData.cs" />
+    <Compile Include="Dialect\Schema\OracleMetaData.cs" />
     <Compile Include="Dialect\Sybase11Dialect.cs" />
     <Compile Include="Driver\ISqlParameterFormatter.cs" />
     <Compile Include="Driver\SqlStringFormatter.cs" />

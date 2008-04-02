@@ -1,8 +1,10 @@
 using System;
 using System.Data;
 using NHibernate.Dialect.Function;
+using NHibernate.Dialect.Schema;
 using NHibernate.SqlCommand;
 using Environment=NHibernate.Cfg.Environment;
+using System.Data.Common;
 
 namespace NHibernate.Dialect
 {
@@ -232,6 +234,11 @@ namespace NHibernate.Dialect
 		public override string GetForUpdateNowaitString(string aliases)
 		{
 			return ForUpdateString + " of " + aliases + " nowait";
+		}
+
+		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
+		{
+			return new OracleDataBaseSchema(connection);
 		}
 	}
 }
