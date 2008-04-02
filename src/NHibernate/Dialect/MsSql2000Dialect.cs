@@ -113,6 +113,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
 			RegisterFunction("variance", new StandardSQLFunction("variance", NHibernateUtil.Double));
 
+			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "left(?1, ?2)"));
+			RegisterFunction("right", new SQLFunctionTemplate(NHibernateUtil.String, "right(?1, ?2)"));
+
 			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime, true));
 			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(second, ?1)"));
 			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(minute, ?1)"));
