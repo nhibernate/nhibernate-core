@@ -1,10 +1,12 @@
 using System.Data;
 using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
+using NHibernate.Dialect.Schema;
 using NHibernate.SqlCommand;
 using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Type;
+using System.Data.Common;
 
 namespace NHibernate.Dialect
 {
@@ -61,7 +63,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("substring", new AnsiSubstringFunction());
 			RegisterFunction("nullif", new StandardSafeSQLFunction("nullif", 2));
 			RegisterFunction("lower", new StandardSafeSQLFunction("lower", NHibernateUtil.String, 1));
-			RegisterFunction("upper", new StandardSafeSQLFunction("upper",NHibernateUtil.String, 1)); ;
+			RegisterFunction("upper", new StandardSafeSQLFunction("upper", NHibernateUtil.String, 1)); ;
 			RegisterFunction("mod", new StandardSafeSQLFunction("mod", NHibernateUtil.Double, 2));
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as VARCHAR(255))"));
 			RegisterFunction("sysdate", new CastedFunction("today", NHibernateUtil.Date));
@@ -226,7 +228,7 @@ namespace NHibernate.Dialect
 			}
 		}
 
-		private class CurrentTimeStamp: NoArgSQLFunction
+		private class CurrentTimeStamp : NoArgSQLFunction
 		{
 			public CurrentTimeStamp()
 				: base("current_timestamp", NHibernateUtil.DateTime, true)
@@ -237,8 +239,10 @@ namespace NHibernate.Dialect
 				return Name;
 			}
 		}
+
+		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
+		{
+			return new FirebirdDataBaseSchema(connection);
+		}
 	}
-
-
-
 }

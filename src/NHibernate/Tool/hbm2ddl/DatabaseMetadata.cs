@@ -16,10 +16,10 @@ namespace NHibernate.Tool.hbm2ddl
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof (DatabaseMetadata));
 
-		private readonly IDictionary<string, TableMetadata> tables = new Dictionary<string, TableMetadata>();
+		private readonly IDictionary<string, ITableMetadata> tables = new Dictionary<string, ITableMetadata>();
 		private readonly ISet<string> sequences = new HashedSet<string>();
 		private readonly bool extras;
-		private readonly ISchemaReader meta;
+		private readonly IDataBaseSchema meta;
 		private readonly ISQLExceptionConverter sqlExceptionConverter;
 		private static readonly string[] Types = {"TABLE", "VIEW"};
 
@@ -31,29 +31,58 @@ namespace NHibernate.Tool.hbm2ddl
 
 		public DatabaseMetadata(DbConnection connection, Dialect.Dialect dialect, bool extras)
 		{
-			meta = dialect.GetSchemaReader(connection);
+			meta = dialect.GetDataBaseSchema(connection);
 			this.extras = extras;
 			InitSequences(connection, dialect);
 			sqlExceptionConverter = dialect.BuildSQLExceptionConverter();
 		}
 
-		public TableMetadata GetTableMetadata(string name, string schema, string catalog, bool isQuoted)
+		public ITableMetadata GetTableMetadata(string name, string schema, string catalog, bool isQuoted)
 		{
 			string identifier = Identifier(catalog, schema, name);
-			TableMetadata table;
+			ITableMetadata table;
 			tables.TryGetValue(identifier, out table);
 			if (table != null)
 				return table; // EARLY exit
 
 			try
 			{
-				DataRowCollection rows = meta.GetTables(catalog, schema, name, Types).Rows;
+				DataTable metaInfo;
+				if ((isQuoted && meta.StoresMixedCaseQuotedIdentifiers))
+				{
+					metaInfo = meta.GetTables(catalog, schema, name, Types);
+				}
+				else
+				{
+					if ((isQuoted && meta.StoresUpperCaseQuotedIdentifiers) || (!isQuoted && meta.StoresUpperCaseIdentifiers))
+					{
+						metaInfo =
+							meta.GetTables(StringHelper.ToUpperCase(catalog), StringHelper.ToUpperCase(schema),
+							               StringHelper.ToUpperCase(name), Types);
+					}
+					else
+					{
+						if ((isQuoted && meta.StoresLowerCaseQuotedIdentifiers) || (!isQuoted && meta.StoresLowerCaseIdentifiers))
+						{
+							metaInfo =
+								meta.GetTables(StringHelper.ToLowerCase(catalog), StringHelper.ToLowerCase(schema),
+								               StringHelper.ToLowerCase(name), Types);
+						}
+						else
+						{
+							metaInfo = meta.GetTables(catalog, schema, name, Types);
+						}
+					}
+
+				}
+				DataRowCollection rows = metaInfo.Rows;
+
 				foreach (DataRow tableRow in rows)
 				{
-					string tableName = (string) tableRow["TABLE_NAME"];
+					string tableName = Convert.ToString(tableRow[meta.ColumnNameForTableName]);
 					if (name.Equals(tableName, StringComparison.InvariantCultureIgnoreCase))
 					{
-						table = new TableMetadata(tableRow, meta, extras);
+						table = meta.GetTableMetadata(tableRow, extras);
 						tables[identifier] = table;
 						return table;
 					}

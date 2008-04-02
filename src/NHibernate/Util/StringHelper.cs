@@ -682,5 +682,15 @@ namespace NHibernate.Util
 			return sql.Substring(0, sql.LastIndexOfCaseInsensitive(" as "));
 		}
 
+
+		public static string ToUpperCase(string str)
+		{
+			return str == null ? null : str.ToUpperInvariant();
+		}
+
+		public static string ToLowerCase(string str)
+		{
+			return str == null ? null : str.ToLowerInvariant();
+		}
 	}
 }

@@ -15,6 +15,7 @@ using NHibernate.Cfg.ConfigurationSchema;
 using NHibernate.Cfg.XmlHbmBinding;
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
+using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Id;
@@ -1851,19 +1852,19 @@ namespace NHibernate.Cfg
 		/// Generate DDL for altering tables
 		///</summary>
 		/// <seealso cref="NHibernate.Tool.hbm2ddl.SchemaUpdate"/>
-		public String[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata)
+		public string[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata)
 		{
 			SecondPassCompile();
 
 			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
 			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
 
-			ArrayList script = new ArrayList(50);
-			foreach (Table table in tables.Values)
+			List<string> script = new List<string>(50);
+			foreach (Table table in TableMappings)
 			{
 				if (table.IsPhysicalTable)
 				{
-					TableMetadata tableInfo = databaseMetadata.GetTableMetadata(table.Name, table.Schema ?? defaultSchema, 
+					ITableMetadata tableInfo = databaseMetadata.GetTableMetadata(table.Name, table.Schema ?? defaultSchema, 
 						table.Catalog ?? defaultCatalog, table.IsQuoted);
 					if (tableInfo == null)
 					{
@@ -1871,12 +1872,7 @@ namespace NHibernate.Cfg
 					}
 					else
 					{
-						string[] alterDDL = table.SqlAlterStrings(
-								dialect,
-								mapping,
-								tableInfo,
-								defaultSchema
-							);
+						string[] alterDDL = table.SqlAlterStrings(dialect, mapping, tableInfo, defaultCatalog, defaultSchema);
 						script.AddRange(alterDDL);
 					}
 
@@ -1886,11 +1882,11 @@ namespace NHibernate.Cfg
 				}
 			}
 
-			foreach (Table table in tables.Values)
+			foreach (Table table in TableMappings)
 			{
 				if (table.IsPhysicalTable)
 				{
-					TableMetadata tableInfo =
+					ITableMetadata tableInfo =
 						databaseMetadata.GetTableMetadata(table.Name, table.Schema, table.Catalog, table.IsQuoted);
 
 					if (dialect.HasAlterTable)
@@ -1900,11 +1896,8 @@ namespace NHibernate.Cfg
 							if (fk.HasPhysicalConstraint)
 							{
 								bool create = tableInfo == null || (
-										tableInfo.GetForeignKeyMetadata(fk.Name) == null && (
-									//Icky workaround for MySQL bug:
-												!(dialect is MySQLDialect) ||
-														tableInfo.GetIndexMetadata(fk.Name) == null
-											)
+										tableInfo.GetForeignKeyMetadata(fk.Name) == null && 
+										(!(dialect is MySQLDialect) || tableInfo.GetIndexMetadata(fk.Name) == null)
 									);
 								if (create)
 								{
@@ -1915,33 +1908,14 @@ namespace NHibernate.Cfg
 					}
 
 				}
-
-				/*//broken, 'cos we don't generate these with names in SchemaExport
-				subIter = table.getIndexIterator();
-				while ( subIter.hasNext() ) {
-					Index index = (Index) subIter.next();
-					if ( !index.isForeignKey() || !dialect.hasImplicitIndexForForeignKey() ) {
-						if ( tableInfo==null || tableInfo.GetIndexMetadata( index.getFilterName() ) == null ) {
-							script.add( index.sqlCreateString(dialect, mapping) );
-						}
-					}
-				}
-				//broken, 'cos we don't generate these with names in SchemaExport
-				subIter = table.getUniqueKeyIterator();
-				while ( subIter.hasNext() ) {
-					UniqueKey uk = (UniqueKey) subIter.next();
-					if ( tableInfo==null || tableInfo.GetIndexMetadata( uk.getFilterName() ) == null ) {
-						script.add( uk.sqlCreateString(dialect, mapping) );
-					}
-				}*/
 			}
 
 			foreach (IPersistentIdentifierGenerator generator in IterateGenerators(dialect))
 			{
-				Object key = generator.GeneratorKey();
+				string key = generator.GeneratorKey();
 				if (!databaseMetadata.IsSequence(key) && !databaseMetadata.IsTable(key))
 				{
-					String[] lines = generator.SqlCreateStrings(dialect);
+					string[] lines = generator.SqlCreateStrings(dialect);
 					for (int i = 0; i < lines.Length; i++)
 					{
 						script.Add(lines[i]);
@@ -1949,7 +1923,7 @@ namespace NHibernate.Cfg
 				}
 			}
 
-			return ArrayHelper.ToStringArray(script);
+			return script.ToArray();
 		}
 
 		private IEnumerable<IPersistentIdentifierGenerator> IterateGenerators(Dialect.Dialect dialect)

@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
-using NHibernate.Tool.hbm2ddl;
 using NHibernate.Util;
 
 namespace NHibernate.Mapping
@@ -326,49 +326,65 @@ namespace NHibernate.Mapping
 			get { return uniqueKeys.Values; }
 		}
 
-		public string[] SqlAlterStrings(Dialect.Dialect dialect, IMapping p, TableMetadata tableInfo, string defaultSchema)
+		public string[] SqlAlterStrings(Dialect.Dialect dialect, IMapping p, ITableMetadata tableInfo, string defaultCatalog, string defaultSchema)
 		{
 			StringBuilder root = new StringBuilder("alter table ")
-				.Append(GetQualifiedName(dialect, defaultSchema))
-				.Append(" ")
+				.Append(GetQualifiedName(dialect, defaultCatalog, defaultSchema))
+				.Append(' ')
 				.Append(dialect.AddColumnString);
 
-			ArrayList results = new ArrayList(ColumnSpan);
+			List<string> results = new List<string>(ColumnSpan);
 
-			foreach (Column col in ColumnIterator)
+			foreach (Column column in ColumnIterator)
 			{
-				if (tableInfo.GetColumnMetadata(col.Name) != null)
+				IColumnMetadata columnInfo = tableInfo.GetColumnMetadata(column.Name);
+				if (columnInfo != null) 
 					continue;
+				
+					// the column doesnt exist at all.
+					StringBuilder alter = new StringBuilder(root.ToString())
+						.Append(' ')
+						.Append(column.GetQuotedName(dialect))
+						.Append(' ')
+						.Append(column.GetSqlType(dialect, p));
+					
+					string defaultValue = column.DefaultValue;
+					if (!string.IsNullOrEmpty(defaultValue))
+					{
+						alter.Append(" default ").Append(defaultValue);
+						
+						if (column.IsNullable)
+						{
+							alter.Append(dialect.NullColumnString);
+						}
+						else
+						{
+							alter.Append(" not null");
+						}
+					}
 
-				StringBuilder alter = new StringBuilder(root.ToString())
-					.Append(" ")
-					.Append(col.GetQuotedName(dialect))
-					.Append(" ")
-					.Append(col.GetSqlType(dialect, p));
-				if (string.IsNullOrEmpty(col.DefaultValue) == false)
-				{
-					alter.Append(" default ").Append(col.DefaultValue).Append(" ");
-					if (col.IsNullable)
-						alter.Append(dialect.NullColumnString);
-					else
-						alter.Append(" not null ");
-				}
-				if (col.IsUnique && dialect.SupportsUnique)
+				bool useUniqueConstraint = column.Unique && dialect.SupportsUnique
+				                           && (!column.IsNullable || dialect.SupportsNotNullUnique);
+				if (useUniqueConstraint)
 				{
 					alter.Append(" unique");
 				}
 
-				if (col.HasCheckConstraint && dialect.SupportsColumnCheck)
+				if (column.HasCheckConstraint && dialect.SupportsColumnCheck)
 				{
-					alter.Append(" check(")
-						.Append(col.CheckConstraint)
-						.Append(") ");
+					alter.Append(" check(").Append(column.CheckConstraint).Append(") ");
+				}
+
+				string columnComment = column.Comment;
+				if (columnComment != null)
+				{
+					alter.Append(dialect.GetColumnComment(columnComment));
 				}
 
 				results.Add(alter.ToString());
 			}
 
-			return (string[]) results.ToArray(typeof (string));
+			return results.ToArray();
 		}
 
 		/// <summary>

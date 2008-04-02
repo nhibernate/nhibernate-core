@@ -3,13 +3,44 @@ using System.Data;
 namespace NHibernate.Dialect.Schema
 {
 	/// <summary>
-	/// The reader of the schema to enable SchemaUpdate.
+	/// This class is specific of NHibernate and supply DatabaseMetaData of Java.
+	/// In the .NET Framework, there is no direct equivalent.
 	/// </summary>
 	/// <remarks>
-	/// The schema reader implementation is provide by a dialect.
+	/// Implementation is provide by a dialect.
 	/// </remarks>
-	public interface ISchemaReader
+	public interface IDataBaseSchema
 	{
+		/// <summary>
+		/// In the Java language, this field indicates that the database treats mixed-case, 
+		/// quoted SQL identifiers as case-insensitive and stores them in mixed case.
+		/// </summary>
+		bool StoresMixedCaseQuotedIdentifiers { get; }
+
+		/// <summary>
+		/// In the Java language, this field indicates that the database treats mixed-case, 
+		/// quoted SQL identifiers as case-insensitive and stores them in upper case.
+		/// </summary>
+		bool StoresUpperCaseQuotedIdentifiers { get; }
+
+		/// <summary>
+		/// In the Java language, this field indicats that the database treats mixed-case, 
+		/// unquoted SQL identifiers as case-insensitive and stores them in upper case.
+		/// </summary>
+		bool StoresUpperCaseIdentifiers { get; }
+
+		/// <summary>
+		/// In the Java language, this field indicates that the database treats mixed-case, 
+		/// quoted SQL identifiers as case-insensitive and stores them in lower case. 
+		/// </summary>
+		bool StoresLowerCaseQuotedIdentifiers { get; }
+
+		/// <summary>
+		/// In the Java language, this field indicates that the database treats mixed-case, 
+		/// unquoted SQL identifiers as case-insensitive and stores them in lower case, 
+		/// </summary>
+		bool StoresLowerCaseIdentifiers { get; }
+
 		/// <summary>
 		/// Gets a description of the tables available for the catalog
 		/// </summary>
@@ -19,6 +50,20 @@ namespace NHibernate.Dialect.Schema
 		/// <param name="types">a list of table types to include</param>
 		/// <returns>Each row</returns>
 		DataTable GetTables(string catalog, string schemaPattern, string tableNamePattern, string[] types);
+
+		/// <summary>
+		/// The name of the column that represent the TABLE_NAME in the <see cref="DataTable"/>
+		/// returned by <see cref="GetTables"/>.
+		/// </summary>
+		string ColumnNameForTableName { get;}
+
+		/// <summary>
+		/// Get the Table MetaData.
+		/// </summary>
+		/// <param name="rs">The <see cref="DataRow"/> resultSet of <see cref="GetTables"/>.</param>
+		/// <param name="extras">Include FKs and indexes</param>
+		/// <returns></returns>
+		ITableMetadata GetTableMetadata(DataRow rs, bool extras);
 
 		/// <summary>
 		/// Gets a description of the table columns available

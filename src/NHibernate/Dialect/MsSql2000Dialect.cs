@@ -4,6 +4,7 @@ using System.Data;
 using System.Text.RegularExpressions;
 
 using NHibernate.Dialect.Function;
+using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
@@ -11,6 +12,7 @@ using NHibernate.Type;
 using NHibernate.Util;
 
 using Environment = NHibernate.Cfg.Environment;
+using System.Data.Common;
 
 namespace NHibernate.Dialect
 {
@@ -470,6 +472,11 @@ namespace NHibernate.Dialect
 				// table
 				return false;
 			}
+		}
+
+		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
+		{
+			return new MsSqlDataBaseSchema(connection);
 		}
 	}
 }

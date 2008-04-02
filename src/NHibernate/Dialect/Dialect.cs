@@ -704,6 +704,12 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
+
+		public virtual IDataBaseSchema GetDataBaseSchema(DbConnection connection)
+		{
+			throw new NotSupportedException();
+		}
+
 		#endregion
 
 		#region Lock acquisition support
@@ -1933,19 +1939,6 @@ namespace NHibernate.Dialect
 			// since SQLErrorCode is extremely vendor-specific.  Specific Dialects
 			// may override to return whatever is most appropriate for that vendor.
 			return new SQLStateConverter(ViolatedConstraintNameExtracter);
-		}
-
-		#endregion
-
-		#region Schema Reader
-
-		/// <summary>
-		/// The SchemaReader of this specific dialect.
-		/// </summary>
-		/// <remarks>NH specific feature.</remarks>
-		public virtual ISchemaReader GetSchemaReader(DbConnection connection)
-		{
-			return new SchemaReader(connection);
 		}
 
 		#endregion
