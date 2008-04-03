@@ -189,6 +189,10 @@ namespace NHibernate.Transaction
 				commitFailed = true;
 				throw new TransactionException("Commit failed with SQL exception", e);
 			}
+			finally
+			{
+				CloseIfRequerid();
+			}
 		}
 
 		/// <summary>
@@ -229,6 +233,7 @@ namespace NHibernate.Transaction
 				finally
 				{
 					AfterTransactionCompletion(false);
+					CloseIfRequerid();
 				}
 			}
 		}
@@ -269,8 +274,7 @@ namespace NHibernate.Transaction
 
 		void CloseIfRequerid()
 		{
-			//bool close = session.ShouldAutoClose() &&
-			//    !transactionContext.isClosed();
+			//bool close = session.ShouldAutoClose() && !transactionContext.isClosed();
 			//if (close)
 			//{
 			//    transactionContext.managedClose();

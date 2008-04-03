@@ -19,6 +19,13 @@ namespace NHibernate.AdoNet
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ConnectionManager));
 
+		public interface Callback
+		{
+			void ConnectionOpened();
+			void ConnectionCleanedUp();
+			bool IsTransactionInProgress { get; }
+		}
+
 		[NonSerialized]
 		private IDbConnection connection;
 		// Whether we own the connection, i.e. connect and disconnect automatically.

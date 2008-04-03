@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.ConnectionTest
 {
-	[TestFixture,Ignore("Not yet supported, need a better or diferent treatment at transactions. Need AutoClosed feature.")]
+	[TestFixture,Ignore("Not yet supported. Need AutoClosed feature.(TransactionContext)")]
 	public class ThreadLocalCurrentSessionTest : ConnectionManagementTestCase
 	{
 		protected override ISession GetSessionUnderTest()
@@ -36,8 +36,7 @@ namespace NHibernate.Test.ConnectionTest
 		[Test]
 		public void ContextCleanup()
 		{
-			ISession session = OpenSession();
-			
+			ISession session = sessions.OpenSession();
 			session.BeginTransaction();
 			session.Transaction.Commit();
 			Assert.IsFalse(session.IsOpen, "session open after txn completion");

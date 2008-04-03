@@ -439,6 +439,7 @@
     <Compile Include="Action\EntityInsertAction.cs" />
     <Compile Include="Action\EntityUpdateAction.cs" />
     <Compile Include="Action\IExecutable.cs" />
+    <Compile Include="AdoNet\AdoNetContext.cs" />
     <Compile Include="AdoNet\ColumnNameCache.cs" />
     <Compile Include="AdoNet\Expectations.cs" />
     <Compile Include="AdoNet\IBatcherFactory.cs" />
@@ -988,6 +989,7 @@
     <Compile Include="Tool\hbm2ddl\SuppliedConnectionHelper.cs" />
     <Compile Include="Tool\hbm2ddl\SuppliedConnectionProviderConnectionHelper.cs" />
     <Compile Include="Transaction\AdoNetTransactionFactory.cs" />
+    <Compile Include="Transaction\ITransactionContext.cs" />
     <Compile Include="Transform\AliasToBeanConstructorResultTransformer.cs" />
     <Compile Include="Transform\AliasToBeanResultTransformer.cs" />
     <Compile Include="Transform\PassThroughResultTransformer.cs" />
