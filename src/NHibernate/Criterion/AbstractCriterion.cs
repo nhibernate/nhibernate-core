@@ -37,6 +37,13 @@ namespace NHibernate.Criterion
 		/// <returns>An array of TypedValues for the Expression.</returns>
 		public abstract TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery);
 
+		/// <summary>
+		/// Return all projections used in this criterion
+		/// </summary>
+		/// <returns>An array of IProjection used by the Expression.</returns>
+		public abstract IProjection[] GetProjections();
+		
+
 		#endregion
 
 		#region Operator Overloading

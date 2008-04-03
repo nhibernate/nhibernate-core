@@ -19,6 +19,7 @@ namespace NHibernate.SqlCommand
 		private SqlString outerJoinsAfterWhere;
 		private string orderByClause;
 		private string groupByClause;
+		private SqlString havingClause;
 		private LockMode lockMode;
 		private string comment;
 
@@ -157,6 +158,29 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
+		/// <summary>
+		/// Sets the criteria to use for the WHERE.  It joins all of the columnNames together with an AND.
+		/// </summary>
+		/// <param name="tableAlias"></param>
+		/// <param name="columnNames">The names of the columns</param>
+		/// <param name="whereType">The Hibernate Type</param>
+		/// <returns>The SqlSelectBuilder</returns>
+		public SqlSelectBuilder SetHavingClause(string tableAlias, string[] columnNames, IType whereType)
+		{
+			return SetHavingClause(ToWhereString(tableAlias, columnNames));
+		}
+
+		/// <summary>
+		/// Sets the prebuilt SqlString to the Having clause
+		/// </summary>
+		/// <param name="havingSqlString">The SqlString that contains the sql and parameters to add to the HAVING</param>
+		/// <returns>This SqlSelectBuilder</returns>
+		public SqlSelectBuilder SetHavingClause(SqlString havingSqlString)
+		{
+			havingClause = havingSqlString;
+			return this;
+		}
+
 		public SqlSelectBuilder SetLockMode(LockMode lockMode)
 		{
 			this.lockMode = lockMode;
@@ -222,6 +246,13 @@ namespace NHibernate.SqlCommand
 				sqlBuilder.Add(" GROUP BY ")
 					.Add(groupByClause);
 			}
+
+			if(StringHelper.IsNotEmpty(havingClause))
+			{
+				sqlBuilder.Add(" HAVING ")
+					.Add(havingClause);
+			}
+
 			if (StringHelper.IsNotEmpty(orderByClause))
 			{
 				sqlBuilder.Add(" ORDER BY ")

@@ -63,6 +63,11 @@ namespace NHibernate.Criterion
 			get { return projection.IsGrouped; }
 		}
 
+		public bool IsAggregate
+		{
+			get { return projection.IsAggregate; }
+		}
+
 		/// <summary>
 		/// Gets the typed values for parameters in this projection
 		/// </summary>

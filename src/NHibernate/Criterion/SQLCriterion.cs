@@ -40,6 +40,11 @@ namespace NHibernate.Criterion
 			return _typedValues;
 		}
 
+		public override IProjection[] GetProjections()
+		{
+			return null;
+		}
+
 		/// <summary></summary>
 		public override string ToString()
 		{

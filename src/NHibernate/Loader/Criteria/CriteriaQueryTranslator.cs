@@ -37,6 +37,8 @@ namespace NHibernate.Loader.Criteria
 		private readonly ISessionFactoryImplementor sessionFactory;
 		private int indexForAlias = 0;
 
+		private readonly List<TypedValue> usedTypedValues = new List<TypedValue>();
+
 		public CriteriaQueryTranslator(
 			ISessionFactoryImplementor factory,
 			CriteriaImpl criteria,
@@ -75,6 +77,21 @@ namespace NHibernate.Loader.Criteria
 		public int GetIndexForAlias()
 		{
 			return indexForAlias++;
+		}
+
+		public void AddUsedTypedValues(TypedValue [] values)
+		{
+			if(values != null)
+			{
+				if(outerQueryTranslator != null)
+				{
+					outerQueryTranslator.AddUsedTypedValues(values);
+				}
+				else
+				{
+					usedTypedValues.AddRange(values);
+				}
+			}
 		}
 
 		private ICriteria GetAliasedCriteria(string alias)
@@ -319,23 +336,10 @@ namespace NHibernate.Loader.Criteria
 			ArrayList values = new ArrayList();
 			ArrayList types = new ArrayList();
 
-			foreach (CriteriaImpl.CriterionEntry ce in rootCriteria.IterateExpressionEntries())
+			foreach(TypedValue value in usedTypedValues)
 			{
-				TypedValue[] tv = ce.Criterion.GetTypedValues(ce.Criteria, this);
-				for (int i = 0; i < tv.Length; i++)
-				{
-					values.Add(tv[i].Value);
-					types.Add(tv[i].Type);
-				}
-			}
-			if (rootCriteria.Projection != null)
-			{
-				TypedValue[] tv = rootCriteria.Projection.GetTypedValues(rootCriteria.ProjectionCriteria, this);
-				for (int i = 0; i < tv.Length; i++)
-				{
-					values.Add(tv[i].Value);
-					types.Add(tv[i].Type);
-				}
+				values.Add(value.Value);
+				types.Add(value.Type);
 			}
 
 			object[] valueArray = values.ToArray();
@@ -426,16 +430,53 @@ namespace NHibernate.Loader.Criteria
 			bool first = true;
 			foreach (CriteriaImpl.CriterionEntry entry in rootCriteria.IterateExpressionEntries())
 			{
-				if (!first)
+				if(!HasGroupedOrAggregateProjection(entry.Criterion.GetProjections()))
 				{
-					condition.Add(" and ");
+					if (!first)
+					{
+						condition.Add(" and ");
+					}
+					first = false;
+					SqlString sqlString = entry.Criterion.ToSqlString(entry.Criteria, this, enabledFilters);
+					condition.Add(sqlString);
 				}
-				first = false;
-				SqlString sqlString = entry.Criterion.ToSqlString(entry.Criteria, this, enabledFilters);
-				condition.Add(sqlString);
 			}
 			return condition.ToSqlString();
 		}
+
+		public SqlString GetHavingCondition(IDictionary<string, IFilter> enabledFilters)
+		{
+			SqlStringBuilder condition = new SqlStringBuilder(30);
+			bool first = true;
+			foreach(CriteriaImpl.CriterionEntry entry in rootCriteria.IterateExpressionEntries())
+			{
+				if(HasGroupedOrAggregateProjection(entry.Criterion.GetProjections()))
+				{
+					if (!first)
+					{
+						condition.Add(" and ");
+					}
+					first = false;
+					SqlString sqlString = entry.Criterion.ToSqlString(entry.Criteria, this, enabledFilters);
+					condition.Add(sqlString);
+				}
+			}
+			return condition.ToSqlString();
+		}
+
+		protected static bool HasGroupedOrAggregateProjection(IProjection[] projections)
+		{
+			if(projections != null)
+			{
+				foreach(IProjection projection in projections)
+				{
+					if(projection.IsGrouped || projection.IsAggregate)
+						return true;
+				}
+			}
+			return false;
+		}
+
 
 		public string GetOrderBy()
 		{

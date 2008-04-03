@@ -36,6 +36,13 @@ namespace NHibernate.Criterion
 		TypedValue GetTypedIdentifierValue(ICriteria subcriteria, object value);
 
 		string GenerateSQLAlias();
+
 		int GetIndexForAlias();
+
+		/// <summary>
+		/// When adding values to the query string it is imparative that they are reported via this function back to the query builder. 
+		/// Do not report the same item multiple times as it will be assumed to be a separate parameter.
+		/// </summary>
+		void AddUsedTypedValues(TypedValue [] values);
 	}
 }

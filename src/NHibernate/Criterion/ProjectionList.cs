@@ -79,7 +79,6 @@ namespace NHibernate.Criterion
 			{
 				buf.RemoveAt(buf.Count - 1);
 			}
-			//if (buf.Length > 2) buf.Length = buf.Length - 2; //pull off the last ", "
 			return buf.ToSqlString();
 		}
 
@@ -163,6 +162,19 @@ namespace NHibernate.Criterion
 				for (int i = 0; i < Length; i++)
 				{
 					if (this[i].IsGrouped)
+						return true;
+				}
+				return false;
+			}
+		}
+
+		public bool IsAggregate
+		{
+			get
+			{
+				for(int i = 0; i < Length; i++)
+				{
+					if(this[i].IsAggregate)
 						return true;
 				}
 				return false;

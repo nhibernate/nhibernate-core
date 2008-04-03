@@ -26,5 +26,11 @@ namespace NHibernate.Criterion
 		/// </summary>
 		/// <returns>An array of TypedValues for the Expression.</returns>
 		TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery);
+
+		/// <summary>
+		/// Return all projections used in this criterion
+		/// </summary>
+		/// <returns>An array of IProjection used by the Expression.</returns>
+		IProjection[] GetProjections();
 	}
 }

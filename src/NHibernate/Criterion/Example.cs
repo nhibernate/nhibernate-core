@@ -355,6 +355,11 @@ namespace NHibernate.Criterion
 			return (TypedValue[]) list.ToArray(typeof(TypedValue));
 		}
 
+		public override IProjection[] GetProjections()
+		{
+			return null;
+		}
+
 		private EntityMode GetEntityMode(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			IEntityPersister meta = criteriaQuery.Factory.GetEntityPersister(criteriaQuery.GetEntityName(criteria));

@@ -111,25 +111,10 @@ namespace NHibernate.Criterion
 			}
 			else
 			{
-				TypedValue[] typedValues = projection.GetTypedValues(criteria, criteriaQuery);
-				types.AddRange(typedValues);
-				// we add the values collection _twice_ on purpose.
-				// once is for the projection types, if they exists
-				// the second for the parameters of the expression itself
-				// if the projection is using no types, we will try to guess
-				// what we have here
 				foreach (object value in values)
 				{
-					if (typedValues.Length != 0)
-					{
-						types.AddRange(typedValues);
-					}
-					else
-					{
-						types.Add(new TypedValue(NHibernateUtil.GuessType((object)value), value, EntityMode.Poco));
-					}
+					types.Add(new TypedValue(NHibernateUtil.GuessType((object)value), value, EntityMode.Poco));
 				}
-
 			}
 			return types.ToArray();
 

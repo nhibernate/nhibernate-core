@@ -58,5 +58,10 @@ namespace NHibernate.Criterion
 		{
 			return "not " + _criterion.ToString();
 		}
+
+		public override IProjection[] GetProjections()
+		{
+			return null;
+		}
 	}
 }

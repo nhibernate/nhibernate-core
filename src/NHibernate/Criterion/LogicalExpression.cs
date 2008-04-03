@@ -58,6 +58,11 @@ namespace NHibernate.Criterion
 			return result;
 		}
 
+		public override IProjection[] GetProjections()
+		{		
+			return null;
+		}
+
 		/// <summary>
 		/// Converts the LogicalExpression to a <see cref="SqlString"/>.
 		/// </summary>

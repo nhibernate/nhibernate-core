@@ -13,7 +13,7 @@ namespace NHibernate.Criterion
 	[Serializable]
 	public class SimpleExpression : AbstractCriterion
 	{
-		private readonly IProjection projection;
+		private readonly IProjection _projection;
 		private readonly string propertyName;
 		private readonly object value;
 		private bool ignoreCase;
@@ -21,7 +21,7 @@ namespace NHibernate.Criterion
 
 		protected internal SimpleExpression(IProjection projection, object value, string op)
 		{
-			this.projection = projection;
+			_projection = projection;
 			this.value = value;
 			this.op = op;
 		}
@@ -77,10 +77,10 @@ namespace NHibernate.Criterion
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			SqlString[] columnNames =
-				CriterionUtil.GetColumnNamesForSimpleExpression(propertyName, projection, criteriaQuery, criteria, enabledFilters,
+				CriterionUtil.GetColumnNamesForSimpleExpression(propertyName, _projection, criteriaQuery, criteria, enabledFilters,
 				                                                 this, value);
-			
 
+			criteriaQuery.AddUsedTypedValues(GetTypedValues(criteria, criteriaQuery));
 			if (ignoreCase)
 			{
 				if (columnNames.Length != 1)
@@ -118,19 +118,25 @@ namespace NHibernate.Criterion
 			}
 		}
 
-		
-
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			object icvalue = ignoreCase ? value.ToString().ToLower() : value;
+			return CriterionUtil.GetTypedValues(criteriaQuery, criteria, _projection,propertyName, icvalue);
+		}
 
-			return CriterionUtil.GetTypedValues(criteriaQuery, criteria, projection,propertyName, icvalue);
+		public override IProjection[] GetProjections()
+		{
+			if(_projection != null)
+			{
+				return new IProjection[] { _projection };
+			}
+			return null;
 		}
 
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return (projection ?? (object)propertyName) + Op + value;
+			return (_projection ?? (object)propertyName) + Op + value;
 		}
 
 		/// <summary>

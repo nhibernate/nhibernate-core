@@ -16,7 +16,7 @@ namespace NHibernate.Criterion
 	{
 		private readonly string _propertyName;
 		private readonly object _value;
-		private readonly IProjection projection;
+		private readonly IProjection _projection;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="InsensitiveLikeExpression"/> class.
@@ -26,7 +26,7 @@ namespace NHibernate.Criterion
 		/// <param name="matchMode">The match mode.</param>
 		public InsensitiveLikeExpression(IProjection projection, string value, MatchMode matchMode)
 		{
-			this.projection = projection;
+			this._projection = projection;
 			this._value = matchMode.ToMatchString(value);
 		}
 
@@ -37,7 +37,7 @@ namespace NHibernate.Criterion
 		/// <param name="_value">The _value.</param>
 		public InsensitiveLikeExpression(IProjection projection, object _value)
 		{
-			this.projection = projection;
+			this._projection = projection;
 			this._value = _value;
 		}
 
@@ -64,8 +64,9 @@ namespace NHibernate.Criterion
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 			SqlString[] columnNames =
-				CriterionUtil.GetColumnNames(_propertyName, projection, criteriaQuery, criteria, enabledFilters);
+				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria, enabledFilters);
 
+			criteriaQuery.AddUsedTypedValues(GetTypedValues(criteria,criteriaQuery));
 			if (columnNames.Length != 1)
 			{
 				throw new HibernateException("insensitive like may only be used with single-column properties");
@@ -92,13 +93,22 @@ namespace NHibernate.Criterion
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return CriterionUtil.GetTypedValues(criteriaQuery, criteria, projection, _propertyName, _value.ToString().ToLower());
+			return CriterionUtil.GetTypedValues(criteriaQuery, criteria, _projection, _propertyName, _value.ToString().ToLower());
+		}
+
+		public override IProjection[] GetProjections()
+		{
+			if(_projection != null)
+			{
+				return new IProjection[] { _projection };
+			}
+			return null;
 		}
 
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return (projection ?? (object)_propertyName) + " ilike " + _value;
+			return (_projection ?? (object)_propertyName) + " ilike " + _value;
 		}
 	}
 }

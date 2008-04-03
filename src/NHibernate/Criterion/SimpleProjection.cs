@@ -38,15 +38,12 @@ namespace NHibernate.Criterion
 			get { return new String[1]; }
 		}
 
-		public virtual SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
-		{
-			throw new InvalidOperationException("not a grouping projection");
-		}
+		public abstract bool IsGrouped { get; }
 
-		public virtual bool IsGrouped
-		{
-			get { return false; }
-		}
+		public abstract SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters);
+
+		public abstract bool IsAggregate { get; }
+
 
 		/// <summary>
 		/// Gets the typed values for parameters in this projection

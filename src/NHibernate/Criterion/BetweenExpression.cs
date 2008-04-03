@@ -54,6 +54,7 @@ namespace NHibernate.Criterion
 			SqlString[] columnNames =
 				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria, enabledFilters);
 
+			criteriaQuery.AddUsedTypedValues(GetTypedValues(criteria, criteriaQuery));
 			if (columnNames.Length == 1)
 			{
 				sqlBuilder
@@ -95,6 +96,15 @@ namespace NHibernate.Criterion
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			return CriterionUtil.GetTypedValues(criteriaQuery, criteria, _projection, _propertyName, _lo, _hi);
+		}
+
+		public override IProjection[] GetProjections()
+		{
+			if(_projection != null)
+			{
+				return new IProjection[] { _projection };
+			}
+			return null;
 		}
 
 		/// <summary></summary>

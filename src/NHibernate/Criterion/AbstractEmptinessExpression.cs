@@ -28,6 +28,8 @@ namespace NHibernate.Criterion
 			return NO_VALUES;
 		}
 
+		public abstract IProjection[] GetProjections();
+
 		public override sealed string ToString()
 		{
 			return propertyName + (ExcludeEmpty ? " is not empty" : " is empty");

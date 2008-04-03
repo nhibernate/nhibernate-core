@@ -31,6 +31,7 @@ namespace NHibernate.Criterion
 
 		protected override SqlString ToLeftSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
+			criteriaQuery.AddUsedTypedValues(GetTypedValues(criteria, criteriaQuery));
 			return SqlString.Parameter;
 		}
 	}

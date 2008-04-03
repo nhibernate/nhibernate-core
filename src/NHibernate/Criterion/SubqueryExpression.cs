@@ -46,6 +46,9 @@ namespace NHibernate.Criterion
 
             IOuterJoinLoadable persister = (IOuterJoinLoadable)factory.GetEntityPersister(this.criteriaImpl.CriteriaClass);
 
+			//buffer needs to be before CriteriaJoinWalker for sake of parameter order
+			SqlStringBuilder buf = new SqlStringBuilder().Add(ToLeftSqlString(criteria, criteriaQuery)); 
+
             //patch to generate joins on subqueries
             //stolen from CriteriaLoader
             CriteriaJoinWalker walker = new CriteriaJoinWalker(
@@ -62,7 +65,6 @@ namespace NHibernate.Criterion
             if (criteriaImpl.FirstResult != 0 || criteriaImpl.MaxResults != RowSelection.NoValue)
                 sql = factory.Dialect.GetLimitString(sql, criteriaImpl.FirstResult, criteriaImpl.MaxResults);
 
-            SqlStringBuilder buf = new SqlStringBuilder().Add(ToLeftSqlString(criteria, criteriaQuery));
             if (op != null)
             {
                 buf.Add(" ").Add(op).Add(" ");
@@ -97,6 +99,11 @@ namespace NHibernate.Criterion
             }
             return tv;
         }
+
+		public override IProjection[] GetProjections()
+		{
+			return null;
+		}
 
         // NH: This feels like a hack but I don't understand the code enough yet to code a better solution
         private void InitializeInnerQueryAndParameters(ICriteriaQuery criteriaQuery)

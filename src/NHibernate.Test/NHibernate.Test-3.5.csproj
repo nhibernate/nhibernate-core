@@ -311,6 +311,14 @@
     <Compile Include="NHSpecificTest\NH1230\FooAssigned.cs" />
     <Compile Include="NHSpecificTest\NH1230\FooIdentity.cs" />
     <Compile Include="NHSpecificTest\NH1230\PreSaveDoVeto.cs" />
+    <Compile Include="NHSpecificTest\NH1250\Model.cs" />
+    <Compile Include="NHSpecificTest\NH1250\PolymorphicJoinFetchFixture.cs" />
+    <Compile Include="NHSpecificTest\NH1252\Model.cs" />
+    <Compile Include="NHSpecificTest\NH1252\NH1252Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1275\A.cs" />
+    <Compile Include="NHSpecificTest\NH1275\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1280\NH1280Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1280\Person.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
@@ -1153,6 +1161,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1235\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="NHSpecificTest\NH1250\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\NH1252\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\NH1275\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\NH1280\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

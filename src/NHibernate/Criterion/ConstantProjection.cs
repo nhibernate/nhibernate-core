@@ -19,8 +19,24 @@ namespace NHibernate.Criterion
 			this.value = value;
 		}
 
+		public override bool IsAggregate
+		{
+			get { return false; }
+		}
+
+		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		{
+			throw new InvalidOperationException("not a grouping projection");
+		}
+
+		public override bool IsGrouped
+		{
+			get { return false; }
+		}
+
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
+			criteriaQuery.AddUsedTypedValues(new TypedValue[] { new TypedValue(NHibernateUtil.GuessType(value), value, EntityMode.Poco) });
 			return new SqlStringBuilder()
 				.AddParameter()
 				.Add(" as ")

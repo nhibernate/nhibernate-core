@@ -41,20 +41,20 @@ namespace NHibernate.Loader
 		}
 
 		protected void InitProjection(SqlString projectionString, SqlString whereString,
-			string orderByString, string groupByString, LockMode lockMode)
+			string orderByString, string groupByString, SqlString havingString, LockMode lockMode)
 		{
 			WalkEntityTree(persister, Alias);
 			Persisters = new ILoadable[0];
-			InitStatementString(projectionString, whereString, orderByString, groupByString, lockMode);
+			InitStatementString(projectionString, whereString, orderByString, groupByString, havingString, lockMode);
 		}
 
 		private void InitStatementString(SqlString condition, string orderBy, LockMode lockMode)
 		{
-			InitStatementString(null, condition, orderBy, string.Empty, lockMode);
+			InitStatementString(null, condition, orderBy, string.Empty, null, lockMode);
 		}
 
 		private void InitStatementString(SqlString projection,SqlString condition,
-			string orderBy,string groupBy,LockMode lockMode)
+			string orderBy,string groupBy, SqlString having, LockMode lockMode)
 		{
 			int joins = CountEntityPersisters(associations);
 			Suffixes = BasicLoader.GenerateSuffixes(joins + 1);
@@ -71,7 +71,8 @@ namespace NHibernate.Loader
 				.SetWhereClause(condition)
 				.SetOuterJoins(ojf.ToFromFragmentString,ojf.ToWhereFragmentString + WhereFragment)
 				.SetOrderByClause(OrderBy(associations, orderBy))
-				.SetGroupByClause(groupBy);
+				.SetGroupByClause(groupBy)
+				.SetHavingClause(having);
 
 			if (Factory.Settings.IsCommentsEnabled)
 				select.SetComment(Comment);

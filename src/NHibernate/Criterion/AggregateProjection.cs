@@ -21,6 +21,11 @@ namespace NHibernate.Criterion
 			this.propertyName = propertyName;
 		}
 
+		public override bool IsAggregate
+		{
+			get { return true; }
+		}
+
 		public override string ToString()
 		{
 			return aggregate + "(" + propertyName + ')';
@@ -42,6 +47,17 @@ namespace NHibernate.Criterion
 			                     		loc.ToString(),
 			                     		"_"
 			                     	});
+		}
+
+		public override bool IsGrouped
+		{
+			get { return false; }
+		}
+
+		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery,
+		                                           IDictionary<string, IFilter> enabledFilters)
+		{
+			throw new InvalidOperationException("not a grouping projection");
 		}
 	}
 }

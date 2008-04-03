@@ -12,7 +12,7 @@ namespace NHibernate.Criterion
 	public class NotNullExpression : AbstractCriterion
 	{
 		private readonly string _propertyName;
-		private IProjection projection;
+		private IProjection _projection;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NotNullExpression"/> class.
@@ -20,7 +20,7 @@ namespace NHibernate.Criterion
 		/// <param name="projection">The projection.</param>
 		public NotNullExpression(IProjection projection)
 		{
-			this.projection = projection;
+			_projection = projection;
 		}
 
 		private static readonly TypedValue[] NoValues = new TypedValue[0];
@@ -41,7 +41,7 @@ namespace NHibernate.Criterion
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
 			SqlString[] columnNames =
-				CriterionUtil.GetColumnNames(_propertyName, projection, criteriaQuery, criteria, enabledFilters);
+				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria, enabledFilters);
 
 			bool opNeeded = false;
 
@@ -68,15 +68,21 @@ namespace NHibernate.Criterion
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			if (projection == null)
-				return NoValues;
-			else
-				return projection.GetTypedValues(criteria, criteriaQuery);
+			return _projection == null ? NoValues : _projection.GetTypedValues(criteria, criteriaQuery);
+		}
+
+		public override IProjection[] GetProjections()
+		{
+			if(_projection != null)
+			{
+				return new IProjection[] { _projection };
+			}
+			return null;
 		}
 
 		public override string ToString()
 		{
-			return (projection ?? (object)_propertyName) + " is not null";
+			return (_projection ?? (object)_propertyName) + " is not null";
 		}
 	}
 }

@@ -126,5 +126,22 @@ namespace NHibernate.Criterion
 		{
 			return (_lhsProjection ?? (object)_lhsPropertyName) + Op + _rhsPropertyName;
 		}
+
+		public override IProjection[] GetProjections()
+		{
+			if(_lhsProjection != null && _rhsProjection != null)
+			{
+				return new IProjection[] {_lhsProjection, _rhsProjection};
+			}
+			if(_lhsProjection != null)
+			{
+				return new IProjection[] {_lhsProjection};
+			}
+			if(_rhsProjection != null)
+			{
+				return new IProjection[] {_rhsProjection};
+			}
+			return null;
+		}
 	}
 }

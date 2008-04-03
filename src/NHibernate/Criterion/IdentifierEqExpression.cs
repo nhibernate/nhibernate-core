@@ -16,10 +16,11 @@ namespace NHibernate.Criterion
 
 		public IdentifierEqExpression(IProjection projection)
 		{
-			this.projection = projection;
+			_projection = projection;
 		}
 
-		private readonly IProjection projection;
+		private readonly IProjection _projection;
+
 		public IdentifierEqExpression(object value)
 		{
 			this.value = value;
@@ -59,13 +60,14 @@ namespace NHibernate.Criterion
 
 		private void AddValueOrProjection(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters, SqlStringBuilder result)
 		{
-			if (projection == null)
+			if (_projection == null)
 			{
+				criteriaQuery.AddUsedTypedValues(GetTypedValues(criteria,criteriaQuery));
 				result.AddParameter();
 			}
 			else
 			{
-				SqlString sql = projection.ToSqlString(criteria, GetHashCode(),criteriaQuery, enabledFilters);
+				SqlString sql = _projection.ToSqlString(criteria, GetHashCode(),criteriaQuery, enabledFilters);
 				result.Add(StringHelper.RemoveAsAliasesFromSql(sql));
 			}
 		}
@@ -75,11 +77,18 @@ namespace NHibernate.Criterion
 			return new TypedValue[] {criteriaQuery.GetTypedIdentifierValue(criteria, value)};
 		}
 
+		public override IProjection[] GetProjections()
+		{
+			if(_projection != null)
+				return new IProjection[] { _projection };
+			return null;
+		}
+
 		#endregion
 
 		public override string ToString()
 		{
-			return (projection != null ? projection.ToString() : "ID") + " == " + value;
+			return (_projection != null ? _projection.ToString() : "ID") + " == " + value;
 		}
 	}
 }

@@ -41,6 +41,11 @@ namespace NHibernate.Criterion
 			get { return grouped; }
 		}
 
+		public override bool IsAggregate
+		{
+			get { return false; }
+		}
+
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			return new IType[] {criteriaQuery.GetType(criteria, propertyName)};
@@ -61,12 +66,9 @@ namespace NHibernate.Criterion
 		{
 			if (!grouped)
 			{
-				return base.ToGroupSqlString(criteria, criteriaQuery, enabledFilters);
+				throw new InvalidOperationException("not a grouping projection");
 			}
-			else
-			{
-				return new SqlString(criteriaQuery.GetColumn(criteria, propertyName));
-			}
+			return new SqlString(criteriaQuery.GetColumn(criteria, propertyName));
 		}
 	}
 }

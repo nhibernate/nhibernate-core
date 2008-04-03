@@ -1,3 +1,5 @@
+using System;
+
 namespace NHibernate.Test.Criteria
 {
 	using System.Collections.Generic;
@@ -17,9 +19,15 @@ namespace NHibernate.Test.Criteria
 			this.numberToAdd = numberToAdd;
 		}
 
+		public override bool IsAggregate
+		{
+			get { return false; }
+		}
+
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			string[] projection = criteriaQuery.GetColumnsUsingProjection(criteria, propertyName);
+			criteriaQuery.AddUsedTypedValues(GetTypedValues(criteria, criteriaQuery));
 			return new SqlStringBuilder()
 				.Add("(")
 				.Add(projection[0])
@@ -39,6 +47,17 @@ namespace NHibernate.Test.Criteria
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			return new TypedValue[] {new TypedValue(NHibernateUtil.Int32, numberToAdd, EntityMode.Poco)};
+		}
+
+		public override bool IsGrouped
+		{
+			get { return false; }
+		}
+
+		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery,
+		                                           IDictionary<string, IFilter> enabledFilters)
+		{
+			throw new InvalidOperationException("not a grouping projection");
 		}
 	}
 }

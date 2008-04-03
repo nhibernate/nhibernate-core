@@ -21,7 +21,7 @@ namespace NHibernate.Criterion
 		private readonly string value;
 		private char? escapeChar;
 		private readonly bool ignoreCase;
-		private readonly IProjection projection;
+		private readonly IProjection _projection;
 
 		public LikeExpression(string propertyName, string value, char? escapeChar, bool ignoreCase)
 		{
@@ -33,7 +33,7 @@ namespace NHibernate.Criterion
 
 		public LikeExpression(IProjection projection, string value, MatchMode matchMode)
 		{
-			this.projection = projection;
+			_projection = projection;
 			this.value = matchMode.ToMatchString(value);
 		}
 
@@ -71,6 +71,8 @@ namespace NHibernate.Criterion
 			}
 			else 
 				lhs.Add(columns[0]);
+			
+			criteriaQuery.AddUsedTypedValues(GetTypedValues(criteria, criteriaQuery));
 			lhs.Add(" like ").AddParameter();
 			if (escapeChar.HasValue)
 				lhs.Add(" escape '" + escapeChar + "'");
@@ -82,11 +84,20 @@ namespace NHibernate.Criterion
 			return new TypedValue[] {criteriaQuery.GetTypedValue(criteria, propertyName, ignoreCase ? value.ToLower() : value)};
 		}
 
+		public override IProjection[] GetProjections()
+		{
+			if(_projection != null)
+			{
+				return new IProjection[] {_projection};
+			}
+			return null;
+		}
+
 		#endregion
 
 		public override string ToString()
 		{
-			return (projection != null ? projection.ToString() : propertyName) + " like " + value;
+			return (_projection != null ? _projection.ToString() : propertyName) + " like " + value;
 		}
 	}
 }

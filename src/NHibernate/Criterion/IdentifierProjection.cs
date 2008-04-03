@@ -55,11 +55,18 @@ namespace NHibernate.Criterion
 			get { return grouped; }
 		}
 
+		public override bool IsAggregate
+		{
+			get { return false; }
+		}
+
 		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			return (grouped) ?
-			       new SqlString(StringHelper.Join(",", criteriaQuery.GetIdentifierColumns(criteria)))
-			       	: base.ToGroupSqlString(criteria, criteriaQuery,enabledFilters);
+			if (!grouped)
+			{
+				throw new InvalidOperationException("not a grouping projection");
+			}
+			return new SqlString(StringHelper.Join(",", criteriaQuery.GetIdentifierColumns(criteria)));
 		}
 	}
 }

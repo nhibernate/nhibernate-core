@@ -17,5 +17,10 @@ namespace NHibernate.Criterion
 		{
 			get { return false; }
 		}
+
+		public override IProjection[] GetProjections()
+		{
+			return null;
+		}
 	}
 }

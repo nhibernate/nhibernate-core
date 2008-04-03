@@ -86,5 +86,10 @@ namespace NHibernate.Criterion
 		{
 			return '(' + StringHelper.Join(Op, _criteria) + ')';
 		}
+
+		public override IProjection[] GetProjections()
+		{
+			return null;
+		}
 	}
 }

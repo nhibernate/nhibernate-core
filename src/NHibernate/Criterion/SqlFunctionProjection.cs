@@ -31,6 +31,41 @@ namespace NHibernate.Criterion
 			this.args = args;
 		}
 
+		public override bool IsAggregate
+		{
+			get { return false; }
+		}
+
+		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		{
+			SqlStringBuilder buf = new SqlStringBuilder();
+			foreach (IProjection projection in args)
+			{
+				if(projection.IsGrouped)
+				{
+					buf.Add(projection.ToGroupSqlString(criteria, criteriaQuery, enabledFilters))
+						.Add(", ");
+				}
+			}
+			if(buf.Count >= 2)
+			{
+				buf.RemoveAt(buf.Count - 1);
+			}
+			return buf.ToSqlString();
+		}
+
+		public override bool IsGrouped
+		{
+			get 
+			{
+				foreach (IProjection projection in args)
+				{
+					if(projection.IsGrouped)
+						return true;
+				}
+				return false;
+			}
+		}
 
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{

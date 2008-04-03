@@ -44,6 +44,7 @@ namespace NHibernate.Loader.Criteria
 					translator.GetWhereCondition(enabledFilters),
 					translator.GetOrderBy(),
 					translator.GetGroupBy().ToString(),
+					translator.GetHavingCondition(enabledFilters),
 					LockMode.None
 					);
 			}

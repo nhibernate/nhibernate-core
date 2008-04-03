@@ -76,6 +76,11 @@ namespace NHibernate.Criterion
 		bool IsGrouped { get; }
 
 		/// <summary>
+		/// Does this projection specify aggregate attributes?
+		/// </summary>
+		bool IsAggregate { get; }
+
+		/// <summary>
 		/// Gets the typed values for parameters in this projection
 		/// </summary>
 		/// <param name="criteria">The criteria.</param>

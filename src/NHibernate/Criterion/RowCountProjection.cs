@@ -13,6 +13,11 @@ namespace NHibernate.Criterion
 		{
 		}
 
+		public override bool IsAggregate
+		{
+			get { return true; }
+		}
+
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			return new IType[] {NHibernateUtil.Int32};
@@ -30,6 +35,18 @@ namespace NHibernate.Criterion
 		public override string ToString()
 		{
 			return "count(*)";
+		}
+
+		public override bool IsGrouped
+		{
+			get { return false; }
+		}
+
+		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery,
+		                                           IDictionary<string, IFilter> enabledFilters)
+		{
+
+			throw new InvalidOperationException("not a grouping projection");
 		}
 	}
 }

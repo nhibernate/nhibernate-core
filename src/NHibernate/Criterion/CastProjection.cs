@@ -24,6 +24,11 @@ namespace NHibernate.Criterion
 			this.projection = projection;
 		}
 
+		public override bool IsAggregate
+		{
+			get { return false; }
+		}
+
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			ISessionFactoryImplementor factory = criteriaQuery.Factory;
@@ -56,6 +61,19 @@ namespace NHibernate.Criterion
 		public override NHibernate.Engine.TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			return projection.GetTypedValues(criteria, criteriaQuery);
+		}
+
+		public override bool IsGrouped
+		{
+			get
+			{
+				return projection.IsGrouped;
+			}
+		}
+
+		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		{
+			return projection.ToGroupSqlString(criteria, criteriaQuery, enabledFilters);
 		}
 	}
 }
