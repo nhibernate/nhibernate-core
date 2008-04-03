@@ -5,6 +5,7 @@ namespace NHibernate.Transaction
 {
 	/// <summary>
 	/// An abstract factory for <c>ITransaction</c> instances.
+	/// <seealso cref="ITransactionContext"/>
 	/// </summary>
 	public interface ITransactionFactory
 	{

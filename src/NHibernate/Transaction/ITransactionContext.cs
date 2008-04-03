@@ -2,12 +2,12 @@ using NHibernate.Engine;
 
 namespace NHibernate.Transaction
 {
-	/// <summary>
-	/// Represent the inner interface in TransactionFactory class.
-	/// See at Hibernate org.hibernate.transaction.TransactionFactory.Context
-	/// </summary>
 	public interface ITransactionContext
 	{
+		/// Since C# doesn't support interfaces into interfaces ITransactionContext
+		/// represent the inner interface at 
+		/// org.hibernate.transaction.TransactionFactory.Context
+
 		ISessionFactoryImplementor Factory { get; }
 		//bool IsOpen { get; }
 		bool IsClosed { get; }
