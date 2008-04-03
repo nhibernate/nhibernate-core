@@ -551,6 +551,7 @@
     <Compile Include="Context\ICurrentSessionContext.cs" />
     <Compile Include="Context\ManagedWebSessionContext.cs" />
     <Compile Include="Context\MapBasedSessionContext.cs" />
+    <Compile Include="Context\ThreadLocalSessionContext.cs" />
     <Compile Include="Context\ThreadStaticSessionContext.cs" />
     <Compile Include="Context\WebSessionContext.cs" />
     <Compile Include="CriteriaTransformer.cs" />
