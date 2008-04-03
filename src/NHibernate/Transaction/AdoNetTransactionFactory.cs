@@ -1,4 +1,5 @@
 using System.Collections;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 
 namespace NHibernate.Transaction
@@ -12,6 +13,17 @@ namespace NHibernate.Transaction
 
 		public void Configure(IDictionary props)
 		{
+		}
+
+		public ConnectionReleaseMode DefaultReleaseMode
+		{
+			get { throw new System.NotImplementedException(); }
+		}
+
+		public bool IsTransactionInProgress(AdoNetContext adoNetContext, ITransactionContext transactionContext,
+		                                    ITransaction transaction)
+		{
+			throw new System.NotImplementedException();
 		}
 	}
 }

@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
+using NHibernate.AdoNet;
+using NHibernate.Transaction;
 
 namespace NHibernate.Test.NHSpecificTest.NH1054
 {
@@ -14,6 +14,17 @@ namespace NHibernate.Test.NHSpecificTest.NH1054
 		ITransaction NHibernate.Transaction.ITransactionFactory.CreateTransaction(NHibernate.Engine.ISessionImplementor session)
 		{
 			return null;
+		}
+
+		public ConnectionReleaseMode DefaultReleaseMode
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool IsTransactionInProgress(AdoNetContext adoNetContext, ITransactionContext transactionContext,
+		                                    ITransaction transaction)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }
