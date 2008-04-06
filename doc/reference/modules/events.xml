@@ -1,0 +1,226 @@
+<chapter id="events">
+    <title>Interceptors and events</title>
+
+    <para>
+        It is often useful for the application to react to certain events that occur
+        inside NHibernate. This allows implementation of certain kinds of generic 
+        functionality, and extension of NHibernate functionality.
+    </para>
+
+    <sect1 id="objectstate-interceptors" revision="3">
+        <title>Interceptors</title>
+
+        <para>
+            The <literal>IInterceptor</literal> interface provides callbacks from the session to the 
+            application allowing the application to inspect and/or manipulate properties of a
+            persistent object before it is saved, updated, deleted or loaded. One 
+            possible use for this is to track auditing information. For example, the following 
+            <literal>IInterceptor</literal> automatically sets the  <literal>createTimestamp</literal> 
+            when an <literal>IAuditable</literal> is created and updates the 
+            <literal>lastUpdateTimestamp</literal> property when an <literal>IAuditable</literal> is 
+            updated.
+        </para>
+
+        <para>
+            You may either implement <literal>IInterceptor</literal> directly or (better) extend
+            <literal>EmptyInterceptor</literal>.
+        </para>
+
+        <programlisting><![CDATA[using System;
+	
+using NHibernate;
+using NHibernate.Type;
+
+public class AuditInterceptor : EmptyInterceptor {
+
+    private int updates;
+    private int creates;
+    private int loads;
+
+    public override void OnDelete(object entity,
+                                  object id,
+                                  object[] state,
+                                  string[] propertyNames,
+                                  IType[] types)
+    {
+        // do nothing
+    }
+
+    public override bool OnFlushDirty(object entity, 
+                                      object id, 
+				      object[] currentState,
+				      object[] previousState, 
+				      string[] propertyNames,
+				      IType[] types) 
+    {
+        if ( entity is IAuditable ) {
+            updates++;
+            for ( int i=0; i < propertyNames.Length; i++ ) {
+                if ( "lastUpdateTimestamp".Equals( propertyNames[i] ) ) {
+                    currentState[i] = new DateTime();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public override bool OnLoad(object entity, 
+                                object id, 
+				object[] state, 
+				string[] propertyNames, 
+				IType[] types)
+    {
+        if ( entity is IAuditable ) {
+            loads++;
+        }
+        return false;
+    }
+
+    public override bool OnSave(object entity, 
+                                object id, 
+				object[] state, 
+				string[] propertyNames, 
+				IType[] types)
+    {
+        if ( entity is IAuditable ) {
+            creates++;
+            for ( int i=0; i<propertyNames.Length; i++ ) {
+                if ( "createTimestamp".Equals( propertyNames[i] ) ) {
+                    state[i] = new DateTime();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public override void AfterTransactionCompletion(ITransaction tx)
+    {
+        if ( tx.WasCommitted ) {
+            System.Console.WriteLine("Creations: " + creates + ", Updates: " + updates, "Loads: " + loads);
+        }
+        updates=0;
+        creates=0;
+        loads=0;
+    }
+
+}]]></programlisting>
+
+        <para>
+            Interceptors come in two flavors: <literal>ISession</literal>-scoped and
+            <literal>ISessionFactory</literal>-scoped.
+        </para>
+
+        <para>
+            An <literal>ISession</literal>-scoped interceptor is specified
+            when a session is opened using one of the overloaded ISessionFactory.OpenSession()
+            methods accepting an <literal>IInterceptor</literal>.
+        </para>
+
+        <programlisting><![CDATA[ISession session = sf.OpenSession( new AuditInterceptor() );]]></programlisting>
+
+        <para>
+            An <literal>ISessionFactory</literal>-scoped interceptor is registered with the <literal>Configuration</literal>
+            object prior to building the <literal>ISessionFactory</literal>.  In this case, the supplied interceptor
+            will be applied to all sessions opened from that <literal>ISessionFactory</literal>; this is true unless
+            a session is opened explicitly specifying the interceptor to use.  <literal>ISessionFactory</literal>-scoped
+            interceptors must be thread safe, taking care to not store session-specific state since multiple
+            sessions will use this interceptor (potentially) concurrently.
+        </para>
+    
+        <programlisting><![CDATA[new Configuration().SetInterceptor( new AuditInterceptor() );]]></programlisting>
+
+    </sect1>
+
+     <sect1 id="objectstate-events" revision="4">
+        <title>Event system</title>
+
+        <para>
+            If you have to react to particular events in your persistence layer, you may
+            also use the NHibernate2 <emphasis>event</emphasis> architecture. The event
+            system can be used in addition or as a replacement for interceptors.
+        </para>
+
+        <para>
+            Essentially all of the methods of the <literal>ISession</literal> interface correlate
+            to an event. You have a <literal>LoadEvent</literal>, a <literal>FlushEvent</literal>, etc
+            (consult the XML configuration-file XSD or the <literal>NHibernate.Event</literal>
+            namespace for the full list of defined event types). When a request is made of one of
+            these methods, the <literal>ISession</literal> generates an appropriate
+            event and passes it to the configured event listeners for that type. Out-of-the-box,
+            these listeners implement the same processing in which those methods always resulted.
+            However, you are free to implement a customization of one of the listener interfaces
+            (i.e., the <literal>LoadEvent</literal> is processed by the registered implemenation
+            of the <literal>ILoadEventListener</literal> interface), in which case their
+            implementation would be responsible for processing any <literal>Load()</literal> requests
+            made of the <literal>ISession</literal>.
+        </para>
+
+        <para>
+            The listeners should be considered effectively singletons; meaning, they are shared between
+            requests, and thus should not save any state as instance variables.
+        </para>
+
+        <para>
+            A custom listener should implement the appropriate interface for the event it wants to
+            process and/or extend one of the convenience base classes (or even the default event
+            listeners used by NHibernate out-of-the-box as their methods are declared virtual for this
+            purpose). Custom listeners can either be registered programmatically through the
+            <literal>Configuration</literal> object, or specified in the NHibernate configuration
+            XML. Here's an example of a custom load event listener:
+        </para>
+
+        <programlisting><![CDATA[public class MyLoadListener : ILoadEventListener 
+{
+    // this is the single method defined by the LoadEventListener interface
+    public void OnLoad(LoadEvent theEvent, LoadType loadType)
+    {
+        if ( !MySecurity.IsAuthorized( theEvent.EntityClassName, theEvent.EntityId ) ) {
+            throw new MySecurityException("Unauthorized access");
+        }
+    }
+}]]></programlisting>
+
+        <para>
+            You also need a configuration entry telling NHibernate to use the listener in addition
+            to the default listener:
+        </para>
+
+<programlisting><![CDATA[<hibernate-configuration>
+    <session-factory>
+        ...
+        <event type="load">
+            <listener class="MyLoadListener"/>
+            <listener class="NHibernate.Event.Default.DefaultLoadEventListener"/>
+        </event>
+    </session-factory>
+</hibernate-configuration>]]></programlisting>
+
+        <para>
+            Instead, you may register it programmatically:
+        </para>
+
+        <programlisting><![CDATA[Configuration cfg = new Configuration();
+ILoadEventListener[] stack = new ILoadEventListener[] { new MyLoadListener(), new DefaultLoadEventListener() };
+cfg.EventListeners.LoadEventListeners = stack;]]></programlisting>
+
+        <para>
+            Listeners registered declaratively cannot share instances. If the same class name is
+            used in multiple <literal>&lt;listener/&gt;</literal> elements, each reference will
+            result in a separate instance of that class. If you need the capability to share
+            listener instances between listener types you must use the programmatic registration
+            approach.
+        </para>
+
+        <para>
+            Why implement an interface and define the specific type during configuration? Well, a
+            listener implementation could implement multiple event listener interfaces. Having the
+            type additionally defined during registration makes it easier to turn custom listeners on
+            or off during configuration.
+        </para>
+
+    </sect1>
+
+</chapter>
+
