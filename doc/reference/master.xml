@@ -12,6 +12,7 @@
 <!ENTITY inheritance-mapping    SYSTEM "modules/inheritance_mapping.xml">
 <!ENTITY manipulating-data      SYSTEM "modules/manipulating_data.xml">
 <!ENTITY transactions           SYSTEM "modules/transactions.xml">
+<!ENTITY events                 SYSTEM "modules/events.xml">
 <!ENTITY query-hql              SYSTEM "modules/query_hql.xml">
 <!ENTITY query-criteria         SYSTEM "modules/query_criteria.xml">
 <!ENTITY query-sql              SYSTEM "modules/query_sql.xml">
@@ -35,7 +36,7 @@
 	<bookinfo>
 		<title>NHibernate - Relational Persistence for Idiomatic .NET</title>
 		<subtitle>NHibernate Reference Documentation</subtitle>
-		<releaseinfo>1.2.0</releaseinfo>
+		<releaseinfo>2.0.0</releaseinfo>
 	</bookinfo>
 
 	<toc />
@@ -57,6 +58,7 @@
 	
 	&manipulating-data;
 	&transactions;
+	&events;
 	
 	&query-hql;
 	&query-criteria;
