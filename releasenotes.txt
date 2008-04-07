@@ -1,3 +1,153 @@
+Build 2.0.0.Alpha1
+========================
+
+** Bug
+    * [NH-987] - Schema creation on SQL Server 2000 uses SQL 2005 system views
+    * [NH-1028] - Duplicate column names in queries
+    * [NH-1042] - MultiQuery force to use parameter in all queries
+    * [NH-1045] - CastleLazyInitializer throws null pointer exception during proxy creation
+    * [NH-1055] - Multi Criteria ignored Result Transformer
+    * [NH-1059] - Join mapping for a subclass is incorrectly applied to the base class
+    * [NH-1084] - Subclass with Join fail when trying to query
+    * [NH-1088] - Wrong exception text referring to config property hibernate.dialect
+    * [NH-1104] - RowCountProjection type should be Int64
+    * [NH-1147] - Minor bug with AbstractFlushingEventListener
+    * [NH-1149] - Second Level Caching with Quey Caching is not working
+    * [NH-1154] - Delete object broken
+    * [NH-1168] - HQL functions 'length()' and 'bit_length()' doesn't support a non-string argument type under PostgreSQL 8.3
+    * [NH-1170] - Multiple queries issues for UniqueResult
+    * [NH-1178] - Example.Create(exampleInstance).ExcludeZeroes().ExcludeNulls() seems has a bug.(version 1.2.0.400)
+    * [NH-1179] - Filter not applied in explicit join
+    * [NH-1181] - NHibernate.JetDriver - replace 'upper(' with 'ucase('
+    * [NH-1187] - concat function fails when a parameter contains a comma, and using MaxResults  (MSSQL 2005)
+    * [NH-1223] - To Change hibernate mapping.xml schma value change for at the runtime
+    * [NH-1229] - Formula fails when using the pagging on MSSQL 2005 dialect
+    * [NH-1234] - PersistentEnumType incorrectly assumes enum types have zero-value defined
+    * [NH-1235] - SetMaxResults() returns one less row when SetFirstResult() is not used
+    * [NH-1237] - Cannot set PostLoadEventListener event listeners.
+    * [NH-1249] - Bug in GetLimitString for MSSql 05 when ordering by aggregates
+    * [NH-1255] - key-many-to-one && not-found
+    * [NH-1259] - Recursive call in SetListener(type,null) causes stack overflow
+    * [NH-1260] - SessionImpl.EnableFilter returns wrong filter if already enabled
+    * [NH-1261] - HQL Functions with no arguments add the return type twice
+    * [NH-1265] - Generated Id does not work for MySQL
+    * [NH-1268] - one-to-one can never be lazy?
+    * [NH-1275] - FOR UPDATE statements not generated for pessimistic locking
+
+** Improvement
+    * [NH-364] - IdBag doesn't work with Identity columns
+    * [NH-421] - Dialect Improvements
+    * [NH-568] - year(), month(),date() and some other functions: not supported in HQL
+    * [NH-628] - HQL functions mapping
+    * [NH-865] - Change SQL Server dialect to use COUNT_BIG for count
+    * [NH-924] - ICriteria - Inspection/traversal, modification and cloning
+    * [NH-969] - IIf for MS SQL
+    * [NH-970] - OnPreLoad & OnPostLoad Lifecycle Events
+    * [NH-975] - Add a way for the user to specify their own ProxyFactory
+    * [NH-993] - Document MultiCriteria
+    * [NH-1063] - NHibernate.Mapping.Attributes - Support ImportAttribute when serializing an assembly
+    * [NH-1085] - When using multi query, allow missing parameters in queries
+
+** New Feature
+    * [NH-280] - Using constants in select clause of HQL
+    * [NH-424] - Add [ Table per subclass, using a discriminator ] Support to Nhibernate
+    * [NH-543] - Adding GetEntityName to IInterceptor (H3.0 feature)
+    * [NH-786] - Port statistics from H3
+    * [NH-831] - Add MutliCriteria
+    * [NH-979] - Allow cloning of DetachedCriteria
+    * [NH-1111] - PostgreSQL 8.3 dialect with Guid type support
+
+** Patch
+    * [NH-466] - Add join mapping element to map one class to several tables
+    * [NH-982] - Patch for Castle DynamicProxy2 Support
+    * [NH-1073] - Remove #if NET_2_0 directives
+    * [NH-1078] - .NET 2.0 Configuration section to store nhibernate configuration
+    * [NH-1109] - HQL functions 'current_timestamp', 'str' and 'locate' for PostgreSQL dialect
+    * [NH-1110] - Enable Multi Query support for Npgsql (PostgreSQL) driver
+    * [NH-1113] - Test DetachedQueryFixture.ExecutableNamedQuery fails on case-sensitive databases
+    * [NH-1114] - Tests NHSpecificTest NH898 and NH958 failed on databases without DbType.Guid support
+    * [NH-1240] - VetoInterceptor - Cancel Calls to Delete, Update, Insert via the IInterceptor Interface
+    * [NH-1242] - Change path delimiter to '/' to be buildable on non-Windows platforms
+    * [NH-1243] - NHibernate.Search is not CLS compliant.
+    * [NH-1244] - NHibernate uses ConfigurationManager which is in System.Configuration.dll which is not referenced.
+    * [NH-1245] - Update mono targets.
+    * [NH-1273] - Generic version of AbstractQueryImp.UniqueResult<T>() called twice
+
+** Task
+    * [NH-1087] - Discard <nhibernate> section and substitute it whit <hibernate-configuration>
+    * [NH-1221] - Implement FullTextQueryImpl.ExecuteUpdate()
+    * [NH-1239] - Update build script to include configuration templates.
+
+Build 1.2.1
+========================
+
+Bug Fixed:
+
+    * [NH-111] - Oracle "Invalid identifier" exception
+    * [NH-989] - Assemblies are not registered in the correct order
+    * [NH-995] - Problem with CompositeId+"key-many-to-one"+Caching
+    * [NH-999] - One Shot Delete doesn't work - and cause reference violations
+    * [NH-1006] - Invalid SQL order generated by JetDriver
+    * [NH-1011] - update=false attribute ignored
+    * [NH-1012] - DetachedCriteria CreateAlias with joinType (new in1.2) is broken
+    * [NH-1018] - 'DistinctRootEntity' result transformer throws InvalidCastException
+    * [NH-1023] - using projections and transformer causes invalid column name when property and alias are the same
+    * [NH-1039] - NullReferenceException  for dynamic-component containing a set
+    * [NH-1061] - Schema name missing when quering for highest key value
+    * [NH-1064] - wrong association owner when fetching eagerly
+    * [NH-1068] - Typo in example-mappings.html
+    * [NH-1086] - SerializationException when using MemCacheProvider as cache because some classes miss the SerializableAttribute.
+    * [NH-1124] - Problem in NHibernate.Type.ComponentType.NullSafeSet
+    * [NH-1155] - SubselectFetch doesn't take into account paging
+    * [NH-1156] - MS2005Dialect doesn't handle same column & alias names correctly
+    * [NH-1167] - SubCriteria.CreateCriteria(string associationPath, string alias, JoinType joinType) always uses JoinType.InnerJoin 
+
+Improvements:
+
+    * [NH-901] - ComponentType mappings for with value types (structs) cause incorrect dirty checking
+    * [NH-1049] - classes which inherit Order can't override ToSqlString
+
+New Features:
+
+    * [NH-1022] - Add command batching support for OracleClient driver
+
+Patches Applied:
+
+    * [NH-585] - Unknown version when using replicate and joined-subclass
+    * [NH-903] - IQuery.SetFirstResult and SetMaxResults break in MsSql2005Dialect for ISQLQuery using WITH keyword
+    * [NH-990] - Abstract CurrentSessionContext management and add more implementations
+    * [NH-1014] - NHibernate Cross Join Syntax Causes Issues With SQL Server 2000/2005
+    * [NH-1054] - Add hibernate.transaction.factory_class setting
+    * [NH-1056] - Command batching support for OracleDataClientDriver
+    * [NH-1076] - Sybase11 Dialect
+    * [NH-1080] - HQL parser incorrectly registers a many-to-one association as a one-to-one.
+    * [NH-1119] - valuetypes in uniqueresult<T> give an error when query result is null
+    * [NH-1160] - Parameter compatibility problem in cached Sql command.
+    * [NH-1193] - Limit string in MsSql2005 dialect can sort incorrectly on machines with multiple processors
+
+Task Completed:
+
+    * [NH-1002] - Document undocumented configuration properties
+
+
+Build 1.2.0.GA
+========================
+
+Patches Applied:
+
+    * [NH-992] - AuxiliaryDatabaseObject enhancement
+
+Bugs Fixed:
+
+    * [NH-980] - Table name not quoted with increment generator
+
+Improvements:
+
+    * [NH-974] - Build and distribute a binary zip file along with the installer
+    * [NH-976] - Better error description when subclass table name is wrong
+    * [NH-985] - Map DbType.Guid to CHAR(38) for Oracle
+    * [NH-988] - Proxy validator should complain on non-virtual internal members
+
 Build 1.2.0.CR2
 ========================
 

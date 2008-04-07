@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   assembly="NHibernate.Test" 
+				   namespace="NHibernate.Test.NHSpecificTest.NH1098" 
+				   default-lazy="false">
+
+  <class name="A" table="table_a" lazy="false">
+
+    <id name="Id" column="id" type="int">
+      <generator class="assigned" />
+    </id>
+
+    <property name="ValueA" column="val_a" type="int"/>
+    <property name="Enabled" column="enabled" type="boolean"/>
+
+    <filter name="EnabledObjects" condition="enabled = :Enabled" />
+
+  </class>
+
+  <class name="B" table="table_b" lazy="false">
+
+    <id name="Id" column="id" type="int">
+      <generator class="assigned" />
+    </id>
+
+    <property name="ValueB" column="val_b" type="int"/>
+    <property name="Enabled" column="enabled" type="boolean"/>
+
+    <filter name="EnabledObjects" condition="enabled = :Enabled" />
+
+  </class>
+
+  <filter-def name="EnabledObjects">
+    <filter-param name="Enabled" type="boolean"/>
+  </filter-def>
+
+</hibernate-mapping>
+

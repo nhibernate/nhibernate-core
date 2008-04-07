@@ -53,7 +53,7 @@ namespace NHibernate.Engine
 		{
 		}
 
-		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, 
+		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues,
 			object optionalObject, string optionalEntityName, object optionalObjectId)
 			: this(positionalParameterTypes, postionalParameterValues)
 		{
@@ -67,28 +67,28 @@ namespace NHibernate.Engine
 		{
 		}
 
-		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, 
+		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues,
 			object[] collectionKeys)
 			: this(positionalParameterTypes, postionalParameterValues, null, collectionKeys)
 		{
 		}
 
-		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, 
+		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues,
 			IDictionary namedParameters, object[] collectionKeys)
 			: this(positionalParameterTypes, postionalParameterValues, namedParameters, null, null, false, false, null, null, collectionKeys, null)
 		{
 		}
 
-		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, 
+		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues,
 			IDictionary lockModes, RowSelection rowSelection, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
 			: this(positionalParameterTypes, positionalParameterValues, null, lockModes, rowSelection, false, cacheable, cacheRegion, comment, null, transformer)
 		{
 			_isNaturalKeyLookup = isLookupByNaturalKey;
 		}
 
-		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, 
-			IDictionary namedParameters, IDictionary lockModes, RowSelection rowSelection, 
-			bool readOnly, bool cacheable, string cacheRegion, string comment, 
+		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues,
+			IDictionary namedParameters, IDictionary lockModes, RowSelection rowSelection,
+			bool readOnly, bool cacheable, string cacheRegion, string comment,
 			object[] collectionKeys, IResultTransformer transformer)
 		{
 			_positionalParameterTypes = positionalParameterTypes;
@@ -104,9 +104,9 @@ namespace NHibernate.Engine
 			_resultTransformer = transformer;
 		}
 
-		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, 
-			IDictionary namedParameters, IDictionary lockModes, RowSelection rowSelection, 
-			bool readOnly, bool cacheable, string cacheRegion, string comment, object[] collectionKeys, 
+		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues,
+			IDictionary namedParameters, IDictionary lockModes, RowSelection rowSelection,
+			bool readOnly, bool cacheable, string cacheRegion, string comment, object[] collectionKeys,
 			object optionalObject, string optionalEntityName, object optionalId, IResultTransformer transformer)
 			: this(positionalParameterTypes, positionalParameterValues, namedParameters, lockModes, rowSelection, readOnly, cacheable, cacheRegion, comment, collectionKeys, transformer)
 		{
@@ -188,13 +188,13 @@ namespace NHibernate.Engine
 			if (_positionalParameterValues.Length != 0)
 			{
 				log.Debug("parameters: "
-				          + print.ToString(_positionalParameterTypes, _positionalParameterValues));
+									+ print.ToString(_positionalParameterTypes, _positionalParameterValues));
 			}
 
 			if (_namedParameters != null)
 			{
 				log.Debug("named parameters: "
-				          + print.ToString(_namedParameters));
+									+ print.ToString(_namedParameters));
 			}
 		}
 
@@ -225,7 +225,7 @@ namespace NHibernate.Engine
 			if (typesLength != valuesLength)
 			{
 				throw new QueryException("Number of positional parameter types (" + typesLength +
-				                         ") does not match number of positional parameter values (" + valuesLength + ")");
+																 ") does not match number of positional parameter values (" + valuesLength + ")");
 			}
 		}
 
@@ -290,16 +290,31 @@ namespace NHibernate.Engine
 
 				IList parameters = new ArrayList();
 				IList parameterTypes = new ArrayList();
+				int parameterCount = 0; // keep track of the positional parameter
 
 				foreach (object part in sql.Parts)
 				{
 					if (part is Parameter)
 					{
 						result.AddParameter();
+
+						// (?) can be a position parameter or a named parameter (already substituted by (?),
+						// but only the positional parameters are available at this point. Adding them in the
+						// order of appearance is best that can be done at this point of time, but if they
+						// are mixed with named parameters, the order is still wrong, because values and
+						// types for the named parameters are added later to the end of the list.
+						// see test fixture NH-1098
+						if (parameterCount < PositionalParameterValues.Length)
+						{
+							parameters.Add(PositionalParameterValues[parameterCount]);
+							parameterTypes.Add(PositionalParameterTypes[parameterCount]);
+							parameterCount++;
+						}
+
 						continue;
 					}
 
-					StringTokenizer tokenizer = new StringTokenizer((string) part, symbols, true);
+					StringTokenizer tokenizer = new StringTokenizer((string)part, symbols, true);
 
 					foreach (string token in tokenizer)
 					{
@@ -311,10 +326,10 @@ namespace NHibernate.Engine
 
 							// If the value is not a value of the type but a collection of values...
 							if (value != null &&
-							    !type.ReturnedClass.IsAssignableFrom(value.GetType()) && // Added to fix NH-882
-							    typeof(ICollection).IsAssignableFrom(value.GetType()))
+									!type.ReturnedClass.IsAssignableFrom(value.GetType()) && // Added to fix NH-882
+									typeof(ICollection).IsAssignableFrom(value.GetType()))
 							{
-								ICollection coll = (ICollection) value;
+								ICollection coll = (ICollection)value;
 								int i = 0;
 								foreach (object elementValue in coll)
 								{
@@ -348,12 +363,8 @@ namespace NHibernate.Engine
 					}
 				}
 
-				foreach (object v in PositionalParameterValues)
-					parameters.Add(v);
-				foreach (object t in PositionalParameterTypes)
-					parameterTypes.Add(t);
-				processedPositionalParameterValues = ((ArrayList) parameters).ToArray();
-				processedPositionalParameterTypes = (IType[]) ((ArrayList) parameterTypes).ToArray(typeof(IType));
+				processedPositionalParameterValues = ((ArrayList)parameters).ToArray();
+				processedPositionalParameterTypes = (IType[])((ArrayList)parameterTypes).ToArray(typeof(IType));
 				processedSQL = result.ToSqlString();
 			}
 		}
@@ -386,8 +397,8 @@ namespace NHibernate.Engine
 
 		public QueryParameters CreateCopyUsing(RowSelection selection)
 		{
-			QueryParameters copy = new QueryParameters(_positionalParameterTypes, _positionalParameterValues, 
-				_namedParameters, _lockModes, selection, _readOnly, _cacheable, _cacheRegion, _comment, 
+			QueryParameters copy = new QueryParameters(_positionalParameterTypes, _positionalParameterValues,
+				_namedParameters, _lockModes, selection, _readOnly, _cacheable, _cacheRegion, _comment,
 				_collectionKeys, _optionalObject, _optionalEntityName, _optionalId, _resultTransformer);
 			copy.processedSQL = processedSQL;
 			copy.processedPositionalParameterTypes = processedPositionalParameterTypes;

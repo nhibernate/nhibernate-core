@@ -14,9 +14,9 @@ namespace NHibernate.Criterion
 	[Serializable]
 	public class InsensitiveLikeExpression : AbstractCriterion
 	{
-		private readonly string _propertyName;
-		private readonly object _value;
-		private readonly IProjection _projection;
+		private readonly string propertyName;
+		private readonly object value;
+		private readonly IProjection projection;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="InsensitiveLikeExpression"/> class.
@@ -26,19 +26,19 @@ namespace NHibernate.Criterion
 		/// <param name="matchMode">The match mode.</param>
 		public InsensitiveLikeExpression(IProjection projection, string value, MatchMode matchMode)
 		{
-			this._projection = projection;
-			this._value = matchMode.ToMatchString(value);
+			this.projection = projection;
+			this.value = matchMode.ToMatchString(value);
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="InsensitiveLikeExpression"/> class.
 		/// </summary>
 		/// <param name="projection">The projection.</param>
-		/// <param name="_value">The _value.</param>
-		public InsensitiveLikeExpression(IProjection projection, object _value)
+		/// <param name="value">The value.</param>
+		public InsensitiveLikeExpression(IProjection projection, object value)
 		{
-			this._projection = projection;
-			this._value = _value;
+			this.projection = projection;
+			this.value = value;
 		}
 
 		/// <summary>
@@ -49,8 +49,8 @@ namespace NHibernate.Criterion
 		/// <param name="value">The value for the Property.</param>
 		public InsensitiveLikeExpression(string propertyName, object value)
 		{
-			_propertyName = propertyName;
-			_value = value;
+			this.propertyName = propertyName;
+			this.value = value;
 		}
 
 		public InsensitiveLikeExpression(string propertyName, string value, MatchMode matchMode)
@@ -64,7 +64,7 @@ namespace NHibernate.Criterion
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 			SqlString[] columnNames =
-				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria, enabledFilters);
+				CriterionUtil.GetColumnNames(propertyName, projection, criteriaQuery, criteria, enabledFilters);
 
 			criteriaQuery.AddUsedTypedValues(GetTypedValues(criteria,criteriaQuery));
 			if (columnNames.Length != 1)
@@ -93,14 +93,14 @@ namespace NHibernate.Criterion
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return CriterionUtil.GetTypedValues(criteriaQuery, criteria, _projection, _propertyName, _value.ToString().ToLower());
+			return CriterionUtil.GetTypedValues(criteriaQuery, criteria, projection, propertyName, value.ToString().ToLower());
 		}
 
 		public override IProjection[] GetProjections()
 		{
-			if(_projection != null)
+			if(projection != null)
 			{
-				return new IProjection[] { _projection };
+				return new IProjection[] { projection };
 			}
 			return null;
 		}
@@ -108,7 +108,8 @@ namespace NHibernate.Criterion
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return (_projection ?? (object)_propertyName) + " ilike " + _value;
+			return (projection ?? (object)propertyName) + " ilike " + value;
 		}
+
 	}
 }
