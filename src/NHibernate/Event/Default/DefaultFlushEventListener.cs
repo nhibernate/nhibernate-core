@@ -9,7 +9,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultFlushEventListener : AbstractFlushingEventListener, IFlushEventListener
 	{
-		public void OnFlush(FlushEvent @event)
+		public virtual void OnFlush(FlushEvent @event)
 		{
 			IEventSource source = @event.Session;
 

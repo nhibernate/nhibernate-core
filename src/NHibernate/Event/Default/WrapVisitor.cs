@@ -15,7 +15,7 @@ namespace NHibernate.Event.Default
 		private static readonly ILog log = LogManager.GetLogger(typeof(WrapVisitor));
 		private bool substitute = false;
 
-		internal WrapVisitor(IEventSource session) : base(session) { }
+		public WrapVisitor(IEventSource session) : base(session) { }
 
 		internal bool SubstitutionRequired
 		{

@@ -12,7 +12,7 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultDirtyCheckEventListener));
 
-		public void OnDirtyCheck(DirtyCheckEvent @event)
+		public virtual void OnDirtyCheck(DirtyCheckEvent @event)
 		{
 			int oldSize = @event.Session.ActionQueue.CollectionRemovalsCount;
 

@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Event.Default
@@ -12,7 +10,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultPreLoadEventListener : IPreLoadEventListener
 	{
-		public void OnPreLoad(PreLoadEvent @event)
+		public virtual void OnPreLoad(PreLoadEvent @event)
 		{
 			IEntityPersister persister = @event.Persister;
 			@event.Session.Interceptor.OnLoad(@event.Entity, @event.Id, @event.State, persister.PropertyNames, persister.PropertyTypes);

@@ -11,7 +11,7 @@ namespace NHibernate.Event.Default
 	{
 		private readonly IEventSource session;
 
-		internal AbstractVisitor(IEventSource session)
+		public AbstractVisitor(IEventSource session)
 		{
 			this.session = session;
 		}

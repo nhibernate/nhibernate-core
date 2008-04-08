@@ -7,7 +7,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultPersistOnFlushEventListener : DefaultPersistEventListener
 	{
-		protected internal override CascadingAction CascadeAction
+		protected override CascadingAction CascadeAction
 		{
 			get { return CascadingAction.PersistOnFlush; }
 		}

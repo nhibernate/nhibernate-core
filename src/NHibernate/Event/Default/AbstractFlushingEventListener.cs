@@ -21,12 +21,12 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(AbstractFlushingEventListener));
 
-		protected virtual internal object Anything
+		protected virtual object Anything
 		{
 			get { return null; }
 		}
 
-		protected virtual internal CascadingAction CascadingAction
+		protected virtual CascadingAction CascadingAction
 		{
 			get { return CascadingAction.SaveUpdate; }
 		}
@@ -37,7 +37,7 @@ namespace NHibernate.Event.Default
 		/// entities and collections to their respective execution queues. 
 		/// </summary>
 		/// <param name="event">The flush event.</param>
-		protected internal virtual void FlushEverythingToExecutions(FlushEvent @event)
+		protected virtual void FlushEverythingToExecutions(FlushEvent @event)
 		{
 			log.Debug("flushing session");
 
@@ -134,8 +134,8 @@ namespace NHibernate.Event.Default
 		}
 
 		// 1. detect any dirty entities
-		 // 2. schedule any entity updates
-		 // 3. search out any reachable collections
+		// 2. schedule any entity updates
+		// 3. search out any reachable collections
 		private void FlushEntities(FlushEvent @event)
 		{
 			log.Debug("Flushing entities and processing referenced collections");
@@ -225,7 +225,7 @@ namespace NHibernate.Event.Default
 		/// <item> <description>Deletes, in the order they were performed</description> </item>
 		/// </list>
 		/// </summary>
-		protected internal void PerformExecutions(IEventSource session)
+		protected virtual void PerformExecutions(IEventSource session)
 		{
 			if (log.IsDebugEnabled)
 				log.Debug("executing flush");
@@ -256,7 +256,7 @@ namespace NHibernate.Event.Default
 		/// 2. rebuild the collection entries
 		/// 3. call Interceptor.postFlush()
 		/// </summary>
-		protected internal void PostFlush(ISessionImplementor session)
+		protected virtual void PostFlush(ISessionImplementor session)
 		{
 			if (log.IsDebugEnabled)
 				log.Debug("post flush");

@@ -10,7 +10,7 @@ namespace NHibernate.Event.Default
 	/// </summary>
 	public abstract class ProxyVisitor : AbstractVisitor
 	{
-		protected ProxyVisitor(IEventSource session) : base(session) { }
+		public ProxyVisitor(IEventSource session) : base(session) { }
 
 		/// <summary>
 		///  Visit a many-to-one or one-to-one associated entity. Default superclass implementation is a no-op.

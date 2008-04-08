@@ -25,7 +25,7 @@ namespace NHibernate.Event.Default
 		/// <param name="id">The id of the entity. </param>
 		/// <param name="persister">The entity's persister instance. </param>
 		/// <returns> An EntityEntry representing the entity within this session. </returns>
-		protected internal EntityEntry Reassociate(AbstractEvent @event, object entity, object id, IEntityPersister persister)
+		protected EntityEntry Reassociate(AbstractEvent @event, object entity, object id, IEntityPersister persister)
 		{
 			if (log.IsDebugEnabled)
 			{

@@ -19,12 +19,12 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultRefreshEventListener));
 
-		public void OnRefresh(RefreshEvent @event)
+		public virtual void OnRefresh(RefreshEvent @event)
 		{
 			OnRefresh(@event, IdentityMap.Instantiate(10));
 		}
 
-		public void OnRefresh(RefreshEvent @event, IDictionary refreshedAlready)
+		public virtual void OnRefresh(RefreshEvent @event, IDictionary refreshedAlready)
 		{
 			IEventSource source = @event.Session;
 

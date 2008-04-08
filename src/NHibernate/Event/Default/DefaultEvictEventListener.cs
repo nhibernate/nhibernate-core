@@ -18,7 +18,7 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultEvictEventListener));
 
-		public void OnEvict(EvictEvent @event)
+		public virtual void OnEvict(EvictEvent @event)
 		{
 			IEventSource source = @event.Session;
 			object obj = @event.Entity;
@@ -58,7 +58,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected internal void DoEvict(object obj, EntityKey key, IEntityPersister persister, IEventSource session)
+		protected virtual void DoEvict(object obj, EntityKey key, IEntityPersister persister, IEventSource session)
 		{
 
 			if (log.IsDebugEnabled)

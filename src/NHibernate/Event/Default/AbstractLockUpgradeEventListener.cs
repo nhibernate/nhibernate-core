@@ -24,7 +24,7 @@ namespace NHibernate.Event.Default
 		/// <param name="entry">The entity's EntityEntry instance.</param>
 		/// <param name="requestedLockMode">The lock mode being requested for locking. </param>
 		/// <param name="source">The session which is the source of the event being processed.</param>
-		protected internal virtual void UpgradeLock(object entity, EntityEntry entry, LockMode requestedLockMode, ISessionImplementor source)
+		protected virtual void UpgradeLock(object entity, EntityEntry entry, LockMode requestedLockMode, ISessionImplementor source)
 		{
 			if (requestedLockMode.GreaterThan(entry.LockMode))
 			{

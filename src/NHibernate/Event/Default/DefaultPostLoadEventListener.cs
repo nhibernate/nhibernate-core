@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using NHibernate.Classic;
 
 namespace NHibernate.Event.Default
@@ -9,7 +7,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultPostLoadEventListener : IPostLoadEventListener
 	{
-		public void OnPostLoad(PostLoadEvent @event)
+		public virtual void OnPostLoad(PostLoadEvent @event)
 		{
 			if (@event.Persister.ImplementsLifecycle(@event.Session.EntityMode))
 			{

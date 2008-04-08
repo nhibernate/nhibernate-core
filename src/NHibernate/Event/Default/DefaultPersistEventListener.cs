@@ -17,22 +17,22 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultPersistEventListener));
 
-		protected internal override CascadingAction CascadeAction
+		protected override CascadingAction CascadeAction
 		{
 			get { return CascadingAction.Persist; }
 		}
 
-		protected internal override bool? AssumedUnsaved
+		protected override bool? AssumedUnsaved
 		{
 			get { return true; }
 		}
 
-		public void OnPersist(PersistEvent @event)
+		public virtual void OnPersist(PersistEvent @event)
 		{
 			OnPersist(@event, IdentityMap.Instantiate(10));
 		}
 
-		public void OnPersist(PersistEvent @event, IDictionary createdAlready)
+		public virtual void OnPersist(PersistEvent @event, IDictionary createdAlready)
 		{
 			ISessionImplementor source = @event.Session;
 			object obj = @event.Entity;
@@ -76,7 +76,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected internal void EntityIsPersistent(PersistEvent @event, IDictionary createCache)
+		protected virtual void EntityIsPersistent(PersistEvent @event, IDictionary createCache)
 		{
 			log.Debug("ignoring persistent instance");
 			IEventSource source = @event.Session;
@@ -99,9 +99,8 @@ namespace NHibernate.Event.Default
 		/// <summary> Handle the given create event. </summary>
 		/// <param name="event">The save event to be handled. </param>
 		/// <param name="createCache"></param>
-		protected internal virtual void EntityIsTransient(PersistEvent @event, IDictionary createCache)
+		protected virtual void EntityIsTransient(PersistEvent @event, IDictionary createCache)
 		{
-
 			log.Debug("saving transient instance");
 
 			IEventSource source = @event.Session;

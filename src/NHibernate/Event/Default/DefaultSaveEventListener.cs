@@ -7,7 +7,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultSaveEventListener : DefaultSaveOrUpdateEventListener
 	{
-		protected internal override object PerformSaveOrUpdate(SaveOrUpdateEvent @event)
+		protected override object PerformSaveOrUpdate(SaveOrUpdateEvent @event)
 		{
 			// this implementation is supposed to tolerate incorrect unsaved-value
 			// mappings, for the purpose of backward-compatibility
@@ -22,7 +22,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected internal override object SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent @event)
+		protected override object SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent @event)
 		{
 			if (@event.RequestedId == null)
 			{
@@ -34,7 +34,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected internal override bool ReassociateIfUninitializedProxy(object obj, ISessionImplementor source)
+		protected override bool ReassociateIfUninitializedProxy(object obj, ISessionImplementor source)
 		{
 			if (!NHibernateUtil.IsInitialized(obj))
 			{

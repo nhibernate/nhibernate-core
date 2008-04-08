@@ -15,7 +15,7 @@ namespace NHibernate.Event.Default
 	{
 		private readonly bool isUpdate;
 
-		internal OnReplicateVisitor(IEventSource session, object ownerIdentifier, object owner, bool isUpdate)
+		public OnReplicateVisitor(IEventSource session, object ownerIdentifier, object owner, bool isUpdate)
 			: base(session, ownerIdentifier, owner)
 		{
 			this.isUpdate = isUpdate;
@@ -23,11 +23,10 @@ namespace NHibernate.Event.Default
 
 		internal override object ProcessCollection(object collection, CollectionType type)
 		{
-			// TODO H3.2: not ported
-			//if (collection == CollectionType.UNFETCHED_COLLECTION)
-			//{
-			//  return null;
-			//}
+			if (collection == CollectionType.UnfetchedCollection)
+			{
+				return null;
+			}
 
 			IEventSource session = Session;
 			ICollectionPersister persister = session.Factory.GetCollectionPersister(type.Role);

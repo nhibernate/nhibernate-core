@@ -13,7 +13,7 @@ namespace NHibernate.Event.Default
 	{
 		/// <summary>Handle the given lock event. </summary>
 		/// <param name="event">The lock event to be handled.</param>
-		public void OnLock(LockEvent @event)
+		public virtual void OnLock(LockEvent @event)
 		{
 			if (@event.Entity == null)
 			{
