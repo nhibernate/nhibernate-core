@@ -8,7 +8,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultUpdateEventListener : DefaultSaveOrUpdateEventListener
 	{
-		protected internal override object PerformSaveOrUpdate(SaveOrUpdateEvent @event)
+		protected override object PerformSaveOrUpdate(SaveOrUpdateEvent @event)
 		{
 			// this implementation is supposed to tolerate incorrect unsaved-value
 			// mappings, for the purpose of backward-compatibility
@@ -35,7 +35,7 @@ namespace NHibernate.Event.Default
 		/// If the user specified an id, assign it to the instance and use that, 
 		/// otherwise use the id already assigned to the instance
 		/// </summary>
-		protected internal override object GetUpdateId(object entity, IEntityPersister persister, object requestedId, EntityMode entityMode)
+		protected override object GetUpdateId(object entity, IEntityPersister persister, object requestedId, EntityMode entityMode)
 		{
 			if (requestedId == null)
 			{

@@ -6,6 +6,7 @@ using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Impl;
+using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using Status=NHibernate.Engine.Status;
@@ -29,24 +30,24 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(AbstractSaveEventListener));
 
-		protected internal virtual bool? AssumedUnsaved
+		protected virtual bool? AssumedUnsaved
 		{
 			get { return null; }
 		}
 
-		protected internal abstract CascadingAction CascadeAction { get;}
+		protected abstract CascadingAction CascadeAction { get;}
 
 		/// <summary> 
 		/// After the save, will te version number be incremented
 		/// if the instance is modified? 
 		/// </summary>
 		/// <returns> True if the version will be incremented on an entity change after save; false otherwise. </returns>
-		protected internal virtual bool VersionIncrementDisabled
+		protected virtual bool VersionIncrementDisabled
 		{
 			get { return false; }
 		}
 
-		protected internal bool InvokeSaveLifecycle(object entity, IEntityPersister persister, IEventSource source)
+		protected virtual bool InvokeSaveLifecycle(object entity, IEntityPersister persister, IEventSource source)
 		{
 			// Sub-insertions should occur before containing insertion so
 			// Try to do the callback now
@@ -62,7 +63,7 @@ namespace NHibernate.Event.Default
 			return false;
 		}
 
-		protected internal void Validate(object entity, IEntityPersister persister, IEventSource source)
+		protected virtual void Validate(object entity, IEntityPersister persister, IEventSource source)
 		{
 			if (persister.ImplementsValidatable(source.EntityMode))
 			{
@@ -79,7 +80,7 @@ namespace NHibernate.Event.Default
 		/// <param name="anything">Generally cascade-specific information. </param>
 		/// <param name="source">The session which is the source of this save event. </param>
 		/// <returns> The id used to save the entity. </returns>
-		protected internal object SaveWithRequestedId(object entity, object requestedId, string entityName, object anything, IEventSource source)
+		protected virtual object SaveWithRequestedId(object entity, object requestedId, string entityName, object anything, IEventSource source)
 		{
 			return PerformSave(entity, requestedId, source.GetEntityPersister(entity), false, anything, source, true);
 		}
@@ -101,7 +102,7 @@ namespace NHibernate.Event.Default
 		/// The id used to save the entity; may be null depending on the
 		/// type of id generator used and the requiresImmediateIdAccess value
 		/// </returns>
-		protected internal object SaveWithGeneratedId(object entity, string entityName, object anything, IEventSource source, bool requiresImmediateIdAccess)
+		protected virtual object SaveWithGeneratedId(object entity, string entityName, object anything, IEventSource source, bool requiresImmediateIdAccess)
 		{
 			IEntityPersister persister = source.GetEntityPersister(entity);
 			object generatedId = persister.IdentifierGenerator.Generate(source, entity);
@@ -149,7 +150,7 @@ namespace NHibernate.Event.Default
 		/// The id used to save the entity; may be null depending on the
 		/// type of id generator used and the requiresImmediateIdAccess value
 		/// </returns>
-		protected internal object PerformSave(object entity, object id, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess)
+		protected virtual object PerformSave(object entity, object id, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -204,7 +205,7 @@ namespace NHibernate.Event.Default
 		/// The id used to save the entity; may be null depending on the
 		/// type of id generator used and the requiresImmediateIdAccess value
 		/// </returns>
-		protected internal object PerformSaveOrReplicate(object entity, EntityKey key, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess)
+		protected virtual object PerformSaveOrReplicate(object entity, EntityKey key, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess)
 		{
 			Validate(entity, persister, source);
 
@@ -289,20 +290,19 @@ namespace NHibernate.Event.Default
 
 		private void MarkInterceptorDirty(object entity, IEntityPersister persister, IEventSource source)
 		{
-			// TODO H3.2 Not ported
-			//if (FieldInterceptionHelper.isInstrumented(entity))
-			//{
-			//  FieldInterceptor interceptor = FieldInterceptionHelper.injectFieldInterceptor(entity, persister.EntityName, null, source);
-			//  interceptor.dirty();
-			//}
+			if (FieldInterceptionHelper.IsInstrumented(entity))
+			{
+				IFieldInterceptor interceptor = FieldInterceptionHelper.InjectFieldInterceptor(entity, persister.EntityName, null, source);
+				interceptor.MarkDirty();
+			}
 		}
 
-		protected internal virtual IDictionary GetMergeMap(object anything)
+		protected virtual IDictionary GetMergeMap(object anything)
 		{
 			return null;
 		}
 
-		protected internal virtual bool VisitCollectionsBeforeSave(object entity, object id, object[] values, IType[] types, IEventSource source)
+		protected virtual bool VisitCollectionsBeforeSave(object entity, object id, object[] values, IType[] types, IEventSource source)
 		{
 			WrapVisitor visitor = new WrapVisitor(source);
 			// substitutes into values by side-effect
@@ -323,7 +323,7 @@ namespace NHibernate.Event.Default
 		/// True if the snapshot state changed such that
 		/// reinjection of the values into the entity is required.
 		/// </returns>
-		protected internal virtual bool SubstituteValuesIfNecessary(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source)
+		protected virtual bool SubstituteValuesIfNecessary(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source)
 		{
 			bool substitute = source.Interceptor.OnSave(entity, id, values, persister.PropertyNames, persister.PropertyTypes);
 
@@ -342,7 +342,7 @@ namespace NHibernate.Event.Default
 		/// <param name="persister">The entity's persister instance. </param>
 		/// <param name="entity">The entity to be saved. </param>
 		/// <param name="anything">Generally cascade-specific data </param>
-		protected internal virtual void CascadeBeforeSave(IEventSource source, IEntityPersister persister, object entity, object anything)
+		protected virtual void CascadeBeforeSave(IEventSource source, IEntityPersister persister, object entity, object anything)
 		{
 			// cascade-save to many-to-one BEFORE the parent is saved
 			source.PersistenceContext.IncrementCascadeLevel();
@@ -361,7 +361,7 @@ namespace NHibernate.Event.Default
 		/// <param name="persister">The entity's persister instance. </param>
 		/// <param name="entity">The entity beng saved. </param>
 		/// <param name="anything">Generally cascade-specific data </param>
-		protected internal virtual void CascadeAfterSave(IEventSource source, IEntityPersister persister, object entity, object anything)
+		protected virtual void CascadeAfterSave(IEventSource source, IEntityPersister persister, object entity, object anything)
 		{
 			// cascade-save to collections AFTER the collection owner was saved
 			source.PersistenceContext.IncrementCascadeLevel();
@@ -383,7 +383,7 @@ namespace NHibernate.Event.Default
 		/// <param name="entry">The entity's entry in the persistence context </param>
 		/// <param name="source">The originating session. </param>
 		/// <returns> The state. </returns>
-		protected internal EntityState GetEntityState(object entity, string entityName, EntityEntry entry, ISessionImplementor source)
+		protected virtual EntityState GetEntityState(object entity, string entityName, EntityEntry entry, ISessionImplementor source)
 		{
 			if (entry != null)
 			{
@@ -432,7 +432,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected internal string GetLoggableName(string entityName, object entity)
+		protected virtual string GetLoggableName(string entityName, object entity)
 		{
 			return entityName ?? entity.GetType().FullName;
 		}

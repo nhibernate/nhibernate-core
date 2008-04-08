@@ -21,7 +21,7 @@ namespace NHibernate.Event.Default
 		/// <summary> 
 		/// Flushes a single entity's state to the database, by scheduling an update action, if necessary
 		/// </summary>
-		public void OnFlushEntity(FlushEntityEvent @event)
+		public virtual void OnFlushEntity(FlushEntityEvent @event)
 		{
 			object entity = @event.Entity;
 			EntityEntry entry = @event.EntityEntry;
@@ -95,6 +95,7 @@ namespace NHibernate.Event.Default
 		/// <param name="persister">The persister.</param>
 		/// <param name="id">The id.</param>
 		/// <param name="entityMode">The entity mode.</param>
+		/// <param name="entityMode"></param>
 		public virtual void CheckId(object obj, IEntityPersister persister, object id, EntityMode entityMode)
 		{
 			if (id != null && id is DelayedPostInsertIdentifier)
@@ -265,7 +266,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected internal virtual bool HandleInterception(FlushEntityEvent @event)
+		protected virtual bool HandleInterception(FlushEntityEvent @event)
 		{
 			ISessionImplementor session = @event.Session;
 			EntityEntry entry = @event.EntityEntry;
@@ -294,7 +295,7 @@ namespace NHibernate.Event.Default
 			return intercepted;
 		}
 
-		protected internal virtual bool InvokeInterceptor(ISessionImplementor session, object entity, EntityEntry entry, object[] values, IEntityPersister persister)
+		protected virtual bool InvokeInterceptor(ISessionImplementor session, object entity, EntityEntry entry, object[] values, IEntityPersister persister)
 		{
 			return session.Interceptor.OnFlushDirty(entity, entry.Id, values, entry.LoadedState, persister.PropertyNames, persister.PropertyTypes);
 		}
@@ -347,7 +348,7 @@ namespace NHibernate.Event.Default
 		/// to synchronize its state to the database. Modifies the event by side-effect!
 		/// Note: this method is quite slow, avoid calling if possible!
 		/// </summary>
-		protected internal bool IsUpdateNecessary(FlushEntityEvent @event)
+		protected bool IsUpdateNecessary(FlushEntityEvent @event)
 		{
 			IEntityPersister persister = @event.EntityEntry.Persister;
 			Status status = @event.EntityEntry.Status;
@@ -393,7 +394,7 @@ namespace NHibernate.Event.Default
 		}
 
 		/// <summary> Perform a dirty check, and attach the results to the event</summary>
-		protected internal void DirtyCheck(FlushEntityEvent @event)
+		protected virtual void DirtyCheck(FlushEntityEvent @event)
 		{
 			object entity = @event.Entity;
 			object[] values = @event.PropertyValues;

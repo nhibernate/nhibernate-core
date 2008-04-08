@@ -15,7 +15,7 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultReplicateEventListener));
 
-		public void OnReplicate(ReplicateEvent @event)
+		public virtual void OnReplicate(ReplicateEvent @event)
 		{
 			IEventSource source = @event.Session;
 			if (source.PersistenceContext.ReassociateIfUninitializedProxy(@event.Entity))
@@ -128,22 +128,22 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected internal override bool VersionIncrementDisabled
+		protected override bool VersionIncrementDisabled
 		{
 			get { return true; }
 		}
 
-		protected internal override CascadingAction CascadeAction
+		protected override CascadingAction CascadeAction
 		{
 			get { return CascadingAction.Replicate; }
 		}
 
-		protected internal override bool SubstituteValuesIfNecessary(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source)
+		protected override bool SubstituteValuesIfNecessary(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source)
 		{
 			return false;
 		}
 
-		protected internal override bool VisitCollectionsBeforeSave(object entity, object id, object[] values, Type.IType[] types, IEventSource source)
+		protected override bool VisitCollectionsBeforeSave(object entity, object id, object[] values, Type.IType[] types, IEventSource source)
 		{
 			//TODO: we use two visitors here, inefficient!
 			OnReplicateVisitor visitor = new OnReplicateVisitor(source, id, entity, false);

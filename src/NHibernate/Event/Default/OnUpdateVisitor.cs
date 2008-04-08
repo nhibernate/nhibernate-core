@@ -13,15 +13,14 @@ namespace NHibernate.Event.Default
 	/// </summary>
 	public class OnUpdateVisitor : ReattachVisitor
 	{
-		internal OnUpdateVisitor(IEventSource session, object ownerIdentifier, object owner) : base(session, ownerIdentifier, owner) { }
+		public OnUpdateVisitor(IEventSource session, object ownerIdentifier, object owner) : base(session, ownerIdentifier, owner) { }
 
 		internal override object ProcessCollection(object collection, CollectionType type)
 		{
-			// TODO H3.2 Not ported
-			//if (collection == CollectionType.UNFETCHED_COLLECTION)
-			//{
-			//  return null;
-			//}
+			if (collection == CollectionType.UnfetchedCollection)
+			{
+				return null;
+			}
 
 			IEventSource session = Session;
 			ICollectionPersister persister = session.Factory.GetCollectionPersister(type.Role);

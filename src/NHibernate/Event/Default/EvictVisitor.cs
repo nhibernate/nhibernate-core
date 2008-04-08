@@ -15,7 +15,7 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(EvictVisitor));
 
-		internal EvictVisitor(IEventSource session) : base(session) { }
+		public EvictVisitor(IEventSource session) : base(session) { }
 
 		internal override object ProcessCollection(object collection, CollectionType type)
 		{

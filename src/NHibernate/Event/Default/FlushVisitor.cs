@@ -12,7 +12,7 @@ namespace NHibernate.Event.Default
 	{
 		private readonly object owner;
 
-		internal FlushVisitor(IEventSource session, object owner)
+		public FlushVisitor(IEventSource session, object owner)
 			: base(session)
 		{
 			this.owner = owner;
@@ -20,11 +20,10 @@ namespace NHibernate.Event.Default
 
 		internal override object ProcessCollection(object collection, CollectionType type)
 		{
-			// TODO H3.2 not ported
-			//if (collection == CollectionType.UNFETCHED_COLLECTION)
-			//{
-			//  return null;
-			//}
+			if (collection == CollectionType.UnfetchedCollection)
+			{
+				return null;
+			}
 
 			if (collection != null)
 			{

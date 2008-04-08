@@ -16,12 +16,12 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultSaveOrUpdateEventListener));
 
-		protected internal override CascadingAction CascadeAction
+		protected override CascadingAction CascadeAction
 		{
 			get { return CascadingAction.SaveUpdate; }
 		}
 
-		public void OnSaveOrUpdate(SaveOrUpdateEvent @event)
+		public virtual void OnSaveOrUpdate(SaveOrUpdateEvent @event)
 		{
 			ISessionImplementor source = @event.Session;
 			object obj = @event.Entity;
@@ -54,12 +54,12 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected internal virtual bool ReassociateIfUninitializedProxy(object obj, ISessionImplementor source)
+		protected virtual bool ReassociateIfUninitializedProxy(object obj, ISessionImplementor source)
 		{
 			return source.PersistenceContext.ReassociateIfUninitializedProxy(obj);
 		}
 
-		protected internal virtual object PerformSaveOrUpdate(SaveOrUpdateEvent @event)
+		protected virtual object PerformSaveOrUpdate(SaveOrUpdateEvent @event)
 		{
 			EntityState entityState = GetEntityState(@event.Entity, @event.EntityName, @event.Entry, @event.Session);
 
@@ -77,7 +77,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected internal object EntityIsPersistent(SaveOrUpdateEvent @event)
+		protected virtual object EntityIsPersistent(SaveOrUpdateEvent @event)
 		{
 			log.Debug("ignoring persistent instance");
 
@@ -127,7 +127,7 @@ namespace NHibernate.Event.Default
 		/// </summary>
 		/// <param name="event">The save event to be handled. </param>
 		/// <returns> The entity's identifier after saving. </returns>
-		protected internal virtual object EntityIsTransient(SaveOrUpdateEvent @event)
+		protected virtual object EntityIsTransient(SaveOrUpdateEvent @event)
 		{
 			log.Debug("saving transient instance");
 
@@ -157,7 +157,7 @@ namespace NHibernate.Event.Default
 		/// </summary>
 		/// <param name="event">The initiating event. </param>
 		/// <returns> The entity's identifier value after saving.</returns>
-		protected internal virtual object SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent @event)
+		protected virtual object SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent @event)
 		{
 			return SaveWithGeneratedId(@event.Entity, @event.EntityName, null, @event.Session, true);
 		}
@@ -167,7 +167,7 @@ namespace NHibernate.Event.Default
 		/// Here, we will perform the update processing. 
 		/// </summary>
 		/// <param name="event">The update event to be handled. </param>
-		protected internal virtual void EntityIsDetached(SaveOrUpdateEvent @event)
+		protected virtual void EntityIsDetached(SaveOrUpdateEvent @event)
 		{
 			log.Debug("updating detached instance");
 
@@ -192,7 +192,7 @@ namespace NHibernate.Event.Default
 		/// <param name="requestedId">The requested identifier </param>
 		/// <param name="entityMode">The entity mode. </param>
 		/// <returns> The id. </returns>
-		protected internal virtual object GetUpdateId(object entity, IEntityPersister persister, object requestedId, EntityMode entityMode)
+		protected virtual object GetUpdateId(object entity, IEntityPersister persister, object requestedId, EntityMode entityMode)
 		{
 			// use the id assigned to the instance
 			object id = persister.GetIdentifier(entity, entityMode);
@@ -208,7 +208,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected internal void PerformUpdate(SaveOrUpdateEvent @event, object entity, IEntityPersister persister)
+		protected virtual void PerformUpdate(SaveOrUpdateEvent @event, object entity, IEntityPersister persister)
 		{
 			if (!persister.IsMutable)
 			{
@@ -265,7 +265,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected internal bool InvokeUpdateLifecycle(object entity, IEntityPersister persister, IEventSource source)
+		protected virtual bool InvokeUpdateLifecycle(object entity, IEntityPersister persister, IEventSource source)
 		{
 			if (persister.ImplementsLifecycle(source.EntityMode))
 			{

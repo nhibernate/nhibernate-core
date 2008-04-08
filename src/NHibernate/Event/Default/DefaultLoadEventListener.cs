@@ -22,7 +22,7 @@ namespace NHibernate.Event.Default
 		public static readonly object InconsistentRTNClassMarker= new object();
 		public static readonly LockMode DefaultLockMode = LockMode.None;
 
-		public void OnLoad(LoadEvent @event, LoadType loadType)
+		public virtual void OnLoad(LoadEvent @event, LoadType loadType)
 		{
 			ISessionImplementor source = @event.Session;
 
@@ -88,7 +88,7 @@ namespace NHibernate.Event.Default
 
 		/// <summary> Perfoms the load of an entity. </summary>
 		/// <returns> The loaded entity. </returns>
-		protected internal object Load(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
+		protected virtual object Load(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
 		{
 			if (@event.InstanceToLoad != null)
 			{
@@ -124,7 +124,7 @@ namespace NHibernate.Event.Default
 		/// generate a new proxy, or perform an actual load. 
 		/// </summary>
 		/// <returns> The result of the proxy/load operation.</returns>
-		protected internal object ProxyOrLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
+		protected virtual object ProxyOrLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -224,7 +224,7 @@ namespace NHibernate.Event.Default
 		/// given id in that cache and then perform the load. 
 		/// </summary>
 		/// <returns> The loaded entity </returns>
-		protected internal object LockAndLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, ISessionImplementor source)
+		protected virtual object LockAndLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, ISessionImplementor source)
 		{
 			ISoftLock sLock = null;
 			CacheKey ck;
@@ -266,7 +266,7 @@ namespace NHibernate.Event.Default
 		/// <param name="keyToLoad">The EntityKey representing the entity to be loaded. </param>
 		/// <param name="options">The load options. </param>
 		/// <returns> The loaded entity, or null. </returns>
-		protected internal object DoLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
+		protected virtual object DoLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -319,7 +319,7 @@ namespace NHibernate.Event.Default
 		/// <param name="keyToLoad">The EntityKey representing the entity to be loaded. </param>
 		/// <param name="options">The load options. </param>
 		/// <returns> The object loaded from the datasource, or null if not found. </returns>
-		protected internal object LoadFromDatasource(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
+		protected virtual object LoadFromDatasource(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
 		{
 			ISessionImplementor source = @event.Session;
 			object entity = persister.Load(@event.EntityId, @event.InstanceToLoad, @event.LockMode, source);
@@ -347,7 +347,7 @@ namespace NHibernate.Event.Default
 		/// session-level cache, it's current status within the session cache
 		/// is checked to see if it has previously been scheduled for deletion.
 		/// </remarks>
-		protected internal object LoadFromSessionCache(LoadEvent @event, EntityKey keyToLoad, LoadType options)
+		protected virtual object LoadFromSessionCache(LoadEvent @event, EntityKey keyToLoad, LoadType options)
 		{
 			ISessionImplementor session = @event.Session;
 			object old = session.GetEntityUsingInterceptor(keyToLoad);
@@ -383,7 +383,7 @@ namespace NHibernate.Event.Default
 		/// <param name="persister">The persister for the entity being requested for load </param>
 		/// <param name="options">The load options. </param>
 		/// <returns> The entity from the second-level cache, or null. </returns>
-		protected internal object LoadFromSecondLevelCache(LoadEvent @event, IEntityPersister persister, LoadType options)
+		protected virtual object LoadFromSecondLevelCache(LoadEvent @event, IEntityPersister persister, LoadType options)
 		{
 			ISessionImplementor source = @event.Session;
 			bool useCache = persister.HasCache && ((source.CacheMode & CacheMode.Get) == CacheMode.Get)

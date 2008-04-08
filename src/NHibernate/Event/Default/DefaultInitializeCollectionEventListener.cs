@@ -14,7 +14,7 @@ namespace NHibernate.Event.Default
 		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultInitializeCollectionEventListener));
 
 		/// <summary> called by a collection that wants to initialize itself</summary>
-		public void OnInitializeCollection(InitializeCollectionEvent @event)
+		public virtual void OnInitializeCollection(InitializeCollectionEvent @event)
 		{
 			IPersistentCollection collection = @event.Collection;
 			ISessionImplementor source = @event.Session;

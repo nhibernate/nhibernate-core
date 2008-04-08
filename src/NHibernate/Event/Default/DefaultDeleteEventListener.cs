@@ -25,12 +25,12 @@ namespace NHibernate.Event.Default
 
 		/// <summary>Handle the given delete event. </summary>
 		/// <param name="event">The delete event to be handled. </param>
-		public void OnDelete(DeleteEvent @event)
+		public virtual void OnDelete(DeleteEvent @event)
 		{
 			OnDelete(@event, new IdentitySet());
 		}
 
-		public void OnDelete(DeleteEvent @event, ISet transientEntities)
+		public virtual void OnDelete(DeleteEvent @event, ISet transientEntities)
 		{
 			IEventSource source = @event.Session;
 			IPersistenceContext persistenceContext = source.PersistenceContext;
@@ -117,7 +117,7 @@ namespace NHibernate.Event.Default
 		/// This is perfectly valid in Hibernate usage; JPA, however, forbids this.
 		/// Thus, this is a hook for HEM to affect this behavior.
 		/// </remarks>
-		protected internal virtual void PerformDetachedEntityDeletionCheck(DeleteEvent @event)
+		protected virtual void PerformDetachedEntityDeletionCheck(DeleteEvent @event)
 		{
 			// ok in normal Hibernate usage to delete a detached entity; JPA however
 			// forbids it, thus this is a hook for HEM to affect this behavior
@@ -138,7 +138,7 @@ namespace NHibernate.Event.Default
 		/// <param name="transientEntities">
 		/// A cache of already visited transient entities (to avoid infinite recursion).
 		/// </param>
-		protected internal void DeleteTransientEntity(IEventSource session, object entity, bool cascadeDeleteEnabled, IEntityPersister persister, ISet transientEntities)
+		protected virtual void DeleteTransientEntity(IEventSource session, object entity, bool cascadeDeleteEnabled, IEntityPersister persister, ISet transientEntities)
 		{
 			log.Info("handling transient entity in delete processing");
 			if (transientEntities.Contains(entity))
@@ -162,9 +162,8 @@ namespace NHibernate.Event.Default
 		/// <param name="isCascadeDeleteEnabled">Is delete cascading enabled? </param>
 		/// <param name="persister">The entity persister. </param>
 		/// <param name="transientEntities">A cache of already deleted entities. </param>
-		protected internal void DeleteEntity(IEventSource session, object entity, EntityEntry entityEntry, bool isCascadeDeleteEnabled, IEntityPersister persister, ISet transientEntities)
+		protected virtual void DeleteEntity(IEventSource session, object entity, EntityEntry entityEntry, bool isCascadeDeleteEnabled, IEntityPersister persister, ISet transientEntities)
 		{
-
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("deleting " + MessageHelper.InfoString(persister, entityEntry.Id, session.Factory));
@@ -223,7 +222,7 @@ namespace NHibernate.Event.Default
 			return deletedState;
 		}
 
-		protected internal virtual bool InvokeDeleteLifecycle(IEventSource session, object entity, IEntityPersister persister)
+		protected virtual bool InvokeDeleteLifecycle(IEventSource session, object entity, IEntityPersister persister)
 		{
 			if (persister.ImplementsLifecycle(session.EntityMode))
 			{

@@ -19,27 +19,27 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultMergeEventListener));
 
-		protected internal override CascadingAction CascadeAction
+		protected override CascadingAction CascadeAction
 		{
 			get { return CascadingAction.Merge; }
 		}
 
-		protected internal override bool? AssumedUnsaved
+		protected override bool? AssumedUnsaved
 		{
 			get { return false; }
 		}
 
-		protected internal override IDictionary GetMergeMap(object anything)
+		protected override IDictionary GetMergeMap(object anything)
 		{
 			return IdentityMap.Invert((IDictionary)anything);
 		}
 
-		public void OnMerge(MergeEvent @event)
+		public virtual void OnMerge(MergeEvent @event)
 		{
 			OnMerge(@event, IdentityMap.Instantiate(10));
 		}
 
-		public void OnMerge(MergeEvent @event, IDictionary copyCache)
+		public virtual void OnMerge(MergeEvent @event, IDictionary copyCache)
 		{
 			IEventSource source = @event.Session;
 			object original = @event.Original;
@@ -123,7 +123,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected internal void EntityIsPersistent(MergeEvent @event, IDictionary copyCache)
+		protected virtual void EntityIsPersistent(MergeEvent @event, IDictionary copyCache)
 		{
 			log.Debug("ignoring persistent instance");
 
@@ -140,7 +140,7 @@ namespace NHibernate.Event.Default
 			@event.Result = entity;
 		}
 
-		protected internal void EntityIsTransient(MergeEvent @event, IDictionary copyCache)
+		protected virtual void EntityIsTransient(MergeEvent @event, IDictionary copyCache)
 		{
 			log.Debug("merging transient instance");
 
@@ -182,7 +182,7 @@ namespace NHibernate.Event.Default
 			@event.Result = copy;
 		}
 
-		protected internal void EntityIsDetached(MergeEvent @event, IDictionary copyCache)
+		protected virtual void EntityIsDetached(MergeEvent @event, IDictionary copyCache)
 		{
 			log.Debug("merging detached instance");
 
@@ -326,7 +326,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected internal static void CopyValues(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache)
+		protected virtual void CopyValues(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache)
 		{
 			object[] copiedValues =
 				TypeFactory.Replace(persister.GetPropertyValues(entity, source.EntityMode),
@@ -336,7 +336,7 @@ namespace NHibernate.Event.Default
 			persister.SetPropertyValues(target, copiedValues, source.EntityMode);
 		}
 
-		protected static void CopyValues(IEntityPersister persister, object entity, object target,
+		protected virtual void CopyValues(IEntityPersister persister, object entity, object target,
 			ISessionImplementor source, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
 		{
 			object[] copiedValues;
@@ -369,7 +369,7 @@ namespace NHibernate.Event.Default
 		/// <param name="persister">The persister of the entity being copied. </param>
 		/// <param name="entity">The entity being copied. </param>
 		/// <param name="copyCache">A cache of already copied instance. </param>
-		protected internal void CascadeOnMerge(IEventSource source, IEntityPersister persister, object entity, IDictionary copyCache)
+		protected virtual void CascadeOnMerge(IEventSource source, IEntityPersister persister, object entity, IDictionary copyCache)
 		{
 			source.PersistenceContext.IncrementCascadeLevel();
 			try
@@ -383,12 +383,12 @@ namespace NHibernate.Event.Default
 		}
 		
 		/// <summary> Cascade behavior is redefined by this subclass, disable superclass behavior</summary>
-		protected internal override void CascadeAfterSave(IEventSource source, IEntityPersister persister, object entity, object anything)
+		protected override void CascadeAfterSave(IEventSource source, IEntityPersister persister, object entity, object anything)
 		{
 		}
 
 		/// <summary> Cascade behavior is redefined by this subclass, disable superclass behavior</summary>
-		protected internal override void CascadeBeforeSave(IEventSource source, IEntityPersister persister, object entity, object anything)
+		protected override void CascadeBeforeSave(IEventSource source, IEntityPersister persister, object entity, object anything)
 		{
 		}
 	}
