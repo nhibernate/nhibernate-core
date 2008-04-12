@@ -176,6 +176,7 @@
                     <area id="class13" coords="14 55"/>
                     <area id="class14" coords="15 55"/>
                     <area id="class15" coords="16 55"/>
+                    <area id="class16" coords="17 55"/>
                 </areaspec>   
                 <programlisting><![CDATA[<class
         name="ClassName"
@@ -193,6 +194,7 @@
         batch-size="N"
         optimistic-lock="none|version|dirty|all"
         lazy="true|false"
+        abstract="true|false"
 />]]></programlisting>
                 <calloutlist>
                     <callout arearefs="class1">
@@ -288,6 +290,12 @@
                         <para>
                             <literal>lazy</literal> (optional): Lazy fetching may be completely disabled by setting
                             <literal>lazy="false"</literal>.
+                        </para>
+                    </callout>
+                    <callout arearefs="class16">
+                        <para>
+                            <literal>abstract</literal> (optional): Used to mark abstract superclasses in
+                            <literal>&lt;union-subclass&gt;</literal> hierarchies.
                         </para>
                     </callout>
                 </calloutlist>
@@ -1802,6 +1810,10 @@
                 define a unique <literal>discriminator-value</literal>. If none is specified, the
                 fully qualified .NET class name is used.
             </para>
+
+            <para>
+                For information about inheritance mappings, see <xref linkend="inheritance"/>.
+            </para>
             
         </sect2>
 
@@ -1889,6 +1901,86 @@
         </class>
 
 </hibernate-mapping>]]></programlisting>
+
+            <para>
+                For information about inheritance mappings, see <xref linkend="inheritance"/>.
+            </para>
+
+        </sect2>
+
+        <sect2 id="mapping-declaration-unionsubclass" revision="2">
+           <title>union-subclass</title>
+
+           <para>
+               A third option is to map only the concrete classes of an inheritance hierarchy
+               to tables, (the table-per-concrete-class strategy) where each table defines all
+               persistent state of the class, including inherited state. In Hibernate, it is
+               not absolutely necessary to explicitly map such inheritance hierarchies. You
+               can simply map each class with a separate <literal>&lt;class&gt;</literal>
+               declaration. However, if you wish use polymorphic associations (e.g. an association
+               to the superclass of your hierarchy), you need to
+               use the <literal>&lt;union-subclass&gt;</literal> mapping.
+           </para>
+
+            <programlistingco>
+                <areaspec>
+                    <area id="unionsubclass1" coords="2 45"/>
+                    <area id="unionsubclass2" coords="3 45"/>
+                    <area id="unionsubclass3" coords="4 45"/>
+                    <area id="unionsubclass4" coords="5 45"/>
+                </areaspec>
+                <programlisting><![CDATA[<union-subclass
+        name="ClassName"
+        table="tablename"
+        proxy="ProxyInterface"
+        lazy="true|false"
+        dynamic-update="true|false"
+        dynamic-insert="true|false"
+        schema="schema"
+        catalog="catalog"
+        extends="SuperclassName"
+        abstract="true|false"
+        persister="ClassName"
+        subselect="SQL expression"
+        entity-name="EntityName"
+        node="element-name">
+
+        <property .... />
+        .....
+</union-subclass>]]></programlisting>
+                <calloutlist>
+                    <callout arearefs="unionsubclass1">
+                        <para>
+                            <literal>name</literal>: The fully qualified class name of the subclass.
+                        </para>
+                    </callout>
+                    <callout arearefs="unionsubclass2">
+                        <para>
+                            <literal>table</literal>: The name of the subclass table.
+                        </para>
+                    </callout>
+                    <callout arearefs="unionsubclass3">
+                        <para>
+                            <literal>proxy</literal> (optional): Specifies a class or interface to use
+                            for lazy initializing proxies.
+                        </para>
+                    </callout>
+                    <callout arearefs="unionsubclass4">
+                        <para>
+                            <literal>lazy</literal> (optional, defaults to <literal>true</literal>): Setting
+                            <literal>lazy="false"</literal> disables the use of lazy fetching.
+                         </para>
+                    </callout>
+                </calloutlist>
+            </programlistingco>
+
+            <para>
+                No discriminator column or key column is required for this mapping strategy.
+            </para>
+
+            <para>
+                For information about inheritance mappings, see <xref linkend="inheritance"/>.
+            </para>
 
         </sect2>
 
