@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using log4net;
 using NHibernate.Engine;
@@ -18,6 +19,7 @@ namespace NHibernate.Transaction
 		private bool committed;
 		private bool rolledBack;
 		private bool commitFailed;
+		private IList<ISynchronization> synchronizations;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AdoTransaction"/> class.
@@ -73,6 +75,16 @@ namespace NHibernate.Transaction
 
 				command.Transaction = trans;
 			}
+		}
+
+		public void RegisterSynchronization(ISynchronization sync) 
+		{
+			if (sync == null) throw new ArgumentNullException("sync");
+			if (synchronizations == null)
+			{
+				synchronizations = new List<ISynchronization>();
+			}
+			synchronizations.Add(sync);
 		}
 
 		public void Begin()
@@ -139,6 +151,7 @@ namespace NHibernate.Transaction
 		private void AfterTransactionCompletion(bool successful)
 		{
 			session.AfterTransactionCompletion(successful, this);
+			NotifyLocalSynchsAfterTransactionCompletion(successful);
 			session = null;
 			begun = false;
 		}
@@ -162,7 +175,8 @@ namespace NHibernate.Transaction
 			{
 				session.Flush();
 			}
-
+            
+			NotifyLocalSynchsBeforeTransactionCompletion();
 			session.BeforeTransactionCompletion(this);
 			
 			try
@@ -361,6 +375,46 @@ namespace NHibernate.Transaction
 			if (!begun)
 			{
 				throw new TransactionException("Transaction not successfully started");
+			}
+		}
+
+
+		private void NotifyLocalSynchsBeforeTransactionCompletion()
+		{
+			if (synchronizations != null)
+			{
+				for (int i = 0; i < synchronizations.Count; i++)
+				{
+					ISynchronization sync = synchronizations[i];
+					try
+					{
+						sync.BeforeCompletion();
+					}
+					catch (Exception e)
+					{
+						log.Error("exception calling user Synchronization", e);
+					}
+				}
+			}
+		}
+
+		private void NotifyLocalSynchsAfterTransactionCompletion(bool success)
+		{
+			begun = false;
+			if (synchronizations != null)
+			{
+				for (int i = 0; i < synchronizations.Count; i++)
+				{
+					ISynchronization sync = synchronizations[i];
+					try
+					{
+						sync.AfterCompletion(success);
+					}
+					catch (Exception e)
+					{
+						log.Error("exception calling user Synchronization", e);
+					}
+				}
 			}
 		}
 	}

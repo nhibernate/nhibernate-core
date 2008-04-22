@@ -989,6 +989,7 @@
     <Compile Include="Tool\hbm2ddl\SuppliedConnectionHelper.cs" />
     <Compile Include="Tool\hbm2ddl\SuppliedConnectionProviderConnectionHelper.cs" />
     <Compile Include="Transaction\AdoNetTransactionFactory.cs" />
+    <Compile Include="Transaction\ISynchronization.cs" />
     <Compile Include="Transaction\ITransactionContext.cs" />
     <Compile Include="Transform\AliasToBeanConstructorResultTransformer.cs" />
     <Compile Include="Transform\AliasToBeanResultTransformer.cs" />
