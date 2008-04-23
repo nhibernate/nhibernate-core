@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1297"
+				   assembly="NHibernate.Test">
+	<class name="Model">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		
+		<property name="Name"/>
+		
+		<idbag name="Items"
+			   access="field.camelcase"
+			   lazy="true">
+			<collection-id column="ItemId" type="Int32">
+				<generator class="native"/>
+			</collection-id>
+			<key column="ModelId"/>
+			<composite-element class="Item">
+				<property name="Name"/>
+				<property name="Quantity"/>
+			</composite-element>
+		</idbag>	
+	</class>
+</hibernate-mapping>
