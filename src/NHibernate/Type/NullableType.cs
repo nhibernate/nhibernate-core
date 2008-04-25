@@ -363,6 +363,11 @@ namespace NHibernate.Type
 			return string.IsNullOrEmpty(xml) ? null : FromStringValue(xml);
 		}
 
+		public override bool IsEqual(object x, object y, EntityMode entityMode)
+		{
+			return IsEqual(x, y);
+		}
+
 		public virtual bool IsEqual(object x, object y)
 		{
 			return EqualsHelper.Equals(x, y);

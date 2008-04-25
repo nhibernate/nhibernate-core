@@ -58,7 +58,7 @@ namespace NHibernate.DomainModel.NHSpecific
 			if (this == lhs) return true;
 
 			if (this._classId.Equals(lhs._classId)
-			    && this._classString.Equals(this._classString)) return true;
+			    && this._classString.Equals(lhs._classString)) return true;
 
 			return false;
 		}
