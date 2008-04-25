@@ -132,6 +132,8 @@ namespace NHibernate.Test.TypesTest
 			ObjectAssert.AreEqual(expected.DefaultSize, bcBinary.DefaultSize);
 			ObjectAssert.AreEqual(expected.WithSize, bcBinary.WithSize);
 
+			Assert.IsFalse(s.IsDirty(), "The session is dirty: an Update will be raised on commit, See NH-1246");
+
 			s.Delete(bcBinary);
 			t.Commit();
 			s.Close();
