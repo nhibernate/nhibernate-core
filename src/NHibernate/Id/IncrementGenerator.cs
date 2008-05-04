@@ -6,7 +6,6 @@ using System.Text;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
-using NHibernate.Mapping;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Data.Common;
@@ -63,7 +62,7 @@ namespace NHibernate.Id
 				{
 					buf.Append("select ").Append(column).Append(" from ");
 				}
-				buf.Append(Table.Qualify(catalog, schema, tables[i]));
+				buf.Append(d.Qualify(catalog, schema, tables[i]));
 				if (i < tables.Length - 1)
 					buf.Append(" union ");
 			}

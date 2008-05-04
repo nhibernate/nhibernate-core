@@ -130,7 +130,7 @@ namespace NHibernate.Mapping
 			string quotedName = GetQuotedName(dialect);
 			string usedSchema = schema == null ? defaultSchema : GetQuotedSchema(dialect);
 			string usedCatalog = catalog ?? defaultCatalog;
-			return Qualify(usedCatalog, usedSchema, quotedName);
+			return dialect.Qualify(usedCatalog, usedSchema, quotedName);
 		}
 
 		/// <summary>
@@ -888,21 +888,6 @@ namespace NHibernate.Mapping
 					return false;
 			}
 			return result;
-		}
-
-		public static string Qualify(string catalog, string schema, string table)
-		{
-			StringBuilder qualifiedName = new StringBuilder();
-
-			if (!string.IsNullOrEmpty(catalog))
-			{
-				qualifiedName.Append(catalog).Append(StringHelper.Dot);
-			}
-			if (!string.IsNullOrEmpty(schema))
-			{
-				qualifiedName.Append(schema).Append(StringHelper.Dot);
-			}
-			return qualifiedName.Append(table).ToString();
 		}
 
 		public bool HasPrimaryKey

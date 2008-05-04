@@ -1475,6 +1475,22 @@ namespace NHibernate.Dialect
 			return (name[0] == OpenQuote && name[name.Length - 1] == CloseQuote);
 		}
 
+        public virtual string Qualify(string catalog, string schema, string table)
+		{
+			StringBuilder qualifiedName = new StringBuilder();
+
+			if (!string.IsNullOrEmpty(catalog))
+			{
+				qualifiedName.Append(catalog).Append(StringHelper.Dot);
+			}
+			if (!string.IsNullOrEmpty(schema))
+			{
+				qualifiedName.Append(schema).Append(StringHelper.Dot);
+			}
+			return qualifiedName.Append(table).ToString();
+		}
+
+
 		/// <summary>
 		/// Quotes a name.
 		/// </summary>

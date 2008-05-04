@@ -89,7 +89,7 @@ namespace NHibernate.Id
 
 			if (tableName.IndexOf('.') < 0)
 			{
-				tableName = Table.Qualify(catalogName, schemaName, tableName);
+				tableName = dialect.Qualify(catalogName, schemaName, tableName);
 			}
 
 			query = "select " + columnName + " from " + dialect.AppendLockHint(LockMode.Upgrade, tableName)

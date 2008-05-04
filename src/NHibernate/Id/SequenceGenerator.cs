@@ -73,7 +73,7 @@ namespace NHibernate.Id
 
 			if (sequenceName.IndexOf('.') < 0)
 			{
-				sequenceName = Table.Qualify(catalogName, schemaName, sequenceName);
+				sequenceName = dialect.Qualify(catalogName, schemaName, sequenceName);
 			}
 
 			identifierType = type;

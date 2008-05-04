@@ -19,6 +19,7 @@ namespace NHibernate.Tool.hbm2ddl
 		private readonly IDictionary<string, ITableMetadata> tables = new Dictionary<string, ITableMetadata>();
 		private readonly ISet<string> sequences = new HashedSet<string>();
 		private readonly bool extras;
+	    private readonly Dialect.Dialect dialect;
 		private readonly IDataBaseSchema meta;
 		private readonly ISQLExceptionConverter sqlExceptionConverter;
 		private static readonly string[] Types = {"TABLE", "VIEW"};
@@ -32,7 +33,8 @@ namespace NHibernate.Tool.hbm2ddl
 		public DatabaseMetadata(DbConnection connection, Dialect.Dialect dialect, bool extras)
 		{
 			meta = dialect.GetDataBaseSchema(connection);
-			this.extras = extras;
+		    this.dialect = dialect;
+		    this.extras = extras;
 			InitSequences(connection, dialect);
 			sqlExceptionConverter = dialect.BuildSQLExceptionConverter();
 		}
@@ -97,9 +99,9 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 		}
 
-		private static string Identifier(string catalog, string schema, string name)
+		private string Identifier(string catalog, string schema, string name)
 		{
-			return Table.Qualify(catalog, schema, name);
+			return dialect.Qualify(catalog, schema, name);
 		}
 
 		private void InitSequences(DbConnection connection, Dialect.Dialect dialect)

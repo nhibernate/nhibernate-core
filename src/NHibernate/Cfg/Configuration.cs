@@ -427,7 +427,7 @@ namespace NHibernate.Cfg
 				namespaceManager.AddNamespace(HbmConstants.nsPrefix, MappingSchemaXMLNS);
 
 				Dialect.Dialect dialect = Dialect.Dialect.GetDialect(properties);
-				Mappings mappings = CreateMappings();
+				Mappings mappings = CreateMappings(dialect);
 
 				new MappingRootBinder(mappings, namespaceManager, dialect).Bind(doc.Document.DocumentElement);
 			}
@@ -442,7 +442,7 @@ namespace NHibernate.Cfg
 		/// Create a new <see cref="Mappings" /> to add classes and collection
 		/// mappings to.
 		/// </summary>
-		public Mappings CreateMappings()
+		public Mappings CreateMappings(Dialect.Dialect dialect)
 		{
 			return new Mappings(classes, 
 				collections, 
@@ -461,7 +461,8 @@ namespace NHibernate.Cfg
 				tableNameBinding, 
 				columnNameBindingPerTable,
 				defaultAssembly,
-				defaultNamespace
+				defaultNamespace,
+                dialect
 				);
 		}
 

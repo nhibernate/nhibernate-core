@@ -61,7 +61,8 @@ namespace NHibernate.Cfg
 		private string catalogName;
 		private string defaultCascade;
 		private string defaultNamespace;
-		private string defaultAssembly;
+	    private readonly Dialect.Dialect dialect;
+	    private string defaultAssembly;
 		private string defaultAccess;
 		private bool autoImport;
 		private bool defaultLazy;
@@ -106,7 +107,8 @@ namespace NHibernate.Cfg
 			IDictionary<string, TableDescription> tableNameBinding,
 			IDictionary<Table, ColumnNames> columnNameBindingPerTable,
 			string defaultAssembly,
-			string defaultNamespace)
+			string defaultNamespace,
+            Dialect.Dialect dialect)
 		{
 			this.classes = classes;
 			this.collections = collections;
@@ -126,6 +128,7 @@ namespace NHibernate.Cfg
 			this.columnNameBindingPerTable = columnNameBindingPerTable;
 			this.defaultAssembly = defaultAssembly;
 			this.defaultNamespace = defaultNamespace;
+		    this.dialect = dialect;
 		}
 
 		/// <summary>
@@ -250,7 +253,7 @@ namespace NHibernate.Cfg
 
 		public Table AddTable(string schema, string catalog, string name, string subselect, bool isAbstract)
 		{
-			string key = subselect ?? Table.Qualify(catalog, schema, name);
+			string key = subselect ?? dialect.Qualify(catalog, schema, name);
 			Table table;
 			if (!tables.TryGetValue(key, out table))
 			{
@@ -273,7 +276,7 @@ namespace NHibernate.Cfg
 
 		public Table AddDenormalizedTable(string schema, string catalog, string name, bool isAbstract, string subselect, Table includedTable)
 		{
-			string key = subselect ?? Table.Qualify(schema, catalog, name);
+			string key = subselect ?? dialect.Qualify(schema, catalog, name);
 			if (tables.ContainsKey(key))
 			{
 				throw new DuplicateMappingException("table", name);
@@ -305,7 +308,7 @@ namespace NHibernate.Cfg
 
 		public Table GetTable(string schema, string catalog, string name)
 		{
-			string key = Table.Qualify(catalog, schema, name);
+			string key = dialect.Qualify(catalog, schema, name);
 			return tables[key];
 		}
 

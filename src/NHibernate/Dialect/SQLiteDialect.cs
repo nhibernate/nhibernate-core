@@ -1,6 +1,9 @@
 using System;
 using System.Data;
+using System.Text;
+using System.Text.RegularExpressions;
 using NHibernate.SqlCommand;
+using NHibernate.Util;
 
 namespace NHibernate.Dialect
 {
@@ -105,6 +108,30 @@ namespace NHibernate.Dialect
                 // so just the integer part is needed here
                 return "integer";
             }
+        }
+
+        public override string Qualify(string catalog, string schema, string table)
+        {
+            StringBuilder qualifiedName = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(catalog))
+            {
+                if (catalog.EndsWith(CloseQuote.ToString()))
+                    catalog = catalog.Substring(0, catalog.Length - 1);
+                qualifiedName.Append(catalog).Append(StringHelper.Underscore);
+            }
+            if (!string.IsNullOrEmpty(schema))
+            {
+                if (schema.StartsWith(OpenQuote.ToString()))
+                    schema = schema.Substring(0, schema.Length-1);
+                qualifiedName.Append(schema).Append(StringHelper.Underscore);
+            }
+
+            if (table.StartsWith(OpenQuote.ToString()))
+                table = table.Substring(1, table.Length - 1);
+
+            return qualifiedName.Append(table).ToString();
+	
         }
 
         public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
