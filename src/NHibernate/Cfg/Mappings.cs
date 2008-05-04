@@ -574,11 +574,6 @@ namespace NHibernate.Cfg
 			get { return collections.Values; }
 		}
 
-        public IEnumerable<PersistentClass> Classes
-        {
-            get { return classes.Values; }
-        }
-
 		public IEnumerable<Table> IterateTables
 		{
 			get { return tables.Values; }
