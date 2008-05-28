@@ -1,4 +1,3 @@
-using System;
 using System.Data;
 using NHibernate.SqlTypes;
 
@@ -6,8 +5,8 @@ namespace NHibernate.SqlCommand
 {
 	public class SqlCommandInfo
 	{
-		private SqlString text;
-		private SqlType[] parameterTypes;
+		private readonly SqlString text;
+		private readonly SqlType[] parameterTypes;
 
 		public SqlCommandInfo(SqlString text, SqlType[] parameterTypes)
 		{
