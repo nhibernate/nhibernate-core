@@ -339,7 +339,6 @@ namespace NHibernate.Hql.Classic
 		protected internal override ILoadable[] EntityPersisters
 		{
 			get { return persisters; }
-			set { persisters = (IQueryable[]) value; }
 		}
 
 		/// <summary>
@@ -423,11 +422,10 @@ namespace NHibernate.Hql.Classic
 		/// <summary></summary>
 		[CLSCompliant(false)]
 		// TODO: Work out why this causes an error in 1.1 - the variable sqlString is private so we're only exposing one name
-			protected internal override SqlString SqlString
+		protected internal override SqlString SqlString
 		{
 			// this needs internal access because the WhereParser needs to be able to "get" it.
 			get { return sqlString; }
-			set { throw new InvalidOperationException("QueryTranslator.SqlString is read-only"); }
 		}
 
 		private int NextCount()
@@ -1188,7 +1186,6 @@ namespace NHibernate.Hql.Classic
 		protected override string[] CollectionSuffixes
 		{
 			get { return fetchedCollections.CollectionSuffixes; }
-			set { throw new InvalidOperationException("QueryTranslator.CollectionSuffixes_set"); }
 		}
 
 		public void AddCollectionToFetch(string role, string name, string ownerName, string entityName)
@@ -1204,7 +1201,6 @@ namespace NHibernate.Hql.Classic
 		protected override string[] Suffixes
 		{
 			get { return suffixes; }
-			set { suffixes = value; }
 		}
 
 		/// <remarks>Used for collection filters</remarks>
@@ -1582,7 +1578,6 @@ namespace NHibernate.Hql.Classic
 		protected override int[] Owners
 		{
 			get { return owners; }
-			set { owners = value; }
 		}
 
 		public IDictionary<string, IFilter> EnabledFilters

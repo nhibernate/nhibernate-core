@@ -14,7 +14,7 @@ namespace NHibernate.Cache
 		private readonly string filterName;
 		private readonly Dictionary<string, TypedValue> filterParameters = new Dictionary<string, TypedValue>();
 
-		public FilterKey(string name, IDictionary<string, object> @params, IDictionary<string, IType> types, EntityMode entityMode)
+		public FilterKey(string name, IEnumerable<KeyValuePair<string, object>> @params, IDictionary<string, IType> types, EntityMode entityMode)
 		{
 			filterName = name;
 			foreach (KeyValuePair<string, object> me in @params)
@@ -28,7 +28,7 @@ namespace NHibernate.Cache
 		{
 			int result = 13;
 			result = 37 * result + filterName.GetHashCode();
-			result = 37 * result + CollectionHelper.GetHashCode<KeyValuePair<string, TypedValue>>(filterParameters);
+			result = 37 * result + CollectionHelper.GetHashCode(filterParameters);
 			return result;
 		}
 
@@ -39,7 +39,7 @@ namespace NHibernate.Cache
 			FilterKey that = (FilterKey) other;
 			if (!that.filterName.Equals(filterName))
 				return false;
-			if (!CollectionHelper.DictionaryEquals(that.filterParameters, filterParameters))
+			if (!CollectionHelper.DictionaryEquals<string, TypedValue>(that.filterParameters, filterParameters))
 				return false;
 			return true;
 		}

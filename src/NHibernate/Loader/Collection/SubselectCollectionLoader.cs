@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -10,19 +9,14 @@ namespace NHibernate.Loader.Collection
 	public class SubselectCollectionLoader : BasicCollectionLoader
 	{
 		private readonly object[] keys;
+		private readonly IDictionary<string, int[]> namedParameterLocMap;
+		private readonly IDictionary<string, TypedValue> namedParameters;
 		private readonly IType[] types;
 		private readonly object[] values;
-		private readonly IDictionary namedParameters;
-		private readonly IDictionary namedParameterLocMap;
 
-		public SubselectCollectionLoader(
-			IQueryableCollection persister,
-			SqlString subquery,
-			ICollection entityKeys,
-			QueryParameters queryParameters,
-			IDictionary namedParameterLocMap,
-			ISessionFactoryImplementor factory,
-			IDictionary<string, IFilter> enabledFilters)
+		public SubselectCollectionLoader(IQueryableCollection persister, SqlString subquery, ICollection<EntityKey> entityKeys,
+																		 QueryParameters queryParameters, IDictionary<string, int[]> namedParameterLocMap,
+		                                 ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(persister, 1, subquery, factory, enabledFilters)
 		{
 			keys = new object[entityKeys.Count];
@@ -45,7 +39,7 @@ namespace NHibernate.Loader.Collection
 
 		public override int[] GetNamedParameterLocs(string name)
 		{
-			return (int[]) namedParameterLocMap[name];
+			return namedParameterLocMap[name];
 		}
 	}
 }

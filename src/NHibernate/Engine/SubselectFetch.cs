@@ -1,32 +1,23 @@
-using System;
-using System.Collections;
-using Iesi.Collections;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
-	using Dialect;
-
 	public class SubselectFetch
 	{
-		private readonly ISet resultingEntityKeys;
+		private readonly ISet<EntityKey> resultingEntityKeys;
 		private readonly SqlString queryString;
 		private readonly string alias;
-		private readonly Dialect dialect;
+		private readonly Dialect.Dialect dialect;
 		private readonly ILoadable loadable;
 		private readonly QueryParameters queryParameters;
-		private readonly IDictionary namedParameterLocMap;
+		private readonly IDictionary<string, int[]> namedParameterLocMap;
 
-		public SubselectFetch(
-			string alias,
-			Dialect dialect,
-			ILoadable loadable,
-			QueryParameters queryParameters,
-			ISet resultingEntityKeys,
-			IDictionary namedParameterLocMap
-			)
+		public SubselectFetch(string alias, Dialect.Dialect dialect, ILoadable loadable, QueryParameters queryParameters,
+													ISet<EntityKey> resultingEntityKeys, IDictionary<string, int[]> namedParameterLocMap)
 		{
 			this.resultingEntityKeys = resultingEntityKeys;
 			this.queryParameters = queryParameters;
@@ -43,7 +34,7 @@ namespace NHibernate.Engine
 			get { return queryParameters; }
 		}
 
-		public ISet Result
+		public ISet<EntityKey> Result
 		{
 			get { return resultingEntityKeys; }
 		}
@@ -54,11 +45,8 @@ namespace NHibernate.Engine
 			                       	? StringHelper.Qualify(alias, loadable.IdentifierColumnNames)
 			                       	: ((IPropertyMapping) loadable).ToColumns(alias, ukname);
 
-			SqlString sqlString = new SqlStringBuilder()
-				.Add("select ")
-				.Add(StringHelper.Join(", ", joinColumns))
-				.Add(queryString)
-				.ToSqlString();
+			SqlString sqlString =
+				new SqlStringBuilder().Add("select ").Add(StringHelper.Join(", ", joinColumns)).Add(queryString).ToSqlString();
 
 			RowSelection selection = queryParameters.RowSelection;
 
@@ -67,13 +55,15 @@ namespace NHibernate.Engine
 			bool useOffset = hasFirstRow && useLimit && dialect.SupportsLimitOffset;
 
 			if ((useLimit || hasFirstRow) == false)
+			{
 				return sqlString;
+			}
 
 			sqlString = AppendOrderByIfNeeded(sqlString);
 
-			return dialect.GetLimitString(sqlString.Trim(),
-										  useOffset ? Loader.Loader.GetFirstRow(selection) : 0,
-										  Loader.Loader.GetMaxOrLimit(dialect, selection));
+			return
+				dialect.GetLimitString(sqlString.Trim(), useOffset ? Loader.Loader.GetFirstRow(selection) : 0,
+				                       Loader.Loader.GetMaxOrLimit(dialect, selection));
 		}
 
 		private SqlString AppendOrderByIfNeeded(SqlString sqlString)
@@ -87,7 +77,7 @@ namespace NHibernate.Engine
 			return "SubselectFetch(" + queryString + ')';
 		}
 
-		public IDictionary NamedParameterLocMap
+		public IDictionary<string, int[]> NamedParameterLocMap
 		{
 			get { return namedParameterLocMap; }
 		}

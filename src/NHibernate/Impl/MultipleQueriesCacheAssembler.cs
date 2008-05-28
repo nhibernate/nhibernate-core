@@ -8,21 +8,23 @@ namespace NHibernate.Impl
 {
 	internal class MultipleQueriesCacheAssembler : ICacheAssembler
 	{
-		private IList assemblersList;
+		private readonly IList assemblersList;
 
 		public MultipleQueriesCacheAssembler(IList assemblers)
 		{
 			assemblersList = assemblers;
 		}
 
+		#region ICacheAssembler Members
+
 		public object Disassemble(object value, ISessionImplementor session, object owner)
 		{
-			IList srcList = (IList)value;
+			IList srcList = (IList) value;
 			ArrayList cacheable = new ArrayList();
 			for (int i = 0; i < srcList.Count; i++)
 			{
-				ICacheAssembler[] assemblers = (ICacheAssembler[])assemblersList[i];
-				IList itemList = (IList)srcList[i];
+				ICacheAssembler[] assemblers = (ICacheAssembler[]) assemblersList[i];
+				IList itemList = (IList) srcList[i];
 				ArrayList singleQueryCached = new ArrayList();
 				foreach (object objToCache in itemList)
 				{
@@ -42,12 +44,12 @@ namespace NHibernate.Impl
 
 		public object Assemble(object cached, ISessionImplementor session, object owner)
 		{
-			IList srcList = (IList)cached;
+			IList srcList = (IList) cached;
 			ArrayList result = new ArrayList();
 			for (int i = 0; i < assemblersList.Count; i++)
 			{
-				ICacheAssembler[] assemblers = (ICacheAssembler[])assemblersList[i];
-				IList queryFromCache = (IList)srcList[i];
+				ICacheAssembler[] assemblers = (ICacheAssembler[]) assemblersList[i];
+				IList queryFromCache = (IList) srcList[i];
 				ArrayList queryResults = new ArrayList();
 				foreach (object fromCache in queryFromCache)
 				{
@@ -57,7 +59,7 @@ namespace NHibernate.Impl
 					}
 					else
 					{
-						queryResults.Add(TypeFactory.Assemble((object[])fromCache, assemblers, session, owner));
+						queryResults.Add(TypeFactory.Assemble((object[]) fromCache, assemblers, session, owner));
 					}
 				}
 				result.Add(queryResults);
@@ -65,28 +67,26 @@ namespace NHibernate.Impl
 			return result;
 		}
 
-		public void BeforeAssemble(object cached, ISessionImplementor session)
-		{
-		}
+		public void BeforeAssemble(object cached, ISessionImplementor session) {}
 
-		public IList GetResultFromQueryCache(
-			ISessionImplementor session,
-			QueryParameters queryParameters,
-			ISet<string> querySpaces,
-			IQueryCache queryCache,
-			QueryKey key)
+		#endregion
+
+		public IList GetResultFromQueryCache(ISessionImplementor session, QueryParameters queryParameters,
+		                                     ISet<string> querySpaces, IQueryCache queryCache, QueryKey key)
 		{
 			if (!queryParameters.ForceCacheRefresh)
 			{
-				IList list = queryCache.Get(key, new ICacheAssembler[] { this }, querySpaces, session);
+				IList list =
+					queryCache.Get(key, new ICacheAssembler[] {this}, queryParameters.NaturalKeyLookup, querySpaces, session);
 				//we had to wrap the query results in another list in order to save all
 				//the queries in the same bucket, now we need to do it the other way around.
 				if (list != null)
-					list = (IList)list[0];
+				{
+					list = (IList) list[0];
+				}
 				return list;
 			}
 			return null;
 		}
-
 	}
 }

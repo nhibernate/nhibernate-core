@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Metadata;
@@ -59,13 +60,13 @@ namespace NHibernate.Impl
 			return CollectionPrinter.ToString(list);
 		}
 
-		public string ToString(IDictionary namedTypedValues)
+		public string ToString(IDictionary<string, TypedValue> namedTypedValues)
 		{
 			IDictionary result = new Hashtable(namedTypedValues.Count);
 
-			foreach (DictionaryEntry me in namedTypedValues)
+			foreach (KeyValuePair<string, TypedValue> me in namedTypedValues)
 			{
-				TypedValue tv = (TypedValue) me.Value;
+				TypedValue tv = me.Value;
 				result[me.Key] = tv.Type.ToLoggableString(tv.Value, _factory);
 			}
 

@@ -26,18 +26,18 @@ namespace NHibernate.Engine
 		/// to resolve any associations yet, because there might be other entities waiting to be
 		/// read from the JDBC result set we are currently processing
 		/// </summary>
-		public static void PostHydrate(IEntityPersister persister, object id, object[] values, object obj, LockMode lockMode, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
+		public static void PostHydrate(IEntityPersister persister, object id, object[] values, object rowId, object obj, LockMode lockMode, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
 		{
 			object version = Versioning.GetVersion(values, persister);
-			session.PersistenceContext.AddEntry(obj, Status.Loading, values, id, version, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
+			session.PersistenceContext.AddEntry(obj, Status.Loading, values, rowId, id, version, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
 
 			if (log.IsDebugEnabled && version != null)
 			{
-				string versionStr = persister.IsVersioned ? persister.VersionType.ToLoggableString(version, session.Factory) : "null";
+				System.String versionStr = persister.IsVersioned ? persister.VersionType.ToLoggableString(version, session.Factory) : "null";
 				log.Debug("Version: " + versionStr);
 			}
 		}
-
+		
 		/// <summary> 
 		/// Perform the second step of 2-phase load. Fully initialize the entity instance. 
 		/// After processing a JDBC result set, we "resolve" all the associations

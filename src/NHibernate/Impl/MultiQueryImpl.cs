@@ -14,6 +14,7 @@ using NHibernate.SqlTypes;
 using NHibernate.Transform;
 using NHibernate.Type;
 using Iesi.Collections.Generic;
+using System.Collections.Generic;
 
 namespace NHibernate.Impl
 {
@@ -21,20 +22,20 @@ namespace NHibernate.Impl
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(MultiQueryImpl));
 
-		private ArrayList queries = new ArrayList();
-		private ArrayList translators = new ArrayList();
-		private ArrayList parameters = new ArrayList();
+		private readonly List<IQuery> queries = new List<IQuery>();
+		private readonly List<QueryTranslator> translators = new List<QueryTranslator>();
+		private readonly List<QueryParameters> parameters = new List<QueryParameters>();
 		private string cacheRegion;
 		private int commandTimeout = RowSelection.NoValue;
 		private bool isCacheable = false;
-		private ISessionImplementor session;
+		private readonly ISessionImplementor session;
 		private IResultTransformer resultTransformer;
-		private ArrayList types = new ArrayList();
+		private readonly List<SqlType> types = new List<SqlType>();
 		private SqlString sqlString = null;
-		private Dialect.Dialect dialect;
+		private readonly Dialect.Dialect dialect;
 		private bool forceCacheRefresh;
 		private QueryParameters combinedParameters;
-		private IList namedParametersThatAreSafeToDuplicate = new ArrayList();
+		private readonly List<string> namedParametersThatAreSafeToDuplicate = new List<string>();
 		private FlushMode flushMode = FlushMode.Unspecified;
 		private FlushMode sessionFlushMode = FlushMode.Unspecified;
 		private static readonly Regex parseParameterListOrignialName = new Regex(@"(.*?)\d+_", RegexOptions.Compiled);
@@ -47,7 +48,7 @@ namespace NHibernate.Impl
 				throw new NotSupportedException(
 					string.Format("The driver {0} does not support multiple queries.", driver.GetType().FullName));
 			}
-			this.dialect = session.Factory.Dialect;
+			dialect = session.Factory.Dialect;
 			this.session = session;
 		}
 
@@ -393,7 +394,7 @@ namespace NHibernate.Impl
 			if (commandTimeout != RowSelection.NoValue)
 				command.CommandTimeout = commandTimeout;
 			ArrayList[] hydratedObjects = new ArrayList[Translators.Count];
-			ArrayList[] subselectResultKeys = new ArrayList[Translators.Count];
+			List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[Translators.Count];
 			bool[] createSubselects = new bool[Translators.Count];
 			IDataReader reader = session.Batcher.ExecuteReader(command);
 			try
@@ -402,8 +403,8 @@ namespace NHibernate.Impl
 					log.DebugFormat("Executing {0} queries", translators.Count);
 				for (int i = 0; i < translators.Count; i++)
 				{
-					QueryTranslator translator = (QueryTranslator)Translators[i];
-					QueryParameters parameter = (QueryParameters)Parameters[i];
+					QueryTranslator translator = Translators[i];
+					QueryParameters parameter = Parameters[i];
 					ArrayList tempResults = new ArrayList();
 					int entitySpan = translator.EntityPersisters.Length;
 					hydratedObjects[i] = entitySpan > 0 ? new ArrayList() : null;
@@ -411,14 +412,14 @@ namespace NHibernate.Impl
 					int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
 					if (!dialect.SupportsLimitOffset || !Loader.Loader.UseLimit(selection, dialect))
 					{
-						translator.Advance(reader, selection);
+						Loader.Loader.Advance(reader, selection);
 					}
 
 					LockMode[] lockModeArray = translator.GetLockModes(parameter.LockModes);
 					EntityKey optionalObjectKey = Loader.Loader.GetOptionalObjectKey(parameter, session);
 
 					createSubselects[i] = translator.IsSubselectLoadingEnabled;
-					subselectResultKeys[i] = createSubselects[i] ? new ArrayList() : null;
+					subselectResultKeys[i] = createSubselects[i] ? new List<EntityKey[]>() : null;
 
 					translator.HandleEmptyCollections(parameter.CollectionKeys, reader, session);
 					EntityKey[] keys = new EntityKey[entitySpan]; // we can reuse it each time
@@ -479,8 +480,8 @@ namespace NHibernate.Impl
 			}
 			for (int i = 0; i < translators.Count; i++)
 			{
-				QueryTranslator translator = (QueryTranslator)translators[i];
-				QueryParameters parameter = (QueryParameters)parameters[i];
+				QueryTranslator translator = translators[i];
+				QueryParameters parameter = parameters[i];
 
 				translator.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false);
 
@@ -494,7 +495,7 @@ namespace NHibernate.Impl
 
 		private IDbCommand PrepareQueriesCommand()
 		{
-			SqlType[] sqlTypes = (SqlType[])types.ToArray(typeof(SqlType));
+			SqlType[] sqlTypes = types.ToArray();
 			return session.Batcher.PrepareQueryCommand(CommandType.Text, SqlString, sqlTypes);
 		}
 
@@ -530,16 +531,17 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private QueryParameters GetFilteredQueryParameters(QueryParameters queryParameters, QueryTranslator translator)
+		private static QueryParameters GetFilteredQueryParameters(QueryParameters queryParameters, IQueryTranslator translator)
 		{
 			QueryParameters filteredQueryParameters = queryParameters;
-			IDictionary namedParameters = new Hashtable(queryParameters.NamedParameters);
+			Dictionary<string, TypedValue> namedParameters = new Dictionary<string, TypedValue>(queryParameters.NamedParameters);
 			filteredQueryParameters.NamedParameters.Clear();
 			foreach (string paramName in translator.GetParameterTranslations().GetNamedParameterNames())
 			{
-				if (namedParameters.Contains(paramName))
+				TypedValue v;
+				if (namedParameters.TryGetValue(paramName,out v))
 				{
-					filteredQueryParameters.NamedParameters.Add(paramName, namedParameters[paramName]);
+					filteredQueryParameters.NamedParameters.Add(paramName, v);
 				}
 			}
 			return filteredQueryParameters;
@@ -559,12 +561,11 @@ namespace NHibernate.Impl
 		{
 			for (int i = 0; i < queries.Count; i++)
 			{
-				QueryTranslator translator = (QueryTranslator)Translators[i];
-				QueryParameters parameter = (QueryParameters)parameters[i];
+				QueryParameters parameter = parameters[i];
 				RowSelection selection = parameter.RowSelection;
 				if (Loader.Loader.UseLimit(selection, dialect) && !dialect.BindLimitParametersFirst)
 				{
-					colIndex += translator.BindLimitParameters(command, colIndex, selection, session);
+					colIndex += Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
 				}
 			}
 		}
@@ -573,8 +574,8 @@ namespace NHibernate.Impl
 		{
 			for (int i = 0; i < queries.Count; i++)
 			{
-				QueryTranslator translator = (QueryTranslator)Translators[i];
-				QueryParameters parameter = (QueryParameters)Parameters[i];
+				QueryTranslator translator = Translators[i];
+				QueryParameters parameter = Parameters[i];
 				colIndex += translator.BindPositionalParameters(command, parameter, colIndex, session);
 				colIndex += translator.BindNamedParameters(command, parameter.NamedParameters, colIndex, session);
 			}
@@ -585,12 +586,11 @@ namespace NHibernate.Impl
 		{
 			for (int i = 0; i < queries.Count; i++)
 			{
-				QueryTranslator translator = (QueryTranslator)Translators[i];
-				QueryParameters parameter = (QueryParameters)Parameters[i];
+				QueryParameters parameter = Parameters[i];
 				RowSelection selection = parameter.RowSelection;
 				if (Loader.Loader.UseLimit(selection, dialect) && dialect.BindLimitParametersFirst)
 				{
-					colIndex += translator.BindLimitParameters(command, colIndex, selection, session);
+					colIndex += Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
 				}
 			}
 			return colIndex;
@@ -615,10 +615,10 @@ namespace NHibernate.Impl
 			ISet filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
 
 			ISet<string> querySpaces = new HashedSet<string>();
-			ArrayList resultTypesList = new ArrayList();
+			List<IType[]> resultTypesList = new List<IType[]>(Translators.Count);
 			for (int i = 0; i < Translators.Count; i++)
 			{
-				QueryTranslator queryTranslator = (QueryTranslator)Translators[i];
+				QueryTranslator queryTranslator = Translators[i];
 				querySpaces.AddAll(queryTranslator.QuerySpaces);
 				resultTypesList.Add(queryTranslator.ActualReturnTypes);
 			}
@@ -626,7 +626,7 @@ namespace NHibernate.Impl
 			int[] maxRows = new int[Parameters.Count];
 			for (int i = 0; i < Parameters.Count; i++)
 			{
-				RowSelection rowSelection = ((QueryParameters)Parameters[i]).RowSelection;
+				RowSelection rowSelection = Parameters[i].RowSelection;
 				firstRows[i] = rowSelection.FirstRow;
 				maxRows[i] = rowSelection.MaxRows;
 			}
@@ -637,25 +637,20 @@ namespace NHibernate.Impl
 				.SetFirstRows(firstRows)
 				.SetMaxRows(maxRows);
 
-			IList result =
-				assembler.GetResultFromQueryCache(session,
-										combinedParameters,
-										querySpaces,
-										queryCache,
-										key);
+			IList result = assembler.GetResultFromQueryCache(session, combinedParameters, querySpaces, queryCache, key);
 
 			if (result == null)
 			{
 				log.Debug("Cache miss for multi query");
 				ArrayList list = DoList();
-				queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, session);
+				queryCache.Put(key, new ICacheAssembler[] {assembler}, new object[] {list}, false, session);
 				result = list;
 			}
 
 			return GetResultList(result);
 		}
 
-		private IList Translators
+		private IList<QueryTranslator> Translators
 		{
 			get
 			{
@@ -669,7 +664,7 @@ namespace NHibernate.Impl
 		{
 			QueryParameters combinedQueryParameters = new QueryParameters();
 			combinedQueryParameters.ForceCacheRefresh = forceCacheRefresh;
-			combinedQueryParameters.NamedParameters = new Hashtable();
+			combinedQueryParameters.NamedParameters = new Dictionary<string, TypedValue>();
 			ArrayList positionalParameterTypes = new ArrayList();
 			ArrayList positionalParameterValues = new ArrayList();
 			foreach (QueryParameters queryParameters in Parameters)
@@ -683,7 +678,7 @@ namespace NHibernate.Impl
 			return combinedQueryParameters;
 		}
 
-		private IList Parameters
+		private IList<QueryParameters> Parameters
 		{
 			get
 			{
@@ -693,13 +688,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private void CopyNamedParametersDictionary(IDictionary dest, IDictionary src)
+		private void CopyNamedParametersDictionary(IDictionary<string, TypedValue> dest, IDictionary<string, TypedValue> src)
 		{
-			foreach (DictionaryEntry dictionaryEntry in src)
+			foreach (KeyValuePair<string, TypedValue> dictionaryEntry in src)
 			{
-				if (dest.Contains(dictionaryEntry.Key))
+				if (dest.ContainsKey(dictionaryEntry.Key))
 				{
-					if (IsParameterSafeToDuplicate(dictionaryEntry.Key.ToString()))
+					if (IsParameterSafeToDuplicate(dictionaryEntry.Key))
 						continue; //we specify it for all the queries, so it is okay.
 
 					throw new QueryException(

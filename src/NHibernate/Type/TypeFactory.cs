@@ -1001,6 +1001,20 @@ namespace NHibernate.Type
 			}
 		}
 
+		/// <summary> Apply the <see cref="ICacheAssembler.BeforeAssemble"/> operation across a series of values. </summary>
+		/// <param name="row">The values </param>
+		/// <param name="types">The value types </param>
+		/// <param name="session">The orginating session </param>
+		public static void BeforeAssemble(object[] row, ICacheAssembler[] types, ISessionImplementor session)
+		{
+			for (int i = 0; i < types.Length; i++)
+			{
+				if (row[i] != LazyPropertyInitializer.UnfetchedProperty && row[i] != BackrefPropertyAccessor.Unknown)
+				{
+					types[i].BeforeAssemble(row[i], session);
+				}
+			}
+		}
 		/// <summary>
 		/// Determine if any of the given field values are dirty,
 		/// returning an array containing indexes of

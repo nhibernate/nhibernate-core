@@ -151,9 +151,9 @@ namespace NHibernate.Engine
 		/// Generates an appropriate EntityEntry instance and adds it 
 		/// to the event source's internal caches.
 		/// </summary>
-		EntityEntry AddEntry(object entity, Status status, object[] loadedState, object id, object version, LockMode lockMode,
-												 bool existsInDatabase, IEntityPersister persister, bool disableVersionIncrement,
-												 bool lazyPropertiesAreUnfetched);
+		EntityEntry AddEntry(object entity, Status status, object[] loadedState, object rowId, object id, object version,
+		                     LockMode lockMode, bool existsInDatabase, IEntityPersister persister, bool disableVersionIncrement,
+		                     bool lazyPropertiesAreUnfetched);
 
 		/// <summary> Is the given collection associated with this persistence context?</summary>
 		bool ContainsCollection(IPersistentCollection collection);

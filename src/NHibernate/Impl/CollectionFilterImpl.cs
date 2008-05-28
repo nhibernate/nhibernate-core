@@ -22,28 +22,28 @@ namespace NHibernate.Impl
 		public override IEnumerable Enumerable()
 		{
 			VerifyParameters();
-			IDictionary namedParams = NamedParams;
+			IDictionary<string, TypedValue> namedParams = NamedParams;
 			return Session.EnumerableFilter(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
 
 		public override IEnumerable<T> Enumerable<T>()
 		{
 			VerifyParameters();
-			IDictionary namedParams = NamedParams;
+			IDictionary<string, TypedValue> namedParams = NamedParams;
 			return Session.EnumerableFilter<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
 
 		public override IList List()
 		{
 			VerifyParameters();
-			IDictionary namedParams = NamedParams;
+			IDictionary<string, TypedValue> namedParams = NamedParams;
 			return Session.ListFilter(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
 
 		public override IList<T> List<T>()
 		{
 			VerifyParameters();
-			IDictionary namedParams = NamedParams;
+			IDictionary<string, TypedValue> namedParams = NamedParams;
 			return Session.ListFilter<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
 

@@ -1,4 +1,3 @@
-using System;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Loader
@@ -25,6 +24,11 @@ namespace NHibernate.Loader
 		string[] SuffixedVersionAliases { get; }
 
 		/// <summary>
+		/// The result set column alias for the Oracle row id
+		/// </summary>
+		string RowIdAlias { get; }
+
+		/// <summary>
 		/// The result set column aliases for the property columns
 		/// </summary>
 		string[][] SuffixedPropertyAliases { get; }
@@ -33,10 +37,5 @@ namespace NHibernate.Loader
 		/// The result set column aliases for the property columns of a subclass
 		/// </summary>
 		string[][] GetSuffixedPropertyAliases(ILoadable persister);
-
-		/// <summary>
-		/// The result set column alias for the Oracle row id
-		/// </summary>
-		string RowIdAlias { get; }
 	}
 }

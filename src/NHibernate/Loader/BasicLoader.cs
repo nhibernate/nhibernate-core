@@ -1,7 +1,7 @@
-using System;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Loader
@@ -13,10 +13,7 @@ namespace NHibernate.Loader
 		private IEntityAliases[] descriptors;
 		private ICollectionAliases[] collectionDescriptors;
 
-		public BasicLoader(ISessionFactoryImplementor factory)
-			: base(factory)
-		{
-		}
+		public BasicLoader(ISessionFactoryImplementor factory) : base(factory) {}
 
 		protected override sealed IEntityAliases[] EntityAliases
 		{
@@ -28,8 +25,8 @@ namespace NHibernate.Loader
 			get { return collectionDescriptors; }
 		}
 
-		protected abstract string[] Suffixes { get; set; }
-		protected abstract string[] CollectionSuffixes { get; set; }
+		protected abstract string[] Suffixes { get; }
+		protected abstract string[] CollectionSuffixes { get; }
 
 		protected override void PostInstantiate()
 		{
@@ -42,22 +39,34 @@ namespace NHibernate.Loader
 			}
 
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
+			int bagCount = 0;
 			if (collectionPersisters != null)
 			{
-				String[] collectionSuffixes = CollectionSuffixes;
+				string[] collectionSuffixes = CollectionSuffixes;
 				collectionDescriptors = new ICollectionAliases[collectionPersisters.Length];
 				for (int i = 0; i < collectionPersisters.Length; i++)
 				{
-					collectionDescriptors[i] = new GeneratedCollectionAliases(
-						collectionPersisters[i],
-						collectionSuffixes[i]
-						);
+					if (IsBag(collectionPersisters[i]))
+					{
+						bagCount++;
+					}
+					collectionDescriptors[i] = new GeneratedCollectionAliases(collectionPersisters[i], collectionSuffixes[i]);
 				}
 			}
 			else
 			{
 				collectionDescriptors = null;
 			}
+			// NH Different behavior
+			//if (bagCount > 1)
+			//{
+			//  throw new HibernateException("cannot simultaneously fetch multiple bags");
+			//}
+		}
+
+		private static bool IsBag(ICollectionPersister collectionPersister)
+		{
+			return collectionPersister.CollectionType.GetType().IsAssignableFrom(typeof (BagType));
 		}
 
 		/// <summary>

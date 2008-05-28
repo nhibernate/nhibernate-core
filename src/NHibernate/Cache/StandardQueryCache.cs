@@ -17,11 +17,36 @@ namespace NHibernate.Cache
 	/// </summary>
 	public class StandardQueryCache : IQueryCache
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(StandardQueryCache));
-
+		private static readonly ILog log = LogManager.GetLogger(typeof (StandardQueryCache));
 		private readonly ICache queryCache;
-		private readonly UpdateTimestampsCache updateTimestampsCache;
 		private readonly string regionName;
+		private readonly UpdateTimestampsCache updateTimestampsCache;
+
+		public StandardQueryCache(Settings settings, IDictionary<string, string> props,
+		                          UpdateTimestampsCache updateTimestampsCache, string regionName)
+		{
+			if (regionName == null)
+			{
+				regionName = typeof (StandardQueryCache).FullName;
+			}
+			String prefix = settings.CacheRegionPrefix;
+			if (!string.IsNullOrEmpty(prefix))
+			{
+				regionName = prefix + '.' + regionName;
+			}
+
+			log.Info("starting query cache at region: " + regionName);
+			queryCache = settings.CacheProvider.BuildCache(regionName, props);
+			this.updateTimestampsCache = updateTimestampsCache;
+			this.regionName = regionName;
+		}
+
+		#region IQueryCache Members
+
+		public ICache Cache
+		{
+			get { return queryCache; }
+		}
 
 		public string RegionName
 		{
@@ -33,83 +58,106 @@ namespace NHibernate.Cache
 			queryCache.Clear();
 		}
 
-		public StandardQueryCache(Settings settings, IDictionary<string,string> props, UpdateTimestampsCache updateTimestampsCache,
-		                          string regionName)
+		public bool Put(QueryKey key, ICacheAssembler[] returnTypes, IList result, bool isNaturalKeyLookup,
+		                ISessionImplementor session)
 		{
-			if (regionName == null)
+			if (isNaturalKeyLookup && result.Count == 0)
 			{
-				regionName = typeof(StandardQueryCache).FullName;
+				return false;
 			}
-			String prefix = settings.CacheRegionPrefix;
-			if (prefix != null) regionName = prefix + '.' + regionName;
+			else
+			{
+				long ts = session.Timestamp;
 
-			log.Info("starting query cache at region: " + regionName);
-			queryCache = settings.CacheProvider.BuildCache(regionName, props);
-			this.updateTimestampsCache = updateTimestampsCache;
-			this.regionName = regionName;
+				if (log.IsDebugEnabled)
+				{
+					log.Debug("caching query results in region: " + regionName);
+				}
+
+				IList cacheable = new ArrayList(result.Count + 1);
+				cacheable.Add(ts);
+				for (int i = 0; i < result.Count; i++)
+				{
+					if (returnTypes.Length == 1)
+					{
+						cacheable.Add(returnTypes[0].Disassemble(result[i], session, null));
+					}
+					else
+					{
+						cacheable.Add(TypeFactory.Disassemble((object[]) result[i], returnTypes, null, session, null));
+					}
+				}
+				queryCache.Put(key, cacheable);
+				return true;
+			}
 		}
 
-		public bool Put(QueryKey key, ICacheAssembler[] returnTypes, IList result, ISessionImplementor session)
-		{
-			if (log.IsDebugEnabled)
-			{
-				log.Debug("caching query results in region: " + regionName);
-			}
-			IList cacheable = new ArrayList(result.Count + 1);
-			cacheable.Add(session.Timestamp);
-			for (int i = 0; i < result.Count; i++)
-			{
-				if (returnTypes.Length == 1)
-				{
-					cacheable.Add(returnTypes[0].Disassemble(result[i], session, null));
-				}
-				else
-				{
-					cacheable.Add(TypeFactory.Disassemble((object[])result[i], returnTypes, null, session, null));
-				}
-			}
-			queryCache.Put(key, cacheable);
-			return true;
-		}
-
-		public IList Get(QueryKey key, ICacheAssembler[] returnTypes, ISet<string> spaces, ISessionImplementor session)
+		public IList Get(QueryKey key, ICacheAssembler[] returnTypes, bool isNaturalKeyLookup, ISet<string> spaces,
+		                 ISessionImplementor session)
 		{
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("checking cached query results in region: " + regionName);
 			}
-			IList cacheable = (IList) queryCache.Get(key);
+			IList cacheable = (IList)queryCache.Get(key);
 			if (cacheable == null)
 			{
 				log.Debug("query results were not found in cache");
 				return null;
 			}
-			IList result = new ArrayList(cacheable.Count - 1);
-			long timestamp = (long) cacheable[0];
+			long timestamp = (long)cacheable[0];
 			log.Debug("Checking query spaces for up-to-dateness [" + spaces + "]");
-			if (! IsUpToDate(spaces, timestamp))
+			if (!isNaturalKeyLookup && !IsUpToDate(spaces, timestamp))
 			{
 				log.Debug("cached query results were not up to date");
 				return null;
 			}
+
 			log.Debug("returning cached query results");
 			for (int i = 1; i < cacheable.Count; i++)
 			{
 				if (returnTypes.Length == 1)
 				{
-					result.Add(returnTypes[0].Assemble(cacheable[i], session, null));
+					returnTypes[0].BeforeAssemble(cacheable[i], session);
 				}
 				else
 				{
-					result.Add(TypeFactory.Assemble((object[]) cacheable[i], returnTypes, session, null));
+					TypeFactory.BeforeAssemble((object[])cacheable[i], returnTypes, session);
+				}
+			}
+			IList result = new ArrayList(cacheable.Count - 1);
+			for (int i = 1; i < cacheable.Count; i++)
+			{
+				try
+				{
+					if (returnTypes.Length == 1)
+					{
+						result.Add(returnTypes[0].Assemble(cacheable[i], session, null));
+					}
+					else
+					{
+						result.Add(TypeFactory.Assemble((object[])cacheable[i], returnTypes, session, null));
+					}
+				}
+				catch (UnresolvableObjectException)
+				{
+					if (isNaturalKeyLookup)
+					{
+						//TODO: not really completely correct, since
+						//      the UnresolvableObjectException could occur while resolving
+						//      associations, leaving the PC in an
+						//      inconsistent state
+						log.Debug("could not reassemble cached result set");
+						queryCache.Remove(key);
+						return null;
+					}
+					else
+					{
+						throw;
+					}
 				}
 			}
 			return result;
-		}
-
-		protected bool IsUpToDate(ISet<string> spaces, long timestamp)
-		{
-			return updateTimestampsCache.IsUpToDate(spaces, timestamp);
 		}
 
 		public void Destroy()
@@ -122,6 +170,13 @@ namespace NHibernate.Cache
 			{
 				log.Warn("could not destroy query cache: " + regionName, e);
 			}
+		}
+
+		#endregion
+
+		protected bool IsUpToDate(ISet<string> spaces, long timestamp)
+		{
+			return updateTimestampsCache.IsUpToDate(spaces, timestamp);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using log4net;
 using NHibernate.Action;
@@ -60,7 +61,7 @@ namespace NHibernate.Engine.Query
 		/// Bind positional parameter values to the <tt>PreparedStatement</tt>
 		/// (these are parameters specified by a JDBC-style ?).
 		/// </summary>
-		private int BindPositionalParameters(IDbCommand st, QueryParameters queryParameters, int start, ISessionImplementor session)
+		private static int BindPositionalParameters(IDbCommand st, QueryParameters queryParameters, int start, ISessionImplementor session)
 		{
 			object[] values = queryParameters.FilteredPositionalParameterValues;
 			IType[] types = queryParameters.FilteredPositionalParameterTypes;
@@ -78,16 +79,16 @@ namespace NHibernate.Engine.Query
 		/// empty implementation on this superclass and should be implemented by
 		/// subclasses (queries) which allow named parameters.
 		/// </summary>
-		private void BindNamedParameters(IDbCommand ps, IDictionary namedParams, int start, ISessionImplementor session)
+		private void BindNamedParameters(IDbCommand ps, IEnumerable<KeyValuePair<string, TypedValue>> namedParams, int start, ISessionImplementor session)
 		{
 			if (namedParams != null)
 			{
 				// assumes that types are all of span 1
 				int result = 0;
-				foreach (DictionaryEntry param in namedParams)
+				foreach (KeyValuePair<string, TypedValue> param in namedParams)
 				{
-					string name = (string)param.Key;
-					TypedValue typedval = (TypedValue)param.Value;
+					string name = param.Key;
+					TypedValue typedval = param.Value;
 
 					int[] locs = GetNamedParameterLocs(name);
 					for (int i = 0; i < locs.Length; i++)
@@ -183,23 +184,23 @@ namespace NHibernate.Engine.Query
 				int offset = paramTypeList.Count;
 
 				// convert the named parameters to an array of types
-				foreach (DictionaryEntry e in parameters.NamedParameters)
+				foreach (KeyValuePair<string, TypedValue> e in parameters.NamedParameters)
 				{
-					string name = (string)e.Key;
-					TypedValue typedval = (TypedValue)e.Value;
+					string name = e.Key;
+					TypedValue typedval = e.Value;
 					int[] locs = GetNamedParameterLocs(name);
 					span += typedval.Type.GetColumnSpan(session.Factory) * locs.Length;
 
 					for (int i = 0; i < locs.Length; i++)
 					{
 						ArrayHelper.SafeSetValue(paramTypeList, locs[i] + offset, typedval.Type);
-					}
+					}					
 				}
 			}
 			return ConvertITypesToSqlTypes(paramTypeList, span, session);
 		}
 
-		private SqlType[] ConvertITypesToSqlTypes(ArrayList nhTypes, int totalSpan, ISessionImplementor session)
+		private static SqlType[] ConvertITypesToSqlTypes(ArrayList nhTypes, int totalSpan, ISessionImplementor session)
 		{
 			SqlType[] result = new SqlType[totalSpan];
 

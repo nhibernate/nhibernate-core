@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -13,19 +12,14 @@ namespace NHibernate.Loader.Collection
 	public class SubselectOneToManyLoader : OneToManyLoader
 	{
 		private readonly object[] keys;
+		private readonly IDictionary<string, int[]> namedParameterLocMap;
+		private readonly IDictionary<string, TypedValue> namedParameters;
 		private readonly IType[] types;
 		private readonly object[] values;
-		private readonly IDictionary namedParameters;
-		private readonly IDictionary namedParameterLocMap;
 
-		public SubselectOneToManyLoader(
-			IQueryableCollection persister,
-			SqlString subquery,
-			ICollection entityKeys,
-			QueryParameters queryParameters,
-			IDictionary namedParameterLocMap,
-			ISessionFactoryImplementor factory,
-			IDictionary<string, IFilter> enabledFilters)
+		public SubselectOneToManyLoader(IQueryableCollection persister, SqlString subquery, ICollection<EntityKey> entityKeys,
+		                                QueryParameters queryParameters, IDictionary<string, int[]> namedParameterLocMap,
+		                                ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(persister, 1, subquery, factory, enabledFilters)
 		{
 			keys = new object[entityKeys.Count];
@@ -35,27 +29,20 @@ namespace NHibernate.Loader.Collection
 				keys[i++] = entityKey.Identifier;
 			}
 
-			this.namedParameters = queryParameters.NamedParameters;
-			this.types = queryParameters.FilteredPositionalParameterTypes;
-			this.values = queryParameters.FilteredPositionalParameterValues;
+			namedParameters = queryParameters.NamedParameters;
+			types = queryParameters.FilteredPositionalParameterTypes;
+			values = queryParameters.FilteredPositionalParameterValues;
 			this.namedParameterLocMap = namedParameterLocMap;
 		}
 
 		public override void Initialize(object id, ISessionImplementor session)
 		{
-			LoadCollectionSubselect(
-				session,
-				keys,
-				values,
-				types,
-				namedParameters,
-				KeyType
-				);
+			LoadCollectionSubselect(session, keys, values, types, namedParameters, KeyType);
 		}
 
 		public override int[] GetNamedParameterLocs(string name)
 		{
-			return (int[]) namedParameterLocMap[name];
+			return namedParameterLocMap[name];
 		}
 	}
 }

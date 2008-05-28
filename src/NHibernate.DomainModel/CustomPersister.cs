@@ -319,7 +319,7 @@ namespace NHibernate.DomainModel
 				clone = (Custom)obj.Clone();
 				TwoPhaseLoad.AddUninitializedEntity(new EntityKey(id, this, session.EntityMode), clone, this, LockMode.None, false,
 				                                    session);
-				TwoPhaseLoad.PostHydrate(this, id, new String[] {obj.Name}, clone, LockMode.None, false, session);
+				TwoPhaseLoad.PostHydrate(this, id, new String[] {obj.Name}, null, clone, LockMode.None, false, session);
 				TwoPhaseLoad.InitializeEntity(clone, false, session, new PreLoadEvent((IEventSource) session),
 				                              new PostLoadEvent((IEventSource) session));
 			}

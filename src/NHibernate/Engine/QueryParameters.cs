@@ -7,6 +7,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Engine
 {
@@ -20,7 +21,7 @@ namespace NHibernate.Engine
 
 		private IType[] _positionalParameterTypes;
 		private object[] _positionalParameterValues;
-		private IDictionary _namedParameters;
+		private IDictionary<string, TypedValue> _namedParameters;
 		private IDictionary _lockModes;
 		private RowSelection _rowSelection;
 		private bool _cacheable;
@@ -31,7 +32,7 @@ namespace NHibernate.Engine
 		private string _optionalEntityName;
 		private object _optionalId;
 		private string _comment;
-		private bool _isNaturalKeyLookup;
+		private bool _naturalKeyLookup;
 		private bool _readOnly;
 		private bool _callable;
 		private bool autoDiscoverTypes;
@@ -40,7 +41,7 @@ namespace NHibernate.Engine
 		private IType[] processedPositionalParameterTypes;
 		private object[] processedPositionalParameterValues;
 
-		private IResultTransformer _resultTransformer;
+		private readonly IResultTransformer _resultTransformer;
 		// not implemented: private ScrollMode _scrollMode;
 
 		public QueryParameters()
@@ -74,7 +75,7 @@ namespace NHibernate.Engine
 		}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues,
-			IDictionary namedParameters, object[] collectionKeys)
+			IDictionary<string, TypedValue> namedParameters, object[] collectionKeys)
 			: this(positionalParameterTypes, postionalParameterValues, namedParameters, null, null, false, false, null, null, collectionKeys, null)
 		{
 		}
@@ -83,11 +84,11 @@ namespace NHibernate.Engine
 			IDictionary lockModes, RowSelection rowSelection, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
 			: this(positionalParameterTypes, positionalParameterValues, null, lockModes, rowSelection, false, cacheable, cacheRegion, comment, null, transformer)
 		{
-			_isNaturalKeyLookup = isLookupByNaturalKey;
+			_naturalKeyLookup = isLookupByNaturalKey;
 		}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues,
-			IDictionary namedParameters, IDictionary lockModes, RowSelection rowSelection,
+			IDictionary<string, TypedValue> namedParameters, IDictionary lockModes, RowSelection rowSelection,
 			bool readOnly, bool cacheable, string cacheRegion, string comment,
 			object[] collectionKeys, IResultTransformer transformer)
 		{
@@ -105,7 +106,7 @@ namespace NHibernate.Engine
 		}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues,
-			IDictionary namedParameters, IDictionary lockModes, RowSelection rowSelection,
+			IDictionary<string, TypedValue> namedParameters, IDictionary lockModes, RowSelection rowSelection,
 			bool readOnly, bool cacheable, string cacheRegion, string comment, object[] collectionKeys,
 			object optionalObject, string optionalEntityName, object optionalId, IResultTransformer transformer)
 			: this(positionalParameterTypes, positionalParameterValues, namedParameters, lockModes, rowSelection, readOnly, cacheable, cacheRegion, comment, collectionKeys, transformer)
@@ -122,11 +123,9 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary>
-		/// Gets or sets an <see cref="IDictionary"/> that contains the named 
-		/// parameter as the key and the <see cref="TypedValue"/> as the value.
+		/// Named parameters.
 		/// </summary>
-		/// <value>An <see cref="IDictionary"/> of named parameters.</value>
-		public IDictionary NamedParameters
+		public IDictionary<string, TypedValue> NamedParameters
 		{
 			get { return _namedParameters; }
 			set { _namedParameters = value; }
@@ -193,8 +192,7 @@ namespace NHibernate.Engine
 
 			if (_namedParameters != null)
 			{
-				log.Debug("named parameters: "
-									+ print.ToString(_namedParameters));
+				log.Debug("named parameters: " + print.ToString(_namedParameters));
 			}
 		}
 
@@ -208,6 +206,12 @@ namespace NHibernate.Engine
 		{
 			get { return _cacheRegion; }
 			set { _cacheRegion = value; }
+		}
+
+		public string Comment
+		{
+			get { return _comment; }
+			set { _comment = value; }
 		}
 
 		/// <summary>
@@ -382,6 +386,12 @@ namespace NHibernate.Engine
 		public IType[] FilteredPositionalParameterTypes
 		{
 			get { return processedPositionalParameterTypes; }
+		}
+
+		public bool NaturalKeyLookup
+		{
+			get { return _naturalKeyLookup; }
+			set { _naturalKeyLookup = value; }
 		}
 
 		public IResultTransformer ResultTransformer

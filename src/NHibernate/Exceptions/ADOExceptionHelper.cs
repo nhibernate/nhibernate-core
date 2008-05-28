@@ -1,7 +1,8 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Text;
+using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 
@@ -44,7 +45,7 @@ namespace NHibernate.Exceptions
 		}
 
 		public static ADOException Convert(ISQLExceptionConverter converter, Exception sqle, string message, SqlString sql,
-			object[] parameterValues, IDictionary namedParameters)
+			object[] parameterValues, IDictionary<string, TypedValue> namedParameters)
 		{
 			string extendMessage = ExtendMessage(message, sql, parameterValues, namedParameters);
 			ADOExceptionReporter.LogExceptions(sqle, extendMessage);
@@ -66,7 +67,7 @@ namespace NHibernate.Exceptions
 			return result;
 		}
 
-		public static string ExtendMessage(string message, SqlString sql, object[] parameterValues, IDictionary namedParameters)
+		public static string ExtendMessage(string message, SqlString sql, object[] parameterValues, IDictionary<string, TypedValue> namedParameters)
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.Append(message).Append(Environment.NewLine).
@@ -86,13 +87,14 @@ namespace NHibernate.Exceptions
 			if (namedParameters != null && namedParameters.Count > 0)
 			{
 				sb.Append(Environment.NewLine);
-				foreach (DictionaryEntry namedParameter in namedParameters)
+				foreach (KeyValuePair<string, TypedValue> namedParameter in namedParameters)
 				{
-					object value = namedParameter.Value;
+					object value = namedParameter.Value.Value;
 					if (value == null)
 						value = "null";
 					sb.Append("  ").Append("Name:").Append(namedParameter.Key)
 						.Append(" - Value:").Append(value);
+
 				}
 			}
 			sb.Append(Environment.NewLine);

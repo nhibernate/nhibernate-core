@@ -39,34 +39,14 @@ namespace NHibernate.Loader
 			this.enabledFilters = enabledFilters;
 		}
 
-		protected override string[] Suffixes
+		protected Dialect.Dialect Dialect
 		{
-			get { return suffixes; }
-			set { suffixes = value; }
-		}
-
-		protected override string[] CollectionSuffixes
-		{
-			get { return collectionSuffixes; }
-			set { collectionSuffixes = value; }
-		}
-
-		protected internal override SqlString SqlString
-		{
-			get { return sql; }
-			set { sql = value; }
-		}
-
-		protected internal override ILoadable[] EntityPersisters
-		{
-			get { return persisters; }
-			set { persisters = value; }
+			get { return Factory.Dialect; }
 		}
 
 		protected override int[] Owners
 		{
 			get { return owners; }
-			set { owners = value; }
 		}
 
 		protected override EntityType[] OwnerAssociationTypes
@@ -74,14 +54,39 @@ namespace NHibernate.Loader
 			get { return ownerAssociationTypes; }
 		}
 
-		protected internal override LockMode[] GetLockModes(IDictionary lockModes)
-		{
-			return lockModeArray;
-		}
-
 		public IDictionary<string, IFilter> EnabledFilters
 		{
 			get { return enabledFilters; }
+		}
+
+		protected override int[] CollectionOwners
+		{
+			get { return collectionOwners; }
+		}
+
+		protected override string[] Suffixes
+		{
+			get { return suffixes; }
+		}
+
+		protected override string[] CollectionSuffixes
+		{
+			get { return collectionSuffixes; }
+		}
+
+		protected internal override SqlString SqlString
+		{
+			get { return sql; }
+		}
+
+		protected internal override ILoadable[] EntityPersisters
+		{
+			get { return persisters; }
+		}
+
+		protected internal override LockMode[] GetLockModes(IDictionary lockModes)
+		{
+			return lockModeArray;
 		}
 
 		protected override string[] Aliases
@@ -92,11 +97,6 @@ namespace NHibernate.Loader
 		protected override ICollectionPersister[] CollectionPersisters
 		{
 			get { return collectionPersisters; }
-		}
-
-		protected override int[] CollectionOwners
-		{
-			get { return collectionOwners; }
 		}
 
 		protected void InitFromWalker(JoinWalker walker)

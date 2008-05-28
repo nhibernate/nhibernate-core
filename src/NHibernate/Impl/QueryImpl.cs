@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
-using System;
 
 namespace NHibernate.Impl
 {
@@ -28,7 +27,7 @@ namespace NHibernate.Impl
 		public override IEnumerable Enumerable()
 		{
 			VerifyParameters();
-			IDictionary namedParams = NamedParams;
+			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
 			try
 			{
@@ -43,7 +42,7 @@ namespace NHibernate.Impl
 		public override IEnumerable<T> Enumerable<T>()
 		{
 			VerifyParameters();
-			IDictionary namedParams = NamedParams;
+			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
 			try
 			{
@@ -58,7 +57,7 @@ namespace NHibernate.Impl
 		public override IList List()
 		{
 			VerifyParameters();
-			IDictionary namedParams = NamedParams;
+			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
 			try
 			{
@@ -73,7 +72,7 @@ namespace NHibernate.Impl
 		public override void List(IList results)
 		{
 			VerifyParameters();
-			IDictionary namedParams = NamedParams;
+			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
 			try
 			{
@@ -88,7 +87,7 @@ namespace NHibernate.Impl
 		public override IList<T> List<T>()
 		{
 			VerifyParameters();
-			IDictionary namedParams = NamedParams;
+			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
 			try
 			{
@@ -114,7 +113,7 @@ namespace NHibernate.Impl
 		public override int ExecuteUpdate()
 		{
 			VerifyParameters();
-			IDictionary namedParams = NamedParams;
+			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
 			try
 			{

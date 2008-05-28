@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Runtime.CompilerServices;
 using Iesi.Collections;
+using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
@@ -19,7 +21,6 @@ using NHibernate.SqlTypes;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Loader
 {
@@ -39,9 +40,10 @@ namespace NHibernate.Loader
 	/// one collection role per query.
 	/// </p>
 	/// </remarks>
+	/// <seealso cref="NHibernate.Persister.Entity.ILoadable"/>
 	public abstract class Loader
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(Loader));
+		private static readonly ILog log = LogManager.GetLogger(typeof (Loader));
 
 		private readonly ISessionFactoryImplementor factory;
 		private ColumnNameCache columnNameCache;
@@ -49,6 +51,72 @@ namespace NHibernate.Loader
 		public Loader(ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
+		}
+
+		/// <summary> 
+		/// An array indicating whether the entities have eager property fetching
+		/// enabled. 
+		/// </summary>
+		/// <value> Eager property fetching indicators. </value>
+		protected virtual bool[] EntityEagerPropertyFetches
+		{
+			get { return null; }
+		}
+
+		/// <summary>
+		/// An array of indexes of the entity that owns a one-to-one association
+		/// to the entity at the given index (-1 if there is no "owner")
+		/// </summary>
+		/// <remarks>
+		/// The indexes contained here are relative to the result of <see cref="EntityPersisters"/>.
+		/// </remarks>
+		protected virtual int[] Owners
+		{
+			get { return null; }
+		}
+
+		/// <summary> 
+		/// An array of the owner types corresponding to the <see cref="Owners"/>
+		/// returns.  Indices indicating no owner would be null here. 
+		/// </summary>
+		protected virtual EntityType[] OwnerAssociationTypes
+		{
+			get { return null; }
+		}
+
+		/// <summary>
+		/// Get the index of the entity that owns the collection, or -1
+		/// if there is no owner in the query results (i.e. in the case of a 
+		/// collection initializer) or no collection.
+		/// </summary>
+		protected virtual int[] CollectionOwners
+		{
+			get { return null; }
+		}
+
+		/// <summary>
+		/// Return false is this loader is a batch entity loader
+		/// </summary>
+		protected virtual bool IsSingleRowLoader
+		{
+			get { return false; }
+		}
+
+		protected internal virtual bool IsSubselectLoadingEnabled
+		{
+			get { return false; }
+		}
+
+		/// <summary>
+		/// Get the result set descriptor
+		/// </summary>
+		protected abstract IEntityAliases[] EntityAliases { get; }
+
+		protected abstract ICollectionAliases[] CollectionAliases { get; }
+
+		public ISessionFactoryImplementor Factory
+		{
+			get { return factory; }
 		}
 
 		/// <summary>
@@ -65,7 +133,7 @@ namespace NHibernate.Loader
 		/// it is parsing a subquery.
 		/// </para>
 		/// </remarks>
-		protected internal abstract SqlString SqlString { get; set; }
+		protected internal abstract SqlString SqlString { get; }
 
 		/// <summary>
 		/// An array of persisters of entity classes contained in each row of results;
@@ -75,37 +143,13 @@ namespace NHibernate.Loader
 		/// The <c>setter</c> was added so that classes inheriting from Loader could write a 
 		/// value using the Property instead of directly to the field.
 		/// </remarks>
-		protected internal abstract ILoadable[] EntityPersisters { get; set; }
-
-		// TODO H3: EntityEagerPropertyFetches
-
-		/// <summary>
-		/// An array of indexes of the entity that owns a one-to-one association
-		/// to the entity at the given index (-1 if there is no "owner")
-		/// </summary>
-		protected virtual int[] Owners
-		{
-			get { return null; }
-			set { throw new NotSupportedException("Loader.set_Owners"); }
-		}
-
-		protected virtual EntityType[] OwnerAssociationTypes
-		{
-			get { return null; }
-		}
+		protected internal abstract ILoadable[] EntityPersisters { get; }
 
 		/// <summary>
 		/// An (optional) persister for a collection to be initialized; only collection loaders
 		/// return a non-null value
 		/// </summary>
-		protected abstract ICollectionPersister[] CollectionPersisters { get; }
-
-		/// <summary>
-		/// Get the index of the entity that owns the collection, or -1
-		/// if there is no owner in the query results (i.e. in the case of a 
-		/// collection initializer) or no collection.
-		/// </summary>
-		protected virtual int[] CollectionOwners
+		protected virtual ICollectionPersister[] CollectionPersisters
 		{
 			get { return null; }
 		}
@@ -116,7 +160,6 @@ namespace NHibernate.Loader
 		/// <param name="lockModes">A Collection of lock modes specified dynamically via the Query Interface</param>
 		/// <returns></returns>
 		protected internal abstract LockMode[] GetLockModes(IDictionary lockModes);
-
 
 		/// <summary>
 		/// Append <c>FOR UPDATE OF</c> clause, if necessary. This
@@ -139,14 +182,6 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Return false is this loader is a batch entity loader
-		/// </summary>
-		protected virtual bool IsSingleRowLoader
-		{
-			get { return false; }
-		}
-
-		/// <summary>
 		/// Get the SQL table aliases of entities whose
 		/// associations are subselect-loadable, returning
 		/// null if this loader does not support subselect
@@ -164,8 +199,20 @@ namespace NHibernate.Loader
 		{
 			sql = ApplyLocks(sql, parameters.LockModes, dialect);
 
-			// TODO H3: SQL comments
-			return sql;
+			return Factory.Settings.IsCommentsEnabled ? PrependComment(sql, parameters) : sql;
+		}
+
+		private static SqlString PrependComment(SqlString sql, QueryParameters parameters)
+		{
+			string comment = parameters.Comment;
+			if (string.IsNullOrEmpty(comment))
+			{
+				return sql;
+			}
+			else
+			{
+				return sql.Insert(0, "/* " + comment + " */");
+			}
 		}
 
 		/// <summary>
@@ -173,10 +220,8 @@ namespace NHibernate.Loader
 		/// persister from each row of the <c>DataReader</c>. If an object is supplied, will attempt to
 		/// initialize that object. If a collection is supplied, attempt to initialize that collection.
 		/// </summary>
-		private IList DoQueryAndInitializeNonLazyCollections(
-			ISessionImplementor session,
-			QueryParameters queryParameters,
-			bool returnProxies)
+		private IList DoQueryAndInitializeNonLazyCollections(ISessionImplementor session, QueryParameters queryParameters,
+		                                                     bool returnProxies)
 		{
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 
@@ -205,28 +250,18 @@ namespace NHibernate.Loader
 		/// <param name="returnProxies">Should proxies be generated</param>
 		/// <returns>The loaded "row".</returns>
 		/// <exception cref="HibernateException" />
-		protected object LoadSingleRow(
-			IDataReader resultSet,
-			ISessionImplementor session,
-			QueryParameters queryParameters,
-			bool returnProxies)
+		protected object LoadSingleRow(IDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters,
+		                               bool returnProxies)
 		{
 			int entitySpan = EntityPersisters.Length;
-			IList hydratedObjects = entitySpan == 0 ?
-			                        null : new ArrayList(entitySpan);
+			IList hydratedObjects = entitySpan == 0 ? null : new ArrayList(entitySpan);
 
 			object result;
 			try
 			{
-				result = GetRowFromResultSet(
-					resultSet,
-					session,
-					queryParameters,
-					GetLockModes(queryParameters.LockModes),
-					null,
-					hydratedObjects,
-					new EntityKey[entitySpan],
-					returnProxies);
+				result =
+					GetRowFromResultSet(resultSet, session, queryParameters, GetLockModes(queryParameters.LockModes), null,
+					                    hydratedObjects, new EntityKey[entitySpan], returnProxies);
 			}
 			catch (HibernateException)
 			{
@@ -234,8 +269,9 @@ namespace NHibernate.Loader
 			}
 			catch (Exception sqle)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not read next row of results", SqlString,
-				                                 queryParameters.PositionalParameterValues, queryParameters.NamedParameters);
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not read next row of results",
+				                                 SqlString, queryParameters.PositionalParameterValues,
+				                                 queryParameters.NamedParameters);
 			}
 
 			InitializeEntitiesAndCollections(hydratedObjects, resultSet, session, queryParameters.ReadOnly);
@@ -261,67 +297,27 @@ namespace NHibernate.Loader
 			}
 		}
 
-		public virtual SqlCommandInfo GetQueryStringAndTypes(
-			ISessionImplementor session,
-			QueryParameters parameters
-			)
-		{
-			SqlString sqlString = ProcessFilters(parameters, session);
-			Dialect.Dialect dialect = session.Factory.Dialect;
-
-			RowSelection selection = parameters.RowSelection;
-			bool useLimit = UseLimit(selection, dialect);
-			bool hasFirstRow = GetFirstRow(selection) > 0;
-			bool useOffset = hasFirstRow && useLimit && dialect.SupportsLimitOffset;
-
-			if (useLimit)
-			{
-				sqlString = dialect.GetLimitString(sqlString.Trim(),
-				                                   useOffset ? GetFirstRow(selection) : 0,
-				                                   GetMaxOrLimit(dialect, selection));
-			}
-
-			sqlString = PreprocessSQL(sqlString, parameters, dialect);
-			return new SqlCommandInfo(sqlString, GetParameterTypes(parameters, useLimit, useOffset));
-		}
-
-		internal object GetRowFromResultSet(
-			IDataReader resultSet,
-			ISessionImplementor session,
-			QueryParameters queryParameters,
-			LockMode[] lockModeArray,
-			EntityKey optionalObjectKey,
-			IList hydratedObjects,
-			EntityKey[] keys,
-			bool returnProxies)
+		internal object GetRowFromResultSet(IDataReader resultSet, ISessionImplementor session,
+		                                    QueryParameters queryParameters, LockMode[] lockModeArray,
+		                                    EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys,
+		                                    bool returnProxies)
 		{
 			ILoadable[] persisters = EntityPersisters;
 			int entitySpan = persisters.Length;
 
 			for (int i = 0; i < entitySpan; i++)
 			{
-				keys[i] = GetKeyFromResultSet(
-					i,
-					persisters[i],
-					i == entitySpan - 1 ?
-					queryParameters.OptionalId : null,
-					resultSet,
-					session);
+				keys[i] =
+					GetKeyFromResultSet(i, persisters[i], i == entitySpan - 1 ? queryParameters.OptionalId : null, resultSet, session);
 				//TODO: the i==entitySpan-1 bit depends upon subclass implementation (very bad)
 			}
 
 			RegisterNonExists(keys, session);
 
 			// this call is side-effecty
-			object[] row = GetRow(
-				resultSet,
-				persisters,
-				keys,
-				queryParameters.OptionalObject,
-				optionalObjectKey,
-				lockModeArray,
-				hydratedObjects,
-				session);
+			object[] row =
+				GetRow(resultSet, persisters, keys, queryParameters.OptionalObject, optionalObjectKey, lockModeArray,
+				       hydratedObjects, session);
 
 			ReadCollectionElements(row, resultSet, session);
 
@@ -361,13 +357,12 @@ namespace NHibernate.Loader
 
 				for (int i = 0; i < collectionPersisters.Length; i++)
 				{
-					bool hasCollectionOwners = collectionOwners != null
-					                           && collectionOwners[i] > -1;
+					bool hasCollectionOwners = collectionOwners != null && collectionOwners[i] > -1;
 					//true if this is a query and we are loading multiple instances of the same collection role
 					//otherwise this is a CollectionInitializer and we are loading up a single collection or batch
 
-					object owner = hasCollectionOwners ? row[collectionOwners[i]] :
-					               null; //if null, owner will be retrieved from session
+					object owner = hasCollectionOwners ? row[collectionOwners[i]] : null;
+						//if null, owner will be retrieved from session
 
 					ICollectionPersister collectionPersister = collectionPersisters[i];
 					object key;
@@ -383,21 +378,12 @@ namespace NHibernate.Loader
 						//keys[collectionOwner].getIdentifier()
 					}
 
-					ReadCollectionElement(
-						owner,
-						key,
-						collectionPersister,
-						descriptors[i],
-						resultSet,
-						session);
+					ReadCollectionElement(owner, key, collectionPersister, descriptors[i], resultSet, session);
 				}
 			}
 		}
 
-		private IList DoQuery(
-			ISessionImplementor session,
-			QueryParameters queryParameters,
-			bool returnProxies)
+		private IList DoQuery(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies)
 		{
 			RowSelection selection = queryParameters.RowSelection;
 			int maxRows = HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
@@ -420,7 +406,7 @@ namespace NHibernate.Loader
 			EntityKey optionalObjectKey = GetOptionalObjectKey(queryParameters, session);
 
 			bool createSubselects = IsSubselectLoadingEnabled;
-			IList subselectResultKeys = createSubselects ? new ArrayList() : null;
+			List<EntityKey[]> subselectResultKeys = createSubselects ? new List<EntityKey[]>() : null;
 			IList results = new ArrayList();
 
 			try
@@ -473,11 +459,6 @@ namespace NHibernate.Loader
 			return results;
 		}
 
-		protected internal virtual bool IsSubselectLoadingEnabled
-		{
-			get { return false; }
-		}
-
 		protected bool HasSubselectLoadableCollections()
 		{
 			foreach (ILoadable loadable in EntityPersisters)
@@ -491,15 +472,15 @@ namespace NHibernate.Loader
 			return false;
 		}
 
-		private static ISet[] Transpose(IList keys)
+		private static ISet<EntityKey>[] Transpose(IList<EntityKey[]> keys)
 		{
-			ISet[] result = new ISet[((EntityKey[]) keys[0]).Length];
+			ISet<EntityKey>[] result = new ISet<EntityKey>[keys[0].Length];
 			for (int j = 0; j < result.Length; j++)
 			{
-				result[j] = new HashedSet();
+				result[j] = new HashedSet<EntityKey>();
 				for (int i = 0; i < keys.Count; i++)
 				{
-					object key = ((EntityKey[]) keys[i])[j];
+					EntityKey key = keys[i][j];
 					if (key != null)
 					{
 						result[j].Add(key);
@@ -509,56 +490,40 @@ namespace NHibernate.Loader
 			return result;
 		}
 
-		internal void CreateSubselects(IList keys, QueryParameters queryParameters, ISessionImplementor session)
+		internal void CreateSubselects(IList<EntityKey[]> keys, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			if (keys.Count > 1)
 			{
 				//if we only returned one entity, query by key is more efficient
 
-				ISet[] keySets = Transpose(keys);
+				ISet<EntityKey>[] keySets = Transpose(keys);
 
-				IDictionary namedParameterLocMap = BuildNamedParameterLocMap(queryParameters);
+				IDictionary<string, int[]> namedParameterLocMap = BuildNamedParameterLocMap(queryParameters);
 
 				ILoadable[] loadables = EntityPersisters;
 				string[] aliases = Aliases;
-
-				int rowKeysLength = ((EntityKey[]) keys[0]).Length;
-
-				SubselectFetch[] subselectFetches = new SubselectFetch[rowKeysLength];
-				for (int i = 0; i < rowKeysLength; i++)
-				{
-					if (loadables[i].HasSubselectLoadableCollections)
-					{
-						subselectFetches[i] = new SubselectFetch(
-							//getSQLString(), 
-							aliases[i],
-							factory.Dialect,
-							loadables[i],
-							queryParameters,
-							keySets[i],
-							namedParameterLocMap
-							);
-					}
-				}
 
 				foreach (EntityKey[] rowKeys in keys)
 				{
 					for (int i = 0; i < rowKeys.Length; i++)
 					{
-						if (rowKeys[i] != null && subselectFetches[i] != null)
+						if (rowKeys[i] != null && loadables[i].HasSubselectLoadableCollections)
 						{
-							session.PersistenceContext.BatchFetchQueue.AddSubselect(rowKeys[i], subselectFetches[i]);
+							SubselectFetch subselectFetch =
+								new SubselectFetch(aliases[i], factory.Dialect, loadables[i], queryParameters, keySets[i], namedParameterLocMap);
+
+							session.PersistenceContext.BatchFetchQueue.AddSubselect(rowKeys[i], subselectFetch);
 						}
 					}
 				}
 			}
 		}
 
-		private IDictionary BuildNamedParameterLocMap(QueryParameters queryParameters)
+		private IDictionary<string, int[]> BuildNamedParameterLocMap(QueryParameters queryParameters)
 		{
 			if (queryParameters.NamedParameters != null)
 			{
-				IDictionary namedParameterLocMap = new Hashtable();
+				IDictionary<string, int[]> namedParameterLocMap = new Dictionary<string, int[]>();
 				foreach (string name in queryParameters.NamedParameters.Keys)
 				{
 					namedParameterLocMap[name] = GetNamedParameterLocs(name);
@@ -571,7 +536,8 @@ namespace NHibernate.Loader
 			}
 		}
 
-		internal void InitializeEntitiesAndCollections(IList hydratedObjects, object resultSetId, ISessionImplementor session, bool readOnly)
+		internal void InitializeEntitiesAndCollections(IList hydratedObjects, object resultSetId, ISessionImplementor session,
+		                                               bool readOnly)
 		{
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
 			if (collectionPersisters != null)
@@ -634,11 +600,12 @@ namespace NHibernate.Loader
 			}
 		}
 
-		private void EndCollectionLoad(object resultSetId, ISessionImplementor session, ICollectionPersister collectionPersister)
+		private static void EndCollectionLoad(object resultSetId, ISessionImplementor session,
+		                                      ICollectionPersister collectionPersister)
 		{
 			//this is a query and we are loading multiple instances of the same collection role
-			session.PersistenceContext.LoadContexts.GetCollectionLoadContext((IDataReader) resultSetId)
-				.EndLoadingCollections(collectionPersister);
+			session.PersistenceContext.LoadContexts.GetCollectionLoadContext((IDataReader) resultSetId).EndLoadingCollections(
+				collectionPersister);
 		}
 
 		protected virtual IList GetResultList(IList results, IResultTransformer resultTransformer)
@@ -664,7 +631,7 @@ namespace NHibernate.Loader
 		/// result set, register the fact that the the object is missing with the
 		/// session.
 		/// </summary>
-		private void RegisterNonExists(EntityKey[] keys,ISessionImplementor session)
+		private void RegisterNonExists(EntityKey[] keys, ISessionImplementor session)
 		{
 			int[] owners = Owners;
 			if (owners != null)
@@ -693,21 +660,12 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Read one collection element from the current row of the ADO.NET result set
 		/// </summary>
-		private void ReadCollectionElement(
-			object optionalOwner,
-			object optionalKey,
-			ICollectionPersister persister,
-			ICollectionAliases descriptor,
-			IDataReader rs,
-			ISessionImplementor session
-			)
+		private static void ReadCollectionElement(object optionalOwner, object optionalKey, ICollectionPersister persister,
+		                                          ICollectionAliases descriptor, IDataReader rs, ISessionImplementor session)
 		{
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 
-			object collectionRowKey = persister.ReadKey(
-				rs,
-				descriptor.SuffixedKeyAliases,
-				session);
+			object collectionRowKey = persister.ReadKey(rs, descriptor.SuffixedKeyAliases, session);
 
 			if (collectionRowKey != null)
 			{
@@ -715,9 +673,7 @@ namespace NHibernate.Loader
 
 				if (log.IsDebugEnabled)
 				{
-					log.Debug(
-						"found row of collection: " +
-						MessageHelper.InfoString(persister, collectionRowKey));
+					log.Debug("found row of collection: " + MessageHelper.InfoString(persister, collectionRowKey));
 				}
 
 				object owner = optionalOwner;
@@ -733,7 +689,8 @@ namespace NHibernate.Loader
 						//throw new AssertionFailure("bug loading unowned collection");
 					}
 				}
-				IPersistentCollection rowCollection = persistenceContext.LoadContexts.GetCollectionLoadContext(rs).GetLoadingCollection(persister, collectionRowKey);
+				IPersistentCollection rowCollection =
+					persistenceContext.LoadContexts.GetCollectionLoadContext(rs).GetLoadingCollection(persister, collectionRowKey);
 
 				if (rowCollection != null)
 				{
@@ -748,11 +705,10 @@ namespace NHibernate.Loader
 
 				if (log.IsDebugEnabled)
 				{
-					log.Debug(
-						"result set contains (possibly empty) collection: " +
-						MessageHelper.InfoString(persister, optionalKey));
+					log.Debug("result set contains (possibly empty) collection: " + MessageHelper.InfoString(persister, optionalKey));
 				}
-				persistenceContext.LoadContexts.GetCollectionLoadContext(rs).GetLoadingCollection(persister, optionalKey); // handle empty collection
+				persistenceContext.LoadContexts.GetCollectionLoadContext(rs).GetLoadingCollection(persister, optionalKey);
+				// handle empty collection
 			}
 
 			// else no collection element, but also no owner
@@ -763,11 +719,7 @@ namespace NHibernate.Loader
 		/// is being initilized, to account for the possibility of the collection having
 		/// no elements (hence no rows in the result set).
 		/// </summary>
-		internal void HandleEmptyCollections(
-			object[] keys,
-			object resultSetId,
-			ISessionImplementor session
-			)
+		internal void HandleEmptyCollections(object[] keys, object resultSetId, ISessionImplementor session)
 		{
 			if (keys != null)
 			{
@@ -783,13 +735,16 @@ namespace NHibernate.Loader
 						// handle empty collections
 						if (log.IsDebugEnabled)
 						{
-							log.Debug("result set contains (possibly empty) collection: " +
-							          MessageHelper.InfoString(collectionPersisters[j], keys[i]));
+							log.Debug("result set contains (possibly empty) collection: "
+							          + MessageHelper.InfoString(collectionPersisters[j], keys[i]));
 						}
-						session.PersistenceContext.LoadContexts.GetCollectionLoadContext((IDataReader)resultSetId).GetLoadingCollection(collectionPersisters[j], keys[i]);
+						session.PersistenceContext.LoadContexts.GetCollectionLoadContext((IDataReader) resultSetId).GetLoadingCollection(
+							collectionPersisters[j], keys[i]);
 					}
 				}
 			}
+			// else this is not a collection initializer (and empty collections will
+			// be detected by looking for the owner's identifier in the result set)
 		}
 
 		/// <summary>
@@ -799,13 +754,7 @@ namespace NHibernate.Loader
 		/// Warning: this method is side-effecty. If an <c>id</c> is given, don't bother going
 		/// to the <c>IDataReader</c>
 		/// </remarks>
-		/// <param name="persister"></param>
-		/// <param name="id"></param>
-		/// <param name="rs"></param>
-		/// <param name="session"></param>
-		/// <param name="i"></param>
-		/// <returns></returns>
-		private EntityKey GetKeyFromResultSet(int i, ILoadable persister, object id, IDataReader rs,
+		private EntityKey GetKeyFromResultSet(int i, IEntityPersister persister, object id, IDataReader rs,
 		                                      ISessionImplementor session)
 		{
 			object resultId;
@@ -820,13 +769,14 @@ namespace NHibernate.Loader
 			}
 			else
 			{
-				// problematic for <key-many-to-one>!
-				resultId = persister.IdentifierType.NullSafeGet(rs, EntityAliases[i].SuffixedKeyAliases, session, null);
+				IType idType = persister.IdentifierType;
+				resultId = idType.NullSafeGet(rs, EntityAliases[i].SuffixedKeyAliases, session, null);
 
-				if (id != null && resultId != null && id.Equals(resultId))
+				bool idIsResultId = id != null && resultId != null && idType.IsEqual(id, resultId, session.EntityMode, factory);
+
+				if (idIsResultId)
 				{
-					// use the id passed in
-					resultId = id;
+					resultId = id; //use the id passed in
 				}
 			}
 
@@ -838,28 +788,18 @@ namespace NHibernate.Loader
 		/// the object version in the session cache, throwing an exception
 		/// if the vesrion numbers are different.
 		/// </summary>
-		/// <param name="i"></param>
-		/// <param name="persister"></param>
-		/// <param name="id"></param>
-		/// <param name="version"></param>
-		/// <param name="rs"></param>
-		/// <param name="session"></param>
 		/// <exception cref="StaleObjectStateException"></exception>
-		private void CheckVersion(
-			int i,
-			ILoadable persister,
-			object id,
-			object version,
-			IDataReader rs,
-			ISessionImplementor session)
+		private void CheckVersion(int i, IEntityPersister persister, object id, object entity, IDataReader rs,
+		                          ISessionImplementor session)
 		{
-			// null version means the object is in the process of being loaded somewhere
-			// else in the ResultSet
+			object version = session.PersistenceContext.GetEntry(entity).Version;
+
+			// null version means the object is in the process of being loaded somewhere else in the ResultSet
 			if (version != null)
 			{
-				IType versionType = persister.VersionType;
+				IVersionType versionType = persister.VersionType;
 				object currentVersion = versionType.NullSafeGet(rs, EntityAliases[i].SuffixedVersionAliases, session, null);
-				if (!versionType.IsEqual(version, currentVersion, EntityMode.Poco))
+				if (!versionType.IsEqual(version, currentVersion))
 				{
 					if (session.Factory.Statistics.IsStatisticsEnabled)
 					{
@@ -877,17 +817,12 @@ namespace NHibernate.Loader
 		/// array of objects (a row of results) and an array of booleans (by side-effect) that determine
 		/// wheter the corresponding object should be initialized
 		/// </summary>
-		private object[] GetRow(
-			IDataReader rs,
-			ILoadable[] persisters,
-			EntityKey[] keys,
-			object optionalObject,
-			EntityKey optionalObjectKey,
-			LockMode[] lockModes,
-			IList hydratedObjects,
-			ISessionImplementor session)
+		private object[] GetRow(IDataReader rs, ILoadable[] persisters, EntityKey[] keys, object optionalObject,
+		                        EntityKey optionalObjectKey, LockMode[] lockModes, IList hydratedObjects,
+		                        ISessionImplementor session)
 		{
 			int cols = persisters.Length;
+			IEntityAliases[] descriptors = EntityAliases;
 
 			if (log.IsDebugEnabled)
 			{
@@ -912,7 +847,7 @@ namespace NHibernate.Loader
 				else
 				{
 					//If the object is already loaded, return the loaded one
-					obj = session.PersistenceContext.GetEntity(key);
+					obj = session.GetEntityUsingInterceptor(key);
 					if (obj != null)
 					{
 						//its already loaded so dont need to hydrate it
@@ -921,8 +856,8 @@ namespace NHibernate.Loader
 					else
 					{
 						obj =
-							InstanceNotYetLoaded(rs, i, persisters[i], key, lockModes[i], optionalObjectKey, optionalObject, hydratedObjects,
-							                     session);
+							InstanceNotYetLoaded(rs, i, persisters[i], key, lockModes[i], descriptors[i].RowIdAlias, optionalObjectKey,
+							                     optionalObject, hydratedObjects, session);
 					}
 				}
 
@@ -934,14 +869,8 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// The entity instance is already in the session cache
 		/// </summary>
-		private void InstanceAlreadyLoaded(
-			IDataReader rs,
-			int i,
-			ILoadable persister,
-			EntityKey key,
-			object obj,
-			LockMode lockMode,
-			ISessionImplementor session)
+		private void InstanceAlreadyLoaded(IDataReader rs, int i, IEntityPersister persister, EntityKey key, object obj,
+		                                   LockMode lockMode, ISessionImplementor session)
 		{
 			if (!persister.IsInstance(obj, session.EntityMode))
 			{
@@ -951,16 +880,18 @@ namespace NHibernate.Loader
 
 			if (LockMode.None != lockMode && UpgradeLocks())
 			{
+				EntityEntry entry = session.PersistenceContext.GetEntry(obj);
+				bool isVersionCheckNeeded = persister.IsVersioned && entry.LockMode.LessThan(lockMode);
+
 				// we don't need to worry about existing version being uninitialized
 				// because this block isn't called by a re-entrant load (re-entrant
 				// load _always_ have lock mode NONE
-				// TODO : Optimize using session.PersistenceContext.GetEntry only one time
-				if (persister.IsVersioned && session.PersistenceContext.GetEntry(obj).LockMode.LessThan(lockMode))
+				if (isVersionCheckNeeded)
 				{
 					// we only check the version when _upgrading_ lock modes
-					CheckVersion(i, persister, key.Identifier, session.PersistenceContext.GetEntry(obj).Version, rs, session);
+					CheckVersion(i, persister, key.Identifier, obj, rs, session);
 					// we need to upgrade the lock mode to the mode requested
-					session.PersistenceContext.GetEntry(obj).LockMode= lockMode;
+					entry.LockMode = lockMode;
 				}
 			}
 		}
@@ -969,8 +900,8 @@ namespace NHibernate.Loader
 		/// The entity instance is not in the session cache
 		/// </summary>
 		private object InstanceNotYetLoaded(IDataReader dr, int i, ILoadable persister, EntityKey key, LockMode lockMode,
-		                                    EntityKey optionalObjectKey, object optionalObject, IList hydratedObjects,
-		                                    ISessionImplementor session)
+		                                    string rowIdAlias, EntityKey optionalObjectKey, object optionalObject,
+		                                    IList hydratedObjects, ISessionImplementor session)
 		{
 			object obj;
 
@@ -992,7 +923,7 @@ namespace NHibernate.Loader
 			// (but don't yet initialize the object itself)
 			// note that we acquired LockMode.READ even if it was not requested
 			LockMode acquiredLockMode = lockMode == LockMode.None ? LockMode.Read : lockMode;
-			LoadFromResultSet(dr, i, obj, instanceClass, key, acquiredLockMode, persister, session);
+			LoadFromResultSet(dr, i, obj, instanceClass, key, rowIdAlias, acquiredLockMode, persister, session);
 
 			// materialize associations (and initialize the object) later
 			hydratedObjects.Add(obj);
@@ -1000,13 +931,20 @@ namespace NHibernate.Loader
 			return obj;
 		}
 
+		private bool IsEagerPropertyFetchEnabled(int i)
+		{
+			bool[] array = EntityEagerPropertyFetches;
+			return array != null && array[i];
+		}
+
 		/// <summary>
 		/// Hydrate the state of an object from the SQL <c>IDataReader</c>, into
 		/// an array of "hydrated" values (do not resolve associations yet),
 		/// and pass the hydrated state to the session.
 		/// </summary>
-		private void LoadFromResultSet(IDataReader rs, int i, object obj, string instanceClass,
-			EntityKey key, LockMode lockMode, ILoadable rootPersister, ISessionImplementor session)
+		private void LoadFromResultSet(IDataReader rs, int i, object obj, string instanceClass, EntityKey key,
+		                               string rowIdAlias, LockMode lockMode, ILoadable rootPersister,
+		                               ISessionImplementor session)
 		{
 			object id = key.Identifier;
 
@@ -1018,46 +956,44 @@ namespace NHibernate.Loader
 				log.Debug("Initializing object from DataReader: " + MessageHelper.InfoString(persister, id));
 			}
 
+			bool eagerPropertyFetch = IsEagerPropertyFetchEnabled(i);
+
 			// add temp entry so that the next step is circular-reference
 			// safe - only needed because some types don't take proper
 			// advantage of two-phase-load (esp. components)
-			TwoPhaseLoad.AddUninitializedEntity(key, obj, persister, lockMode, false, session);
+			TwoPhaseLoad.AddUninitializedEntity(key, obj, persister, lockMode, !eagerPropertyFetch, session);
 
 			// This is not very nice (and quite slow):
 			string[][] cols = persister == rootPersister
 			                  	? EntityAliases[i].SuffixedPropertyAliases
 			                  	: EntityAliases[i].GetSuffixedPropertyAliases(persister);
 
-			object[] values = persister.Hydrate(rs, id, obj, rootPersister, cols, true, session);
+			object[] values = persister.Hydrate(rs, id, obj, rootPersister, cols, eagerPropertyFetch, session);
 
-			// TODO H3:
-			//			IAssociationType[] ownerAssociationTypes = OwnerAssociationTypes;
-			//
-			//			if ( ownerAssociationTypes != null && ownerAssociationTypes[i] != null ) 
-			//			{
-			//				string ukName = ownerAssociationTypes[i].RHSUniqueKeyPropertyName;
-			//				if (ukName!=null) 
-			//				{
-			//					int index = ( (IUniqueKeyLoadable) persister ).GetPropertyIndex(ukName);
-			//					IType type = persister.PropertyTypes[index];
-			//	
-			//					// polymorphism not really handled completely correctly,
-			//					// perhaps...well, actually its ok, assuming that the
-			//					// entity name used in the lookup is the same as the
-			//					// the one used here, which it will be
-			//	
-			//					EntityUniqueKey euk = new EntityUniqueKey( 
-			//						rootPersister.MappedClass, //polymorphism comment above
-			//						ukName,
-			//						type.SemiResolve( values[ index ], session, obj ),
-			//						type,
-			//						session.EntityMode, session.Factory
-			//						);
-			//					session.AddEntity( euk, obj );
-			//				}
-			//			}
+			object rowId = persister.HasRowId ? rs[rowIdAlias] : null;
 
-			TwoPhaseLoad.PostHydrate(persister, id, values, obj, lockMode, false, session);
+			IAssociationType[] ownerAssociationTypes = OwnerAssociationTypes;
+			if (ownerAssociationTypes != null && ownerAssociationTypes[i] != null)
+			{
+				string ukName = ownerAssociationTypes[i].RHSUniqueKeyPropertyName;
+				if (ukName != null)
+				{
+					int index = ((IUniqueKeyLoadable) persister).GetPropertyIndex(ukName);
+					IType type = persister.PropertyTypes[index];
+
+					// polymorphism not really handled completely correctly,
+					// perhaps...well, actually its ok, assuming that the
+					// entity name used in the lookup is the same as the
+					// the one used here, which it will be
+
+					EntityUniqueKey euk =
+						new EntityUniqueKey(rootPersister.EntityName, ukName, type.SemiResolve(values[index], session, obj), type,
+						                    session.EntityMode, session.Factory);
+					session.PersistenceContext.AddEntity(euk, obj);
+				}
+			}
+
+			TwoPhaseLoad.PostHydrate(persister, id, values, rowId, obj, lockMode, !eagerPropertyFetch, session);
 		}
 
 		/// <summary>
@@ -1091,9 +1027,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Advance the cursor to the first required row of the <c>IDataReader</c>
 		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="selection"></param>
-		internal void Advance(IDataReader rs, RowSelection selection)
+		internal static void Advance(IDataReader rs, RowSelection selection)
 		{
 			int firstRow = GetFirstRow(selection);
 
@@ -1118,11 +1052,13 @@ namespace NHibernate.Loader
 		internal static int GetFirstRow(RowSelection selection)
 		{
 			if (selection == null || !selection.DefinesLimits)
+			{
 				return 0;
+			}
 			else
-				return selection.FirstRow > 0
-						? selection.FirstRow
-						: 0;
+			{
+				return selection.FirstRow > 0 ? selection.FirstRow : 0;
+			}
 		}
 
 		/// <summary>
@@ -1138,40 +1074,6 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Bind positional parameter values to the <c>IDbCommand</c>
-		/// (these are parameters specified by ?).
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="queryParameters"></param>
-		/// <param name="start"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
-		protected internal int BindPositionalParameters(
-			IDbCommand st,
-			QueryParameters queryParameters,
-			int start,
-			ISessionImplementor session)
-		{
-			object[] values = queryParameters.FilteredPositionalParameterValues;
-			IType[] types = queryParameters.FilteredPositionalParameterTypes;
-
-			int span = 0;
-			for (int i = 0; i < values.Length; i++)
-			{
-				types[i].NullSafeSet(st, values[i], start + span, session);
-				span += types[i].GetColumnSpan(session.Factory);
-			}
-
-			return span;
-		}
-
-		protected virtual SqlString ProcessFilters(QueryParameters parameters, ISessionImplementor session)
-		{
-			parameters.ProcessFilters(SqlString, session);
-			return parameters.FilteredSQL;
-		}
-
-		/// <summary>
 		/// Obtain an <c>IDbCommand</c> with all parameters pre-bound. Bind positional parameters,
 		/// named parameters, and limit parameters.
 		/// </summary>
@@ -1179,34 +1081,34 @@ namespace NHibernate.Loader
 		/// Creates an IDbCommand object and populates it with the values necessary to execute it against the 
 		/// database to Load an Entity.
 		/// </remarks>
-		/// <param name="parameters">The <see cref="QueryParameters"/> to use for the IDbCommand.</param>
+		/// <param name="queryParameters">The <see cref="QueryParameters"/> to use for the IDbCommand.</param>
 		/// <param name="scroll">TODO: find out where this is used...</param>
 		/// <param name="session">The SessionImpl this Command is being prepared in.</param>
 		/// <returns>A CommandWrapper wrapping an IDbCommand that is ready to be executed.</returns>
-		protected internal virtual IDbCommand PrepareQueryCommand(
-			QueryParameters parameters,
-			bool scroll,
-			ISessionImplementor session)
+		protected internal virtual IDbCommand PrepareQueryCommand(QueryParameters queryParameters, bool scroll,
+		                                                          ISessionImplementor session)
 		{
-			SqlString sqlString = ProcessFilters(parameters, session);
+			SqlString sqlString = ProcessFilters(queryParameters, session);
 			Dialect.Dialect dialect = session.Factory.Dialect;
 
-			RowSelection selection = parameters.RowSelection;
+			RowSelection selection = queryParameters.RowSelection;
 			bool useLimit = UseLimit(selection, dialect);
 			bool hasFirstRow = GetFirstRow(selection) > 0;
 			bool useOffset = hasFirstRow && useLimit && dialect.SupportsLimitOffset;
+			// TODO NH bool callable = queryParameters.Callable;
 
 			if (useLimit)
 			{
-				sqlString = dialect.GetLimitString(sqlString.Trim(),
-				                                   useOffset ? GetFirstRow(selection) : 0,
-				                                   GetMaxOrLimit(dialect, selection));
+				sqlString =
+					dialect.GetLimitString(sqlString.Trim(), useOffset ? GetFirstRow(selection) : 0, GetMaxOrLimit(dialect, selection));
 			}
 
-			sqlString = PreprocessSQL(sqlString, parameters, dialect);
+			sqlString = PreprocessSQL(sqlString, queryParameters, dialect);
 
+			// TODO NH: Collable for SP -> PrepareCallableQueryCommand
 			IDbCommand command =
-				session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString, GetParameterTypes(parameters, useLimit, useOffset));
+				session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString,
+				                                    GetParameterTypes(queryParameters, useLimit, useOffset));
 
 			try
 			{
@@ -1222,13 +1124,17 @@ namespace NHibernate.Loader
 				{
 					colIndex += BindLimitParameters(command, colIndex, selection, session);
 				}
+				// TODO NH
+				//if (callable)
+				//{
+				//  colIndex = dialect.RegisterResultSetOutParameter(command, col);
+				//}
 
-				colIndex += BindPositionalParameters(command, parameters, colIndex, session);
-				colIndex += BindNamedParameters(command, parameters.NamedParameters, colIndex, session);
+				colIndex += BindParameterValues(command, queryParameters, colIndex, session);
 
 				if (useLimit && !dialect.BindLimitParametersFirst)
 				{
-					colIndex += BindLimitParameters(command, colIndex, selection, session);
+					BindLimitParameters(command, colIndex, selection, session);
 				}
 
 				if (!useLimit)
@@ -1251,18 +1157,28 @@ namespace NHibernate.Loader
 			}
 			catch (Exception sqle)
 			{
-				ADOExceptionReporter.LogExceptions(sqle);
 				session.Batcher.CloseCommand(command, null);
+				ADOExceptionReporter.LogExceptions(sqle);
 				throw;
 			}
 
 			return command;
 		}
 
-		/// <summary>
-		/// Some dialect-specific LIMIT clauses require the maximum last row number,
-		/// others require the maximum returned row count.
+		protected virtual SqlString ProcessFilters(QueryParameters parameters, ISessionImplementor session)
+		{
+			parameters.ProcessFilters(SqlString, session);
+			return parameters.FilteredSQL;
+		}
+
+		/// <summary> 
+		/// Some dialect-specific LIMIT clauses require the maximium last row number
+		/// (aka, first_row_number + total_row_count), while others require the maximum
+		/// returned row count (the total maximum number of rows to return). 
 		/// </summary>
+		/// <param name="selection">The selection criteria </param>
+		/// <param name="dialect">The dialect </param>
+		/// <returns> The appropriate value to bind into the limit clause. </returns>
 		internal static int GetMaxOrLimit(Dialect.Dialect dialect, RowSelection selection)
 		{
 			int firstRow = GetFirstRow(selection);
@@ -1282,7 +1198,7 @@ namespace NHibernate.Loader
 		/// Bind parameters needed by the dialect-specific LIMIT clause
 		/// </summary>
 		/// <returns>The number of parameters bound</returns>
-		internal int BindLimitParameters(IDbCommand st, int index, RowSelection selection, ISessionImplementor session)
+		internal static int BindLimitParameters(IDbCommand st, int index, RowSelection selection, ISessionImplementor session)
 		{
 			Dialect.Dialect dialect = session.Factory.Dialect;
 			if (!dialect.SupportsVariableLimit)
@@ -1316,12 +1232,96 @@ namespace NHibernate.Loader
 		/// <remarks>TODO: This does not apply to ADO.NET at all</remarks>
 		protected void SetMaxRows(IDbCommand st, RowSelection selection)
 		{
-			if (HasMaxRows(selection))
+			//TODO: H2.0.3 - do we need this method??
+			//if (HasMaxRows(selection))
+			//{
+			//  // there is nothing in ADO.NET to do anything  similar
+			//  // to Java's PreparedStatement.setMaxRows(int)
+			//}
+		}
+
+		/// <summary> 
+		/// Bind all parameter values into the prepared statement in preparation for execution. 
+		/// </summary>
+		/// <param name="statement">The ADO prepared statement </param>
+		/// <param name="queryParameters">The encapsulation of the parameter values to be bound. </param>
+		/// <param name="startIndex">The position from which to start binding parameter values. </param>
+		/// <param name="session">The originating session. </param>
+		/// <returns> The number of ADO bind positions actually bound during this method execution. </returns>
+		protected internal virtual int BindParameterValues(IDbCommand statement, QueryParameters queryParameters,
+		                                                   int startIndex, ISessionImplementor session)
+		{
+			int span = 0;
+			span += BindPositionalParameters(statement, queryParameters, startIndex, session);
+			span += BindNamedParameters(statement, queryParameters.NamedParameters, startIndex + span, session);
+			return span;
+		}
+
+		/// <summary>
+		/// Bind positional parameter values to the <c>IDbCommand</c>
+		/// (these are parameters specified by ?).
+		/// </summary>
+		/// <param name="st">The ADO prepared statement </param>
+		/// <param name="queryParameters">The encapsulation of the parameter values to be bound. </param>
+		/// <param name="start">The position from which to start binding parameter values. </param>
+		/// <param name="session">The originating session. </param>
+		/// <returns> The number of ADO bind positions actually bound during this method execution. </returns>
+		protected internal virtual int BindPositionalParameters(IDbCommand st, QueryParameters queryParameters, int start,
+		                                                        ISessionImplementor session)
+		{
+			object[] values = queryParameters.FilteredPositionalParameterValues;
+			IType[] types = queryParameters.FilteredPositionalParameterTypes;
+
+			int span = 0;
+			for (int i = 0; i < values.Length; i++)
 			{
-				//TODO: H2.0.3 - do we need this method??
-				// there is nothing in ADO.NET to do anything  similar
-				// to Java's PreparedStatement.setMaxRows(int)
+				types[i].NullSafeSet(st, values[i], start + span, session);
+				span += types[i].GetColumnSpan(session.Factory);
 			}
+
+			return span;
+		}
+
+		/// <summary>
+		/// Bind named parameters to the <c>IDbCommand</c>
+		/// </summary>
+		/// <param name="st">The <see cref="IDbCommand"/> that contains the parameters.</param>
+		/// <param name="namedParams">The named parameters (key) and the values to set.</param>
+		/// <param name="session">The <see cref="ISession"/> this Loader is using.</param>
+		/// <param name="start"></param>
+		protected internal virtual int BindNamedParameters(IDbCommand st, IDictionary<string, TypedValue> namedParams,
+		                                                   int start, ISessionImplementor session)
+		{
+			if (namedParams != null)
+			{
+				// assumes that types are all of span 1
+				int result = 0;
+				foreach (KeyValuePair<string, TypedValue> namedParam in namedParams)
+				{
+					string name = namedParam.Key;
+					TypedValue typedval = namedParam.Value;
+					int[] locs = GetNamedParameterLocs(name);
+					for (int i = 0; i < locs.Length; i++)
+					{
+						if (log.IsDebugEnabled)
+						{
+							log.Debug("BindNamedParameters() " + typedval.Value + " -> " + name + " [" + (locs[i] + start) + "]");
+						}
+						typedval.Type.NullSafeSet(st, typedval.Value, locs[i] + start, session);
+					}
+					result += locs.Length;
+				}
+				return result;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+
+		public virtual int[] GetNamedParameterLocs(string name)
+		{
+			throw new AssertionFailure("no named parameters");
 		}
 
 		/// <summary>
@@ -1334,13 +1334,14 @@ namespace NHibernate.Loader
 		/// <param name="session">The <see cref="ISession" /> to load in.</param>
 		/// <param name="callable"></param>
 		/// <returns>An IDataReader advanced to the first record in RowSelection.</returns>
-		protected IDataReader GetResultSet(IDbCommand st, bool autoDiscoverTypes, bool callable, RowSelection selection, ISessionImplementor session)
+		protected IDataReader GetResultSet(IDbCommand st, bool autoDiscoverTypes, bool callable, RowSelection selection,
+		                                   ISessionImplementor session)
 		{
 			IDataReader rs = null;
 			try
 			{
 				log.Info(st.CommandText);
-
+				// TODO NH: Collable
 				rs = session.Batcher.ExecuteReader(st);
 				rs = WrapResultSetIfEnabled(rs, session);
 
@@ -1404,70 +1405,15 @@ namespace NHibernate.Loader
 			return columnNameCache;
 		}
 
-
-		/// <summary>
-		/// Bind named parameters to the <c>IDbCommand</c>
-		/// </summary>
-		/// <param name="st">The <see cref="IDbCommand"/> that contains the parameters.</param>
-		/// <param name="namedParams">The named parameters (key) and the values to set.</param>
-		/// <param name="session">The <see cref="ISession"/> this Loader is using.</param>
-		/// <param name="start"></param>
-		protected internal virtual int BindNamedParameters(IDbCommand st, IDictionary namedParams, int start,
-		                                                   ISessionImplementor session)
-		{
-			if (namedParams != null)
-			{
-				// assumes that types are all of span 1
-				int result = 0;
-				foreach (DictionaryEntry e in namedParams)
-				{
-					string name = (string) e.Key;
-					TypedValue typedval = (TypedValue) e.Value;
-					int[] locs = GetNamedParameterLocs(name);
-					for (int i = 0; i < locs.Length; i++)
-					{
-						if (log.IsDebugEnabled)
-						{
-							log.Debug(
-								"BindNamedParameters() " +
-								typedval.Value + " -> " + name +
-								" [" + (locs[i] + start) + "]");
-						}
-						typedval.Type.NullSafeSet(st, typedval.Value, locs[i] + start, session);
-					}
-					result += locs.Length;
-				}
-				return result;
-			}
-			else
-			{
-				return 0;
-			}
-		}
-
-		public virtual int[] GetNamedParameterLocs(string name)
-		{
-			throw new AssertionFailure("no named parameters");
-		}
-
 		/// <summary>
 		/// Called by subclasses that load entities
 		/// </summary>
-		protected IList LoadEntity(
-			ISessionImplementor session,
-			object id,
-			IType identifierType,
-			object optionalObject,
-			string optionalEntityName,
-			object optionalIdentifier,
-			IEntityPersister persister)
+		protected IList LoadEntity(ISessionImplementor session, object id, IType identifierType, object optionalObject,
+		                           string optionalEntityName, object optionalIdentifier, IEntityPersister persister)
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug(
-					"loading entity: " +
-					MessageHelper.InfoString(persister, id, identifierType, Factory)
-					);
+				log.Debug("loading entity: " + MessageHelper.InfoString(persister, id, identifierType, Factory));
 			}
 
 			IList result;
@@ -1475,12 +1421,9 @@ namespace NHibernate.Loader
 			try
 			{
 				QueryParameters qp =
-					new QueryParameters(new IType[] {identifierType}, new object[] {id}, optionalObject,
-					                    optionalEntityName ?? null, optionalIdentifier);
-				result = DoQueryAndInitializeNonLazyCollections(
-					session,
-					qp,
-					false);
+					new QueryParameters(new IType[] {identifierType}, new object[] {id}, optionalObject, optionalEntityName,
+					                    optionalIdentifier);
+				result = DoQueryAndInitializeNonLazyCollections(session, qp, false);
 			}
 			catch (HibernateException)
 			{
@@ -1501,18 +1444,23 @@ namespace NHibernate.Loader
 			return result;
 		}
 
-		protected IList LoadEntity(ISessionImplementor session, object key, object index, IType keyType, IType indexType, IEntityPersister persister)
+		protected IList LoadEntity(ISessionImplementor session, object key, object index, IType keyType, IType indexType,
+		                           IEntityPersister persister)
 		{
 			log.Debug("loading collection element by index");
 
 			IList result;
 			try
 			{
-				result = DoQueryAndInitializeNonLazyCollections(session, new QueryParameters(new IType[] { keyType, indexType }, new object[] { key, index }), false);
+				result =
+					DoQueryAndInitializeNonLazyCollections(session,
+					                                       new QueryParameters(new IType[] {keyType, indexType},
+					                                                           new object[] {key, index}), false);
 			}
 			catch (Exception sqle)
 			{
-				throw ADOExceptionHelper.Convert(factory.SQLExceptionConverter, sqle, "could not collection element by index", SqlString);
+				throw ADOExceptionHelper.Convert(factory.SQLExceptionConverter, sqle, "could not collection element by index",
+				                                 SqlString);
 			}
 
 			log.Debug("done entity load");
@@ -1523,38 +1471,24 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Called by subclasses that batch load entities
 		/// </summary>
-		protected internal IList LoadEntityBatch(
-			ISessionImplementor session,
-			object[] ids,
-			IType idType,
-			object optionalObject,
-			string optionalEntityName,
-			object optionalId,
-			IEntityPersister persister)
+		protected internal IList LoadEntityBatch(ISessionImplementor session, object[] ids, IType idType,
+		                                         object optionalObject, string optionalEntityName, object optionalId,
+		                                         IEntityPersister persister)
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug(
-					"batch loading entity: " +
-					MessageHelper.InfoString(persister, ids, Factory)
-					);
+				log.Debug("batch loading entity: " + MessageHelper.InfoString(persister, ids, Factory));
 			}
 
 			IType[] types = new IType[ids.Length];
-			for (int i = 0; i < types.Length; i++)
-			{
-				types[i] = idType;
-			}
-
+			ArrayHelper.Fill(types, idType);
 			IList result;
-
 			try
 			{
-				result = DoQueryAndInitializeNonLazyCollections(
-					session,
-					new QueryParameters(types, ids, optionalObject, optionalEntityName == null ? null : optionalEntityName, optionalId),
-					false
-					);
+				result =
+					DoQueryAndInitializeNonLazyCollections(session,
+					                                       new QueryParameters(types, ids, optionalObject, optionalEntityName,
+					                                                           optionalId), false);
 			}
 			catch (HibernateException)
 			{
@@ -1575,27 +1509,17 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Called by subclasses that load collections
 		/// </summary>
-		public void LoadCollection(
-			ISessionImplementor session,
-			object id,
-			IType type)
+		public void LoadCollection(ISessionImplementor session, object id, IType type)
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug(
-					"loading collection: " +
-					MessageHelper.InfoString(CollectionPersisters[0], id)
-					);
+				log.Debug("loading collection: " + MessageHelper.InfoString(CollectionPersisters[0], id));
 			}
 
 			object[] ids = new object[] {id};
 			try
 			{
-				DoQueryAndInitializeNonLazyCollections(
-					session,
-					new QueryParameters(new IType[] {type}, ids, ids),
-					true
-					);
+				DoQueryAndInitializeNonLazyCollections(session, new QueryParameters(new IType[] {type}, ids, ids), true);
 			}
 			catch (HibernateException)
 			{
@@ -1615,27 +1539,18 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Called by wrappers that batch initialize collections
 		/// </summary>
-		public void LoadCollectionBatch(
-			ISessionImplementor session,
-			object[] ids,
-			IType type)
+		public void LoadCollectionBatch(ISessionImplementor session, object[] ids, IType type)
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug(
-					"batch loading collection: " +
-					MessageHelper.InfoString(CollectionPersisters[0], ids)
-					);
+				log.Debug("batch loading collection: " + MessageHelper.InfoString(CollectionPersisters[0], ids));
 			}
 
-			IType[] idTypes = ArrayHelper.FillArray(type, ids.Length);
+			IType[] idTypes = new IType[ids.Length];
+			ArrayHelper.Fill(idTypes, type);
 			try
 			{
-				DoQueryAndInitializeNonLazyCollections(
-					session,
-					new QueryParameters(idTypes, ids, ids),
-					true
-					);
+				DoQueryAndInitializeNonLazyCollections(session, new QueryParameters(idTypes, ids, ids), true);
 			}
 			catch (HibernateException)
 			{
@@ -1655,21 +1570,15 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Called by subclasses that batch initialize collections
 		/// </summary>
-		protected void LoadCollectionSubselect(
-			ISessionImplementor session,
-			object[] ids,
-			object[] parameterValues,
-			IType[] parameterTypes,
-			IDictionary namedParameters,
-			IType type)
+		protected void LoadCollectionSubselect(ISessionImplementor session, object[] ids, object[] parameterValues,
+		                                       IType[] parameterTypes, IDictionary<string, TypedValue> namedParameters,
+		                                       IType type)
 		{
 			try
 			{
-				DoQueryAndInitializeNonLazyCollections(
-					session,
-					new QueryParameters(parameterTypes, parameterValues, namedParameters, ids),
-					true
-					);
+				DoQueryAndInitializeNonLazyCollections(session,
+				                                       new QueryParameters(parameterTypes, parameterValues, namedParameters, ids),
+				                                       true);
 			}
 			catch (HibernateException)
 			{
@@ -1694,14 +1603,10 @@ namespace NHibernate.Loader
 		/// <param name="querySpaces"></param>
 		/// <param name="resultTypes"></param>
 		/// <returns></returns>
-		protected IList List(
-			ISessionImplementor session,
-			QueryParameters queryParameters,
-			ISet<string> querySpaces,
-			IType[] resultTypes)
+		protected IList List(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces,
+		                     IType[] resultTypes)
 		{
-			bool cacheable = factory.IsQueryCacheEnabled &&
-			                 queryParameters.Cacheable;
+			bool cacheable = factory.IsQueryCacheEnabled && queryParameters.Cacheable;
 
 			if (cacheable)
 			{
@@ -1718,11 +1623,8 @@ namespace NHibernate.Loader
 			return GetResultList(DoList(session, queryParameters), queryParameters.ResultTransformer);
 		}
 
-		private IList ListUsingQueryCache(
-			ISessionImplementor session,
-			QueryParameters queryParameters,
-			ISet<string> querySpaces,
-			IType[] resultTypes)
+		private IList ListUsingQueryCache(ISessionImplementor session, QueryParameters queryParameters,
+		                                  ISet<string> querySpaces, IType[] resultTypes)
 		{
 			IQueryCache queryCache = factory.GetQueryCache(queryParameters.CacheRegion);
 
@@ -1734,32 +1636,20 @@ namespace NHibernate.Loader
 			if (result == null)
 			{
 				result = DoList(session, queryParameters);
-				PutResultInQueryCache(session, resultTypes, queryCache, key, result);
+				PutResultInQueryCache(session, queryParameters, resultTypes, queryCache, key, result);
 			}
 
 			return GetResultList(result, queryParameters.ResultTransformer);
 		}
 
-		private void PutResultInQueryCache(ISessionImplementor session, IType[] resultTypes, IQueryCache queryCache, QueryKey key, IList result)
-		{
-			if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
-			{
-				bool put = queryCache.Put(key, resultTypes, result, session);
-				if (put && factory.Statistics.IsStatisticsEnabled)
-				{
-					factory.StatisticsImplementor.QueryCachePut(QueryIdentifier, queryCache.RegionName);
-				}
-			}		
-		}
-
 		private IList GetResultFromQueryCache(ISessionImplementor session, QueryParameters queryParameters,
-																								 ISet<string> querySpaces, IType[] resultTypes, IQueryCache queryCache,
-		                                             QueryKey key)
+		                                      ISet<string> querySpaces, IType[] resultTypes, IQueryCache queryCache,
+		                                      QueryKey key)
 		{
 			IList result = null;
 			if ((!queryParameters.ForceCacheRefresh) && (session.CacheMode & CacheMode.Get) == CacheMode.Get)
 			{
-				result= queryCache.Get(key, resultTypes, querySpaces, session);
+				result = queryCache.Get(key, resultTypes, queryParameters.NaturalKeyLookup, querySpaces, session);
 				if (factory.Statistics.IsStatisticsEnabled)
 				{
 					if (result == null)
@@ -1775,13 +1665,17 @@ namespace NHibernate.Loader
 			return result;
 		}
 
-		/// <summary> 
-		/// Identifies the query for statistics reporting, if null,
-		/// no statistics will be reported
-		/// </summary>
-		public virtual string QueryIdentifier
+		private void PutResultInQueryCache(ISessionImplementor session, QueryParameters queryParameters, IType[] resultTypes,
+		                                   IQueryCache queryCache, QueryKey key, IList result)
 		{
-			get { return null; }
+			if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
+			{
+				bool put = queryCache.Put(key, resultTypes, result, queryParameters.NaturalKeyLookup, session);
+				if (put && factory.Statistics.IsStatisticsEnabled)
+				{
+					factory.StatisticsImplementor.QueryCachePut(QueryIdentifier, queryCache.RegionName);
+				}
+			}
 		}
 
 		/// <summary>
@@ -1795,7 +1689,9 @@ namespace NHibernate.Loader
 			bool stats = Factory.Statistics.IsStatisticsEnabled;
 			long startTime = 0;
 			if (stats)
+			{
 				startTime = DateTime.Now.Ticks;
+			}
 
 			IList result;
 			try
@@ -1823,25 +1719,42 @@ namespace NHibernate.Loader
 		/// Calculate and cache select-clause suffixes. Must be
 		/// called by subclasses after instantiation.
 		/// </summary>
-		protected virtual void PostInstantiate()
-		{
-		}
+		protected virtual void PostInstantiate() {}
 
-		/// <summary>
-		/// Get the result set descriptor
+		/// <summary> 
+		/// Identifies the query for statistics reporting, if null,
+		/// no statistics will be reported
 		/// </summary>
-		protected abstract IEntityAliases[] EntityAliases { get; }
-
-		protected abstract ICollectionAliases[] CollectionAliases { get; }
-
-		public ISessionFactoryImplementor Factory
+		public virtual string QueryIdentifier
 		{
-			get { return factory; }
+			get { return null; }
 		}
 
 		public override string ToString()
 		{
 			return GetType().FullName + '(' + SqlString + ')';
+		}
+
+		#region NHibernate specific
+
+		public virtual SqlCommandInfo GetQueryStringAndTypes(ISessionImplementor session, QueryParameters parameters)
+		{
+			SqlString sqlString = ProcessFilters(parameters, session);
+			Dialect.Dialect dialect = session.Factory.Dialect;
+
+			RowSelection selection = parameters.RowSelection;
+			bool useLimit = UseLimit(selection, dialect);
+			bool hasFirstRow = GetFirstRow(selection) > 0;
+			bool useOffset = hasFirstRow && useLimit && dialect.SupportsLimitOffset;
+
+			if (useLimit)
+			{
+				sqlString =
+					dialect.GetLimitString(sqlString.Trim(), useOffset ? GetFirstRow(selection) : 0, GetMaxOrLimit(dialect, selection));
+			}
+
+			sqlString = PreprocessSQL(sqlString, parameters, dialect);
+			return new SqlCommandInfo(sqlString, GetParameterTypes(parameters, useLimit, useOffset));
 		}
 
 		protected SqlType[] ConvertITypesToSqlTypes(ArrayList nhTypes, int totalSpan)
@@ -1876,10 +1789,10 @@ namespace NHibernate.Loader
 				int offset = paramTypeList.Count;
 
 				// convert the named parameters to an array of types
-				foreach (DictionaryEntry e in parameters.NamedParameters)
+				foreach (KeyValuePair<string, TypedValue> namedParameter in parameters.NamedParameters)
 				{
-					string name = (string) e.Key;
-					TypedValue typedval = (TypedValue) e.Value;
+					string name = namedParameter.Key;
+					TypedValue typedval = namedParameter.Value;
 					int[] locs = GetNamedParameterLocs(name);
 					span += typedval.Type.GetColumnSpan(Factory) * locs.Length;
 
@@ -1914,5 +1827,7 @@ namespace NHibernate.Loader
 
 			return ConvertITypesToSqlTypes(paramTypeList, span);
 		}
+
+		#endregion
 	}
 }

@@ -26,7 +26,7 @@ namespace NHibernate.Impl
 	{
 		private readonly IList<INativeSQLQueryReturn> queryReturns;
 		private readonly ICollection<string> querySpaces;
-		private bool callable;
+		private readonly bool callable;
 		private bool autoDiscoverTypes;
 
 		/// <summary> Constructs a SQLQueryImpl given a sql query defined in the mappings. </summary>
@@ -117,7 +117,7 @@ namespace NHibernate.Impl
 		public override IList List()
 		{
 			VerifyParameters();
-			IDictionary namedParams = NamedParams;
+			IDictionary<string, TypedValue> namedParams = NamedParams;
 			NativeSQLQuerySpecification spec = GenerateQuerySpecification(namedParams);
 			QueryParameters qp = GetQueryParameters(namedParams);
 
@@ -135,7 +135,7 @@ namespace NHibernate.Impl
 		public override void List(IList results)
 		{
 			VerifyParameters();
-			IDictionary namedParams = NamedParams;
+			IDictionary<string, TypedValue> namedParams = NamedParams;
 			NativeSQLQuerySpecification spec = GenerateQuerySpecification(namedParams);
 			QueryParameters qp = GetQueryParameters(namedParams);
 
@@ -153,7 +153,7 @@ namespace NHibernate.Impl
 		public override IList<T> List<T>()
 		{
 			VerifyParameters();
-			IDictionary namedParams = NamedParams;
+			IDictionary<string, TypedValue> namedParams = NamedParams;
 			NativeSQLQuerySpecification spec = GenerateQuerySpecification(namedParams);
 			QueryParameters qp = GetQueryParameters(namedParams);
 
@@ -168,7 +168,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public NativeSQLQuerySpecification GenerateQuerySpecification(IDictionary parameters)
+		public NativeSQLQuerySpecification GenerateQuerySpecification(IDictionary<string, TypedValue> parameters)
 		{
 			return new NativeSQLQuerySpecification(
 				ExpandParameterLists(parameters),
@@ -176,7 +176,7 @@ namespace NHibernate.Impl
 				querySpaces);
 		}
 
-		public override QueryParameters GetQueryParameters(IDictionary namedParams)
+		public override QueryParameters GetQueryParameters(IDictionary<string, TypedValue> namedParams)
 		{
 			QueryParameters qp = base.GetQueryParameters(namedParams);
 			qp.Callable = callable;
@@ -299,7 +299,7 @@ namespace NHibernate.Impl
 
 		public override int ExecuteUpdate()
 		{
-			IDictionary namedParams = NamedParams;
+			IDictionary<string,TypedValue> namedParams = NamedParams;
 			Before();
 			try
 			{

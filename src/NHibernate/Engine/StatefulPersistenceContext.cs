@@ -501,19 +501,19 @@ namespace NHibernate.Engine
 		{
 			AddEntity(entityKey, entity);
 
-			return AddEntry(entity, status, loadedState, entityKey.Identifier, version, lockMode, existsInDatabase, persister, disableVersionIncrement, lazyPropertiesAreUnfetched);
+			return AddEntry(entity, status, loadedState, null, entityKey.Identifier, version, lockMode, existsInDatabase, persister, disableVersionIncrement, lazyPropertiesAreUnfetched);
 		}
 
 		/// <summary> 
 		/// Generates an appropriate EntityEntry instance and adds it 
 		/// to the event source's internal caches.
 		/// </summary>
-		public EntityEntry AddEntry(object entity, Status status, object[] loadedState, object id, object version,
-																LockMode lockMode, bool existsInDatabase, IEntityPersister persister,
+		public EntityEntry AddEntry(object entity, Status status, object[] loadedState, object rowId, object id,
+																object version, LockMode lockMode, bool existsInDatabase, IEntityPersister persister,
 																bool disableVersionIncrement, bool lazyPropertiesAreUnfetched)
 		{
 			EntityEntry e =
-				new EntityEntry(status, loadedState, null, id, version, lockMode, existsInDatabase, persister, session.EntityMode,
+				new EntityEntry(status, loadedState, rowId, id, version, lockMode, existsInDatabase, persister, session.EntityMode,
 				                disableVersionIncrement, lazyPropertiesAreUnfetched);
 			entityEntries[entity] = e;
 
@@ -1081,12 +1081,13 @@ namespace NHibernate.Engine
 			object entity = tempObject;
 			object tempObject2 = entityEntries[entity];
 			entityEntries.Remove(entity);
-			EntityEntry oldEntry = (EntityEntry)tempObject2;
+			EntityEntry oldEntry = (EntityEntry) tempObject2;
 
 			EntityKey newKey = new EntityKey(generatedId, oldEntry.Persister, Session.EntityMode);
 			AddEntity(newKey, entity);
-			AddEntry(entity, oldEntry.Status, oldEntry.LoadedState, generatedId, oldEntry.Version, oldEntry.LockMode,
-							 oldEntry.ExistsInDatabase, oldEntry.Persister, oldEntry.IsBeingReplicated, oldEntry.LoadedWithLazyPropertiesUnfetched);
+			AddEntry(entity, oldEntry.Status, oldEntry.LoadedState, oldEntry.RowId, generatedId, oldEntry.Version,
+			         oldEntry.LockMode, oldEntry.ExistsInDatabase, oldEntry.Persister, oldEntry.IsBeingReplicated,
+			         oldEntry.LoadedWithLazyPropertiesUnfetched);
 		}
 
 		#endregion

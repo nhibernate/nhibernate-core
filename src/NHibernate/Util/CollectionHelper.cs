@@ -274,6 +274,33 @@ namespace NHibernate.Util
 			return true;
 		}
 
+		public static bool DictionaryEquals<K, V>(IDictionary<K, V> a, IDictionary<K, V> b)
+		{
+			if (Equals(a, b))
+			{
+				return true;
+			}
+
+			if (a == null || b == null)
+			{
+				return false;
+			}
+
+			if (a.Count != b.Count)
+			{
+				return false;
+			}
+
+			foreach (K key in a.Keys)
+			{
+				if (!Equals(a[key], b[key]))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
 		public static bool SetEquals(ISet a, ISet b)
 		{
 			if (Equals(a, b))

@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using Iesi.Collections;
 using NHibernate.Engine;
@@ -20,7 +20,7 @@ namespace NHibernate.Cache
 		private readonly object[] values;
 		private readonly int firstRow = RowSelection.NoValue;
 		private readonly int maxRows = RowSelection.NoValue;
-		private readonly IDictionary namedParameters;
+		private readonly IDictionary<string, TypedValue> namedParameters;
 		private readonly ISet filters;
 		private readonly IResultTransformer customTransformer;
 		private readonly int hashCode;
@@ -57,19 +57,19 @@ namespace NHibernate.Cache
 			}
 			namedParameters = queryParameters.NamedParameters;
 			this.filters = filters;
-			this.customTransformer = queryParameters.ResultTransformer;
-			this.hashCode = ComputeHashCode();
+			customTransformer = queryParameters.ResultTransformer;
+			hashCode = ComputeHashCode();
 		}
 
 		public QueryKey SetFirstRows(int[] firstRows)
 		{
-			this.multiQueriesFirstRows = firstRows;
+			multiQueriesFirstRows = firstRows;
 			return this;
 		}
 
 		public QueryKey SetMaxRows(int[] maxRows)
 		{
-			this.multiQueriesMaxRows = maxRows;
+			multiQueriesMaxRows = maxRows;
 			return this;
 		}
 
@@ -156,9 +156,7 @@ namespace NHibernate.Cache
 				result = 37 * result + firstRow.GetHashCode();
 				result = 37 * result + maxRows.GetHashCode();
 
-				// NH - commented this out, namedParameters don't have a useful GetHashCode implementations
-				//result = 37 * result
-				//	+ ( namedParameters == null ? 0 : namedParameters.GetHashCode() );
+				result = 37 * result + ( namedParameters == null ? 0: CollectionHelper.GetHashCode(namedParameters));
 
 				for (int i = 0; i < types.Length; i++)
 				{

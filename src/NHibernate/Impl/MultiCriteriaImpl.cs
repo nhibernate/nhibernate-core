@@ -18,22 +18,22 @@ namespace NHibernate.Impl
 {
 	public class MultiCriteriaImpl : IMultiCriteria
 	{
-		private static ILog log = LogManager.GetLogger(typeof (MultiCriteriaImpl));
-		private IList criteriaQueries = new ArrayList();
+		private static readonly ILog log = LogManager.GetLogger(typeof (MultiCriteriaImpl));
+		private readonly IList criteriaQueries = new ArrayList();
 
-		private SessionImpl session;
+		private readonly SessionImpl session;
 		private readonly ISessionFactoryImplementor factory;
-		private IList translators = new ArrayList();
-		private List<QueryParameters> parameters = new List<QueryParameters>();
-		private ArrayList types = new ArrayList();
+		private readonly List<CriteriaQueryTranslator> translators = new List<CriteriaQueryTranslator>();
+		private readonly List<QueryParameters> parameters = new List<QueryParameters>();
+		private readonly List<SqlType> types = new List<SqlType>();
 		private SqlString sqlString = new SqlString();
-		private List<CriteriaLoader> loaders = new List<CriteriaLoader>();
-		private Dialect.Dialect dialect;
+		private readonly List<CriteriaLoader> loaders = new List<CriteriaLoader>();
+		private readonly Dialect.Dialect dialect;
 		private bool isCacheable = false;
 		private bool forceCacheRefresh = false;
 		private string cacheRegion;
 		private IResultTransformer resultTransformer;
-		private Dictionary<CriteriaLoader, int> loaderToResultIndex = new Dictionary<CriteriaLoader, int>();
+		private readonly Dictionary<CriteriaLoader, int> loaderToResultIndex = new Dictionary<CriteriaLoader, int>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MultiCriteriaImpl"/> class.
@@ -60,7 +60,7 @@ namespace NHibernate.Impl
 
 		public IList List()
 		{
-			bool cacheable = session.Factory.IsQueryCacheEnabled && this.isCacheable;
+			bool cacheable = session.Factory.IsQueryCacheEnabled && isCacheable;
 
 			CreateCriteriaLoaders();
 			CombineCriteriaQueries();
@@ -119,7 +119,7 @@ namespace NHibernate.Impl
 			{
 				log.Debug("Cache miss for multi criteria query");
 				IList list = DoList();
-				queryCache.Put(key, new ICacheAssembler[] {assembler}, new object[] {list}, session);
+				queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, combinedParameters.NaturalKeyLookup, session);
 				result = list;
 			}
 
@@ -166,15 +166,15 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private void GetResultsFromDatabase(ArrayList results)
+		private void GetResultsFromDatabase(IList results)
 		{
 			using (
 				IDbCommand command =
-					session.Batcher.PrepareCommand(CommandType.Text, sqlString, (SqlType[]) types.ToArray(typeof (SqlType))))
+					session.Batcher.PrepareCommand(CommandType.Text, sqlString, types.ToArray()))
 			{
 				BindParameters(command);
 				ArrayList[] hydratedObjects = new ArrayList[loaders.Count];
-				ArrayList[] subselectResultKeys = new ArrayList[loaders.Count];
+				List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[loaders.Count];
 				bool[] createSubselects = new bool[loaders.Count];
 				IDataReader reader = session.Batcher.ExecuteReader(command);
 				try
@@ -185,15 +185,15 @@ namespace NHibernate.Impl
 						int entitySpan = loader.EntityPersisters.Length;
 						hydratedObjects[i] = entitySpan == 0 ? null : new ArrayList(entitySpan);
 						EntityKey[] keys = new EntityKey[entitySpan];
-						QueryParameters queryParameters = this.parameters[i];
+						QueryParameters queryParameters = parameters[i];
 						IList tmpResults = new ArrayList();
 						RowSelection selection = parameters[i].RowSelection;
 						createSubselects[i] = loader.IsSubselectLoadingEnabled;
-						subselectResultKeys[i] = createSubselects[i] ? new ArrayList() : null;
+						subselectResultKeys[i] = createSubselects[i] ? new List<EntityKey[]>() : null;
 						int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
 						if (!dialect.SupportsLimitOffset || !NHibernate.Loader.Loader.UseLimit(selection, dialect))
 						{
-							loader.Advance(reader, selection);
+							Loader.Loader.Advance(reader, selection);
 						}
 						int count;
             for (count = 0; count < maxRows && reader.Read(); count++)
@@ -228,7 +228,7 @@ namespace NHibernate.Impl
 
 					if (createSubselects[i])
 					{
-						loader.CreateSubselects(subselectResultKeys[i], this.parameters[i], session);
+						loader.CreateSubselects(subselectResultKeys[i], parameters[i], session);
 					}
 				}
 			}
@@ -283,7 +283,7 @@ namespace NHibernate.Impl
 				RowSelection selection = parameter.RowSelection;
 				if (Loader.Loader.UseLimit(selection, dialect) && !dialect.BindLimitParametersFirst)
 				{
-					colIndex += loaders[i].BindLimitParameters(command, colIndex, selection, session);
+					colIndex += Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
 				}
 			}
 		}
@@ -307,7 +307,7 @@ namespace NHibernate.Impl
 				RowSelection selection = parameter.RowSelection;
 				if (Loader.Loader.UseLimit(selection, dialect) && dialect.BindLimitParametersFirst)
 				{
-					colIndex += loaders[i].BindLimitParameters(command, colIndex, selection, session);
+					colIndex += Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
 				}
 			}
 			return colIndex;
@@ -329,13 +329,13 @@ namespace NHibernate.Impl
 
 		public IMultiCriteria SetCacheable(bool cachable)
 		{
-			this.isCacheable = cachable;
+			isCacheable = cachable;
 			return this;
 		}
 
 		public IMultiCriteria ForceCacheRefresh(bool forceRefresh)
 		{
-			this.forceCacheRefresh = forceRefresh;
+			forceCacheRefresh = forceRefresh;
 			return this;
 		}
 
@@ -359,7 +359,7 @@ namespace NHibernate.Impl
 		{
 			QueryParameters combinedQueryParameters = new QueryParameters();
 			combinedQueryParameters.ForceCacheRefresh = forceCacheRefresh;
-			combinedQueryParameters.NamedParameters = new Hashtable();
+			combinedQueryParameters.NamedParameters = new Dictionary<string, TypedValue>();
 			ArrayList positionalParameterTypes = new ArrayList();
 			ArrayList positionalParameterValues = new ArrayList();
 			foreach (QueryParameters queryParameters in parameters)

@@ -570,7 +570,7 @@ namespace NHibernate.Persister.Collection
 			{
 				// Take care of any entities that might have
 				// been evicted!
-				ArrayList keysToRemove = new ArrayList();
+				List<EntityKey> keysToRemove = new List<EntityKey>(subselect.Result.Count);
 				foreach (EntityKey entityKey in subselect.Result)
 				{
 					if (!persistenceContext.ContainsEntity(entityKey))

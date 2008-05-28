@@ -234,7 +234,7 @@ namespace NHibernate.Impl
 		/// <summary> 
 		/// Warning: adds new parameters to the argument by side-effect, as well as mutating the query string!
 		/// </summary>
-		protected internal virtual string ExpandParameterLists(IDictionary namedParamsCopy)
+		protected internal virtual string ExpandParameterLists(IDictionary<string, TypedValue> namedParamsCopy)
 		{
 			string query = queryString;
 			foreach (KeyValuePair<string, TypedValue> me in namedParameterLists)
@@ -246,7 +246,7 @@ namespace NHibernate.Impl
 		/// <summary> 
 		/// Warning: adds new parameters to the argument by side-effect, as well as mutating the query string!
 		/// </summary>
-		private string ExpandParameterList(string query, string name, TypedValue typedList, IDictionary namedParamsCopy)
+		private string ExpandParameterList(string query, string name, TypedValue typedList, IDictionary<string, TypedValue> namedParamsCopy)
 		{
 			ICollection vals = (ICollection)typedList.Value;
 			IType type = typedList.Type;
@@ -696,10 +696,10 @@ namespace NHibernate.Impl
 			get { return queryString; }
 		}
 
-		protected internal IDictionary NamedParams
+		protected internal IDictionary<string, TypedValue> NamedParams
 		{
 			// NB The java one always returns a copy, so I'm going to reproduce that behaviour
-			get { return new Hashtable(namedParameters); }
+			get { return new Dictionary<string, TypedValue>(namedParameters); }
 		}
 
 		protected IDictionary NamedParameterLists
@@ -904,7 +904,7 @@ namespace NHibernate.Impl
 			return GetQueryParameters(NamedParams);
 		}
 
-		public virtual QueryParameters GetQueryParameters(IDictionary namedParams)
+		public virtual QueryParameters GetQueryParameters(IDictionary<string, TypedValue> namedParams)
 		{
 			return new QueryParameters(
 					TypeArray(),

@@ -456,7 +456,7 @@ namespace NHibernate.Event.Default
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 			
-			persistenceContext.AddEntry(result, Status.Loaded, values, id, version, LockMode.None, true, subclassPersister, false, entry.AreLazyPropertiesUnfetched);
+			persistenceContext.AddEntry(result, Status.Loaded, values, null, id, version, LockMode.None, true, subclassPersister, false, entry.AreLazyPropertiesUnfetched);
 			// TODO H3.2 subclassPersister.AfterInitialize(result, entry.AreLazyPropertiesUnfetched, session);
 
 			persistenceContext.InitializeNonLazyCollections();
