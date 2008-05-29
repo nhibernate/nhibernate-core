@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Engine.Query.Sql;
@@ -10,21 +11,28 @@ namespace NHibernate.Loader.Custom.Sql
 {
 	public class SQLQueryReturnProcessor
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(SQLQueryReturnProcessor));
+		private static readonly ILog log = LogManager.GetLogger(typeof (SQLQueryReturnProcessor));
 
 		private readonly INativeSQLQueryReturn[] queryReturns;
 
-		private readonly IDictionary alias2Return = new Hashtable();
-		private readonly IDictionary alias2OwnerAlias = new Hashtable();
+		private readonly Dictionary<string, INativeSQLQueryReturn> alias2Return =
+			new Dictionary<string, INativeSQLQueryReturn>();
 
-		private readonly IDictionary alias2Persister = new Hashtable();
-		private readonly IDictionary alias2Suffix = new Hashtable();
+		private readonly Dictionary<string, string> alias2OwnerAlias = new Dictionary<string, string>();
 
-		private readonly IDictionary alias2CollectionPersister = new Hashtable();
-		private readonly IDictionary alias2CollectionSuffix = new Hashtable();
+		private readonly Dictionary<string, ISqlLoadable> alias2Persister = new Dictionary<string, ISqlLoadable>();
+		private readonly Dictionary<string, string> alias2Suffix = new Dictionary<string, string>();
 
-		private readonly IDictionary entityPropertyResultMaps = new Hashtable();
-		private readonly IDictionary collectionPropertyResultMaps = new Hashtable();
+		private readonly Dictionary<string, ISqlLoadableCollection> alias2CollectionPersister =
+			new Dictionary<string, ISqlLoadableCollection>();
+
+		private readonly Dictionary<string, string> alias2CollectionSuffix = new Dictionary<string, string>();
+
+		private readonly Dictionary<string, IDictionary<string, string[]>> entityPropertyResultMaps =
+			new Dictionary<string, IDictionary<string, string[]>>();
+
+		private readonly Dictionary<string, IDictionary<string, string[]>> collectionPropertyResultMaps =
+			new Dictionary<string, IDictionary<string, string[]>>();
 
 		private readonly ISessionFactoryImplementor factory;
 
@@ -36,9 +44,7 @@ namespace NHibernate.Loader.Custom.Sql
 			get { return factory; }
 		}
 
-		public SQLQueryReturnProcessor(
-			INativeSQLQueryReturn[] queryReturns,
-			ISessionFactoryImplementor factory)
+		public SQLQueryReturnProcessor(INativeSQLQueryReturn[] queryReturns, ISessionFactoryImplementor factory)
 		{
 			this.queryReturns = queryReturns;
 			this.factory = factory;
@@ -46,7 +52,7 @@ namespace NHibernate.Loader.Custom.Sql
 
 		public class ResultAliasContext
 		{
-			private SQLQueryReturnProcessor parent;
+			private readonly SQLQueryReturnProcessor parent;
 
 			public ResultAliasContext(SQLQueryReturnProcessor parent)
 			{
@@ -55,41 +61,51 @@ namespace NHibernate.Loader.Custom.Sql
 
 			public ISqlLoadable GetEntityPersister(string alias)
 			{
-				return (ISqlLoadable) parent.alias2Persister[alias];
+				ISqlLoadable result;
+				parent.alias2Persister.TryGetValue(alias, out result);
+				return result;
 			}
 
 			public ISqlLoadableCollection GetCollectionPersister(string alias)
 			{
-				return (ISqlLoadableCollection) parent.alias2CollectionPersister[alias];
+				ISqlLoadableCollection result;
+				parent.alias2CollectionPersister.TryGetValue(alias, out result);
+				return result;
 			}
 
 			public string GetEntitySuffix(string alias)
 			{
-				return (string) parent.alias2Suffix[alias];
+				string result;
+				parent.alias2Suffix.TryGetValue(alias, out result);
+				return result;
 			}
 
 			public string GetCollectionSuffix(string alias)
 			{
-				return (string) parent.alias2CollectionSuffix[alias];
+				string result;
+				parent.alias2CollectionSuffix.TryGetValue(alias, out result);
+				return result;
 			}
 
 			public string GetOwnerAlias(string alias)
 			{
-				return (string) parent.alias2OwnerAlias[alias];
+				string result;
+				parent.alias2OwnerAlias.TryGetValue(alias, out result);
+				return result;
 			}
 
-			public IDictionary GetPropertyResultsMap(string alias)
+			public IDictionary<string, string[]> GetPropertyResultsMap(string alias)
 			{
 				return parent.InternalGetPropertyResultsMap(alias);
 			}
 		}
 
-		private IDictionary InternalGetPropertyResultsMap(string alias)
+		private IDictionary<string, string[]> InternalGetPropertyResultsMap(string alias)
 		{
-			INativeSQLQueryReturn rtn = (INativeSQLQueryReturn) alias2Return[alias];
-			if (rtn is NativeSQLQueryNonScalarReturn)
+			NativeSQLQueryNonScalarReturn rtn = alias2Return[alias] as NativeSQLQueryNonScalarReturn;
+			if (rtn != null)
 			{
-				return ((NativeSQLQueryNonScalarReturn) rtn).PropertyResultsMap;
+				return rtn.PropertyResultsMap;
 			}
 			else
 			{
@@ -99,7 +115,7 @@ namespace NHibernate.Loader.Custom.Sql
 
 		private bool HasPropertyResultMap(string alias)
 		{
-			IDictionary propertyMaps = InternalGetPropertyResultsMap(alias);
+			IDictionary<string, string[]> propertyMaps = InternalGetPropertyResultsMap(alias);
 			return propertyMaps != null && propertyMaps.Count != 0;
 		}
 
@@ -170,13 +186,11 @@ namespace NHibernate.Loader.Custom.Sql
 			}
 		}
 
-		private void ProcessScalarReturn(NativeSQLQueryScalarReturn typeReturn)
-		{
-		}
+		private void ProcessScalarReturn(NativeSQLQueryScalarReturn typeReturn) {}
 
 		private void ProcessRootReturn(NativeSQLQueryRootReturn rootReturn)
 		{
-			if (alias2Persister.Contains(rootReturn.Alias))
+			if (alias2Persister.ContainsKey(rootReturn.Alias))
 			{
 				// already been processed...
 				return;
@@ -186,7 +200,7 @@ namespace NHibernate.Loader.Custom.Sql
 			AddPersister(rootReturn.Alias, rootReturn.PropertyResultsMap, persister);
 		}
 
-		private void AddPersister(string alias, IDictionary propertyResult, ISqlLoadable persister)
+		private void AddPersister(string alias, IDictionary<string, string[]> propertyResult, ISqlLoadable persister)
 		{
 			alias2Persister[alias] = persister;
 			string suffix = GenerateEntitySuffix();
@@ -195,9 +209,9 @@ namespace NHibernate.Loader.Custom.Sql
 			entityPropertyResultMaps[alias] = propertyResult;
 		}
 
-		private void AddCollection(string role, string alias, IDictionary propertyResults)
+		private void AddCollection(string role, string alias, IDictionary<string, string[]> propertyResults)
 		{
-			IQueryableCollection collectionPersister = (IQueryableCollection) Factory.GetCollectionPersister(role);
+			ISqlLoadableCollection collectionPersister = (ISqlLoadableCollection) Factory.GetCollectionPersister(role);
 			alias2CollectionPersister[alias] = collectionPersister;
 			string suffix = GenerateCollectionSuffix();
 			log.Debug("mapping alias [" + alias + "] to collection-suffix [" + suffix + "]");
@@ -211,15 +225,15 @@ namespace NHibernate.Loader.Custom.Sql
 			}
 		}
 
-		private IDictionary Filter(IDictionary propertyResults)
+		private IDictionary<string, string[]> Filter(IDictionary<string, string[]> propertyResults)
 		{
-			IDictionary result = new Hashtable(propertyResults.Count);
+			Dictionary<string, string[]> result = new Dictionary<string, string[]>(propertyResults.Count);
 
 			string keyPrefix = "element.";
 
-			foreach (DictionaryEntry element in propertyResults)
+			foreach (KeyValuePair<string, string[]> element in propertyResults)
 			{
-				string path = (string) element.Key;
+				string path = element.Key;
 				if (path.StartsWith(keyPrefix))
 				{
 					result[path.Substring(keyPrefix.Length)] = element.Value;
@@ -233,17 +247,13 @@ namespace NHibernate.Loader.Custom.Sql
 		{
 			// we are initializing an owned collection
 			string role = collectionReturn.OwnerEntityName + '.' + collectionReturn.OwnerProperty;
-			AddCollection(
-				role,
-				collectionReturn.Alias,
-				collectionReturn.PropertyResultsMap
-				);
+			AddCollection(role, collectionReturn.Alias, collectionReturn.PropertyResultsMap);
 		}
 
 		private void ProcessJoinReturn(NativeSQLQueryJoinReturn fetchReturn)
 		{
 			string alias = fetchReturn.Alias;
-			if (alias2Persister.Contains(alias) || alias2CollectionPersister.Contains(alias))
+			if (alias2Persister.ContainsKey(alias) || alias2CollectionPersister.ContainsKey(alias))
 			{
 				// already been processed...
 				return;
@@ -252,22 +262,18 @@ namespace NHibernate.Loader.Custom.Sql
 			string ownerAlias = fetchReturn.OwnerAlias;
 
 			// Make sure the owner alias is known...
-			if (!alias2Return.Contains(ownerAlias))
+			if (!alias2Return.ContainsKey(ownerAlias))
 			{
-				throw new HibernateException(
-					"Owner alias [" + ownerAlias + "] is unknown for alias [" +
-					alias + "]"
-					);
+				throw new HibernateException("Owner alias [" + ownerAlias + "] is unknown for alias [" + alias + "]");
 			}
 
 			// If this return's alias has not been processed yet, do so b4 further processing of this return
-			if (!alias2Persister.Contains(ownerAlias))
+			if (!alias2Persister.ContainsKey(ownerAlias))
 			{
-				NativeSQLQueryNonScalarReturn ownerReturn = (NativeSQLQueryNonScalarReturn) alias2Return[ownerAlias];
-				ProcessReturn(ownerReturn);
+				ProcessReturn(alias2Return[ownerAlias]);
 			}
 
-			ISqlLoadable ownerPersister = (ISqlLoadable) alias2Persister[ownerAlias];
+			ISqlLoadable ownerPersister = alias2Persister[ownerAlias];
 			IType returnType = ownerPersister.GetPropertyType(fetchReturn.OwnerProperty);
 
 			if (returnType.IsCollectionType)
@@ -302,26 +308,15 @@ namespace NHibernate.Loader.Custom.Sql
 					IEntityAliases entityAliases;
 					if (queryHadAliases || HasPropertyResultMap(alias))
 					{
-						entityAliases = new DefaultEntityAliases(
-							(IDictionary) entityPropertyResultMaps[alias],
-							(ISqlLoadable) alias2Persister[alias],
-							(string) alias2Suffix[alias]
-							);
+						entityAliases =
+							new DefaultEntityAliases(entityPropertyResultMaps[alias], alias2Persister[alias], alias2Suffix[alias]);
 					}
 					else
 					{
-						entityAliases = new ColumnEntityAliases(
-							(IDictionary) entityPropertyResultMaps[alias],
-							(ISqlLoadable) alias2Persister[alias],
-							(string) alias2Suffix[alias]
-							);
+						entityAliases =
+							new ColumnEntityAliases(entityPropertyResultMaps[alias], alias2Persister[alias], alias2Suffix[alias]);
 					}
-					RootReturn customReturn = new RootReturn(
-						alias,
-						rtn.ReturnEntityName,
-						entityAliases,
-						rtn.LockMode
-						);
+					RootReturn customReturn = new RootReturn(alias, rtn.ReturnEntityName, entityAliases, rtn.LockMode);
 					customReturns.Add(customReturn);
 					customReturnsByAlias[rtn.Alias] = customReturn;
 				}
@@ -329,49 +324,34 @@ namespace NHibernate.Loader.Custom.Sql
 				{
 					NativeSQLQueryCollectionReturn rtn = (NativeSQLQueryCollectionReturn) queryReturns[i];
 					string alias = rtn.Alias;
-					ISqlLoadableCollection persister = (ISqlLoadableCollection) alias2CollectionPersister[alias];
+					ISqlLoadableCollection persister = alias2CollectionPersister[alias];
 					bool isEntityElements = persister.ElementType.IsEntityType;
 					ICollectionAliases collectionAliases;
 					IEntityAliases elementEntityAliases = null;
 					if (queryHadAliases || HasPropertyResultMap(alias))
 					{
-						collectionAliases = new GeneratedCollectionAliases(
-							(IDictionary) collectionPropertyResultMaps[alias],
-							(ISqlLoadableCollection) alias2CollectionPersister[alias],
-							(string) alias2CollectionSuffix[alias]
-							);
+						collectionAliases =
+							new GeneratedCollectionAliases(collectionPropertyResultMaps[alias], alias2CollectionPersister[alias],
+							                               alias2CollectionSuffix[alias]);
 						if (isEntityElements)
 						{
-							elementEntityAliases = new DefaultEntityAliases(
-								(IDictionary) entityPropertyResultMaps[alias],
-								(ISqlLoadable) alias2Persister[alias],
-								(string) alias2Suffix[alias]
-								);
+							elementEntityAliases =
+								new DefaultEntityAliases(entityPropertyResultMaps[alias], alias2Persister[alias], alias2Suffix[alias]);
 						}
 					}
 					else
 					{
-						collectionAliases = new ColumnCollectionAliases(
-							(IDictionary) collectionPropertyResultMaps[alias],
-							(ISqlLoadableCollection) alias2CollectionPersister[alias]
-							);
+						collectionAliases =
+							new ColumnCollectionAliases(collectionPropertyResultMaps[alias], alias2CollectionPersister[alias]);
 						if (isEntityElements)
 						{
-							elementEntityAliases = new ColumnEntityAliases(
-								(IDictionary) entityPropertyResultMaps[alias],
-								(ISqlLoadable) alias2Persister[alias],
-								(string) alias2Suffix[alias]
-								);
+							elementEntityAliases =
+								new ColumnEntityAliases(entityPropertyResultMaps[alias], alias2Persister[alias], alias2Suffix[alias]);
 						}
 					}
-					CollectionReturn customReturn = new CollectionReturn(
-						alias,
-						rtn.OwnerEntityName,
-						rtn.OwnerProperty,
-						collectionAliases,
-						elementEntityAliases,
-						rtn.LockMode
-						);
+					CollectionReturn customReturn =
+						new CollectionReturn(alias, rtn.OwnerEntityName, rtn.OwnerProperty, collectionAliases, elementEntityAliases,
+						                     rtn.LockMode);
 					customReturns.Add(customReturn);
 					customReturnsByAlias[rtn.Alias] = customReturn;
 				}
@@ -381,78 +361,49 @@ namespace NHibernate.Loader.Custom.Sql
 					string alias = rtn.Alias;
 					FetchReturn customReturn;
 					NonScalarReturn ownerCustomReturn = (NonScalarReturn) customReturnsByAlias[rtn.OwnerAlias];
-					if (alias2CollectionPersister.Contains(alias))
+					if (alias2CollectionPersister.ContainsKey(alias))
 					{
-						ISqlLoadableCollection persister = (ISqlLoadableCollection) alias2CollectionPersister[alias];
+						ISqlLoadableCollection persister = alias2CollectionPersister[alias];
 						bool isEntityElements = persister.ElementType.IsEntityType;
 						ICollectionAliases collectionAliases;
 						IEntityAliases elementEntityAliases = null;
 						if (queryHadAliases || HasPropertyResultMap(alias))
 						{
-							collectionAliases = new GeneratedCollectionAliases(
-								(IDictionary) collectionPropertyResultMaps[alias],
-								persister,
-								(string) alias2CollectionSuffix[alias]
-								);
+							collectionAliases =
+								new GeneratedCollectionAliases(collectionPropertyResultMaps[alias], persister, alias2CollectionSuffix[alias]);
 							if (isEntityElements)
 							{
-								elementEntityAliases = new DefaultEntityAliases(
-									(IDictionary) entityPropertyResultMaps[alias],
-									(ISqlLoadable) alias2Persister[alias],
-									(string) alias2Suffix[alias]
-									);
+								elementEntityAliases =
+									new DefaultEntityAliases(entityPropertyResultMaps[alias], alias2Persister[alias], alias2Suffix[alias]);
 							}
 						}
 						else
 						{
-							collectionAliases = new ColumnCollectionAliases(
-								(IDictionary) collectionPropertyResultMaps[alias],
-								persister
-								);
+							collectionAliases = new ColumnCollectionAliases(collectionPropertyResultMaps[alias], persister);
 							if (isEntityElements)
 							{
-								elementEntityAliases = new ColumnEntityAliases(
-									(IDictionary) entityPropertyResultMaps[alias],
-									(ISqlLoadable) alias2Persister[alias],
-									(string) alias2Suffix[alias]
-									);
+								elementEntityAliases =
+									new ColumnEntityAliases(entityPropertyResultMaps[alias], alias2Persister[alias], alias2Suffix[alias]);
 							}
 						}
-						customReturn = new CollectionFetchReturn(
-							alias,
-							ownerCustomReturn,
-							rtn.OwnerProperty,
-							collectionAliases,
-							elementEntityAliases,
-							rtn.LockMode
-							);
+						customReturn =
+							new CollectionFetchReturn(alias, ownerCustomReturn, rtn.OwnerProperty, collectionAliases, elementEntityAliases,
+							                          rtn.LockMode);
 					}
 					else
 					{
 						IEntityAliases entityAliases;
 						if (queryHadAliases || HasPropertyResultMap(alias))
 						{
-							entityAliases = new DefaultEntityAliases(
-								(IDictionary) entityPropertyResultMaps[alias],
-								(ISqlLoadable) alias2Persister[alias],
-								(string) alias2Suffix[alias]
-								);
+							entityAliases =
+								new DefaultEntityAliases(entityPropertyResultMaps[alias], alias2Persister[alias], alias2Suffix[alias]);
 						}
 						else
 						{
-							entityAliases = new ColumnEntityAliases(
-								(IDictionary) entityPropertyResultMaps[alias],
-								(ISqlLoadable) alias2Persister[alias],
-								(string) alias2Suffix[alias]
-								);
+							entityAliases =
+								new ColumnEntityAliases(entityPropertyResultMaps[alias], alias2Persister[alias], alias2Suffix[alias]);
 						}
-						customReturn = new EntityFetchReturn(
-							alias,
-							entityAliases,
-							ownerCustomReturn,
-							rtn.OwnerProperty,
-							rtn.LockMode
-							);
+						customReturn = new EntityFetchReturn(alias, entityAliases, ownerCustomReturn, rtn.OwnerProperty, rtn.LockMode);
 					}
 					customReturns.Add(customReturn);
 					customReturnsByAlias[alias] = customReturn;

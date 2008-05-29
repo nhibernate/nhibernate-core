@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
 using NHibernate.Engine.Query.Sql;
@@ -98,7 +98,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			LockMode lockMode = GetLockMode(returnSchema.lockmode);
 
 			PersistentClass pc = mappings.GetClass(entityName);
-			IDictionary propertyResults =
+			IDictionary<string, string[]> propertyResults =
 				BindPropertyResults(alias, returnSchema.returndiscriminator, returnSchema.returnproperty, pc);
 
 			return new NativeSQLQueryRootReturn(alias, entityName, propertyResults, lockMode);
@@ -118,7 +118,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string roleProperty = returnJoinSchema.property.Substring(dot + 1);
 
 			//FIXME: get the PersistentClass
-			IDictionary propertyResults = BindPropertyResults(returnJoinSchema.alias, null, returnJoinSchema.Items, null);
+			IDictionary<string, string[]> propertyResults = BindPropertyResults(returnJoinSchema.alias, null, returnJoinSchema.Items, null);
 
 			return new NativeSQLQueryJoinReturn(returnJoinSchema.alias, roleOwnerAlias, roleProperty,
 				propertyResults, // TODO: bindpropertyresults(alias, returnElem)
@@ -139,30 +139,29 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string ownerPropertyName = loadCollectionSchema.role.Substring(dot + 1);
 
 			//FIXME: get the PersistentClass
-			IDictionary propertyResults = BindPropertyResults(loadCollectionSchema.alias, null, loadCollectionSchema.Items, null);
+			IDictionary<string, string[]> propertyResults = BindPropertyResults(loadCollectionSchema.alias, null, loadCollectionSchema.Items, null);
 
 			return new NativeSQLQueryCollectionReturn(loadCollectionSchema.alias, ownerClassName, ownerPropertyName,
 				propertyResults, GetLockMode(loadCollectionSchema.lockmode));
 		}
 
-		private IDictionary BindPropertyResults(string alias, HbmReturnDiscriminator discriminatorSchema,
+		private IDictionary<string, string[]> BindPropertyResults(string alias, HbmReturnDiscriminator discriminatorSchema,
 			HbmReturnProperty[] returnProperties, PersistentClass pc)
 		{
-			IDictionary propertyresults = new Hashtable();
+			Dictionary<string, string[]> propertyresults = new Dictionary<string, string[]>();
 			// maybe a concrete SQLpropertyresult type, but Map is exactly what is required at the moment
 
 			if (discriminatorSchema != null)
 			{
-				ArrayList resultColumns = GetResultColumns(discriminatorSchema);
-				propertyresults["class"] = ArrayHelper.ToStringArray(resultColumns);
+				propertyresults["class"] = GetResultColumns(discriminatorSchema).ToArray();
 			}
 
-			IList properties = new ArrayList();
-			IList propertyNames = new ArrayList();
+			List<HbmReturnProperty> properties = new List<HbmReturnProperty>();
+			List<string> propertyNames = new List<string>();
 
 			foreach (HbmReturnProperty returnPropertySchema in returnProperties ?? new HbmReturnProperty[0])
 			{
-				String name = returnPropertySchema.name;
+				string name = returnPropertySchema.name;
 				if (pc == null || name.IndexOf('.') == -1)
 				{
 					//if dotted and not load-collection nor return-join
@@ -213,11 +212,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					else
 						throw new MappingException("dotted notation reference neither a component nor a many/one to one");
 					bool hasFollowers = false;
-					IList followers = new ArrayList();
+					List<string> followers = new List<string>();
 					foreach (Mapping.Property prop in parentPropIter)
 					{
-						String currentPropertyName = prop.Name;
-						String currentName = reducedName + '.' + currentPropertyName;
+						string currentPropertyName = prop.Name;
+						string currentName = reducedName + '.' + currentPropertyName;
 						if (hasFollowers)
 							followers.Add(currentName);
 						if (name.Equals(currentName))
@@ -228,7 +227,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					int followersSize = followers.Count;
 					for (int loop = 0; loop < followersSize; loop++)
 					{
-						String follower = (String) followers[loop];
+						string follower = followers[loop];
 						int currentIndex = GetIndexOfFirstMatchingProperty(propertyNames, follower);
 						index = currentIndex != -1 && currentIndex < index ? currentIndex : index;
 					}
@@ -237,7 +236,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 			}
 
-			ISet uniqueReturnProperty = new HashedSet();
+			ISet<string> uniqueReturnProperty = new HashedSet<string>();
 			foreach (HbmReturnProperty returnPropertySchema in properties)
 			{
 				string name = returnPropertySchema.name;
@@ -246,7 +245,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 						"class is not a valid property name to use in a <return-property>, use <return-discriminator> instead"
 						);
 				//TODO: validate existing of property with the chosen name. (secondpass )
-				ArrayList allResultColumns = GetResultColumns(returnPropertySchema);
+				List<string> allResultColumns = GetResultColumns(returnPropertySchema);
 
 				if (allResultColumns.Count == 0)
 					throw new MappingException(
@@ -281,30 +280,26 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				// but I am not clear enough on the intended purpose of this code block, especially
 				// in relation to the "Reorder properties" code block above... 
 				//			String key = StringHelper.root( name );
-				String key = name;
-				ArrayList intermediateResults = (ArrayList) propertyresults[key];
-				if (intermediateResults == null)
-					propertyresults[key] = allResultColumns;
+				string key = name;
+				string[] intermediateResults;
+				if (!propertyresults.TryGetValue(key,out intermediateResults))
+					propertyresults[key] = allResultColumns.ToArray();
 				else
-					ArrayHelper.AddAll(intermediateResults, allResultColumns);
+					ArrayHelper.AddAll(intermediateResults, allResultColumns); // TODO: intermediateResults not used after this
 			}
 
-			IDictionary newPropertyResults = new Hashtable();
+			Dictionary<string, string[]> newPropertyResults = new Dictionary<string, string[]>();
 
-			foreach (DictionaryEntry entry in propertyresults)
-				if (entry.Value is ArrayList)
-				{
-					ArrayList list = (ArrayList) entry.Value;
-					newPropertyResults[entry.Key] = ArrayHelper.ToStringArray(list);
-				}
-				else
-					newPropertyResults[entry.Key] = entry.Value;
-			return newPropertyResults.Count == 0 ? CollectionHelper.EmptyMap : newPropertyResults;
+			foreach (KeyValuePair<string, string[]> entry in propertyresults)
+			{
+				newPropertyResults[entry.Key] = entry.Value;
+			}
+			return newPropertyResults.Count == 0 ? (IDictionary<string, string[]>)new CollectionHelper.EmptyMapClass<string, string[]>() : newPropertyResults;
 		}
 
-		private static ArrayList GetResultColumns(HbmReturnProperty returnPropertySchema)
+		private static List<string> GetResultColumns(HbmReturnProperty returnPropertySchema)
 		{
-			ArrayList allResultColumns = new ArrayList();
+			List<string> allResultColumns = new List<string>();
 			String column = Unquote(returnPropertySchema.column);
 
 			if (column != null)
@@ -316,10 +311,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			return allResultColumns;
 		}
 
-		private static ArrayList GetResultColumns(HbmReturnDiscriminator discriminatorSchema)
+		private static List<string> GetResultColumns(HbmReturnDiscriminator discriminatorSchema)
 		{
-			String column = Unquote(discriminatorSchema.column);
-			ArrayList allResultColumns = new ArrayList();
+			string column = Unquote(discriminatorSchema.column);
+			List<string> allResultColumns = new List<string>();
 
 			if (column != null)
 				allResultColumns.Add(column);

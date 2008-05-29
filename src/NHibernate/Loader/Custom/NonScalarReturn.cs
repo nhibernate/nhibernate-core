@@ -1,7 +1,6 @@
-using System;
-
 namespace NHibernate.Loader.Custom
 {
+	/// <summary> Represents some non-scalar (entity/collection) return within the query result. </summary>
 	public abstract class NonScalarReturn : IReturn
 	{
 		private readonly string alias;
@@ -10,7 +9,7 @@ namespace NHibernate.Loader.Custom
 		public NonScalarReturn(string alias, LockMode lockMode)
 		{
 			this.alias = alias;
-			if (alias == null)
+			if (string.IsNullOrEmpty(alias))
 			{
 				throw new HibernateException("alias must be specified");
 			}

@@ -17,7 +17,7 @@ namespace NHibernate.Engine.Query
 			void OutParameter(int position);
 			void OrdinalParameter(int position);
 			void NamedParameter(string name, int position);
-			void Ejb3PositionalParameter(string name, int position);
+			void JpaPositionalParameter(string name, int position);
 			void Other(char character);
 		}
 
@@ -92,7 +92,7 @@ namespace NHibernate.Engine.Query
 							{
 								throw new QueryException("ejb3-style positional param was not an integral ordinal", e);
 							}
-							recognizer.Ejb3PositionalParameter(param, indx);
+							recognizer.JpaPositionalParameter(param, indx);
 							indx = chopLocation - 1;
 						}
 						else

@@ -1,7 +1,11 @@
-using System;
-
 namespace NHibernate.Loader.Custom
 {
+	/// <summary> 
+	/// Represents a return which names a collection role; it
+	/// is used in defining a custom query for loading an entity's
+	/// collection in non-fetching scenarios (i.e., loading the collection
+	/// itself as the "root" of the result). 
+	/// </summary>
 	public class CollectionReturn : NonScalarReturn
 	{
 		private readonly string ownerEntityName;
@@ -9,13 +13,8 @@ namespace NHibernate.Loader.Custom
 		private readonly ICollectionAliases collectionAliases;
 		private readonly IEntityAliases elementEntityAliases;
 
-		public CollectionReturn(
-			String alias,
-			String ownerEntityName,
-			String ownerProperty,
-			ICollectionAliases collectionAliases,
-			IEntityAliases elementEntityAliases,
-			LockMode lockMode)
+		public CollectionReturn(string alias, string ownerEntityName, string ownerProperty,
+		                        ICollectionAliases collectionAliases, IEntityAliases elementEntityAliases, LockMode lockMode)
 			: base(alias, lockMode)
 		{
 			this.ownerEntityName = ownerEntityName;
@@ -24,11 +23,13 @@ namespace NHibernate.Loader.Custom
 			this.elementEntityAliases = elementEntityAliases;
 		}
 
+		/// <summary> Returns the class owning the collection. </summary>
 		public string OwnerEntityName
 		{
 			get { return ownerEntityName; }
 		}
 
+		/// <summary> Returns the name of the property representing the collection from the <see cref="OwnerEntityName"/>. </summary>
 		public string OwnerProperty
 		{
 			get { return ownerProperty; }

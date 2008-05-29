@@ -1,5 +1,5 @@
-using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Persister.Collection;
 using NHibernate.Util;
 
@@ -15,29 +15,19 @@ namespace NHibernate.Loader.Custom
 		private readonly string[] indexAliases;
 		private readonly string[] elementAliases;
 		private readonly string identifierAlias;
-		private IDictionary userProvidedAliases;
+		private readonly IDictionary<string, string[]> userProvidedAliases;
 
-		public ColumnCollectionAliases(IDictionary userProvidedAliases, ISqlLoadableCollection persister)
+		public ColumnCollectionAliases(IDictionary<string, string[]> userProvidedAliases, ISqlLoadableCollection persister)
 		{
 			this.userProvidedAliases = userProvidedAliases;
 
-			this.keyAliases = GetUserProvidedAliases(
-				"key",
-				persister.KeyColumnNames
-				);
+			keyAliases = GetUserProvidedAliases("key", persister.KeyColumnNames);
 
-			this.indexAliases = GetUserProvidedAliases(
-				"index",
-				persister.IndexColumnNames
-				);
+			indexAliases = GetUserProvidedAliases("index", persister.IndexColumnNames);
 
-			this.elementAliases = GetUserProvidedAliases("element",
-			                                             persister.ElementColumnNames
-				);
+			elementAliases = GetUserProvidedAliases("element", persister.ElementColumnNames);
 
-			this.identifierAlias = GetUserProvidedAlias("id",
-			                                            persister.IdentifierColumnName
-				);
+			identifierAlias = GetUserProvidedAlias("id", persister.IdentifierColumnName);
 		}
 
 		/// <summary>
@@ -77,35 +67,36 @@ namespace NHibernate.Loader.Custom
 			get { return identifierAlias; }
 		}
 
-
 		/// <summary>
 		/// Returns the suffix used to unique the column aliases for this particular alias set.
 		/// </summary>
 		/// <value>The uniqued column alias suffix.</value>
 		public string Suffix
 		{
-			get { return ""; }
+			get { return string.Empty; }
 		}
 
 		public override string ToString()
 		{
-			return base.ToString() + " [ suffixedKeyAliases=[" + Join(keyAliases) +
-			       "], suffixedIndexAliases=[" + Join(indexAliases) +
-			       "], suffixedElementAliases=[" + Join(elementAliases) +
-			       "], suffixedIdentifierAlias=[" + identifierAlias + "]]";
+			return
+				base.ToString() + " [ suffixedKeyAliases=[" + Join(keyAliases) + "], suffixedIndexAliases=[" + Join(indexAliases)
+				+ "], suffixedElementAliases=[" + Join(elementAliases) + "], suffixedIdentifierAlias=[" + identifierAlias + "]]";
 		}
 
-		private string Join(string[] aliases)
+		private static string Join(IEnumerable aliases)
 		{
-			if (aliases == null) return null;
+			if (aliases == null)
+			{
+				return null;
+			}
 
 			return StringHelper.Join(", ", aliases);
 		}
 
 		private string[] GetUserProvidedAliases(string propertyPath, string[] defaultAliases)
 		{
-			string[] result = (string[]) userProvidedAliases[propertyPath];
-			if (result == null)
+			string[] result;
+			if (!userProvidedAliases.TryGetValue(propertyPath, out result))
 			{
 				return defaultAliases;
 			}
@@ -117,8 +108,8 @@ namespace NHibernate.Loader.Custom
 
 		private string GetUserProvidedAlias(string propertyPath, string defaultAlias)
 		{
-			string[] columns = (string[]) userProvidedAliases[propertyPath];
-			if (columns == null)
+			string[] columns;
+			if (!userProvidedAliases.TryGetValue(propertyPath, out columns))
 			{
 				return defaultAlias;
 			}

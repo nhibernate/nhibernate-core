@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Engine.Query.Sql
 {
@@ -27,7 +27,7 @@ namespace NHibernate.Engine.Query.Sql
 		/// </param>
 		/// <param name="propertyResults">Any user-supplied column->property mappings </param>
 		/// <param name="lockMode">The lock mode to apply to the collection. </param>
-		public NativeSQLQueryCollectionReturn(string alias, string ownerEntityName, string ownerProperty, IDictionary propertyResults, LockMode lockMode)
+		public NativeSQLQueryCollectionReturn(string alias, string ownerEntityName, string ownerProperty, IDictionary<string, string[]> propertyResults, LockMode lockMode)
 			: base(alias, propertyResults, lockMode)
 		{
 			this.ownerEntityName = ownerEntityName;

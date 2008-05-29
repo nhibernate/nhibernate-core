@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Persister.Collection;
 using NHibernate.Util;
 
@@ -16,36 +15,25 @@ namespace NHibernate.Loader
 		private readonly string[] indexAliases;
 		private readonly string[] elementAliases;
 		private readonly string identifierAlias;
-		private IDictionary userProvidedAliases;
+		private readonly IDictionary<string, string[]> userProvidedAliases;
 
-		public GeneratedCollectionAliases(IDictionary userProvidedAliases, ICollectionPersister persister, string suffix)
+		public GeneratedCollectionAliases(IDictionary<string, string[]> userProvidedAliases, ICollectionPersister persister,
+		                                  string suffix)
 		{
 			this.suffix = suffix;
 			this.userProvidedAliases = userProvidedAliases;
 
-			this.keyAliases = GetUserProvidedAliases(
-				"key",
-				persister.GetKeyColumnAliases(suffix)
-				);
+			keyAliases = GetUserProvidedAliases("key", persister.GetKeyColumnAliases(suffix));
 
-			this.indexAliases = GetUserProvidedAliases(
-				"index",
-				persister.GetIndexColumnAliases(suffix)
-				);
+			indexAliases = GetUserProvidedAliases("index", persister.GetIndexColumnAliases(suffix));
 
-			this.elementAliases = GetUserProvidedAliases("element",
-			                                             persister.GetElementColumnAliases(suffix)
-				);
+			elementAliases = GetUserProvidedAliases("element", persister.GetElementColumnAliases(suffix));
 
-			this.identifierAlias = GetUserProvidedAlias("id",
-			                                            persister.GetIdentifierColumnAlias(suffix)
-				);
+			identifierAlias = GetUserProvidedAlias("id", persister.GetIdentifierColumnAlias(suffix));
 		}
 
 		public GeneratedCollectionAliases(ICollectionPersister persister, string str)
-			: this(CollectionHelper.EmptyMap, persister, str)
-		{
-		}
+			: this(new CollectionHelper.EmptyMapClass<string, string[]>(), persister, str) {}
 
 		/// <summary>
 		/// Returns the suffixed result-set column-aliases for columns making up the key for this collection (i.e., its FK to
@@ -90,14 +78,13 @@ namespace NHibernate.Loader
 
 		public override string ToString()
 		{
-			return base.ToString() + " [suffix=" + suffix +
-			       ", suffixedKeyAliases=[" + Join(keyAliases) +
-			       "], suffixedIndexAliases=[" + Join(indexAliases) +
-			       "], suffixedElementAliases=[" + Join(elementAliases) +
-			       "], suffixedIdentifierAlias=[" + identifierAlias + "]]";
+			return
+				string.Format(
+					"{0} [suffix={1}, suffixedKeyAliases=[{2}], suffixedIndexAliases=[{3}], suffixedElementAliases=[{4}], suffixedIdentifierAlias=[{5}]]",
+					base.ToString(), suffix, Join(keyAliases), Join(indexAliases), Join(elementAliases), identifierAlias);
 		}
 
-		private string Join(string[] aliases)
+		private static string Join(IEnumerable<string> aliases)
 		{
 			if (aliases == null)
 			{
@@ -109,8 +96,8 @@ namespace NHibernate.Loader
 
 		private string[] GetUserProvidedAliases(string propertyPath, string[] defaultAliases)
 		{
-			string[] result = (string[]) userProvidedAliases[propertyPath];
-			if (result == null)
+			string[] result;
+			if (!userProvidedAliases.TryGetValue(propertyPath, out result))
 			{
 				return defaultAliases;
 			}
@@ -122,8 +109,8 @@ namespace NHibernate.Loader
 
 		private string GetUserProvidedAlias(string propertyPath, string defaultAlias)
 		{
-			string[] columns = (string[]) userProvidedAliases[propertyPath];
-			if (columns == null)
+			string[] columns;
+			if (!userProvidedAliases.TryGetValue(propertyPath, out columns))
 			{
 				return defaultAlias;
 			}

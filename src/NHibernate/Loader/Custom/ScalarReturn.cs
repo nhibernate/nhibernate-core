@@ -1,8 +1,8 @@
-using System;
 using NHibernate.Type;
 
 namespace NHibernate.Loader.Custom
 {
+	/// <summary> Represent a scalar (aka simple value) return within a query result. </summary>
 	public class ScalarReturn : IReturn
 	{
 		private readonly IType type;

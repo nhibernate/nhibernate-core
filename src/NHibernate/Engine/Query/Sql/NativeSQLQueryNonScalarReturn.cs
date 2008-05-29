@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Engine.Query.Sql
 {
@@ -12,14 +13,14 @@ namespace NHibernate.Engine.Query.Sql
 	public abstract class NativeSQLQueryNonScalarReturn : INativeSQLQueryReturn
 	{
 		private readonly string alias;
-		private readonly Hashtable propertyResults = new Hashtable();
+		private readonly Dictionary<string, string[]> propertyResults = new Dictionary<string, string[]>();
 		private readonly LockMode lockMode;
 
 		/// <summary> Constructs some form of non-scalar return descriptor </summary>
 		/// <param name="alias">The result alias </param>
 		/// <param name="propertyResults">Any user-supplied column->property mappings </param>
 		/// <param name="lockMode">The lock mode to apply to the return. </param>
-		protected internal NativeSQLQueryNonScalarReturn(string alias, IDictionary propertyResults, LockMode lockMode)
+		protected internal NativeSQLQueryNonScalarReturn(string alias, IDictionary<string, string[]> propertyResults, LockMode lockMode)
 		{
 			if (string.IsNullOrEmpty(alias))
 				throw new ArgumentNullException("alias", "A valid scalar alias must be specified.");
@@ -46,7 +47,7 @@ namespace NHibernate.Engine.Query.Sql
 		}
 
 		/// <summary> Retrieve the user-supplied column->property mappings. </summary>
-		public Hashtable PropertyResultsMap
+		public IDictionary<string, string[]> PropertyResultsMap
 		{
 			get { return propertyResults; }
 		}

@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Loader.Custom
@@ -9,10 +8,8 @@ namespace NHibernate.Loader.Custom
 	/// </summary>
 	public class ColumnEntityAliases : DefaultEntityAliases
 	{
-		public ColumnEntityAliases(IDictionary returnProperties, ILoadable persister, string suffix)
-			: base(returnProperties, persister, suffix)
-		{
-		}
+		public ColumnEntityAliases(IDictionary<string, string[]> returnProperties, ILoadable persister, string suffix)
+			: base(returnProperties, persister, suffix) {}
 
 		protected override string[] GetIdentifierAliases(ILoadable persister, string suffix)
 		{

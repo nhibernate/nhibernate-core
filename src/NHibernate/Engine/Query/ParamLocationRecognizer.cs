@@ -64,7 +64,7 @@ namespace NHibernate.Engine.Query
 			GetOrBuildNamedParameterDescription(name, false).Add(position);
 		}
 
-		public void Ejb3PositionalParameter(string name, int position)
+		public void JpaPositionalParameter(string name, int position)
 		{
 			GetOrBuildNamedParameterDescription(name, true).Add(position);
 		}

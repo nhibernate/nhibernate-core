@@ -1,20 +1,14 @@
-using System;
-
 namespace NHibernate.Loader.Custom
 {
+	/// <summary> Spefically a fetch return that refers to a collection association. </summary>
 	public class CollectionFetchReturn : FetchReturn
 	{
 		private readonly ICollectionAliases collectionAliases;
 		private readonly IEntityAliases elementEntityAliases;
 
-		public CollectionFetchReturn(
-			String alias,
-			NonScalarReturn owner,
-			String ownerProperty,
-			ICollectionAliases collectionAliases,
-			IEntityAliases elementEntityAliases,
-			LockMode lockMode)
-			: base(owner, ownerProperty, alias, lockMode)
+		public CollectionFetchReturn(string alias, NonScalarReturn owner, string ownerProperty,
+		                             ICollectionAliases collectionAliases, IEntityAliases elementEntityAliases,
+		                             LockMode lockMode) : base(owner, ownerProperty, alias, lockMode)
 		{
 			this.collectionAliases = collectionAliases;
 			this.elementEntityAliases = elementEntityAliases;

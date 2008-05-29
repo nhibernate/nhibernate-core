@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
 
@@ -16,25 +16,23 @@ namespace NHibernate.Loader
 		private readonly string suffixedDiscriminatorColumn;
 		private readonly string suffix;
 		private readonly string rowIdAlias;
-		private readonly IDictionary userProvidedAliases;
+		private readonly IDictionary<string, string[]> userProvidedAliases;
 
 		public DefaultEntityAliases(ILoadable persister, string suffix)
-			: this(CollectionHelper.EmptyMap, persister, suffix)
-		{
-		}
+			: this(new CollectionHelper.EmptyMapClass<string, string[]>(), persister, suffix) {}
 
 		/// <summary>
 		/// Calculate and cache select-clause suffixes.
 		/// </summary>
-		public DefaultEntityAliases(IDictionary userProvidedAliases, ILoadable persister, string suffix)
+		public DefaultEntityAliases(IDictionary<string, string[]> userProvidedAliases, ILoadable persister, string suffix)
 		{
 			this.suffix = suffix;
 			this.userProvidedAliases = userProvidedAliases;
 
-			string[] keyColumnsCandidates = GetUserProvidedAliases(persister.IdentifierPropertyName,(string[]) null);
+			string[] keyColumnsCandidates = GetUserProvidedAliases(persister.IdentifierPropertyName, null);
 			if (keyColumnsCandidates == null)
 			{
-				suffixedKeyColumns = GetUserProvidedAliases(EntityPersister.EntityID,GetIdentifierAliases(persister, suffix));
+				suffixedKeyColumns = GetUserProvidedAliases(EntityPersister.EntityID, GetIdentifierAliases(persister, suffix));
 			}
 			else
 			{
@@ -43,7 +41,8 @@ namespace NHibernate.Loader
 			Intern(suffixedKeyColumns);
 
 			suffixedPropertyColumns = GetSuffixedPropertyAliases(persister);
-			suffixedDiscriminatorColumn = GetUserProvidedAlias(AbstractEntityPersister.EntityClass,GetDiscriminatorAlias(persister, suffix));
+			suffixedDiscriminatorColumn =
+				GetUserProvidedAlias(AbstractEntityPersister.EntityClass, GetDiscriminatorAlias(persister, suffix));
 			if (persister.IsVersioned)
 			{
 				suffixedVersionColumn = suffixedPropertyColumns[persister.VersionProperty];
@@ -72,7 +71,7 @@ namespace NHibernate.Loader
 
 		private string[] GetUserProvidedAliases(string propertyPath, string[] defaultAliases)
 		{
-			string[] result = propertyPath == null ? null : (string[]) userProvidedAliases[propertyPath];
+			string[] result = propertyPath == null ? null : GetUserProvidedAlias(propertyPath);
 			if (result == null)
 			{
 				return defaultAliases;
@@ -83,9 +82,16 @@ namespace NHibernate.Loader
 			}
 		}
 
+		private string[] GetUserProvidedAlias(string propertyPath)
+		{
+			string[] result;
+			userProvidedAliases.TryGetValue(propertyPath, out result);
+			return result;
+		}
+
 		private string GetUserProvidedAlias(string propertyPath, string defaultAlias)
 		{
-			string[] columns = propertyPath == null ? null : (string[]) userProvidedAliases[propertyPath];
+			string[] columns = propertyPath == null ? null : GetUserProvidedAlias(propertyPath);
 			if (columns == null)
 			{
 				return defaultAlias;
@@ -102,10 +108,7 @@ namespace NHibernate.Loader
 			string[][] suffixedPropertyAliases = new string[size][];
 			for (int j = 0; j < size; j++)
 			{
-				suffixedPropertyAliases[j] = GetUserProvidedAliases(
-					persister.PropertyNames[j],
-					GetPropertyAliases(persister, j)
-					);
+				suffixedPropertyAliases[j] = GetUserProvidedAliases(persister.PropertyNames[j], GetPropertyAliases(persister, j));
 				Intern(suffixedPropertyAliases[j]);
 			}
 			return suffixedPropertyAliases;

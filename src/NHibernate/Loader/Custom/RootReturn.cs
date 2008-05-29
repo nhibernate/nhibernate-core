@@ -1,17 +1,18 @@
-using System;
-
 namespace NHibernate.Loader.Custom
 {
+	/// <summary> 
+	/// Represents a return which names a "root" entity.
+	/// </summary>
+	/// <remarks>
+	/// A root entity means it is explicitly a "column" in the result, as opposed to
+	/// a fetched association.
+	/// </remarks>
 	public class RootReturn : NonScalarReturn
 	{
 		private readonly string entityName;
 		private readonly IEntityAliases entityAliases;
 
-		public RootReturn(
-			String alias,
-			String entityName,
-			IEntityAliases entityAliases,
-			LockMode lockMode)
+		public RootReturn(string alias, string entityName, IEntityAliases entityAliases, LockMode lockMode)
 			: base(alias, lockMode)
 		{
 			this.entityName = entityName;

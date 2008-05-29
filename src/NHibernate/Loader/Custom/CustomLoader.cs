@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -23,7 +22,7 @@ namespace NHibernate.Loader.Custom
 
 		private readonly SqlString sql;
 		private readonly ISet<string> querySpaces = new HashedSet<string>();
-		private readonly IDictionary namedParameterBindPoints;
+		private readonly IDictionary<string, object> namedParameterBindPoints;
 
 		private readonly IQueryable[] entityPersisters;
 		private readonly int[] entityOwners;
@@ -135,7 +134,7 @@ namespace NHibernate.Loader.Custom
 					collectionowners.Add(ownerIndex);
 					lockmodes.Add(fetchRtn.LockMode);
 					IQueryable ownerPersister = DetermineAppropriateOwnerPersister(ownerDescriptor);
-					String role = ownerPersister.EntityName + '.' + fetchRtn.OwnerProperty;
+					string role = ownerPersister.EntityName + '.' + fetchRtn.OwnerProperty;
 					IQueryableCollection persister = (IQueryableCollection) factory.GetCollectionPersister(role);
 					collectionpersisters.Add(persister);
 					nonScalarReturnList.Add(rtn);
@@ -417,7 +416,7 @@ namespace NHibernate.Loader.Custom
 				this.position = position;
 			}
 
-			public object Extract(Object[] data, IDataReader resultSet, ISessionImplementor session)
+			public object Extract(object[] data, IDataReader resultSet, ISessionImplementor session)
 			{
 				return data[position];
 			}

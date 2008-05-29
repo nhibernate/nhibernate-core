@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using NHibernate.Engine.Query;
 using NHibernate.Persister.Collection;
@@ -17,25 +18,23 @@ namespace NHibernate.Loader.Custom.Sql
 			bool IsCollectionAlias(string aliasName);
 			ISqlLoadableCollection GetCollectionPersisterByAlias(string alias);
 			string GetCollectionSuffixByAlias(string alias);
-			IDictionary GetPropertyResultsMapByAlias(string alias);
+			IDictionary<string, string[]> GetPropertyResultsMapByAlias(string alias);
 		}
 
-		private readonly string sqlQuery;
-		private IParserContext context;
+		private readonly string originalQueryString;
+		private readonly IParserContext context;
 
-		private readonly IDictionary namedParameters = new Hashtable();
+		private readonly Dictionary<string, object> namedParameters = new Dictionary<string, object>();
 
 		private long aliasesFound = 0;
 
-		public SQLQueryParser(
-			string sqlQuery,
-			IParserContext context)
+		public SQLQueryParser(string sqlQuery, IParserContext context)
 		{
-			this.sqlQuery = sqlQuery;
+			originalQueryString = sqlQuery;
 			this.context = context;
 		}
 
-		public IDictionary NamedParameters
+		public IDictionary<string, object> NamedParameters
 		{
 			get { return namedParameters; }
 		}
@@ -47,36 +46,37 @@ namespace NHibernate.Loader.Custom.Sql
 
 		public SqlString Process()
 		{
-			return substituteParams(SubstituteBrackets());
+			return SubstituteParams(SubstituteBrackets());
 		}
 
 		// TODO: should "record" how many properties we have reffered to - and if we 
 		//       don't get'em'all we throw an exception! Way better than trial and error ;)
 		private string SubstituteBrackets()
 		{
-			StringBuilder result = new StringBuilder(sqlQuery.Length + 20);
-			int left, right;
+			StringBuilder result = new StringBuilder(originalQueryString.Length + 20);
+			int right;
 
 			// replace {....} with corresponding column aliases
-			for (int curr = 0; curr < sqlQuery.Length; curr = right + 1)
+			for (int curr = 0; curr < originalQueryString.Length; curr = right + 1)
 			{
-				if ((left = sqlQuery.IndexOf('{', curr)) < 0)
+				int left;
+				if ((left = originalQueryString.IndexOf('{', curr)) < 0)
 				{
 					// No additional open braces found in the string, Append the
 					// rest of the string in its entirty and quit this loop
-					result.Append(sqlQuery.Substring(curr));
+					result.Append(originalQueryString.Substring(curr));
 					break;
 				}
 
 				// apend everything up until the next encountered open brace
-				result.Append(sqlQuery.Substring(curr, left - curr));
+				result.Append(originalQueryString.Substring(curr, left - curr));
 
-				if ((right = sqlQuery.IndexOf('}', left + 1)) < 0)
+				if ((right = originalQueryString.IndexOf('}', left + 1)) < 0)
 				{
-					throw new QueryException("Unmatched braces for alias path", sqlQuery);
+					throw new QueryException("Unmatched braces for alias path", originalQueryString);
 				}
 
-				string aliasPath = sqlQuery.Substring(left + 1, right - (left + 1));
+				string aliasPath = originalQueryString.Substring(left + 1, right - (left + 1));
 				int firstDot = aliasPath.IndexOf('.');
 				if (firstDot == -1)
 				{
@@ -102,36 +102,17 @@ namespace NHibernate.Loader.Custom.Sql
 					{
 						// The current alias is referencing the collection to be eagerly fetched
 						string propertyName = aliasPath.Substring(firstDot + 1);
-						result.Append(
-							ResolveCollectionProperties(
-								aliasName,
-								propertyName,
-								context.GetPropertyResultsMapByAlias(aliasName),
-								context.GetEntityPersisterByAlias(aliasName),
-								context.GetCollectionPersisterByAlias(aliasName),
-								context.GetCollectionSuffixByAlias(aliasName),
-								context.GetEntitySuffixByAlias(aliasName)
-								)
-							);
+						result.Append(ResolveCollectionProperties(aliasName, propertyName));
 						aliasesFound++;
 					}
 					else if (isEntity)
 					{
 						// it is a property reference {foo.bar}
 						string propertyName = aliasPath.Substring(firstDot + 1);
-						result.Append(
-							ResolveProperties(
-								aliasName,
-								propertyName,
-								context.GetPropertyResultsMapByAlias(aliasName),
-								context.GetEntityPersisterByAlias(aliasName),
-								context.GetEntitySuffixByAlias(aliasName)
-								)
-							);
+						result.Append(ResolveProperties(aliasName, propertyName));
 						aliasesFound++;
 					}
-
-					if (!isEntity && !isCollection)
+					else
 					{
 						// passing through anything we do not know to support jdbc escape sequences HB-898
 						result.Append('{').Append(aliasPath).Append('}');
@@ -144,141 +125,111 @@ namespace NHibernate.Loader.Custom.Sql
 			return result.ToString();
 		}
 
-		private string ResolveCollectionProperties(
-			string aliasName,
-			string propertyName,
-			IDictionary fieldResults,
-			ISqlLoadable elementPersister,
-			ISqlLoadableCollection currentPersister,
-			string suffix,
-			string persisterSuffix)
+		private string ResolveCollectionProperties(string aliasName, string propertyName)
 		{
+			IDictionary<string, string[]> fieldResults = context.GetPropertyResultsMapByAlias(aliasName);
+			ISqlLoadableCollection collectionPersister = context.GetCollectionPersisterByAlias(aliasName);
+			string collectionSuffix = context.GetCollectionSuffixByAlias(aliasName);
+
 			if ("*".Equals(propertyName))
 			{
-				if (fieldResults.Count > 0)
+				if (fieldResults.Count != 0)
 				{
 					throw new QueryException("Using return-propertys together with * syntax is not supported.");
 				}
 
-				string selectFragment = currentPersister.SelectFragment(aliasName, suffix);
+				string selectFragment = collectionPersister.SelectFragment(aliasName, collectionSuffix);
 				aliasesFound++;
-				return selectFragment
-				       + ", "
-				       + ResolveProperties(aliasName, propertyName, fieldResults, elementPersister, persisterSuffix);
+				return selectFragment + ", " + ResolveProperties(aliasName, propertyName);
 			}
 			else if ("element.*".Equals(propertyName))
 			{
-				return ResolveProperties(aliasName, "*", fieldResults, elementPersister, persisterSuffix);
+				return ResolveProperties(aliasName, "*");
 			}
 			else
 			{
 				string[] columnAliases;
 
 				// Let return-propertys override whatever the persister has for aliases.
-				columnAliases = (string[]) fieldResults[propertyName];
-				if (columnAliases == null)
+				if (!fieldResults.TryGetValue(propertyName,out columnAliases))
 				{
-					columnAliases = currentPersister.GetCollectionPropertyColumnAliases(propertyName, suffix);
+					columnAliases = collectionPersister.GetCollectionPropertyColumnAliases(propertyName, collectionSuffix);
 				}
 
 				if (columnAliases == null || columnAliases.Length == 0)
 				{
-					throw new QueryException("No column name found for property [" +
-					                         propertyName +
-					                         "] for alias [" + aliasName + "]",
-					                         sqlQuery);
+					throw new QueryException("No column name found for property [" + propertyName + "] for alias [" + aliasName + "]",
+					                         originalQueryString);
 				}
 				if (columnAliases.Length != 1)
 				{
 					// TODO: better error message since we actually support composites if names are explicitly listed.
-					throw new QueryException("SQL queries only support properties mapped to a single column - property [" +
-					                         propertyName +
-					                         "] is mapped to " +
-					                         columnAliases.Length +
-					                         " columns.",
-					                         sqlQuery);
+					throw new QueryException(
+						"SQL queries only support properties mapped to a single column - property [" + propertyName + "] is mapped to "
+						+ columnAliases.Length + " columns.", originalQueryString);
 				}
 				aliasesFound++;
 				return columnAliases[0];
 			}
 		}
 
-		private string ResolveProperties(
-			string aliasName,
-			string propertyName,
-			IDictionary fieldResults,
-			ISqlLoadable currentPersister,
-			string suffix)
+		private string ResolveProperties(string aliasName, string propertyName)
 		{
-			/*int currentPersisterIndex = getPersisterIndex( aliasName );
-
-			if ( !aliasName.Equals( aliases[currentPersisterIndex] ) ) {
-				throw new QueryException( "Alias [" +
-						aliasName +
-						"] does not correspond to return alias " +
-						aliases[currentPersisterIndex],
-						sqlQuery );
-			}*/
+			IDictionary<string, string[]> fieldResults = context.GetPropertyResultsMapByAlias(aliasName);
+			ISqlLoadable persister = context.GetEntityPersisterByAlias(aliasName);
+			string suffix = context.GetEntitySuffixByAlias(aliasName);
 
 			if ("*".Equals(propertyName))
 			{
-				if (fieldResults.Count > 0)
+				if (fieldResults.Count != 0)
 				{
 					throw new QueryException("Using return-propertys together with * syntax is not supported.");
 				}
 				aliasesFound++;
-				return currentPersister.SelectFragment(aliasName, suffix);
+				return persister.SelectFragment(aliasName, suffix);
 			}
 			else
 			{
 				string[] columnAliases;
 
 				// Let return-propertys override whatever the persister has for aliases.
-				columnAliases = (string[]) fieldResults[propertyName];
-				if (columnAliases == null)
+				if (!fieldResults.TryGetValue(propertyName, out columnAliases))
 				{
-					columnAliases = currentPersister.GetSubclassPropertyColumnAliases(propertyName, suffix);
+					columnAliases = persister.GetSubclassPropertyColumnAliases(propertyName, suffix);
 				}
 
 				if (columnAliases == null || columnAliases.Length == 0)
 				{
-					throw new QueryException("No column name found for property [" +
-					                         propertyName +
-					                         "] for alias [" + aliasName + "]",
-					                         sqlQuery);
+					throw new QueryException("No column name found for property [" + propertyName + "] for alias [" + aliasName + "]",
+					                         originalQueryString);
 				}
 				if (columnAliases.Length != 1)
 				{
 					// TODO: better error message since we actually support composites if names are explicitly listed.
-					throw new QueryException("SQL queries only support properties mapped to a single column - property [" +
-					                         propertyName +
-					                         "] is mapped to " +
-					                         columnAliases.Length +
-					                         " columns.",
-					                         sqlQuery);
+					throw new QueryException(
+						"SQL queries only support properties mapped to a single column - property [" + propertyName + "] is mapped to "
+						+ columnAliases.Length + " columns.", originalQueryString);
 				}
 				aliasesFound++;
 				return columnAliases[0];
 			}
 		}
 
-		/**
-		 * Substitues JDBC parameter placeholders (?) for all encountered
-		 * parameter specifications.  It also tracks the positions of these
-		 * parameter specifications within the query string.  This accounts for
-		 * ordinal-params, named-params, and ejb3-positional-params.
-		 *
-		 * @param sqlString The query string.
-		 * @return The SQL query with parameter substitution complete.
-		 */
-
-		private SqlString substituteParams(string sqlString)
+		/// <summary> 
+		/// Substitues ADO parameter placeholders (?) for all encountered
+		/// parameter specifications.  It also tracks the positions of these
+		/// parameter specifications within the query string.  This accounts for
+		/// ordinal-params, named-params, and ejb3-positional-params.
+		///  </summary>
+		/// <param name="sqlString">The query string. </param>
+		/// <returns> The SQL query with parameter substitution complete. </returns>
+		private SqlString SubstituteParams(string sqlString)
 		{
 			ParameterSubstitutionRecognizer recognizer = new ParameterSubstitutionRecognizer();
 			ParameterParser.Parse(sqlString, recognizer);
 
 			namedParameters.Clear();
-			foreach (DictionaryEntry de in recognizer.namedParameterBindPoints)
+			foreach (KeyValuePair<string, object> de in recognizer.namedParameterBindPoints)
 			{
 				namedParameters.Add(de.Key, de.Value);
 			}
@@ -289,7 +240,7 @@ namespace NHibernate.Loader.Custom.Sql
 		public class ParameterSubstitutionRecognizer : ParameterParser.IRecognizer
 		{
 			internal SqlStringBuilder result = new SqlStringBuilder();
-			internal IDictionary namedParameterBindPoints = new Hashtable();
+			internal Dictionary<string, object> namedParameterBindPoints = new Dictionary<string, object>();
 			internal int parameterCount = 0;
 
 			public void OutParameter(int position)
@@ -308,28 +259,28 @@ namespace NHibernate.Loader.Custom.Sql
 				result.Add(Parameter.Placeholder);
 			}
 
-			public void Ejb3PositionalParameter(string name, int position)
+			public void JpaPositionalParameter(string name, int position)
 			{
 				NamedParameter(name, position);
 			}
 
 			public void Other(char character)
 			{
-				result.Add(new string(character, 1));
+				result.Add(character.ToString());
 			}
 
 			private void AddNamedParameter(string name)
 			{
 				int loc = parameterCount++;
-				object o = namedParameterBindPoints[name];
-				if (o == null)
+				object o;
+				if (!namedParameterBindPoints.TryGetValue(name, out o))
 				{
 					namedParameterBindPoints[name] = loc;
 				}
 				else if (o is int)
 				{
-					ArrayList list = new ArrayList(4);
-					list.Add(o);
+					List<int> list = new List<int>(4);
+					list.Add((int) o);
 					list.Add(loc);
 					namedParameterBindPoints[name] = list;
 				}
