@@ -120,7 +120,7 @@ namespace NHibernate.Test.Legacy
 
 				baseCriteria = s.CreateCriteria(typeof(Fum))
 					.Add(Expression.Like("FumString", "f%"))
-					.SetResultTransformer(CriteriaUtil.AliasToEntityMap);
+					.SetResultTransformer(CriteriaSpecification.AliasToEntityMap);
 				baseCriteria.CreateCriteria("Fo", "fo")
 					.Add(Expression.IsNotNull("FumString"));
 				baseCriteria.CreateCriteria("Friends", "fum")
@@ -134,7 +134,7 @@ namespace NHibernate.Test.Legacy
 
 				baseCriteria = s.CreateCriteria(typeof(Fum))
 					.Add(Expression.Like("FumString", "f%"))
-					.SetResultTransformer(CriteriaUtil.AliasToEntityMap)
+					.SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
 					.SetFetchMode("Friends", FetchMode.Eager);
 				baseCriteria.CreateCriteria("Fo", "fo")
 					.Add(Expression.Eq("FumString", fum.Fo.FumString));

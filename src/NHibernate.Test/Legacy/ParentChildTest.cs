@@ -228,7 +228,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(2, list.Count);
 
 			s.CreateCriteria(typeof(Glarch)).SetLockMode(LockMode.Upgrade).List();
-			s.CreateCriteria(typeof(Glarch)).SetLockMode(CriteriaUtil.RootAlias, LockMode.Upgrade).List();
+			s.CreateCriteria(typeof(Glarch)).SetLockMode(CriteriaSpecification.RootAlias, LockMode.Upgrade).List();
 
 			g2.Name = null;
 			t.Commit();

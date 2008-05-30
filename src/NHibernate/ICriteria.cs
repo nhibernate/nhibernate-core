@@ -184,9 +184,9 @@ namespace NHibernate
 		/// <summary>
 		/// Set a strategy for handling the query results. This determines the
 		/// "shape" of the query result set.
-		/// <seealso cref="CriteriaUtil.RootEntity"/>
-		/// <seealso cref="CriteriaUtil.DistinctRootEntity"/>
-		/// <seealso cref="CriteriaUtil.AliasToEntityMap"/>
+		/// <seealso cref="CriteriaSpecification.RootEntity"/>
+		/// <seealso cref="CriteriaSpecification.DistinctRootEntity"/>
+		/// <seealso cref="CriteriaSpecification.AliasToEntityMap"/>
 		/// </summary>
 		/// <param name="resultTransformer"></param>
 		/// <returns></returns>

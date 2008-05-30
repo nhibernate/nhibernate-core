@@ -591,7 +591,7 @@ namespace NHibernate.Test.Criteria
 				.Add(Expression.Gt("StudentNumber", 665L))
 				.Add(Expression.Lt("StudentNumber", 668L))
 				.AddOrder(Order.Asc("stNumber"))
-				.SetResultTransformer(CriteriaUtil.AliasToEntityMap)
+				.SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
 				.List();
 
 			Assert.AreEqual(1, resultWithMaps.Count);
@@ -603,7 +603,7 @@ namespace NHibernate.Test.Criteria
 			resultWithMaps = s.CreateCriteria(typeof(Enrolment))
 				.SetProjection(Projections.Property("StudentNumber").As("stNumber"))
 				.AddOrder(Order.Desc("stNumber"))
-				.SetResultTransformer(CriteriaUtil.AliasToEntityMap)
+				.SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
 				.List();
 
 			Assert.AreEqual(2, resultWithMaps.Count);
@@ -777,7 +777,7 @@ namespace NHibernate.Test.Criteria
 				.Add(Expression.Gt("StudentNumber", 665L))
 				.Add(Expression.Lt("StudentNumber", 668L))
 				.AddOrder(Order.Asc("stNumber"))
-				.SetResultTransformer(CriteriaUtil.AliasToEntityMap);
+				.SetResultTransformer(CriteriaSpecification.AliasToEntityMap);
 			IList resultWithMaps = CriteriaTransformer.Clone(criteriaToClone2)
 				.List();
 
@@ -790,7 +790,7 @@ namespace NHibernate.Test.Criteria
 			ICriteria criteria = s.CreateCriteria(typeof(Enrolment))
 				.SetProjection(Projections.Property("StudentNumber").As("stNumber"))
 				.AddOrder(Order.Desc("stNumber"))
-				.SetResultTransformer(CriteriaUtil.AliasToEntityMap);
+				.SetResultTransformer(CriteriaSpecification.AliasToEntityMap);
 			resultWithMaps = CriteriaTransformer.Clone(criteria)
 				.List();
 
@@ -966,7 +966,7 @@ namespace NHibernate.Test.Criteria
 				.Add(Property.ForName("StudentNumber").Gt(665L))
 				.Add(Property.ForName("StudentNumber").Lt(668L))
 				.AddOrder(Property.ForName("StudentNumber").Asc())
-				.SetResultTransformer(CriteriaUtil.AliasToEntityMap)
+				.SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
 				.List();
 
 			Assert.AreEqual(1, resultWithMaps.Count);
@@ -978,7 +978,7 @@ namespace NHibernate.Test.Criteria
 			resultWithMaps = s.CreateCriteria(typeof(Enrolment))
 				.SetProjection(Property.ForName("StudentNumber").As("stNumber"))
 				.AddOrder(Order.Desc("stNumber"))
-				.SetResultTransformer(CriteriaUtil.AliasToEntityMap)
+				.SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
 				.List();
 
 			Assert.AreEqual(2, resultWithMaps.Count);
@@ -1145,7 +1145,7 @@ namespace NHibernate.Test.Criteria
 																			.Add(Property.ForName("StudentNumber").Gt(665L))
 																			.Add(Property.ForName("StudentNumber").Lt(668L))
 																			.AddOrder(Property.ForName("StudentNumber").Asc())
-																			.SetResultTransformer(CriteriaUtil.AliasToEntityMap)
+																			.SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
 				);
 			IList resultWithMaps = clonedCriteriaProjection
 				.List();
@@ -1159,7 +1159,7 @@ namespace NHibernate.Test.Criteria
 			resultWithMaps = CriteriaTransformer.Clone(s.CreateCriteria(typeof(Enrolment))
 														.SetProjection(Property.ForName("StudentNumber").As("stNumber"))
 														.AddOrder(Order.Desc("stNumber"))
-														.SetResultTransformer(CriteriaUtil.AliasToEntityMap)
+														.SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
 				)
 				.List();
 

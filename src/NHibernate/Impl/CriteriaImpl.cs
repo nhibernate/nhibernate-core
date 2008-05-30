@@ -425,7 +425,7 @@ namespace NHibernate.Impl
 		}
 
 		public CriteriaImpl(System.Type persistentClass, ISessionImplementor session)
-			: this(persistentClass, CriteriaUtil.RootAlias, session)
+			: this(persistentClass, CriteriaSpecification.RootAlias, session)
 		{
 		}
 
@@ -601,7 +601,7 @@ namespace NHibernate.Impl
 
 		public ICriteria SetLockMode(LockMode lockMode)
 		{
-			return SetLockMode(CriteriaUtil.RootAlias, lockMode);
+			return SetLockMode(CriteriaSpecification.RootAlias, lockMode);
 		}
 
 		public ICriteria SetLockMode(string alias, LockMode lockMode)

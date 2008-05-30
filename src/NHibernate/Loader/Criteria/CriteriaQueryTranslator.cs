@@ -17,7 +17,7 @@ namespace NHibernate.Loader.Criteria
 {
 	public class CriteriaQueryTranslator : ICriteriaQuery
 	{
-		public static readonly string RootSqlAlias = CriteriaUtil.RootAlias + '_';
+		public static readonly string RootSqlAlias = CriteriaSpecification.RootAlias + '_';
 
 		private readonly ICriteriaQuery outerQueryTranslator;
 

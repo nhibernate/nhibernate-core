@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using NHibernate.Transform;
 using NUnit.Framework;
+using NHibernate.Criterion;
 
 namespace NHibernate.Test.SqlTest
 {
@@ -186,7 +187,7 @@ namespace NHibernate.Test.SqlTest
 			Assert.IsTrue(result.Contains("IFA"));
 			Assert.IsTrue(result.Contains("JBoss"));
 
-			result = s.GetNamedQuery("orgNamesOnly").SetResultTransformer(CriteriaUtil.AliasToEntityMap).List();
+			result = s.GetNamedQuery("orgNamesOnly").SetResultTransformer(CriteriaSpecification.AliasToEntityMap).List();
 			IDictionary m = (IDictionary) result[0];
 			Assert.AreEqual(2, result.Count);
 			Assert.AreEqual(1, m.Count);
@@ -283,7 +284,7 @@ namespace NHibernate.Test.SqlTest
 			s = OpenSession();
 			t = s.BeginTransaction();
 			IQuery sqlQuery = s.GetNamedQuery("EmploymentAndPerson");
-			sqlQuery.SetResultTransformer(CriteriaUtil.AliasToEntityMap);
+			sqlQuery.SetResultTransformer(CriteriaSpecification.AliasToEntityMap);
 			list = sqlQuery.List();
 			Assert.AreEqual(1, list.Count);
 			object res = list[0];
@@ -296,7 +297,7 @@ namespace NHibernate.Test.SqlTest
 			s = OpenSession();
 			t = s.BeginTransaction();
 			sqlQuery = s.GetNamedQuery("organizationreturnproperty");
-			sqlQuery.SetResultTransformer(CriteriaUtil.AliasToEntityMap);
+			sqlQuery.SetResultTransformer(CriteriaSpecification.AliasToEntityMap);
 			list = sqlQuery.List();
 			Assert.AreEqual(2, list.Count);
 			m = (IDictionary) list[0];
@@ -430,7 +431,7 @@ namespace NHibernate.Test.SqlTest
 
 			list = s.CreateSQLQuery(EmploymentSQL)
 				.AddEntity(typeof(Employment).FullName)
-				.SetResultTransformer(CriteriaUtil.AliasToEntityMap)
+				.SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
 				.List();
 			Assert.AreEqual(1, list.Count);
 			IDictionary m = (IDictionary) list[0];
@@ -442,7 +443,7 @@ namespace NHibernate.Test.SqlTest
 			object[] o = (object[]) list[0];
 			Assert.AreEqual(8, o.Length);
 
-			list = s.CreateSQLQuery(EmploymentSQL).SetResultTransformer(CriteriaUtil.AliasToEntityMap).List();
+			list = s.CreateSQLQuery(EmploymentSQL).SetResultTransformer(CriteriaSpecification.AliasToEntityMap).List();
 			Assert.AreEqual(1, list.Count);
 			m = (IDictionary) list[0];
 			Assert.IsTrue(m.Contains("EMPID"));

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 
 using NUnit.Framework;
+using NHibernate.Criterion;
 
 namespace NHibernate.Test.NHSpecificTest.NH1018
 {
@@ -44,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1018
 			using (ISession session = OpenSession())
 			{
 				IList employers = session.CreateQuery("select emr from Employer emr inner join fetch emr.Employees")
-					.SetResultTransformer(CriteriaUtil.DistinctRootEntity)
+					.SetResultTransformer(CriteriaSpecification.DistinctRootEntity)
 					.List();
 				Assert.AreEqual(2, employers.Count);
 			}
