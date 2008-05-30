@@ -235,9 +235,12 @@ using System.Data;
 
 		protected override string GetSelectExistingObject(string name, Table table)
 		{
-			string objName = table.GetQuotedSchemaName(this) + Quote(name);
+		    string schema = table.GetQuotedSchemaName(this);
+            if (schema != null) schema += ".";
+            string objName = string.Format("{0}{1}", schema, Quote(name));
+            string parentName = string.Format("{0}{1}", schema, table.GetQuotedName(this));
 			return string.Format("select 1 from sys.objects where object_id = OBJECT_ID(N'{0}') AND parent_object_id = OBJECT_ID('{1}')",
-								 objName, table.GetQuotedName(this));
+								 objName, parentName);
 		}
 
 
