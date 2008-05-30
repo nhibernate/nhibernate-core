@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Collections.Generic;
 
 namespace NHibernate.Loader.Entity
 {
@@ -12,6 +12,7 @@ namespace NHibernate.Loader.Entity
 	/// "Batch" loads entities, using multiple primary key values in the
 	/// SQL <c>where</c> clause.
 	/// </summary>
+	/// <seealso cref="EntityLoader"/>
 	public class BatchingEntityLoader : IUniqueEntityLoader
 	{
 		private readonly Loader[] loaders;
@@ -32,7 +33,7 @@ namespace NHibernate.Loader.Entity
 			// get the right object from the list ... would it be easier to just call getEntity() ??
 			foreach (object obj in results)
 			{
-				bool equal = idType.IsEqual(id, session.GetContextEntityIdentifier(obj), EntityMode.Poco);
+				bool equal = idType.IsEqual(id, session.GetContextEntityIdentifier(obj), session.EntityMode, session.Factory);
 
 				if (equal)
 				{
@@ -45,7 +46,8 @@ namespace NHibernate.Loader.Entity
 
 		public object Load(object id, object optionalObject, ISessionImplementor session)
 		{
-			object[] batch = session.PersistenceContext.BatchFetchQueue.GetEntityBatch(persister, id, batchSizes[0]);
+			object[] batch =
+				session.PersistenceContext.BatchFetchQueue.GetEntityBatch(persister, id, batchSizes[0], session.EntityMode);
 
 			for (int i = 0; i < batchSizes.Length - 1; i++)
 			{
@@ -55,14 +57,8 @@ namespace NHibernate.Loader.Entity
 					object[] smallBatch = new object[smallBatchSize];
 					Array.Copy(batch, 0, smallBatch, 0, smallBatchSize);
 
-					IList results = loaders[i].LoadEntityBatch(
-						session,
-						smallBatch,
-						idType,
-						optionalObject,
-						persister.EntityName,
-						id,
-						persister);
+					IList results =
+						loaders[i].LoadEntityBatch(session, smallBatch, idType, optionalObject, persister.EntityName, id, persister);
 
 					return GetObjectFromList(results, id, session); //EARLY EXIT
 				}
@@ -71,12 +67,9 @@ namespace NHibernate.Loader.Entity
 			return ((IUniqueEntityLoader) loaders[batchSizes.Length - 1]).Load(id, optionalObject, session);
 		}
 
-		public static IUniqueEntityLoader CreateBatchingEntityLoader(
-			IOuterJoinLoadable persister,
-			int maxBatchSize,
-			LockMode lockMode,
-			ISessionFactoryImplementor factory,
-			IDictionary<string, IFilter> enabledFilters)
+		public static IUniqueEntityLoader CreateBatchingEntityLoader(IOuterJoinLoadable persister, int maxBatchSize,
+		                                                             LockMode lockMode, ISessionFactoryImplementor factory,
+		                                                             IDictionary<string, IFilter> enabledFilters)
 		{
 			if (maxBatchSize > 1)
 			{

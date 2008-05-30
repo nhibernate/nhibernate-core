@@ -2,7 +2,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Loader.Entity
 {
-	/// <summary></summary>
+	/// <summary> Loads entities for a <see cref="NHibernate.Persister.Entity.IEntityPersister"/>
 	public interface IUniqueEntityLoader
 	{
 		/// <summary>

@@ -14,14 +14,13 @@ namespace NHibernate.Loader.Entity
 	/// </summary>
 	public abstract class AbstractEntityLoader : OuterJoinLoader, IUniqueEntityLoader
 	{
-		protected static readonly ILog log = LogManager.GetLogger(typeof(AbstractEntityLoader));
+		protected static readonly ILog log = LogManager.GetLogger(typeof (AbstractEntityLoader));
 		protected readonly IOuterJoinLoadable persister;
 		protected readonly IType uniqueKeyType;
 		protected readonly string entityName;
 
-		public AbstractEntityLoader(IOuterJoinLoadable persister, IType uniqueKeyType, 
-			ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
-			: base(factory, enabledFilters)
+		public AbstractEntityLoader(IOuterJoinLoadable persister, IType uniqueKeyType, ISessionFactoryImplementor factory,
+		                            IDictionary<string, IFilter> enabledFilters) : base(factory, enabledFilters)
 		{
 			this.uniqueKeyType = uniqueKeyType;
 			entityName = persister.EntityName;

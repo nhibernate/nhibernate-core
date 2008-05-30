@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using log4net;
@@ -12,22 +13,25 @@ namespace NHibernate.Loader.Entity
 {
 	public class CollectionElementLoader : OuterJoinLoader
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(CollectionElementLoader));
+		private static readonly ILog log = LogManager.GetLogger(typeof (CollectionElementLoader));
 
 		private readonly IOuterJoinLoadable persister;
 		private readonly IType keyType;
 		private readonly IType indexType;
 		private readonly string entityName;
 
-		public CollectionElementLoader(IQueryableCollection collectionPersister, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
-			: base(factory, enabledFilters)
+		public CollectionElementLoader(IQueryableCollection collectionPersister, ISessionFactoryImplementor factory,
+		                               IDictionary<string, IFilter> enabledFilters) : base(factory, enabledFilters)
 		{
 			keyType = collectionPersister.KeyType;
 			indexType = collectionPersister.IndexType;
-			persister = (IOuterJoinLoadable)collectionPersister.ElementPersister;
+			persister = (IOuterJoinLoadable) collectionPersister.ElementPersister;
 			entityName = persister.EntityName;
 
-			JoinWalker walker = new EntityJoinWalker(persister, ArrayHelper.Join(collectionPersister.KeyColumnNames, collectionPersister.IndexColumnNames), 1, LockMode.None, factory, enabledFilters);
+			JoinWalker walker =
+				new EntityJoinWalker(persister,
+				                     ArrayHelper.Join(collectionPersister.KeyColumnNames, collectionPersister.IndexColumnNames), 1,
+				                     LockMode.None, factory, enabledFilters);
 			InitFromWalker(walker);
 
 			PostInstantiate();
@@ -42,7 +46,7 @@ namespace NHibernate.Loader.Entity
 
 		public virtual object LoadElement(ISessionImplementor session, object key, object index)
 		{
-			System.Collections.IList list = LoadEntity(session, key, index, keyType, indexType, persister);
+			IList list = LoadEntity(session, key, index, keyType, indexType, persister);
 
 			if (list.Count == 1)
 			{
@@ -65,7 +69,8 @@ namespace NHibernate.Loader.Entity
 			}
 		}
 
-		protected override object GetResultColumnOrRow(object[] row, IResultTransformer transformer, IDataReader rs, ISessionImplementor session)
+		protected override object GetResultColumnOrRow(object[] row, IResultTransformer transformer, IDataReader rs,
+		                                               ISessionImplementor session)
 		{
 			return row[row.Length - 1];
 		}

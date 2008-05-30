@@ -194,11 +194,9 @@ namespace NHibernate.Engine
 		/// <param name="persister">The persister for the entities being loaded.</param>
 		/// <param name="id">The identifier of the entity currently demanding load.</param>
 		/// <param name="batchSize">The maximum number of keys to return</param>
+		/// <param name="entityMode">The entity mode.</param>
 		/// <returns>an array of identifiers, of length batchSize (possibly padded with nulls)</returns>
-		public object[] GetEntityBatch(
-			IEntityPersister persister,
-			object id,
-			int batchSize)
+		public object[] GetEntityBatch(IEntityPersister persister,object id,int batchSize, EntityMode entityMode)
 		{
 			object[] ids = new object[batchSize];
 			ids[0] = id; //first element of array is reserved for the actual instance we are loading!
@@ -216,13 +214,13 @@ namespace NHibernate.Engine
 						//the first id found after the given id
 						return ids;
 					}
-					if (persister.IdentifierType.IsEqual(id, key.Identifier, EntityMode.Poco))
+					if (persister.IdentifierType.IsEqual(id, key.Identifier, entityMode))
 					{
 						end = i;
 					}
 					else
 					{
-						if (!IsCached(key, persister))
+						if (!IsCached(key, persister, entityMode))
 						{
 							ids[i++] = key.Identifier;
 						}
@@ -238,19 +236,13 @@ namespace NHibernate.Engine
 			return ids; //we ran out of ids to try
 		}
 
-		private bool IsCached(
-			EntityKey entityKey,
-			IEntityPersister persister)
+		private bool IsCached(EntityKey entityKey, IEntityPersister persister, EntityMode entityMode)
 		{
 			if (persister.HasCache)
 			{
-				CacheKey key = new CacheKey(
-					entityKey.Identifier,
-					persister.IdentifierType,
-					entityKey.EntityName,
-					EntityMode.Poco,
-					context.Session.Factory
-					);
+				CacheKey key =
+					new CacheKey(entityKey.Identifier, persister.IdentifierType, entityKey.EntityName, entityMode,
+					             context.Session.Factory);
 				return persister.Cache.Cache.Get(key) != null;
 			}
 			return false;

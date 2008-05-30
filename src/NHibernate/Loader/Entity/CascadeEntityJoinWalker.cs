@@ -22,16 +22,15 @@ namespace NHibernate.Loader.Entity
 			InitAll(whereCondition.ToSqlString(), string.Empty, LockMode.Read);
 		}
 
-		protected override bool IsJoinedFetchEnabled(IAssociationType type, FetchMode config,
-		                                             CascadeStyle cascadeStyle)
+		protected override bool IsJoinedFetchEnabled(IAssociationType type, FetchMode config, CascadeStyle cascadeStyle)
 		{
-			return (type.IsEntityType || type.IsCollectionType) &&
-			       (cascadeStyle == null || cascadeStyle.DoCascade(cascadeAction));
+			return
+				(type.IsEntityType || type.IsCollectionType) && (cascadeStyle == null || cascadeStyle.DoCascade(cascadeAction));
 		}
 
 		protected override bool IsTooManyCollections
 		{
-			get { return CountCollectionPersisters(associations) > 1; }
+			get { return CountCollectionPersisters(associations) > 0; }
 		}
 
 		public override string Comment
