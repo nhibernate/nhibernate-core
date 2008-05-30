@@ -6,6 +6,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Loader.Collection
 {
+	/// <summary> Implements subselect fetching for a collection</summary>
 	public class SubselectCollectionLoader : BasicCollectionLoader
 	{
 		private readonly object[] keys;
@@ -15,7 +16,7 @@ namespace NHibernate.Loader.Collection
 		private readonly object[] values;
 
 		public SubselectCollectionLoader(IQueryableCollection persister, SqlString subquery, ICollection<EntityKey> entityKeys,
-																		 QueryParameters queryParameters, IDictionary<string, int[]> namedParameterLocMap,
+		                                 QueryParameters queryParameters, IDictionary<string, int[]> namedParameterLocMap,
 		                                 ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(persister, 1, subquery, factory, enabledFilters)
 		{

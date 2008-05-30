@@ -134,16 +134,13 @@ namespace NHibernate.Engine
 		/// <param name="collectionPersister">The persister for the collection role.</param>
 		/// <param name="id">A key that must be included in the batch fetch</param>
 		/// <param name="batchSize">the maximum number of keys to return</param>
+		/// <param name="entityMode">The entity mode.</param>
 		/// <returns>an array of collection keys, of length batchSize (padded with nulls)</returns>
-		public object[] GetCollectionBatch(
-			ICollectionPersister collectionPersister,
-			object id,
-			int batchSize)
+		public object[] GetCollectionBatch(ICollectionPersister collectionPersister, object id, int batchSize, EntityMode entityMode)
 		{
 			object[] keys = new object[batchSize];
 			keys[0] = id;
 			int i = 1;
-			//int count = 0;
 			int end = -1;
 			bool checkForEnd = false;
 
@@ -163,14 +160,14 @@ namespace NHibernate.Engine
 
 					//if ( end == -1 && count > batchSize*10 ) return keys; //try out ten batches, max
 
-					bool isEqual = collectionPersister.KeyType.IsEqual(id, ce.LoadedKey, EntityMode.Poco);
+					bool isEqual = collectionPersister.KeyType.IsEqual(id, ce.LoadedKey, entityMode, collectionPersister.Factory);
 
 					if (isEqual)
 					{
 						end = i;
 						//checkForEnd = false;
 					}
-					else if (!IsCached(ce.LoadedKey, collectionPersister))
+					else if (!IsCached(ce.LoadedKey, collectionPersister, entityMode))
 					{
 						keys[i++] = ce.LoadedKey;
 						//count++;
@@ -259,19 +256,12 @@ namespace NHibernate.Engine
 			return false;
 		}
 
-		private bool IsCached(
-			object collectionKey,
-			ICollectionPersister persister)
+		private bool IsCached(object collectionKey, ICollectionPersister persister, EntityMode entityMode)
 		{
 			if (persister.HasCache)
 			{
-				CacheKey cacheKey = new CacheKey(
-					collectionKey,
-					persister.KeyType,
-					persister.Role,
-					EntityMode.Poco,
-					context.Session.Factory
-					);
+				CacheKey cacheKey =
+					new CacheKey(collectionKey, persister.KeyType, persister.Role, entityMode, context.Session.Factory);
 				return persister.Cache.Cache.Get(cacheKey) != null;
 			}
 			return false;

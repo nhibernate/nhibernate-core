@@ -14,8 +14,8 @@ namespace NHibernate.Loader.Collection
 	{
 		private readonly IQueryableCollection collectionPersister;
 
-		public CollectionLoader(IQueryableCollection persister, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
-			: base(factory, enabledFilters)
+		public CollectionLoader(IQueryableCollection persister, ISessionFactoryImplementor factory,
+		                        IDictionary<string, IFilter> enabledFilters) : base(factory, enabledFilters)
 		{
 			collectionPersister = persister;
 		}
@@ -25,14 +25,14 @@ namespace NHibernate.Loader.Collection
 			get { return HasSubselectLoadableCollections(); }
 		}
 
-		public virtual void Initialize(object id, ISessionImplementor session)
-		{
-			LoadCollection(session, id, KeyType);
-		}
-
 		protected IType KeyType
 		{
 			get { return collectionPersister.KeyType; }
+		}
+
+		public virtual void Initialize(object id, ISessionImplementor session)
+		{
+			LoadCollection(session, id, KeyType);
 		}
 
 		public override string ToString()

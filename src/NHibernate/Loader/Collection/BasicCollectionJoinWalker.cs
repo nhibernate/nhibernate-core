@@ -27,6 +27,7 @@ namespace NHibernate.Loader.Collection
 
 			IList<OuterJoinableAssociation> allAssociations = new List<OuterJoinableAssociation>(associations);
 
+			// NH Different behavior : passing enabledFilters instead empty-filter
 			allAssociations.Add(
 				new OuterJoinableAssociation(collectionPersister.CollectionType, null, null, alias, JoinType.LeftOuterJoin, Factory,
 				                             enabledFilters));

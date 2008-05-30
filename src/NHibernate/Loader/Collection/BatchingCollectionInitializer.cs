@@ -9,16 +9,15 @@ namespace NHibernate.Loader.Collection
 	/// <summary>
 	/// "Batch" loads collections, using multiple foreign key values in the SQL Where clause
 	/// </summary>
+	/// <seealso cref="BasicCollectionLoader"/>
+	/// <seealso cref="OneToManyLoader"/>
 	public class BatchingCollectionInitializer : ICollectionInitializer
 	{
 		private readonly Loader[] loaders;
 		private readonly int[] batchSizes;
 		private readonly ICollectionPersister collectionPersister;
 
-		public BatchingCollectionInitializer(
-			ICollectionPersister collectionPersister,
-			int[] batchSizes,
-			Loader[] loaders)
+		public BatchingCollectionInitializer(ICollectionPersister collectionPersister, int[] batchSizes, Loader[] loaders)
 		{
 			this.loaders = loaders;
 			this.batchSizes = batchSizes;
@@ -27,7 +26,9 @@ namespace NHibernate.Loader.Collection
 
 		public void Initialize(object id, ISessionImplementor session)
 		{
-			object[] batch = session.PersistenceContext.BatchFetchQueue.GetCollectionBatch(collectionPersister, id, batchSizes[0]);
+			object[] batch =
+				session.PersistenceContext.BatchFetchQueue.GetCollectionBatch(collectionPersister, id, batchSizes[0],
+				                                                              session.EntityMode);
 
 			for (int i = 0; i < batchSizes.Length; i++)
 			{
@@ -44,11 +45,9 @@ namespace NHibernate.Loader.Collection
 			loaders[batchSizes.Length - 1].LoadCollection(session, id, collectionPersister.KeyType);
 		}
 
-		public static ICollectionInitializer CreateBatchingOneToManyInitializer(
-			OneToManyPersister persister,
-			int maxBatchSize,
-			ISessionFactoryImplementor factory,
-			IDictionary<string, IFilter> enabledFilters)
+		public static ICollectionInitializer CreateBatchingOneToManyInitializer(OneToManyPersister persister, int maxBatchSize,
+		                                                                        ISessionFactoryImplementor factory,
+		                                                                        IDictionary<string, IFilter> enabledFilters)
 		{
 			if (maxBatchSize > 1)
 			{
@@ -67,11 +66,10 @@ namespace NHibernate.Loader.Collection
 			}
 		}
 
-		public static ICollectionInitializer CreateBatchingCollectionInitializer(
-			IQueryableCollection persister,
-			int maxBatchSize,
-			ISessionFactoryImplementor factory,
-			IDictionary<string, IFilter> enabledFilters)
+		public static ICollectionInitializer CreateBatchingCollectionInitializer(IQueryableCollection persister,
+		                                                                         int maxBatchSize,
+		                                                                         ISessionFactoryImplementor factory,
+		                                                                         IDictionary<string, IFilter> enabledFilters)
 		{
 			if (maxBatchSize > 1)
 			{

@@ -6,42 +6,31 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Loader.Collection
 {
+	/// <summary> 
+	/// Loads a collection of values or a many-to-many association.
+	/// </summary>
+	/// <remarks>
+	/// The collection persister must implement <tt>QueryableCOllection<tt>. For
+	/// other collections, create a customized subclass of <tt>Loader</tt>.
+	/// </remarks>
+	/// <seealso cref="OneToManyLoader"/>
 	public class BasicCollectionLoader : CollectionLoader
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(BasicCollectionLoader));
+		private static readonly ILog log = LogManager.GetLogger(typeof (BasicCollectionLoader));
 
-		public BasicCollectionLoader(
-			IQueryableCollection collectionPersister,
-			ISessionFactoryImplementor session,
-			IDictionary<string, IFilter> enabledFilters)
-			: this(collectionPersister, 1, session, enabledFilters)
-		{
-		}
+		public BasicCollectionLoader(IQueryableCollection collectionPersister, ISessionFactoryImplementor session,
+		                             IDictionary<string, IFilter> enabledFilters)
+			: this(collectionPersister, 1, session, enabledFilters) {}
 
-		public BasicCollectionLoader(
-			IQueryableCollection collectionPersister,
-			int batchSize,
-			ISessionFactoryImplementor factory,
-			IDictionary<string, IFilter> enabledFilters)
-			: this(collectionPersister, batchSize, null, factory, enabledFilters)
-		{
-		}
+		public BasicCollectionLoader(IQueryableCollection collectionPersister, int batchSize,
+		                             ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
+			: this(collectionPersister, batchSize, null, factory, enabledFilters) {}
 
-		protected BasicCollectionLoader(
-			IQueryableCollection collectionPersister,
-			int batchSize,
-			SqlString subquery,
-			ISessionFactoryImplementor factory,
-			IDictionary<string, IFilter> enabledFilters)
+		protected BasicCollectionLoader(IQueryableCollection collectionPersister, int batchSize, SqlString subquery,
+		                                ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(collectionPersister, factory, enabledFilters)
 		{
-			JoinWalker walker = new BasicCollectionJoinWalker(
-				collectionPersister,
-				batchSize,
-				subquery,
-				factory,
-				enabledFilters
-				);
+			JoinWalker walker = new BasicCollectionJoinWalker(collectionPersister, batchSize, subquery, factory, enabledFilters);
 			InitFromWalker(walker);
 
 			PostInstantiate();
