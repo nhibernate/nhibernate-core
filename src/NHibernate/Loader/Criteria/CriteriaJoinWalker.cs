@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
-using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -13,6 +11,7 @@ namespace NHibernate.Loader.Criteria
 	/// <summary>
 	/// A <see cref="JoinWalker" /> for <see cref="ICriteria" /> queries.
 	/// </summary>
+	/// <seealso cref="CriteriaLoader"/>
 	public class CriteriaJoinWalker : AbstractEntityJoinWalker
 	{
 		//TODO: add a CriteriaImplementor interface
@@ -26,9 +25,9 @@ namespace NHibernate.Loader.Criteria
 		private readonly string[] userAliases;
 		private readonly IList<string> userAliasList = new List<string>();
 
-		public CriteriaJoinWalker(IOuterJoinLoadable persister,CriteriaQueryTranslator translator,
-			ISessionFactoryImplementor factory, CriteriaImpl criteria, string rootEntityName,
-			IDictionary<string, IFilter> enabledFilters)
+		public CriteriaJoinWalker(IOuterJoinLoadable persister, CriteriaQueryTranslator translator,
+		                          ISessionFactoryImplementor factory, ICriteria criteria, string rootEntityName,
+		                          IDictionary<string, IFilter> enabledFilters)
 			: base(translator.RootSQLAlias, persister, factory, enabledFilters)
 		{
 			this.translator = translator;
@@ -39,14 +38,9 @@ namespace NHibernate.Loader.Criteria
 			{
 				resultTypes = translator.ProjectedTypes;
 
-				InitProjection(
-					translator.GetSelect(enabledFilters),
-					translator.GetWhereCondition(enabledFilters),
-					translator.GetOrderBy(),
-					translator.GetGroupBy().ToString(),
-					translator.GetHavingCondition(enabledFilters),
-					LockMode.None
-					);
+				InitProjection(translator.GetSelect(enabledFilters), translator.GetWhereCondition(enabledFilters),
+				               translator.GetOrderBy(), translator.GetGroupBy().ToString(),
+				               translator.GetHavingCondition(enabledFilters), LockMode.None);
 			}
 			else
 			{
@@ -59,8 +53,38 @@ namespace NHibernate.Loader.Criteria
 			userAliases = ArrayHelper.ToStringArray(userAliasList);
 		}
 
-		protected override JoinType GetJoinType(IAssociationType type, FetchMode config, string path,
-			string lhsTable, string[] lhsColumns, bool nullable, int currentDepth, CascadeStyle cascadeStyle)
+		public IType[] ResultTypes
+		{
+			get { return resultTypes; }
+		}
+
+		public string[] UserAliases
+		{
+			get { return userAliases; }
+		}
+
+		/// <summary>
+		/// Use the discriminator, to narrow the select to instances
+		/// of the queried subclass, also applying any filters.
+		/// </summary>
+		protected override SqlString WhereFragment
+		{
+			get { return base.WhereFragment.Append(((IQueryable) Persister).FilterFragment(Alias, EnabledFilters)); }
+		}
+
+		public ISet<string> QuerySpaces
+		{
+			get { return querySpaces; }
+		}
+
+		public override string Comment
+		{
+			get { return "criteria query"; }
+		}
+
+		protected override JoinType GetJoinType(IAssociationType type, FetchMode config, string path, string lhsTable,
+		                                        string[] lhsColumns, bool nullable, int currentDepth,
+		                                        CascadeStyle cascadeStyle)
 		{
 			if (translator.IsJoin(path))
 			{
@@ -105,7 +129,7 @@ namespace NHibernate.Loader.Criteria
 			if (joinable.ConsumesEntityAlias())
 			{
 				ICriteria subcriteria = translator.GetCriteria(path);
-				String sqlAlias = subcriteria == null ? null : translator.GetSQLAlias(subcriteria);
+				string sqlAlias = subcriteria == null ? null : translator.GetSQLAlias(subcriteria);
 				if (sqlAlias != null)
 				{
 					userAliasList.Add(subcriteria.Alias); //alias may be null
@@ -119,41 +143,10 @@ namespace NHibernate.Loader.Criteria
 			return base.GenerateTableAlias(n + translator.SQLAliasCount, path, joinable);
 		}
 
-		protected override string GenerateRootAlias(string description)
+		protected override string GenerateRootAlias(string tableName)
 		{
-			return CriteriaQueryTranslator.RootSqlAlias; // NH: really not used (we are using a different ctor to support SubQueryCriteria)
-		}
-
-		public IType[] ResultTypes
-		{
-			get { return resultTypes; }
-		}
-
-		public string[] UserAliases
-		{
-			get { return userAliases; }
-		}
-
-		/// <summary>
-		/// Use the discriminator, to narrow the select to instances
-		/// of the queried subclass, also applying any filters.
-		/// </summary>
-		protected override SqlString WhereFragment
-		{
-			get
-			{
-				return base.WhereFragment.Append(((IQueryable) Persister).FilterFragment(Alias, EnabledFilters));
-			}
-		}
-
-		public ISet<string> QuerySpaces
-		{
-			get { return querySpaces; }
-		}
-
-		public override string Comment
-		{
-			get { return "criteria query"; }
+			return CriteriaQueryTranslator.RootSqlAlias;
+			// NH: really not used (we are using a different ctor to support SubQueryCriteria)
 		}
 	}
 }

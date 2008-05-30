@@ -1,5 +1,6 @@
 using System.Collections;
 using NHibernate.Criterion;
+using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using System.Collections.Generic;
@@ -246,7 +247,7 @@ namespace NHibernate
 
 		System.Type CriteriaClass { get; }
 
-		IDictionary LockModes { get; }
+		IDictionary<string, LockMode> LockModes { get; }
 
 		IResultTransformer ResultTransformer { get; }
 
@@ -258,13 +259,13 @@ namespace NHibernate
 
 		ICriteria ProjectionCriteria { get; }
 
-		IList Restrictions { get; }
+		IList<CriteriaImpl.CriterionEntry> Restrictions { get; }
 
-		IList Orders { get; }
+		IList<CriteriaImpl.OrderEntry> Orders { get; }
 
-		IDictionary FetchModes { get; }
+		IDictionary<string,FetchMode> FetchModes { get; }
 
-		IList SubcriteriaList { get; }
+		IList<CriteriaImpl.Subcriteria> SubcriteriaList { get; }
 
 		string RootAlias { get; }
 

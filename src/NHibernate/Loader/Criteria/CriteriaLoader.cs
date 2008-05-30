@@ -1,14 +1,13 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
-using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Loader.Criteria
 {
@@ -28,29 +27,16 @@ namespace NHibernate.Loader.Criteria
 		//these are not the actual "physical" SQL aliases
 		private readonly string[] userAliases;
 
-		public CriteriaLoader(
-			IOuterJoinLoadable persister,
-			ISessionFactoryImplementor factory,
-			CriteriaImpl rootCriteria,
-			string rootEntityName, 
-			IDictionary<string, IFilter> enabledFilters)
+		public CriteriaLoader(IOuterJoinLoadable persister, ISessionFactoryImplementor factory, CriteriaImpl rootCriteria,
+		                      string rootEntityName, IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters)
 		{
-			translator = new CriteriaQueryTranslator(
-				factory,
-				rootCriteria,
-				rootEntityName,
-				CriteriaQueryTranslator.RootSqlAlias);
+			translator = new CriteriaQueryTranslator(factory, rootCriteria, rootEntityName, CriteriaQueryTranslator.RootSqlAlias);
 
 			querySpaces = translator.GetQuerySpaces();
 
-			CriteriaJoinWalker walker = new CriteriaJoinWalker(
-				persister,
-				translator,
-				factory,
-				rootCriteria,
-				rootEntityName,
-				enabledFilters);
+			CriteriaJoinWalker walker =
+				new CriteriaJoinWalker(persister, translator, factory, rootCriteria, rootEntityName, enabledFilters);
 
 			InitFromWalker(walker);
 
@@ -62,15 +48,29 @@ namespace NHibernate.Loader.Criteria
 
 		// Not ported: scroll (not supported)
 
-		public IList List(ISessionImplementor session)
+		public ISet<string> QuerySpaces
 		{
-			return List(session, translator.GetQueryParameters(), querySpaces, resultTypes);
+			get { return querySpaces; }
 		}
 
+		protected internal override bool IsSubselectLoadingEnabled
+		{
+			get { return HasSubselectLoadableCollections(); }
+		}
+
+		public CriteriaQueryTranslator Translator
+		{
+			get { return translator; }
+		}
 
 		public IType[] ResultTypes
 		{
 			get { return resultTypes; }
+		}
+
+		public IList List(ISessionImplementor session)
+		{
+			return List(session, translator.GetQueryParameters(), querySpaces, resultTypes);
 		}
 
 		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
@@ -99,41 +99,36 @@ namespace NHibernate.Loader.Criteria
 			return translator.RootCriteria.ResultTransformer.TransformTuple(result, aliases);
 		}
 
-		public ISet<string> QuerySpaces
-		{
-			get { return querySpaces; }
-		}
-
-
-		public CriteriaQueryTranslator Translator
-		{
-			get { return translator; }
-		}
-
-		protected override SqlString ApplyLocks(SqlString sqlSelectString, IDictionary lockModes, Dialect.Dialect dialect)
+		protected override SqlString ApplyLocks(SqlString sqlSelectString, IDictionary<string, LockMode> lockModes,
+		                                        Dialect.Dialect dialect)
 		{
 			if (lockModes == null || lockModes.Count == 0)
 			{
 				return sqlSelectString;
 			}
 
-			IDictionary keyColumnNames = null;
-			ILoadable[] persisters = EntityPersisters;
-			string[] entityAliases = Aliases;
-
-			if (dialect.ForUpdateOfColumns)
+			Dictionary<string, LockMode> aliasedLockModes = new Dictionary<string, LockMode>();
+			Dictionary<string, string[]> keyColumnNames = dialect.ForUpdateOfColumns ? new Dictionary<string, string[]>() : null;
+			string[] drivingSqlAliases = Aliases;
+			for (int i = 0; i < drivingSqlAliases.Length; i++)
 			{
-				keyColumnNames = new Hashtable();
-				for (int i = 0; i < entityAliases.Length; i++)
+				LockMode lockMode;
+				if (lockModes.TryGetValue(drivingSqlAliases[i], out lockMode))
 				{
-					keyColumnNames[entityAliases[i]] = persisters[i].IdentifierColumnNames;
+					ILockable drivingPersister = (ILockable) EntityPersisters[i];
+					string rootSqlAlias = drivingPersister.GetRootTableAlias(drivingSqlAliases[i]);
+					aliasedLockModes[rootSqlAlias] = lockMode;
+					if (keyColumnNames != null)
+					{
+						keyColumnNames[rootSqlAlias] = drivingPersister.RootTableIdentifierColumnNames;
+					}
 				}
 			}
 
 			return dialect.ApplyLocksToSql(sqlSelectString, lockModes, keyColumnNames);
 		}
 
-		protected internal override LockMode[] GetLockModes(IDictionary lockModes)
+		protected internal override LockMode[] GetLockModes(IDictionary<string, LockMode> lockModes)
 		{
 			string[] entityAliases = Aliases;
 			if (entityAliases == null)
@@ -144,15 +139,14 @@ namespace NHibernate.Loader.Criteria
 			LockMode[] lockModesArray = new LockMode[size];
 			for (int i = 0; i < size; i++)
 			{
-				LockMode lockMode = (LockMode) lockModes[entityAliases[i]];
-				lockModesArray[i] = lockMode == null ? LockMode.None : lockMode;
+				LockMode lockMode;
+				if (!lockModes.TryGetValue(entityAliases[i], out lockMode))
+				{
+					lockMode = LockMode.None;
+				}
+				lockModesArray[i] = lockMode;
 			}
 			return lockModesArray;
-		}
-
-		protected internal override bool IsSubselectLoadingEnabled
-		{
-			get { return HasSubselectLoadableCollections(); }
 		}
 
 		protected override IList GetResultList(IList results, IResultTransformer resultTransformer)

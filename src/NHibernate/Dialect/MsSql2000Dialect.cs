@@ -1,8 +1,8 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Text.RegularExpressions;
-
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
@@ -10,9 +10,7 @@ using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-
-using Environment = NHibernate.Cfg.Environment;
-using System.Data.Common;
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
@@ -293,7 +291,7 @@ namespace NHibernate.Dialect
 			 * "SELECT TOP limit rest-of-sql-statement"
 			 */
 
-			return querySqlString.Insert(GetAfterSelectInsertPoint(querySqlString), " top " + limit.ToString());
+			return querySqlString.Insert(GetAfterSelectInsertPoint(querySqlString), " top " + limit);
 		}
 
 		/// <summary>
@@ -365,10 +363,10 @@ namespace NHibernate.Dialect
 
 		private struct LockHintAppender
 		{
-			private MsSql2000Dialect dialect;
-			private IDictionary aliasedLockModes;
+			private readonly MsSql2000Dialect dialect;
+			private readonly IDictionary<string, LockMode> aliasedLockModes;
 
-			public LockHintAppender(MsSql2000Dialect dialect, IDictionary aliasedLockModes)
+			public LockHintAppender(MsSql2000Dialect dialect, IDictionary<string, LockMode> aliasedLockModes)
 			{
 				this.dialect = dialect;
 				this.aliasedLockModes = aliasedLockModes;
@@ -377,18 +375,18 @@ namespace NHibernate.Dialect
 			public string ReplaceMatch(Match match)
 			{
 				string alias = match.Groups[1].Value;
-				string lockHint = dialect.AppendLockHint((LockMode)aliasedLockModes[alias], alias);
+				string lockHint = dialect.AppendLockHint(aliasedLockModes[alias], alias);
 				return string.Concat(" ", lockHint, match.Groups[2].Value);
 			}
 		}
 
-		public override SqlString ApplyLocksToSql(SqlString sql, IDictionary aliasedLockModes, IDictionary keyColumnNames)
+		public override SqlString ApplyLocksToSql(SqlString sql, IDictionary<string, LockMode> aliasedLockModes, IDictionary<string, string[]> keyColumnNames)
 		{
 			bool doWork = false;
 
-			foreach (DictionaryEntry de in aliasedLockModes)
+			foreach (KeyValuePair<string, LockMode> de in aliasedLockModes)
 			{
-				if (NeedsLockHint((LockMode)de.Value))
+				if (NeedsLockHint(de.Value))
 				{
 					doWork = true;
 					break;
@@ -409,7 +407,7 @@ namespace NHibernate.Dialect
 			Regex matchRegex = new Regex(" (" + aliasesPattern + ")([, ]|$)");
 
 			SqlStringBuilder result = new SqlStringBuilder();
-			MatchEvaluator evaluator = new MatchEvaluator(new LockHintAppender(this, aliasedLockModes).ReplaceMatch);
+			MatchEvaluator evaluator = new LockHintAppender(this, aliasedLockModes).ReplaceMatch;
 
 			foreach (object part in sql.Parts)
 			{
@@ -434,7 +432,7 @@ namespace NHibernate.Dialect
 			}
 		}
 
-		public override string GetIfExistsDropConstraint(NHibernate.Mapping.Table table, string name)
+		public override string GetIfExistsDropConstraint(Table table, string name)
 		{
 			string selectExistingObject = GetSelectExistingObject(name, table);
 			return string.Format(@"if exists ({0})", selectExistingObject);
@@ -442,12 +440,12 @@ namespace NHibernate.Dialect
 
 		protected virtual string GetSelectExistingObject(string name, Table table)
 		{
-			string objName = table.GetQuotedSchemaName(this) + this.Quote(name);
+			string objName = table.GetQuotedSchemaName(this) + Quote(name);
 			return string.Format("select 1 from sysobjects where id = OBJECT_ID(N'{0}') AND parent_obj = OBJECT_ID('{1}')",
 								 objName, table.GetQuotedName(this));
 		}
 
-		public override string GetIfNotExistsCreateConstraint(NHibernate.Mapping.Table table, string name)
+		public override string GetIfNotExistsCreateConstraint(Table table, string name)
 		{
 			string selectExistingObject = GetSelectExistingObject(name, table);
 			return string.Format(@"if not exists ({0})", selectExistingObject);

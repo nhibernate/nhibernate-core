@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
@@ -7,6 +7,7 @@ using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Lock;
+using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Id;
@@ -17,8 +18,6 @@ using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 using Environment=NHibernate.Cfg.Environment;
-using System.Collections.Generic;
-using NHibernate.Dialect.Schema;
 
 namespace NHibernate.Dialect
 {
@@ -144,7 +143,7 @@ namespace NHibernate.Dialect
 			RegisterHibernateType(DbType.Decimal, NHibernateUtil.Decimal.Name);
 		}
 
-		/// <summary> Get an instance of the dialect specified by the current <see cref="Environment"/> properties. </summary>
+		/// <summary> Get an instance of the dialect specified by the current <see cref="Cfg.Environment"/> properties. </summary>
 		/// <returns> The specified Dialect </returns>
 		public static Dialect GetDialect()
 		{
@@ -161,12 +160,12 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Get de <see cref="Dialect"/> from a property bag (prop name <see cref="Environment.Dialect"/>)
+		/// Get de <see cref="Dialect"/> from a property bag (prop name <see cref="Cfg.Environment.Dialect"/>)
 		/// </summary>
 		/// <param name="props">The property bag.</param>
 		/// <returns>An instance of <see cref="Dialect"/>.</returns>
-		/// <exception cref="ArgumentNullException">When <paramref name="props"/> is null.</exception>
-		/// <exception cref="HibernateException">When the property bag don't contains de property <see cref="Environment.Dialect"/>.</exception>
+		/// <exception cref="System.ArgumentNullException">When <paramref name="props"/> is null.</exception>
+		/// <exception cref="HibernateException">When the property bag don't contains de property <see cref="Cfg.Environment.Dialect"/>.</exception>
 		public static Dialect GetDialect(IDictionary<string, string> props)
 		{
 			if (props == null)
@@ -826,7 +825,7 @@ namespace NHibernate.Dialect
 		/// method is really intended to allow dialects which do not support
 		/// <tt>SELECT FOR UPDATE</tt> to achieve this in their own fashion.
 		/// </remarks>
-		public virtual SqlString ApplyLocksToSql(SqlString sql, IDictionary aliasedLockModes, IDictionary keyColumnNames)
+		public virtual SqlString ApplyLocksToSql(SqlString sql, IDictionary<string, LockMode> aliasedLockModes, IDictionary<string, string[]> keyColumnNames)
 		{
 			return sql.Append(new ForUpdateFragment(this, aliasedLockModes, keyColumnNames).ToSqlStringFragment());
 		}

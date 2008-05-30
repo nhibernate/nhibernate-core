@@ -16,27 +16,28 @@ namespace NHibernate.Impl
 	[Serializable]
 	public class CriteriaImpl : ICriteria
 	{
-		private IList criteria = new ArrayList();
-		private IList orderEntries = new ArrayList();
-		private IDictionary fetchModes = new Hashtable();
-		private IDictionary lockModes = new Hashtable();
+		private readonly List<CriterionEntry> criteria = new List<CriterionEntry>();
+		private readonly List<OrderEntry> orderEntries = new List<OrderEntry>(10);
+		private readonly Dictionary<string, FetchMode> fetchModes = new Dictionary<string, FetchMode>();
+		private readonly Dictionary<string, LockMode> lockModes = new Dictionary<string, LockMode>();
 		private int maxResults = RowSelection.NoValue;
 		private int firstResult;
 		private int timeout = RowSelection.NoValue;
 		private int fetchSize = RowSelection.NoValue;
-		private System.Type persistentClass;
+		private readonly System.Type persistentClass;
 		private ISessionImplementor session;
 		private IResultTransformer resultTransformer = CriteriaSpecification.RootEntity;
 		private bool cacheable;
 		private string cacheRegion;
 		private CacheMode? cacheMode;
 		private CacheMode? sessionCacheMode;
+		private string comment;
 
-		private IList subcriteriaList = new ArrayList();
-		private string rootAlias;
+		private readonly List<Subcriteria> subcriteriaList = new List<Subcriteria>();
+		private readonly string rootAlias;
 
-		private IDictionary subcriteriaByPath = new Hashtable();
-		private IDictionary subcriteriaByAlias = new Hashtable();
+		private readonly Dictionary<string, ICriteria> subcriteriaByPath = new Dictionary<string, ICriteria>();
+		private readonly Dictionary<string, ICriteria> subcriteriaByAlias = new Dictionary<string, ICriteria>();
 		private readonly string entityOrClassName;
 
 		// Projection Fields
@@ -47,13 +48,13 @@ namespace NHibernate.Impl
 		public sealed class Subcriteria : ICriteria
 		{
 			// Added to simulate Java-style inner class
-			private CriteriaImpl root;
+			private readonly CriteriaImpl root;
 
-			private ICriteria parent;
+			private readonly ICriteria parent;
 			private string alias;
-			private string path;
+			private readonly string path;
 			private LockMode lockMode;
-			private JoinType joinType;
+			private readonly JoinType joinType;
 
 			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, string alias, JoinType joinType)
 			{
@@ -299,7 +300,7 @@ namespace NHibernate.Impl
 				get { return root.CriteriaClass; }
 			}
 
-			public IDictionary LockModes
+			public IDictionary<string, LockMode> LockModes
 			{
 				get { return root.LockModes; }
 			}
@@ -329,22 +330,22 @@ namespace NHibernate.Impl
 				get { return root.ProjectionCriteria; }
 			}
 
-			public IList Restrictions
+			public IList<CriterionEntry> Restrictions
 			{
 				get { return root.Restrictions; }
 			}
 
-			public IList Orders
+			public IList<OrderEntry> Orders
 			{
 				get { return root.Orders; }
 			}
 
-			public IDictionary FetchModes
+			public IDictionary<string, FetchMode> FetchModes
 			{
 				get { return root.FetchModes; }
 			}
 
-			public IList SubcriteriaList
+			public IList<Subcriteria> SubcriteriaList
 			{
 				get { return root.SubcriteriaList; }
 			}
@@ -433,8 +434,8 @@ namespace NHibernate.Impl
 			// TODO H3.2 EntityName in constructor instead persistentClass
 			this.persistentClass = persistentClass;
 			this.session = session;
-			this.cacheable = false;
-			this.rootAlias = alias;
+			cacheable = false;
+			rootAlias = alias;
 			cacheMode = null;
 			entityOrClassName = persistentClass.FullName;
 			subcriteriaByAlias[alias] = this;
@@ -480,17 +481,17 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public IEnumerable IterateExpressionEntries()
+		public IEnumerable<CriterionEntry> IterateExpressionEntries()
 		{
 			return criteria;
 		}
 
-		public IEnumerable IterateOrderings()
+		public IEnumerable<OrderEntry> IterateOrderings()
 		{
 			return orderEntries;
 		}
 
-		public IEnumerable IterateSubcriteria()
+		public IEnumerable<Subcriteria> IterateSubcriteria()
 		{
 			return subcriteriaList;
 		}
@@ -529,8 +530,12 @@ namespace NHibernate.Impl
 
 		public FetchMode GetFetchMode(string path)
 		{
-			object result = fetchModes[path];
-			return result == null ? FetchMode.Default : (FetchMode) result;
+			FetchMode result;
+			if (!fetchModes.TryGetValue(path, out result))
+			{
+				result = FetchMode.Default;
+			}
+			return result;
 		}
 
 		public ICriteria SetFetchMode(string associationPath, FetchMode mode)
@@ -605,7 +610,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IDictionary LockModes
+		public IDictionary<string, LockMode> LockModes
 		{
 			get { return lockModes; }
 		}
@@ -642,6 +647,12 @@ namespace NHibernate.Impl
 			get { return cacheRegion; }
 		}
 
+		public string Comment
+		{
+			get { return comment; }
+			set { comment = value; }
+		}
+
 		public ICriteria SetCacheable(bool cacheable)
 		{
 			this.cacheable = cacheable;
@@ -654,25 +665,26 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public bool IsLookupByNaturalKey()
+		public bool LookupByNaturalKey
 		{
-			// TODO H3:
-			//			if ( projection != null ) 
-			//			{
-			//				return false;
-			//			}
-			if (subcriteriaList.Count > 0)
+			get
 			{
-				return false;
-			}
-			if (criteria.Count != 1)
-			{
-				return false;
-			}
+				if (projection != null)
+				{
+					return false;
+				}
+				if (subcriteriaList.Count > 0)
+				{
+					return false;
+				}
+				if (criteria.Count != 1)
+				{
+					return false;
+				}
 
-			return false;
-			//			CriterionEntry ce = (CriterionEntry) criteria[ 0 ];
-			//			return ce.Criterion is NaturalIdentifier;
+				CriterionEntry ce = criteria[0];
+				return ce.Criterion is NaturalIdentifier;
+			}
 		}
 
 		public IProjection Projection
@@ -695,12 +707,16 @@ namespace NHibernate.Impl
 
 		public ICriteria GetCriteriaByPath(string path)
 		{
-			return (ICriteria) subcriteriaByPath[path];
+			ICriteria result;
+			subcriteriaByPath.TryGetValue(path, out result);
+			return result;
 		}
 
 		public ICriteria GetCriteriaByAlias(string alias)
 		{
-			return (ICriteria) subcriteriaByAlias[alias];
+			ICriteria result;
+			subcriteriaByAlias.TryGetValue(alias, out result);
+			return result;
 		}
 
 		/// <summary> Override the cache mode for this particular query. </summary>
@@ -773,17 +789,17 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public IList Restrictions
+		public IList<CriterionEntry> Restrictions
 		{
 			get { return criteria; }
 		}
 
-		public IList Orders
+		public IList<OrderEntry> Orders
 		{
 			get { return orderEntries; }
 		}
 
-		public IDictionary FetchModes
+		public IDictionary<string,FetchMode> FetchModes
 		{
 			get { return fetchModes; }
 		}
@@ -793,7 +809,7 @@ namespace NHibernate.Impl
 			get { return rootAlias; }
 		}
 
-		public IList SubcriteriaList
+		public IList<Subcriteria> SubcriteriaList
 		{
 			get { return subcriteriaList; }
 		}

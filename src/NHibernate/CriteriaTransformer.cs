@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Criterion;
 using NHibernate.Impl;
@@ -62,13 +63,13 @@ namespace NHibernate
 				clone.Add(criterionEntry.Criterion);
 			}
 			CloneSubcriteriaAndOrders(clone, root);
-			foreach (DictionaryEntry de in root.FetchModes)
+			foreach (KeyValuePair<string, FetchMode> de in root.FetchModes)
 			{
-				clone.SetFetchMode((string) de.Key, (FetchMode) de.Value);
+				clone.SetFetchMode(de.Key, de.Value);
 			}
-			foreach (DictionaryEntry de in root.LockModes)
+			foreach (KeyValuePair<string, LockMode> de in root.LockModes)
 			{
-				clone.SetLockMode((string) de.Key, (LockMode) de.Value);
+				clone.SetLockMode(de.Key, de.Value);
 			}
 			clone.SetMaxResults(root.MaxResults);
 			clone.SetFirstResult(root.FirstResult);

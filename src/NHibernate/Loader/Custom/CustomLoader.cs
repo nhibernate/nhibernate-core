@@ -252,7 +252,7 @@ namespace NHibernate.Loader.Custom
 			get { return sql; }
 		}
 
-		protected internal override LockMode[] GetLockModes(IDictionary lockModesMap)
+		protected internal override LockMode[] GetLockModes(IDictionary<string, LockMode> lockModesMap)
 		{
 			return lockModes;
 		}

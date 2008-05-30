@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -84,7 +83,7 @@ namespace NHibernate.Loader
 			get { return persisters; }
 		}
 
-		protected internal override LockMode[] GetLockModes(IDictionary lockModes)
+		protected internal override LockMode[] GetLockModes(IDictionary<string, LockMode> lockModes)
 		{
 			return lockModeArray;
 		}

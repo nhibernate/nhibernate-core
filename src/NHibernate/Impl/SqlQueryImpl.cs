@@ -88,12 +88,12 @@ namespace NHibernate.Impl
 			callable = false;
 		}
 
-		protected internal override IDictionary LockModes
+		protected internal override IDictionary<string, LockMode> LockModes
 		{
 			get
 			{
 				//we never need to apply locks to the SQL
-				return CollectionHelper.EmptyMap;
+				return new CollectionHelper.EmptyMapClass<string, LockMode>();
 			}
 		}
 

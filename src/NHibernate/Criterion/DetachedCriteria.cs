@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
@@ -55,19 +55,18 @@ namespace NHibernate.Criterion
 
 		public static DetachedCriteria For<T>()
 		{
-			return new DetachedCriteria(typeof(T));
+			return new DetachedCriteria(typeof (T));
 		}
 
 		public static DetachedCriteria For<T>(string alias)
 		{
-			return new DetachedCriteria(typeof(T), alias);
+			return new DetachedCriteria(typeof (T), alias);
 		}
 
 		public static DetachedCriteria For(System.Type entityType, string alias)
 		{
 			return new DetachedCriteria(entityType, alias);
 		}
-
 
 		public DetachedCriteria Add(ICriterion criterion)
 		{
@@ -142,21 +141,21 @@ namespace NHibernate.Criterion
 			return this;
 		}
 
-        public DetachedCriteria SetFirstResult(int firstResult)
-        {
-            criteria.SetFirstResult(firstResult);
-            return this;
-        }
+		public DetachedCriteria SetFirstResult(int firstResult)
+		{
+			criteria.SetFirstResult(firstResult);
+			return this;
+		}
 
-        public DetachedCriteria SetMaxResults(int maxResults)
-        {
-            criteria.SetMaxResults(maxResults);
-            return this;
-        }
+		public DetachedCriteria SetMaxResults(int maxResults)
+		{
+			criteria.SetMaxResults(maxResults);
+			return this;
+		}
 
 		public override string ToString()
 		{
-			return "DetachableCriteria(" + criteria.ToString() + ')';
+			return string.Format("DetachableCriteria({0})", criteria);
 		}
 
 		protected internal CriteriaImpl GetCriteriaImpl()
@@ -167,26 +166,30 @@ namespace NHibernate.Criterion
 		protected internal void SetCriteriaImpl(CriteriaImpl impl)
 		{
 			this.impl = impl;
-			this.criteria = impl;
+			criteria = impl;
 		}
 
-        public DetachedCriteria GetCriteriaByPath(string path)
-        {
-            ICriteria tmpCrit = criteria.GetCriteriaByPath(path);
-            if(tmpCrit==null)
-                return null;
-            return new DetachedCriteria(impl, tmpCrit);
-        }
+		public DetachedCriteria GetCriteriaByPath(string path)
+		{
+			ICriteria tmpCrit = criteria.GetCriteriaByPath(path);
+			if (tmpCrit == null)
+			{
+				return null;
+			}
+			return new DetachedCriteria(impl, tmpCrit);
+		}
 
-	    public DetachedCriteria GetCriteriaByAlias(string alias)
-	    {
-	        ICriteria tmpCrit = criteria.GetCriteriaByAlias(alias);
-            if (tmpCrit == null)
-                return null; 
-            return new DetachedCriteria(impl, tmpCrit);
-	    }
+		public DetachedCriteria GetCriteriaByAlias(string alias)
+		{
+			ICriteria tmpCrit = criteria.GetCriteriaByAlias(alias);
+			if (tmpCrit == null)
+			{
+				return null;
+			}
+			return new DetachedCriteria(impl, tmpCrit);
+		}
 
-	    public int MaxResults
+		public int MaxResults
 		{
 			get { return impl.MaxResults; }
 		}
@@ -211,7 +214,7 @@ namespace NHibernate.Criterion
 			get { return impl.CriteriaClass; }
 		}
 
-		public IDictionary LockModes
+		public IDictionary<string, LockMode> LockModes
 		{
 			get { return impl.LockModes; }
 		}
@@ -241,22 +244,22 @@ namespace NHibernate.Criterion
 			get { return impl.ProjectionCriteria; }
 		}
 
-		public IList Restrictions
+		public IList<CriteriaImpl.CriterionEntry> Restrictions
 		{
 			get { return impl.Restrictions; }
 		}
 
-		public IList Orders
+		public IList<CriteriaImpl.OrderEntry> Orders
 		{
 			get { return impl.Orders; }
 		}
 
-		public IDictionary FetchModes
+		public IDictionary<string, FetchMode> FetchModes
 		{
 			get { return impl.FetchModes; }
 		}
 
-		public IList SubcriteriaList
+		public IList<CriteriaImpl.Subcriteria> SubcriteriaList
 		{
 			get { return impl.SubcriteriaList; }
 		}

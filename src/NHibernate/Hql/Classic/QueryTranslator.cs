@@ -1493,29 +1493,24 @@ namespace NHibernate.Hql.Classic
 			set { holderClass = value; }
 		}
 
-		protected internal override LockMode[] GetLockModes(IDictionary lockModes)
+		protected internal override LockMode[] GetLockModes(IDictionary<string, LockMode> lockModes)
 		{
 			// unfortunately this stuff can't be cached because
 			// it is per-invocation, not constant for the
 			// QueryTranslator instance
-			IDictionary nameLockModes = new Hashtable();
+			Dictionary<string, LockMode> nameLockModes = new Dictionary<string, LockMode>();
 			if (lockModes != null)
 			{
-				IDictionaryEnumerator it = lockModes.GetEnumerator();
-				while (it.MoveNext())
+				foreach (KeyValuePair<string, LockMode> mode in lockModes)
 				{
-					DictionaryEntry me = it.Entry;
-					nameLockModes.Add(
-						GetAliasName((String) me.Key),
-						me.Value
-						);
+					nameLockModes[GetAliasName(mode.Key)] = mode.Value;
 				}
 			}
 			LockMode[] lockModeArray = new LockMode[names.Length];
 			for (int i = 0; i < names.Length; i++)
 			{
-				LockMode lm = (LockMode) nameLockModes[names[i]];
-				if (lm == null)
+				LockMode lm;
+				if (!nameLockModes.TryGetValue(names[i], out lm))
 				{
 					lm = LockMode.None;
 				}
@@ -1524,7 +1519,7 @@ namespace NHibernate.Hql.Classic
 			return lockModeArray;
 		}
 
-		protected override SqlString ApplyLocks(SqlString sql, IDictionary lockModes, Dialect.Dialect dialect)
+		protected override SqlString ApplyLocks(SqlString sql, IDictionary<string, LockMode> lockModes, Dialect.Dialect dialect)
 		{
 			SqlString result;
 			if (lockModes == null || lockModes.Count == 0)
@@ -1533,16 +1528,16 @@ namespace NHibernate.Hql.Classic
 			}
 			else
 			{
-				IDictionary aliasedLockModes = new Hashtable();
-				foreach (DictionaryEntry de in lockModes)
+				Dictionary<string, LockMode> aliasedLockModes = new Dictionary<string, LockMode>();
+				foreach (KeyValuePair<string, LockMode> de in lockModes)
 				{
-					aliasedLockModes[GetAliasName((string) de.Key)] = de.Value;
+					aliasedLockModes[GetAliasName(de.Key)] = de.Value;
 				}
 
-				IDictionary keyColumnNames = null;
+				Dictionary<string,string[]> keyColumnNames = null;
 				if (dialect.ForUpdateOfColumns)
 				{
-					keyColumnNames = new Hashtable();
+					keyColumnNames = new Dictionary<string, string[]>();
 					for (int i = 0; i < names.Length; i++)
 					{
 						keyColumnNames[names[i]] = persisters[i].IdentifierColumnNames;

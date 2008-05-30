@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using NHibernate.Util;
 
@@ -10,8 +10,8 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class ForUpdateFragment
 	{
-		private Dialect.Dialect dialect;
-		private StringBuilder aliases = new StringBuilder();
+		private readonly Dialect.Dialect dialect;
+		private readonly StringBuilder aliases = new StringBuilder();
 		private bool isNoWaitEnabled;
 
 		public ForUpdateFragment(Dialect.Dialect dialect)
@@ -19,20 +19,20 @@ namespace NHibernate.SqlCommand
 			this.dialect = dialect;
 		}
 
-		public ForUpdateFragment(Dialect.Dialect dialect, IDictionary lockModes, IDictionary keyColumnNames)
+		public ForUpdateFragment(Dialect.Dialect dialect, IDictionary<string, LockMode> lockModes, IDictionary<string, string[]> keyColumnNames)
 			: this(dialect)
 		{
 			LockMode upgradeType = null;
 
-			foreach (DictionaryEntry me in lockModes)
+			foreach (KeyValuePair<string, LockMode> me in lockModes)
 			{
-				LockMode lockMode = (LockMode) me.Value;
+				LockMode lockMode = me.Value;
 				if (LockMode.Read.LessThan(lockMode))
 				{
-					string tableAlias = (string) me.Key;
+					string tableAlias = me.Key;
 					if (dialect.ForUpdateOfColumns)
 					{
-						string[] keyColumns = (string[]) keyColumnNames[tableAlias];
+						string[] keyColumns = keyColumnNames[tableAlias];
 						if (keyColumns == null)
 						{
 							throw new ArgumentException("alias not found: " + tableAlias);

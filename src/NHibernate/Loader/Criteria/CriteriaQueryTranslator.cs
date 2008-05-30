@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Iesi.Collections.Generic;
-using NHibernate.Engine;
 using NHibernate.Criterion;
+using NHibernate.Engine;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
@@ -39,22 +39,15 @@ namespace NHibernate.Loader.Criteria
 
 		private readonly List<TypedValue> usedTypedValues = new List<TypedValue>();
 
-		public CriteriaQueryTranslator(
-			ISessionFactoryImplementor factory,
-			CriteriaImpl criteria,
-			string rootEntityName,
-			string rootSQLAlias,
-			ICriteriaQuery outerQuery)
+		public CriteriaQueryTranslator(ISessionFactoryImplementor factory, CriteriaImpl criteria, string rootEntityName,
+		                               string rootSQLAlias, ICriteriaQuery outerQuery)
 			: this(factory, criteria, rootEntityName, rootSQLAlias)
 		{
 			outerQueryTranslator = outerQuery;
 		}
 
-		public CriteriaQueryTranslator(
-			ISessionFactoryImplementor factory,
-			CriteriaImpl criteria,
-			string rootEntityName,
-			string rootSQLAlias)
+		public CriteriaQueryTranslator(ISessionFactoryImplementor factory, CriteriaImpl criteria, string rootEntityName,
+		                               string rootSQLAlias)
 		{
 			rootCriteria = criteria;
 			this.rootEntityName = rootEntityName;
@@ -68,30 +61,159 @@ namespace NHibernate.Loader.Criteria
 			CreateCriteriaSQLAliasMap();
 		}
 
+		[CLSCompliant(false)] // TODO: Why does this cause a problem in 1.1
+			public string RootSQLAlias
+		{
+			get { return rootSQLAlias; }
+		}
+
+		public ISet<string> GetQuerySpaces()
+		{
+			ISet<string> result = new HashedSet<string>();
+
+			foreach (string entityName in criteriaEntityNames.Values)
+			{
+				result.AddAll(Factory.GetEntityPersister(entityName).QuerySpaces);
+			}
+
+			foreach (ICollectionPersister collectionPersister in criteriaCollectionPersisters)
+			{
+				result.AddAll(collectionPersister.CollectionSpaces);
+			}
+			return result;
+		}
+
+		public int SQLAliasCount
+		{
+			get { return criteriaSQLAliasMap.Count; }
+		}
+
+		public CriteriaImpl RootCriteria
+		{
+			get { return rootCriteria; }
+		}
+
+		public QueryParameters GetQueryParameters()
+		{
+			ArrayList values = new ArrayList(usedTypedValues.Count);
+			List<IType> types = new List<IType>(usedTypedValues.Count);
+
+			foreach (TypedValue value in usedTypedValues)
+			{
+				values.Add(value.Value);
+				types.Add(value.Type);
+			}
+
+			object[] valueArray = values.ToArray();
+			IType[] typeArray = types.ToArray();
+
+			RowSelection selection = new RowSelection();
+			selection.FirstRow = rootCriteria.FirstResult;
+			selection.MaxRows = rootCriteria.MaxResults;
+			selection.Timeout = rootCriteria.Timeout;
+			selection.FetchSize = rootCriteria.FetchSize;
+
+			Dictionary<string, LockMode> lockModes = new Dictionary<string, LockMode>();
+			foreach (KeyValuePair<string, LockMode> me in rootCriteria.LockModes)
+			{
+				ICriteria subcriteria = GetAliasedCriteria(me.Key);
+				lockModes[GetSQLAlias(subcriteria)] = me.Value;
+			}
+
+			foreach (CriteriaImpl.Subcriteria subcriteria in rootCriteria.IterateSubcriteria())
+			{
+				LockMode lm = subcriteria.LockMode;
+				if (lm != null)
+				{
+					lockModes[GetSQLAlias(subcriteria)] = lm;
+				}
+			}
+
+			return
+				new QueryParameters(typeArray, valueArray, lockModes, selection, rootCriteria.Cacheable, rootCriteria.CacheRegion,
+				                    rootCriteria.Comment, rootCriteria.LookupByNaturalKey, rootCriteria.ResultTransformer);
+		}
+
+		public SqlString GetGroupBy()
+		{
+			if (rootCriteria.Projection.IsGrouped)
+			{
+				return
+					rootCriteria.Projection.ToGroupSqlString(rootCriteria.ProjectionCriteria, this,
+					                                         new CollectionHelper.EmptyMapClass<string, IFilter>());
+			}
+			else
+			{
+				return SqlString.Empty;
+			}
+		}
+
+		public SqlString GetSelect(IDictionary<string, IFilter> enabledFilters)
+		{
+			return rootCriteria.Projection.ToSqlString(rootCriteria.ProjectionCriteria, 0, this, enabledFilters);
+		}
+
+		public IType[] ProjectedTypes
+		{
+			get { return rootCriteria.Projection.GetTypes(rootCriteria, this); }
+		}
+
+		public string[] ProjectedColumnAliases
+		{
+			get { return rootCriteria.Projection.GetColumnAliases(0); }
+		}
+
+		public string[] ProjectedAliases
+		{
+			get { return rootCriteria.Projection.Aliases; }
+		}
+
+		public SqlString GetWhereCondition(IDictionary<string, IFilter> enabledFilters)
+		{
+			SqlStringBuilder condition = new SqlStringBuilder(30);
+
+			bool first = true;
+			foreach (CriteriaImpl.CriterionEntry entry in rootCriteria.IterateExpressionEntries())
+			{
+				if (!HasGroupedOrAggregateProjection(entry.Criterion.GetProjections()))
+				{
+					if (!first)
+					{
+						condition.Add(" and ");
+					}
+					first = false;
+					SqlString sqlString = entry.Criterion.ToSqlString(entry.Criteria, this, enabledFilters);
+					condition.Add(sqlString);
+				}
+			}
+			return condition.ToSqlString();
+		}
+
+		public string GetOrderBy()
+		{
+			StringBuilder orderBy = new StringBuilder(30);
+
+			bool first = true;
+			foreach (CriteriaImpl.OrderEntry oe in rootCriteria.IterateOrderings())
+			{
+				if (!first)
+				{
+					orderBy.Append(StringHelper.CommaSpace);
+				}
+				first = false;
+				orderBy.Append(oe.Order.ToSqlString(oe.Criteria, this));
+			}
+			return orderBy.ToString();
+		}
+
+		public ISessionFactoryImplementor Factory
+		{
+			get { return sessionFactory; }
+		}
+
 		public string GenerateSQLAlias()
 		{
 			return StringHelper.GenerateAlias(rootSQLAlias, aliasCount);
-		}
-
-
-		public int GetIndexForAlias()
-		{
-			return indexForAlias++;
-		}
-
-		public void AddUsedTypedValues(TypedValue [] values)
-		{
-			if(values != null)
-			{
-				if(outerQueryTranslator != null)
-				{
-					outerQueryTranslator.AddUsedTypedValues(values);
-				}
-				else
-				{
-					usedTypedValues.AddRange(values);
-				}
-			}
 		}
 
 		private ICriteria GetAliasedCriteria(string alias)
@@ -110,31 +232,19 @@ namespace NHibernate.Loader.Criteria
 		{
 			JoinType result;
 			if (associationPathJoinTypesMap.TryGetValue(path, out result))
+			{
 				return result;
+			}
 			else
+			{
 				return JoinType.InnerJoin;
+			}
 		}
 
 		public ICriteria GetCriteria(string path)
 		{
 			ICriteria result;
 			associationPathCriteriaMap.TryGetValue(path, out result);
-			return result;
-		}
-
-		public ISet<string> GetQuerySpaces()
-		{
-			ISet<string> result = new HashedSet<string>();
-
-			foreach (string entityName in criteriaEntityNames.Values)
-			{
-				result.AddAll(Factory.GetEntityPersister(entityName).QuerySpaces);
-			}
-
-			foreach (ICollectionPersister collectionPersister in criteriaCollectionPersisters)
-			{
-				result.AddAll(collectionPersister.CollectionSpaces);
-			}
 			return result;
 		}
 
@@ -220,7 +330,7 @@ namespace NHibernate.Loader.Criteria
 			else
 			{
 				// otherwise, recurse
-				return GetWholeAssociationPath((CriteriaImpl.Subcriteria)parent) + '.' + path;
+				return GetWholeAssociationPath((CriteriaImpl.Subcriteria) parent) + '.' + path;
 			}
 		}
 
@@ -234,63 +344,20 @@ namespace NHibernate.Loader.Criteria
 			}
 		}
 
-		private void CreateCriteriaCollectionPersisters()
-		{
-			foreach (KeyValuePair<string, ICriteria> me in associationPathCriteriaMap)
-			{
-				IJoinable joinable = GetPathJoinable(me.Key);
-				if (joinable.IsCollection)
-				{
-					criteriaCollectionPersisters.Add((ICollectionPersister)joinable);
-				}
-			}
-		}
-
-		private IJoinable GetPathJoinable(string path)
-		{
-			IJoinable last = (IJoinable)Factory.GetEntityPersister(rootEntityName);
-			IPropertyMapping lastEntity = (IPropertyMapping)last;
-
-			string componentPath = "";
-
-			StringTokenizer tokens = new StringTokenizer(path, ".", false);
-			foreach (string token in tokens)
-			{
-				componentPath += token;
-				IType type = lastEntity.ToType(componentPath);
-				if (type.IsAssociationType)
-				{
-					IAssociationType atype = (IAssociationType)type;
-					last = atype.GetAssociatedJoinable(Factory);
-					lastEntity = (IPropertyMapping)Factory.GetEntityPersister(atype.GetAssociatedEntityName(Factory));
-					componentPath = "";
-				}
-				else if (type.IsComponentType)
-				{
-					componentPath += '.';
-				}
-				else
-				{
-					throw new QueryException("not an association: " + componentPath);
-				}
-			}
-			return last;
-		}
-
 		private string GetPathEntityName(string path)
 		{
-			IQueryable persister = (IQueryable)sessionFactory.GetEntityPersister(rootEntityName);
+			IQueryable persister = (IQueryable) sessionFactory.GetEntityPersister(rootEntityName);
 			StringTokenizer tokens = new StringTokenizer(path, ".", false);
-			string componentPath = "";
+			string componentPath = string.Empty;
 			foreach (string token in tokens)
 			{
 				componentPath += token;
 				IType type = persister.ToType(componentPath);
 				if (type.IsAssociationType)
 				{
-					IAssociationType atype = (IAssociationType)type;
-					persister = (IQueryable)sessionFactory.GetEntityPersister(atype.GetAssociatedEntityName(sessionFactory));
-					componentPath = "";
+					IAssociationType atype = (IAssociationType) type;
+					persister = (IQueryable) sessionFactory.GetEntityPersister(atype.GetAssociatedEntityName(sessionFactory));
+					componentPath = string.Empty;
 				}
 				else if (type.IsComponentType)
 				{
@@ -304,11 +371,6 @@ namespace NHibernate.Loader.Criteria
 			return persister.EntityName;
 		}
 
-		public int SQLAliasCount
-		{
-			get { return criteriaSQLAliasMap.Count; }
-		}
-
 		private void CreateCriteriaSQLAliasMap()
 		{
 			int i = 0;
@@ -319,191 +381,16 @@ namespace NHibernate.Loader.Criteria
 				string alias = crit.Alias;
 				if (alias == null)
 				{
-					alias = me.Value;
+					alias = me.Value; // the entity name
 				}
 				criteriaSQLAliasMap[crit] = StringHelper.GenerateAlias(alias, i++);
 			}
 			criteriaSQLAliasMap[rootCriteria] = rootSQLAlias;
 		}
 
-		public CriteriaImpl RootCriteria
-		{
-			get { return rootCriteria; }
-		}
-
-		public QueryParameters GetQueryParameters()
-		{
-			ArrayList values = new ArrayList();
-			ArrayList types = new ArrayList();
-
-			foreach(TypedValue value in usedTypedValues)
-			{
-				values.Add(value.Value);
-				types.Add(value.Type);
-			}
-
-			object[] valueArray = values.ToArray();
-			IType[] typeArray = (IType[])types.ToArray(typeof(IType));
-
-			RowSelection selection = new RowSelection();
-			selection.FirstRow = rootCriteria.FirstResult;
-			selection.MaxRows = rootCriteria.MaxResults;
-			selection.Timeout = rootCriteria.Timeout;
-			selection.FetchSize = rootCriteria.FetchSize;
-
-			IDictionary lockModes = new Hashtable();
-			foreach (DictionaryEntry me in rootCriteria.LockModes)
-			{
-				ICriteria subcriteria = GetAliasedCriteria((string)me.Key);
-				lockModes[GetSQLAlias(subcriteria)] = me.Value;
-			}
-
-			foreach (CriteriaImpl.Subcriteria subcriteria in rootCriteria.IterateSubcriteria())
-			{
-				LockMode lm = subcriteria.LockMode;
-				if (lm != null)
-				{
-					lockModes[GetSQLAlias(subcriteria)] = lm;
-				}
-			}
-
-			return new QueryParameters(
-				typeArray,
-				valueArray,
-				lockModes,
-				selection,
-				rootCriteria.Cacheable,
-				rootCriteria.CacheRegion,
-				string.Empty, // TODO H3: rootCriteria.Comment,
-				rootCriteria.IsLookupByNaturalKey(),
-				null
-				);
-		}
-
 		public bool HasProjection
 		{
 			get { return rootCriteria.Projection != null; }
-		}
-
-		public SqlString GetGroupBy()
-		{
-			if (rootCriteria.Projection.IsGrouped)
-			{
-				return rootCriteria.Projection
-					.ToGroupSqlString(rootCriteria.ProjectionCriteria, this, new CollectionHelper.EmptyMapClass<string, IFilter>());
-			}
-			else
-			{
-				return SqlString.Empty;
-			}
-		}
-
-		public SqlString GetSelect(IDictionary<string, IFilter> enabledFilters)
-		{
-			return rootCriteria.Projection.ToSqlString(
-				rootCriteria.ProjectionCriteria,
-				0,
-				this,
-				enabledFilters
-				);
-		}
-
-		public IType[] ProjectedTypes
-		{
-			get { return rootCriteria.Projection.GetTypes(rootCriteria, this); }
-		}
-
-		public string[] ProjectedColumnAliases
-		{
-			get { return rootCriteria.Projection.GetColumnAliases(0); }
-		}
-
-		public string[] ProjectedAliases
-		{
-			get { return rootCriteria.Projection.Aliases; }
-		}
-
-		public SqlString GetWhereCondition(IDictionary<string, IFilter> enabledFilters)
-		{
-			SqlStringBuilder condition = new SqlStringBuilder(30);
-
-			bool first = true;
-			foreach (CriteriaImpl.CriterionEntry entry in rootCriteria.IterateExpressionEntries())
-			{
-				if(!HasGroupedOrAggregateProjection(entry.Criterion.GetProjections()))
-				{
-					if (!first)
-					{
-						condition.Add(" and ");
-					}
-					first = false;
-					SqlString sqlString = entry.Criterion.ToSqlString(entry.Criteria, this, enabledFilters);
-					condition.Add(sqlString);
-				}
-			}
-			return condition.ToSqlString();
-		}
-
-		public SqlString GetHavingCondition(IDictionary<string, IFilter> enabledFilters)
-		{
-			SqlStringBuilder condition = new SqlStringBuilder(30);
-			bool first = true;
-			foreach(CriteriaImpl.CriterionEntry entry in rootCriteria.IterateExpressionEntries())
-			{
-				if(HasGroupedOrAggregateProjection(entry.Criterion.GetProjections()))
-				{
-					if (!first)
-					{
-						condition.Add(" and ");
-					}
-					first = false;
-					SqlString sqlString = entry.Criterion.ToSqlString(entry.Criteria, this, enabledFilters);
-					condition.Add(sqlString);
-				}
-			}
-			return condition.ToSqlString();
-		}
-
-		protected static bool HasGroupedOrAggregateProjection(IProjection[] projections)
-		{
-			if(projections != null)
-			{
-				foreach(IProjection projection in projections)
-				{
-					if(projection.IsGrouped || projection.IsAggregate)
-						return true;
-				}
-			}
-			return false;
-		}
-
-
-		public string GetOrderBy()
-		{
-			StringBuilder orderBy = new StringBuilder(30);
-
-			bool first = true;
-			foreach (CriteriaImpl.OrderEntry oe in rootCriteria.IterateOrderings())
-			{
-				if (!first)
-				{
-					orderBy.Append(", ");
-				}
-				first = false;
-				orderBy.Append(oe.Order.ToSqlString(oe.Criteria, this));
-			}
-			return orderBy.ToString();
-		}
-
-		public ISessionFactoryImplementor Factory
-		{
-			get { return sessionFactory; }
-		}
-
-		[CLSCompliant(false)] // TODO: Why does this cause a problem in 1.1
-		public string RootSQLAlias
-		{
-			get { return rootSQLAlias; }
 		}
 
 		public string GetSQLAlias(ICriteria criteria)
@@ -532,10 +419,9 @@ namespace NHibernate.Loader.Criteria
 		/// Get the names of the columns constrained
 		/// by this criterion.
 		/// </summary>
-		public string[] GetColumnsUsingProjection(
-			ICriteria subcriteria,
-			string propertyName)
+		public string[] GetColumnsUsingProjection(ICriteria subcriteria, string propertyName)
 		{
+			// NH Different behavior: we don't use the projection alias for NH-1023
 			try
 			{
 				return GetColumns(propertyName, subcriteria);
@@ -554,64 +440,20 @@ namespace NHibernate.Loader.Criteria
 			}
 		}
 
-		/// <summary>
-		/// Get the aliases of the columns constrained
-		/// by this criterion (for use in ORDER BY clause).
-		/// </summary>
-		public string[] GetColumnAliasesUsingProjection(
-			ICriteria subcriteria,
-			string propertyName)
-		{
-			//first look for a reference to a projection alias
-
-			IProjection projection = rootCriteria.Projection;
-			string[] projectionColumns = projection == null ?
-										 null :
-										 projection.GetColumnAliases(propertyName, 0);
-
-			if (projectionColumns == null)
-			{
-				//it does not refer to an alias of a projection,
-				//look for a property
-				try
-				{
-					return GetColumns(propertyName, subcriteria);
-				}
-				catch (HibernateException)
-				{
-					//not found in inner query , try the outer query
-					if (outerQueryTranslator != null)
-					{
-						return outerQueryTranslator.GetColumnAliasesUsingProjection(subcriteria, propertyName);
-					}
-					else
-					{
-						throw;
-					}
-				}
-			}
-			else
-			{
-				//it refers to an alias of a projection
-				return projectionColumns;
-			}
-		}
-
 		public string[] GetIdentifierColumns(ICriteria subcriteria)
 		{
-			string[] idcols =
-				((ILoadable)GetPropertyMapping(GetEntityName(subcriteria))).IdentifierColumnNames;
+			string[] idcols = ((ILoadable) GetPropertyMapping(GetEntityName(subcriteria))).IdentifierColumnNames;
 			return StringHelper.Qualify(GetSQLAlias(subcriteria), idcols);
 		}
 
 		public IType GetIdentifierType(ICriteria subcriteria)
 		{
-			return ((ILoadable)GetPropertyMapping(GetEntityName(subcriteria))).IdentifierType;
+			return ((ILoadable) GetPropertyMapping(GetEntityName(subcriteria))).IdentifierType;
 		}
 
 		public TypedValue GetTypedIdentifierValue(ICriteria subcriteria, object value)
 		{
-			ILoadable loadable = (ILoadable)GetPropertyMapping(GetEntityName(subcriteria));
+			ILoadable loadable = (ILoadable) GetPropertyMapping(GetEntityName(subcriteria));
 			return new TypedValue(loadable.IdentifierType, value, EntityMode.Poco);
 		}
 
@@ -619,17 +461,17 @@ namespace NHibernate.Loader.Criteria
 		{
 			string entName = GetEntityName(subcriteria, propertyName);
 			if (entName == null)
+			{
 				throw new QueryException("Could not find property " + propertyName + " on " + subcriteria.CriteriaClass);
-			return GetPropertyMapping(GetEntityName(subcriteria, propertyName)).ToColumns(GetSQLAlias(subcriteria, propertyName), GetPropertyName(propertyName));
+			}
+			return GetPropertyMapping(entName).ToColumns(GetSQLAlias(subcriteria, propertyName), GetPropertyName(propertyName));
 		}
 
 		public IType GetTypeUsingProjection(ICriteria subcriteria, string propertyName)
 		{
 			//first look for a reference to a projection alias
 			IProjection projection = rootCriteria.Projection;
-			IType[] projectionTypes = projection == null ?
-									  null :
-									  projection.GetTypes(propertyName, subcriteria, this);
+			IType[] projectionTypes = projection == null ? null : projection.GetTypes(propertyName, subcriteria, this);
 
 			if (projectionTypes == null)
 			{
@@ -665,8 +507,7 @@ namespace NHibernate.Loader.Criteria
 
 		public IType GetType(ICriteria subcriteria, string propertyName)
 		{
-			return GetPropertyMapping(GetEntityName(subcriteria, propertyName))
-				.ToType(GetPropertyName(propertyName));
+			return GetPropertyMapping(GetEntityName(subcriteria, propertyName)).ToType(GetPropertyName(propertyName));
 		}
 
 		/// <summary>
@@ -677,7 +518,7 @@ namespace NHibernate.Loader.Criteria
 			// Detect discriminator values...
 			if (value is System.Type)
 			{
-				System.Type entityClass = (System.Type)value;
+				System.Type entityClass = (System.Type) value;
 				IQueryable q = SessionFactoryHelper.FindQueryableUsingImports(sessionFactory, entityClass.FullName);
 
 				if (q != null)
@@ -692,10 +533,8 @@ namespace NHibernate.Loader.Criteria
 
 		private IPropertyMapping GetPropertyMapping(string entityName)
 		{
-			return (IPropertyMapping)sessionFactory.GetEntityPersister(entityName);
+			return (IPropertyMapping) sessionFactory.GetEntityPersister(entityName);
 		}
-
-		//TODO: use these in methods above
 
 		public string GetEntityName(ICriteria subcriteria, string propertyName)
 		{
@@ -738,5 +577,145 @@ namespace NHibernate.Loader.Criteria
 			}
 			return propertyName;
 		}
+
+		#region NH specific
+
+		public int GetIndexForAlias()
+		{
+			return indexForAlias++;
+		}
+
+		public void AddUsedTypedValues(TypedValue[] values)
+		{
+			if (values != null)
+			{
+				if (outerQueryTranslator != null)
+				{
+					outerQueryTranslator.AddUsedTypedValues(values);
+				}
+				else
+				{
+					usedTypedValues.AddRange(values);
+				}
+			}
+		}
+
+		private void CreateCriteriaCollectionPersisters()
+		{
+			foreach (KeyValuePair<string, ICriteria> me in associationPathCriteriaMap)
+			{
+				IJoinable joinable = GetPathJoinable(me.Key);
+				if (joinable.IsCollection)
+				{
+					criteriaCollectionPersisters.Add((ICollectionPersister) joinable);
+				}
+			}
+		}
+
+		private IJoinable GetPathJoinable(string path)
+		{
+			IJoinable last = (IJoinable) Factory.GetEntityPersister(rootEntityName);
+			IPropertyMapping lastEntity = (IPropertyMapping) last;
+
+			string componentPath = "";
+
+			StringTokenizer tokens = new StringTokenizer(path, ".", false);
+			foreach (string token in tokens)
+			{
+				componentPath += token;
+				IType type = lastEntity.ToType(componentPath);
+				if (type.IsAssociationType)
+				{
+					IAssociationType atype = (IAssociationType) type;
+					last = atype.GetAssociatedJoinable(Factory);
+					lastEntity = (IPropertyMapping) Factory.GetEntityPersister(atype.GetAssociatedEntityName(Factory));
+					componentPath = "";
+				}
+				else if (type.IsComponentType)
+				{
+					componentPath += '.';
+				}
+				else
+				{
+					throw new QueryException("not an association: " + componentPath);
+				}
+			}
+			return last;
+		}
+
+		public SqlString GetHavingCondition(IDictionary<string, IFilter> enabledFilters)
+		{
+			SqlStringBuilder condition = new SqlStringBuilder(30);
+			bool first = true;
+			foreach (CriteriaImpl.CriterionEntry entry in rootCriteria.IterateExpressionEntries())
+			{
+				if (HasGroupedOrAggregateProjection(entry.Criterion.GetProjections()))
+				{
+					if (!first)
+					{
+						condition.Add(" and ");
+					}
+					first = false;
+					SqlString sqlString = entry.Criterion.ToSqlString(entry.Criteria, this, enabledFilters);
+					condition.Add(sqlString);
+				}
+			}
+			return condition.ToSqlString();
+		}
+
+		protected static bool HasGroupedOrAggregateProjection(IProjection[] projections)
+		{
+			if (projections != null)
+			{
+				foreach (IProjection projection in projections)
+				{
+					if (projection.IsGrouped || projection.IsAggregate)
+					{
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Get the aliases of the columns constrained
+		/// by this criterion (for use in ORDER BY clause).
+		/// </summary>
+		public string[] GetColumnAliasesUsingProjection(ICriteria subcriteria, string propertyName)
+		{
+			//first look for a reference to a projection alias
+			IProjection projection = rootCriteria.Projection;
+			string[] projectionColumns = projection == null ? null : projection.GetColumnAliases(propertyName, 0);
+
+			if (projectionColumns == null)
+			{
+				//it does not refer to an alias of a projection,
+				//look for a property
+				try
+				{
+					return GetColumns(propertyName, subcriteria);
+				}
+				catch (HibernateException)
+				{
+					//not found in inner query , try the outer query
+					if (outerQueryTranslator != null)
+					{
+						return outerQueryTranslator.GetColumnAliasesUsingProjection(subcriteria, propertyName);
+					}
+					else
+					{
+						throw;
+					}
+				}
+			}
+			else
+			{
+				//it refers to an alias of a projection
+				return projectionColumns;
+			}
+		}
+
+		#endregion
 	}
 }

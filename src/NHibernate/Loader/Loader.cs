@@ -159,14 +159,14 @@ namespace NHibernate.Loader
 		/// </summary>
 		/// <param name="lockModes">A Collection of lock modes specified dynamically via the Query Interface</param>
 		/// <returns></returns>
-		protected internal abstract LockMode[] GetLockModes(IDictionary lockModes);
+		protected internal abstract LockMode[] GetLockModes(IDictionary<string, LockMode> lockModes);
 
 		/// <summary>
 		/// Append <c>FOR UPDATE OF</c> clause, if necessary. This
 		/// empty superclass implementation merely returns its first
 		/// argument.
 		/// </summary>
-		protected virtual SqlString ApplyLocks(SqlString sql, IDictionary lockModes, Dialect.Dialect dialect)
+		protected virtual SqlString ApplyLocks(SqlString sql, IDictionary<string, LockMode> lockModes, Dialect.Dialect dialect)
 		{
 			return sql;
 		}

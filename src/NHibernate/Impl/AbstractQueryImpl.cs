@@ -841,7 +841,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		protected internal abstract IDictionary LockModes { get;}
+		protected internal abstract IDictionary<string, LockMode> LockModes { get;}
 
 		#endregion
 

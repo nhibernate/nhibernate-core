@@ -22,7 +22,7 @@ namespace NHibernate.Engine
 		private IType[] _positionalParameterTypes;
 		private object[] _positionalParameterValues;
 		private IDictionary<string, TypedValue> _namedParameters;
-		private IDictionary _lockModes;
+		private IDictionary<string, LockMode> _lockModes;
 		private RowSelection _rowSelection;
 		private bool _cacheable;
 		private string _cacheRegion;
@@ -81,14 +81,14 @@ namespace NHibernate.Engine
 		}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues,
-			IDictionary lockModes, RowSelection rowSelection, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
+			IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
 			: this(positionalParameterTypes, positionalParameterValues, null, lockModes, rowSelection, false, cacheable, cacheRegion, comment, null, transformer)
 		{
 			_naturalKeyLookup = isLookupByNaturalKey;
 		}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues,
-			IDictionary<string, TypedValue> namedParameters, IDictionary lockModes, RowSelection rowSelection,
+			IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection,
 			bool readOnly, bool cacheable, string cacheRegion, string comment,
 			object[] collectionKeys, IResultTransformer transformer)
 		{
@@ -106,7 +106,7 @@ namespace NHibernate.Engine
 		}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues,
-			IDictionary<string, TypedValue> namedParameters, IDictionary lockModes, RowSelection rowSelection,
+			IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection,
 			bool readOnly, bool cacheable, string cacheRegion, string comment, object[] collectionKeys,
 			object optionalObject, string optionalEntityName, object optionalId, IResultTransformer transformer)
 			: this(positionalParameterTypes, positionalParameterValues, namedParameters, lockModes, rowSelection, readOnly, cacheable, cacheRegion, comment, collectionKeys, transformer)
@@ -165,7 +165,7 @@ namespace NHibernate.Engine
 		/// object from hql as the key and the <see cref="LockMode"/> as the value.
 		/// </summary>
 		/// <value>An <see cref="IDictionary"/> of lock modes.</value>
-		public IDictionary LockModes
+		public IDictionary<string, LockMode> LockModes
 		{
 			get { return _lockModes; }
 			set { _lockModes = value; }

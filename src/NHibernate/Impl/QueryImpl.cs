@@ -105,7 +105,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		protected internal override IDictionary LockModes
+		protected internal override IDictionary<string, LockMode> LockModes
 		{
 			get { return lockModes; }
 		}
