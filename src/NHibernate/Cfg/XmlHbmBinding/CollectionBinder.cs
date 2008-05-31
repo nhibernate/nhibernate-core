@@ -6,7 +6,7 @@ using NHibernate.Mapping;
 using NHibernate.Type;
 using NHibernate.Util;
 
-using Array=NHibernate.Mapping.Array;
+using Array = NHibernate.Mapping.Array;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -68,7 +68,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			return list;
 		}
 
-		private  Mapping.Collection CreateBag(XmlNode node, string prefix, string path,
+		private Mapping.Collection CreateBag(XmlNode node, string prefix, string path,
 			PersistentClass owner, System.Type containingType)
 		{
 			Bag bag = new Bag(owner);
@@ -76,7 +76,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			return bag;
 		}
 
-		private  Mapping.Collection CreateIdentifierBag(XmlNode node, string prefix, string path,
+		private Mapping.Collection CreateIdentifierBag(XmlNode node, string prefix, string path,
 			PersistentClass owner, System.Type containingType)
 		{
 			IdentifierBag bag = new IdentifierBag(owner);
@@ -240,16 +240,16 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			//set up second pass
 			if (model is List)
-				AddListSecondPass(node, (List) model);
+				AddListSecondPass(node, (List)model);
 
 			else if (model is Map)
-				AddMapSecondPass(node, (Map) model);
+				AddMapSecondPass(node, (Map)model);
 
 			else if (model is Set)
-				AddSetSecondPass(node, (Set) model);
+				AddSetSecondPass(node, (Set)model);
 
 			else if (model is IdentifierCollection)
-				AddIdentifierCollectionSecondPass(node, (IdentifierCollection) model);
+				AddIdentifierCollectionSecondPass(node, (IdentifierCollection)model);
 
 			else
 				AddCollectionSecondPass(node, model);
@@ -278,20 +278,20 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			XmlAttribute att = node.Attributes["element-class"];
 
 			if (att != null)
-				model.ElementClassName= GetQualifiedClassName(att.Value, mappings);
+				model.ElementClassName = GetQualifiedClassName(att.Value, mappings);
 			else
-			  foreach (XmlNode subnode in node.ChildNodes)
-			  {
+				foreach (XmlNode subnode in node.ChildNodes)
+				{
 					// TODO NH: mmm.... the code below, maybe, must be resolved by SecondPass (not here)
-			    string name = subnode.LocalName; //.Name;
+					string name = subnode.LocalName; //.Name;
 
-			    //I am only concerned with elements that are from the nhibernate namespace
-			    if (subnode.NamespaceURI != Configuration.MappingSchemaXMLNS)
-			      continue;
+					//I am only concerned with elements that are from the nhibernate namespace
+					if (subnode.NamespaceURI != Configuration.MappingSchemaXMLNS)
+						continue;
 
-			    switch (name)
-			    {
-			      case "element":
+					switch (name)
+					{
+						case "element":
 							string typeName;
 							XmlAttribute typeAttribute = subnode.Attributes["type"];
 							if (typeAttribute != null)
@@ -302,16 +302,16 @@ namespace NHibernate.Cfg.XmlHbmBinding
 							if (type == null)
 								throw new MappingException("could not interpret type: " + typeName);
 
-			    		model.ElementClassName = type.ReturnedClass.AssemblyQualifiedName;
-			        break;
+							model.ElementClassName = type.ReturnedClass.AssemblyQualifiedName;
+							break;
 
-			      case "one-to-many":
-			      case "many-to-many":
-			      case "composite-element":
-			        model.ElementClassName = GetQualifiedClassName(subnode.Attributes["class"].Value, mappings);
-			        break;
-			    }
-			  }
+						case "one-to-many":
+						case "many-to-many":
+						case "composite-element":
+							model.ElementClassName = GetQualifiedClassName(subnode.Attributes["class"].Value, mappings);
+							break;
+					}
+				}
 		}
 
 		private void AddListSecondPass(XmlNode node, List model)
@@ -410,7 +410,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				string msg = "Mapped collection key: " + Columns(collection.Key);
 				if (collection.IsIndexed)
-					msg += ", index: " + Columns(((IndexedCollection) collection).Index);
+					msg += ", index: " + Columns(((IndexedCollection)collection).Index);
 				if (collection.IsOneToMany)
 					msg += ", one-to-many: " + collection.Element.Type.Name;
 				else
@@ -533,10 +533,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			if (model.IsOneToMany)
 			{
-				OneToMany oneToMany = (OneToMany) model.Element;
+				OneToMany oneToMany = (OneToMany)model.Element;
 				string associatedEntityName = oneToMany.ReferencedEntityName;
-				PersistentClass persistentClass = persistentClasses[associatedEntityName];
-				if (persistentClass == null)
+				PersistentClass persistentClass;
+				if (persistentClasses.TryGetValue(associatedEntityName, out persistentClass) == false)
 					throw new MappingException("Association references unmapped class: " + associatedEntityName);
 				oneToMany.AssociatedClass = persistentClass;
 				model.CollectionTable = persistentClass.Table;
