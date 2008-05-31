@@ -56,10 +56,6 @@
 							rely on ASP.NET caching feature to understand how it works. For more information, read (on the MSDN):
 							<ulink url="http://msdn.microsoft.com/library/en-us/cpguide/html/cpconcacheapis.asp">Caching Application Data</ulink>.
 						</para>
-						<para>
-							Note that SysCache should only be used in ASP.NET applications. Microsoft knowledge base
-							<ulink url="http://support.microsoft.com/kb/917411">article 917411</ulink> has more details.
-						</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
@@ -80,6 +76,17 @@
 					<listitem>
 						<para>
 							Uses <literal>memcached</literal>. See <ulink url="http://www.danga.com/memcached/">memcached homepage</ulink>
+							for more information.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><classname>NCache provider for NHibernate</classname></term>
+					<listitem>
+						<para>
+							Uses <literal>NCache</literal>,NCache is a commercial distributed caching system with a provider for NHibernate. 
+							The NCache Express version is free for use, see 
+							<ulink url="http://www.alachisoft.com/ncache/ncache_express.html">NCache Express homepage</ulink>
 							for more information.
 						</para>
 					</listitem>
