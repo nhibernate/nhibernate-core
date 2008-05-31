@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
-using NHibernate.Engine;
 using NHibernate.Criterion;
+using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Util;
-using System.Collections.Generic;
 
 namespace NHibernate.Impl
 {
@@ -24,7 +24,6 @@ namespace NHibernate.Impl
 		private int firstResult;
 		private int timeout = RowSelection.NoValue;
 		private int fetchSize = RowSelection.NoValue;
-		private readonly System.Type persistentClass;
 		private ISessionImplementor session;
 		private IResultTransformer resultTransformer = CriteriaSpecification.RootEntity;
 		private bool cacheable;
@@ -32,6 +31,8 @@ namespace NHibernate.Impl
 		private CacheMode? cacheMode;
 		private CacheMode? sessionCacheMode;
 		private string comment;
+		private FlushMode? flushMode;
+		private FlushMode? sessionFlushMode;
 
 		private readonly List<Subcriteria> subcriteriaList = new List<Subcriteria>();
 		private readonly string rootAlias;
@@ -44,320 +45,134 @@ namespace NHibernate.Impl
 		private IProjection projection;
 		private ICriteria projectionCriteria;
 
-		[Serializable]
-		public sealed class Subcriteria : ICriteria
+		public CriteriaImpl(System.Type persistentClass, ISessionImplementor session)
+			: this(persistentClass.FullName, CriteriaSpecification.RootAlias, session) {}
+
+		public CriteriaImpl(System.Type persistentClass, string alias, ISessionImplementor session)
+			: this(persistentClass.FullName, alias, session) {}
+
+		public CriteriaImpl(string entityOrClassName, ISessionImplementor session)
+			: this(entityOrClassName, CriteriaSpecification.RootAlias, session) {}
+
+		public CriteriaImpl(string entityOrClassName, string alias, ISessionImplementor session)
 		{
-			// Added to simulate Java-style inner class
-			private readonly CriteriaImpl root;
+			this.session = session;
+			this.entityOrClassName = entityOrClassName;
+			cacheable = false;
+			rootAlias = alias;
+			subcriteriaByAlias[alias] = this;
+		}
 
-			private readonly ICriteria parent;
-			private string alias;
-			private readonly string path;
-			private LockMode lockMode;
-			private readonly JoinType joinType;
+		public ISessionImplementor Session
+		{
+			get { return session; }
+			set { session = value; }
+		}
 
-			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, string alias, JoinType joinType)
+		public string EntityOrClassName
+		{
+			get { return entityOrClassName; }
+		}
+
+		public IDictionary<string, LockMode> LockModes
+		{
+			get { return lockModes; }
+		}
+
+		public ICriteria ProjectionCriteria
+		{
+			get { return projectionCriteria; }
+		}
+
+		public bool LookupByNaturalKey
+		{
+			get
 			{
-				this.root = root;
-				this.parent = parent;
-				this.alias = alias;
-				this.path = path;
-				this.joinType = joinType;
-
-				root.subcriteriaList.Add(this);
-
-				root.subcriteriaByPath[path] = this;
-				if (alias != null)
-					root.subcriteriaByAlias[alias] = this;
-			}
-
-			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, JoinType joinType)
-				: this(root, parent, path, null, joinType)
-			{
-			}
-
-			public ICriteria Add(ICriterion expression)
-			{
-				root.Add(this, expression);
-				return this;
-			}
-
-			public ICriteria CreateAlias(string associationPath, string alias)
-			{
-				return CreateAlias(associationPath, alias, JoinType.InnerJoin);
-			}
-
-			public ICriteria CreateAlias(string associationPath, string alias, JoinType joinType)
-			{
-				new Subcriteria(root, this, associationPath, alias, joinType);
-				return this;
-			}
-
-			public ICriteria CreateCriteria(string associationPath)
-			{
-				return CreateCriteria(associationPath, JoinType.InnerJoin);
-			}
-
-			public ICriteria CreateCriteria(string associationPath, JoinType joinType)
-			{
-				return new Subcriteria(root, this, associationPath, joinType);
-			}
-
-			public ICriteria AddOrder(Order order)
-			{
-				root.orderEntries.Add(new OrderEntry(order, this));
-				return this;
-			}
-
-			public IList List()
-			{
-				return root.List();
-			}
-
-			public void List(IList results)
-			{
-				root.List(results);
-			}
-
-			public IList<T> List<T>()
-			{
-				return root.List<T>();
-			}
-
-			public T UniqueResult<T>()
-			{
-				object result = UniqueResult();
-				if (result == null && typeof(T).IsValueType)
+				if (projection != null)
 				{
-					throw new InvalidCastException("UniqueResult<T>() cannot cast null result to value type. Call UniqueResult<T?>() instead");
+					return false;
 				}
-				else
+				if (subcriteriaList.Count > 0)
 				{
-					return (T)UniqueResult();
+					return false;
 				}
-			}
-
-			public object UniqueResult()
-			{
-				return root.UniqueResult();
-			}
-
-			public ICriteria SetFetchMode(string associationPath, FetchMode mode)
-			{
-				root.SetFetchMode(StringHelper.Qualify(path, associationPath), mode);
-				return this;
-			}
-
-			public ICriteria SetFirstResult(int firstResult)
-			{
-				root.SetFirstResult(firstResult);
-				return this;
-			}
-
-			public ICriteria SetMaxResults(int maxResults)
-			{
-				root.SetMaxResults(maxResults);
-				return this;
-			}
-
-			public ICriteria SetTimeout(int timeout)
-			{
-				root.SetTimeout(timeout);
-				return this;
-			}
-
-			public ICriteria SetFetchSize(int fetchSize)
-			{
-				root.SetFetchSize(fetchSize);
-				return this;
-			}
-
-			public ICriteria CreateCriteria(string associationPath, string alias)
-			{
-				return CreateCriteria(associationPath, alias, JoinType.InnerJoin);
-			}
-
-			public ICriteria CreateCriteria(string associationPath, string alias, JoinType joinType)
-			{
-				return new Subcriteria(root, this, associationPath, alias, joinType);
-			}
-
-			// Deprecated methods not ported: ReturnMaps, ReturnRootEntities
-
-			public LockMode LockMode
-			{
-				get { return lockMode; }
-			}
-
-			public ICriteria SetLockMode(LockMode lockMode)
-			{
-				this.lockMode = lockMode;
-				return this;
-			}
-
-			public ICriteria SetLockMode(string alias, LockMode lockMode)
-			{
-				root.SetLockMode(alias, lockMode);
-				return this;
-			}
-
-			public JoinType JoinType
-			{
-				get { return joinType; }
-			}
-
-			public string Alias
-			{
-				get { return alias; }
-				set
+				if (criteria.Count != 1)
 				{
-					root.subcriteriaByAlias.Remove(alias);
-					alias = value;
-					root.subcriteriaByAlias[alias] = this;
+					return false;
 				}
-			}
 
-			public ICriteria Parent
-			{
-				get { return parent; }
+				CriterionEntry ce = criteria[0];
+				return ce.Criterion is NaturalIdentifier;
 			}
+		}
 
-			public string Path
-			{
-				get { return path; }
-			}
+		public string Alias
+		{
+			get { return rootAlias; }
+		}
 
-			public ICriteria SetResultTransformer(IResultTransformer resultProcessor)
-			{
-				root.SetResultTransformer(resultProcessor);
-				return this;
-			}
+		public IProjection Projection
+		{
+			get { return projection; }
+		}
 
-			public ICriteria SetCacheable(bool cacheable)
+		public FetchMode GetFetchMode(string path)
+		{
+			FetchMode result;
+			if (!fetchModes.TryGetValue(path, out result))
 			{
-				root.SetCacheable(cacheable);
-				return this;
+				result = FetchMode.Default;
 			}
+			return result;
+		}
 
-			public ICriteria SetCacheRegion(string cacheRegion)
-			{
-				root.SetCacheRegion(cacheRegion);
-				return this;
-			}
+		public IResultTransformer ResultTransformer
+		{
+			get { return resultTransformer; }
+		}
 
-			public ICriteria SetProjection(IProjection projection)
-			{
-				root.SetProjection(projection);
-				return this;
-			}
+		public int MaxResults
+		{
+			get { return maxResults; }
+		}
 
-			public ISessionImplementor Session
-			{
-				get { return root.Session;}
-			}
+		public int FirstResult
+		{
+			get { return firstResult; }
+		}
 
-			public ICriteria GetCriteriaByPath(string path)
-			{
-				return root.GetCriteriaByPath(path);
-			}
+		public int FetchSize
+		{
+			get { return fetchSize; }
+		}
 
-			public ICriteria GetCriteriaByAlias(string alias)
-			{
-				return root.GetCriteriaByAlias(alias);
-			}
+		public int Timeout
+		{
+			get { return timeout; }
+		}
 
-			/// <summary> Override the cache mode for this particular query. </summary>
-			/// <param name="cacheMode">The cache mode to use. </param>
-			/// <returns> this (for method chaining) </returns>
-			public ICriteria SetCacheMode(CacheMode cacheMode)
-			{
-				root.SetCacheMode(cacheMode);
-				return this;
-			}
+		public bool Cacheable
+		{
+			get { return cacheable; }
+		}
 
-			public int MaxResults
-			{
-				get { return root.MaxResults; }
-			}
+		public string CacheRegion
+		{
+			get { return cacheRegion; }
+		}
 
-			public int FirstResult
-			{
-				get { return root.FirstResult; }
-			}
-
-			public int Timeout
-			{
-				get { return root.Timeout; }
-			}
-
-			public int FetchSize
-			{
-				get { return root.FetchSize; }
-			}
-
-			public System.Type CriteriaClass
-			{
-				get { return root.CriteriaClass; }
-			}
-
-			public IDictionary<string, LockMode> LockModes
-			{
-				get { return root.LockModes; }
-			}
-
-			public IResultTransformer ResultTransformer
-			{
-				get { return root.ResultTransformer; }
-			}
-
-			public bool Cacheable
-			{
-				get { return root.Cacheable; }
-			}
-
-			public string CacheRegion
-			{
-				get { return root.CacheRegion; }
-			}
-
-			public IProjection Projection
-			{
-				get { return root.Projection; }
-			}
-
-			public ICriteria ProjectionCriteria
-			{
-				get { return root.ProjectionCriteria; }
-			}
-
-			public IList<CriterionEntry> Restrictions
-			{
-				get { return root.Restrictions; }
-			}
-
-			public IList<OrderEntry> Orders
-			{
-				get { return root.Orders; }
-			}
-
-			public IDictionary<string, FetchMode> FetchModes
-			{
-				get { return root.FetchModes; }
-			}
-
-			public IList<Subcriteria> SubcriteriaList
-			{
-				get { return root.SubcriteriaList; }
-			}
-
-			public string RootAlias
-			{
-				get { return root.RootAlias; }
-			}
+		public string Comment
+		{
+			get { return comment; }
 		}
 
 		protected internal void Before()
 		{
+			if (flushMode.HasValue)
+			{
+				sessionFlushMode = Session.FlushMode;
+				Session.FlushMode = flushMode.Value;
+			}
 			if (cacheMode.HasValue)
 			{
 				sessionCacheMode = Session.CacheMode;
@@ -367,6 +182,11 @@ namespace NHibernate.Impl
 
 		protected internal void After()
 		{
+			if (sessionFlushMode.HasValue)
+			{
+				Session.FlushMode = sessionFlushMode.Value;
+				sessionFlushMode = null;
+			}
 			if (sessionCacheMode.HasValue)
 			{
 				Session.CacheMode = sessionCacheMode.Value;
@@ -404,43 +224,6 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public int MaxResults
-		{
-			get { return maxResults; }
-		}
-
-		public int FirstResult
-		{
-			get { return firstResult; }
-		}
-
-		public int Timeout
-		{
-			get { return timeout; }
-		}
-
-		public int FetchSize
-		{
-			get { return fetchSize; }
-		}
-
-		public CriteriaImpl(System.Type persistentClass, ISessionImplementor session)
-			: this(persistentClass, CriteriaSpecification.RootAlias, session)
-		{
-		}
-
-		public CriteriaImpl(System.Type persistentClass, string alias, ISessionImplementor session)
-		{
-			// TODO H3.2 EntityName in constructor instead persistentClass
-			this.persistentClass = persistentClass;
-			this.session = session;
-			cacheable = false;
-			rootAlias = alias;
-			cacheMode = null;
-			entityOrClassName = persistentClass.FullName;
-			subcriteriaByAlias[alias] = this;
-		}
-
 		public IList List()
 		{
 			ArrayList results = new ArrayList();
@@ -471,14 +254,19 @@ namespace NHibernate.Impl
 		public T UniqueResult<T>()
 		{
 			object result = UniqueResult();
-			if (result == null && typeof(T).IsValueType)
+			if (result == null && typeof (T).IsValueType)
 			{
 				return default(T);
 			}
 			else
 			{
-				return (T)result;
+				return (T) result;
 			}
+		}
+
+		public void ClearOrderds()
+		{
+			orderEntries.Clear();
 		}
 
 		public IEnumerable<CriterionEntry> IterateExpressionEntries()
@@ -503,7 +291,9 @@ namespace NHibernate.Impl
 			foreach (CriterionEntry criterionEntry in criteria)
 			{
 				if (!first)
+				{
 					builder.Append(" and ");
+				}
 				builder.Append(criterionEntry.ToString());
 				first = false;
 			}
@@ -515,7 +305,9 @@ namespace NHibernate.Impl
 			foreach (OrderEntry orderEntry in orderEntries)
 			{
 				if (!first)
+				{
 					builder.Append(" and ");
+				}
 				builder.Append(orderEntry.ToString());
 				first = false;
 			}
@@ -526,16 +318,6 @@ namespace NHibernate.Impl
 		{
 			orderEntries.Add(new OrderEntry(ordering, this));
 			return this;
-		}
-
-		public FetchMode GetFetchMode(string path)
-		{
-			FetchMode result;
-			if (!fetchModes.TryGetValue(path, out result))
-			{
-				result = FetchMode.Default;
-			}
-			return result;
 		}
 
 		public ICriteria SetFetchMode(string associationPath, FetchMode mode)
@@ -554,11 +336,6 @@ namespace NHibernate.Impl
 		{
 			new Subcriteria(this, this, associationPath, alias, joinType);
 			return this;
-		}
-
-		public string Alias
-		{
-			get { return rootAlias; }
 		}
 
 		public ICriteria Add(ICriteria criteriaInst, ICriterion expression)
@@ -592,13 +369,6 @@ namespace NHibernate.Impl
 			return AbstractQueryImpl.UniqueElement(List());
 		}
 
-		public System.Type CriteriaClass
-		{
-			get { return persistentClass; }
-		}
-
-		// Deprecated methods not ported: ReturnMaps, ReturnRootEntities
-
 		public ICriteria SetLockMode(LockMode lockMode)
 		{
 			return SetLockMode(CriteriaSpecification.RootAlias, lockMode);
@@ -610,47 +380,10 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IDictionary<string, LockMode> LockModes
-		{
-			get { return lockModes; }
-		}
-
-		public string EntityOrClassName
-		{
-			get { return entityOrClassName; }
-		}
-
-		public IResultTransformer ResultTransformer
-		{
-			get { return resultTransformer; }
-		}
-
 		public ICriteria SetResultTransformer(IResultTransformer tupleMapper)
 		{
 			resultTransformer = tupleMapper;
 			return this;
-		}
-
-		public bool Cacheable
-		{
-			get { return cacheable; }
-		}
-
-		public ISessionImplementor Session
-		{
-			get { return session; }
-			set { session = value; }
-		}
-
-		public string CacheRegion
-		{
-			get { return cacheRegion; }
-		}
-
-		public string Comment
-		{
-			get { return comment; }
-			set { comment = value; }
 		}
 
 		public ICriteria SetCacheable(bool cacheable)
@@ -665,31 +398,16 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public bool LookupByNaturalKey
+		public ICriteria SetComment(string comment)
 		{
-			get
-			{
-				if (projection != null)
-				{
-					return false;
-				}
-				if (subcriteriaList.Count > 0)
-				{
-					return false;
-				}
-				if (criteria.Count != 1)
-				{
-					return false;
-				}
-
-				CriterionEntry ce = criteria[0];
-				return ce.Criterion is NaturalIdentifier;
-			}
+			this.comment = comment;
+			return this;
 		}
 
-		public IProjection Projection
+		public ICriteria SetFlushMode(FlushMode flushMode)
 		{
-			get { return projection; }
+			this.flushMode = flushMode;
+			return this;
 		}
 
 		public ICriteria SetProjection(IProjection projection)
@@ -700,9 +418,109 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		internal void SetProjectionCriteria(ICriteria projectionCriteria)
+		/// <summary> Override the cache mode for this particular query. </summary>
+		/// <param name="cacheMode">The cache mode to use. </param>
+		/// <returns> this (for method chaining) </returns>
+		public ICriteria SetCacheMode(CacheMode cacheMode)
 		{
-			this.projectionCriteria = projectionCriteria;
+			this.cacheMode = cacheMode;
+			return this;
+		}
+
+		public object Clone()
+		{
+			CriteriaImpl clone = new CriteriaImpl(entityOrClassName, Alias, Session);
+			CloneSubcriteria(clone);
+			foreach (KeyValuePair<string, FetchMode> de in fetchModes)
+			{
+				clone.fetchModes.Add(de.Key, de.Value);
+			}
+			foreach (KeyValuePair<string, LockMode> de in lockModes)
+			{
+				clone.lockModes.Add(de.Key, de.Value);
+			}
+			clone.maxResults = maxResults;
+			clone.firstResult = firstResult;
+			clone.timeout = timeout;
+			clone.fetchSize = fetchSize;
+			clone.cacheable = cacheable;
+			clone.cacheRegion = cacheRegion;
+			clone.SetProjection(projection);
+			CloneProjectCrtieria(clone);
+			clone.SetResultTransformer(resultTransformer);
+			clone.comment = comment;
+			if (flushMode.HasValue)
+			{
+				clone.SetFlushMode(flushMode.Value);
+			}
+			if (cacheMode.HasValue)
+			{
+				clone.SetCacheMode(cacheMode.Value);
+			}
+			return clone;
+		}
+
+		private void CloneProjectCrtieria(CriteriaImpl clone)
+		{
+			if (projectionCriteria != null)
+			{
+				if (projectionCriteria == this)
+				{
+					clone.projectionCriteria = clone;
+				}
+				else
+				{
+					ICriteria clonedProjectionCriteria = (ICriteria) projectionCriteria.Clone();
+					clone.projectionCriteria = clonedProjectionCriteria;
+				}
+			}
+		}
+
+		private void CloneSubcriteria(CriteriaImpl clone)
+		{
+			//we need to preserve the parent criteria, we rely on the orderring when creating the 
+			//subcriterias initially here, so we don't need to make more than a single pass
+			Dictionary<ICriteria, ICriteria> newParents = new Dictionary<ICriteria, ICriteria>();
+			newParents[this] = clone;
+
+			foreach (Subcriteria subcriteria in IterateSubcriteria())
+			{
+				ICriteria currentParent;
+				if (!newParents.TryGetValue(subcriteria.Parent, out currentParent))
+				{
+					throw new AssertionFailure(
+						"Could not find parent for subcriteria in the previous subcriteria. If you see this error, it is a bug");
+				}
+				Subcriteria clonedSubCriteria =
+					new Subcriteria(clone, currentParent, subcriteria.Path, subcriteria.Alias, subcriteria.JoinType);
+				clonedSubCriteria.SetLockMode(subcriteria.LockMode);
+				newParents[subcriteria] = clonedSubCriteria;
+			}
+
+			// remap the orders
+			foreach (OrderEntry orderEntry in IterateOrderings())
+			{
+				ICriteria currentParent = newParents[orderEntry.Criteria];
+				if (currentParent == null)
+				{
+					throw new AssertionFailure(
+						"Could not find parent for order in the previous criteria. If you see this error, it is a bug");
+				}
+				currentParent.AddOrder(orderEntry.Order);
+			}
+
+			// remap the restrictions to appropriate criterias
+			foreach (CriterionEntry criterionEntry in criteria)
+			{
+				ICriteria currentParent;
+				if (!newParents.TryGetValue(criterionEntry.Criteria, out currentParent))
+				{
+					throw new AssertionFailure(
+						"Could not find parent for restriction in the previous criteria. If you see this error, it is a bug.");
+				}
+
+				currentParent.Add(criterionEntry.Criterion);
+			}		
 		}
 
 		public ICriteria GetCriteriaByPath(string path)
@@ -719,18 +537,257 @@ namespace NHibernate.Impl
 			return result;
 		}
 
-		/// <summary> Override the cache mode for this particular query. </summary>
-		/// <param name="cacheMode">The cache mode to use. </param>
-		/// <returns> this (for method chaining) </returns>
-		public ICriteria SetCacheMode(CacheMode cacheMode)
+		[Serializable]
+		public sealed class Subcriteria : ICriteria
 		{
-			this.cacheMode = cacheMode;
-			return this;
-		}
+			// Added to simulate Java-style inner class
+			private readonly CriteriaImpl root;
 
-		public ICriteria ProjectionCriteria
-		{
-			get { return projectionCriteria; }
+			private readonly ICriteria parent;
+			private string alias;
+			private readonly string path;
+			private LockMode lockMode;
+			private readonly JoinType joinType;
+
+			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, string alias, JoinType joinType)
+			{
+				this.root = root;
+				this.parent = parent;
+				this.alias = alias;
+				this.path = path;
+				this.joinType = joinType;
+
+				root.subcriteriaList.Add(this);
+
+				root.subcriteriaByPath[path] = this;
+				if (alias != null)
+				{
+					root.subcriteriaByAlias[alias] = this;
+				}
+			}
+
+			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, JoinType joinType)
+				: this(root, parent, path, null, joinType) {}
+
+			public string Path
+			{
+				get { return path; }
+			}
+
+			public ICriteria Parent
+			{
+				get { return parent; }
+			}
+
+			public JoinType JoinType
+			{
+				get { return joinType; }
+			}
+
+			public string Alias
+			{
+				get { return alias; }
+				set
+				{
+					root.subcriteriaByAlias.Remove(alias);
+					alias = value;
+					root.subcriteriaByAlias[alias] = this;
+				}
+			}
+
+			public LockMode LockMode
+			{
+				get { return lockMode; }
+			}
+
+			public ICriteria SetLockMode(LockMode lockMode)
+			{
+				this.lockMode = lockMode;
+				return this;
+			}
+
+			public ICriteria Add(ICriterion expression)
+			{
+				root.Add(this, expression);
+				return this;
+			}
+
+			public ICriteria AddOrder(Order order)
+			{
+				root.orderEntries.Add(new OrderEntry(order, this));
+				return this;
+			}
+
+			public ICriteria CreateAlias(string associationPath, string alias)
+			{
+				return CreateAlias(associationPath, alias, JoinType.InnerJoin);
+			}
+
+			public ICriteria CreateAlias(string associationPath, string alias, JoinType joinType)
+			{
+				new Subcriteria(root, this, associationPath, alias, joinType);
+				return this;
+			}
+
+			public ICriteria CreateCriteria(string associationPath)
+			{
+				return CreateCriteria(associationPath, JoinType.InnerJoin);
+			}
+
+			public ICriteria CreateCriteria(string associationPath, JoinType joinType)
+			{
+				return new Subcriteria(root, this, associationPath, joinType);
+			}
+
+			public ICriteria CreateCriteria(string associationPath, string alias)
+			{
+				return CreateCriteria(associationPath, alias, JoinType.InnerJoin);
+			}
+
+			public ICriteria CreateCriteria(string associationPath, string alias, JoinType joinType)
+			{
+				return new Subcriteria(root, this, associationPath, alias, joinType);
+			}
+
+			public ICriteria SetCacheable(bool cacheable)
+			{
+				root.SetCacheable(cacheable);
+				return this;
+			}
+
+			public ICriteria SetCacheRegion(string cacheRegion)
+			{
+				root.SetCacheRegion(cacheRegion);
+				return this;
+			}
+
+			public IList List()
+			{
+				return root.List();
+			}
+
+			public void List(IList results)
+			{
+				root.List(results);
+			}
+
+			public IList<T> List<T>()
+			{
+				return root.List<T>();
+			}
+
+			public T UniqueResult<T>()
+			{
+				object result = UniqueResult();
+				if (result == null && typeof (T).IsValueType)
+				{
+					throw new InvalidCastException(
+						"UniqueResult<T>() cannot cast null result to value type. Call UniqueResult<T?>() instead");
+				}
+				else
+				{
+					return (T) UniqueResult();
+				}
+			}
+
+			public void ClearOrderds()
+			{
+				root.ClearOrderds();
+			}
+
+			public object UniqueResult()
+			{
+				return root.UniqueResult();
+			}
+
+			public ICriteria SetFetchMode(string associationPath, FetchMode mode)
+			{
+				root.SetFetchMode(StringHelper.Qualify(path, associationPath), mode);
+				return this;
+			}
+
+			public ICriteria SetFlushMode(FlushMode flushMode)
+			{
+				root.SetFlushMode(flushMode);
+				return this;
+			}
+
+			/// <summary> Override the cache mode for this particular query. </summary>
+			/// <param name="cacheMode">The cache mode to use. </param>
+			/// <returns> this (for method chaining) </returns>
+			public ICriteria SetCacheMode(CacheMode cacheMode)
+			{
+				root.SetCacheMode(cacheMode);
+				return this;
+			}
+
+			public ICriteria SetFirstResult(int firstResult)
+			{
+				root.SetFirstResult(firstResult);
+				return this;
+			}
+
+			public ICriteria SetMaxResults(int maxResults)
+			{
+				root.SetMaxResults(maxResults);
+				return this;
+			}
+
+			public ICriteria SetTimeout(int timeout)
+			{
+				root.SetTimeout(timeout);
+				return this;
+			}
+
+			public ICriteria SetFetchSize(int fetchSize)
+			{
+				root.SetFetchSize(fetchSize);
+				return this;
+			}
+
+			public ICriteria SetLockMode(string alias, LockMode lockMode)
+			{
+				root.SetLockMode(alias, lockMode);
+				return this;
+			}
+
+			public ICriteria SetResultTransformer(IResultTransformer resultProcessor)
+			{
+				root.SetResultTransformer(resultProcessor);
+				return this;
+			}
+
+			public ICriteria SetComment(string comment)
+			{
+				root.SetComment(comment);
+				return this;
+			}
+
+			public ICriteria SetProjection(IProjection projection)
+			{
+				root.SetProjection(projection);
+				return this;
+			}
+
+			public ICriteria GetCriteriaByPath(string path)
+			{
+				return root.GetCriteriaByPath(path);
+			}
+
+			public ICriteria GetCriteriaByAlias(string alias)
+			{
+				return root.GetCriteriaByAlias(alias);
+			}
+
+			/// <summary>
+			/// The Clone is supported only by a root criteria.
+			/// </summary>
+			/// <returns>The clone of the root criteria.</returns>
+			public object Clone()
+			{
+				// implemented only for compatibility with CriteriaTransformer
+				return root.Clone();
+			}
 		}
 
 		[Serializable]
@@ -787,31 +844,6 @@ namespace NHibernate.Impl
 			{
 				return order.ToString();
 			}
-		}
-
-		public IList<CriterionEntry> Restrictions
-		{
-			get { return criteria; }
-		}
-
-		public IList<OrderEntry> Orders
-		{
-			get { return orderEntries; }
-		}
-
-		public IDictionary<string,FetchMode> FetchModes
-		{
-			get { return fetchModes; }
-		}
-
-		public string RootAlias
-		{
-			get { return rootAlias; }
-		}
-
-		public IList<Subcriteria> SubcriteriaList
-		{
-			get { return subcriteriaList; }
 		}
 	}
 }

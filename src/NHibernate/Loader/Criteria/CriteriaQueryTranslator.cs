@@ -462,7 +462,7 @@ namespace NHibernate.Loader.Criteria
 			string entName = GetEntityName(subcriteria, propertyName);
 			if (entName == null)
 			{
-				throw new QueryException("Could not find property " + propertyName + " on " + subcriteria.CriteriaClass);
+				throw new QueryException("Could not find property " + propertyName);
 			}
 			return GetPropertyMapping(entName).ToColumns(GetSQLAlias(subcriteria, propertyName), GetPropertyName(propertyName));
 		}

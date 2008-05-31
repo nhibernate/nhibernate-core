@@ -1,9 +1,9 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Criterion;
-using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
-using System.Collections.Generic;
 
 namespace NHibernate
 {
@@ -35,13 +35,23 @@ namespace NHibernate
 	///			.List();
 	///	</code>
 	/// <para>
-	/// Hibernate's query language is much more general and should be used for non-simple cases.
+	/// You may specify projection and aggregation using <tt>Projection</tt>
+	/// instances obtained via the factory methods on <tt>Projections</tt>.
+	/// <code>
+	/// IList cats = session.CreateCriteria(typeof(Cat))
+	/// .setProjection( Projections.ProjectionList()
+	/// .Add( Projections.RowCount() )
+	/// .Add( Projections.Avg("weight") )
+	/// .Add( Projections.Max("weight") )
+	/// .Add( Projections.Min("weight") )
+	/// .Add( Projections.GroupProperty("color") )
+	/// )
+	/// .AddOrder( Order.Asc("color") )
+	/// .List();	
+	///	</code>
 	/// </para>
-	/// <note>
-	/// This is an experimental API.
-	/// </note>
 	/// </remarks>
-	public interface ICriteria
+	public interface ICriteria : ICloneable
 	{
 		// NH: Static declarations moved to CriteriaUtil class (CriteriaUtil.cs)
 
@@ -52,25 +62,19 @@ namespace NHibernate
 		string Alias { get; }
 
 		/// <summary>
-		/// Set a limit upon the number of objects to be retrieved
+		/// Used to specify that the query results will be a projection (scalar in
+		/// nature).  Implicitly specifies the projection result transformer.
 		/// </summary>
-		/// <param name="maxResults"></param>
-		ICriteria SetMaxResults(int maxResults);
-
-		/// <summary>
-		/// Set the first result to be retrieved
-		/// </summary>
-		/// <param name="firstResult"></param>
-		ICriteria SetFirstResult(int firstResult);
-
-		// SetFetchSize - not ported from H2.1
-
-		/// <summary>
-		/// Set a timeout for the underlying ADO.NET query
-		/// </summary>
-		/// <param name="timeout"></param>
-		/// <returns></returns>
-		ICriteria SetTimeout(int timeout);
+		/// <param name="projection">The projection representing the overall "shape" of the
+		/// query results.</param>
+		/// <returns>This instance (for method chaining)</returns>
+		/// <remarks>
+		/// <para>
+		/// The individual components contained within the given <see cref="IProjection"/>
+		/// determines the overall "shape" of the query result.
+		/// </para>
+		/// </remarks>
+		ICriteria SetProjection(IProjection projection);
 
 		/// <summary>
 		/// Add an Expression to constrain the results to be retrieved.
@@ -86,38 +90,6 @@ namespace NHibernate
 		ICriteria AddOrder(Order order);
 
 		/// <summary>
-		/// Get the results
-		/// </summary>
-		/// <returns></returns>
-		IList List();
-
-		/// <summary>
-		/// Get the results and fill the <see cref="IList"/>
-		/// </summary>
-		/// <param name="results">The list to fill with the results.</param>
-		void List(IList results);
-
-		/// <summary>
-		/// Strongly-typed version of <see cref="List()" />.
-		/// </summary>
-		IList<T> List<T>();
-
-		/// <summary>
-		/// Strongly-typed version of <see cref="UniqueResult()" />.
-		/// </summary>
-		T UniqueResult<T>();
-
-		/// <summary>
-		/// Convenience method to return a single instance that matches
-		/// the query, or null if the query returns no results.
-		/// </summary>
-		/// <returns>the single result or <see langword="null" /></returns>
-		/// <exception cref="HibernateException">
-		/// If there is more than one matching result
-		/// </exception>
-		object UniqueResult();
-
-		/// <summary>
 		/// Specify an association fetching strategy.  Currently, only
 		/// one-to-many and one-to-one associations are supported.
 		/// </summary>
@@ -125,6 +97,21 @@ namespace NHibernate
 		/// <param name="mode">The Fetch mode.</param>
 		/// <returns></returns>
 		ICriteria SetFetchMode(string associationPath, FetchMode mode);
+
+		/// <summary>
+		/// Set the lock mode of the current entity
+		/// </summary>
+		/// <param name="lockMode">the lock mode</param>
+		/// <returns></returns>
+		ICriteria SetLockMode(LockMode lockMode);
+
+		/// <summary>
+		/// Set the lock mode of the aliased entity
+		/// </summary>
+		/// <param name="alias">an alias</param>
+		/// <param name="lockMode">the lock mode</param>
+		/// <returns></returns>
+		ICriteria SetLockMode(string alias, LockMode lockMode);
 
 		/// <summary>
 		/// Join an association, assigning an alias to the joined entity
@@ -152,6 +139,15 @@ namespace NHibernate
 		ICriteria CreateCriteria(string associationPath);
 
 		/// <summary>
+		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity, 
+		/// using the specified join type.
+		/// </summary>
+		/// <param name="associationPath">A dot-seperated property path</param>
+		/// <param name="joinType">The type of join to use</param>
+		/// <returns>The created "sub criteria"</returns>
+		ICriteria CreateCriteria(string associationPath, JoinType joinType);
+
+		/// <summary>
 		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity,
 		/// assigning the given alias
 		/// </summary>
@@ -171,17 +167,6 @@ namespace NHibernate
 		ICriteria CreateCriteria(string associationPath, string alias, JoinType joinType);
 
 		/// <summary>
-		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity, 
-		/// using the specified join type.
-		/// </summary>
-		/// <param name="associationPath">A dot-seperated property path</param>
-		/// <param name="joinType">The type of join to use</param>
-		/// <returns>The created "sub criteria"</returns>
-		ICriteria CreateCriteria(string associationPath, JoinType joinType);
-
-		// NH: Deprecated methods not ported
-
-		/// <summary>
 		/// Set a strategy for handling the query results. This determines the
 		/// "shape" of the query result set.
 		/// <seealso cref="CriteriaSpecification.RootEntity"/>
@@ -193,19 +178,28 @@ namespace NHibernate
 		ICriteria SetResultTransformer(IResultTransformer resultTransformer);
 
 		/// <summary>
-		/// Set the lock mode of the current entity
+		/// Set a limit upon the number of objects to be retrieved
 		/// </summary>
-		/// <param name="lockMode">the lock mode</param>
-		/// <returns></returns>
-		ICriteria SetLockMode(LockMode lockMode);
+		/// <param name="maxResults"></param>
+		ICriteria SetMaxResults(int maxResults);
 
 		/// <summary>
-		/// Set the lock mode of the aliased entity
+		/// Set the first result to be retrieved
 		/// </summary>
-		/// <param name="alias">an alias</param>
-		/// <param name="lockMode">the lock mode</param>
+		/// <param name="firstResult"></param>
+		ICriteria SetFirstResult(int firstResult);
+
+		/// <summary> Set a fetch size for the underlying ADO query. </summary>
+		/// <param name="fetchSize">the fetch size </param>
+		/// <returns> this (for method chaining) </returns>
+		ICriteria SetFetchSize(int fetchSize);
+
+		/// <summary>
+		/// Set a timeout for the underlying ADO.NET query
+		/// </summary>
+		/// <param name="timeout"></param>
 		/// <returns></returns>
-		ICriteria SetLockMode(string alias, LockMode lockMode);
+		ICriteria SetTimeout(int timeout);
 
 		/// <summary>
 		/// Enable caching of this query result set
@@ -222,52 +216,59 @@ namespace NHibernate
 		/// <returns></returns>
 		ICriteria SetCacheRegion(string cacheRegion);
 
+		/// <summary> Add a comment to the generated SQL. </summary>
+		/// <param name="comment">a human-readable string </param>
+		/// <returns> this (for method chaining) </returns>
+		ICriteria SetComment(string comment);
+		
+		/// <summary> Override the flush mode for this particular query. </summary>
+		/// <param name="flushMode">The flush mode to use. </param>
+		/// <returns> this (for method chaining) </returns>
+		ICriteria SetFlushMode(FlushMode flushMode);
+
+		/// <summary> Override the cache mode for this particular query. </summary>
+		/// <param name="cacheMode">The cache mode to use. </param>
+		/// <returns> this (for method chaining) </returns>
+		ICriteria SetCacheMode(CacheMode cacheMode);
+
 		/// <summary>
-		/// Used to specify that the query results will be a projection (scalar in
-		/// nature).  Implicitly specifies the projection result transformer.
+		/// Get the results
 		/// </summary>
-		/// <param name="projection">The projection representing the overall "shape" of the
-		/// query results.</param>
-		/// <returns>This instance (for method chaining)</returns>
-		/// <remarks>
-		/// <para>
-		/// The individual components contained within the given <see cref="IProjection"/>
-		/// determines the overall "shape" of the query result.
-		/// </para>
-		/// </remarks>
-		ICriteria SetProjection(IProjection projection);
+		/// <returns></returns>
+		IList List();
 
-		int MaxResults { get; }
+		/// <summary>
+		/// Convenience method to return a single instance that matches
+		/// the query, or null if the query returns no results.
+		/// </summary>
+		/// <returns>the single result or <see langword="null" /></returns>
+		/// <exception cref="HibernateException">
+		/// If there is more than one matching result
+		/// </exception>
+		object UniqueResult();
 
-		int FirstResult { get; }
+		#region NHibernate specific
 
-		int Timeout { get; }
+		/// <summary>
+		/// Get the results and fill the <see cref="IList"/>
+		/// </summary>
+		/// <param name="results">The list to fill with the results.</param>
+		void List(IList results);
 
-		int FetchSize { get; }
+		/// <summary>
+		/// Strongly-typed version of <see cref="List()" />.
+		/// </summary>
+		IList<T> List<T>();
 
-		System.Type CriteriaClass { get; }
+		/// <summary>
+		/// Strongly-typed version of <see cref="UniqueResult()" />.
+		/// </summary>
+		T UniqueResult<T>();
 
-		IDictionary<string, LockMode> LockModes { get; }
-
-		IResultTransformer ResultTransformer { get; }
-
-		bool Cacheable { get; }
-
-		string CacheRegion { get; }
-
-		IProjection Projection { get; }
-
-		ICriteria ProjectionCriteria { get; }
-
-		IList<CriteriaImpl.CriterionEntry> Restrictions { get; }
-
-		IList<CriteriaImpl.OrderEntry> Orders { get; }
-
-		IDictionary<string,FetchMode> FetchModes { get; }
-
-		IList<CriteriaImpl.Subcriteria> SubcriteriaList { get; }
-
-		string RootAlias { get; }
+		/// <summary>
+		/// Clear all orders from criteria.
+		/// </summary>
+		void ClearOrderds();
 
 		/// <summary>
 		/// Allows to get a sub criteria by path.
@@ -284,9 +285,6 @@ namespace NHibernate
 		/// <returns></returns>
 		ICriteria GetCriteriaByAlias(string alias);
 
-		/// <summary> Override the cache mode for this particular query. </summary>
-		/// <param name="cacheMode">The cache mode to use. </param>
-		/// <returns> this (for method chaining) </returns>
-		ICriteria SetCacheMode(CacheMode cacheMode);
+		#endregion
 	}
 }

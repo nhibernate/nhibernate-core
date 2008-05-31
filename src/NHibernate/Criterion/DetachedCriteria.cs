@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
@@ -18,18 +17,18 @@ namespace NHibernate.Criterion
 	[Serializable]
 	public class DetachedCriteria
 	{
-		private CriteriaImpl impl;
-		private ICriteria criteria;
+		private readonly CriteriaImpl impl;
+		private readonly ICriteria criteria;
 
-		protected DetachedCriteria(System.Type entityType)
+		protected DetachedCriteria(string entityName)
 		{
-			impl = new CriteriaImpl(entityType, null);
+			impl = new CriteriaImpl(entityName, null);
 			criteria = impl;
 		}
 
-		protected DetachedCriteria(System.Type entityType, string alias)
+		protected DetachedCriteria(string entityName, string alias)
 		{
-			impl = new CriteriaImpl(entityType, alias, null);
+			impl = new CriteriaImpl(entityName, alias, null);
 			criteria = impl;
 		}
 
@@ -37,6 +36,12 @@ namespace NHibernate.Criterion
 		{
 			this.impl = impl;
 			this.criteria = criteria;
+		}
+
+		internal DetachedCriteria(CriteriaImpl impl)
+		{
+			this.impl = impl;
+			criteria = impl;
 		}
 
 		/// <summary>
@@ -50,22 +55,32 @@ namespace NHibernate.Criterion
 
 		public static DetachedCriteria For(System.Type entityType)
 		{
-			return new DetachedCriteria(entityType);
+			return new DetachedCriteria(entityType.FullName);
 		}
 
 		public static DetachedCriteria For<T>()
 		{
-			return new DetachedCriteria(typeof (T));
+			return new DetachedCriteria(typeof (T).FullName);
 		}
 
 		public static DetachedCriteria For<T>(string alias)
 		{
-			return new DetachedCriteria(typeof (T), alias);
+			return new DetachedCriteria(typeof (T).FullName, alias);
 		}
 
 		public static DetachedCriteria For(System.Type entityType, string alias)
 		{
-			return new DetachedCriteria(entityType, alias);
+			return new DetachedCriteria(entityType.FullName, alias);
+		}
+
+		public static DetachedCriteria ForEntityName(string entityName)
+		{
+			return new DetachedCriteria(entityName);
+		}
+
+		public static DetachedCriteria ForEntityName(string entityName, string alias)
+		{
+			return new DetachedCriteria(entityName, alias);
 		}
 
 		public DetachedCriteria Add(ICriterion criterion)
@@ -117,6 +132,11 @@ namespace NHibernate.Criterion
 			get { return criteria.Alias; }
 		}
 
+		protected internal CriteriaImpl GetCriteriaImpl()
+		{
+			return impl;
+		}
+
 		public DetachedCriteria SetFetchMode(string associationPath, FetchMode mode)
 		{
 			criteria.SetFetchMode(associationPath, mode);
@@ -158,17 +178,6 @@ namespace NHibernate.Criterion
 			return string.Format("DetachableCriteria({0})", criteria);
 		}
 
-		protected internal CriteriaImpl GetCriteriaImpl()
-		{
-			return impl;
-		}
-
-		protected internal void SetCriteriaImpl(CriteriaImpl impl)
-		{
-			this.impl = impl;
-			criteria = impl;
-		}
-
 		public DetachedCriteria GetCriteriaByPath(string path)
 		{
 			ICriteria tmpCrit = criteria.GetCriteriaByPath(path);
@@ -187,86 +196,6 @@ namespace NHibernate.Criterion
 				return null;
 			}
 			return new DetachedCriteria(impl, tmpCrit);
-		}
-
-		public int MaxResults
-		{
-			get { return impl.MaxResults; }
-		}
-
-		public int FirstResult
-		{
-			get { return impl.FirstResult; }
-		}
-
-		public int Timeout
-		{
-			get { return impl.Timeout; }
-		}
-
-		public int FetchSize
-		{
-			get { return impl.FetchSize; }
-		}
-
-		public System.Type CriteriaClass
-		{
-			get { return impl.CriteriaClass; }
-		}
-
-		public IDictionary<string, LockMode> LockModes
-		{
-			get { return impl.LockModes; }
-		}
-
-		public IResultTransformer ResultTransformer
-		{
-			get { return impl.ResultTransformer; }
-		}
-
-		public bool Cacheable
-		{
-			get { return impl.Cacheable; }
-		}
-
-		public string CacheRegion
-		{
-			get { return impl.CacheRegion; }
-		}
-
-		public IProjection Projection
-		{
-			get { return impl.Projection; }
-		}
-
-		public ICriteria ProjectionCriteria
-		{
-			get { return impl.ProjectionCriteria; }
-		}
-
-		public IList<CriteriaImpl.CriterionEntry> Restrictions
-		{
-			get { return impl.Restrictions; }
-		}
-
-		public IList<CriteriaImpl.OrderEntry> Orders
-		{
-			get { return impl.Orders; }
-		}
-
-		public IDictionary<string, FetchMode> FetchModes
-		{
-			get { return impl.FetchModes; }
-		}
-
-		public IList<CriteriaImpl.Subcriteria> SubcriteriaList
-		{
-			get { return impl.SubcriteriaList; }
-		}
-
-		public string RootAlias
-		{
-			get { return impl.RootAlias; }
 		}
 	}
 }
