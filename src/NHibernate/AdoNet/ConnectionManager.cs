@@ -151,8 +151,9 @@ namespace NHibernate.AdoNet
 			CloseConnection();
 		}
 
-		public IDbConnection Disconnect()
-		{
+		public IDbConnection Disconnect() {
+            if (IsInActiveTransaction)
+                throw  new InvalidOperationException("Disconnect cannot be called while a transaction is in progress.");
 			try
 			{
 				if (!ownConnection)
