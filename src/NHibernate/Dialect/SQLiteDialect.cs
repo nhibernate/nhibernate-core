@@ -134,6 +134,18 @@ namespace NHibernate.Dialect
 	
         }
 
+		public override string NoColumnsInsertString
+		{
+			get { return "DEFAULT VALUES"; }
+		}
+
+		/// <summary>
+		/// Add a LIMIT N clause to the given SQL <c>SELECT</c>
+		/// </summary>
+		/// <param name="querySqlString">A Query in the form of a SqlString.</param>
+		/// <param name="limit">Maximum number of rows to be returned by the query</param>
+		/// <param name="offset">Offset of the first row to process in the result set</param>
+		/// <returns>A new SqlString that contains the <c>LIMIT</c> clause.</returns>
         public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
         {
             SqlStringBuilder pagingBuilder = new SqlStringBuilder();
