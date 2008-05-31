@@ -153,7 +153,6 @@ namespace NHibernate.Hql.Classic
 				{
 					throw new QueryException("'(' expected after HQL function in SELECT");
 				}
-				
 				try
 				{
 					ParserHelper.Parse(funcStack.PathExpressionParser, q.Unalias(token), ParserHelper.PathSeparators, q);
@@ -191,31 +190,9 @@ namespace NHibernate.Hql.Classic
 					throw new QueryException("',' expected in SELECT before:" + token);
 				}
 
-				// Accept costants in SELECT: NH-280
-				// TODO: Parse a costant expression like 5+3+8 (now is not supported in SELECT)
-				if (IsStringCostant(token))
+				try
 				{
-					q.AppendScalarSelectToken(token);
-					q.AddSelectScalar(NHibernateUtil.String);
-				}
-				else if (IsIntegerConstant(token))
-				{
-					q.AppendScalarSelectToken(token);
-					q.AddSelectScalar(GetIntegerConstantType(token));
-				}
-				else if (IsFloatingPointConstant(token))
-				{
-					q.AppendScalarSelectToken(token);
-					q.AddSelectScalar(GetFloatingPointConstantType());
-				}
-				else if (IsParameter(token))
-				{
-					//q.AddNamedParameter(token.Substring(1));
-					//q.AppendScalarSelectToken(token);
-					throw new QueryException("parameters are not supported in SELECT.", new NotSupportedException());
-				}
-				else
-				{
+					//High probablly to find a valid pathExpression
 					ParserHelper.Parse(pathExpressionParser, q.Unalias(token), ParserHelper.PathSeparators, q);
 					if (pathExpressionParser.IsCollectionValued)
 					{
@@ -229,38 +206,66 @@ namespace NHibernate.Hql.Classic
 					}
 					q.AppendScalarSelectTokens(pathExpressionParser.WhereColumns);
 					q.AddSelectScalar(pathExpressionParser.WhereColumnType);
-					pathExpressionParser.AddAssociation(q);
+					pathExpressionParser.AddAssociation(q);				
 				}
-				
+				catch (QueryException)
+				{
+					// Accept costants in SELECT: NH-280
+					// TODO: Parse a costant expression like 5+3+8 (now is not supported in SELECT)
+					if (IsStringCostant(token))
+					{
+						q.AppendScalarSelectToken(token);
+						q.AddSelectScalar(NHibernateUtil.String);
+					}
+					else if (IsIntegerConstant(token))
+					{
+						q.AppendScalarSelectToken(token);
+						q.AddSelectScalar(GetIntegerConstantType(token));
+					}
+					else if (IsFloatingPointConstant(token))
+					{
+						q.AppendScalarSelectToken(token);
+						q.AddSelectScalar(GetFloatingPointConstantType());
+					}
+					else if (IsParameter(token))
+					{
+						//q.AddNamedParameter(token.Substring(1));
+						//q.AppendScalarSelectToken(token);
+						throw new QueryException("parameters are not supported in SELECT.", new NotSupportedException());
+					}
+					else
+						throw;
+				}
 				readyForAliasOrExpression = false;
 			}
 		}
 
 		private static bool IsPathExpression(string token)
 		{
-			return ((!((IsStringCostant(token)) || (IsFloatingPointConstant(token)))) && token.Contains("."));
+			return Regex.IsMatch(token, @"\A[A-Za-z_][A-Za-z_0-9]*[.][A-Za-z_][A-Za-z_0-9]*\z", RegexOptions.Singleline);
 		}
 
 		private static bool IsStringCostant(string token)
 		{
-			return token.Contains("'");
+			return Regex.IsMatch(token,@"\A'('{2})*([^'\r\n]*)('{2})*([^'\r\n]*)('{2})*'\z",RegexOptions.Singleline);
 		}
 
 		private static bool IsIntegerConstant(string token)
 		{
-			Int64 i;
-			return Int64.TryParse(token, out i);
+			// The tokenizer make difficult parse a signed numerical constant
+			return Regex.IsMatch(token,@"\A[+-]?\d\d*\z",RegexOptions.Singleline);
 		}
 
 		private static bool IsFloatingPointConstant(string token)
 		{
-			Decimal d;
-			return Decimal.TryParse(token, out d);
+			// The tokenizer make difficult parse a signed numerical constant
+			return Regex.IsMatch(token, @"\A(?:[-+]?(\d+\.\d+)|(\.\d+))\z", RegexOptions.Singleline);
 		}
 
+		private static readonly string paramMatcher = string.Format("\\A([{0}][A-Za-z_][A-Za-z_0-9]*)|[{1}]\\z", ParserHelper.HqlVariablePrefix, StringHelper.SqlParameter);
 		private static bool IsParameter(string token)
 		{
-			return (token.StartsWith(":") || token.Equals(StringHelper.SqlParameter));
+			return Regex.IsMatch(token, paramMatcher, RegexOptions.Singleline);
 		}
 
 		private static IType GetIntegerConstantType(string token)
