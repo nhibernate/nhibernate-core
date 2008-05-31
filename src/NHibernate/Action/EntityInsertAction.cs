@@ -107,7 +107,10 @@ namespace NHibernate.Action
 					Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
 				}
 			}
-			PostCommitInsert();
+			if (success)
+			{
+				PostCommitInsert();
+			}
 		}
 
 		private void PostInsert()

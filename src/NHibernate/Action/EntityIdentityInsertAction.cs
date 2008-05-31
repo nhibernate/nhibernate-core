@@ -143,7 +143,10 @@ namespace NHibernate.Action
 			if ( success && persister.hasCache() && !persister.isCacheInvalidationRequired() ) {
 			persister.getCache().afterInsert( getGeneratedId(), cacheEntry );
 			}*/
-			PostCommitInsert();
+			if (success)
+			{
+				PostCommitInsert();
+			}
 		}
 	}
 }

@@ -146,7 +146,10 @@ namespace NHibernate.Action
 					persister.Cache.Release(ck, slock);
 				}
 			}
-			PostCommitUpdate();
+			if (success)
+			{
+				PostCommitUpdate();
+			}
 		}
 
 		private void PostUpdate()
