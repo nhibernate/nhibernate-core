@@ -98,23 +98,16 @@ namespace NHibernate.Criterion
             return tv;
         }
 
-        // NH: This feels like a hack but I don't understand the code enough yet to code a better solution
         private void InitializeInnerQueryAndParameters(ICriteriaQuery criteriaQuery)
         {
-            if (innerQuery != null)
-            {
-                // Already initialized
-                return;
-            }
-
             ISessionFactoryImplementor factory = criteriaQuery.Factory;
             innerQuery = new CriteriaQueryTranslator(factory,
                                                      this.criteriaImpl,
-                //implicit polymorphism not supported (would need a union) 
+													 //implicit polymorphism not supported (would need a union) 
                                                      this.criteriaImpl.EntityOrClassName,
                                                      criteriaQuery.GenerateSQLAlias(),
                                                      criteriaQuery);
-
+			
             parameters = innerQuery.GetQueryParameters();
             types = innerQuery.ProjectedTypes;
         }

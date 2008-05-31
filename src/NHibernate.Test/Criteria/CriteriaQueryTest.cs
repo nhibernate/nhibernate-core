@@ -61,7 +61,7 @@ namespace NHibernate.Test.Criteria
 				Course example = new Course();
 				example.Description = "&%1";
 				IList result =
-					session.CreateCriteria(typeof (Course)).Add(
+					session.CreateCriteria(typeof(Course)).Add(
 						Example.Create(example).IgnoreCase().EnableLike().SetEscapeCharacter('&')).List();
 				Assert.AreEqual(1, result.Count);
 			}
@@ -110,22 +110,22 @@ namespace NHibernate.Test.Criteria
 			session.Close();
 		}
 
-	    [Test]
-	    public void AllowToSetLimitOnSubqueries()
-	    {
-            using (ISession session = OpenSession())
-            {
-                DetachedCriteria dc = DetachedCriteria.For(typeof (Student))
-                    .Add(Property.ForName("StudentNumber").Eq(232L))
-                    .SetMaxResults(1)
-                    .AddOrder(Order.Asc("Name"))
-                    .SetProjection(Property.ForName("Name"));
+		[Test]
+		public void AllowToSetLimitOnSubqueries()
+		{
+			using (ISession session = OpenSession())
+			{
+				DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
+					.Add(Property.ForName("StudentNumber").Eq(232L))
+					.SetMaxResults(1)
+					.AddOrder(Order.Asc("Name"))
+					.SetProjection(Property.ForName("Name"));
 
-                session.CreateCriteria(typeof (Student))
-                    .Add(Subqueries.PropertyEqAll("Name", dc))
-                    .List();
-            }
-	    }
+				session.CreateCriteria(typeof(Student))
+					.Add(Subqueries.PropertyEqAll("Name", dc))
+					.List();
+			}
+		}
 
 		[Test]
 		public void Subselect()
@@ -674,7 +674,7 @@ namespace NHibernate.Test.Criteria
 			object r = s.CreateCriteria(typeof(Enrolment))
 											.SetProjection(pp1)
 											.UniqueResult();
-			Assert.AreEqual(typeof (Int64), r.GetType());
+			Assert.AreEqual(typeof(Int64), r.GetType());
 
 			IList list = s.CreateCriteria(typeof(Enrolment))
 				.CreateAlias("Student", "st")
@@ -1602,9 +1602,58 @@ namespace NHibernate.Test.Criteria
 				.AddOrder(new Order("bodyWeight", true));
 
 			crit.List<Animal>();
-			
+
 			t.Rollback();
 			s.Close();
-	}
+		}
+
+		[Test]
+		public void SqlExpressionWithParameters()
+		{
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
+			{
+				ICriteria c = session.CreateCriteria(typeof(Student));
+				c.Add(Expression.Eq("StudentNumber", (long)232));
+				c.Add(Expression.Sql("2 = ?", 1, NHibernateUtil.Int32));
+
+				Student gavin = new Student();
+				gavin.Name = "Gavin King";
+				gavin.StudentNumber = 232;
+				session.Save(gavin);
+
+				IList result = c.List();
+
+				Assert.AreEqual(0, result.Count);
+
+				session.Delete(gavin);
+
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void ParametersInCountExpression()
+		{
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
+			{
+				ICriteria criteria = session.CreateCriteria(typeof(Student), "c");
+
+				DetachedCriteria subselect = DetachedCriteria.For(typeof(Enrolment));
+				subselect.Add(Expression.Eq("Year", (short)2008));
+				subselect.SetProjection(Projections.Distinct(Projections.Property("StudentNumber")));
+
+				criteria.Add(Subqueries.PropertyNotIn("StudentNumber", subselect));
+
+				ICriteria rowCount = CriteriaTransformer.TransformToRowCount(criteria);
+
+				// IMPORTANT: The problem is executing BOTH queries at the same time... not just one
+				criteria.List();
+				rowCount.List();
+
+				t.Commit();
+			}
+		} 
 	}
 }
