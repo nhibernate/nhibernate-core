@@ -80,6 +80,17 @@
 						</para>
 					</listitem>
 				</varlistentry>
+				<varlistentry>
+					<term><classname>NCache provider for NHibernate</classname></term>
+					<listitem>
+						<para>
+							Uses <literal>NCache</literal>,NCache is a commercial distributed caching system with a provider for NHibernate. 
+							The NCache Express version is free for use, see 
+							<ulink url="http://www.alachisoft.com/ncache/ncache_express.html">NCache Express homepage</ulink>
+							for more information.
+						</para>
+					</listitem>
+				</varlistentry>
 			</variablelist>
 		</para>
 	</abstract>
