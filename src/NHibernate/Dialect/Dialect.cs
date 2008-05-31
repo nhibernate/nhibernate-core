@@ -170,7 +170,9 @@ namespace NHibernate.Dialect
 		{
 			if (props == null)
 				throw new ArgumentNullException("props");
-			string dialectName = props[Environment.Dialect];
+			string dialectName;
+			if (props.TryGetValue(Environment.Dialect, out dialectName) == false)
+                throw new InvalidOperationException("Could not find the dialect in the configuration");
 			if (dialectName == null)
 			{
 				return GetDialect();
