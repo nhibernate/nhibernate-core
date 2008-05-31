@@ -33,10 +33,9 @@ namespace NHibernate.Id
 		/// <returns>The new identifier as a <see cref="String"/>.</returns>
 		public object Generate(ISessionImplementor session, object obj)
 		{
-			byte[] guidInBytes = new byte[16];
 			StringBuilder guidBuilder = new StringBuilder(16, 16);
 
-			guidInBytes = Guid.NewGuid().ToByteArray();
+			byte[] guidInBytes = Guid.NewGuid().ToByteArray();
 
 			// add each item in Byte[] to the string builder
 			for (int i = 0; i < guidInBytes.Length; i++)
