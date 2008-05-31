@@ -155,6 +155,7 @@ namespace NHibernate.Transaction
 		{
 			CheckNotDisposed();
 			CheckBegun();
+		    CheckNotZombied();
 
 			log.Debug("Start Commit");
 
@@ -203,6 +204,7 @@ namespace NHibernate.Transaction
 		{
 			CheckNotDisposed();
 			CheckBegun();
+            CheckNotZombied();
 
 			log.Debug("Rollback");
 
@@ -359,5 +361,13 @@ namespace NHibernate.Transaction
 				throw new TransactionException("Transaction not successfully started");
 			}
 		}
+
+        private void CheckNotZombied() 
+		{
+            if (trans != null && trans.Connection == null) 
+			{
+                throw new TransactionException("Transaction not connected, or was disconnected");
+            }
+        }
 	}
 }
