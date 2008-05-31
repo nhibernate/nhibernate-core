@@ -568,9 +568,9 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <returns> a detached entity instance
 		/// </returns>
-		public object Get<T>(object id)
+		public T Get<T>(object id)
 		{
-			return Get(typeof(T), id);
+			return (T)Get(typeof(T), id);
 		}
 
 		private object Get(System.Type persistentClass, object id)
@@ -594,9 +594,9 @@ namespace NHibernate.Impl
 		/// Retrieve a entity, obtaining the specified lock mode. 
 		/// </summary>
 		/// <returns> a detached entity instance </returns>
-		public object Get<T>(object id, LockMode lockMode)
+		public T Get<T>(object id, LockMode lockMode)
 		{
-			return Get(typeof(T).FullName, id, lockMode);
+			return (T)Get(typeof(T).FullName, id, lockMode);
 		}
 
 		/// <summary> 

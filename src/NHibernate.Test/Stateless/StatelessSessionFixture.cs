@@ -162,7 +162,7 @@ namespace NHibernate.Test.Stateless
 			using (IStatelessSession ss = sessions.OpenStatelessSession())
 			using (ITransaction tx = ss.BeginTransaction())
 			{
-				Paper p2 = (Paper)ss.Get<Paper>(paper.Id);
+				Paper p2 = ss.Get<Paper>(paper.Id);
 				p2.Color = "White";
 				ss.Update(p2);
 				tx.Commit();

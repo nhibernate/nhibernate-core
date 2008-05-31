@@ -65,7 +65,7 @@ namespace NHibernate
 		/// </summary>
 		/// <returns> a detached entity instance
 		/// </returns>
-		object Get<T>(object id);
+		T Get<T>(object id);
 
 		/// <summary> 
 		/// Retrieve a entity, obtaining the specified lock mode. 
@@ -77,7 +77,7 @@ namespace NHibernate
 		/// Retrieve a entity, obtaining the specified lock mode. 
 		/// </summary>
 		/// <returns> a detached entity instance </returns>
-		object Get<T>(object id, LockMode lockMode);
+		T Get<T>(object id, LockMode lockMode);
 
 		/// <summary> 
 		/// Refresh the entity instance state from the database. 
