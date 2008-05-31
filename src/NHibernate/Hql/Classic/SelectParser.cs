@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using NHibernate.Dialect.Function;
 using NHibernate.Hql.Util;
 using NHibernate.Type;
@@ -117,7 +118,7 @@ namespace NHibernate.Hql.Classic
 					readyForAliasOrExpression = false;
 
 					// if all functions were parsed add the type of the first function in stack
-					if(!funcStack.HasFunctions)
+					if (!funcStack.HasFunctions)
 						q.AddSelectScalar(scalarType);
 				}
 			}
@@ -206,7 +207,7 @@ namespace NHibernate.Hql.Classic
 					}
 					q.AppendScalarSelectTokens(pathExpressionParser.WhereColumns);
 					q.AddSelectScalar(pathExpressionParser.WhereColumnType);
-					pathExpressionParser.AddAssociation(q);				
+					pathExpressionParser.AddAssociation(q);
 				}
 				catch (QueryException)
 				{
@@ -240,42 +241,49 @@ namespace NHibernate.Hql.Classic
 			}
 		}
 
+		#region RegExs
+		private static readonly Regex pathExpressionRegEx = new Regex(@"\A[A-Za-z_][A-Za-z_0-9]*[.][A-Za-z_][A-Za-z_0-9]*\z", RegexOptions.Singleline | RegexOptions.Compiled);
+		private static readonly Regex stringCostantRegEx = new Regex(@"\A'('{2})*([^'\r\n]*)('{2})*([^'\r\n]*)('{2})*'\z", RegexOptions.Singleline | RegexOptions.Compiled);
+
+		private static readonly string paramMatcher = string.Format("\\A([{0}][A-Za-z_][A-Za-z_0-9]*)|[{1}]\\z", ParserHelper.HqlVariablePrefix, StringHelper.SqlParameter);
+		private static readonly Regex parameterRegEx = new Regex(paramMatcher, RegexOptions.Singleline | RegexOptions.Compiled);
+		#endregion
+
 		private static bool IsPathExpression(string token)
 		{
-			return Regex.IsMatch(token, @"\A[A-Za-z_][A-Za-z_0-9]*[.][A-Za-z_][A-Za-z_0-9]*\z", RegexOptions.Singleline);
+			return pathExpressionRegEx.IsMatch(token);
 		}
 
 		private static bool IsStringCostant(string token)
 		{
-			return Regex.IsMatch(token,@"\A'('{2})*([^'\r\n]*)('{2})*([^'\r\n]*)('{2})*'\z",RegexOptions.Singleline);
+			return stringCostantRegEx.IsMatch(token);
 		}
 
 		private static bool IsIntegerConstant(string token)
 		{
-			// The tokenizer make difficult parse a signed numerical constant
-			return Regex.IsMatch(token,@"\A[+-]?\d\d*\z",RegexOptions.Singleline);
+			long l;
+			return long.TryParse(token, NumberStyles.Integer, CultureInfo.InvariantCulture, out l);
 		}
 
 		private static bool IsFloatingPointConstant(string token)
 		{
-			// The tokenizer make difficult parse a signed numerical constant
-			return Regex.IsMatch(token, @"\A(?:[-+]?(\d+\.\d+)|(\.\d+))\z", RegexOptions.Singleline);
+			double d;
+			return double.TryParse(token, NumberStyles.Number, CultureInfo.InvariantCulture, out d);
 		}
 
-		private static readonly string paramMatcher = string.Format("\\A([{0}][A-Za-z_][A-Za-z_0-9]*)|[{1}]\\z", ParserHelper.HqlVariablePrefix, StringHelper.SqlParameter);
 		private static bool IsParameter(string token)
 		{
-			return Regex.IsMatch(token, paramMatcher, RegexOptions.Singleline);
+			return parameterRegEx.IsMatch(token);
 		}
 
 		private static IType GetIntegerConstantType(string token)
 		{
-			try
+			int i;
+			if (int.TryParse(token, NumberStyles.Integer, CultureInfo.InvariantCulture, out i))
 			{
-				Int32.Parse(token);
 				return NHibernateUtil.Int32;
 			}
-			catch(OverflowException)
+			else
 			{
 				return NHibernateUtil.Int64;
 			}
