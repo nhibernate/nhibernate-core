@@ -124,7 +124,10 @@ namespace NHibernate.Action
 				CacheKey ck = new CacheKey(Id, Persister.IdentifierType, Persister.RootEntityName, Session.EntityMode, Session.Factory);
 				Persister.Cache.Release(ck, sLock);
 			}
-			PostCommitDelete();
+			if (success)
+			{
+				PostCommitDelete();
+			}
 		}
 
 		private void PostCommitDelete()
