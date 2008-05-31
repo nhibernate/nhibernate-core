@@ -1654,6 +1654,26 @@ namespace NHibernate.Test.Criteria
 
 				t.Commit();
 			}
-		} 
+		}
+		
+
+		[Test]
+		public void TransformToRowCountTest()
+		{
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			ICriteria crit = s.CreateCriteria(typeof(Student));
+			ICriteria subCriterium = crit.CreateCriteria("PreferredCourse");
+			subCriterium.Add(Property.ForName("CourseCode").Eq("PREFFERED_CODE"));
+
+
+			ICriteria countCriteria = CriteriaTransformer.TransformToRowCount(crit);
+
+			countCriteria.List();
+
+			t.Rollback();
+			s.Close();
+		}
 	}
 }

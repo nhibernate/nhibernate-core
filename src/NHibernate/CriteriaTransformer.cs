@@ -58,11 +58,8 @@ namespace NHibernate
 		{
 			CriteriaImpl root = GetRootCriteria(criteria);
 			CriteriaImpl clone = new CriteriaImpl(root.CriteriaClass, root.Alias, root.Session);
-			foreach (CriteriaImpl.CriterionEntry criterionEntry in root.Restrictions)
-			{
-				clone.Add(criterionEntry.Criterion);
-			}
-			CloneSubcriteriaAndOrders(clone, root);
+			CloneSubcriteria(clone, root);
+
 			foreach (KeyValuePair<string, FetchMode> de in root.FetchModes)
 			{
 				clone.SetFetchMode(de.Key, de.Value);
@@ -108,10 +105,14 @@ namespace NHibernate
 			}
 		}
 
-
-		private static void CloneSubcriteriaAndOrders(CriteriaImpl clone, CriteriaImpl original)
+		/// <summary>
+		/// When cloning subcriterias we need to preserve the relations of the dependent objects (orders, restrictions).
+		/// </summary>
+		/// <param name="clone"></param>
+		/// <param name="original"></param>
+		private static void CloneSubcriteria(CriteriaImpl clone, CriteriaImpl original)
 		{
-			//we need to preserve the parent criteria, we rely on the orderring when creating the 
+			//we need to preserve the parent criteria, we rely on the ordering when creating the 
 			//subcriterias initially here, so we don't need to make more than a single pass
 			Hashtable newParents = new Hashtable();
 			newParents[original] = clone;
@@ -124,12 +125,23 @@ namespace NHibernate
 				clonedSubCriteria.SetLockMode(subcriteria.LockMode);
 				newParents[subcriteria] = clonedSubCriteria;
 			}
+
+			// remap the orders
 			foreach (CriteriaImpl.OrderEntry orderEntry in original.Orders)
 			{
 				ICriteria currentParent = (ICriteria) newParents[orderEntry.Criteria];
 				if (currentParent == null)
 					throw new InvalidOperationException("Could not find parent for order in the previous criteria. If you see this error, it is a bug");
 				currentParent.AddOrder(orderEntry.Order);
+			}
+
+
+			// remap the restrictions to appropriate criterias
+			foreach (CriteriaImpl.CriterionEntry criterionEntry in original.Restrictions) {
+				ICriteria currentParent = (ICriteria)newParents[criterionEntry.Criteria];
+				if (currentParent == null)
+					throw new InvalidOperationException("Could not find parent for restriction in the previous criteria. If you see this error, it is a bug.");
+				currentParent.Add(criterionEntry.Criterion);
 			}
 		}
 	}

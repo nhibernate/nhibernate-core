@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{5C649B55-1B3F-4C38-9998-1B043E94A244}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -49,7 +49,6 @@
     <Compile Include="A.cs" />
     <Compile Include="Abstract.cs" />
     <Compile Include="AbstractProxy.cs" />
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Assignable.cs" />
     <Compile Include="B.cs" />
     <Compile Include="Bar.cs" />

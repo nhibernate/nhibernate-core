@@ -74,7 +74,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Assertions\InheritedAreMarkedSerializable.cs" />
     <Compile Include="Assertions\IsSerializable.cs" />
     <Compile Include="CacheTest\CacheFixture.cs" />

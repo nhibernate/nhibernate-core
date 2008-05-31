@@ -65,7 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ADOException.cs" />
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AssertionFailure.cs" />
     <Compile Include="Cache\CachedItem.cs" />
     <Compile Include="Cache\CacheException.cs" />
