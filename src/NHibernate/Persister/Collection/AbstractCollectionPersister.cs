@@ -96,7 +96,7 @@ namespace NHibernate.Persister.Collection
 		private readonly bool isArray;
 		private readonly bool hasIndex;
 		protected readonly bool hasIdentifier;
-		protected readonly bool isPostInsertIdentifier;
+		protected readonly bool isPostInsertIdentifier; // NH Specific: to manage identity for id-bag (NH-364)
 		private readonly bool isLazy;
 		private readonly bool isExtraLazy;
 		private readonly bool isInverse;
@@ -1006,11 +1006,12 @@ namespace NHibernate.Persister.Collection
 								{
 									//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
 									int loc = WriteKey(st, id, offset, session);
+									// NH Specific isPostInsertIdentifier : to manage identity for id-bag (NH-364)
 									if (hasIdentifier && !isPostInsertIdentifier)
 										loc = WriteIdentifier(st, collection.GetIdentifier(entry, i), loc, session);
 
 									if (hasIndex)
-										loc = WriteIndex(st, collection.GetIndex(entry, i), loc, session);
+										loc = WriteIndex(st, collection.GetIndex(entry, i, this), loc, session);
 
 									WriteElement(st, collection.GetElement(entry), loc, session);
 									if (useBatch)
@@ -1076,7 +1077,7 @@ namespace NHibernate.Persister.Collection
 				try
 				{
 					// delete all the deleted entries
-					IEnumerator deletes = collection.GetDeletes(elementType, !deleteByIndex).GetEnumerator();
+					IEnumerator deletes = collection.GetDeletes(this, !deleteByIndex).GetEnumerator();
 					if (deletes.MoveNext())
 					{
 						deletes.Reset();
@@ -1197,13 +1198,14 @@ namespace NHibernate.Persister.Collection
 							{
 								//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
 								offset = WriteKey(st, id, offset, session);
+								// NH Specific isPostInsertIdentifier : to manage identity for id-bag (NH-364)
 								if (hasIdentifier && !isPostInsertIdentifier)
 								{
 									offset = WriteIdentifier(st, collection.GetIdentifier(entry, i), offset, session);
 								}
 								if (hasIndex)
 								{
-									offset = WriteIndex(st, collection.GetIndex(entry, i), offset, session);
+									offset = WriteIndex(st, collection.GetIndex(entry, i, this), offset, session);
 								}
 								WriteElement(st, collection.GetElement(entry), offset, session);
 								if (useBatch)

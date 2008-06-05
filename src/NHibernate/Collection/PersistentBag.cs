@@ -7,6 +7,7 @@ using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Collection
 {
@@ -17,14 +18,14 @@ namespace NHibernate.Collection
 	/// so NHibernate follows this practice.
 	/// </summary>
 	[Serializable]
-	[DebuggerTypeProxy(typeof(CollectionProxy))]
+	[DebuggerTypeProxy(typeof (CollectionProxy))]
 	public class PersistentBag : AbstractPersistentCollection, IList
 	{
 		protected IList bag;
 
-		public PersistentBag(ISessionImplementor session) : base(session)
-		{
-		}
+		public PersistentBag() {} // needed for serialization
+
+		public PersistentBag(ISessionImplementor session) : base(session) {}
 
 		public PersistentBag(ISessionImplementor session, ICollection coll) : base(session)
 		{
@@ -32,17 +33,16 @@ namespace NHibernate.Collection
 
 			if (bag == null)
 			{
-				bag = new ArrayList();
-				((ArrayList) bag).AddRange(coll);
+				bag = new ArrayList(coll);
 			}
 
 			SetInitialized();
 			IsDirectlyAccessible = true;
 		}
 
-		public override bool Empty
+		public override bool RowUpdatePossible
 		{
-			get { return bag.Count == 0; }
+			get { return false; }
 		}
 
 		public override bool IsWrapper(object collection)
@@ -50,7 +50,12 @@ namespace NHibernate.Collection
 			return bag == collection;
 		}
 
-		public override IEnumerable Entries()
+		public override bool Empty
+		{
+			get { return bag.Count == 0; }
+		}
+
+		public override IEnumerable Entries(ICollectionPersister persister)
 		{
 			return bag;
 		}
@@ -58,20 +63,28 @@ namespace NHibernate.Collection
 		public override object ReadFrom(IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor,
 		                                object owner)
 		{
+			// note that if we load this collection from a cartesian product
+			// the multiplicity would be broken ... so use an idbag instead
 			object element = role.ReadElement(reader, owner, descriptor.SuffixedElementAliases, Session);
-			bag.Add(element);
+			// NH Different behavior : we don't check for null
+			// The NH-750 test show how cheking for null we are ignoring the not-found tag and
+			// the DB may have some records ignored by NH. This issue may need some more deep consideration.
+			//if (element != null)
+				bag.Add(element);
 			return element;
 		}
 
-		public override void BeforeInitialize(ICollectionPersister persister)
+		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
-			bag = (IList) persister.CollectionType.Instantiate();
+			bag = (IList) persister.CollectionType.Instantiate(anticipatedSize);
 		}
 
 		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
 			IType elementType = persister.ElementType;
-			IList sn = (IList)GetSnapshot();
+			EntityMode entityMode = Session.EntityMode;
+
+			IList sn = (IList) GetSnapshot();
 			if (sn.Count != bag.Count)
 			{
 				return false;
@@ -79,13 +92,18 @@ namespace NHibernate.Collection
 
 			foreach (object elt in bag)
 			{
-				if (CountOccurrences(elt, bag, elementType) != CountOccurrences(elt, sn, elementType))
+				if (CountOccurrences(elt, bag, elementType, entityMode) != CountOccurrences(elt, sn, elementType, entityMode))
 				{
 					return false;
 				}
 			}
 
 			return true;
+		}
+
+		public override bool IsSnapshotEmpty(object snapshot)
+		{
+			return ((ICollection) snapshot).Count == 0;
 		}
 
 		/// <summary>
@@ -95,15 +113,16 @@ namespace NHibernate.Collection
 		/// <param name="element">The element to find in the list.</param>
 		/// <param name="list">The <see cref="IList"/> to search.</param>
 		/// <param name="elementType">The <see cref="IType"/> that can determine equality.</param>
+		/// <param name="entityMode">The entity mode.</param>
 		/// <returns>
 		/// The number of occurrences of the element in the list.
 		/// </returns>
-		private int CountOccurrences(object element, IList list, IType elementType)
+		private static int CountOccurrences(object element, IList list, IType elementType, EntityMode entityMode)
 		{
 			int result = 0;
 			foreach (object obj in list)
 			{
-				if (elementType.IsEqual(element, obj, EntityMode.Poco))
+				if (elementType.IsSame(element, obj, entityMode))
 				{
 					result++;
 				}
@@ -112,13 +131,13 @@ namespace NHibernate.Collection
 			return result;
 		}
 
-		protected override ICollection Snapshot(ICollectionPersister persister)
+		public override ICollection GetSnapshot(ICollectionPersister persister)
 		{
 			EntityMode entityMode = Session.EntityMode;
 			ArrayList clonedList = new ArrayList(bag.Count);
-			foreach (object obj in bag)
+			foreach (object current in bag)
 			{
-				clonedList.Add(persister.ElementType.DeepCopy(obj, entityMode, persister.Factory));
+				clonedList.Add(persister.ElementType.DeepCopy(current, entityMode, persister.Factory));
 			}
 			return clonedList;
 		}
@@ -126,10 +145,7 @@ namespace NHibernate.Collection
 		public override ICollection GetOrphans(object snapshot, string entityName)
 		{
 			IList sn = (IList) snapshot;
-			ArrayList result = new ArrayList();
-			result.AddRange(sn);
-			IdentityRemoveAll(result, bag, entityName, Session);
-			return result;
+			return GetOrphans(sn, bag, entityName, Session);
 		}
 
 		public override object Disassemble(ICollectionPersister persister)
@@ -153,15 +169,18 @@ namespace NHibernate.Collection
 		/// <param name="owner">The owner object.</param>
 		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
 		{
-			BeforeInitialize(persister);
 			object[] array = (object[]) disassembled;
-			for (int i = 0; i < array.Length; i++)
+			int size = array.Length;
+			BeforeInitialize(persister, size);
+			for (int i = 0; i < size; i++)
 			{
-				bag.Add(persister.ElementType.Assemble(array[i], Session, owner));
+				object element = persister.ElementType.Assemble(array[i], Session, owner);
+				if (element != null)
+				{
+					bag.Add(element);
+				}
 			}
-			SetInitialized();
 		}
-
 
 		/// <summary>
 		/// Gets a <see cref="Boolean"/> indicating if this PersistentBag needs to be recreated
@@ -179,7 +198,6 @@ namespace NHibernate.Collection
 			return !persister.IsOneToMany;
 		}
 
-
 		// For a one-to-many, a <bag> is not really a bag;
 		// it is *really* a set, since it can't contain the
 		// same element twice. It could be considered a bug
@@ -188,27 +206,26 @@ namespace NHibernate.Collection
 		// Anyway, here we implement <set> semantics for a
 		// <one-to-many> <bag>!
 
-		public override IEnumerable GetDeletes(IType elemType, bool indexIsFormula)
+		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
+			IType elementType = persister.ElementType;
+			EntityMode entityMode = Session.EntityMode;
 			ArrayList deletes = new ArrayList();
 			IList sn = (IList) GetSnapshot();
-
 			int i = 0;
-
-			foreach (object oldObject in sn)
+			foreach (object old in sn)
 			{
 				bool found = false;
-				if (bag.Count > i && elemType.IsEqual(oldObject, bag[i++], EntityMode.Poco))
+				if (bag.Count > i && elementType.IsSame(old, bag[i++], entityMode))
 				{
 					//a shortcut if its location didn't change!
 					found = true;
 				}
 				else
 				{
-					//search for it
 					foreach (object newObject in bag)
 					{
-						if (elemType.IsEqual(oldObject, newObject, EntityMode.Poco))
+						if (elementType.IsSame(old, newObject, entityMode))
 						{
 							found = true;
 							break;
@@ -217,17 +234,18 @@ namespace NHibernate.Collection
 				}
 				if (!found)
 				{
-					deletes.Add(oldObject);
+					deletes.Add(old);
 				}
 			}
-
 			return deletes;
 		}
 
 		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
 			IList sn = (IList) GetSnapshot();
-			if (sn.Count > i && elemType.IsEqual(sn[i], entry, EntityMode.Poco))
+			EntityMode entityMode = Session.EntityMode;
+
+			if (sn.Count > i && elemType.IsSame(sn[i], entry, entityMode))
 			{
 				// a shortcut if its location didn't change
 				return false;
@@ -235,9 +253,9 @@ namespace NHibernate.Collection
 			else
 			{
 				//search for it
-				foreach (object oldObject in sn)
+				foreach (object old in sn)
 				{
-					if (elemType.IsEqual(oldObject, entry, EntityMode.Poco))
+					if (elemType.IsEqual(old, entry, entityMode))
 					{
 						return false;
 					}
@@ -249,6 +267,33 @@ namespace NHibernate.Collection
 		public override bool NeedsUpdating(object entry, int i, IType elemType)
 		{
 			return false;
+		}
+
+		public override object GetIndex(object entry, int i, ICollectionPersister persister)
+		{
+			throw new NotSupportedException("Bags don't have indexes");
+		}
+
+		public override object GetElement(object entry)
+		{
+			return entry;
+		}
+
+		public override object GetSnapshotElement(object entry, int i)
+		{
+			IList sn = (IList) GetSnapshot();
+			return sn[i];
+		}
+
+		public override bool EntryExists(object entry, int i)
+		{
+			return entry != null;
+		}
+
+		public override string ToString()
+		{
+			Read();
+			return StringHelper.CollectionToString(bag);
 		}
 
 		#region IList Members
@@ -274,24 +319,23 @@ namespace NHibernate.Collection
 
 		public void RemoveAt(int index)
 		{
-			Initialize(true);
+			Write();
 			bag.RemoveAt(index);
-			Dirty();
 		}
 
 		public void Insert(int index, object value)
 		{
-			Initialize(true);
+			Write();
 			bag.Insert(index, value);
-			Dirty();
 		}
 
 		public void Remove(object value)
 		{
 			Initialize(true);
-			int oldCount = bag.Count;
+			// NH: Different implementation: we use the count to know if the value was removed (better performance)
+			int contained = bag.Count;
 			bag.Remove(value);
-			if (oldCount != bag.Count)
+			if (contained != bag.Count)
 			{
 				Dirty();
 			}
@@ -299,17 +343,24 @@ namespace NHibernate.Collection
 
 		public bool Contains(object value)
 		{
-			Read();
-			return bag.Contains(value);
+			bool? exists = ReadElementExistence(value);
+			return !exists.HasValue ? bag.Contains(value) : exists.Value;
 		}
 
 		public void Clear()
 		{
-			Initialize(true);
-			if (bag.Count > 0)
+			if (ClearQueueEnabled)
 			{
-				Dirty();
-				bag.Clear();
+				QueueOperation(new ClearDelayedOperation(this));
+			}
+			else
+			{
+				Initialize(true);
+				if (!(bag.Count == 0))
+				{
+					bag.Clear();
+					Dirty();
+				}
 			}
 		}
 
@@ -321,13 +372,15 @@ namespace NHibernate.Collection
 
 		public int Add(object value)
 		{
-			if (!QueueAdd(value))
+			if (!IsOperationQueueEnabled)
 			{
 				Write();
 				return bag.Add(value);
 			}
 			else
 			{
+				QueueOperation(new SimpleAddDelayedOperation(this, value));
+
 				//TODO: take a look at this - I don't like it because it changes the 
 				// meaning of Add - instead of returning the index it was added at 
 				// returns a "fake" index - not consistent with IList interface...
@@ -351,17 +404,15 @@ namespace NHibernate.Collection
 
 		public int Count
 		{
-			get
-			{
-				Read();
-				return bag.Count;
-			}
+			get { return ReadSize() ? CachedSize : bag.Count; }
 		}
 
 		public void CopyTo(Array array, int index)
 		{
-			Read();
-			bag.CopyTo(array, index);
+			for (int i = index; i < Count; i++)
+			{
+				array.SetValue(this[i], i);
+			}
 		}
 
 		public object SyncRoot
@@ -381,49 +432,110 @@ namespace NHibernate.Collection
 
 		#endregion
 
-		public override void DelayedAddAll(ICollection coll, ICollectionPersister persister)
+		public override bool AfterInitialize(ICollectionPersister persister)
 		{
-			bool isOneToMany = persister.IsOneToMany;
-			foreach (object obj in coll)
+			// NH Different behavior : NH-739
+			// would be nice to prevent this overhead but the operation is managed where the ICollectionPersister is not available
+			bool result;
+			if (persister.IsOneToMany && HasQueuedOperations)
 			{
-				if (isOneToMany && bag.Contains(obj))
+				int additionStartFrom = bag.Count;
+				IList additionQueue = new ArrayList(additionStartFrom);
+				foreach (object o in QueuedAdditionIterator)
 				{
-					// Skip this
-					continue;
+					if (o != null)
+					{
+						for (int i = 0; i < bag.Count; i++)
+						{
+							// we are using ReferenceEquals to be sure that is exactly the same queued instance 
+							if (ReferenceEquals(o, bag[i]))
+							{
+								additionQueue.Add(o);
+								break;
+							}
+						}
+					}
 				}
-				bag.Add(obj);
+
+				result = base.AfterInitialize(persister);
+
+				if(!result)
+				{
+					// removing duplicated additions
+					foreach (object o in additionQueue)
+					{
+						for (int i = additionStartFrom; i < bag.Count; i++)
+						{
+							if (ReferenceEquals(o, bag[i]))
+							{
+								bag.RemoveAt(i);
+								break;
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				result = base.AfterInitialize(persister);
+			}
+			return result;
+		}
+
+		#region DelayedOperations
+
+		protected sealed class ClearDelayedOperation : IDelayedOperation
+		{
+			private readonly PersistentBag enclosingInstance;
+
+			public ClearDelayedOperation(PersistentBag enclosingInstance)
+			{
+				this.enclosingInstance = enclosingInstance;
+			}
+
+			public object AddedInstance
+			{
+				get { return null; }
+			}
+
+			public object Orphan
+			{
+				get { throw new NotSupportedException("queued clear cannot be used with orphan delete"); }
+			}
+
+			public void Operate()
+			{
+				enclosingInstance.bag.Clear();
 			}
 		}
 
-		public override object GetIndex(object entry, int i)
+		protected sealed class SimpleAddDelayedOperation : IDelayedOperation
 		{
-			throw new NotSupportedException("Bags don't have indexes");
+			private readonly PersistentBag enclosingInstance;
+			private readonly object value;
+
+			public SimpleAddDelayedOperation(PersistentBag enclosingInstance, object value)
+			{
+				this.enclosingInstance = enclosingInstance;
+				this.value = value;
+			}
+
+			public object AddedInstance
+			{
+				get { return value; }
+			}
+
+			public object Orphan
+			{
+				get { return null; }
+			}
+
+			public void Operate()
+			{
+				enclosingInstance.bag.Add(value);
+			}
 		}
 
-		public override object GetElement(object entry)
-		{
-			return entry;
-		}
-
-		public override object GetSnapshotElement(object entry, int i)
-		{
-			IList sn = (IList) GetSnapshot();
-			return sn[i];
-		}
-
-		public override bool EntryExists(object entry, int i)
-		{
-			return entry != null;
-		}
-
-		public override IEnumerable Entries(ICollectionPersister persister)
-		{
-			return bag;
-		}
-
-		public override bool RowUpdatePossible
-		{
-			get { return false; }
-		}
+		#endregion
 	}
 }

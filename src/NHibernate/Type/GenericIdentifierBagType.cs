@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-
 using NHibernate.Collection;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
@@ -24,7 +22,7 @@ namespace NHibernate.Type
 
 		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new PersistentIdentifierBag<T>(session, (ICollection) collection);
+			return new PersistentIdentifierBag<T>(session, (ICollection<T>) collection);
 		}
 
 		public override System.Type ReturnedClass
@@ -32,9 +30,9 @@ namespace NHibernate.Type
 			get { return typeof(IList<T>); }
 		}
 
-		public override object Instantiate()
+		public override object Instantiate(int anticipatedSize)
 		{
-			return new List<T>();
+			return anticipatedSize <= 0 ? new List<T>() : new List<T>(anticipatedSize + 1);
 		}
 	}
 }

@@ -22,9 +22,10 @@ namespace NHibernate.Action
 			if (!emptySnapshot)
 				Persister.Remove(Key, Session);
 
-			if (Collection != null)
+			IPersistentCollection collection = Collection;
+			if (collection != null)
 			{
-				Session.PersistenceContext.GetCollectionEntry(Collection).AfterAction(Collection);
+				Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
 			}
 
 			Evict();

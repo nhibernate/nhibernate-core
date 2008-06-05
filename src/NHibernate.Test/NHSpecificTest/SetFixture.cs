@@ -16,64 +16,6 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest
 {
-	internal class CollectionSnapshotStub : ICollectionSnapshot
-	{
-		#region ICollectionSnapshot Members
-
-		public bool Dirty
-		{
-			get
-			{
-				// TODO:  Add CollectionSnapshotStub.Dirty getter implementation
-				return false;
-			}
-		}
-
-		public object Key
-		{
-			get
-			{
-				// TODO:  Add CollectionSnapshotStub.Key getter implementation
-				return null;
-			}
-		}
-
-		public string Role
-		{
-			get
-			{
-				// TODO:  Add CollectionSnapshotStub.Role getter implementation
-				return null;
-			}
-		}
-
-		public void SetDirty()
-		{
-			// TODO:  Add CollectionSnapshotStub.SetDirty implementation
-		}
-
-		public bool WasDereferenced
-		{
-			get
-			{
-				// TODO:  Add CollectionSnapshotStub.WasDereferenced getter implementation
-				return false;
-			}
-		}
-
-		public ICollection Snapshot
-		{
-			get
-			{
-				// TODO:  Add CollectionSnapshotStub.Snapshot getter implementation
-				return null;
-			}
-		}
-
-		#endregion
-	}
-
-
 	internal class CollectionPersisterStub : ICollectionPersister
 	{
 		#region ICollectionPersister Members
@@ -459,8 +401,6 @@ namespace NHibernate.Test.NHSpecificTest
 			{
 				ISessionImplementor si = (ISessionImplementor) s;
 				PersistentSet set = new PersistentSet(si, new ListSet());
-
-				set.CollectionSnapshot = new CollectionSnapshotStub();
 
 				set.Add(10);
 				set.Add(20);

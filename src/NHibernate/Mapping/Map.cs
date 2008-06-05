@@ -19,6 +19,11 @@ namespace NHibernate.Mapping
 		{
 		}
 
+		public override bool IsMap
+		{
+			get { return true; }
+		}
+
 		public override CollectionType CollectionType
 		{
 			get

@@ -1,10 +1,10 @@
 using System;
 using System.Runtime.Serialization;
+using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
-using NHibernate.Cache;
 using NHibernate.Util;
 
 namespace NHibernate.Action
@@ -17,8 +17,7 @@ namespace NHibernate.Action
 	{
 		private readonly object key;
 		private object finalKey;
-		[NonSerialized]
-		private ICollectionPersister persister;
+		[NonSerialized] private ICollectionPersister persister;
 		private readonly ISessionImplementor session;
 		private readonly string collectionRole;
 		private readonly IPersistentCollection collection;
@@ -31,8 +30,8 @@ namespace NHibernate.Action
 		/// <param name="collection">The Persistent collection.</param>
 		/// <param name="key">The identifier of the Collection.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occuring in.</param>
-		public CollectionAction(ICollectionPersister persister, 
-			IPersistentCollection collection, object key, ISessionImplementor session)
+		public CollectionAction(ICollectionPersister persister, IPersistentCollection collection, object key,
+		                        ISessionImplementor session)
 		{
 			this.persister = persister;
 			this.session = session;
@@ -127,8 +126,9 @@ namespace NHibernate.Action
 
 		#endregion
 
-		public ISoftLock Lock {
-			get { return this.softLock; }
+		public ISoftLock Lock
+		{
+			get { return softLock; }
 		}
 
 		protected internal void Evict()

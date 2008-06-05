@@ -1,6 +1,7 @@
 using System;
 using log4net;
 using NHibernate.Cache;
+using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -93,9 +94,8 @@ namespace NHibernate.Event.Default
 				{
 					IPersistenceContext persistenceContext = source.PersistenceContext;
 
-					// NH Different implementation but similar behavior H3.2 CollectionCacheEntry.Assemble do de same
-					collection.InitializeFromCache(persister, ce, persistenceContext.GetCollectionOwner(id, persister));
-					collection.AfterInitialize(persister);
+					CollectionCacheEntry cacheEntry = (CollectionCacheEntry)persister.CacheEntryStructure.Destructure(ce, factory);
+					cacheEntry.Assemble(collection, persister, persistenceContext.GetCollectionOwner(id, persister));
 
 					persistenceContext.GetCollectionEntry(collection).PostInitialize(collection);
 					return true;

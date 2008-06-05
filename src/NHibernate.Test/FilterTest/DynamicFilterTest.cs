@@ -3,6 +3,7 @@ using System.Collections;
 using Iesi.Collections;
 using log4net;
 using NHibernate.Cache;
+using NHibernate.Cache.Entry;
 using NHibernate.Criterion;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -32,7 +33,7 @@ namespace NHibernate.Test.FilterTest
 			Assert.IsTrue(persister.HasCache, "No cache for collection");
 			CacheKey cacheKey =
 				new CacheKey(testData.steveId, persister.KeyType, persister.Role, EntityMode.Poco, (ISessionFactoryImplementor) sessions);
-			object[] cachedData = (object[]) persister.Cache.Cache.Get(cacheKey);
+			CollectionCacheEntry cachedData = (CollectionCacheEntry)persister.Cache.Cache.Get(cacheKey);
 			Assert.IsNotNull(cachedData, "collection was not in cache");
 
 			session.Close();
@@ -44,7 +45,7 @@ namespace NHibernate.Test.FilterTest
 			                   	.UniqueResult();
 			Assert.AreEqual(1, sp.Orders.Count, "Filtered-collection not bypassing 2L-cache");
 
-			object[] cachedData2 = (object[]) persister.Cache.Cache.Get(cacheKey);
+			CollectionCacheEntry cachedData2 = (CollectionCacheEntry)persister.Cache.Cache.Get(cacheKey);
 			Assert.IsNotNull(cachedData2, "collection no longer in cache!");
 			Assert.AreSame(cachedData, cachedData2, "Different cache values!");
 

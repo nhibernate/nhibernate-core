@@ -21,7 +21,7 @@ namespace NHibernate.Type
 		{
 		}
 
-		public override object Instantiate()
+		public override object Instantiate(int anticipatedSize)
 		{
 			return new ListDictionary();
 		}

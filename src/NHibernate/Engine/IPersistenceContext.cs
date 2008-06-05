@@ -230,7 +230,7 @@ namespace NHibernate.Engine
 		void AddUninitializedCollection(ICollectionPersister persister, IPersistentCollection collection, object id);
 
 		/// <summary> add a detached uninitialized collection</summary>
-		void AddUninitializedDetachedCollection(IPersistentCollection collection, ICollectionSnapshot snapshot); // NH Different behavior
+		void AddUninitializedDetachedCollection(ICollectionPersister persister, IPersistentCollection collection);
 
 		/// <summary> 
 		/// Add a new collection (ie. a newly created one, just instantiated by the
@@ -244,7 +244,7 @@ namespace NHibernate.Engine
 		/// add an (initialized) collection that was created by another session and passed
 		/// into update() (ie. one with a snapshot and existing state on the database)
 		/// </summary>
-		void AddInitializedDetachedCollection(IPersistentCollection collection, ICollectionSnapshot snapshot); // NH Different behavior
+		void AddInitializedDetachedCollection(ICollectionPersister collectionPersister, IPersistentCollection collection);
 
 		/// <summary> add a collection we just pulled out of the cache (does not need initializing)</summary>
 		CollectionEntry AddInitializedCollection(ICollectionPersister persister, IPersistentCollection collection, object id);

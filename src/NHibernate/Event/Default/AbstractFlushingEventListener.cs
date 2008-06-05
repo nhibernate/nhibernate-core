@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections;
 using log4net;
 using NHibernate.Action;
 using NHibernate.Collection;
@@ -9,7 +9,6 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
-using Status=NHibernate.Engine.Status;
 
 namespace NHibernate.Event.Default
 {
@@ -19,7 +18,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public abstract class AbstractFlushingEventListener
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(AbstractFlushingEventListener));
+		private static readonly ILog log = LogManager.GetLogger(typeof (AbstractFlushingEventListener));
 
 		protected virtual object Anything
 		{
@@ -44,7 +43,7 @@ namespace NHibernate.Event.Default
 			IEventSource session = @event.Session;
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 
-			session.Interceptor.PreFlush((ICollection)persistenceContext.EntitiesByKey.Values);
+			session.Interceptor.PreFlush((ICollection) persistenceContext.EntitiesByKey.Values);
 
 			PrepareEntityFlushes(session);
 			// we could move this inside if we wanted to
@@ -71,18 +70,14 @@ namespace NHibernate.Event.Default
 			{
 				StringBuilder sb = new StringBuilder(100);
 
-				sb.Append("Flushed: ")
-					.Append(session.ActionQueue.InsertionsCount).Append(" insertions, ")
-					.Append(session.ActionQueue.UpdatesCount).Append(" updates, ")
-					.Append(session.ActionQueue.DeletionsCount).Append(" deletions to ")
-					.Append(persistenceContext.EntityEntries.Count).Append(" objects");
+				sb.Append("Flushed: ").Append(session.ActionQueue.InsertionsCount).Append(" insertions, ").Append(
+					session.ActionQueue.UpdatesCount).Append(" updates, ").Append(session.ActionQueue.DeletionsCount).Append(
+					" deletions to ").Append(persistenceContext.EntityEntries.Count).Append(" objects");
 				log.Debug(sb.ToString());
 				sb = new StringBuilder(100);
-				sb.Append("Flushed: ")
-					.Append(session.ActionQueue.CollectionCreationsCount).Append(" (re)creations, ")
-					.Append(session.ActionQueue.CollectionUpdatesCount).Append(" updates, ")
-					.Append(session.ActionQueue.CollectionRemovalsCount).Append(" removals to ")
-					.Append(persistenceContext.CollectionEntries.Count).Append(" collections");
+				sb.Append("Flushed: ").Append(session.ActionQueue.CollectionCreationsCount).Append(" (re)creations, ").Append(
+					session.ActionQueue.CollectionUpdatesCount).Append(" updates, ").Append(session.ActionQueue.CollectionRemovalsCount)
+					.Append(" removals to ").Append(persistenceContext.CollectionEntries.Count).Append(" collections");
 
 				log.Debug(sb.ToString());
 				new Printer(session.Factory).ToString(persistenceContext.EntitiesByKey.Values.GetEnumerator(), session.EntityMode);
@@ -96,10 +91,10 @@ namespace NHibernate.Event.Default
 			ICollection list = IdentityMap.Entries(session.PersistenceContext.CollectionEntries);
 			foreach (DictionaryEntry me in list)
 			{
-				CollectionEntry ce = (CollectionEntry)me.Value;
+				CollectionEntry ce = (CollectionEntry) me.Value;
 				if (!ce.IsReached && !ce.IsIgnore)
 				{
-					Collections.ProcessUnreachableCollection((IPersistentCollection)me.Key, session);
+					Collections.ProcessUnreachableCollection((IPersistentCollection) me.Key, session);
 				}
 			}
 
@@ -111,8 +106,8 @@ namespace NHibernate.Event.Default
 			ActionQueue actionQueue = session.ActionQueue;
 			foreach (DictionaryEntry me in list)
 			{
-				IPersistentCollection coll = (IPersistentCollection)me.Key;
-				CollectionEntry ce = (CollectionEntry)me.Value;
+				IPersistentCollection coll = (IPersistentCollection) me.Key;
+				CollectionEntry ce = (CollectionEntry) me.Value;
 
 				if (ce.IsDorecreate)
 				{
@@ -122,12 +117,14 @@ namespace NHibernate.Event.Default
 				if (ce.IsDoremove)
 				{
 					session.Interceptor.OnCollectionRemove(coll, ce.LoadedKey);
-					actionQueue.AddAction(new CollectionRemoveAction(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), session));
+					actionQueue.AddAction(
+						new CollectionRemoveAction(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), session));
 				}
 				if (ce.IsDoupdate)
 				{
 					session.Interceptor.OnCollectionUpdate(coll, ce.LoadedKey);
-					actionQueue.AddAction(new CollectionUpdateAction(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), session));
+					actionQueue.AddAction(
+						new CollectionUpdateAction(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), session));
 				}
 			}
 			actionQueue.SortCollectionActions();
@@ -152,7 +149,7 @@ namespace NHibernate.Event.Default
 			foreach (DictionaryEntry me in list)
 			{
 				// Update the status of the object and if necessary, schedule an update
-				EntityEntry entry = (EntityEntry)me.Value;
+				EntityEntry entry = (EntityEntry) me.Value;
 				Status status = entry.Status;
 
 				if (status != Status.Loading && status != Status.Gone)
@@ -160,7 +157,9 @@ namespace NHibernate.Event.Default
 					FlushEntityEvent entityEvent = new FlushEntityEvent(source, me.Key, entry);
 					IFlushEntityEventListener[] listeners = source.Listeners.FlushEntityEventListeners;
 					foreach (IFlushEntityEventListener listener in listeners)
+					{
 						listener.OnFlushEntity(entityEvent);
+					}
 				}
 			}
 			source.ActionQueue.SortActions();
@@ -176,7 +175,7 @@ namespace NHibernate.Event.Default
 			ICollection list = IdentityMap.Entries(session.PersistenceContext.CollectionEntries);
 			foreach (DictionaryEntry entry in list)
 			{
-				((CollectionEntry)entry.Value).PreFlush((IPersistentCollection)entry.Key);
+				((CollectionEntry) entry.Value).PreFlush((IPersistentCollection) entry.Key);
 			}
 		}
 
@@ -191,7 +190,7 @@ namespace NHibernate.Event.Default
 			//safe from concurrent modification because of how entryList() is implemented on IdentityMap
 			foreach (DictionaryEntry me in list)
 			{
-				EntityEntry entry = (EntityEntry)me.Value;
+				EntityEntry entry = (EntityEntry) me.Value;
 				Status status = entry.Status;
 				if (status == Status.Loaded || status == Status.Saving)
 				{
@@ -228,7 +227,9 @@ namespace NHibernate.Event.Default
 		protected virtual void PerformExecutions(IEventSource session)
 		{
 			if (log.IsDebugEnabled)
+			{
 				log.Debug("executing flush");
+			}
 
 			try
 			{
@@ -241,8 +242,10 @@ namespace NHibernate.Event.Default
 			}
 			catch (HibernateException he)
 			{
-				if(log.IsErrorEnabled)
+				if (log.IsErrorEnabled)
+				{
 					log.Error("Could not synchronize database state with session", he);
+				}
 				throw;
 			}
 			finally
@@ -259,15 +262,19 @@ namespace NHibernate.Event.Default
 		protected virtual void PostFlush(ISessionImplementor session)
 		{
 			if (log.IsDebugEnabled)
+			{
 				log.Debug("post flush");
+			}
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 			persistenceContext.CollectionsByKey.Clear();
 			persistenceContext.BatchFetchQueue.ClearSubselects();
-				//the database has changed now, so the subselect results need to be invalidated
+			//the database has changed now, so the subselect results need to be invalidated
 
-			ISet keysToRemove = new HashedSet();
+			// NH Different implementation: In NET an iterator is inmutable;
+			// we need something to hold the persistent collection to remove, and it must be less intrusive as possible
 			IDictionary cEntries = persistenceContext.CollectionEntries;
+			List<IPersistentCollection> keysToRemove = new List<IPersistentCollection>(cEntries.Count);
 			foreach (DictionaryEntry me in cEntries)
 			{
 				CollectionEntry collectionEntry = (CollectionEntry) me.Value;
@@ -280,15 +287,16 @@ namespace NHibernate.Event.Default
 				else
 				{
 					//otherwise recreate the mapping between the collection and its key
-					CollectionKey collectionKey = new CollectionKey(collectionEntry.LoadedPersister, collectionEntry.LoadedKey, session.EntityMode);
+					CollectionKey collectionKey =
+						new CollectionKey(collectionEntry.LoadedPersister, collectionEntry.LoadedKey, session.EntityMode);
 					persistenceContext.CollectionsByKey[collectionKey] = persistentCollection;
 				}
 			}
-			foreach (object key in keysToRemove)
+			foreach (IPersistentCollection key in keysToRemove)
 			{
 				persistenceContext.CollectionEntries.Remove(key);
 			}
-			session.Interceptor.PostFlush((ICollection)persistenceContext.EntitiesByKey.Values);
+			session.Interceptor.PostFlush((ICollection) persistenceContext.EntitiesByKey.Values);
 		}
 	}
 }

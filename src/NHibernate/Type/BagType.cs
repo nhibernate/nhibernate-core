@@ -68,9 +68,9 @@ namespace NHibernate.Type
 			((IList) collection).Clear();
 		}
 
-		public override object Instantiate()
+		public override object Instantiate(int anticipatedSize)
 		{
-			return new ArrayList();
+			return anticipatedSize <= 0 ? new ArrayList() : new ArrayList(anticipatedSize + 1);
 		}
 	}
 }

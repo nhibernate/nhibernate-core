@@ -44,7 +44,7 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Wraps an <see cref="IList&lt;T&gt;"/> in a <see cref="PersistentGenericBag&lt;T&gt;"/>.
+		/// Wraps an <see cref="IList{T}"/> in a <see cref="PersistentGenericBag{T}"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
 		/// <param name="collection">The unwrapped <see cref="IList&lt;T&gt;"/>.</param>
@@ -63,9 +63,9 @@ namespace NHibernate.Type
 		// have a Copy on the base collection that handles the standard checks and then a DoCopy
 		// that performs the actual copy.
 
-		public override object Instantiate()
+		public override object Instantiate(int anticipatedSize)
 		{
-			return new List<T>();
+			return anticipatedSize <= 0 ? new List<T>() : new List<T>(anticipatedSize + 1);
 		}
 	}
 }

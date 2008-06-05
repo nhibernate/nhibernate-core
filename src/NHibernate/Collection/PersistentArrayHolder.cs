@@ -14,27 +14,22 @@ namespace NHibernate.Collection
 	/// <summary>
 	/// A persistent wrapper for an array. lazy initialization is NOT supported
 	/// </summary>
+	/// <remarks> Use of Hibernate arrays is not really recommended. </remarks>
 	[Serializable]
-	[DebuggerTypeProxy(typeof(CollectionProxy))]
-	public class PersistentArrayHolder : AbstractPersistentCollection
+	[DebuggerTypeProxy(typeof (CollectionProxy))]
+	public class PersistentArrayHolder : AbstractPersistentCollection, ICollection
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(PersistentArrayHolder));
+		private static readonly ILog log = LogManager.GetLogger(typeof (PersistentArrayHolder));
 
-		/// <summary>
-		/// The <see cref="Array"/> that NHibernate is wrapping.
-		/// </summary>
-		private Array array;
+		protected Array array;
 
-		[NonSerialized]
-		private System.Type elementClass;
+		[NonSerialized] private readonly System.Type elementClass;
 
 		/// <summary>
 		/// A temporary list that holds the objects while the PersistentArrayHolder is being
 		/// populated from the database.
 		/// </summary>
-		[NonSerialized]
-		private ArrayList tempList;
-
+		[NonSerialized] private ArrayList tempList;
 
 		public PersistentArrayHolder(ISessionImplementor session, object array) : base(session)
 		{
@@ -42,52 +37,7 @@ namespace NHibernate.Collection
 			SetInitialized();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="persister"></param>
-		/// <returns></returns>
-		protected override ICollection Snapshot(ICollectionPersister persister)
-		{
-			EntityMode entityMode = Session.EntityMode;
-
-			int length = /*(array==null) ? temp.Count :*/ array.Length;
-			Array result = System.Array.CreateInstance(persister.ElementClass, length);
-			for (int i = 0; i < length; i++)
-			{
-				object elt = /*(array==null) ? temp[i] :*/ array.GetValue(i);
-				try
-				{
-					result.SetValue(persister.ElementType.DeepCopy(elt, entityMode, persister.Factory), i);
-				}
-				catch (Exception e)
-				{
-					log.Error("Array element type error", e);
-					throw new HibernateException("Array element type error", e);
-				}
-			}
-			return result;
-		}
-
-		public override ICollection GetOrphans(object snapshot, string entityName)
-		{
-			object[] sn = (object[]) snapshot;
-			object[] arr = (object[]) array;
-			ArrayList result = new ArrayList(sn.Length);
-			for (int i = 0; i < sn.Length; i++)
-			{
-				result.Add(sn[i]);
-			}
-			for (int i = 0; i < sn.Length; i++)
-			{
-				IdentityRemove(result, arr[i], entityName, Session);
-			}
-			return result;
-		}
-
-
-		public PersistentArrayHolder(ISessionImplementor session, ICollectionPersister persister)
-			: base(session)
+		public PersistentArrayHolder(ISessionImplementor session, ICollectionPersister persister) : base(session)
 		{
 			elementClass = persister.ElementClass;
 		}
@@ -101,10 +51,55 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Returns the user-visible portion of the NHibernate PersistentArrayHolder.
 		/// </summary>
-		/// <param name="collection"></param>
-		/// <returns></returns>
+		/// <returns>
+		/// The array that contains the data, not the NHibernate wrapper.
+		/// </returns>
+		public override object GetValue()
+		{
+			return array;
+		}
+
+		public override ICollection GetSnapshot(ICollectionPersister persister)
+		{
+			EntityMode entityMode = Session.EntityMode;
+
+			int length = array.Length;
+			Array result = System.Array.CreateInstance(persister.ElementClass, length);
+			for (int i = 0; i < length; i++)
+			{
+				object elt = array.GetValue(i);
+				try
+				{
+					result.SetValue(persister.ElementType.DeepCopy(elt, entityMode, persister.Factory), i);
+				}
+				catch (Exception e)
+				{
+					log.Error("Array element type error", e);
+					throw new HibernateException("Array element type error", e);
+				}
+			}
+			return result;
+		}
+
+		public override bool IsSnapshotEmpty(object snapshot)
+		{
+			return ((Array) snapshot).Length == 0;
+		}
+
+		public override ICollection GetOrphans(object snapshot, string entityName)
+		{
+			object[] sn = (object[]) snapshot;
+			object[] arr = (object[]) array;
+			ArrayList result = new ArrayList(sn);
+			for (int i = 0; i < sn.Length; i++)
+			{
+				IdentityRemove(result, arr[i], entityName, Session);
+			}
+			return result;
+		}
+
 		public override bool IsWrapper(object collection)
 		{
 			return array == collection;
@@ -113,7 +108,7 @@ namespace NHibernate.Collection
 		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
 			IType elementType = persister.ElementType;
-			Array snapshot = GetSnapshot() as Array;
+			Array snapshot = (Array) GetSnapshot();
 
 			int xlen = snapshot.Length;
 			if (xlen != array.Length)
@@ -130,25 +125,12 @@ namespace NHibernate.Collection
 			return true;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
 		public ICollection Elements()
 		{
-			//if (array==null) return tempList;
-			int length = array.Length;
-			IList list = new ArrayList(length);
-			for (int i = 0; i < length; i++)
-			{
-				list.Add(array.GetValue(i));
-			}
-			return list;
+			// NH Different implementation but same result
+			return (ICollection) array.Clone();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public override bool Empty
 		{
 			get { return false; }
@@ -166,11 +148,7 @@ namespace NHibernate.Collection
 			return element;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable Entries()
+		public override IEnumerable Entries(ICollectionPersister persister)
 		{
 			return Elements();
 		}
@@ -194,20 +172,15 @@ namespace NHibernate.Collection
 		{
 			SetInitialized();
 			array = System.Array.CreateInstance(elementClass, tempList.Count);
-			int index = 0;
-			foreach (object element in tempList)
+			for (int i = 0; i < tempList.Count; i++)
 			{
-				array.SetValue(element, index);
-				index++;
+				array.SetValue(tempList[i], i);
 			}
 			tempList = null;
-
 			return true;
 		}
 
-		public override void BeforeInitialize(ICollectionPersister persister)
-		{
-		}
+		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize) {}
 
 		public override bool IsDirectlyAccessible
 		{
@@ -230,7 +203,6 @@ namespace NHibernate.Collection
 			{
 				array.SetValue(persister.ElementType.Assemble(cached[i], Session, owner), i);
 			}
-			SetInitialized();
 		}
 
 		public override object Disassemble(ICollectionPersister persister)
@@ -244,21 +216,10 @@ namespace NHibernate.Collection
 			return result;
 		}
 
-		/// <summary>
-		/// Returns the user-visible portion of the NHibernate PersistentArrayHolder.
-		/// </summary>
-		/// <returns>
-		/// The array that contains the data, not the NHibernate wrapper.
-		/// </returns>
-		public override object GetValue()
-		{
-			return array;
-		}
-
-		public override IEnumerable GetDeletes(IType elemType, bool indexIsFormula)
+		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
 			IList deletes = new ArrayList();
-			Array sn = GetSnapshot() as Array;
+			Array sn = (Array) GetSnapshot();
 			int snSize = sn.Length;
 			int arraySize = array.Length;
 			int end;
@@ -286,20 +247,19 @@ namespace NHibernate.Collection
 
 		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
-			Array sn = GetSnapshot() as Array;
+			Array sn = (Array) GetSnapshot();
 			return array.GetValue(i) != null && (i >= sn.Length || sn.GetValue(i) == null);
 		}
 
 		public override bool NeedsUpdating(object entry, int i, IType elemType)
 		{
-			Array sn = GetSnapshot() as Array;
-			return i < sn.Length &&
-			       sn.GetValue(i) != null &&
-			       array.GetValue(i) != null &&
-			       elemType.IsDirty(array.GetValue(i), sn.GetValue(i), Session);
+			Array sn = (Array) GetSnapshot();
+			return
+				i < sn.Length && sn.GetValue(i) != null && array.GetValue(i) != null
+				&& elemType.IsDirty(array.GetValue(i), sn.GetValue(i), Session);
 		}
 
-		public override object GetIndex(object entry, int i)
+		public override object GetIndex(object entry, int i, ICollectionPersister persister)
 		{
 			return i;
 		}
@@ -320,34 +280,38 @@ namespace NHibernate.Collection
 			return entry != null;
 		}
 
-		public void CopyTo(Array array, int index)
+		#region ICollection Members
+
+		// NH Different : we implement one of the "minimal" interface the NET Array support
+		void ICollection.CopyTo(Array array, int index)
 		{
 			this.array.CopyTo(array, index);
 		}
 
-		public int Count
+		int ICollection.Count
 		{
 			get { return array.Length; }
 		}
 
-		public IEnumerator GetEnumerator()
-		{
-			return array.GetEnumerator();
-		}
-
-		public bool IsSynchronized
-		{
-			get { return false; }
-		}
-
-		public object SyncRoot
+		object ICollection.SyncRoot
 		{
 			get { return this; }
 		}
 
-		public override IEnumerable Entries(ICollectionPersister persister)
+		bool ICollection.IsSynchronized
 		{
-			return Elements();
+			get { return false; }
 		}
+
+		#endregion
+
+		#region IEnumerable Members
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return array.GetEnumerator();
+		}
+
+		#endregion
 	}
 }

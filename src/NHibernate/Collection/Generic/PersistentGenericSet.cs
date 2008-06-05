@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -9,7 +8,6 @@ using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
-using NHibernate.Type;
 
 namespace NHibernate.Collection.Generic
 {
@@ -24,445 +22,108 @@ namespace NHibernate.Collection.Generic
 	/// to .NET</a> that was written by JasonSmith.
 	/// </remarks>
 	[Serializable]
-	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
-	public class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, ISet
+	[DebuggerTypeProxy(typeof (CollectionProxy<>))]
+	public class PersistentGenericSet<T> : PersistentSet, ISet<T>
 	{
-		/// <summary>
-		/// The <see cref="ISet{T}"/> that NHibernate is wrapping.
-		/// </summary>
-		protected ISet<T> internalSet;
+		// TODO NH: find a way to writeonce (no duplicated code from PersistentSet)
 
-		/// <summary>
-		/// A temporary list that holds the objects while the set is being
-		/// populated from the database.  
-		/// </summary>
-		/// <remarks>
-		/// This is necessary to ensure that the object being added to the set doesn't
-		/// have its <see cref="Object.GetHashCode()" /> and <see cref="Object.Equals(object)" />
-		/// methods called during the load process.
-		/// </remarks>
-		[NonSerialized]
-		protected IList<T> tempList;
+		/* NH considerations:
+		 * The implementation of Set<T> in Iesi collections don't have any particular behavior
+		 * for strongly typed. BTW we use the same technique used for other collection.
+		 */
+		protected ISet<T> gset;
+		[NonSerialized] private IList<T> readList;
 
-		/// <summary>
-		/// Returns a Hashtable where the Key &amp; the Value are both a Copy of the
-		/// same object.
-		/// <see cref="AbstractPersistentCollection.Snapshot(ICollectionPersister)"/>
-		/// </summary>
-		/// <param name="persister"></param>
-		protected override ICollection Snapshot(ICollectionPersister persister)
+		public PersistentGenericSet() {}
+		public PersistentGenericSet(ISessionImplementor session) : base(session) {}
+
+		public PersistentGenericSet(ISessionImplementor session, ISet<T> original) : base(session, original as ISet)
 		{
-			EntityMode entityMode = Session.EntityMode;
-
-			Hashtable clonedMap = new Hashtable(internalSet.Count);
-			foreach (T obj in internalSet)
-			{
-				object copied = persister.ElementType.DeepCopy(obj, entityMode, persister.Factory);
-				clonedMap[copied] = copied;
-			}
-			return clonedMap;
+			gset = original;
+			_set = (ISet) original;
 		}
 
-		public override ICollection GetOrphans(object snapshot, string entityName)
+		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
-			/*
-			IDictionary sn = ( IDictionary ) snapshot;
-			ArrayList result = new ArrayList( sn.Keys.Count );
-			result.AddRange( sn.Keys );
-			AbstractPersistentCollection.IdentityRemoveAll( result, internalSet, Session );
-			return result;
-			*/
-			IDictionary sn = (IDictionary) snapshot;
-			return GetOrphans(sn.Keys, (ICollection) internalSet, Session);
-		}
-
-		public override bool EqualsSnapshot(ICollectionPersister persister)
-		{
-			IType elementType = persister.ElementType;
-			IDictionary snapshot = (IDictionary)GetSnapshot();
-			if (snapshot.Count != internalSet.Count)
-			{
-				return false;
-			}
-			else
-			{
-				foreach (object obj in internalSet)
-				{
-					object oldValue = snapshot[obj];
-					if (oldValue == null || elementType.IsDirty(oldValue, obj, Session))
-					{
-						return false;
-					}
-				}
-			}
-
-			return true;
-		}
-
-		public override bool IsWrapper(object collection)
-		{
-			return internalSet == collection;
-		}
-
-		/// <summary>
-		/// This constructor is NOT meant to be called from user code.
-		/// </summary>
-		public PersistentGenericSet(ISessionImplementor session)
-			: base(session)
-		{
-		}
-
-		/// <summary>
-		/// Creates a new PersistentGenericSet initialized to the values in the Map.
-		/// This constructor is NOT meant to be called from user code.
-		/// </summary>
-		/// <remarks>
-		/// Only call this constructor if you consider the map initialized.
-		/// </remarks>
-		public PersistentGenericSet(ISessionImplementor session, ISet<T> collection)
-			: base(session)
-		{
-			internalSet = collection;
-			SetInitialized();
-			IsDirectlyAccessible = true;
-		}
-
-		/// <summary>
-		/// Initializes this PersistentGenericSet from the cached values.
-		/// </summary>
-		/// <param name="persister">The CollectionPersister to use to reassemble the set.</param>
-		/// <param name="disassembled">The disassembled set.</param>
-		/// <param name="owner">The owner object.</param>
-		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
-		{
-			BeforeInitialize(persister);
-			object[] array = (object[]) disassembled;
-			for (int i = 0; i < array.Length; i++)
-			{
-				internalSet.Add((T) persister.ElementType.Assemble(array[i], Session, owner));
-			}
-			SetInitialized();
-		}
-
-		public override void BeforeInitialize(ICollectionPersister persister)
-		{
-			if (persister.HasOrdering)
-			{
-				throw new NotImplementedException("No implementation of generic set with ordering");
-			}
-			else
-			{
-				internalSet = (ISet<T>) persister.CollectionType.Instantiate();
-			}
-		}
-
-		#region System.Collections.ICollection Members
-
-		/// <summary>
-		/// <see cref="ICollection.CopyTo"/>
-		/// </summary>
-		/// <param name="array"></param>
-		/// <param name="index"></param>
-		public void CopyTo(Array array, int index)
-		{
-			Read();
-			((ISet) internalSet).CopyTo(array, index);
-		}
-
-		/// <summary>
-		/// <see cref="ICollection.Count"/>
-		/// </summary>
-		public int Count
-		{
-			get
-			{
-				Read();
-				return internalSet.Count;
-			}
-		}
-
-		/// <summary>
-		/// <see cref="ICollection.IsSynchronized"/>
-		/// </summary>
-		public bool IsSynchronized
-		{
-			get { return false; }
-		}
-
-		/// <summary>
-		/// <see cref="ICollection.SyncRoot"/>
-		/// </summary>
-		public object SyncRoot
-		{
-			get { return this; }
-		}
-
-		#endregion
-
-		#region Iesi.Collections.ISet Memebers
-
-		public bool Add(object value)
-		{
-			Initialize(true);
-			return MakeDirtyIfTrue(((ISet) internalSet).Add(value));
-		}
-
-		public bool AddAll(ICollection coll)
-		{
-			if (coll.Count > 0)
-			{
-				Initialize(true);
-				return MakeDirtyIfTrue(((ISet) internalSet).AddAll(coll));
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-		public void Clear()
-		{
-			Initialize(true);
-			if (!internalSet.IsEmpty)
-			{
-				internalSet.Clear();
-				Dirty();
-			}
-		}
-
-		public bool Contains(object key)
-		{
-			Read();
-			return ((ISet) internalSet).Contains(key);
-		}
-
-		public bool ContainsAll(ICollection c)
-		{
-			Read();
-			return ((ISet) internalSet).ContainsAll(c);
-		}
-
-		public ISet ExclusiveOr(ISet a)
-		{
-			Read();
-			return ((ISet) internalSet).ExclusiveOr(a);
-		}
-
-		public ISet Intersect(ISet a)
-		{
-			Read();
-			return ((ISet) internalSet).Intersect(a);
-		}
-
-		public bool IsEmpty
-		{
-			get
-			{
-				Read();
-				return internalSet.IsEmpty;
-			}
-		}
-
-		public ISet Minus(ISet a)
-		{
-			Read();
-			return ((ISet) internalSet).Minus(a);
-		}
-
-		public bool Remove(object key)
-		{
-			Initialize(true);
-			return MakeDirtyIfTrue(((ISet) internalSet).Remove(key));
-		}
-
-		public bool RemoveAll(ICollection c)
-		{
-			Initialize(true);
-			return MakeDirtyIfTrue(((ISet) internalSet).RemoveAll(c));
-		}
-
-		public bool RetainAll(ICollection c)
-		{
-			Initialize(true);
-			return MakeDirtyIfTrue(((ISet) internalSet).RetainAll(c));
-		}
-
-		public ISet Union(ISet a)
-		{
-			Read();
-			return ((ISet) internalSet).Union(a);
-		}
-
-		#endregion
-
-		#region System.Collections.IEnumerable Members
-
-		/// <summary>
-		/// <see cref="IEnumerable.GetEnumerator"/>
-		/// </summary>
-		public IEnumerator GetEnumerator()
-		{
-			Read();
-			return internalSet.GetEnumerator();
-		}
-
-		#endregion
-
-		#region System.Collections.ICloneable Members
-
-		public object Clone()
-		{
-			Read();
-			return internalSet.Clone();
-		}
-
-		#endregion
-
-		public override bool Empty
-		{
-			get { return internalSet.Count == 0; }
-		}
-
-		public override string ToString()
-		{
-			Read();
-			return internalSet.ToString();
+			gset = (ISet<T>) persister.CollectionType.Instantiate(anticipatedSize);
+			_set = (ISet) gset;
 		}
 
 		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
 			object element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
-			// A set cannot have null values
-			// this is a rare occurances and usually happens when we are eagerly
-			// loading several associations into the same row.
-			// See LoadingNullEntityInSet test for rerproduction
 			if (element != null)
-				tempList.Add((T) element);
+			{
+				readList.Add((T) element);
+			}
 			return element;
 		}
 
-		/// <summary>
-		/// Set up the temporary List that will be used in the EndRead() 
-		/// to fully create the set.
-		/// </summary>
 		public override void BeginRead()
 		{
 			base.BeginRead();
-			tempList = new List<T>();
+			readList = new List<T>();
 		}
 
-		/// <summary>
-		/// Takes the contents stored in the temporary list created during <see cref="BeginRead" />
-		/// that was populated during <see cref="ReadFrom" /> and writes it to the underlying 
-		/// set.
-		/// </summary>
 		public override bool EndRead(ICollectionPersister persister)
 		{
-			internalSet.AddAll(tempList);
-			tempList = null;
+			gset.AddAll(readList);
+			readList = null;
 			SetInitialized();
 			return true;
 		}
 
-		public override IEnumerable Entries()
+		#region ISet<T> Members
+
+		ISet<T> ISet<T>.Union(ISet<T> a)
 		{
-			return internalSet;
+			Read();
+			return gset.Union(a);
 		}
 
-		public override object Disassemble(ICollectionPersister persister)
+		ISet<T> ISet<T>.Intersect(ISet<T> a)
 		{
-			object[] result = new object[internalSet.Count];
-			int i = 0;
-
-			foreach (object obj in internalSet)
-			{
-				result[i++] = persister.ElementType.Disassemble(obj, Session, null);
-			}
-			return result;
+			Read();
+			return gset.Intersect(a);
 		}
 
-		public override IEnumerable GetDeletes(IType elemType, bool indexIsFormula)
+		ISet<T> ISet<T>.Minus(ISet<T> a)
 		{
-			IList deletes = new ArrayList();
-			IDictionary snapshot = (IDictionary) GetSnapshot();
-
-			foreach (DictionaryEntry e in snapshot)
-			{
-				object test = e.Key;
-
-				if (internalSet.Contains((T) test) == false)
-				{
-					deletes.Add(test);
-				}
-			}
-
-			foreach (object obj in internalSet)
-			{
-				//object testKey = e.Key;
-				object oldKey = snapshot[obj];
-
-				if (oldKey != null && elemType.IsDirty(obj, oldKey, Session))
-				{
-					deletes.Add(obj);
-				}
-			}
-
-			return deletes;
+			Read();
+			return gset.Minus(a);
 		}
 
-		public override bool NeedsInserting(object entry, int i, IType elemType)
+		ISet<T> ISet<T>.ExclusiveOr(ISet<T> a)
 		{
-			IDictionary sn = (IDictionary) GetSnapshot();
-			object oldKey = sn[entry];
-			// note that it might be better to iterate the snapshot but this is safe,
-			// assuming the user implements equals() properly, as required by the set
-			// contract!
-			return oldKey == null || elemType.IsDirty(oldKey, entry, Session);
+			Read();
+			return gset.ExclusiveOr(a);
 		}
 
-		public override bool NeedsUpdating(object entry, int i, IType elemType)
+		bool ISet<T>.ContainsAll(ICollection<T> c)
 		{
-			return false;
+			Read();
+			return gset.ContainsAll(c);
 		}
 
-		public override object GetIndex(object entry, int i)
+		bool ISet<T>.Add(T o)
 		{
-			throw new NotImplementedException("Sets don't have indexes");
+			return Add(o);
 		}
 
-		public override object GetElement(object entry)
-		{
-			return entry;
-		}
-
-		public override object GetSnapshotElement(object entry, int i)
-		{
-			throw new NotSupportedException("Sets don't support updating by element");
-		}
-
-		public override bool EntryExists(object entry, int i)
-		{
-			return true;
-		}
-
-		public bool Add(T o)
-		{
-			Initialize(true);
-			return MakeDirtyIfTrue(internalSet.Add(o));
-		}
-
-		void ICollection<T>.Add(T o)
-		{
-			Initialize(true);
-			MakeDirtyIfTrue(internalSet.Add(o));
-		}
-
-		public bool AddAll(ICollection<T> c)
+		bool ISet<T>.AddAll(ICollection<T> c)
 		{
 			if (c.Count > 0)
 			{
 				Initialize(true);
-				return MakeDirtyIfTrue(internalSet.AddAll(c));
+				if (gset.AddAll(c))
+				{
+					Dirty();
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			}
 			else
 			{
@@ -470,91 +131,105 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public bool ContainsAll(ICollection<T> c)
+		bool ISet<T>.RemoveAll(ICollection<T> c)
 		{
-			Read();
-			return internalSet.ContainsAll(c);
+			if (c.Count > 0)
+			{
+				Initialize(true);
+				if (gset.RemoveAll(c))
+				{
+					Dirty();
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else
+			{
+				return false;
+			}
 		}
 
-		public ISet<T> ExclusiveOr(ISet<T> a)
-		{
-			Read();
-			return internalSet.ExclusiveOr(a);
-		}
-
-		public ISet<T> Intersect(ISet<T> a)
-		{
-			Read();
-			return internalSet.Intersect(a);
-		}
-
-		public ISet<T> Minus(ISet<T> a)
-		{
-			Read();
-			return internalSet.Minus(a);
-		}
-
-		public bool RemoveAll(ICollection<T> c)
+		bool ISet<T>.RetainAll(ICollection<T> c)
 		{
 			Initialize(true);
-			return MakeDirtyIfTrue(internalSet.RemoveAll(c));
+			if (gset.RetainAll(c))
+			{
+				Dirty();
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
-		public bool RetainAll(ICollection<T> c)
+		#endregion
+
+		#region ICollection<T> Members
+
+		void ICollection<T>.Add(T item)
 		{
-			Initialize(true);
-			return MakeDirtyIfTrue(internalSet.RetainAll(c));
+			Add(item);
 		}
 
-		public ISet<T> Union(ISet<T> a)
+		bool ICollection<T>.Contains(T item)
+		{
+			bool? exists = ReadElementExistence(item);
+			return exists == null ? gset.Contains(item) : exists.Value;
+		}
+
+		void ICollection<T>.CopyTo(T[] array, int arrayIndex)
 		{
 			Read();
-			return internalSet.Union(a);
+			gset.CopyTo(array, arrayIndex);
 		}
 
-		public bool Contains(T item)
+		bool ICollection<T>.Remove(T item)
 		{
-			Read();
-			return internalSet.Contains(item);
+			bool? exists = PutQueueEnabled ? ReadElementExistence(item) : null;
+			if (!exists.HasValue)
+			{
+				Initialize(true);
+				bool contained = gset.Remove(item);
+				if (contained)
+				{
+					Dirty();
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else if (exists.Value)
+			{
+				QueueOperation(new SimpleRemoveDelayedOperation(this, item));
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
-		public void CopyTo(T[] array, int arrayIndex)
-		{
-			Read();
-			internalSet.CopyTo(array, arrayIndex);
-		}
-
-		public bool IsReadOnly
+		bool ICollection<T>.IsReadOnly
 		{
 			get { return false; }
 		}
 
-		public bool Remove(T item)
-		{
-			Initialize(true);
-			return MakeDirtyIfTrue(internalSet.Remove(item));
-		}
+		#endregion
+
+		#region IEnumerable<T> Members
 
 		IEnumerator<T> IEnumerable<T>.GetEnumerator()
 		{
 			Read();
-			return internalSet.GetEnumerator();
+			return gset.GetEnumerator();
 		}
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			Read();
-			return ((ICollection) internalSet).GetEnumerator();
-		}
-
-		public override IEnumerable Entries(ICollectionPersister persister)
-		{
-			return internalSet;
-		}
-
-		public override bool RowUpdatePossible
-		{
-			get { return false; }
-		}
+		#endregion
 	}
 }

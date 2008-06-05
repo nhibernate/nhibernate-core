@@ -25,7 +25,7 @@ namespace NHibernate.Event.Default
 		internal override void Process(object obj, IEntityPersister persister)
 		{
 			EntityMode entityMode = Session.EntityMode;
-			System.Object[] values = persister.GetPropertyValues(obj, entityMode);
+			object[] values = persister.GetPropertyValues(obj, entityMode);
 			IType[] types = persister.PropertyTypes;
 			ProcessEntityPropertyValues(values, types);
 			if (SubstitutionRequired)
@@ -42,7 +42,7 @@ namespace NHibernate.Event.Default
 				ISessionImplementor session = Session;
 				if (coll.SetCurrentSession(session))
 				{
-					ReattachCollection(coll, coll.CollectionSnapshot);
+					ReattachCollection(coll, collectionType);
 				}
 				return null;
 			}
@@ -67,16 +67,15 @@ namespace NHibernate.Event.Default
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 			//TODO: move into collection type, so we can use polymorphism!
 
-			if (collectionType.IsArrayType)
+			if (collectionType.HasHolder(session.EntityMode))
 			{
-				//if (collection == CollectionType.UNFETCHED_COLLECTION)
-				//  return null;
+				if (collection == CollectionType.UnfetchedCollection)
+					return null;
 
-				PersistentArrayHolder ah = persistenceContext.GetCollectionHolder(collection) as PersistentArrayHolder;
+				IPersistentCollection ah = persistenceContext.GetCollectionHolder(collection);
 				if (ah == null)
 				{
-					//ah = collectionType.Wrap(session, collection);
-					ah = new PersistentArrayHolder(session, collection);
+					ah = collectionType.Wrap(session, collection);
 					persistenceContext.AddNewCollection(persister, ah);
 					persistenceContext.AddCollectionHolder(ah);
 				}
@@ -96,7 +95,7 @@ namespace NHibernate.Event.Default
 
 		internal override void ProcessValue(int i, object[] values, IType[] types)
 		{
-			System.Object result = ProcessValue(values[i], types[i]);
+			object result = ProcessValue(values[i], types[i]);
 			if (result != null)
 			{
 				substitute = true;
@@ -113,7 +112,7 @@ namespace NHibernate.Event.Default
 				bool substituteComponent = false;
 				for (int i = 0; i < types.Length; i++)
 				{
-					System.Object result = ProcessValue(values[i], types[i]);
+					object result = ProcessValue(values[i], types[i]);
 					if (result != null)
 					{
 						values[i] = result;

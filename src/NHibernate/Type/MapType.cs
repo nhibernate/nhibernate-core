@@ -92,9 +92,9 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public override object Instantiate()
+		public override object Instantiate(int anticipatedSize)
 		{
-			return new Hashtable();
+			return anticipatedSize <= 0 ? new Hashtable() : new Hashtable(anticipatedSize + 1);
 		}
 
 		public override object IndexOf(object collection, object element)

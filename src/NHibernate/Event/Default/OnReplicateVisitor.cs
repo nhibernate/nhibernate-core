@@ -45,7 +45,7 @@ namespace NHibernate.Event.Default
 				}
 				else
 				{
-					ReattachCollection(wrapper, wrapper.CollectionSnapshot);
+					ReattachCollection(wrapper, type);
 				}
 			}
 			else

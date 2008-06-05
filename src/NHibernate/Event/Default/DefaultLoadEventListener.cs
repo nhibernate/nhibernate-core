@@ -406,21 +406,14 @@ namespace NHibernate.Event.Default
 
 				if (ce != null)
 				{
-
-					CacheEntry entry = (CacheEntry)ce;
-					// todo-events different behaviour
-					//CacheEntry entry = (CacheEntry)persister.CacheEntryStructure.destructure(ce, factory);
+					CacheEntry entry = (CacheEntry) persister.CacheEntryStructure.Destructure(ce, factory);
 
 					// Entity was found in second-level cache...
-
-					// NH: Different behavior (take a look to options.ExactPersister)
-					if (options.ExactPersister)
+					// NH: Different behavior (take a look to options.ExactPersister (NH-295))
+					if (!options.ExactPersister || entry.Subclass.Equals(persister.EntityName))
 					{
-						if (entry.Subclass.Equals(persister.EntityName))
-							return AssembleCacheEntry(entry, @event.EntityId, persister, @event);
-					}
-					else
 						return AssembleCacheEntry(entry, @event.EntityId, persister, @event);
+					}
 				}
 			}
 
@@ -457,8 +450,7 @@ namespace NHibernate.Event.Default
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 			
 			persistenceContext.AddEntry(result, Status.Loaded, values, null, id, version, LockMode.None, true, subclassPersister, false, entry.AreLazyPropertiesUnfetched);
-			// TODO H3.2 subclassPersister.AfterInitialize(result, entry.AreLazyPropertiesUnfetched, session);
-
+			subclassPersister.AfterInitialize(result, entry.AreLazyPropertiesUnfetched, session);
 			persistenceContext.InitializeNonLazyCollections();
 			// upgrade the lock if necessary:
 			//lock(result, lockMode);

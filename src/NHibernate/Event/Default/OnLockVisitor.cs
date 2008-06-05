@@ -31,15 +31,14 @@ namespace NHibernate.Event.Default
 				{
 					if (persistentCollection.SetCurrentSession(session))
 					{
-						ICollectionSnapshot snapshot = persistentCollection.CollectionSnapshot;
-						if (IsOwnerUnchanged(snapshot, persister, ExtractCollectionKeyFromOwner(persister)))
+						if (IsOwnerUnchanged(persistentCollection, persister, ExtractCollectionKeyFromOwner(persister)))
 						{
 							// a "detached" collection that originally belonged to the same entity
 							if (persistentCollection.IsDirty)
 							{
 								throw new HibernateException("reassociated object has dirty collection");
 							}
-							ReattachCollection(persistentCollection, snapshot);
+							ReattachCollection(persistentCollection, type);
 						}
 						else
 						{

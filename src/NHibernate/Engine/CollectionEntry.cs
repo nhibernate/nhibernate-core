@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using log4net;
 using NHibernate.Collection;
-using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 
@@ -13,9 +12,30 @@ namespace NHibernate.Engine
 	/// of a collection with respect to its persistent state
 	/// </summary>
 	[Serializable]
-	public class CollectionEntry : ICollectionSnapshot
+	public class CollectionEntry
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(CollectionEntry));
+		private static readonly ILog log = LogManager.GetLogger(typeof (CollectionEntry));
+
+		/// <summary>session-start/post-flush persistent state</summary>
+		private object snapshot;
+
+		/// <summary>allow the snapshot to be serialized</summary>
+		private string role;
+
+		/// <summary>
+		/// The <see cref="ICollectionPersister"/> when the Collection was loaded.
+		/// </summary>
+		/// <remarks>
+		/// This can be <see langword="null" /> if the Collection was not loaded by NHibernate and 
+		/// was passed in along with a transient object.
+		/// </remarks>
+		[NonSerialized] private ICollectionPersister loadedPersister;
+
+		/// <summary>
+		/// The identifier of the Entity that is the owner of this Collection 
+		/// during the load or post flush.
+		/// </summary>
+		private object loadedKey;
 
 		/// <summary>
 		/// Indicates that the Collection can still be reached by an Entity
@@ -25,15 +45,13 @@ namespace NHibernate.Engine
 		/// It is also used to ensure that the Collection is not shared between
 		/// two Entities.  
 		/// </remarks>
-		[NonSerialized]
-		private bool reached;
+		[NonSerialized] private bool reached;
 
 		/// <summary>
 		/// Indicates that the Collection has been processed and is ready
 		/// to have its state synchronized with the database.
 		/// </summary>
-		[NonSerialized]
-		private bool processed;
+		[NonSerialized] private bool processed;
 
 		/// <summary>
 		/// Indicates that a Collection needs to be updated.
@@ -42,8 +60,7 @@ namespace NHibernate.Engine
 		/// A Collection needs to be updated whenever the contents of the Collection
 		/// have been changed. 
 		/// </remarks>
-		[NonSerialized]
-		private bool doupdate;
+		[NonSerialized] private bool doupdate;
 
 		/// <summary>
 		/// Indicates that a Collection has old elements that need to be removed.
@@ -52,8 +69,7 @@ namespace NHibernate.Engine
 		/// A Collection needs to have removals performed whenever its role changes or
 		/// the key changes and it has a loadedPersister - ie - it was loaded by NHibernate.
 		/// </remarks>
-		[NonSerialized]
-		private bool doremove;
+		[NonSerialized] private bool doremove;
 
 		/// <summary>
 		/// Indicates that a Collection needs to be recreated.
@@ -62,15 +78,13 @@ namespace NHibernate.Engine
 		/// A Collection needs to be recreated whenever its role changes
 		/// or the owner changes.
 		/// </remarks>
-		[NonSerialized]
-		private bool dorecreate;
+		[NonSerialized] private bool dorecreate;
 
 		/// <summary>
 		/// If we instantiate a collection during the <see cref="ISession.Flush" />
 		/// process, we must ignore it for the rest of the flush.
 		/// </summary>
-		[NonSerialized]
-		private bool ignore;
+		[NonSerialized] private bool ignore;
 
 		// <summary>
 		// Indicates that the Collection has been fully initialized.
@@ -89,107 +103,148 @@ namespace NHibernate.Engine
 		/// This is set when NHibernate is updating a reachable or an
 		/// unreachable collection.
 		/// </remarks>
-		[NonSerialized]
-		private ICollectionPersister currentPersister;
+		[NonSerialized] private ICollectionPersister currentPersister;
 
-		[NonSerialized]
-		private object currentKey;
-
-		/// <summary>
-		/// The <see cref="ICollectionPersister"/> when the Collection was loaded.
-		/// </summary>
-		/// <remarks>
-		/// This can be <see langword="null" /> if the Collection was not loaded by NHibernate and 
-		/// was passed in along with a transient object.
-		/// </remarks>
-		[NonSerialized]
-		private ICollectionPersister loadedPersister;
-
-		/// <summary>
-		/// The identifier of the Entity that is the owner of this Collection 
-		/// during the load or post flush.
-		/// </summary>
-		private object loadedKey;
-
-		/// <summary>session-start/post-flush persistent state</summary>
-		private ICollection snapshot;
-
-		/// <summary>allow the snapshot to be serialized</summary>
-		private string role;
+		[NonSerialized] private object currentKey;
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="CollectionEntry"/>.
 		/// </summary>
 		/// <remarks> 
-		/// The CollectionEntry is for a Collection that is not dirty and 
-		/// has already been initialized.
+		/// For newly wrapped collections, or dereferenced collection wrappers
 		/// </remarks>
-		public CollectionEntry(IPersistentCollection collection)
+		public CollectionEntry(ICollectionPersister persister, IPersistentCollection collection)
 		{
-			// New collections that get found and wrapped during flush shouldn't be ignored
+			// new collections that get found + wrapped
+			// during flush shouldn't be ignored
 			ignore = false;
 
-			//a newly wrapped collection is NOT dirty (or we get unnecessary version updates)
-			collection.ClearDirty();
-			//this.initialized = true;
-		}
+			collection.ClearDirty(); //a newly wrapped collection is NOT dirty (or we get unnecessary version updates)
 
-		public CollectionEntry(ICollectionPersister loadedPersister, object loadedID)
-			// Detached collection wrappers that get found and reattached
-			// during flush shouldn't be ignored
-			: this(loadedPersister, loadedID, false)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of <see cref="CollectionEntry"/> for collections just loaded from the database.
-		/// </summary>
-		/// <param name="loadedPersister">The <see cref="ICollectionPersister"/> that persists this Collection type.</param>
-		/// <param name="loadedID">The identifier of the Entity that is the owner of this Collection.</param>
-		/// <param name="ignore">A boolean indicating whether to ignore the collection during current (or next) flush.</param>
-		public CollectionEntry(ICollectionPersister loadedPersister, object loadedID, bool ignore)
-		{
-			//this.dirty = false;
-			//this.initialized = false;
-			loadedKey = loadedID;
-			SetLoadedPersister(loadedPersister);
-			this.ignore = ignore;
+			snapshot = persister.IsMutable ? collection.GetSnapshot(persister) : null;
+			collection.SetSnapshot(loadedKey, role, snapshot);
 		}
 
 		/// <summary> For collections just loaded from the database</summary>
-		public CollectionEntry(IPersistentCollection collection, ICollectionPersister loadedPersister, object loadedKey, bool ignore)
+		public CollectionEntry(IPersistentCollection collection, ICollectionPersister loadedPersister, object loadedKey,
+		                       bool ignore)
 		{
 			this.ignore = ignore;
+			this.loadedKey = loadedKey;
+			SetLoadedPersister(loadedPersister);
+			collection.SetSnapshot(loadedKey, role, null);
+			//postInitialize() will be called after initialization
+		}
+
+		public CollectionEntry(ICollectionPersister loadedPersister, object loadedKey)
+		{
+			// detached collection wrappers that get found + reattached
+			// during flush shouldn't be ignored
+			ignore = false;
 
 			//collection.clearDirty()
 
 			this.loadedKey = loadedKey;
 			SetLoadedPersister(loadedPersister);
-			snapshot = null;
-			collection.CollectionSnapshot = this;
-			//postInitialize() will be called after initialization
 		}
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="CollectionEntry"/> for initialized detached collections.
 		/// </summary>
-		/// <param name="cs">The <see cref="ICollectionSnapshot"/> from another <see cref="ISession"/>.</param>
-		/// <param name="factory">The <see cref="ISessionFactoryImplementor"/> that created this <see cref="ISession"/>.</param>
 		/// <remarks>
-		/// This takes an <see cref="ICollectionSnapshot"/> from another <see cref="ISession"/> and 
-		/// creates an entry for it in this <see cref="ISession"/> by copying the values from the 
-		/// <c>cs</c> parameter.
+		///  For initialized detached collections
 		/// </remarks>
-		public CollectionEntry(ICollectionSnapshot cs, ISessionFactoryImplementor factory)
+		internal CollectionEntry(IPersistentCollection collection, ISessionFactoryImplementor factory)
 		{
-			//this.dirty = cs.Dirty;
-			snapshot = cs.Snapshot;
-			loadedKey = cs.Key;
-			//this.initialized = true;
-			// Detached collections that get found and reattached during flush
-			// shouldn't be ignored
+			// detached collections that get found + reattached
+			// during flush shouldn't be ignored
 			ignore = false;
-			SetLoadedPersister(factory.GetCollectionPersister(cs.Role));
+
+			loadedKey = collection.Key;
+			SetLoadedPersister(factory.GetCollectionPersister(collection.Role));
+
+			snapshot = collection.StoredSnapshot;
+		}
+
+		/// <summary></summary>
+		public object Key
+		{
+			get { return loadedKey; }
+		}
+
+		/// <summary></summary>
+		public string Role
+		{
+			get { return role; }
+			set { role = value; }
+		}
+
+		/// <summary></summary>
+		public object Snapshot
+		{
+			get { return snapshot; }
+		}
+
+		public bool IsReached
+		{
+			get { return reached; }
+			set { reached = value; }
+		}
+
+		public bool IsProcessed
+		{
+			get { return processed; }
+			set { processed = value; }
+		}
+
+		public bool IsDoupdate
+		{
+			get { return doupdate; }
+			set { doupdate = value; }
+		}
+
+		public bool IsDoremove
+		{
+			get { return doremove; }
+			set { doremove = value; }
+		}
+
+		public bool IsDorecreate
+		{
+			get { return dorecreate; }
+			set { dorecreate = value; }
+		}
+
+		public bool IsIgnore
+		{
+			get { return ignore; }
+		}
+
+		public ICollectionPersister CurrentPersister
+		{
+			get { return currentPersister; }
+			set { currentPersister = value; }
+		}
+
+		public object CurrentKey
+		{
+			get { return currentKey; }
+			set { currentKey = value; }
+		}
+
+		public object LoadedKey
+		{
+			get { return loadedKey; }
+		}
+
+		public ICollectionPersister LoadedPersister
+		{
+			get { return loadedPersister; }
+		}
+
+		public bool WasDereferenced
+		{
+			get { return loadedKey == null; }
 		}
 
 		/// <summary> 
@@ -217,6 +272,11 @@ namespace NHibernate.Engine
 		/// <param name="collection">The <see cref="IPersistentCollection"/> that this CollectionEntry will be responsible for flushing.</param>
 		public void PreFlush(IPersistentCollection collection)
 		{
+			bool nonMutableChange = collection.IsDirty && LoadedPersister != null && !LoadedPersister.IsMutable;
+			if (nonMutableChange)
+			{
+				throw new HibernateException("changed an immutable collection instance: " + MessageHelper.InfoString(LoadedPersister.Role, LoadedKey));
+			}
 			Dirty(collection);
 
 			if (log.IsDebugEnabled && collection.IsDirty && loadedPersister != null)
@@ -240,7 +300,8 @@ namespace NHibernate.Engine
 		/// <param name="collection">The initialized <see cref="AbstractPersistentCollection"/> that this Entry is for.</param>
 		public void PostInitialize(IPersistentCollection collection)
 		{
-			snapshot = collection.GetSnapshot(loadedPersister);
+			snapshot = LoadedPersister.IsMutable ? collection.GetSnapshot(LoadedPersister) : null;
+			collection.SetSnapshot(loadedKey, role, snapshot);
 		}
 
 		/// <summary>
@@ -250,55 +311,35 @@ namespace NHibernate.Engine
 		/// <remarks>
 		/// Called after a <em>successful</em> flush.
 		/// </remarks>
-		public bool PostFlush(IPersistentCollection collection)
+		public void PostFlush(IPersistentCollection collection)
 		{
-			if (ignore)
+			if (IsIgnore)
 			{
 				ignore = false;
 			}
-			else
+			else if (!IsProcessed)
 			{
 				// the CollectionEntry should be processed if we are in the PostFlush()
-				if (!processed)
-				{
-					throw new AssertionFailure("collection was not processed by Flush()");
-				}
+				throw new AssertionFailure("collection [" + collection.Role + "] was not processed by flush()");
 			}
 
-			return loadedPersister == null;
+			collection.SetSnapshot(loadedKey, role, snapshot);
 		}
 
-		#region Engine.ICollectionSnapshot Members
-
-		public void InitSnapshot(IPersistentCollection collection, ICollectionPersister persister)
+		public void AfterAction(IPersistentCollection collection)
 		{
-			snapshot = collection.GetSnapshot(persister);
-		}
+			loadedKey = CurrentKey;
+			SetLoadedPersister(CurrentPersister);
 
-		/// <summary></summary>
-		public object Key
-		{
-			get { return loadedKey; }
-		}
+			bool resnapshot = collection.WasInitialized && (IsDoremove || IsDorecreate || IsDoupdate);
+			if (resnapshot)
+			{
+				//re-snapshot
+				snapshot = loadedPersister == null || !loadedPersister.IsMutable ? null : collection.GetSnapshot(loadedPersister);
+			}
 
-		/// <summary></summary>
-		public string Role
-		{
-			get { return role; }
+			collection.PostAction();
 		}
-
-		/// <summary></summary>
-		public ICollection Snapshot
-		{
-			get { return snapshot; }
-		}
-
-		public bool WasDereferenced
-		{
-			get { return loadedKey == null; }
-		}
-
-		#endregion
 
 		/// <summary>
 		/// Sets the information in this CollectionEntry that is specific to the
@@ -308,73 +349,15 @@ namespace NHibernate.Engine
 		/// The <see cref="ICollectionPersister"/> that is 
 		/// responsible for the Collection.
 		/// </param>
-		internal void SetLoadedPersister(ICollectionPersister persister)
+		private void SetLoadedPersister(ICollectionPersister persister)
 		{
 			loadedPersister = persister;
-			role = (persister == null) ? null : persister.Role;
+			Role = (persister == null) ? null : persister.Role;
 		}
 
-		public bool IsSnapshotEmpty(IPersistentCollection collection)
+		internal void AfterDeserialize(ISessionFactoryImplementor factory)
 		{
-			return collection.WasInitialized &&
-			       collection.IsSnapshotEmpty(Snapshot);
-		}
-
-		public bool IsReached
-		{
-			get { return reached; }
-			set { reached = value; }
-		}
-
-		public bool IsIgnore
-		{
-			get { return ignore; }
-		}
-
-		public bool IsDorecreate
-		{
-			get { return dorecreate; }
-			set { dorecreate = value; }
-		}
-
-		public bool IsDoremove
-		{
-			get { return doremove; }
-			set { doremove = value; }
-		}
-
-		public bool IsDoupdate
-		{
-			get { return doupdate; }
-			set { doupdate = value; }
-		}
-
-		public ICollectionPersister CurrentPersister
-		{
-			get { return currentPersister; }
-			set { currentPersister = value; }
-		}
-
-		public object CurrentKey
-		{
-			get { return currentKey; }
-			set { currentKey = value; }
-		}
-
-		public ICollectionPersister LoadedPersister
-		{
-			get { return loadedPersister; }
-		}
-
-		public object LoadedKey
-		{
-			get { return loadedKey; }
-		}
-
-		public bool IsProcessed
-		{
-			get { return processed; }
-			set { processed = value; }
+			loadedPersister = factory.GetCollectionPersister(role);
 		}
 
 		public ICollection GetOrphans(string entityName, IPersistentCollection collection)
@@ -386,23 +369,19 @@ namespace NHibernate.Engine
 			return collection.GetOrphans(snapshot, entityName);
 		}
 
-		public void AfterAction(IPersistentCollection collection)
+		public bool IsSnapshotEmpty(IPersistentCollection collection)
 		{
-			loadedKey = CurrentKey;
-			SetLoadedPersister(CurrentPersister);
+			return collection.WasInitialized && (LoadedPersister == null || LoadedPersister.IsMutable) && collection.IsSnapshotEmpty(Snapshot);
+		}
 
-			bool resnapshot = collection.WasInitialized &&
-			                  (IsDoremove || IsDorecreate || IsDoupdate);
-			if (resnapshot)
+		public override string ToString()
+		{
+			string result = "CollectionEntry" + MessageHelper.InfoString(loadedPersister.Role, loadedKey);
+			if (currentPersister != null)
 			{
-				snapshot = loadedPersister == null
-				           	? //|| !loadedPersister.IsMutable ? 
-				           null
-				           	:
-				           		collection.GetSnapshot(loadedPersister); //re-snapshot
+				result += ("->" + MessageHelper.InfoString(currentPersister.Role, currentKey));
 			}
-
-			collection.PostAction();
+			return result;
 		}
 	}
 }

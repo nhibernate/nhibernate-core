@@ -1,5 +1,4 @@
 using NHibernate.Collection;
-using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
 
@@ -32,14 +31,13 @@ namespace NHibernate.Event.Default
 				if (wrapper.SetCurrentSession(session))
 				{
 					//a "detached" collection!
-					ICollectionSnapshot snapshot = wrapper.CollectionSnapshot;
-					if (!IsOwnerUnchanged(snapshot, persister, collectionKey))
+					if (!IsOwnerUnchanged(wrapper, persister, collectionKey))
 					{
 						// if the collection belonged to a different entity,
 						// clean up the existing state of the collection
 						RemoveCollection(persister, collectionKey, session);
 					}
-					ReattachCollection(wrapper, snapshot);
+					ReattachCollection(wrapper, type);
 				}
 				else
 				{

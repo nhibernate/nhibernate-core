@@ -98,10 +98,9 @@ namespace NHibernate.Engine
 					new CacheEntry(hydratedState, persister, entityEntry.LoadedWithLazyPropertiesUnfetched, version, session, entity);
 				CacheKey cacheKey = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, session.EntityMode, session.Factory);
 				bool put =
-					persister.Cache.Put(cacheKey, entry, session.Timestamp, version,
+					persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry), session.Timestamp, version,
 					                    persister.IsVersioned ? persister.VersionType.Comparator : null,
 					                    UseMinimalPuts(session, entityEntry));
-				//we could use persister.hasLazyProperties() instead of true
 
 				if (put && factory.Statistics.IsStatisticsEnabled)
 				{

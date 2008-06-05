@@ -325,7 +325,7 @@ namespace NHibernate.Type
 
 		public virtual object InstantiateResult(object original)
 		{
-			return Instantiate();
+			return Instantiate(-1);
 		}
 
 		public override object Replace(object original, object target, ISessionImplementor session, object owner,
@@ -506,8 +506,11 @@ namespace NHibernate.Type
 		/// but with the given anticipated size (i.e. accounting for initial capacity
 		/// and perhaps load factor).
 		/// </summary>
+		/// <param name="anticipatedSize">
+		/// The anticipated size of the instaniated collection after we are done populating it.
+		/// </param>
 		/// <returns> A newly instantiated collection to be wrapped. </returns>
-		public abstract object Instantiate();
+		public abstract object Instantiate(int anticipatedSize);
 
 		public string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 		{

@@ -265,7 +265,7 @@ namespace NHibernate.Persister.Collection
 								int loc = WriteKey(st, id, offset, session);
 								if (HasIndex && !indexContainsFormula)
 								{
-									loc = WriteIndexToWhere(st, collection.GetIndex(entry, i), loc, session);
+									loc = WriteIndexToWhere(st, collection.GetIndex(entry, i, this), loc, session);
 								}
 								WriteElementToWhere(st, collection.GetElement(entry), loc, session);
 								if (useBatch)

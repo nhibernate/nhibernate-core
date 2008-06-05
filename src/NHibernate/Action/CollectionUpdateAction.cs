@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Cache;
+using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -29,7 +30,7 @@ namespace NHibernate.Action
 
 			if (!collection.WasInitialized)
 			{
-				if (!collection.HasQueuedAdds)
+				if (!collection.HasQueuedOperations)
 				{
 					throw new AssertionFailure("no queued adds");
 				}
@@ -85,7 +86,8 @@ namespace NHibernate.Action
 					// or detached from the session
 					if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
 					{
-						bool put = Persister.Cache.AfterUpdate(ck, Collection.Disassemble(Persister), null, Lock);
+						CollectionCacheEntry entry = new CollectionCacheEntry(Collection, Persister);
+						bool put = Persister.Cache.AfterUpdate(ck, entry, null, Lock);
 
 						if (put && Session.Factory.Statistics.IsStatisticsEnabled)
 						{

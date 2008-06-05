@@ -766,17 +766,15 @@ namespace NHibernate.Engine
 		/// <summary> add a collection we just loaded up (still needs initializing)</summary>
 		public void AddUninitializedCollection(ICollectionPersister persister, IPersistentCollection collection, object id)
 		{
-			CollectionEntry ce = new CollectionEntry(persister, id, flushing);
-			collection.CollectionSnapshot = ce; // NH Different behavior
+			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
 			AddCollection(collection, ce, id);
 		}
 
 		/// <summary> add a detached uninitialized collection</summary>
-		public void AddUninitializedDetachedCollection(IPersistentCollection collection, ICollectionSnapshot snapshot)
+		public void AddUninitializedDetachedCollection(ICollectionPersister persister, IPersistentCollection collection)
 		{
-			CollectionEntry ce = new CollectionEntry(snapshot, Session.Factory);
-			collection.CollectionSnapshot = ce; // NH Different behavior
-			AddCollection(collection, ce, ce.Key);
+			CollectionEntry ce = new CollectionEntry(persister, collection.Key);
+			AddCollection(collection, ce, collection.Key);
 		}
 
 		/// <summary> 
@@ -787,11 +785,7 @@ namespace NHibernate.Engine
 		/// <param name="persister"></param>
 		public void AddNewCollection(ICollectionPersister persister, IPersistentCollection collection)
 		{
-			CollectionEntry ce = AddCollection(collection);
-			if (persister.HasOrphanDelete)
-			{
-				ce.InitSnapshot(collection, persister);
-			}
+			AddCollection(collection, persister);
 		}
 
 		/// <summary> Add an collection to the cache, with a given collection entry. </summary>
@@ -822,31 +816,28 @@ namespace NHibernate.Engine
 
 		/// <summary> Add a collection to the cache, creating a new collection entry for it </summary>
 		/// <param name="collection">The collection for which we are adding an entry. </param>
-		private CollectionEntry AddCollection(IPersistentCollection collection)
+		/// <param name="persister">The collection persister </param>
+		private void AddCollection(IPersistentCollection collection, ICollectionPersister persister)
 		{
-			CollectionEntry ce = new CollectionEntry(collection);
+			CollectionEntry ce = new CollectionEntry(persister, collection);
 			collectionEntries[collection] = ce;
-			collection.CollectionSnapshot = ce;
-			return ce;
 		}
 
 		/// <summary> 
 		/// add an (initialized) collection that was created by another session and passed
 		/// into update() (ie. one with a snapshot and existing state on the database)
 		/// </summary>
-		public void AddInitializedDetachedCollection(IPersistentCollection collection,
-																								 ICollectionSnapshot snapshot)
+		public void AddInitializedDetachedCollection(ICollectionPersister collectionPersister, IPersistentCollection collection)
 		{
-			if (snapshot.WasDereferenced)
+			if (collection.IsUnreferenced)
 			{
 				//treat it just like a new collection
-				AddCollection(collection);
+				AddCollection(collection, collectionPersister);
 			}
 			else
 			{
-				CollectionEntry ce = new CollectionEntry(snapshot, session.Factory);
-				collection.CollectionSnapshot = ce; // NH Different behavior
-				AddCollection(collection, ce, ce.Key);
+				CollectionEntry ce = new CollectionEntry(collection, session.Factory);
+				AddCollection(collection, ce, collection.Key);
 			}
 		}
 
@@ -856,7 +847,6 @@ namespace NHibernate.Engine
 		{
 			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
 			ce.PostInitialize(collection);
-			collection.CollectionSnapshot = ce; // NH Different behavior
 			AddCollection(collection, ce, id);
 			return ce;
 		}
@@ -1127,7 +1117,7 @@ namespace NHibernate.Engine
 					CollectionEntry ce = (CollectionEntry)collectionEntry.Value;
 					if (ce.Role != null)
 					{
-						ce.SetLoadedPersister(Session.Factory.GetCollectionPersister(ce.Role));
+						ce.AfterDeserialize(Session.Factory);
 					}
 
 				}

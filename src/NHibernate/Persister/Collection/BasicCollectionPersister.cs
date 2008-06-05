@@ -69,7 +69,8 @@ namespace NHibernate.Persister.Collection
 			SqlInsertBuilder insert = new SqlInsertBuilder(Factory)
 				.SetTableName(qualifiedTableName)
 				.AddColumns(KeyColumnNames, null, KeyType);
-
+			
+			// NH Specific isPostInsertIdentifier : to manage identity for id-bag (NH-364)
 			if (hasIdentifier && !isPostInsertIdentifier)
 				insert.AddColumns(new string[] {IdentifierColumnName}, null, IdentifierType);
 
@@ -204,7 +205,7 @@ namespace NHibernate.Persister.Collection
 								loc = WriteKey(st, id, loc, session);
 								if (HasIndex && !indexContainsFormula)
 								{
-									WriteIndexToWhere(st, collection.GetIndex(entry, i), loc, session);
+									WriteIndexToWhere(st, collection.GetIndex(entry, i, this), loc, session);
 								}
 								else
 								{

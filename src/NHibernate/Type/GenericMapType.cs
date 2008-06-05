@@ -82,9 +82,9 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public override object Instantiate()
+		public override object Instantiate(int anticipatedSize)
 		{
-			return new Dictionary<TKey, TValue>();
+			return anticipatedSize <= 0 ? new Dictionary<TKey, TValue>() : new Dictionary<TKey, TValue>(anticipatedSize + 1);
 		}
 	}
 }

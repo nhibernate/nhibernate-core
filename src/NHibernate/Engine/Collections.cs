@@ -27,18 +27,6 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private static void ProcessNeverReferencedCollection(IPersistentCollection coll, ISessionImplementor session)
-		{
-			CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(coll);
-
-			log.Debug("Found collection with unloaded owner: " + MessageHelper.InfoString(entry.LoadedPersister, entry.LoadedKey, session.Factory));
-
-			entry.CurrentPersister = entry.LoadedPersister;
-			entry.CurrentKey = entry.LoadedKey;
-
-			PrepareCollectionForUpdate(coll, entry);
-		}
-
 		private static void ProcessDereferencedCollection(IPersistentCollection coll, ISessionImplementor session)
 		{
 			IPersistenceContext persistenceContext = session.PersistenceContext;
@@ -53,6 +41,7 @@ namespace NHibernate.Engine
 			if (hasOrphanDelete)
 			{
 				object ownerId = loadedPersister.OwnerEntityPersister.GetIdentifier(coll.Owner, session.EntityMode);
+				// TODO NH Different behavior
 				//if (ownerId == null)
 				//{
 				//  // the owning entity may have been deleted and its identifier unset due to
@@ -88,59 +77,19 @@ namespace NHibernate.Engine
 			// do the work
 			entry.CurrentPersister = null;
 			entry.CurrentKey = null;
-			PrepareCollectionForUpdate(coll, entry);
+			PrepareCollectionForUpdate(coll, entry, session.EntityMode, session.Factory);
 		}
 
-		 //1. record the collection role that this collection is referenced by
-		 //2. decide if the collection needs deleting/creating/updating (but don't actually schedule the action yet)
-		private static void PrepareCollectionForUpdate(IPersistentCollection coll, CollectionEntry entry)
+		private static void ProcessNeverReferencedCollection(IPersistentCollection coll, ISessionImplementor session)
 		{
-			if (entry.IsProcessed)
-				throw new AssertionFailure("collection was processed twice by flush()");
+			CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(coll);
 
-			entry.IsProcessed = true;
+			log.Debug("Found collection with unloaded owner: " + MessageHelper.InfoString(entry.LoadedPersister, entry.LoadedKey, session.Factory));
 
-			ICollectionPersister loadedPersister = entry.LoadedPersister;
-			ICollectionPersister currentPersister = entry.CurrentPersister;
-			if (loadedPersister != null || currentPersister != null)
-			{
-				// it is or was referenced _somewhere_
-				bool ownerChanged = loadedPersister != currentPersister ||
-					!currentPersister.KeyType.IsEqual(entry.LoadedKey, entry.CurrentKey, EntityMode.Poco);
+			entry.CurrentPersister = entry.LoadedPersister;
+			entry.CurrentKey = entry.LoadedKey;
 
-				if (ownerChanged)
-				{
-					// do a check
-					bool orphanDeleteAndRoleChanged = loadedPersister != null && 
-						currentPersister != null && loadedPersister.HasOrphanDelete;
-
-					if (orphanDeleteAndRoleChanged)
-					{
-						throw new HibernateException("Don't change the reference to a collection with cascade=\"all-delete-orphan\": " + loadedPersister.Role);
-					}
-
-					// do the work
-					if (currentPersister != null)
-					{
-						entry.IsDorecreate = true; // we will need to create new entries
-					}
-
-					if (loadedPersister != null)
-					{
-						entry.IsDoremove = true; // we will need to remove ye olde entries
-						if (entry.IsDorecreate)
-						{
-							log.Debug("Forcing collection initialization");
-							coll.ForceInitialization(); // force initialize!
-						}
-					}
-				}
-				else if (coll.IsDirty)
-				{
-					// else if it's elements changed
-					entry.IsDoupdate = true;
-				}
-			}
+			PrepareCollectionForUpdate(coll, entry, session.EntityMode, session.Factory);
 		}
 
 		/// <summary> 
@@ -178,12 +127,65 @@ namespace NHibernate.Engine
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("Collection found: " + 
-					MessageHelper.InfoString(persister, ce.CurrentKey, factory) + ", was: " + 
-					MessageHelper.InfoString(ce.LoadedPersister, ce.LoadedKey, factory) + 
-					(collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
+				          MessageHelper.InfoString(persister, ce.CurrentKey, factory) + ", was: " + 
+				          MessageHelper.InfoString(ce.LoadedPersister, ce.LoadedKey, factory) + 
+				          (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
 			}
 
-			PrepareCollectionForUpdate(collection, ce);
+			PrepareCollectionForUpdate(collection, ce, session.EntityMode, factory);
+		}
+
+		private static void PrepareCollectionForUpdate(IPersistentCollection collection, CollectionEntry entry, EntityMode entityMode, ISessionFactoryImplementor factory)
+		{
+			//1. record the collection role that this collection is referenced by
+			//2. decide if the collection needs deleting/creating/updating (but don't actually schedule the action yet)
+
+			if (entry.IsProcessed)
+				throw new AssertionFailure("collection was processed twice by flush()");
+
+			entry.IsProcessed = true;
+
+			ICollectionPersister loadedPersister = entry.LoadedPersister;
+			ICollectionPersister currentPersister = entry.CurrentPersister;
+			if (loadedPersister != null || currentPersister != null)
+			{
+				// it is or was referenced _somewhere_
+				bool ownerChanged = loadedPersister != currentPersister ||
+					!currentPersister.KeyType.IsEqual(entry.LoadedKey, entry.CurrentKey, entityMode, factory);
+
+				if (ownerChanged)
+				{
+					// do a check
+					bool orphanDeleteAndRoleChanged = loadedPersister != null && 
+						currentPersister != null && loadedPersister.HasOrphanDelete;
+
+					if (orphanDeleteAndRoleChanged)
+					{
+						throw new HibernateException("Don't change the reference to a collection with cascade=\"all-delete-orphan\": " + loadedPersister.Role);
+					}
+
+					// do the work
+					if (currentPersister != null)
+					{
+						entry.IsDorecreate = true; // we will need to create new entries
+					}
+
+					if (loadedPersister != null)
+					{
+						entry.IsDoremove = true; // we will need to remove ye olde entries
+						if (entry.IsDorecreate)
+						{
+							log.Debug("Forcing collection initialization");
+							collection.ForceInitialization(); // force initialize!
+						}
+					}
+				}
+				else if (collection.IsDirty)
+				{
+					// else if it's elements changed
+					entry.IsDoupdate = true;
+				}
+			}
 		}
 	}
 }

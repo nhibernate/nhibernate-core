@@ -1,151 +1,136 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
-using NHibernate.Loader;
 using NHibernate.Persister.Collection;
-using NHibernate.Type;
 
 namespace NHibernate.Collection.Generic
 {
 	/// <summary>
 	/// An unordered, unkeyed collection that can contain the same element
 	/// multiple times. The .NET collections API, has no <c>Bag</c>.
-	/// The <see cref="ICollection{T}" /> interface closely resembles bag semantics,
-	/// however NHibernate for .NET 1.1 used <see cref="System.Collections.IList"/> so 
-	/// <see cref="IList{T}"/> is used to ensure the easiest transition
-	/// to generics.
+	/// Most developers seem to use <see cref="IList{T}"/> to represent bag semantics,
+	/// so NHibernate follows this practice.
 	/// </summary>
 	/// <typeparam name="T">The type of the element the bag should hold.</typeparam>
 	/// <remarks>The underlying collection used is an <see cref="List{T}"/></remarks>
 	[Serializable]
-	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
-	public class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IList
+	[DebuggerTypeProxy(typeof (CollectionProxy<>))]
+	public class PersistentGenericBag<T> : PersistentBag, IList<T>
 	{
-		private IList<T> bag;
+		// TODO NH: find a way to writeonce (no duplicated code from PersistentBag)
 
-		/// <summary>
-		/// Initializes an instance of the <see cref="PersistentGenericBag{T}"/>
-		/// in the <paramref name="session"/>.
-		/// </summary>
-		/// <param name="session">The <see cref="ISessionImplementor"/> the bag is in.</param>
-		public PersistentGenericBag(ISessionImplementor session)
-			: base(session)
+		/* NH considerations:
+		 * For various reason we know that the underlining type will be a List<T> or a 
+		 * PersistentGenericBag<T>; in both cases the class implement all we need to don't duplicate
+		 * all code from PersistentBag.
+		 * In the explicit implementation of IList<T> we need to duplicate 
+		 * code to take advantage from the better performance the use of generic implementation have 
+		 * (mean .NET implementation of the underlining list).
+		 * In other cases, where PersistentBag use for example bag.Add, a cast, probably, is more
+		 * expensive than .NET original implementation.
+		 */
+		private IList<T> gbag;
+
+		public PersistentGenericBag() {}
+		public PersistentGenericBag(ISessionImplementor session) : base(session) {}
+
+		public PersistentGenericBag(ISessionImplementor session, ICollection<T> coll) : base(session, coll as ICollection)
 		{
-		}
-
-		/// <summary>
-		/// Initializes an instance of the <see cref="PersistentGenericBag{T}"/>
-		/// that wraps an existing <see cref="IList{T}"/> in the <paramref name="session"/>.
-		/// </summary>
-		/// <param name="session">The <see cref="ISessionImplementor"/> the bag is in.</param>
-		/// <param name="coll">The <see cref="IList{T}"/> to wrap.</param>
-		public PersistentGenericBag(ISessionImplementor session, IList<T> coll)
-			: base(session)
-		{
-			bag = coll;
-
-			if (bag == null)
+			gbag = coll as IList<T>;
+			if (gbag == null)
 			{
-				bag = new List<T>();
-				((List<T>) bag).AddRange(coll);
-			}
-			SetInitialized();
-			IsDirectlyAccessible = true;
-		}
-
-		#region ICollection<T> Members
-
-		public void Add(T item)
-		{
-			if (!QueueAdd(item))
-			{
-				Write();
-				bag.Add(item);
+				List<T> l = new List<T>(coll);
+				gbag = l;
+				bag = l;
 			}
 		}
 
-		public void Clear()
+		protected IList<T> InternalBag
 		{
-			Initialize(true);
-			if (bag.Count > 0)
+			get { return gbag; }
+			set
 			{
-				Dirty();
-				bag.Clear();
+				gbag = value;
+				bag = (IList) gbag;
 			}
 		}
 
-		public bool Contains(T item)
+		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
-			Read();
-			return bag.Contains(item);
+			InternalBag = (IList<T>) persister.CollectionType.Instantiate(anticipatedSize);
 		}
-
-		public void CopyTo(T[] array, int arrayIndex)
-		{
-			Read();
-			bag.CopyTo(array, arrayIndex);
-		}
-
-		public int Count
-		{
-			get
-			{
-				Read();
-				return bag.Count;
-			}
-		}
-
-		bool ICollection<T>.IsReadOnly
-		{
-			get { return false; }
-		}
-
-		public bool Remove(T item)
-		{
-			Initialize(true);
-			return MakeDirtyIfTrue(bag.Remove(item));
-		}
-
-		#endregion
 
 		#region IList<T> Members
 
-		public int IndexOf(T item)
+		int IList<T>.IndexOf(T item)
 		{
 			Read();
-			return bag.IndexOf(item);
+			return gbag.IndexOf(item);
 		}
 
-		public void Insert(int index, T item)
+		void IList<T>.Insert(int index, T item)
 		{
-			Initialize(true);
-			bag.Insert(index, item);
-			Dirty();
+			Write();
+			gbag.Insert(index, item);
 		}
 
-		public void RemoveAt(int index)
-		{
-			Initialize(true);
-			bag.RemoveAt(index);
-			Dirty();
-		}
-
-		public T this[int index]
+		T IList<T>.this[int index]
 		{
 			get
 			{
 				Read();
-				return bag[index];
+				return gbag[index];
 			}
 			set
 			{
 				Write();
-				bag[index] = value;
+				gbag[index] = value;
 			}
+		}
+
+		#endregion
+
+		#region ICollection<T> Members
+
+		void ICollection<T>.Add(T item)
+		{
+			if (!IsOperationQueueEnabled)
+			{
+				Write();
+				gbag.Add(item);
+			}
+			else
+			{
+				QueueOperation(new SimpleAddDelayedOperation(this, item));
+			}
+		}
+
+		bool ICollection<T>.Contains(T item)
+		{
+			bool? exists = ReadElementExistence(item);
+			return !exists.HasValue ? gbag.Contains(item) : exists.Value;
+		}
+
+		void ICollection<T>.CopyTo(T[] array, int arrayIndex)
+		{
+			for (int i = arrayIndex; i < Count; i++)
+			{
+				array.SetValue(this[i], i);
+			}
+		}
+
+		bool ICollection<T>.Remove(T item)
+		{
+			Initialize(true);
+			bool result = gbag.Remove(item);
+			if (result)
+			{
+				Dirty();
+			}
+			return result;
 		}
 
 		#endregion
@@ -155,397 +140,9 @@ namespace NHibernate.Collection.Generic
 		IEnumerator<T> IEnumerable<T>.GetEnumerator()
 		{
 			Read();
-			return bag.GetEnumerator();
+			return gbag.GetEnumerator();
 		}
 
 		#endregion
-
-		#region IEnumerable Members
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			Read();
-			return bag.GetEnumerator();
-		}
-
-		#endregion
-
-		#region AbstractPersistentCollection Members
-
-		/// <summary>
-		/// Is the initialized GenericBag empty?
-		/// </summary>
-		/// <value><see langword="true" /> if the bag has a Count==0, <see langword="false" /> otherwise.</value>
-		public override bool Empty
-		{
-			get { return bag.Count == 0; }
-		}
-
-		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
-		{
-			BeforeInitialize(persister);
-			object[] array = (object[]) disassembled;
-			for (int i = 0; i < array.Length; i++)
-			{
-				bag.Add((T) persister.ElementType.Assemble(array[i], Session, owner));
-			}
-			SetInitialized();
-		}
-
-		/// <summary>
-		/// Gets a <see cref="Boolean"/> indicating if this Bag needs to be recreated
-		/// in the database.
-		/// </summary>
-		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
-		/// <returns>
-		/// <see langword="false" /> if this is a <c>one-to-many</c> bag, <see langword="true" /> if this is not
-		/// a <c>one-to-many</c> bag.  Since a bag is an unordered, unindexed collection 
-		/// that permits duplicates it is not possible to determine what has changed in a
-		/// <c>many-to-many</c> so it is just recreated.
-		/// </returns>
-		public override bool NeedsRecreate(ICollectionPersister persister)
-		{
-			return !persister.IsOneToMany;
-		}
-
-		public override IEnumerable Entries()
-		{
-			return bag;
-		}
-
-		public override object ReadFrom(IDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor,
-		                                object owner)
-		{
-			object element = persister.ReadElement(reader, owner, descriptor.SuffixedElementAliases, Session);
-			// TODO: to make this more net-2.0 friendly the value returned from persister.ReadElement
-			// should be specified by a type parameter.  However, that would really break NH with net-1.1
-			// and I don't want to do that yet - so the cast is appropriate.
-			bag.Add((T) element);
-			return element;
-		}
-
-		//		public override void WriteTo(IDbCommand st, ICollectionPersister persister, object entry, int i, bool writeOrder)
-		//		{
-		//			persister.WriteElement(st, entry, writeOrder, Session);
-		//		}
-
-		public override object GetIndex(object entry, int i)
-		{
-			throw new NotSupportedException("Bags don't have indexes");
-		}
-
-		public override object GetElement(object entry)
-		{
-			return entry;
-		}
-
-		public override object GetSnapshotElement(object entry, int i)
-		{
-			IList<T> sn = (IList<T>) GetSnapshot();
-			return sn[i];
-		}
-
-		public override void BeforeInitialize(ICollectionPersister persister)
-		{
-			this.bag = (IList<T>) persister.CollectionType.Instantiate();
-		}
-
-		public override bool EqualsSnapshot(ICollectionPersister persister)
-		{
-			IType elementType = persister.ElementType;
-			IList<T> sn = (IList<T>)GetSnapshot();
-			if (sn.Count != bag.Count)
-			{
-				return false;
-			}
-
-			foreach (T elt in bag)
-			{
-				if (CountOccurrences(elt, bag, elementType) != CountOccurrences(elt, sn, elementType))
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-
-		/// <summary>
-		/// Counts the number of times that the <paramref name="element"/> occurs
-		/// in the <paramref name="list"/>.
-		/// </summary>
-		/// <param name="element">The element to find in the list.</param>
-		/// <param name="list">The <see cref="ICollection{T}"/> to search.</param>
-		/// <param name="elementType">The <see cref="IType"/> that can determine equality.</param>
-		/// <returns>
-		/// The number of occurrences of the element in the list.
-		/// </returns>
-		private int CountOccurrences(T element, ICollection<T> list, IType elementType)
-		{
-			int result = 0;
-			foreach (T obj in list)
-			{
-				if (elementType.IsEqual(element, obj, EntityMode.Poco))
-				{
-					result++;
-				}
-			}
-
-			return result;
-		}
-
-		protected override ICollection Snapshot(ICollectionPersister persister)
-		{
-			List<T> clonedList = new List<T>();
-			foreach (T obj in bag)
-			{
-				clonedList.Add((T) persister.ElementType.DeepCopy(obj, EntityMode.Poco, persister.Factory));
-			}
-
-			return clonedList;
-		}
-
-		public override object Disassemble(ICollectionPersister persister)
-		{
-			int length = bag.Count;
-			object[] result = new object[length];
-
-			int i = 0;
-			foreach (T item in bag)
-			{
-				result[i] = persister.ElementType.Disassemble(item, Session, null);
-				i++;
-			}
-
-			return result;
-		}
-
-		public override bool EntryExists(object entry, int i)
-		{
-			return entry != null;
-		}
-
-		public override bool NeedsInserting(object entry, int i, IType elemType)
-		{
-			IList sn = (IList) GetSnapshot();
-			if (sn.Count > i && elemType.IsEqual(sn[i], entry, EntityMode.Poco))
-			{
-				// a shortcut if its location didn't change
-				return false;
-			}
-			else
-			{
-				//search for it
-				foreach (object oldObject in sn)
-				{
-					if (elemType.IsEqual(oldObject, entry, EntityMode.Poco))
-					{
-						return false;
-					}
-				}
-				return true;
-			}
-		}
-
-		public override bool NeedsUpdating(object entry, int i, IType elemType)
-		{
-			return false;
-		}
-
-		public override IEnumerable GetDeletes(IType elemType, bool indexIsFormula)
-		{
-			ArrayList deletes = new ArrayList();
-			IList sn = (IList) GetSnapshot();
-
-			int i = 0;
-
-			foreach (object oldObject in sn)
-			{
-				bool found = false;
-				if (bag.Count > i && elemType.IsEqual(oldObject, bag[i++], EntityMode.Poco))
-				{
-					//a shortcut if its location didn't change!
-					found = true;
-				}
-				else
-				{
-					//search for it
-					foreach (object newObject in bag)
-					{
-						if (elemType.IsEqual(oldObject, newObject, EntityMode.Poco))
-						{
-							found = true;
-							break;
-						}
-					}
-				}
-				if (!found)
-				{
-					deletes.Add(oldObject);
-				}
-			}
-
-			return deletes;
-		}
-
-		/// <summary>
-		/// Is this the wrapper for the given underlying bag instance?
-		/// </summary>
-		/// <param name="collection">The bag that might be wrapped.</param>
-		/// <returns>
-		/// <see langword="true" /> if the <paramref name="collection"/> is equal to the
-		/// wrapped collection by object reference.
-		/// </returns>
-		public override bool IsWrapper(object collection)
-		{
-			return bag == collection;
-		}
-
-		public override ICollection GetOrphans(object snapshot, string entityName)
-		{
-			IList sn = (IList) snapshot;
-			ArrayList result = new ArrayList();
-			result.AddRange(sn);
-			// HACK: careful with cast here...
-			IdentityRemoveAll(result, (ICollection) bag, entityName, Session);
-			return result;
-		}
-
-		public override void DelayedAddAll(ICollection coll, ICollectionPersister persister)
-		{
-			bool isOneToMany = persister.IsOneToMany;
-			foreach (T obj in coll)
-			{
-				if (isOneToMany && bag.Contains(obj))
-				{
-					// Skip this
-					continue;
-				}
-				bag.Add(obj);
-			}
-		}
-
-		#endregion
-
-		#region IList Members
-
-		// when the method/property takes an "object" parameter then 
-		// make sure to use a reference to the non-generic interface
-		// so we can ensure that the same exception gets thrown as if
-		// there was no NHibernate wrapper around the collection.  For
-		// the methods that don't take an "object" parameter then we
-		// can just use "this" so we don't duplicate the Read/Write 
-		// logic.
-
-		int IList.Add(object value)
-		{
-			if (!QueueAdd(value))
-			{
-				Write();
-				return ((IList) bag).Add(value);
-			}
-			else
-			{
-				return -1;
-			}
-		}
-
-		void IList.Clear()
-		{
-			this.Clear();
-		}
-
-		bool IList.Contains(object value)
-		{
-			Read();
-			return ((IList) bag).Contains(value);
-		}
-
-		int IList.IndexOf(object value)
-		{
-			Read();
-			return ((IList) bag).IndexOf(value);
-		}
-
-		void IList.Insert(int index, object value)
-		{
-			Initialize(true);
-			((IList) bag).Insert(index, value);
-			Dirty();
-		}
-
-		bool IList.IsFixedSize
-		{
-			get { return false; }
-		}
-
-		bool IList.IsReadOnly
-		{
-			get { return false; }
-		}
-
-		void IList.Remove(object value)
-		{
-			Initialize(true);
-			int oldCount = bag.Count;
-			((IList) bag).Remove(value);
-			if (oldCount != bag.Count)
-			{
-				Dirty();
-			}
-		}
-
-		void IList.RemoveAt(int index)
-		{
-			this.RemoveAt(index);
-		}
-
-		object IList.this[int index]
-		{
-			get { return this[index]; }
-			set
-			{
-				Write();
-				((IList) bag)[index] = value;
-			}
-		}
-
-		#endregion
-
-		#region ICollection Members
-
-		void ICollection.CopyTo(Array array, int index)
-		{
-			Read();
-			((IList) bag).CopyTo(array, index);
-		}
-
-		int ICollection.Count
-		{
-			get { return this.Count; }
-		}
-
-		bool ICollection.IsSynchronized
-		{
-			get { return false; }
-		}
-
-		object ICollection.SyncRoot
-		{
-			get { return this; }
-		}
-
-		#endregion
-
-		public override IEnumerable Entries(ICollectionPersister persister)
-		{
-			return bag;
-		}
-
-		public override bool RowUpdatePossible
-		{
-			get { return false; }
-		}
 	}
 }
-

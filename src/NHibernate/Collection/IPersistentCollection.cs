@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Data;
 using NHibernate.Engine;
@@ -61,12 +60,35 @@ namespace NHibernate.Collection
 		/// </returns>
 		object GetValue();
 
-		bool RowUpdatePossible { get;}
+		bool RowUpdatePossible { get; }
+
+		/// <summary> Get the current collection key value</summary>
+		object Key { get; }
+
+		/// <summary> Get the current role name</summary>
+		string Role { get; }
+
+		/// <summary> Is the collection unreferenced?</summary>
+		bool IsUnreferenced { get; }
+
+		/// <summary>
+		/// Is the collection dirty? Note that this is only
+		/// reliable during the flush cycle, after the
+		/// collection elements are dirty checked against
+		/// the snapshot.
+		/// </summary>
+		bool IsDirty { get; }
+
+		/// <summary> Get the snapshot cached by the collection instance </summary>
+		object StoredSnapshot { get; }
 
 		/// <summary>
 		/// Is the initialized collection empty?
 		/// </summary>
 		bool Empty { get; }
+
+		/// <summary> After flushing, re-init snapshot state.</summary>
+		void SetSnapshot(object key, string role, object snapshot);
 
 		/// <summary>
 		/// Clears out any Queued Additions.
@@ -90,10 +112,21 @@ namespace NHibernate.Collection
 		/// This should be overridden by sub collections that use temporary collections
 		/// to store values read from the db.
 		/// </remarks>
-		bool EndRead(ICollectionPersister persister);
+		/// <returns>
+		/// true if NOT has Queued operations
+		/// </returns>
+		bool EndRead(ICollectionPersister persister); // NH: added persister parameter to fix NH-739
 
 		/// <summary>
-		/// Gets a <see cref="Boolean"/> indicating if the underlying collection is directly
+		/// Called after initializing from cache
+		/// </summary>
+		/// <returns>
+		/// true if NOT has Queued operations
+		/// </returns>
+		bool AfterInitialize(ICollectionPersister persister); // NH: added persister parameter to fix NH-739
+
+		/// <summary>
+		/// Gets a <see cref="bool"/> indicating if the underlying collection is directly
 		/// accessable through code.
 		/// </summary>
 		/// <value>
@@ -106,14 +139,14 @@ namespace NHibernate.Collection
 		/// NHibernate can't guarantee that it will know about all operations that would cause NHibernate's collections
 		/// to call <see cref="AbstractPersistentCollection.Read" /> or <see cref="AbstractPersistentCollection.Write" />.
 		/// </remarks>
-		bool IsDirectlyAccessible { get; set; }
+		bool IsDirectlyAccessible { get; }
 
 		/// <summary>
 		/// Disassociate this collection from the given session.
 		/// </summary>
-		/// <param name="session"></param>
+		/// <param name="currentSession"></param>
 		/// <returns>true if this was currently associated with the given session</returns>
-		bool UnsetSession(ISessionImplementor session);
+		bool UnsetSession(ISessionImplementor currentSession);
 
 		/// <summary>
 		/// Associate the collection with the given session.
@@ -162,7 +195,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Get the index of the given collection entry
 		/// </summary>
-		object GetIndex(object entry, int i);
+		object GetIndex(object entry, int i, ICollectionPersister persister);
 
 		/// <summary>
 		/// Get the value of the given collection entry
@@ -170,11 +203,17 @@ namespace NHibernate.Collection
 		object GetElement(object entry);
 
 		/// <summary>
+		/// Get the snapshot value of the given collection entry
+		/// </summary>
+		object GetSnapshotElement(object entry, int i);
+
+		/// <summary>
 		/// Called before any elements are read into the collection,
 		/// allowing appropriate initializations to occur.
 		/// </summary>
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this persistent collection.</param>
-		void BeforeInitialize(ICollectionPersister persister);
+		/// <param name="anticipatedSize">The anticipated size of the collection after initilization is complete.</param>
+		void BeforeInitialize(ICollectionPersister persister, int anticipatedSize);
 
 		/// <summary>
 		/// Does the current state exactly match the snapshot?
@@ -187,6 +226,9 @@ namespace NHibernate.Collection
 		/// </returns>
 		bool EqualsSnapshot(ICollectionPersister persister);
 
+		/// <summary> Is the snapshot empty?</summary>
+		bool IsSnapshotEmpty(object snapshot);
+
 		/// <summary>
 		/// Disassemble the collection, ready for the cache
 		/// </summary>
@@ -195,7 +237,7 @@ namespace NHibernate.Collection
 		object Disassemble(ICollectionPersister persister);
 
 		/// <summary>
-		/// Gets a <see cref="Boolean"/> indicating if the rows for this collection
+		/// Gets a <see cref="bool"/> indicating if the rows for this collection
 		/// need to be recreated in the table.
 		/// </summary>
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
@@ -238,7 +280,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Get all the elements that need deleting
 		/// </summary>
-		IEnumerable GetDeletes(IType elemType, bool indexIsFormula);
+		IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula);
 
 		/// <summary>
 		/// Is this the wrapper for the given underlying collection instance?
@@ -254,13 +296,24 @@ namespace NHibernate.Collection
 		bool WasInitialized { get; }
 
 		/// <summary></summary>
-		bool HasQueuedAdds { get; }
+		bool HasQueuedOperations { get; }
 
 		/// <summary></summary>
 		IEnumerable QueuedAdditionIterator { get; }
 
-		/// <summary></summary>
-		ICollectionSnapshot CollectionSnapshot { get; set; }
+		/// <summary> Get the "queued" orphans</summary>
+		ICollection GetQueuedOrphans(string entityName);
+
+		/// <summary>
+		/// Clear the dirty flag, after flushing changes
+		/// to the database.
+		/// </summary>
+		void ClearDirty();
+
+		/// <summary>
+		/// Mark the collection as dirty
+		/// </summary>
+		void Dirty();
 
 		/// <summary>
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
@@ -287,37 +340,5 @@ namespace NHibernate.Collection
 		/// that have been orphaned.
 		/// </returns>
 		ICollection GetOrphans(object snapshot, string entityName);
-
-		/// <summary>
-		/// Get the snapshot value of the given collection entry
-		/// </summary>
-		object GetSnapshotElement(object entry, int i);
-
-		bool IsSnapshotEmpty(ICollection snapshot);
-
-		/// <summary>
-		/// Called after initializing from cache
-		/// </summary>
-		// NH: added persister parameter to fix NH-739
-		bool AfterInitialize(ICollectionPersister persister);
-
-		/// <summary>
-		/// Is the collection dirty? Note that this is only
-		/// reliable during the flush cycle, after the
-		/// collection elements are dirty checked against
-		/// the snapshot.
-		/// </summary>
-		bool IsDirty { get; }
-
-		/// <summary>
-		/// Clear the dirty flag, after flushing changes
-		/// to the database.
-		/// </summary>
-		void ClearDirty();
-
-		/// <summary>
-		/// Mark the collection as dirty
-		/// </summary>
-		void Dirty();
 	}
 }

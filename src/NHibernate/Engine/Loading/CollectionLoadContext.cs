@@ -4,6 +4,7 @@ using System.Data;
 using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Cache;
+using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
@@ -96,7 +97,7 @@ namespace NHibernate.Engine.Loading
 				else
 				{
 					object owner = loadContexts.PersistenceContext.GetCollectionOwner(key, persister);
-					bool newlySavedEntity = owner != null && loadContexts.PersistenceContext.GetEntry(owner).Status != Status.Loading;
+					bool newlySavedEntity = owner != null && loadContexts.PersistenceContext.GetEntry(owner).Status != Status.Loading && em != EntityMode.Xml;
 					if (newlySavedEntity)
 					{
 						// important, to account for newly saved entities in query
@@ -114,7 +115,7 @@ namespace NHibernate.Engine.Loading
 						collection = persister.CollectionType.Instantiate(loadContexts.PersistenceContext.Session, persister, key);
 					}
 				}
-				collection.BeforeInitialize(persister);
+				collection.BeforeInitialize(persister, -1);
 				collection.BeginRead();
 				localLoadingCollectionKeys.Add(collectionKey);
 				loadContexts.RegisterLoadingCollectionXRef(collectionKey, new LoadingCollectionEntry(resultSet, persister, key, collection));
@@ -235,10 +236,14 @@ namespace NHibernate.Engine.Loading
 				log.Debug("ending loading collection [" + lce + "]");
 			}
 			ISessionImplementor session = LoadContext.PersistenceContext.Session;
+			EntityMode em = session.EntityMode;
 
 			bool hasNoQueuedAdds = lce.Collection.EndRead(persister); // warning: can cause a recursive calls! (proxy initialization)
 
-			LoadContext.PersistenceContext.AddCollectionHolder(lce.Collection);
+			if (persister.CollectionType.HasHolder(em))
+			{
+				LoadContext.PersistenceContext.AddCollectionHolder(lce.Collection);
+			}
 
 			CollectionEntry ce = LoadContext.PersistenceContext.GetCollectionEntry(lce.Collection);
 			if (ce == null)
@@ -308,8 +313,9 @@ namespace NHibernate.Engine.Loading
 				versionComparator = null;
 			}
 
-			CacheKey ck = new CacheKey(lce.Key, persister.KeyType, persister.Role, session.EntityMode, factory);
-			bool put = persister.Cache.Put(ck, lce.Collection.Disassemble(persister), 
+			CollectionCacheEntry entry = new CollectionCacheEntry(lce.Collection, persister);
+			CacheKey cacheKey = new CacheKey(lce.Key, persister.KeyType, persister.Role, session.EntityMode, factory);
+			bool put = persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry), 
 			                    session.Timestamp, version, versionComparator,
 													factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh);
 

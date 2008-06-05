@@ -15,8 +15,7 @@ namespace NHibernate.Engine
 		private readonly string role;
 		private readonly object key;
 		private readonly IType keyType;
-		[NonSerialized]
-		private readonly ISessionFactoryImplementor factory;
+		[NonSerialized] private readonly ISessionFactoryImplementor factory;
 		private readonly int hashCode;
 		private readonly EntityMode entityMode;
 
@@ -38,7 +37,7 @@ namespace NHibernate.Engine
 		public override bool Equals(object obj)
 		{
 			CollectionKey that = (CollectionKey)obj;
-			return Equals(role, that.role) && keyType.IsEqual(key, that.key, entityMode, factory);
+			return that.role.Equals(role) && keyType.IsEqual(that.key, key, entityMode, factory);
 		}
 
 		public override int GetHashCode()
@@ -52,7 +51,7 @@ namespace NHibernate.Engine
 			unchecked
 			{
 				result = 37 * result + role.GetHashCode();
-				result = 37 * result + keyType.GetHashCode(key, EntityMode.Poco, factory);
+				result = 37 * result + keyType.GetHashCode(key, entityMode, factory);
 			}
 			return result;
 		}

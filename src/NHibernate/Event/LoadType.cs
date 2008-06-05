@@ -69,11 +69,14 @@ namespace NHibernate.Event
 
 		public bool ExactPersister
 		{
+			// NH Specific : NH-295 Allow strongly typed from cache
+			// so far we are only use if for session.Get
 			get { return exactPersister; }
 		}
 
 		internal LoadType SetExactPersister(bool exactPersister)
 		{
+			// NH Specific : NH-295 Allow strongly typed from cache
 			this.exactPersister = exactPersister;
 			return this;
 		}

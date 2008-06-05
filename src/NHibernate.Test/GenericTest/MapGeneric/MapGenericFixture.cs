@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NHibernate.Engine;
+using NHibernate.Type;
 using NUnit.Framework;
 using NHibernate.Collection.Generic;
+using NHibernate.Persister.Collection;
 
 namespace NHibernate.Test.GenericTest.MapGeneric
 {
@@ -156,17 +159,26 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				a = s.Load<A>( a.Id );
+
+				ISessionFactoryImplementor si = (ISessionFactoryImplementor)sessions;
+				ICollectionPersister cpSortedList = si.GetCollectionPersister(typeof(A).FullName + ".SortedList");
+				ICollectionPersister cpSortedDictionary = si.GetCollectionPersister(typeof(A).FullName + ".SortedDictionary");
+
 				PersistentGenericMap<string, int> sd = a.SortedDictionary as PersistentGenericMap<string, int>;
+
 				Assert.IsNotNull( sd );
+				Assert.IsTrue(cpSortedList.CollectionType is GenericSortedListType<string, int>);
+				Assert.IsTrue(cpSortedDictionary.CollectionType is GenericSortedDictionaryType<string, int>);
+
 				// This is a hack to check that the internal collection is a SortedDictionary<,>.
 				// The hack works because PersistentGenericMap.Entries() returns the internal collection
 				// casted to IEnumerable
-				Assert.IsTrue( sd.Entries() is SortedDictionary<string, int> );
+				Assert.IsTrue(sd.Entries(cpSortedDictionary) is SortedDictionary<string, int>);
 
 				PersistentGenericMap<string, int> sl = a.SortedList as PersistentGenericMap<string, int>;
-				Assert.IsNotNull( sl );
+				Assert.IsNotNull(sl);
 				// This is a hack, see above
-				Assert.IsTrue( sl.Entries() is SortedList<string, int> );
+				Assert.IsTrue(sl.Entries(cpSortedList) is SortedList<string, int>);
 
 				t.Commit();
 			}

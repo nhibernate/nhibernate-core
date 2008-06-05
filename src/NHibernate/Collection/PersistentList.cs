@@ -7,6 +7,7 @@ using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Collection
 {
@@ -17,27 +18,42 @@ namespace NHibernate.Collection
 	/// The underlying collection used in an <see cref="ArrayList"/>.
 	/// </remarks>
 	[Serializable]
-	[DebuggerTypeProxy(typeof(CollectionProxy))]
+	[DebuggerTypeProxy(typeof (CollectionProxy))]
 	public class PersistentList : AbstractPersistentCollection, IList
 	{
-		private IList list;
+		protected IList list;
+
+		public PersistentList() {}
 
 		/// <summary>
-		/// Return a new snapshot of the current state.
+		/// Initializes an instance of the <see cref="PersistentList"/>
+		/// in the <paramref name="session"/>.
 		/// </summary>
-		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
-		/// <returns>
-		/// A new <see cref="ArrayList"/> that contains Deep Copies of the 
-		/// Elements stored in this wrapped collection.
-		/// </returns>
-		protected override ICollection Snapshot(ICollectionPersister persister)
+		/// <param name="session">The <see cref="ISessionImplementor"/> the list is in.</param>
+		public PersistentList(ISessionImplementor session) : base(session) {}
+
+		/// <summary>
+		/// Initializes an instance of the <see cref="PersistentList"/>
+		/// that wraps an existing <see cref="IList"/> in the <paramref name="session"/>.
+		/// </summary>
+		/// <param name="session">The <see cref="ISessionImplementor"/> the list is in.</param>
+		/// <param name="list">The <see cref="IList"/> to wrap.</param>
+		public PersistentList(ISessionImplementor session, IList list) : base(session)
+		{
+			this.list = list;
+			SetInitialized();
+			IsDirectlyAccessible = true;
+		}
+
+		public override ICollection GetSnapshot(ICollectionPersister persister)
 		{
 			EntityMode entityMode = Session.EntityMode;
 
 			ArrayList clonedList = new ArrayList(list.Count);
-			foreach (object obj in list)
+			foreach (object current in list)
 			{
-				clonedList.Add(persister.ElementType.DeepCopy(obj,entityMode, persister.Factory));
+				object deepCopy = persister.ElementType.DeepCopy(current, entityMode, persister.Factory);
+				clonedList.Add(deepCopy);
 			}
 			return clonedList;
 		}
@@ -45,17 +61,14 @@ namespace NHibernate.Collection
 		public override ICollection GetOrphans(object snapshot, string entityName)
 		{
 			IList sn = (IList) snapshot;
-			ArrayList result = new ArrayList(sn.Count);
-			result.AddRange(sn);
-			IdentityRemoveAll(result, list, entityName, Session);
-			return result;
+			return GetOrphans(sn, list, entityName, Session);
 		}
 
 		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
 			IType elementType = persister.ElementType;
-			IList sn = (IList)GetSnapshot();
-			if (sn.Count != this.list.Count)
+			IList sn = (IList) GetSnapshot();
+			if (sn.Count != list.Count)
 			{
 				return false;
 			}
@@ -69,173 +82,30 @@ namespace NHibernate.Collection
 			return true;
 		}
 
+		public override bool IsSnapshotEmpty(object snapshot)
+		{
+			return ((ICollection) snapshot).Count == 0;
+		}
+
+		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
+		{
+			list = (IList) persister.CollectionType.Instantiate(anticipatedSize);
+		}
+
 		public override bool IsWrapper(object collection)
 		{
 			return list == collection;
 		}
 
-		/// <summary>
-		/// Initializes an instance of the <see cref="PersistentList"/>
-		/// in the <paramref name="session"/>.
-		/// </summary>
-		/// <param name="session">The <see cref="ISessionImplementor"/> the list is in.</param>
-		public PersistentList(ISessionImplementor session)
-			: base(session)
-		{
-		}
-
-		/// <summary>
-		/// Initializes an instance of the <see cref="PersistentList"/>
-		/// that wraps an existing <see cref="IList"/> in the <paramref name="session"/>.
-		/// </summary>
-		/// <param name="session">The <see cref="ISessionImplementor"/> the list is in.</param>
-		/// <param name="list">The <see cref="IList"/> to wrap.</param>
-		public PersistentList(ISessionImplementor session, IList list)
-			: base(session)
-		{
-			this.list = list;
-			SetInitialized();
-			IsDirectlyAccessible = true;
-		}
-
-		public override void BeforeInitialize(ICollectionPersister persister)
-		{
-			this.list = (IList) persister.CollectionType.Instantiate();
-		}
-
-		public int Count
-		{
-			get
-			{
-				Read();
-				return list.Count;
-			}
-		}
-
-		public void CopyTo(Array array, int index)
-		{
-			Read();
-			list.CopyTo(array, index);
-		}
-
-		/// <seealso cref="ICollection.SyncRoot"/>
-		public object SyncRoot
-		{
-			get { return this; }
-		}
-
-		/// <seealso cref="ICollection.IsSynchronized"/>
-		public bool IsSynchronized
-		{
-			get { return false; }
-		}
-
-		/// <seealso cref="IList.IsFixedSize"/>
-		public bool IsFixedSize
-		{
-			get { return false; }
-		}
-
-		/// <seealso cref="IList.IsReadOnly"/>
-		public bool IsReadOnly
-		{
-			get { return false; }
-		}
-
-		/// <seealso cref="IList.Contains(Object)"/>
-		public bool Contains(object obj)
-		{
-			Read();
-			return list.Contains(obj);
-		}
-
-		public IEnumerator GetEnumerator()
-		{
-			Read();
-			return list.GetEnumerator();
-		}
-
-		public override void DelayedAddAll(ICollection coll, ICollectionPersister persister)
-		{
-			foreach (object obj in coll)
-			{
-				list.Add(obj);
-			}
-		}
-
-		public int Add(object obj)
-		{
-			// can't perform a Queued Addition because the non-generic
-			// IList interface requires the index the object was added
-			// at to be returned
-			Write();
-			return list.Add(obj);
-		}
-
-		public void Insert(int index, object obj)
-		{
-			Initialize(true);
-			list.Insert(index, obj);
-			Dirty();
-		}
-
-		public void Remove(object obj)
-		{
-			Initialize(true);
-			int oldCount = list.Count;
-			list.Remove(obj);
-			if (oldCount != list.Count)
-			{
-				Dirty();
-			}
-		}
-
-		public void Clear()
-		{
-			Initialize(true);
-			if (list.Count > 0)
-			{
-				list.Clear();
-				Dirty();
-			}
-		}
-
-		public object this[int index]
-		{
-			get
-			{
-				Read();
-				return list[index];
-			}
-			set
-			{
-				Write();
-				list[index] = value;
-			}
-		}
-
-		public void RemoveAt(int index)
-		{
-			Initialize(true);
-			list.RemoveAt(index);
-			Dirty();
-		}
-
-		public int IndexOf(object obj)
-		{
-			Read();
-			return list.IndexOf(obj);
-		}
-
 		public override bool Empty
 		{
-			get { return list.Count == 0; }
+			get { return (list.Count == 0); }
 		}
 
 		public override string ToString()
 		{
 			Read();
-			return list.ToString();
+			return StringHelper.CollectionToString(list);
 		}
 
 		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
@@ -243,6 +113,7 @@ namespace NHibernate.Collection
 			object element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
 			int index = (int) role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session);
 
+			//pad with nulls from the current last element up to the new index
 			for (int i = list.Count; i <= index; i++)
 			{
 				list.Insert(i, null);
@@ -252,7 +123,7 @@ namespace NHibernate.Collection
 			return element;
 		}
 
-		public override IEnumerable Entries()
+		public override IEnumerable Entries(ICollectionPersister persister)
 		{
 			return list;
 		}
@@ -265,13 +136,13 @@ namespace NHibernate.Collection
 		/// <param name="owner">The owner object.</param>
 		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
 		{
-			BeforeInitialize(persister);
 			object[] array = (object[]) disassembled;
-			for (int i = 0; i < array.Length; i++)
+			int size = array.Length;
+			BeforeInitialize(persister, size);
+			for (int i = 0; i < size; i++)
 			{
 				list.Add(persister.ElementType.Assemble(array[i], Session, owner));
 			}
-			SetInitialized();
 		}
 
 		public override object Disassemble(ICollectionPersister persister)
@@ -285,7 +156,7 @@ namespace NHibernate.Collection
 			return result;
 		}
 
-		public override IEnumerable GetDeletes(IType elemType, bool indexIsFormula)
+		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
 			IList deletes = new ArrayList();
 			IList sn = (IList) GetSnapshot();
@@ -324,7 +195,7 @@ namespace NHibernate.Collection
 			return i < sn.Count && sn[i] != null && list[i] != null && elemType.IsDirty(list[i], sn[i], Session);
 		}
 
-		public override object GetIndex(object entry, int i)
+		public override object GetIndex(object entry, int i, ICollectionPersister persister)
 		{
 			return i;
 		}
@@ -345,9 +216,375 @@ namespace NHibernate.Collection
 			return entry != null;
 		}
 
-		public override IEnumerable Entries(ICollectionPersister persister)
+		public override bool Equals(object obj)
 		{
-			return list;
+			ICollection that = obj as ICollection;
+			if (that == null)
+			{
+				return false;
+			}
+			Read();
+			return CollectionHelper.CollectionEquals(list, that);
 		}
+
+		public override int GetHashCode()
+		{
+			Read();
+			return list.GetHashCode();
+		}
+
+		#region IList Members
+
+		public int Add(object value)
+		{
+			if (!IsOperationQueueEnabled)
+			{
+				Write();
+				return list.Add(value);
+			}
+			else
+			{
+				QueueOperation(new SimpleAddDelayedOperation(this, value));
+				//TODO: take a look at this - I don't like it because it changes the 
+				// meaning of Add - instead of returning the index it was added at 
+				// returns a "fake" index - not consistent with IList interface...
+				return -1;
+			}
+		}
+
+		public bool Contains(object value)
+		{
+			bool? exists = ReadElementExistence(value);
+			return !exists.HasValue ? list.Contains(value) : exists.Value;
+		}
+
+		public void Clear()
+		{
+			if (ClearQueueEnabled)
+			{
+				QueueOperation(new ClearDelayedOperation(this));
+			}
+			else
+			{
+				Initialize(true);
+				if (!(list.Count == 0))
+				{
+					list.Clear();
+					Dirty();
+				}
+			}
+		}
+
+		public int IndexOf(object value)
+		{
+			Read();
+			return list.IndexOf(value);
+		}
+
+		public void Insert(int index, object value)
+		{
+			if (index < 0)
+			{
+				throw new IndexOutOfRangeException("negative index");
+			}
+			if (!IsOperationQueueEnabled)
+			{
+				Write();
+				list.Insert(index, value);
+			}
+			else
+			{
+				QueueOperation(new AddDelayedOperation(this, index, value));
+			}
+		}
+
+		public void Remove(object value)
+		{
+			bool? exists = PutQueueEnabled ? ReadElementExistence(value) : null;
+			if (!exists.HasValue)
+			{
+				Initialize(true);
+				// NH: Different implementation: we use the count to know if the value was removed (better performance)
+				int contained = list.Count;
+				list.Remove(value);
+				if (contained != list.Count)
+				{
+					Dirty();
+				}
+			}
+			else if (exists.Value)
+			{
+				QueueOperation(new SimpleRemoveDelayedOperation(this, value));
+			}
+		}
+
+		public void RemoveAt(int index)
+		{
+			if (index < 0)
+			{
+				throw new IndexOutOfRangeException("negative index");
+			}
+			object old = PutQueueEnabled ? ReadElementByIndex(index) : Unknown;
+			if (old == Unknown)
+			{
+				Write();
+				list.RemoveAt(index);
+			}
+			else
+			{
+				QueueOperation(new RemoveDelayedOperation(this, index, old));
+			}
+		}
+
+		public object this[int index]
+		{
+			get
+			{
+				if (index < 0)
+				{
+					throw new IndexOutOfRangeException("negative index");
+				}
+				object result = ReadElementByIndex(index);
+				return result == Unknown ? list[index] : result;
+			}
+			set
+			{
+				if (index < 0)
+				{
+					throw new IndexOutOfRangeException("negative index");
+				}
+				object old = PutQueueEnabled ? ReadElementByIndex(index) : Unknown;
+				if (old == Unknown)
+				{
+					Write();
+					list[index] = value;
+				}
+				else
+				{
+					QueueOperation(new SetDelayedOperation(this, index, value, old));
+				}
+			}
+		}
+
+		public bool IsReadOnly
+		{
+			get { return false; }
+		}
+
+		public bool IsFixedSize
+		{
+			get { return false; }
+		}
+
+		#endregion
+
+		#region ICollection Members
+
+		public void CopyTo(Array array, int index)
+		{
+			for (int i = index; i < Count; i++)
+			{
+				array.SetValue(this[i], i);
+			}
+		}
+
+		public int Count
+		{
+			get { return ReadSize() ? CachedSize : list.Count; }
+		}
+
+		public object SyncRoot
+		{
+			get { return this; }
+		}
+
+		public bool IsSynchronized
+		{
+			get { return false; }
+		}
+
+		#endregion
+
+		#region IEnumerable Members
+
+		public IEnumerator GetEnumerator()
+		{
+			Read();
+			return list.GetEnumerator();
+		}
+
+		#endregion
+
+		#region DelayedOperations
+
+		protected sealed class ClearDelayedOperation : IDelayedOperation
+		{
+			private readonly PersistentList enclosingInstance;
+
+			public ClearDelayedOperation(PersistentList enclosingInstance)
+			{
+				this.enclosingInstance = enclosingInstance;
+			}
+
+			public object AddedInstance
+			{
+				get { return null; }
+			}
+
+			public object Orphan
+			{
+				get { throw new NotSupportedException("queued clear cannot be used with orphan delete"); }
+			}
+
+			public void Operate()
+			{
+				enclosingInstance.list.Clear();
+			}
+		}
+
+		protected sealed class SimpleAddDelayedOperation : IDelayedOperation
+		{
+			private readonly PersistentList enclosingInstance;
+			private readonly object value;
+
+			public SimpleAddDelayedOperation(PersistentList enclosingInstance, object value)
+			{
+				this.enclosingInstance = enclosingInstance;
+				this.value = value;
+			}
+
+			public object AddedInstance
+			{
+				get { return value; }
+			}
+
+			public object Orphan
+			{
+				get { return null; }
+			}
+
+			public void Operate()
+			{
+				enclosingInstance.list.Add(value);
+			}
+		}
+
+		protected sealed class AddDelayedOperation : IDelayedOperation
+		{
+			private readonly PersistentList enclosingInstance;
+			private readonly int index;
+			private readonly object value;
+
+			public AddDelayedOperation(PersistentList enclosingInstance, int index, object value)
+			{
+				this.enclosingInstance = enclosingInstance;
+				this.index = index;
+				this.value = value;
+			}
+
+			public object AddedInstance
+			{
+				get { return value; }
+			}
+
+			public object Orphan
+			{
+				get { return null; }
+			}
+
+			public void Operate()
+			{
+				enclosingInstance.list.Insert(index, value);
+			}
+		}
+
+		protected sealed class SetDelayedOperation : IDelayedOperation
+		{
+			private readonly PersistentList enclosingInstance;
+			private readonly int index;
+			private readonly object value;
+			private readonly object old;
+
+			public SetDelayedOperation(PersistentList enclosingInstance, int index, object value, object old)
+			{
+				this.enclosingInstance = enclosingInstance;
+				this.index = index;
+				this.value = value;
+				this.old = old;
+			}
+
+			public object AddedInstance
+			{
+				get { return value; }
+			}
+
+			public object Orphan
+			{
+				get { return old; }
+			}
+
+			public void Operate()
+			{
+				enclosingInstance.list[index] = value;
+			}
+		}
+
+		protected sealed class RemoveDelayedOperation : IDelayedOperation
+		{
+			private readonly PersistentList enclosingInstance;
+			private readonly int index;
+			private readonly object old;
+
+			public RemoveDelayedOperation(PersistentList enclosingInstance, int index, object old)
+			{
+				this.enclosingInstance = enclosingInstance;
+				this.index = index;
+				this.old = old;
+			}
+
+			public object AddedInstance
+			{
+				get { return null; }
+			}
+
+			public object Orphan
+			{
+				get { return old; }
+			}
+
+			public void Operate()
+			{
+				enclosingInstance.list.RemoveAt(index);
+			}
+		}
+
+		protected sealed class SimpleRemoveDelayedOperation : IDelayedOperation
+		{
+			private readonly PersistentList enclosingInstance;
+			private readonly object value;
+
+			public SimpleRemoveDelayedOperation(PersistentList enclosingInstance, object value)
+			{
+				this.enclosingInstance = enclosingInstance;
+				this.value = value;
+			}
+
+			public object AddedInstance
+			{
+				get { return null; }
+			}
+
+			public object Orphan
+			{
+				get { return value; }
+			}
+
+			public void Operate()
+			{
+				enclosingInstance.list.Remove(value);
+			}
+		}
+
+		#endregion
 	}
 }

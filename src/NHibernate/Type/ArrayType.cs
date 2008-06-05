@@ -95,9 +95,9 @@ namespace NHibernate.Type
 			return Array.CreateInstance(elementClass, ((Array) original).Length);
 		}
 
-		public override object Instantiate()
+		public override object Instantiate(int anticipatedSize)
 		{
-			throw new NotSupportedException("ArrayType.Instantiate()");
+			throw new NotSupportedException();
 		}
 
 		public override bool HasHolder(EntityMode entityMode)
