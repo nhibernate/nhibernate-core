@@ -324,10 +324,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Called after inserting a row, to fetch the natively generated id
 		/// </summary>
-		/// <param name="persister"></param>
-		/// <param name="entry"></param>
-		/// <param name="i"></param>
-		void AfterRowInsert(ICollectionPersister persister, object entry, int i);
+		void AfterRowInsert(ICollectionPersister persister, object entry, int i, object id); // NH Different: added id for generated identifier
 
 		/// <summary>
 		/// Get all "orphaned" elements

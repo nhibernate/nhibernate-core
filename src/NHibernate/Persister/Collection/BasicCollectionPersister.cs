@@ -70,8 +70,7 @@ namespace NHibernate.Persister.Collection
 				.SetTableName(qualifiedTableName)
 				.AddColumns(KeyColumnNames, null, KeyType);
 			
-			// NH Specific isPostInsertIdentifier : to manage identity for id-bag (NH-364)
-			if (hasIdentifier && !isPostInsertIdentifier)
+			if (hasIdentifier)
 				insert.AddColumns(new string[] {IdentifierColumnName}, null, IdentifierType);
 
 			if (HasIndex)
@@ -304,5 +303,25 @@ namespace NHibernate.Persister.Collection
 				                              subselect.QueryParameters, subselect.NamedParameterLocMap, session.Factory,
 				                              session.EnabledFilters);
 		}
+
+		#region NH Specific
+		protected override SqlCommandInfo GenerateIdentityInsertRowString()
+		{
+			// NH specific to manage identity for id-bag (NH-364)
+			SqlInsertBuilder insert = identityDelegate.PrepareIdentifierGeneratingInsert();
+			insert.SetTableName(qualifiedTableName).AddColumns(KeyColumnNames, null, KeyType);
+
+			if (HasIndex)
+				insert.AddColumns(IndexColumnNames, null, IndexType);
+
+			insert.AddColumns(ElementColumnNames, elementColumnIsSettable, ElementType);
+
+			if (Factory.Settings.IsCommentsEnabled)
+				insert.SetComment("insert collection row " + Role);
+
+			return insert.ToSqlCommandInfo();
+		}
+
+		#endregion
 	}
 }

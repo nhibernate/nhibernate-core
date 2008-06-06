@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
+using NHibernate.Id;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -258,12 +259,11 @@ namespace NHibernate.Collection
 
 		public override void PreInsert(ICollectionPersister persister)
 		{
-			// TODO NH :
-			//if ((persister.IdentifierGenerator as IPostInsertIdentifierGenerator)!=null)
-			//{
-			//  // NH Different behavior (NH specific) : if we are using IdentityGenerator the PreInsert have no effect
-			//  return;
-			//}
+			if ((persister.IdentifierGenerator as IPostInsertIdentifierGenerator) != null)
+			{
+				// NH Different behavior (NH specific) : if we are using IdentityGenerator the PreInsert have no effect
+				return;
+			}
 			try
 			{
 				int i = 0;
@@ -283,14 +283,9 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public override void AfterRowInsert(ICollectionPersister persister, object entry, int i)
+		public override void AfterRowInsert(ICollectionPersister persister, object entry, int i, object id)
 		{
-			//TODO: if we are using identity columns, fetch the identifier
-			// NH : we need to read id from entry ? 
-			// probably we need to do something else in AbstractCollectionPersister
-			// in InsertRows and Recreate, to BasicCollectionPersister.GenerateInsertRowString (to generate an apropiate insert) and then 
-			// change de signature of this method to (ICollectionPersister persister, object id, object entry, int i)
-			// what we need here is: identifiers[i] = id;
+			identifiers[i] = id;
 		}
 
 		protected void BeforeRemove(int index)

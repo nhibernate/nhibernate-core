@@ -368,5 +368,11 @@ namespace NHibernate.Persister.Collection
 		{
 			return new CollectionElementLoader(this, Factory, session.EnabledFilters).LoadElement(session, key, IncrementIndexByBase(index));
 		}
+		#region NH Specific
+		protected override SqlCommandInfo GenerateIdentityInsertRowString()
+		{
+			throw new NotSupportedException("Identity insert is not needed for one-to-many association");
+		}
+		#endregion
 	}
 }

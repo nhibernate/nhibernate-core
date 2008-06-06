@@ -1,13 +1,17 @@
-using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
 
 namespace NHibernate.Id
 {
 	/// <summary> 
 	/// A persister that may have an identity assigned by execution of a SQL <tt>INSERT</tt>. 
 	/// </summary>
-	public interface IPostInsertIdentityPersister : IEntityPersister
+	public interface IPostInsertIdentityPersister
 	{
+		/* NH cosideration:
+		 * this interface was de-wired from IEntityPersister because we want use it for ICollectionPersister too.
+		 * More exactly we want use it for id-bag.
+		 */
 		/// <summary> 
 		/// Get the database-specific SQL command to retrieve the last
 		/// generated IDENTITY value.
@@ -28,5 +32,14 @@ namespace NHibernate.Id
 		/// </param>
 		/// <returns> The SQL select string </returns>
 		SqlString GetSelectByUniqueKeyString(string propertyName);
+
+		#region NH specific
+		/// <summary>
+		/// Get the identifier type
+		/// </summary>
+		IType IdentifierType { get; }
+
+		string GetInfoString();
+		#endregion
 	}
 }

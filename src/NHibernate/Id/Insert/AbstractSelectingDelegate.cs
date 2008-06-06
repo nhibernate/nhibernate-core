@@ -1,11 +1,9 @@
-using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
-using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
-using System.Data.Common;
 
 namespace NHibernate.Id.Insert
 {
@@ -46,7 +44,7 @@ namespace NHibernate.Id.Insert
 			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
-				                                 "could not insert: " + MessageHelper.InfoString(persister), insertSQL.Text);
+				                                 "could not insert: " + persister.GetInfoString(), insertSQL.Text);
 			}
 
 			SqlString selectSQL = SelectSQL;
@@ -75,8 +73,8 @@ namespace NHibernate.Id.Insert
 			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
-				                                 "could not retrieve generated id after insert: "
-				                                 + MessageHelper.InfoString(persister), insertSQL.Text);
+				                                 "could not retrieve generated id after insert: " + persister.GetInfoString(),
+				                                 insertSQL.Text);
 			}
 		}
 
@@ -84,7 +82,7 @@ namespace NHibernate.Id.Insert
 
 		/// <summary> Get the SQL statement to be used to retrieve generated key values. </summary>
 		/// <returns> The SQL command string </returns>
-		protected internal abstract SqlString SelectSQL { get;}
+		protected internal abstract SqlString SelectSQL { get; }
 
 		/// <summary> Extract the generated key value from the given result set. </summary>
 		/// <param name="session">The session </param>
@@ -97,9 +95,6 @@ namespace NHibernate.Id.Insert
 		/// <param name="session">The session </param>
 		/// <param name="ps">The prepared {@link #getSelectSQL SQL} command </param>
 		/// <param name="entity">The entity being saved. </param>
-		protected internal virtual void BindParameters(ISessionImplementor session, IDbCommand ps, object entity)
-		{
-		}
-
+		protected internal virtual void BindParameters(ISessionImplementor session, IDbCommand ps, object entity) {}
 	}
 }

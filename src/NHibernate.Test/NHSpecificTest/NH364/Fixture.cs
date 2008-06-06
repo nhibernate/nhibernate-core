@@ -1,4 +1,3 @@
-using System;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH364
@@ -52,7 +51,6 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 
 				inv = new Invoice();
 				inv.Number = "123";
-				InvoiceItem item = new InvoiceItem();
 				inv.Items.Add(new InvoiceItem(product1, 1));
 				inv.Items.Add(new InvoiceItem(product2, 1));
 
@@ -78,7 +76,7 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 			IdBagWithCompositeElementThatContainsAManyToOne_Setup();
 			using (ISession s = OpenSession())
 			{
-				Invoice invLoaded = s.Get(typeof(Invoice), inv.Id) as Invoice;
+				Invoice invLoaded = s.Get<Invoice>(inv.Id);
 				Assert.AreEqual(2, invLoaded.Items.Count, "Expected 2 things in the invoice");
 				s.Clear();
 			}
@@ -91,7 +89,7 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 			IdBagWithCompositeElementThatContainsAManyToOne_Setup();
 			using (ISession s = OpenSession())
 			{
-				Invoice invToUpdate = s.Get(typeof(Invoice), inv.Id) as Invoice;
+				Invoice invToUpdate = s.Get<Invoice>(inv.Id);
 				((InvoiceItem)invToUpdate.Items[0]).Quantity = 10; // update information of an element
 				invToUpdate.Items.Add(new InvoiceItem(product3, 1)); // update the idbag collection
 				s.Flush();
@@ -99,7 +97,7 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 			}
 			using (ISession s = OpenSession())
 			{
-				Invoice invLoaded = s.Get(typeof(Invoice), inv.Id) as Invoice;
+				Invoice invLoaded = s.Get<Invoice>(inv.Id);
 				Assert.AreEqual(10m, ((InvoiceItem)invLoaded.Items[0]).Quantity);
 				Assert.AreEqual(3, invLoaded.Items.Count, "The collection should have a new item");
 				s.Clear();
@@ -113,14 +111,14 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 			IdBagWithCompositeElementThatContainsAManyToOne_Setup();
 			using (ISession s = OpenSession())
 			{
-				Invoice invToUpdate = s.Get(typeof(Invoice), inv.Id) as Invoice;
+				Invoice invToUpdate = s.Get<Invoice>(inv.Id);
 				invToUpdate.Items.RemoveAt(0);
 				s.Flush();
 				s.Clear();
 			}
 			using (ISession s = OpenSession())
 			{
-				Invoice invLoaded = s.Get(typeof(Invoice), inv.Id) as Invoice;
+				Invoice invLoaded = s.Get<Invoice>(inv.Id);
 				Assert.AreEqual(1, invLoaded.Items.Count, "The collection should only have one item");
 				s.Clear();
 			}

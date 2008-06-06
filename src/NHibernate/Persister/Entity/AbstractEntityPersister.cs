@@ -4014,6 +4014,10 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
+		public string GetInfoString()
+		{
+			return MessageHelper.InfoString(this);
+		}
 		#endregion
 	}
 }
