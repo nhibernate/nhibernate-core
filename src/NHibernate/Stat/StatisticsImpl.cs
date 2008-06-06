@@ -242,7 +242,10 @@ namespace NHibernate.Stat
 				}
 				else
 				{
-					return ArrayHelper.ToStringArray(sessionFactory.GetAllCollectionMetadata().Keys);
+					ICollection<string> kc = sessionFactory.GetAllCollectionMetadata().Keys;
+					string[] result = new string[kc.Count];
+					kc.CopyTo(result, 0);
+					return result;
 				}
 			}
 		}

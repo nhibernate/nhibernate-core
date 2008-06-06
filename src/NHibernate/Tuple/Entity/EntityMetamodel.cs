@@ -94,7 +94,7 @@ namespace NHibernate.Tuple.Entity
 			rootTypeAssemblyQualifiedName = rootType.AssemblyQualifiedName;
 
 			identifierProperty =
-				PropertyFactory.BuildIdentifierProperty(persistentClass, sessionFactory.GetIdentifierGenerator(rootType));
+				PropertyFactory.BuildIdentifierProperty(persistentClass, sessionFactory.GetIdentifierGenerator(rootName));
 
 			versioned = persistentClass.IsVersioned;
 

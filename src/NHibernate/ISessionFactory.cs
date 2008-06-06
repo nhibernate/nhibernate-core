@@ -98,7 +98,7 @@ namespace NHibernate
 		/// to metadata object
 		/// </summary>
 		/// <returns></returns>
-		IDictionary GetAllCollectionMetadata();
+		IDictionary<string, ICollectionMetadata> GetAllCollectionMetadata();
 
 		/// <summary>
 		/// Destroy this <c>SessionFactory</c> and release all resources 

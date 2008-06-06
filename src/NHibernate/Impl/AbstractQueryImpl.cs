@@ -210,7 +210,7 @@ namespace NHibernate.Impl
 			{
 				try
 				{
-					session.Factory.GetEntityPersister(clazz);
+					session.Factory.GetEntityPersister(clazz.FullName);
 				}
 				catch (MappingException)
 				{

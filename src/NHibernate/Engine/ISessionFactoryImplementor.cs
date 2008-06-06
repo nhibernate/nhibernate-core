@@ -1,4 +1,7 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.Data;
+using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Context;
 using NHibernate.Dialect.Function;
@@ -13,9 +16,6 @@ using NHibernate.Proxy;
 using NHibernate.Stat;
 using NHibernate.Transaction;
 using NHibernate.Type;
-using System.Collections;
-using Iesi.Collections;
-using System.Collections.Generic;
 
 namespace NHibernate.Engine
 {
@@ -147,7 +147,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Get the identifier generator for the hierarchy
 		/// </summary>
-		IIdentifierGenerator GetIdentifierGenerator(System.Type rootClass);
+		IIdentifierGenerator GetIdentifierGenerator(string rootEntityName);
 
 		ResultSetMappingDefinition GetResultSetMapping(string resultSetRef);
 
@@ -207,7 +207,7 @@ namespace NHibernate.Engine
 		/// <returns> 
 		/// Set of all the collection roles in which the given entityName participates.
 		/// </returns>
-		ISet GetCollectionRolesByEntityParticipant(string entityName);
+		ISet<string> GetCollectionRolesByEntityParticipant(string entityName);
 
 		/// <summary> The cache of table update timestamps</summary>
 		UpdateTimestampsCache UpdateTimestampsCache { get;}
