@@ -1063,6 +1063,7 @@
     <Compile Include="Util\SimpleMRUCache.cs" />
     <Compile Include="Util\SingletonEnumerable.cs" />
     <Compile Include="Util\SoftLimitMRUCache.cs" />
+    <Compile Include="Util\ThreadSafeDictionary.cs" />
     <Compile Include="Util\TypeNameParser.cs" />
     <Compile Include="Util\UnmodifiableDictionary.cs" />
     <Compile Include="Util\WeakHashtable.cs">
