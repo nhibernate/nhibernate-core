@@ -73,11 +73,18 @@ namespace NHibernate
 		IDatabinder OpenDatabinder();
 
 		/// <summary>
-		/// Get the <c>ClassMetadata</c> associated with the given entity class
+		/// Get the <see cref="IClassMetadata"/> associated with the given entity class
 		/// </summary>
-		/// <param name="persistentType"></param>
-		/// <returns></returns>
-		IClassMetadata GetClassMetadata(System.Type persistentType);
+		/// <param name="persistentClass">the given entity type.</param>
+		/// <returns>The class metadata or <see langword="null"/> if not found.</returns>
+		/// <seealso cref="IClassMetadata"/>
+		IClassMetadata GetClassMetadata(System.Type persistentClass);
+
+		/// <summary> Get the <see cref="IClassMetadata"/> associated with the given entity name </summary>
+		/// <param name="entityName">the given entity name.</param>
+		/// <returns>The class metadata or <see langword="null"/> if not found.</returns>
+		/// <seealso cref="IClassMetadata"/>
+		IClassMetadata GetClassMetadata(string entityName);
 
 		/// <summary>
 		/// Get the <c>CollectionMetadata</c> associated with the named collection role
@@ -86,12 +93,12 @@ namespace NHibernate
 		/// <returns></returns>
 		ICollectionMetadata GetCollectionMetadata(string roleName);
 
-		/// <summary>
-		/// Get all <c>ClassMetadata</c> as a <c>IDictionary</c> from <c>Type</c>
+		/// <summary> 
+		/// Get all <see cref="IClassMetadata"/> as a <see cref="IDictionary"/> from entityname <see langword="string"/>
 		/// to metadata object
 		/// </summary>
-		/// <returns></returns>
-		IDictionary GetAllClassMetadata();
+		/// <returns> A dictionary from <see langword="string"/> an entity name to <see cref="IClassMetadata"/> </returns>
+		IDictionary<string, IClassMetadata> GetAllClassMetadata();
 
 		/// <summary>
 		/// Get all <c>CollectionMetadata</c> as a <c>IDictionary</c> from role name

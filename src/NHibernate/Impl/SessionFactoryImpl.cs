@@ -93,7 +93,7 @@ namespace NHibernate.Impl
 
 		[NonSerialized] private readonly IDictionary classPersistersByName;
 
-		[NonSerialized] private readonly IDictionary classMetadata;
+		[NonSerialized] private readonly IDictionary<string, IClassMetadata> classMetadata;
 
 		[NonSerialized] private readonly Dictionary<string, ICollectionPersister> collectionPersisters;
 
@@ -190,7 +190,7 @@ namespace NHibernate.Impl
 			IDictionary caches = new Hashtable();
 			entityPersisters = new Hashtable();
 			classPersistersByName = new Hashtable();
-			IDictionary classMeta = new Hashtable();
+			Dictionary<string, IClassMetadata> classMeta = new Dictionary<string, IClassMetadata>();
 
 			foreach (PersistentClass model in cfg.ClassMappings)
 			{
@@ -220,9 +220,9 @@ namespace NHibernate.Impl
 				// Imports provide the ability to jump from the Classname to the AssemblyQualifiedName.
 				classPersistersByName[model.MappedClass.AssemblyQualifiedName] = cp;
 
-				classMeta[model.MappedClass] = cp.ClassMetadata;
+				classMeta[model.EntityName] = cp.ClassMetadata;
 			}
-			classMetadata = new Hashtable(classMeta);
+			classMetadata = new UnmodifiableDictionary<string, IClassMetadata>(classMeta);
 			Dictionary<string, ISet<string>> tmpEntityToCollectionRoleMap = new Dictionary<string, ISet<string>>();
 			collectionPersisters = new Dictionary<string, ICollectionPersister>();
 			foreach (Mapping.Collection map in cfg.CollectionMappings)
@@ -926,7 +926,14 @@ namespace NHibernate.Impl
 
 		public IClassMetadata GetClassMetadata(System.Type persistentClass)
 		{
-			return GetEntityPersister(persistentClass).ClassMetadata;
+			return GetClassMetadata(persistentClass.FullName);
+		}
+
+		public IClassMetadata GetClassMetadata(string entityName)
+		{
+			IClassMetadata result;
+			classMetadata.TryGetValue(entityName, out result);
+			return result;
 		}
 
 		public ICollectionMetadata GetCollectionMetadata(string roleName)
@@ -1012,7 +1019,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary></summary>
-		public IDictionary GetAllClassMetadata()
+		public IDictionary<string, IClassMetadata> GetAllClassMetadata()
 		{
 			return classMetadata;
 		}

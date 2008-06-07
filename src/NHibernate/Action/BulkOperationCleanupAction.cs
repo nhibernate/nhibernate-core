@@ -1,8 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
+using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Action
@@ -51,10 +51,10 @@ namespace NHibernate.Action
 
 			ISet<string> tmpSpaces = new HashedSet<string>(querySpaces);
 			ISessionFactoryImplementor factory = session.Factory;
-			IDictionary acmd = factory.GetAllClassMetadata();
-			foreach (DictionaryEntry entry in acmd)
+			IDictionary<string, IClassMetadata> acmd = factory.GetAllClassMetadata();
+			foreach (KeyValuePair<string, IClassMetadata> entry in acmd)
 			{
-				string entityName = ((System.Type) entry.Key).FullName;
+				string entityName = entry.Key;
 				IEntityPersister persister = factory.GetEntityPersister(entityName);
 				string[] entitySpaces = persister.QuerySpaces;
 
