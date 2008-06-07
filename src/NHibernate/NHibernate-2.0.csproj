@@ -1064,6 +1064,7 @@
     <Compile Include="Util\SingletonEnumerable.cs" />
     <Compile Include="Util\SoftLimitMRUCache.cs" />
     <Compile Include="Util\TypeNameParser.cs" />
+    <Compile Include="Util\UnmodifiableDictionary.cs" />
     <Compile Include="Util\WeakHashtable.cs">
       <SubType>Code</SubType>
     </Compile>
