@@ -140,6 +140,7 @@ namespace NHibernate.Impl
 		[NonSerialized] private readonly IEntityNotFoundDelegate entityNotFoundDelegate;
 
 		[NonSerialized] private StatisticsImpl statistics;
+		[NonSerialized] private bool isClosed = false;
 
 		private QueryPlanCache queryPlanCache;
 
@@ -774,30 +775,6 @@ namespace NHibernate.Impl
 			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public IDatabinder OpenDatabinder()
-		{
-			throw new NotImplementedException("Have not coded Databinder yet.");
-			//if( templates == null )
-			//{
-			//	throw new HibernateException(
-			//		"No output stylesheet configured. Use the property output_stylesheet and ensure xalan.jar is in classpath"
-			//	);
-			//}
-			//try
-			//{
-			//	return new XMLDatabinder( this, templates.NewTransformer() );
-			//}
-			//catch( Exception e )
-			//{
-			//	log.Error( "Could not open Databinder", e );
-			//	throw new HibernateException( "Could not open Databinder", e );
-			//}
-		}
-
 		/// <summary></summary>
 		public HibernateDialect Dialect
 		{
@@ -1031,7 +1008,6 @@ namespace NHibernate.Impl
 		}
 
 		private bool disposed;
-		private readonly IDictionary items = new Hashtable();
 
 		public void Dispose()
 		{
@@ -1054,6 +1030,8 @@ namespace NHibernate.Impl
 		public void Close()
 		{
 			log.Info("Closing");
+
+			isClosed = true;
 
 			foreach (IEntityPersister p in entityPersisters.Values)
 			{
@@ -1102,7 +1080,7 @@ namespace NHibernate.Impl
 
 		public void Evict(System.Type persistentClass, object id)
 		{
-			IEntityPersister p = GetEntityPersister(persistentClass);
+			IEntityPersister p = GetEntityPersister(persistentClass.FullName);
 			if (p.HasCache)
 			{
 				if (log.IsDebugEnabled)
@@ -1116,7 +1094,7 @@ namespace NHibernate.Impl
 
 		public void Evict(System.Type persistentClass)
 		{
-			IEntityPersister p = GetEntityPersister(persistentClass);
+			IEntityPersister p = GetEntityPersister(persistentClass.FullName);
 			if (p.HasCache)
 			{
 				if (log.IsDebugEnabled)
@@ -1137,6 +1115,20 @@ namespace NHibernate.Impl
 					log.Debug("evicting second-level cache: " + p.EntityName);
 				}
 				p.Cache.Clear();
+			}
+		}
+
+		public void EvictEntity(string entityName, object id)
+		{
+			IEntityPersister p = GetEntityPersister(entityName);
+			if (p.HasCache)
+			{
+				if (log.IsDebugEnabled)
+				{
+					log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id, this));
+				}
+				CacheKey cacheKey = new CacheKey(id, p.IdentifierType, p.RootEntityName, EntityMode.Poco, this);
+				p.Cache.Remove(cacheKey);
 			}
 		}
 
@@ -1182,6 +1174,11 @@ namespace NHibernate.Impl
 		public IConnectionProvider ConnectionProvider
 		{
 			get { return settings.ConnectionProvider; }
+		}
+
+		public bool IsClosed
+		{
+			get { return isClosed; }
 		}
 
 		public UpdateTimestampsCache UpdateTimestampsCache
@@ -1376,11 +1373,6 @@ namespace NHibernate.Impl
 		public Settings Settings
 		{
 			get { return settings; }
-		}
-
-		public IDictionary Items
-		{
-			get { return items; }
 		}
 
 		public ISession GetCurrentSession()

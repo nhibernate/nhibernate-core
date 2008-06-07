@@ -41,7 +41,7 @@ namespace NHibernate.Test.ExpressionTest
 
 			factory = cfg.BuildSessionFactory();
 			factoryImpl = (ISessionFactoryImplementor) factory;
-			dialect = factory.Dialect;
+			dialect = factoryImpl.Dialect;
 		}
 
 		/// <summary>

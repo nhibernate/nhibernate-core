@@ -22,7 +22,7 @@ namespace NHibernate.Test.SqlCommandTest
 			ISessionFactory factory = cfg.BuildSessionFactory();
 
 			ISessionFactoryImplementor factoryImpl = (ISessionFactoryImplementor) factory;
-			SqlUpdateBuilder update = new SqlUpdateBuilder(factory.Dialect, factoryImpl);
+			SqlUpdateBuilder update = new SqlUpdateBuilder(factoryImpl.Dialect, factoryImpl);
 
 			update.SetTableName("test_update_builder");
 

@@ -1,6 +1,7 @@
 using System.Collections;
 using NHibernate.Cache;
 using NHibernate.Cfg;
+using NHibernate.Engine;
 using NUnit.Framework;
 
 namespace NHibernate.Test.SecondLevelCacheTests
@@ -25,7 +26,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		{
 			cfg.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
 			cfg.Properties[Environment.UseQueryCache] = "true";
-			sessions = cfg.BuildSessionFactory();
+			sessions = (ISessionFactoryImplementor)cfg.BuildSessionFactory();
 
 			using (ISession session = OpenSession())
 			using(ITransaction tx = session.BeginTransaction())

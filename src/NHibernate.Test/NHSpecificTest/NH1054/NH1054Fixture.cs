@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Cfg;
+using NHibernate.Engine;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1054
@@ -14,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1054
 			configuration.Properties[Cfg.Environment.TransactionStrategy] =
 				"NHibernate.Test.NHSpecificTest.NH1054.DummyTransactionFactory, " + this.GetType().Assembly.FullName;
 
-			ISessionFactory sessionFactory = configuration.BuildSessionFactory();
+			ISessionFactoryImplementor sessionFactory = (ISessionFactoryImplementor)configuration.BuildSessionFactory();
 
 			Assert.IsInstanceOfType(typeof(DummyTransactionFactory), 
 				sessionFactory.Settings.TransactionFactory);
@@ -24,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1054
 		public void AdoNetTransactionFactoryIsDefaultTransactionFactory()
 		{
 			Configuration configuration = new Configuration();
-			ISessionFactory sessionFactory = configuration.BuildSessionFactory();
+			ISessionFactoryImplementor sessionFactory = (ISessionFactoryImplementor)configuration.BuildSessionFactory();
 
 			Assert.IsInstanceOfType(typeof(NHibernate.Transaction.AdoNetTransactionFactory), 
 				sessionFactory.Settings.TransactionFactory);

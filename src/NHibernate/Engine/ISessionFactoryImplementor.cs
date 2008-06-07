@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using Iesi.Collections.Generic;
 using NHibernate.Cache;
+using NHibernate.Cfg;
+using NHibernate.Connection;
 using NHibernate.Context;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine.Query;
@@ -237,5 +239,17 @@ namespace NHibernate.Engine
 		EventListeners EventListeners { get; }
 
 		NamedSQLQueryDefinition GetNamedSQLQuery(string queryName);
+
+		Settings Settings { get; }
+
+		/// <summary>
+		/// Get the SQL <see cref="NHibernate.Dialect.Dialect"/>.
+		/// </summary>
+		Dialect.Dialect Dialect { get; }
+
+		/// <summary>
+		/// Get the <see cref="IConnectionProvider" /> used.
+		/// </summary>
+		IConnectionProvider ConnectionProvider { get; }
 	}
 }

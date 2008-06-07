@@ -1,12 +1,11 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
-using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Engine;
 using NHibernate.Metadata;
 using NHibernate.Stat;
-using System.Collections.Generic;
 
 namespace NHibernate
 {
@@ -65,12 +64,6 @@ namespace NHibernate
 		/// </summary>
 		/// <returns></returns>
 		ISession OpenSession();
-
-		/// <summary>
-		/// Create a new databinder.
-		/// </summary>
-		/// <returns></returns>
-		IDatabinder OpenDatabinder();
 
 		/// <summary>
 		/// Get the <see cref="IClassMetadata"/> associated with the given entity class
@@ -139,6 +132,13 @@ namespace NHibernate
 		/// </summary>
 		void EvictEntity(string entityName);
 
+		/// <summary> 
+		/// Evict an entry from the second-level  cache. This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy. Use with care.
+		/// </summary>
+		void EvictEntity(string entityName, object id);
+
 		/// <summary>
 		/// Evict all entries from the process-level cache.  This method occurs outside
 		/// of any transaction; it performs an immediate "hard" remove, so does not respect
@@ -167,21 +167,11 @@ namespace NHibernate
 		/// <param name="cacheRegion"></param>
 		void EvictQueries(string cacheRegion);
 
-		/// <summary>
-		/// Get the <see cref="IConnectionProvider" /> used.
-		/// </summary>
-		IConnectionProvider ConnectionProvider { get; }
+		/// <summary> Get a new stateless session.</summary>
+		IStatelessSession OpenStatelessSession();
 
-		/// <summary>
-		/// Get the SQL <c>Dialect</c>
-		/// </summary>
-		Dialect.Dialect Dialect { get; }
-
-		/// <summary>
-		/// Obtain a set of the names of all filters defined on this SessionFactory.
-		/// </summary>
-		/// <return>The set of filter names.</return>
-		ICollection<string> DefinedFilterNames { get; }
+		/// <summary> Get a new stateless session for the given ADO.NET connection.</summary>
+		IStatelessSession OpenStatelessSession(IDbConnection connection);
 
 		/// <summary>
 		/// Obtain the definition of a filter by name.
@@ -189,16 +179,6 @@ namespace NHibernate
 		/// <param name="filterName">The name of the filter for which to obtain the definition.</param>
 		/// <return>The filter definition.</return>
 		FilterDefinition GetFilterDefinition(string filterName);
-
-		Settings Settings { get; }
-
-		/// <summary>
-		/// This collections allows external libraries
-		/// to add their own configuration to the NHibernate session factory.
-		/// This is needed in such cases where the library is tightly coupled to NHibernate, such
-		/// as the case of NHibernate Search
-		/// </summary>
-		IDictionary Items { get; }
 
 		/// <summary>
 		/// Obtains the current session.
@@ -213,13 +193,16 @@ namespace NHibernate
 		/// <exception cref="HibernateException">Indicates an issue locating a suitable current session.</exception>
 		ISession GetCurrentSession();
 
-		/// <summary> Get a new stateless session.</summary>
-		IStatelessSession OpenStatelessSession();
-
-		/// <summary> Get a new stateless session for the given ADO.NET connection.</summary>
-		IStatelessSession OpenStatelessSession(IDbConnection connection);
-
 		/// <summary> Get the statistics for this session factory</summary>
 		IStatistics Statistics { get;}
+
+		/// <summary> Was this <see cref="ISessionFactory"/> already closed?</summary>
+		bool IsClosed { get;}
+
+		/// <summary>
+		/// Obtain a set of the names of all filters defined on this SessionFactory.
+		/// </summary>
+		/// <return>The set of filter names.</return>
+		ICollection<string> DefinedFilterNames { get; }
 	}
 }

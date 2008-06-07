@@ -18,7 +18,7 @@ namespace NHibernate.Test
 	{
 		private const bool OutputDdl = false;
 		protected Configuration cfg;
-		protected ISessionFactory sessions;
+		protected ISessionFactoryImplementor sessions;
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(TestCase));
 
@@ -207,7 +207,7 @@ namespace NHibernate.Test
 
 		protected virtual void BuildSessionFactory()
 		{
-			sessions = cfg.BuildSessionFactory();
+			sessions = (ISessionFactoryImplementor)cfg.BuildSessionFactory();
 			connectionProvider = sessions.ConnectionProvider as DebugConnectionProvider;
 		}
 

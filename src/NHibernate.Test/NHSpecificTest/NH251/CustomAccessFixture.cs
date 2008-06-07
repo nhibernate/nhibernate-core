@@ -1,5 +1,6 @@
 using System.Reflection;
 using NHibernate.Cfg;
+using NHibernate.Engine;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH251
@@ -14,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH251
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH251.CustomAccessDO.hbm.xml",
 			                Assembly.GetExecutingAssembly());
 
-			ISessionFactory factory = cfg.BuildSessionFactory();
+			ISessionFactoryImplementor factory = (ISessionFactoryImplementor)cfg.BuildSessionFactory();
 			cfg.GenerateSchemaCreationScript(factory.Dialect);
 		}
 	}
