@@ -10,6 +10,7 @@ namespace NHibernate.Test
 		private readonly ExecuteAction[] actions;
 		private readonly Random rnd = new Random();
 		private bool running;
+		private int timeout = 1000;
 
 		public MultiThreadRunner(int numThreads, ExecuteAction[] actions)
 		{
@@ -30,6 +31,12 @@ namespace NHibernate.Test
 			this.actions = actions;
 		}
 
+		public int EndTimeout
+		{
+			get { return timeout; }
+			set { timeout = value; }
+		}
+
 		public void Run(T subjectInstance)
 		{
 			running = true;
@@ -43,7 +50,7 @@ namespace NHibernate.Test
 					Thread.Sleep(30);
 			}
 
-			Thread.Sleep(1000);
+			Thread.Sleep(timeout);
 
 			// Tell the threads to shut down, then wait until they all
 			// finish.

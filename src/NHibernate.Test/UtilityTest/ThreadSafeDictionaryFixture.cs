@@ -10,6 +10,11 @@ namespace NHibernate.Test.UtilityTest
 	[TestFixture]
 	public class ThreadSafeDictionaryFixture
 	{
+		public ThreadSafeDictionaryFixture()
+		{
+			log4net.Config.XmlConfigurator.Configure();
+		}
+
 		private static readonly ILog log = LogManager.GetLogger(typeof(ThreadSafeDictionaryFixture));
 
 		private readonly Random rnd = new Random();
@@ -96,6 +101,7 @@ namespace NHibernate.Test.UtilityTest
 					};
 			MultiThreadRunner<IDictionary<int, int>> mtr = new MultiThreadRunner<IDictionary<int, int>>(20, actions);
 			IDictionary<int, int> wrapper = new ThreadSafeDictionary<int, int>(new Dictionary<int, int>());
+			mtr.EndTimeout = 2000;
 			mtr.Run(wrapper);
 			log.DebugFormat("{0} reads, {1} writes -- elements {2}", read, write, wrapper.Count);
 		}
