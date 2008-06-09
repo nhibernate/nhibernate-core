@@ -98,7 +98,7 @@ namespace NHibernate.Hql
 						System.Type clazz = SessionFactoryHelper.GetImportedClass(factory, token);
 						if (clazz != null)
 						{
-							string[] implementors = factory.GetImplementors(clazz.AssemblyQualifiedName);
+							string[] implementors = factory.GetImplementors(clazz.FullName);
 							string placeholder = "$clazz" + count++ + "$";
 
 							if (implementors != null)

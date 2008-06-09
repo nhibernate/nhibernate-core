@@ -179,7 +179,7 @@ namespace NHibernate.Event.Default
 
 			object entity = @event.Entity;
 
-			IEntityPersister persister = @event.Session.GetEntityPersister(entity);
+			IEntityPersister persister = @event.Session.GetEntityPersister(@event.EntityName, entity);
 
 			@event.RequestedId = GetUpdateId(entity, persister, @event.RequestedId, @event.Session.EntityMode);
 

@@ -197,7 +197,7 @@ namespace NHibernate.Persister.Collection
 			isPrimitiveArray = collection.IsPrimitiveArray;
 			isArray = collection.IsArray;
 			subselectLoadable = collection.IsSubselectLoadable;
-			qualifiedTableName = table.GetQualifiedName(dialect, factory.DefaultSchema);
+			qualifiedTableName = table.GetQualifiedName(dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
 
 			int spacesSize = 1 + collection.SynchronizedTables.Count;
 			spaces = new string[spacesSize];

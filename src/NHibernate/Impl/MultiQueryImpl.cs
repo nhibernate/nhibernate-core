@@ -314,7 +314,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		public IList List()
 		{
-			bool cacheable = session.Factory.IsQueryCacheEnabled && isCacheable;
+			bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
 			combinedParameters = CreateCombinedQueryParameters();
 
 			if (log.IsDebugEnabled)

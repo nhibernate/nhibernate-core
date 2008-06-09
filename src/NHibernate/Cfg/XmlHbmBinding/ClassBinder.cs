@@ -149,17 +149,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			model.DynamicInsert = (insertNode == null) ? false : "true".Equals(insertNode.Value);
 
 			// IMPORT
-
-			// we automatically want to add an import of the Assembly Qualified Name (includes version, 
-			// culture, public-key) to the className supplied in the hbm.xml file.  The most common use-case
-			// will have it contain the "FullClassname, AssemblyName", it might contain version, culture, 
-			// public key, etc...) but should not assume it does.
-			mappings.AddImport(model.MappedClass.AssemblyQualifiedName, StringHelper.GetFullClassname(className));
-
-			// if we are supposed to auto-import the Class then add an import to get from the Classname
-			// to the Assembly Qualified Class Name
-			if (mappings.IsAutoImport)
-				mappings.AddImport(model.MappedClass.AssemblyQualifiedName, StringHelper.GetClassname(className));
+			// For entities, the EntityName is the key to find a persister
+			// NH Different behavior: we are using the association between EntityName and its more certain implementation (AssemblyQualifiedName)
+			mappings.AddImport(model.MappedClass.AssemblyQualifiedName, model.EntityName);
+			if (mappings.IsAutoImport && model.EntityName.IndexOf('.') > 0)
+				mappings.AddImport(model.MappedClass.AssemblyQualifiedName, StringHelper.Unqualify(model.EntityName));
 
 			// BATCH SIZE
 			XmlAttribute batchNode = node.Attributes["batch-size"];

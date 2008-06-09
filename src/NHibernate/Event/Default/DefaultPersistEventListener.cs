@@ -83,7 +83,7 @@ namespace NHibernate.Event.Default
 
 			//TODO: check that entry.getIdentifier().equals(requestedId)
 			object entity = source.PersistenceContext.Unproxy(@event.Entity);
-			IEntityPersister persister = source.GetEntityPersister(entity);
+			IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
 
 			object tempObject;
 			tempObject = createCache[entity];

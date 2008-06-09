@@ -82,7 +82,7 @@ namespace NHibernate.Event.Default
 		/// <returns> The id used to save the entity. </returns>
 		protected virtual object SaveWithRequestedId(object entity, object requestedId, string entityName, object anything, IEventSource source)
 		{
-			return PerformSave(entity, requestedId, source.GetEntityPersister(entity), false, anything, source, true);
+			return PerformSave(entity, requestedId, source.GetEntityPersister(entityName, entity), false, anything, source, true);
 		}
 
 		/// <summary> 
@@ -104,7 +104,7 @@ namespace NHibernate.Event.Default
 		/// </returns>
 		protected virtual object SaveWithGeneratedId(object entity, string entityName, object anything, IEventSource source, bool requiresImmediateIdAccess)
 		{
-			IEntityPersister persister = source.GetEntityPersister(entity);
+			IEntityPersister persister = source.GetEntityPersister(entityName, entity);
 			object generatedId = persister.IdentifierGenerator.Generate(source, entity);
 			if (generatedId == null)
 			{

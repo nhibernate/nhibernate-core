@@ -118,7 +118,7 @@ namespace NHibernate.Transaction
 			{
 				if (isolationLevel == IsolationLevel.Unspecified)
 				{
-					isolationLevel = session.Factory.Isolation;
+					isolationLevel = session.Factory.Settings.IsolationLevel;
 				}
 
 				if (isolationLevel == IsolationLevel.Unspecified)

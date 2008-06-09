@@ -386,7 +386,7 @@ namespace NHibernate.Persister.Entity
 						buf.Append(StringHelper.CommaSpace);
 					}
 					buf.Append(clazz.SubclassId).Append(" as clazz_");
-					buf.Append(" from ").Append(table.GetQualifiedName(dialect, Factory.DefaultSchema));
+					buf.Append(" from ").Append(table.GetQualifiedName(dialect, settings.DefaultCatalogName, settings.DefaultSchemaName));
 					buf.Append(" union ");
 					if (dialect.SupportsUnionAll)
 						buf.Append("all ");

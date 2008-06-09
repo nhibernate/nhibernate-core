@@ -23,6 +23,7 @@ namespace NHibernate.Id
 	public class ForeignGenerator : IIdentifierGenerator, IConfigurable
 	{
 		private string propertyName;
+		private string entityName;
 
 		#region IIdentifierGenerator Members
 
@@ -87,7 +88,8 @@ namespace NHibernate.Id
 		/// </exception>
 		public void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect d)
 		{
-			propertyName = parms["property"];
+			parms.TryGetValue(IdGeneratorParmsNames.EntityName, out entityName);
+			parms.TryGetValue("property", out propertyName);
 			if (propertyName == null || propertyName.Length == 0)
 			{
 				throw new MappingException("param named \"property\" is required for foreign id generation strategy");

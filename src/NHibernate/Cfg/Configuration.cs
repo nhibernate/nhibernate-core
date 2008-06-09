@@ -1408,7 +1408,7 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Get the query language imports
+		/// Get the query language imports (entityName/className -> AssemblyQualifiedName)
 		/// </summary>
 		/// <returns></returns>
 		public IDictionary<string, string> Imports

@@ -60,7 +60,7 @@ namespace NHibernate.Impl
 
 		public IList List()
 		{
-			bool cacheable = session.Factory.IsQueryCacheEnabled && isCacheable;
+			bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
 
 			CreateCriteriaLoaders();
 			CombineCriteriaQueries();

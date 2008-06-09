@@ -68,12 +68,10 @@ namespace NHibernate.Impl
 		public abstract IEnumerable EnumerableFilter(object collection, string filter, QueryParameters parameters);
 		public abstract IEnumerable<T> EnumerableFilter<T>(object collection, string filter, QueryParameters parameters);
 		public abstract IEntityPersister GetEntityPersister(string entityName, object obj);
-		public abstract IEntityPersister GetEntityPersister(object obj);
 		public abstract void AfterTransactionBegin(ITransaction tx);
 		public abstract void BeforeTransactionCompletion(ITransaction tx);
 		public abstract void AfterTransactionCompletion(bool successful, ITransaction tx);
 		public abstract object GetContextEntityIdentifier(object obj);
-		public abstract bool IsSaved(object obj);
 		public abstract object Instantiate(string clazz, object id);
 		public abstract IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters);
 		public abstract void List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results);

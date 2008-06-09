@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text;
 using Iesi.Collections.Generic;
@@ -17,7 +15,6 @@ using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
 using NHibernate.Exceptions;
-using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
@@ -89,9 +86,7 @@ namespace NHibernate.Impl
 		private readonly string name;
 		private readonly string uuid;
 
-		[NonSerialized] private readonly IDictionary entityPersisters;
-
-		[NonSerialized] private readonly IDictionary classPersistersByName;
+		[NonSerialized] private readonly IDictionary<string, IEntityPersister> entityPersisters;
 
 		[NonSerialized] private readonly IDictionary<string, IClassMetadata> classMetadata;
 
@@ -113,10 +108,6 @@ namespace NHibernate.Impl
 
 		[NonSerialized] private readonly Dictionary<string, string> imports;
 
-		// templates are related to XmlDatabinder - nothing like that yet 
-		// in NHibernate.
-		//[NonSerialized] private Templates templates;
-
 		[NonSerialized] private readonly IInterceptor interceptor;
 
 		[NonSerialized] private readonly Settings settings;
@@ -129,9 +120,10 @@ namespace NHibernate.Impl
 
 		[NonSerialized] private readonly UpdateTimestampsCache updateTimestampsCache;
 
-		[NonSerialized] private readonly IDictionary queryCaches;
+		[NonSerialized] private readonly IDictionary<string, IQueryCache> queryCaches;
 
-		[NonSerialized] private readonly IDictionary allCacheRegions = new Hashtable();
+		[NonSerialized] private readonly ThreadSafeDictionary<string, ICache> allCacheRegions =
+			new ThreadSafeDictionary<string, ICache>(new Dictionary<string, ICache>());
 
 		[NonSerialized] private readonly EventListeners eventListeners;
 
@@ -188,16 +180,15 @@ namespace NHibernate.Impl
 
 			// Persisters:
 
-			IDictionary caches = new Hashtable();
-			entityPersisters = new Hashtable();
-			classPersistersByName = new Hashtable();
+			Dictionary<string, ICacheConcurrencyStrategy> caches = new Dictionary<string, ICacheConcurrencyStrategy>();
+			entityPersisters = new Dictionary<string, IEntityPersister>();
 			Dictionary<string, IClassMetadata> classMeta = new Dictionary<string, IClassMetadata>();
 
 			foreach (PersistentClass model in cfg.ClassMappings)
 			{
 				string cacheRegion = model.RootClazz.CacheRegionName;
-				ICacheConcurrencyStrategy cache = (ICacheConcurrencyStrategy) caches[cacheRegion];
-				if (cache == null)
+				ICacheConcurrencyStrategy cache;
+				if (!caches.TryGetValue(cacheRegion, out cache))
 				{
 					cache =
 						CacheFactory.CreateCache(model.CacheConcurrencyStrategy, cacheRegion, model.IsMutable, settings, properties);
@@ -208,19 +199,7 @@ namespace NHibernate.Impl
 					}
 				}
 				IEntityPersister cp = PersisterFactory.CreateClassPersister(model, cache, this, mapping);
-				entityPersisters[model.MappedClass] = cp;
-
-				// Adds the "Namespace.ClassName" (FullClassname) as a lookup to get to the Persiter.
-				// Most of the internals of NHibernate use this method to get to the Persister since
-				// Model.Name is used in so many places.  It would be nice to fix it up to be Model.TypeName
-				// instead of just FullClassname
-				classPersistersByName[model.EntityName] = cp;
-
-				// Add in the AssemblyQualifiedName (includes version) as a lookup to get to the Persister.  
-				// In HQL the Imports are used to get from the Classname to the Persister.  The
-				// Imports provide the ability to jump from the Classname to the AssemblyQualifiedName.
-				classPersistersByName[model.MappedClass.AssemblyQualifiedName] = cp;
-
+				entityPersisters[model.EntityName] = cp;
 				classMeta[model.EntityName] = cp.ClassMetadata;
 			}
 			classMetadata = new UnmodifiableDictionary<string, IClassMetadata>(classMeta);
@@ -270,9 +249,6 @@ namespace NHibernate.Impl
 			}
 
 			collectionRolesByEntityParticipant = new Dictionary<string, ISet<string>>(tmpEntityToCollectionRoleMap);
-			//TODO:
-			// For databinding:
-			//templates = XMLDatabinder.GetOutputStyleSheetTemplates( properties );
 
 			// serialization info
 			name = settings.SessionFactoryName;
@@ -286,9 +262,6 @@ namespace NHibernate.Impl
 			}
 
 			SessionFactoryObjectFactory.AddInstance(uuid, name, this, properties);
-
-			// Named queries:
-			// TODO: precompile and cache named queries
 
 			namedQueries = new Dictionary<string, NamedQueryDefinition>(cfg.NamedQueries);
 			namedSqlQueries = new Dictionary<string, NamedSQLQueryDefinition>(cfg.NamedSQLQueries);
@@ -335,7 +308,7 @@ namespace NHibernate.Impl
 			{
 				updateTimestampsCache = new UpdateTimestampsCache(settings, properties);
 				queryCache = settings.QueryCacheFactory.GetQueryCache(null, updateTimestampsCache, settings, properties);
-				queryCaches = Hashtable.Synchronized(new Hashtable());
+				queryCaches = new ThreadSafeDictionary<string, IQueryCache>(new Dictionary<string, IQueryCache>());
 			}
 			else
 			{
@@ -446,9 +419,6 @@ namespace NHibernate.Impl
 
 		[NonSerialized] private int strongRefIndex = 0;
 
-		// both keys and values may be soft since value keeps a hard ref to the key (and there is a hard ref to MRU values)
-		[NonSerialized] private readonly IDictionary softQueryCache = new WeakHashtable();
-
 		[NonSerialized] private readonly ICurrentSessionContext currentSessionContext;
 
 		/// <summary>
@@ -527,153 +497,6 @@ namespace NHibernate.Impl
 			#endregion
 		}
 
-		/// <summary>
-		/// A class that can be used as a Key in a Hashtable for 
-		/// a Query Cache.
-		/// </summary>
-		private class FilterCacheKey
-		{
-			private readonly string _role;
-			private readonly string _query;
-			private readonly bool _scalar;
-
-			internal FilterCacheKey(string role, string query, bool scalar)
-			{
-				_role = role;
-				_query = query;
-				_scalar = scalar;
-			}
-
-			public string Role
-			{
-				get { return _role; }
-			}
-
-			public string Query
-			{
-				get { return _query; }
-			}
-
-			public bool Scalar
-			{
-				get { return _scalar; }
-			}
-
-			#region System.Object Members
-
-			public override bool Equals(object obj)
-			{
-				FilterCacheKey other = obj as FilterCacheKey;
-				if (other == null)
-				{
-					return false;
-				}
-
-				return Equals(other);
-			}
-
-			public bool Equals(FilterCacheKey obj)
-			{
-				return Role.Equals(obj.Role) && Query.Equals(obj.Query) && Scalar == obj.Scalar;
-			}
-
-			public override int GetHashCode()
-			{
-				unchecked
-				{
-					return Role.GetHashCode() + Query.GetHashCode() + Scalar.GetHashCode();
-				}
-			}
-
-			#endregion
-		}
-
-		[MethodImpl(MethodImplOptions.Synchronized)]
-		private object Get(object key)
-		{
-			object result = softQueryCache[key];
-			if (result != null)
-			{
-				strongRefs[++strongRefIndex % MaxStrongRefCount] = result;
-			}
-			return result;
-		}
-
-		[MethodImpl(MethodImplOptions.Synchronized)]
-		private void Put(object key, object value)
-		{
-			softQueryCache[key] = value;
-			strongRefs[++strongRefIndex % MaxStrongRefCount] = value;
-		}
-
-		[MethodImpl(MethodImplOptions.Synchronized)]
-		private IQueryTranslator[] CreateQueryTranslators(string hql, string[] concreteQueryStrings, QueryCacheKey cacheKey,
-		                                                  IDictionary<string, IFilter> enabledFilters)
-		{
-			int length = concreteQueryStrings.Length;
-			IQueryTranslator[] queries = new IQueryTranslator[length];
-			for (int i = 0; i < length; i++)
-			{
-				queries[i] =
-					settings.QueryTranslatorFactory.CreateQueryTranslator(hql, concreteQueryStrings[i], enabledFilters, this);
-			}
-			Put(cacheKey, queries);
-			return queries;
-		}
-
-		[MethodImpl(MethodImplOptions.Synchronized)]
-		private IFilterTranslator CreateFilterTranslator(string hql, string filterString, FilterCacheKey cacheKey,
-		                                                 IDictionary<string, IFilter> enabledFilters)
-		{
-			IFilterTranslator filter =
-				settings.QueryTranslatorFactory.CreateFilterTranslator(hql, filterString, enabledFilters, this);
-			Put(cacheKey, filter);
-			return filter;
-		}
-
-		public IQueryTranslator[] GetQuery(string queryString, bool shallow, IDictionary<string, IFilter> enabledFilters)
-		{
-			QueryCacheKey cacheKey = new QueryCacheKey(queryString, shallow, enabledFilters);
-
-			// have to be careful to ensure that if the JVM does out-of-order execution
-			// then another thread can't get an uncompiled QueryTranslator from the cache
-			// we also have to be very careful to ensure that other threads can perform
-			// compiled queries while another query is being compiled
-
-			IQueryTranslator[] queries = (IQueryTranslator[]) Get(cacheKey);
-
-			if (queries == null)
-			{
-				// a query that names an interface or unmapped class in the from clause
-				// is actually executed as multiple queries
-				string[] concreteQueryStrings = QuerySplitter.ConcreteQueries(queryString, this);
-				queries = CreateQueryTranslators(queryString, concreteQueryStrings, cacheKey, enabledFilters);
-			}
-
-			foreach (IQueryTranslator q in queries)
-			{
-				q.Compile(settings.QuerySubstitutions, shallow);
-			}
-			// see comment above. note that QueryTranslator.compile() is synchronized
-
-			return queries;
-		}
-
-		public IFilterTranslator GetFilter(string filterString, string collectionRole, bool scalar,
-		                                   IDictionary<string, IFilter> enabledFilters)
-		{
-			FilterCacheKey cacheKey = new FilterCacheKey(collectionRole, filterString, scalar);
-
-			IFilterTranslator filter = (IFilterTranslator) Get(cacheKey);
-			if (filter == null)
-			{
-				filter = CreateFilterTranslator(filterString, filterString, cacheKey, enabledFilters);
-			}
-
-			filter.Compile(collectionRole, settings.QuerySubstitutions, scalar);
-			return filter;
-		}
-
 		private ISession OpenSession(IDbConnection connection, long timestamp, IInterceptor interceptor,
 		                             ConnectionReleaseMode connectionReleaseMode)
 		{
@@ -708,11 +531,6 @@ namespace NHibernate.Impl
 			return OpenSession(null, timestamp, interceptor, settings.ConnectionReleaseMode);
 		}
 
-		public ISession OpenSession(IDbConnection connection, ConnectionReleaseMode connectionReleaseMode)
-		{
-			return OpenSession(connection, Timestamper.Next(), interceptor, connectionReleaseMode);
-		}
-
 		public ISession OpenSession(IDbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
 		                            ConnectionReleaseMode connectionReleaseMode)
 		{
@@ -724,37 +542,20 @@ namespace NHibernate.Impl
 
 		public IEntityPersister GetEntityPersister(string entityName)
 		{
-			return GetEntityPersister(entityName, true);
-		}
-
-		public IEntityPersister GetEntityPersister(string entityName, bool throwIfNotFound)
-		{
-			// TODO: H2.1 has the code below, an equivalent for .NET would be useful
-			//if( className.StartsWith( "[" ) )
-			//{
-			//	throw new MappingException( "No persister for array result, likely a broken query" );
-			//}
-
-			IEntityPersister result = classPersistersByName[entityName] as IEntityPersister;
-			if (result == null && throwIfNotFound)
+			try
+			{
+				return entityPersisters[entityName];
+			}
+			catch (KeyNotFoundException)
 			{
 				throw new MappingException("No persister for: " + entityName);
 			}
-			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="theClass"></param>
-		/// <returns></returns>
-		public IEntityPersister GetEntityPersister(System.Type theClass)
+		public IEntityPersister TryGetEntityPersister(string entityName)
 		{
-			IEntityPersister result = entityPersisters[theClass] as IEntityPersister;
-			if (result == null)
-			{
-				throw new MappingException("Unknown entity class: " + theClass.FullName);
-			}
+			IEntityPersister result;
+			entityPersisters.TryGetValue(entityName, out result);
 			return result;
 		}
 
@@ -779,6 +580,11 @@ namespace NHibernate.Impl
 		public HibernateDialect Dialect
 		{
 			get { return settings.Dialect; }
+		}
+
+		public IInterceptor Interceptor
+		{
+			get { return interceptor; }
 		}
 
 		/// <summary></summary>
@@ -830,24 +636,6 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		/// <summary></summary>
-		public bool IsScrollableResultSetsEnabled
-		{
-			get { return settings.IsScrollableResultSetsEnabled; }
-		}
-
-		/// <summary></summary>
-		public bool IsGetGeneratedKeysEnabled
-		{
-			get { return settings.IsGetGeneratedKeysEnabled; }
-		}
-
-		/// <summary></summary>
-		public bool IsOuterJoinedFetchEnabled
-		{
-			get { return settings.IsOuterJoinFetchEnabled; }
-		}
-
 		/// <summary>
 		/// Gets the <c>hql</c> query identified by the <c>name</c>.
 		/// </summary>
@@ -895,12 +683,6 @@ namespace NHibernate.Impl
 					ReturnMetadata.ReturnAliases;
 		}
 
-		/// <summary></summary>
-		public string DefaultSchema
-		{
-			get { return settings.DefaultSchemaName; }
-		}
-
 		public IClassMetadata GetClassMetadata(System.Type persistentClass)
 		{
 			return GetClassMetadata(persistentClass.FullName);
@@ -925,29 +707,40 @@ namespace NHibernate.Impl
 		/// </summary>
 		public string[] GetImplementors(string className)
 		{
-			System.Type clazz;
-			try
+			System.Type clazz= null;
+			// NH Different implementation: we have better performance checking, first of all, if we know the class
+			// and take the System.Type directly from the persister (className have high probability to be entityName)
+			IEntityPersister checkPersister;
+			if (entityPersisters.TryGetValue(className, out checkPersister))
 			{
-				clazz = ReflectHelper.ClassForFullName(className);
-			}
-			catch (Exception)
-			{
-				return new string[] {className}; //for a dynamic-class
+				clazz = checkPersister.GetMappedClass(EntityMode.Poco);
 			}
 
-			ArrayList results = new ArrayList();
+			if (clazz == null)
+			{
+				try
+				{
+					clazz = ReflectHelper.ClassForFullName(className);
+				}
+				catch (Exception)
+				{
+					return new string[] {className}; //for a dynamic-class
+				}
+			}
+
+			List<string> results = new List<string>();
 			foreach (IEntityPersister p in entityPersisters.Values)
 			{
-				if (p is IQueryable)
+				IQueryable q = p as IQueryable;
+				if (q != null)
 				{
-					IQueryable q = (IQueryable) p;
 					string testClassName = q.EntityName;
 					bool isMappedClass = className.Equals(testClassName);
 					if (q.IsExplicitPolymorphism)
 					{
 						if (isMappedClass)
 						{
-							return new string[] {testClassName};
+							return new string[] { testClassName }; // NOTE EARLY EXIT
 						}
 					}
 					else
@@ -980,19 +773,16 @@ namespace NHibernate.Impl
 					}
 				}
 			}
-			return (string[]) results.ToArray(typeof (string));
+			return results.ToArray();
 		}
 
 		public string GetImportedClassName(string className)
 		{
-			if (imports.ContainsKey(className))
-			{
-				return imports[className];
-			}
+			string result;
+			if (className != null && imports.TryGetValue(className, out result))
+				return result;
 			else
-			{
 				return className;
-			}
 		}
 
 		/// <summary></summary>
@@ -1049,7 +839,7 @@ namespace NHibernate.Impl
 				}
 			}
 
-			if (IsQueryCacheEnabled)
+			if (settings.IsQueryCacheEnabled)
 			{
 				queryCache.Destroy();
 
@@ -1159,12 +949,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary></summary>
-		public int MaximumFetchDepth
-		{
-			get { return settings.MaximumFetchDepth; }
-		}
-
 		public IType GetReferencedPropertyType(string className, string propertyName)
 		{
 			return GetEntityPersister(className).GetPropertyType(propertyName);
@@ -1186,20 +970,19 @@ namespace NHibernate.Impl
 			get { return updateTimestampsCache; }
 		}
 
-		public IDictionary GetAllSecondLevelCacheRegions()
+		public IDictionary<string, ICache> GetAllSecondLevelCacheRegions()
 		{
 			lock (allCacheRegions.SyncRoot)
 			{
-				return new Hashtable(allCacheRegions);
+				return new Dictionary<string, ICache>(allCacheRegions);
 			}
 		}
 
 		public ICache GetSecondLevelCacheRegion(string regionName)
 		{
-			lock (allCacheRegions.SyncRoot)
-			{
-				return (ICache) allCacheRegions[regionName];
-			}
+			ICache result;
+			allCacheRegions.TryGetValue(regionName, out result);
+			return result;
 		}
 
 		/// <summary> Statistics SPI</summary>
@@ -1219,24 +1002,24 @@ namespace NHibernate.Impl
 			{
 				return QueryCache;
 			}
-
-			IQueryCache currentQueryCache = (IQueryCache) queryCaches[cacheRegion];
-			if (currentQueryCache == null)
+			if (!settings.IsQueryCacheEnabled)
 			{
-				currentQueryCache =
-					settings.QueryCacheFactory.GetQueryCache(cacheRegion, updateTimestampsCache, settings, properties);
-				queryCaches[cacheRegion] = currentQueryCache;
+				return null;
 			}
-			return currentQueryCache;
-		}
 
-		public bool IsQueryCacheEnabled
-		{
-			get { return settings.IsQueryCacheEnabled; }
+			lock (allCacheRegions.SyncRoot)
+			{
+				IQueryCache currentQueryCache;
+				if (!queryCaches.TryGetValue(cacheRegion,out currentQueryCache))
+				{
+					currentQueryCache =
+						settings.QueryCacheFactory.GetQueryCache(cacheRegion, updateTimestampsCache, settings, properties);
+					queryCaches[cacheRegion] = currentQueryCache;
+					allCacheRegions[currentQueryCache.RegionName] = currentQueryCache.Cache;
+				}
+				return currentQueryCache;
+			}
 		}
-
-		// TODO: isBatchVersionedData()
-		// TODO: isWrapDataReadersEnabled()
 
 		public void EvictQueries()
 		{
@@ -1256,59 +1039,17 @@ namespace NHibernate.Impl
 			{
 				throw new ArgumentNullException("cacheRegion", "use the zero-argument form to evict the default query cache");
 			}
-			else if (queryCaches != null)
+			else
 			{
-				IQueryCache currentQueryCache = (IQueryCache) queryCaches[cacheRegion];
-				if (currentQueryCache != null)
+				if (settings.IsQueryCacheEnabled)
 				{
-					currentQueryCache.Clear();
+					IQueryCache currentQueryCache;
+					if (queryCaches.TryGetValue(cacheRegion, out currentQueryCache))
+					{
+						currentQueryCache.Clear();
+					}
 				}
 			}
-		}
-
-		/*
-		// TODO: a better way to normalised the NamedSQLQUery aspect
-		internal class InternalNamedSQLQuery
-		{
-			private readonly string query;
-			private readonly string[ ] returnAliases;
-			private readonly System.Type[ ] returnClasses;
-			private readonly IList querySpaces;
-
-			public InternalNamedSQLQuery( string query, string[ ] aliases, System.Type[ ] clazz, IList querySpaces )
-			{
-				this.returnClasses = clazz;
-				this.returnAliases = aliases;
-				this.query = query;
-				this.querySpaces = querySpaces;
-			}
-
-			public string[ ] ReturnAliases
-			{
-				get { return returnAliases; }
-			}
-
-			public System.Type[ ] ReturnClasses
-			{
-				get { return returnClasses; }
-			}
-
-			public string QueryString
-			{
-				get { return query; }
-			}
-
-			public ICollection QuerySpaces
-			{
-				get { return querySpaces; }
-			}
-		}
-		*/
-
-		/// <summary></summary>
-		public IsolationLevel Isolation
-		{
-			get { return settings.IsolationLevel; }
 		}
 
 		/// <summary></summary>

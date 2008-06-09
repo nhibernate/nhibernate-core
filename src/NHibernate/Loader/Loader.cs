@@ -1606,7 +1606,7 @@ namespace NHibernate.Loader
 		protected IList List(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces,
 		                     IType[] resultTypes)
 		{
-			bool cacheable = factory.IsQueryCacheEnabled && queryParameters.Cacheable;
+			bool cacheable = factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
 
 			if (cacheable)
 			{

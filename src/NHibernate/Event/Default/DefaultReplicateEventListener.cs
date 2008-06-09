@@ -33,7 +33,7 @@ namespace NHibernate.Event.Default
 				return;
 			}
 
-			IEntityPersister persister = source.GetEntityPersister(entity);
+			IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
 
 			// get the id from the object
 			/*if ( persister.isUnsaved(entity, source) ) {

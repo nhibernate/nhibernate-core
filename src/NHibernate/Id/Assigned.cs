@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Type;
 
 namespace NHibernate.Id
 {
@@ -13,10 +15,9 @@ namespace NHibernate.Id
 	///	<code>&lt;generator class="assigned" /&gt;</code>
 	/// </p>
 	/// </remarks>
-	public class Assigned : IIdentifierGenerator
+	public class Assigned : IIdentifierGenerator, IConfigurable
 	{
-		/// <summary></summary>
-		public static readonly Assigned Instance = new Assigned();
+		private string entityName;
 
 		#region IIdentifierGenerator Members
 
@@ -38,13 +39,26 @@ namespace NHibernate.Id
 				throw new IdentifierGenerationException("Illegal use of assigned id generation for a toplevel collection");
 			}
 
-			object id = session.GetEntityPersister(obj).GetIdentifier(obj, session.EntityMode);
+			object id = session.GetEntityPersister(entityName, obj).GetIdentifier(obj, session.EntityMode);
 			if (id == null)
 			{
 				throw new IdentifierGenerationException("ids for this class must be manually assigned before calling save(): "
 																								+ obj.GetType().FullName);
 			}
 			return id;
+		}
+
+		#endregion
+
+		#region IConfigurable Members
+
+		public void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect d)
+		{
+			parms.TryGetValue(IdGeneratorParmsNames.EntityName, out entityName);
+			if (entityName == null)
+			{
+				throw new MappingException("no entity name");
+			}
 		}
 
 		#endregion

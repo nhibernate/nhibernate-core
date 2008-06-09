@@ -134,13 +134,6 @@ namespace NHibernate.Engine
 		IEntityPersister GetEntityPersister(string entityName, object obj);
 
 		/// <summary>
-		/// Get the <c>IEntityPersister</c> for an object
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
-		IEntityPersister GetEntityPersister(object obj);
-
-		/// <summary>
 		/// Notify the session that an NHibernate transaction has begun.
 		/// </summary>
 		void AfterTransactionBegin(ITransaction tx);
@@ -161,8 +154,6 @@ namespace NHibernate.Engine
 		/// Return the identifier of the persistent object, or null if transient
 		/// </summary>
 		object GetContextEntityIdentifier(object obj);
-
-		bool IsSaved(object obj); // NH specific
 
 		/// <summary>
 		/// Instantiate the entity class, initializing with the given identifier

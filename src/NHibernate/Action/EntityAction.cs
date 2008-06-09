@@ -136,7 +136,7 @@ namespace NHibernate.Action
 		{
 			try
 			{
-				persister = session.GetEntityPersister(instance);
+				persister = session.Factory.GetEntityPersister(entityName);
 			}
 			catch (MappingException e)
 			{

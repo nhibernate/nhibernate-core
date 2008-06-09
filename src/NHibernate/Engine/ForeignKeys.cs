@@ -185,7 +185,7 @@ namespace NHibernate.Engine
 				return isUnsaved.Value;
 
 			// let the persister inspect the instance to decide
-			IEntityPersister persister = session.GetEntityPersister(entity);
+			IEntityPersister persister = session.GetEntityPersister(entityName, entity);
 			isUnsaved = persister.IsTransient(entity, session);
 			if (isUnsaved.HasValue)
 				return isUnsaved.Value;

@@ -30,7 +30,7 @@ namespace NHibernate.Test.GenericTest.EnumGeneric
 			{
 				A a = new A();
 				SessionImpl impl = (SessionImpl) s;
-				IEntityPersister persister = impl.GetEntityPersister(a);
+				IEntityPersister persister = impl.GetEntityPersister(typeof(A).FullName, a);
 
 				int index = -1;
 				for (int i = 0; i < persister.PropertyNames.Length; i++)

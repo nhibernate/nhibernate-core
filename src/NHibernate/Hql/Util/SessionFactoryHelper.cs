@@ -1,6 +1,6 @@
-using System;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
+using NHibernate.Util;
 
 namespace NHibernate.Hql.Util
 {
@@ -17,8 +17,25 @@ namespace NHibernate.Hql.Util
 			{
 				return null;
 			}
+			// NH: This method don't work if entityName != class.FullName
+			return (IQueryable)sfi.TryGetEntityPersister(GetEntityName(importedClassName));
+		}
 
-			return (IQueryable) sfi.GetEntityPersister(importedClassName, false);
+		private static string GetEntityName(string assemblyQualifiedName)
+		{
+			/* *********************************************************************************************************
+			 * TODO NH Different impl.: we need to resolve the matter between FullName-AssemblyQualifiedName-EntityName-Name
+			 * GetImportedClassName in h3.2.5 return the entityName that, in many cases but not all, should be the
+			 * MappesClass.FullName. The value returned by GetImportedClassName, in this case, is used to find the persister.
+			 * A possible solution would be to use the same behavior of H3.2.5 but we start to have some problems (performance)
+			 * when we try to use the result of GetImportedClassName to create an instance and we completely lost a way
+			 * to link an entityName with its AssemblyQualifiedName (strongly typed).
+			 * I would like to maitain <imports> like the holder of the association of an entityName (or a class Name) and
+			 * its Type (in the future: Dictionary<string, System.Type> imports;)
+			 * Note : The same AssemblyQualifiedName should be associaded with more than one emtityName (in case of use generic).
+			 * *********************************************************************************************************
+			 */
+			return TypeNameParser.Parse(assemblyQualifiedName).Type;
 		}
 
 		public static System.Type GetImportedClass(ISessionFactoryImplementor sfi, string className)
@@ -30,6 +47,7 @@ namespace NHibernate.Hql.Util
 				return null;
 			}
 
+			// NH Different implementation: our sessionFactory.Imports hold AssemblyQualifiedName
 			return System.Type.GetType(importedName, false);
 		}
 	}

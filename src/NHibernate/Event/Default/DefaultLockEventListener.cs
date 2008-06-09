@@ -40,7 +40,7 @@ namespace NHibernate.Event.Default
 			EntityEntry entry = source.PersistenceContext.GetEntry(entity);
 			if (entry == null)
 			{
-				IEntityPersister persister = source.GetEntityPersister(entity);
+				IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
 				object id = persister.GetIdentifier(entity, source.EntityMode);
 				if (!ForeignKeys.IsNotTransient(@event.EntityName, entity, false, source))
 				{

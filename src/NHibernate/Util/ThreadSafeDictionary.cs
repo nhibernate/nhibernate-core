@@ -17,12 +17,14 @@ namespace NHibernate.Util
 			this.dictionary = dictionary;
 		}
 
-		private object SyncRoot
+		public object SyncRoot
 		{
 			get
 			{
 				if (_syncRoot == null)
+				{
 					Interlocked.CompareExchange(ref _syncRoot, new object(), null);
+				}
 
 				return _syncRoot;
 			}
@@ -32,12 +34,12 @@ namespace NHibernate.Util
 
 		public bool ContainsKey(TKey key)
 		{
-				return dictionary.ContainsKey(key);
+			return dictionary.ContainsKey(key);
 		}
 
 		public void Add(TKey key, TValue value)
 		{
-			lock(SyncRoot)
+			lock (SyncRoot)
 			{
 				dictionary.Add(key, value);
 			}
@@ -53,7 +55,7 @@ namespace NHibernate.Util
 
 		public bool TryGetValue(TKey key, out TValue value)
 		{
-				return dictionary.TryGetValue(key, out value);
+			return dictionary.TryGetValue(key, out value);
 		}
 
 		public TValue this[TKey key]
@@ -63,7 +65,7 @@ namespace NHibernate.Util
 			{
 				lock (SyncRoot)
 				{
-					dictionary[key]= value;
+					dictionary[key] = value;
 				}
 			}
 		}
@@ -87,7 +89,6 @@ namespace NHibernate.Util
 				{
 					return dictionary.Values;
 				}
-
 			}
 		}
 

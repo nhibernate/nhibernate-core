@@ -226,7 +226,7 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Adds an import to allow for the full class name <c>Namespace.Entity</c> 
+		/// Adds an import to allow for the full class name <c>Namespace.Entity (AssemblyQualifiedName)</c> 
 		/// to be referenced as <c>Entity</c> or some other name in HQL.
 		/// </summary>
 		/// <param name="className">The name of the type that is being renamed.</param>
@@ -234,21 +234,30 @@ namespace NHibernate.Cfg
 		/// <exception cref="MappingException">Thrown when the rename already identifies another type.</exception>
 		public void AddImport(string className, string rename)
 		{
+			if (rename == null)
+			{
+				throw new ArgumentNullException("rename");
+			}
 			// if the imports dictionary already contains the rename, then make sure 
 			// the rename is not for a different className.  If it is a different className
 			// then we probably have 2 classes with the same name in a different namespace.  To 
 			// prevent this error one of the classes needs to have the attribute "
-			if (imports.ContainsKey(rename) && imports[rename] != className)
-			{
-				object existing = imports[rename];
-				throw new DuplicateMappingException("duplicate import: " + rename +
-				                                    " refers to both " + className +
-				                                    " and " + existing +
-				                                    " (try using auto-import=\"false\")",
-				                                    "import",
-				                                    rename);
-			}
+			string existing;
+			imports.TryGetValue(rename, out existing);
 			imports[rename] = className;
+			if(existing!=null)
+			{
+				if (existing.Equals(className))
+				{
+					log.Info("duplicate import: " + className + "->" + rename);
+				}
+				else
+				{
+					throw new DuplicateMappingException(
+						"duplicate import: " + rename + " refers to both " + className + " and " + existing
+						+ " (try using auto-import=\"false\")", "import", rename);
+				}
+			}
 		}
 
 		public Table AddTable(string schema, string catalog, string name, string subselect, bool isAbstract)

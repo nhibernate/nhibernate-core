@@ -94,8 +94,9 @@ namespace NHibernate.Impl
 		{
 			timestamp = info.GetInt64("timestamp");
 
-			Factory = (SessionFactoryImpl)info.GetValue("factory", typeof(SessionFactoryImpl));
-			listeners = Factory.EventListeners;
+			SessionFactoryImpl fact = (SessionFactoryImpl)info.GetValue("factory", typeof(SessionFactoryImpl));
+			Factory = fact;
+			listeners = fact.EventListeners;
 			persistenceContext = (StatefulPersistenceContext)info.GetValue("persistenceContext", typeof(StatefulPersistenceContext));
 
 			actionQueue = (ActionQueue)info.GetValue("actionQueue", typeof(ActionQueue));
@@ -533,17 +534,9 @@ namespace NHibernate.Impl
 
 		public override IQueryTranslator[] GetQueries(string query, bool scalar)
 		{
-			// take the union of the query spaces (ie the queried tables)
-			IQueryTranslator[] q = Factory.GetQuery(query, scalar, enabledFilters);
-			HashedSet<string> qs = new HashedSet<string>();
-			for (int i = 0; i < q.Length; i++)
-			{
-				qs.AddAll(q[i].QuerySpaces);
-			}
-
-			AutoFlushIfRequired(qs);
-
-			return q;
+			HQLQueryPlan plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, enabledFilters);
+			AutoFlushIfRequired(plan.QuerySpaces);
+			return plan.Translators;
 		}
 
 		public IEnumerable Enumerable(string query)
@@ -1219,27 +1212,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		[NonSerialized]
-		private System.Type lastClass;
-
-		[NonSerialized]
-		private IEntityPersister lastResultForClass;
-
-		private IEntityPersister GetClassPersister(System.Type theClass)
-		{
-			if (lastClass != theClass)
-			{
-				lastResultForClass = Factory.GetEntityPersister(theClass);
-				lastClass = theClass;
-			}
-			return lastResultForClass;
-		}
-
-		public override IEntityPersister GetEntityPersister(object obj)
-		{
-			return GetClassPersister(obj.GetType());
-		}
-
 		/// <summary>
 		/// Not for internal use
 		/// </summary>
@@ -1290,38 +1262,6 @@ namespace NHibernate.Impl
 				EntityEntry entry = persistenceContext.GetEntry(obj);
 				return (entry != null) ? entry.Id : null;
 			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
-		public override bool IsSaved(object obj)
-		{
-			if (obj is INHibernateProxy)
-			{
-				return true; // NH sure ???
-			}
-
-			EntityEntry entry = persistenceContext.GetEntry(obj);
-			if (entry != null)
-			{
-				return true;
-			}
-
-			bool? isUnsaved = interceptor.IsTransient(obj);
-			if (isUnsaved.HasValue)
-			{
-				return !isUnsaved.Value;
-			}
-			isUnsaved = GetEntityPersister(obj).IsTransient(obj, this);
-			if (isUnsaved.HasValue)
-			{
-				return !isUnsaved.Value;
-			}
-
-			return false;
 		}
 
 		internal ICollectionPersister GetCollectionPersister(string role)

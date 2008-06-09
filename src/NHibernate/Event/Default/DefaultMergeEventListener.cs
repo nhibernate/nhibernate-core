@@ -130,7 +130,7 @@ namespace NHibernate.Event.Default
 			//TODO: check that entry.getIdentifier().equals(requestedId)
 			object entity = @event.Entity;
 			IEventSource source = @event.Session;
-			IEntityPersister persister = source.GetEntityPersister(entity);
+			IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
 
 			copyCache[entity] = entity; //before cascade!
 
@@ -147,7 +147,7 @@ namespace NHibernate.Event.Default
 			object entity = @event.Entity;
 			IEventSource source = @event.Session;
 
-			IEntityPersister persister = source.GetEntityPersister(entity);
+			IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
 			string entityName = persister.EntityName;
 
 			object id = persister.HasIdentifierProperty ? persister.GetIdentifier(entity, source.EntityMode) : null;

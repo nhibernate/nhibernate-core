@@ -1675,7 +1675,7 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void ForceOuterJoin()
 		{
-			if (((ISessionFactoryImplementor) sessions).IsOuterJoinedFetchEnabled == false)
+			if (sessions.Settings.IsOuterJoinFetchEnabled == false)
 			{
 				// don't bother to run the test if we can't test it
 				return;
@@ -5362,7 +5362,7 @@ namespace NHibernate.Test.Legacy
 				|| (b2 == barprox && !(b1 is INHibernateProxy))); //one-to-many
 			Assert.IsTrue(baz.FooArray[0] is INHibernateProxy); //many-to-many
 			Assert.AreEqual(bar2prox, baz.FooArray[1]);
-			if (((ISessionFactoryImplementor) sessions).IsOuterJoinedFetchEnabled)
+			if (sessions.Settings.IsOuterJoinFetchEnabled)
 			{
 				enumer = baz.FooBag.GetEnumerator();
 				enumer.MoveNext();

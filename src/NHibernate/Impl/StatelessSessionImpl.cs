@@ -214,20 +214,6 @@ namespace NHibernate.Impl
 			throw new NotSupportedException();
 		}
 
-		public override IEntityPersister GetEntityPersister(object obj)
-		{
-			CheckAndUpdateSessionStatus();
-			return Factory.GetEntityPersister(GuessEntityName(obj));
-			//if (entityName == null)
-			//{
-			//  return factory.GetEntityPersister(GuessEntityName(obj));
-			//}
-			//else
-			//{
-			//  return factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory);
-			//}
-		}
-
 		public override void AfterTransactionBegin(ITransaction tx)
 		{
 		}
@@ -245,11 +231,6 @@ namespace NHibernate.Impl
 		{
 			CheckAndUpdateSessionStatus();
 			return null;
-		}
-
-		public override bool IsSaved(object obj)
-		{
-			throw new NotImplementedException();
 		}
 
 		public override object Instantiate(string clazz, object id)
@@ -330,8 +311,8 @@ namespace NHibernate.Impl
 		public override IQueryTranslator[] GetQueries(string query, bool scalar)
 		{
 			// take the union of the query spaces (ie the queried tables)
-			IQueryTranslator[] q = Factory.GetQuery(query, scalar, EnabledFilters);
-			return q;
+			HQLQueryPlan plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, EnabledFilters);
+			return plan.Translators;
 		}
 
 		public override IInterceptor Interceptor
@@ -480,7 +461,7 @@ namespace NHibernate.Impl
 		public object Insert(string entityName, object entity)
 		{
 			CheckAndUpdateSessionStatus();
-			IEntityPersister persister = GetEntityPersister(entity);
+			IEntityPersister persister = GetEntityPersister(entityName, entity);
 			object id = persister.IdentifierGenerator.Generate(this, entity);
 			object[] state = persister.GetPropertyValues(entity, EntityMode.Poco);
 			if (persister.IsVersioned)
@@ -518,7 +499,7 @@ namespace NHibernate.Impl
 		public void Update(string entityName, object entity)
 		{
 			CheckAndUpdateSessionStatus();
-			IEntityPersister persister = GetEntityPersister(entity);
+			IEntityPersister persister = GetEntityPersister(entityName, entity);
 			object id = persister.GetIdentifier(entity, EntityMode.Poco);
 			object[] state = persister.GetPropertyValues(entity, EntityMode.Poco);
 			object oldVersion;
@@ -550,7 +531,7 @@ namespace NHibernate.Impl
 		public void Delete(string entityName, object entity)
 		{
 			CheckAndUpdateSessionStatus();
-			IEntityPersister persister = GetEntityPersister(entity);
+			IEntityPersister persister = GetEntityPersister(entityName, entity);
 			object id = persister.GetIdentifier(entity, EntityMode.Poco);
 			object version = persister.GetVersion(entity, EntityMode.Poco);
 			persister.Delete(id, version, entity, this);
@@ -636,7 +617,7 @@ namespace NHibernate.Impl
 		/// <param name="lockMode">The LockMode to be applied. </param>
 		public void Refresh(string entityName, object entity, LockMode lockMode)
 		{
-			IEntityPersister persister = GetEntityPersister(entity);
+			IEntityPersister persister = GetEntityPersister(entityName, entity);
 			object id = persister.GetIdentifier(entity, EntityMode);
 			if (log.IsDebugEnabled)
 			{

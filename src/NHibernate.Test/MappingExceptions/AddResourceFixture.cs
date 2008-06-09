@@ -44,7 +44,7 @@ namespace NHibernate.Test.MappingExceptions
 			}
 			catch (MappingException me)
 			{
-				Assert.IsTrue(me.InnerException is MappingException);
+				Assert.IsTrue(me.InnerException is DuplicateMappingException);
 				string expected = string.Format(
 					"duplicate import: A refers to both NHibernate.Test.MappingExceptions.A, {0} and Some other class (try using auto-import=\"false\")",
 					Assembly.GetExecutingAssembly().FullName);
