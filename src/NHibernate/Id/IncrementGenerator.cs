@@ -97,7 +97,7 @@ namespace NHibernate.Id
 
 			try
 			{
-				IDbConnection conn = session.Factory.OpenConnection();
+				IDbConnection conn = session.Factory.ConnectionProvider.GetConnection();
 				IDbCommand qps = conn.CreateCommand();
 				qps.CommandText = sql;
 				qps.CommandType = CommandType.Text;
@@ -124,7 +124,7 @@ namespace NHibernate.Id
 				}
 				finally
 				{
-					session.Factory.CloseConnection(conn);
+					session.Factory.ConnectionProvider.CloseConnection(conn);
 				}
 			}
 			catch (DbException sqle)

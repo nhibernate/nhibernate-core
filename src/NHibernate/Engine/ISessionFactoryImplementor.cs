@@ -8,7 +8,6 @@ using NHibernate.Context;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine.Query;
 using NHibernate.Exceptions;
-using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -163,18 +162,6 @@ namespace NHibernate.Engine
 		ISet<string> GetCollectionRolesByEntityParticipant(string entityName);
 
 		#region NHibernate specific
-
-		/// <summary>
-		/// Obtain an ADO.NET connection
-		/// </summary>
-		/// <returns></returns>
-		IDbConnection OpenConnection();
-
-		/// <summary>
-		/// Release an ADO.NET connection
-		/// </summary>
-		/// <param name="conn"></param>
-		void CloseConnection(IDbConnection conn);
 
 		/// <summary>
 		/// Gets the ICurrentSessionContext instance attached to this session factory.

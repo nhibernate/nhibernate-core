@@ -181,7 +181,7 @@ namespace NHibernate.AdoNet
 
 		private void CloseConnection()
 		{
-			session.Factory.CloseConnection(connection);
+			session.Factory.ConnectionProvider.CloseConnection(connection);
 			connection = null;
 		}
 
@@ -191,7 +191,7 @@ namespace NHibernate.AdoNet
 			{
 				if (ownConnection)
 				{
-					connection = session.Factory.OpenConnection();
+					connection = session.Factory.ConnectionProvider.GetConnection();
 					if (session.Factory.Statistics.IsStatisticsEnabled)
 					{
 						session.Factory.StatisticsImplementor.Connect();

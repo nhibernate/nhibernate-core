@@ -1,16 +1,15 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Runtime.CompilerServices;
 using log4net;
 using NHibernate.Dialect;
 using NHibernate.Engine;
-using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Collections.Generic;
 
 namespace NHibernate.Id
 {
@@ -141,12 +140,12 @@ namespace NHibernate.Id
 		#region IIdentifierGenerator Members
 
 		/// <summary>
-		/// Generate a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/> 
+		/// Generate a <see cref="short"/>, <see cref="int"/>, or <see cref="long"/> 
 		/// for the identifier by selecting and updating a value in a table.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
-		/// <returns>The new identifier as a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/>.</returns>
+		/// <returns>The new identifier as a <see cref="short"/>, <see cref="int"/>, or <see cref="long"/>.</returns>
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual object Generate(ISessionImplementor session, object obj)
 		{
@@ -165,7 +164,7 @@ namespace NHibernate.Id
 			}
 			else
 			{
-				conn = session.Factory.OpenConnection();
+				conn = session.Factory.ConnectionProvider.GetConnection();
 			}
 
 			try
@@ -250,7 +249,7 @@ namespace NHibernate.Id
 			{
 				if (!isSQLite)
 				{
-					session.Factory.CloseConnection(conn);
+					session.Factory.ConnectionProvider.CloseConnection(conn);
 				}
 			}
 		}
@@ -264,7 +263,7 @@ namespace NHibernate.Id
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect"/> to help with creating the sql.</param>
 		/// <returns>
-		/// An array of <see cref="String"/> objects that contain the Dialect specific sql to 
+		/// An array of <see cref="string"/> objects that contain the Dialect specific sql to 
 		/// create the necessary database objects and to create the first value as <c>1</c> 
 		/// for the TableGenerator.
 		/// </returns>
@@ -285,7 +284,7 @@ namespace NHibernate.Id
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect"/> to help with creating the sql.</param>
 		/// <returns>
-		/// A <see cref="String"/> that will drop the database objects for the TableGenerator.
+		/// A <see cref="string"/> that will drop the database objects for the TableGenerator.
 		/// </returns>
 		public string SqlDropString(Dialect.Dialect dialect)
 		{

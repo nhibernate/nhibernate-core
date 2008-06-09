@@ -411,91 +411,7 @@ namespace NHibernate.Impl
 			return errors;
 		}
 
-		// Emulates constant time LRU/MRU algorithms for cache
-		// It is better to hold strong references on some (LRU/MRU) queries
-		private const int MaxStrongRefCount = 128;
-
-		[NonSerialized] private readonly object[] strongRefs = new object[MaxStrongRefCount];
-
-		[NonSerialized] private int strongRefIndex = 0;
-
 		[NonSerialized] private readonly ICurrentSessionContext currentSessionContext;
-
-		/// <summary>
-		/// A class that can be used as a Key in a Hashtable for 
-		/// a Query Cache.
-		/// </summary>
-		[Serializable]
-		private class QueryCacheKey
-		{
-			private readonly string _query;
-			private readonly bool _scalar;
-			private readonly ISet<string> _filterNames;
-			private readonly int _hashCode;
-
-			internal QueryCacheKey(string query, bool scalar, IDictionary<string, IFilter> enabledFilters)
-			{
-				_query = query;
-				_scalar = scalar;
-				if (enabledFilters == null || enabledFilters.Count == 0)
-				{
-					_filterNames = new HashedSet<string>();
-				}
-				else
-				{
-					_filterNames = new HashedSet<string>(enabledFilters.Keys);
-				}
-
-				unchecked
-				{
-					_hashCode = query.GetHashCode();
-					_hashCode = 29 * _hashCode + (scalar ? 1 : 0);
-					_hashCode = 29 * _hashCode + CollectionHelper.GetHashCode(_filterNames);
-				}
-			}
-
-			public string Query
-			{
-				get { return _query; }
-			}
-
-			public bool Scalar
-			{
-				get { return _scalar; }
-			}
-
-			public ISet<string> FilterNames
-			{
-				get { return _filterNames; }
-			}
-
-			#region System.Object Members
-
-			public override bool Equals(object obj)
-			{
-				QueryCacheKey other = obj as QueryCacheKey;
-				if (other == null)
-				{
-					return false;
-				}
-
-				return Equals(other);
-			}
-
-			public bool Equals(QueryCacheKey obj)
-			{
-				return
-					_hashCode == obj._hashCode && Query.Equals(obj.Query) && Scalar == obj.Scalar
-					&& CollectionHelper.SetEquals(FilterNames, obj.FilterNames);
-			}
-
-			public override int GetHashCode()
-			{
-				return _hashCode;
-			}
-
-			#endregion
-		}
 
 		private ISession OpenSession(IDbConnection connection, long timestamp, IInterceptor interceptor,
 		                             ConnectionReleaseMode connectionReleaseMode)
@@ -1049,31 +965,6 @@ namespace NHibernate.Impl
 						currentQueryCache.Clear();
 					}
 				}
-			}
-		}
-
-		/// <summary></summary>
-		public IDbConnection OpenConnection()
-		{
-			try
-			{
-				return ConnectionProvider.GetConnection();
-			}
-			catch (Exception sqle)
-			{
-				throw new ADOException("cannot open connection", sqle);
-			}
-		}
-
-		public void CloseConnection(IDbConnection conn)
-		{
-			try
-			{
-				ConnectionProvider.CloseConnection(conn);
-			}
-			catch (Exception e)
-			{
-				throw new ADOException("cannot close connection", e);
 			}
 		}
 
