@@ -75,96 +75,91 @@ namespace NHibernate.Impl
 
 		private class DefaultEntityNotFoundDelegate : IEntityNotFoundDelegate
 		{
+			#region IEntityNotFoundDelegate Members
+
 			public void HandleEntityNotFound(string entityName, object id)
 			{
 				throw new ObjectNotFoundException(id, entityName);
 			}
+
+			#endregion
 		}
 
 		#endregion
 
-		private readonly string name;
-		private readonly string uuid;
-
-		[NonSerialized] private readonly IDictionary<string, IEntityPersister> entityPersisters;
-
-		[NonSerialized] private readonly IDictionary<string, IClassMetadata> classMetadata;
-
-		[NonSerialized] private readonly Dictionary<string, ICollectionPersister> collectionPersisters;
-
-		[NonSerialized] private readonly Dictionary<string, ICollectionMetadata> collectionMetadata;
-
-		[NonSerialized] private readonly Dictionary<string, ISet<string>> collectionRolesByEntityParticipant;
-
-		[NonSerialized] private readonly Dictionary<string, IIdentifierGenerator> identifierGenerators;
-
-		[NonSerialized] private readonly Dictionary<string, NamedQueryDefinition> namedQueries;
-
-		[NonSerialized] private readonly Dictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
-
-		[NonSerialized] private readonly Dictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
-
-		[NonSerialized] private readonly Dictionary<string, FilterDefinition> filters;
-
-		[NonSerialized] private readonly Dictionary<string, string> imports;
-
-		[NonSerialized] private readonly IInterceptor interceptor;
-
-		[NonSerialized] private readonly Settings settings;
-
-		[NonSerialized] private readonly IDictionary<string, string> properties;
-
-		[NonSerialized] private readonly SchemaExport schemaExport;
-
-		[NonSerialized] private readonly IQueryCache queryCache;
-
-		[NonSerialized] private readonly UpdateTimestampsCache updateTimestampsCache;
-
-		[NonSerialized] private readonly IDictionary<string, IQueryCache> queryCaches;
+		private static readonly ILog log = LogManager.GetLogger(typeof (SessionFactoryImpl));
+		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
 
 		[NonSerialized] private readonly ThreadSafeDictionary<string, ICache> allCacheRegions =
 			new ThreadSafeDictionary<string, ICache>(new Dictionary<string, ICache>());
 
+		[NonSerialized] private readonly IDictionary<string, IClassMetadata> classMetadata;
+
+		[NonSerialized] private readonly IDictionary<string, ICollectionMetadata> collectionMetadata;
+		[NonSerialized] private readonly Dictionary<string, ICollectionPersister> collectionPersisters;
+
+		[NonSerialized] private readonly IDictionary<string, ISet<string>> collectionRolesByEntityParticipant;
+		[NonSerialized] private readonly ICurrentSessionContext currentSessionContext;
+		[NonSerialized] private readonly IEntityNotFoundDelegate entityNotFoundDelegate;
+		[NonSerialized] private readonly IDictionary<string, IEntityPersister> entityPersisters;
 		[NonSerialized] private readonly EventListeners eventListeners;
 
+		[NonSerialized] private readonly Dictionary<string, FilterDefinition> filters;
+		[NonSerialized] private readonly Dictionary<string, IIdentifierGenerator> identifierGenerators;
+
+		[NonSerialized] private readonly Dictionary<string, string> imports;
+
+		[NonSerialized] private readonly IInterceptor interceptor;
+		private readonly string name;
+		[NonSerialized] private readonly Dictionary<string, NamedQueryDefinition> namedQueries;
+
+		[NonSerialized] private readonly Dictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
+
+		[NonSerialized] private readonly IDictionary<string, string> properties;
+
+		[NonSerialized] private readonly IQueryCache queryCache;
+
+		[NonSerialized] private readonly IDictionary<string, IQueryCache> queryCaches;
+		[NonSerialized] private readonly SchemaExport schemaExport;
+		[NonSerialized] private readonly Settings settings;
+
 		[NonSerialized] private readonly SQLFunctionRegistry sqlFunctionRegistry;
+		[NonSerialized] private readonly Dictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
+		[NonSerialized] private readonly UpdateTimestampsCache updateTimestampsCache;
+		private readonly string uuid;
+		private bool disposed;
 
-		[NonSerialized] private readonly IEntityNotFoundDelegate entityNotFoundDelegate;
-
-		[NonSerialized] private StatisticsImpl statistics;
 		[NonSerialized] private bool isClosed = false;
 
 		private QueryPlanCache queryPlanCache;
-
-		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
-
-		private static readonly ILog log = LogManager.GetLogger(typeof (SessionFactoryImpl));
-
-		private void Init()
-		{
-			statistics = new StatisticsImpl(this);
-			queryPlanCache = new QueryPlanCache(this);
-		}
+		[NonSerialized] private StatisticsImpl statistics;
 
 		public SessionFactoryImpl(Configuration cfg, IMapping mapping, Settings settings, EventListeners listeners)
 		{
 			Init();
 			log.Info("building session factory");
 
-			properties = cfg.Properties;
+			properties = new Dictionary<string, string>(cfg.Properties);
 			interceptor = cfg.Interceptor;
 			this.settings = settings;
 			sqlFunctionRegistry = new SQLFunctionRegistry(settings.Dialect, cfg.SqlFunctions);
 			eventListeners = listeners;
+			filters = new Dictionary<string, FilterDefinition>(cfg.FilterDefinitions);
+			if (log.IsDebugEnabled)
+			{
+				log.Debug("Session factory constructed with filter configurations : " + CollectionPrinter.ToString(filters));
+			}
 
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("instantiating session factory with properties: " + CollectionPrinter.ToString(properties));
 			}
 
+			#region Caches
 			settings.CacheProvider.Start(properties);
+			#endregion
 
-			// Generators:
+			#region Generators
 			identifierGenerators = new Dictionary<string, IIdentifierGenerator>();
 			foreach (PersistentClass model in cfg.ClassMappings)
 			{
@@ -177,8 +172,9 @@ namespace NHibernate.Impl
 					identifierGenerators[model.EntityName] = generator;
 				}
 			}
+			#endregion
 
-			// Persisters:
+			#region Persisters
 
 			Dictionary<string, ICacheConcurrencyStrategy> caches = new Dictionary<string, ICacheConcurrencyStrategy>();
 			entityPersisters = new Dictionary<string, IEntityPersister>();
@@ -186,6 +182,7 @@ namespace NHibernate.Impl
 
 			foreach (PersistentClass model in cfg.ClassMappings)
 			{
+				model.PrepareTemporaryTables(mapping, settings.Dialect);
 				string cacheRegion = model.RootClazz.CacheRegionName;
 				ICacheConcurrencyStrategy cache;
 				if (!caches.TryGetValue(cacheRegion, out cache))
@@ -203,20 +200,20 @@ namespace NHibernate.Impl
 				classMeta[model.EntityName] = cp.ClassMetadata;
 			}
 			classMetadata = new UnmodifiableDictionary<string, IClassMetadata>(classMeta);
+
 			Dictionary<string, ISet<string>> tmpEntityToCollectionRoleMap = new Dictionary<string, ISet<string>>();
 			collectionPersisters = new Dictionary<string, ICollectionPersister>();
-			foreach (Mapping.Collection map in cfg.CollectionMappings)
+			foreach (Mapping.Collection model in cfg.CollectionMappings)
 			{
 				ICacheConcurrencyStrategy cache =
-					CacheFactory.CreateCache(map.CacheConcurrencyStrategy, map.CacheRegionName, map.Owner.IsMutable, settings,
+					CacheFactory.CreateCache(model.CacheConcurrencyStrategy, model.CacheRegionName, model.Owner.IsMutable, settings,
 					                         properties);
 				if (cache != null)
 				{
 					allCacheRegions[cache.RegionName] = cache.Cache;
 				}
-
-				ICollectionPersister persister = PersisterFactory.CreateCollectionPersister(cfg, map, cache, this);
-				collectionPersisters[map.Role] = persister;
+				ICollectionPersister persister = PersisterFactory.CreateCollectionPersister(cfg, model, cache, this);
+				collectionPersisters[model.Role] = persister;
 				IType indexType = persister.IndexType;
 				if (indexType != null && indexType.IsAssociationType && !indexType.IsAnyType)
 				{
@@ -242,15 +239,36 @@ namespace NHibernate.Impl
 					roles.Add(persister.Role);
 				}
 			}
-			collectionMetadata = new Dictionary<string, ICollectionMetadata>(collectionPersisters.Count);
+			Dictionary<string, ICollectionMetadata> tmpcollectionMetadata = new Dictionary<string, ICollectionMetadata>(collectionPersisters.Count);
 			foreach (KeyValuePair<string, ICollectionPersister> collectionPersister in collectionPersisters)
 			{
-				collectionMetadata.Add(collectionPersister.Key, collectionPersister.Value.CollectionMetadata);
+				tmpcollectionMetadata.Add(collectionPersister.Key, collectionPersister.Value.CollectionMetadata);
 			}
+			collectionMetadata = new UnmodifiableDictionary<string, ICollectionMetadata>(tmpcollectionMetadata);
+			collectionRolesByEntityParticipant = new UnmodifiableDictionary<string, ISet<string>>(tmpEntityToCollectionRoleMap);
+			#endregion
 
-			collectionRolesByEntityParticipant = new Dictionary<string, ISet<string>>(tmpEntityToCollectionRoleMap);
+			#region Named Queries
+			namedQueries = new Dictionary<string, NamedQueryDefinition>(cfg.NamedQueries);
+			namedSqlQueries = new Dictionary<string, NamedSQLQueryDefinition>(cfg.NamedSQLQueries);
+			sqlResultSetMappings = new Dictionary<string, ResultSetMappingDefinition>(cfg.SqlResultSetMappings);
+			#endregion
 
-			// serialization info
+			imports = new Dictionary<string, string>(cfg.Imports);
+
+			#region after *all* persisters and named queries are registered
+			foreach (IEntityPersister persister in entityPersisters.Values)
+			{
+				persister.PostInstantiate();
+			}
+			foreach (ICollectionPersister persister in collectionPersisters.Values)
+			{
+				persister.PostInstantiate();
+			}
+			#endregion
+
+			#region Serialization info
+
 			name = settings.SessionFactoryName;
 			try
 			{
@@ -258,49 +276,39 @@ namespace NHibernate.Impl
 			}
 			catch (Exception)
 			{
-				throw new AssertionFailure("could not generate UUID");
+				throw new AssertionFailure("Could not generate UUID");
 			}
 
 			SessionFactoryObjectFactory.AddInstance(uuid, name, this, properties);
 
-			namedQueries = new Dictionary<string, NamedQueryDefinition>(cfg.NamedQueries);
-			namedSqlQueries = new Dictionary<string, NamedSQLQueryDefinition>(cfg.NamedSQLQueries);
-			sqlResultSetMappings = new Dictionary<string, ResultSetMappingDefinition>(cfg.SqlResultSetMappings);
-			filters = new Dictionary<string, FilterDefinition>(cfg.FilterDefinitions);
-
-			imports = new Dictionary<string, string>(cfg.Imports);
-
-			// after *all* persisters and named queries are registered
-			foreach (IEntityPersister persister in entityPersisters.Values)
-			{
-				persister.PostInstantiate();
-			}
-
-			foreach (ICollectionPersister persister in collectionPersisters.Values)
-			{
-				persister.PostInstantiate();
-			}
+			#endregion
 
 			log.Debug("Instantiated session factory");
 
+			#region Schema management
 			if (settings.IsAutoCreateSchema)
 			{
 				new SchemaExport(cfg).Create(false, true);
 			}
 
-			/*
 			if ( settings.IsAutoUpdateSchema )
 			{
-				new SchemaUpdate( cfg ).Execute( false, true );
+				new SchemaUpdate(cfg).Execute(false, true);
 			}
-			*/
-
+			if (settings.IsAutoValidateSchema)
+			{
+				// TODO NH : Schema validator not ported yet
+				// new SchemaValidator(cfg, settings).validate();
+			}
 			if (settings.IsAutoDropSchema)
 			{
 				schemaExport = new SchemaExport(cfg);
 			}
+			#endregion
 
-			// Obtaining TransactionManager - not ported from H2.1
+			#region Obtaining TransactionManager
+			// not ported yet
+			#endregion
 
 			currentSessionContext = BuildCurrentSessionContext();
 
@@ -317,7 +325,7 @@ namespace NHibernate.Impl
 				queryCaches = null;
 			}
 
-			//checking for named queries
+			#region Checking for named queries
 			if (settings.IsNamedQueryStartupCheckingEnabled)
 			{
 				IDictionary<string, HibernateException> errors = CheckNamedQueries();
@@ -332,6 +340,7 @@ namespace NHibernate.Impl
 					throw new HibernateException(failingQueries.ToString());
 				}
 			}
+			#endregion
 
 			Statistics.IsStatisticsEnabled = settings.IsStatisticsEnabled;
 
@@ -344,179 +353,12 @@ namespace NHibernate.Impl
 			entityNotFoundDelegate = enfd;
 		}
 
-		private IDictionary<string, HibernateException> CheckNamedQueries()
+		public EventListeners EventListeners
 		{
-			IDictionary<string, HibernateException> errors = new Dictionary<string, HibernateException>();
-
-			// Check named HQL queries
-			log.Debug("Checking " + namedQueries.Count + " named HQL queries");
-			foreach (KeyValuePair<string, NamedQueryDefinition> entry in namedQueries)
-			{
-				string queryName = entry.Key;
-				NamedQueryDefinition qd = entry.Value;
-				// this will throw an error if there's something wrong.
-				try
-				{
-					log.Debug("Checking named query: " + queryName);
-					//TODO: BUG! this currently fails for named queries for non-POJO entities
-					queryPlanCache.GetHQLQueryPlan(qd.QueryString, false, new CollectionHelper.EmptyMapClass<string, IFilter>());
-				}
-				catch (QueryException e)
-				{
-					errors[queryName] = e;
-				}
-				catch (MappingException e)
-				{
-					errors[queryName] = e;
-				}
-			}
-
-			log.Debug("Checking " + namedSqlQueries.Count + " named SQL queries");
-			foreach (KeyValuePair<string, NamedSQLQueryDefinition> entry in namedSqlQueries)
-			{
-				string queryName = entry.Key;
-				NamedSQLQueryDefinition qd = entry.Value;
-				// this will throw an error if there's something wrong.
-				try
-				{
-					log.Debug("Checking named SQL query: " + queryName);
-					// TODO : would be really nice to cache the spec on the query-def so as to not have to re-calc the hash;
-					// currently not doable though because of the resultset-ref stuff...
-					NativeSQLQuerySpecification spec;
-					if (qd.ResultSetRef != null)
-					{
-						ResultSetMappingDefinition definition = sqlResultSetMappings[qd.ResultSetRef];
-						if (definition == null)
-						{
-							throw new MappingException("Unable to find resultset-ref definition: " + qd.ResultSetRef);
-						}
-						spec = new NativeSQLQuerySpecification(qd.QueryString, definition.GetQueryReturns(), qd.QuerySpaces);
-					}
-					else
-					{
-						spec = new NativeSQLQuerySpecification(qd.QueryString, qd.QueryReturns, qd.QuerySpaces);
-					}
-					queryPlanCache.GetNativeSQLQueryPlan(spec);
-				}
-				catch (QueryException e)
-				{
-					errors[queryName] = e;
-				}
-				catch (MappingException e)
-				{
-					errors[queryName] = e;
-				}
-			}
-
-			return errors;
+			get { return eventListeners; }
 		}
 
-		[NonSerialized] private readonly ICurrentSessionContext currentSessionContext;
-
-		private ISession OpenSession(IDbConnection connection, long timestamp, IInterceptor interceptor,
-		                             ConnectionReleaseMode connectionReleaseMode)
-		{
-			SessionImpl sessionImpl = new SessionImpl(connection, this, timestamp, interceptor, connectionReleaseMode);
-			bool isSessionScopedInterceptor = this.interceptor != interceptor;
-			if (isSessionScopedInterceptor)
-			{
-				interceptor.SetSession(sessionImpl);
-			}
-			sessionImpl.Initialize();
-			return sessionImpl;
-		}
-
-		public ISession OpenSession()
-		{
-			return OpenSession(interceptor);
-		}
-
-		public ISession OpenSession(IDbConnection connection)
-		{
-			return OpenSession(connection, interceptor);
-		}
-
-		public ISession OpenSession(IDbConnection connection, IInterceptor interceptor)
-		{
-			return OpenSession(connection, long.MinValue, interceptor, settings.ConnectionReleaseMode);
-		}
-
-		public ISession OpenSession(IInterceptor interceptor)
-		{
-			long timestamp = settings.CacheProvider.NextTimestamp();
-			return OpenSession(null, timestamp, interceptor, settings.ConnectionReleaseMode);
-		}
-
-		public ISession OpenSession(IDbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
-		                            ConnectionReleaseMode connectionReleaseMode)
-		{
-			return
-				new SessionImpl(connection, this, true, settings.CacheProvider.NextTimestamp(), interceptor,
-				                settings.DefaultEntityMode, flushBeforeCompletionEnabled, autoCloseSessionEnabled,
-				                connectionReleaseMode);
-		}
-
-		public IEntityPersister GetEntityPersister(string entityName)
-		{
-			try
-			{
-				return entityPersisters[entityName];
-			}
-			catch (KeyNotFoundException)
-			{
-				throw new MappingException("No persister for: " + entityName);
-			}
-		}
-
-		public IEntityPersister TryGetEntityPersister(string entityName)
-		{
-			IEntityPersister result;
-			entityPersisters.TryGetValue(entityName, out result);
-			return result;
-		}
-
-		public ICollectionPersister GetCollectionPersister(string role)
-		{
-			ICollectionPersister result;
-			if (!collectionPersisters.TryGetValue(role, out result))
-			{
-				throw new MappingException("Unknown collection role: " + role);
-			}
-			return result;
-		}
-
-		public ISet<string> GetCollectionRolesByEntityParticipant(string entityName)
-		{
-			ISet<string> result;
-			collectionRolesByEntityParticipant.TryGetValue(entityName, out result);
-			return result;
-		}
-
-		/// <summary></summary>
-		public HibernateDialect Dialect
-		{
-			get { return settings.Dialect; }
-		}
-
-		public IInterceptor Interceptor
-		{
-			get { return interceptor; }
-		}
-
-		/// <summary></summary>
-		public ITransactionFactory TransactionFactory
-		{
-			get { return settings.TransactionFactory; }
-		}
-
-		// TransactionManager - not ported
-
-		public ISQLExceptionConverter SQLExceptionConverter
-		{
-			get { return settings.SqlExceptionConverter; }
-		}
-
-		#region System.Runtime.Serialization.IObjectReference Members
+		#region IObjectReference Members
 
 		public object GetRealObject(StreamingContext context)
 		{
@@ -551,6 +393,108 @@ namespace NHibernate.Impl
 		}
 
 		#endregion
+
+		#region ISessionFactoryImplementor Members
+
+		public ISession OpenSession()
+		{
+			return OpenSession(interceptor);
+		}
+
+		public ISession OpenSession(IDbConnection connection)
+		{
+			return OpenSession(connection, interceptor);
+		}
+
+		public ISession OpenSession(IDbConnection connection, IInterceptor sessionLocalInterceptor)
+		{
+			if (sessionLocalInterceptor == null)
+			{
+				throw new ArgumentNullException("sessionLocalInterceptor");
+			}
+			return OpenSession(connection, false, long.MinValue, sessionLocalInterceptor);
+		}
+
+		public ISession OpenSession(IInterceptor interceptor)
+		{
+			if (interceptor == null)
+			{
+				throw new ArgumentNullException("interceptor");
+			}
+			long timestamp = settings.CacheProvider.NextTimestamp();
+			return OpenSession(null, true, timestamp, interceptor);
+		}
+
+		public ISession OpenSession(IDbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
+		                            ConnectionReleaseMode connectionReleaseMode)
+		{
+			return
+				new SessionImpl(connection, this, true, settings.CacheProvider.NextTimestamp(), interceptor,
+				                settings.DefaultEntityMode, flushBeforeCompletionEnabled, autoCloseSessionEnabled,
+				                connectionReleaseMode);
+		}
+
+		public IEntityPersister GetEntityPersister(string entityName)
+		{
+			try
+			{
+				return entityPersisters[entityName];
+			}
+			catch (KeyNotFoundException)
+			{
+				throw new MappingException("No persister for: " + entityName);
+			}
+		}
+
+		public IEntityPersister TryGetEntityPersister(string entityName)
+		{
+			IEntityPersister result;
+			entityPersisters.TryGetValue(entityName, out result);
+			return result;
+		}
+
+		public ICollectionPersister GetCollectionPersister(string role)
+		{
+			try
+			{
+				return collectionPersisters[role];
+			}
+			catch (KeyNotFoundException)
+			{
+				throw new MappingException("Unknown collection role: " + role);
+			}
+		}
+
+		public ISet<string> GetCollectionRolesByEntityParticipant(string entityName)
+		{
+			ISet<string> result;
+			collectionRolesByEntityParticipant.TryGetValue(entityName, out result);
+			return result;
+		}
+
+		/// <summary></summary>
+		public HibernateDialect Dialect
+		{
+			get { return settings.Dialect; }
+		}
+
+		public IInterceptor Interceptor
+		{
+			get { return interceptor; }
+		}
+
+		/// <summary></summary>
+		public ITransactionFactory TransactionFactory
+		{
+			get { return settings.TransactionFactory; }
+		}
+
+		// TransactionManager - not ported
+
+		public ISQLExceptionConverter SQLExceptionConverter
+		{
+			get { return settings.SqlExceptionConverter; }
+		}
 
 		/// <summary>
 		/// Gets the <c>hql</c> query identified by the <c>name</c>.
@@ -613,7 +557,9 @@ namespace NHibernate.Impl
 
 		public ICollectionMetadata GetCollectionMetadata(string roleName)
 		{
-			return GetCollectionPersister(roleName) as ICollectionMetadata;
+			ICollectionMetadata result;
+			collectionMetadata.TryGetValue(roleName, out result);
+			return result;
 		}
 
 		/// <summary>
@@ -623,7 +569,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		public string[] GetImplementors(string className)
 		{
-			System.Type clazz= null;
+			System.Type clazz = null;
 			// NH Different implementation: we have better performance checking, first of all, if we know the class
 			// and take the System.Type directly from the persister (className have high probability to be entityName)
 			IEntityPersister checkPersister;
@@ -656,7 +602,7 @@ namespace NHibernate.Impl
 					{
 						if (isMappedClass)
 						{
-							return new string[] { testClassName }; // NOTE EARLY EXIT
+							return new string[] {testClassName}; // NOTE EARLY EXIT
 						}
 					}
 					else
@@ -696,9 +642,13 @@ namespace NHibernate.Impl
 		{
 			string result;
 			if (className != null && imports.TryGetValue(className, out result))
+			{
 				return result;
+			}
 			else
+			{
 				return className;
+			}
 		}
 
 		/// <summary></summary>
@@ -712,8 +662,6 @@ namespace NHibernate.Impl
 		{
 			return collectionMetadata;
 		}
-
-		private bool disposed;
 
 		public void Dispose()
 		{
@@ -870,7 +818,6 @@ namespace NHibernate.Impl
 			return GetEntityPersister(className).GetPropertyType(propertyName);
 		}
 
-		/// <summary></summary>
 		public IConnectionProvider ConnectionProvider
 		{
 			get { return settings.ConnectionProvider; }
@@ -926,7 +873,7 @@ namespace NHibernate.Impl
 			lock (allCacheRegions.SyncRoot)
 			{
 				IQueryCache currentQueryCache;
-				if (!queryCaches.TryGetValue(cacheRegion,out currentQueryCache))
+				if (!queryCaches.TryGetValue(cacheRegion, out currentQueryCache))
 				{
 					currentQueryCache =
 						settings.QueryCacheFactory.GetQueryCache(cacheRegion, updateTimestampsCache, settings, properties);
@@ -939,6 +886,7 @@ namespace NHibernate.Impl
 
 		public void EvictQueries()
 		{
+			// NH Different implementation
 			if (queryCache != null)
 			{
 				queryCache.Clear();
@@ -951,7 +899,7 @@ namespace NHibernate.Impl
 
 		public void EvictQueries(string cacheRegion)
 		{
-			if (cacheRegion == null)
+			if (string.IsNullOrEmpty(cacheRegion))
 			{
 				throw new ArgumentNullException("cacheRegion", "use the zero-argument form to evict the default query cache");
 			}
@@ -984,22 +932,19 @@ namespace NHibernate.Impl
 
 		public FilterDefinition GetFilterDefinition(string filterName)
 		{
-			FilterDefinition def = filters[filterName];
-			if (def == null)
+			try
+			{
+				return filters[filterName];
+			}
+			catch (KeyNotFoundException)
 			{
 				throw new HibernateException("No such filter configured [" + filterName + "]");
 			}
-			return def;
 		}
 
 		public ICollection<string> DefinedFilterNames
 		{
 			get { return filters.Keys; }
-		}
-
-		public EventListeners EventListeners
-		{
-			get { return eventListeners; }
 		}
 
 		public Settings Settings
@@ -1043,6 +988,104 @@ namespace NHibernate.Impl
 			get { return currentSessionContext; }
 		}
 
+		public SQLFunctionRegistry SQLFunctionRegistry
+		{
+			get { return sqlFunctionRegistry; }
+		}
+
+		public IEntityNotFoundDelegate EntityNotFoundDelegate
+		{
+			get { return entityNotFoundDelegate; }
+		}
+
+		public QueryPlanCache QueryPlanCache
+		{
+			get { return queryPlanCache; }
+		}
+
+		#endregion
+
+		private void Init()
+		{
+			statistics = new StatisticsImpl(this);
+			queryPlanCache = new QueryPlanCache(this);
+		}
+
+		private IDictionary<string, HibernateException> CheckNamedQueries()
+		{
+			IDictionary<string, HibernateException> errors = new Dictionary<string, HibernateException>();
+
+			// Check named HQL queries
+			log.Debug("Checking " + namedQueries.Count + " named HQL queries");
+			foreach (KeyValuePair<string, NamedQueryDefinition> entry in namedQueries)
+			{
+				string queryName = entry.Key;
+				NamedQueryDefinition qd = entry.Value;
+				// this will throw an error if there's something wrong.
+				try
+				{
+					log.Debug("Checking named query: " + queryName);
+					//TODO: BUG! this currently fails for named queries for non-POJO entities
+					queryPlanCache.GetHQLQueryPlan(qd.QueryString, false, new CollectionHelper.EmptyMapClass<string, IFilter>());
+				}
+				catch (QueryException e)
+				{
+					errors[queryName] = e;
+				}
+				catch (MappingException e)
+				{
+					errors[queryName] = e;
+				}
+			}
+
+			log.Debug("Checking " + namedSqlQueries.Count + " named SQL queries");
+			foreach (KeyValuePair<string, NamedSQLQueryDefinition> entry in namedSqlQueries)
+			{
+				string queryName = entry.Key;
+				NamedSQLQueryDefinition qd = entry.Value;
+				// this will throw an error if there's something wrong.
+				try
+				{
+					log.Debug("Checking named SQL query: " + queryName);
+					// TODO : would be really nice to cache the spec on the query-def so as to not have to re-calc the hash;
+					// currently not doable though because of the resultset-ref stuff...
+					NativeSQLQuerySpecification spec;
+					if (qd.ResultSetRef != null)
+					{
+						ResultSetMappingDefinition definition = sqlResultSetMappings[qd.ResultSetRef];
+						if (definition == null)
+						{
+							throw new MappingException("Unable to find resultset-ref definition: " + qd.ResultSetRef);
+						}
+						spec = new NativeSQLQuerySpecification(qd.QueryString, definition.GetQueryReturns(), qd.QuerySpaces);
+					}
+					else
+					{
+						spec = new NativeSQLQuerySpecification(qd.QueryString, qd.QueryReturns, qd.QuerySpaces);
+					}
+					queryPlanCache.GetNativeSQLQueryPlan(spec);
+				}
+				catch (QueryException e)
+				{
+					errors[queryName] = e;
+				}
+				catch (MappingException e)
+				{
+					errors[queryName] = e;
+				}
+			}
+
+			return errors;
+		}
+
+		private SessionImpl OpenSession(IDbConnection connection, bool autoClose, long timestamp, IInterceptor sessionLocalInterceptor)
+		{
+			return
+				new SessionImpl(connection, this, autoClose, timestamp, sessionLocalInterceptor ?? interceptor,
+				                settings.DefaultEntityMode, settings.IsFlushBeforeCompletionEnabled,
+				                settings.IsAutoCloseSessionEnabled, settings.ConnectionReleaseMode);
+		}
+
 		private ICurrentSessionContext BuildCurrentSessionContext()
 		{
 			string impl = PropertiesHelper.GetString(Environment.CurrentSessionContextClass, properties, null);
@@ -1071,21 +1114,6 @@ namespace NHibernate.Impl
 				log.Error("Unable to construct current session context [" + impl + "]", e);
 				return null;
 			}
-		}
-
-		public SQLFunctionRegistry SQLFunctionRegistry
-		{
-			get { return sqlFunctionRegistry; }
-		}
-
-		public IEntityNotFoundDelegate EntityNotFoundDelegate
-		{
-			get { return entityNotFoundDelegate; }
-		}
-
-		public QueryPlanCache QueryPlanCache
-		{
-			get { return queryPlanCache; }
 		}
 	}
 }

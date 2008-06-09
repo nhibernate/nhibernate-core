@@ -47,8 +47,7 @@ namespace NHibernate.Impl
 
 		private readonly IInterceptor interceptor;
 
-		[NonSerialized] 
-		private EntityMode entityMode = NHibernate.EntityMode.Poco;
+		[NonSerialized] private readonly EntityMode entityMode = NHibernate.EntityMode.Poco;
 
 		[NonSerialized]
 		private readonly EventListeners listeners;
@@ -61,22 +60,20 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private int dontFlushFromFind = 0;
 
-		[NonSerialized]
-		private IDictionary<string, IFilter> enabledFilters = new Dictionary<string, IFilter>();
+		[NonSerialized] private readonly IDictionary<string, IFilter> enabledFilters = new Dictionary<string, IFilter>();
 
 		[NonSerialized]
 		private readonly StatefulPersistenceContext persistenceContext;
 		
 		[NonSerialized]
-		private ISession rootSession;
+		private readonly ISession rootSession;
 
 		[NonSerialized]
 		private IDictionary<EntityMode,ISession> childSessionsByEntityMode;
 
-
-		//[NonSerialized] private bool flushBeforeCompletionEnabled;
-		[NonSerialized] private bool autoCloseSessionEnabled;
-		//[NonSerialized] private ConnectionReleaseMode connectionReleaseMode;
+		[NonSerialized] private readonly bool flushBeforeCompletionEnabled;
+		[NonSerialized] private readonly bool autoCloseSessionEnabled;
+		[NonSerialized] private readonly ConnectionReleaseMode connectionReleaseMode;
 
 		#region System.Runtime.Serialization.ISerializable Members
 
@@ -170,31 +167,6 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		internal SessionImpl(
-			IDbConnection connection,
-			SessionFactoryImpl factory,
-			long timestamp,
-			IInterceptor interceptor,
-			ConnectionReleaseMode connectionReleaseMode):base(factory)
-		{
-			if (interceptor == null)
-				throw new ArgumentNullException("interceptor", "The interceptor can not be null");
-
-			connectionManager = new ConnectionManager(this, connection, connectionReleaseMode, interceptor);
-			this.interceptor = interceptor;
-			this.timestamp = timestamp;
-			listeners = factory.EventListeners;
-			actionQueue = new ActionQueue(this);
-			persistenceContext = new StatefulPersistenceContext(this);
-
-			if (factory.Statistics.IsStatisticsEnabled)
-			{
-				factory.StatisticsImplementor.OpenSession();
-			}
-
-			log.Debug("opened session");
-		}
-
 		/// <summary>
 		/// Constructor used for OpenSession(...) processing, as well as construction
 		/// of sessions for GetCurrentSession().
@@ -208,7 +180,7 @@ namespace NHibernate.Impl
 		/// <param name="flushBeforeCompletionEnabled">Should we auto flush before completion of transaction</param>
 		/// <param name="autoCloseSessionEnabled">Should we auto close after completion of transaction</param>
 		/// <param name="connectionReleaseMode">The mode by which we should release JDBC connections.</param>
-		public SessionImpl(
+		internal SessionImpl(
 			IDbConnection connection,
 			SessionFactoryImpl factory,
 			bool autoclose,
@@ -220,6 +192,9 @@ namespace NHibernate.Impl
 			ConnectionReleaseMode connectionReleaseMode)
 			: base(factory)
 		{
+			if (interceptor == null)
+				throw new AssertionFailure("The interceptor can not be null.");
+
 			rootSession = null;
 			this.timestamp = timestamp;
 			this.entityMode = entityMode;
@@ -227,10 +202,21 @@ namespace NHibernate.Impl
 			listeners = factory.EventListeners;
 			actionQueue = new ActionQueue(this);
 			persistenceContext = new StatefulPersistenceContext(this);
-			//this.flushBeforeCompletionEnabled = flushBeforeCompletionEnabled;
+			this.flushBeforeCompletionEnabled = flushBeforeCompletionEnabled;
 			this.autoCloseSessionEnabled = autoCloseSessionEnabled;
-			//this.connectionReleaseMode = connectionReleaseMode;
-			//this.jdbcContext = new JDBCContext(this, connection, interceptor);
+			this.connectionReleaseMode = connectionReleaseMode;
+			connectionManager = new ConnectionManager(this, connection, connectionReleaseMode, interceptor);
+
+			if (factory.Statistics.IsStatisticsEnabled)
+			{
+				factory.StatisticsImplementor.OpenSession();
+			}
+
+			if (log.IsDebugEnabled)
+			{
+				log.Debug("opened session at timestamp: " + timestamp);
+			}
+
 			CheckAndUpdateSessionStatus();
 		}
 
@@ -244,20 +230,21 @@ namespace NHibernate.Impl
 		{
 			rootSession = parent;
 			timestamp = parent.timestamp;
-			connectionManager = parent.connectionManager; //this.jdbcContext = parent.jdbcContext;
+			connectionManager = parent.connectionManager;
 			interceptor = parent.interceptor;
 			listeners = parent.listeners;
 			actionQueue = new ActionQueue(this);
 			this.entityMode = entityMode;
 			persistenceContext = new StatefulPersistenceContext(this);
-			//this.flushBeforeCompletionEnabled = false;
+			flushBeforeCompletionEnabled = false;
 			autoCloseSessionEnabled = false;
-			//this.connectionReleaseMode = null;
+			connectionReleaseMode = parent.ConnectionReleaseMode; // NH different
 
 			if (Factory.Statistics.IsStatisticsEnabled)
 				Factory.StatisticsImplementor.OpenSession();
 
 			log.Debug("opened session [" + entityMode + "]");
+
 			CheckAndUpdateSessionStatus();
 		}
 
@@ -275,6 +262,11 @@ namespace NHibernate.Impl
 		public override long Timestamp
 		{
 			get { return timestamp; }
+		}
+
+		public ConnectionReleaseMode ConnectionReleaseMode
+		{
+			get { return connectionReleaseMode; }
 		}
 
 		public bool IsAutoCloseSessionEnabled
@@ -313,7 +305,10 @@ namespace NHibernate.Impl
 						}
 					}
 				}
-				catch {}
+				catch 
+				{
+					// just ignore
+				}
 
 				if (rootSession == null)
 					return connectionManager.Close();
@@ -836,6 +831,11 @@ namespace NHibernate.Impl
 		{
 			get { return flushMode; }
 			set { flushMode = value; }
+		}
+
+		public bool FlushBeforeCompletionEnabled
+		{
+			get { return flushBeforeCompletionEnabled; }
 		}
 
 		public override string BestGuessEntityName(object entity)
