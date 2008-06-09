@@ -22,7 +22,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1297
 		}
 
 		[Test]
-		[Ignore("Not yet fix")]
 		public void ItemsCanBeSavedAndUpdatedInTheSameSession()
 		{
 			using (ISession s = OpenSession())
