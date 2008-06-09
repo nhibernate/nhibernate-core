@@ -132,6 +132,11 @@ namespace NHibernate.Criterion
 			get { return criteria.Alias; }
 		}
 
+		public string EntityOrClassName
+		{
+			get { return impl.EntityOrClassName;  }
+		}
+
 		protected internal CriteriaImpl GetCriteriaImpl()
 		{
 			return impl;
