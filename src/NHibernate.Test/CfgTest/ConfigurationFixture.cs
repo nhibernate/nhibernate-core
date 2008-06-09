@@ -5,6 +5,7 @@ using System.Xml;
 using NHibernate.Cfg;
 using NHibernate.DomainModel;
 using NHibernate.Tool.hbm2ddl;
+using NHibernate.Util;
 using NUnit.Framework;
 using Environment=NHibernate.Cfg.Environment;
 
@@ -134,6 +135,28 @@ namespace NHibernate.Test.CfgTest
 			Configuration cfg = new Configuration();
 			XmlTextReader xtr = new XmlTextReader(xml, XmlNodeType.Document, null);
 			cfg.Configure(xtr);
+		}
+
+		[Test]
+		public void NH1334()
+		{
+			string xml =
+				@"<?xml version='1.0' encoding='utf-8' ?>
+<hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
+	<session-factory name='NHibernate.Test'>
+		<property name='current_session_context_class'>
+		web
+		</property>
+	</session-factory>
+</hibernate-configuration>";
+
+			XmlDocument cfgXml = new XmlDocument();
+			cfgXml.LoadXml(xml);
+
+			Configuration cfg = new Configuration();
+			XmlTextReader xtr = new XmlTextReader(xml, XmlNodeType.Document, null);
+			cfg.Configure(xtr);
+			Assert.AreEqual("web", PropertiesHelper.GetString(Environment.CurrentSessionContextClass, cfg.Properties, null));
 		}
 
 		[Test]
