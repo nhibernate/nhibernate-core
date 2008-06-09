@@ -54,7 +54,15 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			while (xpni.MoveNext())
 			{
 				string propName;
-				string propValue = xpni.Current.Value;
+				string propValue;
+				if(xpni.Current.Value!=null)
+				{
+					propValue = xpni.Current.Value.Trim();
+				}
+				else
+				{
+					propValue = string.Empty;
+				}
 				XPathNavigator pNav = xpni.Current.Clone();
 				pNav.MoveToFirstAttribute();
 				propName= pNav.Value;
