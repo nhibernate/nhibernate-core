@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using NHibernate.Transaction;
 
 namespace NHibernate
 {
@@ -68,5 +69,12 @@ namespace NHibernate
 		/// It is okay for this to be a no op implementation.
 		/// </remarks>
 		void Enlist(IDbCommand command);
+	 
+
+		/// <summary>
+		/// Register a user synchronization callback for this transaction.
+		/// </summary>
+		/// <param name="synchronization">The <see cref="ISynchronization"/> callback to register.</param>
+		void RegisterSynchronization(ISynchronization synchronization);
 	}
 }
