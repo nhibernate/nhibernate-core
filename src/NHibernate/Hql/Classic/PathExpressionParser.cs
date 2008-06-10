@@ -669,5 +669,12 @@ namespace NHibernate.Hql.Classic
 				q.AddEntityToFetch(entityName, oneToOneOwnerName, ownerAssociationType);
 			}
 		}
+
+		public string ProcessedPath
+		{
+			// NH: Added to use it in exceptions
+			get { return path.ToString(); }
+		}
+
 	}
 }

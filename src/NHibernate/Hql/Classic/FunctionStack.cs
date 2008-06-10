@@ -134,7 +134,21 @@ namespace NHibernate.Hql.Classic
 		public IType GetReturnType()
 		{
 			FunctionHolder fh = Peek();
-			return fh.SqlFunction.ReturnType(fh.FirstValidColumnType, mapping);
+			IType result;
+			try
+			{
+				result = fh.SqlFunction.ReturnType(fh.FirstValidColumnType, mapping);
+			}
+			catch(ArgumentNullException)
+			{
+				result = null;
+			}
+			if (result == null)
+			{
+				// magnify the exception
+				throw new QueryException(string.Format("Can't extract the type of one parameter of a HQL function: expression->{{{0}}}; check aliases.",fh.PathExpressionParser.ProcessedPath));
+			}
+			return result;
 		}
 	}
 }

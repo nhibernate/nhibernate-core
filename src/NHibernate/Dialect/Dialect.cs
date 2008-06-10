@@ -1960,6 +1960,10 @@ namespace NHibernate.Dialect
 
 			public override IType ReturnType(IType columnType, IMapping mapping)
 			{
+				if (columnType == null)
+				{
+					throw new ArgumentNullException("columnType");
+				}
 				SqlType[] sqlTypes;
 				try
 				{
@@ -1987,6 +1991,10 @@ namespace NHibernate.Dialect
 			//H3.2 behavior
 			public override IType ReturnType(IType columnType, IMapping mapping)
 			{
+				if (columnType == null)
+				{
+					throw new ArgumentNullException("columnType");
+				}
 				SqlType[] sqlTypes;
 				try
 				{

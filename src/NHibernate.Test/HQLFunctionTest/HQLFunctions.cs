@@ -1,9 +1,6 @@
-using System;
 using System.Collections;
-
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.HQLFunctionTest
@@ -177,6 +174,23 @@ namespace NHibernate.Test.HQLFunctionTest
 				result = s.CreateQuery("select sum(a.BodyWeight) from Animal a having sum(a.BodyWeight)>0").UniqueResult();
 				Assert.AreEqual(typeof(double), result.GetType());
 				Assert.AreEqual(30D, result);
+			}
+		}
+
+		[Test, ExpectedException(typeof(QueryException))]
+		public void AggregateSumNH1100()
+		{
+			using (ISession s = OpenSession())
+			{
+				Animal a1 = new Animal("a1", 20);
+				Animal a2 = new Animal("a1", 10);
+				s.Save(a1);
+				s.Save(a2);
+				s.Flush();
+			}
+			using (ISession s = OpenSession())
+			{
+				s.CreateQuery("select distinct new SummaryItem(a.Description, sum(BodyWeight)) from Animal a").List<SummaryItem>();
 			}
 		}
 
