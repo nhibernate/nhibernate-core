@@ -17,6 +17,10 @@ namespace NHibernate.Dialect.Function
 
 		public override IType ReturnType(IType columnType, IMapping mapping)
 		{
+			if (columnType == null)
+			{
+				throw new ArgumentNullException("columnType");
+			}
 			SqlType[] sqlTypes;
 			try
 			{

@@ -4,7 +4,9 @@
 	namespace="NHibernate.Test.HQLFunctionTest"
     default-access="field.camelcase-underscore"
 	default-lazy="true">
-
+	
+	<import class="SummaryItem"/>
+	
 	<class name="Animal">
 		<id name ="Id">
 			<generator class="native" />
