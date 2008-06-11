@@ -210,6 +210,13 @@ namespace NHibernate
 		/// <param name="val">A non-null instance of a <see cref="String"/>.</param>
 		IMultiQuery SetString(string name, string val);
 
+    /// <summary>
+    /// Bind an instance of a <see cref="Guid" /> to a named parameter
+    /// using an NHibernate <see cref="GuidType"/>.
+    /// </summary>
+    /// <param name="name">The name of the parameter</param>
+    /// <param name="val">An instance of a <see cref="Guid"/>.</param>
+    IMultiQuery SetGuid(string name, Guid val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="DateTime" /> to a named parameter

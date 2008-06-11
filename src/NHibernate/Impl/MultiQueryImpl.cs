@@ -260,6 +260,16 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		public IMultiQuery SetGuid(string name, Guid val)
+		{
+			namedParametersThatAreSafeToDuplicate.Add(name);
+			foreach (IQuery query in queries)
+			{
+				query.SetGuid(name, val);
+			}
+			return this;
+		}
+
 		public IMultiQuery SetTime(string name, DateTime val)
 		{
 			namedParametersThatAreSafeToDuplicate.Add(name);
