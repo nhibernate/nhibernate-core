@@ -259,6 +259,16 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		public IMultiQuery SetGuid(string name, Guid val)
+		{
+			namedParametersThatAreSafeToDuplicate.Add(name);
+			foreach (IQuery query in queries)
+			{
+				query.SetGuid(name, val);
+			}
+			return this;
+		}
+
 		public IMultiQuery SetTime(string name, DateTime val)
 		{
 			namedParametersThatAreSafeToDuplicate.Add(name);
@@ -438,13 +448,13 @@ namespace NHibernate.Impl
 
 						object result =
 							translator.GetRowFromResultSet(reader,
-														   session,
-														   parameter,
-														   lockModeArray,
-														   optionalObjectKey,
-														   hydratedObjects[i],
-														   keys,
-														   false);
+															 session,
+															 parameter,
+															 lockModeArray,
+															 optionalObjectKey,
+															 hydratedObjects[i],
+															 keys,
+															 false);
 						tempResults.Add(result);
 
 						if (createSubselects[i])
