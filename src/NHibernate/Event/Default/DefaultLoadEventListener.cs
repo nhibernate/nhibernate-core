@@ -177,10 +177,16 @@ namespace NHibernate.Event.Default
 			if (!options.IsAllowProxyCreation)
 			{
 				impl = Load(@event, persister, keyToLoad, options);
-				if (impl == null)
+				// NH Different behavior : NH-1252
+				if (impl == null && !options.IsAllowNulls)
 				{
 					@event.Session.Factory.EntityNotFoundDelegate.HandleEntityNotFound(persister.EntityName, keyToLoad.Identifier);
 				}
+			}
+			if (impl == null && !options.IsAllowProxyCreation && options.ExactPersister)
+			{
+				// NH Different behavior : NH-1252
+				return null;
 			}
 			return persistenceContext.NarrowProxy((INHibernateProxy)proxy, persister, keyToLoad, impl);
 		}

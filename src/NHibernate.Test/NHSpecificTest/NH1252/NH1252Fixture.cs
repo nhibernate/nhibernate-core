@@ -25,32 +25,31 @@ namespace NHibernate.Test.NHSpecificTest.NH1252
 		}
 
 		[Test]
-		[Ignore("Not yet fixed")]
 		public void Test()
 		{
 			SubClass1 sc1 = new SubClass1();
 			sc1.Name = "obj1";
-
+			object savedId;
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				s.Save(sc1);
+				savedId = s.Save(sc1);
 				tx.Commit();
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				Assert.IsNull(s.Get<SubClass2>(sc1.Id));
+				Assert.IsNull(s.Get<SubClass2>(savedId));
 				tx.Commit();
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				s.Load<SomeClass>(sc1.Id); // Load a proxy by the parent class
+				s.Load<SomeClass>(savedId); // Load a proxy by the parent class
 
-				Assert.IsNull(s.Get<SubClass2>(sc1.Id));
+				Assert.IsNull(s.Get<SubClass2>(savedId));
 				tx.Commit();
 			}
 
