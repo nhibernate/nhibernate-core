@@ -110,15 +110,8 @@ namespace NHibernate.Test.NHSpecificTest
 			{
 				A loadedNonExistentA = (A) s.Load(typeof(A), -id);
 				Assert.IsFalse(NHibernateUtil.IsInitialized(loadedNonExistentA));
-				try
-				{
-					s.Get(typeof(A), -id);
-					Assert.Fail();
-				}
-				catch (ObjectNotFoundException)
-				{
-					// ok
-				}
+				// changed behavior because NH-1252
+				Assert.IsNull(s.Get(typeof(A), -id));
 				tx.Commit();
 			}
 		}
