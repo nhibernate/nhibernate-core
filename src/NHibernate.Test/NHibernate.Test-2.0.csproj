@@ -240,6 +240,7 @@
     <Compile Include="ListIndex\B.cs" />
     <Compile Include="ListIndex\ListIndexFixture.cs" />
     <Compile Include="Log4netConfiguration.cs" />
+    <Compile Include="LogSpy.cs" />
     <Compile Include="MappingExceptions\A.cs" />
     <Compile Include="MappingExceptions\AddClassFixture.cs" />
     <Compile Include="MappingExceptions\AddResourceFixture.cs" />
@@ -326,6 +327,8 @@
     <Compile Include="NHSpecificTest\NH1275\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1297\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1297\Model.cs" />
+    <Compile Include="NHSpecificTest\NH1332\A.cs" />
+    <Compile Include="NHSpecificTest\NH1332\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
@@ -1221,6 +1224,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1297\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1332\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

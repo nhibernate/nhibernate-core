@@ -24,7 +24,7 @@ namespace NHibernate.Action
 
 		protected internal override bool HasPostCommitEventListeners
 		{
-			get { return Session.Listeners.PostDeleteEventListeners.Length > 0; }
+			get { return Session.Listeners.PostCommitDeleteEventListeners.Length > 0; }
 		}
 
 		public override void Execute()
