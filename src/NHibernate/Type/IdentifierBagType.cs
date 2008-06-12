@@ -66,7 +66,7 @@ namespace NHibernate.Type
 			((IList) collection).Add(element);
 		}
 
-		public override object Instantiate()
+		public override object Instantiate(int anticipatedSize)
 		{
 			return new ArrayList();
 		}

@@ -152,7 +152,7 @@ namespace NHibernate.Collection.Generic
 			}
 			else
 			{
-				internalSet = (ISet<T>) persister.CollectionType.Instantiate();
+				internalSet = (ISet<T>)persister.CollectionType.Instantiate(-1);
 			}
 		}
 

@@ -148,7 +148,7 @@ namespace NHibernate.Collection
 
 		public override void BeforeInitialize(ICollectionPersister persister)
 		{
-			internalSet = (ISet) persister.CollectionType.Instantiate();
+			internalSet = (ISet)persister.CollectionType.Instantiate(-1);
 		}
 
 		#region System.Collections.ICollection Members

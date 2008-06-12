@@ -231,7 +231,7 @@ namespace NHibernate.Collection.Generic
 
 		public override void BeforeInitialize(ICollectionPersister persister)
 		{
-			list = (IList<T>) persister.CollectionType.Instantiate();
+			list = (IList<T>) persister.CollectionType.Instantiate(-1);
 		}
 
 		public override bool EqualsSnapshot(ICollectionPersister persister)

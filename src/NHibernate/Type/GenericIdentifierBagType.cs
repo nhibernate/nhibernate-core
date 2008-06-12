@@ -32,7 +32,7 @@ namespace NHibernate.Type
 			get { return typeof(IList<T>); }
 		}
 
-		public override object Instantiate()
+		public override object Instantiate(int anticipatedSize)
 		{
 			return new List<T>();
 		}

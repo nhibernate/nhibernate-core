@@ -63,7 +63,7 @@ namespace NHibernate.Type
 		// have a Copy on the base collection that handles the standard checks and then a DoCopy
 		// that performs the actual copy.
 
-		public override object Instantiate()
+		public override object Instantiate(int anticipatedSize)
 		{
 			return new List<T>();
 		}

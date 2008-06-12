@@ -70,7 +70,7 @@ namespace NHibernate.Type
 			((ISet) collection).Clear();
 		}
 
-		public override object Instantiate()
+		public override object Instantiate(int anticipatedSize)
 		{
 			return new HashedSet();
 		}

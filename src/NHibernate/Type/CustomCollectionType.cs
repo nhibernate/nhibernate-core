@@ -57,12 +57,12 @@ namespace NHibernate.Type
 
 		public override System.Type ReturnedClass
 		{
-			get { return userType.Instantiate().GetType(); }
+			get { return userType.Instantiate(-1).GetType(); }
 		}
 
-		public override object Instantiate()
+		public override object Instantiate(int anticipatedSize)
 		{
-			return userType.Instantiate();
+			return userType.Instantiate(anticipatedSize);
 		}
 
 		public override IEnumerable GetElementsIterator(object collection)

@@ -82,7 +82,7 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public override object Instantiate()
+		public override object Instantiate(int anticipatedSize)
 		{
 			return new Dictionary<TKey, TValue>();
 		}

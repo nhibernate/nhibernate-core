@@ -55,7 +55,7 @@ namespace NHibernate.Type
 			return new PersistentGenericSet<T>(session, (ISet<T>) collection);
 		}
 
-		public override object Instantiate()
+		public override object Instantiate(int anticipatedSize)
 		{
 			return new HashedSet<T>();
 		}

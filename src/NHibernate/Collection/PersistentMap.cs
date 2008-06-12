@@ -88,7 +88,7 @@ namespace NHibernate.Collection
 
 		public override void BeforeInitialize(ICollectionPersister persister)
 		{
-			this.map = (IDictionary) persister.CollectionType.Instantiate();
+			this.map = (IDictionary) persister.CollectionType.Instantiate(-1);
 		}
 
 		public int Count

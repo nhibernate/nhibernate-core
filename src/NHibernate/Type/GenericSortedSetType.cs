@@ -34,7 +34,7 @@ namespace NHibernate.Type
 			get { return comparer; }
 		}
 
-		public override object Instantiate()
+		public override object Instantiate(int anticipatedSize)
 		{
 			return new SortedSet<T>(comparer);
 		}

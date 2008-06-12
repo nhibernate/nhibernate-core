@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -45,9 +44,17 @@ namespace NHibernate.UserTypes
 			IDictionary copyCache,
 			ISessionImplementor session);
 
-		/// <summary>
-		/// Instantiate an empty instance of the "underlying" collection (not a wrapper)
-		/// </summary>
-		object Instantiate();
+		/// <summary> 
+		/// Instantiate an empty instance of the "underlying" collection (not a wrapper),
+		/// but with the given anticipated size (i.e. accounting for initial size
+		/// and perhaps load factor).
+		///  </summary>
+		/// <param name="anticipatedSize">
+		/// The anticipated size of the instaniated collection
+		/// after we are done populating it.  Note, may be negative to indicate that
+		/// we not yet know anything about the anticipated size (i.e., when initializing
+		/// from a result set row by row).
+		/// </param>		
+		object Instantiate(int anticipatedSize);
 	}
 }

@@ -46,7 +46,7 @@ namespace NHibernate.Test.UserCollection
 			return result;
 		}
 
-		public object Instantiate()
+		public object Instantiate(int anticipatedSize)
 		{
 			return new MyList();
 		}
