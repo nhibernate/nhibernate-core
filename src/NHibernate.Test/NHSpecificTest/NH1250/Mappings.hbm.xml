@@ -3,16 +3,18 @@
 				   namespace="NHibernate.Test.NHSpecificTest.NH1250"
 				   assembly="NHibernate.Test">
 	<class name="Party">
-		   
+
 		<id name="Id">
 			<generator class="native"/>
 		</id>
 
 		<discriminator formula="CASE ClassTypeId WHEN 1 THEN 'person' ELSE 'company' END"/>
 
+		<property name="DisplayForename" type="System.String" formula="(CASE WHEN RTRIM(Name) = '' THEN Name ELSE 'Mr' + Name END)" not-null="false" />
+
 		<!-- The ClassTypeId property only exist for schema generation -->
 		<property name="ClassTypeId" access="nosetter.camelcase"/>
-		
+
 		<property name="Name"/>
 
 		<subclass name="Person" discriminator-value="person"></subclass>

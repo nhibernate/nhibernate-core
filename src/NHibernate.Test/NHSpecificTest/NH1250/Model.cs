@@ -17,7 +17,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1250
 			set { name = value; }
 		}
 
+		public virtual string DisplayForename
+		{
+			get { return displayName; }
+			set { displayName = value; }
+		}
+
 		private int classTypeId; // something for NHibernate to write to
+		private string displayName;
+
 		public abstract int ClassTypeId
 		{
 			get;

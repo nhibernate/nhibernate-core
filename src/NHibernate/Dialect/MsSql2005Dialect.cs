@@ -1,9 +1,9 @@
 namespace NHibernate.Dialect
 {
-using System;
+	using System;
 	using System.Collections;
 	using System.Collections.Generic;
-using System.Data;
+	using System.Data;
 	using System.Text.RegularExpressions;
 	using System.Text;
 	using Mapping;
@@ -87,9 +87,9 @@ using System.Data;
 
 			for (int i = 1; i <= sortExpressions.Length; ++i)
 			{
-					result.Add(", query.__hibernate_sort_expr_")
-						.Add(i.ToString())
-						.Add("__");
+				result.Add(", query.__hibernate_sort_expr_")
+					.Add(i.ToString())
+					.Add("__");
 			}
 
 			result.Add(" FROM (")
@@ -141,7 +141,7 @@ using System.Data;
 		{
 			string subselect = querySqlString.GetSubselectString().ToString();
 			int fromIndex = querySqlString.IndexOfCaseInsensitive(subselect);
-			if(fromIndex == -1)
+			if (fromIndex == -1)
 			{
 				fromIndex = querySqlString.ToString().ToLowerInvariant().IndexOf(subselect.ToLowerInvariant());
 			}
@@ -168,13 +168,13 @@ using System.Data;
 					continue;
 				if ("," == token)
 					continue;
-					
+
 				if ("from".Equals(token, StringComparison.InvariantCultureIgnoreCase))
 					break;
 
 				//handle composite expressions like 2 * 4 as foo
-				while (index < tokens.Count && 
-					"as".Equals(tokens[index],StringComparison.InvariantCultureIgnoreCase) == false &&
+				while (index < tokens.Count &&
+					"as".Equals(tokens[index], StringComparison.InvariantCultureIgnoreCase) == false &&
 					"," != tokens[index])
 				{
 					token = token + " " + tokens[index];
@@ -184,7 +184,7 @@ using System.Data;
 				bool isFunctionCallOrQuotedString = token.Contains("'") || token.Contains("(");
 				// this is heuristic guess, if the expression contains ' or (, it is probably
 				// not appropriate to just slice parts off of it
-				if (isFunctionCallOrQuotedString == false) 
+				if (isFunctionCallOrQuotedString == false)
 				{
 					int dot = token.IndexOf('.');
 					if (dot != -1)
@@ -235,10 +235,10 @@ using System.Data;
 
 		protected override string GetSelectExistingObject(string name, Table table)
 		{
-		    string schema = table.GetQuotedSchemaName(this);
-            if (schema != null) schema += ".";
-            string objName = string.Format("{0}{1}", schema, Quote(name));
-            string parentName = string.Format("{0}{1}", schema, table.GetQuotedName(this));
+			string schema = table.GetQuotedSchemaName(this);
+			if (schema != null) schema += ".";
+			string objName = string.Format("{0}{1}", schema, Quote(name));
+			string parentName = string.Format("{0}{1}", schema, table.GetQuotedName(this));
 			return string.Format("select 1 from sys.objects where object_id = OBJECT_ID(N'{0}') AND parent_object_id = OBJECT_ID('{1}')",
 								 objName, parentName);
 		}
@@ -321,6 +321,7 @@ using System.Data;
 							{
 								currentToken.Append(ch);
 								yield return currentToken.ToString();
+								state = TokenizerState.WhiteSpace;
 								currentToken.Length = 0;
 							}
 							else
@@ -384,7 +385,7 @@ using System.Data;
 							throw new InvalidExpressionException("Could not understand the string " + original);
 					}
 				}
-				if (currentToken.Length>0)
+				if (currentToken.Length > 0)
 					yield return currentToken.ToString();
 			}
 

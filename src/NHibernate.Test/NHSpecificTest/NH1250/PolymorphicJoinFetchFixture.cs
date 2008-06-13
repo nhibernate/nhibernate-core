@@ -4,6 +4,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1250
 {
 	/// <summary>
 	/// http://jira.nhibernate.org/browse/NH-1250
+	/// http://jira.nhibernate.org/browse/NH-1340
 	/// </summary>
 	/// <remarks>Failure occurs in MsSql2005Dialect only</remarks>
 	[TestFixture]
@@ -15,13 +16,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1250
 		}
 
 		[Test]
-		[Ignore("Not yet fixed")]
+
 		public void FetchUsingICriteria()
 		{
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				s.CreateCriteria(typeof (Party))
+				s.CreateCriteria(typeof(Party))
 					.SetMaxResults(10)
 					.List();
 				tx.Commit();
@@ -29,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1250
 		}
 
 		[Test]
-		[Ignore("Not yet fixed")]
+
 		public void FetchUsingIQuery()
 		{
 			using (ISession s = OpenSession())
