@@ -327,6 +327,10 @@
     <Compile Include="NHSpecificTest\NH1275\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1297\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1297\Model.cs" />
+    <Compile Include="NHSpecificTest\NH1324\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1324\Person.cs" />
+    <Compile Include="NHSpecificTest\NH1326\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1326\Person.cs" />
     <Compile Include="NHSpecificTest\NH1332\A.cs" />
     <Compile Include="NHSpecificTest\NH1332\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
@@ -1227,6 +1231,10 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1332\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="NHSpecificTest\NH1324\Mappings.hbm.xml" />
+    <Content Include="NHSpecificTest\NH1326\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
