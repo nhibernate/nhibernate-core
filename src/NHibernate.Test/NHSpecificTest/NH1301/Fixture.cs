@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1301
 			get { return "NH1301"; }
 		}
 
-		[Test, Ignore("Not fixed yet.")]
+		[Test]
 		public void Test()
 		{
 			using (ISession s = OpenSession())
@@ -28,10 +28,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1301
 												.SetFetchMode("BCollection", FetchMode.Join)
 												.List<ClassA>()[0];
 				Assert.AreEqual(1, a.BCollection.Count);
-				a.BCollection.RemoveAt(0);
-				Assert.AreEqual(0, a.BCollection.Count);
+				loaded.BCollection.RemoveAt(0);
+				Assert.AreEqual(0, loaded.BCollection.Count);
 				s.Refresh(loaded);
-				Assert.AreEqual(1, a.BCollection.Count);
+				Assert.AreEqual(1, loaded.BCollection.Count);
 				s.Delete(loaded);
 				tx.Commit();
 			}
