@@ -6,16 +6,18 @@ namespace NHibernate.Cfg.MappingSchema
 	{
 		public Dictionary<string, string> FindParameters()
 		{
-			Dictionary<string, string> parameters = new Dictionary<string, string>();
+			Dictionary<string, string> parameters = new Dictionary<string, string>(10);
 
-			foreach (HbmParam hbmParam in param)
+			if (param != null)
 			{
-				string name = hbmParam.name;
-				string text = JoinString(hbmParam.Text);
+				foreach (HbmParam hbmParam in param)
+				{
+					string name = hbmParam.name;
+					string text = JoinString(hbmParam.Text);
 
-				parameters.Add(name, text);
+					parameters.Add(name, text);
+				}
 			}
-
 			return parameters;
 		}
 	}

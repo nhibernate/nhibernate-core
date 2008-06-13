@@ -133,7 +133,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			foreach (HbmDatabaseObject objectSchema in mappingSchema.ListDatabaseObjects())
 			{
-				IAuxiliaryDatabaseObject dbObject = AuxiliaryDatabaseObjectFactory.Create(objectSchema);
+				IAuxiliaryDatabaseObject dbObject = AuxiliaryDatabaseObjectFactory.Create(mappings, objectSchema);
 				mappings.AddAuxiliaryDatabaseObject(dbObject);
 			}
 		}

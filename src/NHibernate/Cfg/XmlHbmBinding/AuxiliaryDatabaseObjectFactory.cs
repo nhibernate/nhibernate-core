@@ -8,13 +8,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	internal class AuxiliaryDatabaseObjectFactory
 	{
-		public static IAuxiliaryDatabaseObject Create(HbmDatabaseObject databaseObjectSchema)
+		public static IAuxiliaryDatabaseObject Create(Mappings mappings, HbmDatabaseObject databaseObjectSchema)
 		{
-			if (databaseObjectSchema.HasDefinition())
-				return CreateCustomObject(databaseObjectSchema);
-
-			else
-				return CreateSimpleObject(databaseObjectSchema);
+			return databaseObjectSchema.HasDefinition()
+							? CreateCustomObject(mappings, databaseObjectSchema)
+							: CreateSimpleObject(databaseObjectSchema);
 		}
 
 		private static IAuxiliaryDatabaseObject CreateSimpleObject(HbmDatabaseObject databaseObjectSchema)
@@ -25,41 +23,44 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			IAuxiliaryDatabaseObject simpleObject = new SimpleAuxiliaryDatabaseObject(createText, dropText);
 
 			foreach (string dialectName in databaseObjectSchema.FindDialectScopeNames())
+			{
 				simpleObject.AddDialectScope(dialectName);
+			}
 
 			return simpleObject;
 		}
 
-		private static IAuxiliaryDatabaseObject CreateCustomObject(HbmDatabaseObject databaseObjectSchema)
+		private static IAuxiliaryDatabaseObject CreateCustomObject(Mappings mappings, HbmDatabaseObject databaseObjectSchema)
 		{
 			HbmDefinition definitionSchema = databaseObjectSchema.FindDefinition();
 			string customTypeName = definitionSchema.@class;
 
 			try
 			{
-				System.Type customType = ReflectHelper.ClassForName(customTypeName);
+				string className =
+					TypeNameParser.Parse(customTypeName, mappings.DefaultNamespace, mappings.DefaultAssembly).ToString();
+				System.Type customType = ReflectHelper.ClassForName(className);
 
-				IAuxiliaryDatabaseObject customObject =
-					(IAuxiliaryDatabaseObject) Activator.CreateInstance(customType);
+				IAuxiliaryDatabaseObject customObject = (IAuxiliaryDatabaseObject)Activator.CreateInstance(customType);
 
-				// Would prefer to change SetParameterValues to take an IDictionary<string, string>.
 				Dictionary<string, string> parameters = definitionSchema.FindParameters();
 				customObject.SetParameterValues(parameters);
-
 				foreach (string dialectName in databaseObjectSchema.FindDialectScopeNames())
+				{
 					customObject.AddDialectScope(dialectName);
+				}
 
 				return customObject;
 			}
 			catch (TypeLoadException exception)
 			{
-				throw new MappingException(string.Format(
-					"Could not locate custom database object class [{0}].", customTypeName), exception);
+				throw new MappingException(string.Format("Could not locate custom database object class [{0}].", customTypeName),
+																	 exception);
 			}
 			catch (Exception exception)
 			{
-				throw new MappingException(string.Format(
-					"Could not instantiate custom database object class [{0}].", customTypeName), exception);
+				throw new MappingException(
+					string.Format("Could not instantiate custom database object class [{0}].", customTypeName), exception);
 			}
 		}
 	}
