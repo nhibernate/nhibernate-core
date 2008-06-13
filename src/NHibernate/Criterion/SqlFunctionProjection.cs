@@ -69,12 +69,13 @@ namespace NHibernate.Criterion
 		{
 			if (function != null)
 				return function;
-			Dialect dialect = criteriaQuery.Factory.Dialect;
-			if (dialect.Functions.ContainsKey(functionName) == false)
+			ISQLFunction dialectFunction = criteriaQuery.Factory.SQLFunctionRegistry.FindSQLFunction(functionName);
+			if (dialectFunction == null)
 			{
-				throw new HibernateException("Current dialect " + dialect + " doesn't support the function: " + functionName);
+				throw new HibernateException("Current dialect " + criteriaQuery.Factory.Dialect + " doesn't support the function: "
+				                             + functionName);
 			}
-			return dialect.Functions[functionName];
+			return dialectFunction;
 		}
 
 		private static SqlString GetProjectionArgument(
