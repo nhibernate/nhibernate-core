@@ -323,6 +323,8 @@
     <Compile Include="NHSpecificTest\NH1250\PolymorphicJoinFetchFixture.cs" />
     <Compile Include="NHSpecificTest\NH1275\A.cs" />
     <Compile Include="NHSpecificTest\NH1275\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1290\AuxType.cs" />
+    <Compile Include="NHSpecificTest\NH1290\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1301\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1301\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1324\Fixture.cs" />
