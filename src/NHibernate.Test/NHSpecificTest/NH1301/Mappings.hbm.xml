@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				  namespace="NHibernate.Test.NHSpecificTest.NH1301"
+				  assembly="NHibernate.Test"
+				  default-access="field.camelcase">
+
+	<class name="ClassA">
+		<id name="Id">
+			<generator class="native"/>
+
+		</id>
+		<bag name="BCollection" cascade="all-delete-orphan, refresh">
+			<key column="something" />
+			<one-to-many class="ClassB"/>
+		</bag>
+	</class>
+
+	<class name="ClassB">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+	</class>
+</hibernate-mapping>
