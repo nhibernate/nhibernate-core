@@ -87,8 +87,8 @@ namespace NHibernate.Id
 		/// </exception>
 		public void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect d)
 		{
-			propertyName = parms["property"];
-			if (propertyName == null || propertyName.Length == 0)
+			parms.TryGetValue("property", out propertyName);
+			if (string.IsNullOrEmpty(propertyName))
 			{
 				throw new MappingException("param named \"property\" is required for foreign id generation strategy");
 			}
