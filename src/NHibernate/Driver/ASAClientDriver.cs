@@ -11,15 +11,15 @@ namespace NHibernate.Driver
 		/// Initializes a new instance of the <see cref="ASAClientDriver"/> class.
 		/// </summary>
 		/// <exception cref="HibernateException">
-		/// Thrown when the ASA.Data.AseClient assembly is not and can not be loaded.
+		/// Thrown when the iAnywhere.Data.SQLAnywhere assembly is not and can not be loaded.
 		/// </exception>
 		public ASAClientDriver()
-			: base("iAnywhere.Data.AsaClient", "iAnywhere.Data.AsaClient.AsaConnection", "iAnywhere.Data.AsaClient.AsaCommand")
+			: base("iAnywhere.Data.SQLAnywhere", "iAnywhere.Data.SQLAnywhere.SAConnection", "iAnywhere.Data.SQLAnywhere.SACommand")
 		{
 		}
 
 		/// <summary>
-		/// iAnywhere.Data.AsaClient uses named parameters in the sql.
+		/// iAnywhere.Data.SQLAnywhere uses named parameters in the sql.
 		/// </summary>
 		/// <value><see langword="true" /> - Sybase uses <c>String.Empty</c> in the sql.</value>
 		public override bool UseNamedPrefixInSql
@@ -33,7 +33,7 @@ namespace NHibernate.Driver
 		}
 
 		/// <summary>
-		/// iAnywhere.Data.AsaClient use the <c>string.Empty</c> to locate parameters in sql.
+		/// iAnywhere.Data.SQLAnywhere use the <c>string.Empty</c> to locate parameters in sql.
 		/// </summary>
 		public override string NamedPrefix
 		{
