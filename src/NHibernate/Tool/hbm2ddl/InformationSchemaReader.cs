@@ -28,7 +28,7 @@ namespace NHibernate.Tool.hbm2ddl
 			return ExecuteQuery(
 				@"select 
 					COLUMN_NAME, IS_NULLABLE, DATA_TYPE, NUMERIC_PRECISION, CHARACTER_MAXIMUM_LENGTH 
-					from information_schema.columns
+					FROM INFORMATION_SCHEMA.COLUMNS
 					where table_schema = @schema and table_name = @name",
 				"schema", schema, "name", name
 				);
