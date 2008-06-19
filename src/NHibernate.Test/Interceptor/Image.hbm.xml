@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.Interceptor">
+
+    <class name="Image" table="image" abstract="false" select-before-update="true" >
+        <id name="Id" type="int" column="id">
+            <generator class="native"/>
+        </id>
+        <component name="Details" class="Image+Detail">
+            <property name="Perm1" not-null="true" type="long" column="permissions"/>
+            <property name="Comment" type="string" column="comment_txt"/>
+        </component>
+        <property name="Name" type="string" column="name" not-null="true"/>
+    </class>
+
+</hibernate-mapping>

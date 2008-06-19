@@ -41,15 +41,15 @@ namespace NHibernate
 		/// <summary>
 		/// Create database connection and open a <c>ISession</c> on it, specifying an interceptor
 		/// </summary>
-		/// <param name="interceptor">A session-scoped interceptor</param>
+		/// <param name="sessionLocalInterceptor">A session-scoped interceptor</param>
 		/// <returns>A session</returns>
-		ISession OpenSession(IInterceptor interceptor);
+		ISession OpenSession(IInterceptor sessionLocalInterceptor);
 
 		/// <summary>
 		/// Open a <c>ISession</c> on the given connection, specifying an interceptor
 		/// </summary>
 		/// <param name="conn">A connection provided by the application</param>
-		/// <param name="interceptor">A session-scoped interceptor</param>
+		/// <param name="sessionLocalInterceptor">A session-scoped interceptor</param>
 		/// <returns>A session</returns>
 		/// <remarks>
 		/// Note that the second-level cache will be disabled if you
@@ -57,7 +57,7 @@ namespace NHibernate
 		/// any statements you might have executed in the same transaction.
 		/// Consider implementing your own <see cref="IConnectionProvider" />.
 		/// </remarks>
-		ISession OpenSession(IDbConnection conn, IInterceptor interceptor);
+		ISession OpenSession(IDbConnection conn, IInterceptor sessionLocalInterceptor);
 
 		/// <summary>
 		/// Create a database connection and open a <c>ISession</c> on it

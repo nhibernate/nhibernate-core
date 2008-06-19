@@ -210,6 +210,13 @@
     <Compile Include="IdTest\HiLoTableGeneratorInt64Fixture.cs" />
     <Compile Include="IdTest\IdentifierGeneratorFactoryFixture.cs" />
     <Compile Include="IdTest\IdFixtureBase.cs" />
+    <Compile Include="Interceptor\CollectionInterceptor.cs" />
+    <Compile Include="Interceptor\Image.cs" />
+    <Compile Include="Interceptor\InterceptorFixture.cs" />
+    <Compile Include="Interceptor\Log.cs" />
+    <Compile Include="Interceptor\PropertyInterceptor.cs" />
+    <Compile Include="Interceptor\StatefulInterceptor.cs" />
+    <Compile Include="Interceptor\User.cs" />
     <Compile Include="JoinedSubclass\Address.cs" />
     <Compile Include="JoinedSubclass\Customer.cs" />
     <Compile Include="JoinedSubclass\Employee.cs" />
@@ -1249,6 +1256,10 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1313\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Interceptor\Image.hbm.xml" />
+    <EmbeddedResource Include="Interceptor\User.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

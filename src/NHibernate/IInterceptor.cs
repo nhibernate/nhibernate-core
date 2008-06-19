@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Data;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
@@ -178,15 +179,25 @@ namespace NHibernate
 		/// </summary>
 		void AfterTransactionCompletion(ITransaction tx);
 
-		/// <summary>
-		/// Called when a session-scoped (and <b>only</b> session scoped) interceptor is attached
-		/// to a session
-		/// </summary>
-		void SetSession(ISession session);
-
 		/// <summary> Called when sql string is being prepared. </summary>
 		/// <param name="sql">sql to be prepared </param>
 		/// <returns> original or modified sql </returns>
 		SqlString OnPrepareStatement(SqlString sql);
+
+		#region NH specific
+
+		/// <summary>
+		/// Called when a session-scoped (and <b>only</b> session scoped) interceptor is attached
+		/// to a session
+		/// </summary>
+		/// <remarks>
+		/// session-scoped-interceptor is an instance of the interceptor used only for one session.
+		/// The use of singleton-interceptor may cause problems in multi-thread scenario. 
+		/// </remarks>
+		/// <seealso cref="ISessionFactory.OpenSession(IInterceptor)"/>
+		/// <seealso cref="ISessionFactory.OpenSession(IDbConnection,IInterceptor)"/>
+		void SetSession(ISession session);
+
+		#endregion
 	}
 }

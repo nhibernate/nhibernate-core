@@ -262,6 +262,12 @@ namespace NHibernate.Test
 			return lastOpenedSession;
 		}
 
+		protected virtual ISession OpenSession(IInterceptor sessionLocalInterceptor)
+		{
+			lastOpenedSession = sessions.OpenSession(sessionLocalInterceptor);
+			return lastOpenedSession;
+		}
+
 		protected void ApplyCacheSettings(Configuration configuration)
 		{
 			if (CacheConcurrencyStrategy == null)

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.Interceptor">
+
+	<class name="User" table="users">
+		<id name="Name" type="string">
+			<generator class="assigned"/>
+		</id>
+		<property name="Password"/>
+		<property name="LastUpdated"/>
+		<property name="Created"/>
+		<set name="Actions" lazy="false" fetch="join">
+			<key column="user_name"/>
+			<element column="Action" type="string"/>
+		</set>
+	</class>
+	
+	<class name="Log" table="log_entries">
+		<id name="Id">
+			<generator class="increment"/>
+		</id>
+		<property name="EntityName" column="entity_name"/>
+		<property name="EntityId" column="entity_id"/>
+		<property name="Action"/>
+		<property name="Time" column="action_time"/>
+	</class>
+	
+</hibernate-mapping>

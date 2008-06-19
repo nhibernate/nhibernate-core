@@ -415,14 +415,14 @@ namespace NHibernate.Impl
 			return OpenSession(connection, false, long.MinValue, sessionLocalInterceptor);
 		}
 
-		public ISession OpenSession(IInterceptor interceptor)
+		public ISession OpenSession(IInterceptor sessionLocalInterceptor)
 		{
-			if (interceptor == null)
+			if (sessionLocalInterceptor == null)
 			{
-				throw new ArgumentNullException("interceptor");
+				throw new ArgumentNullException("sessionLocalInterceptor");
 			}
 			long timestamp = settings.CacheProvider.NextTimestamp();
-			return OpenSession(null, true, timestamp, interceptor);
+			return OpenSession(null, true, timestamp, sessionLocalInterceptor);
 		}
 
 		public ISession OpenSession(IDbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
@@ -1080,10 +1080,15 @@ namespace NHibernate.Impl
 
 		private SessionImpl OpenSession(IDbConnection connection, bool autoClose, long timestamp, IInterceptor sessionLocalInterceptor)
 		{
-			return
-				new SessionImpl(connection, this, autoClose, timestamp, sessionLocalInterceptor ?? interceptor,
-				                settings.DefaultEntityMode, settings.IsFlushBeforeCompletionEnabled,
-				                settings.IsAutoCloseSessionEnabled, settings.ConnectionReleaseMode);
+			SessionImpl session = new SessionImpl(connection, this, autoClose, timestamp, sessionLocalInterceptor ?? interceptor,
+			                                      settings.DefaultEntityMode, settings.IsFlushBeforeCompletionEnabled,
+			                                      settings.IsAutoCloseSessionEnabled, settings.ConnectionReleaseMode);
+			if (sessionLocalInterceptor != null)
+			{
+				// NH specific feature
+				sessionLocalInterceptor.SetSession(session);
+			}
+			return session;
 		}
 
 		private ICurrentSessionContext BuildCurrentSessionContext()
