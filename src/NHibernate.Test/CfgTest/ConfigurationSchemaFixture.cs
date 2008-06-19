@@ -229,6 +229,7 @@ namespace NHibernate.Test.CfgTest
 	<session-factory>
 		<event type='merge'>
 			<listener class='AClass'/>
+			<listener class='BClass'/>
 		</event>
 	</session-factory>
 </hibernate-configuration>";
@@ -237,7 +238,7 @@ namespace NHibernate.Test.CfgTest
 			HibernateConfiguration hc = new HibernateConfiguration(xtr);
 			Assert.AreEqual(1, hc.SessionFactory.Events.Count);
 			Assert.AreEqual(ListenerType.Merge, hc.SessionFactory.Events[0].Type);
-			Assert.AreEqual(1, hc.SessionFactory.Events[0].Listeners.Count);
+			Assert.AreEqual(2, hc.SessionFactory.Events[0].Listeners.Count);
 			Assert.AreEqual("AClass", hc.SessionFactory.Events[0].Listeners[0].Class);
 		}
 	}

@@ -14,6 +14,12 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			Parse(listenerElement);
 		}
 
+		internal ListenerConfiguration(XPathNavigator listenerElement, ListenerType defaultType)
+		{
+			type = defaultType;
+			Parse(listenerElement);
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ListenerConfiguration"/> class.
 		/// </summary>
