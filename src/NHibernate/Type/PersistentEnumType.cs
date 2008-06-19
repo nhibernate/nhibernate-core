@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -9,56 +10,180 @@ namespace NHibernate.Type
 	/// PersistentEnumType
 	/// </summary>
 	[Serializable]
-	public class PersistentEnumType : PrimitiveType, ILiteralType
+	public class PersistentEnumType : PrimitiveType
 	{
-		private readonly System.Type enumClass;
-		private readonly object defaultValue;
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="enumClass"></param>
-		public PersistentEnumType(System.Type enumClass) : base(GetUnderlyingSqlType(enumClass))
+		#region Converters
+
+		// OLD TODO: ORACLE - An convert is needed because right now everything that Oracle is 
+		// sending to NHibernate is a decimal - not the correct underlying type and I don't know why
+
+		public interface IEnumConverter
 		{
-			if (enumClass.IsEnum)
+			object ToObject(System.Type enumClass, object code);
+			object ToEnumValue(object value);
+			SqlType SqlType { get; }
+		}
+
+		private abstract class AbstractEnumConverter<T> : IEnumConverter
+		{
+			public object ToObject(System.Type enumClass, object code)
 			{
-				this.enumClass = enumClass;
-				defaultValue = Enum.GetValues(enumClass).GetValue(0);
+				return Enum.ToObject(enumClass, Convert(code));
 			}
-			else
+
+			public object ToEnumValue(object value)
 			{
-				throw new MappingException(enumClass.Name + " did not inherit from System.Enum");
+				return Convert(value);
+			}
+
+			public abstract T Convert(object input);
+			public abstract SqlType SqlType { get; }
+		}
+
+		private class SystemByteEnumConverter : AbstractEnumConverter<Byte>
+		{
+			public override byte Convert(object input)
+			{
+				return System.Convert.ToByte(input);
+			}
+
+			public override SqlType SqlType
+			{
+				get { return SqlTypeFactory.Byte; }
 			}
 		}
 
-		/// <summary>
-		/// Determines what the NHibernate SqlType should be based on the 
-		/// values contain in the Enum
-		/// </summary>
-		/// <param name="enumClass">The Enumeration class to get the values from.</param>
-		/// <returns>The SqlType for this EnumClass</returns>
-		public static SqlType GetUnderlyingSqlType(System.Type enumClass)
+		private class SystemSByteEnumConverter : AbstractEnumConverter<SByte>
 		{
-			switch (Enum.GetUnderlyingType(enumClass).FullName)
+			public override sbyte Convert(object input)
 			{
-				case "System.Byte":
-					return SqlTypeFactory.Byte; // DbType.Byte;
-				case "System.Int16":
-					return SqlTypeFactory.Int16; // DbType.Int16;
-				case "System.Int32":
-					return SqlTypeFactory.Int32; //DbType.Int32;
-				case "System.Int64":
-					return SqlTypeFactory.Int64; //DbType.Int64;
-				case "System.SByte":
-					return SqlTypeFactory.SByte; //DbType.SByte;
-				case "System.UInt16":
-					return SqlTypeFactory.UInt16; //DbType.UInt16;
-				case "System.UInt32":
-					return SqlTypeFactory.UInt32; //DbType.UInt32;
-				case "System.UInt64":
-					return SqlTypeFactory.UInt64; //DbType.UInt64;
-				default:
-					throw new HibernateException("Unknown UnderlyingDbType for Enum"); //Impossible exception
+				return System.Convert.ToSByte(input);
 			}
+
+			public override SqlType SqlType
+			{
+				get { return SqlTypeFactory.SByte; }
+			}
+		}
+
+		private class SystemInt16EnumConverter : AbstractEnumConverter<Int16>
+		{
+			public override short Convert(object input)
+			{
+				return System.Convert.ToInt16(input);
+			}
+
+			public override SqlType SqlType
+			{
+				get { return SqlTypeFactory.Int16; }
+			}
+		}
+
+		private class SystemInt32EnumConverter : AbstractEnumConverter<Int32>
+		{
+			public override int Convert(object input)
+			{
+				return System.Convert.ToInt32(input);
+			}
+
+			public override SqlType SqlType
+			{
+				get { return SqlTypeFactory.Int32; }
+			}
+		}
+
+		private class SystemInt64EnumConverter : AbstractEnumConverter<Int64>
+		{
+			public override long Convert(object input)
+			{
+				return System.Convert.ToInt64(input);
+			}
+
+			public override SqlType SqlType
+			{
+				get { return SqlTypeFactory.Int64; }
+			}
+		}
+
+		private class SystemUInt16EnumConverter : AbstractEnumConverter<UInt16>
+		{
+			public override ushort Convert(object input)
+			{
+				return System.Convert.ToUInt16(input);
+			}
+
+			public override SqlType SqlType
+			{
+				get { return SqlTypeFactory.UInt16; }
+			}
+		}
+
+		private class SystemUInt32EnumConverter : AbstractEnumConverter<UInt32>
+		{
+			public override uint Convert(object input)
+			{
+				return System.Convert.ToUInt32(input);
+			}
+
+			public override SqlType SqlType
+			{
+				get { return SqlTypeFactory.UInt32; }
+			}
+		}
+
+		private class SystemUInt64EnumConverter : AbstractEnumConverter<UInt64>
+		{
+			public override ulong Convert(object input)
+			{
+				return System.Convert.ToUInt64(input);
+			}
+
+			public override SqlType SqlType
+			{
+				get { return SqlTypeFactory.UInt64; }
+			}
+		}
+
+		#endregion
+
+		static PersistentEnumType()
+		{
+			converters = new Dictionary<System.Type, IEnumConverter>(8);
+			converters.Add(typeof (Int32), new SystemInt32EnumConverter());
+			converters.Add(typeof (Int16), new SystemInt16EnumConverter());
+			converters.Add(typeof (Int64), new SystemInt64EnumConverter());
+			converters.Add(typeof (Byte), new SystemByteEnumConverter());
+			converters.Add(typeof (SByte), new SystemSByteEnumConverter());
+			converters.Add(typeof (UInt16), new SystemUInt16EnumConverter());
+			converters.Add(typeof (UInt32), new SystemUInt32EnumConverter());
+			converters.Add(typeof (UInt64), new SystemUInt64EnumConverter());
+		}
+
+		private static readonly Dictionary<System.Type, IEnumConverter> converters;
+		private readonly System.Type enumClass;
+		private readonly IEnumConverter converter;
+		private readonly object defaultValue;
+
+		public PersistentEnumType(System.Type enumClass) : base(GetEnumCoverter(enumClass).SqlType)
+		{
+			if (!enumClass.IsEnum)
+			{
+				throw new MappingException(enumClass.Name + " did not inherit from System.Enum");
+			}
+			converter = GetEnumCoverter(enumClass);
+			this.enumClass = enumClass;
+			defaultValue = Enum.GetValues(enumClass).GetValue(0);
+		}
+
+		public static IEnumConverter GetEnumCoverter(System.Type enumClass)
+		{
+			System.Type underlyingType = Enum.GetUnderlyingType(enumClass);
+			IEnumConverter result;
+			if (!converters.TryGetValue(underlyingType, out result))
+			{
+				throw new HibernateException("Unknown UnderlyingDbType for Enum; type:" + enumClass.FullName);
+			}
+			return result;
 		}
 
 		public override object Get(IDataReader rs, int index)
@@ -68,10 +193,7 @@ namespace NHibernate.Type
 			{
 				return null;
 			}
-			else
-			{
-				return GetInstance(code);
-			}
+			return GetInstance(code);
 		}
 
 		/// <summary>
@@ -85,7 +207,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Enum.ToObject(enumClass, GetValue(code));
+				return converter.ToObject(enumClass, code);
 			}
 			catch (ArgumentException ae)
 			{
@@ -96,8 +218,8 @@ namespace NHibernate.Type
 		/// <summary>
 		/// Gets the correct value for the Enum.
 		/// </summary>
-		/// <param name="code">The value to convert.</param>
-		/// <returns>A boxed version of the code converted to the correct type.</returns>
+		/// <param name="code">The value to convert (an enum instance).</param>
+		/// <returns>A boxed version of the code, converted to the correct type.</returns>
 		/// <remarks>
 		/// This handles situations where the DataProvider returns the value of the Enum
 		/// from the db in the wrong underlying type.  It uses <see cref="Convert"/> to 
@@ -105,32 +227,7 @@ namespace NHibernate.Type
 		/// </remarks>
 		public virtual object GetValue(object code)
 		{
-			// code is an enum instance.
-			// TODO: ORACLE - An convert is needed because right now everything that Oracle is 
-			// sending to NHibernate is a decimal - not the correct underlying
-			// type and I don't know why
-
-			switch (Enum.GetUnderlyingType(enumClass).FullName)
-			{
-				case "System.Byte":
-					return Convert.ToByte(code);
-				case "System.Int16":
-					return Convert.ToInt16(code);
-				case "System.Int32":
-					return Convert.ToInt32(code);
-				case "System.Int64":
-					return Convert.ToInt64(code);
-				case "System.SByte":
-					return Convert.ToSByte(code);
-				case "System.UInt16":
-					return Convert.ToUInt16(code);
-				case "System.UInt32":
-					return Convert.ToUInt32(code);
-				case "System.UInt64":
-					return Convert.ToUInt64(code);
-				default:
-					throw new AssertionFailure("Unknown UnderlyingType for Enum"); //Impossible exception
-			}
+			return converter.ToEnumValue(code);
 		}
 
 		public override System.Type ReturnedClass
@@ -141,14 +238,7 @@ namespace NHibernate.Type
 		public override void Set(IDbCommand cmd, object value, int index)
 		{
 			IDataParameter par = (IDataParameter) cmd.Parameters[index];
-			if (value == null)
-			{
-				par.Value = DBNull.Value;
-			}
-			else
-			{
-				par.Value = value;
-			}
+			par.Value = value != null ? GetValue(value) : DBNull.Value;
 		}
 
 		public override object Get(IDataReader rs, string name)
@@ -156,7 +246,6 @@ namespace NHibernate.Type
 			return Get(rs, rs.GetOrdinal(name));
 		}
 
-		/// <summary></summary> 
 		public override string Name
 		{
 			get { return enumClass.FullName; }
@@ -174,14 +263,7 @@ namespace NHibernate.Type
 
 		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
-			if (cached == null)
-			{
-				return null;
-			}
-			else
-			{
-				return GetInstance(cached);
-			}
+			return cached == null ? null : GetInstance(cached);
 		}
 
 		public override object Disassemble(object value, ISessionImplementor session, object owner)
