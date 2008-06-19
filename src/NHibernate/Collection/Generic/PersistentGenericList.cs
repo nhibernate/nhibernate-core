@@ -164,6 +164,7 @@ namespace NHibernate.Collection.Generic
 
 		IEnumerator<T> IEnumerable<T>.GetEnumerator()
 		{
+			Read();
 			return glist.GetEnumerator();
 		}
 
