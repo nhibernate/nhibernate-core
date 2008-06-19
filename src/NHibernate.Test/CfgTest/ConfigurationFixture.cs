@@ -397,5 +397,27 @@ namespace NHibernate.Test.CfgTest
 
 			cfg.BuildSessionFactory().Close();
 		}
+
+		[Test]
+		public void NH1348()
+		{
+			string xml =
+				@"<?xml version='1.0' encoding='utf-8' ?>
+<hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
+	<session-factory name='NHibernate.Test'>
+  <event type='flush'>
+    <listener class='NHibernate.Event.Default.DefaultFlushEventListener, NHibernate'/>
+  </event> 
+	</session-factory>
+</hibernate-configuration>";
+
+			XmlDocument cfgXml = new XmlDocument();
+			cfgXml.LoadXml(xml);
+
+			Configuration cfg = new Configuration();
+			XmlTextReader xtr = new XmlTextReader(xml, XmlNodeType.Document, null);
+			cfg.Configure(xtr);
+			// No exception expected
+		}
 	}
 }

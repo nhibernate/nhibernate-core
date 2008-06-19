@@ -36,7 +36,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			XPathNodeIterator listenersI = eventClone.SelectDescendants(XPathNodeType.Element, false);
 			while (listenersI.MoveNext())
 			{
-				listeners.Add(new ListenerConfiguration(listenersI.Current));
+				listeners.Add(new ListenerConfiguration(listenersI.Current, type));
 			}
 		}
 

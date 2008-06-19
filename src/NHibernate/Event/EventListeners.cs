@@ -422,10 +422,11 @@ namespace NHibernate.Event
 
 		public System.Type GetListenerClassFor(ListenerType type)
 		{
-			if (!eventInterfaceFromType.ContainsKey(type))
+			System.Type result;
+			if (!eventInterfaceFromType.TryGetValue(type, out result))
 				throw new MappingException("Unrecognized listener type [" + type + "]");
 
-			return eventInterfaceFromType[type];
+			return result;
 		}
 
 		/// <summary> 

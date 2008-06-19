@@ -37,12 +37,12 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			ByteCodeProviderExpression = XPathExpression.Compile(RootPrefixPath + "bytecode-provider", nsMgr);
 			ReflectionOptimizerExpression = XPathExpression.Compile(RootPrefixPath + "reflection-optimizer", nsMgr);
 			SessionFactoryExpression = XPathExpression.Compile(RootPrefixPath + "session-factory", nsMgr);
-			SessionFactoryPropertiesExpression = XPathExpression.Compile(RootPrefixPath + "session-factory//" + ChildPrefixPath + "property", nsMgr);
-			SessionFactoryMappingsExpression = XPathExpression.Compile(RootPrefixPath + "session-factory//" + ChildPrefixPath + "mapping", nsMgr);
-			SessionFactoryClassesCacheExpression = XPathExpression.Compile(RootPrefixPath + "session-factory//" + ChildPrefixPath + "class-cache", nsMgr);
-			SessionFactoryCollectionsCacheExpression = XPathExpression.Compile(RootPrefixPath + "session-factory//" + ChildPrefixPath + "collection-cache", nsMgr);
-			SessionFactoryEventsExpression = XPathExpression.Compile(RootPrefixPath + "session-factory//" + ChildPrefixPath + "event", nsMgr);
-			SessionFactoryListenersExpression = XPathExpression.Compile(RootPrefixPath + "session-factory//" + ChildPrefixPath + "listener", nsMgr);
+			SessionFactoryPropertiesExpression = XPathExpression.Compile(RootPrefixPath + "session-factory/" + ChildPrefixPath + "property", nsMgr);
+			SessionFactoryMappingsExpression = XPathExpression.Compile(RootPrefixPath + "session-factory/" + ChildPrefixPath + "mapping", nsMgr);
+			SessionFactoryClassesCacheExpression = XPathExpression.Compile(RootPrefixPath + "session-factory/" + ChildPrefixPath + "class-cache", nsMgr);
+			SessionFactoryCollectionsCacheExpression = XPathExpression.Compile(RootPrefixPath + "session-factory/" + ChildPrefixPath + "collection-cache", nsMgr);
+			SessionFactoryEventsExpression = XPathExpression.Compile(RootPrefixPath + "session-factory/" + ChildPrefixPath + "event", nsMgr);
+			SessionFactoryListenersExpression = XPathExpression.Compile(RootPrefixPath + "session-factory/" + ChildPrefixPath + "listener", nsMgr);
 		}
 
 		/// <summary>XPath expression for bytecode-provider property.</summary>
