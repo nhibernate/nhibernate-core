@@ -30,7 +30,7 @@ namespace NHibernate.Action
 		/// <param name="collection">The Persistent collection.</param>
 		/// <param name="key">The identifier of the Collection.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occuring in.</param>
-		public CollectionAction(ICollectionPersister persister, IPersistentCollection collection, object key,
+		protected CollectionAction(ICollectionPersister persister, IPersistentCollection collection, object key,
 		                        ISessionImplementor session)
 		{
 			this.persister = persister;
@@ -157,11 +157,8 @@ namespace NHibernate.Action
 			{
 				return roleComparison;
 			}
-			else
-			{
-				//then by fk
-				return persister.KeyType.Compare(key, other.key, session.EntityMode);
-			}
+			//then by fk
+			return persister.KeyType.Compare(key, other.key, session.EntityMode);
 		}
 
 		#endregion

@@ -279,28 +279,26 @@ namespace NHibernate.Engine
 
 		public void SortCollectionActions()
 		{
-			// todo-events verify the behaviour of this method and verify CompareTo of CollectionAction
-			//if (session.Factory.Settings.IsOrderUpdatesEnabled)
-			//{
-			//  //sort the updates by fk
-			//  collectionCreations.Sort();
-			//  collectionUpdates.Sort();
-			//  collectionRemovals.Sort();
-			//}
+			if (session.Factory.Settings.IsOrderUpdatesEnabled)
+			{
+				//sort the updates by fk
+				collectionCreations.Sort();
+				collectionUpdates.Sort();
+				collectionRemovals.Sort();
+			}
 		}
 
 		public void SortActions()
 		{
-			// todo-events verify the behaviour of this method and verify CompareTo of EntityAction
-			//if (session.Factory.Settings.IsOrderUpdatesEnabled)
-			//{
-			//  //sort the updates by pk
-			//  updates.Sort();
-			//}
-			//if (session.Factory.Settings.IsOrderInsertsEnabled)
-			//{
-			//  SortInsertActions();
-			//}
+			if (session.Factory.Settings.IsOrderUpdatesEnabled)
+			{
+				//sort the updates by pk
+				updates.Sort();
+			}
+			if (session.Factory.Settings.IsOrderInsertsEnabled)
+			{
+				SortInsertActions();
+			}
 		}
 
 		 //Order the {@link #insertions} queue such that we group inserts
