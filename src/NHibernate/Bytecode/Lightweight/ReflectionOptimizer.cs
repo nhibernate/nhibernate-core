@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Security;
@@ -10,8 +9,10 @@ namespace NHibernate.Bytecode.Lightweight
 {
 	public class ReflectionOptimizer : IReflectionOptimizer, IInstantiationOptimizer
 	{
-		private IAccessOptimizer accessOptimizer;
-		private CreateInstanceInvoker createInstanceMethod;
+		private readonly IAccessOptimizer accessOptimizer;
+		private readonly CreateInstanceInvoker createInstanceMethod;
+		private readonly System.Type mappedType;
+		private readonly System.Type typeOfThis;
 
 		public IAccessOptimizer AccessOptimizer
 		{
@@ -28,45 +29,37 @@ namespace NHibernate.Bytecode.Lightweight
 			return createInstanceMethod();
 		}
 
-		private System.Type mappedType;
-		private System.Type typeOfThis;
-
 		/// <summary>
 		/// Class constructor.
 		/// </summary>
-		public ReflectionOptimizer(
-			System.Type mappedType, IGetter[] getters, ISetter[] setters)
+		public ReflectionOptimizer(System.Type mappedType, IGetter[] getters, ISetter[] setters)
 		{
 			// save off references
 			this.mappedType = mappedType;
-			this.typeOfThis = mappedType.IsValueType ? mappedType.MakeByRefType() : mappedType;
+			typeOfThis = mappedType.IsValueType ? mappedType.MakeByRefType() : mappedType;
 			//this.getters = getters;
 			//this.setters = setters;
 
 			GetPropertyValuesInvoker getInvoker = GenerateGetPropertyValuesMethod(getters);
 			SetPropertyValuesInvoker setInvoker = GenerateSetPropertyValuesMethod(getters, setters);
 
-			this.accessOptimizer = new AccessOptimizer(
-				getInvoker,
-				setInvoker,
-				getters,
-				setters);
+			accessOptimizer = new AccessOptimizer(getInvoker, setInvoker, getters, setters);
 
-			this.createInstanceMethod = CreateCreateInstanceMethod(mappedType);
+			createInstanceMethod = CreateCreateInstanceMethod(mappedType);
 		}
 
 		/// <summary>
 		/// Generates a dynamic method which creates a new instance of <paramref name="type" />
 		/// when invoked.
 		/// </summary>
-		private CreateInstanceInvoker CreateCreateInstanceMethod(System.Type type)
+		private static CreateInstanceInvoker CreateCreateInstanceMethod(System.Type type)
 		{
 			if (type.IsInterface || type.IsAbstract)
 			{
 				return null;
 			}
 
-			DynamicMethod method = new DynamicMethod(string.Empty, typeof(object), null, type, true);
+			DynamicMethod method = new DynamicMethod(string.Empty, typeof (object), null, type, true);
 
 			ILGenerator il = method.GetILGenerator();
 
@@ -90,12 +83,12 @@ namespace NHibernate.Bytecode.Lightweight
 
 			il.Emit(OpCodes.Ret);
 
-			return (CreateInstanceInvoker)method.CreateDelegate(typeof(CreateInstanceInvoker));
+			return (CreateInstanceInvoker) method.CreateDelegate(typeof (CreateInstanceInvoker));
 		}
 
 		protected DynamicMethod CreateDynamicMethod(System.Type returnType, System.Type[] argumentTypes)
 		{
-			System.Type owner = mappedType.IsInterface ? typeof(object) : mappedType;
+			System.Type owner = mappedType.IsInterface ? typeof (object) : mappedType;
 			bool canSkipChecks = SecurityManager.IsGranted(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
 			return new DynamicMethod(string.Empty, returnType, argumentTypes, owner, canSkipChecks);
 		}
@@ -117,13 +110,13 @@ namespace NHibernate.Bytecode.Lightweight
 		/// </summary>
 		private GetPropertyValuesInvoker GenerateGetPropertyValuesMethod(IGetter[] getters)
 		{
-			System.Type[] methodArguments = new System.Type[] { typeof(object), typeof(GetterCallback) };
-			DynamicMethod method = CreateDynamicMethod(typeof(object[]), methodArguments);
+			System.Type[] methodArguments = new System.Type[] {typeof (object), typeof (GetterCallback)};
+			DynamicMethod method = CreateDynamicMethod(typeof (object[]), methodArguments);
 
 			ILGenerator il = method.GetILGenerator();
 
 			LocalBuilder thisLocal = il.DeclareLocal(typeOfThis);
-			LocalBuilder dataLocal = il.DeclareLocal(typeof(object[]));
+			LocalBuilder dataLocal = il.DeclareLocal(typeof (object[]));
 
 			// Cast the 'this' pointer to the appropriate type and store it in a local variable
 			il.Emit(OpCodes.Ldarg_0);
@@ -132,7 +125,7 @@ namespace NHibernate.Bytecode.Lightweight
 
 			// Allocate the values array and store it in a local variable
 			il.Emit(OpCodes.Ldc_I4, getters.Length);
-			il.Emit(OpCodes.Newarr, typeof(object));
+			il.Emit(OpCodes.Newarr, typeof (object));
 			il.Emit(OpCodes.Stloc, dataLocal);
 
 			//get all the data from the object into the data array to be returned
@@ -157,9 +150,8 @@ namespace NHibernate.Bytecode.Lightweight
 				else
 				{
 					// using the getter itself via a callback
-					MethodInfo invokeMethod =
-						typeof(GetterCallback).GetMethod(
-							"Invoke", new System.Type[] { typeof(object), typeof(int) });
+					MethodInfo invokeMethod = typeof (GetterCallback).GetMethod("Invoke",
+					                                                            new System.Type[] {typeof (object), typeof (int)});
 					il.Emit(OpCodes.Ldarg_1);
 					il.Emit(OpCodes.Ldarg_0);
 					il.Emit(OpCodes.Ldc_I4, i);
@@ -174,7 +166,7 @@ namespace NHibernate.Bytecode.Lightweight
 			il.Emit(OpCodes.Ldloc, dataLocal.LocalIndex);
 			il.Emit(OpCodes.Ret);
 
-			return (GetPropertyValuesInvoker)method.CreateDelegate(typeof(GetPropertyValuesInvoker));
+			return (GetPropertyValuesInvoker) method.CreateDelegate(typeof (GetPropertyValuesInvoker));
 		}
 
 		/// <summary>
@@ -183,7 +175,7 @@ namespace NHibernate.Bytecode.Lightweight
 		/// <returns></returns>
 		private SetPropertyValuesInvoker GenerateSetPropertyValuesMethod(IGetter[] getters, ISetter[] setters)
 		{
-			System.Type[] methodArguments = new System.Type[] { typeof(object), typeof(object[]), typeof(SetterCallback) };
+			System.Type[] methodArguments = new System.Type[] {typeof (object), typeof (object[]), typeof (SetterCallback)};
 			DynamicMethod method = CreateDynamicMethod(null, methodArguments);
 
 			ILGenerator il = method.GetILGenerator();
@@ -220,9 +212,9 @@ namespace NHibernate.Bytecode.Lightweight
 				else
 				{
 					// using the setter itself via a callback
-					MethodInfo invokeMethod =
-						typeof(SetterCallback).GetMethod(
-							"Invoke", new System.Type[] { typeof(object), typeof(int), typeof(object) });
+					MethodInfo invokeMethod = typeof (SetterCallback).GetMethod("Invoke",
+					                                                            new System.Type[]
+					                                                            	{typeof (object), typeof (int), typeof (object)});
 					il.Emit(OpCodes.Ldarg_2);
 					il.Emit(OpCodes.Ldarg_0);
 					il.Emit(OpCodes.Ldc_I4, i);
@@ -239,7 +231,7 @@ namespace NHibernate.Bytecode.Lightweight
 			// Setup the return
 			il.Emit(OpCodes.Ret);
 
-			return (SetPropertyValuesInvoker)method.CreateDelegate(typeof(SetPropertyValuesInvoker));
+			return (SetPropertyValuesInvoker) method.CreateDelegate(typeof (SetPropertyValuesInvoker));
 		}
 	}
 }
