@@ -1,7 +1,7 @@
 using System;
-using System.Collections;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Collections.Generic;
 
 namespace NHibernate.Bytecode
 {
@@ -68,11 +68,11 @@ namespace NHibernate.Bytecode
 			}
 		}
 
-		private static Hashtable typeToOpcode;
+		private static Dictionary<System.Type, OpCode> typeToOpcode;
 
 		static EmitUtil()
 		{
-			typeToOpcode = new Hashtable();
+			typeToOpcode = new Dictionary<System.Type, OpCode>(12);
 
 			typeToOpcode[typeof(bool)] = OpCodes.Ldind_I1;
 			typeToOpcode[typeof(sbyte)] = OpCodes.Ldind_I1;
@@ -124,10 +124,10 @@ namespace NHibernate.Bytecode
 				il.Emit(OpCodes.Unbox, propertyType);
 
 				// Load the value indirectly, using ldobj or a specific opcode
-				object specificOpCode = typeToOpcode[propertyType];
-				if (specificOpCode != null)
+				OpCode specificOpCode;
+				if (typeToOpcode.TryGetValue(propertyType, out specificOpCode))
 				{
-					il.Emit((OpCode) specificOpCode);
+					il.Emit(specificOpCode);
 				}
 				else
 				{
@@ -171,12 +171,10 @@ namespace NHibernate.Bytecode
 
 			// Define the Invoke method for the delegate
 
-			MethodBuilder methodBuilder;
-			methodBuilder =
-				delegateBuilder.DefineMethod(
-					"Invoke",
-					MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot |
-					MethodAttributes.Virtual, returnType, parameterTypes);
+			MethodBuilder methodBuilder = delegateBuilder.DefineMethod("Invoke",
+			                                                           MethodAttributes.Public | MethodAttributes.HideBySig
+			                                                           | MethodAttributes.NewSlot | MethodAttributes.Virtual,
+			                                                           returnType, parameterTypes);
 
 			methodBuilder.SetImplementationFlags(
 				MethodImplAttributes.Runtime | MethodImplAttributes.Managed);

@@ -1,4 +1,3 @@
-using System.Collections;
 using log4net;
 using NHibernate.Cfg;
 using System.Collections.Generic;
@@ -8,14 +7,9 @@ namespace NHibernate.Cache
 	/// <summary>
 	/// Factory class for creating an <see cref="ICacheConcurrencyStrategy"/>.
 	/// </summary>
-	public sealed class CacheFactory
+	public static class CacheFactory
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(CacheFactory));
-
-		private CacheFactory()
-		{
-			// not publically creatable
-		}
 
 		public const string ReadOnly = "read-only";
 		public const string ReadWrite = "read-write";
@@ -36,7 +30,6 @@ namespace NHibernate.Cache
 		/// <param name="settings">Used to retrieve the global cache region prefix.</param>
 		/// <param name="properties">Properties the cache provider can use to configure the cache.</param>
 		/// <returns>An <see cref="ICacheConcurrencyStrategy"/> to use for this object in the <see cref="ICache"/>.</returns>
-		// was private in h2.1
 		public static ICacheConcurrencyStrategy CreateCache(string usage, string name, bool mutable, Settings settings,
 		                                                    IDictionary<string,string> properties)
 		{
