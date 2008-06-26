@@ -1,81 +1,59 @@
-using System;
-using System.Collections;
 using NHibernate.Type;
 
 namespace NHibernate
 {
-	/// <summary>
-	/// Represents a replication strategy
+	/// <summary> 
+	/// Represents a replication strategy. 
 	/// </summary>
+	/// <seealso cref="ISession.Replicate(object, ReplicationMode)"/>
 	public abstract class ReplicationMode
 	{
-		private readonly int code;
+		public static readonly ReplicationMode Exception = new ExceptionReplicationMode("EXCEPTION");
+		public static readonly ReplicationMode Ignore = new IgnoreReplicationMode("IGNORE");
+		public static readonly ReplicationMode LatestVersion = new LatestVersionReplicationMode("LATEST_VERSION");
+		public static readonly ReplicationMode Overwrite = new OverwriteReplicationMode("OVERWRITE");
 		private readonly string name;
-		private static readonly IDictionary Instances = new Hashtable();
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="level"></param>
-		/// <param name="name"></param>
-		public ReplicationMode(int level, string name)
+		protected ReplicationMode(string name)
 		{
-			this.code = level;
 			this.name = name;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="entity"></param>
-		/// <param name="currentVersion"></param>
-		/// <param name="newVersion"></param>
-		/// <param name="versionType"></param>
-		/// <returns></returns>
+		public override string ToString()
+		{
+			return name;
+		}
+
 		public abstract bool ShouldOverwriteCurrentVersion(object entity, object currentVersion, object newVersion,
 		                                                   IVersionType versionType);
 
-		/// <summary></summary>
-		public static readonly ReplicationMode Exception = new ExceptionReplicationMode(0, "EXCEPTION");
+		#region Nested type: ExceptionReplicationMode
 
 		private sealed class ExceptionReplicationMode : ReplicationMode
 		{
-			public ExceptionReplicationMode(int level, string name) : base(level, name)
-			{
-			}
+			public ExceptionReplicationMode(string name) : base(name) {}
 
 			/// <summary>
 			/// Throw an exception when a row already exists
 			/// </summary>
-			/// <param name="entity"></param>
-			/// <param name="currentVersion"></param>
-			/// <param name="newVersion"></param>
-			/// <param name="versionType"></param>
-			/// <returns></returns>
 			public override bool ShouldOverwriteCurrentVersion(object entity, object currentVersion, object newVersion,
 			                                                   IVersionType versionType)
 			{
-				throw new NotSupportedException("should not be called");
+				throw new AssertionFailure("should not be called");
 			}
 		}
 
-		/// <summary></summary>
-		public static readonly ReplicationMode Ignore = new IgnoreReplicationMode(1, "IGNORE");
+		#endregion
+
+		#region Nested type: IgnoreReplicationMode
 
 		private sealed class IgnoreReplicationMode : ReplicationMode
 		{
-			public IgnoreReplicationMode(int level, string name) : base(level, name)
-			{
-			}
+			public IgnoreReplicationMode(string name) : base(name) {}
 
 			/// <summary>
 			/// Ignore replicated entities when a row already exists
 			/// </summary>
-			/// <param name="entity"></param>
-			/// <param name="currentVersion"></param>
-			/// <param name="newVersion"></param>
-			/// <param name="versionType"></param>
-			/// <returns></returns>
 			public override bool ShouldOverwriteCurrentVersion(object entity, object currentVersion, object newVersion,
 			                                                   IVersionType versionType)
 			{
@@ -83,47 +61,17 @@ namespace NHibernate
 			}
 		}
 
-		/// <summary></summary>
-		public static readonly ReplicationMode Overwrite = new OverwriteReplicationMode(3, "OVERWRITE");
+		#endregion
 
-		private sealed class OverwriteReplicationMode : ReplicationMode
-		{
-			public OverwriteReplicationMode(int level, string name) : base(level, name)
-			{
-			}
-
-			/// <summary>
-			/// Overwrite existing rows when a row already exists
-			/// </summary>
-			/// <param name="entity"></param>
-			/// <param name="currentVersion"></param>
-			/// <param name="newVersion"></param>
-			/// <param name="versionType"></param>
-			/// <returns></returns>
-			public override bool ShouldOverwriteCurrentVersion(object entity, object currentVersion, object newVersion,
-			                                                   IVersionType versionType)
-			{
-				return true;
-			}
-		}
-
-		/// <summary></summary>
-		public static readonly ReplicationMode LatestVersion = new LatestVersionReplicationMode(2, "LATEST_VERSION");
+		#region Nested type: LatestVersionReplicationMode
 
 		private sealed class LatestVersionReplicationMode : ReplicationMode
 		{
-			public LatestVersionReplicationMode(int level, string name) : base(level, name)
-			{
-			}
+			public LatestVersionReplicationMode(string name) : base(name) {}
 
 			/// <summary>
 			/// When a row already exists, choose the latest version
 			/// </summary>
-			/// <param name="entity"></param>
-			/// <param name="currentVersion"></param>
-			/// <param name="newVersion"></param>
-			/// <param name="versionType"></param>
-			/// <returns></returns>
 			public override bool ShouldOverwriteCurrentVersion(object entity, object currentVersion, object newVersion,
 			                                                   IVersionType versionType)
 			{
@@ -136,5 +84,25 @@ namespace NHibernate
 				return versionType.Comparator.Compare(currentVersion, newVersion) <= 0;
 			}
 		}
+
+		#endregion
+
+		#region Nested type: OverwriteReplicationMode
+
+		private sealed class OverwriteReplicationMode : ReplicationMode
+		{
+			public OverwriteReplicationMode(string name) : base(name) {}
+
+			/// <summary>
+			/// Overwrite existing rows when a row already exists
+			/// </summary>
+			public override bool ShouldOverwriteCurrentVersion(object entity, object currentVersion, object newVersion,
+			                                                   IVersionType versionType)
+			{
+				return true;
+			}
+		}
+
+		#endregion
 	}
 }
