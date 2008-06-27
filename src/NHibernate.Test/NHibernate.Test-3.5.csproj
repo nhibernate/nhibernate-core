@@ -160,6 +160,10 @@
     <Compile Include="FilterTest\Product.cs" />
     <Compile Include="FilterTest\Salesperson.cs" />
     <Compile Include="FilterTest\TestClass.cs" />
+    <Compile Include="Generatedkeys\Identity\IdentityGeneratedKeysTest.cs" />
+    <Compile Include="Generatedkeys\Identity\MyChild.cs" />
+    <Compile Include="Generatedkeys\Identity\MyEntity.cs" />
+    <Compile Include="Generatedkeys\Identity\MySibling.cs" />
     <Compile Include="GeneratedTest\AbstractGeneratedPropertyTest.cs" />
     <Compile Include="GeneratedTest\Component.cs" />
     <Compile Include="GeneratedTest\ComponentOwner.cs" />
@@ -206,6 +210,13 @@
     <Compile Include="IdTest\HiLoTableGeneratorInt64Fixture.cs" />
     <Compile Include="IdTest\IdentifierGeneratorFactoryFixture.cs" />
     <Compile Include="IdTest\IdFixtureBase.cs" />
+    <Compile Include="Interceptor\CollectionInterceptor.cs" />
+    <Compile Include="Interceptor\Image.cs" />
+    <Compile Include="Interceptor\InterceptorFixture.cs" />
+    <Compile Include="Interceptor\Log.cs" />
+    <Compile Include="Interceptor\PropertyInterceptor.cs" />
+    <Compile Include="Interceptor\StatefulInterceptor.cs" />
+    <Compile Include="Interceptor\User.cs" />
     <Compile Include="JoinedSubclass\Address.cs" />
     <Compile Include="JoinedSubclass\Customer.cs" />
     <Compile Include="JoinedSubclass\Employee.cs" />
@@ -565,6 +576,16 @@
     <Compile Include="NHSpecificTest\UserTypeFixture.cs" />
     <Compile Include="NHSpecificTest\VersionTest.cs" />
     <Compile Include="ObjectAssertion.cs" />
+    <Compile Include="Ondelete\Address.cs" />
+    <Compile Include="Ondelete\Child.cs" />
+    <Compile Include="Ondelete\EFG.cs" />
+    <Compile Include="Ondelete\Employee.cs" />
+    <Compile Include="Ondelete\JoinedSubclassFixture.cs" />
+    <Compile Include="Ondelete\OnDeleteFixture.cs" />
+    <Compile Include="Ondelete\Parent.cs" />
+    <Compile Include="Ondelete\ParentChildFixture.cs" />
+    <Compile Include="Ondelete\Person.cs" />
+    <Compile Include="Ondelete\Salesperson.cs" />
     <Compile Include="PropertyRef\A.cs" />
     <Compile Include="PropertyRef\B.cs" />
     <Compile Include="PropertyRef\KeyPropertyRefFixture.cs" />
@@ -1195,6 +1216,18 @@
     <EmbeddedResource Include="NHSpecificTest\NH1313\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1332\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1326\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Generatedkeys\Identity\MyEntity.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Interceptor\Image.hbm.xml" />
+    <EmbeddedResource Include="Interceptor\User.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Ondelete\EFGJoinedSubclass.hbm.xml" />
+    <EmbeddedResource Include="Ondelete\ParentChild.hbm.xml" />
+    <EmbeddedResource Include="Ondelete\Person.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
