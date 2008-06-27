@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.CriteriaFromHql"
+				   assembly="NHibernate.Test">
+
+	<class name="Person">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<many-to-one name="Parent" />
+		<list name="Children" cascade="all">
+			<key column="parent_id" />
+			<index column="child_index" />
+			<one-to-many class="Person" />
+		</list>
+		<list name="Friends" cascade="save-update">
+			<key column="friend_id" />
+			<index column="friend_index" />
+			<one-to-many class="Person" />
+		</list>
+	</class>
+</hibernate-mapping>
