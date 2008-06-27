@@ -350,6 +350,8 @@
     <Compile Include="NHSpecificTest\NH1326\Person.cs" />
     <Compile Include="NHSpecificTest\NH1332\A.cs" />
     <Compile Include="NHSpecificTest\NH1332\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1347\A.cs" />
+    <Compile Include="NHSpecificTest\NH1347\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
@@ -1228,6 +1230,9 @@
     <EmbeddedResource Include="Ondelete\EFGJoinedSubclass.hbm.xml" />
     <EmbeddedResource Include="Ondelete\ParentChild.hbm.xml" />
     <EmbeddedResource Include="Ondelete\Person.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1347\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
