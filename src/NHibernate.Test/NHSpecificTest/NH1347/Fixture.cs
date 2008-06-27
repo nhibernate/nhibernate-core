@@ -1,10 +1,6 @@
-using System;
 using log4net;
-using log4net.Core;
-using NHibernate.Cfg;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
-using NHibernate.Event;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1347
