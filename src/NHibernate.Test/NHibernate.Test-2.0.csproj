@@ -350,6 +350,8 @@
     <Compile Include="NHSpecificTest\NH1326\Person.cs" />
     <Compile Include="NHSpecificTest\NH1332\A.cs" />
     <Compile Include="NHSpecificTest\NH1332\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1347\A.cs" />
+    <Compile Include="NHSpecificTest\NH1347\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
@@ -1260,6 +1262,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Interceptor\Image.hbm.xml" />
     <EmbeddedResource Include="Interceptor\User.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="NHSpecificTest\NH1347\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
