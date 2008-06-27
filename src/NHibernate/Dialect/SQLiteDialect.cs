@@ -43,9 +43,6 @@ namespace NHibernate.Dialect
             RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public override string IdentitySelectString
         {
             get { return "select last_insert_rowid()"; }
@@ -95,6 +92,11 @@ namespace NHibernate.Dialect
         {
             get { return true; }
         }
+
+    	public override bool SupportsLimit
+    	{
+    		get { return true; }
+    	}
 
         public override string IdentityColumnString
         {
