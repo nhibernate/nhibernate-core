@@ -32,7 +32,9 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 			{
 			}
 
+#pragma warning disable 67
 			public virtual event EventHandler VirtualEvent;
+#pragma warning restore 67
 
 			protected void NonVirtualProtectedMethod()
 			{
@@ -43,9 +45,9 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 				get { return 0; }
 				set { }
 			}
-
+#pragma warning disable 67
 			protected event EventHandler NonVirtualProtectedEvent;
-
+#pragma warning restore 67
 			protected void NonVirtualPrivateMethod()
 			{
 			}
@@ -55,8 +57,9 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 				get { return 0; }
 				set { }
 			}
-
+#pragma warning disable 67
 			protected event EventHandler NonVirtualPrivateEvent;
+#pragma warning restore 67
 		}
 
 		[Test]
@@ -109,7 +112,9 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 
 		public class InvalidNonVirtualEvent : ValidClass
 		{
+#pragma warning disable 67
 			public event EventHandler NonVirtualEvent;
+#pragma warning restore 67
 		}
 
 		[Test]
@@ -136,7 +141,9 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 			}
 
 			public int publicField;
+#pragma warning disable 67
 			public event EventHandler NonVirtualEvent;
+#pragma warning restore 67
 
 			public int NonVirtualProperty
 			{
@@ -170,7 +177,9 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 
 		public class InvalidInternalField : ValidClass
 		{
+#pragma warning disable 649
 			internal int internalField;
+#pragma warning restore 649
 		}
 
 		[Test]

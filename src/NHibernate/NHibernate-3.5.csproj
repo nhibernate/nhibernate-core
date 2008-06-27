@@ -27,7 +27,9 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug-2.0\NHibernate.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
-    <WarningsAsErrors>1717;1574</WarningsAsErrors>
+    <WarningsAsErrors>
+    </WarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -424,6 +426,7 @@
     <Compile Include="AdoNet\NonBatchingBatcherFactory.cs" />
     <Compile Include="AdoNet\ResultSetWrapper.cs" />
     <Compile Include="AdoNet\TooManyRowsAffectedException.cs" />
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Bytecode\CodeDom\BytecodeProviderImpl.cs" />
     <Compile Include="Bytecode\DefaultProxyFactoryFactory.cs" />
     <Compile Include="Bytecode\IAccessOptimizer.cs" />

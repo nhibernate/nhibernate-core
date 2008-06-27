@@ -27,12 +27,10 @@ namespace NHibernate.Test.Join
 		}
 
 		ISession s;
-		ITransaction t;
 
 		protected override void OnSetUp()
 		{
 			s = OpenSession();
-			//t = s.BeginTransaction();
 
 			objectsNeedDeleting.Clear();
 		}
@@ -57,7 +55,6 @@ namespace NHibernate.Test.Join
 				s.Close();
 			}
 
-			t = null;
 			s = null;
 		}
 

@@ -14,6 +14,13 @@ namespace NHibernate.AdoNet
 		// At that point, perhaps this thing is a "SessionContext", and
 		// ConnectionManager is a "JDBCContext"?  A "SessionContext" should
 		// live in the impl package...
+		
+		//private IContext owner;
+		//private ConnectionManager connectionManager;
+		//[NonSerialized]
+		//private bool isTransactionCallbackRegistered;
+		//[NonSerialized]
+		//private ITransaction hibernateTransaction;
 
 		private static readonly ILog log = LogManager.GetLogger(typeof (AdoNetContext));
 
@@ -29,12 +36,7 @@ namespace NHibernate.AdoNet
 			void BeforeTransactionCompletion(ITransaction tx);
 			void AfterTransactionCompletion(bool success, ITransaction tx);
 		}
-
-		private IContext owner;
-		private ConnectionManager connectionManager;
-		[NonSerialized] private bool isTransactionCallbackRegistered;
-		[NonSerialized] private ITransaction hibernateTransaction;
-
+		
 		#region Callback Members
 
 		public void ConnectionOpened()

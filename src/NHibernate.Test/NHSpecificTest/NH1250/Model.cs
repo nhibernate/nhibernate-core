@@ -23,7 +23,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1250
 			set { displayName = value; }
 		}
 
+#pragma warning disable 169
 		private int classTypeId; // something for NHibernate to write to
+#pragma warning restore 169
 		private string displayName;
 
 		public abstract int ClassTypeId

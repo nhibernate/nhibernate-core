@@ -142,7 +142,7 @@ namespace NHibernate.Test.UtilityTest
 
 		#endregion
 
-		#region IEnumerable<T> Members
+		#region IEnumerable<T2> Members
 
 		IEnumerator<T> IEnumerable<T>.GetEnumerator()
 		{
@@ -151,12 +151,12 @@ namespace NHibernate.Test.UtilityTest
 
 		#endregion
 
-		private class EnumerableTesterEnumerator<T> : IEnumerator<T>
+		private class EnumerableTesterEnumerator<T2> : IEnumerator<T2>
 		{
-			private readonly IEnumerator<T> enumerator;
+			private readonly IEnumerator<T2> enumerator;
 			private bool disposed;
 
-			public EnumerableTesterEnumerator(IEnumerator<T> enumerator)
+			public EnumerableTesterEnumerator(IEnumerator<T2> enumerator)
 			{
 				this.enumerator = enumerator;
 			}
@@ -176,12 +176,12 @@ namespace NHibernate.Test.UtilityTest
 
 			public object Current
 			{
-				get { return ((IEnumerator<T>)this).Current; }
+				get { return ((IEnumerator<T2>)this).Current; }
 			}
 
-			#region IEnumerator<T> Members
+			#region IEnumerator<T2> Members
 
-			T IEnumerator<T>.Current
+			T2 IEnumerator<T2>.Current
 			{
 				get { return enumerator.Current; }
 			}

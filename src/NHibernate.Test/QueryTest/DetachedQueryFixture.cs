@@ -609,6 +609,11 @@ namespace NHibernate.Test.QueryTest
 		{
 			return name.Equals(obj.name) && description.Equals(obj.description);
 		}
+
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
 	}
 
 	public class NoFoo

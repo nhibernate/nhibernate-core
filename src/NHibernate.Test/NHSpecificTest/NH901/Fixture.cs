@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH901
 			get { return "NH901"; }
 		}
 
-		private ISession OpenSession(IInterceptor interceptor)
+		private new ISession OpenSession(IInterceptor interceptor)
 		{
 			lastOpenedSession = sessions.OpenSession(interceptor);
 			return lastOpenedSession;

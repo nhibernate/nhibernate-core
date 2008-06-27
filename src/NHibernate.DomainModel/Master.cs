@@ -19,7 +19,9 @@ namespace NHibernate.DomainModel
 		private ISet _incoming = new HashedSet();
 		private ISet _outgoing = new HashedSet();
 		private string _name = "master";
+#pragma warning disable 169
 		private DateTime version;
+#pragma warning restore 169
 		//private BigDecimal bigDecimal = new BigDecimal("1234.123"); //TODO: how to do in .net
 		private int _x;
 

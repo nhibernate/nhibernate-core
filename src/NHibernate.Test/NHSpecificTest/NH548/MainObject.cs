@@ -4,9 +4,11 @@ namespace NHibernate.Test.NHSpecificTest.NH548
 {
 	public class MainObject
 	{
+#pragma warning disable 649
 		private int _id;
 		private string _name;
 		private ComponentObject _component;
+#pragma warning restore 649
 
 		public MainObject()
 		{

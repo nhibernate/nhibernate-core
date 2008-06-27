@@ -40,13 +40,13 @@ namespace NHibernate.Collection.Generic
 		public PersistentGenericSet(ISessionImplementor session, ISet<T> original) : base(session, original as ISet)
 		{
 			gset = original;
-			_set = (ISet) original;
+			set = (ISet) original;
 		}
 
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
 			gset = (ISet<T>) persister.CollectionType.Instantiate(anticipatedSize);
-			_set = (ISet) gset;
+			set = (ISet) gset;
 		}
 
 		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)

@@ -26,6 +26,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -268,6 +269,12 @@
     <Compile Include="NHSpecificTest\CollectionFixture.cs" />
     <Compile Include="NHSpecificTest\CriteriaFromHql\Person.cs" />
     <Compile Include="NHSpecificTest\CriteriaFromHql\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1290\AuxType.cs" />
+    <Compile Include="NHSpecificTest\NH1290\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1301\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH1301\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1313\A.cs" />
+    <Compile Include="NHSpecificTest\NH1313\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1324\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1324\Person.cs" />
     <Compile Include="NHSpecificTest\NH1098\FilterParameterOrderFixture.cs" />
@@ -330,6 +337,8 @@
     <Compile Include="NHSpecificTest\NH1280\NH1280Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1280\Person.cs" />
     <Compile Include="NHSpecificTest\NH1326\Person.cs" />
+    <Compile Include="NHSpecificTest\NH1332\A.cs" />
+    <Compile Include="NHSpecificTest\NH1332\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
@@ -1176,12 +1185,15 @@
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1324\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\CriteriaFromHql\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\NH1098\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\NH1250\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\NH1252\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\NH1275\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\NH1280\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\NH1297\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1098\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1250\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1252\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1275\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1280\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1297\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1301\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1313\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1332\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1326\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>

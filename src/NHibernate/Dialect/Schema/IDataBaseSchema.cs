@@ -95,7 +95,8 @@ namespace NHibernate.Dialect.Schema
 		/// <returns>A description of the table's indices available</returns>
 		/// <remarks>The result is relative to the schema sollections "IndexColumns".</remarks>
 		DataTable GetIndexColumns(string catalog, string schemaPattern, string tableName, string indexName);
-
+		
+		/*
 		/// <summary>
 		/// Gets a description of the primary keys available
 		/// </summary>
@@ -104,7 +105,7 @@ namespace NHibernate.Dialect.Schema
 		/// <param name="table">A table name</param>
 		/// <returns>A description of the primary keys available</returns>
 		//DataTable GetPrimaryKeys(string catalog, string schema, string table);
-
+		*/
 
 		/// <summary>
 		/// Gets a description of the foreign keys available

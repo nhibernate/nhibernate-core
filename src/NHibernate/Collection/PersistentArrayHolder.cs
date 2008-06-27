@@ -21,7 +21,7 @@ namespace NHibernate.Collection
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof (PersistentArrayHolder));
 
-		protected Array array;
+		private Array array;
 
 		[NonSerialized] private readonly System.Type elementClass;
 
@@ -43,11 +43,16 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// 
+		/// Gets or sets the array.
 		/// </summary>
+		/// <value>The array.</value>
 		public object Array
 		{
 			get { return array; }
+			protected set
+			{
+				array = (Array)value;
+			}
 		}
 
 		/// <summary>

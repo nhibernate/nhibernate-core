@@ -10,8 +10,8 @@ namespace NHibernate.Loader.Collection
 	/// Loads a collection of values or a many-to-many association.
 	/// </summary>
 	/// <remarks>
-	/// The collection persister must implement <tt>QueryableCOllection<tt>. For
-	/// other collections, create a customized subclass of <tt>Loader</tt>.
+	/// The collection persister must implement <seealso cref="IQueryableCollection"/>. For
+	/// other collections, create a customized subclass of <seealso cref="Loader"/>
 	/// </remarks>
 	/// <seealso cref="OneToManyLoader"/>
 	public class BasicCollectionLoader : CollectionLoader

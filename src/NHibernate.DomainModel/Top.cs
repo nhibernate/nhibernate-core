@@ -13,7 +13,9 @@ namespace NHibernate.DomainModel
 		// accurracy issues
 		private DateTime date = new DateTime(2004, 01, 01, 12, 00, 00, 00);
 		private Top other;
+#pragma warning disable 169
 		private Top top;
+#pragma warning restore 169
 
 		public Top(int c)
 		{

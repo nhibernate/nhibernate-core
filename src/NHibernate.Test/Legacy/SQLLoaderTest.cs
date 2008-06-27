@@ -45,7 +45,8 @@ namespace NHibernate.Test.Legacy
 			Simple sim = new Simple();
 			sim.Date = DateTime.Today; // NB We don't use Now() due to the millisecond alignment problem with SQL Server
 			session.Save(sim, 1L);
-			IQuery q = session.CreateSQLQuery("select {sim.*} from Simple {sim} where {sim}.date_ = ?", "sim", typeof(Simple));
+			IQuery q = session.CreateSQLQuery("select {sim.*} from Simple {sim} where {sim}.date_ = ?")
+				.AddEntity("sim", typeof(Simple));
 			q.SetTimestamp(0, sim.Date);
 			Assert.AreEqual(1, q.List().Count, "q.List.Count");
 			session.Delete(sim);
@@ -68,7 +69,8 @@ namespace NHibernate.Test.Legacy
 			sim.Date = DateTime.Today; // NB We don't use Now() due to the millisecond alignment problem with SQL Server
 			session.Save(sim, 1L);
 			IQuery q =
-				session.CreateSQLQuery("select {sim.*} from Simple {sim} where {sim}.date_ = :fred", "sim", typeof(Simple));
+				session.CreateSQLQuery("select {sim.*} from Simple {sim} where {sim}.date_ = :fred")
+				.AddEntity("sim", typeof(Simple));
 			q.SetTimestamp("fred", sim.Date);
 			Assert.AreEqual(1, q.List().Count, "q.List.Count");
 			session.Delete(sim);
@@ -96,9 +98,12 @@ namespace NHibernate.Test.Legacy
 			//B b = new B();
 			//session.Save( b );
 
-			session.CreateSQLQuery("select {category.*} from Category {category}", "category", typeof(Category)).List();
-			session.CreateSQLQuery("select {simple.*} from Simple {simple}", "simple", typeof(Simple)).List();
-			session.CreateSQLQuery("select {a.*} from A {a}", "a", typeof(A)).List();
+			session.CreateSQLQuery("select {category.*} from Category {category}")
+				.AddEntity("category", typeof(Category)).List();
+			session.CreateSQLQuery("select {simple.*} from Simple {simple}")
+				.AddEntity("simple", typeof(Simple)).List();
+			session.CreateSQLQuery("select {a.*} from A {a}")
+				.AddEntity("a", typeof(A)).List();
 
 			session.Delete(s);
 			session.Delete(simple);
@@ -123,8 +128,8 @@ namespace NHibernate.Test.Legacy
 			session.Flush();
 
 			IQuery query =
-				session.CreateSQLQuery("select {category.*} from Category {category} where {category}.Name = :Name", "category",
-				                       typeof(Category));
+				session.CreateSQLQuery("select {category.*} from Category {category} where {category}.Name = :Name")
+				.AddEntity("category",typeof(Category));
 			query.SetProperties(s);
 
 			query.List();
@@ -152,7 +157,8 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 
 			s = OpenSession();
-			IList list = s.CreateSQLQuery("select {category.*} from Category {category}", "category", typeof(Category)).List();
+			IList list = s.CreateSQLQuery("select {category.*} from Category {category}")
+				.AddEntity("category", typeof(Category)).List();
 			Assert.AreEqual(1, list.Count, "Count differs");
 
 			s.Delete("from Assignable");
@@ -199,9 +205,10 @@ namespace NHibernate.Test.Legacy
 			if (!(Dialect is MySQLDialect))
 			{
 				IList list =
-					s.CreateSQLQuery("select {category.*}, {assignable.*} from Category {category}, \"assign able\" {assignable}",
-					                 new string[] {"category", "assignable"}, new System.Type[] {typeof(Category), typeof(Assignable)})
-						.List();
+					s.CreateSQLQuery("select {category.*}, {assignable.*} from Category {category}, \"assign able\" {assignable}")
+					.AddEntity("category",   typeof(Category))
+					.AddEntity("assignable", typeof(Assignable))
+					.List();
 				Assert.AreEqual(6, list.Count, "Count differs"); // cross-product of 2 categories x 3 assignables;
 				Assert.IsTrue(list[0] is object[]);
 			}
@@ -255,14 +262,14 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			IQuery basicParam =
-				s.CreateSQLQuery("select {category.*} from Category {category} where {category}.Name = 'Best'", "category",
-				                 typeof(Category));
+				s.CreateSQLQuery("select {category.*} from Category {category} where {category}.Name = 'Best'")
+				.AddEntity("category", typeof(Category));
 			IList list = basicParam.List();
 			Assert.AreEqual(1, list.Count);
 
 			IQuery unnamedParam =
-				s.CreateSQLQuery("select {category.*} from Category {category} where {category}.Name = ? or {category}.Name = ?",
-				                 "category", typeof(Category));
+				s.CreateSQLQuery("select {category.*} from Category {category} where {category}.Name = ? or {category}.Name = ?")
+				.AddEntity("category", typeof(Category));
 			unnamedParam.SetString(0, "Good");
 			unnamedParam.SetString(1, "Best");
 			list = unnamedParam.List();
@@ -270,8 +277,8 @@ namespace NHibernate.Test.Legacy
 
 			IQuery namedParam =
 				s.CreateSQLQuery(
-					"select {category.*} from Category {category} where ({category}.Name=:firstCat or {category}.Name=:secondCat)",
-					"category", typeof(Category));
+					"select {category.*} from Category {category} where ({category}.Name=:firstCat or {category}.Name=:secondCat)")
+					.AddEntity("category", typeof(Category));
 			namedParam.SetString("firstCat", "Better");
 			namedParam.SetString("secondCat", "Best");
 			list = namedParam.List();
@@ -307,8 +314,8 @@ namespace NHibernate.Test.Legacy
 
 			query =
 				session.CreateSQLQuery(
-					"select identifier_column as {a.id}, clazz_discriminata as {a.class}, count_ as {a.Count}, name as {a.Name} from A where {fn ucase(Name)} like {fn ucase('max')}",
-					"a", typeof(A));
+					"select identifier_column as {a.id}, clazz_discriminata as {a.class}, count_ as {a.Count}, name as {a.Name} from A where {fn ucase(Name)} like {fn ucase('max')}")
+					.AddEntity("a", typeof(A));
 
 			// NH: Replaced the whole if by the line above
 			/*
@@ -360,8 +367,9 @@ namespace NHibernate.Test.Legacy
 					"select a.identifier_column as {a1.id}, a.clazz_discriminata as {a1.class}, a.count_ as {a1.Count}, a.name as {a1.Name}, a.anothername as {a1.AnotherName} " +
 					", b.identifier_column as {a2.id}, b.clazz_discriminata as {a2.class}, b.count_ as {a2.Count}, b.name as {a2.Name}, b.anothername as {a2.AnotherName} " +
 					" from A a, A b" +
-					" where a.identifier_column = b.identifier_column", new String[] {"a1", "a2"},
-					new System.Type[] {typeof(A), typeof(A)});
+					" where a.identifier_column = b.identifier_column")
+					.AddEntity("a1", typeof(A))
+					.AddEntity("a2",typeof(A));
 			IList list = query.List();
 
 			Assert.IsNotNull(list);
@@ -386,7 +394,8 @@ namespace NHibernate.Test.Legacy
 			session.Flush();
 			session.Clear();
 
-			IQuery query = session.CreateSQLQuery("select {sing.*} from Single {sing}", "sing", typeof(Single));
+			IQuery query = session.CreateSQLQuery("select {sing.*} from Single {sing}")
+				.AddEntity("sing", typeof(Single));
 
 			IList list = query.List();
 
@@ -394,7 +403,8 @@ namespace NHibernate.Test.Legacy
 
 			session.Clear();
 
-			query = session.CreateSQLQuery("select {sing.*} from Single {sing} where sing.Id = ?", "sing", typeof(Single));
+			query = session.CreateSQLQuery("select {sing.*} from Single {sing} where sing.Id = ?")
+				.AddEntity("sing", typeof(Single));
 			query.SetString(0, "my id");
 			list = query.List();
 
@@ -404,8 +414,8 @@ namespace NHibernate.Test.Legacy
 
 			query =
 				session.CreateSQLQuery(
-					"select s.id as {sing.Id}, s.string_ as {sing.String}, s.prop as {sing.Prop} from Single s where s.Id = ?", "sing",
-					typeof(Single));
+					"select s.id as {sing.Id}, s.string_ as {sing.String}, s.prop as {sing.Prop} from Single s where s.Id = ?")
+					.AddEntity("sing", typeof(Single));
 			query.SetString(0, "my id");
 			list = query.List();
 
@@ -416,8 +426,8 @@ namespace NHibernate.Test.Legacy
 
 			query =
 				session.CreateSQLQuery(
-					"select s.id as {sing.Id}, s.string_ as {sing.String}, s.prop as {sing.Prop} from Single s where s.Id = ?", "sing",
-					typeof(Single));
+					"select s.id as {sing.Id}, s.string_ as {sing.String}, s.prop as {sing.Prop} from Single s where s.Id = ?")
+					.AddEntity("sing", typeof(Single));
 			query.SetString(0, "my id");
 			list = query.List();
 
@@ -461,7 +471,7 @@ namespace NHibernate.Test.Legacy
 
 			session.Clear();
 
-			IQuery q = session.CreateSQLQuery(sql, "comp", typeof(Componentizable));
+			IQuery q = session.CreateSQLQuery(sql).AddEntity("comp", typeof(Componentizable));
 			IList list = q.List();
 
 			Assert.AreEqual(list.Count, 1);
@@ -491,8 +501,8 @@ namespace NHibernate.Test.Legacy
 
 			IQuery query =
 				session.CreateSQLQuery(
-					"select s.category_key_col as {category.id}, s.Name as {category.Name}, s.\"assign able id\" as {category.Assignable} from {category} s",
-					"category", typeof(Category));
+					"select s.category_key_col as {category.id}, s.Name as {category.Name}, s.\"assign able id\" as {category.Assignable} from {category} s")
+					.AddEntity("category", typeof(Category));
 			IList list = query.List();
 
 			Assert.IsNotNull(list);
@@ -521,8 +531,8 @@ namespace NHibernate.Test.Legacy
 
 			IQuery query =
 				session.CreateSQLQuery(
-					"select s.category_key_col as {category.id}, s.Name as {category.Name}, s.\"assign able id\" as {category.Assignable} from {category} s",
-					"category", typeof(Category));
+					"select s.category_key_col as {category.id}, s.Name as {category.Name}, s.\"assign able id\" as {category.Assignable} from {category} s")
+					.AddEntity("category", typeof(Category));
 			IList list = query.List();
 
 			Assert.IsNotNull(list);
@@ -551,8 +561,8 @@ namespace NHibernate.Test.Legacy
 
 			IQuery query =
 				session.CreateSQLQuery(
-					"select identifier_column as {a.id}, clazz_discriminata as {a.class}, name as {a.Name}, count_ as {a.Count} from {a} s",
-					"a", typeof(A));
+					"select identifier_column as {a.id}, clazz_discriminata as {a.class}, name as {a.Name}, count_ as {a.Count} from {a} s")
+					.AddEntity("a", typeof(A));
 			IList list = query.List();
 
 			Assert.IsNotNull(list);
@@ -599,8 +609,8 @@ namespace NHibernate.Test.Legacy
 			session = OpenSession();
 
 			IQuery query = session.CreateSQLQuery(
-				"select identifier_column as {a.id}, clazz_discriminata as {a.class}, count_ as {a.Count}, name as {a.Name}, anothername as {a.AnotherName} from A",
-				"a", typeof(A));
+				"select identifier_column as {a.id}, clazz_discriminata as {a.class}, count_ as {a.Count}, name as {a.Name}, anothername as {a.AnotherName} from A")
+				.AddEntity("a", typeof(A));
 			IList list = query.List();
 
 			Assert.IsNotNull(list);

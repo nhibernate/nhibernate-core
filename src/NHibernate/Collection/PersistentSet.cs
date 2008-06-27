@@ -29,7 +29,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// The <see cref="ISet"/> that NHibernate is wrapping.
 		/// </summary>
-		protected ISet _set;
+		protected ISet set;
 
 		/// <summary>
 		/// A temporary list that holds the objects while the PersistentSet is being
@@ -63,7 +63,7 @@ namespace NHibernate.Collection
 			// do we need to copy it to be sure it won't be changing
 			// underneath us?
 			// ie. this.set.addAll(set);
-			_set = original;
+			set = original;
 			SetInitialized();
 			IsDirectlyAccessible = true;
 		}
@@ -78,8 +78,8 @@ namespace NHibernate.Collection
 			EntityMode entityMode = Session.EntityMode;
 
 			//if (set==null) return new Set(session);
-			Hashtable clonedSet = new Hashtable(_set.Count);
-			foreach (object current in _set)
+			Hashtable clonedSet = new Hashtable(set.Count);
+			foreach (object current in set)
 			{
 				object copied = persister.ElementType.DeepCopy(current, entityMode, persister.Factory);
 				clonedSet[copied] = copied;
@@ -91,20 +91,20 @@ namespace NHibernate.Collection
 		{
 			IDictionary sn = (IDictionary) snapshot;
 			// NH Different implementation : sn.Keys return a new collection we don't need "re-new"
-			return GetOrphans(sn.Keys, _set, entityName, Session);
+			return GetOrphans(sn.Keys, set, entityName, Session);
 		}
 
 		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
 			IType elementType = persister.ElementType;
 			IDictionary snapshot = (IDictionary) GetSnapshot();
-			if (snapshot.Count != _set.Count)
+			if (snapshot.Count != set.Count)
 			{
 				return false;
 			}
 			else
 			{
-				foreach (object obj in _set)
+				foreach (object obj in set)
 				{
 					object oldValue = snapshot[obj];
 					if (oldValue == null || elementType.IsDirty(oldValue, obj, Session))
@@ -124,7 +124,7 @@ namespace NHibernate.Collection
 
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
-			_set = (ISet) persister.CollectionType.Instantiate(anticipatedSize);
+			set = (ISet) persister.CollectionType.Instantiate(anticipatedSize);
 		}
 
 		/// <summary>
@@ -143,7 +143,7 @@ namespace NHibernate.Collection
 				object element = persister.ElementType.Assemble(array[i], Session, owner);
 				if (element != null)
 				{
-					_set.Add(element);
+					set.Add(element);
 				}
 			}
 			SetInitialized();
@@ -151,13 +151,13 @@ namespace NHibernate.Collection
 
 		public override bool Empty
 		{
-			get { return _set.Count == 0; }
+			get { return set.Count == 0; }
 		}
 
 		public override string ToString()
 		{
 			Read();
-			return StringHelper.CollectionToString(_set);
+			return StringHelper.CollectionToString(set);
 		}
 
 		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
@@ -187,7 +187,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		public override bool EndRead(ICollectionPersister persister)
 		{
-			_set.AddAll(tempList);
+			set.AddAll(tempList);
 			tempList = null;
 			SetInitialized();
 			return true;
@@ -195,15 +195,15 @@ namespace NHibernate.Collection
 
 		public override IEnumerable Entries(ICollectionPersister persister)
 		{
-			return _set;
+			return set;
 		}
 
 		public override object Disassemble(ICollectionPersister persister)
 		{
-			object[] result = new object[_set.Count];
+			object[] result = new object[set.Count];
 			int i = 0;
 
-			foreach (object obj in _set)
+			foreach (object obj in set)
 			{
 				result[i++] = persister.ElementType.Disassemble(obj, Session, null);
 			}
@@ -217,13 +217,13 @@ namespace NHibernate.Collection
 			ArrayList deletes = new ArrayList(sn.Count);
 			foreach (object obj in sn.Keys)
 			{
-				if (!_set.Contains(obj))
+				if (!set.Contains(obj))
 				{
 					// the element has been removed from the set
 					deletes.Add(obj);
 				}
 			}
-			foreach (object obj in _set)
+			foreach (object obj in set)
 			{
 				object oldValue = sn[obj];
 				if (oldValue != null && elementType.IsDirty(obj, oldValue, Session))
@@ -274,13 +274,13 @@ namespace NHibernate.Collection
 				return false;
 			}
 			Read();
-			return CollectionHelper.CollectionEquals(_set, that);
+			return CollectionHelper.CollectionEquals(set, that);
 		}
 
 		public override int GetHashCode()
 		{
 			Read();
-			return _set.GetHashCode();
+			return set.GetHashCode();
 		}
 
 		public override bool EntryExists(object entry, int i)
@@ -290,7 +290,7 @@ namespace NHibernate.Collection
 
 		public override bool IsWrapper(object collection)
 		{
-			return _set == collection;
+			return set == collection;
 		}
 
 		#region ISet Members
@@ -298,37 +298,37 @@ namespace NHibernate.Collection
 		public ISet Union(ISet a)
 		{
 			Read();
-			return _set.Union(a);
+			return set.Union(a);
 		}
 
 		public ISet Intersect(ISet a)
 		{
 			Read();
-			return _set.Intersect(a);
+			return set.Intersect(a);
 		}
 
 		public ISet Minus(ISet a)
 		{
 			Read();
-			return _set.Minus(a);
+			return set.Minus(a);
 		}
 
 		public ISet ExclusiveOr(ISet a)
 		{
 			Read();
-			return _set.ExclusiveOr(a);
+			return set.ExclusiveOr(a);
 		}
 
 		public bool Contains(object o)
 		{
 			bool? exists = ReadElementExistence(o);
-			return exists == null ? _set.Contains(o) : exists.Value;
+			return exists == null ? set.Contains(o) : exists.Value;
 		}
 
 		public bool ContainsAll(ICollection c)
 		{
 			Read();
-			return _set.ContainsAll(c);
+			return set.ContainsAll(c);
 		}
 
 		public bool Add(object o)
@@ -337,7 +337,7 @@ namespace NHibernate.Collection
 			if (!exists.HasValue)
 			{
 				Initialize(true);
-				if (_set.Add(o))
+				if (set.Add(o))
 				{
 					Dirty();
 					return true;
@@ -363,7 +363,7 @@ namespace NHibernate.Collection
 			if (c.Count > 0)
 			{
 				Initialize(true);
-				if (_set.AddAll(c))
+				if (set.AddAll(c))
 				{
 					Dirty();
 					return true;
@@ -385,7 +385,7 @@ namespace NHibernate.Collection
 			if (!exists.HasValue)
 			{
 				Initialize(true);
-				bool contained = _set.Remove(o);
+				bool contained = set.Remove(o);
 				if (contained)
 				{
 					Dirty();
@@ -412,7 +412,7 @@ namespace NHibernate.Collection
 			if (c.Count > 0)
 			{
 				Initialize(true);
-				if (_set.RemoveAll(c))
+				if (set.RemoveAll(c))
 				{
 					Dirty();
 					return true;
@@ -431,7 +431,7 @@ namespace NHibernate.Collection
 		public bool RetainAll(ICollection c)
 		{
 			Initialize(true);
-			if (_set.RetainAll(c))
+			if (set.RetainAll(c))
 			{
 				Dirty();
 				return true;
@@ -451,9 +451,9 @@ namespace NHibernate.Collection
 			else
 			{
 				Initialize(true);
-				if (!(_set.Count == 0))
+				if (!(set.Count == 0))
 				{
-					_set.Clear();
+					set.Clear();
 					Dirty();
 				}
 			}
@@ -461,7 +461,7 @@ namespace NHibernate.Collection
 
 		public bool IsEmpty
 		{
-			get { return ReadSize() ? CachedSize == 0 : (_set.Count == 0); }
+			get { return ReadSize() ? CachedSize == 0 : (set.Count == 0); }
 		}
 
 		#endregion
@@ -472,12 +472,12 @@ namespace NHibernate.Collection
 		{
 			// NH : we really need to initialize the set ?
 			Read();
-			_set.CopyTo(array, index);
+			set.CopyTo(array, index);
 		}
 
 		public int Count
 		{
-			get { return ReadSize() ? CachedSize : _set.Count; }
+			get { return ReadSize() ? CachedSize : set.Count; }
 		}
 
 		public object SyncRoot
@@ -497,7 +497,7 @@ namespace NHibernate.Collection
 		public IEnumerator GetEnumerator()
 		{
 			Read();
-			return _set.GetEnumerator();
+			return set.GetEnumerator();
 		}
 
 		#endregion
@@ -507,7 +507,7 @@ namespace NHibernate.Collection
 		public object Clone()
 		{
 			Read();
-			return _set.Clone();
+			return set.Clone();
 		}
 
 		#endregion
@@ -535,7 +535,7 @@ namespace NHibernate.Collection
 
 			public void Operate()
 			{
-				enclosingInstance._set.Clear();
+				enclosingInstance.set.Clear();
 			}
 		}
 
@@ -562,7 +562,7 @@ namespace NHibernate.Collection
 
 			public void Operate()
 			{
-				enclosingInstance._set.Add(value);
+				enclosingInstance.set.Add(value);
 			}
 		}
 
@@ -589,7 +589,7 @@ namespace NHibernate.Collection
 
 			public void Operate()
 			{
-				enclosingInstance._set.Remove(value);
+				enclosingInstance.set.Remove(value);
 			}
 		}
 
