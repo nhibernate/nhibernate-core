@@ -1,9 +1,34 @@
+Build 2.0.0.Beta1
+========================
+** Bug
+    * [NH-1238] - NH_1155_ShouldNotLoadAllChildrenInPagedSubSelect fails for MsSql2000Dialect
+    * [NH-1318] - Enum fields cannot be mapped to database on DB2
+    * [NH-1329] - Expression.Sql with parameters (inside of functions) is broken
+    * [NH-1346] - SchemaUpdate.Execute fails on MS SQL Server 2005 With Locale TURKISH_CI_AS
+    * [NH-1347] - SetMaxResult does not work with SQLite (SQLiteDialect)
+    * [NH-1348] - Cannot use multiple listeners for the same event type
+
+** Improvement
+    * [NH-1172] - ASA 10 Driver for NHibernate
+    * [NH-1315] - ForeignGenerator.cs property Key is not found if the generator tag is empty causes exception
+    * [NH-1335] - Performance improvment of PersistentEnumType class
+
+
+** Patch
+    * [NH-1254] - Sybase ASA10 - Dialect + Driver
+    * [NH-1326] - ISession.Disconnect() creates zombied transactions
+    * [NH-1327] - PostCommitXXXEventListeners invoked even when transaction fails
+
+
 Build 2.0.0.Alpha2
 ========================
 
 ** Bug
     * [NH-1100] - Introduce exception if two columns are being selected, but only one being returned by NH
+    * [NH-1145] - MultiCrieria Does Not Respect MaxResults on Criteria
     * [NH-1161] - Java mentioned in NHibernate Documentation
+    * [NH-1203] - Problem to resolv property name
+    * [NH-1205] - Various subselect bugs in MultiCriteria
     * [NH-1246] - Reading BinaryBlob triggers update when transaction is committed.
     * [NH-1250] - Failure with MsSql2005Dialect when paging in polymorphic queries with discriminator formula
     * [NH-1252] - Inconsistent behavior of ISession.Get() under certain conditions
@@ -21,14 +46,21 @@ Build 2.0.0.Alpha2
 
 ** Improvement
     * [NH-763] - NHibernate Does Not Recognize Dependent Resources
+    * [NH-1158] - Upgrade to DynamicProxy 2
     * [NH-1283] - SetGuid is missing in IMultiQuery interface
     * [NH-1303] - UUIDStringGenerator#Generate Improvement
 
+** New Feature
+    * [NH-1134] - Allow property-ref for collection keys
 
 ** Patch
     * [NH-1058] - automatically create indexes for foreign keys in postgresql dialect
+    * [NH-1140] - Getting NullReferenceException when using SimpleSubqueryExpression within another subexpression
     * [NH-1146] - Expose DetachedCriteria in SubqueryExpression
+    * [NH-1162] - Add list-index element and property-ref attribute to key element in mapping schema
+    * [NH-1163] - Add more complete identity column support to SQLiteDialect
     * [NH-1166] - Sql server lock patch, pessimistic locking for SQL Server 2000/2005
+    * [NH-1201] - Patch: MultiQueryImpl.GetResultList does not use Result Transformers correctly.
     * [NH-1292] - No-Dialect Patch
     * [NH-1302] - Patches for Visual Studio 2008 / .Net 3.5
     * [NH-1308] - Patch to get a MappingException when association references unmapped class
@@ -67,6 +99,7 @@ Build 2.0.0.Alpha1
     * [NH-1234] - PersistentEnumType incorrectly assumes enum types have zero-value defined
     * [NH-1235] - SetMaxResults() returns one less row when SetFirstResult() is not used
     * [NH-1237] - Cannot set PostLoadEventListener event listeners.
+    * [NH-1246] - Reading BinaryBlob triggers update when transaction is committed.
     * [NH-1249] - Bug in GetLimitString for MSSql 05 when ordering by aggregates
     * [NH-1255] - key-many-to-one && not-found
     * [NH-1259] - Recursive call in SetListener(type,null) causes stack overflow
@@ -75,6 +108,7 @@ Build 2.0.0.Alpha1
     * [NH-1265] - Generated Id does not work for MySQL
     * [NH-1268] - one-to-one can never be lazy?
     * [NH-1275] - FOR UPDATE statements not generated for pessimistic locking
+    * [NH-1286] - Binary types are not compared properly and always sent to update
 
 ** Improvement
     * [NH-364] - IdBag doesn't work with Identity columns
@@ -82,6 +116,7 @@ Build 2.0.0.Alpha1
     * [NH-568] - year(), month(),date() and some other functions: not supported in HQL
     * [NH-628] - HQL functions mapping
     * [NH-865] - Change SQL Server dialect to use COUNT_BIG for count
+    * [NH-913] - make Flush() - return int value for records affected
     * [NH-924] - ICriteria - Inspection/traversal, modification and cloning
     * [NH-969] - IIf for MS SQL
     * [NH-970] - OnPreLoad & OnPostLoad Lifecycle Events
@@ -97,9 +132,11 @@ Build 2.0.0.Alpha1
     * [NH-786] - Port statistics from H3
     * [NH-831] - Add MutliCriteria
     * [NH-979] - Allow cloning of DetachedCriteria
+    * [NH-1036] - IQuery.executeUpdate()
     * [NH-1111] - PostgreSQL 8.3 dialect with Guid type support
 
 ** Patch
+    * [NH-387] - Rolling back identifiers
     * [NH-466] - Add join mapping element to map one class to several tables
     * [NH-982] - Patch for Castle DynamicProxy2 Support
     * [NH-1073] - Remove #if NET_2_0 directives
@@ -108,6 +145,7 @@ Build 2.0.0.Alpha1
     * [NH-1110] - Enable Multi Query support for Npgsql (PostgreSQL) driver
     * [NH-1113] - Test DetachedQueryFixture.ExecutableNamedQuery fails on case-sensitive databases
     * [NH-1114] - Tests NHSpecificTest NH898 and NH958 failed on databases without DbType.Guid support
+    * [NH-1231] - Add support for SetResultTransformer to ISQLQuery queries (auto-discovery of return types)
     * [NH-1240] - VetoInterceptor - Cancel Calls to Delete, Update, Insert via the IInterceptor Interface
     * [NH-1242] - Change path delimiter to '/' to be buildable on non-Windows platforms
     * [NH-1243] - NHibernate.Search is not CLS compliant.
