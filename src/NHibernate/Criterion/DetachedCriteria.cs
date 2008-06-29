@@ -20,6 +20,18 @@ namespace NHibernate.Criterion
 		private readonly CriteriaImpl impl;
 		private readonly ICriteria criteria;
 
+		protected DetachedCriteria(System.Type entityType)
+		{
+			impl = new CriteriaImpl(entityType, null);
+			criteria = impl;
+		}
+
+		protected DetachedCriteria(System.Type entityType, string alias)
+		{
+			impl = new CriteriaImpl(entityType, alias, null);
+			criteria = impl;
+		}
+
 		protected DetachedCriteria(string entityName)
 		{
 			impl = new CriteriaImpl(entityName, null);
@@ -55,22 +67,22 @@ namespace NHibernate.Criterion
 
 		public static DetachedCriteria For(System.Type entityType)
 		{
-			return new DetachedCriteria(entityType.FullName);
+			return new DetachedCriteria(entityType);
 		}
 
 		public static DetachedCriteria For<T>()
 		{
-			return new DetachedCriteria(typeof (T).FullName);
+			return new DetachedCriteria(typeof (T));
 		}
 
 		public static DetachedCriteria For<T>(string alias)
 		{
-			return new DetachedCriteria(typeof (T).FullName, alias);
+			return new DetachedCriteria(typeof (T), alias);
 		}
 
 		public static DetachedCriteria For(System.Type entityType, string alias)
 		{
-			return new DetachedCriteria(entityType.FullName, alias);
+			return new DetachedCriteria(entityType, alias);
 		}
 
 		public static DetachedCriteria ForEntityName(string entityName)
@@ -201,6 +213,18 @@ namespace NHibernate.Criterion
 				return null;
 			}
 			return new DetachedCriteria(impl, tmpCrit);
+		}
+
+		/// <summary>
+		/// Gets the root entity type if available, throws otherwise
+		/// </summary>
+		/// <remarks>
+		/// This is an NHibernate specific method, used by several dependent 
+		/// frameworks for advance integration with NHibernate.
+		/// </remarks>
+		public System.Type GetRootEntityTypeIfAvailable()
+		{
+			return criteria.GetRootEntityTypeIfAvailable();
 		}
 	}
 }

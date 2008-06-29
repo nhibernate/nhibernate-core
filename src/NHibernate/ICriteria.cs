@@ -53,8 +53,6 @@ namespace NHibernate
 	/// </remarks>
 	public interface ICriteria : ICloneable
 	{
-		// NH: Static declarations moved to CriteriaUtil class (CriteriaUtil.cs)
-
 		/// <summary>
 		/// Get the alias of the entity encapsulated by this criteria instance.
 		/// </summary>
@@ -284,6 +282,15 @@ namespace NHibernate
 		/// <param name="alias">The alias.</param>
 		/// <returns></returns>
 		ICriteria GetCriteriaByAlias(string alias);
+
+		/// <summary>
+		/// Gets the root entity type if available, throws otherwise
+		/// </summary>
+		/// <remarks>
+		/// This is an NHibernate specific method, used by several dependent 
+		/// frameworks for advance integration with NHibernate.
+		/// </remarks>
+		System.Type GetRootEntityTypeIfAvailable();
 
 		#endregion
 	}

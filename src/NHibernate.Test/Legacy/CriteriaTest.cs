@@ -170,5 +170,25 @@ namespace NHibernate.Test.Legacy
 				s.Flush();
 			}
 		}
+
+		[Test]
+		public void Criteria_can_get_query_entity_type()
+		{
+			using (ISession s = OpenSession())
+			{
+				Assert.AreEqual(typeof(Master), 
+					s.CreateCriteria(typeof(Master)).GetRootEntityTypeIfAvailable());
+			}
+		}
+
+		[Test]
+		public void DetachedCriteria_can_get_query_entity_type()
+		{
+			Assert.AreEqual(
+				typeof(Master),
+				DetachedCriteria.For<Master>().GetRootEntityTypeIfAvailable()
+				);
+		}
+
 	}
 }

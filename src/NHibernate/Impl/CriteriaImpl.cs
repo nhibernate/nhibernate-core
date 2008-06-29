@@ -16,6 +16,7 @@ namespace NHibernate.Impl
 	[Serializable]
 	public class CriteriaImpl : ICriteria
 	{
+		private readonly System.Type persistentClass;
 		private readonly List<CriterionEntry> criteria = new List<CriterionEntry>();
 		private readonly List<OrderEntry> orderEntries = new List<OrderEntry>(10);
 		private readonly Dictionary<string, FetchMode> fetchModes = new Dictionary<string, FetchMode>();
@@ -46,10 +47,16 @@ namespace NHibernate.Impl
 		private ICriteria projectionCriteria;
 
 		public CriteriaImpl(System.Type persistentClass, ISessionImplementor session)
-			: this(persistentClass.FullName, CriteriaSpecification.RootAlias, session) {}
+			: this(persistentClass.FullName, CriteriaSpecification.RootAlias, session) 
+		{
+			this.persistentClass = persistentClass;
+		}
 
 		public CriteriaImpl(System.Type persistentClass, string alias, ISessionImplementor session)
-			: this(persistentClass.FullName, alias, session) {}
+			: this(persistentClass.FullName, alias, session)
+		{
+			this.persistentClass = persistentClass;
+		}
 
 		public CriteriaImpl(string entityOrClassName, ISessionImplementor session)
 			: this(entityOrClassName, CriteriaSpecification.RootAlias, session) {}
@@ -779,6 +786,11 @@ namespace NHibernate.Impl
 				return root.GetCriteriaByAlias(alias);
 			}
 
+			public System.Type GetRootEntityTypeIfAvailable()
+			{
+				return root.GetRootEntityTypeIfAvailable();
+			}
+
 			/// <summary>
 			/// The Clone is supported only by a root criteria.
 			/// </summary>
@@ -844,6 +856,13 @@ namespace NHibernate.Impl
 			{
 				return order.ToString();
 			}
+		}
+
+		public System.Type GetRootEntityTypeIfAvailable()
+		{
+			if (persistentClass != null)
+				return persistentClass;
+			throw new HibernateException("Cannot provide root entity type because this criteria was initialized with an entity name.");
 		}
 	}
 }
