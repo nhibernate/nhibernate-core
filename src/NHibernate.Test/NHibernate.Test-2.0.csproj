@@ -1239,7 +1239,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1313\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="NHSpecificTest\NH1347\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1347\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
