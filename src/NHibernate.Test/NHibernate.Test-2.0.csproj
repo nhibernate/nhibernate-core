@@ -363,6 +363,8 @@
     <Compile Include="NHSpecificTest\NH1080\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1080\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH364\Invoice.cs" />
+    <Compile Include="NHSpecificTest\NH693\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH693\Something.cs" />
     <Compile Include="NHSpecificTest\NH883\Cat.cs" />
     <Compile Include="NHSpecificTest\NH883\Fixture.cs" />
     <Compile Include="NHSpecificTest\Docs\Associations\BiM21\Address.cs" />
@@ -1266,6 +1268,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="NHSpecificTest\NH1347\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH693\EmptyTableName.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH693\SpaceTableName.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

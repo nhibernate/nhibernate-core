@@ -23,6 +23,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string schema = classSchema.schema ?? mappings.SchemaName;
 			string catalog = mappings.CatalogName; //string catalog = classSchema.catalog ?? mappings.CatalogName;
 			string tableName = GetClassTableName(rootClass, classSchema);
+			if (string.IsNullOrEmpty(tableName))
+			{
+				throw new MappingException(
+					string.Format(
+						"Could not determine the name of the table for entity '{0}'; remove the 'table' attribute or assign a value to it.",
+						rootClass.EntityName));
+			}
 
 			Table table = mappings.AddTable(schema, catalog, tableName, null, rootClass.IsAbstract.GetValueOrDefault());
 			((ITableOwner) rootClass).Table = table;
@@ -54,7 +61,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (classSchema.table == null)
 				return mappings.NamingStrategy.ClassToTableName(model.EntityName);
 			else
-				return mappings.NamingStrategy.TableName(classSchema.table);
+				return mappings.NamingStrategy.TableName(classSchema.table.Trim());
 		}
 
 		private void BindTimestamp(HbmTimestamp timestampSchema, PersistentClass rootClass, Table table)
