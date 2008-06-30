@@ -14,6 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH693
 				new Configuration()
 					.AddResource(GetType().Namespace + ".EmptyTableName.hbm.xml", GetType().Assembly)
 					.BuildSessionFactory();
+				Assert.Fail("should throw exception");
 			}
 			catch (MappingException e)
 			{
@@ -32,6 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH693
 				new Configuration()
 					.AddResource(GetType().Namespace + ".SpaceTableName.hbm.xml", GetType().Assembly)
 					.BuildSessionFactory();
+				Assert.Fail("should throw exception");
 			}
 			catch (MappingException e)
 			{
