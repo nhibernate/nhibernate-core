@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using NHibernate.Criterion;
 using NUnit.Framework;
@@ -42,7 +41,7 @@ where p.Parent is null")
 				Assertions(result);
 			}
 
-			using(SqlLogSpy spy = new SqlLogSpy())
+			using (SqlLogSpy spy = new SqlLogSpy())
 			using (ISession session = sessions.OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{

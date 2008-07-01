@@ -279,6 +279,8 @@
     <Compile Include="NHSpecificTest\BasicTimeFixture.cs" />
     <Compile Include="NHSpecificTest\BugTestCase.cs" />
     <Compile Include="NHSpecificTest\CollectionFixture.cs" />
+    <Compile Include="NHSpecificTest\CriteriaFromHql\Fixture.cs" />
+    <Compile Include="NHSpecificTest\CriteriaFromHql\Person.cs" />
     <Compile Include="NHSpecificTest\NH1098\FilterParameterOrderFixture.cs" />
     <Compile Include="NHSpecificTest\NH1098\Model.cs" />
     <Compile Include="NHSpecificTest\NH1252\NH1252Fixture.cs" />
@@ -688,6 +690,8 @@
     <Compile Include="SubselectFetchTest\Child.cs" />
     <Compile Include="SubselectFetchTest\Parent.cs" />
     <Compile Include="SubselectFetchTest\SubselectFetchFixture.cs" />
+    <Compile Include="SystemTransactions\TransactionFixture.cs" />
+    <Compile Include="SystemTransactions\TransactionNotificationFixture.cs" />
     <Compile Include="TestCase.cs" />
     <Compile Include="TestConfigurationHelper.cs" />
     <Compile Include="TestTestCase.cs" />
@@ -1267,6 +1271,7 @@
     <EmbeddedResource Include="Interceptor\User.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\CriteriaFromHql\Mappings.hbm.xml" />
     <Content Include="NHSpecificTest\NH1347\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH693\EmptyTableName.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH693\SpaceTableName.hbm.xml" />

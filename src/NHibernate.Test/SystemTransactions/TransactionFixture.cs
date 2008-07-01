@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Data;
 using System.Transactions;
 using NHibernate.DomainModel;
 using NUnit.Framework;
