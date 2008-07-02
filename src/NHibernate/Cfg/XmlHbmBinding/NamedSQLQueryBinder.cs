@@ -23,13 +23,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				{
 					string queryName = querySchema.name;
 					string queryText = querySchema.GetText();
-					bool cacheable = querySchema.cacheableSpecified ? querySchema.cacheable: false;
+					bool cacheable = querySchema.cacheable;
 					string region = querySchema.cacheregion;
-					int timeout = querySchema.timeoutSpecified ? querySchema.timeout : RowSelection.NoValue;
+					int timeout = string.IsNullOrEmpty(querySchema.timeout) ? RowSelection.NoValue : int.Parse(querySchema.timeout);
 					int fetchSize = querySchema.fetchsizeSpecified ? querySchema.fetchsize : -1;
 					bool readOnly = querySchema.readonlySpecified ? querySchema.@readonly : false;
 					string comment = null;
-					bool callable = querySchema.callableSpecified ? querySchema.callable : false;
+					bool callable = querySchema.callable;
 					string resultSetRef = querySchema.resultsetref;
 
 					FlushMode flushMode = FlushModeConverter.GetFlushMode(querySchema);

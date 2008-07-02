@@ -9,7 +9,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public HbmFilterParam[] ListParameters()
 		{
-			return filterparam ?? new HbmFilterParam[0];
+			return Items ?? new HbmFilterParam[0];
 		}
 	}
 }

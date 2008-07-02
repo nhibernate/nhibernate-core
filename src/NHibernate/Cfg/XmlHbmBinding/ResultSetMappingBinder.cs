@@ -118,7 +118,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string roleProperty = returnJoinSchema.property.Substring(dot + 1);
 
 			//FIXME: get the PersistentClass
-			IDictionary<string, string[]> propertyResults = BindPropertyResults(returnJoinSchema.alias, null, returnJoinSchema.Items, null);
+			IDictionary<string, string[]> propertyResults = BindPropertyResults(returnJoinSchema.alias, null, returnJoinSchema.returnproperty, null);
 
 			return new NativeSQLQueryJoinReturn(returnJoinSchema.alias, roleOwnerAlias, roleProperty,
 				propertyResults, // TODO: bindpropertyresults(alias, returnElem)
@@ -139,7 +139,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string ownerPropertyName = loadCollectionSchema.role.Substring(dot + 1);
 
 			//FIXME: get the PersistentClass
-			IDictionary<string, string[]> propertyResults = BindPropertyResults(loadCollectionSchema.alias, null, loadCollectionSchema.Items, null);
+			IDictionary<string, string[]> propertyResults = BindPropertyResults(loadCollectionSchema.alias, null, loadCollectionSchema.returnproperty, null);
 
 			return new NativeSQLQueryCollectionReturn(loadCollectionSchema.alias, ownerClassName, ownerPropertyName,
 				propertyResults, GetLockMode(loadCollectionSchema.lockmode));

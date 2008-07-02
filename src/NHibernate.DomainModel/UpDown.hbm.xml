@@ -5,7 +5,7 @@
 			<key-property name="Id1"/>
 			<key-property name="Id2"/>
 		</composite-id>
-		<discriminator column="value_" type="long" not-null="false"/>
+		<discriminator column="value_" type="long" not-null="false" insert="false"/>
 		<subclass name="NHibernate.DomainModel.Down" discriminator-value="not null">
 			<property name="Value" column="value_" type="long"/>
 		</subclass>

@@ -39,7 +39,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private static SimpleValue CreateIdentifier(HbmId idSchema, PersistentClass rootClass, Table table)
 		{
 			SimpleValue iv = new SimpleValue(table);
-			iv.TypeName = idSchema.type;
+			iv.TypeName = idSchema.type1;
 			rootClass.Identifier = iv;
 
 			return iv;

@@ -43,8 +43,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				IAuxiliaryDatabaseObject customObject = (IAuxiliaryDatabaseObject)Activator.CreateInstance(customType);
 
-				Dictionary<string, string> parameters = definitionSchema.FindParameters();
-				customObject.SetParameterValues(parameters);
 				foreach (string dialectName in databaseObjectSchema.FindDialectScopeNames())
 				{
 					customObject.AddDialectScope(dialectName);

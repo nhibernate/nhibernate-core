@@ -1,6 +1,5 @@
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
-using NHibernate.Type;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -28,12 +27,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 
 			rootClass.IsPolymorphic = true;
-
-			if (discriminatorSchema.force)
-				rootClass.IsForceDiscriminator = true;
-
-			if (discriminatorSchema.insertSpecified && !discriminatorSchema.insert)
-				rootClass.IsDiscriminatorInsertable = false;
+			rootClass.IsForceDiscriminator = discriminatorSchema.force;
+			rootClass.IsDiscriminatorInsertable = discriminatorSchema.insert;
 		}
 
 		private void BindSimpleValue(HbmDiscriminator discriminatorSchema, SimpleValue discriminator)
@@ -56,25 +51,26 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			Table table = discriminator.Table;
 
 			//COLUMN(S)
-			if (discriminatorSchema.column1 != null)
+			if (discriminatorSchema.column != null)
 			{
 				Column col = new Column();
 				col.Value = discriminator;
 				BindColumn(discriminatorSchema, col);
-				col.Name = mappings.NamingStrategy.ColumnName(discriminatorSchema.column1);
+				col.Name = mappings.NamingStrategy.ColumnName(discriminatorSchema.column);
 
 				if (table != null)
 					table.AddColumn(col);
 
 				discriminator.AddColumn(col);
 			}
-			else if (discriminatorSchema.column != null)
+			else if (discriminatorSchema.Item != null && discriminatorSchema.Item is HbmColumn)
 			{
+				HbmColumn theCol = (HbmColumn)discriminatorSchema.Item;
 				Column col = new Column();
 				col.Value = discriminator;
-				BindColumn(discriminatorSchema.column, col, false);
+				BindColumn(theCol, col, false);
 
-				col.Name = mappings.NamingStrategy.ColumnName(discriminatorSchema.column.name);
+				col.Name = mappings.NamingStrategy.ColumnName(theCol.name);
 
 				if (table != null)
 					table.AddColumn(col);
@@ -82,8 +78,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				discriminator.AddColumn(col);
 
-				BindIndex(discriminatorSchema.column.index, table, col);
-				BindUniqueKey(discriminatorSchema.column.uniquekey, table, col);
+				BindIndex(theCol.index, table, col);
+				BindUniqueKey(theCol.uniquekey, table, col);
 			}
 
 			if (discriminator.ColumnSpan == 0)

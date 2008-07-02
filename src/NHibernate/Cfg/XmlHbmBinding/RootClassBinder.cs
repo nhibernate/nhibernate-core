@@ -44,7 +44,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			rootClass.IsExplicitPolymorphism = classSchema.polymorphism == HbmPolymorphismType.Explicit;
 
-			BindCache(classSchema.Cache, rootClass);
+			BindCache(classSchema.cache, rootClass);
 			new ClassIdBinder(this).BindId(classSchema.Id, rootClass, table);
 			new ClassCompositeIdBinder(this).BindCompositeId(classSchema.CompositeId, rootClass);
 			new ClassDiscriminatorBinder(this).BindDiscriminator(classSchema.discriminator, rootClass, table);
@@ -86,8 +86,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (property.Generation == PropertyGeneration.Insert)
 				throw new MappingException("'generated' attribute cannot be 'insert' for versioning property");
-
-			simpleValue.NullValue = timestampSchema.unsavedvalue;
+			simpleValue.NullValue = timestampSchema.unsavedvalue == HbmTimestampUnsavedvalue.Null ? null : "undefined";
 			rootClass.Version = property;
 			rootClass.AddProperty(property);
 		}
@@ -225,12 +224,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			Table table = model.Table;
 
-			if (versionSchema.column != null)
+			if (versionSchema.column1 != null)
 			{
 				Column col = new Column();
 				col.Value = model;
 				BindColumn(col, isNullable);
-				col.Name = mappings.NamingStrategy.ColumnName(versionSchema.column);
+				col.Name = mappings.NamingStrategy.ColumnName(versionSchema.column1);
 
 				if (table != null)
 					table.AddColumn(col);
@@ -295,7 +294,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.NullValue = null;
 		}
 
-		private static void BindCache(HbmCacheType cacheSchema, RootClass rootClass)
+		private static void BindCache(HbmCache cacheSchema, RootClass rootClass)
 		{
 			if (cacheSchema != null)
 			{

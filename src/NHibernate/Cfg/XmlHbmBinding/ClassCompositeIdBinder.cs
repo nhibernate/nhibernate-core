@@ -274,8 +274,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void BindSimpleValue(HbmKeyProperty keyPropertySchema, SimpleValue model, bool isNullable, string path)
 		{
-			if (keyPropertySchema.type != null)
-				model.TypeName = keyPropertySchema.type;
+			if (keyPropertySchema.type1 != null)
+				model.TypeName = keyPropertySchema.type1;
 			BindColumns(keyPropertySchema, model, isNullable, true, path);
 		}
 

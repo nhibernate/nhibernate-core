@@ -2,29 +2,24 @@ namespace NHibernate.Cfg.MappingSchema
 {
 	partial class HbmClass
 	{
-		public HbmCacheType Cache
-		{
-			get { return Item; }
-		}
-
 		public HbmId Id
 		{
-			get { return Item1 as HbmId; }
+			get { return Item as HbmId; }
 		}
 
 		public HbmCompositeId CompositeId
 		{
-			get { return Item1 as HbmCompositeId; }
+			get { return Item as HbmCompositeId; }
 		}
 
 		public HbmVersion Version
 		{
-			get { return Item2 as HbmVersion; }
+			get { return Item1 as HbmVersion; }
 		}
 
 		public HbmTimestamp Timestamp
 		{
-			get { return Item2 as HbmTimestamp; }
+			get { return Item1 as HbmTimestamp; }
 		}
 	}
 }

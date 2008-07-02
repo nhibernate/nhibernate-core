@@ -62,14 +62,10 @@ namespace NHibernate.Engine
 			{
 				return IdentifierValue.SaveNull;
 			}
-				// TODO: H3 only, IdentifierValue.IsUnsaved may return true/false/null in H3
-				// and SaveUndefined always returns null.
-				/*
 			else if( "undefined" == unsavedValue )
 			{
-				return Cascades.IdentifierValue.SaveUndefined;
+				return IdentifierValue.Undefined;
 			}
-			*/
 			else if ("none" == unsavedValue)
 			{
 				return IdentifierValue.SaveNone;

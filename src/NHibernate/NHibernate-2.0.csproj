@@ -422,9 +422,6 @@
     <Compile Include="WrongClassException.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="nhibernate-generic.xsd">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <Compile Include="Action\BulkOperationCleanupAction.cs" />
     <Compile Include="Action\CollectionAction.cs" />
     <Compile Include="Action\CollectionRecreateAction.cs" />
@@ -493,7 +490,6 @@
     <Compile Include="Cfg\MappingSchema\HbmBase.cs" />
     <Compile Include="Cfg\MappingSchema\HbmClass.cs" />
     <Compile Include="Cfg\MappingSchema\HbmDatabaseObject.cs" />
-    <Compile Include="Cfg\MappingSchema\HbmDefinition.cs" />
     <Compile Include="Cfg\MappingSchema\HbmMapping.cs" />
     <Compile Include="Cfg\MappingSchema\HbmMeta.cs" />
     <Compile Include="Cfg\MappingSchema\HbmParam.cs" />
@@ -1075,9 +1071,6 @@
     </EmbeddedResource>
     <None Include="nhibernate-configuration.xsx">
       <DependentUpon>nhibernate-configuration.xsd</DependentUpon>
-    </None>
-    <None Include="nhibernate-generic.xsx">
-      <DependentUpon>nhibernate-generic.xsd</DependentUpon>
     </None>
     <EmbeddedResource Include="nhibernate-mapping.xsd">
       <SubType>Designer</SubType>
