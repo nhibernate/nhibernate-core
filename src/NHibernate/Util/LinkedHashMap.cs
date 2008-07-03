@@ -25,8 +25,8 @@ namespace NHibernate.Util
 		{
 			private readonly TKey key;
 			private TValue evalue;
-			private Entry next = null;
-			private Entry prev = null;
+			private Entry next;
+			private Entry prev;
 
 			public Entry(TKey key, TValue value)
 			{
@@ -84,7 +84,7 @@ namespace NHibernate.Util
 
 		private readonly Entry header;
 		private readonly Dictionary<TKey, Entry> entries;
-		private long version = 0;
+		private long version;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LinkedHashMap{K,V}"/> class that is empty, 
@@ -348,17 +348,13 @@ namespace NHibernate.Util
 
 		private bool RemoveImpl(TKey key)
 		{
-			bool result;
-			try
+			Entry e;
+			bool result = false;
+			if (entries.TryGetValue(key, out e))
 			{
-				Entry e = entries[key];
 				result = entries.Remove(key);
 				version++;
 				RemoveEntry(e);
-			}
-			catch(KeyNotFoundException)
-			{
-				result = false;
 			}
 			return result;
 		}
