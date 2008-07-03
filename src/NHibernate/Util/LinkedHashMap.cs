@@ -348,17 +348,13 @@ namespace NHibernate.Util
 
 		private bool RemoveImpl(TKey key)
 		{
-			bool result;
-			try
+			Entry<TKey, TValue> e;
+			bool result = entries.TryGetValue(key, out e);
+			if (result)
 			{
-				Entry<TKey, TValue> e = entries[key];
-				result = entries.Remove(key);
+				entries.Remove(key);
 				version++;
 				RemoveEntry(e);
-			}
-			catch(KeyNotFoundException)
-			{
-				result = false;
 			}
 			return result;
 		}
