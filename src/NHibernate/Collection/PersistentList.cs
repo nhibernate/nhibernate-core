@@ -23,6 +23,11 @@ namespace NHibernate.Collection
 	{
 		protected IList list;
 
+		protected virtual object DefaultForType
+		{
+			get { return null; }
+		}
+
 		public PersistentList() {}
 
 		/// <summary>
@@ -116,7 +121,7 @@ namespace NHibernate.Collection
 			//pad with nulls from the current last element up to the new index
 			for (int i = list.Count; i <= index; i++)
 			{
-				list.Insert(i, null);
+				list.Insert(i, DefaultForType);
 			}
 
 			list[index] = element;
@@ -141,7 +146,8 @@ namespace NHibernate.Collection
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i++)
 			{
-				list.Add(persister.ElementType.Assemble(array[i], Session, owner));
+				object element = persister.ElementType.Assemble(array[i], Session, owner);
+				list.Add(element ?? DefaultForType);
 			}
 		}
 

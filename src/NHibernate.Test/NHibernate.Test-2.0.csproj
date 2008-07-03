@@ -570,6 +570,8 @@
     <Compile Include="NHSpecificTest\NH995\Model.cs" />
     <Compile Include="NHSpecificTest\NH1280\NH1280Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1280\Person.cs" />
+    <Compile Include="NHSpecificTest\NH1356\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1356\Model.cs" />
     <Compile Include="NHSpecificTest\NodeFixture.cs" />
     <Compile Include="NHSpecificTest\OptimisticConcurrencyFixture.cs" />
     <Compile Include="NHSpecificTest\NH892\Fixture.cs" />
@@ -1271,6 +1273,9 @@
     <EmbeddedResource Include="NHSpecificTest\NH1347\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH693\EmptyTableName.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH693\SpaceTableName.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1356\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

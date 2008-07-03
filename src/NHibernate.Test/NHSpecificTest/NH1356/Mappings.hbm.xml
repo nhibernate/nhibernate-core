@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH1356">
+	<class name="Person" lazy="false">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<property name="Name" />
+
+		<list name="Addresses" table="Addresses" lazy="false">
+			<key column="PersonId" />
+			<index column="Position" />
+
+			<composite-element class="Address">
+				<property name="Street" access="field.camelcase" />
+				<property name="City" access="field.camelcase" />
+				<property name="State" access="field.camelcase" />
+				<property name="PostalCode" access="field.camelcase" />
+			</composite-element>
+		</list>
+	</class>
+</hibernate-mapping>

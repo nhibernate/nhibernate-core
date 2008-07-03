@@ -30,6 +30,12 @@ namespace NHibernate.Collection.Generic
 		 * expensive than .NET original implementation.
 		 */
 		protected IList<T> glist;
+
+		protected override object DefaultForType
+		{
+			get { return default(T); }
+		}
+
 		public PersistentGenericList() {}
 		public PersistentGenericList(ISessionImplementor session) : base(session) {}
 
