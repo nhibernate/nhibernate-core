@@ -73,10 +73,9 @@ namespace NHibernate.Event.Default
 				id = e.Id;
 			}
 
-			// TODO H3.2 Differente behavior
 			// cascade the refresh prior to refreshing this entity
-			//refreshedAlready[obj] = obj;
-			//new Cascade(CascadingAction.Refresh, CascadePoint.BeforeRefresh, source).CascadeOn(persister, obj, refreshedAlready);
+			refreshedAlready[obj] = obj;
+			new Cascade(CascadingAction.Refresh, CascadePoint.BeforeRefresh, source).CascadeOn(persister, obj, refreshedAlready);
 
 			if (e != null)
 			{

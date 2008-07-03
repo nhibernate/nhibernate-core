@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1362"
+				   assembly="NHibernate.Test"
+				   default-access="field.camelcase-underscore">
+	<class name="ClassA">
+		<id name="Id"
+				type="guid"
+				unsaved-value="null">
+			<generator class="guid.comb" />
+		</id>
+
+		<many-to-one name="B" class="ClassB" cascade="all"/>
+	</class>
+
+	<class name="ClassB">
+		<id name="Id" type="guid">
+			<generator class="guid.comb" />
+		</id>
+
+		<bag name="CCollection" cascade="all-delete-orphan">
+			<key column="Parent" />
+			<one-to-many class="ClassC"/>
+		</bag>
+	</class>
+
+	<class name="ClassC">
+		<id name="Id" type="guid" unsaved-value="null">
+			<generator class="guid.comb" />
+		</id>
+	</class>
+</hibernate-mapping>
