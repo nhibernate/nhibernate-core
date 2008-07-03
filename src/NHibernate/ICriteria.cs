@@ -266,7 +266,7 @@ namespace NHibernate
 		/// <summary>
 		/// Clear all orders from criteria.
 		/// </summary>
-		void ClearOrderds();
+		void ClearOrders();
 
 		/// <summary>
 		/// Allows to get a sub criteria by path.

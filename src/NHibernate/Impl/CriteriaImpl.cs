@@ -271,7 +271,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public void ClearOrderds()
+		public void ClearOrders()
 		{
 			orderEntries.Clear();
 		}
@@ -697,9 +697,9 @@ namespace NHibernate.Impl
 				}
 			}
 
-			public void ClearOrderds()
+			public void ClearOrders()
 			{
-				root.ClearOrderds();
+				root.ClearOrders();
 			}
 
 			public object UniqueResult()

@@ -568,6 +568,8 @@
     <Compile Include="NHSpecificTest\NH995\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH995\LogPlugin.cs" />
     <Compile Include="NHSpecificTest\NH995\Model.cs" />
+    <Compile Include="NHSpecificTest\NH1356\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1356\Model.cs" />
     <Compile Include="NHSpecificTest\NodeFixture.cs" />
     <Compile Include="NHSpecificTest\OptimisticConcurrencyFixture.cs" />
     <Compile Include="NHSpecificTest\NH892\Fixture.cs" />
@@ -1234,6 +1236,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1347\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1356\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

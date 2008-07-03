@@ -30,7 +30,7 @@ namespace NHibernate
 
 		private static CriteriaImpl TransformToRowCount(CriteriaImpl criteria)
 		{
-			criteria.ClearOrderds();
+			criteria.ClearOrders();
 			criteria.SetFirstResult(0).SetMaxResults(RowSelection.NoValue).SetProjection(Projections.RowCount());
 			return criteria;
 		}

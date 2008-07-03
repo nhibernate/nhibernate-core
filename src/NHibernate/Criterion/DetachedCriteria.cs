@@ -72,12 +72,12 @@ namespace NHibernate.Criterion
 
 		public static DetachedCriteria For<T>()
 		{
-			return new DetachedCriteria(typeof (T));
+			return new DetachedCriteria(typeof(T));
 		}
 
 		public static DetachedCriteria For<T>(string alias)
 		{
-			return new DetachedCriteria(typeof (T), alias);
+			return new DetachedCriteria(typeof(T), alias);
 		}
 
 		public static DetachedCriteria For(System.Type entityType, string alias)
@@ -146,7 +146,7 @@ namespace NHibernate.Criterion
 
 		public string EntityOrClassName
 		{
-			get { return impl.EntityOrClassName;  }
+			get { return impl.EntityOrClassName; }
 		}
 
 		protected internal CriteriaImpl GetCriteriaImpl()
@@ -225,6 +225,14 @@ namespace NHibernate.Criterion
 		public System.Type GetRootEntityTypeIfAvailable()
 		{
 			return criteria.GetRootEntityTypeIfAvailable();
+		}
+
+		/// <summary>
+		/// Clear all orders from criteria.
+		/// </summary>
+		public void ClearOrders()
+		{
+			criteria.ClearOrders();
 		}
 	}
 }
