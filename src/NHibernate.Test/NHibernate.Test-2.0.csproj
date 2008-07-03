@@ -577,6 +577,8 @@
     <Compile Include="NHSpecificTest\NH892\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH892\Model.cs" />
     <Compile Include="NHSpecificTest\ProxyValidator\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1362\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1362\Model.cs" />
     <Compile Include="NHSpecificTest\SetFixture.cs" />
     <Compile Include="NHSpecificTest\SimpleComponentFixture.cs" />
     <Compile Include="NHSpecificTest\UnsavedValueFixture.cs" />
@@ -1276,6 +1278,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1356\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1362\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

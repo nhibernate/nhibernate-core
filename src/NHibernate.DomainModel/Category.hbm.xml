@@ -4,7 +4,7 @@
 		<id name="Id" unsaved-value="0" column="category_key_col">
 			<generator class="native"/>
 		</id>
-		<list name="Subcategories" lazy="true" cascade="all">
+		<list name="Subcategories" lazy="true" cascade="save-update,merge,delete,lock">
 			<key column="parent"/>
 			<index column="ord"/>
 			<one-to-many class="NHibernate.DomainModel.Category, NHibernate.DomainModel"/>

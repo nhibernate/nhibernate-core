@@ -4783,9 +4783,12 @@ namespace NHibernate.Test.Legacy
 			Foo foo = new Foo();
 			s.Save(foo);
 			s.Flush();
-			s.Close();
-
+			/* 
+			Commented to have same behavior of H3.2 (test named FooBarTest.testRefresh())
+			s.Close(); 
 			s = OpenSession();
+			btw using close and open a new session more than Transient the entity will be detached.
+			*/
 			IDbCommand cmd = s.Connection.CreateCommand();
 			cmd.CommandText = "update " + Dialect.QuoteForTableName("foos") + " set long_ = -3";
 			cmd.ExecuteNonQuery();
