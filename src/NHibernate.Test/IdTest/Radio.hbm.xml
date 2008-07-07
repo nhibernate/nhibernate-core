@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!--
+
+  This mapping demonstrates the use of
+  the EJB3 compliant table hilo generator
+  with all the parameters
+
+-->
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.IdTest">
+	
+    <class name="Radio">
+    
+    	<id name="id">
+    		<generator class="NHibernate.Id.MultipleHiLoPerTableGenerator">
+				<param name="table">sequences</param>
+				<param name="value_column">hi_value</param>
+                <param name="primary_key_column">name</param>
+				<param name="primary_key_length">50</param>
+				<param name="max_lo">2</param>
+				<param name="primary_key_value">Radio</param>
+ 			</generator>
+    	</id>
+        <property name="frequency"/>
+	</class>
+
+</hibernate-mapping>

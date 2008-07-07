@@ -118,6 +118,10 @@ namespace NHibernate.Cfg
 			log.Info("Statistics: " + EnabledDisabled(useStatistics));
 			settings.IsStatisticsEnabled = useStatistics;
 
+			bool useIdentifierRollback = PropertiesHelper.GetBoolean(Environment.UseIdentifierRollBack, properties);
+			log.Info("Deleted entity synthetic identifier rollback: " + EnabledDisabled(useIdentifierRollback));
+			settings.IsIdentifierRollbackEnabled = useIdentifierRollback;
+
 			// queries:
 
 			settings.QueryTranslatorFactory = CreateQueryTranslatorFactory(properties);

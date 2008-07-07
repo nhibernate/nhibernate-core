@@ -120,6 +120,8 @@ namespace NHibernate.Cfg
 		/// <summary> Enable statistics collection</summary>
 		public const string GenerateStatistics = "generate_statistics";
 
+		public const string UseIdentifierRollBack = "use_identifier_rollback";
+
 		// The classname of the HQL query parser factory
 		public const string QueryTranslator = "query.factory_class";
 

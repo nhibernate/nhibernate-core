@@ -422,14 +422,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			//unsaved-value
 			XmlAttribute nullValueNode = node.Attributes["unsaved-value"];
 			if (nullValueNode != null)
+			{
 				model.NullValue = nullValueNode.Value;
-			else if (model.IdentifierGeneratorStrategy == "assigned")
-				// TODO: H3 has model.setNullValue("undefined") here, but
-				// NH doesn't (yet) allow "undefined" for id unsaved-value,
-				// so we use "null" here
-				model.NullValue = "null";
+			}
 			else
-				model.NullValue = null;
+			{
+				model.NullValue = "assigned".Equals(model.IdentifierGeneratorStrategy) ? "undefined" : null;
+			}
 		}
 
 		protected void BindComponent(XmlNode node, Component model, System.Type reflectedClass,
@@ -658,6 +657,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void BindSimpleValueType(XmlNode node, SimpleValue simpleValue)
 		{
 			string typeName = null;
+			string originalTypeName = null;
 
 			Dictionary<string, string> parameters = new Dictionary<string, string>();
 
@@ -670,12 +670,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			XmlNode typeChild = node.SelectSingleNode(HbmConstants.nsType, namespaceManager);
 			if (typeName == null && typeChild != null)
 			{
-				typeName = typeChild.Attributes["name"].Value;
+				originalTypeName = typeChild.Attributes["name"].Value;
+				// NH: allow className completing it with assembly+namespace of the mapping doc.
+				typeName = FullClassName(originalTypeName, mappings);
 				foreach (XmlNode childNode in typeChild.ChildNodes)
 					parameters.Add(childNode.Attributes["name"].Value, childNode.InnerText.Trim());
 			}
 
-			TypeDef typeDef = mappings.GetTypeDef(typeName);
+			// NH: try get using a fullName and shortName (shortName is the case of a typedef name)
+			TypeDef typeDef = mappings.GetTypeDef(typeName) ?? mappings.GetTypeDef(originalTypeName);
 			if (typeDef != null)
 			{
 				typeName = typeDef.TypeClass;

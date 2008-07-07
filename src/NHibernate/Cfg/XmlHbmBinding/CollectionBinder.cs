@@ -142,7 +142,19 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			XmlAttribute typeNode = node.Attributes["collection-type"];
 			if (typeNode != null)
-				model.TypeName = typeNode.Value;
+			{
+				string typeName = typeNode.Value;
+				TypeDef typeDef = mappings.GetTypeDef(typeName);
+				if (typeDef != null)
+				{
+					model.TypeName = typeDef.TypeClass;
+					model.TypeParameters = typeDef.Parameters;
+				}
+				else
+				{
+					model.TypeName = FullClassName(typeName, mappings);
+				}
+			}
 
 			// FETCH STRATEGY
 			InitOuterJoinFetchSetting(node, model);

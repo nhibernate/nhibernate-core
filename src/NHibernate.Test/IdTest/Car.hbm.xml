@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+
+  This mapping demonstrates the use of
+  the EJB3 compliant table hilo generator
+
+-->
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.IdTest">
+
+    <class name="Car">
+    
+    	<id name="Id">
+    		<generator class="NHibernate.Id.MultipleHiLoPerTableGenerator">
+				<param name="max_lo">0</param>
+ 			</generator>
+    	</id>
+        <property name="Color"/>
+	</class>
+
+</hibernate-mapping>

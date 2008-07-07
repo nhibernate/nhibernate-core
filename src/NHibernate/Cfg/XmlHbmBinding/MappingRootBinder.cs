@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Xml;
 
 using NHibernate.Cfg.MappingSchema;
@@ -26,6 +27,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			SetMappingsProperties(mappingSchema);
 			AddFilterDefinitions(mappingSchema);
+			AddTypeDefs(mappingSchema);
 
 			AddRootClasses(node);
 			AddSubclasses(node);
@@ -126,6 +128,22 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				log.DebugFormat("Import: {0} -> {1}", rename, fullClassName);
 				mappings.AddImport(fullClassName, rename);
+			}
+		}
+
+		public void AddTypeDefs(HbmMapping mappingSchema)
+		{
+			foreach (HbmTypedef typedef in mappingSchema.typedef ?? new HbmTypedef[0])
+			{
+				string typeClass = FullClassName(typedef.@class, mappings);
+				string typeName = typedef.name;
+				IEnumerable<HbmParam> paramIter = typedef.param ?? new HbmParam[0];
+				Dictionary<string, string> parameters = new Dictionary<string, string>(5);
+				foreach (HbmParam param in paramIter)
+				{
+					parameters.Add(param.name, param.GetText().Trim());
+				}
+				mappings.AddTypeDef(typeName, typeClass, parameters);
 			}
 		}
 

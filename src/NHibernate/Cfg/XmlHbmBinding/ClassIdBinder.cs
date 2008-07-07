@@ -122,16 +122,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private static void BindUnsavedValue(HbmId idSchema, SimpleValue id)
 		{
-			if (idSchema.unsavedvalue != null)
-				id.NullValue = idSchema.unsavedvalue;
-
-			else if (id.IdentifierGeneratorStrategy == "assigned")
-				// TODO: H3 has id.setNullValue("undefined") here, but NH doesn't (yet) allow "undefined"
-				// for id unsaved-value, so we use "null" here
-				id.NullValue = "null";
-
-			else
-				id.NullValue = null;
+			id.NullValue = idSchema.unsavedvalue ?? (id.IdentifierGeneratorStrategy == "assigned" ? "undefined" : null);
 		}
 
 		private void AddColumnFromAttribute(HbmId idSchema, SimpleValue id)

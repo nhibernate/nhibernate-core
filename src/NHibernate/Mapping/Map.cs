@@ -31,12 +31,12 @@ namespace NHibernate.Mapping
 				if (IsGeneric && IsSorted)
 				{
 					CheckGenericArgumentsLength(2);
-					if (TypeName == "sorted-list")
+					if (TypeName.Contains("sorted-list"))
 					{
 						return
 							TypeFactory.GenericSortedList(Role, ReferencedPropertyName, Comparer, GenericArguments[0], GenericArguments[1]);
 					}
-					else if (TypeName == "sorted-dictionary")
+					else if (TypeName.Contains("sorted-dictionary"))
 					{
 						return
 							TypeFactory.GenericSortedDictionary(Role, ReferencedPropertyName, Comparer, GenericArguments[0],

@@ -199,6 +199,7 @@
     <Compile Include="HQLFunctionTest\SQLFunctionTemplateTest.cs" />
     <Compile Include="BulkManipulation\NativeSQLBulkOperations.cs" />
     <Compile Include="BulkManipulation\Vehicles.cs" />
+    <Compile Include="IdTest\Car.cs" />
     <Compile Include="IdTest\HiLoInt16Class.cs" />
     <Compile Include="IdTest\HiLoInt32Class.cs" />
     <Compile Include="IdTest\HiLoInt64Class.cs" />
@@ -207,6 +208,11 @@
     <Compile Include="IdTest\HiLoTableGeneratorInt64Fixture.cs" />
     <Compile Include="IdTest\IdentifierGeneratorFactoryFixture.cs" />
     <Compile Include="IdTest\IdFixtureBase.cs" />
+    <Compile Include="IdTest\MultipleHiLoPerTableGeneratorTest.cs" />
+    <Compile Include="IdTest\Plane.cs" />
+    <Compile Include="IdTest\Product.cs" />
+    <Compile Include="IdTest\Radio.cs" />
+    <Compile Include="IdTest\UseIdentifierRollbackTest.cs" />
     <Compile Include="Interceptor\CollectionInterceptor.cs" />
     <Compile Include="Interceptor\Image.cs" />
     <Compile Include="Interceptor\InterceptorFixture.cs" />
@@ -756,6 +762,12 @@
     <Compile Include="UserCollection\Email.cs" />
     <Compile Include="UserCollection\MyList.cs" />
     <Compile Include="UserCollection\MyListType.cs" />
+    <Compile Include="UserCollection\Parameterized\DefaultableListImpl.cs" />
+    <Compile Include="UserCollection\Parameterized\DefaultableListType.cs" />
+    <Compile Include="UserCollection\Parameterized\Entity.cs" />
+    <Compile Include="UserCollection\Parameterized\IDefaultableList.cs" />
+    <Compile Include="UserCollection\Parameterized\ParameterizedUserCollectionTypeFixture.cs" />
+    <Compile Include="UserCollection\Parameterized\PersistentDefaultableList.cs" />
     <Compile Include="UserCollection\PersistentMylist.cs" />
     <Compile Include="UserCollection\User.cs" />
     <Compile Include="UserCollection\UserCollectionTypeTest.cs" />
@@ -1281,6 +1293,18 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1362\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TypeParameters\Typedef.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="UserCollection\Parameterized\Mapping.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="IdTest\Car.hbm.xml" />
+    <EmbeddedResource Include="IdTest\Plane.hbm.xml" />
+    <EmbeddedResource Include="IdTest\Product.hbm.xml" />
+    <EmbeddedResource Include="IdTest\Radio.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

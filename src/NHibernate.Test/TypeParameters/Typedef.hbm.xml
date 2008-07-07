@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.TypeParameters">
+
+	<typedef name="nullToMinusOne" class="DefaultValueIntegerType">
+		<param name="default">-1</param>
+	</typedef>
+
+</hibernate-mapping>
