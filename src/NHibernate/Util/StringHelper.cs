@@ -239,8 +239,17 @@ namespace NHibernate.Util
 		/// <returns></returns>
 		public static string GetClassname(string typeName)
 		{
-			string[] splitClassname = GetFullClassname(typeName).Split('.');
+			//string[] splitClassname = GetFullClassname(typeName).Split('.');
+			string fullClassName = GetFullClassname(typeName);
 
+			int genericTick = fullClassName.IndexOf('`');
+			if (genericTick != -1)
+			{
+				string nameBeforeGenericTick = fullClassName.Substring(0, genericTick);
+				int lastPeriod = nameBeforeGenericTick.LastIndexOf('.');
+				return lastPeriod != -1 ? fullClassName.Substring(lastPeriod + 1) : fullClassName;
+			}
+			string[] splitClassname = fullClassName.Split('.');
 			return splitClassname[splitClassname.Length - 1];
 		}
 

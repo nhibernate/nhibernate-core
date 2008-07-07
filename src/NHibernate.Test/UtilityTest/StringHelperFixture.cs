@@ -10,16 +10,11 @@ namespace NHibernate.Test.UtilityTest
 	[TestFixture]
 	public class StringHelperFixture
 	{
-		private bool Contains(string source, string arg)
-		{
-			return source.IndexOf(arg) > -1;
-		}
-
 		[Test]
 		public void GetClassnameFromFQType()
 		{
-			string typeName = "ns1.ns2.classname, as1.as2., pk, lang";
-			string expected = "classname";
+			const string typeName = "ns1.ns2.classname, as1.as2., pk, lang";
+			const string expected = "classname";
 
 			Assert.AreEqual(expected, StringHelper.GetClassname(typeName));
 		}
@@ -27,8 +22,8 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void GetClassnameFromFQClass()
 		{
-			string typeName = "ns1.ns2.classname";
-			string expected = "classname";
+			const string typeName = "ns1.ns2.classname";
+			const string expected = "classname";
 
 			Assert.AreEqual(expected, StringHelper.GetClassname(typeName));
 		}
@@ -73,8 +68,8 @@ namespace NHibernate.Test.UtilityTest
 		/// </summary>
 		public void QualifyArray()
 		{
-			string[] simple = {"b", "c"};
-			string[] qual = {"a.b", "a.c"};
+			string[] simple = { "b", "c" };
+			string[] qual = { "a.b", "a.c" };
 
 			string[] result = StringHelper.Qualify("a", simple);
 
@@ -87,12 +82,31 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void GenerateAliasForGenericTypeName()
 		{
-			string typeName = "A`1[B]";
+			const string typeName = "A`1[B]";
 			string alias = StringHelper.GenerateAlias(typeName, 10);
 
-			Assert.IsFalse( alias.Contains( "`" ), "alias '{0}' should not contain backticks",     alias );
-			Assert.IsFalse( alias.Contains( "[" ), "alias '{0}' should not contain left bracket",  alias );
-			Assert.IsFalse( alias.Contains( "]" ), "alias '{0}' should not contain right bracket", alias );
+			Assert.IsFalse(alias.Contains("`"), "alias '{0}' should not contain backticks", alias);
+			Assert.IsFalse(alias.Contains("["), "alias '{0}' should not contain left bracket", alias);
+			Assert.IsFalse(alias.Contains("]"), "alias '{0}' should not contain right bracket", alias);
 		}
+
+		[Test]
+		public void GetClassnameFromGenericType()
+		{
+			const string typeName = "classname`1[innerns1.innerClass]";
+			const string expected = "classname`1[innerns1.innerClass]";
+
+			Assert.AreEqual(expected, StringHelper.GetClassname(typeName));
+		}
+
+		[Test]
+		public void GetClassnameFromGenericFQClass()
+		{
+			const string typeName = "ns1.ns2.classname`1[innerns1.innerClass]";
+			const string expected = "classname`1[innerns1.innerClass]";
+
+			Assert.AreEqual(expected, StringHelper.GetClassname(typeName));
+		}
+
 	}
 }
