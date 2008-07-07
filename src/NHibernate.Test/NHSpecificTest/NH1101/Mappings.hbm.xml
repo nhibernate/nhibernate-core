@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   assembly="NHibernate.Test" 
+				   namespace="NHibernate.Test.NHSpecificTest.NH1101"
+				   default-access="field.camelcase">
+	<class name="A">
+		<id name="Id" type="int">
+			<generator class="native" />
+		</id>
+		<property name="Descript"/>
+		<component name="B">
+			<property name="Str" />
+			<property name="NInt" />
+		</component>
+	</class>
+</hibernate-mapping>

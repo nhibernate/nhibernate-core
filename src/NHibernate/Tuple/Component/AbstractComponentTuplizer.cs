@@ -74,8 +74,10 @@ namespace NHibernate.Tuple.Component
 		public virtual object[] GetPropertyValues(object component)
 		{
 			object[] values = new object[propertySpan];
-			for (int i = 0; i < propertySpan; i++)
-				values[i] = GetPropertyValue(component, i);
+			// NH Different behavior : for NH-1101
+			if (component != null)
+				for (int i = 0; i < propertySpan; i++)
+					values[i] = GetPropertyValue(component, i);
 
 			return values;
 		}
