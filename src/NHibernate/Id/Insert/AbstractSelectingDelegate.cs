@@ -64,7 +64,7 @@ namespace NHibernate.Id.Insert
 					}
 					finally
 					{
-						rs.Close();
+						session.Batcher.CloseReader(rs);
 					}
 				}
 				finally
