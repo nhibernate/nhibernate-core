@@ -125,11 +125,15 @@ namespace NHibernate.Type
 			{
 				return false;
 			}
-			if (x == null || y == null)
+			/* 
+			 * NH Different behavior : we don't use the shortcut because NH-1101 
+			 * let the tuplizer choose how cosiderer properties when the component is null.
+			 */
+			EntityMode entityMode = session.EntityMode;
+			if (entityMode != EntityMode.Poco && (x == null || y == null))
 			{
 				return true;
 			}
-			EntityMode entityMode = session.EntityMode;
 			object[] xvalues = GetPropertyValues(x, entityMode);
 			object[] yvalues = GetPropertyValues(y, entityMode);
 			for (int i = 0; i < xvalues.Length; i++)
@@ -148,11 +152,15 @@ namespace NHibernate.Type
 			{
 				return false;
 			}
-			if (x == null || y == null)
+			/* 
+			 * NH Different behavior : we don't use the shortcut because NH-1101 
+			 * let the tuplizer choose how cosiderer properties when the component is null.
+			 */
+			EntityMode entityMode = session.EntityMode;
+			if (entityMode != EntityMode.Poco && (x == null || y == null))
 			{
 				return true;
 			}
-			EntityMode entityMode = session.EntityMode;
 			object[] xvalues = GetPropertyValues(x, entityMode);
 			object[] yvalues = GetPropertyValues(y, entityMode);
 			int loc = 0;
