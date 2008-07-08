@@ -187,7 +187,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string propertyName = versionSchema.name;
 			SimpleValue simpleValue = new SimpleValue(table);
 
-			simpleValue.TypeName = GetType(versionSchema).Name;
+			simpleValue.TypeName = versionSchema.type;
 			BindColumns(versionSchema, simpleValue, false, propertyName);
 			if (!simpleValue.IsTypeSpecified)
 				simpleValue.TypeName = versioningPropertyType;
@@ -205,19 +205,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			simpleValue.NullValue = versionSchema.unsavedvalue;
 			rootClass.Version = property;
 			rootClass.AddProperty(property);
-		}
-
-		private static IType GetType(HbmVersion versionSchema)
-		{
-			if (versionSchema.type == null)
-				return null;
-
-			IType type = TypeFactory.HeuristicType(versionSchema.type, null);
-
-			if (type == null)
-				throw new MappingException("could not interpret type: " + versionSchema.type);
-
-			return type;
 		}
 
 		private void BindColumns(HbmVersion versionSchema, SimpleValue model, bool isNullable, string propertyPath)

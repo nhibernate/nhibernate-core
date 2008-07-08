@@ -361,6 +361,9 @@
     <Compile Include="NHSpecificTest\NH1332\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1347\A.cs" />
     <Compile Include="NHSpecificTest\NH1347\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1355\Category.cs" />
+    <Compile Include="NHSpecificTest\NH1355\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1355\UserTypeTimestamp.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
@@ -1315,6 +1318,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1077\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1355\Category.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

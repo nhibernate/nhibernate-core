@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1355">
+	
+	<class name="Category" lazy="true" table="Categories"  dynamic-update="true" dynamic-insert="false" optimistic-lock="version" >
+		<id name="Id" type="Int32" unsaved-value="null">
+			<column name="CategoryID" length="4" sql-type="int" not-null="true" unique="true" index="PK_Categories"/>
+			<generator class="native" />
+		</id>
+		<version name="RowVersion" column="LastModified" type="NHibernate.Test.NHSpecificTest.NH1355.UserTypeTimestamp, NHibernate.Test" generated="always" unsaved-value="null"/>
+		<property name="CategoryName" type="String">
+			<column name="CategoryName" length="50" sql-type="nvarchar" not-null="false"/>
+		</property>
+	</class>
+</hibernate-mapping>
