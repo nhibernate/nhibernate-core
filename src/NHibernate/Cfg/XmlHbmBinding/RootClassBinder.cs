@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Xml;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
-using NHibernate.Type;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -182,15 +181,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (versionSchema == null)
 				return;
 
-			string versioningPropertyType = NHibernateUtil.Int32.Name;
-
 			string propertyName = versionSchema.name;
 			SimpleValue simpleValue = new SimpleValue(table);
-
-			simpleValue.TypeName = versionSchema.type;
+			BindVersionType(versionSchema.type, simpleValue);
 			BindColumns(versionSchema, simpleValue, false, propertyName);
 			if (!simpleValue.IsTypeSpecified)
-				simpleValue.TypeName = versioningPropertyType;
+				simpleValue.TypeName = NHibernateUtil.Int32.Name;
 
 			Mapping.Property property = new Mapping.Property(simpleValue);
 			BindProperty(versionSchema, property);
@@ -205,6 +201,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			simpleValue.NullValue = versionSchema.unsavedvalue;
 			rootClass.Version = property;
 			rootClass.AddProperty(property);
+		}
+
+		private void BindVersionType(string versionTypeName, SimpleValue simpleValue)
+		{
+			if (versionTypeName == null)
+				return;
+			BindTypeDef(versionTypeName, versionTypeName, new Dictionary<string, string>(), simpleValue);
 		}
 
 		private void BindColumns(HbmVersion versionSchema, SimpleValue model, bool isNullable, string propertyPath)

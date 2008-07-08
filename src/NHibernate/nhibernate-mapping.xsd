@@ -1506,7 +1506,7 @@
 			<xs:attribute name="node" type="xs:string" />
 			<xs:attribute name="access" type="xs:string" />
 			<xs:attribute name="column" type="xs:string" />
-			<xs:attribute name="type" default="integer" type="xs:string" />
+			<xs:attribute name="type" default="Int32" type="xs:string" />
 			<xs:attribute name="unsaved-value" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>undefined|any|none|null|0|-1|... </xs:documentation>

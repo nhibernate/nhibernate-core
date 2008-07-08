@@ -677,11 +677,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					parameters.Add(childNode.Attributes["name"].Value, childNode.InnerText.Trim());
 			}
 
-			// NH: try get using a fullName and shortName (shortName is the case of a typedef name)
-			TypeDef typeDef = mappings.GetTypeDef(typeName) ?? mappings.GetTypeDef(originalTypeName);
+			BindTypeDef(typeName, originalTypeName, parameters, simpleValue);
+		}
+
+		protected void BindTypeDef(string typeName, string originalTypeName, Dictionary<string, string> parameters, SimpleValue simpleValue)
+		{
+			TypeDef typeDef = originalTypeName == null ? mappings.GetTypeDef(typeName) : mappings.GetTypeDef(originalTypeName);
 			if (typeDef != null)
 			{
-				typeName = typeDef.TypeClass;
+				typeName = FullClassName(typeDef.TypeClass, mappings);
 				// parameters on the property mapping should
 				// override parameters in the typedef
 				Dictionary<string, string> allParameters = new Dictionary<string, string>(typeDef.Parameters);

@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1355">
+
+	<typedef name="ByteTimestamp" class="NHibernate.Test.NHSpecificTest.NH1355.UserTypeTimestamp, NHibernate.Test"/>
+
+	<class name="Category" lazy="true" table="Categories"  dynamic-update="true" dynamic-insert="false" optimistic-lock="version" >
+		<id name="Id" column="CategoryID">
+			<generator class="native" />
+		</id>
+		<version name="RowVersion" column="LastModified" type="ByteTimestamp" generated="always" unsaved-value="null"/>
+		<property name="CategoryName" length="50"/>
+	</class>
+</hibernate-mapping>
