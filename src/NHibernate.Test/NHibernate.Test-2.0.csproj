@@ -283,6 +283,8 @@
     <Compile Include="NHSpecificTest\CollectionFixture.cs" />
     <Compile Include="NHSpecificTest\CriteriaFromHql\Fixture.cs" />
     <Compile Include="NHSpecificTest\CriteriaFromHql\Person.cs" />
+    <Compile Include="NHSpecificTest\NH1077\A.cs" />
+    <Compile Include="NHSpecificTest\NH1077\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1098\FilterParameterOrderFixture.cs" />
     <Compile Include="NHSpecificTest\NH1098\Model.cs" />
     <Compile Include="NHSpecificTest\NH1101\Domain.cs" />
@@ -1310,6 +1312,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1101\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1077\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
