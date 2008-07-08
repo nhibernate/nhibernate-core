@@ -6,8 +6,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1355
 {
 	//http://jira.nhibernate.org/browse/NH-1355
 	//http://jira.nhibernate.org/browse/NH-1377
+	//http://jira.nhibernate.org/browse/NH-1379
 	[TestFixture]
-	public class Fixture
+	public class CustomVersionType
 	{
 		[Test]
 		public void Bug()
@@ -16,6 +17,23 @@ namespace NHibernate.Test.NHSpecificTest.NH1355
 			Assembly domain = typeof(Category).Assembly;
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1355.Category.hbm.xml", domain);
 			
+			try
+			{
+				cfg.BuildSessionFactory();
+			}
+			catch (MappingException)
+			{
+				Assert.Fail("Should not throw exception");
+			}
+		}
+
+		[Test]
+		public void BugSubTask()
+		{
+			Configuration cfg = new Configuration();
+			Assembly domain = typeof(Category).Assembly;
+			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1355.CategoryTD.hbm.xml", domain);
+
 			try
 			{
 				cfg.BuildSessionFactory();
