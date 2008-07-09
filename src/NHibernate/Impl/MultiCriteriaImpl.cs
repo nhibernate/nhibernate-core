@@ -29,6 +29,8 @@ namespace NHibernate.Impl
 		private SqlString sqlString = new SqlString();
 		private readonly List<CriteriaLoader> loaders = new List<CriteriaLoader>();
 		private readonly Dialect.Dialect dialect;
+		private IList criteriaResults;
+		private Dictionary<string, int> criteriaResultPositions = new Dictionary<string, int>();
 		private bool isCacheable = false;
 		private bool forceCacheRefresh = false;
 		private string cacheRegion;
@@ -76,12 +78,14 @@ namespace NHibernate.Impl
 
 			if (cacheable)
 			{
-				return ListUsingQueryCache();
+				criteriaResults = ListUsingQueryCache();
 			}
 			else
 			{
-				return ListIgnoreQueryCache();
+				criteriaResults = ListIgnoreQueryCache();
 			}
+
+			return criteriaResults;
 		}
 
 		private IList ListUsingQueryCache()
@@ -319,11 +323,25 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		public IMultiCriteria Add(string key, ICriteria criteria)
+		{
+			ThrowIfKeyAlreadyExists(key);
+			criteriaResultPositions.Add(key, criteriaQueries.Add(criteria));
+			return this;
+		}
+
 		public IMultiCriteria Add(DetachedCriteria detachedCriteria)
 		{
 			criteriaQueries.Add(
 				detachedCriteria.GetExecutableCriteria(session)
 				);
+			return this;
+		}
+
+		public IMultiCriteria Add(string key, DetachedCriteria detachedCriteria)
+		{
+			ThrowIfKeyAlreadyExists(key);
+			criteriaResultPositions.Add(key, criteriaQueries.Add(detachedCriteria.GetExecutableCriteria(session)));
 			return this;
 		}
 
@@ -345,6 +363,18 @@ namespace NHibernate.Impl
 		{
 			this.resultTransformer = resultTransformer;
 			return this;
+		}
+
+		public object GetResult(string key)
+		{
+			if (criteriaResults == null) List();
+
+			if (!criteriaResultPositions.ContainsKey(key))
+			{
+				throw new InvalidOperationException(String.Format("The key '{0}' is unknown", key));
+			}
+
+			return criteriaResults[criteriaResultPositions[key]];
 		}
 
 		#endregion
@@ -372,6 +402,14 @@ namespace NHibernate.Impl
 			combinedQueryParameters.PositionalParameterTypes = (IType[]) positionalParameterTypes.ToArray(typeof (IType));
 			combinedQueryParameters.PositionalParameterValues = (object[]) positionalParameterValues.ToArray(typeof (object));
 			return combinedQueryParameters;
+		}
+
+		private void ThrowIfKeyAlreadyExists(string key)
+		{
+			if (criteriaResultPositions.ContainsKey(key))
+			{
+				throw new InvalidOperationException(String.Format("The key '{0}' already exists", key));
+			}
 		}
 	}
 }

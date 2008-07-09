@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Reflection;
 using NHibernate.Cache;
@@ -273,6 +274,179 @@ namespace NHibernate.Test.QueryTest
 			}
 		}
 
+		[Test]
+		public void CanAddCriteriaWithKeyAndRetrieveResultsWithKey()
+		{
+			CreateItems();
+
+			using (ISession session = OpenSession())
+			{
+				IMultiCriteria multiCriteria = session.CreateMultiCriteria();
+				
+				ICriteria firstCriteria = session.CreateCriteria(typeof(Item))
+					.Add(Expression.Lt("id", 50));
+
+				ICriteria secondCriteria = session.CreateCriteria(typeof(Item));
+
+				multiCriteria.Add("firstCriteria", firstCriteria);
+				multiCriteria.Add("secondCriteria", secondCriteria);
+
+				IList secondResult = (IList)multiCriteria.GetResult("secondCriteria");
+				IList firstResult = (IList)multiCriteria.GetResult("firstCriteria");
+
+				Assert.Greater(secondResult.Count, firstResult.Count);
+			}
+
+			RemoveAllItems();
+		}
+
+		[Test]
+		public void CanAddDetachedCriteriaWithKeyAndRetrieveResultsWithKey()
+		{
+			CreateItems();
+
+			using (ISession session = OpenSession())
+			{
+				IMultiCriteria multiCriteria = session.CreateMultiCriteria();
+
+				DetachedCriteria firstCriteria = DetachedCriteria.For(typeof(Item))
+					.Add(Expression.Lt("id", 50));
+					
+				DetachedCriteria secondCriteria = DetachedCriteria.For(typeof(Item));
+
+				multiCriteria.Add("firstCriteria", firstCriteria);
+				multiCriteria.Add("secondCriteria", secondCriteria);
+
+				IList secondResult = (IList)multiCriteria.GetResult("secondCriteria");
+				IList firstResult = (IList)multiCriteria.GetResult("firstCriteria");
+
+				Assert.Greater(secondResult.Count, firstResult.Count);
+			}
+
+			RemoveAllItems();
+		}
+
+		[Test]
+		public void CanNotAddCriteriaWithKeyThatAlreadyExists()
+		{
+			using (ISession session = OpenSession())
+			{
+				IMultiCriteria multiCriteria = session.CreateMultiCriteria();
+
+				ICriteria firstCriteria = session.CreateCriteria(typeof(Item))
+					.Add(Expression.Lt("id", 50));
+
+				ICriteria secondCriteria = session.CreateCriteria(typeof(Item));
+
+				multiCriteria.Add("firstCriteria", firstCriteria);
+
+				try
+				{
+					multiCriteria.Add("firstCriteria", secondCriteria);
+					Assert.Fail("This should've thrown an InvalidOperationException");
+				}
+				catch (InvalidOperationException)
+				{
+				}
+				catch (Exception)
+				{
+					Assert.Fail("This should've thrown an InvalidOperationException");
+				}
+			}
+		}
+
+		[Test]
+		public void CanNotAddDetachedCriteriaWithKeyThatAlreadyExists()
+		{
+			using (ISession session = OpenSession())
+			{
+				IMultiCriteria multiCriteria = session.CreateMultiCriteria();
+
+				DetachedCriteria firstCriteria = DetachedCriteria.For(typeof(Item))
+					.Add(Expression.Lt("id", 50));
+
+				DetachedCriteria secondCriteria = DetachedCriteria.For(typeof(Item));
+
+				multiCriteria.Add("firstCriteria", firstCriteria);
+
+				try
+				{
+					multiCriteria.Add("firstCriteria", secondCriteria);
+					Assert.Fail("This should've thrown an InvalidOperationException");
+				}
+				catch (InvalidOperationException)
+				{
+				}
+				catch (Exception)
+				{
+					Assert.Fail("This should've thrown an InvalidOperationException");
+				}
+			}
+		}
+
+		[Test]
+		public void CanNotRetrieveCriteriaResultWithUnknownKey()
+		{
+			CreateItems();
+
+			using (ISession session = OpenSession())
+			{
+				IMultiCriteria multiCriteria = session.CreateMultiCriteria();
+
+				ICriteria firstCriteria = session.CreateCriteria(typeof(Item))
+					.Add(Expression.Lt("id", 50));
+
+				multiCriteria.Add("firstCriteria", firstCriteria);
+
+				try
+				{
+					IList firstResult = (IList)multiCriteria.GetResult("unknownKey");
+					Assert.Fail("This should've thrown an InvalidOperationException");
+				}
+				catch (InvalidOperationException)
+				{
+				}
+				catch (Exception)
+				{
+					Assert.Fail("This should've thrown an InvalidOperationException");
+				}
+	
+			}
+
+			RemoveAllItems();
+		}
+
+		[Test]
+		public void CanNotRetrieveDetachedCriteriaResultWithUnknownKey()
+		{
+			CreateItems();
+
+			using (ISession session = OpenSession())
+			{
+				IMultiCriteria multiCriteria = session.CreateMultiCriteria();
+
+				DetachedCriteria firstCriteria = DetachedCriteria.For(typeof(Item))
+					.Add(Expression.Lt("id", 50));
+
+				multiCriteria.Add("firstCriteria", firstCriteria);
+
+				try
+				{
+					IList firstResult = (IList)multiCriteria.GetResult("unknownKey");
+					Assert.Fail("This should've thrown an InvalidOperationException");
+				}
+				catch (InvalidOperationException)
+				{
+				}
+				catch (Exception)
+				{
+					Assert.Fail("This should've thrown an InvalidOperationException");
+				}
+
+			}
+
+			RemoveAllItems();
+		}
 
 		private void DoMutiQueryAndAssert()
 		{
