@@ -205,8 +205,8 @@
                     </callout>
                     <callout arearefs="class2">
                         <para>
-                            <literal>table</literal>: The name of its database table.
-                        </para>
+                            <literal>table</literal>(optional - defaults to the unqualified class name): The name of its database table.
+						</para>
                     </callout>
                     <callout arearefs="class3">
                         <para>
