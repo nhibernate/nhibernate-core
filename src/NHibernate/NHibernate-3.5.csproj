@@ -61,6 +61,7 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
@@ -402,10 +403,6 @@
     <Compile Include="WrongClassException.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="nhibernate-generic.xsd">
-      <SubType>
-      </SubType>
-    </EmbeddedResource>
     <Compile Include="Action\BulkOperationCleanupAction.cs" />
     <Compile Include="Action\CollectionAction.cs" />
     <Compile Include="Action\CollectionRecreateAction.cs" />
@@ -424,7 +421,9 @@
     <Compile Include="AdoNet\IBatcherFactory.cs" />
     <Compile Include="AdoNet\IExpectation.cs" />
     <Compile Include="AdoNet\NonBatchingBatcherFactory.cs" />
+    <Compile Include="AdoNet\OracleDataClientBatchingBatcherFactory.cs" />
     <Compile Include="AdoNet\ResultSetWrapper.cs" />
+    <Compile Include="AdoNet\SqlClientBatchingBatcherFactory.cs" />
     <Compile Include="AdoNet\TooManyRowsAffectedException.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Bytecode\CodeDom\BytecodeProviderImpl.cs" />
@@ -475,7 +474,6 @@
     <Compile Include="Cfg\MappingSchema\HbmBase.cs" />
     <Compile Include="Cfg\MappingSchema\HbmClass.cs" />
     <Compile Include="Cfg\MappingSchema\HbmDatabaseObject.cs" />
-    <Compile Include="Cfg\MappingSchema\HbmDefinition.cs" />
     <Compile Include="Cfg\MappingSchema\HbmMapping.cs" />
     <Compile Include="Cfg\MappingSchema\HbmMeta.cs" />
     <Compile Include="Cfg\MappingSchema\HbmParam.cs" />
@@ -804,13 +802,17 @@
     <Compile Include="Impl\AbstractDetachedQuery.cs" />
     <Compile Include="Hql\Classic\FunctionStack.cs" />
     <Compile Include="Impl\AbstractSessionImpl.cs" />
+    <Compile Include="Impl\DbCommandSet.cs" />
     <Compile Include="Impl\DetachedNamedQuery.cs" />
     <Compile Include="Impl\DetachedQuery.cs" />
     <Compile Include="IDetachedQuery.cs" />
     <Compile Include="IdentityEqualityComparer.cs" />
+    <Compile Include="Impl\IDbCommandSet.cs" />
     <Compile Include="Impl\IDetachedQueryImplementor.cs" />
     <Compile Include="Impl\MultiCriteriaImpl.cs" />
     <Compile Include="Impl\MultipleQueriesCacheAssembler.cs" />
+    <Compile Include="Impl\OracleClientCommandSet.cs" />
+    <Compile Include="Impl\SqlClientCommandSet.cs" />
     <Compile Include="Impl\StatelessSessionImpl.cs" />
     <Compile Include="IMultiCriteria.cs" />
     <Compile Include="Intercept\AbstractFieldInterceptor.cs" />
@@ -1083,9 +1085,6 @@
     </EmbeddedResource>
     <None Include="nhibernate-configuration.xsx">
       <DependentUpon>nhibernate-configuration.xsd</DependentUpon>
-    </None>
-    <None Include="nhibernate-generic.xsx">
-      <DependentUpon>nhibernate-generic.xsd</DependentUpon>
     </None>
     <EmbeddedResource Include="nhibernate-mapping.xsd">
       <SubType>

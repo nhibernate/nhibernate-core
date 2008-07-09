@@ -65,7 +65,7 @@ namespace NHibernate.Driver
 
 		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass
 		{
-			get { return typeof (OracleDataClientClientBatchingBatcherFactory); }
+			get { return typeof (OracleDataClientBatchingBatcherFactory); }
 		}
 
 		#endregion

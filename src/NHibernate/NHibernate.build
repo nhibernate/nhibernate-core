@@ -20,6 +20,7 @@
 			<include name="System.Configuration.dll" />
 			<include name="System.XML.dll" />
 			<include name="System.Data.dll" />
+			<include name="System.Data.OracleClient" />
 			<include name="System.Web.dll" />
 			<include name="Iesi.Collections.dll" />
 			<include name="log4net.dll" />

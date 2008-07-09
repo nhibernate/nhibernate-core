@@ -78,7 +78,6 @@ namespace NHibernate.Test.DialectTest
 				"SELECT TOP 10 id, bar FROM (SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__) as row, query.id, query.bar, query.__hibernate_sort_expr_1__ FROM (SELECT fish.id, cast('astring, with,comma' as string) as bar, CURRENT_TIMESTAMP as __hibernate_sort_expr_1__ FROM fish) query ) page WHERE page.row > 0 ORDER BY __hibernate_sort_expr_1__",
 				str.ToString());
 	}
-
 		[Test]
 		public void QuotedAndParenthesisStringTokenizerTests_WithComma_InQuotes()
 		{
