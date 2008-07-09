@@ -25,6 +25,8 @@ namespace NHibernate.Impl
 		private readonly List<IQuery> queries = new List<IQuery>();
 		private readonly List<QueryTranslator> translators = new List<QueryTranslator>();
 		private readonly List<QueryParameters> parameters = new List<QueryParameters>();
+		private IList criteriaResults;
+		private Dictionary<string, int> criteriaResultPositions = new Dictionary<string, int>();
 		private string cacheRegion;
 		private int commandTimeout = RowSelection.NoValue;
 		private bool isCacheable = false;
@@ -292,8 +294,14 @@ namespace NHibernate.Impl
 
 		public IMultiQuery Add(IQuery query)
 		{
-			((AbstractQueryImpl)query).SetIgnoreUknownNamedParameters(true);
-			queries.Add(query);
+			AddQueryForLaterExecutionAndReturnIndexOfQuery(query);
+			return this;
+		}
+
+		public IMultiQuery Add(string key, IQuery query)
+		{
+			ThrowIfKeyAlreadyExists(key);
+			criteriaResultPositions.Add(key, AddQueryForLaterExecutionAndReturnIndexOfQuery(query));
 			return this;
 		}
 
@@ -302,9 +310,22 @@ namespace NHibernate.Impl
 			return Add(((ISession)session).CreateQuery(hql));
 		}
 
+		public IMultiQuery Add(string key, string hql)
+		{
+			ThrowIfKeyAlreadyExists(key);
+			return Add(key, ((ISession)session).CreateQuery(hql));
+		}
+
 		public IMultiQuery AddNamedQuery(string namedQuery)
 		{
 			return Add(session.GetNamedQuery(namedQuery));
+		}
+
+
+		public IMultiQuery AddNamedQuery(string key, string namedQuery)
+		{
+			ThrowIfKeyAlreadyExists(key);
+			return Add(key, session.GetNamedQuery(namedQuery));
 		}
 
 		public IMultiQuery SetCacheable(bool cacheable)
@@ -342,12 +363,13 @@ namespace NHibernate.Impl
 
 				if (cacheable)
 				{
-					return ListUsingQueryCache();
+					criteriaResults = ListUsingQueryCache();
 				}
 				else
 				{
-					return ListIgnoreQueryCache();
+					criteriaResults = ListIgnoreQueryCache();
 				}
+				return criteriaResults;
 			}
 			finally
 			{
@@ -549,7 +571,7 @@ namespace NHibernate.Impl
 			foreach (string paramName in translator.GetParameterTranslations().GetNamedParameterNames())
 			{
 				TypedValue v;
-				if (namedParameters.TryGetValue(paramName,out v))
+				if (namedParameters.TryGetValue(paramName, out v))
 				{
 					filteredQueryParameters.NamedParameters.Add(paramName, v);
 				}
@@ -590,6 +612,18 @@ namespace NHibernate.Impl
 				colIndex += translator.BindNamedParameters(command, parameter.NamedParameters, colIndex, session);
 			}
 			return colIndex;
+		}
+
+		public object GetResult(string key)
+		{
+			if (criteriaResults == null) List();
+
+			if (!criteriaResultPositions.ContainsKey(key))
+			{
+				throw new InvalidOperationException(String.Format("The key '{0}' is unknown", key));
+			}
+
+			return criteriaResults[criteriaResultPositions[key]];
 		}
 
 		private int BindLimitParametersFirstIfNeccesary(IDbCommand command, int colIndex)
@@ -653,7 +687,7 @@ namespace NHibernate.Impl
 			{
 				log.Debug("Cache miss for multi query");
 				ArrayList list = DoList();
-				queryCache.Put(key, new ICacheAssembler[] {assembler}, new object[] {list}, false, session);
+				queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, false, session);
 				result = list;
 			}
 
@@ -728,6 +762,22 @@ namespace NHibernate.Impl
 			}
 			return false;
 		}
+		
+		private void ThrowIfKeyAlreadyExists(string key)
+		{
+			if (criteriaResultPositions.ContainsKey(key))
+			{
+				throw new InvalidOperationException(String.Format("The key '{0}' already exists", key));
+			}
+		}
+
+		private int AddQueryForLaterExecutionAndReturnIndexOfQuery(IQuery query)
+		{
+			((AbstractQueryImpl)query).SetIgnoreUknownNamedParameters(true);
+			queries.Add(query);
+			return queries.Count - 1;
+		}
+
 
 		#endregion
 	}

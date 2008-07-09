@@ -16,9 +16,25 @@ namespace NHibernate
 		IList List();
 
 		/// <summary>
-		/// Add the specified HQL query to the multi query
+		/// Add the specified HQL query to the multi query, and associate it with the given key
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="query"></param>
+		/// <returns></returns>
+		IMultiQuery Add(string key, IQuery query);
+
+		/// <summary>
+	 	/// Add the specified HQL query to the multi query
 		/// </summary>
 		IMultiQuery Add(IQuery query);
+
+		/// <summary>
+		/// Add the specified HQL Query to the multi query, and associate it with the given key
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="hql"></param>
+		/// <returns></returns>
+		IMultiQuery Add(string key, string hql);
 
 		/// <summary>
 		/// Add the specified HQL query to the multi query
@@ -29,6 +45,14 @@ namespace NHibernate
 		/// Add a named query to the multi query
 		/// </summary>
 		IMultiQuery AddNamedQuery(string namedQuery);
+
+		/// <summary>
+		/// Add a named query to the multi query, and associate it with the given key
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="namedKey"></param>
+		/// <returns></returns>
+		IMultiQuery AddNamedQuery(string key, string namedKey);
 
 		/// <summary>
 		/// Enable caching of this query result set.
@@ -210,13 +234,13 @@ namespace NHibernate
 		/// <param name="val">A non-null instance of a <see cref="String"/>.</param>
 		IMultiQuery SetString(string name, string val);
 
-    /// <summary>
-    /// Bind an instance of a <see cref="Guid" /> to a named parameter
-    /// using an NHibernate <see cref="GuidType"/>.
-    /// </summary>
-    /// <param name="name">The name of the parameter</param>
-    /// <param name="val">An instance of a <see cref="Guid"/>.</param>
-    IMultiQuery SetGuid(string name, Guid val);
+		/// <summary>
+		/// Bind an instance of a <see cref="Guid" /> to a named parameter
+		/// using an NHibernate <see cref="GuidType"/>.
+		/// </summary>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">An instance of a <see cref="Guid"/>.</param>
+		IMultiQuery SetGuid(string name, Guid val);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="DateTime" /> to a named parameter
@@ -244,5 +268,12 @@ namespace NHibernate
 		/// "shape" of the query result.
 		/// </summary>
 		IMultiQuery SetResultTransformer(IResultTransformer transformer);
+
+		/// <summary>
+		/// Returns the result of one of the Criteria based on the key
+		/// </summary>
+		/// <param name="key">The key</param>
+		/// <returns></returns>
+		object GetResult(string key);
 	}
 }
