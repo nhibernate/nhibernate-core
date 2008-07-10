@@ -2,23 +2,14 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Reflection;
-using NHibernate.Engine;
 
 namespace NHibernate.AdoNet
 {
-	internal class OracleDataClientClientBatchingBatcherFactory : IBatcherFactory
-	{
-		public virtual IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
-		{
-			return new OracleDataClientBatchingBatcher(connectionManager, interceptor);
-		}
-	}
-
 	/// <summary>
 	/// Summary description for OracleDataClientBatchingBatcher.
 	/// By Tomer Avissar
 	/// </summary>
-	internal class OracleDataClientBatchingBatcher : AbstractBatcher
+	public class OracleDataClientBatchingBatcher : AbstractBatcher
 	{
 		private int batchSize;
 		private int countOfCommands = 0;

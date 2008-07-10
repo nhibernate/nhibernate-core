@@ -9,7 +9,7 @@ namespace NHibernate.AdoNet
 	/// batching support.
 	/// The BatcherFactory trough session-factory configuration section.
 	/// This interface was added in NHibernate for backdraw compatibility to have the ability
-	/// to specify a default <see cref="IBatcherFactory"/> for a specific <see cref="NHibernate.Driver.IDriver"/>.
+	/// to specify a default <see cref="IBatcherFactory"/> for a specific <see cref="Driver.IDriver"/>.
 	/// </remarks>
 	public interface IEmbeddedBatcherFactoryProvider
 	{

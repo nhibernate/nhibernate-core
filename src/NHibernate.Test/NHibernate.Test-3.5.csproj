@@ -67,6 +67,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\2.0\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="Oracle.DataAccess, Version=10.2.0.100, Culture=neutral, PublicKeyToken=89b483f429c47342">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
@@ -265,6 +268,27 @@
     <Compile Include="NHSpecificTest\BasicTimeFixture.cs" />
     <Compile Include="NHSpecificTest\BugTestCase.cs" />
     <Compile Include="NHSpecificTest\CollectionFixture.cs" />
+
+
+
+
+
+
+
+
+
+
+    <Compile Include="NHSpecificTest\NH1324\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1144\Classes.cs" />
+    <Compile Include="NHSpecificTest\NH1144\Fixture.cs" />
+    <Compile Include="NHSpecificTest\CriteriaFromHql\Person.cs" />
+    <Compile Include="NHSpecificTest\CriteriaFromHql\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1290\AuxType.cs" />
+    <Compile Include="NHSpecificTest\NH1290\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1301\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH1301\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1313\A.cs" />
+    <Compile Include="NHSpecificTest\NH1313\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1324\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1324\Person.cs" />
     <Compile Include="NHSpecificTest\NH1098\FilterParameterOrderFixture.cs" />
@@ -1174,6 +1198,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1347\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1144\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
