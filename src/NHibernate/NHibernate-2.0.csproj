@@ -209,36 +209,6 @@
     <Compile Include="Cache\Entry\CacheEntry.cs" />
     <Compile Include="Engine\CollectionEntry.cs" />
     <Compile Include="Engine\CollectionKey.cs" />
-
-
-
-
-
-
-    <Compile Include="Impl\AbstractVisitor.cs" />
-    <Compile Include="Impl\BatcherImpl.cs" />
-    <Compile Include="Impl\CommandSetBatchingBatcher.cs" />
-    <Compile Include="Impl\DbCommandSet.cs" />
-    <Compile Include="Impl\IDbCommandSet.cs" />
-    <Compile Include="Impl\OracleClientBatchingBatcher.cs" />
-    <Compile Include="Impl\OracleClientCommandSet.cs" />
-    <Compile Include="Impl\OracleDataClientBatchingBatcher.cs" />
-    <Compile Include="Impl\SqlClientBatchingBatcher.cs" />
-    <Compile Include="Impl\CacheEntry.cs" />
-    <Compile Include="Impl\CollectionEntry.cs" />
-    <Compile Include="Impl\AbstractVisitor.cs" />
-    <Compile Include="Impl\BatcherImpl.cs" />
-    <Compile Include="Impl\CommandSetBatchingBatcher.cs" />
-    <Compile Include="Impl\DbCommandSet.cs" />
-    <Compile Include="Impl\IDbCommandSet.cs" />
-    <Compile Include="Impl\OracleClientBatchingBatcher.cs" />
-    <Compile Include="Impl\OracleClientCommandSet.cs" />
-    <Compile Include="Impl\OracleDataClientBatchingBatcher.cs" />
-    <Compile Include="Impl\SqlClientBatchingBatcher.cs" />
-    <Compile Include="Impl\CacheEntry.cs" />
-    <Compile Include="Impl\CollectionEntry.cs" />
-    <Compile Include="Impl\CollectionKey.cs" />
-    <Compile Include="Impl\CollectionKey.cs" />
     <Compile Include="Impl\CriteriaImpl.cs" />
     <Compile Include="Engine\EntityEntry.cs" />
     <Compile Include="Impl\EnumerableImpl.cs" />
@@ -251,7 +221,6 @@
     <Compile Include="Impl\SessionFactoryImpl.cs" />
     <Compile Include="Impl\SessionFactoryObjectFactory.cs" />
     <Compile Include="Impl\SessionImpl.cs" />
-    <Compile Include="Impl\SqlClientCommandSet.cs" />
     <Compile Include="Impl\SqlQueryImpl.cs" />
     <Compile Include="Engine\Status.cs" />
     <Compile Include="InstantiationException.cs" />
@@ -472,7 +441,9 @@
     <Compile Include="AdoNet\IBatcherFactory.cs" />
     <Compile Include="AdoNet\IExpectation.cs" />
     <Compile Include="AdoNet\NonBatchingBatcherFactory.cs" />
+    <Compile Include="AdoNet\OracleDataClientBatchingBatcherFactory.cs" />
     <Compile Include="AdoNet\ResultSetWrapper.cs" />
+    <Compile Include="AdoNet\SqlClientBatchingBatcherFactory.cs" />
     <Compile Include="AdoNet\TooManyRowsAffectedException.cs" />
     <Compile Include="Bytecode\CodeDom\BytecodeProviderImpl.cs" />
     <Compile Include="Bytecode\DefaultProxyFactoryFactory.cs" />
@@ -789,13 +760,17 @@
     <Compile Include="Impl\AbstractDetachedQuery.cs" />
     <Compile Include="Hql\Classic\FunctionStack.cs" />
     <Compile Include="Impl\AbstractSessionImpl.cs" />
+    <Compile Include="Impl\DbCommandSet.cs" />
     <Compile Include="Impl\DetachedNamedQuery.cs" />
     <Compile Include="Impl\DetachedQuery.cs" />
     <Compile Include="IDetachedQuery.cs" />
     <Compile Include="IdentityEqualityComparer.cs" />
+    <Compile Include="Impl\IDbCommandSet.cs" />
     <Compile Include="Impl\IDetachedQueryImplementor.cs" />
     <Compile Include="Impl\MultiCriteriaImpl.cs" />
     <Compile Include="Impl\MultipleQueriesCacheAssembler.cs" />
+    <Compile Include="Impl\OracleClientCommandSet.cs" />
+    <Compile Include="Impl\SqlClientCommandSet.cs" />
     <Compile Include="Impl\StatelessSessionImpl.cs" />
     <Compile Include="IMultiCriteria.cs" />
     <Compile Include="Intercept\AbstractFieldInterceptor.cs" />

@@ -1,13 +1,11 @@
-using System.Collections;
+using log4net.Core;
+using NHibernate.AdoNet;
+using NHibernate.Cfg;
+using NHibernate.Driver;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1144
 {
-	using AdoNet;
-	using Cfg;
-	using Driver;
-	using Loader;
-
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
@@ -18,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1144
 			get { return "NH1144"; }
 		}
 
-		protected override void Configure(NHibernate.Cfg.Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
 			this.configuration = configuration;
 			this.configuration.Properties[Environment.BatchSize] = "10";
@@ -27,42 +25,50 @@ namespace NHibernate.Test.NHSpecificTest.NH1144
 		[Test]
 		public void CanSaveInSingleBatch()
 		{
-			if (configuration.Properties[Environment.ConnectionDriver].Contains(typeof(OracleDataClientDriver).Name) == false)
+			if (configuration.Properties[Environment.ConnectionDriver].Contains(typeof (OracleDataClientDriver).Name) == false)
+			{
 				Assert.Ignore("Only applicable for Oracle Data Client driver");
+			}
 
-			MainClass[] mc =
-				new MainClass[]
-					{
-						new MainClass("d0"), new MainClass("d0"), new MainClass("d1"), new MainClass("d1"),
-						new MainClass("d1")
-					};
+			MainClass[] mc = new MainClass[]
+			                 	{
+			                 		new MainClass("d0"), new MainClass("d0"), new MainClass("d1"), new MainClass("d1"),
+			                 		new MainClass("d1")
+			                 	};
 
 			bool executedBatch = false;
 
-			using (LogSpy spy = new LogSpy(typeof(AbstractBatcher)))
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
+			using (LogSpy spy = new LogSpy(typeof (AbstractBatcher)))
 			{
-				foreach (MainClass mainClass in mc)
-					s.Save(mainClass);
-
-				tx.Commit();
-				foreach (var loggingEvent in spy.Appender.GetEvents())
+				using (ISession s = OpenSession())
 				{
-					if ("Executing batch".Equals(loggingEvent.MessageObject))
+					using (ITransaction tx = s.BeginTransaction())
 					{
-						executedBatch = true;
-						break;
+						foreach (MainClass mainClass in mc)
+						{
+							s.Save(mainClass);
+						}
+
+						tx.Commit();
+						foreach (LoggingEvent loggingEvent in spy.Appender.GetEvents())
+						{
+							if ("Executing batch".Equals(loggingEvent.MessageObject))
+							{
+								executedBatch = true;
+								break;
+							}
+						}
 					}
 				}
 			}
 
-
 			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
 			{
-				s.Delete("from MainClass");
-				tx.Commit();
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					s.Delete("from MainClass");
+					tx.Commit();
+				}
 			}
 
 			Assert.IsTrue(executedBatch);
