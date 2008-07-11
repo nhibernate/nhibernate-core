@@ -50,10 +50,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\2.0\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="nmock, Version=1.0.1536.20687, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\nmock.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.core, Version=2.2.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\2.0\nunit.core.dll</HintPath>
