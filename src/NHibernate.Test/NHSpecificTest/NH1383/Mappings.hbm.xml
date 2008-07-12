@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1383"
+				   assembly="NHibernate.Test"
+				   default-lazy="false"
+				   default-access="field.camelcase-underscore">
+
+	<class name="MyBO" table="MyBO">
+		<id name="Id" type="Int32" column="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Name" type="string"/>
+		<component name="NullableComp" class="MyNullableComponent" insert="true" update="true" >
+			<property name="I1" type="Int32" column="NullableComp_I1"/>
+			<property name="I2" type="Int32" column="NullableComp_I2"/>
+		</component>
+		<component name="Comp" class="MyComponent" insert="true" update="true" >
+			<property name="I1" type="Int32" column="Comp_I1"/>
+			<property name="I2" type="Int32" column="Comp_I2"/>
+		</component>
+	</class>
+
+</hibernate-mapping>
