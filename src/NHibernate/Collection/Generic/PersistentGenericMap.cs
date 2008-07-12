@@ -54,7 +54,7 @@ namespace NHibernate.Collection.Generic
 			IDictionary<TKey, TValue> sn = (IDictionary<TKey, TValue>)GetSnapshot();
 			foreach (KeyValuePair<TKey, TValue> e in sn)
 			{
-				if (e.Value != null && gmap[e.Key] == null)
+				if (e.Value != null && !gmap.ContainsKey(e.Key))
 				{
 					object key = e.Key;
 					deletes.Add(indexIsFormula ? e.Value : key);
