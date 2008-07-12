@@ -53,7 +53,7 @@ namespace NHibernate.Driver
 
 		public override bool SupportsMultipleOpenReaders
 		{
-			get { return true; }
+			get { return false; }
 		}
 
 		protected override bool SupportsPreparingCommands
