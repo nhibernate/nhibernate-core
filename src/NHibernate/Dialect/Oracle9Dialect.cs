@@ -1,4 +1,3 @@
-using System;
 using System.Data;
 using NHibernate.Dialect.Function;
 using NHibernate.SqlCommand;
@@ -57,6 +56,9 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Int16, "NUMBER(5,0)");
 			RegisterColumnType(DbType.Int32, "NUMBER(10,0)");
 			RegisterColumnType(DbType.Int64, "NUMBER(20,0)");
+			RegisterColumnType(DbType.UInt16, "NUMBER(5,0)");
+			RegisterColumnType(DbType.UInt32, "NUMBER(10,0)");
+			RegisterColumnType(DbType.UInt64, "NUMBER(20,0)");
 			RegisterColumnType(DbType.Single, "FLOAT(24)");
 			RegisterColumnType(DbType.StringFixedLength, "NCHAR(255)");
 			RegisterColumnType(DbType.StringFixedLength, 2000, "NCHAR($l)");
