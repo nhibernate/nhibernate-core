@@ -1,4 +1,5 @@
 using System.Collections;
+using log4net.Core;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1144
@@ -47,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1144
 					s.Save(mainClass);
 
 				tx.Commit();
-				foreach (var loggingEvent in spy.Appender.GetEvents())
+				foreach (LoggingEvent loggingEvent in spy.Appender.GetEvents())
 				{
 					if ("Executing batch".Equals(loggingEvent.MessageObject))
 					{
