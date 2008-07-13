@@ -343,6 +343,8 @@
     <Compile Include="NHSpecificTest\NH1250\PolymorphicJoinFetchFixture.cs" />
     <Compile Include="NHSpecificTest\NH1275\A.cs" />
     <Compile Include="NHSpecificTest\NH1275\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1284\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1284\Model.cs" />
     <Compile Include="NHSpecificTest\NH1290\AuxType.cs" />
     <Compile Include="NHSpecificTest\NH1290\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1297\Fixture.cs" />
@@ -1329,6 +1331,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1144\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1284\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
