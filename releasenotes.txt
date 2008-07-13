@@ -1,3 +1,41 @@
+Build 2.0.0.Beta2
+========================
+** Bug
+    * [NH-1030] - DB2400Dialect : mod(x,y) function triggers a parse exception
+    * [NH-1077] - Pessimistic locking for SQL Server fails on cached objects
+    * [NH-1258] - Oracle Sequences mappings without Schema information throwns InvalidKeyException
+    * [NH-1279] - AggressiveRelease tests fail for MySQL
+    * [NH-1300] - Detached Entities that have many-to-one associations improperly throw LazyInitializationExceptions when accessing the association outside the loading session
+    * [NH-1355] - Custom Version type (IUserVersionType) not allowed
+    * [NH-1362] - Nested cascades on ISession.Refresh()
+    * [NH-1375] - Disable Multi Query support for Npgsql
+    * [NH-1383] - Components with (non-C#) Nullables do not follow documentation sect. 7.1 "if all component columns are null, then the entire component is null"
+    * [NH-1384] - Support for latest Npgsql2 (PostgreSQL) Data Provider
+
+** Improvement
+    * [NH-693] - Better error message when user forgets to supply table name
+    * [NH-803] - Support DML type batch sql statements
+    * [NH-824] - GetClassname cannot parse generic classnames
+    * [NH-938] - Escape characters in Like expressions
+    * [NH-978] - show_sql: Transaction Begin, Commit, Rollback
+    * [NH-1101] - component directy detection should consider null component value to be equiv to all component member's being null
+    * [NH-1151] - Improve Configuration to Support ASP.NET Configuration File Hierarchy and Inheritance
+    * [NH-1216] - SchemaExport creates varchar(255) on MySQL when Property Type is StringClob
+    * [NH-1236] - XML Entity support in mapping files broken 
+    * [NH-1257] - lazy=true and fetch=join doesn't work together it will be nice to receive a WARN
+    * [NH-1364] - LinkedHashMap.RemoveImpl can be improved (using try/catch for common scenario)
+    * [NH-1382] - Oracle Dialect support for Unsigned Int (UInt32, UInt64)
+
+** New Feature
+    * [NH-1115] - Add support for "Refresh" cascade style
+    * [NH-1367] - Add Interceptor or Event to Batcher
+
+
+** Task
+    * [NH-1144] - Apply patch for NH-1022 (Oracle command batching) to trunk
+    * [NH-1210] - "table" attribute documented as required when in fact optional
+
+
 Build 2.0.0.Beta1
 ========================
 ** Bug
