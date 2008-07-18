@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH1291AnonExample">
+
+  <class name="Person" lazy="false">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <property name="Name"/>
+    <property name="IQ"/>
+    <property name="ShoeSize"/>
+    <many-to-one name="Home" column="HomeID" />
+  </class>
+
+  <class name="Home" lazy="false">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <property name="City"/>
+    <property name="Zip"/>
+  </class>
+  
+</hibernate-mapping>
