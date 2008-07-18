@@ -2,7 +2,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1101
 {
 	public class A
 	{
+#pragma warning disable 649
 		private int id;
+#pragma warning restore 649
 		private string descript;
 		private B b;
 		public A() {}

@@ -16,7 +16,7 @@ namespace NHibernate.SqlCommand
 
 		private int lastOrderByIndex;
 		private int lastOrderByPartIndex;
-
+		private int parenNestCount;
 		private object[] sqlParts;
 
 		/// <summary>
@@ -72,7 +72,7 @@ namespace NHibernate.SqlCommand
 		public SqlString GetSqlString()
 		{
 			IEnumerator partEnumerator = sqlParts.GetEnumerator();
-
+			parenNestCount = 0;
 			// Process the parts until FROM is found
 			while (partEnumerator.MoveNext())
 			{
@@ -94,12 +94,11 @@ namespace NHibernate.SqlCommand
 			return builder.ToSqlString();
 		}
 
-		private static int FindFromClauseInPart(string part)
+		private int FindFromClauseInPart(string part)
 		{
 			int afterLastClosingParenIndex = 0;
 			int fromIndex = StringHelper.IndexOfCaseInsensitive(part, FromClauseToken);
-			int parenNestCount = 0;
-
+			
 			for (int i = 0; i < part.Length; i++)
 			{
 				if (parenNestCount == 0 && i > fromIndex)
@@ -128,6 +127,9 @@ namespace NHibernate.SqlCommand
 			{
 				fromIndex = StringHelper.IndexOfCaseInsensitive(part, FromClauseToken);
 			}
+
+			if(parenNestCount > 0)
+				return -1;
 
 			return fromIndex;
 		}

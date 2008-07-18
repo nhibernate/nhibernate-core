@@ -586,6 +586,7 @@
     <Compile Include="Dialect\Lock\UpdateLockingStrategy.cs" />
     <Compile Include="Dialect\MsSqlCeDialect.cs" />
     <Compile Include="Dialect\MySQL5Dialect.cs" />
+    <Compile Include="Criterion\SelectSubqueryExpression.cs" />
     <Compile Include="Dialect\PostgreSQL82Dialect.cs" />
     <Compile Include="Dialect\Schema\FirebirdMetaData.cs" />
     <Compile Include="Dialect\Schema\ITableMetadata.cs" />
@@ -594,6 +595,7 @@
     <Compile Include="Dialect\Sybase11Dialect.cs" />
     <Compile Include="Driver\ISqlParameterFormatter.cs" />
     <Compile Include="Driver\SqlStringFormatter.cs" />
+    <Compile Include="Criterion\SubqueryProjection.cs" />
     <Compile Include="EmptyInterceptor.cs" />
     <Compile Include="Engine\ActionQueue.cs" />
     <Compile Include="Engine\AssociationKey.cs" />

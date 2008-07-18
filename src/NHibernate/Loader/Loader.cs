@@ -391,7 +391,7 @@ namespace NHibernate.Loader
 			int entitySpan = EntityPersisters.Length;
 
 			ArrayList hydratedObjects = entitySpan == 0 ? null : new ArrayList(entitySpan * 10);
-			;
+			
 			IDbCommand st = PrepareQueryCommand(queryParameters, false, session);
 
 			IDataReader rs =

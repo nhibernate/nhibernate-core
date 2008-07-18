@@ -190,5 +190,10 @@ namespace NHibernate.Criterion
 		{
 			return new SimpleSubqueryExpression(value, "<=", "some", dc);
 		}
+
+		public static AbstractCriterion Select(DetachedCriteria detachedCriteria)
+		{
+			return new SelectSubqueryExpression(detachedCriteria);
+		}
 	}
 }

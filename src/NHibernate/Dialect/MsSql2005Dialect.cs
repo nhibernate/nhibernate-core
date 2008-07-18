@@ -73,7 +73,7 @@ namespace NHibernate.Dialect
 				.Add(StringHelper.Join(", ", columnsOrAliases))
 				.Add(" FROM (SELECT ROW_NUMBER() OVER(ORDER BY ");
 
-			AppendSortExpressions(sortExpressions, result);
+			AppendSortExpressions(columnsOrAliases,  sortExpressions, result);
 
 			result.Add(") as row, ");
 
@@ -84,22 +84,27 @@ namespace NHibernate.Dialect
 				if (notLastColumn)
 					result.Add(", ");
 			}
-
-			for (int i = 1; i <= sortExpressions.Length; ++i)
+			for (int i = 0; i < sortExpressions.Length; i++)
 			{
-				result.Add(", query.__hibernate_sort_expr_")
-					.Add(i.ToString())
-					.Add("__");
+				string sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
+				if(!columnsOrAliases.Contains(sortExpression))
+				{
+					result.Add(", query.__hibernate_sort_expr_")
+						.Add(i.ToString())
+						.Add("__");
+				}
 			}
 
 			result.Add(" FROM (")
 				.Add(select);
 
-			for (int i = 1; i <= sortExpressions.Length; i++)
+			for (int i = 0; i < sortExpressions.Length; i++)
 			{
-				// Drop the ASC/DESC at the end of the sort expression which might look like "count(distinct frog.Id)desc" or "frog.Name asc".
-				string sortExpression = Regex.Replace(sortExpressions[i - 1].Trim(), @"(\)|\s)(?i:asc|desc)$", "$1").Trim();
+				string sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
 
+				if(columnsOrAliases.Contains(sortExpression))
+					continue;
+				
 				if (aliasToColumn.ContainsKey(sortExpression))
 					sortExpression = aliasToColumn[sortExpression];
 
@@ -116,23 +121,36 @@ namespace NHibernate.Dialect
 				.Add(offset.ToString())
 				.Add(" ORDER BY ");
 
-			AppendSortExpressions(sortExpressions, result);
+			AppendSortExpressions(columnsOrAliases, sortExpressions, result);
 
 			return result.ToSqlString();
 		}
 
-		private void AppendSortExpressions(string[] sortExpressions, SqlStringBuilder result)
+		private static string RemoveSortOrderDirection(string sortExpression)
 		{
-			for (int i = 1; i <= sortExpressions.Length; i++)
+			// Drop the ASC/DESC at the end of the sort expression which might look like "count(distinct frog.Id)desc" or "frog.Name asc".
+			return Regex.Replace(sortExpression.Trim(), @"(\)|\s)(?i:asc|desc)$", "$1").Trim();
+		}
+
+		private static void AppendSortExpressions(ICollection<string> columnsOrAliases, string[] sortExpressions, SqlStringBuilder result)
+		{
+			for (int i = 0; i < sortExpressions.Length; i++)
 			{
-				if (i > 1)
+				if(i > 1)
 					result.Add(", ");
 
-				result.Add("__hibernate_sort_expr_")
-					.Add(i.ToString())
-					.Add("__");
-
-				if (sortExpressions[i - 1].Trim().ToLower().EndsWith("desc"))
+				string sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
+				if(columnsOrAliases.Contains(sortExpression))
+				{
+					result.Add(sortExpression);
+				}
+				else
+				{
+					result.Add("__hibernate_sort_expr_")
+						.Add(i.ToString())
+						.Add("__");
+				}
+				if (sortExpressions[i].Trim().ToLower().EndsWith("desc"))
 					result.Add(" DESC");
 			}
 		}
@@ -181,6 +199,8 @@ namespace NHibernate.Dialect
 					index += 1;
 				}
 
+				string alias = token;
+
 				bool isFunctionCallOrQuotedString = token.Contains("'") || token.Contains("(");
 				// this is heuristic guess, if the expression contains ' or (, it is probably
 				// not appropriate to just slice parts off of it
@@ -188,10 +208,8 @@ namespace NHibernate.Dialect
 				{
 					int dot = token.IndexOf('.');
 					if (dot != -1)
-						token = token.Substring(dot + 1);
+						alias = token.Substring(dot + 1);
 				}
-
-				string alias = token;
 
 				// notice! we are checking here the existence of "as" "alias", two
 				// tokens from the current one

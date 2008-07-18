@@ -241,5 +241,11 @@ namespace NHibernate.Criterion
 		{
 			return new ConditionalProjection(criterion, whenTrue, whenFalse);
 		}
+
+		public static IProjection SubQuery(DetachedCriteria detachedCriteria)
+		{
+			SelectSubqueryExpression expr = new SelectSubqueryExpression(detachedCriteria);
+			return new SubqueryProjection(expr);
+		}
 	}
 }

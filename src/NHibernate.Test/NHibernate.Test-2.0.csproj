@@ -390,6 +390,8 @@
     <Compile Include="NHSpecificTest\Docs\Associations\BiM21\Person.cs" />
     <Compile Include="NHSpecificTest\Docs\ExampleParentChild\Child.cs" />
     <Compile Include="NHSpecificTest\Docs\ExampleParentChild\Parent.cs" />
+    <Compile Include="NHSpecificTest\NH1359\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1359\Person.cs" />
     <Compile Include="NHSpecificTest\Docs\ExampleParentChild\UpdateFixture.cs" />
     <Compile Include="NHSpecificTest\Docs\PersistentClasses\Cat.cs" />
     <Compile Include="NHSpecificTest\EmptyMappingsFixture.cs" />
@@ -1316,6 +1318,7 @@
     <EmbeddedResource Include="UserCollection\Parameterized\Mapping.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1359\Mappings.hbm.xml" />
     <EmbeddedResource Include="IdTest\Car.hbm.xml" />
     <EmbeddedResource Include="IdTest\Plane.hbm.xml" />
     <EmbeddedResource Include="IdTest\Product.hbm.xml" />

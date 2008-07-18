@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections;
 using NHibernate.Util;
@@ -119,6 +120,8 @@ namespace NHibernate.SqlCommand
 			}
 			else
 			{
+				if(values.Count == 0)
+					throw new ArgumentOutOfRangeException("Attempting to parse a null value into an sql string.");
 				object value = values[0];
 				if (Null.Equals(value))
 				{

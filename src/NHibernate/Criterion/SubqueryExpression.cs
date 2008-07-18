@@ -27,7 +27,7 @@ namespace NHibernate.Criterion
 			this.op = op;
 		}
 
-		protected IType[] GetTypes()
+		public IType[] GetTypes()
 		{
 			return types;
 		}
@@ -98,7 +98,7 @@ namespace NHibernate.Criterion
 			return null;
 		}
 
-		private void InitializeInnerQueryAndParameters(ICriteriaQuery criteriaQuery)
+		public void InitializeInnerQueryAndParameters(ICriteriaQuery criteriaQuery)
 		{
 			ISessionFactoryImplementor factory = criteriaQuery.Factory;
 			innerQuery =

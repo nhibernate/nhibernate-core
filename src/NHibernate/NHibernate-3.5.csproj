@@ -586,6 +586,7 @@
     <Compile Include="Criterion\Restrictions.cs" />
     <Compile Include="Criterion\RowCountInt64Projection.cs" />
     <Compile Include="Criterion\RowCountProjection.cs" />
+    <Compile Include="Criterion\SelectSubqueryExpression.cs" />
     <Compile Include="Criterion\SimpleExpression.cs" />
     <Compile Include="Criterion\SimpleProjection.cs" />
     <Compile Include="Criterion\SimpleSubqueryExpression.cs" />
@@ -594,6 +595,7 @@
     <Compile Include="Criterion\SQLProjection.cs" />
     <Compile Include="Criterion\Subqueries.cs" />
     <Compile Include="Criterion\SubqueryExpression.cs" />
+    <Compile Include="Criterion\SubqueryProjection.cs" />
     <Compile Include="DebugHelpers\DictionaryProxy.cs" />
     <Compile Include="DebugHelpers\CollectionProxy.cs" />
     <Compile Include="Dialect\Function\AnsiExtractFunction.cs" />
