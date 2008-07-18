@@ -285,6 +285,9 @@
     <Compile Include="NHSpecificTest\CriteriaFromHql\Person.cs" />
     <Compile Include="NHSpecificTest\NH1077\A.cs" />
     <Compile Include="NHSpecificTest\NH1077\Fixture.cs" />
+	<Compile Include="NHSpecificTest\NH1291AnonExample\Home.cs" />
+    <Compile Include="NHSpecificTest\NH1291AnonExample\NH1291AnonExampleFixture.cs" />
+    <Compile Include="NHSpecificTest\NH1291AnonExample\Person.cs" />
     <Compile Include="NHSpecificTest\NH1098\FilterParameterOrderFixture.cs" />
     <Compile Include="NHSpecificTest\NH1098\Model.cs" />
     <Compile Include="NHSpecificTest\NH1101\Domain.cs" />
@@ -1276,6 +1279,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1098\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< .mine
     <EmbeddedResource Include="NHSpecificTest\NH1297\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -1336,6 +1340,68 @@
     <EmbeddedResource Include="NHSpecificTest\NH1284\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+=======
+    <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> .theirs
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
