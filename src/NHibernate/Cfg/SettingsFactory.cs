@@ -99,12 +99,12 @@ namespace NHibernate.Cfg
 				log.Info("Default schema: " + defaultSchema);
 			if (defaultCatalog != null)
 				log.Info("Default catalog: " + defaultCatalog);
-			settings.DefaultSchemaName=defaultSchema;
-			settings.DefaultCatalogName=defaultCatalog;
+			settings.DefaultSchemaName = defaultSchema;
+			settings.DefaultCatalogName = defaultCatalog;
 
 			int batchFetchSize = PropertiesHelper.GetInt32(Environment.DefaultBatchFetchSize, properties, 1);
 			log.Info("Default batch fetch size: " + batchFetchSize);
-			settings.DefaultBatchFetchSize= batchFetchSize;
+			settings.DefaultBatchFetchSize = batchFetchSize;
 
 			//Statistics and logging:
 
@@ -126,11 +126,11 @@ namespace NHibernate.Cfg
 
 			settings.QueryTranslatorFactory = CreateQueryTranslatorFactory(properties);
 
-			IDictionary<string, string> querySubstitutions =
-				PropertiesHelper.ToDictionary(Environment.QuerySubstitutions, " ,=;:\n\t\r\f", properties);
+			IDictionary<string, string> querySubstitutions = PropertiesHelper.ToDictionary(Environment.QuerySubstitutions,
+			                                                                               " ,=;:\n\t\r\f", properties);
 			if (log.IsInfoEnabled)
 			{
-				log.Info("Query language substitutions: " + CollectionPrinter.ToString((IDictionary)querySubstitutions));
+				log.Info("Query language substitutions: " + CollectionPrinter.ToString((IDictionary) querySubstitutions));
 			}
 
 			string autoSchemaExport = PropertiesHelper.GetString(Environment.Hbm2ddlAuto, properties, null);
@@ -169,13 +169,13 @@ namespace NHibernate.Cfg
 
 			if (useQueryCache)
 			{
-				string queryCacheFactoryClassName =
-					PropertiesHelper.GetString(Environment.QueryCacheFactory, properties, typeof(StandardQueryCacheFactory).FullName);
+				string queryCacheFactoryClassName = PropertiesHelper.GetString(Environment.QueryCacheFactory, properties,
+				                                                               typeof (StandardQueryCacheFactory).FullName);
 				log.Info("query cache factory: " + queryCacheFactoryClassName);
 				try
 				{
-					settings.QueryCacheFactory = (IQueryCacheFactory) Activator.CreateInstance(
-					                                                  	ReflectHelper.ClassForName(queryCacheFactoryClassName));
+					settings.QueryCacheFactory =
+						(IQueryCacheFactory) Activator.CreateInstance(ReflectHelper.ClassForName(queryCacheFactoryClassName));
 				}
 				catch (Exception cnfe)
 				{
@@ -200,17 +200,22 @@ namespace NHibernate.Cfg
 			{
 				try
 				{
-					isolation = (IsolationLevel) Enum.Parse(typeof(IsolationLevel), isolationString);
+					isolation = (IsolationLevel) Enum.Parse(typeof (IsolationLevel), isolationString);
 					log.Info("Using Isolation Level: " + isolation);
 				}
 				catch (ArgumentException ae)
 				{
 					log.Error("error configuring IsolationLevel " + isolationString, ae);
 					throw new HibernateException(
-						"The isolation level of " + isolationString + " is not a valid IsolationLevel.  Please " +
-						"use one of the Member Names from the IsolationLevel.", ae);
+						"The isolation level of " + isolationString + " is not a valid IsolationLevel.  Please "
+						+ "use one of the Member Names from the IsolationLevel.", ae);
 				}
 			}
+
+			EntityMode defaultEntityMode =
+				EntityModeHelper.Parse(PropertiesHelper.GetString(Environment.DefaultEntityMode, properties, "poco"));
+			log.Info("Default entity-mode: " + defaultEntityMode);
+			settings.DefaultEntityMode = defaultEntityMode;
 
 			bool namedQueryChecking = PropertiesHelper.GetBoolean(Environment.QueryStartupChecking, properties, true);
 			log.Info("Named query checking : " + EnabledDisabled(namedQueryChecking));

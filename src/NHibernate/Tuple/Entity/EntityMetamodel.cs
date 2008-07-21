@@ -91,14 +91,15 @@ namespace NHibernate.Tuple.Entity
 			entityType = TypeFactory.ManyToOne(name);
 			type = persistentClass.MappedClass;
 			rootType = persistentClass.RootClazz.MappedClass;
-			rootTypeAssemblyQualifiedName = rootType.AssemblyQualifiedName;
+			rootTypeAssemblyQualifiedName = rootType == null ? null : rootType.AssemblyQualifiedName;
 
-			identifierProperty =
-				PropertyFactory.BuildIdentifierProperty(persistentClass, sessionFactory.GetIdentifierGenerator(rootName));
+			identifierProperty = PropertyFactory.BuildIdentifierProperty(persistentClass,
+			                                                             sessionFactory.GetIdentifierGenerator(rootName));
 
 			versioned = persistentClass.IsVersioned;
 
-			bool lazyAvailable = persistentClass.HasPocoRepresentation && FieldInterceptionHelper.IsInstrumented(persistentClass.MappedClass);
+			bool lazyAvailable = persistentClass.HasPocoRepresentation
+			                     && FieldInterceptionHelper.IsInstrumented(persistentClass.MappedClass);
 			bool hasLazy = false;
 
 			propertySpan = persistentClass.PropertyClosureSpan;
@@ -155,6 +156,7 @@ namespace NHibernate.Tuple.Entity
 				}
 
 				#region temporary
+
 				bool lazyProperty = prop.IsLazy && lazyAvailable;
 				if (lazyProperty)
 					hasLazy = true;
@@ -169,11 +171,13 @@ namespace NHibernate.Tuple.Entity
 				updateInclusions[i] = DetermineUpdateValueGenerationType(prop, properties[i]);
 				propertyVersionability[i] = properties[i].IsVersionable;
 				nonlazyPropertyUpdateability[i] = properties[i].IsUpdateable && !lazyProperty;
-				propertyCheckability[i] = propertyUpdateability[i] ||
-				                          (propertyTypes[i].IsAssociationType &&
-				                           ((IAssociationType) propertyTypes[i]).IsAlwaysDirtyChecked);
+				propertyCheckability[i] = propertyUpdateability[i]
+				                          ||
+				                          (propertyTypes[i].IsAssociationType
+				                           && ((IAssociationType) propertyTypes[i]).IsAlwaysDirtyChecked);
 
 				cascadeStyles[i] = properties[i].CascadeStyle;
+
 				#endregion
 
 				if (properties[i].IsLazy)
@@ -224,24 +228,23 @@ namespace NHibernate.Tuple.Entity
 			hasLazyProperties = hasLazy;
 			if (hasLazyProperties) log.Info("lazy property fetching available for: " + name);
 
-			lazy = persistentClass.IsLazy && 
-				(!persistentClass.HasPocoRepresentation || !ReflectHelper.IsFinalClass(persistentClass.ProxyInterface));
+			lazy = persistentClass.IsLazy
+			       && (!persistentClass.HasPocoRepresentation || !ReflectHelper.IsFinalClass(persistentClass.ProxyInterface));
 			mutable = persistentClass.IsMutable;
 
 			if (!persistentClass.IsAbstract.HasValue)
 			{
 				// legacy behavior (with no abstract attribute specified)
-				isAbstract = persistentClass.HasPocoRepresentation &&
-				             ReflectHelper.IsAbstractClass(persistentClass.MappedClass);
+				isAbstract = persistentClass.HasPocoRepresentation && ReflectHelper.IsAbstractClass(persistentClass.MappedClass);
 			}
 			else
 			{
 				isAbstract = persistentClass.IsAbstract.Value;
-				if (!isAbstract && persistentClass.HasPocoRepresentation &&
-				    ReflectHelper.IsAbstractClass(persistentClass.MappedClass))
+				if (!isAbstract && persistentClass.HasPocoRepresentation
+				    && ReflectHelper.IsAbstractClass(persistentClass.MappedClass))
 				{
-					log.Warn("entity [" + type.FullName +
-					         "] is abstract-class/interface explicitly mapped as non-abstract; be sure to supply entity-names");
+					log.Warn("entity [" + type.FullName
+					         + "] is abstract-class/interface explicitly mapped as non-abstract; be sure to supply entity-names");
 				}
 			}
 			selectBeforeUpdate = persistentClass.SelectBeforeUpdate;
@@ -252,9 +255,7 @@ namespace NHibernate.Tuple.Entity
 			explicitPolymorphism = persistentClass.IsExplicitPolymorphism;
 			inherited = persistentClass.IsInherited;
 			superclass = inherited ? persistentClass.Superclass.EntityName : null;
-			superclassType = inherited ?
-			                           	persistentClass.Superclass.MappedClass :
-			                           	                                       	null;
+			superclassType = inherited ? persistentClass.Superclass.MappedClass : null;
 			hasSubclasses = persistentClass.HasSubclasses;
 
 			optimisticLockMode = persistentClass.OptimisticLockMode;

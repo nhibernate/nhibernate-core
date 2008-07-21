@@ -147,9 +147,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			// IMPORT
 			// For entities, the EntityName is the key to find a persister
 			// NH Different behavior: we are using the association between EntityName and its more certain implementation (AssemblyQualifiedName)
-			mappings.AddImport(model.MappedClass.AssemblyQualifiedName, model.EntityName);
+			// Dynamic entities have no class, reverts to EntityName. -AK
+			string qualifiedName = model.MappedClass == null ? model.EntityName : model.MappedClass.AssemblyQualifiedName;
+			mappings.AddImport(qualifiedName, model.EntityName);
 			if (mappings.IsAutoImport && model.EntityName.IndexOf('.') > 0)
-				mappings.AddImport(model.MappedClass.AssemblyQualifiedName, StringHelper.Unqualify(model.EntityName));
+				mappings.AddImport(qualifiedName, StringHelper.Unqualify(model.EntityName));
 
 			// BATCH SIZE
 			XmlAttribute batchNode = node.Attributes["batch-size"];
@@ -1175,20 +1177,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			return type;
 		}
 
-		private static string GetEntityName(XmlNode elem, Mappings model)
+		protected static string GetEntityName(XmlNode elem, Mappings model)
 		{
 			string entityName = XmlHelper.GetAttributeValue(elem, "entity-name");
-			if (entityName == null)
-			{
-				XmlAttribute att = elem.Attributes["class"];
+			string className = XmlHelper.GetAttributeValue(elem, "class");
+			entityName = entityName
+			             ?? (className == null ? null : StringHelper.GetFullClassname(FullClassName(className, model)));
 
-				return att == null ? null : GetClassName(att.Value, model);
-			}
-			else
-			{
-				return entityName;
-			}
-
+			return entityName;
 		}
 
 		protected XmlNodeList SelectNodes(XmlNode node, string xpath)

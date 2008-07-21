@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Xml;
 using Iesi.Collections;
@@ -23,7 +22,7 @@ namespace NHibernate.Cfg
 			public ClassEntry(string extends, string className, string assembly, string @namespace)
 			{
 				_fullExtends = extends == null ? null : TypeNameParser.Parse(extends, @namespace, assembly);
-				_fullClassName = TypeNameParser.Parse(className, @namespace, assembly);
+				_fullClassName = className == null ? null : TypeNameParser.Parse(className, @namespace, assembly);
 			}
 
 			public AssemblyQualifiedTypeName FullExtends

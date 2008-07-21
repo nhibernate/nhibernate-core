@@ -33,7 +33,8 @@ namespace NHibernate.Cfg
 
 			foreach (ClassExtractor.ClassEntry ce in classEntries)
 			{
-				result.Add(ce.FullClassName);
+				if (ce.FullClassName != null)
+					result.Add(ce.FullClassName);
 			}
 
 			return result;

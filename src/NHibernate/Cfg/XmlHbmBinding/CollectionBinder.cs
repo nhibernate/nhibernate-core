@@ -451,8 +451,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void BindOneToMany(XmlNode node, OneToMany model)
 		{
-			model.ReferencedEntityName = ClassForNameChecked(node.Attributes["class"].Value, mappings,
-				"associated class not found: {0}").FullName;
+			model.ReferencedEntityName = GetEntityName(node, mappings);
 
 			string notFound = XmlHelper.GetAttributeValue(node, "not-found");
 			model.IsIgnoreNotFound = "ignore".Equals(notFound);

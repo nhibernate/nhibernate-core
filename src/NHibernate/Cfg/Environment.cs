@@ -49,8 +49,8 @@ namespace NHibernate.Cfg
 				{
 					Assembly thisAssembly = Assembly.GetExecutingAssembly();
 					AssemblyInformationalVersionAttribute[] attrs = (AssemblyInformationalVersionAttribute[])
-					                                                thisAssembly.GetCustomAttributes(
-					                                                	typeof(AssemblyInformationalVersionAttribute), false);
+																													thisAssembly.GetCustomAttributes(
+																														typeof(AssemblyInformationalVersionAttribute), false);
 
 					if (attrs != null && attrs.Length > 0)
 					{
@@ -84,6 +84,9 @@ namespace NHibernate.Cfg
 		public const string DefaultSchema = "default_schema";
 		/// <summary> A default database catalog name to use for unqualified tablenames</summary>
 		public const string DefaultCatalog = "default_catalog";
+
+		/// <summary>The EntityMode in which set the Session opened from the SessionFactory.</summary>
+		public const string DefaultEntityMode = "default_entity_mode";
 
 		public const string ShowSql = "show_sql";
 		public const string MaxFetchDepth = "max_fetch_depth";
@@ -192,7 +195,7 @@ namespace NHibernate.Cfg
 
 			if (config == null)
 			{
-				log.Info(string.Format("{0} section not found in application configuration file",CfgXmlHelper.CfgSectionName));
+				log.Info(string.Format("{0} section not found in application configuration file", CfgXmlHelper.CfgSectionName));
 				return;
 			}
 
@@ -246,7 +249,7 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public static IDictionary<string, string> Properties
 		{
-			get { return new Dictionary<string,string>(GlobalProperties); }
+			get { return new Dictionary<string, string>(GlobalProperties); }
 		}
 
 		[Obsolete]
@@ -293,7 +296,7 @@ namespace NHibernate.Cfg
 		{
 			string defaultBytecodeProvider = "lcg";
 			string provider = PropertiesHelper.GetString(PropertyBytecodeProvider, properties,
-			                                             defaultBytecodeProvider);
+																									 defaultBytecodeProvider);
 			log.Info("Bytecode provider name : " + provider);
 			return BuildBytecodeProvider(provider);
 		}

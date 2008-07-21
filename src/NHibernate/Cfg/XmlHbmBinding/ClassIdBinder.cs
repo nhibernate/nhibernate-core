@@ -1,10 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
-
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
@@ -29,7 +26,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				AddColumns(idSchema, id);
 				CreateIdentifierProperty(idSchema, rootClass, id);
-				VerifiyIdTypeIsValid(id, rootClass.MappedClass.Name);
+				VerifiyIdTypeIsValid(id, rootClass.EntityName);
 				BindGenerator(idSchema, id);
 				id.Table.SetIdentifierValue(id);
 				BindUnsavedValue(idSchema, id);
@@ -61,9 +58,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (idSchema.name != null)
 			{
 				string access = idSchema.access ?? mappings.DefaultAccess;
-				id.SetTypeUsingReflection(rootClass.MappedClass.AssemblyQualifiedName, idSchema.name, access);
+				id.SetTypeUsingReflection(rootClass.MappedClass == null ? null : rootClass.MappedClass.AssemblyQualifiedName,
+				                          idSchema.name, access);
 
-				Mapping.Property property = new Mapping.Property(id);
+				Property property = new Property(id);
 				property.Name = idSchema.name;
 
 				if (property.Value.Type == null)

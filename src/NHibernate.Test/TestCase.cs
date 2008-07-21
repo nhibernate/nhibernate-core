@@ -253,7 +253,7 @@ namespace NHibernate.Test
 
 		protected ISessionFactoryImplementor Sfi
 		{
-			get { return (ISessionFactoryImplementor) sessions; }
+			get { return sessions; }
 		}
 
 		protected virtual ISession OpenSession()
@@ -278,11 +278,11 @@ namespace NHibernate.Test
 			foreach (PersistentClass clazz in configuration.ClassMappings)
 			{
 				bool hasLob = false;
-				foreach (Mapping.Property prop in clazz.PropertyClosureIterator)
+				foreach (Property prop in clazz.PropertyClosureIterator)
 				{
 					if (prop.Value.IsSimpleValue)
 					{
-						IType type = ((SimpleValue) prop.Value).Type;
+						IType type = ((SimpleValue)prop.Value).Type;
 						if (type == NHibernateUtil.BinaryBlob)
 						{
 							hasLob = true;
@@ -291,13 +291,13 @@ namespace NHibernate.Test
 				}
 				if (!hasLob && !clazz.IsInherited)
 				{
-					configuration.SetCacheConcurrencyStrategy(clazz.MappedClass, CacheConcurrencyStrategy);
+					configuration.SetCacheConcurrencyStrategy(clazz.EntityName, CacheConcurrencyStrategy);
 				}
 			}
 
 			foreach (Mapping.Collection coll in configuration.CollectionMappings)
 			{
-				configuration.SetCacheConcurrencyStrategy(coll.Role, CacheConcurrencyStrategy);
+				configuration.SetCollectionCacheConcurrencyStrategy(coll.Role, CacheConcurrencyStrategy);
 			}
 		}
 
