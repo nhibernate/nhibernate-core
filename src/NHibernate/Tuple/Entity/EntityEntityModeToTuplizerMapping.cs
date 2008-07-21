@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using NHibernate.Mapping;
+using NHibernate.Util;
 
 namespace NHibernate.Tuple.Entity
 {
@@ -25,19 +26,14 @@ namespace NHibernate.Tuple.Entity
 		public EntityEntityModeToTuplizerMapping(PersistentClass mappedEntity, EntityMetamodel em)
 		{
 			// create our own copy of the user-supplied tuplizer impl map
-			Dictionary<EntityMode, System.Type> userSuppliedTuplizerImpls;
-			if (mappedEntity.TuplizerMap != null)
-			{
-				userSuppliedTuplizerImpls = new Dictionary<EntityMode, System.Type>(mappedEntity.TuplizerMap);
-			}
-			else
-			{
-				userSuppliedTuplizerImpls = new Dictionary<EntityMode, System.Type>();
-			}
+			Dictionary<EntityMode, string> userSuppliedTuplizerImpls = mappedEntity.TuplizerMap != null
+			                                                           	? new Dictionary<EntityMode, string>(
+			                                                           	  	mappedEntity.TuplizerMap)
+			                                                           	: new Dictionary<EntityMode, string>();
 
 			// Build the dynamic-map tuplizer...
 			ITuplizer dynamicMapTuplizer;
-			System.Type tuplizerImpl;
+			string tuplizerImpl;
 			if (!userSuppliedTuplizerImpls.TryGetValue(EntityMode.Map, out tuplizerImpl))
 			{
 				dynamicMapTuplizer = new DynamicMapEntityTuplizer(em, mappedEntity);
@@ -51,7 +47,7 @@ namespace NHibernate.Tuple.Entity
 			// then the pojo tuplizer, using the dynamic-map tuplizer if no pojo representation is available
 			ITuplizer pojoTuplizer;
 
-			System.Type tempObject2;
+			string tempObject2;
 			userSuppliedTuplizerImpls.TryGetValue(EntityMode.Poco, out tempObject2);
 			userSuppliedTuplizerImpls.Remove(EntityMode.Poco);
 			tuplizerImpl = tempObject2;
@@ -82,22 +78,23 @@ namespace NHibernate.Tuple.Entity
 			}
 
 			// then handle any user-defined entity modes...
-			foreach (KeyValuePair<EntityMode, System.Type> pair in userSuppliedTuplizerImpls)
+			foreach (KeyValuePair<EntityMode, string> pair in userSuppliedTuplizerImpls)
 			{
 				IEntityTuplizer tuplizer = BuildEntityTuplizer(pair.Value, mappedEntity, em);
 				AddTuplizer(pair.Key, tuplizer);
 			}
 		}
 
-		private static IEntityTuplizer BuildEntityTuplizer(System.Type implClass, PersistentClass pc, EntityMetamodel em)
+		private static IEntityTuplizer BuildEntityTuplizer(string className, PersistentClass pc, EntityMetamodel em)
 		{
 			try
 			{
+				System.Type implClass = ReflectHelper.ClassForName(className);
 				return (IEntityTuplizer)implClass.GetConstructor(entityTuplizerCTORSignature).Invoke(new object[] { em, pc });
 			}
 			catch (Exception t)
 			{
-				throw new HibernateException("Could not build tuplizer [" + implClass.FullName + "]", t);
+				throw new HibernateException("Could not build tuplizer [" + className + "]", t);
 			}
 		}
 

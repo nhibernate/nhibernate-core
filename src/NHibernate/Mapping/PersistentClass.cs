@@ -59,7 +59,7 @@ namespace NHibernate.Mapping
 		private string temporaryIdTableName;
 		private string temporaryIdTableDDL;
 
-		private IDictionary<EntityMode, System.Type> tuplizerImpls;
+		private IDictionary<EntityMode, string> tuplizerImpls;
 
 		private Versioning.OptimisticLock optimisticLockMode;
 
@@ -571,14 +571,11 @@ namespace NHibernate.Mapping
 			get { return temporaryIdTableDDL; }
 		}
 
-		public virtual IDictionary<EntityMode, System.Type> TuplizerMap
+		public virtual IDictionary<EntityMode, string> TuplizerMap
 		{
 			get
 			{
-				if (tuplizerImpls == null)
-					return null;
-
-				return new Dictionary<EntityMode, System.Type>(tuplizerImpls);
+				return tuplizerImpls == null ? null : new UnmodifiableDictionary<EntityMode, string>(tuplizerImpls);
 			}
 		}
 
@@ -1157,11 +1154,11 @@ namespace NHibernate.Mapping
 			get { return identifierMapper != null; }
 		}
 
-		public void AddTuplizer(EntityMode entityMode, System.Type implClass)
+		public void AddTuplizer(EntityMode entityMode, string implClass)
 		{
 			if (tuplizerImpls == null)
 			{
-				tuplizerImpls = new Dictionary<EntityMode, System.Type>();
+				tuplizerImpls = new Dictionary<EntityMode, string>();
 			}
 			tuplizerImpls[entityMode] = implClass;
 		}
@@ -1170,7 +1167,9 @@ namespace NHibernate.Mapping
 		{
 			if (tuplizerImpls == null)
 				return null;
-			return tuplizerImpls[mode].AssemblyQualifiedName;
+			string result;
+			tuplizerImpls.TryGetValue(mode, out result);
+			return result;
 		}
 
 		public bool HasNaturalId()

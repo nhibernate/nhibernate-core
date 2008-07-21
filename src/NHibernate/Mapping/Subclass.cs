@@ -161,19 +161,19 @@ namespace NHibernate.Mapping
 			get { return Superclass.FilterMap; }
 		}
 
-		public override IDictionary<EntityMode, System.Type> TuplizerMap
+		public override IDictionary<EntityMode, string> TuplizerMap
 		{
 			get
 			{
-				IDictionary<EntityMode, System.Type> specificTuplizerDefs = base.TuplizerMap;
-				IDictionary<EntityMode, System.Type> superclassTuplizerDefs = Superclass.TuplizerMap;
+				IDictionary<EntityMode, string> specificTuplizerDefs = base.TuplizerMap;
+				IDictionary<EntityMode, string> superclassTuplizerDefs = Superclass.TuplizerMap;
 				if (specificTuplizerDefs == null && superclassTuplizerDefs == null)
 				{
 					return null;
 				}
 				else
 				{
-					IDictionary<EntityMode, System.Type> combined = new Dictionary<EntityMode, System.Type>();
+					IDictionary<EntityMode, string> combined = new Dictionary<EntityMode, string>();
 					if (superclassTuplizerDefs != null)
 					{
 						ArrayHelper.AddAll(combined, superclassTuplizerDefs);
@@ -182,7 +182,7 @@ namespace NHibernate.Mapping
 					{
 						ArrayHelper.AddAll(combined, specificTuplizerDefs);
 					}
-					return combined;
+					return new UnmodifiableDictionary<EntityMode, string>(combined);
 				}
 			}
 		}

@@ -48,5 +48,6 @@ namespace NHibernate.Cfg
 		public const string nsResultset = nsPrefix + ":resultset";
 
 		public const string nsUnionSubclass = nsPrefix + ":union-subclass";
+		public const string nsTuplizer = nsPrefix + ":tuplizer";
 	}
 }

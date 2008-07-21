@@ -106,36 +106,32 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		protected void BindClass(XmlNode node, PersistentClass model)
 		{
-			string className = node.Attributes["name"] == null ? null : FullClassName(node.Attributes["name"].Value, mappings);
+			// transfer an explicitly defined entity name
+			// handle the lazy attribute
+			XmlAttribute lazyNode = node.Attributes["lazy"];
+			bool lazy = lazyNode == null ? mappings.DefaultLazy : "true".Equals(lazyNode.Value);
+			// go ahead and set the lazy here, since pojo.proxy can override it.
+			model.IsLazy = lazy;
 
-			// CLASS
-			model.ClassName = ClassForFullNameChecked(className, "persistent class {0} not found").AssemblyQualifiedName;
-
-			string entityName = node.Attributes["entity-name"] == null ? null : node.Attributes["name"].Value;
-			if (entityName == null)
-				entityName = model.MappedClass.FullName;
+			string entityName = (node.Attributes["entity-name"] != null ? node.Attributes["entity-name"].Value : null)
+			                    ??
+			                    ClassForNameChecked(node.Attributes["name"].Value, mappings, "persistent class {0} not found").
+			                    	FullName;
 			if (entityName == null)
 			{
 				throw new MappingException("Unable to determine entity name");
 			}
 			model.EntityName = entityName;
 
-			// PROXY INTERFACE
-			XmlAttribute proxyNode = node.Attributes["proxy"];
-			XmlAttribute lazyNode = node.Attributes["lazy"];
-			bool lazy = lazyNode == null ? mappings.DefaultLazy : "true".Equals(lazyNode.Value);
+			BindPocoRepresentation(node, model);
+			BindXmlRepresentation(node, model);
+			BindMapRepresentation(node, model);
 
-			// go ahead and set the lazy here, since pojo.proxy can override it.
-			model.IsLazy = lazy;
+			BindPersistentClassCommonValues(node, model);
+		}
 
-			if (proxyNode != null)
-			{
-				model.ProxyInterfaceName = ClassForNameChecked(proxyNode.Value, mappings, "proxy class not found: {0}").AssemblyQualifiedName;
-				model.IsLazy = true;
-			}
-			else if (model.IsLazy)
-				model.ProxyInterfaceName = model.MappedClass.AssemblyQualifiedName;
-
+		private void BindPersistentClassCommonValues(XmlNode node, PersistentClass model)
+		{
 			// DISCRIMINATOR
 			XmlAttribute discriminatorNode = node.Attributes["discriminator-value"];
 			model.DiscriminatorValue = (discriminatorNode == null) ? model.EntityName : discriminatorNode.Value;
@@ -179,8 +175,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				//persister = typeof( EntityPersister );
 			}
 			else
-				model.EntityPersisterClass =
-					ClassForNameChecked(persisterNode.Value, mappings, "could not instantiate persister class: {0}");
+				model.EntityPersisterClass = ClassForNameChecked(persisterNode.Value, mappings,
+				                                                 "could not instantiate persister class: {0}");
 
 			// CUSTOM SQL
 			HandleCustomSQL(node, model);
@@ -198,6 +194,71 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					isAbstract = false;
 			}
 			model.IsAbstract = isAbstract;
+		}
+
+		private void BindMapRepresentation(XmlNode node, PersistentClass entity)
+		{
+			XmlNode tuplizer = LocateTuplizerDefinition(node, EntityMode.Map);
+			if (tuplizer != null)
+			{
+				string tupClassName = FullClassName(tuplizer.Attributes["class"].Value, mappings);
+				entity.AddTuplizer(EntityMode.Map, tupClassName);
+			}
+		}
+
+		private void BindXmlRepresentation(XmlNode node, PersistentClass entity)
+		{
+			string nodeName = null;
+			XmlAttribute nodeAtt = node.Attributes["node"];
+			if(nodeAtt != null)
+				nodeName = nodeAtt.Value;
+			if (nodeName == null)
+				nodeName = StringHelper.Unqualify(entity.EntityName);
+			entity.NodeName = nodeName;
+
+			XmlNode tuplizer = LocateTuplizerDefinition(node, EntityMode.Xml);
+			if (tuplizer != null)
+			{
+				string tupClassName = FullClassName(tuplizer.Attributes["class"].Value, mappings);
+				entity.AddTuplizer(EntityMode.Xml, tupClassName);
+			}
+		}
+
+		private void BindPocoRepresentation(XmlNode node, PersistentClass entity)
+		{
+			string className = node.Attributes["name"] == null
+			                   	? null
+			                   	: ClassForNameChecked(node.Attributes["name"].Value, mappings, "persistent class {0} not found").
+			                   	  	AssemblyQualifiedName;
+
+			entity.ClassName = className;
+
+			XmlAttribute proxyNode = node.Attributes["proxy"];
+			if (proxyNode != null)
+			{
+				entity.ProxyInterfaceName = ClassForNameChecked(proxyNode.Value, mappings, "proxy class not found: {0}").AssemblyQualifiedName;
+				entity.IsLazy = true;
+			}
+			else if (entity.IsLazy)
+				entity.ProxyInterfaceName = className;
+
+			XmlNode tuplizer = LocateTuplizerDefinition(node, EntityMode.Poco);
+			if (tuplizer != null)
+			{
+				string tupClassName = FullClassName(tuplizer.Attributes["class"].Value, mappings);
+				entity.AddTuplizer(EntityMode.Poco, tupClassName);
+			}
+		}
+
+		private XmlNode LocateTuplizerDefinition(XmlNode container, EntityMode mode)
+		{
+			string modeToFind = EntityModeHelper.ToString(mode);
+			foreach (XmlNode node in container.SelectNodes(HbmConstants.nsTuplizer, namespaceManager))
+			{
+				if (modeToFind.Equals(node.Attributes["entity-mode"].Value))
+					return node;
+			}
+			return null;
 		}
 
 		private void BindJoin(XmlNode node, Join join)
@@ -1116,25 +1177,18 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private static string GetEntityName(XmlNode elem, Mappings model)
 		{
-			// TODO: H3.2 Implement real entityName (look at IEntityPersister for feature)
-			//string entityName = XmlHelper.GetAttributeValue(elem, "entity-name");
-			//return entityName == null ? GetClassName( elem.Attributes[ "class" ], model ) : entityName;
-			XmlAttribute att = elem.Attributes["class"];
+			string entityName = XmlHelper.GetAttributeValue(elem, "entity-name");
+			if (entityName == null)
+			{
+				XmlAttribute att = elem.Attributes["class"];
 
-			if (att == null)
-				return null;
+				return att == null ? null : GetClassName(att.Value, model);
+			}
+			else
+			{
+				return entityName;
+			}
 
-			return GetClassName(att.Value, model);
-		}
-
-		private static string GetQualifiedClassName(XmlNode elem, Mappings model)
-		{
-			XmlAttribute att = elem.Attributes["class"];
-
-			if (att == null)
-				return null;
-
-			return GetQualifiedClassName(att.Value, model);
 		}
 
 		protected XmlNodeList SelectNodes(XmlNode node, string xpath)

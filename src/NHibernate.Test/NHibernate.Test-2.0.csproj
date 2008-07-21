@@ -120,6 +120,19 @@
     <Compile Include="DriverTest\NullReferenceFixture.cs" />
     <Compile Include="DriverTest\OracleClientDriverFixture.cs" />
     <Compile Include="DriverTest\OracleDataClientDriverFixture.cs" />
+    <Compile Include="DynamicEntity\Address.cs" />
+    <Compile Include="DynamicEntity\Company.cs" />
+    <Compile Include="DynamicEntity\Customer.cs" />
+    <Compile Include="DynamicEntity\DataProxyHandler.cs" />
+    <Compile Include="DynamicEntity\Interceptor\InterceptorDynamicEntity.cs" />
+    <Compile Include="DynamicEntity\Interceptor\ProxyInterceptor.cs" />
+    <Compile Include="DynamicEntity\IProxyMarker.cs" />
+    <Compile Include="DynamicEntity\Person.cs" />
+    <Compile Include="DynamicEntity\ProxyHelper.cs" />
+    <Compile Include="DynamicEntity\Tuplizer\EntityNameInterceptor.cs" />
+    <Compile Include="DynamicEntity\Tuplizer\MyEntityInstantiator.cs" />
+    <Compile Include="DynamicEntity\Tuplizer\MyEntityTuplizer.cs" />
+    <Compile Include="DynamicEntity\Tuplizer\TuplizerDynamicEntity.cs" />
     <Compile Include="EngineTest\TypedValueFixture.cs" />
     <Compile Include="ExceptionsTest\Group.cs" />
     <Compile Include="ExceptionsTest\MSSQLExceptionConverterExample.cs" />
@@ -1343,6 +1356,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DynamicEntity\Interceptor\Customer.hbm.xml" />
+    <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

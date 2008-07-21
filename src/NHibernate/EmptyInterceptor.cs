@@ -58,7 +58,7 @@ namespace NHibernate
 			return null;
 		}
 
-		public string GetEntityName(object entity)
+		public virtual string GetEntityName(object entity)
 		{
 			return null;
 		}

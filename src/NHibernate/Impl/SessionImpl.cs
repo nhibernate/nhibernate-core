@@ -730,6 +730,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object Instantiate(IEntityPersister persister, object id)
 		{
+			ErrorIfClosed();
 			object result = interceptor.Instantiate(persister.EntityName, entityMode, id);
 			if (result == null)
 			{

@@ -45,14 +45,11 @@ namespace NHibernate.Engine
 					object defaultValue = identifierGetter.Get(Instantiate(constructor));
 					return new IdentifierValue(defaultValue);
 				}
-					// TODO: NH - the branch below is actually never visited, so it's commented out
-					/*
-				else if( identifierGetter != null && ( identifierType is ValueTypeType ) )
+				else if (identifierGetter != null && (identifierType is PrimitiveType))
 				{
-					object defaultValue = ( ( ValueTypeType ) identifierType ).DefaultValue;
-					return new Cascades.IdentifierValue( defaultValue );
+					object defaultValue = ((PrimitiveType) identifierType).DefaultValue;
+					return new IdentifierValue(defaultValue);
 				}
-				*/
 				else
 				{
 					return IdentifierValue.SaveNull;
