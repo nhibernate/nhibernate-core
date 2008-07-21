@@ -70,6 +70,9 @@ namespace NHibernate
 	/// </remarks>
 	public interface ISession : IDisposable
 	{
+		/// <summary> The entity mode in effect for this session.</summary>
+		EntityMode ActiveEntityMode { get;} // NH different implementation: changend name to don't have conflicts
+
 		/// <summary>
 		/// Force the <c>ISession</c> to flush.
 		/// </summary>

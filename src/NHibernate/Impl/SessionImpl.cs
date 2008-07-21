@@ -1921,6 +1921,11 @@ namespace NHibernate.Impl
 			get { return entityMode; }
 		}
 
+		public EntityMode ActiveEntityMode
+		{
+			get { return entityMode; }
+		}
+
 		public override string FetchProfile
 		{
 			get { return fetchProfile; }
