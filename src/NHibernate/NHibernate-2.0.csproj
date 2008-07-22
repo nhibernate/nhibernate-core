@@ -593,6 +593,7 @@
     <Compile Include="Dialect\Schema\MsSqlMetaData.cs" />
     <Compile Include="Dialect\Schema\OracleMetaData.cs" />
     <Compile Include="Dialect\Sybase11Dialect.cs" />
+    <Compile Include="Driver\ASA10ClientDriver.cs" />
     <Compile Include="Driver\ISqlParameterFormatter.cs" />
     <Compile Include="Driver\SqlStringFormatter.cs" />
     <Compile Include="Criterion\SubqueryProjection.cs" />
