@@ -2,6 +2,7 @@ using System.Data;
 using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Dialect
 {
@@ -136,6 +137,32 @@ namespace NHibernate.Dialect
 		public override string GetForUpdateString(string aliases)
 		{
 			return ForUpdateString + " of " + aliases;
+		}
+
+		/// <summary>PostgreSQL supports UNION ALL clause</summary>
+		/// <remarks>
+		/// Reference: <see href="http://www.postgresql.org/docs/8.0/static/sql-select.html#SQL-UNION">
+		/// PostgreSQL 8.0 UNION Clause documentation</see>
+		/// </remarks>
+		/// <value><see langword="true"/></value>
+		public override bool SupportsUnionAll
+		{
+			get { return true; }
+		}
+
+		/// <summary>PostgreSQL requires to cast NULL values to correctly handle UNION/UNION ALL</summary>
+		/// <remarks>
+		/// See <see href="http://archives.postgresql.org/pgsql-bugs/2005-08/msg00239.php">
+		/// PostgreSQL BUG #1847: Error in some kind of UNION query.</see>
+		/// </remarks>
+		/// <param name="sqlType">The <see cref="DbType"/> type code.</param>
+		/// <returns>null casted as <paramref name="sqlType"/>: "<c>null::sqltypename</c>"</returns>
+		public override string GetSelectClauseNullString(SqlType sqlType)
+		{
+			//This will cast 'null' with the full SQL type name, including eventual parameters.
+			//It shouldn't have any influence, but note that it's not mandatory.
+			//i.e. 'null::decimal(19, 2)', even if 'null::decimal' would be enough
+			return "null::" + GetTypeName(sqlType);
 		}
 	}
 }
