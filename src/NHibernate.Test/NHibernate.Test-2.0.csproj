@@ -355,6 +355,8 @@
     <Compile Include="NHSpecificTest\NH1230\PreSaveDoVeto.cs" />
     <Compile Include="NHSpecificTest\NH1250\Model.cs" />
     <Compile Include="NHSpecificTest\NH1250\PolymorphicJoinFetchFixture.cs" />
+    <Compile Include="NHSpecificTest\NH1253\Car.cs" />
+    <Compile Include="NHSpecificTest\NH1253\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1275\A.cs" />
     <Compile Include="NHSpecificTest\NH1275\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1284\Fixture.cs" />
@@ -1361,6 +1363,7 @@
   <ItemGroup>
     <EmbeddedResource Include="DynamicEntity\Interceptor\Customer.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1253\Mappings.hbm.xml" />
     <EmbeddedResource Include="EntityModeTest\Map\Basic\ProductLine.hbm.xml" />
     <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
   </ItemGroup>

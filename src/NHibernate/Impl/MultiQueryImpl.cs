@@ -26,21 +26,21 @@ namespace NHibernate.Impl
 		private readonly List<QueryTranslator> translators = new List<QueryTranslator>();
 		private readonly List<QueryParameters> parameters = new List<QueryParameters>();
 		private IList criteriaResults;
-		private Dictionary<string, int> criteriaResultPositions = new Dictionary<string, int>();
+		private readonly Dictionary<string, int> criteriaResultPositions = new Dictionary<string, int>();
 		private string cacheRegion;
 		private int commandTimeout = RowSelection.NoValue;
-		private bool isCacheable = false;
+		private bool isCacheable;
 		private readonly ISessionImplementor session;
 		private IResultTransformer resultTransformer;
 		private readonly List<SqlType> types = new List<SqlType>();
-		private SqlString sqlString = null;
+		private SqlString sqlString;
 		private readonly Dialect.Dialect dialect;
 		private bool forceCacheRefresh;
 		private QueryParameters combinedParameters;
 		private readonly List<string> namedParametersThatAreSafeToDuplicate = new List<string>();
 		private FlushMode flushMode = FlushMode.Unspecified;
 		private FlushMode sessionFlushMode = FlushMode.Unspecified;
-		private static readonly Regex parseParameterListOrignialName = new Regex(@"(.*?)\d+_", RegexOptions.Compiled);
+		private static readonly Regex parseParameterListOrignialName = new Regex(@"(?<orgname>.*?)_\d+_", RegexOptions.Compiled);
 
 		public MultiQueryImpl(ISessionImplementor session)
 		{
@@ -334,9 +334,9 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IMultiQuery SetCacheRegion(string cacheRegion)
+		public IMultiQuery SetCacheRegion(string region)
 		{
-			this.cacheRegion = cacheRegion;
+			cacheRegion = region;
 			return this;
 		}
 
@@ -361,14 +361,7 @@ namespace NHibernate.Impl
 			{
 				Before();
 
-				if (cacheable)
-				{
-					criteriaResults = ListUsingQueryCache();
-				}
-				else
-				{
-					criteriaResults = ListIgnoreQueryCache();
-				}
+				criteriaResults = cacheable ? ListUsingQueryCache() : ListIgnoreQueryCache();
 				return criteriaResults;
 			}
 			finally
@@ -377,9 +370,9 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public IMultiQuery SetFlushMode(FlushMode flushMode)
+		public IMultiQuery SetFlushMode(FlushMode mode)
 		{
-			this.flushMode = flushMode;
+			flushMode = mode;
 			return this;
 		}
 
@@ -757,7 +750,7 @@ namespace NHibernate.Impl
 			Match match = parseParameterListOrignialName.Match(name);
 			if (match != null)
 			{
-				string originalName = match.Groups[1].Value;
+				string originalName = match.Groups["orgname"].Value;
 				return namedParametersThatAreSafeToDuplicate.Contains(originalName);
 			}
 			return false;

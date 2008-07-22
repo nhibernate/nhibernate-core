@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="NHibernate.Test.NHSpecificTest.NH1253" assembly="NHibernate.Test">
+	<class name="Car" table="Cars">
+		<id name="Id" column="CarID" type="Int32">
+			<generator class="native" />
+		</id>
+		<property name="Make" type="string" />
+		<property name="Model" type="string" />
+	</class>
+</hibernate-mapping>

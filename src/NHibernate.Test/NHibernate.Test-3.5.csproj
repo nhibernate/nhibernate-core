@@ -294,6 +294,8 @@
     <Compile Include="NHSpecificTest\NH1144\Fixture.cs" />
     <Compile Include="NHSpecificTest\CriteriaFromHql\Person.cs" />
     <Compile Include="NHSpecificTest\CriteriaFromHql\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1253\Car.cs" />
+    <Compile Include="NHSpecificTest\NH1253\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1284\Fixture.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -1319,6 +1321,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1359\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1253\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

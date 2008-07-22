@@ -267,12 +267,12 @@ namespace NHibernate.Impl
 				if (i > 0)
 					list.Append(StringHelper.CommaSpace);
 
-				string alias = (isJpaPositionalParam ? 'x' + name : name) + i++ + StringHelper.Underscore;
+				string alias = (isJpaPositionalParam ? 'x' + name : name + StringHelper.Underscore) + i++ + StringHelper.Underscore;
 				namedParamsCopy[alias] = new TypedValue(type, obj, session.EntityMode);
 				list.Append(ParserHelper.HqlVariablePrefix).Append(alias);
 			}
 			string paramPrefix = isJpaPositionalParam ? StringHelper.SqlParameter : ParserHelper.HqlVariablePrefix;
-			return StringHelper.Replace(query, paramPrefix + name, list.ToString());
+			return StringHelper.Replace(query, paramPrefix + name, list.ToString(), true);
 		}
 
 		#region Parameters

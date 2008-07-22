@@ -61,9 +61,9 @@ namespace NHibernate
 		IMultiQuery SetCacheable(bool cacheable);
 
 		/// Set the name of the cache region.
-		/// <param name="cacheRegion">The name of a query cache region, or <see langword="null" />
+		/// <param name="region">The name of a query cache region, or <see langword="null" />
 		/// for the default query cache</param>
-		IMultiQuery SetCacheRegion(string cacheRegion);
+		IMultiQuery SetCacheRegion(string region);
 
 		/// Should the query force a refresh of the specified query cache region?
 		/// This is particularly useful in cases where underlying data may have been
@@ -261,7 +261,7 @@ namespace NHibernate
 		/// <summary>
 		/// Override the current session flush mode, just for this query.
 		/// </summary>
-		IMultiQuery SetFlushMode(FlushMode flushMode);
+		IMultiQuery SetFlushMode(FlushMode mode);
 
 		/// <summary>
 		/// Set a strategy for handling the query results. This can be used to change

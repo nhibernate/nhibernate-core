@@ -109,14 +109,12 @@ namespace NHibernate.Util
 			return buf.ToString();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="template"></param>
-		/// <param name="placeholder"></param>
-		/// <param name="replacement"></param>
-		/// <returns></returns>
 		public static string Replace(string template, string placeholder, string replacement)
+		{
+			return Replace(template, placeholder, replacement, false);
+		}
+
+		public static string Replace(string template, string placeholder, string replacement, bool wholeWords)
 		{
 			// sometimes a null value will get passed in here -> SqlWhereStrings are a good example
 			if (template == null)
@@ -131,13 +129,22 @@ namespace NHibernate.Util
 			}
 			else
 			{
-				return new StringBuilder(template.Substring(0, loc))
-					.Append(replacement)
-					.Append(Replace(
-								template.Substring(loc + placeholder.Length),
-								placeholder,
-								replacement
-								)).ToString();
+				// NH different implementation (NH-1253)
+				string replaceWith = replacement;
+				if(loc + placeholder.Length < template.Length)
+				{
+					string afterPlaceholder = template[loc + placeholder.Length].ToString();
+					//After a token in HQL there can be whitespace, closedparen or comma.. 
+					if(wholeWords && !(WhiteSpace.Contains(afterPlaceholder) || ClosedParen.Equals(afterPlaceholder) || Comma.Equals(afterPlaceholder)))
+					{
+						//If this is not a full token we don't want to touch it
+						replaceWith = placeholder;
+					}
+				}
+
+				return
+					new StringBuilder(template.Substring(0, loc)).Append(replaceWith).Append(
+						Replace(template.Substring(loc + placeholder.Length), placeholder, replacement, wholeWords)).ToString();
 			}
 		}
 
