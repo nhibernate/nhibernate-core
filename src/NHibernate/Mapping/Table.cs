@@ -709,20 +709,14 @@ namespace NHibernate.Mapping
 
 		public string UniqueColumnString(IEnumerable iterator, string referencedEntityName)
 		{
-			int result = 0;
+			// NH Different implementation (NH-1339)
+			int result = 37;
 			if (referencedEntityName != null)
-				result += referencedEntityName.GetHashCode();
+				result ^= referencedEntityName.GetHashCode();
 
 			foreach (object o in iterator)
 			{
-				// this is marked as unchecked because the GetHashCode could potentially
-				// cause an integer overflow.  This way if there is an overflow it will
-				// just roll back over - since we are not doing any computations based
-				// on this number then a rollover is no big deal.
-				unchecked
-				{
-					result += o.GetHashCode();
-				}
+				result ^= o.GetHashCode();
 			}
 			return (name.GetHashCode().ToString("X") + result.GetHashCode().ToString("X"));
 		}
