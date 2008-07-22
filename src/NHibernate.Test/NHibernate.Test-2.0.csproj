@@ -347,6 +347,7 @@
     <Compile Include="NHSpecificTest\NH1355\UserTypeTimestamp.cs" />
     <Compile Include="NHSpecificTest\NH1383\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1383\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1399\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
