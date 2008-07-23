@@ -353,6 +353,8 @@
     <Compile Include="NHSpecificTest\NH1403\Hobby.cs" />
     <Compile Include="NHSpecificTest\NH1403\Male.cs" />
     <Compile Include="NHSpecificTest\NH1403\Person.cs" />
+    <Compile Include="NHSpecificTest\NH1405\Column.cs" />
+    <Compile Include="NHSpecificTest\NH1405\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
@@ -1289,6 +1291,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1403\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1405\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

@@ -304,14 +304,15 @@ namespace NHibernate.Mapping
 		{
 			// TODO : temporary initial step towards HHH-1907
 			ComponentMetamodel metamodel = new ComponentMetamodel(this);
-			if (IsEmbedded)
-			{
-				return new EmbeddedComponentType(metamodel);
-			}
-			else
-			{
+			// TODO NH : The proble to mange correctly EmbeddedComponentType is in binders (NH-1405)
+			//if (IsEmbedded)
+			//{
+			//  return new EmbeddedComponentType(metamodel);
+			//}
+			//else
+			//{
 				return new ComponentType(metamodel);
-			}
+			//}
 		}
 
 		public override string ToString()
