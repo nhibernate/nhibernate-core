@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+					   assembly="NHibernate.Test"
+					   namespace="NHibernate.Test.Any">
+
+	<class name="PropertySet" table="T_PROP_SET">
+        <id name="Id" column="ID" type="long">
+            <generator class="increment"/>
+        </id>
+        <property name="Name" column="NAME" type="string"/>
+        <any name="SomeSpecificProperty" id-type="long" meta-type="string" cascade="all">
+            <meta-value value="I" class="IntegerPropertyValue"/>
+            <meta-value value="S" class="StringPropertyValue"/>
+            <meta-value value="C" class="ComplexPropertyValue" />
+            <column name="S_S_PROP_TYPE"/>
+            <column name="S_S_PROP_ID"/>
+        </any>
+        <map name="GeneralProperties" table="T_GEN_PROPS" lazy="true" cascade="all">
+            <key column="PROP_SET_ID"/>
+            <map-key type="string" column="GEN_PROP_NAME"/>
+            <many-to-any id-type="long" meta-type="string">
+                <meta-value value="I" class="IntegerPropertyValue"/>
+                <meta-value value="S" class="StringPropertyValue"/>
+                <column name="PROP_TYPE"/>
+                <column name="PROP_ID"/>
+            </many-to-any>
+        </map>
+    </class>
+
+    <class name="StringPropertyValue" table="T_CHAR_PROP">
+        <id name="Id" column="ID" type="long">
+            <generator class="increment"/>
+        </id>
+        <property name="Value" column="VAL" not-null="true" type="string"/>
+    </class>
+
+    <class name="IntegerPropertyValue" table="T_NUM_PROP">
+        <id name="Id" column="ID" type="long">
+            <generator class="increment"/>
+        </id>
+        <property name="Value" column="VAL" not-null="true" type="integer"/>
+    </class>
+
+    <class name="ComplexPropertyValue" table="T_COMPLEX_PROP">
+        <id name="Id" column="ID" type="long">
+            <generator class="increment"/>
+        </id>
+        <map name="SubProperties" table="T_COMPLEX_SUB_PROPS" lazy="true">
+            <key column="PROP_ID" />
+            <map-key type="string" column="SUB_PROP_NAME" />
+            <element type="string" column="SUB_PROP_VAL" />
+        </map>
+    </class>
+</hibernate-mapping>

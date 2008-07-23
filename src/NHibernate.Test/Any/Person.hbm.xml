@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+					   assembly="NHibernate.Test"
+					   namespace="NHibernate.Test.Any">
+
+	<class name="Person" table="T_ANY_PERSON">
+		<id name="Id" column="ID_">
+            <generator class="increment" />
+        </id>
+        <property name="Name" />
+        <any name="Data" id-type="long" cascade="none">
+            <meta-value value="A" class="Address"/>
+            <column name="DATATYPE_"/>
+            <column name="DATAID_"/>
+        </any>
+    </class>
+
+    <class name="Address" table="T_ANY_ADDRESS">
+        <id name="Id" column="ID_">
+            <generator class="increment" />
+        </id>
+        <set name="Lines" table="LINE">
+            <key column="ADDRESS" />
+            <element type="string" />
+        </set>
+    </class>
+
+</hibernate-mapping>

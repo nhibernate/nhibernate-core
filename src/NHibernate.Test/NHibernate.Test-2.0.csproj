@@ -65,6 +65,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Any\Address.cs" />
+    <Compile Include="Any\AnyTypeTest.cs" />
+    <Compile Include="Any\ComplexPropertyValue.cs" />
+    <Compile Include="Any\IntegerPropertyValue.cs" />
+    <Compile Include="Any\Person.cs" />
+    <Compile Include="Any\PropertySet.cs" />
+    <Compile Include="Any\IPropertyValue.cs" />
+    <Compile Include="Any\StringPropertyValue.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Assertions\InheritedAreMarkedSerializable.cs" />
     <Compile Include="Assertions\IsSerializable.cs" />
@@ -1368,6 +1376,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DynamicEntity\Interceptor\Customer.hbm.xml" />
+    <EmbeddedResource Include="Any\Person.hbm.xml" />
+    <EmbeddedResource Include="Any\Properties.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
     <EmbeddedResource Include="NHSpecificTest\NH1403\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1253\Mappings.hbm.xml" />
