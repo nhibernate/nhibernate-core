@@ -94,7 +94,7 @@ namespace NHibernate.Proxy
 			if (method.DeclaringType != typeof(object) && 
 				(method.IsPublic || method.IsAssembly || method.IsFamilyOrAssembly))
 			{
-				if (!method.IsVirtual)
+				if (!method.IsVirtual || method.IsFinal)
 				{
 					Error(errors, type, "method " + method.Name + " should be virtual");
 				}

@@ -227,5 +227,25 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		{
 			Validate(typeof(InvalidNonVirtualProtectedInternalProperty));
 		}
+
+		interface INonVirtualPublicImplementsInterface
+		{
+			int NonVirtualMethodImplementsInterface { get; }
+		}
+
+		public class NonVirtualPublicImplementsInterface : ValidClass, INonVirtualPublicImplementsInterface
+		{
+			public int NonVirtualMethodImplementsInterface
+			{
+				get { return 0; }
+			}
+		}
+
+		[Test]
+		[ExpectedException(typeof(InvalidProxyTypeException))]
+		public void VirtualPublicImplementsInterface()
+		{
+			Validate(typeof(NonVirtualPublicImplementsInterface));
+		} 
 	}
 }

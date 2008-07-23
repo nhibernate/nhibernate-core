@@ -36,7 +36,7 @@ namespace NHibernate.DomainModel
 
 		#region ILifecycle members
 
-		public LifecycleVeto OnSave(ISession session)
+		public virtual LifecycleVeto OnSave(ISession session)
 		{
 			_created = true;
 			try
@@ -52,7 +52,7 @@ namespace NHibernate.DomainModel
 			return LifecycleVeto.NoVeto;
 		}
 
-		public LifecycleVeto OnDelete(ISession session)
+		public virtual LifecycleVeto OnDelete(ISession session)
 		{
 			_deleted = true;
 			try
@@ -67,13 +67,13 @@ namespace NHibernate.DomainModel
 			return LifecycleVeto.NoVeto;
 		}
 
-		public void OnLoad(ISession session, object id)
+		public virtual void OnLoad(ISession session, object id)
 		{
 			_loaded = true;
 			_session = session;
 		}
 
-		public LifecycleVeto OnUpdate(ISession s)
+		public virtual LifecycleVeto OnUpdate(ISession s)
 		{
 			return LifecycleVeto.NoVeto;
 		}

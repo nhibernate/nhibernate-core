@@ -63,7 +63,7 @@ namespace NHibernate.Test.Classic
 		/// throw a <see cref="ValidationFailure" />. This method must not change the state of the object
 		/// by side-effect.
 		/// </summary>
-		public void Validate()
+		public virtual void Validate()
 		{
 			IList<string> br = GetBrokenRules();
 			if (br != null && br.Count > 0)
