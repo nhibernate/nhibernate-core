@@ -33,16 +33,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1405
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				IQuery query = session.CreateQuery("from Column");
-				IList<Column> columns;
-				using (SqlLogSpy sqlLogSpy = new SqlLogSpy())
-				{
-					columns = query.List<Column>();
-				}
-			Assert.AreEqual(3, columns.Count);
+				IList<Column> columns = query.List<Column>();
+				Assert.AreEqual(3, columns.Count);
 				foreach (Column column in columns)
 				{
 					Assert.IsNotNull(column.ColumnName, "Column.ColumnName should not be null.");
-					Assert.IsFalse((null != column.ControlColumn) && (null == column.ControlColumn.ColumnName), "Column's control column's ColumnName should not be null.");
+					Assert.IsFalse((null != column.ControlColumn) && (null == column.ControlColumn.ColumnName),
+					               "Column's control column's ColumnName should not be null.");
 				}
 				tx.Commit();
 			}
