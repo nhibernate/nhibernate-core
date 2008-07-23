@@ -1028,6 +1028,7 @@
     <Compile Include="Type\AnsiCharType.cs" />
     <Compile Include="Type\AnyType.cs" />
     <Compile Include="Type\AbstractCharType.cs" />
+    <Compile Include="Type\ClassMetaType.cs" />
     <Compile Include="Type\CollectionType.cs" />
     <Compile Include="Type\CustomCollectionType.cs" />
     <Compile Include="Type\EmbeddedComponentType.cs" />

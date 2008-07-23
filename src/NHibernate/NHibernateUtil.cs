@@ -221,6 +221,12 @@ namespace NHibernate
 		public static readonly NullableType Class = new TypeType();
 
 		/// <summary>
+		/// NHibernate class meta type for associtiation of kind <code>any</code>.
+		/// </summary>
+		/// <seealso cref="AnyType"/>
+		public static readonly IType ClassMetaType = new ClassMetaType();
+
+		/// <summary>
 		/// NHibernate serializable type
 		/// </summary>
 		public static readonly NullableType Serializable = new SerializableType();

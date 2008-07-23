@@ -819,39 +819,32 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			XmlAttribute metaAttribute = node.Attributes["meta-type"];
 			if (metaAttribute != null)
 			{
-				IType metaType = TypeFactory.HeuristicType(metaAttribute.Value);
-				if (metaType == null)
-					throw new MappingException("could not interpret meta-type");
-				model.MetaType = metaType.Name;
-
-				IDictionary<object, string> values = new Dictionary<object, string>();
-				foreach (XmlNode metaValue in node.SelectNodes(HbmConstants.nsMetaValue, namespaceManager))
-					try
-					{
-						object value = ((IDiscriminatorType) metaType).StringToObject(metaValue.Attributes["value"].Value);
-						string entityName = GetClassName(metaValue.Attributes["class"].Value, mappings);
-						values[value] = entityName;
-					}
-					catch (InvalidCastException)
-					{
-						throw new MappingException("meta-type was not an IDiscriminatorType: " + metaType.Name);
-					}
-					catch (HibernateException he)
-					{
-						throw new MappingException("could not interpret meta-value", he);
-					}
-					catch (TypeLoadException cnfe)
-					{
-						throw new MappingException("meta-value class not found", cnfe);
-					}
-
-				if (values.Count > 0)
+				model.MetaType = metaAttribute.Value;
+				XmlNodeList metaValues = node.SelectNodes(HbmConstants.nsMetaValue, namespaceManager);
+				if (metaValues != null && metaValues.Count > 0)
 				{
-					model.MetaValues = values;
-				}
-				else
-				{
-					model.MetaValues = null;
+					IDictionary<object, string> values = new Dictionary<object, string>();
+					IType metaType = TypeFactory.HeuristicType(model.MetaType);
+					foreach (XmlNode metaValue in metaValues)
+						try
+						{
+							object value = ((IDiscriminatorType)metaType).StringToObject(metaValue.Attributes["value"].Value);
+							string entityName = GetClassName(metaValue.Attributes["class"].Value, mappings);
+							values[value] = entityName;
+						}
+						catch (InvalidCastException)
+						{
+							throw new MappingException("meta-type was not an IDiscriminatorType: " + metaType.Name);
+						}
+						catch (HibernateException he)
+						{
+							throw new MappingException("could not interpret meta-value", he);
+						}
+						catch (TypeLoadException cnfe)
+						{
+							throw new MappingException("meta-value class not found", cnfe);
+						}
+					model.MetaValues = values.Count > 0 ? values : null;
 				}
 			}
 

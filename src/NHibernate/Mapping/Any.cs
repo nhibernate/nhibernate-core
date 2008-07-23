@@ -40,7 +40,7 @@ namespace NHibernate.Mapping
 					type =
 						new AnyType(
 							metaValues == null
-								? TypeFactory.HeuristicType(metaTypeName)
+							? ("class".Equals(metaTypeName) ? new ClassMetaType(): TypeFactory.HeuristicType(metaTypeName))
 								: new MetaType(metaValues, TypeFactory.HeuristicType(metaTypeName)),
 							TypeFactory.HeuristicType(identifierTypeName));
 				}

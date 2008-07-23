@@ -90,7 +90,7 @@ namespace NHibernate.Type
 		/// </remarks>
 		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			NHibernateUtil.String.Set(cmd, ((System.Type)value).FullName, index);
+			NHibernateUtil.String.Set(cmd, ((System.Type)value).AssemblyQualifiedName, index);
 		}
 
 		/// <summary>
@@ -101,7 +101,7 @@ namespace NHibernate.Type
 		/// <returns>An Xml formatted string that contains the Assembly Qualified Name.</returns>
 		public override string ToString(object value)
 		{
-			return ((System.Type)value).FullName;
+			return ((System.Type)value).AssemblyQualifiedName;
 		}
 
 		/// <summary>
