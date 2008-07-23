@@ -5129,7 +5129,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			IList list = s.CreateQuery("from Bar bar where bar.Object.id = ? and bar.Object.class = ?")
-				.SetParameter(0, oid, NHibernateUtil.Int64).SetParameter(1, typeof(One), NHibernateUtil.Class).List();
+				.SetParameter(0, oid, NHibernateUtil.Int64).SetParameter(1, typeof(One).FullName, NHibernateUtil.ClassMetaType).List();
 			Assert.AreEqual(1, list.Count);
 
 			// this is a little different from h2.0.3 because the full type is stored, not

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   assembly="NHibernate.Test" 
+				   namespace="NHibernate.Test.NHSpecificTest.NH1403">
+
+	<class name="Person">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		
+		<discriminator column="Gender" type="String" />
+	
+		<property name="Name" />
+
+		<subclass name="Female" discriminator-value="Female">
+		</subclass>
+
+		<subclass name="Male" discriminator-value="Male">
+		</subclass>
+	</class>
+	
+	<class name="Hobby">
+		<id name="Id">
+			<generator class="native"  />
+		</id>
+		
+		<property name="Name" />
+		<any name="Person" meta-type="class" id-type="int" cascade="all">
+			<column name="ORIGINAL_CLASS"/>
+			<column name="ORIGINAL_ID"/>
+		</any>
+	</class>
+</hibernate-mapping>
