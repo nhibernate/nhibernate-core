@@ -1,15 +1,15 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Text;
+using System.Text.RegularExpressions;
+using NHibernate.Mapping;
+using NHibernate.SqlCommand;
+using NHibernate.Util;
+
 namespace NHibernate.Dialect
 {
-	using System;
-	using System.Collections;
-	using System.Collections.Generic;
-	using System.Data;
-	using System.Text.RegularExpressions;
-	using System.Text;
-	using Mapping;
-	using SqlCommand;
-	using Util;
-
 	public class MsSql2005Dialect : MsSql2000Dialect
 	{
 		public MsSql2005Dialect()
@@ -66,14 +66,11 @@ namespace NHibernate.Dialect
 				sortExpressions = new string[] { "CURRENT_TIMESTAMP" };
 			}
 
-			SqlStringBuilder result = new SqlStringBuilder()
-				.Add("SELECT TOP ")
-				.Add(last.ToString())
-				.Add(" ")
-				.Add(StringHelper.Join(", ", columnsOrAliases))
-				.Add(" FROM (SELECT ROW_NUMBER() OVER(ORDER BY ");
+			SqlStringBuilder result =
+				new SqlStringBuilder().Add("SELECT TOP ").Add(last.ToString()).Add(" ").Add(StringHelper.Join(", ", columnsOrAliases))
+					.Add(" FROM (SELECT ROW_NUMBER() OVER(ORDER BY ");
 
-			AppendSortExpressions(columnsOrAliases,  sortExpressions, result);
+			AppendSortExpressions(columnsOrAliases, sortExpressions, result);
 
 			result.Add(") as row, ");
 
@@ -82,44 +79,39 @@ namespace NHibernate.Dialect
 				result.Add("query.").Add(columnsOrAliases[i]);
 				bool notLastColumn = i != columnsOrAliases.Count - 1;
 				if (notLastColumn)
+				{
 					result.Add(", ");
+				}
 			}
 			for (int i = 0; i < sortExpressions.Length; i++)
 			{
 				string sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
-				if(!columnsOrAliases.Contains(sortExpression))
+				if (!columnsOrAliases.Contains(sortExpression))
 				{
-					result.Add(", query.__hibernate_sort_expr_")
-						.Add(i.ToString())
-						.Add("__");
+					result.Add(", query.__hibernate_sort_expr_").Add(i.ToString()).Add("__");
 				}
 			}
 
-			result.Add(" FROM (")
-				.Add(select);
+			result.Add(" FROM (").Add(select);
 
 			for (int i = 0; i < sortExpressions.Length; i++)
 			{
 				string sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
 
-				if(columnsOrAliases.Contains(sortExpression))
+				if (columnsOrAliases.Contains(sortExpression))
+				{
 					continue;
-				
-				if (aliasToColumn.ContainsKey(sortExpression))
-					sortExpression = aliasToColumn[sortExpression];
+				}
 
-				result.Add(", ")
-					.Add(sortExpression)
-					.Add(" as __hibernate_sort_expr_")
-					.Add(i.ToString())
-					.Add("__");
+				if (aliasToColumn.ContainsKey(sortExpression))
+				{
+					sortExpression = aliasToColumn[sortExpression];
+				}
+
+				result.Add(", ").Add(sortExpression).Add(" as __hibernate_sort_expr_").Add(i.ToString()).Add("__");
 			}
 
-			result.Add(" ")
-				.Add(from)
-				.Add(") query ) page WHERE page.row > ")
-				.Add(offset.ToString())
-				.Add(" ORDER BY ");
+			result.Add(" ").Add(from).Add(") query ) page WHERE page.row > ").Add(offset.ToString()).Add(" ORDER BY ");
 
 			AppendSortExpressions(columnsOrAliases, sortExpressions, result);
 
@@ -132,26 +124,29 @@ namespace NHibernate.Dialect
 			return Regex.Replace(sortExpression.Trim(), @"(\)|\s)(?i:asc|desc)$", "$1").Trim();
 		}
 
-		private static void AppendSortExpressions(ICollection<string> columnsOrAliases, string[] sortExpressions, SqlStringBuilder result)
+		private static void AppendSortExpressions(ICollection<string> columnsOrAliases, string[] sortExpressions,
+																							SqlStringBuilder result)
 		{
 			for (int i = 0; i < sortExpressions.Length; i++)
 			{
-				if(i > 1)
+				if (i > 0)
+				{
 					result.Add(", ");
+				}
 
 				string sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
-				if(columnsOrAliases.Contains(sortExpression))
+				if (columnsOrAliases.Contains(sortExpression))
 				{
 					result.Add(sortExpression);
 				}
 				else
 				{
-					result.Add("__hibernate_sort_expr_")
-						.Add(i.ToString())
-						.Add("__");
+					result.Add("__hibernate_sort_expr_").Add(i.ToString()).Add("__");
 				}
 				if (sortExpressions[i].Trim().ToLower().EndsWith("desc"))
+				{
 					result.Add(" DESC");
+				}
 			}
 		}
 
@@ -166,9 +161,8 @@ namespace NHibernate.Dialect
 			return fromIndex;
 		}
 
-		private static void ExtractColumnOrAliasNames(SqlString select,
-			out List<string> columnsOrAliases,
-			out Dictionary<string, string> aliasToColumn)
+		private static void ExtractColumnOrAliasNames(SqlString select, out List<string> columnsOrAliases,
+																									out Dictionary<string, string> aliasToColumn)
 		{
 			columnsOrAliases = new List<string>();
 			aliasToColumn = new Dictionary<string, string>();
@@ -181,19 +175,26 @@ namespace NHibernate.Dialect
 				index += 1;
 
 				if ("select".Equals(token, StringComparison.InvariantCultureIgnoreCase))
+				{
 					continue;
+				}
 				if ("distinct".Equals(token, StringComparison.InvariantCultureIgnoreCase))
+				{
 					continue;
+				}
 				if ("," == token)
+				{
 					continue;
+				}
 
 				if ("from".Equals(token, StringComparison.InvariantCultureIgnoreCase))
+				{
 					break;
+				}
 
 				//handle composite expressions like 2 * 4 as foo
-				while (index < tokens.Count &&
-					"as".Equals(tokens[index], StringComparison.InvariantCultureIgnoreCase) == false &&
-					"," != tokens[index])
+				while (index < tokens.Count && "as".Equals(tokens[index], StringComparison.InvariantCultureIgnoreCase) == false
+							 && "," != tokens[index])
 				{
 					token = token + " " + tokens[index];
 					index += 1;
@@ -208,13 +209,14 @@ namespace NHibernate.Dialect
 				{
 					int dot = token.IndexOf('.');
 					if (dot != -1)
+					{
 						alias = token.Substring(dot + 1);
+					}
 				}
 
 				// notice! we are checking here the existence of "as" "alias", two
 				// tokens from the current one
-				if (index + 1 < tokens.Count &&
-					"as".Equals(tokens[index], StringComparison.InvariantCultureIgnoreCase))
+				if (index + 1 < tokens.Count && "as".Equals(tokens[index], StringComparison.InvariantCultureIgnoreCase))
 				{
 					alias = tokens[index + 1];
 					index += 2; //skip the "as" and the alias	\
@@ -232,10 +234,7 @@ namespace NHibernate.Dialect
 		/// <value><c>true</c></value>
 		public override bool SupportsLimit
 		{
-			get
-			{
-				return true;
-			}
+			get { return true; }
 		}
 
 		/// <summary>
@@ -245,22 +244,23 @@ namespace NHibernate.Dialect
 		/// <value><c>true</c></value>
 		public override bool SupportsLimitOffset
 		{
-			get
-			{
-				return true;
-			}
+			get { return true; }
 		}
 
 		protected override string GetSelectExistingObject(string name, Table table)
 		{
 			string schema = table.GetQuotedSchemaName(this);
-			if (schema != null) schema += ".";
+			if (schema != null)
+			{
+				schema += ".";
+			}
 			string objName = string.Format("{0}{1}", schema, Quote(name));
 			string parentName = string.Format("{0}{1}", schema, table.GetQuotedName(this));
-			return string.Format("select 1 from sys.objects where object_id = OBJECT_ID(N'{0}') AND parent_object_id = OBJECT_ID('{1}')",
-								 objName, parentName);
+			return
+				string.Format(
+					"select 1 from sys.objects where object_id = OBJECT_ID(N'{0}') AND parent_object_id = OBJECT_ID('{1}')", objName,
+					parentName);
 		}
-
 
 		/// <summary>
 		/// Sql Server 2005 supports a query statement that provides <c>LIMIT</c>
@@ -269,10 +269,7 @@ namespace NHibernate.Dialect
 		/// <value><c>false</c></value>
 		public override bool UseMaxForLimit
 		{
-			get
-			{
-				return false;
-			}
+			get { return false; }
 		}
 
 		/// <summary>
@@ -376,7 +373,7 @@ namespace NHibernate.Dialect
 								currentToken.Length = 0;
 								state = TokenizerState.WhiteSpace;
 							}
-							else if (ch == ',')// stop current token, and send the , as well
+							else if (ch == ',') // stop current token, and send the , as well
 							{
 								yield return currentToken.ToString();
 								currentToken.Length = 0;
@@ -404,7 +401,9 @@ namespace NHibernate.Dialect
 					}
 				}
 				if (currentToken.Length > 0)
+				{
 					yield return currentToken.ToString();
+				}
 			}
 
 			public IEnumerator GetEnumerator()
