@@ -382,6 +382,8 @@
     <Compile Include="NHSpecificTest\NH1301\Fixture.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="NHSpecificTest\NH1304\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1304\Funny.cs" />
     <Compile Include="NHSpecificTest\NH1313\A.cs" />
     <Compile Include="NHSpecificTest\NH1313\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1324\Fixture.cs" />
@@ -1389,6 +1391,7 @@
     <EmbeddedResource Include="Any\Person.hbm.xml" />
     <EmbeddedResource Include="Any\Properties.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1304\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1408\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1393\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1394\Mappings.hbm.xml" />

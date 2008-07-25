@@ -25,7 +25,7 @@ namespace NHibernate.Test.Assertions
 			}
 			catch (SerializationException e)
 			{
-				FailureMessage.AddLine(string.Format("class {0} is not serializable: {1}", obj.GetType().FullName, e.Message));
+				FailureMessage.WriteLine(string.Format("class {0} is not serializable: {1}", obj.GetType().FullName, e.Message));
 				result = false;
 			}
 			return result;

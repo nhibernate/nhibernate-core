@@ -25,7 +25,7 @@ namespace NHibernate.Test.Assertions
 				object[] atts = tp.GetCustomAttributes(typeof(SerializableAttribute), false);
 				if (atts.Length == 0)
 				{
-					FailureMessage.AddLine(string.Format("    class {0} is not marked as Serializable", tp.FullName));
+					FailureMessage.WriteLine(string.Format("    class {0} is not marked as Serializable", tp.FullName));
 					failedCount++;
 				}
 			}

@@ -30,9 +30,9 @@ namespace NHibernate.Test.Assertions
 			get
 			{
 				if (clazz.IsInterface)
-					FailureMessage.AddLine(string.Format("The class {0} is an interface.", clazz.FullName));
+					FailureMessage.WriteLine(string.Format("The class {0} is an interface.", clazz.FullName));
 				else
-					FailureMessage.AddLine(string.Format("The class {0} is not marked as Serializable.", clazz.FullName));
+					FailureMessage.WriteLine(string.Format("The class {0} is not marked as Serializable.", clazz.FullName));
 				return FailureMessage.ToString();
 			}
 		}

@@ -534,13 +534,13 @@ namespace NHibernate.Test.HQLFunctionTest
 				hql = "select cast(a.BodyWeight as Double) from Animal a";
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(1.3D, l[0]);
+				Assert.AreEqual(1.3f, l[0]);
 
 				// Rendered in SELECT using a property in an operation with costant 
 				hql = "select cast(7+123-5*a.BodyWeight as Double) from Animal a";
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(7D + 123D - 5D * 1.3D, l[0]);
+				Assert.AreEqual(7f + 123f - 5f * 1.3f, l[0]);
 
 				// Rendered in SELECT using a property and nested functions
 				hql = "select cast(cast(a.BodyWeight as string) as Double) from Animal a";
@@ -569,13 +569,13 @@ namespace NHibernate.Test.HQLFunctionTest
 				hql = "select cast(a.BodyWeight as Double) from Animal a group by cast(a.BodyWeight as Double)";
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(1.3D, l[0]);
+				Assert.AreEqual(1.3f, l[0]);
 
 				// Rendered in GROUP BY using a property in an operation with costant 
 				hql = "select cast(7+123-5*a.BodyWeight as Double) from Animal a group by cast(7+123-5*a.BodyWeight as Double)";
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(7D + 123D - 5D * 1.3D, l[0]);
+				Assert.AreEqual(7f + 123f - 5f * 1.3f, l[0]);
 
 				// Rendered in GROUP BY using a property and nested functions
 				hql = "select cast(cast(a.BodyWeight as string) as Double) from Animal a group by cast(cast(a.BodyWeight as string) as Double)";
@@ -587,7 +587,7 @@ namespace NHibernate.Test.HQLFunctionTest
 				hql = "select cast(a.BodyWeight as Double) from Animal a group by cast(a.BodyWeight as Double) having cast(a.BodyWeight as Double)>0";
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(1.3D, l[0]);
+				Assert.AreEqual(1.3f, l[0]);
 
 				// Rendered in HAVING using a property in an operation with costants
 				hql = "select cast(7+123.3-1*a.BodyWeight as int) from Animal a group by cast(7+123.3-1*a.BodyWeight as int) having cast(7+123.3-1*a.BodyWeight as int)>0";

@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1304"
+				   assembly="NHibernate.Test">
+
+	<class name="Funny">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="field" access="field"/>
+		<property name="FieldCamelcase" access="field.camelcase"/>
+		<property name="FieldCamelcaseUnderscore" access="field.camelcase-underscore"/>
+		<property name="FieldLowercase" access="field.lowercase"/>
+		<property name="FieldLowercaseUnderscore" access="field.lowercase-underscore"/>
+		<property name="FieldPascalcaseUnderscore" access="field.pascalcase-underscore"/>
+		<property name="FieldPascalcaseMUnderscore" access="field.pascalcase-m-underscore"/>
+		<property name="FieldPascalcaseM" access="field.pascalcase-m"/>
+		<property name="NosetterCamelcase" access="nosetter.camelcase"/>
+		<property name="NosetterCamelcaseUnderscore" access="nosetter.camelcase-underscore"/>
+		<property name="NosetterLowercase" access="nosetter.lowercase"/>
+		<property name="NosetterLowercaseUnderscore" access="nosetter.lowercase-underscore"/>
+		<property name="NosetterPascalcaseUnderscore" access="nosetter.pascalcase-underscore"/>
+		<property name="NosetterPascalcaseMUnderscore" access="nosetter.pascalcase-m-underscore"/>
+		<property name="NosetterPascalcase" access="nosetter.pascalcase-m"/>
+	</class>
+</hibernate-mapping>
