@@ -86,6 +86,11 @@ namespace NHibernate.Properties
 			return new FieldSetter(GetField(theClass, fieldName), theClass, fieldName);
 		}
 
+		public bool CanAccessTroughReflectionOptimizer
+		{
+			get { return true; }
+		}
+
 		#endregion
 
 		private static FieldInfo GetField(System.Type type, string fieldName, System.Type originalType)

@@ -1,5 +1,6 @@
 using System.Collections;
 using Iesi.Collections.Generic;
+using log4net;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Intercept;
@@ -13,6 +14,7 @@ namespace NHibernate.Tuple.Entity
 	/// <summary> Support for tuplizers relating to entities. </summary>
 	public abstract class AbstractEntityTuplizer : IEntityTuplizer
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(AbstractEntityTuplizer));
 		private readonly EntityMetamodel entityMetamodel;
 		private readonly IGetter idGetter;
 		private readonly ISetter idSetter;
@@ -57,6 +59,11 @@ namespace NHibernate.Tuple.Entity
 				if (!property.IsBasicPropertyAccessor)
 					foundCustomAccessor = true;
 				i++;				
+			}
+			if (log.IsDebugEnabled)
+			{
+				log.DebugFormat("{0} accessors found for entity: {1}", foundCustomAccessor ? "Custom" : "No custom",
+				                mappingInfo.EntityName);
 			}
 			hasCustomAccessors = foundCustomAccessor;
 

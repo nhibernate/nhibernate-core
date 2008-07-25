@@ -18,6 +18,11 @@ namespace NHibernate.Properties
 			return new MapSetter(propertyName);
 		}
 
+		public bool CanAccessTroughReflectionOptimizer
+		{
+			get { return false; }
+		}
+
 		#endregion
 
 		public sealed class MapSetter : ISetter

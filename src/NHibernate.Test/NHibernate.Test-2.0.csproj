@@ -332,6 +332,10 @@
     <Compile Include="NHSpecificTest\NH1300\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1301\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1301\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1304\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1304\Funny.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="NHSpecificTest\NH1313\A.cs" />
     <Compile Include="NHSpecificTest\NH1313\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1324\Fixture.cs" />
@@ -1301,6 +1305,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1408\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1304\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

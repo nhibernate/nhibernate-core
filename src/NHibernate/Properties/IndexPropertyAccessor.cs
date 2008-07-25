@@ -32,6 +32,11 @@ namespace NHibernate.Properties
 			throw new NotImplementedException();
 		}
 
+		public bool CanAccessTroughReflectionOptimizer
+		{
+			get { return false; }
+		}
+
 		#endregion
 
 		/// <summary> The Setter implementation for index backrefs.</summary>

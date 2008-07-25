@@ -1,4 +1,5 @@
 using System;
+using log4net;
 using NHibernate.Engine;
 using NHibernate.Properties;
 
@@ -8,6 +9,8 @@ namespace NHibernate.Tuple.Component
 	[Serializable]
 	public abstract class AbstractComponentTuplizer : IComponentTuplizer
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(AbstractComponentTuplizer));
+
 		protected internal int propertySpan;
 		protected internal IGetter[] getters;
 		protected internal ISetter[] setters;
@@ -31,6 +34,11 @@ namespace NHibernate.Tuple.Component
 					foundCustomAccessor = true;
 				}
 				i++;				
+			}
+			if (log.IsDebugEnabled)
+			{
+				log.DebugFormat("{0} accessors found for component: {1}", foundCustomAccessor ? "Custom" : "No custom",
+				                component.ComponentClassName);
 			}
 			hasCustomAccessors = foundCustomAccessor;
 

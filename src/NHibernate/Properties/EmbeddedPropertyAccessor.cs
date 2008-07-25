@@ -19,6 +19,11 @@ namespace NHibernate.Properties
 			return new EmbeddedSetter(theClass);
 		}
 
+		public bool CanAccessTroughReflectionOptimizer
+		{
+			get { return false; }
+		}
+
 		#endregion
 
 		[Serializable]
