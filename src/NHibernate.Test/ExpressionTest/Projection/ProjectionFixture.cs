@@ -1,6 +1,7 @@
 using NHibernate.DomainModel;
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -29,8 +30,11 @@ namespace NHibernate.Test.ExpressionTest.Projection
 			ISession session = factory.OpenSession();
 			IProjection expression = Projections.Avg("Pay");
 			CreateObjects(typeof(Simple), session);
+			IType nhType = NHibernateUtil.GuessType(typeof (double));
+			SqlType[] sqlTypes = nhType.SqlTypes(this.factoryImpl);
+			string sqlTypeString = factoryImpl.Dialect.GetCastTypeName(sqlTypes[0]);
 			SqlString sqlString = expression.ToSqlString(criteria, 0, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
-			string expectedSql = "avg(sql_alias.Pay) as y0_";
+			string expectedSql = string.Format("avg(cast(sql_alias.Pay as {0})) as y0_",sqlTypeString);
 			CompareSqlStrings(sqlString, expectedSql, 0);
 			session.Close();
 		}

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH1394">
+
+	<class name="Person" lazy="false">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<bag name="Pets" inverse="true" lazy="false" cascade="all-delete-orphan">
+			<key column="PersonId" />
+			<one-to-many class="Pet"/>
+			<filter name="ExampleFilter" condition=":WeightVal &gt;= Weight" />
+		</bag>
+		<property name="Name"/>
+		<property name="IQ"/>
+		<property name="ShoeSize"/>
+	</class>
+
+	<class name="Pet" lazy="false">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<many-to-one name="Owner" column="PersonId" not-null="true"/>
+		<property name="Name"/>
+		<property name="Species"/>
+		<property name="Weight"/>
+	</class>
+
+	<filter-def name="ExampleFilter">
+		<filter-param name="WeightVal" type="int"/>
+	</filter-def>
+
+</hibernate-mapping>

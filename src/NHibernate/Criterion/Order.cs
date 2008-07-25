@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using NHibernate.Engine;
+using NHibernate.Criterion;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Criterion
 {
@@ -13,6 +16,17 @@ namespace NHibernate.Criterion
 	{
 		protected bool ascending;
 		protected string propertyName;
+		protected IProjection projection;
+		/// <summary>
+		/// Constructor for Order.
+		/// </summary>
+		/// <param name="projection"></param>
+		/// <param name="ascending"></param>
+		public Order(IProjection projection, bool ascending)
+		{
+			this.projection = projection;
+			this.ascending = ascending;
+		}
 
 		/// <summary>
 		/// Constructor for Order.
@@ -31,6 +45,16 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public virtual string ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
+			if(projection!=null)
+			{
+				SqlString sb=new SqlString();
+				SqlString produced = this.projection.ToSqlString(criteria, 0, criteriaQuery, new Dictionary<string, IFilter>());
+				SqlString truncated = NHibernate.Util.StringHelper.RemoveAsAliasesFromSql(produced);
+				sb = sb.Append(truncated);
+				sb = sb.Append(ascending ? " asc" : " desc");
+				return sb.ToString();
+			}
+
 			string[] columns = criteriaQuery.GetColumnAliasesUsingProjection(criteria, propertyName);
 
 			StringBuilder fragment = new StringBuilder();
@@ -65,7 +89,7 @@ namespace NHibernate.Criterion
 
 		public override string ToString()
 		{
-			return propertyName + (ascending ? " asc" : " desc");
+			return (projection!=null?projection.ToString():propertyName) + (ascending ? " asc" : " desc");
 		}
 
 		/// <summary>
@@ -76,6 +100,26 @@ namespace NHibernate.Criterion
 		public static Order Asc(string propertyName)
 		{
 			return new Order(propertyName, true);
+		}
+
+		/// <summary>
+		/// Ascending order
+		/// </summary>
+		/// <param name="projection"></param>
+		/// <returns></returns>
+		public static Order Asc(IProjection projection)
+		{
+			return new Order(projection, true);
+		}
+
+		/// <summary>
+		/// Descending order
+		/// </summary>
+		/// <param name="projection"></param>
+		/// <returns></returns>
+		public static Order Desc(IProjection projection)
+		{
+			return new Order(projection, false);
 		}
 
 		/// <summary>

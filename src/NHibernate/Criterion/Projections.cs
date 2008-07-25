@@ -56,7 +56,15 @@ namespace NHibernate.Criterion
 		{
 			return new RowCountInt64Projection();
 		}
-
+		/// <summary>
+		/// A property value count
+		/// </summary>
+		/// <param name="projection"></param>
+		/// <returns></returns>
+		public static CountProjection Count(IProjection projection)
+		{
+			return new CountProjection(projection);
+		}
 		/// <summary>
 		/// A property value count
 		/// </summary>
@@ -88,6 +96,17 @@ namespace NHibernate.Criterion
 		}
 
 		/// <summary>
+		/// A projection maximum value
+		/// </summary>
+		/// <param name="projection"></param>
+		/// <returns></returns>
+		public static AggregateProjection Max(IProjection projection)
+		{
+			return new AggregateProjection("max", projection);
+		}
+
+
+		/// <summary>
 		/// A property minimum value
 		/// </summary>
 		/// <param name="propertyName"></param>
@@ -95,6 +114,16 @@ namespace NHibernate.Criterion
 		public static AggregateProjection Min(String propertyName)
 		{
 			return new AggregateProjection("min", propertyName);
+		}
+
+		/// <summary>
+		/// A projection minimum value
+		/// </summary>
+		/// <param name="projection"></param>
+		/// <returns></returns>
+		public static AggregateProjection Min(IProjection projection)
+		{
+			return new AggregateProjection("min", projection);
 		}
 
 		/// <summary>
@@ -108,6 +137,16 @@ namespace NHibernate.Criterion
 		}
 
 		/// <summary>
+		/// A property average value
+		/// </summary>
+		/// <param name="projection"></param>
+		/// <returns></returns>
+		public static AggregateProjection Avg(IProjection projection)
+		{
+			return new AvgProjection(projection);
+		}
+
+		/// <summary>
 		/// A property value sum
 		/// </summary>
 		/// <param name="propertyName"></param>
@@ -115,6 +154,16 @@ namespace NHibernate.Criterion
 		public static AggregateProjection Sum(String propertyName)
 		{
 			return new AggregateProjection("sum", propertyName);
+		}
+
+		/// <summary>
+		/// A property value sum
+		/// </summary>
+		/// <param name="projection"></param>
+		/// <returns></returns>
+		public static AggregateProjection Sum(IProjection projection)
+		{
+			return new AggregateProjection("sum", projection);
 		}
 
 		/// <summary>

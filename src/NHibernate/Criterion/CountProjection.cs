@@ -1,11 +1,10 @@
 using System;
+using System.Collections.Generic;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Criterion
 {
-	using System.Collections.Generic;
-
 	/// <summary>
 	/// A Count
 	/// </summary>
@@ -14,10 +13,8 @@ namespace NHibernate.Criterion
 	{
 		private bool distinct;
 
-		protected internal CountProjection(String prop)
-			: base("count", prop)
-		{
-		}
+		protected internal CountProjection(String prop) : base("count", prop) {}
+		protected internal CountProjection(IProjection projection) : base("count", projection) {}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
@@ -29,18 +26,15 @@ namespace NHibernate.Criterion
 			return (distinct) ? "distinct " + base.ToString() : base.ToString();
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery,
+		                                      IDictionary<string, IFilter> enabledFilters)
 		{
-			SqlStringBuilder buf = new SqlStringBuilder()
-				.Add("count(");
+			SqlStringBuilder buf = new SqlStringBuilder().Add("count(");
 			if (distinct)
 			{
 				buf.Add("distinct ");
 			}
-			buf.Add(criteriaQuery.GetColumn(criteria, propertyName))
-				.Add(") as y")
-				.Add(position.ToString())
-				.Add("_");
+			buf.Add(criteriaQuery.GetColumn(criteria, propertyName)).Add(") as y").Add(position.ToString()).Add("_");
 			return buf.ToSqlString();
 		}
 
