@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH1405"
+				   default-lazy="false">
+
+	<class name="Column" table="PPDM_COLUMN">
+		<composite-id>
+			<key-property name="SystemId" type="String" column="SYSTEM_ID" length="20" />
+			<key-property name="TableName" type="String" column="TABLE_NAME" length="30" />
+			<key-property name="ColumnName" type="String" column="COLUMN_NAME" length="30" />
+		</composite-id>
+		<!-- 
+			Remove this many-to-one mapping and ColumnName will be retrieved correctly - 
+			keep it and ColumnName will be null. 
+			ControlColumn is never fetched correctly. 
+		-->
+		<many-to-one name="ControlColumn" class="Column" update="false" insert="false" not-found="ignore">
+			<column name="SYSTEM_ID" />
+			<column name="TABLE_NAME" />
+			<column name="CONTROL_COLUMN" length="30" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>
+	
