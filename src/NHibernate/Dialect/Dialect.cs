@@ -22,7 +22,7 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Dialect
 {
 	/// <summary>
-	/// Represents a dialect of SQL implemented by a particular RDBMS. Sublcasses
+	/// Represents a dialect of SQL implemented by a particular RDBMS. Subclasses
 	/// implement NHibernate compatibility with different systems.
 	/// </summary>
 	/// <remarks>

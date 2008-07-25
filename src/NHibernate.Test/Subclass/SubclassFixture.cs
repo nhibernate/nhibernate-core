@@ -64,7 +64,7 @@ namespace NHibernate.Test.Subclass
 			SubclassAssert.AreEqual(base1, base2);
 
 			// the object with id=2 was loaded using the base class - lets make sure it actually loaded
-			// the sublcass
+			// the subclass
 			SubclassOne one2 = oneBase2 as SubclassOne;
 			Assert.IsNotNull(one2);
 
