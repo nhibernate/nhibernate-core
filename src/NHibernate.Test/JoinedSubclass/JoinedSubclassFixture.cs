@@ -210,7 +210,7 @@ namespace NHibernate.Test.JoinedSubclass
 			person = (Person) s.Load(typeof(Person), personId);
 
 			// the object with id=2 was loaded using the base class - lets make sure it actually loaded
-			// the sublcass
+			// the subclass
 			Assert.AreEqual(typeof(Employee), empAsPerson.GetType(),
 			                "even though person was queried, should have returned correct subclass.");
 			emp = (Employee) s.Load(typeof(Employee), empId);

@@ -51,7 +51,7 @@ namespace NHibernate
 		{
 			get
 			{
-				return string.Format("Object with id: {0} was not of the specified sublcass: {1} ({2})", identifier, entityName, base.Message);
+				return string.Format("Object with id: {0} was not of the specified subclass: {1} ({2})", identifier, entityName, base.Message);
 			}
 		}
 
