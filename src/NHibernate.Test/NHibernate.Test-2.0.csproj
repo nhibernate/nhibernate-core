@@ -363,6 +363,8 @@
     <Compile Include="NHSpecificTest\NH1408\DbResourceKey.cs" />
     <Compile Include="NHSpecificTest\NH1408\DetachedSubCriteriaTest.cs" />
     <Compile Include="NHSpecificTest\NH1408\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH1413\Foo.cs" />
+    <Compile Include="NHSpecificTest\NH1413\PagingTest.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
@@ -1308,6 +1310,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1304\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1413\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
