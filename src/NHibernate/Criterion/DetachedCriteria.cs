@@ -39,6 +39,12 @@ namespace NHibernate.Criterion
 			this.criteria = criteria;
 		}
 
+		internal DetachedCriteria(CriteriaImpl impl)
+		{
+			this.impl = impl;
+			criteria = impl;
+		}
+
 		/// <summary>
 		/// Get an executable instance of <c>Criteria</c>,
 		/// to actually run the query.</summary>

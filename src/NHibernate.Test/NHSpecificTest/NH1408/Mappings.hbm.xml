@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH1408">
+
+	<class name="DbResource" table="Resources">
+		<cache usage="nonstrict-read-write" />
+		<id name="Oid" column="ID">
+			<generator class="identity"/>
+		</id>
+		<discriminator column="Type" type="String(25)" not-null="true" />
+		<version name="Version" column="Version" />
+
+		<bag name="keys" inverse="true" access="field" lazy="true" optimistic-lock="false"
+			 cascade="all-delete-orphan">
+			<key column="ResourceId" />
+			<one-to-many class="DbResourceKey" />
+		</bag>
+
+		<property name="RawValue" type="StringClob">
+			<column name="Value" sql-type="ntext" not-null="true" />
+		</property>
+
+		<subclass name="StringDbResource" discriminator-value="string" />
+		<subclass name="IntDbResource" discriminator-value="int" />
+		<subclass name="DecimalDbResource" discriminator-value="decimal" />
+	</class>
+	
+	<class name="DbResourceKey" table="ResourceKeys">
+		<cache usage="nonstrict-read-write" />
+		<id name="Oid" column="ID">
+			<generator class="identity"/>
+		</id>
+
+		<version name="Version" column="Version" />
+
+		<many-to-one name="Resource" column="ResourceId" class="DbResource" foreign-key="FK_RESOURCEKEYS_TO_RESOURCES" />
+		<property name="Key0" column="Key0" type="String(25)" index="RES_KEY0_IDX" />
+		<property name="Key1" column="Key1" type="String(25)" index="RES_KEY1_IDX" />
+	</class>
+</hibernate-mapping>

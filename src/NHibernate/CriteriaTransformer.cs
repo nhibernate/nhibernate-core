@@ -43,9 +43,8 @@ namespace NHibernate
 		/// <returns></returns>
 		public static DetachedCriteria Clone(DetachedCriteria criteria)
 		{
-			ICriteria clonedCriteria = Clone(criteria.GetCriteriaImpl());
-			DetachedCriteria detachedCriteria = DetachedCriteria.For(clonedCriteria.CriteriaClass, clonedCriteria.Alias);
-			detachedCriteria.SetCriteriaImpl((CriteriaImpl) clonedCriteria);
+			CriteriaImpl clonedCriteria = (CriteriaImpl)Clone(criteria.GetCriteriaImpl());
+			DetachedCriteria detachedCriteria = new DetachedCriteria(clonedCriteria);
 			return detachedCriteria;
 		}
 
@@ -57,10 +56,6 @@ namespace NHibernate
 		{
 			CriteriaImpl root = GetRootCriteria(criteria);
 			CriteriaImpl clone = new CriteriaImpl(root.CriteriaClass, root.Alias, root.Session);
-			foreach (CriteriaImpl.CriterionEntry criterionEntry in root.Restrictions)
-			{
-				clone.Add(criterionEntry.Criterion);
-			}
 			CloneSubcriteriaAndOrders(clone, root);
 			foreach (DictionaryEntry de in root.FetchModes)
 			{
@@ -114,22 +109,45 @@ namespace NHibernate
 			//subcriterias initially here, so we don't need to make more than a single pass
 			Hashtable newParents = new Hashtable();
 			newParents[original] = clone;
-			foreach (CriteriaImpl.Subcriteria subcriteria in original.SubcriteriaList)
+
+			foreach (CriteriaImpl.Subcriteria subcriteria in original.IterateSubcriteria())
 			{
-				ICriteria currentParent = (ICriteria) newParents[subcriteria.Parent];
+				ICriteria currentParent = (ICriteria)newParents[subcriteria.Parent];
 				if (currentParent == null)
-					throw new InvalidOperationException("Could not find parent for subcriteria in the previous subcriteria. If you see this error, it is a bug");
-				CriteriaImpl.Subcriteria clonedSubCriteria = new CriteriaImpl.Subcriteria(clone, currentParent, subcriteria.Path, subcriteria.Alias, subcriteria.JoinType);
+				{
+					throw new AssertionFailure(
+						"Could not find parent for subcriteria in the previous subcriteria. If you see this error, it is a bug");
+				}
+				CriteriaImpl.Subcriteria clonedSubCriteria =
+					new CriteriaImpl.Subcriteria(clone, currentParent, subcriteria.Path, subcriteria.Alias, subcriteria.JoinType);
 				clonedSubCriteria.SetLockMode(subcriteria.LockMode);
 				newParents[subcriteria] = clonedSubCriteria;
 			}
-			foreach (CriteriaImpl.OrderEntry orderEntry in original.Orders)
+
+			// remap the orders
+			foreach (CriteriaImpl.OrderEntry orderEntry in original.IterateOrderings())
 			{
-				ICriteria currentParent = (ICriteria) newParents[orderEntry.Criteria];
+				ICriteria currentParent = (ICriteria)newParents[orderEntry.Criteria];
 				if (currentParent == null)
-					throw new InvalidOperationException("Could not find parent for order in the previous criteria. If you see this error, it is a bug");
+				{
+					throw new AssertionFailure(
+						"Could not find parent for order in the previous criteria. If you see this error, it is a bug");
+				}
 				currentParent.AddOrder(orderEntry.Order);
 			}
+
+			// remap the restrictions to appropriate criterias
+			foreach (CriteriaImpl.CriterionEntry criterionEntry in original.Restrictions)
+			{
+				ICriteria currentParent = (ICriteria) newParents[criterionEntry.Criteria];
+				if (currentParent == null)
+				{
+					throw new AssertionFailure(
+						"Could not find parent for restriction in the previous criteria. If you see this error, it is a bug.");
+				}
+
+				currentParent.Add(criterionEntry.Criterion);
+			}		
 		}
 	}
 }
