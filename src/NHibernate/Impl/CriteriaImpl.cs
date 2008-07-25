@@ -507,8 +507,8 @@ namespace NHibernate.Impl
 			// remap the orders
 			foreach (OrderEntry orderEntry in IterateOrderings())
 			{
-				ICriteria currentParent = newParents[orderEntry.Criteria];
-				if (currentParent == null)
+				ICriteria currentParent;
+				if (!newParents.TryGetValue(orderEntry.Criteria, out currentParent))
 				{
 					throw new AssertionFailure(
 						"Could not find parent for order in the previous criteria. If you see this error, it is a bug");
