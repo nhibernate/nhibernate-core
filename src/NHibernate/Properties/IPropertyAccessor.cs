@@ -1,5 +1,3 @@
-using System;
-
 namespace NHibernate.Properties
 {
 	/// <summary>
@@ -36,5 +34,12 @@ namespace NHibernate.Properties
 		/// be found in the <see cref="System.Type"/>.
 		/// </exception>
 		ISetter GetSetter(System.Type theClass, string propertyName);
+
+		#region NH specific
+		/// <summary>
+		/// Allow embedded and custom accessors to define if the ReflectionOptimizer can be used.
+		/// </summary>
+		bool CanAccessTroughReflectionOptimizer { get;}
+		#endregion
 	}
 }

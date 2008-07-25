@@ -19,6 +19,11 @@ namespace NHibernate.Properties
 			return new NoopSetter();
 		}
 
+		public bool CanAccessTroughReflectionOptimizer
+		{
+			get { return false; }
+		}
+
 		#endregion
 
 		/// <summary> A Getter which will always return null. It should not be called anyway.</summary>

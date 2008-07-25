@@ -30,6 +30,11 @@ namespace NHibernate.Properties
 			return new BackrefSetter();
 		}
 
+		public bool CanAccessTroughReflectionOptimizer
+		{
+			get { return false; }
+		}
+
 		#endregion
 
 		/// <summary> The Setter implementation for id backrefs.</summary>

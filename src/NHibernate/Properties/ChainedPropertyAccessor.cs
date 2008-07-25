@@ -48,6 +48,11 @@ namespace NHibernate.Properties
 			throw new PropertyNotFoundException(theClass, propertyName, "setter");
 		}
 
+		public bool CanAccessTroughReflectionOptimizer
+		{
+			get { return false; }
+		}
+
 		#endregion
 	}
 }

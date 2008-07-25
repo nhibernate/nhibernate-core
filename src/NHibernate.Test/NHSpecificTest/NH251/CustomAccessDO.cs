@@ -53,6 +53,11 @@ namespace NHibernate.Test.NHSpecificTest.NH251
 			return new CustomSetter(propertyName);
 		}
 
+		public bool CanAccessTroughReflectionOptimizer
+		{
+			get { return false; }
+		}
+
 		public class CustomGetter : IGetter
 		{
 			private System.Type theClass;
