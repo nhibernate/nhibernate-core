@@ -1,12 +1,12 @@
 ** BREAKING CHANGES from NH1.2.1GA to NH2.0.0
 	##### Infrastructure #####
-		* No more support for .NET 1.1
-		* No more support for Nullables.NHibernate (use nullable types of .NET 2.0)
+		* .NET 1.1 is no longer supported
+		* Nullables.NHibernate is no longer supported (use nullable types of .NET 2.0)
 		* Contrib projects moved to http://sourceforge.net/projects/nhcontrib
 
 	##### Compile time #####
-		* Changed NHibernate.Expression namespace to NHibernate.Criterion
-		* IInterceptor (some news and IsUnsaved is now renamed to IsTransient)
+		* NHibernate.Expression namespace was renamed to NHibernate.Criterion
+		* IInterceptor have additional methods. (IsUnsaved was renamed IsTransient)
 		* INamingStrategy
 		* IType
 		* IEntityPersister
@@ -17,31 +17,31 @@
 		* IPropertyAccessor
 		* ValueTypeType renamed to PrimitiveType 
 
-	##### Possible BR for external FrameWork #####
-		* Various classes was moved between namespaces
-		* Various classes have a different name (acording H3.2 names)
-		* ISession
+	##### Possible Breaking Changes for external frameworks #####
+		* Various classes were moved between namespaces
+		* Various classes have been renamed (to match Hibernate 3.2 names)
+		* ISession interface have additional methods
 		* ICacheProvider
 		* ICriterion
 		* CriteriaQueryTranslator
 
 	##### Initialization time #####
-		* <nhibernate> section, in App.config, is ignored (no more supported)
+		* <nhibernate> section, in App.config, is no longer supported and will be ignored. Configuration schema for configuration file and App.config is now identical, and the App.config section name is: <hibernate-configuration>
 		* <hibernate-configuration> have a different schema and all properties names are cheked
 		* configuration properties are no longer prefixed by "hibernate.", if before you would specify "hibernate.dialect", now you specify just "dialect"
-		* Will perform validation on all named queries at initialization time, and throw exception if any is not valid (you can deactivate it)
-		* More deep check of proxyable classes (all public methods must be virtual)
+		* All named queries will be validated at initialization time, an exception will be thrown if any is not valid (can be disabled if needed)
+		* Stricter checks for proxying classes (all public methods must be virtual)
 
 	##### Run time #####
-		* SaveOrUpdateCopy() returns a new instance of the entity without change the original
-		* No AutoFlush outside a transaction - Database transactions are never optional, all communication with a database has to occur inside a transaction, no matter if you read or write data.
+		* SaveOrUpdateCopy() returns a new instance of the entity without changing the original
+		* AutoFlush will not occur outside a transaction - Database transactions are never optional, all communication with the database must occur inside a transaction, whatever you read or write data.
 		* NHibernate will return long for count(*) queries on SQL Server
 		* <formula> must contain parenthesis when needed
 		* The HQL functions names may cause conflic in your HQL (reserved names are: substring,locate,trim,length,bit_length,coalesce,nullif,abs,mod,sqrt,upper,lower,cast,extract,concat,current_timestamp,sysdate,second,minute,hour,day,month,year,str)
-		* <any> when meta-type="class" the persistent type is a string containing the Class.FullName (to set a parameter in a query you must use SetParameter("paraName", typeof(YourClass).FullName, NHibernateUtil.ClassMetaType) )
+		* <any> when meta-type="class" the persistent type is a string containing the Class.FullName (In order to set a parameter in a query you must use SetParameter("paraName", typeof(YourClass).FullName, NHibernateUtil.ClassMetaType) )
 
 	##### Mapping #####
-		* <any> : default meta-type is "string" (no more "class") 
+		* <any> : default meta-type is "string" (was "class") 
 		
 Build 2.0.0.Beta2
 ========================
