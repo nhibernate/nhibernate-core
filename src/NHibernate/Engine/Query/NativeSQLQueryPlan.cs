@@ -131,6 +131,8 @@ namespace NHibernate.Engine.Query
 				throw new ArgumentException("callable not yet supported for native queries");
 			}
 
+			RowSelection selection = queryParameters.RowSelection;
+
 			int result;
 			try
 			{
@@ -142,6 +144,11 @@ namespace NHibernate.Engine.Query
 
 				try
 				{
+					if (selection != null && selection.Timeout != RowSelection.NoValue)
+					{
+						// NH Difference : set Timeout for native query
+						ps.CommandTimeout = selection.Timeout;
+					}
 					int col = 0; // NH Different (initialized to 1 in JAVA)
 					col += BindPositionalParameters(ps, queryParameters, col, session);
 					BindNamedParameters(ps, queryParameters.NamedParameters, col, session);
