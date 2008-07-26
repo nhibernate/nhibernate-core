@@ -68,11 +68,25 @@
 			debug="${build.debug}"
 			keyfile="${key.file}"
 			output="${bin.dir}/${project::get-name()}.dll"
+			if="${sign}"
 		>
 			<sources refid="project.sources" />
 			<references refid="project.references" />
 			<resources refid="project.resources" />
 		</csc>
+
+		<csc 
+			target="library"
+			define="${current.build.defines}"
+			debug="${build.debug}"
+			output="${bin.dir}/${project::get-name()}.dll"
+			unless="${sign}"
+		>
+			<sources refid="project.sources" />
+			<references refid="project.references" />
+			<resources refid="project.resources" />
+		</csc>
+
 
 		<copy 
 			file="App.config"
@@ -93,6 +107,7 @@
 			keyfile="${key.file}"
 			output="${bin.dir}/${project::get-name()}.dll" 
 			doc="${bin.dir}/${project::get-name()}.xml"
+			if="${sign}"
 		>
 			<nowarn>
 				<warning number="1591" /> <!-- No XML comment for publicly visible member -->
@@ -101,6 +116,23 @@
 			<references refid="project.references" />
 			<resources refid="project.resources" />
 		</csc>
+
+		<csc
+			target="library" 
+			define="${current.build.defines}" 
+			debug="${build.debug}" 
+			output="${bin.dir}/${project::get-name()}.dll" 
+			doc="${bin.dir}/${project::get-name()}.xml"
+			unless="${sign}"
+		>
+			<nowarn>
+				<warning number="1591" /> <!-- No XML comment for publicly visible member -->
+			</nowarn>
+			<sources refid="project.sources" />
+			<references refid="project.references" />
+			<resources refid="project.resources" />
+		</csc>
+
 	</target>
 
 	<target name="common.compile-exe"
@@ -113,6 +145,22 @@
 			define="${current.build.defines}" 
 			debug="${build.debug}"
 			output="${bin.dir}/${project::get-name()}.exe" 
+			if="${sign}"
+		>
+			<nowarn>
+				<warning number="1591" /> <!-- No XML comment for publicly visible member -->
+			</nowarn>
+			<sources refid="project.sources" />
+			<references refid="project.references" />
+			<resources refid="project.resources" />
+		</csc>
+
+		<csc
+			target="exe"
+			define="${current.build.defines}" 
+			debug="${build.debug}"
+			output="${bin.dir}/${project::get-name()}.exe" 
+			unless="${sign}"
 		>
 			<nowarn>
 				<warning number="1591" /> <!-- No XML comment for publicly visible member -->
