@@ -1,7 +1,7 @@
 <chapter id="best-practices" revision="3">
     <title>Best Practices</title>
-
-    <variablelist spacing="compact">
+    
+    <variablelist>
         <varlistentry>
             <term>Write fine-grained classes and map them using <literal>&lt;component&gt;</literal>.</term>
             <listitem>
@@ -27,9 +27,9 @@
             <term>Place each class mapping in its own file.</term>
             <listitem>
                 <para>
-                     Don't use a single monolithic mapping document. Map <literal>Eg.Foo</literal> in 
-                     the file <literal>Eg/Foo.hbm.xml</literal>. This makes particularly good sense in 
-                     a team environment.
+                    Don't use a single monolithic mapping document. Map <literal>Eg.Foo</literal> in 
+                    the file <literal>Eg/Foo.hbm.xml</literal>. This makes particularly good sense in 
+                    a team environment.
                 </para>
             </listitem>
         </varlistentry>
@@ -55,9 +55,9 @@
             <term>Use parameters.</term>
             <listitem>
                 <para>
-                     As in ADO.NET, always replace non-constant values by "?". Never use string manipulation to 
-                     bind a non-constant value in a query! Even better, consider using named parameters in
-                     queries.
+                    As in ADO.NET, always replace non-constant values by "?". Never use string manipulation to 
+                    bind a non-constant value in a query! Even better, consider using named parameters in
+                    queries.
                 </para>
             </listitem>
         </varlistentry>
@@ -198,6 +198,6 @@
             </listitem>
         </varlistentry>
     </variablelist>
-
+    
 </chapter>
 

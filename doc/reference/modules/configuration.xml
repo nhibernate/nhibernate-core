@@ -1,5 +1,5 @@
 <chapter id="session-configuration">
-
+    
     <title>ISessionFactory Configuration</title>
     
     <para>
@@ -10,10 +10,10 @@
         that shows the various options. You usually only have to put that file in your
         project and customize it.
     </para>
-
+    
     <sect1 id="configuration-programmatic">
         <title>Programmatic Configuration</title>
-
+        
         <para>
             An instance of <literal>NHibernate.Cfg.Configuration</literal>
             represents an entire set of mappings of an application's .NET types to a
@@ -21,26 +21,26 @@
             (immutable) <literal>ISessionFactory</literal>. The mappings are compiled
             from various XML mapping files.
         </para>
-
+        
         <para>
             You may obtain a <literal>Configuration</literal> instance by
             instantiating it directly. Heres an example of setting up a datastore from 
             mappings defined in two XML configuration files:
         </para>
-
+        
         <programlisting><![CDATA[Configuration cfg = new Configuration()
     .AddFile("Item.hbm.xml")
     .AddFile("Bid.hbm.xml");]]></programlisting>
-
+        
         <para>
             An alternative (sometimes better) way is to let NHibernate load a mapping file
             from an embedded resource:
         </para>
-
+        
         <programlisting><![CDATA[Configuration cfg = new Configuration()
     .AddClass(typeof(NHibernate.Auction.Item))
     .AddClass(typeof(NHibernate.Auction.Bid));]]></programlisting>
-
+        
         <para>
             Then NHibernate will look for mapping files named
             <literal>NHibernate.Auction.Item.hbm.xml</literal> and
@@ -53,10 +53,10 @@
             Another alternative (probably the best) way is to let NHibernate load all of 
             the mapping files contained in an Assembly:
         </para>
-
+        
         <programlisting><![CDATA[Configuration cfg = new Configuration()
     .AddAssembly( "NHibernate.Auction" );]]></programlisting>
-
+        
         <para>
             Then NHibernate will look through the assembly for any resources that
             end with <literal>.hbm.xml</literal>.  This approach eliminates 
@@ -73,71 +73,71 @@
         <para>
             A <literal>Configuration</literal> also specifies various optional properties:
         </para>
-
+        
         <programlisting><![CDATA[IDictionary props = new Hashtable();
 ...
 Configuration cfg = new Configuration()
     .AddClass(typeof(NHibernate.Auction.Item))
     .AddClass(typeof(NHibernate.Auction.Bind))
     .SetProperties(props);]]></programlisting>
-
+        
         <para>
             A <literal>Configuration</literal> is intended as a configuration-time object, to be
             discarded once an <literal>ISessionFactory</literal> is built.
         </para>
-
+        
     </sect1>
     
     <sect1 id="configuration-sessionfactory">
         <title>Obtaining an ISessionFactory</title>
-
+        
         <para>
             When all mappings have been parsed by the <literal>Configuration</literal>, the application
             must obtain a factory for <literal>ISession</literal> instances. This factory is intended
             to be shared by all application threads:
         </para>
-
+        
         <programlisting><![CDATA[ISessionFactory sessions = cfg.BuildSessionFactory();]]></programlisting>
-
+        
         <para>
             However, NHibernate does allow your application to instantiate more than one
             <literal>ISessionFactory</literal>. This is useful if you are using more than one database.
         </para>
-
+        
     </sect1>
-
+    
     <sect1 id="configuration-userjdbc">
         <title>User provided ADO.NET connection</title>
-
+        
         <para>
             An <literal>ISessionFactory</literal> may open an <literal>ISession</literal> on 
             a user-provided ADO.NET connection. This design choice frees the application to 
             obtain ADO.NET connections wherever it pleases:
         </para>
-
+        
         <programlisting><![CDATA[IDbConnection conn = myApp.GetOpenConnection();
 ISession session = sessions.OpenSession(conn);
 
 // do some data access work]]></programlisting>
-
+        
         <para>
             The application must be careful not to open two concurrent
             <literal>ISession</literal>s on the same ADO.NET connection!
         </para>
-
+        
     </sect1>
-
-
+    
+    
     <sect1 id="configuration-hibernatejdbc">
         <title>NHibernate provided ADO.NET connection</title>
-
+        
         <para>
             Alternatively, you can have the <literal>ISessionFactory</literal>
             open connections for you. The <literal>ISessionFactory</literal>
             must be provided with ADO.NET connection properties in one of the
             following ways:
         </para>
-
+        
         <orderedlist spacing="compact">
             <listitem>
                 <para>
@@ -170,25 +170,25 @@ ISession session = sessions.OpenSession(conn);
                 </para>
             </listitem>
         </orderedlist>
-
+        
         <para>
             If you take this approach, opening an <literal>ISession</literal> is as simple as:
         </para>
-
+        
         <programlisting><![CDATA[ISession session = sessions.OpenSession(); // open a new Session
 // do some data access work, an ADO.NET connection will be used on demand]]></programlisting>
-
+        
         <para>
             All NHibernate property names and semantics are defined on the class 
             <literal>NHibernate.Cfg.Environment</literal>. We will now describe the most
             important settings for ADO.NET connection configuration.
         </para>
-
+        
         <para>
             NHibernate will obtain (and pool) connections using an ADO.NET data provider
             if you set the following properties:
         </para>
-
+        
         <table frame="topbot">
             <title>NHibernate ADO.NET Properties</title>
             <tgroup cols="2">
@@ -200,121 +200,121 @@ ISession session = sessions.OpenSession(conn);
                         <entry>Purpose</entry>
                     </row>
                 </thead>
-            <tbody>
-            <row>
-                <entry>
-                    <literal>hibernate.connection.provider_class</literal>
-                </entry>
-                <entry>
-                    The type of a custom <literal>IConnectionProvider</literal>.
-                    <para>
-                        <emphasis role="strong">eg.</emphasis> 
-                        <literal>full.classname.of.ConnectionProvider</literal> if the Provider 
-                        is built into NHibernate, or <literal>full.classname.of.ConnectionProvider, 
-                        assembly</literal> if using an implementation of <literal>IConnectionProvider</literal>
-                        not included in NHibernate.
-                    </para>
-                </entry>
-            </row>
-            <row>
-                <entry>
-                    <literal>hibernate.connection.driver_class</literal>
-                </entry>
-                <entry>
-                    The type of a custom <literal>IDriver</literal>, if using <literal>DriverConnectionProvider</literal>.
-                    <para>
-                        <literal>full.classname.of.Driver</literal> if the Driver 
-                        is built into NHibernate, or <literal>full.classname.of.Driver, assembly</literal> 
-                        if using an implementation of IDriver not included in NHibernate.
-                    </para>
-                    <para>
-                        This is usually not needed, most of the time the <literal>hibernate.dialect</literal> will
-                        take care of setting the <literal>IDriver</literal> using a sensible default.  See the API
-                        documentation of the specific dialect for the defaults.
-                    </para>
-                </entry>
-            </row>
-            <row>
-                <entry>
-                    <literal>hibernate.connection.connection_string</literal>
-                </entry>
-                <entry>
-                    Connection string to use to obtain the connection.
-                </entry>
-            </row>
-            <row>
-                <entry>
-                    <literal>hibernate.connection.connection_string_name</literal>
-                </entry>
-                <entry>
-                    The name of the connection string (defined in <literal>&lt;connectionStrings&gt;</literal>
-                    configuration file element) to use to obtain the connection.
-                </entry>
-            </row>
-            <row>
-                <entry>
-                    <literal>hibernate.connection.isolation</literal>
-                </entry>
-                <entry>
-                    Set the ADO.NET transaction isolation level. Check
-                    <literal>System.Data.IsolationLevel</literal> for meaningful values 
-                    and the database's documentation to ensure that level is supported.
-                    <para>
-                        <emphasis role="strong">eg.</emphasis> 
-                        <literal>Chaos, ReadCommitted, ReadUncommitted, RepeatableRead, Serializable, Unspecified </literal>
-                    </para>
-                </entry>
-            </row>
-            <row>
-                <entry>
-                    <literal>hibernate.connection.release_mode</literal>
-                </entry>
-                <entry>
-                    Specify when NHibernate should release ADO.NET connections.
-                    See <xref linkend="transactions-connection-release" />.
-                    <para>
-                        <emphasis role="strong">eg.</emphasis> 
-                        <literal>auto</literal> (default) | <literal>on_close</literal> |
-                        <literal>after_transaction</literal>
-                    </para>
-                    <para>
-                        Note that this setting only affects <literal>ISession</literal>s returned from
-                        <literal>ISessionFactory.OpenSession</literal>.  For <literal>ISession</literal>s
-                        obtained through <literal>ISessionFactory.GetCurrentSession</literal>, the
-                        <literal>ICurrentSessionContext</literal> implementation configured for use
-                        controls the connection release mode for those <literal>ISession</literal>s.
-                        See <xref linkend="architecture-current-session"/>.
-                    </para>
-                </entry>
-            </row>
-            <row>
-                <entry>
-                    <literal>hibernate.command_timeout</literal>
-                </entry>
-                <entry>
-                    Specify the default timeout of <literal>IDbCommands</literal>
-                    generated by NHibernate.
-                </entry>
-            </row>
-            <row>
-                <entry>
-                    <literal>hibernate.adonet.batch_size</literal>
-                </entry>
-                <entry>
-                    Specify the batch size to use when batching update statements. Setting this to 0
-                    (the default) disables the functionality.
-                    See <xref linkend="performance-batch-updates" />.
-                </entry>
-            </row>
-            </tbody>
+                <tbody>
+                    <row>
+                        <entry>
+                            <literal>hibernate.connection.provider_class</literal>
+                        </entry>
+                        <entry>
+                            The type of a custom <literal>IConnectionProvider</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis> 
+                                <literal>full.classname.of.ConnectionProvider</literal> if the Provider 
+                                is built into NHibernate, or <literal>full.classname.of.ConnectionProvider, 
+                                    assembly</literal> if using an implementation of <literal>IConnectionProvider</literal>
+                                not included in NHibernate.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>hibernate.connection.driver_class</literal>
+                        </entry>
+                        <entry>
+                            The type of a custom <literal>IDriver</literal>, if using <literal>DriverConnectionProvider</literal>.
+                            <para>
+                                <literal>full.classname.of.Driver</literal> if the Driver 
+                                is built into NHibernate, or <literal>full.classname.of.Driver, assembly</literal> 
+                                if using an implementation of IDriver not included in NHibernate.
+                            </para>
+                            <para>
+                                This is usually not needed, most of the time the <literal>hibernate.dialect</literal> will
+                                take care of setting the <literal>IDriver</literal> using a sensible default.  See the API
+                                documentation of the specific dialect for the defaults.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>hibernate.connection.connection_string</literal>
+                        </entry>
+                        <entry>
+                            Connection string to use to obtain the connection.
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>hibernate.connection.connection_string_name</literal>
+                        </entry>
+                        <entry>
+                            The name of the connection string (defined in <literal>&lt;connectionStrings&gt;</literal>
+                            configuration file element) to use to obtain the connection.
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>hibernate.connection.isolation</literal>
+                        </entry>
+                        <entry>
+                            Set the ADO.NET transaction isolation level. Check
+                            <literal>System.Data.IsolationLevel</literal> for meaningful values 
+                            and the database's documentation to ensure that level is supported.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis> 
+                                <literal>Chaos, ReadCommitted, ReadUncommitted, RepeatableRead, Serializable, Unspecified </literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>hibernate.connection.release_mode</literal>
+                        </entry>
+                        <entry>
+                            Specify when NHibernate should release ADO.NET connections.
+                            See <xref linkend="transactions-connection-release" />.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis> 
+                                <literal>auto</literal> (default) | <literal>on_close</literal> |
+                                <literal>after_transaction</literal>
+                            </para>
+                            <para>
+                                Note that this setting only affects <literal>ISession</literal>s returned from
+                                <literal>ISessionFactory.OpenSession</literal>.  For <literal>ISession</literal>s
+                                obtained through <literal>ISessionFactory.GetCurrentSession</literal>, the
+                                <literal>ICurrentSessionContext</literal> implementation configured for use
+                                controls the connection release mode for those <literal>ISession</literal>s.
+                                See <xref linkend="architecture-current-session"/>.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>hibernate.command_timeout</literal>
+                        </entry>
+                        <entry>
+                            Specify the default timeout of <literal>IDbCommands</literal>
+                            generated by NHibernate.
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>hibernate.adonet.batch_size</literal>
+                        </entry>
+                        <entry>
+                            Specify the batch size to use when batching update statements. Setting this to 0
+                            (the default) disables the functionality.
+                            See <xref linkend="performance-batch-updates" />.
+                        </entry>
+                    </row>
+                </tbody>
             </tgroup>
         </table>
-
+        
         <para>
             This is an example of how to specify the database connection properties inside a 
             <literal>web.config</literal>:
         </para>
-
+        
         <programlisting id="we-config-configuration" revision="1"><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 <configuration>
     <configSections>
@@ -348,19 +348,19 @@ ISession session = sessions.OpenSession(conn);
     
     <!-- other app specific config follows -->
 </configuration>]]></programlisting>
-
+        
         <para>
             NHibernate relies on the ADO.NET data provider implementation of connection pooling.
         </para>
-
+        
         <para>
             You may define your own plugin strategy for obtaining ADO.NET connections by implementing the
             interface <literal>NHibernate.Connection.IConnectionProvider</literal>. You may select
             a custom implementation by setting <literal>hibernate.connection.provider_class</literal>.
         </para>
-
+        
     </sect1>
-
+    
     <sect1 id="configuration-optional">
         <title>Optional configuration properties</title>
         
@@ -368,7 +368,7 @@ ISession session = sessions.OpenSession(conn);
             There are a number of other properties that control the behaviour of NHibernate
             at runtime. All are optional and have reasonable default values.
         </para>
-
+        
         <para>
             System-level properties can only be set manually by setting static properties of
             <literal>NHibernate.Cfg.Environment</literal> class or be defined in the
@@ -378,7 +378,7 @@ ISession session = sessions.OpenSession(conn);
             <literal>&lt;hibernate-configuration&gt;</literal> section of the application configuration
             file.
         </para>
-
+        
         <table frame="topbot" id="configuration-optional-properties" revision="3">
             <title>NHibernate Configuration Properties</title>
             <tgroup cols="2">
@@ -469,7 +469,7 @@ ISession session = sessions.OpenSession(conn);
                             Specifies the bytecode provider to use to optimize the use of reflection in NHibernate.
                             Use <literal>null</literal> to disable the optimization completely, <literal>lcg</literal>
                             to use lightweight code generation (supported on .NET 2.0 only), and <literal>
-                            codedom</literal> to use CodeDOM-based code generation (supported on .NET 1.1, has problems
+                                codedom</literal> to use CodeDOM-based code generation (supported on .NET 1.1, has problems
                             with generic types on .NET 2.0). 
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
@@ -609,10 +609,10 @@ ISession session = sessions.OpenSession(conn);
                 </tbody>
             </tgroup>
         </table>
-
+        
         <sect2 id="configuration-optional-dialects">
             <title>SQL Dialects</title>
-
+            
             <para>
                 You should always set the <literal>hibernate.dialect</literal> property to the correct
                 <literal>NHibernate.Dialect.Dialect</literal> subclass for your database. This is not
@@ -622,7 +622,7 @@ ISession session = sessions.OpenSession(conn);
                 However, if you specify a dialect, NHibernate will use sensible defaults for some of the
                 other properties listed above, saving you the effort of specifying them manually.
             </para>
-
+            
             <table frame="topbot" id="sql-dialects" revision="2">
                 <title>NHibernate SQL Dialects (<literal>hibernate.dialect</literal>)</title>
                 <tgroup cols="2">
@@ -750,38 +750,38 @@ ISession session = sessions.OpenSession(conn);
                     </tbody>
                 </tgroup>
             </table>
-
+            
             <para>
                 Additional dialects may be available in the NHibernateContrib package (see
                 <xref linkend="part-contrib" />). At the time of writing this package contains
                 support for Microsoft Access (Jet) database engine.
             </para>
-
+            
         </sect2>
-
+        
         <sect2 id="configuration-optional-outerjoin">
             <title>Outer Join Fetching</title>
-
+            
             <para>
                 If your database supports ANSI or Oracle style outer joins, <emphasis>outer join
-                fetching</emphasis> might increase performance by limiting the number of round
+                    fetching</emphasis> might increase performance by limiting the number of round
                 trips to and from the database (at the cost of possibly more work performed by
                 the database itself). Outer join fetching allows a graph of objects connected
                 by many-to-one, one-to-many or one-to-one associations to be retrieved in a single
                 SQL <literal>SELECT</literal>.
             </para>
-
+            
             <para>
                 By default, the fetched graph when loading an objects ends at leaf objects,
                 collections, objects with proxies, or where circularities occur.
             </para>
-
+            
             <para>
                 For a <emphasis>particular  association</emphasis>, fetching may be configured
                 (and the default behaviour overridden) by setting the <literal>fetch</literal>
                 attribute in the XML mapping.
             </para>
-
+            
             <para>
                 Outer join fetching may be disabled <emphasis>globally</emphasis> by setting
                 the property <literal>hibernate.max_fetch_depth</literal> to <literal>0</literal>.
@@ -793,17 +793,17 @@ ISession session = sessions.OpenSession(conn);
             <para>
                 See <xref linkend="performance-fetching"/> for more information.
             </para>
-
+            
             <para>
                 In NHibernate 1.0, <literal>outer-join</literal> attribute could be used to achieve
                 a similar effect. This attribute is now deprecated in favor of <literal>fetch</literal>.
             </para>
-
+            
         </sect2>
-
+        
         <sect2 id="configuration-optional-cacheprovider">
             <title>Custom <literal>ICacheProvider</literal></title>
-
+            
             <para>
                 You may integrate a process-level (or clustered) second-level cache system by
                 implementing the interface <literal>NHibernate.Cache.ICacheProvider</literal>.
@@ -811,48 +811,48 @@ ISession session = sessions.OpenSession(conn);
                 <literal>hibernate.cache.provider_class</literal>. See the 
                 <xref linkend="performance-cache"/> for more details.
             </para>
-
+            
         </sect2>
-
+        
         <sect2 id="configuration-optional-querysubstitution">
             <title>Query Language Substitution</title>
-
+            
             <para>
                 You may define new NHibernate query tokens using <literal>hibernate.query.substitutions</literal>.
                 For example:
             </para>
-
+            
             <programlisting>hibernate.query.substitutions true=1, false=0</programlisting>
-
+            
             <para>
                 would cause the tokens <literal>true</literal> and <literal>false</literal> to be translated to
                 integer literals in the generated SQL.
             </para>
-
+            
             <programlisting>hibernate.query.substitutions toLowercase=LOWER</programlisting>
-
+            
             <para>
                 would allow you to rename the SQL <literal>LOWER</literal> function.
             </para>
-
+            
         </sect2>
-
+        
     </sect1>
-
+    
     <sect1 id="configuration-logging">
         <title>Logging</title>
-
+        
         <para>
             NHibernate logs various events using Apache log4net.
         </para>
-
+        
         <para>
             You may download log4net from <literal>http://logging.apache.org/log4net/</literal>.
             To use log4net you will need a <literal>log4net</literal> configuration section in
             the application configuration file.  An example of the configuration section is
             distributed with NHibernate in the <literal>src/NHibernate.Test</literal> project.
         </para>
-
+        
         <para>
             We strongly recommend that you familiarize yourself with NHibernate's log
             messages. A lot of work has been put into making the NHibernate log as
@@ -863,15 +863,15 @@ ISession session = sessions.OpenSession(conn);
         </para>
         
     </sect1>
-
+    
     <sect1 id="configuration-namingstrategy">
         <title>Implementing an <literal>INamingStrategy</literal></title>
-
+        
         <para>
             The interface <literal>NHibernate.Cfg.INamingStrategy</literal> allows you
             to specify a "naming standard" for database objects and schema elements.
         </para>
-
+        
         <para>
             You may provide rules for automatically generating database identifiers from
             .NET identifiers or for processing "logical" column and table names given in
@@ -880,40 +880,40 @@ ISession session = sessions.OpenSession(conn);
             (<literal>TBL_</literal> prefixes, for example). The default strategy used by
             NHibernate is quite minimal.
         </para>
-
+        
         <para>
             You may specify a different strategy by calling
             <literal>Configuration.SetNamingStrategy()</literal> before adding mappings:
         </para>
-
+        
         <programlisting><![CDATA[ISessionFactory sf = new Configuration()
     .SetNamingStrategy(ImprovedNamingStrategy.Instance)
     .AddFile("Item.hbm.xml")
     .AddFile("Bid.hbm.xml")
     .BuildSessionFactory();]]></programlisting>
-    
+        
         <para>
             <literal>NHibernate.Cfg.ImprovedNamingStrategy</literal> is a built-in
             strategy that might be a useful starting point for some applications.
         </para>
-
+        
     </sect1>
-
+    
     <sect1 id="configuration-xmlconfig">
         <title>XML Configuration File</title>
-
+        
         <para>
             An alternative approach is to specify a full configuration in a file named
             <literal>hibernate.cfg.xml</literal>. This file can be used as a replacement
             for the <literal>&lt;nhibernate;&gt;</literal> or <literal>&lt;hibernate-configuration&gt;</literal>
             sections of the application configuration file.
         </para>
-
+        
         <para>
             The XML configuration file is by default expected to be in your application directory.
             Here is an example:
         </para>
-
+        
         <programlisting><![CDATA[<?xml version='1.0' encoding='utf-8'?>
 <hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
 
@@ -935,22 +935,22 @@ ISession session = sessions.OpenSession(conn);
     </session-factory>
 
 </hibernate-configuration>]]></programlisting>
-
-       <para>
-           Configuring NHibernate is then as simple as
-       </para>
-
-       <programlisting><![CDATA[ISessionFactory sf = new Configuration().Configure().BuildSessionFactory();]]></programlisting>
-
-       <para>
-           You can pick a different XML configuration file using
-       </para>
-
-       <programlisting id="configuration-xmlconfig-ex3" revision="1"><![CDATA[ISessionFactory sf = new Configuration()
+        
+        <para>
+            Configuring NHibernate is then as simple as
+        </para>
+        
+        <programlisting><![CDATA[ISessionFactory sf = new Configuration().Configure().BuildSessionFactory();]]></programlisting>
+        
+        <para>
+            You can pick a different XML configuration file using
+        </para>
+        
+        <programlisting id="configuration-xmlconfig-ex3" revision="1"><![CDATA[ISessionFactory sf = new Configuration()
     .Configure("/path/to/config.cfg.xml")
     .BuildSessionFactory();]]></programlisting>
-
+        
     </sect1>
-
+    
 </chapter>
 

@@ -1,6 +1,6 @@
 <preface id="preface" revision="1">
 	<title>Preface</title>
-
+	
 	<para>
 		Working with object-oriented software and a relational database can be cumbersome
 		and time consuming in today's enterprise environments. NHibernate is an object/relational
@@ -8,14 +8,14 @@
 		the technique of mapping a data representation from an object model to a relational
 		data model with a SQL-based schema.
 	</para>
-
+	
 	<para>
 		NHibernate not only takes care of the mapping from .NET classes to
 		database tables (and from .NET data types to SQL data types), but also provides data
 		query and retrieval facilities and can significantly reduce development time otherwise
 		spent with manual data handling in SQL and ADO.NET.
 	</para>
-
+	
 	<para>
 		NHibernate's goal is to relieve the developer from 95 percent of common data persistence
 		related programming tasks. NHibernate may not be the best solution for data-centric
@@ -25,12 +25,12 @@
 		encapsulate vendor-specific SQL code and will help with the common task of result set
 		translation from a tabular representation to a graph of objects.
 	</para>
-
+	
 	<para>
 		If you are new to NHibernate and Object/Relational Mapping or even .NET Framework,
 		please follow these steps:
 	</para>
-
+	
 	<orderedlist>
 		<listitem>
 			<para>
@@ -48,17 +48,17 @@
 			<para>
 				Use this reference documentation as your primary source of information.
 				Consider reading <emphasis>Hibernate in Action</emphasis>
-				(<ulink url="http://www.manning.com/bauer/" />)
+				(<ulink url="http://www.manning.com/bauer/"/>)
 				or the work-in-progress <emphasis>NHibernate in Action</emphasis>
-				(<ulink url="http://www.manning.com/kuate/" />) if you need more help
+				(<ulink url="http://www.manning.com/kuate/"/>) if you need more help
 				with application design or if you prefer a step-by-step tutorial. Also visit
-				<ulink url="http://nhibernate.sourceforge.net/NHibernateEg/" /> for NHibernate
+				<ulink url="http://nhibernate.sourceforge.net/NHibernateEg/"/> for NHibernate
 				tutorial with examples.
 			</para>
 		</listitem>
 		<listitem>
 			<para>
-				FAQs are answered on the <ulink url="http://www.nhibernate.org/">NHibernate website</ulink>.
+				FAQs are answered on the <ulink url="http://blogs.hibernatingrhinos.com/nhibernate/Default.aspx">NHibernate community blog</ulink>.
 			</para>
 		</listitem>
 		<listitem>
@@ -74,15 +74,15 @@
 				Forms).
 			</para>
 		</listitem>
-	 </orderedlist>
-
-	 <para>
-		 If you have questions, use the
-		 <ulink url="http://forum.hibernate.org/viewforum.php?f=25">NHibernate user forum</ulink>.
-		 We also provide a <ulink url="http://jira.nhibernate.org/">JIRA issue trackings system</ulink>
-		 for bug reports and feature requests.
-		 If you are interested in the development of NHibernate, join the developer mailing list.
-		 If you are interested in translating this documentation into your language, contact us
-		 on the <ulink url="http://sourceforge.net/mail/?group_id=29446">developer mailing list</ulink>.
-	 </para>
+	</orderedlist>
+	
+	<para>
+		If you have questions, use the
+		<ulink url="http://groups.google.com/group/nhusers">NHibernate group</ulink>.
+		We also provide a <ulink url="http://jira.nhibernate.org/">JIRA issue trackings system</ulink>
+		for bug reports and feature requests.
+		If you are interested in the development of NHibernate, join the developer mailing list.
+		If you are interested in translating this documentation into your language, contact us
+		on the <ulink url="http://sourceforge.net/mail/?group_id=29446">developer mailing list</ulink>.
+	</para>
 </preface>

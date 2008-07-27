@@ -1,14 +1,14 @@
 <chapter id="architecture">
-
+    
     <title>Architecture</title>
-
+    
     <sect1 id="architecture-overview">
         <title>Overview</title>
         
         <para>
             A (very) high-level view of the NHibernate architecture:
         </para>
-
+        
         <mediaobject>
             <imageobject role="fo">
                 <imagedata fileref="images/overview.svg" format="SVG" align="center"/>
@@ -17,15 +17,15 @@
                 <imagedata fileref="../shared/images/overview.gif" format="GIF" align="center"/>
             </imageobject>
             <imageobject role="chm">
-                <imagedata fileref="shared/images/overview.gif" format="GIF" align="center"/>
+                <imagedata fileref="../shared/images/overview.gif" format="GIF" align="center"/>
             </imageobject>
         </mediaobject>
-
+        
         <para>
             This diagram shows NHibernate using the database and configuration data to
             provide persistence services (and persistent objects) to the application.
         </para>
-
+        
         <para>
             We would like to show a more detailed view of the runtime architecture.
             Unfortunately, NHibernate is flexible and supports several approaches. We will
@@ -33,7 +33,7 @@
             provide its own ADO.NET connections and manage its own transactions. This approach
             uses a minimal subset of NHibernate's APIs:
         </para>
-
+        
         <mediaobject>
             <imageobject role="fo">
                 <imagedata fileref="images/lite.svg" format="SVG" align="center"/>
@@ -42,15 +42,15 @@
                 <imagedata fileref="../shared/images/lite.gif" format="GIF" align="center"/>
             </imageobject>
             <imageobject role="chm">
-                <imagedata fileref="shared/images/lite.gif" format="GIF" align="center"/>
+                <imagedata fileref="../shared/images/lite.gif" format="GIF" align="center"/>
             </imageobject>
         </mediaobject>
-
+        
         <para>
             The "full cream" architecture abstracts the application away from the
             underlying ADO.NET APIs and lets NHibernate take care of the details.
         </para>
-
+        
         <mediaobject>
             <imageobject role="fo">
                 <imagedata fileref="images/full_cream.svg" format="SVG" align="center"/>
@@ -59,14 +59,14 @@
                 <imagedata fileref="../shared/images/full_cream.gif" format="GIF" align="center"/>
             </imageobject>
             <imageobject role="chm">
-                <imagedata fileref="shared/images/full_cream.gif" format="GIF" align="center"/>
+                <imagedata fileref="../shared/images/full_cream.gif" format="GIF" align="center"/>
             </imageobject>
         </mediaobject>
-
+        
         <para>
             Heres some definitions of the objects in the diagrams:
-
-            <variablelist spacing="compact">
+            
+            <variablelist>
                 <varlistentry>
                     <term>ISessionFactory (<literal>NHibernate.ISessionFactory</literal>)</term>
                     <listitem>
@@ -157,14 +157,14 @@
                 </varlistentry>
             </variablelist>
         </para>
-
+        
         <para>
             Given a "lite" architecture, the application bypasses the
             <literal>ITransaction</literal>/<literal>ITransactionFactory</literal> and/or
             <literal>IConnectionProvider</literal> APIs to talk to ADO.NET directly.
         </para>
     </sect1>
-
+    
     <sect1 id="architecture-states">
         <title>Instance states</title>
         <para>
@@ -173,7 +173,7 @@
             The NHibernate <literal>ISession</literal> object is the persistence context:
         </para>
         
-       <variablelist spacing="compact">
+        <variablelist>
             <varlistentry>
                 <term>transient</term>
                 <listitem>
@@ -214,7 +214,7 @@
             </varlistentry>
         </variablelist>
     </sect1>    
-
+    
     <sect1 id="architecture-current-session">
         <title>Contextual Sessions</title>
         <para>
@@ -237,7 +237,7 @@
             tracking the current contextual session.  Out-of-the-box, NHibernate 1.2.1 comes with several
             implementations of this interface:
         </para>
-
+        
         <itemizedlist>
             <listitem>
                 <para>
@@ -251,8 +251,8 @@
                 <para>
                     <literal>NHibernate.Context.CallSessionContext</literal> - current sessions are tracked
                     by <literal>CallContext</literal>. You are responsible to bind and unbind an <literal>
-                    ISession</literal> instance with static methods of class <literal>CurrentSessionContext
-                    </literal>.
+                        ISession</literal> instance with static methods of class <literal>CurrentSessionContext
+                        </literal>.
                 </para>
             </listitem>
             <listitem>
@@ -266,13 +266,13 @@
             <listitem>
                 <para>
                     <literal>NHibernate.Context.WebSessionContext</literal> - analogous to <literal>
-                    ManagedWebSessionContext</literal> above, stores the current session in <literal>
-                    HttpContext</literal>. You are responsible to bind and unbind an <literal>ISession
-                    </literal> instance with static methods of class <literal>CurrentSessionContext</literal>.
+                        ManagedWebSessionContext</literal> above, stores the current session in <literal>
+                            HttpContext</literal>. You are responsible to bind and unbind an <literal>ISession
+                            </literal> instance with static methods of class <literal>CurrentSessionContext</literal>.
                 </para>
             </listitem>
         </itemizedlist>
-
+        
         <para>
             The <literal>hibernate.current_session_context_class</literal> configuration parameter
             defines which <literal>NHibernate.Context.ICurrentSessionContext</literal> implementation

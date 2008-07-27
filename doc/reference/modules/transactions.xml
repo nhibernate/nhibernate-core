@@ -1,6 +1,6 @@
 <chapter id="transactions">
     <title>Transactions And Concurrency</title>
-
+    
     <para>
         NHibernate is not itself a database. It is a lightweight object-relational
         mapping tool. Transaction management is delegated to the underlying database
@@ -9,7 +9,7 @@
         of the wider distributed transaction. NHibernate can be seen as a thin adapter
         to ADO.NET, adding object-oriented semantics.
     </para>
-
+    
     <sect1 id="transactions-basics">
         <title>Configurations, Sessions and Factories</title>
         <para>
@@ -20,23 +20,23 @@
             ASP.NET application, pages could obtain an <literal>ISessionFactory</literal> 
             using:
         </para>
-
+        
         <programlisting><![CDATA[ISessionFactory sf = Global.SessionFactory;]]></programlisting>
-
+        
         <para>
             Each call to a service method could create a new <literal>ISession</literal>,
             <literal>Flush()</literal> it, <literal>Commit()</literal> its transaction,
             <literal>Close()</literal> it and finally discard it. (The <literal>ISessionFactory</literal>
             may also be kept in <!-- Active Directory or --> a static <emphasis>Singleton</emphasis> helper variable.)
         </para>
-
+        
         <para>
             We use the NHibernate <literal>ITransaction</literal> API as discussed previously,
             a single <literal>Commit()</literal> of a NHibernate <literal>ITransaction</literal>
             flushes the state and commits any underlying database connection (with special
             handling of distributed transactions).
         </para>
-
+        
         <para>
             Ensure you understand the semantics of <literal>Flush()</literal>.
             Flushing synchronizes the persistent store with in-memory changes but
@@ -44,22 +44,22 @@
             connections/transactions, the transaction isolation level for that connection
             applies to all operations executed by NHibernate!
         </para>
-
+        
         <para>
             The next few sections will discuss alternative approaches that utilize versioning
             to ensure transaction atomicity. These are considered "advanced" approaches to
             be used with care.
         </para>
-
+        
     </sect1>
-
+    
     <sect1 id="transactions-threads">
         <title>Threads and connections</title>
-
+        
         <para>
             You should observe the following practices when creating NHibernate Sessions:
         </para>
-
+        
         <itemizedlist spacing="compact">
             <listitem>
                 <para>
@@ -84,18 +84,18 @@
             </listitem>
         </itemizedlist>
     </sect1>
-
+    
     <sect1 id="transactions-identity">
         <title>Considering object identity</title>
-
+        
         <para>
             The application may concurrently access the same persistent state in two
             different units-of-work. However, an instance of a persistent class is never shared
             between two <literal>ISession</literal> instances. Hence there are
             two different notions of identity:
         </para>
-
-        <variablelist spacing="compact">
+        
+        <variablelist >
             <varlistentry>
                 <term>Database Identity</term>
                 <listitem>
@@ -113,7 +113,7 @@
                 </listitem>
             </varlistentry>
         </variablelist>
-
+        
         <para>
             Then for objects attached to a <emphasis>particular</emphasis> <literal>Session</literal>,
             the two notions are equivalent. However, while the application might concurrently access
@@ -128,16 +128,16 @@
             compare objects).
         </para>
     </sect1>
-
+    
     <sect1 id="transactions-optimistic">
         <title>Optimistic concurrency control</title>
-
+        
         <para>
             Many business processes require a whole series of interactions with the user
             interleaved with database accesses. In web and enterprise applications it is
             not acceptable for a database transaction to span a user interaction.
         </para>
-
+        
         <para>
             Maintaining isolation of business processes becomes the partial responsibility
             of the application tier, hence we call this process a long running
@@ -146,22 +146,22 @@
             these database transactions (the last one) stores the updated data, all others
             simply read data.
         </para>
-
+        
         <para>
             The only approach that is consistent with high concurrency and high
             scalability is optimistic concurrency control with versioning. NHibernate
             provides for three possible approaches to writing application code that
             uses optimistic concurrency.
         </para>
-
+        
         <sect2 id="transactions-optimistic-longsession">
             <title>Long session with automatic versioning</title>
-
+            
             <para>
                 A single <literal>ISession</literal> instance and its persistent instances are
                 used for the whole application transaction.
             </para>
-
+            
             <para>
                 The <literal>ISession</literal> uses optimistic locking with versioning to
                 ensure that many database transactions appear to the application as a single
@@ -171,7 +171,7 @@
                 need not concern itself with version checking or with reattaching detached
                 instances.
             </para>
-
+            
             <programlisting><![CDATA[// foo is an instance loaded earlier by the Session
 session.Reconnect();
 transaction = session.BeginTransaction();
@@ -179,13 +179,13 @@ foo.Property = "bar";
 session.Flush();
 transaction.Commit();
 session.Disconnect();]]></programlisting>
-
+            
             <para>
                 The <literal>foo</literal> object still knows which <literal>ISession</literal>
                 it was loaded it. As soon as the <literal>ISession</literal> has an ADO.NET connection,
                 we commit the changes to the object.
             </para>
-
+            
             <para>
                 This pattern is problematic if our <literal>ISession</literal> is too big to
                 be stored during user think time, e.g. an <literal>HttpSession</literal> should
@@ -194,12 +194,12 @@ session.Disconnect();]]></programlisting>
                 use this strategy only for a few request/response cycles. This is indeed
                 recommended, as the <literal>ISession</literal> will soon also have stale data.
             </para>
-
+            
         </sect2>
-
+        
         <sect2 id="transactions-optimistic-detached">
             <title>Many sessions with automatic versioning</title>
-
+            
             <para>
                 Each interaction with the persistent store occurs in a new <literal>ISession</literal>. 
                 However, the same persistent instances are reused for each interaction with the database.
@@ -207,7 +207,7 @@ session.Disconnect();]]></programlisting>
                 <literal>ISession</literal> and then "reassociates" them using 
                 <literal>ISession.Update()</literal> or <literal>ISession.SaveOrUpdate()</literal>.
             </para>
-
+            
             <programlisting><![CDATA[// foo is an instance loaded by a previous Session
 foo.Property = "bar";
 session = factory.OpenSession();
@@ -216,25 +216,25 @@ session.SaveOrUpdate(foo);
 session.Flush();
 transaction.Commit();
 session.Close();]]></programlisting>
-
+            
             <para>
                 You may also call <literal>Lock()</literal> instead of <literal>Update()</literal>
                 and use <literal>LockMode.Read</literal> (performing a version check, bypassing all
                 caches) if you are sure that the object has not been modified.
             </para>
-
+            
         </sect2>
-
+        
         <sect2 id="transactions-optimistic-customizing">
             <title>Customizing automatic versioning</title>
-
+            
             <para>
                 You may disable NHibernate's automatic version increment for particular properties and 
                 collections by setting the <literal>optimistic-lock</literal> mapping attribute to 
                 <literal>false</literal>. NHibernate will then no longer increment versions if the 
                 property is dirty.
             </para>
-
+            
             <para>
                 Legacy database schemas are often static and can't be modified. Or, other applications
                 might also access the same database and don't know how to handle version numbers or
@@ -245,13 +245,13 @@ session.Close();]]></programlisting>
                 if NHibernate can compare the old and new state, i.e. if you use a single long
                 <literal>ISession</literal> and not session-per-request-with-detached-objects.
             </para>
-
+            
             <para>
                 Sometimes concurrent modification can be permitted as long as the changes that have been
                 made don't overlap. If you set <literal>optimistic-lock="dirty"</literal> when mapping the
                 <literal>&lt;class&gt;</literal>, NHibernate will only compare dirty fields during flush.
             </para>
-
+            
             <para>
                 In both cases, with dedicated version/timestamp columns or with full/dirty field
                 comparison, NHibernate uses a single <literal>UPDATE</literal> statement (with an
@@ -264,13 +264,13 @@ session.Close();]]></programlisting>
                 <literal>&lt;class&gt;</literal> mapping, forcing Hibernate to <literal>SELECT</literal>
                 the instance to ensure that changes did actually occur, before updating the row.
             </para>
-
+            
         </sect2>
-
-
+        
+        
         <sect2 id="transactions-optimistic-manual">
             <title>Application version checking</title>
-
+            
             <para>
                 Each interaction with the database occurs in a new <literal>ISession</literal>
                 that reloads all persistent instances from the database before manipulating them.
@@ -278,7 +278,7 @@ session.Close();]]></programlisting>
                 application transaction isolation. (Of course, NHibernate will still <emphasis>update</emphasis>
                 version numbers for you.) This approach is the least efficient in terms of database access.
             </para>
-
+            
             <programlisting><![CDATA[// foo is an instance loaded by a previous Session
 session = factory.OpenSession();
 transaction = session.BeginTransaction();
@@ -289,26 +289,26 @@ foo.Property = "bar";
 session.Flush();
 transaction.Commit();
 session.close();]]></programlisting>
-
+            
             <para>
                 Of course, if you are operating in a low-data-concurrency environment and don't
                 require version checking, you may use this approach and just skip the version
                 check.
             </para>
         </sect2>
-
+        
     </sect1>
-
+    
     <sect1 id="transactions-disconnection">
         <title>Session disconnection</title>
-
+        
         <para>
             The first approach described above is to maintain a single <literal>ISession</literal> 
             for a whole business process thats spans user think time. (For example, a servlet might 
             keep an <literal>ISession</literal> in the user's <literal>HttpSession</literal>.) For 
             performance reasons you should
         </para>
-
+        
         <orderedlist spacing="compact">
             <listitem>
                 <para>
@@ -321,13 +321,13 @@ session.close();]]></programlisting>
                 </para>
             </listitem>
         </orderedlist>
-
+        
         <para>
             before waiting for user activity. The method <literal>ISession.Disconnect()</literal> 
             will disconnect the session from the ADO.NET connection and return the connection to 
             the pool (unless you provided the connection).
         </para>
-
+        
         <para>
             <literal>ISession.Reconnect()</literal> obtains a new connection (or you may supply one) 
             and restarts the session. After reconnection, to force a version check on data you aren't 
@@ -335,11 +335,11 @@ session.close();]]></programlisting>
             been updated by another transaction. You don't need to lock any data that you
             <emphasis>are</emphasis> updating.
         </para>
-
+        
         <para>
             Heres an example:
         </para>
-
+        
         <programlisting><![CDATA[ISessionFactory sessions;
 IList fooList;
 Bar bar;
@@ -368,11 +368,11 @@ catch (Exception)
     throw;
 }
 s.Disconnect();]]></programlisting>
-
+        
         <para>
             Later on:
         </para>
-
+        
         <programlisting><![CDATA[s.Reconnect();
 
 try
@@ -397,7 +397,7 @@ finally
 {
     s.Close();
 }]]></programlisting>
-
+        
         <para>
             You can see from this how the relationship between <literal>ITransaction</literal>s and
             <literal>ISession</literal>s is many-to-one, An <literal>ISession</literal> represents a 
@@ -406,17 +406,17 @@ finally
             at the database level.
         </para>
     </sect1>
-
+    
     <sect1 id="transactions-locking">
         <title>Pessimistic Locking</title>
-
+        
         <para>
             It is not intended that users spend much time worring about locking strategies. It's usually
             enough to specify an isolation level for the ADO.NET connections and then simply let the
             database do all the work. However, advanced users may sometimes wish to obtain
             exclusive pessimistic locks, or re-obtain locks at the start of a new transaction.
         </para>
-
+        
         <para>
             NHibernate will always use the locking mechanism of the database, never lock objects
             in memory!
@@ -453,14 +453,14 @@ finally
                     request.
                 </para>
             </listitem>
-        <listitem>
-        <para>
-            <literal>LockMode.None</literal> represents the absence of a lock. All objects switch to this
-            lock mode at the end of an <literal>ITransaction</literal>. Objects associated with the session 
-            via a call to <literal>Update()</literal> or <literal>SaveOrUpdate()</literal> also start out 
-            in this lock mode.
-        </para>
-        </listitem>
+            <listitem>
+                <para>
+                    <literal>LockMode.None</literal> represents the absence of a lock. All objects switch to this
+                    lock mode at the end of an <literal>ITransaction</literal>. Objects associated with the session 
+                    via a call to <literal>Update()</literal> or <literal>SaveOrUpdate()</literal> also start out 
+                    in this lock mode.
+                </para>
+            </listitem>
         </itemizedlist>
         
         <para>
@@ -508,10 +508,10 @@ finally
         </para>
         
     </sect1>
-
+    
     <sect1 id="transactions-connection-release">
         <title>Connection Release Modes</title>
-
+        
         <para>
             The legacy (1.0.x) behavior of NHibernate in regards to ADO.NET connection management
             was that a <literal>ISession</literal> would obtain a connection when it was first
@@ -523,7 +523,7 @@ finally
             release modes are identified by the enumerated values of
             <literal>NHibernate.ConnectionReleaseMode</literal>:
         </para>
-
+        
         <itemizedlist spacing="compact">
             <listitem>
                 <para>
@@ -539,12 +539,12 @@ finally
                 </para>
             </listitem>
         </itemizedlist>
-
+        
         <para>
             The configuration parameter <literal>hibernate.connection.release_mode</literal> is used
             to specify which release mode to use.  The possible values:
         </para>
-
+        
         <itemizedlist spacing="compact">
             <listitem>
                 <para>
@@ -567,16 +567,16 @@ finally
                 </para>
             </listitem>
         </itemizedlist>
-
+        
         <para>
             As of NHibernate 1.2.0, if your application manages transactions through .NET APIs such as <literal>
-            System.Transactions</literal> library, <literal>ConnectionReleaseMode.AfterTransaction</literal> may cause
+                System.Transactions</literal> library, <literal>ConnectionReleaseMode.AfterTransaction</literal> may cause
             NHibernate to open and close several connections during one transaction, leading to unnecessary overhead and
             transaction promotion from local to distributed. Specifying <literal>ConnectionReleaseMode.OnClose</literal>
             will revert to the legacy behavior and prevent this problem from occuring.
         </para>
-
+        
     </sect1>
-
+    
 </chapter>
 

@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5b1//EN"
-               "support/docbook-dtd/docbookx.dtd" [
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5b1//EN" "support/docbook-dtd/docbookx.dtd"[
 <!ENTITY preface                SYSTEM "modules/preface.xml">
 <!ENTITY quickstart             SYSTEM "modules/quickstart.xml">
 <!ENTITY architecture           SYSTEM "modules/architecture.xml">
@@ -26,63 +25,15 @@
 
 <!ENTITY nhc-preface            SYSTEM "modules/nhibernatecontrib_preface.xml">
 <!ENTITY nhcaches-chapter       SYSTEM "modules/nhibernate_caches.xml">
-<!ENTITY nhma-chapter           SYSTEM "modules/nhibernate_mapping_attributes.xml">
-<!ENTITY nhbm2net-chapter       SYSTEM "modules/nhibernate_tool_hbm2net.xml">
-<!ENTITY nullables-chapter      SYSTEM "modules/nullables.xml">
 ]>
-
-
 <book lang="en">
-	<bookinfo>
-		<title>NHibernate - Relational Persistence for Idiomatic .NET</title>
-		<subtitle>NHibernate Reference Documentation</subtitle>
-		<releaseinfo>2.0.0</releaseinfo>
-	</bookinfo>
-
-	<toc />
-
-	&preface;
-
-	&quickstart;
-	
-	&architecture;
-	
-	&configuration;
-	
-	&persistent-classes;
-	
-	&basic-mapping;
-	&collection-mapping;
-	&component-mapping;
-	&inheritance-mapping;
-	
-	&manipulating-data;
-	&transactions;
-	&events;
-	
-	&query-hql;
-	&query-criteria;
-	&query-sql;
-
-	&filters;
-
-	&performance;
-	
-	&toolset-guide;
-	
-	&example-parentchild;
-	&example-weblog;
-	&example-mappings;
-	
-	&best-practices;
-
-	<part id="part-contrib">
-		<title>NHibernateContrib Documentation</title>
-		&nhc-preface;
-		&nhcaches-chapter;
-		&nhma-chapter;
-		&nhbm2net-chapter;
-		&nullables-chapter;
-	</part>
-
+    <bookinfo><title>NHibernate - Relational Persistence for Idiomatic
+        .NET</title><subtitle>NHibernate Reference Documentation</subtitle>
+        <releaseinfo>2.0.0</releaseinfo>
+    </bookinfo>
+    <toc/>&preface;&quickstart;&architecture;&configuration;&persistent-classes;&basic-mapping;&collection-mapping;&component-mapping;&inheritance-mapping;&manipulating-data;&transactions;&events;&query-hql;&query-criteria;&query-sql;&filters;&performance;&toolset-guide;&example-parentchild;&example-weblog;&example-mappings;&best-practices;
+    <part id="part-contrib">
+        <title>NHibernateContrib
+            Documentation</title>&nhc-preface;&nhcaches-chapter;
+    </part>
 </book>

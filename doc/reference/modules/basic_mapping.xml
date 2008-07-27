@@ -1,9 +1,9 @@
 <chapter id="mapping">
     <title>Basic O/R Mapping</title>
-
+    
     <sect1 id="mapping-declaration">
         <title>Mapping declaration</title>
-
+        
         <para>
             Object/relational mappings are defined in an XML document. The mapping document
             is designed to be readable and hand-editable. The mapping language is object-centric,
@@ -17,11 +17,11 @@
             NHibernate.Mapping.Attributes library and various template-based code
             generators (CodeSmith, MyGeneration).
         </para>
-
+        
         <para>
             Let's kick off with an example mapping:
         </para>
-
+        
         <programlisting><![CDATA[<?xml version="1.0"?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="Eg"
     namespace="Eg">
@@ -50,20 +50,20 @@
         </class>
 
 </hibernate-mapping>]]></programlisting>
-
+        
         <para>
-             We will now discuss the content of the mapping document. We will only describe the 
-             document elements and attributes that are used by NHibernate at runtime. The mapping 
-             document also contains some extra optional attributes and elements that affect the 
-             database schemas exported by the schema export tool. (For example the <literal>
-             not-null</literal> attribute.)
+            We will now discuss the content of the mapping document. We will only describe the 
+            document elements and attributes that are used by NHibernate at runtime. The mapping 
+            document also contains some extra optional attributes and elements that affect the 
+            database schemas exported by the schema export tool. (For example the <literal>
+                not-null</literal> attribute.)
         </para>
-
-
-
+        
+        
+        
         <sect2 id="mapping-declaration-xmlns">
             <title>XML Namespace</title>
-
+            
             <para>
                 All XML mappings should declare the XML namespace shown. The actual schema definition
                 may be found in the <literal>src\nhibernate-mapping.xsd</literal> file in the
@@ -79,10 +79,10 @@
             </emphasis></para>
             
         </sect2>
-
+        
         <sect2 id="mapping-declaration-mapping">
             <title>hibernate-mapping</title>
-
+            
             <para>
                 This element has several optional attributes. The <literal>schema</literal> attribute
                 specifies that tables referred to by this mapping belong to the named schema. If specified, 
@@ -94,67 +94,67 @@
                 and <literal>namespace</literal> attributes specify the assembly where persistent classes
                 are located and the namespace they are declared in.
             </para>
- 
-             <programlistingco>
-                 <areaspec>
-                     <area id="hm1" coords="2 55"/>
-                     <area id="hm2" coords="3 55"/>
-                     <area id="hm3" coords="4 55"/>
-                     <area id="hm4" coords="5 55"/>
-                     <area id="hm5" coords="6 55"/>
-                 </areaspec>   
-                 <programlisting><![CDATA[<hibernate-mapping
+            
+            <programlistingco>
+                <areaspec>
+                    <area id="hm1" coords="2 55"/>
+                    <area id="hm2" coords="3 55"/>
+                    <area id="hm3" coords="4 55"/>
+                    <area id="hm4" coords="5 55"/>
+                    <area id="hm5" coords="6 55"/>
+                </areaspec>   
+                <programlisting><![CDATA[<hibernate-mapping
          schema="schemaName"
          default-cascade="none|save-update"
          auto-import="true|false"
          assembly="Eg"
          namespace="Eg"
  />]]></programlisting>
-                 <calloutlist>
-                     <callout arearefs="hm1">
-                         <para>
-                             <literal>schema</literal> (optional): The name of a database schema.
-                         </para>
-                     </callout>
-                     <callout arearefs="hm2">
-                         <para>
-                             <literal>default-cascade</literal> (optional - defaults to <literal>none</literal>): 
-                             A default cascade style.
-                         </para>
-                     </callout>
-                     <callout arearefs="hm3">
-                         <para>
-                             <literal>auto-import</literal> (optional - defaults to <literal>true</literal>):
-                             Specifies whether we can use unqualified class names (of classes in this mapping)
-                             in the query language.
-                         </para>
-                     </callout>
-                     <callout arearefs="hm4 hm5">
-                         <para>
-                             <literal>assembly</literal> and <literal>namespace</literal>(optional): Specify
-                             assembly and namespace to assume for unqualified class names in the mapping
-                             document.
-                         </para>
-                     </callout>
-                 </calloutlist>
-             </programlistingco>
-             
-             <para>
-                 If you are not using <literal>assembly</literal> and <literal>namespace</literal>
-                 attributes, you have to specify fully-qualified class names, including the name
-                 of the assembly that classes are declared in.
-             </para>
-
-             <para>
-                 If you have two persistent classes with the same (unqualified) name, you should set 
-                 <literal>auto-import="false"</literal>. NHibernate will throw an exception if you attempt
-                 to assign two classes to the same "imported" name.
-             </para>
+                <calloutlist>
+                    <callout arearefs="hm1">
+                        <para>
+                            <literal>schema</literal> (optional): The name of a database schema.
+                        </para>
+                    </callout>
+                    <callout arearefs="hm2">
+                        <para>
+                            <literal>default-cascade</literal> (optional - defaults to <literal>none</literal>): 
+                            A default cascade style.
+                        </para>
+                    </callout>
+                    <callout arearefs="hm3">
+                        <para>
+                            <literal>auto-import</literal> (optional - defaults to <literal>true</literal>):
+                            Specifies whether we can use unqualified class names (of classes in this mapping)
+                            in the query language.
+                        </para>
+                    </callout>
+                    <callout arearefs="hm4 hm5">
+                        <para>
+                            <literal>assembly</literal> and <literal>namespace</literal>(optional): Specify
+                            assembly and namespace to assume for unqualified class names in the mapping
+                            document.
+                        </para>
+                    </callout>
+                </calloutlist>
+            </programlistingco>
+            
+            <para>
+                If you are not using <literal>assembly</literal> and <literal>namespace</literal>
+                attributes, you have to specify fully-qualified class names, including the name
+                of the assembly that classes are declared in.
+            </para>
+            
+            <para>
+                If you have two persistent classes with the same (unqualified) name, you should set 
+                <literal>auto-import="false"</literal>. NHibernate will throw an exception if you attempt
+                to assign two classes to the same "imported" name.
+            </para>
         </sect2>
-
+        
         <sect2 id="mapping-declaration-class">
             <title>class</title>
-
+            
             <para>
                 You may declare a persistent class using the <literal>class</literal> element:
             </para>
@@ -206,7 +206,7 @@
                     <callout arearefs="class2">
                         <para>
                             <literal>table</literal>(optional - defaults to the unqualified class name): The name of its database table.
-						</para>
+                        </para>
                     </callout>
                     <callout arearefs="class3">
                         <para>
@@ -280,7 +280,7 @@
                             for fetching instances of this class by identifier.
                         </para>
                     </callout>                 
-                   <callout arearefs="class14">
+                    <callout arearefs="class14">
                         <para>
                             <literal>optimistic-lock</literal> (optional, defaults to <literal>version</literal>): 
                             Determines the optimistic locking strategy.
@@ -300,7 +300,7 @@
                     </callout>
                 </calloutlist>
             </programlistingco>
-           
+            
             <para>
                 It is perfectly acceptable for the named persistent class to be an interface. You would then
                 declare implementing classes of that interface using the <literal>&lt;subclass&gt;</literal>
@@ -308,7 +308,7 @@
                 class name using the standard form ie. <literal>Eg.Foo+Bar, Eg</literal>.
                 Due to an HQL parser limitation inner classes can not be used in queries in NHibernate 1.0.
             </para>
-
+            
             <para>
                 Immutable classes, <literal>mutable="false"</literal>, may not be updated or deleted by the 
                 application. This allows NHibernate to make some minor performance optimizations.
@@ -392,17 +392,17 @@
                 what <literal>unsaved-value</literal> strategy, or an instance will be detected as
                 transient.
             </para>
-
+            
             <para>
                 Beginning with NHibernate 1.2.0, version numbers start with 1, not 0 as in previous
                 versions. This was done to allow using 0 as <literal>unsaved-value</literal> for the
                 version property.
             </para>
         </sect2>
-
+        
         <sect2 id="mapping-declaration-id">
             <title>id</title>
-
+            
             <para>
                 Mapped classes <emphasis>must</emphasis> declare the primary key column of the database 
                 table. Most classes will also have a property holding the unique identifier 
@@ -452,7 +452,7 @@
                             in a previous session.
                         </para>
                     </callout>            
-                   <callout arearefs="id5">
+                    <callout arearefs="id5">
                         <para>
                             <literal>access</literal> (optional - defaults to <literal>property</literal>): The
                             strategy NHibernate should use for accessing the property value.
@@ -469,159 +469,159 @@
             <para>
                 The <literal>unsaved-value</literal> attribute is almost never needed in NHibernate 1.0.
             </para>
-
-             <para>
+            
+            <para>
                 There is an alternative <literal>&lt;composite-id&gt;</literal> declaration to allow access to
                 legacy data with composite keys. We strongly discourage its use for anything else.
             </para>
             
             <sect3 id="mapping-declaration-id-generator">
                 <title>generator</title>
-
+                
                 <para>
                     The required <literal>&lt;generator&gt;</literal> child element names a .NET class used
                     to generate unique identifiers for instances of the persistent class. If any parameters
                     are required to configure or initialize the generator instance, they are passed using the
                     <literal>&lt;param&gt;</literal> element.
                 </para>
-
+                
                 <programlisting><![CDATA[<id name="Id" type="Int64" column="uid" unsaved-value="0">
         <generator class="NHibernate.Id.TableHiLoGenerator">
                 <param name="table">uid_table</param>
                 <param name="column">next_hi_value_column</param>
         </generator>
 </id>]]></programlisting>
-
+                
                 <para>
                     All generators implement the interface <literal>NHibernate.Id.IIdentifierGenerator</literal>.
                     This is a very simple interface; some applications may choose to provide their own specialized
                     implementations. However, NHibernate provides a range of built-in implementations. There are shortcut
                     names for the built-in generators:
-
+                    
                     <variablelist>
                         <varlistentry>
-                        <term><literal>increment</literal></term>
-                        <listitem>
-                            <para>
-                                generates identifiers of any integral type that are unique only when
-                                no other process is inserting data into the same table.
-                                <emphasis>Do not use in a cluster.</emphasis>
-                            </para>
-                        </listitem>
+                            <term><literal>increment</literal></term>
+                            <listitem>
+                                <para>
+                                    generates identifiers of any integral type that are unique only when
+                                    no other process is inserting data into the same table.
+                                    <emphasis>Do not use in a cluster.</emphasis>
+                                </para>
+                            </listitem>
                         </varlistentry>
                         <varlistentry>
-                        <term><literal>identity</literal></term>
-                        <listitem>
-                            <para>
-                                supports identity columns in DB2, MySQL, MS SQL Server and Sybase. The identifier
-                                returned by the database is converted to the property type using <literal>
-                                Convert.ChangeType</literal>. Any integral property type is thus supported.
-                            </para>
-                        </listitem>
+                            <term><literal>identity</literal></term>
+                            <listitem>
+                                <para>
+                                    supports identity columns in DB2, MySQL, MS SQL Server and Sybase. The identifier
+                                    returned by the database is converted to the property type using <literal>
+                                        Convert.ChangeType</literal>. Any integral property type is thus supported.
+                                </para>
+                            </listitem>
                         </varlistentry>
                         <varlistentry>
-                        <term><literal>sequence</literal></term>
-                        <listitem>
-                            <para>
-                                uses a sequence in DB2, PostgreSQL, Oracle or a generator
-                                in Firebird. The identifier returned by the database is converted to the property
-                                type using <literal>Convert.ChangeType</literal>. Any integral property type is
-                                thus supported.
-                            </para>
-                        </listitem>
+                            <term><literal>sequence</literal></term>
+                            <listitem>
+                                <para>
+                                    uses a sequence in DB2, PostgreSQL, Oracle or a generator
+                                    in Firebird. The identifier returned by the database is converted to the property
+                                    type using <literal>Convert.ChangeType</literal>. Any integral property type is
+                                    thus supported.
+                                </para>
+                            </listitem>
                         </varlistentry>
                         <varlistentry>
-                        <term><literal>hilo</literal></term>
-                        <listitem>
-                            <para id="mapping-declaration-id-hilodescription" revision="1">
-                                uses a hi/lo algorithm to efficiently generate identifiers of any integral type,
-                                given a table and column (by default <literal>hibernate_unique_key</literal> and
-                                <literal>next_hi</literal> respectively) as a source of hi values. The hi/lo algorithm
-                                generates identifiers that are unique only for a particular database. <emphasis>Do not
-                                use this generator with a user-supplied connection.</emphasis>
-                            </para>
-                            <para>
-								You can use the "where" parameter to specify the row to use in a table. This is useful
-								if you want to use a single tabel for your identifiers, with different rows for each table.
-                            </para>
-                        </listitem>
+                            <term><literal>hilo</literal></term>
+                            <listitem>
+                                <para id="mapping-declaration-id-hilodescription" revision="1">
+                                    uses a hi/lo algorithm to efficiently generate identifiers of any integral type,
+                                    given a table and column (by default <literal>hibernate_unique_key</literal> and
+                                    <literal>next_hi</literal> respectively) as a source of hi values. The hi/lo algorithm
+                                    generates identifiers that are unique only for a particular database. <emphasis>Do not
+                                        use this generator with a user-supplied connection.</emphasis>
+                                </para>
+                                <para>
+                                    You can use the "where" parameter to specify the row to use in a table. This is useful
+                                    if you want to use a single tabel for your identifiers, with different rows for each table.
+                                </para>
+                            </listitem>
                         </varlistentry>
                         <varlistentry>
-                        <term><literal>seqhilo</literal></term>
-                        <listitem>
-                            <para>
-                                uses a hi/lo algorithm to efficiently generate identifiers of any integral type,
-                                given a named database sequence.
-                            </para>
-                        </listitem>
+                            <term><literal>seqhilo</literal></term>
+                            <listitem>
+                                <para>
+                                    uses a hi/lo algorithm to efficiently generate identifiers of any integral type,
+                                    given a named database sequence.
+                                </para>
+                            </listitem>
                         </varlistentry>
                         <varlistentry>
-                        <term><literal>uuid.hex</literal></term>
-                        <listitem>
-                            <para>
-                                uses <literal>System.Guid</literal> and its <literal>ToString(string format)</literal> method
-                                to generate identifiers of type string.  The length of the string returned depends on the 
-                                configured <literal>format</literal>.
-                            </para>
-                        </listitem>
+                            <term><literal>uuid.hex</literal></term>
+                            <listitem>
+                                <para>
+                                    uses <literal>System.Guid</literal> and its <literal>ToString(string format)</literal> method
+                                    to generate identifiers of type string.  The length of the string returned depends on the 
+                                    configured <literal>format</literal>.
+                                </para>
+                            </listitem>
                         </varlistentry>
                         <varlistentry>
-                        <term><literal>uuid.string</literal></term>
-                        <listitem>
-                            <para>
-                                uses a new <literal>System.Guid</literal> to create a <literal>byte[]</literal> that is
-                                converted to a string.
-                            </para>
-                        </listitem>
+                            <term><literal>uuid.string</literal></term>
+                            <listitem>
+                                <para>
+                                    uses a new <literal>System.Guid</literal> to create a <literal>byte[]</literal> that is
+                                    converted to a string.
+                                </para>
+                            </listitem>
                         </varlistentry>
                         <varlistentry>
-                        <term><literal>guid</literal></term>
-                        <listitem>
-                            <para>
-                                uses a new <literal>System.Guid</literal> as the identifier.
-                            </para>
-                        </listitem>
+                            <term><literal>guid</literal></term>
+                            <listitem>
+                                <para>
+                                    uses a new <literal>System.Guid</literal> as the identifier.
+                                </para>
+                            </listitem>
                         </varlistentry>
                         <varlistentry>
-                        <term><literal>guid.comb</literal></term>
-                        <listitem>
-                            <para>
-                                uses the algorithm to generate a new <literal>System.Guid</literal>
-                                described by Jimmy Nilsson in the article 
-                                http://www.informit.com/articles/article.asp?p=25862.
-                            </para>
-                        </listitem>
+                            <term><literal>guid.comb</literal></term>
+                            <listitem>
+                                <para>
+                                    uses the algorithm to generate a new <literal>System.Guid</literal>
+                                    described by Jimmy Nilsson in the article 
+                                    http://www.informit.com/articles/article.asp?p=25862.
+                                </para>
+                            </listitem>
                         </varlistentry>
                         <varlistentry>
-                        <term><literal>native</literal></term>
-                        <listitem>
-                            <para>
-                                picks <literal>identity</literal>, <literal>sequence</literal> or
-                                <literal>hilo</literal> depending upon the capabilities of the
-                                underlying database.
-                            </para>
-                        </listitem>
+                            <term><literal>native</literal></term>
+                            <listitem>
+                                <para>
+                                    picks <literal>identity</literal>, <literal>sequence</literal> or
+                                    <literal>hilo</literal> depending upon the capabilities of the
+                                    underlying database.
+                                </para>
+                            </listitem>
                         </varlistentry>
                         <varlistentry>
-                        <term><literal>assigned</literal></term>
-                        <listitem>
-                            <para>
-                                lets the application to assign an identifier to the object before
-                                <literal>Save()</literal> is called.
-                            </para>
-                        </listitem>
+                            <term><literal>assigned</literal></term>
+                            <listitem>
+                                <para>
+                                    lets the application to assign an identifier to the object before
+                                    <literal>Save()</literal> is called.
+                                </para>
+                            </listitem>
                         </varlistentry>
                         <varlistentry>
-                        <term><literal>foreign</literal></term>
-                        <listitem>
-                            <para>
-                                uses the identifier of another associated object. Usually used in conjunction
-                                with a <literal>&lt;one-to-one&gt;</literal> primary key association.
-                            </para>
-                        </listitem>
+                            <term><literal>foreign</literal></term>
+                            <listitem>
+                                <para>
+                                    uses the identifier of another associated object. Usually used in conjunction
+                                    with a <literal>&lt;one-to-one&gt;</literal> primary key association.
+                                </para>
+                            </listitem>
                         </varlistentry>
                     </variablelist>
-
+                    
                 </para>
             </sect3>
             
@@ -633,7 +633,7 @@
                     first implementation requires a "special" database table to hold the next available "hi" value.
                     The second uses an Oracle-style sequence (where supported).
                 </para>
-
+                
                 <programlisting><![CDATA[<id name="Id" type="Int64" column="cat_id">
         <generator class="hilo">
                 <param name="table">hi_value</param>
@@ -641,14 +641,14 @@
                 <param name="max_lo">100</param>
         </generator>
 </id>]]></programlisting>
-
+                
                 <programlisting><![CDATA[<id name="Id" type="Int64" column="cat_id">
         <generator class="seqhilo">
                 <param name="sequence">hi_value</param>
                 <param name="max_lo">100</param>
         </generator>
 </id>]]></programlisting>
-
+                
                 <para>
                     Unfortunately, you can't use <literal>hilo</literal> when supplying your own
                     <literal>IDbConnection</literal> to NHibernate. NHibernate must be able to
@@ -658,14 +658,14 @@
             
             <sect3 id="mapping-declaration-id-uuid-hex">
                 <title>UUID Hex Algorithm</title>
-
+                
                 <programlisting><![CDATA[<id name="Id" type="String" column="cat_id">
         <generator class="uuid.hex">
             <param name="format">format_value</param>
             <param name="seperator">seperator_value</param>
         </generator>
 </id>]]></programlisting>
-
+                
                 <para>
                     The UUID is generated by calling <literal>Guid.NewGuid().ToString(format)</literal>.
                     The valid values for <literal>format</literal> are described in the MSDN documentation.
@@ -685,7 +685,7 @@
                     16 characters.
                 </para>
             </sect3>
-
+            
             <sect3 id="mapping-declaration-id-guid">
                 <title>GUID Algorithms</title>
                 <para>
@@ -695,9 +695,9 @@
                     the <literal>guid.comb</literal> with other databases that support GUIDs has not been measured.
                 </para>
             </sect3>
-
+            
             <sect3 id="mapping-declaration-id-sequences">
-            <title>Identity columns and Sequences</title>
+                <title>Identity columns and Sequences</title>
                 <para>
                     For databases which support identity columns (DB2, MySQL, Sybase, MS SQL), you
                     may use <literal>identity</literal> key generation. For databases that support
@@ -705,17 +705,17 @@
                     <literal>sequence</literal> style key generation. Both these strategies require
                     two SQL queries to insert a new object.
                 </para>
-
+                
                 <programlisting><![CDATA[<id name="Id" type="Int64" column="uid">
         <generator class="sequence">
                 <param name="sequence">uid_sequence</param>
         </generator>
 </id>]]></programlisting>
-
+                
                 <programlisting><![CDATA[<id name="Id" type="Int64" column="uid" unsaved-value="0">
         <generator class="identity"/>
 </id>]]></programlisting>
-            
+                
                 <para>
                     For cross-platform development, the <literal>native</literal> strategy will
                     choose from the <literal>identity</literal>, <literal>sequence</literal> and
@@ -742,10 +742,10 @@
             </sect3>
             
         </sect2>
-
+        
         <sect2 id="mapping-declaration-compositeid">
             <title>composite-id</title>
-
+            
             <programlisting><![CDATA[<composite-id
         name="PropertyName"
         class="ClassName"
@@ -756,7 +756,7 @@
         <key-many-to-one name="PropertyName class="ClassName" column="column_name"/>
         ......
 </composite-id>]]></programlisting>
-
+            
             <para>
                 For a table with a composite key, you may map multiple properties of the class
                 as identifier properties. The <literal>&lt;composite-id&gt;</literal> element
@@ -768,13 +768,13 @@
         <key-property name="MedicareNumber"/>
         <key-property name="Dependent"/>
 </composite-id>]]></programlisting>
-
+            
             <para>
                 Your persistent class <emphasis>must</emphasis> override <literal>Equals()</literal>
                 and <literal>GetHashCode()</literal> to implement composite identifier equality. It must
                 also be <literal>Serializable</literal>.
             </para>
-
+            
             <para>
                 Unfortunately, this approach to composite identifiers means that a persistent object 
                 is its own identifier. There is no convenient "handle" other than the object itself. 
@@ -785,7 +785,7 @@
                 in <xref linkend="components-compositeid"/>. The attributes described below apply only
                 to this alternative approach:
             </para>
-
+            
             <itemizedlist spacing="compact">
                 <listitem>
                     <para>
@@ -811,7 +811,7 @@
         
         <sect2 id="mapping-declaration-discriminator" revision="1">
             <title>discriminator</title>
-
+            
             <para>
                 The <literal>&lt;discriminator&gt;</literal> element is required for polymorphic persistence 
                 using the table-per-class-hierarchy mapping strategy and declares a discriminator column of the 
@@ -872,7 +872,7 @@
                     </callout>
                 </calloutlist>
             </programlistingco>
-
+            
             <para>
                 Actual values of the discriminator column are specified by the
                 <literal>discriminator-value</literal> attribute of the <literal>&lt;class&gt;</literal> and
@@ -884,17 +884,17 @@
                 "extra" discriminator values that are not mapped to a persistent class. This will not
                 usually be the case.
             </para>
-
+            
             <para>
                 Using the <literal>formula</literal> attribute you can declare an arbitrary SQL expression
                 that will be used to evaluate the type of a row:
             </para>
-
+            
             <programlisting><![CDATA[<discriminator
     formula="case when CLASS_TYPE in ('a', 'b', 'c') then 0 else 1 end"
     type="Int32"/>]]></programlisting>
         </sect2>
-
+        
         <sect2 id="mapping-declaration-version">
             <title>version (optional)</title>
             
@@ -939,13 +939,13 @@
                             The type of the version number.
                         </para>
                     </callout>
-                   <callout arearefs="version4">
+                    <callout arearefs="version4">
                         <para>
                             <literal>access</literal> (optional - defaults to <literal>property</literal>): The
                             strategy NHibernate should use for accessing the property value.
                         </para>
                     </callout>
-                   <callout arearefs="version5">
+                    <callout arearefs="version5">
                         <para>
                             <literal>unsaved-value</literal> (optional - defaults to a "sensible" value): 
                             A version property value that indicates that an instance is newly instantiated
@@ -958,7 +958,7 @@
                         <para>
                             <literal>generated</literal> (optional - defaults to <literal>never</literal>):
                             Specifies that this version property value is actually generated by the database.
-                            See the discussion of <xref linkend="mapping-generated">generated properties</xref>.
+                            See the discussion of <xref linkend="mapping-generated"/>.
                         </para>
                     </callout>
                 </calloutlist>
@@ -969,12 +969,12 @@
                 <literal>Int16</literal>, <literal>Ticks</literal>, <literal>Timestamp</literal>, 
                 or <literal>TimeSpan</literal> (or their nullable counterparts in .NET 2.0).
             </para>
-
+            
         </sect2>
         
         <sect2 id="mapping-declaration-timestamp" revision="1">
             <title>timestamp (optional)</title>
-
+            
             <para>
                 The optional <literal>&lt;timestamp&gt;</literal> element indicates that the table contains 
                 timestamped data. This is intended as an alternative to versioning. Timestamps are by nature
@@ -1010,13 +1010,13 @@
                             <literal>DateTime</literal> of the persistent class.
                         </para>
                     </callout>
-                   <callout arearefs="timestamp3">
+                    <callout arearefs="timestamp3">
                         <para>
                             <literal>access</literal> (optional - defaults to <literal>property</literal>): The
                             strategy NHibernate should use for accessing the property value.
                         </para>
                     </callout>
-                   <callout arearefs="timestamp4">
+                    <callout arearefs="timestamp4">
                         <para>
                             <literal>unsaved-value</literal> (optional - defaults to <literal>null</literal>): 
                             A timestamp property value that indicates that an instance is newly instantiated
@@ -1029,7 +1029,7 @@
                         <para>
                             <literal>generated</literal> (optional - defaults to <literal>never</literal>):
                             Specifies that this timestamp property value is actually generated by the database.
-                            See the discussion of <xref linkend="mapping-generated">generated properties</xref>.
+                            See the discussion of <xref linkend="mapping-generated"/>.
                         </para>
                     </callout>
                 </calloutlist>
@@ -1040,11 +1040,11 @@
                 <literal>&lt;version type="timestamp"&gt;</literal>.
             </para>
         </sect2>
-
-
+        
+        
         <sect2 id="mapping-declaration-property">
             <title>property</title>
-
+            
             <para>
                 The <literal>&lt;property&gt;</literal> element declares a persistent property
                 of the class.
@@ -1108,7 +1108,7 @@
                             mapping of their own.
                         </para>
                     </callout>
-                   <callout arearefs="property7">
+                    <callout arearefs="property7">
                         <para>
                             <literal>access</literal> (optional - defaults to <literal>property</literal>): The
                             strategy NHibernate should use for accessing the property value.
@@ -1126,27 +1126,27 @@
                         <para>
                             <literal>generated</literal> (optional - defaults to <literal>never</literal>):
                             Specifies that this property value is actually generated by the database.
-                            See the discussion of <xref linkend="mapping-generated">generated properties</xref>.
+                            See the discussion of <xref linkend="mapping-generated"/>.
                         </para>
                     </callout>
                 </calloutlist>
             </programlistingco>
-
+            
             <para>
                 <emphasis>typename</emphasis> could be:
             </para>
-
+            
             <orderedlist spacing="compact">
                 <listitem>
                     <para>
                         The name of a NHibernate basic type (eg. <literal>Int32, String, Char,
-                        DateTime, Timestamp, Single, Byte[], Object, ...</literal>).
+                            DateTime, Timestamp, Single, Byte[], Object, ...</literal>).
                     </para>
                 </listitem>
                 <listitem>
                     <para>
                         The name of a .NET type with a default basic type (eg. <literal>System.Int16, System.Single,
-                        System.Char, System.String, System.DateTime, System.Byte[], ...</literal>).
+                            System.Char, System.String, System.DateTime, System.Byte[], ...</literal>).
                     </para>
                 </listitem>
                 <listitem>
@@ -1165,21 +1165,21 @@
                     </para>
                 </listitem>
             </orderedlist>
-
+            
             <para>
                 Note that you have to specify full <emphasis>assembly-qualified</emphasis> names for all
                 except basic NHibernate types (unless you set <literal>assembly</literal>
                 and/or <literal>namespace</literal> attributes of the
                 <literal>&lt;hibernate-mapping&gt;</literal> element).
             </para>
-
+            
             <para>
                 NHibernate supports .NET 2.0 <literal>Nullable</literal> types. These types are
                 mostly treated the same as plain non-<literal>Nullable</literal> types internally.
                 For example, a property of type <literal>Nullable&lt;Int32&gt;</literal> can be mapped
                 using <literal>type="Int32"</literal> or <literal>type="System.Int32"</literal>.
             </para>
-
+            
             <para>
                 If you do not specify a type, NHibernate will use reflection upon the named
                 property to take a guess at the correct NHibernate type. NHibernate will try to
@@ -1259,7 +1259,7 @@
                     </tgroup>
                 </table>
             </para>
-
+            
             <para>
                 <table>
                     <title>Naming Strategies</title>
@@ -1342,18 +1342,18 @@
                     </tgroup>
                 </table>
             </para>
-
+            
         </sect2>
-
+        
         <sect2 id="mapping-declaration-manytoone" revision="1">
             <title>many-to-one</title>
-
+            
             <para>
                 An ordinary association to another persistent class is declared using a
                 <literal>many-to-one</literal> element. The relational model is a
                 many-to-one association. (It's really just an object reference.)
             </para>
-
+            
             <programlistingco>
                 <areaspec>
                     <area id="manytoone1" coords="2 60"/>
@@ -1430,7 +1430,7 @@
                             the associated class is used.
                         </para>
                     </callout>
-                   <callout arearefs="manytoone9">
+                    <callout arearefs="manytoone9">
                         <para>
                             <literal>access</literal> (optional - defaults to <literal>property</literal>): The
                             strategy NHibernate should use for accessing the property value.
@@ -1459,7 +1459,7 @@
                     </callout>
                 </calloutlist>
             </programlistingco>
-
+            
             <para>
                 The <literal>cascade</literal> attribute permits the following values: 
                 <literal>all</literal>, <literal>save-update</literal>, <literal>delete</literal>,
@@ -1488,7 +1488,7 @@
             <para>
                 A typical <literal>many-to-one</literal> declaration looks as simple as
             </para>
-
+            
             <programlisting><![CDATA[<many-to-one name="product" class="Product" column="PRODUCT_ID"/>]]></programlisting>
             
             <para>
@@ -1513,10 +1513,10 @@
             </para>
             
         </sect2>
-
+        
         <sect2 id="mapping-declaration-onetoone">
             <title>one-to-one</title>
-
+            
             <para>
                 A one-to-one association to another persistent class is declared using a 
                 <literal>one-to-one</literal> element.
@@ -1589,17 +1589,17 @@
                     </callout>
                 </calloutlist>
             </programlistingco>
-        
+            
             <para>
                 There are two varieties of one-to-one association:
             </para>
             <itemizedlist>
-            <listitem><para>
-                primary key associations
-            </para></listitem>
-            <listitem><para>
-                unique foreign key associations
-            </para></listitem>
+                <listitem><para>
+                    primary key associations
+                </para></listitem>
+                <listitem><para>
+                    unique foreign key associations
+                </para></listitem>
             </itemizedlist>
             
             <para>
@@ -1613,16 +1613,16 @@
                 For a primary key association, add the following mappings to <literal>Employee</literal> and 
                 <literal>Person</literal>, respectively.
             </para>
-
+            
             <programlisting><![CDATA[<one-to-one name="Person" class="Person"/>]]></programlisting>
             <programlisting><![CDATA[<one-to-one name="Employee" class="Employee" constrained="true"/>]]></programlisting>
-
+            
             <para>
                 Now we must ensure that the primary keys of related rows in the PERSON and
                 EMPLOYEE tables are equal. We use a special NHibernate identifier generation strategy
                 called <literal>foreign</literal>:
             </para>
-
+            
             <programlisting><![CDATA[<class name="Person" table="PERSON">
     <id name="Id" column="PERSON_ID">
         <generator class="foreign">
@@ -1634,13 +1634,13 @@
         class="Employee"
         constrained="true"/>
 </class>]]></programlisting>
-
+            
             <para>
                 A newly saved instance of <literal>Person</literal> is then assigned the same primar
                 key value as the <literal>Employee</literal> instance refered with the <literal>Employee</literal>
                 property of that <literal>Person</literal>.
             </para>
-
+            
             <para>
                 Alternatively, a foreign key with a unique constraint, from <literal>Employee</literal> to 
                 <literal>Person</literal>, may be expressed as:
@@ -1653,20 +1653,20 @@
                 <literal>Person</literal> mapping:
             </para>
             
-           <programlisting><![CDATA[<one-to-one name="Employee" class="Employee" property-ref="Person"/>]]></programlisting>
-
+            <programlisting><![CDATA[<one-to-one name="Employee" class="Employee" property-ref="Person"/>]]></programlisting>
+            
         </sect2>
-
+        
         <sect2 id="mapping-declaration-component">
             <title>component, dynamic-component</title>
-
+            
             <para>
                 The <literal>&lt;component&gt;</literal> element maps properties of a
                 child object to columns of the table of a parent class. Components may, in
                 turn, declare their own properties, components or collections. See
                 "Components" below.
             </para>
-
+            
             <programlistingco>
                 <areaspec>
                     <area id="component1" coords="2 60"/>
@@ -1729,28 +1729,28 @@
                     </callout>
                 </calloutlist>
             </programlistingco>
-
+            
             <para>
                 The child <literal>&lt;property&gt;</literal> tags map properties of the
                 child class to table columns.
             </para>
-
+            
             <para>
                 The <literal>&lt;component&gt;</literal> element allows a <literal>&lt;parent&gt;</literal>
                 subelement that maps a property of the component class as a reference back to the
                 containing entity.
             </para>
-
+            
             <para>
                 The <literal>&lt;dynamic-component&gt;</literal> element allows an <literal>IDictionary</literal>
                 to be mapped as a component, where the property names refer to keys of the dictionary.
             </para>
             
         </sect2>
-
+        
         <sect2 id="mapping-declaration-subclass">
             <title>subclass</title>
-
+            
             <para>
                 Finally, polymorphic persistence requires the declaration of each subclass of
                 the root persistent class. For the (recommended) table-per-class-hierarchy
@@ -1802,7 +1802,7 @@
                     </callout>
                 </calloutlist>
             </programlistingco>
-
+            
             <para>
                 Each subclass should declare its own persistent properties and subclasses.
                 <literal>&lt;version&gt;</literal> and <literal>&lt;id&gt;</literal> properties
@@ -1810,22 +1810,22 @@
                 define a unique <literal>discriminator-value</literal>. If none is specified, the
                 fully qualified .NET class name is used.
             </para>
-
+            
             <para>
                 For information about inheritance mappings, see <xref linkend="inheritance"/>.
             </para>
             
         </sect2>
-
-         <sect2 id="mapping-declaration-joinedsubclass" revision="1">
+        
+        <sect2 id="mapping-declaration-joinedsubclass" revision="1">
             <title>joined-subclass</title>
-
+            
             <para>
                 Alternatively, a subclass that is persisted to its own table (table-per-subclass 
                 mapping strategy) is declared using a <literal>&lt;joined-subclass&gt;</literal>
                 element.
             </para>
-
+            
             <programlistingco>
                 <areaspec>
                     <area id="joinedsubclass1" coords="2 45"/>
@@ -1865,7 +1865,7 @@
                     </callout>    
                 </calloutlist>
             </programlistingco>
-
+            
             <para>
                 No discriminator column is required for this mapping strategy. Each subclass must,
                 however, declare a table column holding the object identifier using the
@@ -1873,7 +1873,7 @@
                 would be re-written as:
             </para>
             
-        <programlisting><![CDATA[<?xml version="1.0"?>
+            <programlisting><![CDATA[<?xml version="1.0"?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="Eg"
     namespace="Eg">
 
@@ -1901,27 +1901,27 @@
         </class>
 
 </hibernate-mapping>]]></programlisting>
-
+            
             <para>
                 For information about inheritance mappings, see <xref linkend="inheritance"/>.
             </para>
-
+            
         </sect2>
-
+        
         <sect2 id="mapping-declaration-unionsubclass" revision="2">
-           <title>union-subclass</title>
-
-           <para>
-               A third option is to map only the concrete classes of an inheritance hierarchy
-               to tables, (the table-per-concrete-class strategy) where each table defines all
-               persistent state of the class, including inherited state. In Hibernate, it is
-               not absolutely necessary to explicitly map such inheritance hierarchies. You
-               can simply map each class with a separate <literal>&lt;class&gt;</literal>
-               declaration. However, if you wish use polymorphic associations (e.g. an association
-               to the superclass of your hierarchy), you need to
-               use the <literal>&lt;union-subclass&gt;</literal> mapping.
-           </para>
-
+            <title>union-subclass</title>
+            
+            <para>
+                A third option is to map only the concrete classes of an inheritance hierarchy
+                to tables, (the table-per-concrete-class strategy) where each table defines all
+                persistent state of the class, including inherited state. In Hibernate, it is
+                not absolutely necessary to explicitly map such inheritance hierarchies. You
+                can simply map each class with a separate <literal>&lt;class&gt;</literal>
+                declaration. However, if you wish use polymorphic associations (e.g. an association
+                to the superclass of your hierarchy), you need to
+                use the <literal>&lt;union-subclass&gt;</literal> mapping.
+            </para>
+            
             <programlistingco>
                 <areaspec>
                     <area id="unionsubclass1" coords="2 45"/>
@@ -1969,29 +1969,29 @@
                         <para>
                             <literal>lazy</literal> (optional, defaults to <literal>true</literal>): Setting
                             <literal>lazy="false"</literal> disables the use of lazy fetching.
-                         </para>
+                        </para>
                     </callout>
                 </calloutlist>
             </programlistingco>
-
+            
             <para>
                 No discriminator column or key column is required for this mapping strategy.
             </para>
-
+            
             <para>
                 For information about inheritance mappings, see <xref linkend="inheritance"/>.
             </para>
-
+            
         </sect2>
-
+        
         <sect2 id="mapping-declaration-join" revision="1">
             <title>join</title>
-
+            
             <para>
                 Using the <literal>&lt;join&gt;</literal> element, it is possible to map
                 properties of one class to several tables, when there's a 1-to-1 relationship between the tables.
             </para>
-
+            
             <programlistingco>
                 <areaspec>
                     <area id="join1" coords="2 50"/>
@@ -2012,7 +2012,7 @@
         <property ... />
         ...
 </join>]]></programlisting>
-
+                
                 <calloutlist>
                     <callout arearefs="join1">
                         <para>
@@ -2025,7 +2025,7 @@
                             the root <literal>&lt;hibernate-mapping&gt;</literal> element.
                         </para>
                     </callout>
-
+                    
                     <callout arearefs="join3">
                         <para>
                             <literal>fetch</literal> (optional - defaults to <literal>join</literal>):
@@ -2055,12 +2055,12 @@
                     </callout>
                 </calloutlist>
             </programlistingco>
-
+            
             <para>
                 For example, the address information for a person can be mapped to a separate
                 table (while preserving value type semantics for all properties):
             </para>
-
+            
             <programlisting><![CDATA[<class name="Person"
     table="PERSON">
 
@@ -2073,27 +2073,27 @@
         <property name="country"/>
     </join>
     ...]]></programlisting>
-
+            
             <para>
                 This feature is often only useful for legacy data models, we recommend fewer
                 tables than classes and a fine-grained domain model. However, it is useful
                 for switching between inheritance mapping strategies in a single hierarchy, as
                 explained later.
             </para>
-
+            
         </sect2>
-
+        
         <sect2 id="mapping-declaration-collections">
             <title>map, set, list, bag</title>
-
+            
             <para>
                 Collections are discussed later.
             </para>
         </sect2>
-
+        
         <sect2 id="mapping-declaration-import" revision="1">
             <title>import</title>
-
+            
             <para>
                 Suppose your application has two persistent classes with the same name, and you don't want to
                 specify the fully qualified name in NHibernate queries. Classes may be "imported" 
@@ -2130,18 +2130,18 @@
             
         </sect2>
     </sect1>
-
+    
     <sect1 id="mapping-types">
         <title>NHibernate Types</title>
-
+        
         <sect2 id="mapping-types-entitiesvalues" revision="1">
             <title>Entities and values</title>
-
+            
             <para>
                 To understand the behaviour of various .NET language-level objects with respect
                 to the persistence service, we need to classify them into two groups:
             </para>
-
+            
             <para>
                 An <emphasis>entity</emphasis> exists independently of any other objects holding
                 references to the entity. Contrast this with the usual Java model where an
@@ -2152,7 +2152,7 @@
                 application objects are usually used in large systems. Entities support
                 circular and shared references. They may also be versioned.
             </para>
-
+            
             <para>
                 An entity's persistent state consists of references to other entities and
                 instances of <emphasis>value</emphasis> types. Values are primitives,
@@ -2163,12 +2163,12 @@
                 independently versioned. Values have no independent identity, so they cannot be
                 shared by two entities or collections.
             </para>
-
+            
             <para>
                 All NHibernate types except collections support null semantics if the .NET type
                 is nullable (i.e. not derived from <literal>System.ValueType</literal>).
             </para>
-
+            
             <para>
                 Up until now, we've been using the term "persistent class" to refer to
                 entities. We will continue to do that. Strictly speaking, however, not all
@@ -2176,10 +2176,10 @@
                 <emphasis>component</emphasis> is a user defined class with value semantics.
             </para>
         </sect2>
-
+        
         <sect2 id="mapping-types-basictypes">
             <title>Basic value types</title>
-
+            
             <para>
                 The <emphasis>basic types</emphasis> may be roughly categorized into three groups - <literal>System.ValueType</literal> 
                 types, <literal>System.Object</literal> types, and <literal>System.Object</literal> types for large objects.  Just like
@@ -2269,8 +2269,8 @@
                             <entry>A <literal>System.Enum</literal></entry>
                             <entry>The <literal>DbType</literal> for the underlying value.</entry>
                             <entry>Do not specify <literal>type="PersistentEnum"</literal> in the mapping.  Instead 
-                            specify the Assembly Qualified Name of the Enum or let NHibernate use Reflection to "guess" the Type.  
-                            The UnderlyingType of the Enum is used to determine the correct <literal>DbType</literal>.</entry>
+                                specify the Assembly Qualified Name of the Enum or let NHibernate use Reflection to "guess" the Type.  
+                                The UnderlyingType of the Enum is used to determine the correct <literal>DbType</literal>.</entry>
                         </row>
                         <row>
                             <entry><literal>Single</literal></entry>
@@ -2387,7 +2387,7 @@
                             <entry>Any <literal>System.Object</literal> that is marked with SerializableAttribute.</entry>
                             <entry><literal>DbType.Binary</literal></entry>
                             <entry><literal>type="Serializable"</literal> should be specified.  This is the fallback type
-                            if no NHibernate Type can be found for the Property.</entry>
+                                if no NHibernate Type can be found for the Property.</entry>
                         </row>
                     </tbody>
                 </tgroup>
@@ -2401,12 +2401,12 @@
                 To see all of the conversions you can view the source of static constructor of the class
                 <literal>NHibernate.Type.TypeFactory</literal>. 
             </para>
-
+            
         </sect2>
-
+        
         <sect2 id="mapping-types-custom">
             <title>Custom value types</title>
-
+            
             <para>
                 It is relatively easy for developers to create their own value types. For example,
                 you might want to persist properties of type <literal>Int64</literal>
@@ -2425,17 +2425,17 @@
                 <literal>NHibernate.DomainModel.DoubleStringType</literal> to see the kind of things that 
                 are possible.
             </para>
-
+            
             <programlisting><![CDATA[<property name="TwoStrings" type="NHibernate.DomainModel.DoubleStringType, NHibernate.DomainModel">
     <column name="first_string"/>
     <column name="second_string"/>
 </property>]]></programlisting>
-
+            
             <para>
                 Notice the use of <literal>&lt;column&gt;</literal> tags to map a property to multiple
                 columns.
             </para>
-
+            
             <para>
                 The <literal>ICompositeUserType</literal>, <literal>IEnhancedUserType</literal>,
                 <literal>INullableUserType</literal>, <literal>IUserCollectionType</literal>,
@@ -2456,12 +2456,12 @@
         <param name="default">0</param>
     </type>
 </property>]]></programlisting>
-
+            
             <para>
                 The <literal>IUserType</literal> can now retrieve the value for the parameter named 
                 <literal>default</literal> from the <literal>IDictionary</literal> object passed to it.
             </para>
-
+            
             <para>
                 Even though NHibernate's rich range of built-in types and support for components means you
                 will very rarely <emphasis>need</emphasis> to use a custom type, it is nevertheless
@@ -2472,7 +2472,7 @@
                 documents would be future-proofed against possible changes in your way of representing 
                 monetary values.
             </para>
-
+            
         </sect2>
         
         <sect2 id="mapping-types-anymapping">
@@ -2487,21 +2487,21 @@
                 (polymorphic) associations. You should use this only in very special cases (eg. audit logs,
                 user session data, etc).
             </para>
-
+            
             <programlisting><![CDATA[<any name="AnyEntity" id-type="Int64" meta-type="Eg.Custom.Class2TablenameType">
     <column name="table_name"/>
     <column name="id"/>
 </any>]]></programlisting>
-
+            
             <para>
-                 The <literal>meta-type</literal> attribute lets the application specify a custom type that 
-                 maps database column values to persistent classes which have identifier properties of the 
-                 type specified by <literal>id-type</literal>. If the meta-type returns instances of 
-                 <literal>System.Type</literal>, nothing else is required. On the other hand, if it is
-                 a basic type like <literal>String</literal> or <literal>Char</literal>, you must
-                 specify the mapping from values to classes.
+                The <literal>meta-type</literal> attribute lets the application specify a custom type that 
+                maps database column values to persistent classes which have identifier properties of the 
+                type specified by <literal>id-type</literal>. If the meta-type returns instances of 
+                <literal>System.Type</literal>, nothing else is required. On the other hand, if it is
+                a basic type like <literal>String</literal> or <literal>Char</literal>, you must
+                specify the mapping from values to classes.
             </para>
-
+            
             <programlisting><![CDATA[<any name="AnyEntity" id-type="Int64" meta-type="String">
     <meta-value value="TBL_ANIMAL" class="Animal"/>
     <meta-value value="TBL_HUMAN" class="Human"/>
@@ -2509,7 +2509,7 @@
     <column name="table_name"/>
     <column name="id"/>
 </any>]]></programlisting>
-
+            
             <programlistingco>
                 <areaspec>
                     <area id="any1" coords="2 60"/>
@@ -2574,38 +2574,38 @@
                     </callout>
                 </calloutlist>
             </programlistingco>
-
-      </sect2>
-
+            
+        </sect2>
+        
     </sect1>
     
     <sect1 id="mapping-quotedidentifiers">
-            <title>SQL quoted identifiers</title>
-            <para>
-                You may force NHibernate to quote an identifier in the generated SQL by enclosing the table or
-                column name in backticks in the mapping document. NHibernate will use the correct quotation
-                style for the SQL <literal>Dialect</literal> (usually double quotes, but brackets for SQL
-                Server and backticks for MySQL).
-            </para>
-
-            <programlisting><![CDATA[<class name="LineItem" table="`Line Item`">
+        <title>SQL quoted identifiers</title>
+        <para>
+            You may force NHibernate to quote an identifier in the generated SQL by enclosing the table or
+            column name in backticks in the mapping document. NHibernate will use the correct quotation
+            style for the SQL <literal>Dialect</literal> (usually double quotes, but brackets for SQL
+            Server and backticks for MySQL).
+        </para>
+        
+        <programlisting><![CDATA[<class name="LineItem" table="`Line Item`">
     <id name="Id" column="`Item Id`"/><generator class="assigned"/></id>
     <property name="ItemNumber" column="`Item #`"/>
     ...
 </class>]]></programlisting>
-
+        
     </sect1>
-
-   <sect1 id="mapping-modularfiles">
-       <title>Modular mapping files</title>
-       <para>
+    
+    <sect1 id="mapping-modularfiles">
+        <title>Modular mapping files</title>
+        <para>
             It is possible to define <literal>subclass</literal> and <literal>joined-subclass</literal>
             mappings in seperate mapping documents, directly beneath <literal>hibernate-mapping</literal>.
             This allows you to extend a class hierachy just by adding a new mapping file. You must
             specify an <literal>extends</literal> attribute in the subclass mapping, naming a previously
             mapped superclass. Use of this feature makes the ordering of the mapping documents important!
         </para>
-    
+        
         <programlisting><![CDATA[
 <hibernate-mapping>
         <subclass name="Eg.Subclass.DomesticCat, Eg"
@@ -2613,9 +2613,9 @@
              <property name="name" type="string"/>
         </subclass>
 </hibernate-mapping>]]></programlisting>
-
+        
     </sect1>
-
+    
     <sect1 id="mapping-generated">
         <title>Generated Properties</title>
         <para>
@@ -2629,9 +2629,9 @@
         </para>
         <para>
             Properties marked as generated must additionally be non-insertable and non-updateable.
-            Only <xref linkend="mapping-declaration-version">versions</xref>,
-            <xref linkend="mapping-declaration-timestamp">timestamps</xref>, and
-            <xref linkend="mapping-declaration-property">simple properties</xref> can be marked as
+            Only <xref linkend="mapping-declaration-version"/>,
+            <xref linkend="mapping-declaration-timestamp"/>, and
+            <xref linkend="mapping-declaration-property"/> can be marked as
             generated.
         </para>
         <para>
@@ -2642,8 +2642,8 @@
             <literal>insert</literal> - states that the given property value is generated on
             insert, but is not regenerated on subsequent updates.  Things like created-date would
             fall into this category.  Note that even though
-            <xref linkend="mapping-declaration-version">version</xref> and
-            <xref linkend="mapping-declaration-timestamp">timestamp</xref> properties can
+            <xref linkend="mapping-declaration-version"/> and
+            <xref linkend="mapping-declaration-timestamp"/> properties can
             be marked as generated, this option is not available there...
         </para>
         <para>
@@ -2651,7 +2651,7 @@
             on insert and on update.
         </para>
     </sect1>
-
+    
     <sect1 id="mapping-database-object">
         <title>Auxiliary Database Objects</title>
         <para>
@@ -2713,6 +2713,6 @@
     </database-object>
 </hibernate-mapping>]]></programlisting>
     </sect1>
-
+    
 </chapter>
 

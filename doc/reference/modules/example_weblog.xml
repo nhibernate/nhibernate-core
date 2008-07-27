@@ -1,15 +1,15 @@
 <chapter id="example-weblog">
     <title>Example: Weblog Application</title>
-
+    
     <sect1 id="example-weblog-classes">
         <title>Persistent Classes</title>
-
+        
         <para>
             The persistent classes represent a weblog, and an item posted
             in a weblog. They are to be modelled as a standard parent/child
             relationship, but we will use an ordered bag, instead of a set.
         </para>
-
+        
         <programlisting><![CDATA[using System;
 using System.Collections;
 
@@ -40,7 +40,7 @@ namespace Eg
         }
     }
 }]]></programlisting>
-
+        
         <programlisting><![CDATA[using System;
 
 namespace Eg
@@ -84,12 +84,12 @@ namespace Eg
         }
     }
 }]]></programlisting>
-
+        
     </sect1>
-
+    
     <sect1 id="example-weblog-mappings">
         <title>Hibernate Mappings</title>
-
+        
         <para>
             The XML mappings should now be quite straightforward.
         </para>
@@ -132,7 +132,7 @@ namespace Eg
     </class>
     
 </hibernate-mapping>]]></programlisting>
-
+        
         <programlisting><![CDATA[<?xml version="1.0"?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
     assembly="Eg" namespace="Eg">
@@ -173,17 +173,17 @@ namespace Eg
     </class>
     
 </hibernate-mapping>]]></programlisting>
-
+        
     </sect1>
     
     <sect1 id="example-weblog-code">
         <title>NHibernate Code</title>
-
+        
         <para>
             The following class demonstrates some of the kinds of things
             we can do with these classes, using NHibernate.
         </para>
-
+        
         <programlisting><![CDATA[using System;
 using System.Collections;
 
@@ -354,8 +354,8 @@ namespace Eg
         }
     }
 }]]></programlisting>
-
+        
     </sect1>
-
+    
 </chapter>
 

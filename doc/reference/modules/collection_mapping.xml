@@ -1,9 +1,9 @@
 <chapter id="collections">
     <title>Collection Mapping</title>
-
+    
     <sect1 id="collections-persistent">
         <title>Persistent Collections</title>
-
+        
         <para>
             NHibernate requires that persistent collection-valued fields be declared
             as an interface type, for example:
@@ -49,7 +49,7 @@
             with an instance of NHibernate's own implementation of <literal>ISet</literal>.
             Watch out for errors like this:
         </para>
-
+        
         <programlisting><![CDATA[Cat cat = new DomesticCat();
 Cat kitten = new DomesticCat();
 ....
@@ -59,7 +59,7 @@ cat.Kittens = kittens;
 session.Save(cat);
 kittens = cat.Kittens; //Okay, kittens collection is an ISet
 HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
-
+        
         <para>
             Collection instances have the usual behavior of value types. They are automatically
             persisted when referenced by a persistent object and automatically deleted when
@@ -69,20 +69,20 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
             collection-valued properties do not support null value semantics; NHibernate does
             not distinguish between a null collection reference and an empty collection.
         </para>
-
+        
         <para>
             You shouldn't have to worry much about any of this. Just use NHibernate's collections
             the same way you use ordinary .NET collections, but make sure you understand the
             semantics of bidirectional associations (discussed later) before using them.
         </para>
-
+        
         <para>
             Collection instances are distinguished in the database by a foreign key to
             the owning entity. This foreign key is referred to as the
             <emphasis>collection key </emphasis>. The collection key is mapped by
             the <literal>&lt;key&gt;</literal> element.
         </para>
-
+        
         <para>
             Collections may contain almost any other NHibernate type, including all basic types,
             custom types, entity types and components. This is an important definition: An object
@@ -95,7 +95,7 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
             <literal>&lt;many-to-any&gt;</literal>. The first two map elements with value semantics,
             the other three are used to map entity associations.
         </para>
-
+        
         <para>
             All collection types except <literal>ISet</literal> and bag have an <emphasis>index
             </emphasis> column - a column that maps to an array or <literal>IList</literal> index or
@@ -105,19 +105,19 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
             mapped using <literal>&lt;index&gt;</literal>, <literal>&lt;index-many-to-many&gt;</literal>,
             <literal>&lt;composite-index&gt;</literal> or <literal>&lt;index-many-to-any&gt;</literal>.
         </para>
-
+        
         <para>
             There are quite a range of mappings that can be generated for collections,
             covering many common relational models. We suggest you experiment with the
             schema generation tool to get a feeling for how various mapping declarations
             translate to database tables.
         </para>
-
+        
     </sect1>
-
+    
     <sect1 id="collections-mapping">
         <title>Mapping a Collection</title>
-
+        
         <para>
             Collections are declared by the
             <literal>&lt;set&gt;</literal>,
@@ -128,7 +128,7 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
             <literal>&lt;primitive-array&gt;</literal> elements.
             <literal>&lt;map&gt;</literal> is representative:
         </para>
-
+        
         <programlistingco>
             <areaspec>
                 <area id="mappingcollection1" coords="2 65"/>
@@ -259,7 +259,7 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                 </callout>
             </calloutlist>
         </programlistingco>
-
+        
         <para>
             The mapping of an <literal>IList</literal> or array requires a seperate table column holding the array
             or list index (the <literal>i</literal> in <literal>foo[i]</literal>). If your relational model doesn't
@@ -269,7 +269,7 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
             semantics attached to the <literal>ISet</literal>, <literal>IList</literal> and <literal>IDictionary</literal>
             interfaces. <literal>IList</literal> elements don't just spontaneously rearrange themselves!
         </para>
-
+        
         <para>
             On the other hand, people who planned to use the <literal>IList</literal> to emulate
             <emphasis>bag</emphasis> semantics have a legitimate grievance here.
@@ -281,34 +281,34 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
             conflict with the semantics of the <literal>IList</literal> contract (however, you can sort
             the bag arbitrarily, discussed later in this chapter).
         </para>
-
+        
         <para>
             Note: Large NHibernate bags mapped with <literal>inverse="false"</literal> are inefficient and
             should be  avoided; NHibernate can't create, delete or update rows individually, because there is
             no key that may be used to identify an individual row.
         </para>
-
+        
     </sect1>
-
+    
     <sect1 id="collections-ofvalues">
         <title>Collections of Values and Many-To-Many Associations</title>
-
+        
         <para>
             A collection table is required for any collection of values and any collection of
             references to other entities mapped as a many-to-many association (the natural semantics
             for a .NET collection). The table requires (foreign) key column(s), element column(s) and
             possibly index column(s).
         </para>
-
+        
         <para>
             The foreign key from the collection table to the table of the owning class is
             declared using a <literal>&lt;key&gt;</literal> element.
         </para>
-
+        
         <programlistingco>
             <areaspec>
                 <area id="key1" coords="1 45"/>
-             </areaspec>
+            </areaspec>
             <programlisting><![CDATA[<key column="column_name"/>]]></programlisting>
             <calloutlist>
                 <callout arearefs="element1">
@@ -318,19 +318,19 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                 </callout>
             </calloutlist>
         </programlistingco>
-
+        
         <para>
             For indexed collections like maps and lists, we require an <literal>&lt;index&gt;</literal>
             element. For lists, this column contains sequential integers numbered from zero. Make sure
             that your index really starts from zero if you have to deal with legacy data. For maps,
             the column may contain any values of any NHibernate type.
         </para>
-
+        
         <programlistingco>
             <areaspec>
                 <area id="index1" coords="2 45"/>
                 <area id="index2" coords="3 45"/>
-             </areaspec>
+            </areaspec>
             <programlisting><![CDATA[<index
         column="column_name"
         type="typename"
@@ -350,17 +350,17 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                 </callout>
             </calloutlist>
         </programlistingco>
-
+        
         <para>
             Alternatively, a map may be indexed by objects of entity type. We use the
             <literal>&lt;index-many-to-many&gt;</literal> element.
         </para>
-
+        
         <programlistingco>
             <areaspec>
                 <area id="indexmanytomany1" coords="2 45"/>
                 <area id="indexmanytomany2" coords="3 45"/>
-             </areaspec>
+            </areaspec>
             <programlisting><![CDATA[<index-many-to-many
         column="column_name"
         class="ClassName"
@@ -380,16 +380,16 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                 </callout>
             </calloutlist>
         </programlistingco>
-
+        
         <para>
             For a collection of values, we use the <literal>&lt;element&gt;</literal> tag.
         </para>
-
+        
         <programlistingco>
             <areaspec>
                 <area id="element1" coords="2 45"/>
                 <area id="element2" coords="3 45"/>
-             </areaspec>
+            </areaspec>
             <programlisting><![CDATA[<element
         column="column_name"
         type="typename"
@@ -408,13 +408,13 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                 </callout>
             </calloutlist>
         </programlistingco>
-
+        
         <para>
             A collection of entities with its own table corresponds to the relational notion
             of <emphasis>many-to-many association</emphasis>. A many to many association is the
             most natural mapping of a .NET collection but is not usually the best relational model.
         </para>
-
+        
         <programlistingco>
             <areaspec>
                 <area id="manytomany1" coords="2 60"/>
@@ -446,7 +446,7 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                         special case; for full eager fetching (in a single SELECT) of an entity and its
                         many-to-many relationships to other entities, you would enable join fetching not
                         only of the collection itself, but also with this attribute on the <literal>
-                        &lt;many-to-many&gt;</literal> nested element.
+                            &lt;many-to-many&gt;</literal> nested element.
                     </para>
                 </callout>
                 <callout arearefs="manytomany4">
@@ -458,51 +458,51 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                 </callout>
             </calloutlist>
         </programlistingco>
-
+        
         <para>
             Some examples, first, a set of strings:
         </para>
-
+        
         <programlisting><![CDATA[<set name="Names" table="NAMES">
     <key column="GROUPID"/>
     <element column="NAME" type="String"/>
 </set>]]></programlisting>
-
+        
         <para>
             A bag containing integers (with an iteration order determined by the
             <literal>order-by</literal> attribute):
         </para>
-
+        
         <programlisting><![CDATA[<bag name="Sizes" table="SIZES" order-by="SIZE ASC">
     <key column="OWNER"/>
     <element column="SIZE" type="Int32"/>
 </bag>]]></programlisting>
-
+        
         <para>
             An array of entities - in this case, a many to many association (note that
             the entities are lifecycle objects, <literal>cascade="all"</literal>):
         </para>
-
+        
         <programlisting><![CDATA[<array name="Foos" table="BAR_FOOS" cascade="all">
     <key column="BAR_ID"/>
     <index column="I"/>
     <many-to-many column="FOO_ID" class="Eg.Foo, Eg"/>
 </array>]]></programlisting>
-
+        
         <para>
             A map from string indices to dates:
         </para>
-
+        
         <programlisting><![CDATA[<map name="Holidays" table="holidays" schema="dbo" order-by="hol_name asc">
     <key column="id"/>
     <index column="hol_name" type="String"/>
     <element column="hol_date" type="Date"/>
 </map>]]></programlisting>
-
+        
         <para>
             A list of components (discussed in the next chapter):
         </para>
-
+        
         <programlisting><![CDATA[<list name="CarComponents" table="car_components">
     <key column="car_id"/>
     <index column="posn"/>
@@ -512,19 +512,19 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
             <property name="SerialNumber" column="serial_no" type="String"/>
     </composite-element>
 </list>]]></programlisting>
-
+        
     </sect1>
-
+    
     <sect1 id="collections-onetomany">
         <title>One-To-Many Associations</title>
-
+        
         <para>
             A <emphasis>one to many association</emphasis> links the tables of two classes
             <emphasis>directly</emphasis>, with no intervening collection table.
             (This implements a <emphasis>one-to-many</emphasis> relational model.) This
             relational model loses some of the semantics of .NET collections:
         </para>
-
+        
         <itemizedlist spacing="compact">
             <listitem>
                 <para>
@@ -544,7 +544,7 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                 </para>
             </listitem>
         </itemizedlist>
-
+        
         <para>
             An association from <literal>Foo</literal> to <literal>Bar</literal> requires the
             addition of a key column and possibly an index column to the table of the contained
@@ -552,11 +552,11 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
             <literal>&lt;key&gt;</literal> and <literal>&lt;index&gt;</literal> elements
             described above.
         </para>
-
+        
         <para>
             The <literal>&lt;one-to-many&gt;</literal> tag indicates a one to many association.
         </para>
-
+        
         <programlistingco>
             <areaspec>
                 <area id="onetomany1" coords="2 60"/>
@@ -581,22 +581,22 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                 </callout>
             </calloutlist>
         </programlistingco>
-
+        
         <para>
             Example:
         </para>
-
+        
         <programlisting><![CDATA[<set name="Bars">
     <key column="foo_id"/>
     <one-to-many class="Eg.Bar, Eg"/>
 </set>]]></programlisting>
-
+        
         <para>
             Notice that the <literal>&lt;one-to-many&gt;</literal> element does not need to
             declare any columns. Nor is it necessary to specify the <literal>table</literal>
             name anywhere.
         </para>
-
+        
         <para>
             <emphasis>Very Important Note:</emphasis> If the <literal>&lt;key&gt;</literal>
             column of a <literal>&lt;one-to-many&gt;</literal> association is declared
@@ -606,12 +606,12 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
             end (the set or bag) marked as <literal>inverse="true"</literal>.
             See the discussion of bidirectional associations later in this chapter.
         </para>
-
+        
     </sect1>
-
+    
     <sect1 id="collections-lazy">
         <title>Lazy Initialization</title>
-
+        
         <para>
             Collections (other than arrays) may be lazily initialized, meaning they load
             their state from the database only when the application needs to access it.
@@ -620,7 +620,7 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
             the main reason why NHibernate needs its own collection implementations).
             However, if the application tries something like this:
         </para>
-
+        
         <programlisting><![CDATA[s = sessions.OpenSession();
 ITransaction tx = sessions.BeginTransaction();
 User u = (User) s.Find("from User u where u.Name=?", userName, NHibernateUtil.String)[0];
@@ -629,7 +629,7 @@ tx.Commit();
 s.Close();
 
 int accessLevel = (int) permissions["accounts"];  // Error!]]></programlisting>
-
+        
         <para>
             It could be in for a nasty surprise. Since the permissions collection was not
             initialized when the <literal>ISession</literal> was committed,
@@ -637,35 +637,35 @@ int accessLevel = (int) permissions["accounts"];  // Error!]]></programlisting>
             line that reads from the collection to just before the commit. (There are
             other more advanced ways to solve this problem, however.)
         </para>
-
+        
         <para>
             Alternatively, use a non-lazy collection. Since lazy initialization can lead to
             bugs like that above, non-laziness is the default. However, it is intended that
             lazy initialization be used for almost all collections, especially for
             collections of entities (for reasons of efficiency).
         </para>
-
+        
         <para>
             Exceptions that occur while lazily initializing a collection are wrapped in a
             <literal>LazyInitializationException</literal>.
         </para>
-
+        
         <para>
             Declare a lazy collection using the optional <literal>lazy</literal> attribute:
         </para>
-
+        
         <programlisting><![CDATA[<set name="Names" table="NAMES" lazy="true">
     <key column="group_id"/>
     <element column="NAME" type="String"/>
 </set>]]></programlisting>
-
+        
         <para>
             In some application architectures, particularly where the code that accesses data
             using NHibernate, and the code that uses it are in different application layers, it
             can be a problem to ensure that the <literal>ISession</literal> is open when a
             collection is initialized. There are two basic ways to deal with this issue:
         </para>
-
+        
         <itemizedlist>
             <listitem>
                 <para>
@@ -704,33 +704,33 @@ int accessLevel = (int) permissions["accounts"];  // Error!]]></programlisting>
                 </para>
             </listitem>
         </itemizedlist>
-
+        
         <para>
             You can use the <literal>Filter()</literal> method of the NHibernate ISession API to
             get the size of a collection without initializing it:
         </para>
-
+        
         <programlisting><![CDATA[ICollection countColl = s.Filter( collection, "select count(*)" );
 IEnumerator countEn = countColl.GetEnumerator();
 countEn.MoveNext();
 int count = (int) countEn.Current;]]></programlisting>
-
+        
         <para>
             <literal>Filter()</literal> or <literal>CreateFilter()</literal> are also used to
             efficiently retrieve subsets of a collection without needing to initialize the whole
             collection.
         </para>
-
+        
     </sect1>
-
+    
     <sect1 id="collections-sorted" revision="1">
         <title>Sorted Collections</title>
-
+        
         <para>
             NHibernate supports collections implemented by <literal>System.Collections.SortedList</literal> and
             <literal>Iesi.Collections.SortedSet</literal>. You must specify a comparer in the mapping file:
         </para>
-
+        
         <programlisting><![CDATA[<set name="Aliases" table="person_aliases" sort="natural">
     <key column="person"/>
     <element column="name" type="String"/>
@@ -741,28 +741,28 @@ int count = (int) countEn.Current;]]></programlisting>
     <index column="hol_name" type="String"/>
     <element column="hol_date" type="Date"/>
 </map>]]></programlisting>
-
+        
         <para>
             Allowed values of the <literal>sort</literal> attribute are <literal>unsorted</literal>,
             <literal>natural</literal> and the name of a class implementing
             <literal>System.Collections.IComparer</literal>.
         </para>
-
+        
         <para>
             If you want the database itself to order the collection elements use the
             <literal>order-by</literal> attribute of <literal>set</literal>, <literal>bag</literal>
             or <literal>map</literal> mappings. This performs the ordering in the SQL query, not in
             memory.
         </para>
-
+        
         <para>
             Setting the <literal>order-by</literal> attribute tells NHibernate to use
             <literal>ListDictionary</literal> or <literal>ListSet</literal> class
             internally for dictionaries and sets, maintaining the order of the elements.
             <emphasis>Note that lookup operations on these collections are very slow if they
-            contain more than a few elements.</emphasis>
+                contain more than a few elements.</emphasis>
         </para>
-
+        
         <programlisting><![CDATA[<set name="Aliases" table="person_aliases" order-by="name asc">
     <key column="person"/>
     <element column="name" type="String"/>
@@ -773,24 +773,24 @@ int count = (int) countEn.Current;]]></programlisting>
     <index column="hol_name" type="String"/>
     <element column="hol_date type="Date"/>
 </map>]]></programlisting>
-
+        
         <para>
             Note that the value of the <literal>order-by</literal> attribute is an SQL ordering, not
             a HQL ordering!
         </para>
-
+        
         <para>
             Associations may even be sorted by some arbitrary criteria at runtime using a
             <literal>Filter()</literal>.
         </para>
-
+        
         <programlisting><![CDATA[sortedUsers = s.Filter( group.Users, "order by this.Name" );]]></programlisting>
-
+        
     </sect1>
-
-   <sect1 id="collections-idbag" revision="1">
+    
+    <sect1 id="collections-idbag" revision="1">
         <title>Using an <literal>&lt;idbag&gt;</literal></title>
-
+        
         <para>
             If you've fully embraced our view that composite keys are a bad thing and that
             entities should have synthetic identifiers (surrogate keys), then you might
@@ -801,49 +801,49 @@ int count = (int) countEn.Current;]]></programlisting>
             Nevertheless, NHibernate provides a feature that allows you to map many to many
             associations and collections of values to a table with a surrogate key.
         </para>
-
+        
         <para>
             The <literal>&lt;idbag&gt;</literal> element lets you map a <literal>List</literal>
             (or <literal>Collection</literal>) with bag semantics.
         </para>
-
-<programlisting><![CDATA[<idbag name="Lovers" table="LOVERS" lazy="true">
+        
+        <programlisting><![CDATA[<idbag name="Lovers" table="LOVERS" lazy="true">
     <collection-id column="ID" type="Int64">
         <generator class="hilo"/>
     </collection-id>
     <key column="PERSON1"/>
     <many-to-many column="PERSON2" class="Eg.Person" fetch="join"/>
 </idbag>]]></programlisting>
-
+        
         <para>
             As you can see, an <literal>&lt;idbag&gt;</literal> has a synthetic id generator,
             just like an entity class! A different surrogate key is assigned to each collection
             row. NHibernate does not provide any mechanism to discover the surrogate key value
             of a particular row, however.
         </para>
-
+        
         <para>
             Note that the update performance of an <literal>&lt;idbag&gt;</literal> is
             <emphasis>much</emphasis> better than a regular <literal>&lt;bag&gt;</literal>!
             NHibernate can locate individual rows efficiently and update or delete them
             individually, just like a list, map or set.
         </para>
-
+        
         <para>
             As of version 2.0, the <literal>native</literal> identifier generation
             strategy is supported for <literal>&lt;idbag&gt;</literal> collection identifiers.
         </para>
-
+        
     </sect1>
-
+    
     <sect1 id="collections-bidirectional">
         <title>Bidirectional Associations</title>
-
+        
         <para>
             A <emphasis>bidirectional association</emphasis> allows navigation from both
             "ends" of the association. Two kinds of bidirectional association are
             supported:
-
+            
             <variablelist>
                 <varlistentry>
                     <term>one-to-many</term>
@@ -862,15 +862,15 @@ int count = (int) countEn.Current;]]></programlisting>
                     </listitem>
                 </varlistentry>
             </variablelist>
-
+            
         </para>
-
+        
         <para>
             Please note that NHibernate does not support bidirectional one-to-many associations
             with an indexed collection (list, map or array) as the "many" end, you have to
             use a set or bag mapping.
         </para>
-
+        
         <para>
             You may specify a bidirectional many-to-many association simply by mapping two
             many-to-many associations to the same database table and declaring one end as
@@ -878,7 +878,7 @@ int count = (int) countEn.Current;]]></programlisting>
             a bidirectional many-to-many association from a class back to <emphasis>itself</emphasis>
             (each category can have many items and each item can be in many categories):
         </para>
-
+        
         <programlisting><![CDATA[<class name="NHibernate.Auction.Category, NHibernate.Auction">
     <id name="Id" column="ID"/>
     ...
@@ -898,7 +898,7 @@ int count = (int) countEn.Current;]]></programlisting>
         <many-to-many class="NHibernate.Auction.Category, NHibernate.Auction" column="CATEGORY_ID"/>
     </bag>
 </class>]]></programlisting>
-
+        
         <para>
             Changes made only to the inverse end of the association are <emphasis>not</emphasis>
             persisted. This means that NHibernate has two representations in memory for every
@@ -906,27 +906,27 @@ int count = (int) countEn.Current;]]></programlisting>
             is easier to understand if you think about the .NET object model and how we create
             a many-to-many relationship in C#:
         </para>
-
+        
         <programlisting><![CDATA[
 category.Items.Add(item);          // The category now "knows" about the relationship
 item.Categories.Add(category);     // The item now "knows" about the relationship
 
 session.Update(item);                     // No effect, nothing will be saved!
 session.Update(category);                 // The relationship will be saved]]></programlisting>
-
+        
         <para>
             The non-inverse side is used to save the in-memory representation to the database.
             We would get an unneccessary INSERT/UPDATE and probably even a foreign key violation
             if both would trigger changes! The same is of course also true for bidirectional
             one-to-many associations.
         </para>
-
+        
         <para>
             You may map a bidirectional one-to-many association by mapping a one-to-many association
             to the same table column(s) as a many-to-one association and declaring the many-valued
             end <literal>inverse="true"</literal>.
         </para>
-
+        
         <programlisting><![CDATA[<class name="Eg.Parent, Eg">
     <id name="Id" column="id"/>
     ....
@@ -941,57 +941,57 @@ session.Update(category);                 // The relationship will be saved]]></
     ....
     <many-to-one name="Parent" class="Eg.Parent, Eg" column="parent_id"/>
 </class>]]></programlisting>
-
+        
         <para>
             Mapping one end of an association with <literal>inverse="true"</literal> doesn't
             affect the operation of cascades, both are different concepts!
         </para>
-
+        
     </sect1>
-
+    
     <sect1 id="collections-ternary">
         <title>Ternary Associations</title>
-
+        
         <para>
             There are two possible approaches to mapping a ternary association. One approach is to use
             composite elements (discussed below). Another is to use an <literal>IDictionary</literal> with an
             association as its index:
         </para>
-
+        
         <programlisting><![CDATA[<map name="Contracts" lazy="true">
     <key column="employer_id"/>
     <index-many-to-many column="employee_id" class="Employee"/>
     <one-to-many column="contract_id" class="Contract"/>
 </map>]]></programlisting>
-            
-            <programlisting><![CDATA[<map name="Connections" lazy="true">
+        
+        <programlisting><![CDATA[<map name="Connections" lazy="true">
     <key column="node1_id"/>
     <index-many-to-many column="node2_id" class="Node"/>
     <many-to-many column="connection_id" class="Connection"/>
 </map>]]></programlisting>
-            
-	</sect1>
-	
-	<sect1 id="collections-heterogeneous">
-	    <title>Heterogeneous Associations</title>
-
-	    <para>
-	        The <literal>&lt;many-to-any&gt;</literal> and <literal>&lt;index-many-to-any&gt;</literal>
-	        elements provide for true heterogeneous associations. These mapping elements work in the
-	        same way as the <literal>&lt;any&gt;</literal> element - and should also be used
-	        rarely, if ever.
-	    </para>
-
-	</sect1>
-
+        
+    </sect1>
+    
+    <sect1 id="collections-heterogeneous">
+        <title>Heterogeneous Associations</title>
+        
+        <para>
+            The <literal>&lt;many-to-any&gt;</literal> and <literal>&lt;index-many-to-any&gt;</literal>
+            elements provide for true heterogeneous associations. These mapping elements work in the
+            same way as the <literal>&lt;any&gt;</literal> element - and should also be used
+            rarely, if ever.
+        </para>
+        
+    </sect1>
+    
     <sect1 id="collections-example">
         <title>Collection examples</title>
-
+        
         <para>
             The previous sections are pretty confusing. So lets look at an example. This
             class:
         </para>
-
+        
         <programlisting><![CDATA[using System;
 using System.Collections;
 
@@ -1018,13 +1018,13 @@ namespace Eg
         ....
     }
 }]]></programlisting>
-
+        
         <para>
             has a collection of <literal>Eg.Child</literal> instances. If each
             child has at most one parent, the most natural mapping is a one-to-many
             association:
         </para>
-
+        
         <programlisting><![CDATA[<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
     assembly="Eg" namespace="Eg">
 
@@ -1046,20 +1046,20 @@ namespace Eg
     </class>
 
 </hibernate-mapping>]]></programlisting>
-
+        
         <para>
             This maps to the following table definitions:
         </para>
-
+        
         <programlisting><![CDATA[create table parent ( Id bigint not null primary key )
 create table child ( Id bigint not null primary key, Name varchar(255), parent_id bigint )
 alter table child add constraint childfk0 (parent_id) references parent]]></programlisting>
-
+        
         <para>
             If the parent is <emphasis>required</emphasis>, use a bidirectional one-to-many
             association:
         </para>
-
+        
         <programlisting><![CDATA[<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
     assembly="Eg" namespace="Eg">
 
@@ -1082,23 +1082,23 @@ alter table child add constraint childfk0 (parent_id) references parent]]></prog
     </class>
 
 </hibernate-mapping>]]></programlisting>
-
+        
         <para>
             Notice the <literal>NOT NULL</literal> constraint:
         </para>
-
+        
         <programlisting><![CDATA[create table parent ( Id bigint not null primary key )
 create table child ( Id bigint not null
                      primary key,
                      Name varchar(255),
                      parent_id bigint not null )
 alter table child add constraint childfk0 (parent_id) references parent]]></programlisting>
-
+        
         <para>
             On the other hand, if a child might have multiple parents, a many-to-many
             association is appropriate:
         </para>
-
+        
         <programlisting><![CDATA[<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
     assembly="Eg" namespace="Eg">
 
@@ -1120,11 +1120,11 @@ alter table child add constraint childfk0 (parent_id) references parent]]></prog
     </class>
 
 </hibernate-mapping>]]></programlisting>
-
+        
         <para>
             Table definitions:
         </para>
-
+        
         <programlisting><![CDATA[create table parent ( Id bigint not null primary key )
 create table child ( Id bigint not null primary key, name varchar(255) )
 create table childset ( parent_id bigint not null,
@@ -1132,9 +1132,9 @@ create table childset ( parent_id bigint not null,
                         primary key ( parent_id, child_id ) )
 alter table childset add constraint childsetfk0 (parent_id) references parent
 alter table childset add constraint childsetfk1 (child_id) references child]]></programlisting>
-
+        
         <!-- TODO: link to parent/child chapter -->
-
+        
     </sect1>
-
+    
 </chapter>

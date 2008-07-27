@@ -1,15 +1,15 @@
 <chapter id="events">
     <title>Interceptors and events</title>
-
+    
     <para>
         It is often useful for the application to react to certain events that occur
         inside NHibernate. This allows implementation of certain kinds of generic 
         functionality, and extension of NHibernate functionality.
     </para>
-
+    
     <sect1 id="objectstate-interceptors" revision="3">
         <title>Interceptors</title>
-
+        
         <para>
             The <literal>IInterceptor</literal> interface provides callbacks from the session to the 
             application allowing the application to inspect and/or manipulate properties of a
@@ -20,12 +20,12 @@
             <literal>lastUpdateTimestamp</literal> property when an <literal>IAuditable</literal> is 
             updated.
         </para>
-
+        
         <para>
             You may either implement <literal>IInterceptor</literal> directly or (better) extend
             <literal>EmptyInterceptor</literal>.
         </para>
-
+        
         <programlisting><![CDATA[using System;
 	
 using NHibernate;
@@ -106,20 +106,20 @@ public class AuditInterceptor : EmptyInterceptor {
     }
 
 }]]></programlisting>
-
+        
         <para>
             Interceptors come in two flavors: <literal>ISession</literal>-scoped and
             <literal>ISessionFactory</literal>-scoped.
         </para>
-
+        
         <para>
             An <literal>ISession</literal>-scoped interceptor is specified
             when a session is opened using one of the overloaded ISessionFactory.OpenSession()
             methods accepting an <literal>IInterceptor</literal>.
         </para>
-
+        
         <programlisting><![CDATA[ISession session = sf.OpenSession( new AuditInterceptor() );]]></programlisting>
-
+        
         <para>
             An <literal>ISessionFactory</literal>-scoped interceptor is registered with the <literal>Configuration</literal>
             object prior to building the <literal>ISessionFactory</literal>.  In this case, the supplied interceptor
@@ -128,20 +128,20 @@ public class AuditInterceptor : EmptyInterceptor {
             interceptors must be thread safe, taking care to not store session-specific state since multiple
             sessions will use this interceptor (potentially) concurrently.
         </para>
-    
+        
         <programlisting><![CDATA[new Configuration().SetInterceptor( new AuditInterceptor() );]]></programlisting>
-
+        
     </sect1>
-
-     <sect1 id="objectstate-events" revision="4">
+    
+    <sect1 id="objectstate-events" revision="4">
         <title>Event system</title>
-
+        
         <para>
             If you have to react to particular events in your persistence layer, you may
             also use the NHibernate2 <emphasis>event</emphasis> architecture. The event
             system can be used in addition or as a replacement for interceptors.
         </para>
-
+        
         <para>
             Essentially all of the methods of the <literal>ISession</literal> interface correlate
             to an event. You have a <literal>LoadEvent</literal>, a <literal>FlushEvent</literal>, etc
@@ -156,12 +156,12 @@ public class AuditInterceptor : EmptyInterceptor {
             implementation would be responsible for processing any <literal>Load()</literal> requests
             made of the <literal>ISession</literal>.
         </para>
-
+        
         <para>
             The listeners should be considered effectively singletons; meaning, they are shared between
             requests, and thus should not save any state as instance variables.
         </para>
-
+        
         <para>
             A custom listener should implement the appropriate interface for the event it wants to
             process and/or extend one of the convenience base classes (or even the default event
@@ -170,7 +170,7 @@ public class AuditInterceptor : EmptyInterceptor {
             <literal>Configuration</literal> object, or specified in the NHibernate configuration
             XML. Here's an example of a custom load event listener:
         </para>
-
+        
         <programlisting><![CDATA[public class MyLoadListener : ILoadEventListener 
 {
     // this is the single method defined by the LoadEventListener interface
@@ -181,13 +181,13 @@ public class AuditInterceptor : EmptyInterceptor {
         }
     }
 }]]></programlisting>
-
+        
         <para>
             You also need a configuration entry telling NHibernate to use the listener in addition
             to the default listener:
         </para>
-
-<programlisting><![CDATA[<hibernate-configuration>
+        
+        <programlisting><![CDATA[<hibernate-configuration>
     <session-factory>
         ...
         <event type="load">
@@ -196,15 +196,15 @@ public class AuditInterceptor : EmptyInterceptor {
         </event>
     </session-factory>
 </hibernate-configuration>]]></programlisting>
-
+        
         <para>
             Instead, you may register it programmatically:
         </para>
-
+        
         <programlisting><![CDATA[Configuration cfg = new Configuration();
 ILoadEventListener[] stack = new ILoadEventListener[] { new MyLoadListener(), new DefaultLoadEventListener() };
 cfg.EventListeners.LoadEventListeners = stack;]]></programlisting>
-
+        
         <para>
             Listeners registered declaratively cannot share instances. If the same class name is
             used in multiple <literal>&lt;listener/&gt;</literal> elements, each reference will
@@ -212,15 +212,15 @@ cfg.EventListeners.LoadEventListeners = stack;]]></programlisting>
             listener instances between listener types you must use the programmatic registration
             approach.
         </para>
-
+        
         <para>
             Why implement an interface and define the specific type during configuration? Well, a
             listener implementation could implement multiple event listener interfaces. Having the
             type additionally defined during registration makes it easier to turn custom listeners on
             or off during configuration.
         </para>
-
+        
     </sect1>
-
+    
 </chapter>
 
