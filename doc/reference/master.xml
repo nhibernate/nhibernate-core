@@ -27,13 +27,13 @@
 <!ENTITY nhcaches-chapter       SYSTEM "modules/nhibernate_caches.xml">
 ]>
 <book lang="en">
-    <bookinfo><title>NHibernate - Relational Persistence for Idiomatic
-        .NET</title><subtitle>NHibernate Reference Documentation</subtitle>
+    <bookinfo>
+        <title>NHibernate - Relational Persistence for Idiomatic  .NET</title>
+        <subtitle>NHibernate Reference Documentation</subtitle>
         <releaseinfo>2.0.0</releaseinfo>
     </bookinfo>
     <toc/>&preface;&quickstart;&architecture;&configuration;&persistent-classes;&basic-mapping;&collection-mapping;&component-mapping;&inheritance-mapping;&manipulating-data;&transactions;&events;&query-hql;&query-criteria;&query-sql;&filters;&performance;&toolset-guide;&example-parentchild;&example-weblog;&example-mappings;&best-practices;
     <part id="part-contrib">
-        <title>NHibernateContrib
-            Documentation</title>&nhc-preface;&nhcaches-chapter;
+        <title>NHibernateContrib Documentation</title>&nhc-preface;&nhcaches-chapter;
     </part>
 </book>

@@ -5,7 +5,7 @@
         <title>Getting started with NHibernate</title>
         
         <para>
-            This tutorial explains a setup of NHibernate 1.0.2 within a Microsoft
+            This tutorial explains a setup of NHibernate 2.0.0 within a Microsoft
             environment. The tools used in this tutorial are:
         </para>
         
@@ -14,14 +14,16 @@
                 <para>                Microsoft Internet Information Services (IIS) - web server supporting ASP.NET.
                 </para>            </listitem>
             <listitem>
-                <para>                Microsoft SQL Server 2000 - the database server. This tutorial uses
-                    the desktop edition (MSDE), a free download from Microsoft. Support
+                <para>                
+                    Microsoft SQL Server 2005 - the database server. This tutorial uses
+                    the desktop edition (EXPRESS), a free download from Microsoft. Support
                     for other databases is only a matter of changing the NHibernate SQL
                     dialect and driver configuration.
-                </para>            </listitem>
+                </para>            
+            </listitem>
             <listitem>
-                <para>                Microsoft Visual Studio .NET 2003 - the development environment.
-                </para>            </listitem>
+                <para>Microsoft Visual Studio .NET 2005 - the development environment.</para>            
+            </listitem>
         </orderedlist>
         
         <para>
@@ -52,10 +54,11 @@
     <!-- Add this element -->
     <hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
         <session-factory>
-            <property name="dialect">NHibernate.Dialect.MsSql2000Dialect</property>
+            <property name="dialect">NHibernate.Dialect.MsSql2005Dialect</property>
             <property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>
-            <property name="connection.connection_string">Server=(local);initial catalog=quickstart;Integrated Security=SSPI</property>
-            
+            <property name="connection.connection_string">
+                Server=(local);initial catalog=quickstart;Integrated Security=SSPI
+            </property>
             <mapping assembly="QuickStart" />
         </session-factory>
     </hibernate-configuration>
@@ -71,7 +74,7 @@
             sections that follow and handlers to use to process their content. We declare
             the handler for the configuration section here. The <literal>
                 &lt;hibernate-configuration&gt;</literal> section contains the configuration
-            itself, telling NHibernate that we will use a Microsoft SQL Server 2000
+            itself, telling NHibernate that we will use a Microsoft SQL Server 2005
             database and connect to it through the specified connection string.
             The dialect is a required setting, databases differ in their interpretation
             of the SQL "standard". NHibernate will take care of the differences and comes
@@ -162,7 +165,7 @@
             No special interface has to be implemented for persistent classes nor do we have
             to subclass from a special root persistent class. NHibernate also doesn't use any
             build time processing, such as IL manipulation, it relies solely on
-            .NET reflection and runtime class enhancement (through Castle.DynamicProxy library).
+            .NET reflection and runtime class enhancement (through Castle.DynamicProxy2 library).
             So, without any dependency in the POCO class on NHibernate, we can map it to
             a database table.
         </para>
@@ -187,7 +190,8 @@
             Please note that the Cat.hbm.xml should be set to an embedded resource.
         </para>
         
-        <programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+        <programlisting><![CDATA[
+<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
     namespace="QuickStart" assembly="QuickStart">
 
@@ -236,7 +240,8 @@
             like this:
         </para>
         
-        <programlisting><![CDATA[ Column |     Type     | Modifiers
+        <programlisting><![CDATA[ 
+ Column |     Type     | Modifiers
 --------+--------------+----------------------
  CatId  | char(32)     | not null, primary key
  Name   | nvarchar(16) | not null
@@ -294,7 +299,8 @@
             We implement a <literal>NHibernateHelper</literal> helper class:
         </para>
         
-        <programlisting><![CDATA[using System;
+        <programlisting><![CDATA[
+using System;
 using System.Web;
 using NHibernate;
 using NHibernate.Cfg;
@@ -403,16 +409,18 @@ NHibernateHelper.CloseSession();]]></programlisting>
             which is an easy to learn and powerful object-oriented extension to SQL:
         </para>
         
-        <programlisting><![CDATA[ITransaction tx = session.BeginTransaction();
-
-IQuery query = session.CreateQuery("select c from Cat as c where c.Sex = :sex");
-query.SetCharacter("sex", 'F');
-foreach (Cat cat in query.Enumerable())
-{
-    Console.Out.WriteLine("Female Cat: " + cat.Name);
-}
-
-tx.Commit();]]></programlisting>
+        <programlisting><![CDATA[
+using(ITransaction tx = session.BeginTransaction())
+    {
+    IQuery query = session.CreateQuery("select c from Cat as c where c.Sex = :sex");
+    query.SetCharacter("sex", 'F');
+    foreach (Cat cat in query.Enumerable())
+        {
+        Console.Out.WriteLine("Female Cat: " + cat.Name);
+        }
+    tx.Commit();
+    }
+]]></programlisting>
         
         <para>
             NHibernate also offers an object-oriented <emphasis>query by criteria</emphasis> API

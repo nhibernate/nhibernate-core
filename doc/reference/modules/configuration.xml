@@ -4,11 +4,12 @@
     
     <para>
         Because NHibernate is designed to operate in many different environments, there
-        are a large number of configuration parameters. Fortunately, most have sensible
+        are a large number of configuration parameters. 
+        Fortunately, most have sensible
         default values and NHibernate is distributed with an example 
         <literal>App.config</literal> file (found in <literal>src\NHibernate.Test</literal>)
-        that shows the various options. You usually only have to put that file in your
-        project and customize it.
+        and various templates for supported RDBMS (found in <literal>src\NHibernate.Config.Templates</literal>).
+        You usually only have to put that file in your  project and customize it.
     </para>
     
     <sect1 id="configuration-programmatic">
@@ -28,7 +29,8 @@
             mappings defined in two XML configuration files:
         </para>
         
-        <programlisting><![CDATA[Configuration cfg = new Configuration()
+        <programlisting><![CDATA[
+Configuration cfg = new Configuration()
     .AddFile("Item.hbm.xml")
     .AddFile("Bid.hbm.xml");]]></programlisting>
         
@@ -37,7 +39,8 @@
             from an embedded resource:
         </para>
         
-        <programlisting><![CDATA[Configuration cfg = new Configuration()
+        <programlisting><![CDATA[
+Configuration cfg = new Configuration()
     .AddClass(typeof(NHibernate.Auction.Item))
     .AddClass(typeof(NHibernate.Auction.Bid));]]></programlisting>
         
@@ -54,8 +57,10 @@
             the mapping files contained in an Assembly:
         </para>
         
-        <programlisting><![CDATA[Configuration cfg = new Configuration()
-    .AddAssembly( "NHibernate.Auction" );]]></programlisting>
+        <programlisting><![CDATA[
+Configuration cfg = new Configuration()
+    .AddAssembly( "NHibernate.Auction" );
+    ]]></programlisting>
         
         <para>
             Then NHibernate will look through the assembly for any resources that
@@ -74,12 +79,14 @@
             A <literal>Configuration</literal> also specifies various optional properties:
         </para>
         
-        <programlisting><![CDATA[IDictionary props = new Hashtable();
+        <programlisting><![CDATA[
+IDictionary<string, string> props = new Dictionary<string, string>();
 ...
 Configuration cfg = new Configuration()
     .AddClass(typeof(NHibernate.Auction.Item))
     .AddClass(typeof(NHibernate.Auction.Bind))
-    .SetProperties(props);]]></programlisting>
+    .SetProperties(props);
+ ]]></programlisting>
         
         <para>
             A <literal>Configuration</literal> is intended as a configuration-time object, to be
@@ -115,7 +122,8 @@ Configuration cfg = new Configuration()
             obtain ADO.NET connections wherever it pleases:
         </para>
         
-        <programlisting><![CDATA[IDbConnection conn = myApp.GetOpenConnection();
+        <programlisting><![CDATA[
+IDbConnection conn = myApp.GetOpenConnection();
 ISession session = sessions.OpenSession(conn);
 
 // do some data access work]]></programlisting>
@@ -175,7 +183,8 @@ ISession session = sessions.OpenSession(conn);
             If you take this approach, opening an <literal>ISession</literal> is as simple as:
         </para>
         
-        <programlisting><![CDATA[ISession session = sessions.OpenSession(); // open a new Session
+        <programlisting><![CDATA[
+ISession session = sessions.OpenSession(); // open a new Session
 // do some data access work, an ADO.NET connection will be used on demand]]></programlisting>
         
         <para>
@@ -203,7 +212,7 @@ ISession session = sessions.OpenSession(conn);
                 <tbody>
                     <row>
                         <entry>
-                            <literal>hibernate.connection.provider_class</literal>
+                            <literal>connection.provider_class</literal>
                         </entry>
                         <entry>
                             The type of a custom <literal>IConnectionProvider</literal>.
@@ -218,7 +227,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.connection.driver_class</literal>
+                            <literal>connection.driver_class</literal>
                         </entry>
                         <entry>
                             The type of a custom <literal>IDriver</literal>, if using <literal>DriverConnectionProvider</literal>.
@@ -236,7 +245,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.connection.connection_string</literal>
+                            <literal>connection.connection_string</literal>
                         </entry>
                         <entry>
                             Connection string to use to obtain the connection.
@@ -244,7 +253,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.connection.connection_string_name</literal>
+                            <literal>connection.connection_string_name</literal>
                         </entry>
                         <entry>
                             The name of the connection string (defined in <literal>&lt;connectionStrings&gt;</literal>
@@ -253,7 +262,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.connection.isolation</literal>
+                            <literal>connection.isolation</literal>
                         </entry>
                         <entry>
                             Set the ADO.NET transaction isolation level. Check
@@ -267,7 +276,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.connection.release_mode</literal>
+                            <literal>connection.release_mode</literal>
                         </entry>
                         <entry>
                             Specify when NHibernate should release ADO.NET connections.
@@ -289,7 +298,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.command_timeout</literal>
+                            <literal>command_timeout</literal>
                         </entry>
                         <entry>
                             Specify the default timeout of <literal>IDbCommands</literal>
@@ -298,7 +307,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.adonet.batch_size</literal>
+                            <literal>adonet.batch_size</literal>
                         </entry>
                         <entry>
                             Specify the batch size to use when batching update statements. Setting this to 0
@@ -315,39 +324,27 @@ ISession session = sessions.OpenSession(conn);
             <literal>web.config</literal>:
         </para>
         
-        <programlisting id="we-config-configuration" revision="1"><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+        <programlisting id="we-config-configuration" revision="1"><![CDATA[
 <configuration>
-    <configSections>
-        <section name="nhibernate" type="System.Configuration.NameValueSectionHandler, System,
-                    Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    </configSections>
-    
-    <nhibernate>
-        <add
-            key="hibernate.connection.provider"          
-            value="NHibernate.Connection.DriverConnectionProvider" 
-        />
-        <add 
-            key="hibernate.dialect"
-            value="NHibernate.Dialect.MsSql2000Dialect"
-        />
-        <add
-            key="hibernate.connection.driver_class"
-            value="NHibernate.Driver.SqlClientDriver"
-        />
-        <add 
-            key="hibernate.connection.connection_string" 
-            value="Server=127.0.0.1; Initial Catalog=thedatabase; Integrated Security=SSPI" 
-        />
-        <add 
-            key="hibernate.connection.isolation"
-            value="ReadCommitted"
-        />
-        
-    </nhibernate>
-    
+	<configSections>
+		<section name="hibernate-configuration"
+		 type="NHibernate.Cfg.ConfigurationSectionHandler, NHibernate" />
+	</configSections>
+
+                <hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
+		<session-factory>
+			<property name="connection.provider">NHibernate.Connection.DriverConnectionProvider, NHibernate</property>
+			<property name="connection.connection_string">
+				Server=127.0.0.1; Initial Catalog=thedatabase; Integrated Security=SSPI
+			</property>
+			<property name="dialect">NHibernate.Dialect.MsSql2000Dialect</property>
+			<property name="current_session_context_class">managed_web</property>
+		</session-factory>
+	</hibernate-configuration>
     <!-- other app specific config follows -->
-</configuration>]]></programlisting>
+	
+</configuration>
+]]></programlisting>
         
         <para>
             NHibernate relies on the ADO.NET data provider implementation of connection pooling.
@@ -356,7 +353,7 @@ ISession session = sessions.OpenSession(conn);
         <para>
             You may define your own plugin strategy for obtaining ADO.NET connections by implementing the
             interface <literal>NHibernate.Connection.IConnectionProvider</literal>. You may select
-            a custom implementation by setting <literal>hibernate.connection.provider_class</literal>.
+            a custom implementation by setting <literal>connection.provider_class</literal>.
         </para>
         
     </sect1>
@@ -372,11 +369,9 @@ ISession session = sessions.OpenSession(conn);
         <para>
             System-level properties can only be set manually by setting static properties of
             <literal>NHibernate.Cfg.Environment</literal> class or be defined in the
-            <literal>&lt;nhibernate&gt;</literal> section of the application
+            <literal>&lt;hibernate-configuration&gt;</literal> section of the application
             configuration file. These properties cannot be set using
-            <literal>Configuration.SetProperties</literal> or be defined in the
-            <literal>&lt;hibernate-configuration&gt;</literal> section of the application configuration
-            file.
+            <literal>Configuration.SetProperties</literal>.
         </para>
         
         <table frame="topbot" id="configuration-optional-properties" revision="3">
@@ -393,7 +388,7 @@ ISession session = sessions.OpenSession(conn);
                 <tbody>
                     <row>
                         <entry>
-                            <literal>hibernate.dialect</literal>
+                            <literal>dialect</literal>
                         </entry>
                         <entry>
                             The classname of a NHibernate <literal>Dialect</literal> - enables
@@ -406,7 +401,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.default_schema</literal>
+                            <literal>default_schema</literal>
                         </entry>
                         <entry>
                             Qualify unqualified tablenames with the given schema/tablespace
@@ -419,7 +414,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.use_outer_join</literal>
+                            <literal>use_outer_join</literal>
                         </entry>
                         <entry>
                             Enables outer join fetching. Deprecated, use <literal>max_fetch_depth</literal>.
@@ -431,7 +426,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.max_fetch_depth</literal>
+                            <literal>max_fetch_depth</literal>
                         </entry>
                         <entry>
                             Set a maximum "depth" for the outer join fetch tree
@@ -445,7 +440,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.use_reflection_optimizer</literal>
+                            <literal>use_reflection_optimizer</literal>
                         </entry>
                         <entry>
                             Enables use of a runtime-generated class to set or get properties of an entity
@@ -463,14 +458,13 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.bytecode.provider</literal>
+                            <literal>bytecode.provider</literal>
                         </entry>
                         <entry>
                             Specifies the bytecode provider to use to optimize the use of reflection in NHibernate.
                             Use <literal>null</literal> to disable the optimization completely, <literal>lcg</literal>
-                            to use lightweight code generation (supported on .NET 2.0 only), and <literal>
-                                codedom</literal> to use CodeDOM-based code generation (supported on .NET 1.1, has problems
-                            with generic types on .NET 2.0). 
+                            to use lightweight code generation, and <literal>
+                                codedom</literal> to use CodeDOM-based code generation. 
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
                                 <literal>null</literal> | <literal>lcg</literal> | <literal>codedom</literal>
@@ -479,7 +473,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.cache.provider_class</literal>
+                            <literal>cache.provider_class</literal>
                         </entry>
                         <entry>
                             The classname of a custom <literal>ICacheProvider</literal>.
@@ -491,7 +485,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.cache.use_minimal_puts</literal>
+                            <literal>cache.use_minimal_puts</literal>
                         </entry>
                         <entry>
                             Optimize second-level cache operation to minimize writes, at the
@@ -504,7 +498,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.cache.use_query_cache</literal>
+                            <literal>cache.use_query_cache</literal>
                         </entry>
                         <entry>
                             Enable the query cache, individual queries still have to be set cacheable.
@@ -516,7 +510,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.cache.query_cache_factory</literal>
+                            <literal>cache.query_cache_factory</literal>
                         </entry>
                         <entry>
                             The classname of a custom <literal>IQueryCacheFactory</literal> interface,
@@ -529,7 +523,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.cache.region_prefix</literal>
+                            <literal>cache.region_prefix</literal>
                         </entry>
                         <entry>
                             A prefix to use for second-level cache region names.
@@ -541,7 +535,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.query.substitutions</literal>
+                            <literal>query.substitutions</literal>
                         </entry>
                         <entry>
                             Mapping from tokens in NHibernate queries to SQL tokens
@@ -554,7 +548,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.show_sql</literal>
+                            <literal>show_sql</literal>
                         </entry>
                         <entry>
                             Write all SQL statements to console.
@@ -566,7 +560,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.hbm2ddl.auto</literal>
+                            <literal>hbm2ddl.auto</literal>
                         </entry>
                         <entry>
                             Automatically export schema DDL to the database when the
@@ -582,7 +576,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.use_proxy_validator</literal>
+                            <literal>use_proxy_validator</literal>
                         </entry>
                         <entry>
                             Enables or disables validation of interfaces or classes specified
@@ -595,7 +589,7 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>hibernate.transaction.factory_class</literal>
+                            <literal>transaction.factory_class</literal>
                         </entry>
                         <entry>
                             The classname of a custom <literal>ITransactionFactory</literal> implementation,
@@ -728,7 +722,7 @@ ISession session = sessions.OpenSession(conn);
                             <entry>Firebird</entry> 
                             <entry><literal>NHibernate.Dialect.FirebirdDialect</literal></entry>
                             <entry>
-                                Set <literal>hibernate.driver_class</literal> to
+                                Set <literal>driver_class</literal> to
                                 <literal>NHibernate.Driver.FirebirdClientDriver</literal>
                                 for Firebird ADO.NET provider 2.0.
                             </entry>
@@ -737,7 +731,7 @@ ISession session = sessions.OpenSession(conn);
                             <entry>SQLite</entry>
                             <entry><literal>NHibernate.Dialect.SQLiteDialect</literal></entry>
                             <entry>
-                                Set <literal>hibernate.driver_class</literal> to
+                                Set <literal>driver_class</literal> to
                                 <literal>NHibernate.Driver.SQLite20Driver</literal>
                                 for System.Data.SQLite provider for .NET 2.0.
                             </entry>
@@ -752,7 +746,7 @@ ISession session = sessions.OpenSession(conn);
             </table>
             
             <para>
-                Additional dialects may be available in the NHibernateContrib package (see
+                Additional dialects may be available in the NHibernate Contrib project (see
                 <xref linkend="part-contrib" />). At the time of writing this package contains
                 support for Microsoft Access (Jet) database engine.
             </para>
@@ -808,7 +802,7 @@ ISession session = sessions.OpenSession(conn);
                 You may integrate a process-level (or clustered) second-level cache system by
                 implementing the interface <literal>NHibernate.Cache.ICacheProvider</literal>.
                 You may select the custom implementation by setting
-                <literal>hibernate.cache.provider_class</literal>. See the 
+                <literal>cache.provider_class</literal>. See the 
                 <xref linkend="performance-cache"/> for more details.
             </para>
             
@@ -822,14 +816,14 @@ ISession session = sessions.OpenSession(conn);
                 For example:
             </para>
             
-            <programlisting>hibernate.query.substitutions true=1, false=0</programlisting>
+            <programlisting>query.substitutions true=1, false=0</programlisting>
             
             <para>
                 would cause the tokens <literal>true</literal> and <literal>false</literal> to be translated to
                 integer literals in the generated SQL.
             </para>
             
-            <programlisting>hibernate.query.substitutions toLowercase=LOWER</programlisting>
+            <programlisting>query.substitutions toLowercase=LOWER</programlisting>
             
             <para>
                 would allow you to rename the SQL <literal>LOWER</literal> function.
@@ -858,7 +852,7 @@ ISession session = sessions.OpenSession(conn);
             messages. A lot of work has been put into making the NHibernate log as
             detailed as possible, without making it unreadable. It is an essential
             troubleshooting device. Also don't forget to enable SQL logging as
-            described above (<literal>hibernate.show_sql</literal>), it is your first
+            described above (<literal>show_sql</literal>), it is your first
             step when looking for performance problems.
         </para>
         
@@ -886,7 +880,8 @@ ISession session = sessions.OpenSession(conn);
             <literal>Configuration.SetNamingStrategy()</literal> before adding mappings:
         </para>
         
-        <programlisting><![CDATA[ISessionFactory sf = new Configuration()
+        <programlisting><![CDATA[
+ISessionFactory sf = new Configuration()
     .SetNamingStrategy(ImprovedNamingStrategy.Instance)
     .AddFile("Item.hbm.xml")
     .AddFile("Bid.hbm.xml")
@@ -914,27 +909,23 @@ ISession session = sessions.OpenSession(conn);
             Here is an example:
         </para>
         
-        <programlisting><![CDATA[<?xml version='1.0' encoding='utf-8'?>
+        <programlisting><![CDATA[
+<?xml version='1.0' encoding='utf-8'?>
 <hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
-
-    <!-- an ISessionFactory instance -->
     <session-factory>
-
         <!-- properties -->
         <property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>
         <property name="connection.driver_class">NHibernate.Driver.SqlClientDriver</property>
         <property name="connection.connection_string">Server=localhost;initial catalog=nhibernate;User Id=;Password=</property>
         <property name="show_sql">false</property>
-        <property name="dialect">NHibernate.Dialect.MsSql2000Dialect</property>
+        <property name="dialect">NHibernate.Dialect.MsSql2005Dialect</property>
         <property name="use_outer_join">true</property>
 
         <!-- mapping files -->
         <mapping resource="NHibernate.Auction.Item.hbm.xml" assembly="NHibernate.Auction" />
         <mapping resource="NHibernate.Auction.Bid.hbm.xml" assembly="NHibernate.Auction" />
-
     </session-factory>
-
-</hibernate-configuration>]]></programlisting>
+/hibernate-configuration>]]></programlisting>
         
         <para>
             Configuring NHibernate is then as simple as
@@ -946,7 +937,8 @@ ISession session = sessions.OpenSession(conn);
             You can pick a different XML configuration file using
         </para>
         
-        <programlisting id="configuration-xmlconfig-ex3" revision="1"><![CDATA[ISessionFactory sf = new Configuration()
+        <programlisting id="configuration-xmlconfig-ex3" revision="1"><![CDATA[
+ISessionFactory sf = new Configuration()
     .Configure("/path/to/config.cfg.xml")
     .BuildSessionFactory();]]></programlisting>
         
