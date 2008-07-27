@@ -20,7 +20,8 @@
             Most .NET applications require a persistent class representing felines.
         </para>
         
-        <programlisting><![CDATA[using System;
+        <programlisting><![CDATA[
+using System;
 using Iesi.Collections;
 
 namespace Eg
@@ -191,7 +192,8 @@ namespace Eg
             identifier property from <literal>Cat</literal>.
         </para>
         
-        <programlisting><![CDATA[using System;
+        <programlisting><![CDATA[
+using System;
 namespace Eg
 {
     public class DomesticCat : Cat
@@ -245,7 +247,8 @@ namespace Eg
             identify our instance in the real world (a <emphasis>natural</emphasis> candidate key):
         </para>
         
-        <programlisting><![CDATA[public class Cat
+        <programlisting><![CDATA[
+public class Cat
 {
 
     ...
@@ -380,7 +383,8 @@ namespace Eg
             persisted, it may implement the following interface:
         </para>
         
-        <programlisting><![CDATA[public interface IValidatable
+        <programlisting><![CDATA[
+public interface IValidatable
 {
         void Validate();
 }]]></programlisting>

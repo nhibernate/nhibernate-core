@@ -22,7 +22,8 @@
             Let's kick off with an example mapping:
         </para>
         
-        <programlisting><![CDATA[<?xml version="1.0"?>
+        <programlisting><![CDATA[
+<?xml version="1.0"?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="Eg"
     namespace="Eg">
 
@@ -49,7 +50,8 @@
                 <!-- mapping for Dog could go here -->
         </class>
 
-</hibernate-mapping>]]></programlisting>
+</hibernate-mapping>]]>
+        </programlisting>
         
         <para>
             We will now discuss the content of the mapping document. We will only describe the 
@@ -72,10 +74,7 @@
             
             <para><emphasis>
                 Tip: to enable IntelliSense for mapping and configuration files, copy the appropriate
-                <literal>.xsd</literal> files to
-                <literal>&lt;VS.NET installation directory&gt;\Common7\Packages\schemas\xml</literal>
-                if you are using Visual Studio .NET 2003, or to
-                <literal>&lt;VS 2005 installation directory&gt;\Xml\Schemas</literal> for Visual Studio 2005.
+                <literal>.xsd</literal> files to  <literal>&lt;VS 2005 installation directory&gt;\Xml\Schemas</literal> .
             </emphasis></para>
             
         </sect2>
@@ -103,7 +102,8 @@
                     <area id="hm4" coords="5 55"/>
                     <area id="hm5" coords="6 55"/>
                 </areaspec>   
-                <programlisting><![CDATA[<hibernate-mapping
+                <programlisting><![CDATA[
+<hibernate-mapping
          schema="schemaName"
          default-cascade="none|save-update"
          auto-import="true|false"
@@ -178,7 +178,8 @@
                     <area id="class15" coords="16 55"/>
                     <area id="class16" coords="17 55"/>
                 </areaspec>   
-                <programlisting><![CDATA[<class
+                <programlisting><![CDATA[
+<class
         name="ClassName"
         table="tableName"
         discriminator-value="discriminator_value"
@@ -418,7 +419,8 @@
                     <area id="id4" coords="5 50" />
                     <area id="id5" coords="6 50" />
                 </areaspec>
-                <programlisting><![CDATA[<id
+                <programlisting><![CDATA[
+<id
         name="PropertyName"
         type="typename"
         column="column_name"
@@ -485,7 +487,8 @@
                     <literal>&lt;param&gt;</literal> element.
                 </para>
                 
-                <programlisting><![CDATA[<id name="Id" type="Int64" column="uid" unsaved-value="0">
+                <programlisting><![CDATA[
+<id name="Id" type="Int64" column="uid" unsaved-value="0">
         <generator class="NHibernate.Id.TableHiLoGenerator">
                 <param name="table">uid_table</param>
                 <param name="column">next_hi_value_column</param>
@@ -2426,7 +2429,8 @@
                 are possible.
             </para>
             
-            <programlisting><![CDATA[<property name="TwoStrings" type="NHibernate.DomainModel.DoubleStringType, NHibernate.DomainModel">
+            <programlisting><![CDATA[
+<property name="TwoStrings" type="NHibernate.DomainModel.DoubleStringType, NHibernate.DomainModel">
     <column name="first_string"/>
     <column name="second_string"/>
 </property>]]></programlisting>
@@ -2451,7 +2455,8 @@
                 files.
             </para>
             
-            <programlisting><![CDATA[<property name="priority">
+            <programlisting><![CDATA[
+<property name="priority">
     <type name="MyCompany.UserTypes.DefaultValueIntegerType">
         <param name="default">0</param>
     </type>
