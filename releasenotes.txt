@@ -1,3 +1,6 @@
+
+Build 2.0.0.CR1
+========================
 ** BREAKING CHANGES from NH1.2.1GA to NH2.0.0
 	##### Infrastructure #####
 		* .NET 1.1 is no longer supported
@@ -42,6 +45,30 @@
 
 	##### Mapping #####
 		* <any> : default meta-type is "string" (was "class") 
+** Bug
+    * [NH-1361] - ProxyTypeValidator: Non-virtual public methods are accepted
+    * [NH-1389] - Sybase SQLAnywhere 8/9 support broken in Beta1 onword
+    * [NH-1399] - Database constraint names and hash collisions
+    * [NH-1403] - Support <any> with meta-type="class"
+    * [NH-1405] - composite-id property is nulled when related composite many-to-one mapping returns null.
+    * [NH-1406] - IQuery.SetTimeout work incorrect for ExecuteUpdate
+    * [NH-1408] - CriteriaTransformer don't clone a DetachedCriteria with sub DetachedCriteria
+    * [NH-1413] - Paging with multiple orders fail in MSSQL2005
+
+** Improvement
+    * [NH-1304] - Reflection optimizer on != property access
+    * [NH-1415] - Adding multi query support to MySqlDataDriver 
+
+** New Feature
+    * [NH-1412] - Allow custom accessors to define if the ReflectionOptimizer can be used.
+
+** Patch
+    * [NH-1254] - Sybase ASA10 - Dialect + Driver
+    * [NH-1390] - Union subclass support for PostgreSQL
+
+** Task
+    * [NH-1410] - Spelling mistake in error message: sublcass must be subclass
+
 		
 Build 2.0.0.Beta2
 ========================
