@@ -2484,52 +2484,65 @@
             <title>Any type mappings</title>
             
             <para>
-                There is one further type of property mapping. The <literal>&lt;any&gt;</literal> mapping element 
+                There is one further type of property mapping. The <literal>&lt;any&gt;</literal> mapping element
                 defines a polymorphic association to classes from multiple tables. This type of mapping always
-                requires more than one column. The first column holds the type of the associated entity. 
+                requires more than one column. The first column holds the type of the associated entity.
                 The remaining columns hold the identifier. It is impossible to specify a foreign key constraint
-                for this kind of association, so this is most certainly not meant as the usual way of mapping 
+                for this kind of association, so this is most certainly not meant as the usual way of mapping
                 (polymorphic) associations. You should use this only in very special cases (eg. audit logs,
                 user session data, etc).
             </para>
             
-            <programlisting><![CDATA[<any name="AnyEntity" id-type="Int64" meta-type="Eg.Custom.Class2TablenameType">
-    <column name="table_name"/>
-    <column name="id"/>
-</any>]]></programlisting>
-            
             <para>
-                The <literal>meta-type</literal> attribute lets the application specify a custom type that 
-                maps database column values to persistent classes which have identifier properties of the 
-                type specified by <literal>id-type</literal>. If the meta-type returns instances of 
-                <literal>System.Type</literal>, nothing else is required. On the other hand, if it is
-                a basic type like <literal>String</literal> or <literal>Char</literal>, you must
-                specify the mapping from values to classes.
+                The <literal>meta-type</literal> attribute lets the application specify a custom type that
+                maps database column values to persistent classes which have identifier properties of the
+                type specified by <literal>id-type</literal>. You must specify the mapping from values of
+                the meta-type to class names.
             </para>
             
-            <programlisting><![CDATA[<any name="AnyEntity" id-type="Int64" meta-type="String">
+            <programlisting><![CDATA[
+ <any name="being" id-type="Int64" meta-type="string">
     <meta-value value="TBL_ANIMAL" class="Animal"/>
     <meta-value value="TBL_HUMAN" class="Human"/>
     <meta-value value="TBL_ALIEN" class="Alien"/>
     <column name="table_name"/>
     <column name="id"/>
-</any>]]></programlisting>
+ </any>]]></programlisting>
             
+            <para>
+                NHibernate also support <literal>meta-type="class"</literal>.
+                In this case no <literal>meta-value</literal> are required because the <literal>meta-value</literal> will be the entity-name (persistentClass.FullName).
+            </para>
+            <programlisting><![CDATA[
+ <any name="being" id-type="Int64" meta-type="class">
+    <column name="table_name"/>
+    <column name="id"/>
+  </any>]]>
+            </programlisting>
+            <para>
+                When you use <literal>meta-type="class"</literal> to set a parameter in a query you must use:
+            </para>
+            <programlisting><![CDATA[
+ SetParameter("paramName", typeof(YourClass).FullName, NHibernateUtil.ClassMetaType)]]>
+            </programlisting>
+            <para>
+                Mapping section.
+            </para>
             <programlistingco>
                 <areaspec>
-                    <area id="any1" coords="2 60"/>
-                    <area id="any2" coords="3 60"/>
-                    <area id="any3" coords="4 60"/>
-                    <area id="any4" coords="5 60"/>
-                    <area id="any5" coords="6 60"/>
-                    <area id="any6" coords="7 60"/>
+                    <area id="any1" coords="2 50"/>
+                    <area id="any2" coords="3 50"/>
+                    <area id="any3" coords="4 50"/>
+                    <area id="any4" coords="5 50"/>
+                    <area id="any5" coords="6 50"/>
+                    <area id="any6" coords="7 50"/>
                 </areaspec>
                 <programlisting><![CDATA[<any
-        name="PropertyName"
+        name="propertyName"
         id-type="idtypename"
         meta-type="metatypename"
-        cascade="none|all|save-update"
-        access="field|property|nosetter|ClassName"
+        cascade="cascade_style"
+        access="field|property|ClassName"
         optimistic-lock="true|false"
 >
         <meta-value ... />
@@ -2543,26 +2556,25 @@
                     <callout arearefs="any1">
                         <para>
                             <literal>name</literal>: the property name.
-                        </para>            
-                    </callout>                   
+                        </para>
+                    </callout>
                     <callout arearefs="any2">
                         <para>
                             <literal>id-type</literal>: the identifier type.
-                        </para>            
-                    </callout>                   
+                        </para>
+                    </callout>
                     <callout arearefs="any3">
                         <para>
-                            <literal>meta-type</literal> (optional - defaults to <literal>Type</literal>): 
-                            a type that maps <literal>System.Type</literal> to a single database column
-                            or, alternatively, a type that is allowed for a discriminator mapping.
-                        </para>            
-                    </callout>                   
+                            <literal>meta-type</literal> (optional - defaults to <literal>string</literal>):
+                            Any type that is allowed for a discriminator mapping or "class".
+                        </para>
+                    </callout>
                     <callout arearefs="any4">
                         <para>
-                            <literal>cascade</literal> (optional - defaults to <literal>none</literal>): 
+                            <literal>cascade</literal> (optional- defaults to <literal>none</literal>):
                             the cascade style.
-                        </para>            
-                    </callout>                   
+                        </para>
+                    </callout>
                     <callout arearefs="any5">
                         <para>
                             <literal>access</literal> (optional - defaults to <literal>property</literal>): The
@@ -2571,7 +2583,7 @@
                     </callout>
                     <callout arearefs="any6">
                         <para>
-                            <literal>optimistic-lock</literal> (optional - defaults to <literal>true</literal>): 
+                            <literal>optimistic-lock</literal> (optional - defaults to <literal>true</literal>):
                             Specifies that updates to this property do or do not require acquisition of the
                             optimistic lock. In other words, define if a version increment should occur if this
                             property is dirty.
