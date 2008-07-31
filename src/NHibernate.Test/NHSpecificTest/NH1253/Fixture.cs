@@ -43,6 +43,24 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 		}
 
 		[Test]
+		public void TestSamePartialName()
+		{
+			// Demostration of NH-1422
+			using (ISession s = OpenSession())
+			{
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					IQuery q = s.CreateQuery("from Car c where c.Id in (:foo) or c.Id = :foobar");
+					q.SetParameterList("foo", new long[] {1, 2});
+					q.SetInt64("foobar", 3);
+					IList<Car> cars = q.List<Car>();
+
+					tx.Commit();
+				}
+			}
+		}
+
+		[Test]
 		public void TestParametersWithTrailingNumbersMultipleInList()
 		{
 			using (ISession s = OpenSession())
