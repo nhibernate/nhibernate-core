@@ -45,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 		[Test]
 		public void TestSamePartialName()
 		{
-			// Demostration of NH-1422
+			// Demonstration of NH-1422
 			using (ISession s = OpenSession())
 			{
 				using (ITransaction tx = s.BeginTransaction())
