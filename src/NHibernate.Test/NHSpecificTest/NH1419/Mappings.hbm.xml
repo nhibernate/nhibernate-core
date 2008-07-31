@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH1419"
+	default-lazy="false">
+
+	<class name="Blog" table="Blogs">
+		<id name="ID" type="Guid" column="BlogID">
+			<generator class="guid" />
+		</id>
+		<property name="Name"/>
+		<bag name="Entries" cascade="all-delete-orphan" inverse="true" generic="true">
+			<key column="BlogID"/>
+			<one-to-many class="Entry"/>
+		</bag>
+	</class>
+
+	<class name ="Entry" table="Entries">
+		<id name="ID" type="Guid" column="EntryID">
+			<generator class="guid" />
+		</id>
+		<many-to-one name="Blog" class="Blog" column="BlogID"/>
+		<property name="Subject"/>
+	</class>
+</hibernate-mapping>
