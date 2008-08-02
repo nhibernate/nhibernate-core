@@ -230,6 +230,7 @@ namespace NHibernate.Impl
 			this.autoCloseSessionEnabled = autoCloseSessionEnabled;
 			//this.connectionReleaseMode = connectionReleaseMode;
 			//this.jdbcContext = new JDBCContext(this, connection, interceptor);
+			connectionManager = new ConnectionManager(this, connection, connectionReleaseMode, interceptor);
 		}
 
 		/// <summary>
