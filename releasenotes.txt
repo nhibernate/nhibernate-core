@@ -1,6 +1,3 @@
-
-Build 2.0.0.CR1
-========================
 ** BREAKING CHANGES from NH1.2.1GA to NH2.0.0
 	##### Infrastructure #####
 		* .NET 1.1 is no longer supported
@@ -45,6 +42,14 @@ Build 2.0.0.CR1
 
 	##### Mapping #####
 		* <any> : default meta-type is "string" (was "class") 
+
+Build 2.0.0.CR2
+========================
+** Sub-task
+    * [NH-1407] - Actualize documentation of <any>
+
+Build 2.0.0.CR1
+========================
 ** Bug
     * [NH-1361] - ProxyTypeValidator: Non-virtual public methods are accepted
     * [NH-1389] - Sybase SQLAnywhere 8/9 support broken in Beta1 onword
