@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace NHibernate.Linq.Visitors
+namespace NHibernate.Linq
 {
     /// <summary>
     /// Provides virtual methods that can be used by subclasses to parse an expression tree.
