@@ -48,6 +48,10 @@
   <ItemGroup>
     <Compile Include="ExpressionVisitor.cs" />
     <Compile Include="NHibernateExtensions.cs" />
+    <Compile Include="NHibernateQueryProvider.cs" />
+    <Compile Include="Query.cs" />
+    <Compile Include="QueryProvider.cs" />
+    <Compile Include="Util\TypeSystem.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

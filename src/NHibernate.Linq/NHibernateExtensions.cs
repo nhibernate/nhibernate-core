@@ -16,7 +16,7 @@ namespace NHibernate.Linq
 		/// <returns>An <see cref="T:NHibernate.Linq.NHibernateQueryProvider"/> used to evaluate an expression tree.</returns>
 		public static IQueryable<T> Linq<T>(this ISession session)
 		{
-			throw new NotImplementedException();
+			return new Query<T>(new NHibernateQueryProvider(session));
 		}
 	}
 }
