@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Dialect.Function
@@ -39,7 +40,7 @@ namespace NHibernate.Dialect.Function
 			this.allowedArgsCount = allowedArgsCount;
 		}
 
-		public override string Render(System.Collections.IList args, NHibernate.Engine.ISessionFactoryImplementor factory)
+		public override SqlString Render(System.Collections.IList args, NHibernate.Engine.ISessionFactoryImplementor factory)
 		{
 			if (args.Count!= allowedArgsCount)
 			{

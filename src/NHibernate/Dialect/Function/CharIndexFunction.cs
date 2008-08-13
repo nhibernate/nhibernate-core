@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Dialect.Function
@@ -32,7 +33,7 @@ namespace NHibernate.Dialect.Function
 			get { return true; }
 		}
 
-		public string Render(IList args, ISessionFactoryImplementor factory)
+		public SqlString Render(IList args, ISessionFactoryImplementor factory)
 		{
 			// TODO: QueryException if args.Count<2 (not present in H3.2) 
 			bool threeArgs = args.Count > 2;
@@ -40,25 +41,25 @@ namespace NHibernate.Dialect.Function
 			object orgString = args[1];
 			object start = threeArgs ? args[2] : null;
 
-			StringBuilder buf = new StringBuilder();
-			buf.Append("charindex(")
-				.Append(pattern)
-				.Append(", ");
+			SqlStringBuilder buf = new SqlStringBuilder();
+			buf.Add("charindex(")
+				.AddObject(pattern)
+				.Add(", ");
 			if (threeArgs)
 			{
-				buf.Append("right(");
+				buf.Add("right(");
 			}
-			buf.Append(orgString);
+			buf.AddObject(orgString);
 			if (threeArgs)
 			{
-				buf.Append(", char_length(")
-					.Append(orgString)
-					.Append(")-(")
-					.Append(start)
-					.Append("-1))");
+				buf.Add(", char_length(")
+					.AddObject(orgString)
+					.Add(")-(")
+					.AddObject(start)
+					.Add("-1))");
 			}
-			buf.Append(')');
-			return buf.ToString();
+			buf.Add(")");
+			return buf.ToSqlString();
 		}
 
 		#endregion

@@ -3,6 +3,7 @@ using System.Collections;
 using NHibernate.Dialect.Function;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Test.HQLFunctionTest
 {
@@ -15,16 +16,16 @@ namespace NHibernate.Test.HQLFunctionTest
 			IList args = new ArrayList();
 			NoArgSQLFunction nf = new NoArgSQLFunction("noArgs", NHibernateUtil.String);
 			Assert.IsTrue(nf.HasParenthesesIfNoArguments);
-			Assert.AreEqual("noArgs()", nf.Render(args, factoryImpl));
+			Assert.AreEqual("noArgs()", nf.Render(args, factoryImpl).ToString());
 
 			nf = new NoArgSQLFunction("noArgs", NHibernateUtil.String, false);
 			Assert.IsFalse(nf.HasParenthesesIfNoArguments);
-			Assert.AreEqual("noArgs", nf.Render(args, factoryImpl));
+			Assert.AreEqual("noArgs", nf.Render(args, factoryImpl).ToString());
 
 			args.Add("aparam");
 			try
 			{
-				string t = nf.Render(args, factoryImpl);
+				SqlString t = nf.Render(args, factoryImpl);
 				Assert.Fail("No exception if has argument");
 			}
 			catch (QueryException)
@@ -39,11 +40,11 @@ namespace NHibernate.Test.HQLFunctionTest
 			IList args = new ArrayList();
 
 			StandardSQLFunction sf = new StandardSQLFunction("fname");
-			Assert.AreEqual("fname()", sf.Render(args, factoryImpl));
+			Assert.AreEqual("fname()", sf.Render(args, factoryImpl).ToString());
 
 			args.Add(1);
 			args.Add(2);
-			Assert.AreEqual("fname(1, 2)", sf.Render(args, factoryImpl));
+			Assert.AreEqual("fname(1, 2)", sf.Render(args, factoryImpl).ToString());
 		}
 
 		[Test]
@@ -54,7 +55,7 @@ namespace NHibernate.Test.HQLFunctionTest
 			CastFunction cf = new CastFunction();
 			try
 			{
-				string t = cf.Render(args, factoryImpl);
+				SqlString t = cf.Render(args, factoryImpl);
 				Assert.Fail("No exception if no argument");
 			}
 			catch (QueryException)
@@ -66,14 +67,14 @@ namespace NHibernate.Test.HQLFunctionTest
 			args.Add("long");
 			string expected =
 				string.Format("cast({0} as {1})", args[0], factoryImpl.Dialect.GetCastTypeName(SqlTypeFactory.Int64));
-			Assert.AreEqual(expected, cf.Render(args, factoryImpl));
+			Assert.AreEqual(expected, cf.Render(args, factoryImpl).ToString());
 
 			args.Clear();
 			args.Add("'123'");
 			args.Add("NO_TYPE");
 			try
 			{
-				string t = cf.Render(args, factoryImpl);
+				SqlString t = cf.Render(args, factoryImpl);
 				Assert.Fail("Ivalid type accepted");
 			}
 			catch (QueryException)
@@ -88,16 +89,16 @@ namespace NHibernate.Test.HQLFunctionTest
 			IList args = new ArrayList();
 
 			VarArgsSQLFunction vf = new VarArgsSQLFunction("(", " || ", ")");
-			Assert.AreEqual("()", vf.Render(args, factoryImpl));
+			Assert.AreEqual("()", vf.Render(args, factoryImpl).ToString());
 
 			args.Add("va1");
-			Assert.AreEqual("(va1)", vf.Render(args, factoryImpl));
+			Assert.AreEqual("(va1)", vf.Render(args, factoryImpl).ToString());
 
 			args.Clear();
 			args.Add("va1");
 			args.Add("va2");
 			args.Add("va3");
-			Assert.AreEqual("(va1 || va2 || va3)", vf.Render(args, factoryImpl));
+			Assert.AreEqual("(va1 || va2 || va3)", vf.Render(args, factoryImpl).ToString());
 		}
 
 		[Test]
@@ -107,13 +108,13 @@ namespace NHibernate.Test.HQLFunctionTest
 
 			NvlFunction nf = new NvlFunction();
 			args.Add("va1");
-			Assert.AreEqual("va1", nf.Render(args, factoryImpl));
+			Assert.AreEqual("va1", nf.Render(args, factoryImpl).ToString());
 
 			args.Clear();
 			args.Add("va1");
 			args.Add("va2");
 			args.Add("va3");
-			Assert.AreEqual("nvl(va1, nvl(va2, va3))", nf.Render(args, factoryImpl));
+			Assert.AreEqual("nvl(va1, nvl(va2, va3))", nf.Render(args, factoryImpl).ToString());
 		}
 
 		[Test]
@@ -124,13 +125,13 @@ namespace NHibernate.Test.HQLFunctionTest
 			PositionSubstringFunction psf = new PositionSubstringFunction();
 			args.Add("'a'");
 			args.Add("va2");
-			Assert.AreEqual("position('a' in va2)", psf.Render(args, factoryImpl));
+			Assert.AreEqual("position('a' in va2)", psf.Render(args, factoryImpl).ToString());
 
 			args.Clear();
 			args.Add("'a'");
 			args.Add("va2");
 			args.Add("2");
-			Assert.AreEqual("(position('a' in substring(va2, 2))+2-1)", psf.Render(args, factoryImpl));
+			Assert.AreEqual("(position('a' in substring(va2, 2))+2-1)", psf.Render(args, factoryImpl).ToString());
 		}
 
 		[Test]
@@ -145,19 +146,19 @@ namespace NHibernate.Test.HQLFunctionTest
 
 			ClassicSumFunction csf = new ClassicSumFunction();
 			args.Add("va1");
-			Assert.AreEqual("sum(va1)", csf.Render(args, factoryImpl));
+			Assert.AreEqual("sum(va1)", csf.Render(args, factoryImpl).ToString());
 
 			args.Clear();
 			args.Add("distinct");
 			args.Add("va2");
-			Assert.AreEqual("sum(distinct va2)", csf.Render(args, factoryImpl));
+			Assert.AreEqual("sum(distinct va2)", csf.Render(args, factoryImpl).ToString());
 
 			args.Clear();
 			args.Add("va1");
 			args.Add("va2");
 			try
 			{
-				string t = csf.Render(args, factoryImpl);
+				SqlString t = csf.Render(args, factoryImpl);
 				Assert.Fail("No exception 2 argument without <setquantifier>:" + t);
 			}
 			catch (QueryException)
@@ -175,18 +176,18 @@ namespace NHibernate.Test.HQLFunctionTest
 
 			ClassicCountFunction ccf = new ClassicCountFunction();
 			args.Add("va1");
-			Assert.AreEqual("count(va1)", ccf.Render(args, factoryImpl));
+			Assert.AreEqual("count(va1)", ccf.Render(args, factoryImpl).ToString());
 
 			args.Clear();
 			args.Add("*");
-			Assert.AreEqual("count(*)", ccf.Render(args, factoryImpl));
+			Assert.AreEqual("count(*)", ccf.Render(args, factoryImpl).ToString());
 
 			args.Clear();
 			args.Add("va1");
 			args.Add("va2");
 			try
 			{
-				string t = ccf.Render(args, factoryImpl);
+				SqlString t = ccf.Render(args, factoryImpl);
 				Assert.Fail("No exception 2 argument without <setquantifier>:" + t);
 			}
 			catch (QueryException)
@@ -207,19 +208,19 @@ namespace NHibernate.Test.HQLFunctionTest
 
 			ClassicAvgFunction caf = new ClassicAvgFunction();
 			args.Add("va1");
-			Assert.AreEqual("avg(va1)", caf.Render(args, factoryImpl));
+			Assert.AreEqual("avg(va1)", caf.Render(args, factoryImpl).ToString());
 
 			args.Clear();
 			args.Add("distinct");
 			args.Add("va2");
-			Assert.AreEqual("avg(distinct va2)", caf.Render(args, factoryImpl));
+			Assert.AreEqual("avg(distinct va2)", caf.Render(args, factoryImpl).ToString());
 
 			args.Clear();
 			args.Add("va1");
 			args.Add("va2");
 			try
 			{
-				string t = caf.Render(args, factoryImpl);
+				SqlString t = caf.Render(args, factoryImpl);
 				Assert.Fail("No exception 2 argument without <setquantifier>:" + t);
 			}
 			catch (QueryException)
@@ -235,19 +236,19 @@ namespace NHibernate.Test.HQLFunctionTest
 
 			ClassicAggregateFunction caf = new ClassicAggregateFunction("max", false);
 			args.Add("va1");
-			Assert.AreEqual("max(va1)", caf.Render(args, factoryImpl));
+			Assert.AreEqual("max(va1)", caf.Render(args, factoryImpl).ToString());
 
 			args.Clear();
 			args.Add("distinct");
 			args.Add("va2");
-			Assert.AreEqual("max(distinct va2)", caf.Render(args, factoryImpl));
+			Assert.AreEqual("max(distinct va2)", caf.Render(args, factoryImpl).ToString());
 
 			args.Clear();
 			args.Add("va1");
 			args.Add("va2");
 			try
 			{
-				string t = caf.Render(args, factoryImpl);
+				SqlString t = caf.Render(args, factoryImpl);
 				Assert.Fail("No exception 2 argument without <setquantifier>:" + t);
 			}
 			catch (QueryException)
@@ -259,7 +260,7 @@ namespace NHibernate.Test.HQLFunctionTest
 			args.Add("*");
 			try
 			{
-				string t = caf.Render(args, factoryImpl);
+				SqlString t = caf.Render(args, factoryImpl);
 				Assert.Fail("No exception '*' :" + t);
 			}
 			catch (QueryException)
@@ -280,15 +281,15 @@ namespace NHibernate.Test.HQLFunctionTest
 			AnsiSubstringFunction asf = new AnsiSubstringFunction();
 			args.Add("var1");
 			args.Add("3");
-			Assert.AreEqual("substring(var1 from 3)", asf.Render(args, factoryImpl));
+			Assert.AreEqual("substring(var1 from 3)", asf.Render(args, factoryImpl).ToString());
 
 			args.Add("4");
-			Assert.AreEqual("substring(var1 from 3 for 4)", asf.Render(args, factoryImpl));
+			Assert.AreEqual("substring(var1 from 3 for 4)", asf.Render(args, factoryImpl).ToString());
 
 			args.Clear();
 			try
 			{
-				string t = asf.Render(args, factoryImpl);
+				SqlString t = asf.Render(args, factoryImpl);
 				Assert.Fail("Not threw 'Not enough parameters' exception:" + t);
 			}
 			catch (QueryException)
@@ -302,7 +303,7 @@ namespace NHibernate.Test.HQLFunctionTest
 			args.Add("4");
 			try
 			{
-				string t = asf.Render(args, factoryImpl);
+				SqlString t = asf.Render(args, factoryImpl);
 				Assert.Fail("Not threw 'Not enough parameters' exception:" + t);
 			}
 			catch (QueryException)

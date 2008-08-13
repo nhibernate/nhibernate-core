@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Text.RegularExpressions;
@@ -79,14 +80,14 @@ namespace NHibernate.Dialect.Function
 		/// If only trim specification is omitted, BOTH is assumed;
 		/// if trim character is omitted, space is assumed
 		/// </remarks>
-		public string Render(IList args, ISessionFactoryImplementor factory)
+		public SqlString Render(IList args, ISessionFactoryImplementor factory)
 		{
 			if (args.Count < 1 || args.Count > 4)
 			{
 				throw new QueryException("function takes between 1 and 4 arguments");
 			}
 
-			string firstArg = (string) args[0];
+			string firstArg = args[0].ToString();
 
 			if (args.Count == 1)
 			{
@@ -108,7 +109,7 @@ namespace NHibernate.Dialect.Function
 				bool leading = true; // should leading trim-characters be trimmed?
 				bool trailing = true; // should trailing trim-characters be trimmed?
 				string trimCharacter = null; // the trim-character
-				string trimSource = null; // the trim-source
+				object trimSource = null; // the trim-source
 
 				// potentialTrimCharacterArgIndex = 1 assumes that a
 				// trim-specification has been specified.  we handle the
@@ -130,11 +131,11 @@ namespace NHibernate.Dialect.Function
 					potentialTrimCharacterArgIndex = 0;
 				}
 
-				string potentialTrimCharacter = (string) args[potentialTrimCharacterArgIndex];
-				if (StringHelper.EqualsCaseInsensitive("from", potentialTrimCharacter))
+				object potentialTrimCharacter = args[potentialTrimCharacterArgIndex];
+				if (StringHelper.EqualsCaseInsensitive("from", potentialTrimCharacter.ToString()))
 				{
 					trimCharacter = "' '";
-					trimSource = (string) args[potentialTrimCharacterArgIndex + 1];
+					trimSource = args[potentialTrimCharacterArgIndex + 1];
 				}
 				else if (potentialTrimCharacterArgIndex + 1 >= args.Count)
 				{
@@ -143,14 +144,14 @@ namespace NHibernate.Dialect.Function
 				}
 				else
 				{
-					trimCharacter = potentialTrimCharacter;
-					if (StringHelper.EqualsCaseInsensitive("from", (string) args[potentialTrimCharacterArgIndex + 1]))
+					trimCharacter = potentialTrimCharacter.ToString();
+					if (StringHelper.EqualsCaseInsensitive("from", args[potentialTrimCharacterArgIndex + 1].ToString()))
 					{
-						trimSource = (string) args[potentialTrimCharacterArgIndex + 2];
+						trimSource = args[potentialTrimCharacterArgIndex + 2];
 					}
 					else
 					{
-						trimSource = (string) args[potentialTrimCharacterArgIndex + 1];
+						trimSource = args[potentialTrimCharacterArgIndex + 1];
 					}
 				}
 

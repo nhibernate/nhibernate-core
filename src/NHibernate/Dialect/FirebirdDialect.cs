@@ -221,10 +221,15 @@ namespace NHibernate.Dialect
 			{
 			}
 
-			public override string Render(IList args, ISessionFactoryImplementor factory)
+			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{
-				base.Render(args, factory);
-				return string.Format("cast('{0}' as {1})", Name, FunctionReturnType.SqlTypes(factory)[0]);
+				return new SqlStringBuilder()
+					.Add("cast('")
+					.Add(name)
+					.Add("' as ")
+					.Add(returnType.SqlTypes(factory)[0].ToString())
+					.Add(")")
+					.ToSqlString();
 			}
 		}
 
@@ -234,9 +239,9 @@ namespace NHibernate.Dialect
 				: base("current_timestamp", NHibernateUtil.DateTime, true)
 			{ }
 
-			public override string Render(IList args, ISessionFactoryImplementor factory)
+			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{
-				return Name;
+				return new SqlString(name);
 			}
 		}
 

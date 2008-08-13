@@ -333,6 +333,11 @@ namespace NHibernate.SqlCommand
 				parent.Add(text);
 			}
 
+			public void String(SqlString sqlString)
+			{
+				parent.Add(sqlString);
+			}
+
 			public void Parameter()
 			{
 				parent.AddParameter();

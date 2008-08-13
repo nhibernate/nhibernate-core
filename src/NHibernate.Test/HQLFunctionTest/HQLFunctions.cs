@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
@@ -17,7 +18,7 @@ namespace NHibernate.Test.HQLFunctionTest
 		static HQLFunctions()
 		{
 			notSupportedStandardFunction.Add("locate",
-				new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(FirebirdDialect) });
+				new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(FirebirdDialect), typeof(PostgreSQLDialect) });
 			notSupportedStandardFunction.Add("bit_length",
 				new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect) });
 			notSupportedStandardFunction.Add("extract",
@@ -221,6 +222,36 @@ namespace NHibernate.Test.HQLFunctionTest
 				hql = "from Animal a where substring(a.Description, 2, 3) = 'bcd'";
 				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
+
+				hql = "from Animal a where substring(a.Description, 2, 3) = ?";
+				result = (Animal)s.CreateQuery(hql)
+					.SetParameter(0, "bcd")
+					.UniqueResult();
+				Assert.AreEqual("abcdef", result.Description);
+
+
+				hql = "from Animal a where substring(a.Description, 2, ?) = 'bcd'";
+				result = (Animal)s.CreateQuery(hql)
+					.SetParameter(0, 3)
+					.UniqueResult();
+				Assert.AreEqual("abcdef", result.Description);
+
+
+				hql = "from Animal a where substring(a.Description, ?, ?) = ?";
+				result = (Animal)s.CreateQuery(hql)
+					.SetParameter(0, 2)
+					.SetParameter(1, 3)
+					.SetParameter(2, "bcd")
+					.UniqueResult();
+				Assert.AreEqual("abcdef", result.Description);
+
+				hql = "select substring(a.Description, ?, ?) from Animal a";
+				IList results = s.CreateQuery(hql)
+					.SetParameter(0, 2)
+					.SetParameter(1, 3)
+					.List();
+				Assert.AreEqual(1, results.Count);
+				Assert.AreEqual("bcd", results[0]);
 
 				if (twoArgSubstringSupported)
 				{
@@ -560,6 +591,13 @@ namespace NHibernate.Test.HQLFunctionTest
 				result = (Animal)s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 
+				// Rendered in WHERE using a property and named param
+				hql = "from Animal a where cast(:aParam+a.BodyWeight as Double)>0";
+				result = (Animal)s.CreateQuery(hql)
+					.SetDouble("aParam", 2D)
+					.UniqueResult();
+				Assert.AreEqual("abcdef", result.Description);
+
 				// Rendered in WHERE using a property and nested functions
 				hql = "from Animal a where cast(cast(cast(a.BodyWeight as string) as double) as int) = 1";
 				result = (Animal)s.CreateQuery(hql).UniqueResult();
@@ -594,6 +632,30 @@ namespace NHibernate.Test.HQLFunctionTest
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
 				Assert.AreEqual(129, l[0]);
+
+				// Rendered in HAVING using a property and named param (NOT SUPPORTED)
+				try
+				{
+					hql = "select cast(:aParam+a.BodyWeight as int) from Animal a group by cast(:aParam+a.BodyWeight as int) having cast(:aParam+a.BodyWeight as int)>0";
+					l = s.CreateQuery(hql).SetInt32("aParam", 10).List();
+					Assert.AreEqual(1, l.Count);
+					Assert.AreEqual(11, l[0]);
+				}
+				catch (QueryException ex)
+				{
+					if (!(ex.InnerException is NotSupportedException))
+						throw;
+				}
+				catch (ADOException ex)
+				{
+					// This test raises an exception in SQL Server because named 
+					// parameters internally are always positional (@p0, @p1, etc.)
+					// and named differently hence they mismatch between GROUP BY and HAVING clauses.
+					if (!ex.InnerException.Message.Equals(
+						"Column 'Animal.BodyWeight' is invalid in the HAVING clause " +
+						"because it is not contained in either an aggregate function or the GROUP BY clause."))
+						throw;
+				}
 
 				// Rendered in HAVING using a property and nested functions
 				string castExpr = "cast(cast(cast(a.BodyWeight as string) as double) as int)";

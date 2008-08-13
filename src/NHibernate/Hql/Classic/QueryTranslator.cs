@@ -45,7 +45,7 @@ namespace NHibernate.Hql.Classic
 		private readonly IDictionary<string, IAssociationType> uniqueKeyOwnerReferences = new Dictionary<string, IAssociationType>();
 		private readonly IDictionary<string, IPropertyMapping> decoratedPropertyMappings = new Dictionary<string, IPropertyMapping>();
 
-		private readonly IList scalarSelectTokens = new ArrayList(); // contains a List of strings
+		private readonly IList<SqlString> scalarSelectTokens = new List<SqlString>();
 		private readonly IList<SqlString> whereTokens = new List<SqlString>();
 		private readonly IList<SqlString> havingTokens = new List<SqlString>();
 		private readonly IDictionary<string, JoinSequence> joins = new LinkedHashMap<string, JoinSequence>();
@@ -174,7 +174,9 @@ namespace NHibernate.Hql.Classic
 
 				for (int i = 0; i < count; i++)
 				{
-					sql.AddSelectFragmentString(((IQueryableCollection) persisters[i]).SelectFragment(names[i], suffixes[i]));
+					sql.AddSelectFragmentString(new SqlString(
+						((IQueryableCollection) persisters[i]).SelectFragment(
+							(string) names[i], (string) suffixes[i])));
 				}
 			}
 
@@ -632,14 +634,24 @@ namespace NHibernate.Hql.Classic
 			groupByTokens.Add(new SqlString(token));
 		}
 
+		internal void AppendGroupByParameter()
+		{
+			groupByTokens.Add(SqlString.Parameter);
+		}
+
 		internal void AppendScalarSelectToken(string token)
 		{
-			scalarSelectTokens.Add(token);
+			scalarSelectTokens.Add(new SqlString(token));
 		}
 
 		internal void AppendScalarSelectTokens(string[] tokens)
 		{
-			scalarSelectTokens.Add(tokens);
+			scalarSelectTokens.Add(new SqlString(tokens));
+		}
+
+		internal void AppendScalarSelectParameter()
+		{
+			scalarSelectTokens.Add(SqlString.Parameter);
 		}
 
 		internal void AddJoin(string name, JoinSequence joinSequence)
@@ -747,7 +759,7 @@ namespace NHibernate.Hql.Classic
 				owners = null;
 			}
 
-			string scalarSelect = RenderScalarSelect(); //Must be done here because of side-effect! yuck...
+			SqlString scalarSelect = RenderScalarSelect(); //Must be done here because of side-effect! yuck...
 
 			int scalarSize = scalarTypes.Count;
 			hasScalars = scalarTypes.Count != rtsize;
@@ -846,7 +858,7 @@ namespace NHibernate.Hql.Classic
 			{
 				string name = returnedTypes[k];
 				string suffix = size == 1 ? String.Empty : k.ToString() + StringHelper.Underscore;
-				sql.AddSelectFragmentString(persisters[k].IdentifierSelectFragment(name, suffix));
+				sql.AddSelectFragmentString(new SqlString(persisters[k].IdentifierSelectFragment(name, suffix)));
 			}
 		}
 
@@ -856,19 +868,19 @@ namespace NHibernate.Hql.Classic
 			for (int k = 0; k < size; k++)
 			{
 				string suffix = (size == 1) ? String.Empty : k.ToString() + StringHelper.Underscore;
-				string name = returnedTypes[k];
-				sql.AddSelectFragmentString(persisters[k].PropertySelectFragment(name, suffix, false));
+				string name = (string) returnedTypes[k];
+				sql.AddSelectFragmentString(new SqlString(persisters[k].PropertySelectFragment(name, suffix, false)));
 			}
 		}
 
 		/// <summary> 
 		/// WARNING: side-effecty
 		/// </summary>
-		private string RenderScalarSelect()
+		private SqlString RenderScalarSelect()
 		{
 			bool isSubselect = superQuery != null;
 
-			StringBuilder buf = new StringBuilder(20);
+			SqlStringBuilder buf = new SqlStringBuilder();
 
 			if (scalarTypes.Count == 0)
 			{
@@ -881,14 +893,14 @@ namespace NHibernate.Hql.Classic
 					string[] _names = persisters[k].IdentifierColumnNames;
 					for (int i = 0; i < _names.Length; i++)
 					{
-						buf.Append(returnedTypes[k]).Append(StringHelper.Dot).Append(_names[i]);
+						buf.Add(returnedTypes[k].ToString()).Add(StringHelper.Dot.ToString()).Add(_names[i]);
 						if (!isSubselect)
 						{
-							buf.Append(" as ").Append(ScalarName(k, i));
+							buf.Add(" as ").Add(ScalarName(k, i));
 						}
 						if (i != _names.Length - 1 || k != size - 1)
 						{
-							buf.Append(StringHelper.CommaSpace);
+							buf.Add(StringHelper.CommaSpace);
 						}
 					}
 				}
@@ -901,17 +913,17 @@ namespace NHibernate.Hql.Classic
 				int parenCount = 0; // used to count the nesting of parentheses
 				for (int tokenIdx = 0; tokenIdx < scalarSelectTokens.Count; tokenIdx++)
 				{
-					object next = scalarSelectTokens[tokenIdx];
-					if (next is string)
+					SqlString next = scalarSelectTokens[tokenIdx];
+					if (next.Count == 1)
 					{
-						string token = (string)next;
+						string token = next.ToString();
 						string lc = token.ToLowerInvariant();
 						ISQLFunction func = Factory.SQLFunctionRegistry.FindSQLFunction(lc);
 						if (func != null)
 						{
 							// Render the HQL function
-							string renderedFunction = RenderFunctionClause(func, scalarSelectTokens, ref tokenIdx);
-							buf.Append(renderedFunction);
+							SqlString renderedFunction = RenderFunctionClause(func, scalarSelectTokens, ref tokenIdx);
+							buf.Add(renderedFunction);
 						}
 						else
 						{
@@ -933,47 +945,47 @@ namespace NHibernate.Hql.Classic
 								{
 									if (!isSubselect && parenCount == 0)
 									{
-										buf.Append(" as ").Append(ScalarName(c++, 0));
+										buf.Add(" as ").Add(ScalarName(c++, 0));
 									}
 								}
 							}
 
-							buf.Append(token);
+							buf.Add(token);
 							if (lc.Equals("distinct") || lc.Equals("all"))
 							{
-								buf.Append(' ');
+								buf.Add(" ");
 							}
 						}
 					}
 					else
 					{
 						nolast = true;
-						string[] tokens = (string[])next;
-						for (int i = 0; i < tokens.Length; i++)
+						int i = 0;
+						foreach (object token in next.Parts)
 						{
-							buf.Append(tokens[i]);
+							buf.AddObject(token);
 							if (!isSubselect)
 							{
-								buf.Append(" as ").Append(ScalarName(c, i));
+								buf.Add(" as ").Add(ScalarName(c, i));
 							}
-							if (i != tokens.Length - 1)
+							if (i != next.Count - 1)
 							{
-								buf.Append(StringHelper.CommaSpace);
+								buf.Add(StringHelper.CommaSpace);
 							}
+							i++;
 						}
 						c++;
 					}
 				}
 				if (!isSubselect && !nolast)
 				{
-					buf.Append(" as ").Append(ScalarName(c, 0));
+					buf.Add(" as ").Add(ScalarName(c++, 0));
 				}
 			}
 
-			return buf.ToString();
+			return buf.ToSqlString();
 		}
 
-		// Parameters inside function are not supported
 		private void RenderFunctions(IList<SqlString> tokens)
 		{
 			for (int tokenIdx = 0; tokenIdx < tokens.Count; tokenIdx++)
@@ -983,10 +995,10 @@ namespace NHibernate.Hql.Classic
 				if (func != null)
 				{
 					int flTokenIdx = tokenIdx;
-					string renderedFunction = RenderFunctionClause(func, (IList)tokens, ref flTokenIdx);
-					// At this point we have the trunk that represent the function with it's parameters enclosed
-					// in paren. Now all token in the tokens list can be removed from original list because they must
-					// be replased with the rendered function.
+					SqlString renderedFunction = RenderFunctionClause(func, tokens, ref flTokenIdx);
+					// At this point we have the trunk that represents the function with its 
+					// arguments enclosed in parens. Now all token in the tokens list will be
+					// removed from the original list and replaced with the rendered function.
 					for (int i = 0; i < flTokenIdx - tokenIdx; i++)
 					{
 						tokens.RemoveAt(tokenIdx + 1);
@@ -1003,30 +1015,32 @@ namespace NHibernate.Hql.Classic
 		/// <param name="tokenIdx">The index of the list that represent the founded function.</param>
 		/// <returns>String trepresentation of each token.</returns>
 		/// <remarks>Each token can be string or SqlString </remarks>
-		private StringCollection ExtractFunctionClause(IList tokens, ref int tokenIdx)
+		private IList<SqlString> ExtractFunctionClause(IList<SqlString> tokens, ref int tokenIdx)
 		{
-			string funcName = tokens[tokenIdx].ToString();
-			StringCollection functionTokens = new StringCollection();
+			SqlString funcName = tokens[tokenIdx];
+			IList<SqlString> functionTokens = new List<SqlString>();
 			functionTokens.Add(funcName);
 			tokenIdx++;
 			if (tokenIdx >= tokens.Count ||
 				!StringHelper.OpenParen.Equals(tokens[tokenIdx].ToString()))
 			{
-				// All function with parameters have the syntax
-				// <function name> <left paren> <parameters> <right paren>
+				// All function with arguments have the syntax
+				// <function name> <left paren> <arguments> <right paren>
 				throw new QueryException("'(' expected after function " + funcName);
 			}
-			functionTokens.Add(StringHelper.OpenParen);
+			functionTokens.Add(new SqlString(StringHelper.OpenParen));
 			tokenIdx++;
 			int parenCount = 1;
 			for (; tokenIdx < tokens.Count && parenCount > 0; tokenIdx++)
 			{
-				if (tokens[tokenIdx].ToString().StartsWith(ParserHelper.HqlVariablePrefix) || tokens[tokenIdx].ToString().Equals(StringHelper.SqlParameter))
+				if (tokens[tokenIdx].StartsWithCaseInsensitive(ParserHelper.HqlVariablePrefix) || tokens[tokenIdx].ToString().Equals(StringHelper.SqlParameter))
 				{
-					throw new QueryException(string.Format("Parameters inside function are not supported (function '{0}').", funcName),
-						new NotSupportedException());
+					functionTokens.Add(SqlString.Parameter);
 				}
-				functionTokens.Add(tokens[tokenIdx].ToString());
+				else
+				{
+					functionTokens.Add(tokens[tokenIdx]);
+				}
 				if (StringHelper.OpenParen.Equals(tokens[tokenIdx].ToString()))
 				{
 					parenCount++;
@@ -1044,17 +1058,17 @@ namespace NHibernate.Hql.Classic
 			return functionTokens;
 		}
 
-		private string RenderFunctionClause(ISQLFunction func, IList tokens, ref int tokenIdx)
+		private SqlString RenderFunctionClause(ISQLFunction func, IList<SqlString> tokens, ref int tokenIdx)
 		{
-			StringCollection functionTokens;
+			IList<SqlString> functionTokens;
 			if (!func.HasArguments)
 			{
-				// The function don't work with arguments.
+				// The function doesn't work with arguments.
 				if (func.HasParenthesesIfNoArguments)
 					ExtractFunctionClause(tokens, ref tokenIdx);
 
-				// The function render simply translate is't name for a specific dialect.
-				return func.Render(CollectionHelper.EmptyList, Factory);
+				// The function render simply translate its name for a specific dialect.
+				return func.Render(new ArrayList(), Factory);
 			}
 			functionTokens = ExtractFunctionClause(tokens, ref tokenIdx);
 
@@ -1062,8 +1076,8 @@ namespace NHibernate.Hql.Classic
 			if (fg == null)
 				fg = new CommonGrammar();
 
-			StringCollection args = new StringCollection();
-			StringBuilder argBuf = new StringBuilder(20);
+			IList args = new ArrayList();
+			SqlStringBuilder argBuf = new SqlStringBuilder();
 			// Extract args spliting first 2 token because are: FuncName(
 			// last token is ')'
 			// To allow expressions like arg (ex:5+5) all tokens between 'argument separator' or
@@ -1073,44 +1087,44 @@ namespace NHibernate.Hql.Classic
 			// Ex: sum(a.Prop+10), cast(yesterday-1 as date)
 			for (int argIdx = 2; argIdx < functionTokens.Count - 1; argIdx++)
 			{
-				string token = functionTokens[argIdx];
-				if(fg.IsKnownArgument(token))
+				object token = functionTokens[argIdx];
+				if (fg.IsKnownArgument(token.ToString()))
 				{
-					if (argBuf.Length > 0)
+					if (argBuf.Count > 0)
 					{
 						// end of the previous argument
-						args.Add(argBuf.ToString());
-						argBuf = new StringBuilder(20);
+						args.Add(argBuf.ToSqlString());
+						argBuf = new SqlStringBuilder();
 					}
 					args.Add(token);
 				}
-				else if (fg.IsSeparator(token))
+				else if (fg.IsSeparator(token.ToString()))
 				{
 					// argument end
-					if (argBuf.Length > 0)
+					if (argBuf.Count > 0)
 					{
-						args.Add(argBuf.ToString());
-						argBuf = new StringBuilder(20);
+						args.Add(argBuf.ToSqlString());
+						argBuf = new SqlStringBuilder();
 					}
 				}
 				else
 				{
-					ISQLFunction nfunc = Factory.SQLFunctionRegistry.FindSQLFunction(token.ToLowerInvariant());
+					ISQLFunction nfunc = Factory.SQLFunctionRegistry.FindSQLFunction(token.ToString().ToLowerInvariant());
 					if (nfunc != null)
 					{
 						// the token is a nested function call
-						argBuf.Append(RenderFunctionClause(nfunc, functionTokens, ref argIdx));
+						argBuf.Add(RenderFunctionClause(nfunc, functionTokens, ref argIdx));
 					}
 					else
 					{
 						// the token is a part of an argument (every thing else)
-						argBuf.Append(token);
+						argBuf.AddObject(token);
 					}
 				}
 			}
 			// Add the last arg
-			if (argBuf.Length > 0)
-				args.Add(argBuf.ToString());
+			if (argBuf.Count > 0)
+				args.Add(argBuf.ToSqlString());
 			return func.Render(args, Factory);
 		}
 

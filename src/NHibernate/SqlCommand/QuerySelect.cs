@@ -12,7 +12,7 @@ namespace NHibernate.SqlCommand
 	{
 		private readonly JoinFragment joins;
 
-		private readonly StringBuilder selectBuilder = new StringBuilder();
+		private readonly SqlStringBuilder selectBuilder = new SqlStringBuilder();
 		private readonly SqlStringBuilder whereBuilder = new SqlStringBuilder();
 
 		// groupBy, orderBy, and having will for sure have no parameters.
@@ -111,9 +111,9 @@ namespace NHibernate.SqlCommand
 		/// 
 		/// </summary>
 		/// <param name="fragment"></param>
-		public void AddSelectFragmentString(string fragment)
+		public void AddSelectFragmentString(SqlString fragment)
 		{
-			if (fragment.StartsWith(","))
+			if (fragment.StartsWithCaseInsensitive(","))
 			{
 				fragment = fragment.Substring(1);
 			}
@@ -122,12 +122,12 @@ namespace NHibernate.SqlCommand
 
 			if (fragment.Length > 0)
 			{
-				if (selectBuilder.Length > 0)
+				if (selectBuilder.Count > 0)
 				{
-					selectBuilder.Append(StringHelper.CommaSpace);
+					selectBuilder.Add(StringHelper.CommaSpace);
 				}
 
-				selectBuilder.Append(fragment);
+				selectBuilder.Add(fragment);
 			}
 		}
 
@@ -138,7 +138,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="alias"></param>
 		public void AddSelectColumn(string columnName, string alias)
 		{
-			AddSelectFragmentString(columnName + ' ' + alias);
+			AddSelectFragmentString(new SqlString(columnName + ' ' + alias));
 		}
 
 		/// <summary></summary>
@@ -224,12 +224,12 @@ namespace NHibernate.SqlCommand
 				from = from.Substring(11);
 			}
 
-			builder.Add(selectBuilder.ToString())
+			builder.Add(selectBuilder.ToSqlString())
 				.Add(" from")
 				.Add(from);
 
 			SqlString part1 = joins.ToWhereFragmentString.Trim();
-			SqlString part2 = whereBuilder.ToSqlString().Trim();
+			SqlString part2 = whereBuilder.ToSqlString();
 			bool hasPart1 = part1.Count > 0;
 			bool hasPart2 = part2.Count > 0;
 

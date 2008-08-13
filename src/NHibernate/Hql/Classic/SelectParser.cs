@@ -166,7 +166,12 @@ namespace NHibernate.Hql.Classic
 					constantToken = true;
 				}
 
-				if (constantToken)
+				if (token.StartsWith(ParserHelper.HqlVariablePrefix))
+				{
+					q.AddNamedParameter(token.Substring(1));
+					q.AppendScalarSelectParameter();
+				}
+				else if (constantToken)
 				{
 					q.AppendScalarSelectToken(token);
 				}
@@ -228,11 +233,10 @@ namespace NHibernate.Hql.Classic
 						q.AppendScalarSelectToken(token);
 						q.AddSelectScalar(GetFloatingPointConstantType());
 					}
-					else if (IsParameter(token))
+					else if (token.StartsWith(ParserHelper.HqlVariablePrefix))
 					{
-						//q.AddNamedParameter(token.Substring(1));
-						//q.AppendScalarSelectToken(token);
-						throw new QueryException("parameters are not supported in SELECT.", new NotSupportedException());
+						q.AddNamedParameter(token.Substring(1));
+						q.AppendScalarSelectParameter();
 					}
 					else
 						throw;
@@ -244,9 +248,6 @@ namespace NHibernate.Hql.Classic
 		#region RegExs
 		private static readonly Regex pathExpressionRegEx = new Regex(@"\A[A-Za-z_][A-Za-z_0-9]*[.][A-Za-z_][A-Za-z_0-9]*\z", RegexOptions.Singleline | RegexOptions.Compiled);
 		private static readonly Regex stringCostantRegEx = new Regex(@"\A'('{2})*([^'\r\n]*)('{2})*([^'\r\n]*)('{2})*'\z", RegexOptions.Singleline | RegexOptions.Compiled);
-
-		private static readonly string paramMatcher = string.Format("\\A([{0}][A-Za-z_][A-Za-z_0-9]*)|[{1}]\\z", ParserHelper.HqlVariablePrefix, StringHelper.SqlParameter);
-		private static readonly Regex parameterRegEx = new Regex(paramMatcher, RegexOptions.Singleline | RegexOptions.Compiled);
 		#endregion
 
 		private static bool IsPathExpression(string token)
@@ -269,11 +270,6 @@ namespace NHibernate.Hql.Classic
 		{
 			double d;
 			return double.TryParse(token, NumberStyles.Number, CultureInfo.InvariantCulture, out d);
-		}
-
-		private static bool IsParameter(string token)
-		{
-			return parameterRegEx.IsMatch(token);
 		}
 
 		private static IType GetIntegerConstantType(string token)

@@ -78,7 +78,7 @@ namespace NHibernate.Criterion
 			{
 				tokens.Add(replacemenToken);
 			}
-			string functionStatement = sqlFunction.Render(tokens, criteriaQuery.Factory);
+			string functionStatement = sqlFunction.Render(tokens, criteriaQuery.Factory).ToString();
 			string[] splitted = functionStatement.Split(new string[] {replacemenToken}, StringSplitOptions.RemoveEmptyEntries);
 
 			SqlStringBuilder sb = new SqlStringBuilder();
