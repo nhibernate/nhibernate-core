@@ -52,7 +52,7 @@ namespace NHibernate.Linq.Visitors
 					}
 					break;
 			}
-			return u;
+			return base.VisitUnary(u);
 		}
 
 		private Expression ProcessBinaryExpression(Expression exprToCompare, Expression exprToReturn,
