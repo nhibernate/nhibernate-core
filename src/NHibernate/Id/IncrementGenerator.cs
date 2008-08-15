@@ -38,8 +38,8 @@ namespace NHibernate.Id
 		/// </summary>
 		/// <param name="type"></param>
 		/// <param name="parms"></param>
-		/// <param name="d"></param>
-		public void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect d)
+		/// <param name="dialect"></param>
+		public void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect dialect)
 		{
 			string tableList;
 			string column;
@@ -62,7 +62,7 @@ namespace NHibernate.Id
 				{
 					buf.Append("select ").Append(column).Append(" from ");
 				}
-				buf.Append(d.Qualify(catalog, schema, tables[i]));
+				buf.Append(dialect.Qualify(catalog, schema, tables[i]));
 				if (i < tables.Length - 1)
 					buf.Append(" union ");
 			}

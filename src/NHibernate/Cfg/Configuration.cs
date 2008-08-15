@@ -701,9 +701,14 @@ namespace NHibernate.Cfg
 			IEnumerable<IPersistentIdentifierGenerator> pIDg = IterateGenerators(dialect);
 			foreach (IPersistentIdentifierGenerator idGen in pIDg)
 			{
-				string dropString = idGen.SqlDropString(dialect);
-				if (dropString != null)
-					script.Add(dropString);
+				string[] lines = idGen.SqlDropString(dialect);
+				if (lines != null)
+				{
+					foreach (string line in lines)
+					{
+						script.Add(line);						
+					}
+				}
 			}
 
 			return script.ToArray();

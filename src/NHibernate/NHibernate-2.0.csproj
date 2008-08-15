@@ -631,6 +631,9 @@
     <Compile Include="Engine\Query\Sql\NativeSQLQueryRootReturn.cs" />
     <Compile Include="Engine\Query\Sql\NativeSQLQueryScalarReturn.cs" />
     <Compile Include="Engine\StatefulPersistenceContext.cs" />
+    <Compile Include="Engine\TransactionHelper.cs" />
+    <Compile Include="Engine\Transaction\IIsolatedWork.cs" />
+    <Compile Include="Engine\Transaction\Isolater.cs" />
     <Compile Include="Engine\TwoPhaseLoad.cs" />
     <Compile Include="Engine\ValueInclusion.cs" />
     <Compile Include="Engine\VersionValue.cs" />
@@ -738,6 +741,13 @@
     <Compile Include="Criterion\SqlFunctionProjection.cs" />
     <Compile Include="FKUnmatchingColumnsException.cs" />
     <Compile Include="Id\AbstractPostInsertGenerator.cs" />
+    <Compile Include="Id\Enhanced\IAccessCallback.cs" />
+    <Compile Include="Id\Enhanced\IDatabaseStructure.cs" />
+    <Compile Include="Id\Enhanced\IOptimizer.cs" />
+    <Compile Include="Id\Enhanced\OptimizerFactory.cs" />
+    <Compile Include="Id\Enhanced\SequenceStructure.cs" />
+    <Compile Include="Id\Enhanced\SequenceStyleGenerator.cs" />
+    <Compile Include="Id\Enhanced\TableStructure.cs" />
     <Compile Include="Id\Insert\AbstractReturningDelegate.cs">
       <SubType>Code</SubType>
     </Compile>

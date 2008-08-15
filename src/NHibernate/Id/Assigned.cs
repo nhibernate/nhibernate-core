@@ -52,7 +52,7 @@ namespace NHibernate.Id
 
 		#region IConfigurable Members
 
-		public void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect d)
+		public void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect dialect)
 		{
 			parms.TryGetValue(IdGeneratorParmsNames.EntityName, out entityName);
 			if (entityName == null)

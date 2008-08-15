@@ -16,7 +16,7 @@ namespace NHibernate.Id
 		/// </summary>
 		/// <param name="type">The <see cref="IType"/> the identifier should be.</param>
 		/// <param name="parms">An <see cref="IDictionary"/> of Param values that are keyed by parameter name.</param>
-		/// <param name="d">The <see cref="Dialect.Dialect"/> to help with Configuration.</param>
-		void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect d);
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with Configuration.</param>
+		void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect dialect);
 	}
 }

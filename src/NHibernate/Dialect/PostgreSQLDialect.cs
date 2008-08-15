@@ -77,7 +77,7 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		protected override string CascadeConstraintsString
+		public override string CascadeConstraintsString
 		{
 			get { return " cascade"; }
 		}

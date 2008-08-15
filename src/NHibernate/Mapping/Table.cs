@@ -1022,5 +1022,19 @@ namespace NHibernate.Mapping
 		{
 			throw new NotSupportedException();
 		}
+
+		public static string Qualify(string catalog, string schema, string table)
+		{
+			StringBuilder qualifiedName = new StringBuilder(100);
+			if (catalog != null)
+			{
+				qualifiedName.Append(catalog).Append('.');
+			}
+			if (schema != null)
+			{
+				qualifiedName.Append(schema).Append('.');
+			}
+			return qualifiedName.Append(table).ToString();
+		}
 	}
 }

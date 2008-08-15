@@ -18,7 +18,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Guid, "uuid");
 		}
 
-		protected override bool SupportsIfExistsBeforeTableName
+		public override bool SupportsIfExistsBeforeTableName
 		{
 			get { return true; }
 		}

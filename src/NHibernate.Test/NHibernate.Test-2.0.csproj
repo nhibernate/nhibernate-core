@@ -226,6 +226,7 @@
     <Compile Include="HQLFunctionTest\SQLFunctionTemplateTest.cs" />
     <Compile Include="BulkManipulation\NativeSQLBulkOperations.cs" />
     <Compile Include="BulkManipulation\Vehicles.cs" />
+    <Compile Include="IdGen\Enhanced\SequenceStyleConfigUnitFixture.cs" />
     <Compile Include="IdTest\Car.cs" />
     <Compile Include="IdTest\HiLoInt16Class.cs" />
     <Compile Include="IdTest\HiLoInt32Class.cs" />

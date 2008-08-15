@@ -286,9 +286,9 @@ namespace NHibernate.Id
 		/// <returns>
 		/// A <see cref="string"/> that will drop the database objects for the TableGenerator.
 		/// </returns>
-		public string SqlDropString(Dialect.Dialect dialect)
+		public string[] SqlDropString(Dialect.Dialect dialect)
 		{
-			return dialect.GetDropTableString(tableName);
+			return new string[] { dialect.GetDropTableString(tableName) };
 		}
 
 		/// <summary>

@@ -82,11 +82,11 @@ namespace NHibernate.Id
 		/// </summary>
 		/// <param name="type">The <see cref="IType"/> the identifier should be.</param>
 		/// <param name="parms">An <see cref="IDictionary"/> of Param values that are keyed by parameter name.</param>
-		/// <param name="d">The <see cref="Dialect.Dialect"/> to help with Configuration.</param>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with Configuration.</param>
 		/// <exception cref="MappingException">
 		/// Thrown if the key <c>property</c> is not found in the <c>parms</c> parameter.
 		/// </exception>
-		public void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect d)
+		public void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect dialect)
 		{
 			parms.TryGetValue(IdGeneratorParmsNames.EntityName, out entityName);
 			parms.TryGetValue("property", out propertyName);

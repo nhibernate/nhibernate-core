@@ -4,7 +4,6 @@ using System.Data;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
-using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -157,9 +156,9 @@ namespace NHibernate.Id
 		/// <returns>
 		/// A <see cref="String"/> that will drop the database objects for the SequenceGenerator.
 		/// </returns>
-		public string SqlDropString(Dialect.Dialect dialect)
+		public string[] SqlDropString(Dialect.Dialect dialect)
 		{
-			return dialect.GetDropSequenceString(sequenceName);
+			return new string[] { dialect.GetDropSequenceString(sequenceName) };
 		}
 
 		/// <summary>

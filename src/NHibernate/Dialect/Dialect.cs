@@ -393,7 +393,7 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// Completely optional cascading drop clause
 		/// </summary>
-		protected virtual string CascadeConstraintsString
+		public virtual string CascadeConstraintsString
 		{
 			get { return String.Empty; }
 		}
@@ -669,7 +669,7 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// Does the dialect support the syntax 'drop table if exists NAME'
 		/// </summary>
-		protected virtual bool SupportsIfExistsBeforeTableName
+		public virtual bool SupportsIfExistsBeforeTableName
 		{
 			get { return false; }
 		}
@@ -677,7 +677,7 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// Does the dialect support the syntax 'drop table NAME if exists'
 		/// </summary>
-		protected virtual bool SupportsIfExistsAfterTableName
+		public virtual bool SupportsIfExistsAfterTableName
 		{
 			get { return false; }
 		}

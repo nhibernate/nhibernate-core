@@ -53,7 +53,7 @@ namespace NHibernate.Id
 		/// <returns>
 		/// A <see cref="String"/> that will drop the database objects.
 		/// </returns>
-		string SqlDropString(Dialect.Dialect dialect);
+		string[] SqlDropString(Dialect.Dialect dialect);
 
 		/// <summary>
 		/// Return a key unique to the underlying database objects.
