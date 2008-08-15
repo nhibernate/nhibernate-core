@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Collections;
 using System.Collections.Generic;
+using NHibernate.Linq.Util;
 
 namespace NHibernate.Linq
 {
@@ -16,7 +17,7 @@ namespace NHibernate.Linq
 
 		public Query(QueryProvider provider)
 		{
-			if (provider == null) throw new ArgumentNullException("provider");
+			Guard.AgainstNull(provider,"provider");
 
 			this.provider = provider;
 			this.expression = Expression.Constant(this);
@@ -24,8 +25,9 @@ namespace NHibernate.Linq
 
 		public Query(QueryProvider provider, Expression expression)
 		{
-			if (provider == null) throw new ArgumentNullException("provider");
-			if (expression == null) throw new ArgumentNullException("expression");
+			Guard.AgainstNull(provider,"provider");
+			Guard.AgainstNull(expression,"expression");
+
 
 			if (!typeof(IQueryable<T>).IsAssignableFrom(expression.Type))
 				throw new ArgumentOutOfRangeException("expression");

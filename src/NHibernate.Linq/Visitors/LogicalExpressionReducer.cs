@@ -12,9 +12,14 @@ namespace NHibernate.Linq.Visitors
 	/// </summary>
 
 	//May be used for animal.Offspring.Any() == true
-	//Eventhough it is almost unnecessary to reduce not(not(true)) kind of expression, but simplified expressions are gold.
+	//Eventhough it is almost unnecessary to reduce not(not(true)) kind of expression(sql servers can easily optimize them,
+	//simplified expressions is gold for debugging.
 	public class LogicalExpressionReducer:ExpressionVisitor
 	{
+		public static Expression Reduce(Expression expr)
+		{
+			return new LogicalExpressionReducer().Visit(expr);
+		}
 		protected override Expression VisitBinary(BinaryExpression expr)
 		{
 			bool modified;

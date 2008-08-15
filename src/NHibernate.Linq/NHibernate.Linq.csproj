@@ -46,6 +46,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Util\Guard.cs" />
     <Compile Include="Visitors\LogicalExpressionReducer.cs" />
     <Compile Include="ExpressionVisitor.cs" />
     <Compile Include="NHibernateExtensions.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="Query.cs" />
     <Compile Include="QueryProvider.cs" />
     <Compile Include="Util\TypeSystem.cs" />
+    <Compile Include="Visitors\LocalVariableExpressionReducer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

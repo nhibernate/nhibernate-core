@@ -1,17 +1,19 @@
 ﻿using System;
-using System.Linq.Expressions;
+using NHibernate.Criterion;
 using NHibernate.Linq.Util;
+using Expression=System.Linq.Expressions.Expression;
+using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq
 {
 	public class NHibernateQueryProvider : QueryProvider
 	{
-		private readonly ISession _session;
+		private readonly ISession session;
 
 		public NHibernateQueryProvider(ISession session)
 		{
-			if (session == null) throw new ArgumentNullException("session");
-			_session = session;
+			Guard.AgainstNull(session,"session");
+			this.session = session;
 		}
 
 		public override object Execute(Expression expression)
@@ -20,9 +22,9 @@ namespace NHibernate.Linq
 
 			/* iteratively process expression tree here converting to NH tree */
 
-			//expression = Evaluator.PartialEval(expression);
-			//expression = new BinaryBooleanReducer().Visit(expression);
-			//expression = AssociationVisitor.RewriteWithAssociations(_session.SessionFactory, expression);
+			//expression = LocalVariableExpressionReducer.Reduce(expression);
+			//expression =  LogicalExpressionReducer.Reduce(expression);
+			//expression = AssociationVisitor.RewriteWithAssociations(session.SessionFactory, expression);
 			//expression = CollectionAliasVisitor.AssignCollectionAccessAliases(expression);
 			//expression = new PropertyToMethodVisitor().Visit(expression);
 			//expression = new BinaryExpressionOrderer().Visit(expression);
@@ -30,7 +32,7 @@ namespace NHibernate.Linq
 			//once tree is converted to NH tree, pass it to NHibernateQueryTranslator
 			//which will convert the tree to an NHibernate.SqlCommand.SqlString
 
-			//NHibernateQueryTranslator translator = new NHibernateQueryTranslator(_session);
+			//NHibernateQueryTranslator translator = new NHibernateQueryTranslator(session);
 			//return translator.Translate(expression,this.queryOptions);
 		}
 	}
