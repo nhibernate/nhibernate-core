@@ -117,11 +117,14 @@ namespace NHibernate.Hql.Classic
 
 				hasUnsafeCollection = hasUnsafeCollection || IsUnsafe(collectionPersister);
 
-				if (count > 1 && hasUnsafeCollection)
-				{
-					// The comment only mentions a bag since I don't want to confuse users.
-					throw new QueryException("Cannot fetch multiple collections in a single query if one of them is a bag");
-				}
+				// NH : This constraint is present in BasicLoader.PostInstantiate
+				// The constraint here break some tests ported from H3.2 
+				// where is possible the use of "left join fetch"
+				//if (count > 1 && hasUnsafeCollection)
+				//{
+				//  // The comment only mentions a bag since I don't want to confuse users.
+				//  throw new QueryException("Cannot fetch multiple collections in a single query if one of them is a bag");
+				//}
 
 				names.Add(name);
 				persisters.Add(collectionPersister);

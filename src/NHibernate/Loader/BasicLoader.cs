@@ -57,11 +57,13 @@ namespace NHibernate.Loader
 			{
 				collectionDescriptors = null;
 			}
-			// NH Different behavior
-			//if (bagCount > 1)
-			//{
-			//  throw new HibernateException("cannot simultaneously fetch multiple bags");
-			//}
+			// H3.2 : 14.3. Associations and joins
+			// Join fetching multiple collection roles also sometimes gives unexpected results for bag mappings, 
+			// so be careful about how you formulate your queries in this case
+			if (bagCount > 1)
+			{
+				throw new QueryException("Cannot simultaneously fetch multiple bags.");
+			}
 		}
 
 		private static bool IsBag(ICollectionPersister collectionPersister)

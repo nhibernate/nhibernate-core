@@ -6,10 +6,10 @@
 			<generator class="native" />
 		</id>
 
-		<bag name="Activities" lazy="true" table="co_activity_set_membership" cascade="save-update" outer-join="true" inverse="false">
+		<set name="Activities" lazy="true" table="co_activity_set_membership" cascade="save-update" outer-join="true" inverse="false">
 			<key column="ActivitySetId" />
 			<many-to-many column="ActivityId" class="Activity" />
-		</bag>
+		</set>
 	</class>
 
 	<class name="Activity" table="co_activity" discriminator-value="0">
@@ -21,10 +21,10 @@
 		<discriminator column="ActivityType" type="String" />
 
 		<subclass name="EvaluationActivity" discriminator-value="3">
-			<bag name="Questions" lazy="true" table="" cascade="all-delete-orphan" outer-join="true" inverse="false">
+			<set name="Questions" lazy="true" table="" cascade="all-delete-orphan" outer-join="true" inverse="false">
 				<key column="EvaluationActivityId" />
 				<one-to-many class="Question" />
-			</bag>
+			</set>
 		</subclass>
 	</class>
 

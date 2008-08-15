@@ -38,7 +38,10 @@ namespace NHibernate.Test.NHSpecificTest.NH826
 
 			session.Flush();
 
-			session.Delete(loadedActivitySet.Activities[0]);
+			foreach (object o in loadedActivitySet.Activities)
+			{
+				session.Delete(o);				
+			}
 			session.Delete(loadedActivitySet);
 
 			transaction.Commit();

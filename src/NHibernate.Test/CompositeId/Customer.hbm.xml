@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!-- 
+
+  This mapping demonstrates how to map a collection
+  <key> to one of the primary key columns of an
+  associated child class with a composite key. This
+  is very useful for legacy data!
+     
+-->
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.CompositeId"
+				   assembly="NHibernate.Test"
+				   default-access="field.camelcase">
+
+    <class name="Customer">
+    
+    	<id name="CustomerId"
+    		length="10">
+    		<generator class="assigned"/>
+    	</id>
+
+    	<property name="Name" not-null="true" length="100"/>
+    	<property name="Address" not-null="true" length="200"/>
+
+    	<list name="Orders" inverse="true" cascade="save-update">
+    		<key column="customerId"/>
+    		<index column="orderNumber"/>
+    		<one-to-many class="Order"/>
+    	</list>
+	</class>
+
+</hibernate-mapping>

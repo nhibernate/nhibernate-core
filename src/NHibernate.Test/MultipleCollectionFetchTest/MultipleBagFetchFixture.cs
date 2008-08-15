@@ -32,7 +32,7 @@ namespace NHibernate.Test.MultipleCollectionFetchTest
 			}
 			catch (QueryException e)
 			{
-				Assert.IsTrue(e.Message.IndexOf("multiple collections") >= 0);
+				Assert.IsTrue(e.Message.IndexOf("Cannot simultaneously fetch multiple bags") >= 0);
 			}
 		}
 
@@ -45,7 +45,7 @@ namespace NHibernate.Test.MultipleCollectionFetchTest
 			}
 			catch (QueryException e)
 			{
-				Assert.IsTrue(e.Message.IndexOf("multiple collections") >= 0);
+				Assert.IsTrue(e.Message.IndexOf("Cannot simultaneously fetch multiple bags") >= 0);
 			}
 		}
 	}

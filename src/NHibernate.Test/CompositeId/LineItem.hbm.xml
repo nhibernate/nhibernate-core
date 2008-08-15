@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!-- 
+
+  This mapping demonstrates 
+  
+     (1) composite keys and many-to-one associations on 
+         composite keys
+      
+     (2) use of insert="false" update="false" on an
+         association mapping, when the foreign key is
+         also part of the primary key
+     
+-->
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.CompositeId"
+				   assembly="NHibernate.Test"
+				   default-access="field.camelcase">
+
+	<class name="LineItem">
+    	
+    	<composite-id name="Id" class="LineItem+ID">
+    		<key-property name="CustomerId" length="10"/>
+    		<key-property name="OrderNumber"/>
+    		<key-property name="ProductId" length="10"/>
+    	</composite-id>
+    	
+    	<property name="Quantity"/>
+    	
+    	<many-to-one name="Order" insert="false" update="false" not-null="true">
+			<column name="customerId"/>
+			<column name="orderNumber"/>
+		</many-to-one>
+    	
+    	<many-to-one name="Product" insert="false" update="false" not-null="true" column="productId"/>
+    </class>
+ 	
+
+</hibernate-mapping>
