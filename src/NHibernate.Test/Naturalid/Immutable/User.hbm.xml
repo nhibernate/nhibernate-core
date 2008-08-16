@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+
+  This mapping illustrates use of <natural-id mutable="false"/>
+
+-->
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.Naturalid.Immutable"
+				   assembly="NHibernate.Test">
+
+	<class name="User" table="IMM_NAT_ID_USER" lazy="true">
+        <comment>Users may bid for or sell auction items.</comment>
+        <id name="MyUserId" type="int">
+            <generator class="increment"/>
+        </id>
+        <natural-id mutable="false">
+            <property name="UserName" length="10"/>
+        </natural-id>
+        <version name="Version"/>
+        <property name="Password" not-null="true" length="15" column="`password`"/>
+        <property name="Email"/>
+    </class>
+
+</hibernate-mapping>

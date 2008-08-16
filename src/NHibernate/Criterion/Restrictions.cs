@@ -727,5 +727,9 @@ namespace NHibernate.Criterion
 			return conj;
 		}
 
+		public static NaturalIdentifier NaturalId()
+		{
+			return new NaturalIdentifier();
+		}
 	}
 }

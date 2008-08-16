@@ -81,9 +81,9 @@ namespace NHibernate.Event.Default
 				CheckId(entity, persister, entry.Id, entityMode);
 
 				// grab its current state
-				values = persister.GetPropertyValues(entity, session.EntityMode);
+				values = persister.GetPropertyValues(entity, entityMode);
 
-				CheckNaturalId(persister, entry.Id, values, loadedState, session);
+				CheckNaturalId(persister, entry, values, loadedState, entityMode, session);
 			}
 			return values;
 		}
@@ -118,30 +118,29 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		private void CheckNaturalId(IEntityPersister persister, object identifier, object[] current, object[] loaded, ISessionImplementor session)
+		private void CheckNaturalId(IEntityPersister persister, EntityEntry entry, object[] current, object[] loaded, EntityMode entityMode, ISessionImplementor session)
 		{
-			// TODO NH: Natural Identifier
-			//if (persister.HasNaturalIdentifier)
-			//{
-			//  if (loaded == null)
-			//  {
-			//    loaded = session.PersistenceContext.GetNaturalIdSnapshot(identifier, persister);
-			//  }
-			//  IType[] types = persister.PropertyTypes;
-			//  int[] props = persister.NaturalIdentifierProperties;
-			//  bool[] updateable = persister.PropertyUpdateability;
-			//  for (int i = 0; i < props.Length; i++)
-			//  {
-			//    int prop = props[i];
-			//    if (!updateable[prop])
-			//    {
-			//      if (!types[prop].Equals(current[prop], loaded[prop]))
-			//      {
-			//        throw new HibernateException("immutable natural identifier of an instance of " + persister.EntityName + " was altered");
-			//      }
-			//    }
-			//  }
-			//}
+			if (persister.HasNaturalIdentifier && entry.Status != Status.ReadOnly)
+			{
+				if (loaded == null)
+				{
+					loaded = session.PersistenceContext.GetNaturalIdSnapshot(entry.Id, persister);
+				}
+				IType[] types = persister.PropertyTypes;
+				int[] props = persister.NaturalIdentifierProperties;
+				bool[] updateable = persister.PropertyUpdateability;
+				for (int i = 0; i < props.Length; i++)
+				{
+					int prop = props[i];
+					if (!updateable[prop])
+					{
+						if (!types[prop].IsEqual(current[prop], loaded[prop], entityMode))
+						{
+							throw new HibernateException("immutable natural identifier of an instance of " + persister.EntityName + " was altered");
+						}
+					}
+				}
+			}
 		}
 
 		private bool WrapCollections(IEventSource session, IEntityPersister persister, IType[] types, object[] values)

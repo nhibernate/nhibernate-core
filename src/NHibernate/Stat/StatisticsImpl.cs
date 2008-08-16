@@ -657,7 +657,10 @@ namespace NHibernate.Stat
 					qs.cacheHitCount++;
 				}
 				SecondLevelCacheStatistics slcs = GetSecondLevelCacheStatistics(regionName);
-				slcs.hitCount++;
+				if (slcs != null)
+				{
+					slcs.hitCount++;
+				}
 			}
 		}
 
@@ -673,7 +676,10 @@ namespace NHibernate.Stat
 					qs.cacheMissCount++;
 				}
 				SecondLevelCacheStatistics slcs = GetSecondLevelCacheStatistics(regionName);
-				slcs.missCount++;
+				if (slcs != null)
+				{
+					slcs.missCount++;
+				}
 			}
 		}
 
@@ -689,7 +695,10 @@ namespace NHibernate.Stat
 					qs.cachePutCount++;
 				}
 				SecondLevelCacheStatistics slcs = GetSecondLevelCacheStatistics(regionName);
-				slcs.putCount++;
+				if (slcs != null)
+				{
+					slcs.putCount++;
+				}
 			}
 		}
 

@@ -32,6 +32,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		protected void PropertiesFromXML(XmlNode node, PersistentClass model)
 		{
+			PropertiesFromXML(node, model, null, true, true, false);
+		}
+
+		protected void PropertiesFromXML(XmlNode node, PersistentClass model, UniqueKey uniqueKey, bool mutable, bool nullable, bool naturalId)
+		{
+			string entityName = model.EntityName;
+
 			Table table = model.Table;
 
 			foreach (XmlNode subnode in node.ChildNodes)
@@ -47,8 +54,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				CollectionBinder collectionBinder = new CollectionBinder(this);
 				if (collectionBinder.CanCreate(name))
 				{
-					Mapping.Collection collection = collectionBinder.Create(name, subnode, model.EntityName,
-						propertyName, model, model.MappedClass);
+					Mapping.Collection collection = collectionBinder.Create(name, subnode, entityName,
+					                                                        propertyName, model, model.MappedClass);
 
 					mappings.AddCollection(collection);
 					value = collection;
@@ -78,7 +85,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					// NH: Modified from H2.1 to allow specifying the type explicitly using class attribute
 					System.Type reflectedClass = GetPropertyType(subnode, model.MappedClass, propertyName);
 					value = new Component(model);
-					BindComponent(subnode, (Component) value, reflectedClass, model.EntityName, propertyName, true);
+					BindComponent(subnode, (Component)value, reflectedClass, entityName, propertyName, true);
 				}
 				else if ("join".Equals(name))
 				{
@@ -98,9 +105,34 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				else if ("filter".Equals(name))
 					ParseFilter(subnode, model);
+				else if ("natural-id".Equals(name))
+				{
+					UniqueKey uk = new UniqueKey();
+					uk.Name = "_UniqueKey";
+					uk.Table = table;
+					//by default, natural-ids are "immutable" (constant)
+
+					bool mutableId = false;
+					if (subnode.Attributes["mutable"] != null)
+					{
+						mutableId = "true".Equals(subnode.Attributes["mutable"]);						
+					}
+
+					PropertiesFromXML(subnode, model, uk, mutableId, false, true);
+					table.AddUniqueKey(uk);
+				}
 
 				if (value != null)
-					model.AddProperty(CreateProperty(value, propertyName, model.MappedClass, subnode));
+				{
+					Property property = CreateProperty(value, propertyName, model.MappedClass, subnode);
+					if (!mutable)
+						property.IsUpdateable = false;
+					if (naturalId)
+						property.IsNaturalIdentifier = true;
+					model.AddProperty(property);
+					if (uniqueKey != null)
+						uniqueKey.AddColumns(new SafetyEnumerable<Column>(property.ColumnIterator));
+				}
 			}
 		}
 

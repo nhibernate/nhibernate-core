@@ -300,6 +300,10 @@
     <Compile Include="MultipleCollectionFetchTest\MultipleSetFetchFixture.cs" />
     <Compile Include="MultipleCollectionFetchTest\Person.cs" />
     <Compile Include="MultiThreadRunner.cs" />
+    <Compile Include="Naturalid\Immutable\ImmutableNaturalIdFixture.cs" />
+    <Compile Include="Naturalid\Immutable\User.cs" />
+    <Compile Include="Naturalid\Mutable\MutableNaturalIdFixture.cs" />
+    <Compile Include="Naturalid\Mutable\User.cs" />
     <Compile Include="NHAssert.cs" />
     <Compile Include="NHibernateUtilTest.cs" />
     <Compile Include="NHSpecificTest\AliasFixture.cs" />
@@ -1406,6 +1410,8 @@
     <EmbeddedResource Include="CompositeId\Order.hbm.xml" />
     <EmbeddedResource Include="CompositeId\Product.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="Naturalid\Immutable\User.hbm.xml" />
+    <EmbeddedResource Include="Naturalid\Mutable\User.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1419\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1413\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1304\Mappings.hbm.xml" />

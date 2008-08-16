@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+
+  This mapping illustrates use of <natural-id mutable="true"/>
+  
+-->
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.Naturalid.Mutable"
+				   assembly="NHibernate.Test"
+				   default-access="field">
+
+	<class name="User" table="SystemUserInfo">
+		<id name="id">
+			<generator class="increment"/>
+		</id>
+		<natural-id mutable="true">
+			<property name="name"/>
+			<property name="org"/>
+		</natural-id>
+		<property name="password"/>
+	</class>
+	
+</hibernate-mapping>
