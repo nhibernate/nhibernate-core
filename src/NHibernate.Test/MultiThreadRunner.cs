@@ -11,6 +11,7 @@ namespace NHibernate.Test
 		private readonly Random rnd = new Random();
 		private bool running;
 		private int timeout = 1000;
+		private int timeoutBetweenThreadStart = 30;
 
 		public MultiThreadRunner(int numThreads, ExecuteAction[] actions)
 		{
@@ -37,6 +38,12 @@ namespace NHibernate.Test
 			set { timeout = value; }
 		}
 
+		public int TimeoutBetweenThreadStart
+		{
+			get { return timeoutBetweenThreadStart; }
+			set { timeoutBetweenThreadStart = value; }
+		}
+
 		public void Run(T subjectInstance)
 		{
 			running = true;
@@ -47,7 +54,7 @@ namespace NHibernate.Test
 				t[i].Name = i.ToString();
 				t[i].Start(subjectInstance);
 				if (i > 2)
-					Thread.Sleep(30);
+					Thread.Sleep(timeoutBetweenThreadStart);
 			}
 
 			Thread.Sleep(timeout);

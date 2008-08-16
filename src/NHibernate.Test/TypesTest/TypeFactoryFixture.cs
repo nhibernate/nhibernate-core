@@ -1,4 +1,7 @@
 using System;
+using System.Threading;
+using log4net;
+using log4net.Repository.Hierarchy;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -10,6 +13,13 @@ namespace NHibernate.Test.TypesTest
 	[TestFixture]
 	public class TypeFactoryFixture
 	{
+		public TypeFactoryFixture()
+		{
+			log4net.Config.XmlConfigurator.Configure();
+		}
+
+		private static readonly ILog log = LogManager.GetLogger(typeof(TypeFactoryFixture));
+
 		/// <summary>
 		/// Test that calling GetGuidType multiple times returns the
 		/// exact same GuidType object by reference.
@@ -62,5 +72,44 @@ namespace NHibernate.Test.TypesTest
 				set { _genericLong = value; }
 			}
 		}
+
+		private readonly Random rnd = new Random();
+		private int totalCall;
+
+		[Test, Explicit]
+		public void MultiThreadAccess()
+		{
+			((Logger) log.Logger).Level = log4net.Core.Level.Debug;
+			MultiThreadRunner<object>.ExecuteAction[] actions = new MultiThreadRunner<object>.ExecuteAction[]
+        	{
+        		delegate(object o)
+        			{
+        				TypeFactory.GetStringType(rnd.Next(1, 50));
+        				totalCall++;
+        			},
+        		delegate(object o)
+        			{
+        				TypeFactory.GetBinaryType(rnd.Next(1, 50));
+        				totalCall++;
+        			},
+        		delegate(object o)
+        			{
+        				TypeFactory.GetSerializableType(rnd.Next(1, 50));
+        				totalCall++;
+        			},
+        		delegate(object o)
+        			{
+        				TypeFactory.GetTypeType(rnd.Next(1, 20));
+        				totalCall++;
+        			},
+        	};
+			MultiThreadRunner<object> mtr = new MultiThreadRunner<object>(100, actions);
+			mtr.EndTimeout = 2000;
+			mtr.TimeoutBetweenThreadStart = 2;
+			mtr.Run(null);
+			log.DebugFormat("{0} calls", totalCall);
+			TypeFactory.GetTypeType(rnd.Next());
+		}
+
 	}
 }
