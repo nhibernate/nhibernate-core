@@ -46,6 +46,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Expressions\LimitFragment.cs" />
+    <Compile Include="Expressions\MemberAccessExpression.cs" />
+    <Compile Include="Expressions\OrderByDirection.cs" />
+    <Compile Include="Expressions\OrderByFragment.cs" />
+    <Compile Include="Expressions\ProjectionExpression.cs" />
+    <Compile Include="Expressions\SelectExpression.cs" />
+    <Compile Include="Expressions\SelectFragment.cs" />
+    <Compile Include="Expressions\SqlExpression.cs" />
+    <Compile Include="Expressions\SqlExpressionType.cs" />
+    <Compile Include="Expressions\EntityExpression.cs" />
     <Compile Include="Util\Guard.cs" />
     <Compile Include="Visitors\LogicalExpressionReducer.cs" />
     <Compile Include="ExpressionVisitor.cs" />
