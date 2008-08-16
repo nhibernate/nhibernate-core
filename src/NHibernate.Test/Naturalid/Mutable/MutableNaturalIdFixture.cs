@@ -12,7 +12,6 @@ namespace NHibernate.Test.Naturalid.Mutable
 	[TestFixture]
 	public class MutableNaturalIdFixture : TestCase
 	{
-		// TODO : Complete the test as H3.2.6
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
@@ -56,12 +55,7 @@ namespace NHibernate.Test.Naturalid.Mutable
 			}
 			catch (Exception)
 			{
-				try
-				{
 					s.Transaction.Rollback();
-				}
-				catch (Exception) {}
-				throw;
 			}
 			finally
 			{
@@ -84,10 +78,8 @@ namespace NHibernate.Test.Naturalid.Mutable
 			ITransaction t = s.BeginTransaction();
 
 			object nullUser =
-				s.CreateCriteria(typeof (User))
-				.Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb"))
-				.SetCacheable(true)
-				.UniqueResult();
+				s.CreateCriteria(typeof (User)).Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb")).SetCacheable(
+					true).UniqueResult();
 
 			Assert.That(nullUser, Is.Null);
 
@@ -112,9 +104,10 @@ namespace NHibernate.Test.Naturalid.Mutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			u =(User) s.CreateCriteria(typeof (User))
-				.Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb"))
-				.SetCacheable(true).UniqueResult();
+			u =
+				(User)
+				s.CreateCriteria(typeof (User)).Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb")).SetCacheable(
+					true).UniqueResult();
 
 			Assert.That(u, Is.Not.Null);
 
@@ -130,9 +123,10 @@ namespace NHibernate.Test.Naturalid.Mutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			u =(User) s.CreateCriteria(typeof (User))
-				.Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb"))
-				.SetCacheable(true).UniqueResult();
+			u =
+				(User)
+				s.CreateCriteria(typeof (User)).Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb")).SetCacheable(
+					true).UniqueResult();
 
 			s.Delete(u);
 
@@ -147,9 +141,9 @@ namespace NHibernate.Test.Naturalid.Mutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			nullUser = s.CreateCriteria(typeof (User))
-				.Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb"))
-				.SetCacheable(true).UniqueResult();
+			nullUser =
+				s.CreateCriteria(typeof (User)).Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb")).SetCacheable(
+					true).UniqueResult();
 
 			Assert.That(nullUser, Is.Null);
 
@@ -206,16 +200,23 @@ namespace NHibernate.Test.Naturalid.Mutable
 			t = s.BeginTransaction();
 
 			u = (User) s.CreateCriteria(typeof (User))
-				.Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb"))
+				.Add(Restrictions.NaturalId().Set("name", "xam").Set("org", "hb"))
 				.SetCacheable(true).UniqueResult();
 
 			Assert.That(u, Is.Not.Null);
+			Assert.AreEqual(1, sessions.Statistics.QueryExecutionCount);
+			Assert.AreEqual(0, sessions.Statistics.QueryCacheHitCount);
+
+			u = (User)s.CreateCriteria(typeof(User))
+				.Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb"))
+				.SetCacheable(true).UniqueResult();
+			Assert.That(u, Is.Not.Null);
+			Assert.AreEqual(1, sessions.Statistics.QueryExecutionCount);
+			Assert.AreEqual(1, sessions.Statistics.QueryCacheHitCount);
 
 			t.Commit();
 			s.Close();
 
-			Assert.AreEqual(0, sessions.Statistics.QueryExecutionCount);
-			Assert.AreEqual(1, sessions.Statistics.QueryCacheHitCount);
 
 			s = OpenSession();
 			t = s.BeginTransaction();

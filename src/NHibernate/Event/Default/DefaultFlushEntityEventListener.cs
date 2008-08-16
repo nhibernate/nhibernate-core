@@ -122,10 +122,7 @@ namespace NHibernate.Event.Default
 		{
 			if (persister.HasNaturalIdentifier && entry.Status != Status.ReadOnly)
 			{
-				if (loaded == null)
-				{
-					loaded = session.PersistenceContext.GetNaturalIdSnapshot(entry.Id, persister);
-				}
+				object[] snapshot = null;
 				IType[] types = persister.PropertyTypes;
 				int[] props = persister.NaturalIdentifierProperties;
 				bool[] updateable = persister.PropertyUpdateability;
@@ -134,9 +131,23 @@ namespace NHibernate.Event.Default
 					int prop = props[i];
 					if (!updateable[prop])
 					{
-						if (!types[prop].IsEqual(current[prop], loaded[prop], entityMode))
+						object loadedVal;
+						if (loaded == null)
 						{
-							throw new HibernateException("immutable natural identifier of an instance of " + persister.EntityName + " was altered");
+							if (snapshot == null)
+							{
+								snapshot = session.PersistenceContext.GetNaturalIdSnapshot(entry.Id, persister);
+							}
+							loadedVal = snapshot[i];
+						}
+						else
+						{
+							loadedVal = loaded[prop];
+						}
+						if (!types[prop].IsEqual(current[prop], loadedVal, entityMode))
+						{
+							throw new HibernateException("immutable natural identifier of an instance of " + persister.EntityName
+							                             + " was altered");
 						}
 					}
 				}

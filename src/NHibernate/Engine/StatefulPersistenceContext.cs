@@ -356,48 +356,46 @@ namespace NHibernate.Engine
 		/// </summary>
 		public object[] GetNaturalIdSnapshot(object id, IEntityPersister persister)
 		{
-			// todo Natural Identifier
-			//if (!persister.HasNaturalIdentifier)
-			//{
-			//  return null;
-			//}
+			if (!persister.HasNaturalIdentifier)
+			{
+				return null;
+			}
 
-			//// if the natural-id is marked as non-mutable, it is not retrieved during a
-			//// normal database-snapshot operation...
-			//int[] props = persister.NaturalIdentifierProperties;
-			//bool[] updateable = persister.PropertyUpdateability;
-			//bool allNatualIdPropsAreUpdateable = true;
-			//for (int i = 0; i < props.Length; i++)
-			//{
-			//  if (!updateable[props[i]])
-			//  {
-			//    allNatualIdPropsAreUpdateable = false;
-			//    break;
-			//  }
-			//}
+			// if the natural-id is marked as non-mutable, it is not retrieved during a
+			// normal database-snapshot operation...
+			int[] props = persister.NaturalIdentifierProperties;
+			bool[] updateable = persister.PropertyUpdateability;
+			bool allNatualIdPropsAreUpdateable = true;
+			for (int i = 0; i < props.Length; i++)
+			{
+				if (!updateable[props[i]])
+				{
+					allNatualIdPropsAreUpdateable = false;
+					break;
+				}
+			}
 
-			//if (allNatualIdPropsAreUpdateable)
-			//{
-			//  // do this when all the properties are updateable since there is
-			//  // a certain likelihood that the information will already be
-			//  // snapshot-cached.
-			//  object[] entitySnapshot = GetDatabaseSnapshot(id, persister);
-			//  if (entitySnapshot == NoRow)
-			//  {
-			//    return null;
-			//  }
-			//  object[] naturalIdSnapshot = new object[props.Length];
-			//  for (int i = 0; i < props.Length; i++)
-			//  {
-			//    naturalIdSnapshot[i] = entitySnapshot[props[i]];
-			//  }
-			//  return naturalIdSnapshot;
-			//}
-			//else
-			//{
-			//  return persister.GetNaturalIdentifierSnapshot(id, session);
-			//}
-			return null;
+			if (allNatualIdPropsAreUpdateable)
+			{
+				// do this when all the properties are updateable since there is
+				// a certain likelihood that the information will already be
+				// snapshot-cached.
+				object[] entitySnapshot = GetDatabaseSnapshot(id, persister);
+				if (entitySnapshot == NoRow)
+				{
+					return null;
+				}
+				object[] naturalIdSnapshot = new object[props.Length];
+				for (int i = 0; i < props.Length; i++)
+				{
+					naturalIdSnapshot[i] = entitySnapshot[props[i]];
+				}
+				return naturalIdSnapshot;
+			}
+			else
+			{
+				return persister.GetNaturalIdentifierSnapshot(id, session);
+			}
 		}
 
 		/// <summary> Add a canonical mapping from entity key to entity instance</summary>
