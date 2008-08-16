@@ -6,6 +6,7 @@ using NHibernate.Linq.Test.Model;
 namespace NHibernate.Linq.Test
 {
 	[TestFixture]
+	[Ignore]
 	public class SelectTest : BaseTest
 	{
 		[Test]

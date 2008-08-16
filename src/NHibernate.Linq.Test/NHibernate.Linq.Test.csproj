@@ -73,6 +73,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseTest.cs" />
+    <Compile Include="ExpressionEqualityChecker.cs" />
+    <Compile Include="ExpressionEqualityCheckerTests.cs" />
     <Compile Include="GlobalSetup.cs" />
     <Compile Include="Model\Animal.cs" />
     <Compile Include="SelectTest.cs" />
