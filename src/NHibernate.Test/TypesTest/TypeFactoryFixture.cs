@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using log4net;
 using log4net.Repository.Hierarchy;
 using NHibernate.Type;
@@ -79,6 +78,8 @@ namespace NHibernate.Test.TypesTest
 		[Test, Explicit]
 		public void MultiThreadAccess()
 		{
+			// Test added for NH-1251
+			// If one thread break the test you can see the result in the console.
 			((Logger) log.Logger).Level = log4net.Core.Level.Debug;
 			MultiThreadRunner<object>.ExecuteAction[] actions = new MultiThreadRunner<object>.ExecuteAction[]
         	{
@@ -108,7 +109,6 @@ namespace NHibernate.Test.TypesTest
 			mtr.TimeoutBetweenThreadStart = 2;
 			mtr.Run(null);
 			log.DebugFormat("{0} calls", totalCall);
-			TypeFactory.GetTypeType(rnd.Next());
 		}
 
 	}
