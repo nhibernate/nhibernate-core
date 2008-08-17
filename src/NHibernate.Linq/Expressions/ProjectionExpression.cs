@@ -11,12 +11,14 @@ namespace NHibernate.Linq.Expressions
 	/// </summary>
 	public class ProjectionExpression:SqlExpression
 	{
-		public ProjectionExpression(System.Type type,LambdaExpression lambda):base(SqlExpressionType.Projection,type)
+		public ProjectionExpression(SelectExpression source, Expression lambda)
+			: base(SqlExpressionType.Projection, lambda.Type)
 		{
 			this.Projector = lambda;
 		}
 
-		public LambdaExpression Projector { get; protected set; }
+		public Expression Projector { get; protected set; }
+		public SelectExpression Source { get; set; }
 		public override string ToString()
 		{
 			return string.Format("({0})", this.Projector.ToString());

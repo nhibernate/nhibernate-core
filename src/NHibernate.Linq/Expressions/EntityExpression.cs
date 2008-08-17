@@ -9,7 +9,7 @@ namespace NHibernate.Linq.Expressions
 {
 	/// <summary>
 	/// An entity is where we want to execute our query on, in RDBMS case it is a Table.
-	/// May also be used as from clause of a select expression
+	/// May also be used in from clause of a select expression
 	/// </summary>
 	public class EntityExpression:SqlExpression
 	{

@@ -9,7 +9,6 @@ namespace NHibernate.Linq.Expressions
 	{
 		Entity=100,
 		Select,
-		MemberAccess,
 		Projection,
 	}
 }

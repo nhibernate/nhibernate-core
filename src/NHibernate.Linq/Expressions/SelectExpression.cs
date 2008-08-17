@@ -11,17 +11,16 @@ namespace NHibernate.Linq.Expressions
 	/// </summary>
 	public class SelectExpression : SqlExpression
 	{
-		public SelectExpression(System.Type type, SqlExpression from, SqlExpression where, IList<OrderByFragment> orderBys)
+		public SelectExpression(System.Type type, string alias, Expression from, Expression where)
 			: base(SqlExpressionType.Select, type)
 		{
 			this.Where = where;
-			this.OrderBys = orderBys;
 			this.From = from;
+			this.Alias = alias;
 		}
 
-		public SqlExpression Where { get; protected set; }
-		public SqlExpression From { get; protected set; }
-		public IList<OrderByFragment> OrderBys { get; protected set; }
-		public LimitFragment Limit { get; set; }
+		public string Alias { get; set; }
+		public Expression Where { get; protected set; }
+		public Expression From { get; protected set; }
 	}
 }

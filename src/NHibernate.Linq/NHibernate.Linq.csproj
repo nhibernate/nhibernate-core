@@ -46,10 +46,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Expressions\LimitFragment.cs" />
-    <Compile Include="Expressions\MemberAccessExpression.cs" />
-    <Compile Include="Expressions\OrderByDirection.cs" />
-    <Compile Include="Expressions\OrderByFragment.cs" />
     <Compile Include="Expressions\ProjectionExpression.cs" />
     <Compile Include="Expressions\SelectExpression.cs" />
     <Compile Include="Expressions\SelectFragment.cs" />
@@ -57,6 +53,7 @@
     <Compile Include="Expressions\SqlExpressionType.cs" />
     <Compile Include="Expressions\EntityExpression.cs" />
     <Compile Include="Util\Guard.cs" />
+    <Compile Include="Util\LinqUtil.cs" />
     <Compile Include="Visitors\LogicalExpressionReducer.cs" />
     <Compile Include="ExpressionVisitor.cs" />
     <Compile Include="NHibernateExtensions.cs" />
@@ -65,6 +62,9 @@
     <Compile Include="QueryProvider.cs" />
     <Compile Include="Util\TypeSystem.cs" />
     <Compile Include="Visitors\LocalVariableExpressionReducer.cs" />
+    <Compile Include="Visitors\NhibernateExpressionTransformer.cs" />
+    <Compile Include="Visitors\NHibernateExpressionVisitor.cs" />
+    <Compile Include="Visitors\QueryTransformer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
