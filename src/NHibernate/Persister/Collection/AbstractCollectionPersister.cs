@@ -1443,7 +1443,7 @@ namespace NHibernate.Persister.Collection
 				IDataReader rs = null;
 				try
 				{
-					KeyType.NullSafeSet(st, key, 1, session);
+					KeyType.NullSafeSet(st, key, 0, session);
 					rs = session.Batcher.ExecuteReader(st);
 					return rs.Read() ? rs.GetInt32(0) - baseIndex : 0;
 				}
@@ -1481,8 +1481,8 @@ namespace NHibernate.Persister.Collection
 				IDataReader rs = null;
 				try
 				{
-					KeyType.NullSafeSet(st, key, 1, session);
-					indexOrElementType.NullSafeSet(st, indexOrElement, keyColumnNames.Length + 1, session);
+					KeyType.NullSafeSet(st, key, 0, session);
+					indexOrElementType.NullSafeSet(st, indexOrElement, keyColumnNames.Length, session);
 					rs = session.Batcher.ExecuteReader(st);
 					try
 					{
@@ -1520,8 +1520,8 @@ namespace NHibernate.Persister.Collection
 				IDataReader rs = null;
 				try
 				{
-					KeyType.NullSafeSet(st, key, 1, session);
-					IndexType.NullSafeSet(st, IncrementIndexByBase(index), keyColumnNames.Length + 1, session);
+					KeyType.NullSafeSet(st, key, 0, session);
+					IndexType.NullSafeSet(st, IncrementIndexByBase(index), keyColumnNames.Length, session);
 					rs = session.Batcher.ExecuteReader(st);
 					try
 					{

@@ -167,7 +167,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			// LAZINESS
 			InitLaziness(node, model, "true", mappings.DefaultLazy);
-			// TODO: H3.1 - lazy="extra"
+			XmlAttribute lazyNode = node.Attributes["lazy"];
+			if (lazyNode != null && "extra".Equals(lazyNode.Value))
+			{
+				model.IsLazy = true;
+				model.ExtraLazy = true;
+			}
 
 			XmlNode oneToManyNode = node.SelectSingleNode(HbmConstants.nsOneToMany, namespaceManager);
 			if (oneToManyNode != null)
@@ -507,7 +512,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				string name = subnode.LocalName; //.Name;
 
-				if ("index".Equals(name))
+				if ("index".Equals(name) || "map-key".Equals(name))
 				{
 					SimpleValue value = new SimpleValue(model.CollectionTable);
 					BindSimpleValue(subnode, value, model.IsOneToMany, IndexedCollection.DefaultIndexColumnName);
@@ -515,13 +520,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					if (model.Index.Type == null)
 						throw new MappingException("map index element must specify a type: " + model.Role);
 				}
-				else if ("index-many-to-many".Equals(name))
+				else if ("index-many-to-many".Equals(name) || "map-key-many-to-many".Equals(name))
 				{
 					ManyToOne mto = new ManyToOne(model.CollectionTable);
 					BindManyToOne(subnode, mto, IndexedCollection.DefaultIndexColumnName, model.IsOneToMany);
 					model.Index = mto;
 				}
-				else if ("composite-index".Equals(name))
+				else if ("composite-index".Equals(name) || "composite-map-key".Equals(name))
 				{
 					Component component = new Component(model);
 					BindComponent(subnode, component, null, model.Role, "index", model.IsOneToMany);

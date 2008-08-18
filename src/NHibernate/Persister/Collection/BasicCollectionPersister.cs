@@ -74,12 +74,12 @@ namespace NHibernate.Persister.Collection
 				insert.AddColumns(new string[] {IdentifierColumnName}, null, IdentifierType);
 
 			if (HasIndex)
-				insert.AddColumns(IndexColumnNames, null, IndexType);
-
-			insert.AddColumns(ElementColumnNames, elementColumnIsSettable, ElementType);
+				insert.AddColumns(IndexColumnNames, indexColumnIsSettable, IndexType);
 
 			if (Factory.Settings.IsCommentsEnabled)
 				insert.SetComment("insert collection row " + Role);
+
+			insert.AddColumns(ElementColumnNames, elementColumnIsSettable, ElementType);
 
 			return insert.ToSqlCommandInfo();
 		}

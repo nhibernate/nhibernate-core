@@ -385,8 +385,7 @@ namespace NHibernate.Collection
 			if (!exists.HasValue)
 			{
 				Initialize(true);
-				bool contained = set.Remove(o);
-				if (contained)
+				if (set.Remove(o))
 				{
 					Dirty();
 					return true;

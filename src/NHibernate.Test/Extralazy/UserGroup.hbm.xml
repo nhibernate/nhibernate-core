@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.Extralazy">
+
+	<class name="Group" table="groups">
+		<id name="Name"/>
+		<map name="Users" cascade="persist" table="group_user" lazy="extra">
+			<key column="groupName"/>
+			<map-key formula="lower(personName)" type="string"/>
+			<many-to-many class="User" column="personName"/>
+		</map>
+	</class>
+	
+	<class name="User" table="users">
+		<id name="Name"/>
+		<property name="Password"/>
+		<map name="Session" lazy="extra" cascade="persist,save-update,delete,delete-orphan">
+			<key column="userName"/> <!--Need to investigate  not-null="true"-->
+			<map-key column="name" type="string"/>
+			<one-to-many class="SessionAttribute"/>
+		</map>
+		<set name="Documents" inverse="true" lazy="extra" cascade="all,delete-orphan">
+			<key column="owner"/>
+			<one-to-many class="Document"/>
+		</set>
+	</class>
+	
+	<class name="Document" table="documents">
+		<id name="Title"/>
+		<property name="Content" type="string" length="10000"/>
+		<many-to-one name="Owner" not-null="true"/>
+	</class>
+	
+	<class name="SessionAttribute" table="session_attributes">
+		<id name="id" access="field">
+			<generator class="native"/>
+		</id>
+		<property name="Name" update="false"/>	<!--Need to investigate  not-null="true"-->
+		<property name="StringData"/>
+		<property name="ObjectData" type="Serializable"/>
+	</class>
+	<!-- 
+	NH the map of SessionAttribute in H3.2.6 have insert="false" for property "Name" but it can't work with not-null="true"
+	We remove the inconsistence.
+	-->
+	
+	<sql-query name="UserSessionData">
+		<return alias="u" class="User"/>
+		<return-join alias="s" property="u.Session"/>
+		select 
+			lower(u.name) as {u.Name}, lower(u.password) as {u.Password}, 
+			lower(s.userName) as {s.key}, lower(s.name) as {s.index}, s.id as {s.element}, 
+			{s.element.*}
+		from users u 
+		join session_attributes s on lower(s.userName) = lower(u.name)
+		where u.name like :uname
+	</sql-query>	
+	
+
+</hibernate-mapping>
