@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.Cascade">
+
+	<class name="Job" table="T_JOB">
+		<id name="Id" column="JOB_ID">
+			<generator class="native"/>
+		</id>
+
+		<many-to-one name="Batch" class="JobBatch" cascade="none" column="BATCH_ID"/>
+
+		<property name="Status" type="int" column="JOB_STATUS" not-null="true"/>
+		<property name="ProcessingInstructions" type="string" column="PI" not-null="true"/>
+
+	</class>
+
+</hibernate-mapping>

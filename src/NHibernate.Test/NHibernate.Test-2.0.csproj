@@ -79,6 +79,9 @@
     <Compile Include="CacheTest\CacheFixture.cs" />
     <Compile Include="CacheTest\QueryCacheFixture.cs" />
     <Compile Include="CacheTest\TimestamperFixture.cs" />
+    <Compile Include="Cascade\Job.cs" />
+    <Compile Include="Cascade\JobBatch.cs" />
+    <Compile Include="Cascade\RefreshFixture.cs" />
     <Compile Include="CfgTest\ConfigurationFixture.cs" />
     <Compile Include="CfgTest\ConfigurationSchemaFixture.cs" />
     <Compile Include="CfgTest\DefaultNsAssmFixture.cs" />
@@ -1414,6 +1417,8 @@
     <EmbeddedResource Include="CompositeId\LineItem.hbm.xml" />
     <EmbeddedResource Include="CompositeId\Order.hbm.xml" />
     <EmbeddedResource Include="CompositeId\Product.hbm.xml" />
+    <EmbeddedResource Include="Cascade\Job.hbm.xml" />
+    <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
     <EmbeddedResource Include="Extralazy\UserGroup.hbm.xml" />
     <EmbeddedResource Include="Naturalid\Immutable\User.hbm.xml" />
