@@ -143,7 +143,7 @@ namespace NHibernate.Test.Extralazy
 			s.Close();
 		}
 
-		[Test, Ignore("Not supported yet")]
+		[Test]
 		public void IndexFormulaMap()
 		{
 			ISession s = OpenSession();
@@ -176,8 +176,8 @@ namespace NHibernate.Test.Extralazy
 			Assert.AreEqual(1, g.Users.Count);
 			smap = ((User) g.Users["gavin"]).Session;
 			Assert.AreEqual(1, smap.Count);
+			gavin = (User) g.Users["gavin"]; // NH: put in JAVA return the previous value
 			g.Users["gavin"]= turin;
-			gavin = (User) g.Users["gavin"];
 			s.Delete(gavin);
 			Assert.AreEqual(0, s.CreateQuery("select count(*) from SessionAttribute").UniqueResult<long>());
 			t.Commit();
