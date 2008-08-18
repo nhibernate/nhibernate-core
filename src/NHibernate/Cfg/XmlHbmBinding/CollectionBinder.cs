@@ -225,7 +225,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			//ORPHAN DELETE (used for programmer error detection)
 			XmlAttribute cascadeAtt = node.Attributes["cascade"];
-			if (cascadeAtt != null && cascadeAtt.Value.Equals("all-delete-orphan"))
+			if (cascadeAtt != null && cascadeAtt.Value.IndexOf("delete-orphan") >= 0)
 				model.HasOrphanDelete = true;
 
 			bool? isGeneric = null;

@@ -262,7 +262,7 @@ namespace NHibernate.Engine
 			}
 			else
 			{
-				orphans = CollectionHelper.EmptyCollection; // TODO NH: H3.2 Different pc.GetQueuedOrphans(entityName);
+				orphans = pc.GetQueuedOrphans(entityName);
 			}
 
 			foreach (object orphan in orphans)

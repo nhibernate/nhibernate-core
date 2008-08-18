@@ -22,7 +22,7 @@ namespace NHibernate.Test.Extralazy
 			get { return null; }
 		}
 
-		[Test, Ignore("Not supported yet") ]
+		[Test]
 		public void OrphanDelete()
 		{
 			ISession s = OpenSession();
