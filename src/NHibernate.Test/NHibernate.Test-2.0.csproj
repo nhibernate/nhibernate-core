@@ -127,6 +127,9 @@
     <Compile Include="Criteria\Student.cs" />
     <Compile Include="Criteria\StudentDTO.cs" />
     <Compile Include="DebugConnectionProvider.cs" />
+    <Compile Include="Deletetransient\Address.cs" />
+    <Compile Include="Deletetransient\DeleteTransientEntityTest.cs" />
+    <Compile Include="Deletetransient\Person.cs" />
     <Compile Include="DialectTest\DB2DialectFixture.cs" />
     <Compile Include="DialectTest\DialectFixture.cs" />
     <Compile Include="DialectTest\FirebirdDialectFixture.cs" />
@@ -1419,6 +1422,7 @@
     <EmbeddedResource Include="CompositeId\Product.hbm.xml" />
     <EmbeddedResource Include="Cascade\Job.hbm.xml" />
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
+    <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
     <EmbeddedResource Include="Extralazy\UserGroup.hbm.xml" />
     <EmbeddedResource Include="Naturalid\Immutable\User.hbm.xml" />
