@@ -3,10 +3,8 @@ namespace NHibernate.Event
 	/// <summary>
 	/// Values for listener type property.
 	/// </summary>
-	/// <remarks>Unused</remarks>
 	public enum ListenerType
 	{
-		// TODO:Implement listeners and events (remove de remarks from this enum)
 		/// <summary>Not allowed in Xml. It represente de default value when an explicit type is assigned.</summary>
 		NotValidType,
 		/// <summary>Xml value: auto-flush</summary>
@@ -51,6 +49,12 @@ namespace NHibernate.Event
 		PreDelete,
 		/// <summary>Xml value: pre-insert</summary>
 		PreInsert,
+		/// <summary>Xml value: pre-collection-recreate </summary>
+		PreCollectionRecreate,
+		/// <summary>Xml value: pre-collection-remove </summary>
+		PreCollectionRemove,
+		/// <summary>Xml value: pre-collection-update </summary>
+		PreCollectionUpdate,
 		/// <summary>Xml value: post-load</summary>
 		PostLoad,
 		/// <summary>Xml value: post-insert</summary>
@@ -64,6 +68,12 @@ namespace NHibernate.Event
 		/// <summary>Xml value: post-commit-insert</summary>
 		PostCommitInsert,
 		/// <summary>Xml value: post-commit-delete</summary>
-		PostCommitDelete
+		PostCommitDelete,
+		/// <summary>Xml value: post-collection-recreate </summary>
+		PostCollectionRecreate,
+		/// <summary>Xml value: post-collection-remove </summary>
+		PostCollectionRemove,
+		/// <summary>Xml value: post-collection-update </summary>
+		PostCollectionUpdate,
 	}
 }

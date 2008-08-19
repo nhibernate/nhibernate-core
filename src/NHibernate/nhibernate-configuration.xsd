@@ -178,6 +178,12 @@
 			<xs:enumeration value="post-commit-update" />
 			<xs:enumeration value="post-commit-insert" />
 			<xs:enumeration value="post-commit-delete" />
+			<xs:enumeration value="pre-collection-recreate" />
+			<xs:enumeration value="pre-collection-remove" />
+			<xs:enumeration value="pre-collection-update" />
+			<xs:enumeration value="post-collection-recreate" />
+			<xs:enumeration value="post-collection-remove" />
+			<xs:enumeration value="post-collection-update" />
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:element name="bytecode-provider">

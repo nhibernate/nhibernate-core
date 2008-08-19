@@ -80,16 +80,16 @@ namespace NHibernate.Engine
 		// yet loaded ... for now, this is purely transient!
 		private Dictionary<CollectionKey, IPersistentCollection> unownedCollections;
 
-		private bool hasNonReadOnlyEntities = false;
+		private bool hasNonReadOnlyEntities;
 
 		[NonSerialized]
-		private int cascading = 0;
+		private int cascading;
 
 		[NonSerialized]
-		private bool flushing = false;
+		private bool flushing;
 
 		[NonSerialized]
-		private int loadCounter = 0;
+		private int loadCounter;
 
 		[NonSerialized]
 		private LoadContexts loadContexts;
@@ -101,6 +101,9 @@ namespace NHibernate.Engine
 		/// <param name="session">The session "owning" this context. </param>
 		public StatefulPersistenceContext(ISessionImplementor session)
 		{
+			loadCounter = 0;
+			flushing = false;
+			cascading = 0;
 			this.session = session;
 
 			entitiesByKey = new Dictionary<EntityKey, object>(InitCollectionSize);
@@ -761,6 +764,52 @@ namespace NHibernate.Engine
 			return GetEntity(new EntityKey(key, collectionPersister.OwnerEntityPersister, session.EntityMode));
 		}
 
+		/// <summary> Get the entity that owned this persistent collection when it was loaded </summary>
+		/// <param name="collection">The persistent collection </param>
+		/// <returns> 
+		/// The owner, if its entity ID is available from the collection's loaded key
+		/// and the owner entity is in the persistence context; otherwise, returns null
+		/// </returns>
+		public virtual object GetLoadedCollectionOwnerOrNull(IPersistentCollection collection)
+		{
+			CollectionEntry ce = GetCollectionEntry(collection);
+			if (ce.LoadedPersister == null)
+			{
+				return null; // early exit...
+			}
+			object loadedOwner = null;
+			// TODO: an alternative is to check if the owner has changed; if it hasn't then
+			// return collection.getOwner()
+			object entityId = GetLoadedCollectionOwnerIdOrNull(ce);
+			if (entityId != null)
+			{
+				loadedOwner = GetCollectionOwner(entityId, ce.LoadedPersister);
+			}
+			return loadedOwner;
+		}
+
+		/// <summary> Get the ID for the entity that owned this persistent collection when it was loaded </summary>
+		/// <param name="collection">The persistent collection </param>
+		/// <returns> the owner ID if available from the collection's loaded key; otherwise, returns null </returns>
+		public virtual object GetLoadedCollectionOwnerIdOrNull(IPersistentCollection collection)
+		{
+			return GetLoadedCollectionOwnerIdOrNull(GetCollectionEntry(collection));
+		}
+
+		/// <summary> Get the ID for the entity that owned this persistent collection when it was loaded </summary>
+		/// <param name="ce">The collection entry </param>
+		/// <returns> the owner ID if available from the collection's loaded key; otherwise, returns null </returns>
+		private object GetLoadedCollectionOwnerIdOrNull(CollectionEntry ce)
+		{
+			if (ce == null || ce.LoadedKey == null || ce.LoadedPersister == null)
+			{
+				return null;
+			}
+			// TODO: an alternative is to check if the owner has changed; if it hasn't then
+			// get the ID from collection.getOwner()
+			return ce.LoadedPersister.CollectionType.GetIdOfOwnerOrNull(ce.LoadedKey, session);
+		}
+
 		/// <summary> add a collection we just loaded up (still needs initializing)</summary>
 		public void AddUninitializedCollection(ICollectionPersister persister, IPersistentCollection collection, object id)
 		{
@@ -1159,6 +1208,9 @@ namespace NHibernate.Engine
 		#region ISerializable Members
 		internal StatefulPersistenceContext(SerializationInfo info, StreamingContext context)
 		{
+			loadCounter = 0;
+			flushing = false;
+			cascading = 0;
 			entitiesByKey = (Dictionary<EntityKey, object>)info.GetValue("context.entitiesByKey", typeof(Dictionary<EntityKey, object>));
 			entitiesByUniqueKey = (Dictionary<EntityUniqueKey, object>)info.GetValue("context.entitiesByUniqueKey", typeof(Dictionary<EntityUniqueKey, object>));
 			entityEntries = (IdentityMap)info.GetValue("context.entityEntries", typeof(IdentityMap));

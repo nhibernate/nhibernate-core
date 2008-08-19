@@ -254,6 +254,18 @@ namespace NHibernate.Cfg.ConfigurationSchema
 					return ListenerType.PostCommitInsert;
 				case "post-commit-delete":
 					return ListenerType.PostCommitDelete;
+				case "pre-collection-recreate":
+					return ListenerType.PreCollectionRecreate;
+				case "pre-collection-remove":
+					return ListenerType.PreCollectionRemove;
+				case "pre-collection-update":
+					return ListenerType.PreCollectionUpdate;
+				case "post-collection-recreate":
+					return ListenerType.PostCollectionRecreate;
+				case "post-collection-remove":
+					return ListenerType.PostCollectionRemove;
+				case "post-collection-update":
+					return ListenerType.PostCollectionUpdate;
 				default:
 					throw new HibernateConfigException(string.Format("Invalid ListenerType value:{0}", listenerType));
 			}
@@ -319,6 +331,18 @@ namespace NHibernate.Cfg.ConfigurationSchema
 					return "post-commit-insert";
 				case ListenerType.PostCommitDelete:
 					return "post-commit-delete";
+				case ListenerType.PreCollectionRecreate:
+					return "pre-collection-recreate";
+				case ListenerType.PreCollectionRemove:
+					return "pre-collection-remove";
+				case ListenerType.PreCollectionUpdate:
+					return "pre-collection-update";
+				case ListenerType.PostCollectionRecreate:
+					return "post-collection-recreate";
+				case ListenerType.PostCollectionRemove:
+					return "post-collection-remove";
+				case ListenerType.PostCollectionUpdate:
+					return "post-collection-update";
 				default:
 					return string.Empty;
 			}

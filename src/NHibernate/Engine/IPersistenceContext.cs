@@ -226,6 +226,19 @@ namespace NHibernate.Engine
 		/// <summary> Get the entity that owns this persistent collection</summary>
 		object GetCollectionOwner(object key, ICollectionPersister collectionPersister);
 
+		/// <summary> Get the entity that owned this persistent collection when it was loaded </summary>
+		/// <param name="collection">The persistent collection </param>
+		/// <returns> 
+		/// The owner if its entity ID is available from the collection's loaded key
+		/// and the owner entity is in the persistence context; otherwise, returns null
+		/// </returns>
+		object GetLoadedCollectionOwnerOrNull(IPersistentCollection collection);
+
+		/// <summary> Get the ID for the entity that owned this persistent collection when it was loaded </summary>
+		/// <param name="collection">The persistent collection </param>
+		/// <returns> the owner ID if available from the collection's loaded key; otherwise, returns null </returns>
+		object GetLoadedCollectionOwnerIdOrNull(IPersistentCollection collection);
+
 		/// <summary> add a collection we just loaded up (still needs initializing)</summary>
 		void AddUninitializedCollection(ICollectionPersister persister, IPersistentCollection collection, object id);
 

@@ -502,6 +502,42 @@ namespace NHibernate.Type
 		}
 
 		/// <summary> 
+		/// Get the id value from the owning entity key, usually the same as the key, but might be some
+		/// other property, in the case of property-ref 
+		/// </summary>
+		/// <param name="key">The collection owner key </param>
+		/// <param name="session">The session from which the request is originating. </param>
+		/// <returns> 
+		/// The collection owner's id, if it can be obtained from the key;
+		/// otherwise, null is returned
+		/// </returns>
+		public virtual object GetIdOfOwnerOrNull(object key, ISessionImplementor session)
+		{
+			object ownerId = null;
+			if (foreignKeyPropertyName == null)
+			{
+				ownerId = key;
+			}
+			else
+			{
+				IType keyType = GetPersister(session).KeyType;
+				IEntityPersister ownerPersister = GetPersister(session).OwnerEntityPersister;
+				// TODO: Fix this so it will work for non-POJO entity mode
+				System.Type ownerMappedClass = ownerPersister.GetMappedClass(session.EntityMode);
+				if (ownerMappedClass.IsAssignableFrom(keyType.ReturnedClass) && keyType.ReturnedClass.IsInstanceOfType(key))
+				{
+					// the key is the owning entity itself, so get the ID from the key
+					ownerId = ownerPersister.GetIdentifier(key, session.EntityMode);
+				}
+				else
+				{
+					// TODO: check if key contains the owner ID
+				}
+			}
+			return ownerId;
+		}
+
+		/// <summary> 
 		/// Instantiate an empty instance of the "underlying" collection (not a wrapper),
 		/// but with the given anticipated size (i.e. accounting for initial capacity
 		/// and perhaps load factor).
