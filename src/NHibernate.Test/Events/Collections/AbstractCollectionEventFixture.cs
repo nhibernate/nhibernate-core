@@ -184,17 +184,18 @@ namespace NHibernate.Test.Events.Collections
 			IChild child = GetFirstChild(parent.Children);
 			Assert.That(parent.Children.Count, Is.EqualTo(1));
 			listeners.Clear();
-			ISession s = OpenSession();
-			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection) s.Get(parent.GetType(), parent.Id);
-			IEntity e = child as IEntity;
-			if (e != null)
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
 			{
-				child = (IChild) s.Get(child.GetType(), e.Id);
+				parent = (IParentWithCollection) s.Get(parent.GetType(), parent.Id);
+				IEntity e = child as IEntity;
+				if (e != null)
+				{
+					child = (IChild) s.Get(child.GetType(), e.Id);
+				}
+				parent.AddChild(child);
+				tx.Commit();
 			}
-			parent.AddChild(child);
-			tx.Commit();
-			s.Close();
 			int index = 0;
 			if (((IPersistentCollection) parent.Children).WasInitialized)
 			{

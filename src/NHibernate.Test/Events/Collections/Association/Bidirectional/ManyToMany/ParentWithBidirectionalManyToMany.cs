@@ -34,10 +34,6 @@ namespace NHibernate.Test.Events.Collections.Association.Bidirectional.ManyToMan
 					child.AddParent(this);
 				}
 			}
-			if (children == Children)
-			{
-				return;
-			}
 			base.NewChildren(children);
 		}
 
