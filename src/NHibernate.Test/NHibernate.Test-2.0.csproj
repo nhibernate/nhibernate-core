@@ -154,6 +154,31 @@
     <Compile Include="DynamicEntity\Tuplizer\TuplizerDynamicEntity.cs" />
     <Compile Include="EngineTest\TypedValueFixture.cs" />
     <Compile Include="EntityModeTest\Map\Basic\DynamicClassFixture.cs" />
+    <Compile Include="Events\Collections\AbstractCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\AbstractParentWithCollection.cs" />
+    <Compile Include="Events\Collections\Association\AbstractAssociationCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\ManyToMany\BidirectionalManyToManyBagToSetCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\ManyToMany\BidirectionalManyToManySetToSetCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\ManyToMany\ChildWithBidirectionalManyToMany.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\ManyToMany\ParentWithBidirectionalManyToMany.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\OneToMany\BidirectionalOneToManyBagCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\OneToMany\BidirectionalOneToManyBagSubclassCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\OneToMany\BidirectionalOneToManySetCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\OneToMany\ChildWithManyToOne.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\OneToMany\ParentWithBidirectionalOneToMany.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\OneToMany\ParentWithBidirectionalOneToManySubclass.cs" />
+    <Compile Include="Events\Collections\Association\Unidirectional\ManyToMany\UnidirectionalManyToManyBagCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\Association\Unidirectional\OneToMany\UnidirectionalOneToManyBagCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\Association\Unidirectional\OneToMany\UnidirectionalOneToManySetCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\Association\Unidirectional\ParentWithCollectionOfEntities.cs" />
+    <Compile Include="Events\Collections\ChildEntity.cs" />
+    <Compile Include="Events\Collections\ChildValue.cs" />
+    <Compile Include="Events\Collections\CollectionListeners.cs" />
+    <Compile Include="Events\Collections\IChild.cs" />
+    <Compile Include="Events\Collections\IEntity.cs" />
+    <Compile Include="Events\Collections\IParentWithCollection.cs" />
+    <Compile Include="Events\Collections\Values\ParentWithCollectionOfValues.cs" />
+    <Compile Include="Events\Collections\Values\ValuesBagCollectionEventFixture.cs" />
     <Compile Include="ExceptionsTest\Group.cs" />
     <Compile Include="ExceptionsTest\MSSQLExceptionConverterExample.cs" />
     <Compile Include="ExceptionsTest\PropertyAccessExceptionFixture.cs" />
@@ -1424,6 +1449,15 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="Events\Collections\Association\Bidirectional\ManyToMany\BidirectionalManyToManyBagToSetMapping.hbm.xml" />
+    <EmbeddedResource Include="Events\Collections\Association\Bidirectional\ManyToMany\BidirectionalManyToManySetToSetMapping.hbm.xml" />
+    <EmbeddedResource Include="Events\Collections\Association\Bidirectional\OneToMany\BidirectionalOneToManyBagMapping.hbm.xml" />
+    <EmbeddedResource Include="Events\Collections\Association\Bidirectional\OneToMany\BidirectionalOneToManyBagSubclassMapping.hbm.xml" />
+    <EmbeddedResource Include="Events\Collections\Association\Bidirectional\OneToMany\BidirectionalOneToManySetMapping.hbm.xml" />
+    <EmbeddedResource Include="Events\Collections\Association\Unidirectional\ManyToMany\UnidirectionalManyToManyBagMapping.hbm.xml" />
+    <EmbeddedResource Include="Events\Collections\Association\Unidirectional\OneToMany\UnidirectionalOneToManyBagMapping.hbm.xml" />
+    <EmbeddedResource Include="Events\Collections\Association\Unidirectional\OneToMany\UnidirectionalOneToManySetMapping.hbm.xml" />
+    <EmbeddedResource Include="Events\Collections\Values\ValuesBagMapping.hbm.xml" />
     <EmbeddedResource Include="Extralazy\UserGroup.hbm.xml" />
     <EmbeddedResource Include="Naturalid\Immutable\User.hbm.xml" />
     <EmbeddedResource Include="Naturalid\Mutable\User.hbm.xml" />
@@ -1440,7 +1474,6 @@
     <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Events\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

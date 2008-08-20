@@ -3,6 +3,7 @@ using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Event;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 
@@ -27,6 +28,8 @@ namespace NHibernate.Action
 			ICollectionPersister persister = Persister;
 			IPersistentCollection collection = Collection;
 			bool affectedByFilters = persister.IsAffectedByEnabledFilters(session);
+
+			PreUpdate();
 
 			if (!collection.WasInitialized)
 			{
@@ -67,9 +70,37 @@ namespace NHibernate.Action
 
 			Evict();
 
+			PostUpdate();
+
 			if (Session.Factory.Statistics.IsStatisticsEnabled)
 			{
 				Session.Factory.StatisticsImplementor.UpdateCollection(Persister.Role);
+			}
+		}
+
+		private void PreUpdate()
+		{
+			IPreCollectionUpdateEventListener[] preListeners = Session.Listeners.PreCollectionUpdateEventListeners;
+			if (preListeners.Length > 0)
+			{
+				PreCollectionUpdateEvent preEvent = new PreCollectionUpdateEvent(Persister, Collection, (IEventSource)Session);
+				for (int i = 0; i < preListeners.Length; i++)
+				{
+					preListeners[i].OnPreUpdateCollection(preEvent);
+				}
+			}
+		}
+
+		private void PostUpdate()
+		{
+			IPostCollectionUpdateEventListener[] postListeners = Session.Listeners.PostCollectionUpdateEventListeners;
+			if (postListeners.Length > 0)
+			{
+				PostCollectionUpdateEvent postEvent = new PostCollectionUpdateEvent(Persister, Collection, (IEventSource)Session);
+				for (int i = 0; i < postListeners.Length; i++)
+				{
+					postListeners[i].OnPostUpdateCollection(postEvent);
+				}
 			}
 		}
 

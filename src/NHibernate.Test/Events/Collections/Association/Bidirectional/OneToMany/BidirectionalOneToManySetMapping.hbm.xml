@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.Events.Collections.Association.Bidirectional.OneToMany">
+
+	<class name="ParentWithBidirectionalOneToMany" table="PARENT">
+		<id name="Id" column="ID" type="long">
+			<generator class="native"/>
+		</id>
+		<set name="Children" inverse="true" cascade="all">
+            <key column="parent_id"/>
+            <one-to-many class="ChildWithManyToOne"/>
+        </set>
+    </class>
+
+    <class name="ChildWithManyToOne" table="CHILD">
+        <id name="Id" column="ID" type="long">
+            <generator class="native"/>
+        </id>
+        <property name="Name" column="NAME" type="string"/>
+        <many-to-one name="Parent" column="parent_id" class="ParentWithBidirectionalOneToMany" cascade="none"/>
+    </class>
+
+</hibernate-mapping>

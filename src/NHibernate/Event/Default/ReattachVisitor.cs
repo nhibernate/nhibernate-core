@@ -15,7 +15,7 @@ namespace NHibernate.Event.Default
 		private readonly object owner;
 		private static readonly ILog log = LogManager.GetLogger(typeof(AbstractFlushingEventListener));
 
-		public ReattachVisitor(IEventSource session, object ownerIdentifier, object owner)
+		protected ReattachVisitor(IEventSource session, object ownerIdentifier, object owner)
 			: base(session)
 		{
 			this.ownerIdentifier = ownerIdentifier;
@@ -60,7 +60,7 @@ namespace NHibernate.Event.Default
 				log.Debug("collection dereferenced while transient " + 
 					MessageHelper.InfoString(role, ownerIdentifier, source.Factory));
 			}
-			source.ActionQueue.AddAction(new CollectionRemoveAction(null, role, collectionKey, false, source));
+			source.ActionQueue.AddAction(new CollectionRemoveAction(owner, role, collectionKey, false, source));
 		}
 
 		/// <summary> 

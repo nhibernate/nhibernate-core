@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.Events.Collections.Values">
+
+		<class name="ParentWithCollectionOfValues" table="PARENT">
+        <id name="Id" column="ID" type="long">
+            <generator class="native"/>
+        </id>
+        <bag name="Children" cascade="all">
+            <key column="parent_id"/>
+            <composite-element class="NHibernate.Test.Events.Collections.ChildValue">
+                <property name="Name"/>
+            </composite-element>
+        </bag>
+    </class>
+
+</hibernate-mapping>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.Events.Collections.Association.Unidirectional">
+
+	<class name="ParentWithCollectionOfEntities" table="PARENT">
+		<id name="Id" column="ID" type="long">
+			<generator class="native"/>
+		</id>
+		<bag name="Children" cascade="all">
+            <key column="parent_id"/>
+            <one-to-many class="NHibernate.Test.Events.Collections.ChildEntity"/>
+        </bag>
+    </class>
+
+    <class name="NHibernate.Test.Events.Collections.ChildEntity" table="CHILD">
+        <id name="Id" column="ID" type="long">
+            <generator class="native"/>
+        </id>
+        <property name="Name" column="NAME" type="string"/>
+    </class>
+
+</hibernate-mapping>
