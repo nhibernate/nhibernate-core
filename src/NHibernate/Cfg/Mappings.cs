@@ -18,14 +18,14 @@ namespace NHibernate.Cfg
 		#region Utility classes
 
 		[Serializable]
-		protected internal class ColumnNames
+        public class ColumnNames
 		{
 			public readonly IDictionary<string, string> logicalToPhysical = new Dictionary<string, string>();
 			public readonly IDictionary<string, string> physicalToLogical = new Dictionary<string, string>();
 		}
 
 		[Serializable]
-		protected internal class TableDescription
+        public class TableDescription
 		{
 			public readonly string logicalName;
 			public readonly Table denormalizedSupertable;
@@ -38,7 +38,7 @@ namespace NHibernate.Cfg
 		}
 
 		[Serializable]
-		internal class PropertyReference
+		public class PropertyReference
 		{
 			public string referencedClass;
 			public string propertyName;
@@ -89,7 +89,7 @@ namespace NHibernate.Cfg
 		/// </summary>
 		protected internal IDictionary<string, TableDescription> tableNameBinding;
 
-		internal Mappings(
+		protected internal Mappings(
 			IDictionary<string, PersistentClass> classes,
 			IDictionary<string, Mapping.Collection> collections,
 			IDictionary<string, Table> tables,

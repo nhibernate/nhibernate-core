@@ -53,15 +53,15 @@ namespace NHibernate.Cfg
 
 		private string currentDocumentName;
 
-		private IDictionary<string, PersistentClass> classes; // entityName, PersistentClass
-		private IDictionary<string, string> imports;
-		private IDictionary<string, NHibernate.Mapping.Collection> collections;
-		private IDictionary<string, Table> tables;
-		private IDictionary<string, NamedQueryDefinition> namedQueries;
-		private IDictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
-		private IDictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
-		private IList<SecondPassCommand> secondPasses;
-		private IList<Mappings.PropertyReference> propertyReferences;
+	    protected IDictionary<string, PersistentClass> classes; // entityName, PersistentClass
+	    protected IDictionary<string, string> imports;
+	    protected IDictionary<string, NHibernate.Mapping.Collection> collections;
+	    protected IDictionary<string, Table> tables;
+	    protected IDictionary<string, NamedQueryDefinition> namedQueries;
+	    protected IDictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
+	    protected IDictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
+	    protected IList<SecondPassCommand> secondPasses;
+	    private IList<Mappings.PropertyReference> propertyReferences;
 		private IInterceptor interceptor;
 		private IDictionary<string, string> properties;
 		private IDictionary<string, FilterDefinition> filterDefinitions;
