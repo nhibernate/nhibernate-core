@@ -53,29 +53,29 @@ namespace NHibernate.Cfg
 
 		private string currentDocumentName;
 
-	    protected IDictionary<string, PersistentClass> classes; // entityName, PersistentClass
-	    protected IDictionary<string, string> imports;
-	    protected IDictionary<string, NHibernate.Mapping.Collection> collections;
-	    protected IDictionary<string, Table> tables;
-	    protected IDictionary<string, NamedQueryDefinition> namedQueries;
-	    protected IDictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
-	    protected IDictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
-	    protected IList<SecondPassCommand> secondPasses;
-	    private IList<Mappings.PropertyReference> propertyReferences;
+		protected IDictionary<string, PersistentClass> classes; // entityName, PersistentClass
+		protected IDictionary<string, string> imports;
+		protected IDictionary<string, NHibernate.Mapping.Collection> collections;
+		protected IDictionary<string, Table> tables;
+		protected IDictionary<string, NamedQueryDefinition> namedQueries;
+		protected IDictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
+		protected IDictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
+		protected IList<SecondPassCommand> secondPasses;
+		protected IList<Mappings.PropertyReference> propertyReferences;
 		private IInterceptor interceptor;
 		private IDictionary<string, string> properties;
-		private IDictionary<string, FilterDefinition> filterDefinitions;
-		private IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects;
-		private IDictionary<string, ISQLFunction> sqlFunctions;
+		protected IDictionary<string, FilterDefinition> filterDefinitions;
+		protected IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects;
+		protected IDictionary<string, ISQLFunction> sqlFunctions;
 
 		private INamingStrategy namingStrategy = DefaultNamingStrategy.Instance;
 		private MappingsQueue mappingsQueue;
 
 		private EventListeners eventListeners;
-		private IDictionary<string, TypeDef> typeDefs;
-		private ISet<ExtendsQueueEntry> extendsQueue;
-		private IDictionary<string, Mappings.TableDescription> tableNameBinding;
-		private IDictionary<Table, Mappings.ColumnNames> columnNameBindingPerTable;
+		protected IDictionary<string, TypeDef> typeDefs;
+		protected ISet<ExtendsQueueEntry> extendsQueue;
+		protected IDictionary<string, Mappings.TableDescription> tableNameBinding;
+		protected IDictionary<Table, Mappings.ColumnNames> columnNameBindingPerTable;
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(Configuration));
 
@@ -84,7 +84,7 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// Clear the internal state of the <see cref="Configuration"/> object.
 		/// </summary>
-		private void Reset()
+		protected void Reset()
 		{
 			classes = new Dictionary<string, PersistentClass>(); //new SequencedHashMap(); - to make NH-369 bug deterministic
 			imports = new Dictionary<string, string>();
@@ -158,7 +158,7 @@ namespace NHibernate.Cfg
 		[NonSerialized]
 		private IMapping mapping;
 
-		protected internal Configuration(SettingsFactory settingsFactory)
+		protected Configuration(SettingsFactory settingsFactory)
 		{
 			InitBlock();
 			this.settingsFactory = settingsFactory;
@@ -233,10 +233,7 @@ namespace NHibernate.Cfg
 		/// <returns><see cref="NHibernate.Mapping.Collection" /></returns>
 		public NHibernate.Mapping.Collection GetCollectionMapping(string role)
 		{
-			if (collections.ContainsKey(role))
-				return collections[role];
-			else
-				return null;
+			return collections.ContainsKey(role) ? collections[role] : null;
 		}
 
 		/// <summary>
@@ -706,7 +703,7 @@ namespace NHibernate.Cfg
 				{
 					foreach (string line in lines)
 					{
-						script.Add(line);						
+						script.Add(line);
 					}
 				}
 			}
@@ -1669,106 +1666,106 @@ namespace NHibernate.Cfg
 			switch (type)
 			{
 				case ListenerType.Autoflush:
-					eventListeners.AutoFlushEventListeners = new IAutoFlushEventListener[] {};
+					eventListeners.AutoFlushEventListeners = new IAutoFlushEventListener[] { };
 					break;
 				case ListenerType.Merge:
-					eventListeners.MergeEventListeners = new IMergeEventListener[] {};
+					eventListeners.MergeEventListeners = new IMergeEventListener[] { };
 					break;
 				case ListenerType.Create:
-					eventListeners.PersistEventListeners = new IPersistEventListener[] {};
+					eventListeners.PersistEventListeners = new IPersistEventListener[] { };
 					break;
 				case ListenerType.CreateOnFlush:
-					eventListeners.PersistOnFlushEventListeners = new IPersistEventListener[] {};
+					eventListeners.PersistOnFlushEventListeners = new IPersistEventListener[] { };
 					break;
 				case ListenerType.Delete:
-					eventListeners.DeleteEventListeners = new IDeleteEventListener[] {};
+					eventListeners.DeleteEventListeners = new IDeleteEventListener[] { };
 					break;
 				case ListenerType.DirtyCheck:
-					eventListeners.DirtyCheckEventListeners = new IDirtyCheckEventListener[] {};
+					eventListeners.DirtyCheckEventListeners = new IDirtyCheckEventListener[] { };
 					break;
 				case ListenerType.Evict:
-					eventListeners.EvictEventListeners = new IEvictEventListener[] {};
+					eventListeners.EvictEventListeners = new IEvictEventListener[] { };
 					break;
 				case ListenerType.Flush:
-					eventListeners.FlushEventListeners = new IFlushEventListener[] {};
+					eventListeners.FlushEventListeners = new IFlushEventListener[] { };
 					break;
 				case ListenerType.FlushEntity:
-					eventListeners.FlushEntityEventListeners = new IFlushEntityEventListener[] {};
+					eventListeners.FlushEntityEventListeners = new IFlushEntityEventListener[] { };
 					break;
 				case ListenerType.Load:
-					eventListeners.LoadEventListeners = new ILoadEventListener[] {};
+					eventListeners.LoadEventListeners = new ILoadEventListener[] { };
 					break;
 				case ListenerType.LoadCollection:
-					eventListeners.InitializeCollectionEventListeners = new IInitializeCollectionEventListener[] {};
+					eventListeners.InitializeCollectionEventListeners = new IInitializeCollectionEventListener[] { };
 					break;
 				case ListenerType.Lock:
-					eventListeners.LockEventListeners = new ILockEventListener[] {};
+					eventListeners.LockEventListeners = new ILockEventListener[] { };
 					break;
 				case ListenerType.Refresh:
-					eventListeners.RefreshEventListeners = new IRefreshEventListener[] {};
+					eventListeners.RefreshEventListeners = new IRefreshEventListener[] { };
 					break;
 				case ListenerType.Replicate:
-					eventListeners.ReplicateEventListeners = new IReplicateEventListener[] {};
+					eventListeners.ReplicateEventListeners = new IReplicateEventListener[] { };
 					break;
 				case ListenerType.SaveUpdate:
-					eventListeners.SaveOrUpdateEventListeners = new ISaveOrUpdateEventListener[] {};
+					eventListeners.SaveOrUpdateEventListeners = new ISaveOrUpdateEventListener[] { };
 					break;
 				case ListenerType.Save:
-					eventListeners.SaveEventListeners = new ISaveOrUpdateEventListener[] {};
+					eventListeners.SaveEventListeners = new ISaveOrUpdateEventListener[] { };
 					break;
 				case ListenerType.PreUpdate:
-					eventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] {};
+					eventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { };
 					break;
 				case ListenerType.Update:
-					eventListeners.UpdateEventListeners = new ISaveOrUpdateEventListener[] {};
+					eventListeners.UpdateEventListeners = new ISaveOrUpdateEventListener[] { };
 					break;
 				case ListenerType.PreLoad:
-					eventListeners.PreLoadEventListeners = new IPreLoadEventListener[] {};
+					eventListeners.PreLoadEventListeners = new IPreLoadEventListener[] { };
 					break;
 				case ListenerType.PreDelete:
-					eventListeners.PreDeleteEventListeners = new IPreDeleteEventListener[] {};
+					eventListeners.PreDeleteEventListeners = new IPreDeleteEventListener[] { };
 					break;
 				case ListenerType.PreInsert:
-					eventListeners.PreInsertEventListeners = new IPreInsertEventListener[] {};
+					eventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { };
 					break;
 				case ListenerType.PostLoad:
-					eventListeners.PostLoadEventListeners = new IPostLoadEventListener[] {};
+					eventListeners.PostLoadEventListeners = new IPostLoadEventListener[] { };
 					break;
 				case ListenerType.PostInsert:
-					eventListeners.PostInsertEventListeners = new IPostInsertEventListener[] {};
+					eventListeners.PostInsertEventListeners = new IPostInsertEventListener[] { };
 					break;
 				case ListenerType.PostUpdate:
-					eventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[] {};
+					eventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[] { };
 					break;
 				case ListenerType.PostDelete:
-					eventListeners.PostDeleteEventListeners = new IPostDeleteEventListener[] {};
+					eventListeners.PostDeleteEventListeners = new IPostDeleteEventListener[] { };
 					break;
 				case ListenerType.PostCommitUpdate:
-					eventListeners.PostCommitUpdateEventListeners = new IPostUpdateEventListener[] {};
+					eventListeners.PostCommitUpdateEventListeners = new IPostUpdateEventListener[] { };
 					break;
 				case ListenerType.PostCommitInsert:
-					eventListeners.PostCommitInsertEventListeners = new IPostInsertEventListener[] {};
+					eventListeners.PostCommitInsertEventListeners = new IPostInsertEventListener[] { };
 					break;
 				case ListenerType.PostCommitDelete:
-					eventListeners.PostCommitDeleteEventListeners = new IPostDeleteEventListener[] {};
+					eventListeners.PostCommitDeleteEventListeners = new IPostDeleteEventListener[] { };
 					break;
 				case ListenerType.PreCollectionRecreate:
-					eventListeners.PreCollectionRecreateEventListeners = new IPreCollectionRecreateEventListener[] {};
+					eventListeners.PreCollectionRecreateEventListeners = new IPreCollectionRecreateEventListener[] { };
 					break;
 				case ListenerType.PreCollectionRemove:
-					eventListeners.PreCollectionRemoveEventListeners = new IPreCollectionRemoveEventListener[] {};
+					eventListeners.PreCollectionRemoveEventListeners = new IPreCollectionRemoveEventListener[] { };
 					break;
 				case ListenerType.PreCollectionUpdate:
-					eventListeners.PreCollectionUpdateEventListeners = new IPreCollectionUpdateEventListener[] {};
+					eventListeners.PreCollectionUpdateEventListeners = new IPreCollectionUpdateEventListener[] { };
 					break;
 				case ListenerType.PostCollectionRecreate:
-					eventListeners.PostCollectionRecreateEventListeners = new IPostCollectionRecreateEventListener[] {};
+					eventListeners.PostCollectionRecreateEventListeners = new IPostCollectionRecreateEventListener[] { };
 					break;
 				case ListenerType.PostCollectionRemove:
-					eventListeners.PostCollectionRemoveEventListeners = new IPostCollectionRemoveEventListener[] {};
+					eventListeners.PostCollectionRemoveEventListeners = new IPostCollectionRemoveEventListener[] { };
 					break;
 				case ListenerType.PostCollectionUpdate:
-					eventListeners.PostCollectionUpdateEventListeners = new IPostCollectionUpdateEventListener[] {};
+					eventListeners.PostCollectionUpdateEventListeners = new IPostCollectionUpdateEventListener[] { };
 					break;
 				default:
 					log.Warn("Unrecognized listener type [" + type + "]");

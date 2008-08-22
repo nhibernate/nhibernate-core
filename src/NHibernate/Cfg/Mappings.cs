@@ -18,14 +18,14 @@ namespace NHibernate.Cfg
 		#region Utility classes
 
 		[Serializable]
-        public class ColumnNames
+		public class ColumnNames
 		{
 			public readonly IDictionary<string, string> logicalToPhysical = new Dictionary<string, string>();
 			public readonly IDictionary<string, string> physicalToLogical = new Dictionary<string, string>();
 		}
 
 		[Serializable]
-        public class TableDescription
+		public class TableDescription
 		{
 			public readonly string logicalName;
 			public readonly Table denormalizedSupertable;
@@ -38,7 +38,7 @@ namespace NHibernate.Cfg
 		}
 
 		[Serializable]
-		public class PropertyReference
+		public sealed class PropertyReference
 		{
 			public string referencedClass;
 			public string propertyName;
@@ -61,8 +61,8 @@ namespace NHibernate.Cfg
 		private string catalogName;
 		private string defaultCascade;
 		private string defaultNamespace;
-	    private readonly Dialect.Dialect dialect;
-	    private string defaultAssembly;
+		private readonly Dialect.Dialect dialect;
+		private string defaultAssembly;
 		private string defaultAccess;
 		private bool autoImport;
 		private bool defaultLazy;
@@ -108,7 +108,7 @@ namespace NHibernate.Cfg
 			IDictionary<Table, ColumnNames> columnNameBindingPerTable,
 			string defaultAssembly,
 			string defaultNamespace,
-            Dialect.Dialect dialect)
+						Dialect.Dialect dialect)
 		{
 			this.classes = classes;
 			this.collections = collections;
@@ -128,7 +128,7 @@ namespace NHibernate.Cfg
 			this.columnNameBindingPerTable = columnNameBindingPerTable;
 			this.defaultAssembly = defaultAssembly;
 			this.defaultNamespace = defaultNamespace;
-		    this.dialect = dialect;
+			this.dialect = dialect;
 		}
 
 		/// <summary>
@@ -245,7 +245,7 @@ namespace NHibernate.Cfg
 			string existing;
 			imports.TryGetValue(rename, out existing);
 			imports[rename] = className;
-			if(existing!=null)
+			if (existing != null)
 			{
 				if (existing.Equals(className))
 				{
@@ -311,7 +311,7 @@ namespace NHibernate.Cfg
 			{
 				//TODO possibly relax that
 				throw new MappingException("Same physical table name reference several logical table names: " + physicalName
-				                           + " => " + "'" + oldDescriptor.logicalName + "' and '" + logicalName + "'");
+																	 + " => " + "'" + oldDescriptor.logicalName + "' and '" + logicalName + "'");
 			}
 		}
 
@@ -454,7 +454,7 @@ namespace NHibernate.Cfg
 
 		public TypeDef GetTypeDef(string typeName)
 		{
-			if(string.IsNullOrEmpty(typeName)) 
+			if (string.IsNullOrEmpty(typeName))
 				return null;
 			TypeDef result;
 			typeDefs.TryGetValue(typeName, out result);
@@ -476,13 +476,13 @@ namespace NHibernate.Cfg
 			binding.logicalToPhysical.TryGetValue(logicalName.ToLowerInvariant(), out oldFinalName);
 			binding.logicalToPhysical[logicalName.ToLowerInvariant()] = finalColumn.GetQuotedName();
 			if (oldFinalName != null &&
-			    !(finalColumn.IsQuoted
-			      	? oldFinalName.Equals(finalColumn.GetQuotedName())
-			      	: oldFinalName.Equals(finalColumn.GetQuotedName(), StringComparison.InvariantCultureIgnoreCase)))
+					!(finalColumn.IsQuoted
+							? oldFinalName.Equals(finalColumn.GetQuotedName())
+							: oldFinalName.Equals(finalColumn.GetQuotedName(), StringComparison.InvariantCultureIgnoreCase)))
 			{
 				//TODO possibly relax that
 				throw new MappingException("Same logical column name referenced by different physical ones: " + table.Name + "."
-				                           + logicalName + " => '" + oldFinalName + "' and '" + finalColumn.GetQuotedName() + "'");
+																	 + logicalName + " => '" + oldFinalName + "' and '" + finalColumn.GetQuotedName() + "'");
 			}
 
 			string oldLogicalName;
@@ -492,7 +492,7 @@ namespace NHibernate.Cfg
 			{
 				//TODO possibly relax that
 				throw new MappingException("Same physical column represented by different logical column names: " + table.Name + "."
-				                           + finalColumn.GetQuotedName() + " => '" + oldLogicalName + "' and '" + logicalName + "'");
+																	 + finalColumn.GetQuotedName() + " => '" + oldLogicalName + "' and '" + logicalName + "'");
 			}
 		}
 
