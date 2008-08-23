@@ -1,3 +1,5 @@
+Build 2.0.0.GA
+========================
 ** BREAKING CHANGES from NH1.2.1GA to NH2.0.0
 	##### Infrastructure #####
 		* .NET 1.1 is no longer supported
