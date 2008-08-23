@@ -22,7 +22,6 @@ namespace NHibernate.Test.TypeParameters
 			{
 				return new String[]
 					{
-						"TypeParameters.Typedef.hbm.xml",
 						"TypeParameters.Widget.hbm.xml"
 					};
 			}

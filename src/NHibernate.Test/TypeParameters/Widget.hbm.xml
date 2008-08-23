@@ -8,6 +8,11 @@
 		<param name="default">2</param>
 	</typedef>
 
+
+	<typedef name="nullToMinusOne" class="DefaultValueIntegerType">
+		<param name="default">-1</param>
+	</typedef>
+
 	<class name="Widget" table="STRANGE_TYPED_OBJECT">
 		<id name="Id" column="ID">
 			<generator class="increment"/>
