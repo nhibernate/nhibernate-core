@@ -16,19 +16,19 @@ namespace NHibernate.Test.HQLFunctionTest
 			Assert.IsTrue(ft.HasArguments);
 			IList args = new ArrayList();
 			args.Add("'abcd   <'");
-			Assert.AreEqual("ltrim( 'abcd   <' )", ft.Render(args, factoryImpl));
+			Assert.AreEqual("ltrim( 'abcd   <' )", ft.Render(args, factoryImpl).ToString());
 
 			ft = new SQLFunctionTemplate(NHibernateUtil.String, "ltrim( Az?ab )");
 			Assert.IsFalse(ft.HasArguments);
-			Assert.AreEqual("ltrim( Az?ab )", ft.Render(args, factoryImpl));
+			Assert.AreEqual("ltrim( Az?ab )", ft.Render(args, factoryImpl).ToString());
 
 			ft = new SQLFunctionTemplate(NHibernateUtil.String, "function( ?1 )? 5:6");
 			Assert.IsTrue(ft.HasArguments);
-			Assert.AreEqual("function( 'abcd   <' )? 5:6", ft.Render(args, factoryImpl));
+			Assert.AreEqual("function( 'abcd   <' )? 5:6", ft.Render(args, factoryImpl).ToString());
 
 			ft = new SQLFunctionTemplate(NHibernateUtil.String, "????????1?");
 			Assert.IsTrue(ft.HasArguments);
-			Assert.AreEqual("???????'abcd   <'?", ft.Render(args, factoryImpl));
+			Assert.AreEqual("???????'abcd   <'?", ft.Render(args, factoryImpl).ToString());
 		}
 
 		[Test]
@@ -44,14 +44,14 @@ namespace NHibernate.Test.HQLFunctionTest
 			args.Add("'param2 ab '");
 			Assert.AreEqual(
 				"replace( replace( rtrim( replace( replace( 'param1  ', ' ', '${space}$' ), 'param2 ab ', ' ' ) ), ' ', 'param2 ab ' ), '${space}$', ' ' )",
-				ft.Render(args, factoryImpl));
+				ft.Render(args, factoryImpl).ToString());
 
 			args.Clear();
 			ft = new SQLFunctionTemplate(NHibernateUtil.String, "?1 ?3 ?2 ?3 ?1");
 			args.Add(1);
 			args.Add(2);
 			args.Add(3);
-			Assert.AreEqual("1 3 2 3 1", ft.Render(args, factoryImpl));
+			Assert.AreEqual("1 3 2 3 1", ft.Render(args, factoryImpl).ToString());
 		}
 
 		//[Test] not required
@@ -68,7 +68,7 @@ namespace NHibernate.Test.HQLFunctionTest
 			                                DateTime.Today.ToString(DateTimeFormatInfo.InvariantInfo),
 			                                (125.6D).ToString(NumberFormatInfo.InvariantInfo),
 			                                (0910.123456m).ToString(NumberFormatInfo.InvariantInfo));
-			Assert.AreEqual(expected, ft.Render(args, factoryImpl));
+			Assert.AreEqual(expected, ft.Render(args, factoryImpl).ToString());
 		}
 
 		[Test]
@@ -79,13 +79,13 @@ namespace NHibernate.Test.HQLFunctionTest
 
 			// No Args; 2 params
 			ft = new SQLFunctionTemplate(NHibernateUtil.String, "func(?1,?2)");
-			Assert.AreEqual("func(,)", ft.Render(args, factoryImpl));
+			Assert.AreEqual("func(,)", ft.Render(args, factoryImpl).ToString());
 
 			// Args<params
 			args.Clear();
 			ft = new SQLFunctionTemplate(NHibernateUtil.String, "func(?1,?2)");
 			args.Add(1);
-			Assert.AreEqual("func(1,)", ft.Render(args, factoryImpl));
+			Assert.AreEqual("func(1,)", ft.Render(args, factoryImpl).ToString());
 
 			// Args>params
 			args.Clear();
@@ -93,7 +93,7 @@ namespace NHibernate.Test.HQLFunctionTest
 			args.Add(1);
 			args.Add(2);
 			args.Add(3);
-			Assert.AreEqual("func(1,3)", ft.Render(args, factoryImpl));
+			Assert.AreEqual("func(1,3)", ft.Render(args, factoryImpl).ToString());
 		}
 	}
 }

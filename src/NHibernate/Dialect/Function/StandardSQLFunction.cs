@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Text;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Dialect.Function
@@ -55,17 +56,25 @@ namespace NHibernate.Dialect.Function
 			get { return true; }
 		}
 
-		public virtual string Render(IList args, ISessionFactoryImplementor factory)
+		public virtual SqlString Render(IList args, ISessionFactoryImplementor factory)
 		{
-			StringBuilder buf = new StringBuilder();
-			buf.Append(name)
-				.Append('(');
+			SqlStringBuilder buf = new SqlStringBuilder();
+			buf.Add(name)
+				.Add("(");
 			for (int i = 0; i < args.Count; i++)
 			{
-				buf.Append(args[i]);
-				if (i < (args.Count - 1)) buf.Append(", ");
+				object arg = args[i];
+				if (arg is Parameter || arg is SqlString)
+				{
+					buf.AddObject(arg);
+				}
+				else
+				{
+					buf.Add(arg.ToString());
+				}
+				if (i < (args.Count - 1)) buf.Add(", ");
 			}
-			return buf.Append(')').ToString();
+			return buf.Add(")").ToSqlString();
 		}
 
 		#endregion

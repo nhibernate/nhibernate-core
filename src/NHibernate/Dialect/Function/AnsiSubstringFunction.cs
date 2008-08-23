@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Dialect.Function
@@ -39,24 +40,24 @@ namespace NHibernate.Dialect.Function
 			get { return true; }
 		}
 
-		public string Render(IList args, ISessionFactoryImplementor factory)
+		public SqlString Render(IList args, ISessionFactoryImplementor factory)
 		{
 			if (args.Count < 2 || args.Count > 3)
 			{
 				throw new QueryException("substring(): Incorrect number of parameters (expected 2 or 3, got " + args.Count + ")");
 			}
-			StringBuilder cmd = new StringBuilder();
-			cmd.Append("substring(")
-				.Append(args[0])
-				.Append(" from ")
-				.Append(args[1]);
+			SqlStringBuilder cmd = new SqlStringBuilder();
+			cmd.Add("substring(")
+				.AddObject(args[0])
+				.Add(" from ")
+				.AddObject(args[1]);
 			if (args.Count > 2)
 			{
-				cmd.Append(" for ")
-					.Append(args[2]);
+				cmd.Add(" for ")
+					.AddObject(args[2]);
 			}
-			cmd.Append(')');
-			return cmd.ToString();
+			cmd.Add(")");
+			return cmd.ToSqlString();
 		}
 
 		#endregion

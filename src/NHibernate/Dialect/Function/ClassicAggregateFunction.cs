@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -53,7 +54,7 @@ namespace NHibernate.Dialect.Function
 			get { return true; }
 		}
 
-		public string Render(IList args, ISessionFactoryImplementor factory)
+		public SqlString Render(IList args, ISessionFactoryImplementor factory)
 		{
 			//ANSI-SQL92 definition
 			//<general set function> ::=
@@ -69,22 +70,22 @@ namespace NHibernate.Dialect.Function
 			{
 				throw new QueryException(string.Format("Aggregate {0}(): invalid argument '*'.", name));
 			}
-			StringBuilder cmd = new StringBuilder();
-			cmd.Append(name)
-				.Append("(");
+			SqlStringBuilder cmd = new SqlStringBuilder();
+			cmd.Add(name)
+				.Add("(");
 			if (args.Count > 1)
 			{
-				string firstArg = args[0].ToString();
-				if (!StringHelper.EqualsCaseInsensitive("distinct", firstArg) &&
-				    !StringHelper.EqualsCaseInsensitive("all", firstArg))
+				object firstArg = args[0];
+				if (!StringHelper.EqualsCaseInsensitive("distinct", firstArg.ToString()) &&
+				    !StringHelper.EqualsCaseInsensitive("all", firstArg.ToString()))
 				{
 					throw new QueryException(string.Format("Aggregate {0}(): token unknow {1}.", name, firstArg));
 				}
-				cmd.Append(firstArg).Append(' ');
+				cmd.AddObject(firstArg).Add(" ");
 			}
-			cmd.Append(args[args.Count - 1])
-				.Append(')');
-			return cmd.ToString();
+			cmd.AddObject(args[args.Count - 1])
+				.Add(")");
+			return cmd.ToSqlString();
 		}
 
 		#endregion

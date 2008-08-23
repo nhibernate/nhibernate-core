@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Dialect.Function
@@ -31,7 +32,7 @@ namespace NHibernate.Dialect.Function
 			get { return true; }
 		}
 
-		public string Render(IList args, ISessionFactoryImplementor factory)
+		public SqlString Render(IList args, ISessionFactoryImplementor factory)
 		{
 			// DONE: QueryException if args.Count==0 (not present in H3.2)
 			if (args.Count == 0)
@@ -43,11 +44,16 @@ namespace NHibernate.Dialect.Function
 			args.RemoveAt(lastIndex);
 			if (lastIndex == 0)
 			{
-				return last.ToString();
+				return new SqlString(last);
 			}
 			object secondLast = args[lastIndex - 1];
-			string nvl = "nvl(" + secondLast + ", " + last + ")";
-			args[lastIndex - 1] = nvl;
+			SqlStringBuilder nvl = new SqlStringBuilder(5)
+				.Add("nvl(")
+				.AddObject(secondLast)
+				.Add(", ")
+				.AddObject(last)
+				.Add(")");
+			args[lastIndex - 1] = nvl.ToSqlString();
 			return Render(args, factory);
 		}
 

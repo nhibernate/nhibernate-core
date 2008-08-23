@@ -30,6 +30,11 @@ namespace NHibernate.Driver
 			result.Append(text);
 		}
 
+		void ISqlStringVisitor.String(SqlString sqlString)
+		{
+			result.Append(sqlString.ToString());
+		}
+
 		void ISqlStringVisitor.Parameter()
 		{
 			string name = formatter.GetParameterName(parameterIndex);

@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Dialect.Function
@@ -98,9 +99,9 @@ namespace NHibernate.Dialect.Function
 		/// <param name="args">args function arguments</param>
 		/// <param name="factory">generated SQL function call</param>
 		/// <returns></returns>
-		public string Render(IList args, ISessionFactoryImplementor factory)
+		public SqlString Render(IList args, ISessionFactoryImplementor factory)
 		{
-			StringBuilder buf = new StringBuilder();
+			SqlStringBuilder buf = new SqlStringBuilder();
 			foreach (TemplateChunk tc in chunks)
 			{
 				if (tc.ArgumentIndex != InvalidArgumentIndex)
@@ -110,15 +111,22 @@ namespace NHibernate.Dialect.Function
 					// TODO: if (arg == null) QueryException is better ?
 					if (arg != null)
 					{
-						buf.Append(arg);
+						if (arg is Parameter || arg is SqlString)
+						{
+							buf.AddObject(arg);
+						}
+						else
+						{
+							buf.Add(arg.ToString());
+						}
 					}
 				}
 				else
 				{
-					buf.Append(tc.Text);
+					buf.Add(tc.Text);
 				}
 			}
-			return buf.ToString();
+			return buf.ToSqlString();
 		}
 
 		#endregion

@@ -1,5 +1,6 @@
 using System.Collections;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Dialect.Function
@@ -38,6 +39,6 @@ namespace NHibernate.Dialect.Function
 		/// <param name="args">List of arguments</param>
 		/// <param name="factory"></param>
 		/// <returns>SQL fragment for the fuction.</returns>
-		string Render(IList args, ISessionFactoryImplementor factory);
+		SqlString Render(IList args, ISessionFactoryImplementor factory);
 	}
 }

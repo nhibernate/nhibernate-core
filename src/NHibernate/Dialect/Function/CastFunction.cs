@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 
@@ -34,13 +35,13 @@ namespace NHibernate.Dialect.Function
 			get { return true; }
 		}
 
-		public string Render(IList args, ISessionFactoryImplementor factory)
+		public SqlString Render(IList args, ISessionFactoryImplementor factory)
 		{
 			if (args.Count != 2)
 			{
 				throw new QueryException("cast() requires two arguments");
 			}
-			string typeName = (string) args[1];
+			string typeName = args[1].ToString();
 			string sqlType = string.Empty;
 			IType hqlType = TypeFactory.HeuristicType(typeName);
 			if (hqlType != null)
@@ -70,7 +71,13 @@ namespace NHibernate.Dialect.Function
 			{
 				throw new QueryException(string.Format("invalid Hibernate type for cast(): type {0} not found", typeName));
 			}
-			return String.Format("cast({0} as {1})", args[0], sqlType);
+			return new SqlStringBuilder()
+				.Add("cast(")
+				.AddObject(args[0])
+				.Add(" as ")
+				.Add(sqlType)
+				.Add(")")
+				.ToSqlString();
 		}
 
 		#endregion

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Dialect.Function
@@ -32,7 +33,7 @@ namespace NHibernate.Dialect.Function
 			get { return true; }
 		}
 
-		public string Render(IList args, ISessionFactoryImplementor factory)
+		public SqlString Render(IList args, ISessionFactoryImplementor factory)
 		{
 			// DONE: QueryException if args.Count<2 (not present in H3.2) 
 			if (args.Count < 2)
@@ -44,33 +45,33 @@ namespace NHibernate.Dialect.Function
 			object orgString = args[1];
 			object start = threeArgs ? args[2] : null;
 
-			StringBuilder buf = new StringBuilder();
+			SqlStringBuilder buf = new SqlStringBuilder();
 			if (threeArgs)
 			{
-				buf.Append('(');
+				buf.Add("(");
 			}
-			buf.Append("position(")
-				.Append(pattern)
-				.Append(" in ");
+			buf.Add("position(")
+				.AddObject(pattern)
+				.Add(" in ");
 			if (threeArgs)
 			{
-				buf.Append("substring(");
+				buf.Add("substring(");
 			}
-			buf.Append(orgString);
+			buf.AddObject(orgString);
 			if (threeArgs)
 			{
-				buf.Append(", ")
-					.Append(start)
-					.Append(')');
+				buf.Add(", ")
+					.AddObject(start)
+					.Add(")");
 			}
-			buf.Append(')');
+			buf.Add(")");
 			if (threeArgs)
 			{
-				buf.Append('+')
-					.Append(start)
-					.Append("-1)");
+				buf.Add("+")
+					.AddObject(start)
+					.Add("-1)");
 			}
-			return buf.ToString();
+			return buf.ToSqlString();
 		}
 
 		#endregion

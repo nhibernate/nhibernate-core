@@ -42,7 +42,7 @@ namespace NHibernate.SqlCommand
 #if DEBUG
 			foreach (object obj in sqlParts)
 			{
-				Debug.Assert(obj is string || obj is Parameter);
+				Debug.Assert(obj is string || obj is SqlString || obj is Parameter);
 			}
 #endif
 			this.sqlParts = sqlParts;
@@ -108,9 +108,13 @@ namespace NHibernate.SqlCommand
 
 			foreach (object part in sqlParts)
 			{
+				SqlString sqlStringPart = part as SqlString;
 				string stringPart = part as string;
-
-				if (stringPart != null)
+				if (sqlStringPart != null)
+				{
+					sqlBuilder.Add(sqlStringPart.Compact());
+				}
+				else if (stringPart != null)
 				{
 					builder.Append(stringPart);
 				}
@@ -123,7 +127,7 @@ namespace NHibernate.SqlCommand
 					}
 
 					builder.Length = 0;
-					sqlBuilder.Add((Parameter) part);
+					sqlBuilder.Add((Parameter)part);
 				}
 			}
 
@@ -648,9 +652,14 @@ namespace NHibernate.SqlCommand
 			foreach (object part in sqlParts)
 			{
 				string partString = part as string;
+				SqlString partSqlString = part as SqlString;
 				if (partString != null)
 				{
 					visitor.String(partString);
+				}
+				else if (partSqlString != null && !SqlString.Parameter.Equals(partSqlString))
+				{
+					visitor.String(partSqlString);
 				}
 				else
 				{
