@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Events.Collections.Association.Bidirectional.ManyToMany
 {
-	[TestFixture, Ignore("Need some more check for timeouts.")]
+	[TestFixture]
 	public class BidirectionalManyToManyBagToSetCollectionEventFixture : AbstractAssociationCollectionEventFixture
 	{
 		protected override IList Mappings
@@ -20,6 +20,13 @@ namespace NHibernate.Test.Events.Collections.Association.Bidirectional.ManyToMan
 		public override ICollection<IChild> CreateCollection()
 		{
 			return new List<IChild>();
+		}
+
+		public override void UpdateParentOneToTwoSameChildren()
+		{
+			Assert.Ignore("Not supported");
+			// This test need some more deep study if it really work in H3.2
+			// because <bag> allow duplication.
 		}
 	}
 }

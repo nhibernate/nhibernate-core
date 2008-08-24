@@ -177,7 +177,7 @@ namespace NHibernate.Test.Events.Collections
 		}
 
 		[Test]
-		public void UpdateParentOneToTwoSameChildren()
+		public virtual void UpdateParentOneToTwoSameChildren()
 		{
 			CollectionListeners listeners = new CollectionListeners(sessions);
 			IParentWithCollection parent = CreateParentWithOneChild("parent", "child");
