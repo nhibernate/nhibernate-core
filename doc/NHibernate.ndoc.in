@@ -2,19 +2,7 @@
 <project SchemaVersion="2.0">
     <assemblies>
         <assembly location="${bin.dir}/NHibernate.dll" documentation="${bin.dir}/NHibernate.xml" />
-        <assembly location="${bin.dir}/NHibernate.Tasks.dll" documentation="${bin.dir}/NHibernate.Tasks.xml" />
         <assembly location="${bin.dir}/Iesi.Collections.dll" documentation="${bin.dir}/Iesi.Collections.xml" />
-        <assembly location="${bin.dir}/NHibernate.Caches.MemCache.dll" documentation="${bin.dir}/NHibernate.Caches.MemCache.xml" />
-        <assembly location="${bin.dir}/NHibernate.Caches.Prevalence.dll" documentation="${bin.dir}/NHibernate.Caches.Prevalence.xml" />
-        <assembly location="${bin.dir}/NHibernate.Caches.SysCache.dll" documentation="${bin.dir}/NHibernate.Caches.SysCache.xml" />
-        <assembly location="${bin.dir}/NHibernate.Caches.SysCache2.dll" documentation="${bin.dir}/NHibernate.Caches.SysCache2.xml" />
-        <assembly location="${bin.dir}/NHibernate.JetDriver.dll" documentation="${bin.dir}/NHibernate.JetDriver.xml" />
-        <assembly location="${bin.dir}/NHibernate.Mapping.Attributes.dll" documentation="${bin.dir}/NHibernate.Mapping.Attributes.xml" />
-        <assembly location="${bin.dir}/NHibernate.UserTypes.Oracle.dll" documentation="${bin.dir}/NHibernate.UserTypes.Oracle.xml" />
-        <assembly location="${bin.dir}/NHibernate.Tool.hbm2net.dll" documentation="${bin.dir}/NHibernate.Tool.hbm2net.xml" />
-        <assembly location="${bin.dir}/NHibernate.UserTypes.SqlTypes.dll" documentation="${bin.dir}/NHibernate.UserTypes.SqlTypes.xml" />
-        <assembly location="${bin.dir}/Nullables.dll" documentation="${bin.dir}/Nullables.xml" />
-        <assembly location="${bin.dir}/Nullables.NHibernate.dll" documentation="${bin.dir}/Nullables.NHibernate.xml" />
     </assemblies>
     <referencePaths>
         <referencePath path="${bin.dir}/nant" />
