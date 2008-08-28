@@ -6,22 +6,20 @@ using System.Text;
 
 namespace NHibernate.Linq.Expressions
 {
-	/// <summary>
-	/// Projection expression
-	/// </summary>
-	public class ProjectionExpression:SqlExpression
+	public class ProjectionExpression:NHExpression
 	{
-		public ProjectionExpression(SelectExpression source, Expression lambda)
-			: base(SqlExpressionType.Projection, lambda.Type)
+		public ProjectionExpression(SelectExpression source, Expression projector)
+			: base(NHExpressionType.Projection, projector.Type)
 		{
-			this.Projector = lambda;
+			this.Projector = projector;
+			this.Source = source;
 		}
 
 		public Expression Projector { get; protected set; }
-		public SelectExpression Source { get; set; }
+		public SelectExpression Source { get; protected set; }
 		public override string ToString()
 		{
-			return string.Format("({0})", this.Projector.ToString());
+			return string.Format("({0})", this.Projector);
 		}
 	}
 }

@@ -16,5 +16,10 @@ namespace NHibernate.Linq.Util
 			}
 			return expression;
 		}
+		public static bool IsAnonymousType(System.Type type)
+		{
+			return type != null && type.Name.StartsWith("<");
+		}
+
 	}
 }

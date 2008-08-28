@@ -6,6 +6,10 @@ namespace NHibernate.Linq.Test.Model
 {
 	public class Animal
 	{
+		public Animal()
+		{
+			this.Offspring = new HashedSet<Animal>();
+		}
 		public virtual int Id { get; set; }
 		public virtual string Description { get; set; }
 		public virtual double BodyWeight { get; set; }

@@ -5,10 +5,11 @@ using System.Text;
 
 namespace NHibernate.Linq.Expressions
 {
-	public enum SqlExpressionType
+	public enum NHExpressionType
 	{
-		Entity=100,
+		QuerySource=100,
 		Select,
 		Projection,
+		Property,
 	}
 }

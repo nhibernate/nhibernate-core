@@ -16,14 +16,16 @@ namespace NHibernate.Linq.Visitors
 		{
 			if(exp==null)
 				return null;
-			switch((SqlExpressionType)exp.NodeType)
+			switch((NHExpressionType)exp.NodeType)
 			{
-				case SqlExpressionType.Entity:
-					return this.VisitEntity((EntityExpression)exp);
-				case SqlExpressionType.Select:
+				case NHExpressionType.QuerySource:
+					return this.VisitQuerySource((QuerySourceExpression)exp);
+				case NHExpressionType.Select:
 					return this.VisitSelect((SelectExpression)exp);
-				case SqlExpressionType.Projection:
+				case NHExpressionType.Projection:
 					return this.VisitProjection((ProjectionExpression)exp);
+				case NHExpressionType.Property:
+					return this.VisitProperty((PropertyExpression)exp);
 				default:
 					return base.Visit(exp);
 			}
@@ -42,23 +44,28 @@ namespace NHibernate.Linq.Visitors
 		}
 		protected virtual Expression VisitSource(Expression source)
 		{
-			return this.Visit(source);
+			return source;
 		}
+		protected virtual Expression VisitProperty(PropertyExpression property)
+		{
+			return property;
+		}
+		//TODO: modify
 		protected virtual Expression VisitSelect(SelectExpression select)
 		{
 			Expression from = this.VisitSource(select.From);
 			Expression where = this.Visit(select.Where);
-
+			Expression projection = this.Visit(select.Projection);
 			if (from != select.From || where != select.Where)
 			{
-				return new SelectExpression(select.Type, select.Alias, from, where);
+				return new SelectExpression(select.Type, select.FromAlias, projection, from, where);
 			}
 			else
 				return select;
 		}
-		protected virtual Expression VisitEntity(EntityExpression expr)
+		protected virtual Expression VisitQuerySource(QuerySourceExpression expr)
 		{
-			return this.Visit(expr);
+			return expr;
 		}
 		 
 	}
