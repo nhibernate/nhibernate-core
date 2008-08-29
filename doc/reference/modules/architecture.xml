@@ -14,10 +14,10 @@
                 <imagedata fileref="images/overview.svg" format="SVG" align="center"/>
             </imageobject>
             <imageobject role="html">
-                <imagedata fileref="../shared/images/overview.gif" format="GIF" align="center"/>
+                <imagedata fileref="../shared/images/Overview.jpg" format="JPG" align="center"/>
             </imageobject>
             <imageobject role="chm">
-                <imagedata fileref="../shared/images/overview.gif" format="GIF" align="center"/>
+                <imagedata fileref="../shared/images/Overview.jpg" format="JPG" align="center"/>
             </imageobject>
         </mediaobject>
         

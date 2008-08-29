@@ -84,6 +84,7 @@
 		<!-- Copy the images and the stylesheet -->
 		<copy todir="${build.shared.dir}/images" overwrite="true" >
 			<fileset basedir="images">
+				<include name="**/*.jpg" />
 				<include name="**/*.gif" />
 				<include name="**/*.png" />
 			</fileset>
