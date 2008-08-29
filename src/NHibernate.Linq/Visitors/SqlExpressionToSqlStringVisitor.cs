@@ -187,6 +187,8 @@ namespace NHibernate.Linq.Visitors
 						selectBuilder.Add(", ");
 					started = true;
 					selectBuilder.Add(mapping.ToColumns(name)[0]);
+					selectBuilder.Add(" AS ");
+					selectBuilder.Add(name);
 				}
 
 			}
