@@ -530,6 +530,7 @@
     <Compile Include="Context\ICurrentSessionContext.cs" />
     <Compile Include="Context\ManagedWebSessionContext.cs" />
     <Compile Include="Context\MapBasedSessionContext.cs" />
+    <Compile Include="Context\ThreadLocalSessionContext.cs" />
     <Compile Include="Context\ThreadStaticSessionContext.cs" />
     <Compile Include="Context\WebSessionContext.cs" />
     <Compile Include="CriteriaTransformer.cs" />
@@ -641,6 +642,7 @@
     <Compile Include="Dialect\Schema\MsSqlMetaData.cs" />
     <Compile Include="Dialect\Schema\OracleMetaData.cs" />
     <Compile Include="Dialect\Sybase11Dialect.cs" />
+    <Compile Include="Driver\ASA10ClientDriver.cs" />
     <Compile Include="Driver\ISqlParameterFormatter.cs" />
     <Compile Include="Driver\SqlStringFormatter.cs" />
     <Compile Include="EmptyInterceptor.cs" />
@@ -678,6 +680,9 @@
     <Compile Include="Engine\Query\Sql\NativeSQLQueryRootReturn.cs" />
     <Compile Include="Engine\Query\Sql\NativeSQLQueryScalarReturn.cs" />
     <Compile Include="Engine\StatefulPersistenceContext.cs" />
+    <Compile Include="Engine\TransactionHelper.cs" />
+    <Compile Include="Engine\Transaction\IIsolatedWork.cs" />
+    <Compile Include="Engine\Transaction\Isolater.cs" />
     <Compile Include="Engine\TwoPhaseLoad.cs" />
     <Compile Include="Engine\ValueInclusion.cs" />
     <Compile Include="Engine\VersionValue.cs" />
@@ -792,6 +797,13 @@
     <Compile Include="Exceptions\SQLStateConverter.cs" />
     <Compile Include="FKUnmatchingColumnsException.cs" />
     <Compile Include="Id\AbstractPostInsertGenerator.cs" />
+    <Compile Include="Id\Enhanced\IAccessCallback.cs" />
+    <Compile Include="Id\Enhanced\IDatabaseStructure.cs" />
+    <Compile Include="Id\Enhanced\IOptimizer.cs" />
+    <Compile Include="Id\Enhanced\OptimizerFactory.cs" />
+    <Compile Include="Id\Enhanced\SequenceStructure.cs" />
+    <Compile Include="Id\Enhanced\SequenceStyleGenerator.cs" />
+    <Compile Include="Id\Enhanced\TableStructure.cs" />
     <Compile Include="Id\Insert\AbstractReturningDelegate.cs">
       <SubType>Code</SubType>
     </Compile>

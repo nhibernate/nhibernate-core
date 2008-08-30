@@ -26,7 +26,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <NoWarn>618,612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -72,11 +72,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Any\Address.cs" />
+    <Compile Include="Any\AnyTypeTest.cs" />
+    <Compile Include="Any\ComplexPropertyValue.cs" />
+    <Compile Include="Any\IntegerPropertyValue.cs" />
+    <Compile Include="Any\IPropertyValue.cs" />
+    <Compile Include="Any\Person.cs" />
+    <Compile Include="Any\PropertySet.cs" />
+    <Compile Include="Any\StringPropertyValue.cs" />
     <Compile Include="Assertions\InheritedAreMarkedSerializable.cs" />
     <Compile Include="Assertions\IsSerializable.cs" />
     <Compile Include="CacheTest\CacheFixture.cs" />
     <Compile Include="CacheTest\QueryCacheFixture.cs" />
     <Compile Include="CacheTest\TimestamperFixture.cs" />
+    <Compile Include="Cascade\Job.cs" />
+    <Compile Include="Cascade\JobBatch.cs" />
+    <Compile Include="Cascade\RefreshFixture.cs" />
     <Compile Include="CfgTest\ConfigurationFixture.cs" />
     <Compile Include="CfgTest\ConfigurationSchemaFixture.cs" />
     <Compile Include="CfgTest\DefaultNsAssmFixture.cs" />
@@ -116,6 +127,9 @@
     <Compile Include="Criteria\Student.cs" />
     <Compile Include="Criteria\StudentDTO.cs" />
     <Compile Include="DebugConnectionProvider.cs" />
+    <Compile Include="Deletetransient\Address.cs" />
+    <Compile Include="Deletetransient\DeleteTransientEntityTest.cs" />
+    <Compile Include="Deletetransient\Person.cs" />
     <Compile Include="DialectTest\DB2DialectFixture.cs" />
     <Compile Include="DialectTest\DialectFixture.cs" />
     <Compile Include="DialectTest\FirebirdDialectFixture.cs" />
@@ -125,7 +139,46 @@
     <Compile Include="DriverTest\NullReferenceFixture.cs" />
     <Compile Include="DriverTest\OracleClientDriverFixture.cs" />
     <Compile Include="DriverTest\OracleDataClientDriverFixture.cs" />
+    <Compile Include="DynamicEntity\Address.cs" />
+    <Compile Include="DynamicEntity\Company.cs" />
+    <Compile Include="DynamicEntity\Customer.cs" />
+    <Compile Include="DynamicEntity\DataProxyHandler.cs" />
+    <Compile Include="DynamicEntity\Interceptor\InterceptorDynamicEntity.cs" />
+    <Compile Include="DynamicEntity\Interceptor\ProxyInterceptor.cs" />
+    <Compile Include="DynamicEntity\IProxyMarker.cs" />
+    <Compile Include="DynamicEntity\Person.cs" />
+    <Compile Include="DynamicEntity\ProxyHelper.cs" />
+    <Compile Include="DynamicEntity\Tuplizer\EntityNameInterceptor.cs" />
+    <Compile Include="DynamicEntity\Tuplizer\MyEntityInstantiator.cs" />
+    <Compile Include="DynamicEntity\Tuplizer\MyEntityTuplizer.cs" />
+    <Compile Include="DynamicEntity\Tuplizer\TuplizerDynamicEntity.cs" />
     <Compile Include="EngineTest\TypedValueFixture.cs" />
+    <Compile Include="EntityModeTest\Map\Basic\DynamicClassFixture.cs" />
+    <Compile Include="Events\Collections\AbstractCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\AbstractParentWithCollection.cs" />
+    <Compile Include="Events\Collections\Association\AbstractAssociationCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\ManyToMany\BidirectionalManyToManyBagToSetCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\ManyToMany\BidirectionalManyToManySetToSetCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\ManyToMany\ChildWithBidirectionalManyToMany.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\ManyToMany\ParentWithBidirectionalManyToMany.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\OneToMany\BidirectionalOneToManyBagCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\OneToMany\BidirectionalOneToManyBagSubclassCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\OneToMany\BidirectionalOneToManySetCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\OneToMany\ChildWithManyToOne.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\OneToMany\ParentWithBidirectionalOneToMany.cs" />
+    <Compile Include="Events\Collections\Association\Bidirectional\OneToMany\ParentWithBidirectionalOneToManySubclass.cs" />
+    <Compile Include="Events\Collections\Association\Unidirectional\ManyToMany\UnidirectionalManyToManyBagCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\Association\Unidirectional\OneToMany\UnidirectionalOneToManyBagCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\Association\Unidirectional\OneToMany\UnidirectionalOneToManySetCollectionEventFixture.cs" />
+    <Compile Include="Events\Collections\Association\Unidirectional\ParentWithCollectionOfEntities.cs" />
+    <Compile Include="Events\Collections\ChildEntity.cs" />
+    <Compile Include="Events\Collections\ChildValue.cs" />
+    <Compile Include="Events\Collections\CollectionListeners.cs" />
+    <Compile Include="Events\Collections\IChild.cs" />
+    <Compile Include="Events\Collections\IEntity.cs" />
+    <Compile Include="Events\Collections\IParentWithCollection.cs" />
+    <Compile Include="Events\Collections\Values\ParentWithCollectionOfValues.cs" />
+    <Compile Include="Events\Collections\Values\ValuesBagCollectionEventFixture.cs" />
     <Compile Include="ExceptionsTest\PropertyAccessExceptionFixture.cs" />
     <Compile Include="ExpressionTest\BaseExpressionFixture.cs" />
     <Compile Include="ExpressionTest\BetweenExpressionFixture.cs" />
@@ -147,6 +200,11 @@
     <Compile Include="ExpressionTest\SQLExpressionFixture.cs" />
     <Compile Include="ExpressionTest\SubQueries\Classes.cs" />
     <Compile Include="ExpressionTest\SubQueries\SubQueriesSqlFixture.cs" />
+    <Compile Include="Extralazy\Document.cs" />
+    <Compile Include="Extralazy\ExtraLazyFixture.cs" />
+    <Compile Include="Extralazy\Group.cs" />
+    <Compile Include="Extralazy\SessionAttribute.cs" />
+    <Compile Include="Extralazy\User.cs" />
     <Compile Include="FilterTest\BinaryFiltered.cs" />
     <Compile Include="FilterTest\Category.cs" />
     <Compile Include="FilterTest\Department.cs" />
@@ -200,6 +258,7 @@
     <Compile Include="HQLFunctionTest\SQLFunctionTemplateTest.cs" />
     <Compile Include="BulkManipulation\NativeSQLBulkOperations.cs" />
     <Compile Include="BulkManipulation\Vehicles.cs" />
+    <Compile Include="IdGen\Enhanced\SequenceStyleConfigUnitFixture.cs" />
     <Compile Include="IdTest\HiLoInt16Class.cs" />
     <Compile Include="IdTest\HiLoInt32Class.cs" />
     <Compile Include="IdTest\HiLoInt64Class.cs" />
@@ -267,6 +326,10 @@
     <Compile Include="MultipleCollectionFetchTest\MultipleSetFetchFixture.cs" />
     <Compile Include="MultipleCollectionFetchTest\Person.cs" />
     <Compile Include="MultiThreadRunner.cs" />
+    <Compile Include="Naturalid\Immutable\ImmutableNaturalIdFixture.cs" />
+    <Compile Include="Naturalid\Immutable\User.cs" />
+    <Compile Include="Naturalid\Mutable\MutableNaturalIdFixture.cs" />
+    <Compile Include="Naturalid\Mutable\User.cs" />
     <Compile Include="NHAssert.cs" />
     <Compile Include="NHibernateUtilTest.cs" />
     <Compile Include="NHSpecificTest\AliasFixture.cs" />
@@ -1318,6 +1381,29 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1253\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Any\Person.hbm.xml" />
+    <EmbeddedResource Include="Any\Properties.hbm.xml" />
+    <EmbeddedResource Include="Cascade\Job.hbm.xml" />
+    <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
+    <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
+    <EmbeddedResource Include="DynamicEntity\Interceptor\Customer.hbm.xml" />
+    <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
+    <EmbeddedResource Include="EntityModeTest\Map\Basic\ProductLine.hbm.xml" />
+    <EmbeddedResource Include="Events\Collections\Association\Bidirectional\ManyToMany\BidirectionalManyToManyBagToSetMapping.hbm.xml" />
+    <EmbeddedResource Include="Events\Collections\Association\Bidirectional\ManyToMany\BidirectionalManyToManySetToSetMapping.hbm.xml" />
+    <EmbeddedResource Include="Events\Collections\Association\Bidirectional\OneToMany\BidirectionalOneToManyBagMapping.hbm.xml" />
+    <EmbeddedResource Include="Events\Collections\Association\Bidirectional\OneToMany\BidirectionalOneToManyBagSubclassMapping.hbm.xml" />
+    <EmbeddedResource Include="Events\Collections\Association\Bidirectional\OneToMany\BidirectionalOneToManySetMapping.hbm.xml" />
+    <EmbeddedResource Include="Events\Collections\Association\Unidirectional\ManyToMany\UnidirectionalManyToManyBagMapping.hbm.xml" />
+    <EmbeddedResource Include="Events\Collections\Association\Unidirectional\OneToMany\UnidirectionalOneToManyBagMapping.hbm.xml" />
+    <EmbeddedResource Include="Events\Collections\Association\Unidirectional\OneToMany\UnidirectionalOneToManySetMapping.hbm.xml" />
+    <EmbeddedResource Include="Events\Collections\Values\ValuesBagMapping.hbm.xml" />
+    <EmbeddedResource Include="Extralazy\UserGroup.hbm.xml" />
+    <EmbeddedResource Include="Naturalid\Immutable\User.hbm.xml" />
+    <EmbeddedResource Include="Naturalid\Mutable\User.hbm.xml" />
+    <EmbeddedResource Include="TypeParameters\Typedef.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
