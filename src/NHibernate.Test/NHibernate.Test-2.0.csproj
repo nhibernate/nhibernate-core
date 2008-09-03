@@ -464,6 +464,7 @@
     <Compile Include="NHSpecificTest\NH1419\Blog.cs" />
     <Compile Include="NHSpecificTest\NH1419\Entry.cs" />
     <Compile Include="NHSpecificTest\NH1419\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1464\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
