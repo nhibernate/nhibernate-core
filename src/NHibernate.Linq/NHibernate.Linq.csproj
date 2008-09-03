@@ -52,6 +52,7 @@
     <Compile Include="Expressions\NHExpression.cs" />
     <Compile Include="Expressions\NHExpressionType.cs" />
     <Compile Include="Expressions\QuerySourceExpression.cs" />
+    <Compile Include="Query\LinqTranslator.cs" />
     <Compile Include="Util\Guard.cs" />
     <Compile Include="Util\LinqUtil.cs" />
     <Compile Include="Visitors\AssociationRewriteVisitor.cs" />
@@ -65,11 +66,9 @@
     <Compile Include="Visitors\LocalVariableExpressionReducer.cs" />
     <Compile Include="Visitors\NHibernateExpressionVisitor.cs" />
     <Compile Include="Visitors\NHExpressionToSqlQueryTranslator.cs" />
-    <Compile Include="Visitors\SqlExpressionToSqlStringVisitor.cs" />
+    <Compile Include="Visitors\QuerySpacesFinderVisitor.cs" />
+    <Compile Include="Visitors\SqlExpressionTranslator.cs" />
     <Compile Include="Visitors\NHExpressionToSqlExpressionTransformer.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Loaders\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

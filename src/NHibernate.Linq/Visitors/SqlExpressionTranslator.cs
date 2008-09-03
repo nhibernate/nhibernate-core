@@ -6,7 +6,6 @@ using System.Text;
 using NHibernate.Engine;
 using NHibernate.Linq.Expressions;
 using NHibernate.SqlCommand;
-using SelectFragment=NHibernate.SqlCommand.SelectFragment;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NHibernate.Metadata;
@@ -22,35 +21,37 @@ namespace NHibernate.Linq.Visitors
 
 			var visitor = new SqlExpressionToSqlStringVisitor(sessionFactory,parameterList);
 			visitor.Visit(expr);
-			return visitor.selectBuilder.ToSqlString();
+			return visitor.sqlStringBuilder.ToSqlString();
 		}
 
 		public SqlExpressionToSqlStringVisitor(ISessionFactoryImplementor sessionFactory,IList<object> parameterList)
 		{
-			this.selectBuilder = new SqlStringBuilder();
+			this.sqlStringBuilder = new SqlStringBuilder();
 			this.sessionFactory = sessionFactory;
 			this.parameterList = parameterList;
+
 		}
 
 		private readonly IList<object> parameterList;
-		private ISessionFactoryImplementor sessionFactory;
-		private SqlStringBuilder selectBuilder;
+		private readonly ISessionFactoryImplementor sessionFactory;
+		private SqlStringBuilder sqlStringBuilder;
+
 		protected override Expression VisitUnary(UnaryExpression u)
 		{
 			switch(u.NodeType)
 			{
 				case ExpressionType.Not:
 					{
-						selectBuilder.Add(" NOT (");
+						sqlStringBuilder.Add(" NOT (");
 						Expression ret=base.VisitUnary(u);
-						selectBuilder.Add(")");
+						sqlStringBuilder.Add(")");
 						return ret;
 					}
 				case ExpressionType.Negate:
 					{
-						selectBuilder.Add("(-1 * (");
+						sqlStringBuilder.Add("(-1 * (");
 						Expression ret = base.VisitUnary(u);
-						selectBuilder.Add("))");
+						sqlStringBuilder.Add("))");
 						return ret;
 					}
 			}
@@ -112,23 +113,19 @@ namespace NHibernate.Linq.Visitors
 
 			#endregion
 
-			selectBuilder.Add("(");
+			sqlStringBuilder.Add("(");
 			this.Visit(b.Left);
-			selectBuilder.Add(" ");
-			selectBuilder.Add(op);
-			selectBuilder.Add(" ");
+			sqlStringBuilder.Add(" ");
+			sqlStringBuilder.Add(op);
+			sqlStringBuilder.Add(" ");
 			this.Visit(b.Right);
-			selectBuilder.Add(")");
+			sqlStringBuilder.Add(")");
 			return b;
-		}
-		protected override Expression VisitConditional(ConditionalExpression c)
-		{
-			return base.VisitConditional(c);
 		}
 
 		protected override Expression VisitConstant(ConstantExpression c)
 		{
-			selectBuilder.AddParameter();
+			sqlStringBuilder.AddParameter();
 			parameterList.Add(c.Value);
 			return c;
 		}
@@ -137,42 +134,40 @@ namespace NHibernate.Linq.Visitors
 		{
 			ParameterExpression expr = property.Expression as ParameterExpression;
 
-			selectBuilder.Add(string.Format("{0}.{1}", expr.Name, property.Name));
+			sqlStringBuilder.Add(string.Format("{0}.{1}", expr.Name, property.Name));
 			return property;
 		}
 
 		protected override Expression VisitSelect(SelectExpression select)
 		{
-			selectBuilder.Add("(SELECT ");
-			if(select.Projection!=null)
-				this.Visit(select.Projection);
-			else
-				selectBuilder.Add(select.FromAlias+".* ");
-
-			if (select.From != null)
-			{
-				selectBuilder.Add(" FROM (");
-				this.Visit(select.From);
-				selectBuilder.Add(") AS ");
-				selectBuilder.Add(select.FromAlias);
-			}
-			else 
-				throw new NotImplementedException();
-			if(select.Where!=null)
-			{
-				selectBuilder.Add(" WHERE ");
-				this.Visit(select.Where);
-			}
-			selectBuilder.Add(")");
+			SqlSelectBuilder selectBuilder=new SqlSelectBuilder(this.sessionFactory);
+			SqlString selectString = new SqlString("*");
+			SqlString fromString = SqlExpressionToSqlStringVisitor.Translate(select.From, sessionFactory, parameterList);
+			fromString=new SqlString("(",fromString,")");
+			SqlString whereString = SqlExpressionToSqlStringVisitor.Translate(select.Where, sessionFactory, parameterList);
+			SqlString outerJoinsAfterFrom=new SqlString();
+			SqlString outerJoinsAfterWhere=new SqlString();
+			selectBuilder.SetFromClause(fromString);
+			selectBuilder.SetWhereClause(whereString);
+			selectBuilder.SetSelectClause(selectString);
+			selectBuilder.SetOuterJoins(outerJoinsAfterFrom, outerJoinsAfterWhere);
+			this.sqlStringBuilder.Add(selectBuilder.ToSqlString());
 			return select;
 		}
 
 		protected override Expression VisitQuerySource(QuerySourceExpression expr)
 		{
-			selectBuilder.Add("SELECT ");
+
+			sqlStringBuilder.Add("SELECT ");
 			IClassMetadata metadata = sessionFactory.GetClassMetadata(expr.Query.ElementType);
 			IPropertyMapping mapping = (IPropertyMapping)sessionFactory.GetEntityPersister(metadata.EntityName);
 			string[] names = metadata.PropertyNames;
+
+
+
+
+
+
 			bool started = false;
 			for (int i = 0; i < names.Length;i++ )
 			{
@@ -184,25 +179,21 @@ namespace NHibernate.Linq.Visitors
 					propertyType.IsAnyType))
 				{
 					if(started)
-						selectBuilder.Add(", ");
+						sqlStringBuilder.Add(", ");
 					started = true;
-					selectBuilder.Add(mapping.ToColumns(name)[0]);
-					selectBuilder.Add(" AS ");
-					selectBuilder.Add(name);
+					sqlStringBuilder.Add(mapping.ToColumns(name)[0]);
+					sqlStringBuilder.Add(" AS ");
+					sqlStringBuilder.Add(name);
 				}
 
 			}
-			selectBuilder.Add(" FROM ");
-			selectBuilder.Add(expr.Query.ElementType.Name);
+			sqlStringBuilder.Add(" FROM ");
+			sqlStringBuilder.Add(expr.Query.ElementType.Name);
 			return base.VisitQuerySource(expr);
-		}
-		protected override Expression VisitParameter(ParameterExpression p)
-		{
-			return base.VisitParameter(p);
 		}
 		public override string ToString()
 		{
-			return selectBuilder.ToString();
+			return sqlStringBuilder.ToString();
 		}
 	}
 }

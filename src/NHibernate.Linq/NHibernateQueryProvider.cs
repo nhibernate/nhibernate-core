@@ -1,5 +1,4 @@
 ﻿using System;
-using NHibernate.Criterion;
 using NHibernate.Linq.Util;
 using NHibernate.SqlCommand;
 using Expression=System.Linq.Expressions.Expression;
@@ -12,22 +11,23 @@ namespace NHibernate.Linq
 	public class NHibernateQueryProvider : QueryProvider
 	{
 		private readonly ISession session;
-
+		private readonly ISessionFactoryImplementor sessionFactory;
 		public NHibernateQueryProvider(ISession session)
 		{
 			Guard.AgainstNull(session,"session");
 			this.session = session;
+			this.sessionFactory = this.session.SessionFactory as ISessionFactoryImplementor;
 		}
 
 		public override object Execute(Expression expression)
 		{
 			IList<object> parameterList = new List<object>();
-			ISessionFactoryImplementor sessionFactory = this.session.SessionFactory as ISessionFactoryImplementor;
 			expression = LocalVariableExpressionReducer.Reduce(expression);
 			expression = LogicalExpressionReducer.Reduce(expression);
 			expression = AssociationRewriteVisitor.Rewrite(expression, sessionFactory);
 			expression = NHExpressionToSqlExpressionTransformer.Transform(sessionFactory, expression);
 			SqlString sql=SqlExpressionToSqlStringVisitor.Translate(expression, sessionFactory,parameterList);
+			Console.WriteLine(sql);
 			throw new NotImplementedException();
 			//expression = AssociationVisitor.RewriteWithAssociations(session.SessionFactory, expression);
 			//expression = CollectionAliasVisitor.AssignCollectionAccessAliases(expression);

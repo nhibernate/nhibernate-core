@@ -13,7 +13,7 @@ namespace NHibernate.Linq.Test
 		[Ignore("this doesn't work yet")]
 		public void CanSelectAnimals()
 		{
-			var animals = session.Linq<Animal>();
+			var animals = session.Linq<Animal>().ToList();
 			Assert.IsNotNull(animals);
 		}
 	}

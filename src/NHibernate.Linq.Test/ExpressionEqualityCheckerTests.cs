@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Linq.Test
 {
 	[TestFixture]
-	public class ExpressionEqualityCheckerTests
+	public class ExpressionEqualityCheckerTests:BaseTest
 	{
 		[Test]
 		public void SimpleExpressionsProducesCorrectResult()
