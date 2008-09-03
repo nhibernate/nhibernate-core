@@ -723,6 +723,8 @@
     <Compile Include="TypesTest\DecimalTypeFixture.cs" />
     <Compile Include="TypesTest\DoubleClass.cs" />
     <Compile Include="TypesTest\DoubleTypeFixture.cs" />
+    <Compile Include="TypesTest\EntityClass.cs" />
+    <Compile Include="TypesTest\EntityTypeFixture.cs" />
     <Compile Include="TypesTest\EnumStringClass.cs" />
     <Compile Include="TypesTest\EnumStringTypeFixture.cs" />
     <Compile Include="TypesTest\GuidClass.cs" />
@@ -1318,6 +1320,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH1419\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TypesTest\EntityClass.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
