@@ -91,14 +91,19 @@ namespace NHibernate.Proxy
 
 		private static void CheckMethodIsVirtual(System.Type type, MethodInfo method, IList errors)
 		{
-			if (method.DeclaringType != typeof(object) && 
-				(method.IsPublic || method.IsAssembly || method.IsFamilyOrAssembly))
+			if (method.DeclaringType != typeof(object) && !IsDisposeMethod(method) &&
+				method.IsPublic || method.IsAssembly || method.IsFamilyOrAssembly)
 			{
 				if (!method.IsVirtual || method.IsFinal)
 				{
 					Error(errors, type, "method " + method.Name + " should be virtual");
 				}
 			}
+		}
+
+		private static bool IsDisposeMethod(MethodBase method)
+		{
+			return method.Name.Equals("Dispose") && method.MemberType == MemberTypes.Method && method.GetParameters().Length == 0;
 		}
 
 		private static bool HasVisibleDefaultConstructor(System.Type type)
