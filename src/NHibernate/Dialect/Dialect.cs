@@ -989,7 +989,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// How we seperate the queries when we use multiply queries.
+		/// How we separate the queries when we use multiply queries.
 		/// </summary>
 		public virtual string MultipleQueriesSeparator
 		{
@@ -1105,7 +1105,7 @@ namespace NHibernate.Dialect
 
 		/// <summary>
 		/// Whether this dialect has an identity clause added to the data type or a
-		/// completely seperate identity data type.
+		/// completely separate identity data type.
 		/// </summary>
 		public virtual bool HasDataTypeInIdentityColumn
 		{
@@ -1129,7 +1129,7 @@ namespace NHibernate.Dialect
 
 		/// <summary> 
 		/// Get the select command to use to retrieve the last generated IDENTITY
-		/// value for a particuar table 
+		/// value for a particular table 
 		/// </summary>
 		/// <param name="tableName">The table into which the insert was done </param>
 		/// <param name="identityColumn">The PK column. </param>
@@ -1234,7 +1234,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary> 
-		/// Generate the select expression fragment that will retreive the next
+		/// Generate the select expression fragment that will retrieve the next
 		/// value of a sequence as part of another (typically DML) statement.
 		/// </summary>
 		/// <param name="sequenceName">the name of the sequence </param>
@@ -1837,7 +1837,7 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		/// <summary> Does the dialect support propogating changes to LOB
+		/// <summary> Does the dialect support propagating changes to LOB
 		/// values back to the database?  Talking about mutating the
 		/// internal value of the locator as opposed to supplying a new
 		/// locator instance...
@@ -1859,7 +1859,7 @@ namespace NHibernate.Dialect
 		/// databases which (1) are not part of the cruise control process
 		/// or (2) do not {@link #supportsExpectedLobUsagePattern}. 
 		/// </summary>
-		/// <returns> True if the changes are propogated back to the database; false otherwise. </returns>
+		/// <returns> True if the changes are propagated back to the database; false otherwise. </returns>
 		public virtual bool SupportsLobValueChangePropogation
 		{
 			get { return true; }

@@ -67,7 +67,7 @@ namespace NHibernate.Collection
 			// the multiplicity would be broken ... so use an idbag instead
 			object element = role.ReadElement(reader, owner, descriptor.SuffixedElementAliases, Session);
 			// NH Different behavior : we don't check for null
-			// The NH-750 test show how cheking for null we are ignoring the not-found tag and
+			// The NH-750 test show how checking for null we are ignoring the not-found tag and
 			// the DB may have some records ignored by NH. This issue may need some more deep consideration.
 			//if (element != null)
 				bag.Add(element);

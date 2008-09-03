@@ -70,7 +70,7 @@ namespace NHibernate
 		/// updated via a seperate process (i.e., not modified through Hibernate) and
 		/// allows the application to selectively refresh the query cache regions
 		/// based on its knowledge of those events.
-		/// <param name="forceCacheRefresh">Should the query result in a forceable refresh of
+		/// <param name="forceCacheRefresh">Should the query result in a forcible refresh of
 		/// the query cache?</param>
 		IMultiQuery SetForceCacheRefresh(bool forceCacheRefresh);
 

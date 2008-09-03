@@ -737,7 +737,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			return columns.ToString();
 		}
 
-		//automatically makes a column with the default name if none is specifed by XML
+		//automatically makes a column with the default name if none is specified by XML
 		protected void BindSimpleValue(XmlNode node, SimpleValue model, bool isNullable, string path)
 		{
 			BindSimpleValueType(node, model);

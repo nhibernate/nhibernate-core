@@ -956,7 +956,7 @@ namespace NHibernate.Type
 		/// <param name="types">The value types </param>
 		/// <param name="copy">an array indicating which values to include in the copy </param>
 		/// <param name="target">The array into which to copy the values </param>
-		/// <param name="session">The orginating session </param>
+		/// <param name="session">The originating session </param>
 		public static void DeepCopy(object[] values, IType[] types, bool[] copy, object[] target, ISessionImplementor session)
 		{
 			for (int i = 0; i < types.Length; i++)
@@ -978,7 +978,7 @@ namespace NHibernate.Type
 		/// <summary> Apply the <see cref="ICacheAssembler.BeforeAssemble"/> operation across a series of values. </summary>
 		/// <param name="row">The values </param>
 		/// <param name="types">The value types </param>
-		/// <param name="session">The orginating session </param>
+		/// <param name="session">The originating session </param>
 		public static void BeforeAssemble(object[] row, ICacheAssembler[] types, ISessionImplementor session)
 		{
 			for (int i = 0; i < types.Length; i++)
@@ -1100,8 +1100,8 @@ namespace NHibernate.Type
 		/// <summary> Apply the {@link Type#disassemble} operation across a series of values. </summary>
 		/// <param name="row">The values </param>
 		/// <param name="types">The value types </param>
-		/// <param name="nonCacheable">An array indicating which values to include in the disassemled state </param>
-		/// <param name="session">The orginating session </param>
+		/// <param name="nonCacheable">An array indicating which values to include in the disassembled state </param>
+		/// <param name="session">The originating session </param>
 		/// <param name="owner">The entity "owning" the values </param>
 		/// <returns> The disassembled state </returns>
 		public static object[] Disassemble(object[] row, ICacheAssembler[] types, bool[] nonCacheable, ISessionImplementor session, object owner)
@@ -1132,7 +1132,7 @@ namespace NHibernate.Type
 		/// <param name="original">The source of the state </param>
 		/// <param name="target">The target into which to replace the source values. </param>
 		/// <param name="types">The value types </param>
-		/// <param name="session">The orginating session </param>
+		/// <param name="session">The originating session </param>
 		/// <param name="owner">The entity "owning" the values </param>
 		/// <param name="copiedAlready">Represent a cache of already replaced state </param>
 		/// <returns> The replaced state </returns>
@@ -1154,7 +1154,7 @@ namespace NHibernate.Type
 		/// <param name="original">The source of the state </param>
 		/// <param name="target">The target into which to replace the source values. </param>
 		/// <param name="types">The value types </param>
-		/// <param name="session">The orginating session </param>
+		/// <param name="session">The originating session </param>
 		/// <param name="owner">The entity "owning" the values </param>
 		/// <param name="copyCache">A map representing a cache of already replaced state </param>
 		/// <param name="foreignKeyDirection">FK directionality to be applied to the replacement </param>
@@ -1183,14 +1183,14 @@ namespace NHibernate.Type
 		/// <param name="original">The source of the state </param>
 		/// <param name="target">The target into which to replace the source values. </param>
 		/// <param name="types">The value types </param>
-		/// <param name="session">The orginating session </param>
+		/// <param name="session">The originating session </param>
 		/// <param name="owner">The entity "owning" the values </param>
 		/// <param name="copyCache">A map representing a cache of already replaced state </param>
 		/// <param name="foreignKeyDirection">FK directionality to be applied to the replacement </param>
 		/// <returns> The replaced state </returns>
 		/// <remarks>
 		/// If the corresponding type is a component type, then apply <see cref="ReplaceAssociations"/>
-		/// accross the component subtypes but do not replace the component value itself.
+		/// across the component subtypes but do not replace the component value itself.
 		/// </remarks>
 		public static object[] ReplaceAssociations(object[] original, object[] target, IType[] types, 
 			ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)

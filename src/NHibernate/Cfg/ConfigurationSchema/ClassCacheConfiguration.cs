@@ -158,7 +158,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		/// </summary>
 		/// <remarks>
 		/// Not implemented in Cache.
-		/// Defaul value <see cref="ClassCacheInclude.All"/>.
+		/// Default value <see cref="ClassCacheInclude.All"/>.
 		/// </remarks>
 		public ClassCacheInclude Include
 		{

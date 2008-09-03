@@ -24,7 +24,7 @@ namespace NHibernate.Dialect.Schema
 		bool StoresUpperCaseQuotedIdentifiers { get; }
 
 		/// <summary>
-		/// In the Java language, this field indicats that the database treats mixed-case, 
+		/// In the Java language, this field indicates that the database treats mixed-case, 
 		/// unquoted SQL identifiers as case-insensitive and stores them in upper case.
 		/// </summary>
 		bool StoresUpperCaseIdentifiers { get; }
@@ -82,7 +82,7 @@ namespace NHibernate.Dialect.Schema
 		/// <param name="schemaPattern">Schema pattern, retrieves those without the schema</param>
 		/// <param name="tableName">A table name pattern</param>
 		/// <returns>A description of the table's indices available</returns>
-		/// <remarks>The result is relative to the schema sollections "Indexes".</remarks>
+		/// <remarks>The result is relative to the schema collections "Indexes".</remarks>
 		DataTable GetIndexInfo(string catalog, string schemaPattern, string tableName);
 
 		/// <summary>
@@ -93,7 +93,7 @@ namespace NHibernate.Dialect.Schema
 		/// <param name="tableName">A table name pattern</param>
 		/// <param name="indexName">The name of the index</param>
 		/// <returns>A description of the table's indices available</returns>
-		/// <remarks>The result is relative to the schema sollections "IndexColumns".</remarks>
+		/// <remarks>The result is relative to the schema collections "IndexColumns".</remarks>
 		DataTable GetIndexColumns(string catalog, string schemaPattern, string tableName, string indexName);
 		
 		/*

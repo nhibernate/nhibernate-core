@@ -23,7 +23,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Cascade the action to the child object. </summary>
-		/// <param name="session">The session within which the cascade is occuring. </param>
+		/// <param name="session">The session within which the cascade is occurring. </param>
 		/// <param name="child">The child to which cascading should be performed. </param>
 		/// <param name="entityName">The child's entity name </param>
 		/// <param name="anything">Typically some form of cascade-local cache which is specific to each CascadingAction type </param>
@@ -34,7 +34,7 @@ namespace NHibernate.Engine
 		/// Given a collection, get an iterator of the children upon which the
 		/// current cascading action should be visited. 
 		/// </summary>
-		/// <param name="session">The session within which the cascade is occuring. </param>
+		/// <param name="session">The session within which the cascade is occurring. </param>
 		/// <param name="collectionType">The mapping type of the collection. </param>
 		/// <param name="collection">The collection instance. </param>
 		/// <returns> The children iterator. </returns>
@@ -56,7 +56,7 @@ namespace NHibernate.Engine
 		/// Called (in the case of <see cref="RequiresNoCascadeChecking"/> returning true) to validate
 		/// that no cascade on the given property is considered a valid semantic. 
 		/// </summary>
-		/// <param name="session">The session witin which the cascade is occurring. </param>
+		/// <param name="session">The session within which the cascade is occurring. </param>
 		/// <param name="child">The property value </param>
 		/// <param name="parent">The property value owner </param>
 		/// <param name="persister">The entity persister for the owner </param>
@@ -79,7 +79,7 @@ namespace NHibernate.Engine
 		/// Given a collection, get an iterator of all its children, loading them
 		/// from the database if necessary. 
 		/// </summary>
-		/// <param name="session">The session within which the cascade is occuring. </param>
+		/// <param name="session">The session within which the cascade is occurring. </param>
 		/// <param name="collectionType">The mapping type of the collection. </param>
 		/// <param name="collection">The collection instance. </param>
 		/// <returns> The children iterator. </returns>
@@ -101,7 +101,7 @@ namespace NHibernate.Engine
 			}
 			else
 			{
-				// does not handle arrays (thats ok, cos they can't be lazy)
+				// does not handle arrays (that's ok, cos they can't be lazy)
 				// or newly instantiated collections, so we can do the cast
 				return ((IPersistentCollection)collection).QueuedAdditionIterator;
 			}

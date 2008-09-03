@@ -149,7 +149,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Gets or sets the <see cref="IEntityPersister"/> that is responsible for this Entity.
 		/// </summary>
-		/// <value>The <see cref="IEntityPersister"/> that is reponsible for this Entity.</value>
+		/// <value>The <see cref="IEntityPersister"/> that is responsible for this Entity.</value>
 		public IEntityPersister Persister
 		{
 			get { return persister; }

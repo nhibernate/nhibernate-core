@@ -45,7 +45,7 @@ namespace NHibernate.UserTypes
 		/// and perhaps load factor).
 		///  </summary>
 		/// <param name="anticipatedSize">
-		/// The anticipated size of the instaniated collection
+		/// The anticipated size of the instantiated collection
 		/// after we are done populating it.  Note, may be negative to indicate that
 		/// we not yet know anything about the anticipated size (i.e., when initializing
 		/// from a result set row by row).

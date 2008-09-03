@@ -44,7 +44,7 @@ namespace NHibernate.Type
 		/// a possibility of this PrimitiveType having any characters
 		/// that need to be encoded then this method should be overridden.
 		/// </remarks>
-		// TODO: figure out if this is used to build Xml strings or will have encoding done automattically.
+		// TODO: figure out if this is used to build Xml strings or will have encoding done automatically.
 		public override string ToString(object val)
 		{
 			return val.ToString();

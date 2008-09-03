@@ -27,9 +27,9 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Initialize the collection (if not already initialized)
 		/// </summary>
-		/// <param name="coolection"></param>
+		/// <param name="collection"></param>
 		/// <param name="writing"></param>
-		void InitializeCollection(IPersistentCollection coolection, bool writing);
+		void InitializeCollection(IPersistentCollection collection, bool writing);
 
 		// NH-268
 		/// <summary>
@@ -145,7 +145,7 @@ namespace NHibernate.Engine
 
 		/// <summary>
 		/// Notify the session that the transaction completed, so we no longer own the old locks.
-		/// (Also we shold release cache softlocks). May be called multiple times during the transaction
+		/// (Also we should release cache softlocks). May be called multiple times during the transaction
 		/// completion process.
 		/// </summary>
 		void AfterTransactionCompletion(bool successful, ITransaction tx);
@@ -178,7 +178,7 @@ namespace NHibernate.Engine
 		IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters);
 
 		/// <summary>
-		/// Retreive the currently set value for a filter parameter.
+		/// Retrieve the currently set value for a filter parameter.
 		/// </summary>
 		/// <param name="filterParameterName">The filter parameter name in the format 
 		/// {FILTER_NAME.PARAMETER_NAME}.</param>
@@ -186,7 +186,7 @@ namespace NHibernate.Engine
 		object GetFilterParameterValue(string filterParameterName);
 
 		/// <summary>
-		/// Retreive the type for a given filter parrameter.
+		/// Retrieve the type for a given filter parameter.
 		/// </summary>
 		/// <param name="filterParameterName">The filter parameter name in the format 
 		/// {FILTER_NAME.PARAMETER_NAME}.</param>
@@ -251,7 +251,7 @@ namespace NHibernate.Engine
 
 		IQuery GetNamedQuery(string queryName);
 
-		/// <summary> Determine whether the session is closed.  Provided seperately from
+		/// <summary> Determine whether the session is closed.  Provided separately from
 		/// {@link #isOpen()} as this method does not attempt any JTA synch
 		/// registration, where as {@link #isOpen()} does; which makes this one
 		/// nicer to use for most internal purposes. 

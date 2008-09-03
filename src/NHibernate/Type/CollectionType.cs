@@ -409,14 +409,14 @@ namespace NHibernate.Type
 		protected virtual void Clear(object collection)
 		{
 			throw new NotImplementedException(
-				"CollectionType.Clear was not overriden for type "
+				"CollectionType.Clear was not overridden for type "
 				+ GetType().FullName);
 		}
 
 		protected virtual void Add(object collection, object element)
 		{
 			throw new NotImplementedException(
-				"CollectionType.Add was not overriden for type "
+				"CollectionType.Add was not overridden for type "
 				+ GetType().FullName);
 		}
 
@@ -434,7 +434,7 @@ namespace NHibernate.Type
 
 		/// <summary>
 		/// We always need to dirty check the collection because we sometimes 
-		/// need to incremement version number of owner and also because of 
+		/// need to increment version number of owner and also because of 
 		/// how assemble/disassemble is implemented for uks
 		/// </summary>
 		public bool IsAlwaysDirtyChecked
@@ -543,7 +543,7 @@ namespace NHibernate.Type
 		/// and perhaps load factor).
 		/// </summary>
 		/// <param name="anticipatedSize">
-		/// The anticipated size of the instaniated collection after we are done populating it.
+		/// The anticipated size of the instantiated collection after we are done populating it.
 		/// </param>
 		/// <returns> A newly instantiated collection to be wrapped. </returns>
 		public abstract object Instantiate(int anticipatedSize);

@@ -311,7 +311,7 @@ namespace NHibernate.Event.Default
 
 		private object GetNextVersion(FlushEntityEvent @event)
 		{
-			// Convience method to retreive an entities next version value
+			// Convience method to retrieve an entities next version value
 			EntityEntry entry = @event.EntityEntry;
 			IEntityPersister persister = entry.Persister;
 			if (persister.IsVersioned)

@@ -64,7 +64,7 @@ namespace NHibernate.Cache
 		}
 
 		/// <summary>
-		/// Don't overwite already cached items
+		/// Don't overwrite already cached items
 		/// </summary>
 		/// <param name="txTimestamp"></param>
 		/// <param name="newVersion"></param>

@@ -79,7 +79,7 @@ namespace NHibernate.Cfg
 		/// Binding table between the logical column name and the name out of the naming strategy
 		/// for each table.
 		/// According that when the column name is not set, the property name is considered as such
-		/// This means that while theorically possible through the naming strategy contract, it is
+		/// This means that while theoretically possible through the naming strategy contract, it is
 		/// forbidden to have 2 real columns having the same logical name
 		/// </summary>
 		protected internal IDictionary<Table, ColumnNames> columnNameBindingPerTable;
@@ -387,7 +387,7 @@ namespace NHibernate.Cfg
 
 		/// <summary>
 		/// Gets or sets a boolean indicating if the Fully Qualified Type name should
-		/// automattically have an import added as the class name.
+		/// automatically have an import added as the class name.
 		/// </summary>
 		/// <value><see langword="true" /> if the class name should be used as an import.</value>
 		/// <remarks>

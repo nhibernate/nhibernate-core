@@ -292,8 +292,8 @@ namespace NHibernate.Engine.Loading
 				// some filters affecting the collection are enabled on the session, so do not do the put into the cache.
 				log.Debug("Refusing to add to cache due to enabled filters");
 				// todo : add the notion of enabled filters to the CacheKey to differentiate filtered collections from non-filtered;
-				//      but CacheKey is currently used for both collections and entities; would ideally need to define two seperate ones;
-				//      currently this works in conjuction with the check on
+				//      but CacheKey is currently used for both collections and entities; would ideally need to define two separate ones;
+				//      currently this works in conjunction with the check on
 				//      DefaultInitializeCollectionEventHandler.initializeCollectionFromCache() (which makes sure to not read from
 				//      cache with enabled filters).
 				return; // EARLY EXIT!!!!!

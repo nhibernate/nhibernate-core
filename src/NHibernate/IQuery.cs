@@ -176,7 +176,7 @@ namespace NHibernate
 		/// <summary>
 		/// Bind a value to an indexed parameter.
 		/// </summary>
-		/// <param name="position">Postion of the parameter in the query, numbered from <c>0</c></param>
+		/// <param name="position">Position of the parameter in the query, numbered from <c>0</c></param>
 		/// <param name="val">The possibly null parameter value</param>
 		/// <param name="type">The Hibernate type</param>
 		IQuery SetParameter(int position, object val, IType type);

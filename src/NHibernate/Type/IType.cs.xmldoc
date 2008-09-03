@@ -247,9 +247,9 @@
 	<member name="P:IType.HasNiceEquals">
 		<summary>
 		When implemented by a class, gets whether or not this IType contains 
-		<see cref="System.Type"/>s that implement well-behaived <c>Equals()</c> method.
+		<see cref="System.Type"/>s that implement well-behaved <c>Equals()</c> method.
 		</summary>
-		<value>true if a well-behaived <c>Equals()</c> is implemented.</value>
+		<value>true if a well-behaved <c>Equals()</c> is implemented.</value>
 		<remarks>
 		<para>
 		Strickly, if this method returns <c>true</c> then <c>x.Equals(y)</c> implies
@@ -271,7 +271,7 @@
 	
 	<member name="M:IType.Hydrate">
 		<summary>
-		When implemented by a class, retrives an instance of the mapped class, 
+		When implemented by a class, retrieves an instance of the mapped class, 
 		or the identifier of an entity or collection from a <see cref="IDataReader"/>.
 		</summary>
 		<param name="rs">The <see cref="IDataReader"/> that contains the values.</param>

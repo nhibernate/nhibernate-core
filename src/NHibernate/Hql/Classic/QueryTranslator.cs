@@ -1081,7 +1081,7 @@ namespace NHibernate.Hql.Classic
 
 			IList args = new ArrayList();
 			SqlStringBuilder argBuf = new SqlStringBuilder();
-			// Extract args spliting first 2 token because are: FuncName(
+			// Extract args splitting first 2 token because are: FuncName(
 			// last token is ')'
 			// To allow expressions like arg (ex:5+5) all tokens between 'argument separator' or
 			// a 'know argument' are compacted in a string, 

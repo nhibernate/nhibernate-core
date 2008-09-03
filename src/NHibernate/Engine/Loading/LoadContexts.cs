@@ -20,7 +20,7 @@ namespace NHibernate.Engine.Loading
 	/// dependent upon potentially bad <see cref="IDataReader"/> and <see cref="IDataReader"/>
 	/// implementations.
 	/// Considering the JDBC-redesign work, would further like this contextual info
-	/// not mapped seperately, but available based on the result set being processed.
+	/// not mapped separately, but available based on the result set being processed.
 	/// This would also allow maintaining a single mapping as we could reliably get
 	/// notification of the result-set closing...
 	/// </remarks>

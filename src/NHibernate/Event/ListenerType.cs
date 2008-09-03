@@ -5,7 +5,7 @@ namespace NHibernate.Event
 	/// </summary>
 	public enum ListenerType
 	{
-		/// <summary>Not allowed in Xml. It represente de default value when an explicit type is assigned.</summary>
+		/// <summary>Not allowed in Xml. It represents the default value when an explicit type is assigned.</summary>
 		NotValidType,
 		/// <summary>Xml value: auto-flush</summary>
 		Autoflush,

@@ -135,7 +135,7 @@ namespace NHibernate.Hql.Classic
 
 				if (afterAs || expectingAs)
 				{
-					// (AS is always optional, for consistentcy with SQL/OQL
+					// (AS is always optional, for consistency with SQL/OQL
 
 					// process the "new" HQL stype where aliases are assigned
 					// _after_ the class name or path expression ie using the

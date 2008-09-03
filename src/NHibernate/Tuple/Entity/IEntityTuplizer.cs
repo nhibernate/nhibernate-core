@@ -4,7 +4,7 @@ using NHibernate.Engine;
 namespace NHibernate.Tuple.Entity
 {
 	/// <summary> 
-	/// Defines further responsibilities reagarding tuplization based on a mapped entity.
+	/// Defines further responsibilities regarding tuplization based on a mapped entity.
 	/// </summary>
 	/// <remarks>
 	/// EntityTuplizer implementations should have the following constructor signature:

@@ -15,7 +15,7 @@ namespace NHibernate.Type
 	/// </para>
 	/// <para>
 	/// A more appropriate choice to store the duration/time is the <see cref="TimeSpanType"/>.
-	/// The underlying <see cref="DbType.Time"/> tends to be handled diffently by different
+	/// The underlying <see cref="DbType.Time"/> tends to be handled differently by different
 	/// DataProviders.
 	/// </para>
 	/// </remarks>

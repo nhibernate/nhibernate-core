@@ -78,7 +78,7 @@ namespace NHibernate
 		public static LockMode Upgrade = new LockMode(10, "Upgrade");
 
 		/// <summary>
-		/// Attempty to obtain an upgrade lock, using an Oracle-style
+		/// Attempt to obtain an upgrade lock, using an Oracle-style
 		/// <c>SELECT ... FOR UPGRADE NOWAIT</c>. 
 		/// </summary>
 		/// <remarks>
@@ -96,7 +96,7 @@ namespace NHibernate
 
 		// TODO H3.2: Implement Force where required
 		/// <summary> 
-		/// Similiar to <see cref="Upgrade"/> except that, for versioned entities,
+		/// Similar to <see cref="Upgrade"/> except that, for versioned entities,
 		/// it results in a forced version increment.
 		/// </summary>
 		public static readonly LockMode Force = new LockMode(15, "Force");

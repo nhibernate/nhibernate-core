@@ -276,7 +276,7 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> if only classes queried on should be returned, <see langword="false" />
-		/// if any class in the heirarchy should implicitly be returned.
+		/// if any class in the hierarchy should implicitly be returned.
 		/// </value>
 		public override bool IsExplicitPolymorphism
 		{

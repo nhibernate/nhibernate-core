@@ -51,7 +51,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			}
 			catch (Exception e)
 			{
-				// Encapsule and reThrow
+				// Encapsulate and reThrow
 				throw new HibernateConfigException(e);
 			}
 			Parse(nav, fromAppSetting);
@@ -108,7 +108,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		private static void LogWarnIgnoredProperty(string propName)
 		{
 			if (log.IsWarnEnabled)
-				log.Warn(string.Format("{0} propety is ignored out of application configuration file.", propName));
+				log.Warn(string.Format("{0} property is ignored out of application configuration file.", propName));
 		}
 
 		private void ParseReflectionOptimizer(XPathNavigator navigator, bool fromAppConfig)

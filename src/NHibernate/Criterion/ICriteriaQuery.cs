@@ -64,7 +64,7 @@ namespace NHibernate.Criterion
 		int GetIndexForAlias();
 
 		/// <summary>
-		/// When adding values to the query string it is imparative that they are reported via this function back to the query builder. 
+		/// When adding values to the query string it is imperative that they are reported via this function back to the query builder. 
 		/// Do not report the same item multiple times as it will be assumed to be a separate parameter.
 		/// </summary>
 		void AddUsedTypedValues(TypedValue [] values);

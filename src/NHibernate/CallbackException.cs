@@ -15,7 +15,7 @@ namespace NHibernate
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public CallbackException(Exception innerException) : this("An exception occured in a callback", innerException)
+		public CallbackException(Exception innerException) : this("An exception occurred in a callback", innerException)
 		{
 		}
 

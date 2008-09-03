@@ -41,7 +41,7 @@ namespace NHibernate.Loader.Custom
 		}
 
 		/// <summary>
-		/// Returns the suffixed result-set column-aliases for the collumns making up the collection's index (map or list).
+		/// Returns the suffixed result-set column-aliases for the columns making up the collection's index (map or list).
 		/// </summary>
 		/// <value>The index result-set column aliases.</value>
 		public string[] SuffixedIndexAliases

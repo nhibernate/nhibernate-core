@@ -76,7 +76,7 @@ namespace NHibernate.Collection
 
 		private object GetIdentifier(int index)
 		{
-			// NH specific : To emulate IDictionary behavior but using Dictionary<int, object> (whitout boxing/unboxing for index)
+			// NH specific : To emulate IDictionary behavior but using Dictionary<int, object> (without boxing/unboxing for index)
 			object result;
 			identifiers.TryGetValue(index, out result);
 			return result;

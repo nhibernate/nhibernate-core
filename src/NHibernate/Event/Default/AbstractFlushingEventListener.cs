@@ -32,7 +32,7 @@ namespace NHibernate.Event.Default
 
 		/// <summary> 
 		/// Coordinates the processing necessary to get things ready for executions
-		/// as db calls by preping the session caches and moving the appropriate
+		/// as db calls by preparing the session caches and moving the appropriate
 		/// entities and collections to their respective execution queues. 
 		/// </summary>
 		/// <param name="event">The flush event.</param>
@@ -271,7 +271,7 @@ namespace NHibernate.Event.Default
 			persistenceContext.BatchFetchQueue.ClearSubselects();
 			//the database has changed now, so the subselect results need to be invalidated
 
-			// NH Different implementation: In NET an iterator is inmutable;
+			// NH Different implementation: In NET an iterator is immutable;
 			// we need something to hold the persistent collection to remove, and it must be less intrusive as possible
 			IDictionary cEntries = persistenceContext.CollectionEntries;
 			List<IPersistentCollection> keysToRemove = new List<IPersistentCollection>(cEntries.Count);

@@ -30,7 +30,7 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Return the full property path with underscore seperators, mixed case converted to underscores
+		/// Return the full property path with underscore separators, mixed case converted to underscores
 		/// </summary>
 		/// <param name="propertyName"></param>
 		/// <returns></returns>
@@ -60,7 +60,7 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Return the full property path prefixed by the unqualified class name, with underscore seperators, mixed case converted to underscores
+		/// Return the full property path prefixed by the unqualified class name, with underscore separators, mixed case converted to underscores
 		/// </summary>
 		/// <param name="className"></param>
 		/// <param name="propertyName"></param>

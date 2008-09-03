@@ -4,7 +4,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Exceptions
 {
 	/// <summary> 
-	/// A SQLExceptionConverter implementation which performs no converion of
+	/// A SQLExceptionConverter implementation which performs no conversion of
 	/// the underlying <see cref="System.Data.Common.DbException"/>. 
 	/// Interpretation of a SQL error based on <see cref="System.Data.Common.DbException"/>
 	/// is not possible as using the ErrorCode (which is, however, vendor-

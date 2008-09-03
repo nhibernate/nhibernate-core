@@ -179,7 +179,7 @@ namespace NHibernate.Mapping
 		/// </value>
 		/// <remarks>
 		/// The value of this is set by the <c>discriminator-value</c> attribute.  Each <c>&lt;subclass&gt;</c>
-		/// in a heirarchy must define a unique <c>discriminator-value</c>.  The default value 
+		/// in a hierarchy must define a unique <c>discriminator-value</c>.  The default value 
 		/// is the class name if no value is supplied.
 		/// </remarks>
 		public virtual string DiscriminatorValue
@@ -856,7 +856,7 @@ namespace NHibernate.Mapping
 				{
 					if (property == null)
 					{
-						// we are processing the root of the prpertyPath, so we have the following
+						// we are processing the root of the propertyPath, so we have the following
 						// considerations:
 						//		1) specifically account for identifier properties
 						//		2) specifically account for embedded composite-identifiers

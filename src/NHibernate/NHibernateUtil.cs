@@ -171,7 +171,7 @@ namespace NHibernate
 		public static readonly NullableType UInt64 = new UInt64Type();
 
 		/// <summary>
-		/// NHIbernate System.Single (float in C#) Type
+		/// NHibernate System.Single (float in C#) Type
 		/// </summary>
 		public static readonly NullableType Single = new SingleType();
 
@@ -221,7 +221,7 @@ namespace NHibernate
 		public static readonly NullableType Class = new TypeType();
 
 		/// <summary>
-		/// NHibernate class meta type for associtiation of kind <code>any</code>.
+		/// NHibernate class meta type for association of kind <code>any</code>.
 		/// </summary>
 		/// <seealso cref="AnyType"/>
 		public static readonly IType ClassMetaType = new ClassMetaType();

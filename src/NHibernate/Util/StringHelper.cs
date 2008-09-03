@@ -189,11 +189,11 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="separators">separators for the tokens of the list</param>
 		/// <param name="list">the string that will be broken into tokens</param>
-		/// <param name="include">true to include the seperators in the tokens.</param>
+		/// <param name="include">true to include the separators in the tokens.</param>
 		/// <returns></returns>
 		/// <remarks>
 		/// This is more powerful than Split because you have the option of including or 
-		/// not including the seperators in the tokens.
+		/// not including the separators in the tokens.
 		/// </remarks>
 		public static string[] Split(string separators, string list, bool include)
 		{
@@ -239,7 +239,7 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
-		/// Takes a fully qualifed type name (can include the assembly) and just returns
+		/// Takes a fully qualified type name (can include the assembly) and just returns
 		/// the name of the Class.
 		/// </summary>
 		/// <param name="typeName"></param>
@@ -439,7 +439,7 @@ namespace NHibernate.Util
 			}
 
 			// Impl note: takes advantage of the fact that an escaped single quote
-			// embedded within a quote-block can really be handled as two seperate
+			// embedded within a quote-block can really be handled as two separate
 			// quote-blocks for the purposes of this method...
 			int count = 0;
 			char[] chars = str.ToCharArray();

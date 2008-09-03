@@ -187,7 +187,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
-		/// Adds a string to the WhereFragement
+		/// Adds a string to the WhereFragment
 		/// </summary>
 		/// <param name="whereSql">A well formed sql string with no parameters.</param>
 		/// <returns>The SqlUpdateBuilder</returns>
@@ -210,7 +210,7 @@ namespace NHibernate.SqlCommand
 			int initialCapacity = 3;
 
 			// will have a comma for all but the first column, and then for each column
-			// will have a name, " = ", value so mulitply by 3
+			// will have a name, " = ", value so multiply by 3
 			if (columns.Count > 0)
 			{
 				initialCapacity += (columns.Count - 1) + (columns.Count * 3);

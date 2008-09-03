@@ -25,7 +25,7 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				//wierd implementation because of hacky behavior
+				//weird implementation because of hacky behavior
 				//of Table.SqlCreateString() which modifies the
 				//list of unique keys by side-effect on some dialects
 				Dictionary<string, UniqueKey> uks = new Dictionary<string, UniqueKey>();

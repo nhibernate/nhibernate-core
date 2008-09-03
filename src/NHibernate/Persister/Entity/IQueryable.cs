@@ -35,15 +35,15 @@ namespace NHibernate.Persister.Entity
 		object DiscriminatorValue { get; }
 
 		/// <summary> 
-		/// Is the inheritence hierarchy described by this persister contained across
+		/// Is the inheritance hierarchy described by this persister contained across
 		/// multiple tables? 
 		/// </summary>
-		/// <returns> True if the inheritence hierarchy is spread across multiple tables; false otherwise. </returns>
+		/// <returns> True if the inheritance hierarchy is spread across multiple tables; false otherwise. </returns>
 		bool IsMultiTable { get;}
 
 		/// <summary> 
 		/// Get the names of all tables used in the hierarchy (up and down) ordered such
-		/// that deletes in the given order would not cause contraint violations. 
+		/// that deletes in the given order would not cause constraint violations. 
 		/// </summary>
 		/// <returns> The ordered array of table names. </returns>
 		string[] ConstraintOrderedTableNameClosure { get;}
@@ -96,7 +96,7 @@ namespace NHibernate.Persister.Entity
 		/// to which this property is mapped.
 		/// </summary>
 		/// <param name="propertyPath">The name of the property. </param>
-		/// <returns> The nunber of the table to which the property is mapped. </returns>
+		/// <returns> The number of the table to which the property is mapped. </returns>
 		/// <remarks>
 		/// Note that this is <b>not</b> relative to the results from {@link #getConstraintOrderedTableNameClosure()}.
 		/// It is relative to the subclass table name closure maintained internal to the persister (yick!).
@@ -129,7 +129,7 @@ namespace NHibernate.Persister.Entity
 		/// <returns> The alias used for "filter conditions" within the where clause. </returns>
 		/// <remarks>
 		/// This may or may not be different from the root alias depending upon the
-		/// inheritence mapping strategy. 
+		/// inheritance mapping strategy. 
 		/// </remarks>
 		string GenerateFilterConditionAlias(string rootAlias);
 	}

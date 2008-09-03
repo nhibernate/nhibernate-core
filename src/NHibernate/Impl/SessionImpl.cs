@@ -777,7 +777,7 @@ namespace NHibernate.Impl
 			FirePersistOnFlush(copiedAlready, new PersistEvent(entityName, obj, this));
 		}
 
-		/// <summary> Cascade refesh an entity instance</summary>
+		/// <summary> Cascade refresh an entity instance</summary>
 		public void Refresh(object obj, IDictionary refreshedAlready)
 		{
 			FireRefresh(refreshedAlready, new RefreshEvent(obj, this));

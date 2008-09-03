@@ -29,9 +29,9 @@ namespace NHibernate.Cfg
 	/// corresponds to Java system-level properties; <c>&lt;session-factory&gt;</c>
 	/// section is the session-factory-level configuration. 
 	/// 
-	/// It is possible to use the applicatoin configuration file (App.config) together with the NHibernate 
+	/// It is possible to use the application configuration file (App.config) together with the NHibernate 
 	/// configuration file (hibernate.cfg.xml) at the same time.
-	/// Properties in hibernate.cfg.xml override/merge properties in applicatoin configuration file where same
+	/// Properties in hibernate.cfg.xml override/merge properties in application configuration file where same
 	/// property is found. For others configuration a merge is applied.
 	/// </remarks>
 	public sealed class Environment

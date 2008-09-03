@@ -63,7 +63,7 @@ namespace NHibernate.Loader.Custom.Sql
 				if ((left = originalQueryString.IndexOf('{', curr)) < 0)
 				{
 					// No additional open braces found in the string, Append the
-					// rest of the string in its entirty and quit this loop
+					// rest of the string in its entity and quit this loop
 					result.Append(originalQueryString.Substring(curr));
 					break;
 				}

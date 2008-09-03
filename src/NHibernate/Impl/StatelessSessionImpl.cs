@@ -39,7 +39,7 @@ namespace NHibernate.Impl
 			CheckAndUpdateSessionStatus();
 		}
 
-		public override void InitializeCollection(IPersistentCollection coolection, bool writing)
+		public override void InitializeCollection(IPersistentCollection collection, bool writing)
 		{
 			throw new SessionException("collections cannot be fetched by a stateless session");
 		}

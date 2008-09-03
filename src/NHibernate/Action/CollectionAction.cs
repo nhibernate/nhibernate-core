@@ -29,7 +29,7 @@ namespace NHibernate.Action
 		/// <param name="persister">The <see cref="ICollectionPersister"/> that is responsible for the persisting the Collection.</param>
 		/// <param name="collection">The Persistent collection.</param>
 		/// <param name="key">The identifier of the Collection.</param>
-		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occuring in.</param>
+		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occurring in.</param>
 		protected CollectionAction(ICollectionPersister persister, IPersistentCollection collection, object key,
 		                        ISessionImplementor session)
 		{
@@ -91,7 +91,7 @@ namespace NHibernate.Action
 			// executed, since this may be an inverse="true"
 			// bidirectional association and it is one of the
 			// earlier entity actions which actually updates
-			// the database (this action is resposible for
+			// the database (this action is responsible for
 			// second-level cache invalidation only)
 			if (persister.HasCache)
 			{

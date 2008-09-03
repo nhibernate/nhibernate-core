@@ -20,7 +20,7 @@ namespace NHibernate.Dialect.Function
 
 		public IType ReturnType(IType columnType, IMapping mapping)
 		{
-			//note there is a wierd implementation in the client side
+			//note there is a weird implementation in the client side
 			//TODO: cast that use only costant are not supported in SELECT. Ex: cast(5 as string)  
 			return columnType; 
 		}

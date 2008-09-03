@@ -10,7 +10,7 @@ namespace NHibernate.Engine
 	public sealed class TypedValue
 	{
 		// Because NH-875 we have a different implementation
-		// The DefaultComparer is the comparrer used in H3.2.5
+		// The DefaultComparer is the comparer used in H3.2.5
 		// The ParameterListComparer is the comparer introduced in NH to fix NH-845 
 
 		private readonly IType type;

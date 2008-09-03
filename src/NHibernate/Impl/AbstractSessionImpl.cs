@@ -41,7 +41,7 @@ namespace NHibernate.Impl
 			CheckAndUpdateSessionStatus();
 		}
 
-		public abstract void InitializeCollection(IPersistentCollection coolection, bool writing);
+		public abstract void InitializeCollection(IPersistentCollection collection, bool writing);
 		public abstract object InternalLoad(string entityName, object id, bool eager, bool isNullable);
 		public abstract object ImmediateLoad(string entityName, object id);
 		public abstract long Timestamp { get; }

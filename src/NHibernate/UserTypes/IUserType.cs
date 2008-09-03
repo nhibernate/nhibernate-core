@@ -4,16 +4,16 @@ using NHibernate.SqlTypes;
 namespace NHibernate.UserTypes
 {
 	/// <summary>
-	/// The inteface to be implemented by user-defined types.
+	/// The interface to be implemented by user-defined types.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// The inteface abstracts user code from future changes to the <see cref="Type.IType"/> inteface,
+	/// The interface abstracts user code from future changes to the <see cref="Type.IType"/> interface,
 	/// simplifies the implementation of custom types and hides certain "internal interfaces from
 	/// user code.
 	/// </para>
 	/// <para>
-	/// Implemenators must be immutable and must declare a public default constructor.
+	/// Implementers must be immutable and must declare a public default constructor.
 	/// </para>
 	/// <para>
 	/// The actual class mapped by a <c>IUserType</c> may be just about anything. However, if it is to
@@ -22,7 +22,7 @@ namespace NHibernate.UserTypes
 	/// <para>
 	/// Alternatively, custom types could implement <see cref="Type.IType"/> directly or extend one of the
 	/// abstract classes in <c>NHibernate.Type</c>. This approach risks future incompatible changes
-	/// to classes or intefaces in the package.
+	/// to classes or interfaces in the package.
 	/// </para>
 	/// </remarks>
 	public interface IUserType

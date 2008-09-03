@@ -83,7 +83,7 @@ namespace NHibernate.Impl
 			}
 			else
 			{
-				log.Debug("retreiving next results");
+				log.Debug("retrieving next results");
 				bool isHolder = _holderInstantiator.IsRequired;
 
 				if (_single && !isHolder)
@@ -178,7 +178,7 @@ namespace NHibernate.Impl
 		#region IDisposable Members
 
 		/// <summary>
-		/// A flag to indicate if <c>Disose()</c> has been called.
+		/// A flag to indicate if <c>Dispose()</c> has been called.
 		/// </summary>
 		private bool _isAlreadyDisposed;
 

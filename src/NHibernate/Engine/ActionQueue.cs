@@ -315,7 +315,7 @@ namespace NHibernate.Engine
 			// The main data structure in this ordering algorithm is the 'positionToAction'
 			// map. Essentially this can be thought of as an put-ordered map (the problem with
 			// actually implementing it that way and doing away with the 'nameList' is that
-			// we'd end up having potential duplicate key values).  'positionToAction' maitains
+			// we'd end up having potential duplicate key values).  'positionToAction' maintains
 			// a mapping from a position within the 'nameList' structure to a "partial queue"
 			// of actions.
 
@@ -346,7 +346,7 @@ namespace NHibernate.Engine
 				else
 				{
 					// we have seen it before, so we need to determine if this insert action is
-					// is depenedent upon a previously processed action in terms of FK
+					// is dependent upon a previously processed action in terms of FK
 					// relationships (this FK checking is done against the entity's property-state
 					// associated with the action...)
 					int lastPos = nameList.LastIndexOf(thisEntityName);

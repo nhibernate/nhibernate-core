@@ -485,7 +485,7 @@ namespace NHibernate.Impl
 
 		private void CloneSubcriteria(CriteriaImpl clone)
 		{
-			//we need to preserve the parent criteria, we rely on the orderring when creating the 
+			//we need to preserve the parent criteria, we rely on the ordering when creating the 
 			//subcriterias initially here, so we don't need to make more than a single pass
 			Dictionary<ICriteria, ICriteria> newParents = new Dictionary<ICriteria, ICriteria>();
 			newParents[this] = clone;

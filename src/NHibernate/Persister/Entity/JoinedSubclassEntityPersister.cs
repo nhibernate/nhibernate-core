@@ -90,7 +90,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Constructs the NormalizedEntityPerister for the PersistentClass.
 		/// </summary>
-		/// <param name="persistentClass">The PeristentClass to create the EntityPersister for.</param>
+		/// <param name="persistentClass">The PersistentClass to create the EntityPersister for.</param>
 		/// <param name="cache">The configured <see cref="ICacheConcurrencyStrategy" />.</param>
 		/// <param name="factory">The SessionFactory that this EntityPersister will be stored in.</param>
 		/// <param name="mapping">The mapping used to retrieve type information.</param>
@@ -219,7 +219,7 @@ namespace NHibernate.Persister.Entity
 			}
 			if (jk != -1)
 			{
-				throw new AssertionFailure("Tablespan does not match height of joined-subclass hiearchy.");
+				throw new AssertionFailure("Tablespan does not match height of joined-subclass hierarchy.");
 			}
 
 			#endregion
@@ -584,7 +584,7 @@ namespace NHibernate.Persister.Entity
 		{
 			if ("class".Equals(propertyPath))
 			{
-				// special case where we need to force incloude all subclass joins
+				// special case where we need to force include all subclass joins
 				return Declarer.SubClass;
 			}
 			return base.GetSubclassPropertyDeclarer(propertyPath);

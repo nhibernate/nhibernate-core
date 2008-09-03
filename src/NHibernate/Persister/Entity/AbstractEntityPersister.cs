@@ -3208,7 +3208,7 @@ namespace NHibernate.Persister.Entity
 
 			//render the where and from parts
 			int drivingTable = tableNumbers[0];
-			string drivingAlias = GenerateTableAlias(RootAlias, drivingTable); //we *could* regerate this inside each called method!
+			string drivingAlias = GenerateTableAlias(RootAlias, drivingTable); //we *could* regenerate this inside each called method!
 			SqlString where = CreateWhereByKey(drivingTable, drivingAlias);
 			string from = CreateFrom(drivingTable, drivingAlias);
 
@@ -3269,7 +3269,7 @@ namespace NHibernate.Persister.Entity
 																? new SqlCommandInfo(customSQLUpdate[j], defaultUpdate.ParameterTypes)
 																: defaultUpdate;
 
-				// NH: in practic for lazy update de update sql is the same any way.
+				// NH: in practice for lazy update de update sql is the same any way.
 				sqlLazyUpdateStrings[j] = customSQLUpdate[j] != null
 																		? new SqlCommandInfo(customSQLUpdate[j], defaultUpdate.ParameterTypes)
 																		: GenerateUpdateString(NonLazyPropertyUpdateability, j, false);

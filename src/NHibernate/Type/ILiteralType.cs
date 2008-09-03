@@ -11,7 +11,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="value">The object to convert to a string for the SQL statement.</param>
 		/// <param name="dialect"></param>
-		/// <returns>A string that containts a well formed SQL Statement.</returns>
+		/// <returns>A string that contains a well formed SQL Statement.</returns>
 		string ObjectToSQLString(object value, Dialect.Dialect dialect);
 	}
 }

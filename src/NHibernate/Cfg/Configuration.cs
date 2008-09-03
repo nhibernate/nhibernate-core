@@ -652,7 +652,7 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Generate DDL for droping tables
+		/// Generate DDL for dropping tables
 		/// </summary>
 		/// <seealso cref="NHibernate.Tool.hbm2ddl.SchemaExport" />
 		public string[] GenerateDropSchemaScript(Dialect.Dialect dialect)
@@ -1778,7 +1778,7 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="type">The <see cref="ListenerType"/>.</param>
 		/// <param name="listeners">The listener for <paramref name="type"/> or null to clear.</param>
-		/// <remarks>Listners of <paramref name="listeners"/> must implements one of the interface of event listenesr.</remarks>
+		/// <remarks>Listeners of <paramref name="listeners"/> must implements one of the interface of event listenesr.</remarks>
 		/// <seealso cref="NHibernate.Event"/>
 		public void SetListeners(ListenerType type, object[] listeners)
 		{

@@ -29,7 +29,7 @@ namespace NHibernate.Persister
 				typeof(IMapping)
 			};
 
-		// TODO: is it really neceassry to provide Configuration to CollectionPersisters ? Should it not be enough with associated class ?
+		// TODO: is it really necessary to provide Configuration to CollectionPersisters ? Should it not be enough with associated class ?
 		// or why does ClassPersister's not get access to configuration ?
 		private static readonly System.Type[] CollectionPersisterConstructorArgs = new System.Type[]
 			{

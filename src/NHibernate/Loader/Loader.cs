@@ -786,7 +786,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Check the version of the object in the <c>IDataReader</c> against
 		/// the object version in the session cache, throwing an exception
-		/// if the vesrion numbers are different.
+		/// if the version numbers are different.
 		/// </summary>
 		/// <exception cref="StaleObjectStateException"></exception>
 		private void CheckVersion(int i, IEntityPersister persister, object id, object entity, IDataReader rs,

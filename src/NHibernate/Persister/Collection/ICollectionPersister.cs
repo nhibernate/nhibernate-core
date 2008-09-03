@@ -78,13 +78,13 @@ namespace NHibernate.Persister.Collection
 		/// <summary> 
 		/// Is this a many-to-many association?  Note that this is mainly
 		/// a convenience feature as the single persister does not
-		/// conatin all the information needed to handle a many-to-many
+		/// contain all the information needed to handle a many-to-many
 		/// itself, as internally it is looked at as two many-to-ones.
 		/// </summary>
 		bool IsManyToMany { get;}
 
 		/// <summary>
-		/// Is this collection lazyily initialized?
+		/// Is this collection lazily initialized?
 		/// </summary>
 		bool IsLazy { get; }
 

@@ -28,7 +28,7 @@ namespace NHibernate.Event
 		/// <summary> Cascade persist an entity instance during the flush process</summary>
 		void PersistOnFlush(string entityName, object obj, IDictionary copiedAlready);
 
-		/// <summary> Cascade refesh an entity instance</summary>
+		/// <summary> Cascade refresh an entity instance</summary>
 		void Refresh(object obj, IDictionary refreshedAlready);
 
 		/// <summary> Cascade copy an entity instance</summary>

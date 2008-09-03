@@ -16,7 +16,7 @@ namespace NHibernate
 		public AssertionFailure() : base(String.Empty)
 		{
 			LogManager.GetLogger(typeof(AssertionFailure)).Error(
-				"An AssertionFailure occured - this may indicate a bug in NHibernate");
+				"An AssertionFailure occurred - this may indicate a bug in NHibernate");
 		}
 
 		/// <summary>
@@ -26,7 +26,7 @@ namespace NHibernate
 		public AssertionFailure(string message) : base(message)
 		{
 			LogManager.GetLogger(typeof(AssertionFailure)).Error(
-				"An AssertionFailure occured - this may indicate a bug in NHibernate", this);
+				"An AssertionFailure occurred - this may indicate a bug in NHibernate", this);
 		}
 
 		/// <summary>
@@ -41,7 +41,7 @@ namespace NHibernate
 		public AssertionFailure(string message, Exception innerException) : base(message, innerException)
 		{
 			LogManager.GetLogger(typeof(AssertionFailure)).Error(
-				"An AssertionFailure occured - this may indicate a bug in NHibernate", innerException);
+				"An AssertionFailure occurred - this may indicate a bug in NHibernate", innerException);
 		}
 
 		/// <summary>

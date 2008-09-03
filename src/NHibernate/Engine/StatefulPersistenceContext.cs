@@ -336,7 +336,7 @@ namespace NHibernate.Engine
 		/// <list type="bullet">
 		/// <listheader><description>This differs from <see cref="GetDatabaseSnapshot"/> is two important respects:</description></listheader>
 		/// <item><description>no snapshot is obtained from the database if not already cached</description></item>
-		/// <item><description>an entry of NO_ROW here is interpretet as an exception</description></item>
+		/// <item><description>an entry of NO_ROW here is interpreted as an exception</description></item>
 		/// </list>
 		/// </remarks>
 		public object[] GetCachedDatabaseSnapshot(EntityKey key)
@@ -466,7 +466,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> 
-		/// Retreive the EntityEntry representation of the given entity. 
+		/// Retrieve the EntityEntry representation of the given entity. 
 		/// </summary>
 		/// <param name="entity">The entity for which to locate the EntityEntry. </param>
 		/// <returns> The EntityEntry for the given entity. </returns>

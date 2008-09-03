@@ -469,7 +469,7 @@ namespace NHibernate.Dialect
 			get
 			{
 				// SQL Server (at least up through 2005) does not support defining
-				// cascade delete constraints which can circel back to the mutating
+				// cascade delete constraints which can circle back to the mutating
 				// table
 				return false;
 			}

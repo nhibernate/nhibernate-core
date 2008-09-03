@@ -47,7 +47,7 @@ namespace NHibernate.Criterion
 		/// Combines the <see cref="TypedValue"/> for the Left Hand Side and the 
 		/// Right Hand Side of the Expression into one array.
 		/// </summary>
-		/// <returns>An arry of <see cref="TypedValue"/>s.</returns>
+		/// <returns>An array of <see cref="TypedValue"/>s.</returns>
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			TypedValue[] lhstv = _lhs.GetTypedValues(criteria, criteriaQuery);

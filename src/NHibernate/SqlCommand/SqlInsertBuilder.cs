@@ -49,7 +49,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="columnName">The column name for the Property</param>
 		/// <param name="propertyType">The IType of the property.</param>
 		/// <returns>The SqlInsertBuilder.</returns>
-		/// <remarks>The column will be asociated with a parameter.</remarks>
+		/// <remarks>The column will be associated with a parameter.</remarks>
 		public virtual SqlInsertBuilder AddColumn(string columnName, IType propertyType)
 		{
 			SqlType[] sqlTypes = propertyType.SqlTypes(factory);

@@ -127,7 +127,7 @@ namespace NHibernate.Collection
 
 		/// <summary>
 		/// Gets a <see cref="bool"/> indicating if the underlying collection is directly
-		/// accessable through code.
+		/// accessible through code.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> if we are not guaranteed that the NHibernate collection wrapper
