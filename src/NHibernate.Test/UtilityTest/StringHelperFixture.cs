@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using NHibernate.Util;
 using NUnit.Framework;
 
@@ -26,6 +27,17 @@ namespace NHibernate.Test.UtilityTest
 			const string expected = "classname";
 
 			Assert.AreEqual(expected, StringHelper.GetClassname(typeName));
+		}
+
+		[Test]
+		public void GetFullClassNameForGenericType()
+		{
+			string typeName = typeof (IDictionary<int, string>).AssemblyQualifiedName;
+			string expected = typeof (IDictionary<int, string>).FullName;
+			Assert.AreEqual(expected, StringHelper.GetFullClassname(typeName));
+			typeName = "some.namespace.SomeType`1[[System.Int32, mscorlib], System.Int32], some.assembly";
+			expected = "some.namespace.SomeType`1[[System.Int32, mscorlib], System.Int32]";
+			Assert.AreEqual(expected, StringHelper.GetFullClassname(typeName));
 		}
 
 		[Test]

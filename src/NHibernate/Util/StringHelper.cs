@@ -235,7 +235,7 @@ namespace NHibernate.Util
 		/// <returns></returns>
 		public static string GetFullClassname(string typeName)
 		{
-			return typeName.Trim().Split(' ', ',')[0];
+			return new TypeNameParser().ParseTypeName(typeName, null, null).Type;
 		}
 
 		/// <summary>
@@ -492,7 +492,7 @@ namespace NHibernate.Util
 			char first = name[0];
 
 			// Should we check for prefix == string.Empty rather than a length check?
-			if (prefix != null && prefix.Length > 0 && first != SingleQuote && !char.IsDigit(first))
+			if (!string.IsNullOrEmpty(prefix) && first != SingleQuote && !char.IsDigit(first))
 			{
 				return prefix + Dot + name;
 			}
@@ -505,7 +505,7 @@ namespace NHibernate.Util
 		public static string[] Qualify(string prefix, string[] names)
 		{
 			// Should we check for prefix == string.Empty rather than a length check?
-			if (prefix != null && prefix.Length > 0)
+			if (!string.IsNullOrEmpty(prefix))
 			{
 				int len = names.Length;
 				string[] qualified = new string[len];
