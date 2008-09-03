@@ -228,7 +228,7 @@ namespace NHibernate.Util
 		/// <returns></returns>
 		public static string GetFullClassname(string typeName)
 		{
-			return typeName.Trim().Split(' ', ',')[0];
+			return new TypeNameParser().ParseTypeName(typeName, null, null).Type;
 		}
 
 		/// <summary>
