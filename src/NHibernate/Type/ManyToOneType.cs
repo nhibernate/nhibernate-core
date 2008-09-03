@@ -70,7 +70,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="rs">The <see cref="IDataReader"/> that contains the query results.</param>
 		/// <param name="names">A string array of column names to read from.</param>
-		/// <param name="session">The <see cref="ISessionImplementor"/> this is occuring in.</param>
+		/// <param name="session">The <see cref="ISessionImplementor"/> this is occurring in.</param>
 		/// <param name="owner">The object that this Entity will be a part of.</param>
 		/// <returns>
 		/// An instantiated object that used as the identifier of the type.

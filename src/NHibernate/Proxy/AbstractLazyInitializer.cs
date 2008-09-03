@@ -4,7 +4,7 @@ using NHibernate.Engine;
 namespace NHibernate.Proxy
 {
 	/// <summary>
-	/// Provides the base functionallity to Handle Member calls into a dynamically
+	/// Provides the base functionality to Handle Member calls into a dynamically
 	/// generated NHibernate Proxy.
 	/// </summary>
 	/// <remarks>

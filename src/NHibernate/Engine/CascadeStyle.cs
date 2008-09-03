@@ -45,7 +45,7 @@ namespace NHibernate.Engine
 		/// For this style, should the given action really be cascaded?  The default
 		/// implementation is simply to return {@link #doCascade}; for certain
 		/// styles (currently only delete-orphan), however, we need to be able to
-		/// control this seperately.
+		/// control this separately.
 		/// </remarks>
 		public virtual bool ReallyDoCascade(CascadingAction action)
 		{
@@ -53,7 +53,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Do we need to delete orphaned collection elements? </summary>
-		/// <returns> True if this style need to account for orphan delete operations; false othwerwise. </returns>
+		/// <returns> True if this style need to account for orphan delete operations; false otherwise. </returns>
 		public virtual bool HasOrphanDelete
 		{
 			get { return false; }

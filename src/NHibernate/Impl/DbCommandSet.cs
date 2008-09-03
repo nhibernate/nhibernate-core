@@ -98,7 +98,7 @@ namespace NHibernate.Impl
             }
             catch (Exception e)
             {
-                throw new HibernateException("An exception occured when executing batch queries", e);
+                throw new HibernateException("An exception occurred when executing batch queries", e);
             }
         }
 

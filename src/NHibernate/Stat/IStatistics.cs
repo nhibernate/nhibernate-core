@@ -4,8 +4,8 @@ namespace NHibernate.Stat
 {
 	/// <summary> 
 	/// Statistics for a particular <tt>SessionFactory</tt>.
-	/// Beware of milliseconds metrics, they are depdendent of the JVM precision:
-	/// you may then encounter a 10 ms approximation dending on your OS platform.
+	/// Beware of milliseconds metrics, they are dependent of the JVM precision:
+	/// you may then encounter a 10 ms approximation depending on your OS platform.
 	/// Please refer to the JVM documentation for more information. 
 	/// </summary>
 	public interface IStatistics

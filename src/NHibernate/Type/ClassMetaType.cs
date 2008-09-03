@@ -7,7 +7,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// ClassMetaType is a NH specif type to support "any" with meta-type="class"
+	/// ClassMetaType is a NH specific type to support "any" with meta-type="class"
 	/// </summary>
 	/// <remarks>
 	/// It work like a MetaType where the key is the entity-name it self

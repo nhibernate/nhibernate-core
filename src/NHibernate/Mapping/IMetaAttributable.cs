@@ -11,7 +11,7 @@ namespace NHibernate.Mapping
 		IDictionary<string, MetaAttribute> MetaAttributes { get;set;}
 
 		/// <summary>
-		/// Retrive the <see cref="MetaAttribute"/>
+		/// Retrieve the <see cref="MetaAttribute"/>
 		/// </summary>
 		/// <param name="name">The attribute name</param>
 		/// <returns>The <see cref="MetaAttribute"/> if exists; null otherwise</returns>

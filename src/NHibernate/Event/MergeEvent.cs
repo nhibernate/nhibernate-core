@@ -11,7 +11,7 @@ namespace NHibernate.Event
 		private string entityName;
 		private object requestedId;
 
-		private object entity; // ported from H3.2 even if I don't understand why is unused in costructor
+		private object entity; // ported from H3.2 even if I don't understand why is unused in constructor
 		private object result;
 
 		public MergeEvent(object entity, IEventSource source)

@@ -98,7 +98,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Queue an addition if the peristent collection supports it
+		/// Queue an addition if the persistent collection supports it
 		/// </summary>
 		/// <returns>
 		/// <see langword="true" /> if the addition was queued up, <see langword="false" /> if the persistent collection
@@ -287,7 +287,7 @@ namespace NHibernate.Collection
 
 		/// <summary>
 		/// Gets a <see cref="Boolean"/> indicating if the underlying collection is directly
-		/// accessable through code.
+		/// accessible through code.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> if we are not guaranteed that the NHibernate collection wrapper

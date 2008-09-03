@@ -18,7 +18,7 @@ namespace NHibernate.Tuple
 		/// or component which this Instantiator instantiates. 
 		/// </summary>
 		/// <param name="obj">The object to be checked. </param>
-		/// <returns> True is the object does respresent an instance of the underlying entity/component. </returns>
+		/// <returns> True is the object does represent an instance of the underlying entity/component. </returns>
 		bool IsInstance(object obj);
 	}
 }

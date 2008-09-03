@@ -32,7 +32,7 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Initializes a new instance of the <see cref="QueryKey"/> class.
 		/// </summary>
-		/// <param name="factory">the sesion factory for this query key, required to get the identifiers of entities that are used as values.</param>
+		/// <param name="factory">the session factory for this query key, required to get the identifiers of entities that are used as values.</param>
 		/// <param name="queryString">The query string.</param>
 		/// <param name="queryParameters">The query parameters.</param>
 		/// <param name="filters">The filters.</param>

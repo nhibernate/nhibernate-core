@@ -65,7 +65,7 @@ namespace NHibernate
 		/// <summary>
 		/// Bind a value to an indexed parameter.
 		/// </summary>
-		/// <param name="position">Postion of the parameter in the query, numbered from <c>0</c></param>
+		/// <param name="position">Position of the parameter in the query, numbered from <c>0</c></param>
 		/// <param name="val">The possibly null parameter value</param>
 		/// <param name="type">The Hibernate type</param>
 		IDetachedQuery SetParameter(int position, object val, IType type);
@@ -418,9 +418,9 @@ namespace NHibernate
 		IDetachedQuery SetResultTransformer(IResultTransformer resultTransformer);
 
 		/// <summary>
-		/// Set the value to ignore unknow parameters names.
+		/// Set the value to ignore unknown parameters names.
 		/// </summary>
-		/// <param name="ignoredUnknownNamedParameters">True to ignore unknow parameters names.</param>
+		/// <param name="ignoredUnknownNamedParameters">True to ignore unknown parameters names.</param>
 		IDetachedQuery SetIgnoreUknownNamedParameters(bool ignoredUnknownNamedParameters);
 
 		/// <summary> Override the current session cache mode, just for this query. </summary>

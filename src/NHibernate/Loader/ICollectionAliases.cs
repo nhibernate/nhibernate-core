@@ -13,7 +13,7 @@ namespace NHibernate.Loader
 		string[] SuffixedKeyAliases { get; }
 
 		/// <summary>
-		/// Returns the suffixed result-set column-aliases for the collumns
+		/// Returns the suffixed result-set column-aliases for the columns
 		/// making up the collection's index (map or list).
 		/// </summary>
 		/// <value>The index result-set column aliases.</value>

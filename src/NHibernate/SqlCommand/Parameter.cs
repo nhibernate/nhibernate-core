@@ -35,7 +35,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
-		/// Determines wether this instance and the specified object 
+		/// Determines whether this instance and the specified object 
 		/// are of the same type and have the same values.
 		/// </summary>
 		/// <param name="obj">An object to compare to this instance.</param>

@@ -146,7 +146,7 @@ namespace NHibernate.Mapping
 			set { collectionPersisterClass = value; }
 		}
 
-		// The type of this property is object, so as to accomodate
+		// The type of this property is object, so as to accommodate
 		// both IComparer and IComparer<T>.
 		public object Comparer
 		{

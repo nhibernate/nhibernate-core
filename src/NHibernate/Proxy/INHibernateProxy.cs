@@ -12,7 +12,7 @@ namespace NHibernate.Proxy
 	/// </para> 
 	/// <para>
 	/// It has to be public scope because
-	/// the Proxies are created in a seperate DLL than NHibernate. 
+	/// the Proxies are created in a separate DLL than NHibernate. 
 	/// </para> 
 	/// </remarks>
 	public interface INHibernateProxy

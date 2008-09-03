@@ -320,14 +320,14 @@ namespace NHibernate.Tuple.Entity
 			get { return instantiator; }
 		}
 
-		/// <summary>Retreives the defined entity-name for the tuplized entity. </summary>
+		/// <summary>Retrieves the defined entity-name for the tuplized entity. </summary>
 		protected internal virtual string EntityName
 		{
 			get { return entityMetamodel.Name; }
 		}
 
 		/// <summary> 
-		/// Retreives the defined entity-names for any subclasses defined for this entity. 
+		/// Retrieves the defined entity-names for any subclasses defined for this entity. 
 		/// </summary>
 		protected internal virtual ISet<string> SubclassEntityNames
 		{

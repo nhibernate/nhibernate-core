@@ -18,7 +18,7 @@ namespace NHibernate.Dialect
 	}
 
 	/// <summary>
-	/// This class is basically a port of the hibernate 3.2  Sybase 11 join fragment. It usees concepts from that join fragment and the Oracle join fragment in NHibernate
+	/// This class is basically a port of the hibernate 3.2  Sybase 11 join fragment. It uses concepts from that join fragment and the Oracle join fragment in NHibernate
 	/// </summary>
 	internal class Sybase11JoinFragment : JoinFragment
 	{

@@ -81,7 +81,7 @@ namespace NHibernate.Util
 			}
 			catch (AmbiguousMatchException)
 			{
-				// an ambigious match means that there is an override and it
+				// an ambiguous match means that there is an override and it
 				// can't determine which one to use.
 				return true;
 			}

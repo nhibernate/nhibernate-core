@@ -16,7 +16,7 @@ namespace NHibernate.Engine.Query
 		private readonly ISessionFactoryImplementor factory;
 
 		// simple cache of param metadata based on query string.  Ideally, the
-		// original "user-supplied query" string should be used to retreive this
+		// original "user-supplied query" string should be used to retrieve this
 		// metadata (i.e., not the para-list-expanded query string) to avoid
 		// unnecessary cache entries.
 		// Used solely for caching param metadata for native-sql queries, see
@@ -38,7 +38,7 @@ namespace NHibernate.Engine.Query
 			{
 				// for native-sql queries, the param metadata is determined outside
 				// any relation to a query plan, because query plan creation and/or
-				// retreival for a native-sql query depends on all of the return
+				// retrieval for a native-sql query depends on all of the return
 				// types having been set, which might not be the case up-front when
 				// param metadata would be most useful
 				metadata = BuildNativeSQLParameterMetadata(query);

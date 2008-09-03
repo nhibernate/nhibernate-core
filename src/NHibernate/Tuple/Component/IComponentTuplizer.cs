@@ -3,7 +3,7 @@ using NHibernate.Engine;
 namespace NHibernate.Tuple.Component
 {
 	/// <summary> 
-	/// Defines further responsibilities reagarding tuplization based on
+	/// Defines further responsibilities regarding tuplization based on
 	/// a mapped components.
 	/// </summary>
 	/// <remarks>
@@ -12,7 +12,7 @@ namespace NHibernate.Tuple.Component
 	/// </remarks>
 	public interface IComponentTuplizer : ITuplizer
 	{
-		/// <summary> Retreive the current value of the parent property. </summary>
+		/// <summary> Retrieve the current value of the parent property. </summary>
 		/// <param name="component">
 		/// The component instance from which to extract the parent property value. 
 		/// </param>
@@ -21,7 +21,7 @@ namespace NHibernate.Tuple.Component
 
 		/// <summary> Set the value of the parent property. </summary>
 		/// <param name="component">The component instance on which to set the parent. </param>
-		/// <param name="parent">The parent to be set on the comonent. </param>
+		/// <param name="parent">The parent to be set on the component. </param>
 		/// <param name="factory">The current session factory. </param>
 		void SetParent(object component, object parent, ISessionFactoryImplementor factory);
 

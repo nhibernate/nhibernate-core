@@ -50,7 +50,7 @@ namespace NHibernate.Properties
 		MethodInfo Method { get; }
 
 		/// <summary> Get the property value from the given owner instance. </summary>
-		/// <param name="owner">The instance containing the value to be retreived. </param>
+		/// <param name="owner">The instance containing the value to be retrieved. </param>
 		/// <param name="mergeMap">a map of merged persistent instances to detached instances </param>
 		/// <param name="session">The session from which this request originated. </param>
 		/// <returns> The extracted value. </returns>

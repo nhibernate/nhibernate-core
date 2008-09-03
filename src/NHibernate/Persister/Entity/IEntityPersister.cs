@@ -19,7 +19,7 @@ namespace NHibernate.Persister.Entity
 	/// Concrete <c>IEntityPersister</c>s implement mapping and persistence logic for a particular class.
 	/// </summary>
 	/// <remarks>
-	/// Implementors must be threadsafe (preferrably immutable) and must provide a constructor of type
+	/// Implementors must be threadsafe (preferably immutable) and must provide a constructor of type
 	/// matching the signature of: (PersistentClass, SessionFactoryImplementor)
 	/// </remarks>
 	public interface IEntityPersister : IOptimisticCacheSource
@@ -306,7 +306,7 @@ namespace NHibernate.Persister.Entity
 		/// (2) the identifier is an embedded composite identifier; false otherwise.
 		/// </returns>
 		/// <remarks>
-		/// The other option is the deperecated feature where users could supply
+		/// The other option is the deprecated feature where users could supply
 		/// the id during session calls.
 		/// </remarks>
 		bool CanExtractIdOutOfEntity { get; }
@@ -339,7 +339,7 @@ namespace NHibernate.Persister.Entity
 		bool HasLazyProperties { get; }
 
 		/// <summary>
-		/// Load an insatance of the persistent class.
+		/// Load an instance of the persistent class.
 		/// </summary>
 		object Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session);
 

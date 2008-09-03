@@ -34,7 +34,7 @@ namespace NHibernate.Proxy
 		/// </param>
 		///  <exception cref="HibernateException"> Indicates a problem completing post </exception>
 		/// <remarks>
-		/// Essentially equivalent to contructor injection, but contracted
+		/// Essentially equivalent to constructor injection, but contracted
 		/// here via interface.
 		/// </remarks>
 		void PostInstantiate(string entityName, System.Type persistentClass, ISet<System.Type> interfaces, 

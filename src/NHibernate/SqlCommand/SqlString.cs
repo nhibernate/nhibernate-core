@@ -365,7 +365,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
-		/// Returns the index of the first occurence of <paramref name="text" />, case-insensitive.
+		/// Returns the index of the first occurrence of <paramref name="text" />, case-insensitive.
 		/// </summary>
 		/// <param name="text">Text to look for in the <see cref="SqlString" />. Must be in lower
 		/// case.</param>
@@ -374,7 +374,7 @@ namespace NHibernate.SqlCommand
 		/// Searching for <c>"a ? b"</c> in an <see cref="SqlString" /> consisting of
 		/// <c>"a ", Parameter, " b"</c> will result in no matches.
 		/// </remarks>
-		/// <returns>The index of the first occurence of <paramref name="text" />, or -1
+		/// <returns>The index of the first occurrence of <paramref name="text" />, or -1
 		/// if not found.</returns>
 		public int IndexOfCaseInsensitive(string text)
 		{

@@ -31,7 +31,7 @@ namespace NHibernate.Util
 
 		// actual cache of the entries.  soft references are used for both the keys and the
 		// values here since the values pertaining to the MRU entries are kept in a
-		// seperate hard reference cache (to avoid their enqueuement/garbage-collection).
+		// separate hard reference cache (to avoid their enqueuement/garbage-collection).
 		[NonSerialized] 
 		private readonly IDictionary softReferenceCache = new Hashtable();
 

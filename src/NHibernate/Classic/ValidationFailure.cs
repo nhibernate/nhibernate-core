@@ -13,7 +13,7 @@ namespace NHibernate.Classic
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ValidationFailure"/> class.
 		/// </summary>
-		public ValidationFailure() : base("A validation failure occured")
+		public ValidationFailure() : base("A validation failure occurred")
 		{
 		}
 
@@ -33,7 +33,7 @@ namespace NHibernate.Classic
 		/// is not a null reference, the current exception is raised in a catch block that handles 
 		/// the inner exception.
 		/// </param>
-		public ValidationFailure(Exception innerException) : base("A validation failure occured", innerException)
+		public ValidationFailure(Exception innerException) : base("A validation failure occurred", innerException)
 		{
 		}
 

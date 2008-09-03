@@ -84,7 +84,7 @@ namespace NHibernate.Action
 				TypeFactory.DeepCopy(state, persister.PropertyTypes, persister.PropertyCheckability, state, Session);
 				if (persister.HasUpdateGeneratedProperties)
 				{
-					// this entity defines proeprty generation, so process those generated
+					// this entity defines property generation, so process those generated
 					// values...
 					persister.ProcessUpdateGeneratedProperties(id, instance, state, Session);
 					if (persister.IsVersionPropertyGenerated)

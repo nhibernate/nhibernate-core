@@ -33,7 +33,7 @@ namespace NHibernate
 	/// <para>
 	/// <c>Save()</c> results in an SQL <c>INSERT</c>, <c>Delete()</c>
 	/// in an SQL <c>DELETE</c> and <c>Update()</c> in an SQL <c>UPDATE</c>. Changes to
-	/// <em>persistent</em> instances are deteced at flush time and also result in an SQL
+	/// <em>persistent</em> instances are detected at flush time and also result in an SQL
 	/// <c>UPDATE</c>.
 	/// </para>
 	/// <para>

@@ -131,7 +131,7 @@ namespace NHibernate.Event.Default
 		}
 
 		/// <summary> 
-		/// Ppepares the save call by checking the session caches for a pre-existing
+		/// Prepares the save call by checking the session caches for a pre-existing
 		/// entity and performing any lifecycle callbacks. 
 		/// </summary>
 		/// <param name="entity">The entity to be saved. </param>
@@ -338,7 +338,7 @@ namespace NHibernate.Event.Default
 		}
 
 		/// <summary> Handles the calls needed to perform pre-save cascades for the given entity. </summary>
-		/// <param name="source">The session from whcih the save event originated.</param>
+		/// <param name="source">The session from which the save event originated.</param>
 		/// <param name="persister">The entity's persister instance. </param>
 		/// <param name="entity">The entity to be saved. </param>
 		/// <param name="anything">Generally cascade-specific data </param>
@@ -359,7 +359,7 @@ namespace NHibernate.Event.Default
 		/// <summary> Handles to calls needed to perform post-save cascades. </summary>
 		/// <param name="source">The session from which the event originated. </param>
 		/// <param name="persister">The entity's persister instance. </param>
-		/// <param name="entity">The entity beng saved. </param>
+		/// <param name="entity">The entity being saved. </param>
 		/// <param name="anything">Generally cascade-specific data </param>
 		protected virtual void CascadeAfterSave(IEventSource source, IEntityPersister persister, object entity, object anything)
 		{

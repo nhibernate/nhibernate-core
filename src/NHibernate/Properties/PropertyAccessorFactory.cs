@@ -76,9 +76,9 @@ namespace NHibernate.Properties
 		///			<term>nosetter</term>
 		///			<description>
 		///				The <c>name</c> attribute is the name of the Property.  NHibernate will use the 
-		///				Property's get method to retreive the value and will use the field
+		///				Property's get method to retrieve the value and will use the field
 		///				to set the value.  This is a good option for &lt;id&gt; Properties because this access method 
-		///				allow's users of the Class to get the value of the Id but not set the value.
+		///				allows users of the Class to get the value of the Id but not set the value.
 		///			</description>
 		///		</item>
 		///		<item>
@@ -161,7 +161,7 @@ namespace NHibernate.Properties
 		///	<para>
 		///	With a naming strategy and a get/set for the Property available the user of the Domain Class 
 		///	could write an Hql statement <c>from Foo as foo where foo.SomeProperty = 'a'</c>.   If no naming 
-		///	strategy was specified the Hql statement whould have to be <c>from Foo as foo where foo._someProperty</c>
+		///	strategy was specified the Hql statement would have to be <c>from Foo as foo where foo._someProperty</c>
 		///	 (assuming CamelCase with an underscore field naming strategy is used).  
 		///	</para>
 		/// </remarks>

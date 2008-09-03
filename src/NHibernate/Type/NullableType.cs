@@ -126,7 +126,7 @@ namespace NHibernate.Type
 		/// /> 
 		/// <remarks>
 		/// <para>
-		/// This implemenation forwards the call to <see cref="NullSafeSet(IDbCommand, object, int)" />.
+		/// This implementation forwards the call to <see cref="NullSafeSet(IDbCommand, object, int)" />.
 		/// </para>
 		/// <para>
 		/// It has been "sealed" because the Types inheriting from <see cref="NullableType"/>
@@ -228,7 +228,7 @@ namespace NHibernate.Type
 		/// </para>
 		/// <para>
 		/// If the value is not null, then the method <see cref="Get(IDataReader, Int32)"/> 
-		/// is called and that method is responsible for retreiving the value.
+		/// is called and that method is responsible for retrieving the value.
 		/// </para>
 		/// </remarks>
 		public virtual object NullSafeGet(IDataReader rs, string name)
@@ -274,7 +274,7 @@ namespace NHibernate.Type
 		/// /> 
 		/// <remarks>
 		/// <para>
-		/// This implemenation forwards the call to <see cref="NullSafeGet(IDataReader, String)" />.
+		/// This implementation forwards the call to <see cref="NullSafeGet(IDataReader, String)" />.
 		/// </para>
 		/// <para>
 		/// It has been "sealed" because the Types inheriting from <see cref="NullableType"/>
@@ -307,7 +307,7 @@ namespace NHibernate.Type
 		/// /> 
 		/// <remarks>
 		/// <para>
-		/// This implemenation forwards the call to <see cref="NullableType.SqlType" />.
+		/// This implementation forwards the call to <see cref="NullableType.SqlType" />.
 		/// </para>
 		/// <para>
 		/// It has been "sealed" because the Types inheriting from <see cref="NullableType"/>

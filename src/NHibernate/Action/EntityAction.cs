@@ -28,7 +28,7 @@ namespace NHibernate.Action
 		/// </summary>
 		/// <param name="session">The session from which this action is coming.</param>
 		/// <param name="id">The id of the entity</param>
-		/// <param name="instance">The entiyt instance</param>
+		/// <param name="instance">The entity instance</param>
 		/// <param name="persister">The entity persister</param>
 		protected internal EntityAction(ISessionImplementor session, object id, object instance, IEntityPersister persister)
 		{
