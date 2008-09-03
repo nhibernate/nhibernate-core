@@ -81,7 +81,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				yid = persister.GetIdentifier(x, entityMode);
+				yid = persister.GetIdentifier(y, entityMode);
 			}
 
 			return persister.IdentifierType.IsEqual(xid, yid, entityMode, factory);
@@ -567,13 +567,13 @@ namespace NHibernate.Type
 		public override int Compare(object x, object y, EntityMode? entityMode)
 		{
 			IComparable xComp = x as IComparable;
-			IComparable yComp = x as IComparable;
+			IComparable yComp = y as IComparable;
 			if (xComp != null)
 				return xComp.CompareTo(y);
 			if (yComp != null)
-				return yComp.CompareTo(x);
+				return -yComp.CompareTo(x);
 
-			return 0; //TODO: entities CAN be compared, by PK, fix this! -> only if/when we can extract the id values....
+			return 0;
 		}
 
 		private System.Type DetermineAssociatedEntityClass()

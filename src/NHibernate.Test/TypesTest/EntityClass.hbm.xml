@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.TypesTest"
+				   default-lazy="false">
+
+    <class name="EntityClass" table="nh_entity">
+		<id name="Id" column="id">
+			<generator class="assigned" />
+		</id>
+		
+	</class>
+</hibernate-mapping>

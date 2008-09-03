@@ -828,6 +828,8 @@
     <Compile Include="TypesTest\DecimalTypeFixture.cs" />
     <Compile Include="TypesTest\DoubleClass.cs" />
     <Compile Include="TypesTest\DoubleTypeFixture.cs" />
+    <Compile Include="TypesTest\EntityClass.cs" />
+    <Compile Include="TypesTest\EntityTypeFixture.cs" />
     <Compile Include="TypesTest\EnumStringClass.cs" />
     <Compile Include="TypesTest\EnumStringTypeFixture.cs" />
     <Compile Include="TypesTest\GuidClass.cs" />
@@ -1449,6 +1451,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="TypesTest\EntityClass.hbm.xml" />
     <EmbeddedResource Include="Events\Collections\Association\Bidirectional\ManyToMany\BidirectionalManyToManyBagToSetMapping.hbm.xml" />
     <EmbeddedResource Include="Events\Collections\Association\Bidirectional\ManyToMany\BidirectionalManyToManySetToSetMapping.hbm.xml" />
     <EmbeddedResource Include="Events\Collections\Association\Bidirectional\OneToMany\BidirectionalOneToManyBagMapping.hbm.xml" />
