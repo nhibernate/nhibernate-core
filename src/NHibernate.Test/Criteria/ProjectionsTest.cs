@@ -143,7 +143,7 @@ namespace NHibernate.Test.Criteria
 			using (ISession session = sessions.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
-					.Add(Expression.Like(Projections.Id(), "2", MatchMode.Start))
+					.Add(Expression.Like(Projections.Property("Name"), "aye", MatchMode.Start))
 					.List<Student>();
 				Assert.AreEqual(27L, list[0].StudentNumber);
 			}
@@ -155,7 +155,7 @@ namespace NHibernate.Test.Criteria
 			using (ISession session = sessions.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
-					.Add(Expression.InsensitiveLike(Projections.Id(), "2", MatchMode.Start))
+					.Add(Expression.InsensitiveLike(Projections.Property("Name"), "AYE", MatchMode.Start))
 					.List<Student>();
 				Assert.AreEqual(27L, list[0].StudentNumber);
 			}

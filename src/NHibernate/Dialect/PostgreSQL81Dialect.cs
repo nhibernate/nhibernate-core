@@ -68,11 +68,12 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// PostgreSQL supports <c>serial</c> and <c>serial4</c> type for 4 bytes integer auto increment column.
 		/// <c>bigserial</c> or <c>serial8</c> can be used for 8 bytes integer auto increment column.
-		/// This dialect uses <c>serial</c>
 		/// </summary>
-		public override string IdentityColumnString
+		/// <returns><c>bigserial</c> if <paramref name="type"/> equal Int64,
+		/// <c>serial</c> otherwise</returns>
+		public override string GetIdentityColumnString(DbType type)
 		{
-			get { return "serial"; }
+			return (type == DbType.Int64) ? "bigserial" : "serial";
 		}
 
 		/// <summary>

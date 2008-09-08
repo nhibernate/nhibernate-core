@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1179
 			{
 				s.EnableFilter("RelatedClass_Valued").SetParameter("forValue", 2);
 				IQuery q =
-					s.CreateQuery("select mc.Description, count(mc.Id) from MainClass mc join mc.Related r group by mc.Description");
+					s.CreateQuery("select mc.Description, count(mc.Id) from MainClass mc join mc.Related r group by mc.Description order by mc.Description");
 
 				IList l = q.List();
 				Assert.AreEqual(2, l.Count);

@@ -2467,22 +2467,22 @@ namespace NHibernate.Test.Legacy
 				s.CreateQuery("select count(*) from Bar as bar where 'abc' in elements(bar.Baz.FooArray)").List();
 				s.CreateQuery("select count(*) from Bar as bar where 1 in indices(bar.Baz.FooArray)").List();
 				s.CreateQuery(
-					"select count(*) from Bar as bar, bar.Component.Glarch.ProxyArray as g where g.id in indices(bar.Baz.FooArray)").
+					"select count(*) from Bar as bar, bar.Component.Glarch.ProxyArray as g where cast(g.id as Int32) in indices(bar.Baz.FooArray)").
 					List();
 				s.CreateQuery(
-					"select max( elements(bar.Baz.FooArray) ) from Bar as bar, bar.Component.Glarch.ProxyArray as g where g.id in indices(bar.Baz.FooArray)")
+					"select max( elements(bar.Baz.FooArray) ) from Bar as bar, bar.Component.Glarch.ProxyArray as g where cast(g.id as Int32) in indices(bar.Baz.FooArray)")
 					.List();
 				s.CreateQuery(
-					"select count(*) from Bar as bar where 1 in (from bar.Component.Glarch.ProxyArray g where g.Name='foo')").List();
+					"select count(*) from Bar as bar where '1' in (from bar.Component.Glarch.ProxyArray g where g.Name='foo')").List();
 				s.CreateQuery(
-					"select count(*) from Bar as bar where 1 in (from g in bar.Component.Glarch.ProxyArray.elements where g.Name='foo')")
+					"select count(*) from Bar as bar where '1' in (from g in bar.Component.Glarch.ProxyArray.elements where g.Name='foo')")
 					.List();
 
 				// TODO: figure out why this is throwing an ORA-1722 error
 				if (!(Dialect is Oracle9Dialect))
 				{
 					s.CreateQuery(
-						"select count(*) from Bar as bar left outer join bar.Component.Glarch.ProxyArray as pg where 1 in (from g in bar.Component.Glarch.ProxyArray)")
+						"select count(*) from Bar as bar left outer join bar.Component.Glarch.ProxyArray as pg where '1' in (from g in bar.Component.Glarch.ProxyArray)")
 						.List();
 				}
 			}
