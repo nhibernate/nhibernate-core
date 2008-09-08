@@ -425,7 +425,7 @@ namespace NHibernate.Mapping
 						buf.Append(col.GetSqlType(dialect, p));
 					}
 					buf.Append(' ')
-						.Append(dialect.IdentityColumnString);
+						.Append(dialect.GetIdentityColumnString(col.GetSqlTypeCode(p).DbType));
 				}
 				else
 				{

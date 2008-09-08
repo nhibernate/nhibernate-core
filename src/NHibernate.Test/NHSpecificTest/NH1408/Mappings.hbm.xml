@@ -17,9 +17,7 @@
 			<one-to-many class="DbResourceKey" />
 		</bag>
 
-		<property name="RawValue" type="StringClob">
-			<column name="Value" sql-type="ntext" not-null="true" />
-		</property>
+		<property name="RawValue" type="string" column="Value" not-null="true"/>
 
 		<subclass name="StringDbResource" discriminator-value="string" />
 		<subclass name="IntDbResource" discriminator-value="int" />

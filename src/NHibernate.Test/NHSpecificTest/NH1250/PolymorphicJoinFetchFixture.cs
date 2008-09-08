@@ -1,3 +1,4 @@
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1250
@@ -15,8 +16,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1250
 			get { return "NH1250"; }
 		}
 
-		[Test]
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2000Dialect;
+		}
 
+		[Test]
 		public void FetchUsingICriteria()
 		{
 			using (ISession s = OpenSession())
@@ -30,7 +35,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1250
 		}
 
 		[Test]
-
 		public void FetchUsingIQuery()
 		{
 			using (ISession s = OpenSession())
