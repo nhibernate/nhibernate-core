@@ -38,7 +38,7 @@ namespace NHibernate.Event.Default
 		{
 			if (!NHibernateUtil.IsInitialized(obj))
 			{
-				throw new PersistentObjectException("uninitialized proxy passed to save()");
+                throw new PersistentObjectException("Uninitialized proxy passed to save(). Object: " + obj.ToString());
 			}
 			else
 			{
