@@ -135,6 +135,7 @@
     <Compile Include="DialectTest\FirebirdDialectFixture.cs" />
     <Compile Include="DialectTest\MsSql2005DialectFixture.cs" />
     <Compile Include="DialectTest\MsSqlDialectFixture.cs" />
+    <Compile Include="DialectTest\SqlCEDialectFixture.cs" />
     <Compile Include="DialectTest\SQLiteDialectFixture.cs" />
     <Compile Include="DriverTest\NullReferenceFixture.cs" />
     <Compile Include="DriverTest\OracleClientDriverFixture.cs" />

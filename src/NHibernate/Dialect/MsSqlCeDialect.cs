@@ -17,8 +17,8 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.AnsiString, "NVARCHAR(255)");
 			RegisterColumnType(DbType.AnsiString, 4000, "NVARCHAR");
 			RegisterColumnType(DbType.AnsiString, 1073741823, "NTEXT");
-			RegisterColumnType(DbType.Binary, "VARBINARY(4000)");
-			RegisterColumnType(DbType.Binary, 4000, "VARBINARY($l)");
+			RegisterColumnType(DbType.Binary, "VARBINARY(8000)");
+			RegisterColumnType(DbType.Binary, 8000, "VARBINARY($l)");
 			RegisterColumnType(DbType.Binary, 1073741823, "IMAGE");
 			RegisterColumnType(DbType.Boolean, "BIT");
 			RegisterColumnType(DbType.Byte, "TINYINT");
