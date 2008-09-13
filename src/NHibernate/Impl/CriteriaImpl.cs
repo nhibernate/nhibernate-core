@@ -436,7 +436,15 @@ namespace NHibernate.Impl
 
 		public object Clone()
 		{
-			CriteriaImpl clone = new CriteriaImpl(entityOrClassName, Alias, Session);
+			CriteriaImpl clone;
+			if (persistentClass != null)
+			{
+				clone = new CriteriaImpl(persistentClass, Alias, Session);
+			}
+			else
+			{
+				clone = new CriteriaImpl(entityOrClassName, Alias, Session);
+			}
 			CloneSubcriteria(clone);
 			foreach (KeyValuePair<string, FetchMode> de in fetchModes)
 			{
