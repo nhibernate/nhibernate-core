@@ -396,14 +396,41 @@ namespace NHibernate.Impl
 
 		protected virtual IList GetResultList(IList results)
 		{
-			if (resultTransformer != null)
+            for (int i = 0, len = results.Count; i < len; ++i)
 			{
-				for (int i = 0, len = results.Count; i < len; ++i)
+                IList subList = (IList)results[i];
+				QueryParameters parameter = Parameters[i];
+				HolderInstantiator holderInstantiator = GetHolderInstantiator(parameter);
+				if (holderInstantiator.IsRequired)
 				{
-					results[i] = resultTransformer.TransformList((IList)results[i]);
+					for (int j = 0; j < subList.Count; j++)
+					{
+						object[] row = subList[j] as object[];
+						if(row!=null) //if the result is array 
+							subList[j] = holderInstantiator.Instantiate(row);
+					}
+
+					if (holderInstantiator.ResultTransformer != null)
+					{
+						results[i] = holderInstantiator.ResultTransformer.TransformList(subList);
+					}
 				}
 			}
 			return results;
+		}
+
+		private HolderInstantiator GetHolderInstantiator(QueryParameters parameter)
+		{
+			//if multi query has result transformer, then this will override IQuery transformations
+			if (resultTransformer != null)
+			{
+				return new HolderInstantiator(resultTransformer, null);
+			}
+			if (parameter.ResultTransformer!=null)
+			{
+				return new HolderInstantiator(parameter.ResultTransformer, null);
+			}
+			return HolderInstantiator.NoopInstantiator;
 		}
 
 
@@ -484,6 +511,7 @@ namespace NHibernate.Impl
 					{
 						log.Debug(string.Format("done processing result set ({0} rows)", count));
 					}
+
 					results.Add(tempResults);
 
 					if (log.IsDebugEnabled)
