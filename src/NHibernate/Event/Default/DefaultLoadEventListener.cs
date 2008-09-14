@@ -416,7 +416,7 @@ namespace NHibernate.Event.Default
 
 					// Entity was found in second-level cache...
 					// NH: Different behavior (take a look to options.ExactPersister (NH-295))
-					if (!options.ExactPersister || entry.Subclass.Equals(persister.EntityName))
+					if (!options.ExactPersister || persister.EntityMetamodel.SubclassEntityNames.Contains(entry.Subclass))
 					{
 						return AssembleCacheEntry(entry, @event.EntityId, persister, @event);
 					}
