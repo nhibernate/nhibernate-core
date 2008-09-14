@@ -818,6 +818,11 @@ namespace NHibernate.Impl
 			return GetEntityPersister(className).GetPropertyType(propertyName);
 		}
 
+		public bool HasNonIdentifierPropertyNamedId(string className)
+		{
+			return "id".Equals(GetIdentifierPropertyName(className));
+		}
+
 		public IConnectionProvider ConnectionProvider
 		{
 			get { return settings.ConnectionProvider; }

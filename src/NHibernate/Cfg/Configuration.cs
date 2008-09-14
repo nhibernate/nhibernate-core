@@ -153,6 +153,11 @@ namespace NHibernate.Cfg
 				}
 				return prop.Type;
 			}
+
+			public bool HasNonIdentifierPropertyNamedId(string className)
+			{
+				return "id".Equals(GetIdentifierPropertyName(className));
+			}
 		}
 
 		[NonSerialized]

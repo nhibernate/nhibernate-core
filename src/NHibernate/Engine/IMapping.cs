@@ -13,5 +13,7 @@ namespace NHibernate.Engine
 		string GetIdentifierPropertyName(string className);
 
 		IType GetReferencedPropertyType(string className, string propertyName);
+
+		bool HasNonIdentifierPropertyNamedId(string className);
 	}
 }
