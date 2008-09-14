@@ -368,6 +368,9 @@
     <Compile Include="NHSpecificTest\NH1419\Entry.cs" />
     <Compile Include="NHSpecificTest\NH1419\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1464\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1483\BaseClass.cs" />
+    <Compile Include="NHSpecificTest\NH1483\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1483\SubClass.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
@@ -1324,6 +1327,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TypesTest\EntityClass.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1483\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
