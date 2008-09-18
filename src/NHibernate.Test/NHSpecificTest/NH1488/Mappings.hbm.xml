@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH1488">
+
+	<class name="Category" table="Category" abstract="true">
+		<id name="Id" column="Id">
+			<generator class="native" />
+		</id>
+		<discriminator column="Type" length="1" />
+		<property name="Name" not-null="true" />
+		<subclass name="CustomerCategory" discriminator-value="C"/>
+	</class>
+
+	<class name="Customer" table="Customer">
+		<id name="Id" column="Id">
+			<generator class="native" />
+		</id>
+		<property name="Name" not-null="true" />
+		<many-to-one name="Category" lazy="false" column="Category_Id"/>
+	</class>
+	
+	<class name="CustomerNoSmart" table="CustomerNoSmart">
+		<id name="Id" column="Id">
+			<generator class="native" />
+		</id>
+		<property name="Name" not-null="true" />
+		<many-to-one name="Category" lazy="false" column="Category_Id"/>
+	</class>
+</hibernate-mapping>

@@ -473,6 +473,8 @@
     <Compile Include="NHSpecificTest\NH1483\BaseClass.cs" />
     <Compile Include="NHSpecificTest\NH1483\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1483\SubClass.cs" />
+    <Compile Include="NHSpecificTest\NH1488\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH1488\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
@@ -1460,6 +1462,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1488\Mappings.hbm.xml" />
     <EmbeddedResource Include="Extendshbm\allinone.hbm.xml" />
     <EmbeddedResource Include="Extendshbm\allseparateinone.hbm.xml" />
     <EmbeddedResource Include="Extendshbm\Customer.hbm.xml" />
