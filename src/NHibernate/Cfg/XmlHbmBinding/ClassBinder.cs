@@ -235,7 +235,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			XmlNode tuplizer = LocateTuplizerDefinition(node, EntityMode.Map);
 			if (tuplizer != null)
 			{
-				string tupClassName = FullClassName(tuplizer.Attributes["class"].Value, mappings);
+				string tupClassName = FullQualifiedClassName(tuplizer.Attributes["class"].Value, mappings);
 				entity.AddTuplizer(EntityMode.Map, tupClassName);
 			}
 		}
@@ -253,7 +253,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			XmlNode tuplizer = LocateTuplizerDefinition(node, EntityMode.Xml);
 			if (tuplizer != null)
 			{
-				string tupClassName = FullClassName(tuplizer.Attributes["class"].Value, mappings);
+				string tupClassName = FullQualifiedClassName(tuplizer.Attributes["class"].Value, mappings);
 				entity.AddTuplizer(EntityMode.Xml, tupClassName);
 			}
 		}
@@ -279,7 +279,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			XmlNode tuplizer = LocateTuplizerDefinition(node, EntityMode.Poco);
 			if (tuplizer != null)
 			{
-				string tupClassName = FullClassName(tuplizer.Attributes["class"].Value, mappings);
+				string tupClassName = FullQualifiedClassName(tuplizer.Attributes["class"].Value, mappings);
 				entity.AddTuplizer(EntityMode.Poco, tupClassName);
 			}
 		}
@@ -460,14 +460,20 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			XmlAttribute extendsAttr = subnode.Attributes["extends"];
 			if (extendsAttr == null)
+			{
 				throw new MappingException("'extends' attribute is not found.");
-			String extendsValue = FullClassName(extendsAttr.Value, mappings);
-			System.Type superclass = ClassForFullNameChecked(extendsValue,
-				"extended class not found: {0}");
-			PersistentClass superModel = mappings.GetClass(superclass);
-
+			}
+			string extendsName = extendsAttr.Value;
+			PersistentClass superModel = mappings.GetClass(extendsName);
+			if(superModel == null)
+			{
+				string qualifiedExtendsName = FullClassName(extendsName, mappings);
+				superModel = mappings.GetClass(qualifiedExtendsName);
+			}
 			if (superModel == null)
-				throw new MappingException("Cannot extend unmapped class: " + extendsValue);
+			{
+				throw new MappingException("Cannot extend unmapped class: " + extendsName);
+			}
 			return superModel;
 		}
 
@@ -541,7 +547,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.ComponentClass = ClassForNameChecked(
 					classNode.Value, mappings,
 					"component class not found: {0}");
-				model.ComponentClassName = FullClassName(classNode.Value, mappings);
+				model.ComponentClassName = FullQualifiedClassName(classNode.Value, mappings);
 				model.IsEmbedded = false;
 			}
 			else if (reflectedClass != null)
@@ -767,7 +773,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				originalTypeName = typeChild.Attributes["name"].Value;
 				// NH: allow className completing it with assembly+namespace of the mapping doc.
-				typeName = FullClassName(originalTypeName, mappings);
+				typeName = FullQualifiedClassName(originalTypeName, mappings);
 				foreach (XmlNode childNode in typeChild.ChildNodes)
 					parameters.Add(childNode.Attributes["name"].Value, childNode.InnerText.Trim());
 			}
@@ -780,7 +786,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			TypeDef typeDef = originalTypeName == null ? mappings.GetTypeDef(typeName) : mappings.GetTypeDef(originalTypeName);
 			if (typeDef != null)
 			{
-				typeName = FullClassName(typeDef.TypeClass, mappings);
+				typeName = FullQualifiedClassName(typeDef.TypeClass, mappings);
 				// parameters on the property mapping should
 				// override parameters in the typedef
 				Dictionary<string, string> allParameters = new Dictionary<string, string>(typeDef.Parameters);
@@ -1207,7 +1213,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string entityName = XmlHelper.GetAttributeValue(elem, "entity-name");
 			string className = XmlHelper.GetAttributeValue(elem, "class");
 			entityName = entityName
-			             ?? (className == null ? null : StringHelper.GetFullClassname(FullClassName(className, model)));
+			             ?? (className == null ? null : StringHelper.GetFullClassname(FullQualifiedClassName(className, model)));
 
 			return entityName;
 		}

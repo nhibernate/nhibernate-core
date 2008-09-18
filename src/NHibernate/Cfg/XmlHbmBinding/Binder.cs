@@ -37,13 +37,30 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		/// <param name="className"></param>
 		/// <param name="mappings"></param>
 		/// <returns></returns>
-		protected static string FullClassName(string className, Mappings mappings)
+		protected static string FullQualifiedClassName(string className, Mappings mappings)
 		{
 			if (className == null)
 				return null;
 
 			return TypeNameParser.Parse(className, mappings.DefaultNamespace, mappings.DefaultAssembly)
 				.ToString();
+		}
+
+		/// <summary>
+		/// Converts a partial class name into a fully one
+		/// </summary>
+		/// <param name="className"></param>
+		/// <param name="mappings"></param>
+		/// <returns>The class FullName (without the assembly)</returns>
+		/// <remarks>
+		/// The FullName is equivalent to the default entity-name
+		/// </remarks>
+		protected static string FullClassName(string className, Mappings mappings)
+		{
+			if (className == null)
+				return null;
+
+			return TypeNameParser.Parse(className, mappings.DefaultNamespace, mappings.DefaultAssembly).Type;
 		}
 
 		/// <summary>
@@ -72,7 +89,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		/// <summary>
 		/// Similar to <see cref="ClassForFullNameChecked" />, but handles short class names
-		/// by calling <see cref="FullClassName" />.
+		/// by calling <see cref="FullQualifiedClassName" />.
 		/// </summary>
 		/// <param name="name"></param>
 		/// <param name="mappings"></param>
@@ -80,7 +97,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		/// <returns></returns>
 		protected static System.Type ClassForNameChecked(string name, Mappings mappings, string errorMessage)
 		{
-			return ClassForFullNameChecked(FullClassName(name, mappings), errorMessage);
+			return ClassForFullNameChecked(FullQualifiedClassName(name, mappings), errorMessage);
 		}
 
 		protected static string GetClassName(string unqualifiedName, Mappings mappings)

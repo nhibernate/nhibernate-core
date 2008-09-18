@@ -152,7 +152,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 				else
 				{
-					model.TypeName = FullClassName(typeName, mappings);
+					model.TypeName = FullQualifiedClassName(typeName, mappings);
 				}
 			}
 
@@ -211,7 +211,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.IsSorted = true;
 				if (!sortedAtt.Value.Equals("natural"))
 				{
-					string comparatorClassName = FullClassName(sortedAtt.Value, mappings);
+					string comparatorClassName = FullQualifiedClassName(sortedAtt.Value, mappings);
 					try
 					{
 						model.Comparer = Activator.CreateInstance(ReflectHelper.ClassForName(comparatorClassName));

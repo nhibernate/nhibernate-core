@@ -123,7 +123,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			foreach (HbmImport importSchema in mappingSchema.import ?? new HbmImport[0])
 			{
-				string fullClassName = FullClassName(importSchema.@class, mappings);
+				string fullClassName = FullQualifiedClassName(importSchema.@class, mappings);
 				string rename = importSchema.rename ?? StringHelper.GetClassname(fullClassName);
 
 				log.DebugFormat("Import: {0} -> {1}", rename, fullClassName);
@@ -135,7 +135,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			foreach (HbmTypedef typedef in mappingSchema.typedef ?? new HbmTypedef[0])
 			{
-				string typeClass = FullClassName(typedef.@class, mappings);
+				string typeClass = FullQualifiedClassName(typedef.@class, mappings);
 				string typeName = typedef.name;
 				IEnumerable<HbmParam> paramIter = typedef.param ?? new HbmParam[0];
 				Dictionary<string, string> parameters = new Dictionary<string, string>(5);

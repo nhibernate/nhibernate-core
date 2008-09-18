@@ -92,7 +92,7 @@ namespace NHibernate.Test.Extendshbm
 			Assert.That(cfg.GetClassMapping(typeof (Employee).FullName), Is.Not.Null);
 		}
 
-		[Test, Ignore("Not supported yet!")]
+		[Test]
 		public void JoinedSubclassAndEntityNamesOnly()
 		{
 			Configuration cfg = new Configuration();

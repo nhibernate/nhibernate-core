@@ -173,20 +173,11 @@ namespace NHibernate.Cfg
 			propertyReferences.Add(upr);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public PersistentClass GetClass(System.Type type)
-		{
-			// TODO NH: Remove this method
-			return GetClass(type.FullName);
-		}
-
 		public PersistentClass GetClass(string className)
 		{
-			return classes[className];
+			PersistentClass result;
+			classes.TryGetValue(className, out result);
+			return result;
 		}
 
 		/// <summary>
@@ -215,11 +206,6 @@ namespace NHibernate.Cfg
 			set { defaultAssembly = value; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="role"></param>
-		/// <returns></returns>
 		public Mapping.Collection GetCollection(string role)
 		{
 			return collections[role];
