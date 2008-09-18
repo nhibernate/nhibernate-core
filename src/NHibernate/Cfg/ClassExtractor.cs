@@ -1,7 +1,7 @@
-using System.Collections;
 using System.Xml;
-using Iesi.Collections;
 using NHibernate.Util;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Cfg
 {
@@ -16,23 +16,68 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public class ClassEntry
 		{
-			private readonly AssemblyQualifiedTypeName _fullExtends;
-			private readonly AssemblyQualifiedTypeName _fullClassName;
+			private readonly string entityName;
+			private readonly string extendsEntityName;
+			private readonly AssemblyQualifiedTypeName fullExtends;
+			private readonly AssemblyQualifiedTypeName fullClassName;
+			private readonly int hashCode;
 
-			public ClassEntry(string extends, string className, string assembly, string @namespace)
+			public ClassEntry(string extends, string className, string entityName, string assembly, string @namespace)
 			{
-				_fullExtends = extends == null ? null : TypeNameParser.Parse(extends, @namespace, assembly);
-				_fullClassName = className == null ? null : TypeNameParser.Parse(className, @namespace, assembly);
+				fullExtends = string.IsNullOrEmpty(extends) ? null : TypeNameParser.Parse(extends, @namespace, assembly);
+				fullClassName = string.IsNullOrEmpty(className) ? null : TypeNameParser.Parse(className, @namespace, assembly);
+				this.entityName = entityName;
+				extendsEntityName = string.IsNullOrEmpty(extends) ? null : extends;
+				unchecked
+				{
+					hashCode = (entityName != null ? entityName.GetHashCode() : 0);
+					hashCode = (hashCode * 397) ^ (fullExtends != null ? fullExtends.GetHashCode() : 0);
+					hashCode = (hashCode * 397) ^ (fullClassName != null ? fullClassName.GetHashCode() : 0);
+				}
 			}
 
 			public AssemblyQualifiedTypeName FullExtends
 			{
-				get { return _fullExtends; }
+				get { return fullExtends; }
 			}
 
 			public AssemblyQualifiedTypeName FullClassName
 			{
-				get { return _fullClassName; }
+				get { return fullClassName; }
+			}
+
+			public string EntityName
+			{
+				get { return entityName; }
+			}
+
+			public string ExtendsEntityName
+			{
+				get { return extendsEntityName; }
+			}
+
+			public override bool Equals(object obj)
+			{
+				ClassEntry that = obj as ClassEntry;
+				return Equals(that);
+			}
+
+			public bool Equals(ClassEntry obj)
+			{
+				if (obj == null)
+				{
+					return false;
+				}
+				if (ReferenceEquals(this, obj))
+				{
+					return true;
+				}
+				return Equals(obj.entityName, entityName) && Equals(obj.fullExtends, fullExtends) && Equals(obj.fullClassName, fullClassName);
+			}
+
+			public override int GetHashCode()
+			{
+				return hashCode;
 			}
 		}
 
@@ -42,7 +87,7 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="document">A validated <see cref="XmlDocument"/> representing
 		/// a mapping file.</param>
-		public static ICollection GetClassEntries(XmlDocument document)
+		public static ICollection<ClassEntry> GetClassEntries(XmlDocument document)
 		{
 			// TODO this should be extracted into a utility method since there's similar
 			// code in Configuration
@@ -50,7 +95,7 @@ namespace NHibernate.Cfg
 			nsmgr.AddNamespace(HbmConstants.nsPrefix, Configuration.MappingSchemaXMLNS);
 
 			// Since the document is validated, no error checking is done in this method.
-			HashedSet classEntries = new HashedSet();
+			HashedSet<ClassEntry> classEntries = new HashedSet<ClassEntry>();
 
 			XmlNode root = document.DocumentElement;
 
@@ -65,12 +110,15 @@ namespace NHibernate.Cfg
 				nsmgr
 				);
 
-			foreach (XmlNode classNode in classNodes)
+			if (classNodes != null)
 			{
-				string name = XmlHelper.GetAttributeValue(classNode, "name");
-				string extends = XmlHelper.GetAttributeValue(classNode, "extends");
-				ClassEntry ce = new ClassEntry(extends, name, assembly, @namespace);
-				classEntries.Add(ce);
+				foreach (XmlNode classNode in classNodes)
+				{
+					string name = XmlHelper.GetAttributeValue(classNode, "name");
+					string extends = XmlHelper.GetAttributeValue(classNode, "extends");
+					string entityName = XmlHelper.GetAttributeValue(classNode, "entity-name");
+					classEntries.Add(new ClassEntry(extends, name, entityName, assembly, @namespace));
+				}
 			}
 
 			return classEntries;

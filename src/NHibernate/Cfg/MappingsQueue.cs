@@ -1,10 +1,7 @@
-using System;
 using System.Collections;
-using System.Reflection;
 using System.Text;
-
-using Iesi.Collections;
-using NHibernate.Util;
+using Iesi.Collections.Generic;
+using System.Collections.Generic;
 
 namespace NHibernate.Cfg
 {
@@ -13,9 +10,9 @@ namespace NHibernate.Cfg
 	/// </summary>
 	public class MappingsQueue
 	{
-		private readonly ISet _processedClassNames = new HashedSet();
-		
-		private readonly IList _unavailableEntries = new ArrayList();
+		private readonly ISet<string> _processedClassNames = new HashedSet<string>();
+
+		private readonly List<MappingsQueueEntry> _unavailableEntries = new List<MappingsQueueEntry>();
 		private readonly Queue _availableEntries = new Queue();
 
 		/// <summary>
@@ -23,9 +20,7 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public void AddDocument(NamedXmlDocument document)
 		{
-			MappingsQueueEntry re = new MappingsQueueEntry(
-				document,
-				ClassExtractor.GetClassEntries(document.Document));
+			MappingsQueueEntry re = new MappingsQueueEntry(document, ClassExtractor.GetClassEntries(document.Document));
 			AddEntry(re);
 		}
 
@@ -57,7 +52,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		private void AddProcessedClassNames(ICollection classNames)
+		private void AddProcessedClassNames(ICollection<string> classNames)
 		{
 			_processedClassNames.AddAll(classNames);
 			if (classNames.Count > 0)
@@ -113,7 +108,7 @@ namespace NHibernate.Cfg
 
 			foreach (MappingsQueueEntry resourceEntry in resourceEntries)
 			{
-				foreach (AssemblyQualifiedTypeName className in resourceEntry.RequiredClassNames)
+				foreach (string className in resourceEntry.RequiredClassNames)
 				{
 					message.Append('\n')
 						.Append(className);

@@ -1,6 +1,7 @@
-using System.Collections;
 using Iesi.Collections;
 using NHibernate.Util;
+using Iesi.Collections.Generic;
+using System.Collections.Generic;
 
 namespace NHibernate.Cfg
 {
@@ -10,10 +11,10 @@ namespace NHibernate.Cfg
 	public class MappingsQueueEntry
 	{
 		private readonly NamedXmlDocument document;
-		private readonly ISet requiredClassNames;
-		private readonly ISet containedClassNames;
+		private readonly ISet<string> requiredClassNames;
+		private readonly ISet<string> containedClassNames;
 
-		public MappingsQueueEntry(NamedXmlDocument document, ICollection classEntries)
+		public MappingsQueueEntry(NamedXmlDocument document, IEnumerable<ClassExtractor.ClassEntry> classEntries)
 		{
 			this.document = document;
 
@@ -27,28 +28,34 @@ namespace NHibernate.Cfg
 			get { return document; }
 		}
 
-		private static ISet GetClassNames(ICollection classEntries)
+		private static ISet<string> GetClassNames(IEnumerable<ClassExtractor.ClassEntry> classEntries)
 		{
-			HashedSet result = new HashedSet();
+			HashedSet<string> result = new HashedSet<string>();
 
 			foreach (ClassExtractor.ClassEntry ce in classEntries)
 			{
-				if (ce.FullClassName != null)
-					result.Add(ce.FullClassName);
+				if (ce.EntityName != null)
+				{
+					result.Add(ce.EntityName);
+				}
+				else if (ce.FullClassName != null)
+				{
+					result.Add(ce.FullClassName.Type);
+				}
 			}
 
 			return result;
 		}
 
-		private static ISet GetExtendsNames(ICollection classEntries)
+		private static ISet<string> GetExtendsNames(IEnumerable<ClassExtractor.ClassEntry> classEntries)
 		{
-			HashedSet result = new HashedSet();
+			HashedSet<string> result = new HashedSet<string>();
 
 			foreach (ClassExtractor.ClassEntry ce in classEntries)
 			{
 				if (ce.FullExtends != null)
 				{
-					result.Add(ce.FullExtends);
+					result.Add(ce.FullExtends.Type);
 				}
 			}
 
@@ -60,12 +67,12 @@ namespace NHibernate.Cfg
 		/// needed by the classes in this resource.
 		/// </summary>
 		/// <returns>An <see cref="ISet"/> of <see cref="AssemblyQualifiedTypeName" /></returns>
-		public ICollection RequiredClassNames
+		public ICollection<string> RequiredClassNames
 		{
 			get { return requiredClassNames; }
 		}
 
-		public ICollection ContainedClassNames
+		public ICollection<string> ContainedClassNames
 		{
 			get { return containedClassNames; }
 		}

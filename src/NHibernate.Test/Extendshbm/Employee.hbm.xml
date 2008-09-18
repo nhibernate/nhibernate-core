@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.Extendshbm"
+				   default-access="field.camelcase">
+
+	<subclass name="Employee" extends="Person">
+		<property name="Title" length="20"/>
+		<property name="Salary" length="2"/>
+		<many-to-one name="Manager"/>
+	</subclass>
+</hibernate-mapping>

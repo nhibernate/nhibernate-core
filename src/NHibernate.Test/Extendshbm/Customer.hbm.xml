@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.Extendshbm"
+				   default-access="field.camelcase">
+	<subclass name="Customer" extends="Person">
+		<property name="Comments"/>
+		<many-to-one name="Salesperson"/>
+	</subclass>	
+</hibernate-mapping>
