@@ -834,6 +834,15 @@ namespace NHibernate.Cfg
 			return ProxyTypeValidator.ValidateType(persistentClass.ProxyInterface);
 		}
 
+		/// <summary> 
+		/// Call this to ensure the mappings are fully compiled/built. Usefull to ensure getting
+		/// access to all information in the metamodel when calling e.g. getClassMappings().
+		/// </summary>
+		public virtual void BuildMappings()
+		{
+			SecondPassCompile();
+		}
+
 		/// <remarks>
 		/// This method may be called many times!!
 		/// </remarks>
