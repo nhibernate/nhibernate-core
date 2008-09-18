@@ -104,7 +104,7 @@ namespace NHibernate.Test.Extendshbm
 			Assert.That(cfg.GetClassMapping("EntityCompany"), Is.Not.Null);
 		}
 
-		[Test, Ignore("Not supported yet!")]
+		[Test]
 		public void EntityNamesWithPackageFailureExpected()
 		{
 			Configuration cfg = new Configuration();
