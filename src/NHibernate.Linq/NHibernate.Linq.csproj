@@ -66,9 +66,11 @@
     <Compile Include="Visitors\LocalVariableExpressionReducer.cs" />
     <Compile Include="Visitors\NHibernateExpressionVisitor.cs" />
     <Compile Include="Visitors\NHExpressionToSqlQueryTranslator.cs" />
+    <Compile Include="Visitors\ParameterReplacer.cs" />
     <Compile Include="Visitors\QuerySpacesFinderVisitor.cs" />
     <Compile Include="Visitors\SqlExpressionTranslator.cs" />
     <Compile Include="Visitors\NHExpressionToSqlExpressionTransformer.cs" />
+    <Compile Include="Visitors\WhereExpressionCombiner.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

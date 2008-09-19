@@ -10,7 +10,8 @@ namespace NHibernate.Linq.Test
 	{
 		public static bool ExpressionEquals(this Expression source, Expression toBeCompared)
 		{
-			if (object.Equals(source, toBeCompared))
+			return source.ToString().Equals(toBeCompared.ToString());
+			/*if (object.Equals(source, toBeCompared))
 				return true;
 			else if ((source != null && toBeCompared == null) || (source == null && toBeCompared != null))
 			{
@@ -37,7 +38,7 @@ namespace NHibernate.Linq.Test
 				return value;
 			}
 			else
-				return false;
+				return false;*/
 		}
 	}
 }
