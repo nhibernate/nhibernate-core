@@ -46,6 +46,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Expressions\OrderExpression.cs" />
+    <Compile Include="Expressions\OrderType.cs" />
     <Compile Include="Expressions\ProjectionExpression.cs" />
     <Compile Include="Expressions\PropertyExpression.cs" />
     <Compile Include="Expressions\SelectExpression.cs" />
@@ -66,6 +68,7 @@
     <Compile Include="Visitors\LocalVariableExpressionReducer.cs" />
     <Compile Include="Visitors\NHibernateExpressionVisitor.cs" />
     <Compile Include="Visitors\NHExpressionToSqlQueryTranslator.cs" />
+    <Compile Include="Visitors\OrderByTransformer.cs" />
     <Compile Include="Visitors\ParameterReplacer.cs" />
     <Compile Include="Visitors\QuerySpacesFinderVisitor.cs" />
     <Compile Include="Visitors\SqlExpressionTranslator.cs" />

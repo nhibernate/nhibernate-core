@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
+﻿using System.Linq.Expressions;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -10,16 +6,16 @@ namespace NHibernate.Linq.Visitors
 	/// Reduces the expression using logical simplification
 	/// Please note that it doesn't evaluate the binary expressions with constant operands
 	/// </summary>
-
 	//May be used for animal.Offspring.Any() == true
 	//Eventhough it is almost unnecessary to reduce not(not(true)) kind of expression(sql servers can easily optimize them, but
 	//simplified expressions is gold for debugging.
-	public class LogicalExpressionReducer:ExpressionVisitor
+	public class LogicalExpressionReducer : ExpressionVisitor
 	{
 		public static Expression Reduce(Expression expr)
 		{
 			return new LogicalExpressionReducer().Visit(expr);
 		}
+
 		protected override Expression VisitBinary(BinaryExpression expr)
 		{
 			bool modified;
@@ -27,15 +23,14 @@ namespace NHibernate.Linq.Visitors
 			if (modified)
 				return Visit(e);
 			e = ProcessBinaryExpression(expr.Right, expr.Left, expr.NodeType, out modified);
-			if(modified)
+			if (modified)
 				return Visit(e);
 			return expr;
-
 		}
 
 		protected override Expression VisitUnary(UnaryExpression u)
 		{
-			switch(u.NodeType)
+			switch (u.NodeType)
 			{
 				case ExpressionType.Not:
 					if (u.Operand.NodeType == ExpressionType.Not)
@@ -50,10 +45,10 @@ namespace NHibernate.Linq.Visitors
 						var binaryExpression = u.Operand as BinaryExpression;
 						return Visit(Expression.Equal(binaryExpression.Left, binaryExpression.Right));
 					}
-					else if(u.Operand.NodeType==ExpressionType.Constant)
+					else if (u.Operand.NodeType == ExpressionType.Constant)
 					{
 						var constantExpression = u.Operand as ConstantExpression;
-						return Visit(Expression.Constant(!((bool)constantExpression.Value)));
+						return Visit(Expression.Constant(!((bool) constantExpression.Value)));
 					}
 					break;
 			}
@@ -61,7 +56,7 @@ namespace NHibernate.Linq.Visitors
 		}
 
 		private Expression ProcessBinaryExpression(Expression exprToCompare, Expression exprToReturn,
-														ExpressionType nodeType, out bool modified)
+		                                           ExpressionType nodeType, out bool modified)
 		{
 			modified = false;
 
@@ -91,10 +86,11 @@ namespace NHibernate.Linq.Visitors
 				default:
 					return null;
 			}
-
 		}
 
-		class BooleanConstantFinder : ExpressionVisitor
+		#region Nested type: BooleanConstantFinder
+
+		private class BooleanConstantFinder : ExpressionVisitor
 		{
 			private bool isNestedBinaryExpression;
 
@@ -102,8 +98,8 @@ namespace NHibernate.Linq.Visitors
 
 			protected override Expression VisitConstant(ConstantExpression c)
 			{
-				if (c.Type == typeof(bool) && !isNestedBinaryExpression)
-					Constant = (bool)c.Value;
+				if (c.Type == typeof (bool) && !isNestedBinaryExpression)
+					Constant = (bool) c.Value;
 				return c;
 			}
 
@@ -113,5 +109,7 @@ namespace NHibernate.Linq.Visitors
 				return b;
 			}
 		}
+
+		#endregion
 	}
 }

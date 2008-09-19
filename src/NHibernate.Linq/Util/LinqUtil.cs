@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
+﻿using System.Linq.Expressions;
 
 namespace NHibernate.Linq.Util
 {
@@ -12,14 +8,14 @@ namespace NHibernate.Linq.Util
 		{
 			while (expression.NodeType == ExpressionType.Quote)
 			{
-				expression=((UnaryExpression)expression).Operand;
+				expression = ((UnaryExpression) expression).Operand;
 			}
 			return expression;
 		}
+
 		public static bool IsAnonymousType(System.Type type)
 		{
 			return type != null && type.Name.StartsWith("<");
 		}
-
 	}
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -29,25 +28,77 @@ namespace NHibernate.Linq.Visitors
 		/// <returns>A new tree with sub-trees evaluated and replaced.</returns>
 		public static Expression Reduce(Expression expression)
 		{
-			return Reduce(expression, LocalVariableExpressionReducer.CanBeEvaluatedLocally);
+			return Reduce(expression, CanBeEvaluatedLocally);
 		}
 
 		private static bool CanBeEvaluatedLocally(Expression expression)
 		{
 			if (expression.NodeType == ExpressionType.Constant)
 			{
-				return !(((ConstantExpression)expression).Value is IQueryable);
+				return !(((ConstantExpression) expression).Value is IQueryable);
 			}
 
 			return expression.NodeType != ExpressionType.Parameter;
 		}
 
+		#region Nested type: Nominator
+
+		/// <summary>
+		/// Performs bottom-up analysis to determine which nodes can possibly
+		/// be part of an evaluated sub-tree.
+		/// </summary>
+		private class Nominator : ExpressionVisitor
+		{
+			private readonly Func<Expression, bool> fnCanBeEvaluated;
+			private HashSet<Expression> candidates;
+			private bool cannotBeEvaluated;
+
+			internal Nominator(Func<Expression, bool> fnCanBeEvaluated)
+			{
+				this.fnCanBeEvaluated = fnCanBeEvaluated;
+			}
+
+			internal HashSet<Expression> Nominate(Expression expression)
+			{
+				candidates = new HashSet<Expression>();
+				Visit(expression);
+				return candidates;
+			}
+
+			public override Expression Visit(Expression expression)
+			{
+				if (expression != null)
+				{
+					bool saveCannotBeEvaluated = cannotBeEvaluated;
+					cannotBeEvaluated = false;
+					base.Visit(expression);
+					if (!cannotBeEvaluated)
+					{
+						if (fnCanBeEvaluated(expression))
+						{
+							candidates.Add(expression);
+						}
+						else
+						{
+							cannotBeEvaluated = true;
+						}
+					}
+					cannotBeEvaluated |= saveCannotBeEvaluated;
+				}
+				return expression;
+			}
+		}
+
+		#endregion
+
+		#region Nested type: SubtreeEvaluator
+
 		/// <summary>
 		/// Evaluates & replaces sub-trees when first candidate is reached (top-down)
 		/// </summary>
-		class SubtreeEvaluator : ExpressionVisitor
+		private class SubtreeEvaluator : ExpressionVisitor
 		{
-			HashSet<Expression> candidates;
+			private readonly HashSet<Expression> candidates;
 
 			internal SubtreeEvaluator(HashSet<Expression> candidates)
 			{
@@ -56,7 +107,7 @@ namespace NHibernate.Linq.Visitors
 
 			internal Expression Eval(Expression exp)
 			{
-				return this.Visit(exp);
+				return Visit(exp);
 			}
 
 			public override Expression Visit(Expression exp)
@@ -65,9 +116,9 @@ namespace NHibernate.Linq.Visitors
 				{
 					return null;
 				}
-				if (this.candidates.Contains(exp))
+				if (candidates.Contains(exp))
 				{
-					return this.Evaluate(exp);
+					return Evaluate(exp);
 				}
 				return base.Visit(exp);
 			}
@@ -84,50 +135,6 @@ namespace NHibernate.Linq.Visitors
 			}
 		}
 
-		/// <summary>
-		/// Performs bottom-up analysis to determine which nodes can possibly
-		/// be part of an evaluated sub-tree.
-		/// </summary>
-		class Nominator : ExpressionVisitor
-		{
-			Func<Expression, bool> fnCanBeEvaluated;
-			HashSet<Expression> candidates;
-			bool cannotBeEvaluated;
-
-			internal Nominator(Func<Expression, bool> fnCanBeEvaluated)
-			{
-				this.fnCanBeEvaluated = fnCanBeEvaluated;
-			}
-
-			internal HashSet<Expression> Nominate(Expression expression)
-			{
-				this.candidates = new HashSet<Expression>();
-				this.Visit(expression);
-				return this.candidates;
-			}
-
-			public override Expression Visit(Expression expression)
-			{
-				if (expression != null)
-				{
-					bool saveCannotBeEvaluated = this.cannotBeEvaluated;
-					this.cannotBeEvaluated = false;
-					base.Visit(expression);
-					if (!this.cannotBeEvaluated)
-					{
-						if (this.fnCanBeEvaluated(expression))
-						{
-							this.candidates.Add(expression);
-						}
-						else
-						{
-							this.cannotBeEvaluated = true;
-						}
-					}
-					this.cannotBeEvaluated |= saveCannotBeEvaluated;
-				}
-				return expression;
-			}
-		}
+		#endregion
 	}
 }

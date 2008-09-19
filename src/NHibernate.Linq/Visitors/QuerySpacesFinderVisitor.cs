@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Engine;
-using System.Collections;
-using NHibernate.Persister.Collection;
 using NHibernate.Linq.Util;
 using NHibernate.Metadata;
 
@@ -19,41 +16,43 @@ namespace NHibernate.Linq.Visitors
 	/// This visitor visits nodes of the expression tree, and appends each node corresponding 
 	/// to an entity/collection to the queryspace.
 	/// </summary>
-	public class QuerySpacesFinderVisitor:ExpressionVisitor
+	public class QuerySpacesFinderVisitor : ExpressionVisitor
 	{
+		private readonly ISessionFactoryImplementor sessionFactory;
+
 		public QuerySpacesFinderVisitor(ISessionFactoryImplementor sessionFactory)
-			:this(sessionFactory,new List<string>())
+			: this(sessionFactory, new List<string>())
 		{
-			
 		}
-		public QuerySpacesFinderVisitor(ISessionFactoryImplementor sessionFactory,IList<string> querySpaces)
+
+		public QuerySpacesFinderVisitor(ISessionFactoryImplementor sessionFactory, IList<string> querySpaces)
 		{
-			this.QuerySpaces = querySpaces;
+			QuerySpaces = querySpaces;
 			this.sessionFactory = sessionFactory;
 		}
-		private readonly ISessionFactoryImplementor sessionFactory;
 
 		/// <summary>
 		/// Query spaces evolved in the query.
 		/// </summary>
-		public  IList<string> QuerySpaces { get; protected set; }
-		protected override System.Linq.Expressions.Expression VisitConstant(System.Linq.Expressions.ConstantExpression c)
+		public IList<string> QuerySpaces { get; protected set; }
+
+		protected override Expression VisitConstant(ConstantExpression c)
 		{
-			if(c.Value is IQueryable)
+			if (c.Value is IQueryable)
 			{
-				QuerySpaces.Add(((IQueryable)c.Value).ElementType.ToString());
+				QuerySpaces.Add(((IQueryable) c.Value).ElementType.ToString());
 			}
 			return base.VisitConstant(c);
 		}
-		protected override System.Linq.Expressions.Expression VisitMemberAccess(System.Linq.Expressions.MemberExpression m)
-		{
-			if(m.Member.MemberType==MemberTypes.Property)
-			{
 
+		protected override Expression VisitMemberAccess(MemberExpression m)
+		{
+			if (m.Member.MemberType == MemberTypes.Property)
+			{
 				//TODO: need to find better way to find if a property is a collection/list.
-				if (TypeSystem.GetElementType(m.Type) == null || TypeSystem.GetElementType(m.Type)==m.Type)
+				if (TypeSystem.GetElementType(m.Type) == null || TypeSystem.GetElementType(m.Type) == m.Type)
 				{
-					if(sessionFactory.GetImplementors(m.Type.ToString()).Length>0)
+					if (sessionFactory.GetImplementors(m.Type.ToString()).Length > 0)
 					{
 						QuerySpaces.Add(m.Type.FullName);
 					}
@@ -61,7 +60,7 @@ namespace NHibernate.Linq.Visitors
 				else
 				{
 					ICollectionMetadata metadata =
-					sessionFactory.GetCollectionMetadata(string.Format("{0}.{1}", m.Member.DeclaringType.FullName, m.Member.Name));
+						sessionFactory.GetCollectionMetadata(string.Format("{0}.{1}", m.Member.DeclaringType.FullName, m.Member.Name));
 					QuerySpaces.Add(metadata.ElementType.ReturnedClass.FullName);
 				}
 			}

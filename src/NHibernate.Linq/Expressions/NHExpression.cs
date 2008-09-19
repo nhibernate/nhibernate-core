@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
+﻿using System.Linq.Expressions;
 
 namespace NHibernate.Linq.Expressions
 {
 	/// <summary>
 	/// Base expression for transformed nodes.
 	/// </summary>
-	public abstract class NHExpression:Expression
+	public abstract class NHExpression : Expression
 	{
 		/// <summary>
 		/// Base class for the modified nodes.
@@ -17,9 +13,8 @@ namespace NHibernate.Linq.Expressions
 		/// <param name="nodeType"></param>
 		/// <param name="type"></param>
 		protected NHExpression(NHExpressionType nodeType, System.Type type)
-			: base((ExpressionType)nodeType, type)
+			: base((ExpressionType) nodeType, type)
 		{
-			
 		}
 	}
 }

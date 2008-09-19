@@ -79,6 +79,7 @@
     <Compile Include="Model\Animal.cs" />
     <Compile Include="SelectTest.cs" />
     <Compile Include="VisitorTests\LogicalExpressionSimplifierTests.cs" />
+    <Compile Include="VisitorTests\OrderTransformerTests.cs" />
     <Compile Include="VisitorTests\QuerySpacesFinderVisitorTests.cs" />
     <Compile Include="VisitorTests\WhereExpressionCombinerTests.cs" />
   </ItemGroup>

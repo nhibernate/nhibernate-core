@@ -8,22 +8,23 @@ using NHibernate.Type;
 
 namespace NHibernate.Linq.Visitors
 {
-	public class AssociationRewriteVisitor:NHibernateExpressionVisitor
+	public class AssociationRewriteVisitor : NHibernateExpressionVisitor
 	{
-		public static Expression Rewrite(Expression expr,ISessionFactory factory)
-		{
-			var visitor=new AssociationRewriteVisitor(factory);
-			expr=visitor.Visit(expr);
-			return expr;
-		}
+		private readonly ISessionFactory sessionFactory;
+		private int aliasOrder;
 
 		public AssociationRewriteVisitor(ISessionFactory factory)
 		{
-			this.sessionFactory = factory;
-			this.aliasOrder = 0;
-			
+			sessionFactory = factory;
+			aliasOrder = 0;
 		}
-		private readonly ISessionFactory sessionFactory;
+
+		public static Expression Rewrite(Expression expr, ISessionFactory factory)
+		{
+			var visitor = new AssociationRewriteVisitor(factory);
+			expr = visitor.Visit(expr);
+			return expr;
+		}
 
 		private IClassMetadata GetMetaData(System.Type type)
 		{
@@ -35,33 +36,33 @@ namespace NHibernate.Linq.Visitors
 				}
 				catch (MappingException)
 				{
-					 
 				}
 			}
 			return null;
 		}
-		
+
 		private string GetNextAlias()
 		{
-			return "source" + (aliasOrder++).ToString();
+			return "source" + (aliasOrder++);
 		}
-
-		private int aliasOrder;
 
 		protected override Expression VisitMemberAccess(MemberExpression expr)
 		{
-			expr = (MemberExpression)base.VisitMemberAccess(expr);
+			expr = (MemberExpression) base.VisitMemberAccess(expr);
 			IClassMetadata clazz = GetMetaData(expr.Member.DeclaringType);
 			IType propertyType = clazz.GetPropertyType(expr.Member.Name);
-			if(propertyType.IsAssociationType||propertyType.IsComponentType)
+			if (propertyType.IsAssociationType || propertyType.IsComponentType)
 			{
-				return new PropertyExpression(expr.Member.Name, ((PropertyInfo)expr.Member).PropertyType, base.Visit(expr.Expression), propertyType);
+				return new PropertyExpression(expr.Member.Name, ((PropertyInfo) expr.Member).PropertyType,
+				                              base.Visit(expr.Expression), propertyType);
 			}
 			else
 			{
-				return new PropertyExpression(expr.Member.Name, ((PropertyInfo)expr.Member).PropertyType, base.Visit(expr.Expression), propertyType); 
+				return new PropertyExpression(expr.Member.Name, ((PropertyInfo) expr.Member).PropertyType,
+				                              base.Visit(expr.Expression), propertyType);
 			}
 		}
+
 		protected override Expression VisitConstant(ConstantExpression c)
 		{
 			if (c.Value is IQueryable)

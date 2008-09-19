@@ -1,49 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using NHibernate.Engine;
 using NHibernate.Linq.Expressions;
-using NHibernate.SqlCommand;
-using NHibernate.Persister.Entity;
-using NHibernate.Type;
 using NHibernate.Metadata;
+using NHibernate.Persister.Entity;
+using NHibernate.SqlCommand;
+using NHibernate.Type;
 
 namespace NHibernate.Linq.Visitors
 {
 	//TODO: Process the query source by converting into select expression
 	//TODO: Select expression should be changed so that it can handle columns or projections instead of expression.
-	public class SqlExpressionToSqlStringVisitor:NHibernateExpressionVisitor
+	public class SqlExpressionToSqlStringVisitor : NHibernateExpressionVisitor
 	{
-		public static SqlString Translate(Expression expr,ISessionFactoryImplementor sessionFactory,IList<object> parameterList)
-		{
+		private readonly IList<object> parameterList;
+		private readonly ISessionFactoryImplementor sessionFactory;
+		private readonly SqlStringBuilder sqlStringBuilder;
 
-			var visitor = new SqlExpressionToSqlStringVisitor(sessionFactory,parameterList);
+		public SqlExpressionToSqlStringVisitor(ISessionFactoryImplementor sessionFactory, IList<object> parameterList)
+		{
+			sqlStringBuilder = new SqlStringBuilder();
+			this.sessionFactory = sessionFactory;
+			this.parameterList = parameterList;
+		}
+
+		public static SqlString Translate(Expression expr, ISessionFactoryImplementor sessionFactory,
+		                                  IList<object> parameterList)
+		{
+			var visitor = new SqlExpressionToSqlStringVisitor(sessionFactory, parameterList);
 			visitor.Visit(expr);
 			return visitor.sqlStringBuilder.ToSqlString();
 		}
 
-		public SqlExpressionToSqlStringVisitor(ISessionFactoryImplementor sessionFactory,IList<object> parameterList)
-		{
-			this.sqlStringBuilder = new SqlStringBuilder();
-			this.sessionFactory = sessionFactory;
-			this.parameterList = parameterList;
-
-		}
-
-		private readonly IList<object> parameterList;
-		private readonly ISessionFactoryImplementor sessionFactory;
-		private SqlStringBuilder sqlStringBuilder;
-
 		protected override Expression VisitUnary(UnaryExpression u)
 		{
-			switch(u.NodeType)
+			switch (u.NodeType)
 			{
 				case ExpressionType.Not:
 					{
 						sqlStringBuilder.Add(" NOT (");
-						Expression ret=base.VisitUnary(u);
+						Expression ret = base.VisitUnary(u);
 						sqlStringBuilder.Add(")");
 						return ret;
 					}
@@ -57,6 +54,7 @@ namespace NHibernate.Linq.Visitors
 			}
 			return base.VisitUnary(u);
 		}
+
 		protected override Expression VisitBinary(BinaryExpression b)
 		{
 			string op = "";
@@ -114,11 +112,11 @@ namespace NHibernate.Linq.Visitors
 			#endregion
 
 			sqlStringBuilder.Add("(");
-			this.Visit(b.Left);
+			Visit(b.Left);
 			sqlStringBuilder.Add(" ");
 			sqlStringBuilder.Add(op);
 			sqlStringBuilder.Add(" ");
-			this.Visit(b.Right);
+			Visit(b.Right);
 			sqlStringBuilder.Add(")");
 			return b;
 		}
@@ -132,7 +130,7 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitProperty(PropertyExpression property)
 		{
-			ParameterExpression expr = property.Expression as ParameterExpression;
+			var expr = property.Expression as ParameterExpression;
 
 			sqlStringBuilder.Add(string.Format("{0}.{1}", expr.Name, property.Name));
 			return property;
@@ -140,57 +138,52 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitSelect(SelectExpression select)
 		{
-			SqlSelectBuilder selectBuilder=new SqlSelectBuilder(this.sessionFactory);
-			SqlString selectString = new SqlString("*");
-			SqlString fromString = SqlExpressionToSqlStringVisitor.Translate(select.From, sessionFactory, parameterList);
-			fromString=new SqlString("(",fromString,")");
-			SqlString whereString = SqlExpressionToSqlStringVisitor.Translate(select.Where, sessionFactory, parameterList);
-			SqlString outerJoinsAfterFrom=new SqlString();
-			SqlString outerJoinsAfterWhere=new SqlString();
+			var selectBuilder = new SqlSelectBuilder(sessionFactory);
+			var selectString = new SqlString("*");
+			SqlString fromString = Translate(select.From, sessionFactory, parameterList);
+			fromString = new SqlString("(", fromString, ")");
+			SqlString whereString = Translate(select.Where, sessionFactory, parameterList);
+			var outerJoinsAfterFrom = new SqlString();
+			var outerJoinsAfterWhere = new SqlString();
 			selectBuilder.SetFromClause(fromString);
 			selectBuilder.SetWhereClause(whereString);
 			selectBuilder.SetSelectClause(selectString);
 			selectBuilder.SetOuterJoins(outerJoinsAfterFrom, outerJoinsAfterWhere);
-			this.sqlStringBuilder.Add(selectBuilder.ToSqlString());
+			sqlStringBuilder.Add(selectBuilder.ToSqlString());
 			return select;
 		}
 
 		protected override Expression VisitQuerySource(QuerySourceExpression expr)
 		{
-
 			sqlStringBuilder.Add("SELECT ");
 			IClassMetadata metadata = sessionFactory.GetClassMetadata(expr.Query.ElementType);
-			IPropertyMapping mapping = (IPropertyMapping)sessionFactory.GetEntityPersister(metadata.EntityName);
+			var mapping = (IPropertyMapping) sessionFactory.GetEntityPersister(metadata.EntityName);
 			string[] names = metadata.PropertyNames;
 
 
-
-
-
-
 			bool started = false;
-			for (int i = 0; i < names.Length;i++ )
+			for (int i = 0; i < names.Length; i++)
 			{
 				string name = names[i];
 				IType propertyType = metadata.GetPropertyType(name);
 				if (!(propertyType.IsComponentType |
-					propertyType.IsCollectionType |
-					propertyType.IsAssociationType |
-					propertyType.IsAnyType))
+				      propertyType.IsCollectionType |
+				      propertyType.IsAssociationType |
+				      propertyType.IsAnyType))
 				{
-					if(started)
+					if (started)
 						sqlStringBuilder.Add(", ");
 					started = true;
 					sqlStringBuilder.Add(mapping.ToColumns(name)[0]);
 					sqlStringBuilder.Add(" AS ");
 					sqlStringBuilder.Add(name);
 				}
-
 			}
 			sqlStringBuilder.Add(" FROM ");
 			sqlStringBuilder.Add(expr.Query.ElementType.Name);
 			return base.VisitQuerySource(expr);
 		}
+
 		public override string ToString()
 		{
 			return sqlStringBuilder.ToString();
