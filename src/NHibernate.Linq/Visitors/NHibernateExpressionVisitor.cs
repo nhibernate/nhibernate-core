@@ -23,14 +23,18 @@ namespace NHibernate.Linq.Visitors
 					return VisitProjection((ProjectionExpression) exp);
 				case NHExpressionType.SimpleProperty:
 					return VisitSimpleProperty((SimplePropertyExpression) exp);
-				case NHExpressionType.CollectionProperty:
-					return VisitCollectionProperty((CollectionPropertyExpression)exp);
+				case NHExpressionType.OneToManyProperty:
+					return VisitOneToManyProperty((OneToManyPropertyExpression)exp);
+				case NHExpressionType.OneToOneProperty:
+					return VisitOneToOneProperty((OneToOnePropertyExpression)exp);
 				case NHExpressionType.ComponentProperty:
 					return VisitComponentProperty((ComponentPropertyExpression) exp);
 				default:
 					return base.Visit(exp);
 			}
 		}
+
+
 
 
 		protected virtual Expression VisitProjection(ProjectionExpression projection)
@@ -65,14 +69,20 @@ namespace NHibernate.Linq.Visitors
 			return property;
 		}
 
-		private Expression VisitCollectionProperty(CollectionPropertyExpression property)
+		private Expression VisitOneToManyProperty(OneToManyPropertyExpression propertyExpression)
 		{
-			Expression source = Visit(property.Source);
-			if (source != property.Source)
-				return new CollectionPropertyExpression(property.Name, property.Type, source, property.NHibernateType);
-			return property;
+			Expression source = Visit(propertyExpression.Source);
+			if (source != propertyExpression.Source)
+				return new OneToManyPropertyExpression(propertyExpression.Name, propertyExpression.Type, source, propertyExpression.NHibernateType);
+			return propertyExpression;
 		}
-
+		private Expression VisitOneToOneProperty(OneToOnePropertyExpression propertyExpression)
+		{
+			Expression source = Visit(propertyExpression.Source);
+			if (source != propertyExpression.Source)
+				return new OneToOnePropertyExpression(propertyExpression.Name, propertyExpression.Type, source, propertyExpression.NHibernateType);
+			return propertyExpression;
+		}
 		//TODO: modify
 		protected virtual Expression VisitSelect(SelectExpression select)
 		{

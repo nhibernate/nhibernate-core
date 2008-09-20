@@ -59,19 +59,18 @@ namespace NHibernate.Linq.Visitors
 				                                       ((PropertyInfo) expr.Member).PropertyType,
 				                                       source, propertyType);
 			}
-			else if(propertyType.IsAssociationType)
+			else if (propertyType is OneToOneType)
 			{
-				throw new NotImplementedException("Queries on associations are not yet supported");
+				Expression source = base.Visit(expr.Expression);
+				return new OneToOnePropertyExpression(propertyName, expr.Type, source, propertyType);
 			}
-			else if(propertyType.IsCollectionType)
+			else if(!propertyType.IsAssociationType)//assume simple property
 			{
-				throw new NotImplementedException("Queries on collections are not yet supported");
+				return new SimplePropertyExpression(expr.Member.Name, mapping.ToColumns(propertyName)[0],
+				                                    ((PropertyInfo) expr.Member).PropertyType,
+				                                    base.Visit(expr.Expression), propertyType);
 			}
-			else//Assume simple property
-			{
-				return new SimplePropertyExpression(expr.Member.Name,mapping.ToColumns(propertyName)[0], ((PropertyInfo) expr.Member).PropertyType,
-				                              base.Visit(expr.Expression), propertyType);
-			}
+			return expr;
 		}
 
 		protected override Expression VisitConstant(ConstantExpression c)

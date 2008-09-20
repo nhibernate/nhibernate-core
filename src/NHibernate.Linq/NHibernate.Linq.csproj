@@ -50,8 +50,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Expressions\CollectionPropertyExpression.cs" />
+    <Compile Include="Expressions\AssociationPropertyExpression.cs" />
+    <Compile Include="Expressions\OneToManyPropertyExpression.cs" />
     <Compile Include="Expressions\ComponentPropertyExpression.cs" />
+    <Compile Include="Expressions\OneToOnePropertyExpression.cs" />
     <Compile Include="Expressions\OrderExpression.cs" />
     <Compile Include="Expressions\OrderType.cs" />
     <Compile Include="Expressions\ProjectionExpression.cs" />
@@ -65,6 +67,7 @@
     <Compile Include="Util\Guard.cs" />
     <Compile Include="Util\LinqUtil.cs" />
     <Compile Include="Visitors\AssociationRewriteVisitor.cs" />
+    <Compile Include="Visitors\JoinGatherer.cs" />
     <Compile Include="Visitors\LogicalExpressionReducer.cs" />
     <Compile Include="ExpressionVisitor.cs" />
     <Compile Include="NHibernateExtensions.cs" />

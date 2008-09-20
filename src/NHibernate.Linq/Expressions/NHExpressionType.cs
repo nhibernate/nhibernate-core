@@ -7,7 +7,8 @@
 		Projection,
 		SimpleProperty,
 		ComponentProperty,
-		CollectionProperty,
+		OneToManyProperty,
+		OneToOneProperty,
 		Order,
 	}
 }
