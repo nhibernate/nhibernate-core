@@ -17,5 +17,6 @@ namespace NHibernate.Linq.Expressions
 		}
 
 		public string[] Columns { get; protected set; }
+		public ComponentType ComponentType { get { base.NHibernateType as ComponentType; } }
 	}
 }

@@ -44,14 +44,10 @@ namespace NHibernate.Linq.Visitors
 			return null;
 		}
 
-		private string GetNextAlias()
-		{
-			return "source" + (aliasOrder++);
-		}
-
 		protected override Expression VisitMemberAccess(MemberExpression expr)
 		{
 			expr = (MemberExpression) base.VisitMemberAccess(expr);
+			System.Type type = TypeSystem.GetElementType(expr.Type);
 			IClassMetadata clazz = GetMetaData(expr.Member.DeclaringType);
 			IPropertyMapping mapping = sessionFactory.GetEntityPersister(expr.Type.FullName) as IPropertyMapping;
 			IType propertyType = clazz.GetPropertyType(expr.Member.Name);
@@ -65,13 +61,12 @@ namespace NHibernate.Linq.Visitors
 			}
 			else if(propertyType.IsAssociationType)
 			{
-				throw new NotImplementedException();
+				throw new NotImplementedException("Queries on associations are not yet supported");
 			}
 			else if(propertyType.IsCollectionType)
 			{
-				throw new NotImplementedException();
+				throw new NotImplementedException("Queries on collections are not yet supported");
 			}
-			
 			else//Assume simple property
 			{
 				return new SimplePropertyExpression(expr.Member.Name,mapping.ToColumns(propertyName)[0], ((PropertyInfo) expr.Member).PropertyType,

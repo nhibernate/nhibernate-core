@@ -13,8 +13,9 @@ namespace NHibernate.Linq.Test
 		[Ignore("this doesn't work yet")]
 		public void CanSelectAnimals()
 		{
-			var animals = session.Linq<Animal>().ToList();
-			Assert.IsNotNull(animals);
+			var animals = from f in session.Linq<Animal>()
+			              select f;
+			animals.ToList();
 		}
 	}
 }

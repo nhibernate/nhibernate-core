@@ -14,8 +14,8 @@ namespace NHibernate.Linq.Expressions
 		{
 			this.Persister = entityPersister;
 		}
-		public IEntityPersister Persister { get; protected set; }
-
+		public IOuterJoinLoadable Persister { get; protected set; }
+		
 		public override string ToString()
 		{
 			return string.Format("({0})", Persister.EntityName);

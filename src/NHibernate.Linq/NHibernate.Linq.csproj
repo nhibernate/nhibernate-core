@@ -50,6 +50,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Expressions\CollectionPropertyExpression.cs" />
     <Compile Include="Expressions\ComponentPropertyExpression.cs" />
     <Compile Include="Expressions\OrderExpression.cs" />
     <Compile Include="Expressions\OrderType.cs" />
