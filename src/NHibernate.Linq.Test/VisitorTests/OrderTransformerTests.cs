@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Linq.Test.Model;
 using NHibernate.Linq.Visitors;
@@ -17,6 +18,7 @@ namespace NHibernate.Linq.Test.VisitorTests
 						select a;
 			OrderByTransformer transformer = new OrderByTransformer();
 			Expression expr=transformer.Visit(query.Expression);
+			Console.WriteLine(expr);
 		}
 	}
 }

@@ -2,10 +2,10 @@
 
 namespace NHibernate.Linq.Expressions
 {
-	public class OrderExpression : Expression
+	public class OrderExpression : NHExpression
 	{
 		public OrderExpression(Expression source, LambdaExpression selector, OrderType orderType, System.Type type)
-			: base((ExpressionType) NHExpressionType.Order, type)
+			: base(NHExpressionType.Order, type)
 		{
 			Source = source;
 			Selector = selector;

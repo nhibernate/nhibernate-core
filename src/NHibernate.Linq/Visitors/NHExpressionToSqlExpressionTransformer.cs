@@ -45,7 +45,7 @@ namespace NHibernate.Linq.Visitors
 			string alias = parameter.Name;
 			System.Type type = lambda.Body.Type;
 			System.Type resultType = typeof (IQueryable<>).MakeGenericType(type);
-			return new SelectExpression(resultType, alias, body, source, null);
+			return new SelectExpression(resultType, alias, body, source,null,null);
 		}
 
 		protected Expression TransformWhereCall(MethodCallExpression expr)
@@ -59,14 +59,13 @@ namespace NHibernate.Linq.Visitors
 			string alias = parameter.Name;
 			System.Type type = body.Type;
 			System.Type resultType = typeof (IQueryable<>).MakeGenericType(type);
-			return new SelectExpression(resultType, alias, null, source, body);
+			return new SelectExpression(resultType, alias, null, source, body,null);
 		}
 
 		protected override Expression VisitQuerySource(QuerySourceExpression expr)
 		{
 			return expr;
 		}
-
 
 		protected override Expression VisitBinary(BinaryExpression b)
 		{

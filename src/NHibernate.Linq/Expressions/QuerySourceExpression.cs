@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using NHibernate.Persister.Entity;
+using IQueryable=System.Linq.IQueryable;
 
 namespace NHibernate.Linq.Expressions
 {
@@ -8,17 +9,16 @@ namespace NHibernate.Linq.Expressions
 	/// </summary>
 	public class QuerySourceExpression : NHExpression
 	{
-		public QuerySourceExpression(IQueryable query)
-			: base(NHExpressionType.QuerySource, query.GetType())
+		public QuerySourceExpression(System.Type type, IOuterJoinLoadable entityPersister)
+			: base(NHExpressionType.QuerySource, type)
 		{
-			Query = query;
+			this.Persister = entityPersister;
 		}
-
-		public IQueryable Query { get; protected set; }
+		public IEntityPersister Persister { get; protected set; }
 
 		public override string ToString()
 		{
-			return string.Format("(({0})", Type);
+			return string.Format("({0})", Persister.EntityName);
 		}
 	}
 }

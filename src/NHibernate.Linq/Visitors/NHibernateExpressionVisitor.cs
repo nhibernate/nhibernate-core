@@ -1,6 +1,7 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections.ObjectModel;
+using System.Linq.Expressions;
 using NHibernate.Linq.Expressions;
-
+using System.Linq;
 namespace NHibernate.Linq.Visitors
 {
 	/// <summary>
@@ -55,11 +56,12 @@ namespace NHibernate.Linq.Visitors
 			Expression from = VisitSource(select.From);
 			Expression where = Visit(select.Where);
 			Expression projection = Visit(select.Projection);
+			ReadOnlyCollection<Expression> orderbys = VisitList(select.OrderBys);
 			if (from != select.From || where != select.Where)
 			{
-				return new SelectExpression(select.Type, select.FromAlias, projection, from, where);
+				return new SelectExpression(select.Type, select.FromAlias, projection, from, where, orderbys);
 			}
-			else
+			else 
 				return select;
 		}
 

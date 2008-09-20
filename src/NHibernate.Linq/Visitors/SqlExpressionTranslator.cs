@@ -123,7 +123,7 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitConstant(ConstantExpression c)
 		{
-			sqlStringBuilder.AddParameter();
+			sqlStringBuilder.Add(Parameter.Placeholder);
 			parameterList.Add(c.Value);
 			return c;
 		}
@@ -138,51 +138,9 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitSelect(SelectExpression select)
 		{
-			var selectBuilder = new SqlSelectBuilder(sessionFactory);
-			var selectString = new SqlString("*");
-			SqlString fromString = Translate(select.From, sessionFactory, parameterList);
-			fromString = new SqlString("(", fromString, ")");
-			SqlString whereString = Translate(select.Where, sessionFactory, parameterList);
-			var outerJoinsAfterFrom = new SqlString();
-			var outerJoinsAfterWhere = new SqlString();
-			selectBuilder.SetFromClause(fromString);
-			selectBuilder.SetWhereClause(whereString);
-			selectBuilder.SetSelectClause(selectString);
-			selectBuilder.SetOuterJoins(outerJoinsAfterFrom, outerJoinsAfterWhere);
-			sqlStringBuilder.Add(selectBuilder.ToSqlString());
-			return select;
+			throw new NotImplementedException();
 		}
 
-		protected override Expression VisitQuerySource(QuerySourceExpression expr)
-		{
-			sqlStringBuilder.Add("SELECT ");
-			IClassMetadata metadata = sessionFactory.GetClassMetadata(expr.Query.ElementType);
-			var mapping = (IPropertyMapping) sessionFactory.GetEntityPersister(metadata.EntityName);
-			string[] names = metadata.PropertyNames;
-
-
-			bool started = false;
-			for (int i = 0; i < names.Length; i++)
-			{
-				string name = names[i];
-				IType propertyType = metadata.GetPropertyType(name);
-				if (!(propertyType.IsComponentType |
-				      propertyType.IsCollectionType |
-				      propertyType.IsAssociationType |
-				      propertyType.IsAnyType))
-				{
-					if (started)
-						sqlStringBuilder.Add(", ");
-					started = true;
-					sqlStringBuilder.Add(mapping.ToColumns(name)[0]);
-					sqlStringBuilder.Add(" AS ");
-					sqlStringBuilder.Add(name);
-				}
-			}
-			sqlStringBuilder.Add(" FROM ");
-			sqlStringBuilder.Add(expr.Query.ElementType.Name);
-			return base.VisitQuerySource(expr);
-		}
 
 		public override string ToString()
 		{

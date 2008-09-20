@@ -14,7 +14,7 @@ namespace NHibernate.Linq.Visitors
 			if (IsWhereCall(m))
 			{
 				var stack = new Stack<Expression>();
-				var parameterReplacements = new Dictionary<ParameterExpression, ParameterExpression>();
+				var parameterReplacements = new Dictionary<Expression, Expression>();
 
 				Expression source = m.Arguments[0];
 				var outerLambda = LinqUtil.StripQuotes(m.Arguments[1]) as LambdaExpression;
@@ -38,7 +38,7 @@ namespace NHibernate.Linq.Visitors
 				}
 				source = Visit(source);
 				LambdaExpression resultingLambda = Expression.Lambda(expr, replacementParameter);
-				var parameterReplacer = new ParameterReplacer(parameterReplacements);
+				var parameterReplacer = new Replacer(parameterReplacements);
 				resultingLambda = parameterReplacer.Visit(resultingLambda) as LambdaExpression;
 				return Expression.Call(null, m.Method, source, resultingLambda);
 			}

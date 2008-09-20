@@ -1,25 +1,27 @@
-﻿using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Engine;
 using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Util;
 using NHibernate.Metadata;
+using NHibernate.Persister.Entity;
 using NHibernate.Type;
+using IQueryable=System.Linq.IQueryable;
 
 namespace NHibernate.Linq.Visitors
 {
 	public class AssociationRewriteVisitor : NHibernateExpressionVisitor
 	{
-		private readonly ISessionFactory sessionFactory;
+		private readonly ISessionFactoryImplementor sessionFactory;
 		private int aliasOrder;
 
-		public AssociationRewriteVisitor(ISessionFactory factory)
+		public AssociationRewriteVisitor(ISessionFactoryImplementor factory)
 		{
 			sessionFactory = factory;
 			aliasOrder = 0;
 		}
 
-		public static Expression Rewrite(Expression expr, ISessionFactory factory)
+		public static Expression Rewrite(Expression expr, ISessionFactoryImplementor factory)
 		{
 			var visitor = new AssociationRewriteVisitor(factory);
 			expr = visitor.Visit(expr);
@@ -66,7 +68,13 @@ namespace NHibernate.Linq.Visitors
 		protected override Expression VisitConstant(ConstantExpression c)
 		{
 			if (c.Value is IQueryable)
-				return new QuerySourceExpression((IQueryable) c.Value);
+			{
+				var type = c.Value.GetType();
+				var elementType = ((IQueryable) c.Value).ElementType;
+				var loadable = sessionFactory.GetEntityPersister(elementType.FullName) as IOuterJoinLoadable;
+				return new QuerySourceExpression(type, loadable);
+			}
+				
 			return c;
 		}
 	}
