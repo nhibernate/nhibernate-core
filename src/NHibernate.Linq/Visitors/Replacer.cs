@@ -13,6 +13,8 @@ namespace NHibernate.Linq.Visitors
 		}
 		public override Expression Visit(Expression exp)
 		{
+			if (exp == null) 
+				return exp;
 			if (replacements.ContainsKey(exp))
 				return replacements[exp];
 			return base.Visit(exp);
