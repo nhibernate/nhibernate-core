@@ -34,11 +34,12 @@ namespace NHibernate.Linq.Query
 
 		public void Translate()
 		{
-			/*Expression modified = LocalVariableExpressionReducer.Reduce(expression);
+			Expression modified = LocalVariableExpressionReducer.Reduce(expression);
 			modified = LogicalExpressionReducer.Reduce(modified);
 			modified = AssociationRewriteVisitor.Rewrite(modified, sessionFactory);
 			modified = NHExpressionToSqlExpressionTransformer.Transform(sessionFactory, modified);
-			sqlString = SqlExpressionToSqlStringVisitor.Translate(modified, sessionFactory, parameterList);*/
+			sqlString = SqlExpressionToSqlStringVisitor.Translate(modified, sessionFactory, parameterList);
+			throw new NotImplementedException();
 			
 		}
 		public IList List(ISessionImplementor sessionImplementor)

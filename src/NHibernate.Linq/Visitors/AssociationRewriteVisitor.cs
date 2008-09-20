@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.Linq.Expressions;
@@ -52,15 +53,28 @@ namespace NHibernate.Linq.Visitors
 		{
 			expr = (MemberExpression) base.VisitMemberAccess(expr);
 			IClassMetadata clazz = GetMetaData(expr.Member.DeclaringType);
+			IPropertyMapping mapping = sessionFactory.GetEntityPersister(expr.Type.FullName) as IPropertyMapping;
 			IType propertyType = clazz.GetPropertyType(expr.Member.Name);
-			if (propertyType.IsAssociationType || propertyType.IsComponentType)
+			string propertyName = expr.Member.Name;
+			if (propertyType.IsComponentType)
 			{
-				return new PropertyExpression(expr.Member.Name, ((PropertyInfo) expr.Member).PropertyType,
-				                              base.Visit(expr.Expression), propertyType);
+				Expression source = base.Visit(expr.Expression);
+				return new ComponentPropertyExpression(propertyName, mapping.ToColumns(propertyName),
+				                                       ((PropertyInfo) expr.Member).PropertyType,
+				                                       source, propertyType);
 			}
-			else
+			else if(propertyType.IsAssociationType)
 			{
-				return new PropertyExpression(expr.Member.Name, ((PropertyInfo) expr.Member).PropertyType,
+				throw new NotImplementedException();
+			}
+			else if(propertyType.IsCollectionType)
+			{
+				throw new NotImplementedException();
+			}
+			
+			else//Assume simple property
+			{
+				return new SimplePropertyExpression(expr.Member.Name,mapping.ToColumns(propertyName)[0], ((PropertyInfo) expr.Member).PropertyType,
 				                              base.Visit(expr.Expression), propertyType);
 			}
 		}

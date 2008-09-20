@@ -3,31 +3,30 @@ using NHibernate.Type;
 
 namespace NHibernate.Linq.Expressions
 {
-	public class PropertyExpression : NHExpression
+	public abstract class PropertyExpression : NHExpression
 	{
-		public PropertyExpression(string name,
-		                          System.Type type, Expression expression, IType nhibernateType)
-			: this(name, type, expression, nhibernateType, NHExpressionType.Property)
+		public PropertyExpression(string name, System.Type type, Expression source, IType nhibernateType)
+			: this(name, type, source, nhibernateType, NHExpressionType.Property)
 		{
 		}
 
 
-		protected PropertyExpression(string name, System.Type type, Expression expression, IType nhibernateType,
+		protected PropertyExpression(string name, System.Type type, Expression source, IType nhibernateType,
 		                             NHExpressionType nodeType)
 			: base(nodeType, type)
 		{
 			NHibernateType = nhibernateType;
-			Expression = expression;
+			Source = source;
 			Name = name;
 		}
 
-		public Expression Expression { get; protected set; }
+		public Expression Source { get; protected set; }
 		public IType NHibernateType { get; protected set; }
 		public string Name { get; protected set; }
 
 		public override string ToString()
 		{
-			return Expression + "." + Name;
+			return string.Format("({0}).Property({1})", Source, this.Name);
 		}
 	}
 }

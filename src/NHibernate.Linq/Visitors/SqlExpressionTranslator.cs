@@ -130,7 +130,7 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitProperty(PropertyExpression property)
 		{
-			var expr = property.Expression as ParameterExpression;
+			var expr = property.Source as ParameterExpression;
 
 			sqlStringBuilder.Add(string.Format("{0}.{1}", expr.Name, property.Name));
 			return property;
