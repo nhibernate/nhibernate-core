@@ -128,7 +128,7 @@ namespace NHibernate.Linq.Visitors
 			return c;
 		}
 
-		protected override Expression VisitProperty(PropertyExpression property)
+		protected override Expression VisitSimpleProperty(SimplePropertyExpression property)
 		{
 			var expr = property.Source as ParameterExpression;
 

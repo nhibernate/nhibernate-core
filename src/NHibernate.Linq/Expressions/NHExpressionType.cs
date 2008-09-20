@@ -5,7 +5,9 @@
 		QuerySource = 100,
 		Select,
 		Projection,
-		Property,
+		SimpleProperty,
+		ComponentProperty,
+		CollectionProperty,
 		Order,
 	}
 }

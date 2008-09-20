@@ -10,7 +10,7 @@ namespace NHibernate.Linq.Expressions
 	public class CollectionPropertyExpression : PropertyExpression
 	{
 		public CollectionPropertyExpression(string name, System.Type type, Expression source, IType nhibernateType)
-			: base(name, type, source, nhibernateType)
+			: base(name,NHExpressionType.CollectionProperty, type, source, nhibernateType)
 		{
 		}
 

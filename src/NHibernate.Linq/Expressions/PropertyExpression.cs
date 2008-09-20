@@ -5,14 +5,8 @@ namespace NHibernate.Linq.Expressions
 {
 	public abstract class PropertyExpression : NHExpression
 	{
-		public PropertyExpression(string name, System.Type type, Expression source, IType nhibernateType)
-			: this(name, type, source, nhibernateType, NHExpressionType.Property)
-		{
-		}
 
-
-		protected PropertyExpression(string name, System.Type type, Expression source, IType nhibernateType,
-		                             NHExpressionType nodeType)
+		protected PropertyExpression(string name,NHExpressionType nodeType, System.Type type, Expression source, IType nhibernateType)
 			: base(nodeType, type)
 		{
 			NHibernateType = nhibernateType;

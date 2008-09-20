@@ -11,12 +11,12 @@ namespace NHibernate.Linq.Expressions
 	{
 		public ComponentPropertyExpression(string name, string[] columns, System.Type type, Expression source,
 			IType nhibernateType)
-			: base(name, type, source, nhibernateType)
+			: base(name,NHExpressionType.ComponentProperty, type, source, nhibernateType)
 		{
 			this.Columns = columns;
 		}
 
 		public string[] Columns { get; protected set; }
-		public ComponentType ComponentType { get { base.NHibernateType as ComponentType; } }
+		public ComponentType ComponentType { get { return base.NHibernateType as ComponentType; } }
 	}
 }

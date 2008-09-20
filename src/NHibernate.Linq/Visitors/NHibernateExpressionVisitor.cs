@@ -21,12 +21,17 @@ namespace NHibernate.Linq.Visitors
 					return VisitSelect((SelectExpression) exp);
 				case NHExpressionType.Projection:
 					return VisitProjection((ProjectionExpression) exp);
-				case NHExpressionType.Property:
-					return VisitProperty((PropertyExpression) exp);
+				case NHExpressionType.SimpleProperty:
+					return VisitSimpleProperty((SimplePropertyExpression) exp);
+				case NHExpressionType.CollectionProperty:
+					return VisitCollectionProperty((CollectionPropertyExpression)exp);
+				case NHExpressionType.ComponentProperty:
+					return VisitComponentProperty((ComponentPropertyExpression) exp);
 				default:
 					return base.Visit(exp);
 			}
 		}
+
 
 		protected virtual Expression VisitProjection(ProjectionExpression projection)
 		{
@@ -45,8 +50,26 @@ namespace NHibernate.Linq.Visitors
 			return source;
 		}
 
-		protected virtual Expression VisitProperty(PropertyExpression property)
+		protected virtual Expression VisitSimpleProperty(SimplePropertyExpression property)
 		{
+			Expression source = Visit(property.Source);
+			if (source != property.Source)
+				return new SimplePropertyExpression(property.Name, property.Column, property.Type, source, property.NHibernateType);
+			return property;
+		}
+		private Expression VisitComponentProperty(ComponentPropertyExpression property)
+		{
+			Expression source = Visit(property.Source);
+			if (source != property.Source)
+				return new ComponentPropertyExpression(property.Name, property.Columns, property.Type, source, property.NHibernateType);
+			return property;
+		}
+
+		private Expression VisitCollectionProperty(CollectionPropertyExpression property)
+		{
+			Expression source = Visit(property.Source);
+			if (source != property.Source)
+				return new CollectionPropertyExpression(property.Name, property.Type, source, property.NHibernateType);
 			return property;
 		}
 

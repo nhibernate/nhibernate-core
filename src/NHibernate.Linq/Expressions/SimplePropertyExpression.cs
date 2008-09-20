@@ -10,7 +10,7 @@ namespace NHibernate.Linq.Expressions
 	public class SimplePropertyExpression:PropertyExpression
 	{
 		public SimplePropertyExpression(string name,string column, System.Type type, Expression source, IType nhibernateType)
-			: base(name, type, source, nhibernateType)
+			: base(name,NHExpressionType.SimpleProperty, type, source, nhibernateType)
 		{
 			this.Column = column;
 		}
