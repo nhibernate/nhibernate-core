@@ -18,8 +18,8 @@ namespace NHibernate.Impl
 {
 	public class MultiCriteriaImpl : IMultiCriteria
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (MultiCriteriaImpl));
-		private readonly IList criteriaQueries = new ArrayList();
+		private static readonly ILog log = LogManager.GetLogger(typeof(MultiCriteriaImpl));
+		private readonly IList<ICriteria> criteriaQueries = new List<ICriteria>();
 
 		private readonly SessionImpl session;
 		private readonly ISessionFactoryImplementor factory;
@@ -30,7 +30,7 @@ namespace NHibernate.Impl
 		private readonly List<CriteriaLoader> loaders = new List<CriteriaLoader>();
 		private readonly Dialect.Dialect dialect;
 		private IList criteriaResults;
-		private Dictionary<string, int> criteriaResultPositions = new Dictionary<string, int>();
+		private readonly Dictionary<string, int> criteriaResultPositions = new Dictionary<string, int>();
 		private bool isCacheable = false;
 		private bool forceCacheRefresh = false;
 		private string cacheRegion;
@@ -114,10 +114,10 @@ namespace NHibernate.Impl
 
 			IList result =
 				assembler.GetResultFromQueryCache(session,
-				                                  combinedParameters,
-				                                  querySpaces,
-				                                  queryCache,
-				                                  key);
+												  combinedParameters,
+												  querySpaces,
+												  queryCache,
+												  key);
 
 			if (result == null)
 			{
@@ -139,9 +139,19 @@ namespace NHibernate.Impl
 		{
 			if (resultTransformer != null)
 			{
-				for (int i = 0, len = results.Count; i < len; ++i)
+				for (int i = 0; i < results.Count; i++)
 				{
 					results[i] = resultTransformer.TransformList((IList)results[i]);
+				}
+			}
+			else
+			{
+				for (int i = 0; i < results.Count; i++)
+				{
+					var critImp = criteriaQueries[i] as CriteriaImpl;
+					if(critImp==null || critImp.ResultTransformer==null)
+						continue;
+					results[i] = critImp.ResultTransformer.TransformList((IList)results[i]);
 				}
 			}
 			return results;
@@ -200,11 +210,11 @@ namespace NHibernate.Impl
 							Loader.Loader.Advance(reader, selection);
 						}
 						int count;
-            for (count = 0; count < maxRows && reader.Read(); count++)
+						for (count = 0; count < maxRows && reader.Read(); count++)
 						{
 							object o =
 								loader.GetRowFromResultSet(reader, session, queryParameters, loader.GetLockModes(queryParameters.LockModes),
-								                           null, hydratedObjects[i], keys, false);
+														   null, hydratedObjects[i], keys, false);
 							if (createSubselects[i])
 							{
 								subselectResultKeys[i].Add(keys);
@@ -307,7 +317,7 @@ namespace NHibernate.Impl
 		{
 			for (int i = 0; i < loaders.Count; i++)
 			{
-				QueryParameters parameter =  parameters[i];
+				QueryParameters parameter = parameters[i];
 				RowSelection selection = parameter.RowSelection;
 				if (Loader.Loader.UseLimit(selection, dialect) && dialect.BindLimitParametersFirst)
 				{
@@ -326,7 +336,8 @@ namespace NHibernate.Impl
 		public IMultiCriteria Add(string key, ICriteria criteria)
 		{
 			ThrowIfKeyAlreadyExists(key);
-			criteriaResultPositions.Add(key, criteriaQueries.Add(criteria));
+			criteriaQueries.Add(criteria);
+			criteriaResultPositions.Add(key, criteriaQueries.Count - 1);
 			return this;
 		}
 
@@ -341,7 +352,8 @@ namespace NHibernate.Impl
 		public IMultiCriteria Add(string key, DetachedCriteria detachedCriteria)
 		{
 			ThrowIfKeyAlreadyExists(key);
-			criteriaResultPositions.Add(key, criteriaQueries.Add(detachedCriteria.GetExecutableCriteria(session)));
+			criteriaQueries.Add(detachedCriteria.GetExecutableCriteria(session));
+			criteriaResultPositions.Add(key, criteriaQueries.Count-1);
 			return this;
 		}
 
@@ -399,8 +411,8 @@ namespace NHibernate.Impl
 				positionalParameterTypes.AddRange(queryParameters.PositionalParameterTypes);
 				positionalParameterValues.AddRange(queryParameters.PositionalParameterValues);
 			}
-			combinedQueryParameters.PositionalParameterTypes = (IType[]) positionalParameterTypes.ToArray(typeof (IType));
-			combinedQueryParameters.PositionalParameterValues = (object[]) positionalParameterValues.ToArray(typeof (object));
+			combinedQueryParameters.PositionalParameterTypes = (IType[])positionalParameterTypes.ToArray(typeof(IType));
+			combinedQueryParameters.PositionalParameterValues = (object[])positionalParameterValues.ToArray(typeof(object));
 			return combinedQueryParameters;
 		}
 

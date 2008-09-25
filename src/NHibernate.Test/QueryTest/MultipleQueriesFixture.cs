@@ -9,6 +9,8 @@ using System;
 
 namespace NHibernate.Test.QueryTest
 {
+	using Transform;
+
 	[TestFixture]
 	public class MultipleQueriesFixture : TestCase
 	{
@@ -417,5 +419,104 @@ namespace NHibernate.Test.QueryTest
 
 			}
 		}
+
+		[Test]
+		public void ExecutingCriteriaThroughMultiQueryTransformsResults()
+		{
+			CreateItems();
+
+			using (ISession session = OpenSession())
+			{
+				ResultTransformerStub transformer = new ResultTransformerStub();
+				IQuery criteria = session.CreateQuery("from Item")
+					.SetResultTransformer(transformer);
+				session.CreateMultiQuery()
+					.Add(criteria)
+					.List();
+
+				Assert.IsTrue(transformer.WasTransformTupleCalled, "Transform Tuple was not called");
+				Assert.IsTrue(transformer.WasTransformListCalled, "Transform List was not called");
+			}
+
+			RemoveAllItems();
+		}
+
+		[Test]
+		public void ExecutingCriteriaThroughMultiQueryTransformsResults_When_setting_on_multi_query_directly()
+		{
+			CreateItems();
+
+			using (ISession session = OpenSession())
+			{
+				ResultTransformerStub transformer = new ResultTransformerStub();
+				IQuery query = session.CreateQuery("from Item");
+				session.CreateMultiQuery()
+					.Add(query)
+					.SetResultTransformer(transformer)
+					.List();
+
+				Assert.IsTrue(transformer.WasTransformTupleCalled, "Transform Tuple was not called");
+				Assert.IsTrue(transformer.WasTransformListCalled, "Transform List was not called");
+			}
+
+			RemoveAllItems();
+		}
+
+
+		[Test]
+		public void ExecutingCriteriaThroughMultiCriteriaTransformsResults()
+		{
+			CreateItems();
+
+			using (ISession session = OpenSession())
+			{
+				ResultTransformerStub transformer = new ResultTransformerStub();
+				ICriteria criteria = session.CreateCriteria(typeof(Item))
+					.SetResultTransformer(transformer);
+				IMultiCriteria multiCriteria = session.CreateMultiCriteria()
+					.Add(criteria);
+				multiCriteria.List();
+
+				Assert.IsTrue(transformer.WasTransformTupleCalled, "Transform Tuple was not called");
+				Assert.IsTrue(transformer.WasTransformListCalled,"Transform List was not called");
+			}
+
+			RemoveAllItems();
+		}
+
+		public class ResultTransformerStub : IResultTransformer
+		{
+			private bool _wasTransformTupleCalled;
+			private bool _wasTransformListCalled;
+
+			public bool WasTransformTupleCalled
+			{
+				get { return _wasTransformTupleCalled; }
+			}
+
+			public bool WasTransformListCalled
+			{
+				get { return _wasTransformListCalled; }
+			}
+
+			public ResultTransformerStub()
+			{
+				_wasTransformTupleCalled = false;
+				_wasTransformListCalled = false;
+			}
+
+			public object TransformTuple(object[] tuple, string[]aliases)
+			{
+				_wasTransformTupleCalled = true;
+				return tuple;
+			}
+
+			public IList TransformList(IList collection)
+			{
+				_wasTransformListCalled = true;
+				return collection;
+			}
+		}
+
 	}
 }

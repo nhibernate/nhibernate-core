@@ -396,9 +396,9 @@ namespace NHibernate.Impl
 
 		protected virtual IList GetResultList(IList results)
 		{
-            for (int i = 0, len = results.Count; i < len; ++i)
+			for (int i = 0, len = results.Count; i < len; ++i)
 			{
-                IList subList = (IList)results[i];
+				IList subList = (IList)results[i];
 				QueryParameters parameter = Parameters[i];
 				HolderInstantiator holderInstantiator = GetHolderInstantiator(parameter);
 				if (holderInstantiator.IsRequired)
@@ -406,13 +406,16 @@ namespace NHibernate.Impl
 					for (int j = 0; j < subList.Count; j++)
 					{
 						object[] row = subList[j] as object[];
-						if(row!=null) //if the result is array 
-							subList[j] = holderInstantiator.Instantiate(row);
+						if (row == null)
+							row = new object[] { subList[j] };
+						subList[j] = holderInstantiator.Instantiate(row);
 					}
 
-					if (holderInstantiator.ResultTransformer != null)
+					IResultTransformer transformer =
+						holderInstantiator.ResultTransformer;
+					if (transformer != null)
 					{
-						results[i] = holderInstantiator.ResultTransformer.TransformList(subList);
+						results[i] = transformer.TransformList(subList);
 					}
 				}
 			}
@@ -426,7 +429,7 @@ namespace NHibernate.Impl
 			{
 				return new HolderInstantiator(resultTransformer, null);
 			}
-			if (parameter.ResultTransformer!=null)
+			if (parameter.ResultTransformer != null)
 			{
 				return new HolderInstantiator(parameter.ResultTransformer, null);
 			}
@@ -783,7 +786,7 @@ namespace NHibernate.Impl
 			}
 			return false;
 		}
-		
+
 		private void ThrowIfKeyAlreadyExists(string key)
 		{
 			if (criteriaResultPositions.ContainsKey(key))
