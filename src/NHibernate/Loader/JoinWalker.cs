@@ -525,19 +525,32 @@ namespace NHibernate.Loader
 			return !tooDeep && !IsDuplicateAssociation(lhsTable, lhsColumnNames, type);
 		}
 
-		protected string OrderBy(IList<OuterJoinableAssociation> associations, string orderBy)
+		protected SqlString OrderBy(IList<OuterJoinableAssociation> associations, SqlString orderBy)
 		{
 			return MergeOrderings(OrderBy(associations), orderBy);
 		}
 
-		protected string MergeOrderings(string ass, string orderBy)
+		protected SqlString OrderBy(IList<OuterJoinableAssociation> associations, string orderBy)
+		{
+			return MergeOrderings(OrderBy(associations), new SqlString(orderBy));
+		}
+
+		protected SqlString MergeOrderings(SqlString ass, SqlString orderBy)
 		{
 			if (ass.Length == 0)
 				return orderBy;
 			else if (orderBy.Length == 0)
 				return ass;
 			else
-				return ass + StringHelper.CommaSpace + orderBy;
+				return ass.Append(StringHelper.CommaSpace).Append(orderBy);
+		}
+
+		protected SqlString MergeOrderings(string ass, SqlString orderBy) {
+			return this.MergeOrderings(new SqlString(ass), orderBy);
+		}
+
+		protected SqlString MergeOrderings(string ass, string orderBy) {
+			return this.MergeOrderings(new SqlString(ass), new SqlString(orderBy));
 		}
 
 		/// <summary>
@@ -597,9 +610,9 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Get the order by string required for collection fetching
 		/// </summary>
-		protected static string OrderBy(IList<OuterJoinableAssociation> associations)
+		protected SqlString OrderBy(IList<OuterJoinableAssociation> associations)
 		{
-			StringBuilder buf = new StringBuilder();
+			SqlStringBuilder buf = new SqlStringBuilder();
 
 			OuterJoinableAssociation last = null;
 			foreach (OuterJoinableAssociation oj in associations)
@@ -612,7 +625,7 @@ namespace NHibernate.Loader
 						if (queryableCollection.HasOrdering)
 						{
 							string orderByString = queryableCollection.GetSQLOrderByString(oj.RHSAlias);
-							buf.Append(orderByString).Append(StringHelper.CommaSpace);
+							buf.Add(orderByString).Add(StringHelper.CommaSpace);
 						}
 					}
 					else
@@ -627,7 +640,7 @@ namespace NHibernate.Loader
 								if (queryableCollection.HasManyToManyOrdering)
 								{
 									string orderByString = queryableCollection.GetManyToManyOrderByString(oj.RHSAlias);
-									buf.Append(orderByString).Append(StringHelper.CommaSpace);
+									buf.Add(orderByString).Add(StringHelper.CommaSpace);
 								}
 							}
 						}
@@ -636,10 +649,11 @@ namespace NHibernate.Loader
 				last = oj;
 			}
 
-			if (buf.Length > 0)
-				buf.Length = buf.Length - 2;
+			if (buf.Count > 0) {
+				buf.RemoveAt(buf.Count-1);
+			}
 
-			return buf.ToString();
+			return buf.ToSqlString();
 		}
 
 		/// <summary>

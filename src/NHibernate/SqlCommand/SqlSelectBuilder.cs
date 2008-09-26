@@ -17,7 +17,7 @@ namespace NHibernate.SqlCommand
 		private SqlString outerJoinsAfterFrom;
 		private SqlString whereClause;
 		private SqlString outerJoinsAfterWhere;
-		private string orderByClause;
+		private SqlString orderByClause;
 		private string groupByClause;
 		private SqlString havingClause;
 		private LockMode lockMode;
@@ -72,7 +72,7 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="orderByClause">The orderByClause to set</param>
 		/// <returns>The SqlSelectBuilder</returns>
-		public SqlSelectBuilder SetOrderByClause(string orderByClause)
+		public SqlSelectBuilder SetOrderByClause(SqlString orderByClause)
 		{
 			this.orderByClause = orderByClause;
 			return this;

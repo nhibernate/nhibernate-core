@@ -43,7 +43,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Render the SQL fragment
 		/// </summary>
-		public virtual string ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public virtual SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			if(projection!=null)
 			{
@@ -52,7 +52,7 @@ namespace NHibernate.Criterion
 				SqlString truncated = NHibernate.Util.StringHelper.RemoveAsAliasesFromSql(produced);
 				sb = sb.Append(truncated);
 				sb = sb.Append(ascending ? " asc" : " desc");
-				return sb.ToString();
+				return sb;
 			}
 
 			string[] columns = criteriaQuery.GetColumnAliasesUsingProjection(criteria, propertyName);
@@ -67,13 +67,13 @@ namespace NHibernate.Criterion
 				if (lower)
 				{
 					fragment.Append(factory.Dialect.LowercaseFunction)
-						.Append('(');
+						.Append("(");
 				}
 				fragment.Append(columns[i]);
 
 				if (lower)
 				{
-					fragment.Append(')');
+					fragment.Append(")");
 				}
 
 				fragment.Append(ascending ? " asc" : " desc");
@@ -84,7 +84,7 @@ namespace NHibernate.Criterion
 				}
 			}
 
-			return fragment.ToString();
+			return new SqlString(fragment.ToString());
 		}
 
 		public override string ToString()

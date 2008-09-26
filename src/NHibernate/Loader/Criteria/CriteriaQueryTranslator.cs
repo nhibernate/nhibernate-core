@@ -189,21 +189,21 @@ namespace NHibernate.Loader.Criteria
 			return condition.ToSqlString();
 		}
 
-		public string GetOrderBy()
+		public SqlString GetOrderBy()
 		{
-			StringBuilder orderBy = new StringBuilder(30);
+			SqlStringBuilder orderBy = new SqlStringBuilder(30);
 
 			bool first = true;
 			foreach (CriteriaImpl.OrderEntry oe in rootCriteria.IterateOrderings())
 			{
 				if (!first)
 				{
-					orderBy.Append(StringHelper.CommaSpace);
+					orderBy.Add(StringHelper.CommaSpace);
 				}
 				first = false;
-				orderBy.Append(oe.Order.ToSqlString(oe.Criteria, this));
+				orderBy.Add(oe.Order.ToSqlString(oe.Criteria, this));
 			}
-			return orderBy.ToString();
+			return orderBy.ToSqlString();
 		}
 
 		public ISessionFactoryImplementor Factory

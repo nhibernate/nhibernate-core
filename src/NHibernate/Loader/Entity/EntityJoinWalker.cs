@@ -25,7 +25,7 @@ namespace NHibernate.Loader.Entity
 				//include the discriminator and class-level where, but not filters
 				.Add(persister.FilterFragment(Alias, new CollectionHelper.EmptyMapClass<string, IFilter>()));
 
-			InitAll(whereCondition.ToSqlString(), string.Empty, lockMode);
+			InitAll(whereCondition.ToSqlString(), SqlString.Empty, lockMode);
 		}
 
 		/// <summary>

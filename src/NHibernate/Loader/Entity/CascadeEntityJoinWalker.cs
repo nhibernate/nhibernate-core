@@ -19,7 +19,7 @@ namespace NHibernate.Loader.Entity
 				//include the discriminator and class-level where, but not filters
 				.Add(persister.FilterFragment(Alias, new CollectionHelper.EmptyMapClass<string, IFilter>()));
 
-			InitAll(whereCondition.ToSqlString(), string.Empty, LockMode.Read);
+			InitAll(whereCondition.ToSqlString(), SqlString.Empty, LockMode.Read);
 		}
 
 		protected override bool IsJoinedFetchEnabled(IAssociationType type, FetchMode config, CascadeStyle cascadeStyle)

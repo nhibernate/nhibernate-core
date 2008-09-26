@@ -28,7 +28,7 @@ namespace NHibernate.Loader
 			alias = rootSqlAlias;
 		}
 
-		protected void InitAll(SqlString whereString,string orderByString,LockMode lockMode)
+		protected void InitAll(SqlString whereString, SqlString orderByString, LockMode lockMode)
 		{
 			WalkEntityTree(persister, Alias);
 			IList<OuterJoinableAssociation> allAssociations = new List<OuterJoinableAssociation>(associations);
@@ -41,20 +41,20 @@ namespace NHibernate.Loader
 		}
 
 		protected void InitProjection(SqlString projectionString, SqlString whereString,
-			string orderByString, string groupByString, SqlString havingString, LockMode lockMode)
+			SqlString orderByString, string groupByString, SqlString havingString, LockMode lockMode)
 		{
 			WalkEntityTree(persister, Alias);
 			Persisters = new ILoadable[0];
 			InitStatementString(projectionString, whereString, orderByString, groupByString, havingString, lockMode);
 		}
 
-		private void InitStatementString(SqlString condition, string orderBy, LockMode lockMode)
+		private void InitStatementString(SqlString condition, SqlString orderBy, LockMode lockMode)
 		{
 			InitStatementString(null, condition, orderBy, string.Empty, null, lockMode);
 		}
 
 		private void InitStatementString(SqlString projection,SqlString condition,
-			string orderBy,string groupBy, SqlString having, LockMode lockMode)
+			SqlString orderBy,string groupBy, SqlString having, LockMode lockMode)
 		{
 			int joins = CountEntityPersisters(associations);
 			Suffixes = BasicLoader.GenerateSuffixes(joins + 1);

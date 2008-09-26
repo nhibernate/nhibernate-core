@@ -1675,5 +1675,22 @@ namespace NHibernate.Test.Criteria
 			t.Rollback();
 			s.Close();
 		}
+
+		[Test]
+		public void OrderProjectionTest() {
+			using (ISession session = this.OpenSession()) {
+				ICriteria criteria = session.CreateCriteria(typeof (Student), "c");
+
+				criteria
+					.AddOrder(Order.Asc(
+											Projections.Conditional(
+												Restrictions.Eq("StudentNumber", (long)1),
+												Projections.Constant(0),
+												Projections.Constant(1)
+												)));
+
+				criteria.List();
+			}
+		}
 	}
 }
