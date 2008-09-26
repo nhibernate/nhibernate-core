@@ -107,9 +107,16 @@ namespace NHibernate.Criterion
                                                      this.criteriaImpl.EntityOrClassName,
                                                      criteriaQuery.GenerateSQLAlias(),
                                                      criteriaQuery);
-			
-            parameters = innerQuery.GetQueryParameters();
-            types = innerQuery.ProjectedTypes;
+
+			if (innerQuery.HasProjection)
+			{
+				parameters = innerQuery.GetQueryParameters();
+				types = innerQuery.ProjectedTypes;
+			}
+			else
+			{
+				types = null;
+			}
         }
     }
 }
