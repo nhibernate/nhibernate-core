@@ -104,9 +104,15 @@ namespace NHibernate.Criterion
 			innerQuery =
 				new CriteriaQueryTranslator(factory, criteriaImpl, //implicit polymorphism not supported (would need a union) 
 				                            criteriaImpl.EntityOrClassName, criteriaQuery.GenerateSQLAlias(), criteriaQuery);
-
-			parameters = innerQuery.GetQueryParameters();
-			types = innerQuery.ProjectedTypes;
+			if (innerQuery.HasProjection)
+			{
+				parameters = innerQuery.GetQueryParameters();
+				types = innerQuery.ProjectedTypes;
+			}
+			else
+			{
+				types = null;
+			}
 		}
 
 		public ICriteria Criteria
