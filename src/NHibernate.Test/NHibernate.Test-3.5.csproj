@@ -201,6 +201,10 @@
     <Compile Include="ExpressionTest\SQLExpressionFixture.cs" />
     <Compile Include="ExpressionTest\SubQueries\Classes.cs" />
     <Compile Include="ExpressionTest\SubQueries\SubQueriesSqlFixture.cs" />
+    <Compile Include="Extendshbm\Customer.cs" />
+    <Compile Include="Extendshbm\Employee.cs" />
+    <Compile Include="Extendshbm\ExtendsFixture.cs" />
+    <Compile Include="Extendshbm\Person.cs" />
     <Compile Include="Extralazy\Document.cs" />
     <Compile Include="Extralazy\ExtraLazyFixture.cs" />
     <Compile Include="Extralazy\Group.cs" />
@@ -373,6 +377,8 @@
     </Compile>
     <Compile Include="NHSpecificTest\NH1301\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1301\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1304\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1304\Funny.cs" />
     <Compile Include="NHSpecificTest\NH1313\A.cs" />
     <Compile Include="NHSpecificTest\NH1313\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1324\Fixture.cs" />
@@ -458,6 +464,33 @@
     <Compile Include="NHSpecificTest\NH1362\Model.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="NHSpecificTest\NH1393\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1393\Person.cs" />
+    <Compile Include="NHSpecificTest\NH1394\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1394\Person.cs" />
+    <Compile Include="NHSpecificTest\NH1399\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1403\Female.cs" />
+    <Compile Include="NHSpecificTest\NH1403\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1403\Hobby.cs" />
+    <Compile Include="NHSpecificTest\NH1403\Male.cs" />
+    <Compile Include="NHSpecificTest\NH1403\Person.cs" />
+    <Compile Include="NHSpecificTest\NH1405\Column.cs" />
+    <Compile Include="NHSpecificTest\NH1405\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1408\DbResource.cs" />
+    <Compile Include="NHSpecificTest\NH1408\DbResourceKey.cs" />
+    <Compile Include="NHSpecificTest\NH1408\DetachedSubCriteriaTest.cs" />
+    <Compile Include="NHSpecificTest\NH1408\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH1413\Foo.cs" />
+    <Compile Include="NHSpecificTest\NH1413\PagingTest.cs" />
+    <Compile Include="NHSpecificTest\NH1419\Blog.cs" />
+    <Compile Include="NHSpecificTest\NH1419\Entry.cs" />
+    <Compile Include="NHSpecificTest\NH1419\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1464\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1483\BaseClass.cs" />
+    <Compile Include="NHSpecificTest\NH1483\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1483\SubClass.cs" />
+    <Compile Include="NHSpecificTest\NH1488\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH1488\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
@@ -941,9 +974,9 @@
       <Project>{5C649B55-1B3F-4C38-9998-1B043E94A244}</Project>
       <Name>NHibernate.DomainModel-2.0</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NHibernate\NHibernate-2.0.csproj">
+    <ProjectReference Include="..\NHibernate\NHibernate-3.5.csproj">
       <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
-      <Name>NHibernate-2.0</Name>
+      <Name>NHibernate-3.5</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -1405,6 +1438,30 @@
     <EmbeddedResource Include="Naturalid\Immutable\User.hbm.xml" />
     <EmbeddedResource Include="Naturalid\Mutable\User.hbm.xml" />
     <EmbeddedResource Include="TypeParameters\Typedef.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1304\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH1393\Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Extendshbm\allinone.hbm.xml" />
+    <EmbeddedResource Include="Extendshbm\allseparateinone.hbm.xml" />
+    <EmbeddedResource Include="Extendshbm\Customer.hbm.xml" />
+    <EmbeddedResource Include="Extendshbm\Employee.hbm.xml" />
+    <EmbeddedResource Include="Extendshbm\entitynames.hbm.xml" />
+    <EmbeddedResource Include="Extendshbm\packageentitynames.hbm.xml" />
+    <EmbeddedResource Include="Extendshbm\Person.hbm.xml" />
+    <EmbeddedResource Include="Extendshbm\unionsubclass.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1394\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1488\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1483\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1419\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1413\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1408\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1405\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1403\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
