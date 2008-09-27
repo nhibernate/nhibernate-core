@@ -148,7 +148,7 @@ namespace NHibernate.Impl
 			{
 				for (int i = 0; i < results.Count; i++)
 				{
-					var critImp = criteriaQueries[i] as CriteriaImpl;
+					CriteriaImpl critImp = criteriaQueries[i] as CriteriaImpl;
 					if(critImp==null || critImp.ResultTransformer==null)
 						continue;
 					results[i] = critImp.ResultTransformer.TransformList((IList)results[i]);
