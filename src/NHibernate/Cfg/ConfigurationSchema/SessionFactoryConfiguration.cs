@@ -33,7 +33,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			ParseProperties(navigator);
 			ParseMappings(navigator);
 			ParseClassesCache(navigator);
-			ParseColectionsCache(navigator);
+			ParseCollectionsCache(navigator);
 			ParseListeners(navigator);
 			ParseEvents(navigator);
 		}
@@ -113,7 +113,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		}
 
 
-		private void ParseColectionsCache(XPathNavigator navigator)
+		private void ParseCollectionsCache(XPathNavigator navigator)
 		{
 			XPathNodeIterator xpni = navigator.Select(CfgXmlHelper.SessionFactoryCollectionsCacheExpression);
 			while (xpni.MoveNext())
