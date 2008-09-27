@@ -613,7 +613,10 @@ namespace NHibernate.Cfg
 		public Configuration AddAssembly(Assembly assembly)
 		{
 			IList<string> resourceNames = GetAllHbmXmlResourceNames(assembly);
-
+			if (resourceNames.Count == 0)
+			{
+				log.Warn("No mapped documents found in assembly: " + assembly.FullName);
+			} 
 			foreach (string name in resourceNames)
 			{
 				AddResource(name, assembly);
