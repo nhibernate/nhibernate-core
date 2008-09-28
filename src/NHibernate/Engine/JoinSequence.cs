@@ -185,11 +185,12 @@ namespace NHibernate.Engine
 					condition = on;
 				}
 				//Start NH1179 ************
-				if (string.IsNullOrEmpty(condition))
-				{
-					string filterCondition = join.Joinable.FilterFragment(join.Alias, enabledFilters);
-					joinFragment.HasFilterCondition = joinFragment.AddCondition(filterCondition);
-				}
+				//Patch reverted after NH2.0.0GA to fix some other bugs.
+				//if (string.IsNullOrEmpty(condition))
+				//{
+				//  string filterCondition = join.Joinable.FilterFragment(join.Alias, enabledFilters);
+				//  joinFragment.HasFilterCondition = joinFragment.AddCondition(filterCondition);
+				//}
 				//End   NH1179 ************
 
 				if (withClauseFragment != null)
