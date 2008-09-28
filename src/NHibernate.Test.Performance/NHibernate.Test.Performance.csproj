@@ -1,14 +1,19 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{13CE8E1E-E87B-4DE1-B091-0C3AA05FFA3E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NHibernate.Test.Performance</RootNamespace>
     <AssemblyName>NHibernate.Test.Performance</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -61,17 +66,17 @@
     <None Include="NHibernate.Test.Performance.nunit" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel-2.0.csproj">
+    <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel.csproj">
       <Project>{5C649B55-1B3F-4C38-9998-1B043E94A244}</Project>
-      <Name>NHibernate.DomainModel-2.0</Name>
+      <Name>NHibernate.DomainModel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NHibernate.Test\NHibernate.Test-2.0.csproj">
+    <ProjectReference Include="..\NHibernate.Test\NHibernate.Test.csproj">
       <Project>{7AEE5B37-C552-4E59-9B6F-88755BCB5070}</Project>
-      <Name>NHibernate.Test-2.0</Name>
+      <Name>NHibernate.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NHibernate\NHibernate-2.0.csproj">
+    <ProjectReference Include="..\NHibernate\NHibernate.csproj">
       <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
-      <Name>NHibernate-2.0</Name>
+      <Name>NHibernate</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
