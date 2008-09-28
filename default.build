@@ -92,13 +92,18 @@
 	</target>
 
 	<target name="build"
-		depends="init prepare-build-directory"
+		depends="check-framework-version init prepare-build-directory"
 		description="Builds NHibernate in the current configuration">
 
 		<nant target="build">
 			<buildfiles refid="buildfiles.all" />
 		</nant>
 
+	</target>
+	
+	<target name="check-framework-version">
+			<echo>Running with ${framework::get-target-framework()}</echo>
+			<fail message="ERROR: NHibernate requires .Net 3.5 to compile (but can run on .Net 2.0), please use the -t:net-3.5 parameter when starting nant" if="${framework::get-target-framework()!='net-3.5'}"/>
 	</target>
 
 	<target name="test-report" if="${nunit2report.installed}">
