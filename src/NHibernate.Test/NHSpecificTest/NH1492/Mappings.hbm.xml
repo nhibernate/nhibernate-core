@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test" 
+	namespace="NHibernate.Test.NHSpecificTest.NH1492"
+	default-access="field.camelcase-underscore">
+	
+	<class name="Entity" table="EntityTable">
+		<id name="Id" column="EntityID">
+			<generator class="native" />
+		</id>
+
+		<property name="Code" column="Code" />
+		<property name="Description" column="Description" />
+		<property name="Deleted" column="Deleted" />
+	
+		<bag name="Childs" lazy="true" table="ChildsTable" generic="true" inverse="true" cascade="all-delete-orphan">
+			<key column="ParentID" />
+			<one-to-many class="ChildEntity" />
+		</bag>
+
+		<filter name="excludeDeletedRows" condition="(Deleted IS NULL OR Deleted != :deleted)"/>
+	</class>
+	
+	<class name="ChildEntity" table="ChildEntityTable">
+		<id name="Id" column="ChildEntityID">
+			<generator class="native" />
+		</id>
+
+		<property name="Description" column="Description" />
+
+		<many-to-one name="Parent" column="ParentID" class="Entity" />
+
+	</class>
+	
+	<filter-def name="excludeDeletedRows">
+		<filter-param name="deleted" type="String"/>
+	</filter-def>
+  
+</hibernate-mapping>

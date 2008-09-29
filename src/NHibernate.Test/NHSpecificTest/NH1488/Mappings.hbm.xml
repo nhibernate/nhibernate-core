@@ -3,7 +3,7 @@
 	assembly="NHibernate.Test"
 	namespace="NHibernate.Test.NHSpecificTest.NH1488">
 
-	<class name="Category" table="Category" abstract="true">
+	<class name="Category" table="Category" mutable="true" abstract="true">
 		<id name="Id" column="Id">
 			<generator class="native" />
 		</id>
@@ -17,9 +17,9 @@
 			<generator class="native" />
 		</id>
 		<property name="Name" not-null="true" />
-		<many-to-one name="Category" lazy="false" column="Category_Id"/>
+		<many-to-one name="Category" lazy="false" class="CustomerCategory" column="Category_Id" />
 	</class>
-	
+
 	<class name="CustomerNoSmart" table="CustomerNoSmart">
 		<id name="Id" column="Id">
 			<generator class="native" />

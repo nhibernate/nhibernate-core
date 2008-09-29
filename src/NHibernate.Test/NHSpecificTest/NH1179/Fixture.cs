@@ -11,9 +11,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1179
 			get { return "NH1179"; }
 		}
 
-		[Test]
+		[Test, Ignore("Not supported.")]
 		public void ApplyFilterExplicitJoin()
 		{
+			// Note: if we fix this we must fix it for Criteria too (NH-1293)
+
 			RelatedClass rc1 = new RelatedClass(1);
 			RelatedClass rc2 = new RelatedClass(2);
 			RelatedClass rc11 = new RelatedClass(1);

@@ -37,8 +37,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1488
 			}
 		}
 
-		[Test, Ignore("Not supported.")]
-		public void PerhapsBug()
+		[Test]
+		public void Bug()
 		{
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())

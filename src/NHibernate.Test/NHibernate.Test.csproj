@@ -430,6 +430,8 @@
     <Compile Include="NHSpecificTest\NH1291AnonExample\Home.cs" />
     <Compile Include="NHSpecificTest\NH1291AnonExample\NH1291AnonExampleFixture.cs" />
     <Compile Include="NHSpecificTest\NH1291AnonExample\Person.cs" />
+    <Compile Include="NHSpecificTest\NH1293\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH1293\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1297\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1297\Model.cs" />
     <Compile Include="NHSpecificTest\NH1301\Domain.cs">
@@ -480,6 +482,11 @@
     <Compile Include="NHSpecificTest\NH1483\SubClass.cs" />
     <Compile Include="NHSpecificTest\NH1488\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1488\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1490\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH1490\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1492\ChildEntity.cs" />
+    <Compile Include="NHSpecificTest\NH1492\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH1492\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1499\Document.cs" />
     <Compile Include="NHSpecificTest\NH1499\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1499\Person.cs" />
@@ -1472,6 +1479,9 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1293\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1490\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1492\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1499\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1502\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1488\Mappings.hbm.xml" />
