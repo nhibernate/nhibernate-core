@@ -1,7 +1,8 @@
 using System;
 using System.Collections;
-using Iesi.Collections;
+using System.Runtime.CompilerServices;
 using log4net;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Transform
 {
@@ -9,7 +10,6 @@ namespace NHibernate.Transform
 	public class DistinctRootEntityResultTransformer : IResultTransformer
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DistinctRootEntityResultTransformer));
-		private static readonly IEqualityComparer identityEqualityComparer = new IdentityEqualityComparer();
 
 		internal sealed class Identity
 		{
@@ -23,12 +23,12 @@ namespace NHibernate.Transform
 			public override bool Equals(object other)
 			{
 				Identity that = (Identity) other;
-				return identityEqualityComparer.Equals(entity, that.entity);
+				return ReferenceEquals(entity, that.entity);
 			}
 
 			public override int GetHashCode()
 			{
-				return identityEqualityComparer.GetHashCode(entity);
+				return RuntimeHelpers.GetHashCode(entity);
 			}
 		}
 
@@ -40,7 +40,7 @@ namespace NHibernate.Transform
 		public IList TransformList(IList list)
 		{
 			IList result = new ArrayList();
-			ISet distinct = new HashedSet();
+			ISet<Identity> distinct = new HashedSet<Identity>();
 
 			for (int i = 0; i < list.Count; i++)
 			{
