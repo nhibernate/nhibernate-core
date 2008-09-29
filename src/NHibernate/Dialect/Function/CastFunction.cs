@@ -12,10 +12,6 @@ namespace NHibernate.Dialect.Function
 	/// </summary>
 	public class CastFunction : ISQLFunction, IFunctionGrammar
 	{
-		public CastFunction()
-		{
-		}
-
 		#region ISQLFunction Members
 
 		public IType ReturnType(IType columnType, IMapping mapping)
@@ -42,7 +38,7 @@ namespace NHibernate.Dialect.Function
 				throw new QueryException("cast() requires two arguments");
 			}
 			string typeName = args[1].ToString();
-			string sqlType = string.Empty;
+			string sqlType;
 			IType hqlType = TypeFactory.HeuristicType(typeName);
 			if (hqlType != null)
 			{
@@ -86,7 +82,7 @@ namespace NHibernate.Dialect.Function
 
 		bool IFunctionGrammar.IsSeparator(string token)
 		{
-			return "as".Equals(token);
+			return "as".Equals(token, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		bool IFunctionGrammar.IsKnownArgument(string token)

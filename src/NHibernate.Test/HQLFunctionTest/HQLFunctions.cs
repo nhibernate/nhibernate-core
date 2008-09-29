@@ -667,6 +667,27 @@ namespace NHibernate.Test.HQLFunctionTest
 		}
 
 		[Test]
+		public void CastNH1446()
+		{
+			IgnoreIfNotSupported("cast");
+			using (ISession s = OpenSession())
+			{
+				Animal a1 = new Animal("abcdef", 1.3f);
+				s.Save(a1);
+				s.Flush();
+			}
+			using (ISession s = OpenSession())
+			{
+				// Rendered in SELECT using a property 
+				string hql = "select cast(a.BodyWeight As Double) from Animal a";
+				IList l = s.CreateQuery(hql).List();
+				Assert.AreEqual(1, l.Count);
+				Assert.AreEqual(1.3f, l[0]);
+			}
+		}
+
+
+		[Test]
 		public void Current_TimeStamp()
 		{
 			IgnoreIfNotSupported("current_timestamp");
