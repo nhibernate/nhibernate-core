@@ -23,7 +23,7 @@ namespace NHibernate
 		/// true if x is the same instance as y or if both are null references; otherwise, false.
 		///</returns>
 		/// <remarks>
-		/// This is Lazy collection safe since it uses <see cref="M:Object.ReferenceEquals"/>, 
+		/// This is Lazy collection safe since it uses <see cref="Object.ReferenceEquals"/>, 
 		/// unlike <c>Object.Equals()</c> which currently causes NHibernate to load up the collection.
 		/// This behaivior of Collections is likely to change because Java's collections override Equals() and 
 		/// .net's collections don't. So in .net there is no need to override Equals() and 
@@ -31,7 +31,7 @@ namespace NHibernate
 		/// </remarks>
 		public new bool Equals(object x, object y)
 		{
-			return object.ReferenceEquals(x, y);
+			return ReferenceEquals(x, y);
 
 		}
 		#endregion
