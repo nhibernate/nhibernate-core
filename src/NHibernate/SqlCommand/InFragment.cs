@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections;
 using NHibernate.Util;
@@ -10,11 +9,11 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class InFragment
 	{
-		public static readonly string Null = "null";
 		public static readonly string NotNull = "not null";
+		public static readonly string Null = "null";
 
+		private readonly ArrayList values = new ArrayList();
 		private string columnName;
-		private ArrayList values = new ArrayList();
 
 		/// <summary>
 		/// Add a value to the value list. Value may be a string,
@@ -27,39 +26,27 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="columnName"></param>
-		/// <returns></returns>
-		public InFragment SetColumn(string columnName)
+		public InFragment SetColumn(string colName)
 		{
-			this.columnName = columnName;
+			columnName = colName;
 			return this;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="columnName"></param>
-		/// <returns></returns>
-		public InFragment SetColumn(string alias, string columnName)
+		public InFragment SetColumn(string alias, string colName)
 		{
-			this.columnName = alias + StringHelper.Dot + columnName;
-			return SetColumn(this.columnName);
+			columnName = alias + StringHelper.Dot + colName;
+			return SetColumn(columnName);
 		}
 
 		public InFragment SetFormula(string alias, string formulaTemplate)
 		{
-			this.columnName = StringHelper.Replace(formulaTemplate, Template.Placeholder, alias);
-			return SetColumn(this.columnName);
+			columnName = StringHelper.Replace(formulaTemplate, Template.Placeholder, alias);
+			return SetColumn(columnName);
 		}
 
-		/// <summary></summary>
 		public SqlString ToFragmentString()
 		{
-			SqlStringBuilder buf = new SqlStringBuilder(values.Count * 5);
+			var buf = new SqlStringBuilder(values.Count * 5);
 			buf.Add(columnName);
 
 			if (values.Count > 1)
@@ -82,7 +69,7 @@ namespace NHibernate.SqlCommand
 					}
 					else if (NotNull.Equals(value))
 					{
-						throw new ArgumentOutOfRangeException("not null makes no sense for in expression");
+						throw new NotSupportedException(string.Format("not null makes no sense for in expression (column:{0})",columnName));
 					}
 					else
 					{
@@ -112,16 +99,15 @@ namespace NHibernate.SqlCommand
 				// SqlString "is null or [column] (" + [rest of sqlstring here] + ")"
 				if (allowNull)
 				{
-					buf.Insert(0, " is null or ")
-						.Insert(0, columnName)
-						.Insert(0, StringHelper.OpenParen)
-						.Add(StringHelper.ClosedParen);
+					buf.Insert(0, " is null or ").Insert(0, columnName).Insert(0, StringHelper.OpenParen).Add(StringHelper.ClosedParen);
 				}
 			}
 			else
 			{
-				if(values.Count == 0)
-					throw new ArgumentOutOfRangeException("Attempting to parse a null value into an sql string.");
+				if (values.Count == 0)
+				{
+					throw new NotSupportedException(string.Format("Attempting to parse a null value into an sql string (column:{0}).", columnName));
+				}
 				object value = values[0];
 				if (Null.Equals(value))
 				{

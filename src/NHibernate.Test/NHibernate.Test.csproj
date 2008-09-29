@@ -783,7 +783,6 @@
     <Compile Include="Assertions\HaveSerializableAttributeAsserter.cs" />
     <Compile Include="SessionCacheTest.cs" />
     <Compile Include="SqlLogSpy.cs" />
-    <Compile Include="SqlCommandTest\InFragmentFixture.cs" />
     <Compile Include="SqlCommandTest\SqlDeleteBuilderFixture.cs" />
     <Compile Include="SqlCommandTest\SqlInsertBuilderFixture.cs" />
     <Compile Include="SqlCommandTest\SqlSelectBuilderFixture.cs" />
