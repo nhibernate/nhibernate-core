@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -598,10 +598,12 @@
     <Compile Include="Dialect\Schema\MsSqlMetaData.cs" />
     <Compile Include="Dialect\Schema\OracleMetaData.cs" />
     <Compile Include="Dialect\Sybase11Dialect.cs" />
+    <Compile Include="Dialect\SybaseAdoNet12Dialect.cs" />
     <Compile Include="Driver\ASA10ClientDriver.cs" />
     <Compile Include="Driver\ISqlParameterFormatter.cs" />
     <Compile Include="Driver\SqlStringFormatter.cs" />
     <Compile Include="Criterion\SubqueryProjection.cs" />
+    <Compile Include="Driver\SybaseAdoNet12ClientDriver.cs" />
     <Compile Include="EmptyInterceptor.cs" />
     <Compile Include="Engine\ActionQueue.cs" />
     <Compile Include="Engine\AssociationKey.cs" />
