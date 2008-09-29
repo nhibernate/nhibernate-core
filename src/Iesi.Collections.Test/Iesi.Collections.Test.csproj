@@ -49,6 +49,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Generic\HashedSetFixture.cs" />
     <Compile Include="Generic\ImmutableSetFixture.cs" />
+    <Compile Include="Generic\OrderedSetFixture.cs" />
     <Compile Include="Generic\SetFixture.cs" />
     <Compile Include="Generic\SortedSetFixture.cs" />
     <Compile Include="HashedSetFixture.cs" />

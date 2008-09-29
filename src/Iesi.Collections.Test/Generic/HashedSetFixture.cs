@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-
+using Iesi.Collections.Generic;
 using NUnit.Framework;
 
-namespace Iesi.Collections.Generic.Test
+namespace Iesi.Collections.Test.Generic
 {
 	/// <summary>
 	/// Summary description for HashedSetFixture.

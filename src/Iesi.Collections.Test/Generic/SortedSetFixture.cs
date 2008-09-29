@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using Iesi.Collections.Generic;
 using NUnit.Framework;
 
-namespace Iesi.Collections.Generic.Test
+namespace Iesi.Collections.Test.Generic
 {
 	/// <summary>
 	/// Summary description for SortedSetFixture.
