@@ -1062,6 +1062,7 @@
     <Compile Include="Type\CollectionType.cs" />
     <Compile Include="Type\CustomCollectionType.cs" />
     <Compile Include="Type\EmbeddedComponentType.cs" />
+    <Compile Include="Type\GenericOrderedSetType.cs" />
     <Compile Include="Type\ICacheAssembler.cs" />
     <Compile Include="Type\OrderedSetType.cs" />
     <Compile Include="Type\OrderedMapType.cs" />

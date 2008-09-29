@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   assembly="NHibernate.Test" 
+				   namespace="NHibernate.Test.GenericTest.OrderedSetGeneric">
+	
+  <class name="A" table="a" lazy="false">
+    <id name="Id" column="id">
+      <generator class="assigned" />
+    </id>
+    <property name="Name" column="aname" />
+    <set name="Items" cascade="save-update" order-by="OrderBy ASC">
+      <key column="aid"/>
+      <one-to-many class="B"/>
+    </set>
+  </class>
+
+  <class name="B" table="b">
+    <id name="Id" column="id">
+      <generator class="native" />
+    </id>
+    <property name="AId" column="aid" />
+    <property name="OrderBy" column="orderby" />
+    <property name="Name" column="aname" />
+  </class>
+</hibernate-mapping>

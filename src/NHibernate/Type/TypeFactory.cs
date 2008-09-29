@@ -33,8 +33,8 @@ namespace NHibernate.Type
 			PrecisionScale
 		}
 
-		private static readonly char[] precisionScaleSplit = new char[] {'(', ')', ','};
-		private static readonly char[] lengthSplit = new char[] {'(', ')'};
+		private static readonly char[] precisionScaleSplit = new char[] { '(', ')', ',' };
+		private static readonly char[] lengthSplit = new char[] { '(', ')' };
 
 		/*
 		 * Maps the string representation of the type to the IType.  The string 
@@ -59,7 +59,7 @@ namespace NHibernate.Type
 		private static readonly IDictionary<string, IType> typeByTypeOfName =
 			new ThreadSafeDictionary<string, IType>(new Dictionary<string, IType>());
 
-		private static readonly IDictionary<string, GetNullableTypeWithLength> getTypeDelegatesWithLength = 
+		private static readonly IDictionary<string, GetNullableTypeWithLength> getTypeDelegatesWithLength =
 			new ThreadSafeDictionary<string, GetNullableTypeWithLength>(new Dictionary<string, GetNullableTypeWithLength>());
 
 		private static readonly IDictionary<string, GetNullableTypeWithPrecision> getTypeDelegatesWithPrecision =
@@ -241,7 +241,7 @@ namespace NHibernate.Type
 			// Use the basic name (such as String or String(255)) to get the
 			// instance of the IType object.
 			IType returnType;
-			if (typeByTypeOfName.TryGetValue(name,out returnType))
+			if (typeByTypeOfName.TryGetValue(name, out returnType))
 			{
 				return returnType;
 			}
@@ -259,7 +259,7 @@ namespace NHibernate.Type
 				if (parsedName.Length < 4)
 				{
 					throw new ArgumentOutOfRangeException("TypeClassification.PrecisionScale", name,
-					                                      "It is not a valid Precision/Scale name");
+																								"It is not a valid Precision/Scale name");
 				}
 
 				typeName = parsedName[0].Trim();
@@ -372,8 +372,8 @@ namespace NHibernate.Type
 				{
 					parsedTypeName = typeName.Split(lengthSplit);
 				}
-				else 
-					parsedTypeName = typeClassification == TypeClassification.PrecisionScale ? typeName.Split(precisionScaleSplit) : new string[] {typeName};
+				else
+					parsedTypeName = typeClassification == TypeClassification.PrecisionScale ? typeName.Split(precisionScaleSplit) : new string[] { typeName };
 
 
 				System.Type typeClass;
@@ -392,7 +392,7 @@ namespace NHibernate.Type
 					{
 						try
 						{
-							type = (IType) Activator.CreateInstance(typeClass);
+							type = (IType)Activator.CreateInstance(typeClass);
 						}
 						catch (Exception e)
 						{
@@ -439,11 +439,11 @@ namespace NHibernate.Type
 		private static Boolean IsNullableEnum(System.Type typeClass)
 		{
 			if (!typeClass.IsGenericType) return false;
-			System.Type nullable = typeof (Nullable<>);
+			System.Type nullable = typeof(Nullable<>);
 			if (!nullable.Equals(typeClass.GetGenericTypeDefinition())) return false;
 
 			System.Type genericClass = typeClass.GetGenericArguments()[0];
-			return genericClass.IsSubclassOf(typeof (Enum));
+			return genericClass.IsSubclassOf(typeof(Enum));
 		}
 
 
@@ -604,12 +604,12 @@ namespace NHibernate.Type
 		/// <summary>
 		/// A one-to-one association type for the given class and cascade style.
 		/// </summary>
-		public static EntityType OneToOne(string persistentClass, ForeignKeyDirection foreignKeyType, string uniqueKeyPropertyName, 
+		public static EntityType OneToOne(string persistentClass, ForeignKeyDirection foreignKeyType, string uniqueKeyPropertyName,
 			bool lazy, bool unwrapProxy, bool isEmbeddedInXML, string entityName, string propertyName)
 		{
 			return
 				new OneToOneType(persistentClass, foreignKeyType, uniqueKeyPropertyName, lazy, unwrapProxy, isEmbeddedInXML,
-				                 entityName, propertyName);
+												 entityName, propertyName);
 		}
 
 		/// <summary>
@@ -633,7 +633,7 @@ namespace NHibernate.Type
 		/// <summary>
 		/// A many-to-one association type for the given class and cascade style.
 		/// </summary>
-		public static EntityType ManyToOne(string persistentClass, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, 
+		public static EntityType ManyToOne(string persistentClass, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy,
 			bool isEmbeddedInXML, bool ignoreNotFound)
 		{
 			return new ManyToOneType(persistentClass, uniqueKeyPropertyName, lazy, unwrapProxy, isEmbeddedInXML, ignoreNotFound);
@@ -796,15 +796,17 @@ namespace NHibernate.Type
 			return new OrderedSetType(role, propertyRef, embedded);
 		}
 
+
+
 		private static CollectionType CreateCollectionType(
 			System.Type genericCollectionType,
 			string role,
 			string propertyRef,
 			params System.Type[] typeArguments)
 		{
-			return (CollectionType) Activator.CreateInstance(
-			                        	genericCollectionType.MakeGenericType(typeArguments),
-			                        	role, propertyRef);
+			return (CollectionType)Activator.CreateInstance(
+																genericCollectionType.MakeGenericType(typeArguments),
+																role, propertyRef);
 		}
 
 		private static CollectionType CreateSortedCollectionType(
@@ -814,9 +816,18 @@ namespace NHibernate.Type
 			object comparer,
 			params System.Type[] typeArguments)
 		{
-			return (CollectionType) Activator.CreateInstance(
-			                        	genericCollectionType.MakeGenericType(typeArguments),
-			                        	role, propertyRef, comparer);
+			return (CollectionType)Activator.CreateInstance(
+																genericCollectionType.MakeGenericType(typeArguments),
+																role, propertyRef, comparer);
+		}
+
+		private static CollectionType CreateOrderedCollectionType(System.Type genericCollectionType,
+			string role,
+			string propertyRef,
+			params System.Type[] typeArguments)
+		{
+			return
+				(CollectionType)Activator.CreateInstance(genericCollectionType.MakeGenericType(typeArguments), role, propertyRef);
 		}
 
 		/// <summary>
@@ -901,24 +912,24 @@ namespace NHibernate.Type
 		/// A <see cref="MapType"/> for the specified role.
 		/// </returns>
 		public static CollectionType GenericMap(string role, string propertyRef, System.Type indexClass,
-		                                        System.Type elementClass)
+																						System.Type elementClass)
 		{
 			return CreateCollectionType(typeof(GenericMapType<,>), role, propertyRef, indexClass, elementClass);
 		}
 
 		public static CollectionType GenericSortedList(string role, string propertyRef, object comparer,
-		                                               System.Type indexClass, System.Type elementClass)
+																									 System.Type indexClass, System.Type elementClass)
 		{
 			return
 				CreateSortedCollectionType(typeof(GenericSortedListType<,>), role, propertyRef, comparer, indexClass, elementClass);
 		}
 
 		public static CollectionType GenericSortedDictionary(string role, string propertyRef, object comparer,
-		                                                     System.Type indexClass, System.Type elementClass)
+																												 System.Type indexClass, System.Type elementClass)
 		{
 			return
 				CreateSortedCollectionType(typeof(GenericSortedDictionaryType<,>), role, propertyRef, comparer, indexClass,
-				                           elementClass);
+																	 elementClass);
 		}
 
 		/// <summary>
@@ -946,9 +957,24 @@ namespace NHibernate.Type
 		/// <param name="elementType">The type of the elements in the set.</param>
 		/// <returns>A <see cref="GenericSetType{T}" /> for the specified role.</returns>
 		public static CollectionType GenericSortedSet(string role, string propertyRef, object comparer,
-		                                              System.Type elementType)
+																									System.Type elementType)
 		{
 			return CreateSortedCollectionType(typeof(GenericSortedSetType<>), role, propertyRef, comparer, elementType);
+		}
+
+		/// <summary>
+		/// Creates a new <see cref="CollectionType"/> for an ordered <see cref="Iesi.Collections.Generic.ISet{T}" />.
+		/// </summary>
+		/// <param name="role">The role the collection is in.</param>
+		/// <param name="propertyRef">The name of the property in the
+		/// owner object containing the collection ID, or <see langword="null" /> if it is
+		/// the primary key.</param>
+		/// <param name="elementType">The type of the elements in the set.</param>
+		/// <returns>A <see cref="GenericSetType{T}" /> for the specified role.</returns>
+		public static CollectionType GenericOrderedSet(string role, string propertyRef,
+																									System.Type elementType)
+		{
+			return CreateOrderedCollectionType(typeof(GenericOrderedSetType<>), role, propertyRef, elementType);
 		}
 
 		/// <summary> Deep copy a series of values from one array to another... </summary>
@@ -1137,7 +1163,7 @@ namespace NHibernate.Type
 		/// <param name="copiedAlready">Represent a cache of already replaced state </param>
 		/// <returns> The replaced state </returns>
 		public static object[] Replace(object[] original, object[] target, IType[] types, ISessionImplementor session,
-		                               object owner, IDictionary copiedAlready)
+																	 object owner, IDictionary copiedAlready)
 		{
 			object[] copied = new object[original.Length];
 			for (int i = 0; i < original.Length; i++)
@@ -1159,7 +1185,7 @@ namespace NHibernate.Type
 		/// <param name="copyCache">A map representing a cache of already replaced state </param>
 		/// <param name="foreignKeyDirection">FK directionality to be applied to the replacement </param>
 		/// <returns> The replaced state </returns>
-		public static object[] Replace(object[] original, object[] target, IType[] types, 
+		public static object[] Replace(object[] original, object[] target, IType[] types,
 			ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
 		{
 			object[] copied = new object[original.Length];
@@ -1192,7 +1218,7 @@ namespace NHibernate.Type
 		/// If the corresponding type is a component type, then apply <see cref="ReplaceAssociations"/>
 		/// across the component subtypes but do not replace the component value itself.
 		/// </remarks>
-		public static object[] ReplaceAssociations(object[] original, object[] target, IType[] types, 
+		public static object[] ReplaceAssociations(object[] original, object[] target, IType[] types,
 			ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
 		{
 			object[] copied = new object[original.Length];
@@ -1205,14 +1231,14 @@ namespace NHibernate.Type
 				else if (types[i].IsComponentType)
 				{
 					// need to extract the component values and check for subtype replacements...
-					IAbstractComponentType componentType = (IAbstractComponentType) types[i];
+					IAbstractComponentType componentType = (IAbstractComponentType)types[i];
 					IType[] subtypes = componentType.Subtypes;
 					object[] origComponentValues = original[i] == null
-					                               	? new object[subtypes.Length]
-					                               	: componentType.GetPropertyValues(original[i], session);
+																					? new object[subtypes.Length]
+																					: componentType.GetPropertyValues(original[i], session);
 					object[] targetComponentValues = componentType.GetPropertyValues(target[i], session);
 					ReplaceAssociations(origComponentValues, targetComponentValues, subtypes, session, null, copyCache,
-					                    foreignKeyDirection);
+															foreignKeyDirection);
 					copied[i] = target[i];
 				}
 				else if (!types[i].IsAssociationType)
@@ -1242,7 +1268,7 @@ namespace NHibernate.Type
 			CustomCollectionType result = new CustomCollectionType(typeClass, role, propertyRef, embedded);
 			if (typeParameters != null)
 			{
-				InjectParameters(result.UserType, (IDictionary) typeParameters);
+				InjectParameters(result.UserType, (IDictionary)typeParameters);
 			}
 			return result;
 		}
@@ -1251,7 +1277,7 @@ namespace NHibernate.Type
 		{
 			if (type is IParameterizedType)
 			{
-				((IParameterizedType) type).SetParameterValues(parameters);
+				((IParameterizedType)type).SetParameterValues(parameters);
 			}
 			else if (parameters != null && !(parameters.Count == 0))
 			{

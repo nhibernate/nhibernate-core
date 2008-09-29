@@ -34,8 +34,7 @@ namespace NHibernate.Mapping
 					}
 					else if (HasOrder)
 					{
-						throw new MappingException(
-							"Cannot use order-by with generic set, no appropriate collection implementation is available");
+						return TypeFactory.GenericOrderedSet(Role, ReferencedPropertyName, this.GenericArguments[0]);
 					}
 					else
 					{
