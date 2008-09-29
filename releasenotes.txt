@@ -1,3 +1,34 @@
+Build 2.0.1.GA
+========================
+** Bug
+    * [NH-1293] - Changed behavior of Filters for many-to-one  associations brings up possible bug when used with outer joins.
+    * [NH-1464] - C++ and Dispose method
+    * [NH-1466] - current_session_context_class = thread_static doesn't work
+    * [NH-1473] - IsEqual and Compare broken in EntityType
+    * [NH-1481] - Named Hql queries w/ Named Parameters broken after upgrade to 2.0 from 1.2.1
+    * [NH-1483] - Subclass Not Loaded From Cache as Baseclass
+    * [NH-1488] - Table per class hierarchy and OUTER JOIN
+    * [NH-1490] - Wrong order of parameters in query when session uses IFilter
+    * [NH-1492] - Parameter mismatch enabling filters
+    * [NH-1499] - NullReferenceException construting Criteria query
+
+** Improvement
+    * [NH-1484] - first chance exception 'NHibernate.MappingException' when starting a webapplication
+    * [NH-1496] - Configuration.AddAssembly(Assembly) should do some logging if no mapping files where found
+    * [NH-1500] - Spelling error of NHibernate.Cfg.ConfigurationSchema.ParseColectionsCache
+
+
+** Patch
+    * [NH-1034] - HQL functions - parameters support
+    * [NH-1434] - Some unit test supplies non-character value to LIKE: not portable across every RDBMS
+    * [NH-1435] - Explicitly order query in NH-1179 to ensure reliable results
+    * [NH-1436] - Mapping of NH-1250 not portable across every RDBMS
+    * [NH-1437] - Mapping of NH-1408 not portable across every RDBMS
+    * [NH-1438] - Some queries from FooBarTest fixture are not portable across every RDBMS
+    * [NH-1439] - Handle Dialect.GetIdentityColumnString(DbType type)
+    * [NH-1459] - Sybase dialect
+    * [NH-1462] - StringHelper.GetFullClassname fails to parse generic types
+
 Build 2.0.0.GA
 ========================
 ** BREAKING CHANGES from NH1.2.1GA to NH2.0.0
