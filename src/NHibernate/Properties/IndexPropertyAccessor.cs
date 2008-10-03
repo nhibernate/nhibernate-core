@@ -32,7 +32,7 @@ namespace NHibernate.Properties
 			throw new NotImplementedException();
 		}
 
-		public bool CanAccessTroughReflectionOptimizer
+		public bool CanAccessThroughReflectionOptimizer
 		{
 			get { return false; }
 		}

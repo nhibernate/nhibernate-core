@@ -18,7 +18,7 @@ namespace NHibernate.Properties
 			return new MapSetter(propertyName);
 		}
 
-		public bool CanAccessTroughReflectionOptimizer
+		public bool CanAccessThroughReflectionOptimizer
 		{
 			get { return false; }
 		}

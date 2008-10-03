@@ -60,7 +60,7 @@ namespace NHibernate.Properties
 			return result;
 		}
 
-		public bool CanAccessTroughReflectionOptimizer
+		public bool CanAccessThroughReflectionOptimizer
 		{
 			get { return true; }
 		}

@@ -30,7 +30,7 @@ namespace NHibernate.Properties
 			return new BackrefSetter();
 		}
 
-		public bool CanAccessTroughReflectionOptimizer
+		public bool CanAccessThroughReflectionOptimizer
 		{
 			get { return false; }
 		}
