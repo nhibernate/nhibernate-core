@@ -86,7 +86,7 @@ namespace NHibernate.Properties
 			return new FieldSetter(GetField(theClass, fieldName), theClass, fieldName);
 		}
 
-		public bool CanAccessTroughReflectionOptimizer
+		public bool CanAccessThroughReflectionOptimizer
 		{
 			get { return true; }
 		}

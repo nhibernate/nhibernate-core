@@ -48,7 +48,7 @@ namespace NHibernate.Properties
 			throw new PropertyNotFoundException(theClass, propertyName, "setter");
 		}
 
-		public bool CanAccessTroughReflectionOptimizer
+		public bool CanAccessThroughReflectionOptimizer
 		{
 			get { return false; }
 		}

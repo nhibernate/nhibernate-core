@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH251
 			return new CustomSetter(propertyName);
 		}
 
-		public bool CanAccessTroughReflectionOptimizer
+		public bool CanAccessThroughReflectionOptimizer
 		{
 			get { return false; }
 		}

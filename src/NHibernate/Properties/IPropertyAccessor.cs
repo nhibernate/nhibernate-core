@@ -39,7 +39,7 @@ namespace NHibernate.Properties
 		/// <summary>
 		/// Allow embedded and custom accessors to define if the ReflectionOptimizer can be used.
 		/// </summary>
-		bool CanAccessTroughReflectionOptimizer { get;}
+		bool CanAccessThroughReflectionOptimizer { get;}
 		#endregion
 	}
 }

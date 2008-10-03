@@ -19,7 +19,7 @@ namespace NHibernate.Properties
 			return new NoopSetter();
 		}
 
-		public bool CanAccessTroughReflectionOptimizer
+		public bool CanAccessThroughReflectionOptimizer
 		{
 			get { return false; }
 		}

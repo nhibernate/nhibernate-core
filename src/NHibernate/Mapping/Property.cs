@@ -189,8 +189,8 @@ namespace NHibernate.Mapping
 
 		public virtual bool IsBasicPropertyAccessor
 		{
-			// NH Different behavior : see IPropertyAccessor.CanAccessTroughReflectionOptimizer (ref. NH-1304)
-			get { return PropertyAccessor.CanAccessTroughReflectionOptimizer; }
+			// NH Different behavior : see IPropertyAccessor.CanAccessThroughReflectionOptimizer (ref. NH-1304)
+			get { return PropertyAccessor.CanAccessThroughReflectionOptimizer; }
 		}
 
 		public IDictionary<string, MetaAttribute> MetaAttributes
