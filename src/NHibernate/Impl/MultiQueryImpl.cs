@@ -291,7 +291,8 @@ namespace NHibernate.Impl
 
 		public IMultiQuery Add(IQuery query)
 		{
-			((AbstractQueryImpl)query).SetIgnoreUknownNamedParameters(true);
+			ThrowNotSupportedIfSqlQuery(query);
+			((AbstractQueryImpl) query).SetIgnoreUknownNamedParameters(true);
 			queries.Add(query);
 			return this;
 		}
@@ -523,20 +524,28 @@ namespace NHibernate.Impl
 			sqlString = new SqlString();
 			foreach (AbstractQueryImpl query in queries)
 			{
-				QueryParameters queryParameters = query.GetQueryParameters();
-				queryParameters.ValidateParameters();
-				query.VerifyParameters();
-				IQueryTranslator[] queryTranslators =
-					session.GetQueries(query.ExpandParameterLists(queryParameters.NamedParameters), false);
-				foreach (QueryTranslator translator in queryTranslators)
+				if (query is ISQLQuery)
 				{
-					translators.Add(translator);
-					parameters.Add(queryParameters);
-					queryParameters = GetFilteredQueryParameters(queryParameters, translator);
-					SqlCommandInfo commandInfo = translator.GetQueryStringAndTypes(session, queryParameters);
-					sqlString = sqlString.Append(commandInfo.Text).Append(dialect.MultipleQueriesSeparator).Append(Environment.NewLine);
-					types.AddRange(commandInfo.ParameterTypes);
+
 				}
+				else
+				{
+					QueryParameters queryParameters = query.GetQueryParameters();
+					queryParameters.ValidateParameters();
+					query.VerifyParameters();
+					IQueryTranslator[] queryTranslators =
+						session.GetQueries(query.ExpandParameterLists(queryParameters.NamedParameters), false);
+					foreach (QueryTranslator translator in queryTranslators)
+					{
+						translators.Add(translator);
+						parameters.Add(queryParameters);
+						queryParameters = GetFilteredQueryParameters(queryParameters, translator);
+						SqlCommandInfo commandInfo = translator.GetQueryStringAndTypes(session, queryParameters);
+						sqlString = sqlString.Append(commandInfo.Text).Append(dialect.MultipleQueriesSeparator).Append(Environment.NewLine);
+						types.AddRange(commandInfo.ParameterTypes);
+					}
+				}
+
 			}
 		}
 
@@ -733,7 +742,11 @@ namespace NHibernate.Impl
 			}
 			return false;
 		}
-
+		protected void ThrowNotSupportedIfSqlQuery(IQuery query)
+		{
+			if (query is ISQLQuery)
+				throw new NotSupportedException("Sql queries in MultiQuery is currently not supported.");
+		}
 		#endregion
 	}
 }
