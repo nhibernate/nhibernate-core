@@ -797,11 +797,16 @@ namespace NHibernate.Impl
 
 		private int AddQueryForLaterExecutionAndReturnIndexOfQuery(IQuery query)
 		{
+			ThrowNotSupportedIfSqlQuery(query);
 			((AbstractQueryImpl)query).SetIgnoreUknownNamedParameters(true);
 			queries.Add(query);
 			return queries.Count - 1;
 		}
-
+		protected void ThrowNotSupportedIfSqlQuery(IQuery query)
+		{
+			if (query is ISQLQuery)
+				throw new NotSupportedException("Sql queries in MultiQuery are currently not supported.");
+		}
 
 		#endregion
 	}

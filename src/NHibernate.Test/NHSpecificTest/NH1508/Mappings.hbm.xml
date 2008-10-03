@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1508">
+
+  <class name="Document">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <many-to-one name="Person" column="PersonID"/>
+    <property name="Title"/>
+  </class>
+
+  <class name="Person">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <property name="Name"/>
+  </class>
+  <sql-query name="SampleSqlQuery">
+    <![CDATA[ 
+      SELECT PersonId from Document
+   ]]>
+  </sql-query>
+  <query name="SampleHqlQuery">
+    <![CDATA[ 
+      from Document
+   ]]>
+  </query>
+</hibernate-mapping>
