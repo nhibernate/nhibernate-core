@@ -17,26 +17,28 @@ namespace NHibernate.Criterion
 	[Serializable]
 	public class LikeExpression : AbstractCriterion
 	{
-		private readonly string propertyName;
 		private readonly string value;
 		private char? escapeChar;
 		private readonly bool ignoreCase;
 		private readonly IProjection projection;
 
 		public LikeExpression(string propertyName, string value, char? escapeChar, bool ignoreCase)
+			: this(Projections.Property(propertyName), value, MatchMode.Exact, escapeChar, ignoreCase)
 		{
-			this.propertyName = propertyName;
-			this.value = value;
-			this.escapeChar = escapeChar;
-			this.ignoreCase = ignoreCase;
 		}
 
 		public LikeExpression(IProjection projection, string value, MatchMode matchMode)
+			: this(projection, value, MatchMode.Exact, null, false)
+		{
+
+		}
+		public LikeExpression(IProjection projection, string value, MatchMode matchMode, char? escapeChar, bool ignoreCase)
 		{
 			this.projection = projection;
 			this.value = matchMode.ToMatchString(value);
+			this.escapeChar = escapeChar;
+			this.ignoreCase = ignoreCase;
 		}
-
 
 		public LikeExpression(string propertyName, string value)
 			: this(propertyName, value, null, false)
@@ -57,19 +59,22 @@ namespace NHibernate.Criterion
 
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			string[] columns = criteriaQuery.GetColumnsUsingProjection(criteria, propertyName);
+			SqlString[] columns = CriterionUtil.GetColumnNamesUsingProjection(projection, criteriaQuery, criteria, enabledFilters);
 			if (columns.Length != 1)
-				throw new HibernateException("Like may only be used with single-column properties");
+				throw new HibernateException("Like may only be used with single-column properties / projections.");
 
 			SqlStringBuilder lhs = new SqlStringBuilder(6);
 
-			if(ignoreCase)
+			if (ignoreCase)
 			{
 				Dialect.Dialect dialect = criteriaQuery.Factory.Dialect;
-				lhs.Add(dialect.LowercaseFunction).Add(StringHelper.OpenParen).Add(columns[0]).Add(
-					StringHelper.ClosedParen);
+				lhs
+					.Add(dialect.LowercaseFunction)
+					.Add(StringHelper.OpenParen)
+					.Add(columns[0])
+					.Add(StringHelper.ClosedParen);
 			}
-			else 
+			else
 				lhs.Add(columns[0]);
 			lhs.Add(" like ").AddParameter();
 			if (escapeChar.HasValue)
@@ -79,14 +84,17 @@ namespace NHibernate.Criterion
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[] {criteriaQuery.GetTypedValue(criteria, propertyName, ignoreCase ? value.ToLower() : value)};
+			return new TypedValue[]
+			       	{
+						new TypedValue(NHibernateUtil.String, value, EntityMode.Poco)
+			       	};
 		}
 
 		#endregion
 
 		public override string ToString()
 		{
-			return (projection != null ? projection.ToString() : propertyName) + " like " + value;
+			return projection + " like " + value;
 		}
 	}
 }

@@ -34,10 +34,10 @@ namespace NHibernate.Criterion
 			if (projection == null)
 			{
 				return GetColumnNamesUsingPropertyName(
-					criteriaQuery, 
-					criteria, 
+					criteriaQuery,
+					criteria,
 					propertyName,
-					value, 
+					value,
 					criterion);
 			}
 			else
@@ -46,12 +46,12 @@ namespace NHibernate.Criterion
 			}
 		}
 
-		private static SqlString[] GetColumnNamesUsingProjection(IProjection projection, ICriteriaQuery criteriaQuery, ICriteria criteria,
+		internal static SqlString[] GetColumnNamesUsingProjection(IProjection projection, ICriteriaQuery criteriaQuery, ICriteria criteria,
 																	 IDictionary<string, IFilter> enabledFilters)
 		{
-			SqlString sqlString = projection.ToSqlString(criteria, 
+			SqlString sqlString = projection.ToSqlString(criteria,
 				criteriaQuery.GetIndexForAlias(),
-				criteriaQuery, 
+				criteriaQuery,
 				enabledFilters);
 			return new SqlString[]
 				{
@@ -66,10 +66,10 @@ namespace NHibernate.Criterion
 		}
 
 		private static SqlString[] GetColumnNamesUsingPropertyName(
-			ICriteriaQuery criteriaQuery, 
-			ICriteria criteria, 
-			string propertyName, 
-			object value, 
+			ICriteriaQuery criteriaQuery,
+			ICriteria criteria,
+			string propertyName,
+			object value,
 			ICriterion critertion)
 		{
 			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, propertyName);
@@ -96,16 +96,16 @@ namespace NHibernate.Criterion
 		}
 
 		public static TypedValue[] GetTypedValues(ICriteriaQuery criteriaQuery, ICriteria criteria,
-		                                          IProjection projection,
-		                                          string propertyName,
-		                                          params object[] values)
+												  IProjection projection,
+												  string propertyName,
+												  params object[] values)
 		{
 			List<TypedValue> types = new List<TypedValue>();
 			if (projection == null)
 			{
 				foreach (object value in values)
 				{
-					TypedValue typedValue = criteriaQuery.GetTypedValue(criteria, propertyName, value); 					
+					TypedValue typedValue = criteriaQuery.GetTypedValue(criteria, propertyName, value);
 					types.Add(typedValue);
 				}
 			}

@@ -1654,6 +1654,70 @@ namespace NHibernate.Test.Criteria
 
 				t.Commit();
 			}
-		} 
+		}
+
+
+		[Test]
+		public void LikeProjectionTest()
+		{
+			Student john = new Student();
+			john.Name = "John";
+			using (ISession session = this.OpenSession())
+			{
+				session.Save(john);
+				session.Flush();
+			}
+
+
+			using (ISession session = this.OpenSession())
+			{
+				ICriteria criteria = session.CreateCriteria(typeof(Student), "c");
+
+				criteria.Add(new LikeExpression(Projections.Property("Name"), "John", MatchMode.Anywhere));
+
+				Assert.AreEqual(1, criteria.List().Count);
+			}
+
+			using (ISession session = this.OpenSession())
+			{
+				ICriteria criteria = session.CreateCriteria(typeof(Student), "c");
+
+				criteria.Add(new LikeExpression("Name", "John"));
+
+				Assert.AreEqual(1, criteria.List().Count);
+			}
+
+			using (ISession session = this.OpenSession())
+			{
+				session.Delete(john);
+				session.Flush();
+			}
+		}
+
+		[Test]
+		public void LikeProjectionUsingRestrictionsTest()
+		{
+			using (ISession session = this.OpenSession())
+			{
+				ICriteria criteria = session.CreateCriteria(typeof(Student), "c");
+
+				criteria.Add(Restrictions.Like(Projections.Constant("Name"), "John", MatchMode.Anywhere));
+
+				criteria.List();
+			}
+		}
+
+		[Test]
+		public void InsensitiveLikeProjectionUsingRestrictionsTest()
+		{
+			using (ISession session = this.OpenSession())
+			{
+				ICriteria criteria = session.CreateCriteria(typeof(Student), "c");
+
+				criteria.Add(Restrictions.InsensitiveLike(Projections.Constant("Name"), "John", MatchMode.Anywhere));
+
+				criteria.List();
+			}
+		}
 	}
 }
