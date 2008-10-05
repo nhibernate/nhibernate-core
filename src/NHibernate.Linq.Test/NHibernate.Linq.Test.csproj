@@ -60,7 +60,7 @@
       <Project>{3073F5DA-5D57-4E12-9F95-8516ED346E67}</Project>
       <Name>NHibernate.Linq</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NHibernate\NHibernate-3.5.csproj">
+    <ProjectReference Include="..\NHibernate\NHibernate.csproj">
       <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
       <Name>NHibernate-3.5</Name>
     </ProjectReference>

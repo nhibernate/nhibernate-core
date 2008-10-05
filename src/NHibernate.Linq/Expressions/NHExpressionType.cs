@@ -9,6 +9,7 @@
 		ComponentProperty,
 		OneToManyProperty,
 		OneToOneProperty,
+		Parameter,
 		Order,
 	}
 }

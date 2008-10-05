@@ -14,12 +14,13 @@ namespace NHibernate.Linq.Visitors
 	public class AssociationRewriteVisitor : NHibernateExpressionVisitor
 	{
 		private readonly ISessionFactoryImplementor sessionFactory;
+		private int parameterOrder;
 		private int aliasOrder;
-
 		public AssociationRewriteVisitor(ISessionFactoryImplementor factory)
 		{
-			sessionFactory = factory;
-			aliasOrder = 0;
+			this.sessionFactory = factory;
+			this.aliasOrder = 0;
+			this.parameterOrder = 0;
 		}
 
 		public static Expression Rewrite(Expression expr, ISessionFactoryImplementor factory)
@@ -62,7 +63,7 @@ namespace NHibernate.Linq.Visitors
 			else if (propertyType is OneToOneType)
 			{
 				Expression source = base.Visit(expr.Expression);
-				return new OneToOnePropertyExpression(propertyName, expr.Type, source, propertyType);
+				return new OneToOnePropertyExpression(propertyName,GenerateAliasString(), expr.Type, source, propertyType);
 			}
 			else if(!propertyType.IsAssociationType)//assume simple property
 			{
@@ -82,8 +83,12 @@ namespace NHibernate.Linq.Visitors
 				var loadable = sessionFactory.GetEntityPersister(elementType.FullName) as IOuterJoinLoadable;
 				return new QuerySourceExpression(type, loadable);
 			}
-				
-			return c;
+			else
+				return new QueryParameterExpression(c.Type, parameterOrder++, c.Type);
+		}
+		private string GenerateAliasString()
+		{
+			return string.Format("a_{0}", aliasOrder++);
 		}
 	}
 }

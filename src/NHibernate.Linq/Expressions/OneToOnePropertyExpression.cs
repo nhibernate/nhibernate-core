@@ -9,8 +9,8 @@ namespace NHibernate.Linq.Expressions
 {
 	public class OneToOnePropertyExpression:AssociationPropertyExpression
 	{
-		public OneToOnePropertyExpression(string name, System.Type type, Expression source, IType nhType)
-			: base(name, NHExpressionType.OneToOneProperty, type, source, nhType)
+		public OneToOnePropertyExpression(string name,string alias, System.Type type, Expression source, IType nhType)
+			: base(name,alias, NHExpressionType.OneToOneProperty, type, source, nhType)
 		{
 
 		}

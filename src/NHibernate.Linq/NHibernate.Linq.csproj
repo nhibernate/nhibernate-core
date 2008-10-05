@@ -44,7 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NHibernate\NHibernate-3.5.csproj">
+    <ProjectReference Include="..\NHibernate\NHibernate.csproj">
       <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
       <Name>NHibernate-3.5</Name>
     </ProjectReference>
@@ -56,6 +56,7 @@
     <Compile Include="Expressions\OneToOnePropertyExpression.cs" />
     <Compile Include="Expressions\OrderExpression.cs" />
     <Compile Include="Expressions\OrderType.cs" />
+    <Compile Include="Expressions\QueryParameterExpression.cs" />
     <Compile Include="Expressions\ProjectionExpression.cs" />
     <Compile Include="Expressions\PropertyExpression.cs" />
     <Compile Include="Expressions\SelectExpression.cs" />
@@ -67,7 +68,6 @@
     <Compile Include="Util\Guard.cs" />
     <Compile Include="Util\LinqUtil.cs" />
     <Compile Include="Visitors\AssociationRewriteVisitor.cs" />
-    <Compile Include="Visitors\JoinGatherer.cs" />
     <Compile Include="Visitors\LogicalExpressionReducer.cs" />
     <Compile Include="ExpressionVisitor.cs" />
     <Compile Include="NHibernateExtensions.cs" />
@@ -80,6 +80,7 @@
     <Compile Include="Visitors\OrderByTransformer.cs" />
     <Compile Include="Visitors\Replacer.cs" />
     <Compile Include="Visitors\QuerySpacesFinderVisitor.cs" />
+    <Compile Include="Visitors\SelectJoinGatherer.cs" />
     <Compile Include="Visitors\SqlExpressionTranslator.cs" />
     <Compile Include="Visitors\NHExpressionToSqlExpressionTransformer.cs" />
     <Compile Include="Visitors\WhereExpressionCombiner.cs" />

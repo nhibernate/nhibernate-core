@@ -61,7 +61,7 @@ namespace NHibernate.Linq.Visitors
 				return new SimplePropertyExpression(property.Name, property.Column, property.Type, source, property.NHibernateType);
 			return property;
 		}
-		private Expression VisitComponentProperty(ComponentPropertyExpression property)
+		protected virtual Expression VisitComponentProperty(ComponentPropertyExpression property)
 		{
 			Expression source = Visit(property.Source);
 			if (source != property.Source)
@@ -69,18 +69,19 @@ namespace NHibernate.Linq.Visitors
 			return property;
 		}
 
-		private Expression VisitOneToManyProperty(OneToManyPropertyExpression propertyExpression)
+		protected virtual Expression VisitOneToManyProperty(OneToManyPropertyExpression propertyExpression)
 		{
 			Expression source = Visit(propertyExpression.Source);
+			
 			if (source != propertyExpression.Source)
-				return new OneToManyPropertyExpression(propertyExpression.Name, propertyExpression.Type, source, propertyExpression.NHibernateType);
+				return new OneToManyPropertyExpression(propertyExpression.Name, propertyExpression.Alias,  propertyExpression.Type, source, propertyExpression.NHibernateType);
 			return propertyExpression;
 		}
-		private Expression VisitOneToOneProperty(OneToOnePropertyExpression propertyExpression)
+		protected virtual Expression VisitOneToOneProperty(OneToOnePropertyExpression propertyExpression)
 		{
 			Expression source = Visit(propertyExpression.Source);
 			if (source != propertyExpression.Source)
-				return new OneToOnePropertyExpression(propertyExpression.Name, propertyExpression.Type, source, propertyExpression.NHibernateType);
+				return new OneToOnePropertyExpression(propertyExpression.Name, propertyExpression.Alias, propertyExpression.Type, source, propertyExpression.NHibernateType);
 			return propertyExpression;
 		}
 		//TODO: modify
