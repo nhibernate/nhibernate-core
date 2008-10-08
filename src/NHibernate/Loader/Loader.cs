@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
@@ -1686,11 +1687,11 @@ namespace NHibernate.Loader
 		/// <returns></returns>
 		protected IList DoList(ISessionImplementor session, QueryParameters queryParameters)
 		{
-			bool stats = Factory.Statistics.IsStatisticsEnabled;
-			long startTime = 0;
-			if (stats)
+			bool statsEnabled = Factory.Statistics.IsStatisticsEnabled;
+			var stopWath = new Stopwatch();
+			if (statsEnabled)
 			{
-				startTime = DateTime.Now.Ticks;
+				stopWath.Start();
 			}
 
 			IList result;
@@ -1708,9 +1709,10 @@ namespace NHibernate.Loader
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not execute query", SqlString,
 				                                 queryParameters.PositionalParameterValues, queryParameters.NamedParameters);
 			}
-			if (stats)
+			if (statsEnabled)
 			{
-				Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, result.Count, (DateTime.Now.Ticks - startTime));
+				stopWath.Stop();
+				Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, result.Count, stopWath.Elapsed);
 			}
 			return result;
 		}

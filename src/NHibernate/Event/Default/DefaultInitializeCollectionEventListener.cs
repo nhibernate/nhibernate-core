@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using log4net;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -19,6 +20,13 @@ namespace NHibernate.Event.Default
 		{
 			IPersistentCollection collection = @event.Collection;
 			ISessionImplementor source = @event.Session;
+
+			bool statsEnabled = source.Factory.Statistics.IsStatisticsEnabled;
+			var stopWath = new Stopwatch();
+			if (statsEnabled)
+			{
+				stopWath.Start();
+			}
 
 			CollectionEntry ce = source.PersistenceContext.GetCollectionEntry(collection);
 			if (ce == null)
@@ -43,9 +51,10 @@ namespace NHibernate.Event.Default
 					ce.LoadedPersister.Initialize(ce.LoadedKey, source);
 					log.Debug("collection initialized");
 
-					if (source.Factory.Statistics.IsStatisticsEnabled)
+					if (statsEnabled)
 					{
-						source.Factory.StatisticsImplementor.FetchCollection(ce.LoadedPersister.Role);
+						stopWath.Stop();
+						source.Factory.StatisticsImplementor.FetchCollection(ce.LoadedPersister.Role, stopWath.Elapsed);
 					}
 				}
 			}

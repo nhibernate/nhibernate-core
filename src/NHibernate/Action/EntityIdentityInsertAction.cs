@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Persister.Entity;
@@ -57,6 +58,13 @@ namespace NHibernate.Action
 			IEntityPersister persister = Persister;
 			object instance = Instance;
 
+			bool statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
+			var stopWath = new Stopwatch();
+			if (statsEnabled)
+			{
+				stopWath.Start();
+			}
+
 			bool veto = PreInsert();
 
 			// Don't need to lock the cache here, since if someone
@@ -84,9 +92,10 @@ namespace NHibernate.Action
 			}*/
 
 			PostInsert();
-			if (Session.Factory.Statistics.IsStatisticsEnabled && !veto)
+			if (statsEnabled && !veto)
 			{
-				Session.Factory.StatisticsImplementor.InsertEntity(Persister.EntityName);
+				stopWath.Stop();
+				Session.Factory.StatisticsImplementor.InsertEntity(Persister.EntityName, stopWath.Elapsed);
 			}
 		}
 

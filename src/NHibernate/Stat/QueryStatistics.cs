@@ -13,9 +13,9 @@ namespace NHibernate.Stat
 		internal long cachePutCount;
 		private long executionCount;
 		private long executionRowCount;
-		private long executionAvgTime;
-		private long executionMaxTime;
-		private long executionMinTime;
+		private TimeSpan executionAvgTime;
+		private TimeSpan executionMaxTime;
+		private TimeSpan executionMinTime = TimeSpan.MaxValue;
 
 		public QueryStatistics(string categoryName) : base(categoryName) { }
 
@@ -44,17 +44,17 @@ namespace NHibernate.Stat
 			get { return executionRowCount; }
 		}
 
-		public long ExecutionAvgTime
+		public TimeSpan ExecutionAvgTime
 		{
 			get { return executionAvgTime; }
 		}
 
-		public long ExecutionMaxTime
+		public TimeSpan ExecutionMaxTime
 		{
 			get { return executionMaxTime; }
 		}
 
-		public long ExecutionMinTime
+		public TimeSpan ExecutionMinTime
 		{
 			get { return executionMinTime; }
 		}
@@ -62,7 +62,7 @@ namespace NHibernate.Stat
 		/// <summary> Add statistics report of a DB query </summary>
 		/// <param name="rows">rows count returned </param>
 		/// <param name="time">time taken </param>
-		internal void Executed(long rows, long time)
+		internal void Executed(long rows, TimeSpan time)
 		{
 			if (time < executionMinTime)
 				executionMinTime = time;
@@ -70,7 +70,7 @@ namespace NHibernate.Stat
 				executionMaxTime = time;
 			executionCount++;
 			executionRowCount += rows;
-			executionAvgTime = (executionAvgTime * executionCount + time) / executionCount;
+			executionAvgTime = TimeSpan.FromTicks((executionAvgTime.Ticks * executionCount + time.Ticks) / executionCount);
 		}
 
 		public override string ToString()

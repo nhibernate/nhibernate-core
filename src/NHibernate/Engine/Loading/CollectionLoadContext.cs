@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Cache;
@@ -238,6 +239,13 @@ namespace NHibernate.Engine.Loading
 			ISessionImplementor session = LoadContext.PersistenceContext.Session;
 			EntityMode em = session.EntityMode;
 
+			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
+			var stopWath = new Stopwatch();
+			if (statsEnabled)
+			{
+				stopWath.Start();
+			}
+
 			bool hasNoQueuedAdds = lce.Collection.EndRead(persister); // warning: can cause a recursive calls! (proxy initialization)
 
 			if (persister.CollectionType.HasHolder(em))
@@ -268,9 +276,10 @@ namespace NHibernate.Engine.Loading
 				log.Debug("collection fully initialized: " + MessageHelper.InfoString(persister, lce.Key, session.Factory));
 			}
 
-			if (session.Factory.Statistics.IsStatisticsEnabled)
+			if (statsEnabled)
 			{
-				session.Factory.StatisticsImplementor.LoadCollection(persister.Role);
+				stopWath.Stop();
+				session.Factory.StatisticsImplementor.LoadCollection(persister.Role, stopWath.Elapsed);
 			}
 		}
 

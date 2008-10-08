@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using log4net;
 using NHibernate.Cache;
@@ -20,8 +21,10 @@ namespace NHibernate.Stat
 		private long entityLoadCount;
 		private long entityFetchCount;
 		private long entityUpdateCount;
+		// log operations that take longer than this value
+		private TimeSpan operationThreshold = TimeSpan.MaxValue; 
 		private long queryExecutionCount;
-		private long queryExecutionMaxTime;
+		private TimeSpan queryExecutionMaxTime;
 		private string queryExecutionMaxTimeQueryString;
 		private long queryCacheHitCount;
 		private long queryCacheMissCount;
@@ -39,7 +42,6 @@ namespace NHibernate.Stat
 		private long collectionRemoveCount;
 		private long collectionRecreateCount;
 		private DateTime startTime;
-		private bool isStatisticsEnabled;
 		private long commitedTransactionCount;
 		private long transactionCount;
 		private long prepareStatementCount;
@@ -54,8 +56,22 @@ namespace NHibernate.Stat
 		// entity statistics per query string (HQL or SQL) 
 		private readonly Dictionary<string, QueryStatistics> queryStatistics = new Dictionary<string, QueryStatistics>();
 
+		internal const string OperationLoad = "load ";
+		internal const string OperationFetch = "fetch ";
+		internal const string OperationUpdate = "update ";
+		internal const string OperationInsert = "insert ";
+		internal const string OperationDelete = "delete ";
+		internal const string OperationLoadCollection = "loadCollection ";
+		internal const string OperationFetchCollection = "fetchCollection ";
+		internal const string OperationUpdateCollection = "updateCollection ";
+		internal const string OperationRecreateCollection = "recreateCollection ";
+		internal const string OperationRemoveCollection = "removeCollection ";
+		internal const string OperationExecuteQuery = "executeQuery ";
+		internal const string OperationEndTransaction = "endTransaction ";
+
 		public StatisticsImpl()
 		{
+			Clear();
 		}
 
 		public StatisticsImpl(ISessionFactoryImplementor sessionFactory)
@@ -107,7 +123,7 @@ namespace NHibernate.Stat
 			get { return queryExecutionCount; }
 		}
 
-		public long QueryExecutionMaxTime
+		public TimeSpan QueryExecutionMaxTime
 		{
 			get { return queryExecutionMaxTime; }
 		}
@@ -197,17 +213,13 @@ namespace NHibernate.Stat
 			get { return startTime; }
 		}
 
-		public bool IsStatisticsEnabled
-		{
-			get { return isStatisticsEnabled; }
-			set { isStatisticsEnabled = value; }
-		}
+		public bool IsStatisticsEnabled { get; set; }
 
 		public string[] Queries
 		{
 			get
 			{
-				string[] result = new string[queryStatistics.Keys.Count];
+				var result = new string[queryStatistics.Keys.Count];
 				queryStatistics.Keys.CopyTo(result,0);
 				return result;
 			}
@@ -219,7 +231,7 @@ namespace NHibernate.Stat
 			{
 				if (sessionFactory == null)
 				{
-					string[] result = new string[entityStatistics.Keys.Count];
+					var result = new string[entityStatistics.Keys.Count];
 					entityStatistics.Keys.CopyTo(result, 0);
 					return result;
 				}
@@ -236,14 +248,14 @@ namespace NHibernate.Stat
 			{
 				if (sessionFactory == null)
 				{
-					string[] result = new string[collectionStatistics.Keys.Count];
+					var result = new string[collectionStatistics.Keys.Count];
 					collectionStatistics.Keys.CopyTo(result, 0);
 					return result;
 				}
 				else
 				{
 					ICollection<string> kc = sessionFactory.GetAllCollectionMetadata().Keys;
-					string[] result = new string[kc.Count];
+					var result = new string[kc.Count];
 					kc.CopyTo(result, 0);
 					return result;
 				}
@@ -256,7 +268,7 @@ namespace NHibernate.Stat
 			{
 				if (sessionFactory == null)
 				{
-					string[] result = new string[secondLevelCacheStatistics.Keys.Count];
+					var result = new string[secondLevelCacheStatistics.Keys.Count];
 					secondLevelCacheStatistics.Keys.CopyTo(result, 0);
 					return result;
 				}
@@ -323,7 +335,7 @@ namespace NHibernate.Stat
 
 				queryExecutionCount = 0;
 				queryCacheHitCount = 0;
-				queryExecutionMaxTime = 0;
+				queryExecutionMaxTime = TimeSpan.MinValue;
 				queryExecutionMaxTimeQueryString = null;
 				queryCacheMissCount = 0;
 				queryCachePutCount = 0;
@@ -348,8 +360,7 @@ namespace NHibernate.Stat
 			lock (SyncRoot)
 			{
 				EntityStatistics es;
-				entityStatistics.TryGetValue(entityName, out es);
-				if (es == null)
+				if (!entityStatistics.TryGetValue(entityName, out es))
 				{
 					es = new EntityStatistics(entityName);
 					entityStatistics[entityName] = es;
@@ -364,8 +375,7 @@ namespace NHibernate.Stat
 			lock (SyncRoot)
 			{
 				CollectionStatistics cs;
-				collectionStatistics.TryGetValue(role, out cs);
-				if (cs == null)
+				if (!collectionStatistics.TryGetValue(role, out cs))
 				{
 					cs = new CollectionStatistics(role);
 					collectionStatistics[role] = cs;
@@ -380,8 +390,8 @@ namespace NHibernate.Stat
 			lock (SyncRoot)
 			{
 				SecondLevelCacheStatistics slcs;
-				secondLevelCacheStatistics.TryGetValue(regionName, out slcs);
-				if (slcs == null)
+
+				if (!secondLevelCacheStatistics.TryGetValue(regionName, out slcs))
 				{
 					if (sessionFactory == null)
 						return null;
@@ -401,8 +411,7 @@ namespace NHibernate.Stat
 			lock (SyncRoot)
 			{
 				QueryStatistics qs;
-				queryStatistics.TryGetValue(queryString, out qs);
-				if (qs == null)
+				if (!queryStatistics.TryGetValue(queryString, out qs))
 				{
 					qs = new QueryStatistics(queryString);
 					queryStatistics[queryString] = qs;
@@ -414,7 +423,7 @@ namespace NHibernate.Stat
 		public void LogSummary()
 		{
 			log.Info("Logging statistics....");
-			log.Info(string.Format("start time: {0}", startTime));// TODO change format to show ms
+			log.Info(string.Format("start time: {0}", startTime.ToString("o")));
 			log.Info("sessions opened: " + sessionOpenCount);
 			log.Info("sessions closed: " + sessionCloseCount);
 			log.Info("transactions: " + transactionCount);
@@ -441,7 +450,23 @@ namespace NHibernate.Stat
 			log.Info("query cache puts: " + queryCachePutCount);
 			log.Info("query cache hits: " + queryCacheHitCount);
 			log.Info("query cache misses: " + queryCacheMissCount);
-			log.Info("max query time: " + queryExecutionMaxTime + "ms");
+			log.Info("max query time: " + queryExecutionMaxTime.Milliseconds + "ms");
+		}
+
+		public TimeSpan OperationThreshold
+		{
+			get
+			{
+				return operationThreshold;
+			}
+			[MethodImpl(MethodImplOptions.Synchronized)]
+			set
+			{
+				lock (SyncRoot)
+				{
+					operationThreshold = value;
+				}
+			}
 		}
 
 		#endregion
@@ -485,102 +510,142 @@ namespace NHibernate.Stat
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public void LoadEntity(string entityName)
+		public void LoadEntity(string entityName, TimeSpan time)
 		{
 			lock (SyncRoot)
 			{
 				entityLoadCount++;
 				GetEntityStatistics(entityName).loadCount++;
 			}
+			if (operationThreshold < time)
+			{
+				LogOperation(OperationLoad, entityName, time);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public void FetchEntity(string entityName)
+		public void FetchEntity(string entityName, TimeSpan time)
 		{
 			lock (SyncRoot)
 			{
 				entityFetchCount++;
 				GetEntityStatistics(entityName).fetchCount++;
 			}
+			if (operationThreshold < time)
+			{
+				LogOperation(OperationLoad, entityName, time);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public void UpdateEntity(string entityName)
+		public void UpdateEntity(string entityName, TimeSpan time)
 		{
 			lock (SyncRoot)
 			{
 				entityUpdateCount++;
 				GetEntityStatistics(entityName).updateCount++;
 			}
+			if (operationThreshold < time)
+			{
+				LogOperation(OperationUpdate, entityName, time);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public void InsertEntity(string entityName)
+		public void InsertEntity(string entityName, TimeSpan time)
 		{
 			lock (SyncRoot)
 			{
 				entityInsertCount++;
 				GetEntityStatistics(entityName).insertCount++;
 			}
+			if (operationThreshold < time)
+			{
+				LogOperation(OperationInsert, entityName, time);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public void DeleteEntity(string entityName)
+		public void DeleteEntity(string entityName, TimeSpan time)
 		{
 			lock (SyncRoot)
 			{
 				entityDeleteCount++;
 				GetEntityStatistics(entityName).deleteCount++;
 			}
+			if (operationThreshold < time)
+			{
+				LogOperation(OperationDelete, entityName, time);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public void LoadCollection(string role)
+		public void LoadCollection(string role, TimeSpan time)
 		{
 			lock (SyncRoot)
 			{
 				collectionLoadCount++;
 				GetCollectionStatistics(role).loadCount++;
 			}
+			if (operationThreshold < time)
+			{
+				LogOperation(OperationLoadCollection, role, time);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public void FetchCollection(string role)
+		public void FetchCollection(string role, TimeSpan time)
 		{
 			lock (SyncRoot)
 			{
 				collectionFetchCount++;
 				GetCollectionStatistics(role).fetchCount++;
 			}
+			if (operationThreshold < time)
+			{
+				LogOperation(OperationFetchCollection, role, time);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public void UpdateCollection(string role)
+		public void UpdateCollection(string role, TimeSpan time)
 		{
 			lock (SyncRoot)
 			{
 				collectionUpdateCount++;
 				GetCollectionStatistics(role).updateCount++;
 			}
+			if (operationThreshold < time)
+			{
+				LogOperation(OperationUpdateCollection, role, time);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public void RecreateCollection(string role)
+		public void RecreateCollection(string role, TimeSpan time)
 		{
 			lock (SyncRoot)
 			{
 				collectionRecreateCount++;
 				GetCollectionStatistics(role).recreateCount++;
 			}
+			if (operationThreshold < time)
+			{
+				LogOperation(OperationRecreateCollection, role, time);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public void RemoveCollection(string role)
+		public void RemoveCollection(string role, TimeSpan time)
 		{
 			lock (SyncRoot)
 			{
 				collectionRemoveCount++;
 				GetCollectionStatistics(role).removeCount++;
+			}
+			if (operationThreshold < time)
+			{
+				LogOperation(OperationRecreateCollection, role, time);
 			}
 		}
 
@@ -627,7 +692,7 @@ namespace NHibernate.Stat
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public void QueryExecuted(string hql, int rows, long time)
+		public void QueryExecuted(string hql, int rows, TimeSpan time)
 		{
 			lock (SyncRoot)
 			{
@@ -642,6 +707,10 @@ namespace NHibernate.Stat
 					QueryStatistics qs = GetQueryStatistics(hql);
 					qs.Executed(rows, time);
 				}
+			}
+			if (operationThreshold < time)
+			{
+				LogOperation(OperationExecuteQuery, hql, time);
 			}
 		}
 
@@ -726,5 +795,34 @@ namespace NHibernate.Stat
 		}
 
 		#endregion
+
+		private static void LogOperation(string operation, string entityName, TimeSpan time)
+		{
+			if (entityName != null)
+				log.Info(operation + entityName + " " + time.Milliseconds + "ms");
+			else
+				log.Info(operation); // just log that the event occurred
+		}
+
+		public override string ToString()
+		{
+			return
+				new StringBuilder().Append("Statistics[").Append("start time=").Append(startTime).Append(",sessions opened=").Append
+					(sessionOpenCount).Append(",sessions closed=").Append(sessionCloseCount).Append(",transactions=").Append(
+					transactionCount).Append(",successful transactions=").Append(commitedTransactionCount).Append(
+					",optimistic lock failures=").Append(optimisticFailureCount).Append(",flushes=").Append(flushCount).Append(
+					",connections obtained=").Append(connectCount).Append(",statements prepared=").Append(prepareStatementCount).Append
+					(",statements closed=").Append(closeStatementCount).Append(",second level cache puts=").Append(
+					secondLevelCachePutCount).Append(",second level cache hits=").Append(secondLevelCacheHitCount).Append(
+					",second level cache misses=").Append(secondLevelCacheMissCount).Append(",entities loaded=").Append(entityLoadCount)
+					.Append(",entities updated=").Append(entityUpdateCount).Append(",entities inserted=").Append(entityInsertCount).
+					Append(",entities deleted=").Append(entityDeleteCount).Append(",entities fetched=").Append(entityFetchCount).Append
+					(",collections loaded=").Append(collectionLoadCount).Append(",collections updated=").Append(collectionUpdateCount).
+					Append(",collections removed=").Append(collectionRemoveCount).Append(",collections recreated=").Append(
+					collectionRecreateCount).Append(",collections fetched=").Append(collectionFetchCount).Append(
+					",queries executed to database=").Append(queryExecutionCount).Append(",query cache puts=").Append(
+					queryCachePutCount).Append(",query cache hits=").Append(queryCacheHitCount).Append(",query cache misses=").Append(
+					queryCacheMissCount).Append(",max query time=").Append(queryExecutionMaxTime).Append(']').ToString();
+		}
 	}
 }

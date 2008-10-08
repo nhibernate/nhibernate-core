@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using log4net;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -47,6 +48,14 @@ namespace NHibernate.Engine
 		public static void InitializeEntity(object entity, bool readOnly, ISessionImplementor session, PreLoadEvent preLoadEvent, PostLoadEvent postLoadEvent)
 		{
 			//TODO: Should this be an InitializeEntityEventListener??? (watch out for performance!)
+
+      bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
+			var stopWath = new Stopwatch();
+			if (statsEnabled)
+			{
+				stopWath.Start();
+			}
+
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 			EntityEntry entityEntry = persistenceContext.GetEntry(entity);
 			if (entityEntry == null)
@@ -140,9 +149,10 @@ namespace NHibernate.Engine
 			if (log.IsDebugEnabled)
 				log.Debug("done materializing entity " + MessageHelper.InfoString(persister, id, session.Factory));
 
-			if (factory.Statistics.IsStatisticsEnabled)
+			if (statsEnabled)
 			{
-				factory.StatisticsImplementor.LoadEntity(persister.EntityName);
+				stopWath.Stop();
+				factory.StatisticsImplementor.LoadEntity(persister.EntityName, stopWath.Elapsed);
 			}
 		}
 

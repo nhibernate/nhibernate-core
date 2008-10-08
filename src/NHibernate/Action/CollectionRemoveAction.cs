@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Event;
@@ -56,6 +57,13 @@ namespace NHibernate.Action
 
 		public override void Execute()
 		{
+			bool statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
+			var stopWath = new Stopwatch();
+			if (statsEnabled)
+			{
+				stopWath.Start();
+			}
+
 			PreRemove();
 
 			if (!emptySnapshot)
@@ -73,9 +81,10 @@ namespace NHibernate.Action
 
 			PostRemove();
 
-			if (Session.Factory.Statistics.IsStatisticsEnabled)
+			if (statsEnabled)
 			{
-				Session.Factory.StatisticsImplementor.RemoveCollection(Persister.Role);
+				stopWath.Stop();
+				Session.Factory.StatisticsImplementor.RemoveCollection(Persister.Role, stopWath.Elapsed);
 			}
 		}
 

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using log4net;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -328,11 +329,20 @@ namespace NHibernate.Event.Default
 		protected virtual object LoadFromDatasource(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
 		{
 			ISessionImplementor source = @event.Session;
+
+			bool statsEnabled = source.Factory.Statistics.IsStatisticsEnabled;
+			var stopWath = new Stopwatch();
+			if (statsEnabled)
+			{
+				stopWath.Start();
+			}
+
 			object entity = persister.Load(@event.EntityId, @event.InstanceToLoad, @event.LockMode, source);
 
-			if (@event.IsAssociationFetch && source.Factory.Statistics.IsStatisticsEnabled)
+			if (@event.IsAssociationFetch && statsEnabled)
 			{
-				source.Factory.StatisticsImplementor.FetchEntity(@event.EntityClassName);
+				stopWath.Stop();
+				source.Factory.StatisticsImplementor.FetchEntity(@event.EntityClassName, stopWath.Elapsed);
 			}
 
 			return entity;

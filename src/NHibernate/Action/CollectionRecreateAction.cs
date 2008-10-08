@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Event;
@@ -13,8 +14,18 @@ namespace NHibernate.Action
 			: base(persister, collection, key, session) { }
 
 		/// <summary> Execute this action</summary>
+		/// <remarks>
+		/// This method is called when a new non-null collection is persisted
+		/// or when an existing (non-null) collection is moved to a new owner
+		/// </remarks>
 		public override void Execute()
 		{
+			bool statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
+			var stopWath = new Stopwatch();
+			if (statsEnabled)
+			{
+				stopWath.Start();
+			}
 			IPersistentCollection collection = Collection;
 
 			PreRecreate();
@@ -26,10 +37,10 @@ namespace NHibernate.Action
 			Evict();
 
 			PostRecreate();
-
-			if (Session.Factory.Statistics.IsStatisticsEnabled)
+			if (statsEnabled)
 			{
-			  Session.Factory.StatisticsImplementor.RecreateCollection(Persister.Role);
+				stopWath.Stop();
+				Session.Factory.StatisticsImplementor.RecreateCollection(Persister.Role, stopWath.Elapsed);
 			}
 		}
 

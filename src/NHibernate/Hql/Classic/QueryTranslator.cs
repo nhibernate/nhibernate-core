@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -1288,10 +1289,13 @@ namespace NHibernate.Hql.Classic
 
 		public IEnumerable GetEnumerable(QueryParameters parameters, ISessionImplementor session)
 		{
-			bool stats = session.Factory.Statistics.IsStatisticsEnabled;
-			long startTime = 0;
-			if (stats)
-				startTime = DateTime.Now.Ticks;
+			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
+
+			var stopWath = new Stopwatch();
+			if (statsEnabled)
+			{
+				stopWath.Start();
+			}
 
 			IDbCommand cmd = PrepareQueryCommand(parameters, false, session);
 
@@ -1301,12 +1305,13 @@ namespace NHibernate.Hql.Classic
 				HolderInstantiator.CreateClassicHolderInstantiator(holderConstructor, parameters.ResultTransformer);
 			IEnumerable result =
 				new EnumerableImpl(rs, cmd, session, ReturnTypes, ScalarColumnNames, parameters.RowSelection, hi);
-			if (stats)
+			if (statsEnabled)
 			{
-				session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + queryString, 0, (DateTime.Now.Ticks  - startTime));
+				stopWath.Stop();
+				session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + queryString, 0, stopWath.Elapsed);
 				// NH: Different behavior (H3.2 use QueryLoader in AST parser) we need statistic for orginal query too.
 				// probably we have a bug some where else for statistic RowCount
-				session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, (DateTime.Now.Ticks - startTime));
+				session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWath.Elapsed);
 			}
 			return result;
 		}

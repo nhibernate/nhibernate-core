@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Engine;
@@ -45,6 +46,13 @@ namespace NHibernate.Action
 			object id = Id;
 			IEntityPersister persister = Persister;
 			object instance = Instance;
+
+			bool statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
+			var stopWath = new Stopwatch();
+			if (statsEnabled)
+			{
+				stopWath.Start();
+			}
 
 			bool veto = PreUpdate();
 
@@ -119,9 +127,10 @@ namespace NHibernate.Action
 
 			PostUpdate();
 
-			if (factory.Statistics.IsStatisticsEnabled && !veto)
+			if (statsEnabled && !veto)
 			{
-				factory.StatisticsImplementor.UpdateEntity(Persister.EntityName);
+				stopWath.Stop();
+				factory.StatisticsImplementor.UpdateEntity(Persister.EntityName, stopWath.Elapsed);
 			}
 		}
 

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Collection;
@@ -28,6 +29,13 @@ namespace NHibernate.Action
 			ICollectionPersister persister = Persister;
 			IPersistentCollection collection = Collection;
 			bool affectedByFilters = persister.IsAffectedByEnabledFilters(session);
+
+			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
+			var stopWath = new Stopwatch();
+			if (statsEnabled)
+			{
+				stopWath.Start();
+			}
 
 			PreUpdate();
 
@@ -72,9 +80,10 @@ namespace NHibernate.Action
 
 			PostUpdate();
 
-			if (Session.Factory.Statistics.IsStatisticsEnabled)
+			if (statsEnabled)
 			{
-				Session.Factory.StatisticsImplementor.UpdateCollection(Persister.Role);
+				stopWath.Stop();
+				Session.Factory.StatisticsImplementor.UpdateCollection(Persister.Role, stopWath.Elapsed);
 			}
 		}
 

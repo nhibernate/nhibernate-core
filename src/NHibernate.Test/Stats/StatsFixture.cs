@@ -155,7 +155,7 @@ namespace NHibernate.Test.Stats
 			Assert.IsNotNull(continentStats, "stats were null");
 			Assert.AreEqual(1, continentStats.ExecutionCount, "unexpected execution count");
 			Assert.AreEqual(results, continentStats.ExecutionRowCount, "unexpected row count");
-			long maxTime = continentStats.ExecutionMaxTime;
+			var maxTime = continentStats.ExecutionMaxTime;
 			Assert.AreEqual(maxTime, stats.QueryExecutionMaxTime);
 			//Assert.AreEqual( continents, stats.QueryExecutionMaxTimeQueryString );
 

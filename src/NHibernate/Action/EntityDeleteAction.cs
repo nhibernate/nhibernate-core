@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Event;
@@ -33,6 +34,13 @@ namespace NHibernate.Action
 			IEntityPersister persister = Persister;
 			ISessionImplementor session = Session;
 			object instance = Instance;
+
+			bool statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
+			var stopWath = new Stopwatch();
+			if (statsEnabled)
+			{
+				stopWath.Start();
+			}
 
 			bool veto = PreDelete();
 
@@ -83,9 +91,10 @@ namespace NHibernate.Action
 
 			PostDelete();
 
-			if (Session.Factory.Statistics.IsStatisticsEnabled && !veto)
+			if (statsEnabled && !veto)
 			{
-				Session.Factory.StatisticsImplementor.DeleteEntity(Persister.EntityName);
+				stopWath.Stop();
+				Session.Factory.StatisticsImplementor.DeleteEntity(Persister.EntityName, stopWath.Elapsed);
 			}
 		}
 

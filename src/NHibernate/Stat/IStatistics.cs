@@ -1,12 +1,11 @@
 using System;
+using System.Diagnostics;
 
 namespace NHibernate.Stat
 {
 	/// <summary> 
-	/// Statistics for a particular <tt>SessionFactory</tt>.
-	/// Beware of milliseconds metrics, they are dependent of the JVM precision:
-	/// you may then encounter a 10 ms approximation depending on your OS platform.
-	/// Please refer to the JVM documentation for more information. 
+	/// Statistics for a particular <see cref="ISessionFactory"/>.
+	/// Beware of metrics, they are dependent of the <see cref="Stopwatch"/> precision:
 	/// </summary>
 	public interface IStatistics
 	{
@@ -28,8 +27,8 @@ namespace NHibernate.Stat
 		/// <summary> Global number of executed queries</summary>
 		long QueryExecutionCount { get;}
 
-		/// <summary> The time in milliseconds of the slowest query.</summary>
-		long QueryExecutionMaxTime { get;}
+		/// <summary> The <see cref="TimeSpan"/> of the slowest query.</summary>
+		TimeSpan QueryExecutionMaxTime { get; }
 
 		/// <summary> The query string for the slowest query.</summary>
 		string QueryExecutionMaxTimeQueryString { get;}
@@ -141,5 +140,11 @@ namespace NHibernate.Stat
 
 		/// <summary> log in info level the main statistics</summary>
 		void LogSummary();
+
+		/// <summary> 
+		/// The OperationThreshold to a value greater than <see cref="TimeSpan.MinValue"/> to enable logging of long running operations.
+		/// </summary>
+		/// <remarks>Operations that exceed the level will be logged.</remarks>
+		TimeSpan OperationThreshold { get; set; }
 	}
 }
