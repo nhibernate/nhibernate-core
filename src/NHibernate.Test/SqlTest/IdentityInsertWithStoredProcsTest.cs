@@ -1,8 +1,8 @@
-using NHibernate.Cfg;
 using NUnit.Framework;
 
 namespace NHibernate.Test.SqlTest
 {
+	// http://jira.nhibernate.org/browse/NH-727
 	public abstract class IdentityInsertWithStoredProcsTest : TestCase
 	{
 		protected override string MappingsAssembly
