@@ -160,6 +160,7 @@
     <Compile Include="DynamicEntity\Tuplizer\TuplizerDynamicEntity.cs" />
     <Compile Include="EngineTest\TypedValueFixture.cs" />
     <Compile Include="EntityModeTest\Map\Basic\DynamicClassFixture.cs" />
+    <Compile Include="EntityModeTest\Xml\Accessors\XmlAccessorFixture.cs" />
     <Compile Include="Events\Collections\AbstractCollectionEventFixture.cs" />
     <Compile Include="Events\Collections\AbstractParentWithCollection.cs" />
     <Compile Include="Events\Collections\Association\AbstractAssociationCollectionEventFixture.cs" />
