@@ -3300,10 +3300,10 @@ namespace NHibernate.Persister.Entity
 			if (IsIdentifierAssignedByInsert)
 			{
 				identityDelegate = ((IPostInsertIdentifierGenerator)IdentifierGenerator).GetInsertGeneratedIdentifierDelegate(this, Factory, UseGetGeneratedKeys());
-				SqlCommandInfo defaultInsert = GenerateInsertString(PropertyInsertability, 0);
+				SqlCommandInfo defaultInsert = GenerateIdentityInsertString(PropertyInsertability);
 				sqlIdentityInsertString = customSQLInsert[0] != null
 																		? new SqlCommandInfo(customSQLInsert[0], defaultInsert.ParameterTypes)
-																		: GenerateIdentityInsertString(PropertyInsertability);
+																		: defaultInsert;
 			}
 			else
 			{
