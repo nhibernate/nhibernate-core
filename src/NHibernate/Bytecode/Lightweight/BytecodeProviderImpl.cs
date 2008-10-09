@@ -68,7 +68,7 @@ namespace NHibernate.Bytecode.Lightweight
 				                             he); 
 			}
 
-			if (typeof(IProxyFactoryFactory).IsAssignableFrom(pffc) == false)
+            if (pffc is IProxyFactoryFactory == false)
 			{
 				HibernateException he =
 					new HibernateException(pffc.FullName + " does not implement " +
