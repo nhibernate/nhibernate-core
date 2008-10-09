@@ -747,6 +747,7 @@
     <Compile Include="PropertyRef\A.cs" />
     <Compile Include="PropertyRef\B.cs" />
     <Compile Include="PropertyRef\KeyPropertyRefFixture.cs" />
+    <Compile Include="PropertyTest\BackFieldAccessorFixture.cs" />
     <Compile Include="PropertyTest\BasicSetterExceptionFixture.cs" />
     <Compile Include="PropertyTest\FieldAccessorFixture.cs" />
     <Compile Include="PropertyTest\FieldCamelCaseFixture.cs" />

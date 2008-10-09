@@ -20,6 +20,7 @@ namespace NHibernate.Properties
 			accessors = new Dictionary<string, IPropertyAccessor>(19);
 			accessors["property"] = new BasicPropertyAccessor();
 			accessors["field"] = new FieldAccessor();
+			accessors["backfield"] = new FieldAccessor(new BackFieldStrategy());
 			accessors["field.camelcase"] = new FieldAccessor(new CamelCaseStrategy());
 			accessors["field.camelcase-underscore"] = new FieldAccessor(new CamelCaseUnderscoreStrategy());
 			accessors["field.lowercase"] = new FieldAccessor(new LowerCaseStrategy());
