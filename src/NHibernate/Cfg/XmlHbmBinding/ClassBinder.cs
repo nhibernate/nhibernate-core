@@ -82,10 +82,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 				else if ("component".Equals(name) || "dynamic-component".Equals(name))
 				{
+					string subpath = StringHelper.Qualify(entityName, propertyName);
 					// NH: Modified from H2.1 to allow specifying the type explicitly using class attribute
 					System.Type reflectedClass = GetPropertyType(subnode, model.MappedClass, propertyName);
 					value = new Component(model);
-					BindComponent(subnode, (Component)value, reflectedClass, entityName, propertyName, true);
+					BindComponent(subnode, (Component)value, reflectedClass, entityName, propertyName, subpath, true);
 				}
 				else if ("join".Equals(name))
 				{
@@ -124,7 +125,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				if (value != null)
 				{
-					Property property = CreateProperty(value, propertyName, model.MappedClass, subnode);
+					Property property = CreateProperty(value, propertyName, model.ClassName, subnode);
 					if (!mutable)
 						property.IsUpdateable = false;
 					if (naturalId)
@@ -362,19 +363,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					case "dynamic-component":
 						string subpath = StringHelper.Qualify(path, propertyName);
 						value = new Component(join);
-						BindComponent(
-							subnode,
-							(Component) value,
-							join.PersistentClass.MappedClass,
-							propertyName,
-							subpath,
-							true);
+						BindComponent(subnode, (Component) value, join.PersistentClass.MappedClass, join.PersistentClass.ClassName,  propertyName, subpath, true);
 						break;
 				}
 
 				if (value != null)
 				{
-					Mapping.Property prop = CreateProperty(value, propertyName, persistentClass.MappedClass, subnode);
+					Mapping.Property prop = CreateProperty(value, propertyName, persistentClass.MappedClass.AssemblyQualifiedName, subnode);
 					prop.IsOptional = join.IsOptional;
 					join.AddProperty(prop);
 				}
@@ -533,22 +528,26 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		protected void BindComponent(XmlNode node, Component model, System.Type reflectedClass,
-			string className, string path, bool isNullable)
+			string className, string parentProperty, string path, bool isNullable)
 		{
+			bool isIdentifierMapper = false;
+
+			model.RoleName = path;
+
 			XmlAttribute classNode = node.Attributes["class"];
 
-			if ("dynamic-component".Equals(node.Name))
-			{
-				model.IsEmbedded = false;
-				model.IsDynamic = true;
-			}
-			else if (classNode != null)
+			if (classNode != null)
 			{
 				model.ComponentClass = ClassForNameChecked(
 					classNode.Value, mappings,
 					"component class not found: {0}");
 				model.ComponentClassName = FullQualifiedClassName(classNode.Value, mappings);
 				model.IsEmbedded = false;
+			}
+			else if ("dynamic-component".Equals(node.Name))
+			{
+				model.IsEmbedded = false;
+				model.IsDynamic = true;
 			}
 			else if (reflectedClass != null)
 			{
@@ -561,6 +560,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.ComponentClass = model.Owner.MappedClass;
 				model.IsEmbedded = true;
 			}
+
+			string nodeName = (GetAttributeValue(node, "node") ?? GetAttributeValue(node, "name")) ?? model.Owner.NodeName;
+			model.NodeName = nodeName;
 
 			foreach (XmlNode subnode in node.ChildNodes)
 			{
@@ -612,21 +614,34 @@ namespace NHibernate.Cfg.XmlHbmBinding
 						:
 							GetPropertyType(subnode, model.ComponentClass, propertyName);
 					value = new Component(model);
-					BindComponent(subnode, (Component) value, subreflectedClass, className, subpath, isNullable);
+					BindComponent(subnode, (Component) value, subreflectedClass, className, propertyName, subpath, isNullable);
 				}
 				else if ("parent".Equals(name))
 					model.ParentProperty = propertyName;
 
 				if (value != null)
-					model.AddProperty(CreateProperty(value, propertyName, model.ComponentClass, subnode));
+				{
+					Property property = CreateProperty(value, propertyName, model.ComponentClassName, subnode);
+					if (isIdentifierMapper)
+					{
+						property.IsInsertable = false;
+						property.IsUpdateable = false;
+					}
+					model.AddProperty(property);
+				}
 			}
 		}
 
-		protected Mapping.Property CreateProperty(IValue value, string propertyName, System.Type parentClass,
+		protected Property CreateProperty(IValue value, string propertyName, string className,
 			XmlNode subnode)
 		{
-			if (parentClass != null && value.IsSimpleValue)
-				value.SetTypeUsingReflection(parentClass.AssemblyQualifiedName, propertyName, PropertyAccess(subnode));
+			if (string.IsNullOrEmpty(propertyName))
+			{
+				throw new MappingException(subnode.LocalName + " mapping must defined a name attribute [" + className + "]");
+			}
+
+			if (!string.IsNullOrEmpty(className) && value.IsSimpleValue)
+				value.SetTypeUsingReflection(className, propertyName, PropertyAccess(subnode));
 
 			// This is done here 'cos we might only know the type here (ugly!)
 			if (value is ToOne)
@@ -638,7 +653,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 
 			value.CreateForeignKey();
-			Mapping.Property prop = new Mapping.Property();
+			Property prop = new Property();
 			prop.Value = value;
 			BindProperty(subnode, prop);
 

@@ -43,8 +43,10 @@ namespace NHibernate.Test.EntityModeTest.Xml.Basic
 	<b bId='1' aId='1>foo foo</b>
 	<b bId='2' aId='1>bar bar</b>
 </a>";
+			var baseXml = new XmlDocument();
+			baseXml.LoadXml(xml);
 
-			XmlElement a=null;
+			XmlElement a = baseXml.DocumentElement;
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			s.Persist("A", a);

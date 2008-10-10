@@ -141,5 +141,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			return "false".Equals(xmlNodeValue) || "0".Equals(xmlNodeValue);
 		}
+
+		protected static string GetAttributeValue(XmlNode node, string attributeName)
+		{
+			XmlAttribute att = node.Attributes[attributeName];
+			return att != null ? att.Value : null;
+		}
 	}
 }

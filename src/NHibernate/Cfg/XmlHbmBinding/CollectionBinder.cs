@@ -529,7 +529,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				else if ("composite-index".Equals(name) || "composite-map-key".Equals(name))
 				{
 					Component component = new Component(model);
-					BindComponent(subnode, component, null, model.Role, "index", model.IsOneToMany);
+					BindComponent(subnode, component, null, null, null, model.Role + ".index", model.IsOneToMany);
 					model.Index = component;
 				}
 				else if ("index-many-to-any".Equals(name))
@@ -618,7 +618,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				{
 					Component element = new Component(model);
 					model.Element = element;
-					BindComponent(subnode, element, null, model.Role, "element", true);
+					BindComponent(subnode, element, null, null, null, model.Role+ ".element", true);
 				}
 				else if ("many-to-any".Equals(name))
 				{
