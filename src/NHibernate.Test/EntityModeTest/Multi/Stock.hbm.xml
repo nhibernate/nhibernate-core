@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.EntityModeTest.Multi">
+
+	<class table="STOCK" name="Stock" node="stock">
+
+		<id name="Id" column="STOCK_ID" node="@id">
+			<generator class="increment"/>
+		</id>
+
+		<property name="TradeSymbol" type="string" column="SYMBOL"/>
+
+		<many-to-one name="CurrentValuation" class="Valuation" column="CURR_VAL_ID" cascade="all" />
+
+		<set name="Valuations" cascade="all" lazy="true">
+			<key column="STOCK_ID"/>
+			<one-to-many class="Valuation"/>
+		</set>
+	</class>
+
+</hibernate-mapping>

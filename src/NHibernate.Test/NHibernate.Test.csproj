@@ -160,6 +160,9 @@
     <Compile Include="DynamicEntity\Tuplizer\TuplizerDynamicEntity.cs" />
     <Compile Include="EngineTest\TypedValueFixture.cs" />
     <Compile Include="EntityModeTest\Map\Basic\DynamicClassFixture.cs" />
+    <Compile Include="EntityModeTest\Multi\MultiRepresentationFixture.cs" />
+    <Compile Include="EntityModeTest\Multi\Stock.cs" />
+    <Compile Include="EntityModeTest\Multi\Valuation.cs" />
     <Compile Include="EntityModeTest\Xml\Accessors\XmlAccessorFixture.cs" />
     <Compile Include="EntityModeTest\Xml\Basic\XmlFixture.cs" />
     <Compile Include="EntityModeTest\Xml\Many2One\Car.cs" />
@@ -1493,7 +1496,9 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
-    <Content Include="EntityModeTest\Xml\Many2One\Car.hbm.xml" />
+    <EmbeddedResource Include="EntityModeTest\Multi\Stock.hbm.xml" />
+    <EmbeddedResource Include="EntityModeTest\Multi\Valuation.hbm.xml" />
+    <EmbeddedResource Include="EntityModeTest\Xml\Many2One\Car.hbm.xml" />
     <EmbeddedResource Include="EntityModeTest\Xml\Basic\AB.hbm.xml" />
     <EmbeddedResource Include="EntityModeTest\Xml\Basic\Account.hbm.xml" />
     <EmbeddedResource Include="EntityModeTest\Xml\Basic\Employer.hbm.xml" />
