@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.EntityModeTest.Xml.Many2One
 {
-	[TestFixture]
+	[TestFixture, Ignore("Not supported yet.")]
 	public class XmlManyToOneFixture : TestCase
 	{
 		protected override string MappingsAssembly
