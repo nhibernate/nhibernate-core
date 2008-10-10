@@ -1,3 +1,4 @@
+using System;
 using System.Xml;
 using NHibernate.Mapping;
 using NHibernate.Properties;
@@ -6,7 +7,7 @@ using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.EntityModeTest.Xml.Accessors
 {
-	[TestFixture, Ignore("Not supported yet.")]
+	[TestFixture]
 	public class XmlAccessorFixture
 	{
 		public static XmlElement dom = GenerateTestElement();
@@ -77,6 +78,7 @@ namespace NHibernate.Test.EntityModeTest.Xml.Accessors
 			nameSetter.Set(root, "NHForge");
 			accountIdSetter.Set(root, 456L);
 
+			Console.WriteLine(dom.OuterXml);
 			//Assert.That(new NodeComparator().Compare(dom, root) == 0);
 		}
 
@@ -107,7 +109,7 @@ namespace NHibernate.Test.EntityModeTest.Xml.Accessors
 			Assert.That(name, Is.EqualTo("NHForge"));
 		}
 
-		[Test]
+		[Test, Ignore("Not supported yet.")]
 		public void StringTextExtraction()
 		{
 			Property property = GenerateTextProperty();

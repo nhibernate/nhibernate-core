@@ -345,12 +345,12 @@ namespace NHibernate.Type
 
 		public override object FromXMLNode(XmlNode xml, IMapping factory)
 		{
-			return FromXMLString(xml.Value, factory);
+			return FromXMLString(xml.InnerText, factory);
 		}
 
 		public override void SetToXMLNode(XmlNode xml, object value, ISessionFactoryImplementor factory)
 		{
-			xml.Value = ToXMLString(value, factory);
+			xml.InnerText = ToXMLString(value, factory);
 		}
 
 		public string ToXMLString(object value, ISessionFactoryImplementor pc)

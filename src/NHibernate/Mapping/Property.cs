@@ -187,6 +187,11 @@ namespace NHibernate.Mapping
 			get { return PropertyAccessorFactory.GetPropertyAccessor(PropertyAccessorName); }
 		}
 
+		public virtual string GetAccessorPropertyName(EntityMode mode)
+		{
+			return mode == EntityMode.Xml ? nodeName : Name;
+		}
+
 		public virtual bool IsBasicPropertyAccessor
 		{
 			// NH Different behavior : see IPropertyAccessor.CanAccessThroughReflectionOptimizer (ref. NH-1304)
