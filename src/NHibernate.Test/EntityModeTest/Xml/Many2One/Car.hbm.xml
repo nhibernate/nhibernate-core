@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.EntityModeTest.Xml.Many2One">
+
+	<class name="Car" lazy="false" node="car">
+		<id name="Id" node="@id" type="long">
+			<generator class="increment"/>
+		</id>
+		<property name="Model"  type="string" node="model"/>
+		<many-to-one name="CarType" node="carType" class="CarType"/>
+		<set name="CarParts" node="." cascade="all" generic="true">
+			<key column="car" not-null="true"/>
+			<one-to-many class="CarPart" node="carPart" embed-xml="false"/>
+		</set>
+	</class>
+	
+	<class name="CarType" lazy="true" node="carType">
+		<id name="Id" node="@id" type="long">
+			<generator class="increment"/>
+		</id>
+		<property name="TypeName" type="string" node="typeName"/>
+	</class>
+	
+	<class name="CarPart" node="carPart">
+		<id name="Id" node="@id" type="long">
+			<generator class="increment"/>
+		</id>
+		<property name="PartName" type="string" node="partName"/>
+	</class>
+	
+</hibernate-mapping>

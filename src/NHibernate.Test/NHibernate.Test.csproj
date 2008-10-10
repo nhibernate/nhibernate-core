@@ -162,6 +162,10 @@
     <Compile Include="EntityModeTest\Map\Basic\DynamicClassFixture.cs" />
     <Compile Include="EntityModeTest\Xml\Accessors\XmlAccessorFixture.cs" />
     <Compile Include="EntityModeTest\Xml\Basic\XmlFixture.cs" />
+    <Compile Include="EntityModeTest\Xml\Many2One\Car.cs" />
+    <Compile Include="EntityModeTest\Xml\Many2One\CarPart.cs" />
+    <Compile Include="EntityModeTest\Xml\Many2One\CarType.cs" />
+    <Compile Include="EntityModeTest\Xml\Many2One\XmlManyToOneFixture.cs" />
     <Compile Include="Events\Collections\AbstractCollectionEventFixture.cs" />
     <Compile Include="Events\Collections\AbstractParentWithCollection.cs" />
     <Compile Include="Events\Collections\Association\AbstractAssociationCollectionEventFixture.cs" />
@@ -1489,6 +1493,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <Content Include="EntityModeTest\Xml\Many2One\Car.hbm.xml" />
     <EmbeddedResource Include="EntityModeTest\Xml\Basic\AB.hbm.xml" />
     <EmbeddedResource Include="EntityModeTest\Xml\Basic\Account.hbm.xml" />
     <EmbeddedResource Include="EntityModeTest\Xml\Basic\Employer.hbm.xml" />
