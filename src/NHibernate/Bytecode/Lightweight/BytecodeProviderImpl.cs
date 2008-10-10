@@ -14,7 +14,7 @@ namespace NHibernate.Bytecode.Lightweight
 	/// </remarks>
 	public class BytecodeProviderImpl : IBytecodeProvider, IInjectableProxyFactoryFactory
 	{
-		System.Type proxyFactoryFactory;
+		private System.Type proxyFactoryFactory;
 
 		#region IBytecodeProvider Members
 
@@ -37,7 +37,6 @@ namespace NHibernate.Bytecode.Lightweight
 			}
 		}
 
-
 		/// <summary>
 		/// Generate the IReflectionOptimizer object
 		/// </summary>
@@ -45,8 +44,7 @@ namespace NHibernate.Bytecode.Lightweight
 		/// <param name="setters">Array of setters</param>
 		/// <param name="getters">Array of getters</param>
 		/// <returns><see langword="null" /> if the generation fails</returns>
-		public IReflectionOptimizer GetReflectionOptimizer(
-			System.Type mappedClass, IGetter[] getters, ISetter[] setters)
+		public IReflectionOptimizer GetReflectionOptimizer(System.Type mappedClass, IGetter[] getters, ISetter[] setters)
 		{
 			return new ReflectionOptimizer(mappedClass, getters, setters);
 		}
@@ -62,17 +60,15 @@ namespace NHibernate.Bytecode.Lightweight
 			{
 				pffc = ReflectHelper.ClassForName(typeName);
 			}
-			catch(HibernateException he)
+			catch (HibernateException he)
 			{
 				throw new HibernateException("Unable to load type '" + typeName + "' during configuration of proxy factory class.",
-				                             he); 
+				                             he);
 			}
 
-            if (typeof(IProxyFactoryFactory).IsAssignableFrom(pffc) == false)
+			if (typeof (IProxyFactoryFactory).IsAssignableFrom(pffc) == false)
 			{
-				HibernateException he =
-					new HibernateException(pffc.FullName + " does not implement " +
-						typeof(IProxyFactoryFactory).FullName);
+				var he = new HibernateException(pffc.FullName + " does not implement " + typeof (IProxyFactoryFactory).FullName);
 				throw he;
 			}
 			proxyFactoryFactory = pffc;
@@ -81,4 +77,3 @@ namespace NHibernate.Bytecode.Lightweight
 		#endregion
 	}
 }
-
