@@ -1,3 +1,151 @@
+Build 2.0.1.GA
+========================
+** Bug
+    * [NH-1293] - Changed behavior of Filters for many-to-one  associations brings up possible bug when used with outer joins.
+    * [NH-1464] - C++ and Dispose method
+    * [NH-1466] - current_session_context_class = thread_static doesn't work
+    * [NH-1473] - IsEqual and Compare broken in EntityType
+    * [NH-1481] - Named Hql queries w/ Named Parameters broken after upgrade to 2.0 from 1.2.1
+    * [NH-1483] - Subclass Not Loaded From Cache as Baseclass
+    * [NH-1488] - Table per class hierarchy and OUTER JOIN
+    * [NH-1490] - Wrong order of parameters in query when session uses IFilter
+    * [NH-1492] - Parameter mismatch enabling filters
+    * [NH-1499] - NullReferenceException construting Criteria query
+
+** Improvement
+    * [NH-1484] - first chance exception 'NHibernate.MappingException' when starting a webapplication
+    * [NH-1496] - Configuration.AddAssembly(Assembly) should do some logging if no mapping files where found
+    * [NH-1500] - Spelling error of NHibernate.Cfg.ConfigurationSchema.ParseColectionsCache
+
+
+** Patch
+    * [NH-1034] - HQL functions - parameters support
+    * [NH-1434] - Some unit test supplies non-character value to LIKE: not portable across every RDBMS
+    * [NH-1435] - Explicitly order query in NH-1179 to ensure reliable results
+    * [NH-1436] - Mapping of NH-1250 not portable across every RDBMS
+    * [NH-1437] - Mapping of NH-1408 not portable across every RDBMS
+    * [NH-1438] - Some queries from FooBarTest fixture are not portable across every RDBMS
+    * [NH-1439] - Handle Dialect.GetIdentityColumnString(DbType type)
+    * [NH-1459] - Sybase dialect
+    * [NH-1462] - StringHelper.GetFullClassname fails to parse generic types
+
+Build 2.0.0.GA
+========================
+** BREAKING CHANGES from NH1.2.1GA to NH2.0.0
+	##### Infrastructure #####
+		* .NET 1.1 is no longer supported
+		* Nullables.NHibernate is no longer supported (use nullable types of .NET 2.0)
+		* Contrib projects moved to http://sourceforge.net/projects/nhcontrib
+
+	##### Compile time #####
+		* NHibernate.Expression namespace was renamed to NHibernate.Criterion
+		* IInterceptor have additional methods. (IsUnsaved was renamed IsTransient)
+		* INamingStrategy
+		* IType
+		* IEntityPersister
+		* IVersionType
+		* IBatcher
+		* IUserCollectionType
+		* IEnhancedUserType
+		* IPropertyAccessor
+		* ValueTypeType renamed to PrimitiveType 
+
+	##### Possible Breaking Changes for external frameworks #####
+		* Various classes were moved between namespaces
+		* Various classes have been renamed (to match Hibernate 3.2 names)
+		* ISession interface have additional methods
+		* ICacheProvider
+		* ICriterion
+		* CriteriaQueryTranslator
+
+	##### Initialization time #####
+		* <nhibernate> section, in App.config, is no longer supported and will be ignored. Configuration schema for configuration file and App.config is now identical, and the App.config section name is: <hibernate-configuration>
+		* <hibernate-configuration> have a different schema and all properties names are cheked
+		* configuration properties are no longer prefixed by "hibernate.", if before you would specify "hibernate.dialect", now you specify just "dialect"
+		* All named queries will be validated at initialization time, an exception will be thrown if any is not valid (can be disabled if needed)
+		* Stricter checks for proxying classes (all public methods must be virtual)
+
+	##### Run time #####
+		* SaveOrUpdateCopy() returns a new instance of the entity without changing the original
+		* AutoFlush will not occur outside a transaction - Database transactions are never optional, all communication with the database must occur inside a transaction, whatever you read or write data.
+		* NHibernate will return long for count(*) queries on SQL Server
+		* <formula> must contain parenthesis when needed
+		* The HQL functions names may cause conflic in your HQL (reserved names are: substring,locate,trim,length,bit_length,coalesce,nullif,abs,mod,sqrt,upper,lower,cast,extract,concat,current_timestamp,sysdate,second,minute,hour,day,month,year,str)
+		* <any> when meta-type="class" the persistent type is a string containing the Class.FullName (In order to set a parameter in a query you must use SetParameter("paraName", typeof(YourClass).FullName, NHibernateUtil.ClassMetaType) )
+
+	##### Mapping #####
+		* <any> : default meta-type is "string" (was "class") 
+
+Build 2.0.0.CR2
+========================
+** Sub-task
+    * [NH-1407] - Actualize documentation of <any>
+
+Build 2.0.0.CR1
+========================
+** Bug
+    * [NH-1361] - ProxyTypeValidator: Non-virtual public methods are accepted
+    * [NH-1389] - Sybase SQLAnywhere 8/9 support broken in Beta1 onword
+    * [NH-1399] - Database constraint names and hash collisions
+    * [NH-1403] - Support <any> with meta-type="class"
+    * [NH-1405] - composite-id property is nulled when related composite many-to-one mapping returns null.
+    * [NH-1406] - IQuery.SetTimeout work incorrect for ExecuteUpdate
+    * [NH-1408] - CriteriaTransformer don't clone a DetachedCriteria with sub DetachedCriteria
+    * [NH-1413] - Paging with multiple orders fail in MSSQL2005
+
+** Improvement
+    * [NH-1304] - Reflection optimizer on != property access
+    * [NH-1415] - Adding multi query support to MySqlDataDriver 
+
+** New Feature
+    * [NH-1412] - Allow custom accessors to define if the ReflectionOptimizer can be used.
+
+** Patch
+    * [NH-1254] - Sybase ASA10 - Dialect + Driver
+    * [NH-1390] - Union subclass support for PostgreSQL
+
+** Task
+    * [NH-1410] - Spelling mistake in error message: sublcass must be subclass
+
+		
+Build 2.0.0.Beta2
+========================
+** Bug
+    * [NH-1030] - DB2400Dialect : mod(x,y) function triggers a parse exception
+    * [NH-1077] - Pessimistic locking for SQL Server fails on cached objects
+    * [NH-1258] - Oracle Sequences mappings without Schema information throwns InvalidKeyException
+    * [NH-1279] - AggressiveRelease tests fail for MySQL
+    * [NH-1300] - Detached Entities that have many-to-one associations improperly throw LazyInitializationExceptions when accessing the association outside the loading session
+    * [NH-1355] - Custom Version type (IUserVersionType) not allowed
+    * [NH-1362] - Nested cascades on ISession.Refresh()
+    * [NH-1375] - Disable Multi Query support for Npgsql
+    * [NH-1383] - Components with (non-C#) Nullables do not follow documentation sect. 7.1 "if all component columns are null, then the entire component is null"
+    * [NH-1384] - Support for latest Npgsql2 (PostgreSQL) Data Provider
+
+** Improvement
+    * [NH-693] - Better error message when user forgets to supply table name
+    * [NH-803] - Support DML type batch sql statements
+    * [NH-824] - GetClassname cannot parse generic classnames
+    * [NH-938] - Escape characters in Like expressions
+    * [NH-978] - show_sql: Transaction Begin, Commit, Rollback
+    * [NH-1101] - component directy detection should consider null component value to be equiv to all component member's being null
+    * [NH-1151] - Improve Configuration to Support ASP.NET Configuration File Hierarchy and Inheritance
+    * [NH-1216] - SchemaExport creates varchar(255) on MySQL when Property Type is StringClob
+    * [NH-1236] - XML Entity support in mapping files broken 
+    * [NH-1257] - lazy=true and fetch=join doesn't work together it will be nice to receive a WARN
+    * [NH-1364] - LinkedHashMap.RemoveImpl can be improved (using try/catch for common scenario)
+    * [NH-1382] - Oracle Dialect support for Unsigned Int (UInt32, UInt64)
+
+** New Feature
+    * [NH-1115] - Add support for "Refresh" cascade style
+    * [NH-1367] - Add Interceptor or Event to Batcher
+
+
+** Task
+    * [NH-1144] - Apply patch for NH-1022 (Oracle command batching) to trunk
+    * [NH-1210] - "table" attribute documented as required when in fact optional
+
+
 Build 2.0.0.Beta1
 ========================
 ** Bug
