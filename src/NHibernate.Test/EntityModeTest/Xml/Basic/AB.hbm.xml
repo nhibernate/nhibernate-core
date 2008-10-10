@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2">
+
+	<class entity-name="A" table="AX" node="a">
+		<id name="aId" type="int" column="aId" node="@id"/>
+		<property name="x"  type="string"/>
+		<set name="bs" node="." embed-xml="true" cascade="all" inverse="true">
+			<key column="aId"/>
+			<one-to-many class="B"/>
+		</set>
+	</class>
+
+
+	<class entity-name="B" table="BX" node="b">
+		<composite-id>
+			<key-property name="bId" column="bId" type="int" node="@bId"/>
+			<key-property name="aId" column="aId" type="int" node="@aId"/>
+		</composite-id>
+		<property name="y" type="string" node="."/>
+	</class>
+
+</hibernate-mapping>
