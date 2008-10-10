@@ -1,0 +1,170 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Reflection;
+using log4net;
+using NHibernate.Mapping;
+using NHibernate.Util;
+
+namespace NHibernate.Proxy
+{
+    public class DynamicProxyTypeValidator : IProxyTypeValidator
+    {
+        private readonly ILog log = LogManager.GetLogger(typeof (DynamicProxyTypeValidator));
+
+		/// <summary>
+		/// Validates whether <paramref name="type"/> can be specified as the base class
+		/// (or an interface) for a dynamically-generated proxy.
+		/// </summary>
+		/// <returns>
+		/// A collection of errors, if any, or <see langword="null" /> if none were found.
+		/// </returns>
+		/// <param name="type">The type to validate.</param>
+		public ICollection<string> ValidateType(System.Type type)
+		{
+            List<string> errors = new List<string>();
+
+			if (type.IsInterface)
+			{
+				// Any interface is valid as a proxy
+				return null;
+			}
+			CheckHasVisibleDefaultConstructor(type, errors);
+			CheckAccessibleMembersAreVirtual(type, errors);
+			CheckNotSealed(type, errors);
+			if (errors.Count > 0)
+			{
+				return errors;
+			}
+			return null;
+		}
+
+        public void LogPropertyAccessorsErrors(PersistentClass persistentClass)
+        {
+            // This method work when Environment.UseProxyValidator is off
+
+            System.Type clazz = persistentClass.MappedClass;
+            foreach (Mapping.Property property in persistentClass.PropertyIterator)
+            {
+                MethodInfo method = property.GetGetter(clazz).Method;
+                // In NET if IsVirtual is false or IsFinal is true, then the method cannot be overridden.
+                if (method != null && (!method.IsVirtual || method.IsFinal))
+                {
+                    log.Error(
+                        string.Format("Getters of lazy classes cannot be final: {0}.{1}", persistentClass.MappedClass.FullName,
+                                      property.Name));
+                }
+                method = property.GetSetter(clazz).Method;
+                if (method != null && (!method.IsVirtual || method.IsFinal))
+                {
+                    log.Error(
+                        string.Format("Setters of lazy classes cannot be final: {0}.{1}", persistentClass.MappedClass.FullName,
+                                      property.Name));
+                }
+            }
+        }
+
+		private static void Error(IList errors, System.Type type, string text)
+		{
+			errors.Add(string.Format("{0}: {1}", type, text));
+		}
+
+		private static void CheckHasVisibleDefaultConstructor(System.Type type, IList errors)
+		{
+			if (!HasVisibleDefaultConstructor(type))
+			{
+				Error(errors, type, "type should have a visible (public or protected) no-argument constructor");
+			}
+		}
+
+		private static void CheckAccessibleMembersAreVirtual(System.Type type, IList errors)
+		{
+			MemberInfo[] members = type.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+			foreach (MemberInfo member in members)
+			{
+				if (member is PropertyInfo)
+				{
+					PropertyInfo property = (PropertyInfo) member;
+					MethodInfo[] accessors = property.GetAccessors(false);
+
+					foreach (MethodInfo accessor in accessors)
+					{
+						CheckMethodIsVirtual(type, accessor, errors);
+					}
+				}
+				else if (member is MethodInfo)
+				{
+					if (member.DeclaringType == typeof(object)
+					    && member.Name == "GetType")
+					{
+						// object.GetType is ignored
+						continue;
+					}
+					CheckMethodIsVirtual(type, (MethodInfo) member, errors);
+				}
+				else if (member is FieldInfo)
+				{
+					FieldInfo memberField = (FieldInfo) member;
+					if (memberField.IsPublic || memberField.IsAssembly || memberField.IsFamilyOrAssembly)
+					{
+						Error(errors, type, "field " + member.Name + " should not be public nor internal");
+					}
+				}
+			}
+		}
+
+		private static void CheckMethodIsVirtual(System.Type type, MethodInfo method, IList errors)
+		{
+			if (method.DeclaringType != typeof(object) && !IsDisposeMethod(method) &&
+				method.IsPublic || method.IsAssembly || method.IsFamilyOrAssembly)
+			{
+				if (!method.IsVirtual || method.IsFinal)
+				{
+					Error(errors, type, "method " + method.Name + " should be virtual");
+				}
+			}
+		}
+
+		private static bool IsDisposeMethod(MethodBase method)
+		{
+			return method.Name.Equals("Dispose") && method.MemberType == MemberTypes.Method && method.GetParameters().Length == 0;
+		}
+
+		private static bool HasVisibleDefaultConstructor(System.Type type)
+		{
+			ConstructorInfo constructor = type.GetConstructor(
+				BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+				null, System.Type.EmptyTypes, null);
+
+			return constructor != null
+			       && !constructor.IsPrivate;
+		}
+
+		private static void CheckNotSealed(System.Type type, IList errors)
+		{
+			if (ReflectHelper.IsFinalClass(type))
+			{
+				Error(errors, type, "type should not be sealed");
+			}
+		}
+
+        public ICollection<string> ValidateType(PersistentClass persistentClass)
+        {
+            if (!persistentClass.IsLazy)
+            {
+                // Nothing to validate
+                return null;
+            }
+
+            if (persistentClass.ProxyInterface == null)
+            {
+                // Nothing to validate
+                return null;
+            }
+
+            return ValidateType(persistentClass.ProxyInterface);
+        }
+    }
+}

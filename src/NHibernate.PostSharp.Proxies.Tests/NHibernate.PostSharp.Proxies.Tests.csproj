@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{632F2934-8EF6-4D27-A6FA-8F99502292D9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NHibernate.PostSharp.Proxies.Tests</RootNamespace>
+    <AssemblyName>NHibernate.PostSharp.Proxies.Tests</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\2.0\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\2.0\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="PostSharp.Laos, Version=1.0.11.424, Culture=neutral, PublicKeyToken=b13fd38b8f9c99d7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Users\Administrator\Downloads\PostSharp-1.0.11.425-Debug-Binary\PostSharp.Laos.dll</HintPath>
+    </Reference>
+    <Reference Include="PostSharp.Public, Version=1.0.11.424, Culture=neutral, PublicKeyToken=b13fd38b8f9c99d7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Users\Administrator\Downloads\PostSharp-1.0.11.425-Debug-Binary\PostSharp.Public.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Address.cs" />
+    <Compile Include="CanCreateNHibernateSessionFactoryWithLazyLoadingAndNoVirtuals.cs" />
+    <Compile Include="ClassesAreWeavedCorrectly.cs" />
+    <Compile Include="Customer.cs" />
+    <Compile Include="LoadingInstancesFromTheDatabase.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SavingInstanceToDatabase.cs" />
+    <Compile Include="TestCase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Address.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Customer.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate.PostSharp.Proxies\NHibernate.PostSharp.Proxies.csproj">
+      <Project>{0BB9DD0F-A2DE-4419-AFC4-A0D85B05E28F}</Project>
+      <Name>NHibernate.PostSharp.Proxies</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NHibernate.Test\NHibernate.Test.csproj">
+      <Project>{7AEE5B37-C552-4E59-9B6F-88755BCB5070}</Project>
+      <Name>NHibernate.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NHibernate\NHibernate.csproj">
+      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
+      <Name>NHibernate</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>C:\Users\Administrator\Downloads\PostSharp-1.0.11.425-Debug-Binary\PostSharp.exe C:\Users\Administrator\Downloads\PostSharp-1.0.11.425-Debug-Binary\Default.psproj  C:\OSS\nhibernate\nhibernate\src\NHibernate.PostSharp.Proxies.Tests\bin\Debug\NHibernate.PostSharp.Proxies.Tests.dll /p:Output=C:\OSS\nhibernate\nhibernate\src\NHibernate.PostSharp.Proxies.Tests\bin\Debug\NHibernate.PostSharp.Proxies.Tests2.dll /p:IntermediateDirectory=. /p:CleanIntermediate=false /p:SearchPath=C:\Users\Administrator\Downloads\PostSharp-1.0.11.425-Debug-Binary /p:SignAssembly=false /p:PrivateKeyLocation=none.snk 
+del C:\OSS\nhibernate\nhibernate\src\NHibernate.PostSharp.Proxies.Tests\bin\Debug\NHibernate.PostSharp.Proxies.Tests.dll
+del C:\OSS\nhibernate\nhibernate\src\NHibernate.PostSharp.Proxies.Tests\bin\Debug\NHibernate.PostSharp.Proxies.Tests.pdb
+copy C:\OSS\nhibernate\nhibernate\src\NHibernate.PostSharp.Proxies.Tests\bin\Debug\NHibernate.PostSharp.Proxies.Tests2.??? C:\OSS\nhibernate\nhibernate\src\NHibernate.PostSharp.Proxies.Tests\bin\Debug\NHibernate.PostSharp.Proxies.Tests.???
+</PostBuildEvent>
+  </PropertyGroup>
+</Project>

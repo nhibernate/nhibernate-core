@@ -36,7 +36,7 @@ namespace NHibernate.Event.Default
 
 		protected override bool ReassociateIfUninitializedProxy(object obj, ISessionImplementor source)
 		{
-			if (!NHibernateUtil.IsInitialized(obj))
+			if (NHibernateUtil.IsProxy(obj) && !NHibernateUtil.IsInitialized(obj))
 			{
                 throw new PersistentObjectException("Uninitialized proxy passed to save(). Object: " + obj.ToString());
 			}

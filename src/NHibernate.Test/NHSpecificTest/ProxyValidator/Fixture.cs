@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Proxy;
 using NUnit.Framework;
 
@@ -10,11 +11,11 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 	{
 		private void Validate(System.Type type)
 		{
-			ICollection errors = ProxyTypeValidator.ValidateType(type);
+			ICollection<string> errors = new DynamicProxyTypeValidator().ValidateType(type);
 			if (errors != null)
 			{
 				throw new InvalidProxyTypeException(errors);
-			}
+			}   
 		}
 
 		public class ValidClass

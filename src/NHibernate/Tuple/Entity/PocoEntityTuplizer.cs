@@ -10,6 +10,7 @@ using NHibernate.Mapping;
 using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Type;
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Tuple.Entity
 {
@@ -135,7 +136,7 @@ namespace NHibernate.Tuple.Entity
 			 */
 			if (log.IsErrorEnabled && needAccesorCheck)
 			{
-				LogPropertyAccessorsErrors(persistentClass);
+                Environment.BytecodeProvider.ProxyFactoryFactory.Validator.LogPropertyAccessorsErrors(persistentClass);
 			}
 			/**********************************************************/
 
@@ -162,31 +163,6 @@ namespace NHibernate.Tuple.Entity
 				pf = null;
 			}
 			return pf;
-		}
-
-		private static void LogPropertyAccessorsErrors(PersistentClass persistentClass)
-		{
-			// This method work when Environment.UseProxyValidator is off
-
-			System.Type clazz = persistentClass.MappedClass;
-			foreach (Mapping.Property property in persistentClass.PropertyIterator)
-			{
-				MethodInfo method = property.GetGetter(clazz).Method;
-				// In NET if IsVirtual is false or IsFinal is true, then the method cannot be overridden.
-				if (method != null && (!method.IsVirtual || method.IsFinal))
-				{
-					log.Error(
-						string.Format("Getters of lazy classes cannot be final: {0}.{1}", persistentClass.MappedClass.FullName,
-						              property.Name));
-				}
-				method = property.GetSetter(clazz).Method;
-				if (method != null && (!method.IsVirtual || method.IsFinal))
-				{
-					log.Error(
-						string.Format("Setters of lazy classes cannot be final: {0}.{1}", persistentClass.MappedClass.FullName,
-						              property.Name));
-				}
-			}
 		}
 
 		protected virtual IProxyFactory BuildProxyFactoryInternal(PersistentClass @class, IGetter getter, ISetter setter)

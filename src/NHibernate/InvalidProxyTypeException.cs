@@ -3,6 +3,7 @@ using System.Collections;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Text;
+using System.Collections.Generic;
 
 namespace NHibernate
 {
@@ -14,20 +15,20 @@ namespace NHibernate
 	[Serializable]
 	public class InvalidProxyTypeException : MappingException
 	{
-		private ICollection errors;
+		private ICollection<string> errors;
 
-		public InvalidProxyTypeException(ICollection errors)
+		public InvalidProxyTypeException(ICollection<string> errors)
 			: base(FormatMessage(errors))
 		{
 			this.errors = errors;
 		}
 
-		public ICollection Errors
+		public ICollection<string> Errors
 		{
 			get { return errors; }
 		}
 
-		private static string FormatMessage(ICollection errors)
+		private static string FormatMessage(ICollection<string> errors)
 		{
 			StringBuilder result = new StringBuilder("The following types may not be used as proxies:");
 			foreach (string error in errors)
@@ -42,7 +43,7 @@ namespace NHibernate
 		public InvalidProxyTypeException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
-			this.errors = (ICollection) info.GetValue("errors", typeof(ICollection));
+            this.errors = (ICollection<string>)info.GetValue("errors", typeof(ICollection<string>));
 		}
 
 		[SecurityPermission(SecurityAction.LinkDemand,

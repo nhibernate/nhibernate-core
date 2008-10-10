@@ -12,6 +12,11 @@ namespace NHibernate.Bytecode
 			return new CastleProxyFactory();
 		}
 
-		#endregion
+	    public IProxyTypeValidator Validator
+	    {
+            get { return new DynamicProxyTypeValidator(); }
+	    }
+
+	    #endregion
 	}
 }

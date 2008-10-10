@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"  
+                   namespace="NHibernate.PostSharp.Proxies.Tests" 
+                   assembly="NHibernate.PostSharp.Proxies.Tests"
+                   >
+  <class name="Address">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="City"/>
+    <property name="Street"/>
+    <property name="Home"/>
+    <many-to-one name="Customer"/>
+  </class>
+</hibernate-mapping>

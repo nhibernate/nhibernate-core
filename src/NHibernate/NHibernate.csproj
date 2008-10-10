@@ -303,7 +303,7 @@
     <Compile Include="Proxy\IProxyFactory.cs" />
     <Compile Include="Proxy\AbstractLazyInitializer.cs" />
     <Compile Include="Proxy\NHibernateProxyHelper.cs" />
-    <Compile Include="Proxy\ProxyTypeValidator.cs" />
+    <Compile Include="Proxy\DynamicProxyTypeValidator.cs" />
     <Compile Include="QueryException.cs" />
     <Compile Include="ReplicationMode.cs" />
     <Compile Include="SqlCommand\Alias.cs" />
@@ -832,6 +832,7 @@
     <Compile Include="Properties\NoopAccessor.cs" />
     <Compile Include="Proxy\IEntityNotFoundDelegate.cs" />
     <Compile Include="Proxy\ILazyInitializer.cs" />
+    <Compile Include="Proxy\IProxyTypeValidator.cs" />
     <Compile Include="Proxy\Map\MapLazyInitializer.cs" />
     <Compile Include="Proxy\Map\MapProxy.cs" />
     <Compile Include="Proxy\Map\MapProxyFactory.cs" />

@@ -72,7 +72,12 @@ namespace NHibernate.Test.ProxyInterface
 			return new DataBindingProxyFactory();
 		}
 
-		#endregion
+	    public IProxyTypeValidator Validator
+	    {
+            get { return new DynamicProxyTypeValidator(); }
+	    }
+
+	    #endregion
 	}
 
 	public class DataBindingProxyFactory : CastleProxyFactory

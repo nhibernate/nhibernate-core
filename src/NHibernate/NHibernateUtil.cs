@@ -358,7 +358,10 @@ namespace NHibernate
 		{
 			if (proxy is INHibernateProxy)
 			{
-				return !((INHibernateProxy)proxy).HibernateLazyInitializer.IsUninitialized;
+			    var hibernateProxy = ((INHibernateProxy)proxy);
+                if(hibernateProxy.HibernateLazyInitializer==null)//uninitialized static proxy 
+                    return false;
+			    return !hibernateProxy.HibernateLazyInitializer.IsUninitialized;
 			}
 			else if (proxy is IPersistentCollection)
 			{
@@ -531,5 +534,11 @@ namespace NHibernate
 				return true;
 			}
 		}
+
+	    public static bool IsProxy(object obj)
+	    {
+	        INHibernateProxy proxy = obj as INHibernateProxy;
+	        return proxy != null && proxy.HibernateLazyInitializer != null;
+	    }
 	}
 }

@@ -52,10 +52,19 @@ namespace NHibernate.Type
 		/// </returns>
 		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new PersistentGenericSet<T>(session, (ISet<T>) collection);
+		    var set = collection as ISet<T>;
+            if (set == null)
+            {
+                var typedCollection = collection as ICollection<T>;
+                if(typedCollection==null)
+                    throw new InvalidOperationException(
+                        "could not wrap collection, it is not an ISet<T> or ICollection<T>");
+                set = new HashedSet<T>(typedCollection);
+            }
+		    return new PersistentGenericSet<T>(session, set);
 		}
 
-		public override object Instantiate(int anticipatedSize)
+	    public override object Instantiate(int anticipatedSize)
 		{
 			return new HashedSet<T>();
 		}

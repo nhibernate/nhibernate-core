@@ -787,19 +787,19 @@ namespace NHibernate.Cfg
 		private void Validate()
 		{
 			bool validateProxy = PropertiesHelper.GetBoolean(Environment.UseProxyValidator, properties, true);
-			HashedSet allProxyErrors = null;
+            HashedSet<string> allProxyErrors = null;
 
 			foreach (PersistentClass clazz in classes.Values)
 			{
 				clazz.Validate(mapping);
 				if (validateProxy)
 				{
-					ICollection errors = ValidateProxyInterface(clazz);
+					ICollection<string> errors = ValidateProxyInterface(clazz);
 					if (errors != null)
 					{
 						if (allProxyErrors == null)
 						{
-							allProxyErrors = new HashedSet(errors);
+							allProxyErrors = new HashedSet<string>(errors);
 						}
 						else
 						{
@@ -820,21 +820,9 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		private static ICollection ValidateProxyInterface(PersistentClass persistentClass)
+		private static ICollection<string> ValidateProxyInterface(PersistentClass persistentClass)
 		{
-			if (!persistentClass.IsLazy)
-			{
-				// Nothing to validate
-				return null;
-			}
-
-			if (persistentClass.ProxyInterface == null)
-			{
-				// Nothing to validate
-				return null;
-			}
-
-			return ProxyTypeValidator.ValidateType(persistentClass.ProxyInterface);
+		    return Environment.BytecodeProvider.ProxyFactoryFactory.Validator.ValidateType(persistentClass);
 		}
 
 		/// <summary> 
