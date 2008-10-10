@@ -53,10 +53,10 @@ namespace NHibernate.Test.EntityModeTest.Xml.Basic
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			//a = (XmlElement)s.CreateCriteria("A").UniqueResult();
+			a = (XmlElement)s.CreateCriteria("A").UniqueResult();
 			Assert.AreEqual(a.GetElementsByTagName("b").Count, 2);
 			Print(a);
-			//s.Delete("A", a);
+			s.Delete("A", a);
 			t.Commit();
 			s.Close();
 		}

@@ -1,3 +1,9 @@
+Build 2.1.0.GA
+========================
+** BREAKING CHANGES from NH2.0.xGA to NH2.1.0
+	##### Possible Breaking Changes for external frameworks #####
+		* ISession interface have additional methods
+
 Build 2.0.1.GA
 ========================
 ** Bug

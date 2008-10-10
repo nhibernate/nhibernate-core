@@ -453,6 +453,17 @@ namespace NHibernate
 		void Delete(object obj);
 
 		/// <summary>
+		/// Remove a persistent instance from the datastore. The <b>object</b> argument may be
+		/// an instance associated with the receiving <see cref="ISession"/> or a transient
+		/// instance with an identifier associated with existing persistent state.
+		/// This operation cascades to associated instances if the association is mapped
+		/// with <tt>cascade="delete"</tt>. 
+		/// </summary>
+		/// <param name="entityName">The entity name for the instance to be removed. </param>
+		/// <param name="obj">the instance to be removed </param>
+		void Delete(string entityName, object obj);
+
+		/// <summary>
 		/// Execute a query
 		/// </summary>
 		/// <param name="query">A query expressed in Hibernate's query language</param>
@@ -716,6 +727,21 @@ namespace NHibernate
 		/// <returns>An ICriteria object</returns>
 		ICriteria CreateCriteria(System.Type persistentClass, string alias);
 
+		/// <summary> 
+		/// Create a new <c>Criteria</c> instance, for the given entity name. 
+		/// </summary>
+		/// <param name="entityName">The name of the entity to Query</param>
+		/// <returns>An ICriteria object</returns>
+		ICriteria CreateCriteria(string entityName);
+
+		/// <summary>
+		/// Create a new <c>Criteria</c> instance, for the given entity name,
+		/// with the given alias. 
+		/// </summary>
+		/// <param name="entityName">The name of the entity to Query</param>
+		/// <param name="alias">The alias of the entity</param>
+		/// <returns>An ICriteria object</returns>
+		ICriteria CreateCriteria(string entityName, string alias);
 
 		/// <summary>
 		/// Create a new instance of <c>Query</c> for the given query string

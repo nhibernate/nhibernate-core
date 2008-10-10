@@ -1476,6 +1476,18 @@ namespace NHibernate.Impl
 			return new CriteriaImpl(persistentClass, alias, this);
 		}
 
+		public ICriteria CreateCriteria(string entityName, string alias)
+		{
+			CheckAndUpdateSessionStatus();
+			return new CriteriaImpl(entityName, alias, this);
+		}
+
+		public ICriteria CreateCriteria(string entityName)
+		{
+			CheckAndUpdateSessionStatus();
+			return new CriteriaImpl(entityName, this);
+		}
+
 		public override IList List(CriteriaImpl criteria)
 		{
 			ArrayList results = new ArrayList();
