@@ -189,24 +189,21 @@ namespace NHibernate
 		/// <param name="type">The NHibernate <see cref="IType"/>.</param>
 		IQuery SetParameter(string name, object val, IType type);
 
-
 		/// <summary>
 		/// Bind a value to an indexed parameter.
 		/// </summary>
 		/// <param name="position">Position of the parameter in the query, numbered from <c>0</c></param>
 		/// <param name="val">The possibly null parameter value</param>
-		/// <param name="type">The System.Type</param>
-		IQuery SetParameter(int position, object val, System.Type type);
+		/// <typeparam name="T">The parameter's <see cref="Type"/> </typeparam>
+		IQuery SetParameter<T>(int position, T val);
 
 		/// <summary>
 		/// Bind a value to a named query parameter
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">The possibly null parameter value</param>
-		/// <param name="type">The System.Type.</param>
-		IQuery SetParameter(string name, object val, System.Type type);
-
-
+		/// <typeparam name="T">The parameter's <see cref="Type"/> </typeparam>
+		IQuery SetParameter<T>(string name, T val);
 
 		/// <summary>
 		/// Bind a value to an indexed parameter, guessing the Hibernate type from

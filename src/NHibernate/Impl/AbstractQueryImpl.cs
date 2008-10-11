@@ -322,16 +322,15 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public IQuery SetParameter(int position, object val, System.Type type)
+		public IQuery SetParameter<T>(int position, T val)
 		{
-			return SetParameter(position, val, GuessType(type));
+			return SetParameter(position, val, GuessType(typeof (T)));
 		}
 
-		public IQuery SetParameter(string name,object val,System.Type type)
+		public IQuery SetParameter<T>(string name, T val)
 		{
-			return SetParameter(name, val, GuessType(type));
+			return SetParameter(name, val, GuessType(typeof (T)));
 		}
-
 
 		public IQuery SetParameter(string name, object val)
 		{
