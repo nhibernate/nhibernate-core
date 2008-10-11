@@ -4,13 +4,14 @@ using Castle.DynamicProxy;
 using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Proxy;
 using NHibernate.Type;
 
-namespace NHibernate.Proxy.Poco.Castle
+namespace NHibernate.ProxyGenerators.CastleDynamicProxy
 {
-	public class CastleProxyFactory : IProxyFactory
+	public class ProxyFactory : IProxyFactory
 	{
-		protected static readonly ILog log = LogManager.GetLogger(typeof(CastleProxyFactory));
+		protected static readonly ILog log = LogManager.GetLogger(typeof (ProxyFactory));
 		private static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator();
 
 		private System.Type _persistentClass;
@@ -35,7 +36,7 @@ namespace NHibernate.Proxy.Poco.Castle
 
 		protected static ProxyGenerator DefaultProxyGenerator
 		{
-			get	{return _proxyGenerator;}
+			get { return _proxyGenerator; }
 		}
 
 		protected System.Type PersistentClass
@@ -83,22 +84,13 @@ namespace NHibernate.Proxy.Poco.Castle
 		{
 			try
 			{
-				CastleLazyInitializer initializer =
-					new CastleLazyInitializer(EntityName, _persistentClass, id, _getIdentifierMethod, _setIdentifierMethod,
-					                          ComponentIdType, session);
+				var initializer = new LazyInitializer(EntityName, _persistentClass, id, _getIdentifierMethod,
+				                                            _setIdentifierMethod, ComponentIdType, session);
 
-				object generatedProxy;
-
-				if (IsClassProxy)
-				{
-					generatedProxy = _proxyGenerator.CreateClassProxy(_persistentClass, _interfaces, initializer);
-					//generatedProxy = _proxyGenerator.CreateClassProxy(_persistentClass, _interfaces, initializer, false);
-				}
-				else
-				{
-					generatedProxy = _proxyGenerator.CreateInterfaceProxyWithoutTarget(_interfaces[0], _interfaces, initializer);
-					//generatedProxy = _proxyGenerator.CreateProxy(_interfaces, initializer, new object());
-				}
+				object generatedProxy = IsClassProxy
+				                        	? _proxyGenerator.CreateClassProxy(_persistentClass, _interfaces, initializer)
+				                        	: _proxyGenerator.CreateInterfaceProxyWithoutTarget(_interfaces[0], _interfaces,
+				                        	                                                    initializer);
 
 				initializer._constructed = true;
 				return (INHibernateProxy) generatedProxy;

@@ -23,10 +23,11 @@
 
 	<fileset id="buildfiles.all" basedir="src">
 		<!-- Files have to be in dependency order -->
-		<!--<include name="HashCodeProvider/HashCodeProvider.build" />-->
 		<include name="Iesi.Collections/Iesi.Collections.build" />
 		<include name="Iesi.Collections.Test/Iesi.Collections.Test.build" />
 		<include name="NHibernate/NHibernate.build" />
+		<include name="NHibernate.ProxyGenerators.CastleDynamicProxy/ProxyGenerators.build" />
+		<include name="NHibernate.ProxyGenerators.CastleDynamicProxy.Tests/ProxyGenerators.Test.build" />
 		<include name="NHibernate.DomainModel/NHibernate.DomainModel.build" />
 		<include name="NHibernate.Test/NHibernate.Test.build" />
 		<include name="NHibernate.Test.Performance/NHibernate.Test.Performance.build" />
@@ -36,6 +37,7 @@
 
 	<fileset id="buildfiles.tests" basedir="src">
 		<include name="Iesi.Collections.Test/Iesi.Collections.Test.build" />
+		<include name="NHibernate.ProxyGenerators.CastleDynamicProxy.Tests/ProxyGenerators.Test.build" />
 		<include name="NHibernate.Test/NHibernate.Test.build" />
 		<include name="NHibernate.Test.Performance/NHibernate.Test.Performance.build"
 			if="${run.performance.tests}" />
@@ -84,6 +86,8 @@
 				-->
 				<exclude name="Iesi.Collections.dll" />
 				<exclude name="Iesi.Collections.xml" />
+				<exclude name="NHibernate.ProxyGenerators.CastleDynamicProxy.dll" />
+				<exclude name="NHibernate.ProxyGenerators.CastleDynamicProxy.xml" />
 				<include name="*.dll" />
 				<include name="*.xml" />
 				<include name="*.license.txt" />
@@ -229,6 +233,7 @@
 				<!-- exclude ReSharper stuff -->
 				<exclude name="**/_ReSharper*/**" />
 				<exclude name="**/*.resharperoptions" />
+				<exclude name="**/*resharper*" />
 
 				<!-- exclude VS.NET stuff -->
 				<exclude name="**/*.suo" />
@@ -259,7 +264,7 @@
 	<target name="copy-xml-schemas" depends="init">
 		<!--
 			TODO: Probably need to think of a better place for the XML schemas since
-			they are used by NHibernate, NHMA, and this build file.
+			they are used by NHibernate and this build file.
 		-->
 		<copy todir="${build.dir}">
 			<fileset basedir="src/NHibernate">

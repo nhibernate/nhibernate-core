@@ -1,28 +1,29 @@
 using System;
 using System.Reflection;
 using Castle.Core.Interceptor;
-using log4net;
-using NHibernate.Engine;
+using NHibernate.Proxy;
+using NHibernate.Proxy.Poco;
 using NHibernate.Type;
-using NHibernate.Util;
+using NHibernate.Engine;
 
-namespace NHibernate.Proxy.Poco.Castle
+namespace NHibernate.ProxyGenerators.CastleDynamicProxy
 {
 	/// <summary>
 	/// A <see cref="ILazyInitializer"/> for use with the Castle Dynamic Class Generator.
 	/// </summary>
 	[Serializable]
 	[CLSCompliant(false)]
-	public class CastleLazyInitializer : BasicLazyInitializer, global::Castle.Core.Interceptor.IInterceptor
+	public class LazyInitializer : BasicLazyInitializer, Castle.Core.Interceptor.IInterceptor
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(CastleLazyInitializer));
+		private static readonly MethodInfo Exception_InternalPreserveStackTrace =
+	typeof(Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic);
 
 		#region Instance
 
-		public bool _constructed = false;
+		public bool _constructed;
 
 		/// <summary>
-		/// Initializes a new <see cref="CastleLazyInitializer"/> object.
+		/// Initializes a new <see cref="LazyInitializer"/> object.
 		/// </summary>
 		/// <param name="entityName"></param>
 		/// <param name="persistentClass">The Class to Proxy.</param>
@@ -31,9 +32,9 @@ namespace NHibernate.Proxy.Poco.Castle
 		/// <param name="setIdentifierMethod"></param>
 		/// <param name="componentIdType"></param>
 		/// <param name="session">The ISession this Proxy is in.</param>
-		public CastleLazyInitializer(string entityName, System.Type persistentClass, object id, 
-			MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, 
-			IAbstractComponentType componentIdType, ISessionImplementor session)
+		public LazyInitializer(string entityName, System.Type persistentClass, object id, 
+		                             MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, 
+		                             IAbstractComponentType componentIdType, ISessionImplementor session)
 			:base(entityName, persistentClass, id, getIdentifierMethod, setIdentifierMethod, componentIdType, session)
 		{
 		}
@@ -75,7 +76,8 @@ namespace NHibernate.Proxy.Poco.Castle
 			{
 				// Propagate the inner exception so that the proxy throws the same exception as
 				// the real object would 
-				throw ReflectHelper.UnwrapTargetInvocationException(tie);
+				Exception_InternalPreserveStackTrace.Invoke(tie.InnerException, new Object[] { });
+				throw tie.InnerException;
 			}
 		}
 

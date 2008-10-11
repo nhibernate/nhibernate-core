@@ -1,7 +1,7 @@
+using NHibernate.Bytecode;
 using NHibernate.Proxy;
-using NHibernate.Proxy.Poco.Castle;
 
-namespace NHibernate.Bytecode.Castle
+namespace NHibernate.ProxyGenerators.CastleDynamicProxy
 {
 	public class ProxyFactoryFactory : IProxyFactoryFactory
 	{
@@ -9,7 +9,7 @@ namespace NHibernate.Bytecode.Castle
 
 		public IProxyFactory BuildProxyFactory()
 		{
-			return new CastleProxyFactory();
+			return new ProxyFactory();
 		}
 
 		public IProxyValidator ProxyValidator

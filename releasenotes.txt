@@ -1,6 +1,9 @@
 Build 2.1.0.GA
 ========================
 ** BREAKING CHANGES from NH2.0.xGA to NH2.1.0
+	##### Run time #####
+		* If you want work using lazy loading with Castle.DynamicProxy2 now you must deploy NHibernate.ProxyGenerators.CastleDynamicProxy.dll
+
 	##### Possible Breaking Changes for external frameworks #####
 		* ISession interface have additional methods
 		* DefaultProxyFactoryFactory moved to NHibernate.Bytecode.Castle.ProxyFactoryFactory

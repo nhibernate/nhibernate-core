@@ -1,6 +1,4 @@
-using System;
-
-namespace NHibernate.Test.ProxyInterface
+namespace NHibernate.ProxyGenerators.CastleDynamicProxy.Tests.ProxyInterface
 {
 	/// <summary>
 	/// Summary description for CastleProxy.

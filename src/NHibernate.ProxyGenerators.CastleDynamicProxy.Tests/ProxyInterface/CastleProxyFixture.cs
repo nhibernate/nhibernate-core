@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using NUnit.Framework;
 
-namespace NHibernate.Test.ProxyInterface
+namespace NHibernate.ProxyGenerators.CastleDynamicProxy.Tests.ProxyInterface
 {
 	/// <summary>
 	/// Summary description for CastleProxyFixture.
@@ -13,29 +13,22 @@ namespace NHibernate.Test.ProxyInterface
 	[TestFixture]
 	public class CastleProxyFixture : TestCase
 	{
-		protected override string MappingsAssembly
-		{
-			get { return "NHibernate.Test"; }
-		}
-
 		protected override IList Mappings
 		{
-			get { return new string[] {"ProxyInterface.CastleProxyImpl.hbm.xml"}; }
+			get { return new[] {"ProxyInterface.CastleProxyImpl.hbm.xml"}; }
 		}
 
 		[Test]
 		public void Proxy()
 		{
 			ISession s = OpenSession();
-			CastleProxy ap = new CastleProxyImpl();
-			ap.Id = 1;
-			ap.Name = "first proxy";
+			CastleProxy ap = new CastleProxyImpl {Id = 1, Name = "first proxy"};
 			s.Save(ap);
 			s.Flush();
 			s.Close();
 
 			s = OpenSession();
-			ap = (CastleProxy) s.Load(typeof(CastleProxyImpl), ap.Id);
+			ap = (CastleProxy) s.Load(typeof (CastleProxyImpl), ap.Id);
 			Assert.IsFalse(NHibernateUtil.IsInitialized(ap));
 			int id = ap.Id;
 			Assert.IsFalse(NHibernateUtil.IsInitialized(ap), "get id should not have initialized it.");
@@ -75,7 +68,7 @@ namespace NHibernate.Test.ProxyInterface
 			s.Close();
 
 			s = OpenSession();
-			ap = (CastleProxy) s.Load(typeof(CastleProxyImpl), ap.Id);
+			ap = (CastleProxy) s.Load(typeof (CastleProxyImpl), ap.Id);
 			Assert.AreEqual(1, ap.Id);
 			s.Disconnect();
 
@@ -101,14 +94,14 @@ namespace NHibernate.Test.ProxyInterface
 		{
 			ISession s = OpenSession();
 			// this does not actually exists in db
-			CastleProxy notThere = (CastleProxy) s.Load(typeof(CastleProxyImpl), 5);
+			var notThere = (CastleProxy) s.Load(typeof (CastleProxyImpl), 5);
 			Assert.AreEqual(5, notThere.Id);
 			s.Disconnect();
 
 			// serialize and then deserialize the session.
 			SerializeAndDeserialize(ref s);
 
-			Assert.IsNotNull(s.Load(typeof(CastleProxyImpl), 5), "should be proxy - even though it doesn't exists in db");
+			Assert.IsNotNull(s.Load(typeof (CastleProxyImpl), 5), "should be proxy - even though it doesn't exists in db");
 			s.Close();
 		}
 

@@ -193,7 +193,7 @@ namespace NHibernate.Cfg
 		private static void SetDefaultProxyFactoryFactory()
 		{
 			// maitaining the optionality of set the proxyfactory.factory_class property
-			GlobalProperties[ProxyFactoryFactoryClass] = "NHibernate.Bytecode.Castle.ProxyFactoryFactory, NHibernate";
+			GlobalProperties[ProxyFactoryFactoryClass] = "NHibernate.ProxyGenerators.CastleDynamicProxy.ProxyFactoryFactory, NHibernate.ProxyGenerators.CastleDynamicProxy";
 		}
 
 		private static void LoadGlobalPropertiesFromAppConfig()

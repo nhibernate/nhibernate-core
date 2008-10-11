@@ -40,14 +40,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Castle.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\2.0\Castle.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.DynamicProxy2, Version=2.0.0.1, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\2.0\Castle.DynamicProxy2.dll</HintPath>
-    </Reference>
     <Reference Include="Iesi.Collections, Version=1.0.0.1, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\2.0\Iesi.Collections.dll</HintPath>
@@ -297,8 +289,6 @@
     <Compile Include="Properties\PascalCaseMUnderscoreStrategy.cs" />
     <Compile Include="Properties\PascalCaseUnderscoreStrategy.cs" />
     <Compile Include="Properties\PropertyAccessorFactory.cs" />
-    <Compile Include="Proxy\Poco\Castle\CastleLazyInitializer.cs" />
-    <Compile Include="Proxy\Poco\Castle\CastleProxyFactory.cs" />
     <Compile Include="Proxy\INHibernateProxy.cs" />
     <Compile Include="Proxy\IProxyFactory.cs" />
     <Compile Include="Proxy\AbstractLazyInitializer.cs" />
@@ -452,7 +442,6 @@
     <Compile Include="AdoNet\TooManyRowsAffectedException.cs" />
     <Compile Include="Properties\BackFieldStrategy.cs" />
     <Compile Include="Bytecode\CodeDom\BytecodeProviderImpl.cs" />
-    <Compile Include="Bytecode\Castle\ProxyFactoryFactory.cs" />
     <Compile Include="Bytecode\IAccessOptimizer.cs" />
     <Compile Include="Bytecode\IBytecodeProvider.cs" />
     <Compile Include="Bytecode\IInjectableProxyFactoryFactory.cs" />

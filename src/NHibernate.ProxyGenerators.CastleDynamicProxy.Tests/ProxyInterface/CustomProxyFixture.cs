@@ -2,34 +2,30 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Reflection;
+using Castle.Core.Interceptor;
 using Castle.DynamicProxy;
 using NHibernate.Bytecode;
+using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Proxy;
-using NHibernate.Proxy.Poco.Castle;
-using NHibernate.Test.ExpressionTest.SubQueries;
 using NHibernate.Type;
 using NUnit.Framework;
+using Environment=NHibernate.Cfg.Environment;
 
-namespace NHibernate.Test.ProxyInterface
+namespace NHibernate.ProxyGenerators.CastleDynamicProxy.Tests.ProxyInterface
 {
 	[TestFixture]
 	public class CustomProxyFixture : TestCase
 	{
-		protected override string MappingsAssembly
-		{
-			get { return "NHibernate.Test"; }
-		}
-
 		protected override IList Mappings
 		{
-			get { return new string[] { "ExpressionTest.SubQueries.Mappings.hbm.xml" }; }
+			get { return new[] { "ProxyInterface.Mappings.hbm.xml" }; }
 		}
 
-		protected override void Configure(Cfg.Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			configuration.Properties[NHibernate.Cfg.Environment.ProxyFactoryFactoryClass] =
-				typeof(CustomProxyFactoryFactory).AssemblyQualifiedName;
+			configuration.Properties[Environment.ProxyFactoryFactoryClass] =
+				typeof (CustomProxyFactoryFactory).AssemblyQualifiedName;
 		}
 
 		[Test]
@@ -43,13 +39,11 @@ namespace NHibernate.Test.ProxyInterface
 
 			using (ISession s = OpenSession())
 			{
-				Blog blog = (Blog)s.Load(typeof(Blog), 1);
-				INotifyPropertyChanged propertyChanged = (INotifyPropertyChanged)blog;
+				var blog = (Blog) s.Load(typeof (Blog), 1);
+				var propertyChanged = (INotifyPropertyChanged) blog;
 				string propChanged = null;
-				propertyChanged.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e)
-				{
-					propChanged = e.PropertyName;
-				};
+				propertyChanged.PropertyChanged +=
+					delegate(object sender, PropertyChangedEventArgs e) { propChanged = e.PropertyName; };
 
 				blog.BlogName = "foo";
 				Assert.AreEqual("BlogName", propChanged);
@@ -80,23 +74,24 @@ namespace NHibernate.Test.ProxyInterface
 		#endregion
 	}
 
-	public class DataBindingProxyFactory : CastleProxyFactory
+	public class DataBindingProxyFactory : ProxyFactory
 	{
 		public override INHibernateProxy GetProxy(object id, ISessionImplementor session)
 		{
 			try
 			{
-				CastleLazyInitializer initializer = new DataBindingInterceptor(EntityName, PersistentClass, id,
-																				GetIdentifierMethod, SetIdentifierMethod, ComponentIdType, session);
+				LazyInitializer initializer = new DataBindingInterceptor(EntityName, PersistentClass, id, GetIdentifierMethod,
+				                                                         SetIdentifierMethod, ComponentIdType, session);
 
-				object generatedProxy = null;
+				object generatedProxy;
 
-				ArrayList list = new ArrayList(Interfaces);
-				list.Add(typeof(INotifyPropertyChanged));
-				System.Type[] interfaces = (System.Type[])list.ToArray(typeof(System.Type));
+				var list = new ArrayList(Interfaces);
+				list.Add(typeof (INotifyPropertyChanged));
+				var interfaces = (System.Type[]) list.ToArray(typeof (System.Type));
 				if (IsClassProxy)
 				{
-					generatedProxy = DefaultProxyGenerator.CreateClassProxy(PersistentClass, interfaces, ProxyGenerationOptions.Default, initializer);
+					generatedProxy = DefaultProxyGenerator.CreateClassProxy(PersistentClass, interfaces, ProxyGenerationOptions.Default,
+					                                                        initializer);
 				}
 				else
 				{
@@ -104,7 +99,7 @@ namespace NHibernate.Test.ProxyInterface
 				}
 
 				initializer._constructed = true;
-				return (INHibernateProxy)generatedProxy;
+				return (INHibernateProxy) generatedProxy;
 			}
 			catch (Exception e)
 			{
@@ -114,11 +109,13 @@ namespace NHibernate.Test.ProxyInterface
 		}
 	}
 
-	public class DataBindingInterceptor : CastleLazyInitializer
+	public class DataBindingInterceptor : LazyInitializer
 	{
 		private PropertyChangedEventHandler subscribers = delegate { };
-		public DataBindingInterceptor(string entityName, System.Type persistentClass, object id, 
-			MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, IAbstractComponentType componentIdType, ISessionImplementor session) 
+
+		public DataBindingInterceptor(string entityName, System.Type persistentClass, object id,
+		                              MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod,
+		                              IAbstractComponentType componentIdType, ISessionImplementor session)
 			: base(entityName, persistentClass, id, getIdentifierMethod, setIdentifierMethod, componentIdType, session) {}
 
 		//public DataBindingInterceptor(System.Type persistentClass, object id, MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, ISessionImplementor session)
@@ -126,12 +123,12 @@ namespace NHibernate.Test.ProxyInterface
 		//{
 		//}
 
-		public override void Intercept(Castle.Core.Interceptor.IInvocation invocation)
+		public override void Intercept(IInvocation invocation)
 		{
-			object result = null;
-			if (invocation.Method.DeclaringType == typeof(INotifyPropertyChanged))
+			object result;
+			if (invocation.Method.DeclaringType == typeof (INotifyPropertyChanged))
 			{
-				PropertyChangedEventHandler propertyChangedEventHandler = (PropertyChangedEventHandler)invocation.GetArgumentValue(0);
+				var propertyChangedEventHandler = (PropertyChangedEventHandler) invocation.GetArgumentValue(0);
 				if (invocation.Method.Name.StartsWith("add_"))
 				{
 					subscribers += propertyChangedEventHandler;
