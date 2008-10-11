@@ -92,8 +92,7 @@ namespace NHibernate.Tuple.Entity
 
 			// determine the id getter and setter methods from the proxy interface (if any)
 			// determine all interfaces needed by the resulting proxy
-			HashedSet<System.Type> proxyInterfaces = new HashedSet<System.Type>();
-			proxyInterfaces.Add(typeof(INHibernateProxy));
+			var proxyInterfaces = new HashedSet<System.Type> {typeof (INHibernateProxy)};
 
 			System.Type _mappedClass = persistentClass.MappedClass;
 			System.Type _proxyInterface = persistentClass.ProxyInterface;
@@ -167,26 +166,30 @@ namespace NHibernate.Tuple.Entity
 		private static void LogPropertyAccessorsErrors(PersistentClass persistentClass)
 		{
 			// This method work when Environment.UseProxyValidator is off
-
 			System.Type clazz = persistentClass.MappedClass;
 			foreach (Mapping.Property property in persistentClass.PropertyIterator)
 			{
 				MethodInfo method = property.GetGetter(clazz).Method;
-				// In NET if IsVirtual is false or IsFinal is true, then the method cannot be overridden.
-				if (method != null && (!method.IsVirtual || method.IsFinal))
+				if (ShouldLogError(method))
 				{
 					log.Error(
 						string.Format("Getters of lazy classes cannot be final: {0}.{1}", persistentClass.MappedClass.FullName,
 						              property.Name));
 				}
 				method = property.GetSetter(clazz).Method;
-				if (method != null && (!method.IsVirtual || method.IsFinal))
+				if (ShouldLogError(method))
 				{
 					log.Error(
 						string.Format("Setters of lazy classes cannot be final: {0}.{1}", persistentClass.MappedClass.FullName,
 						              property.Name));
 				}
 			}
+		}
+
+		private static bool ShouldLogError(MethodBase method)
+		{
+			// In NET if IsVirtual is false or IsFinal is true, then the method cannot be overridden.
+			return method != null && (!method.IsVirtual || method.IsFinal || (method.IsVirtual && method.IsAssembly));
 		}
 
 		protected virtual IProxyFactory BuildProxyFactoryInternal(PersistentClass @class, IGetter getter, ISetter setter)
@@ -284,7 +287,7 @@ namespace NHibernate.Tuple.Entity
 
 		public override EntityMode EntityMode
 		{
-			get { return NHibernate.EntityMode.Poco; }
+			get { return EntityMode.Poco; }
 		}
 	}
 }

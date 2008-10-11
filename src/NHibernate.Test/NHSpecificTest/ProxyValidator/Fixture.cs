@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using NHibernate.Proxy;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 {
@@ -10,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 	{
 		private void Validate(System.Type type)
 		{
-			ICollection errors = ProxyTypeValidator.ValidateType(type);
+			ICollection<string> errors = ProxyTypeValidator.ValidateType(type);
 			if (errors != null)
 			{
 				throw new InvalidProxyTypeException(errors);

@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1408
 		public virtual DbResource Resource
 		{
 			get { return resource; }
-			internal set { resource = value; }
+			protected internal set { resource = value; }
 		}
 	}
 }

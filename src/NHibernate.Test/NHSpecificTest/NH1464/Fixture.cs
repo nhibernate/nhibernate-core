@@ -1,8 +1,8 @@
 using System;
-using System.Collections;
 using NHibernate.Proxy;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1464
 {
@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1464
 		[Test]
 		public void NoExceptionForDispose()
 		{
-			ICollection errs = ProxyTypeValidator.ValidateType(typeof (CPPMimic));
+			ICollection<string> errs = ProxyTypeValidator.ValidateType(typeof (CPPMimic));
 			Assert.That(errs, Is.Null);
 			errs = ProxyTypeValidator.ValidateType(typeof(Another));
 			Assert.That(errs, Is.Null);

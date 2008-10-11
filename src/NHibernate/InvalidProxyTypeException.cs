@@ -3,6 +3,7 @@ using System.Collections;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Text;
+using System.Collections.Generic;
 
 namespace NHibernate
 {
@@ -14,22 +15,17 @@ namespace NHibernate
 	[Serializable]
 	public class InvalidProxyTypeException : MappingException
 	{
-		private ICollection errors;
-
-		public InvalidProxyTypeException(ICollection errors)
+		public InvalidProxyTypeException(ICollection<string> errors)
 			: base(FormatMessage(errors))
 		{
-			this.errors = errors;
+			Errors = errors;
 		}
 
-		public ICollection Errors
-		{
-			get { return errors; }
-		}
+		public ICollection<string> Errors { get; private set; }
 
-		private static string FormatMessage(ICollection errors)
+		private static string FormatMessage(IEnumerable<string> errors)
 		{
-			StringBuilder result = new StringBuilder("The following types may not be used as proxies:");
+			var result = new StringBuilder("The following types may not be used as proxies:");
 			foreach (string error in errors)
 			{
 				result.Append('\n').Append(error);
@@ -42,7 +38,7 @@ namespace NHibernate
 		public InvalidProxyTypeException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
-			this.errors = (ICollection) info.GetValue("errors", typeof(ICollection));
+			Errors = (ICollection<string>)info.GetValue("errors", typeof(ICollection));
 		}
 
 		[SecurityPermission(SecurityAction.LinkDemand,
@@ -50,7 +46,7 @@ namespace NHibernate
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);
-			info.AddValue("errors", errors, typeof(ICollection));
+			info.AddValue("errors", Errors, typeof(ICollection));
 		}
 
 		#endregion

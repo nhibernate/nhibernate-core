@@ -4,6 +4,10 @@ Build 2.1.0.GA
 	##### Possible Breaking Changes for external frameworks #####
 		* ISession interface have additional methods
 
+	##### Initialization time #####
+		* The ProxyTypeValidator check for "internal virtual" (to be proxied need "protected internal virtual")
+		
+
 Build 2.0.1.GA
 ========================
 ** Bug

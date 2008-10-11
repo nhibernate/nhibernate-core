@@ -1,6 +1,5 @@
-using System;
 using System.Collections;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Reflection;
 using NHibernate.Util;
 
@@ -8,9 +7,7 @@ namespace NHibernate.Proxy
 {
 	public class ProxyTypeValidator
 	{
-		private ProxyTypeValidator()
-		{
-		}
+		private ProxyTypeValidator() {}
 
 		/// <summary>
 		/// Validates whether <paramref name="type"/> can be specified as the base class
@@ -20,9 +17,9 @@ namespace NHibernate.Proxy
 		/// A collection of errors, if any, or <see langword="null" /> if none were found.
 		/// </returns>
 		/// <param name="type">The type to validate.</param>
-		public static ICollection ValidateType(System.Type type)
+		public static ICollection<string> ValidateType(System.Type type)
 		{
-			StringCollection errors = new StringCollection();
+			var errors = new List<string>();
 
 			if (type.IsInterface)
 			{
@@ -60,7 +57,7 @@ namespace NHibernate.Proxy
 			{
 				if (member is PropertyInfo)
 				{
-					PropertyInfo property = (PropertyInfo) member;
+					var property = (PropertyInfo) member;
 					MethodInfo[] accessors = property.GetAccessors(false);
 
 					foreach (MethodInfo accessor in accessors)
@@ -70,8 +67,7 @@ namespace NHibernate.Proxy
 				}
 				else if (member is MethodInfo)
 				{
-					if (member.DeclaringType == typeof(object)
-					    && member.Name == "GetType")
+					if (member.DeclaringType == typeof (object) && member.Name == "GetType")
 					{
 						// object.GetType is ignored
 						continue;
@@ -80,7 +76,7 @@ namespace NHibernate.Proxy
 				}
 				else if (member is FieldInfo)
 				{
-					FieldInfo memberField = (FieldInfo) member;
+					var memberField = (FieldInfo) member;
 					if (memberField.IsPublic || memberField.IsAssembly || memberField.IsFamilyOrAssembly)
 					{
 						Error(errors, type, "field " + member.Name + " should not be public nor internal");
@@ -91,12 +87,12 @@ namespace NHibernate.Proxy
 
 		private static void CheckMethodIsVirtual(System.Type type, MethodInfo method, IList errors)
 		{
-			if (method.DeclaringType != typeof(object) && !IsDisposeMethod(method) &&
-				method.IsPublic || method.IsAssembly || method.IsFamilyOrAssembly)
+			if (method.DeclaringType != typeof (object) && !IsDisposeMethod(method) && method.IsPublic || method.IsAssembly
+			    || method.IsFamilyOrAssembly)
 			{
-				if (!method.IsVirtual || method.IsFinal)
+				if (!method.IsVirtual || method.IsFinal || (method.IsVirtual && method.IsAssembly))
 				{
-					Error(errors, type, "method " + method.Name + " should be virtual");
+					Error(errors, type, "method " + method.Name + " should be 'public/protected virtual' or 'protected internal virtual'");
 				}
 			}
 		}
@@ -108,12 +104,11 @@ namespace NHibernate.Proxy
 
 		private static bool HasVisibleDefaultConstructor(System.Type type)
 		{
-			ConstructorInfo constructor = type.GetConstructor(
-				BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-				null, System.Type.EmptyTypes, null);
+			ConstructorInfo constructor =
+				type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null,
+				                    System.Type.EmptyTypes, null);
 
-			return constructor != null
-			       && !constructor.IsPrivate;
+			return constructor != null && !constructor.IsPrivate;
 		}
 
 		private static void CheckNotSealed(System.Type type, IList errors)
