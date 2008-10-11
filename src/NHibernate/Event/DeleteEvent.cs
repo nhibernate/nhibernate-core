@@ -26,9 +26,6 @@ namespace NHibernate.Event
 		public DeleteEvent(string entityName, object entity, IEventSource source)
 			: this(entity, source)
 		{
-			if (string.IsNullOrEmpty("entityName"))
-				throw new ArgumentNullException("entityName");
-
 			this.entityName = entityName;
 		}
 
