@@ -322,6 +322,17 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public IQuery SetParameter(int position, object val, System.Type type)
+		{
+			return SetParameter(position, val, GuessType(type));
+		}
+
+		public IQuery SetParameter(string name,object val,System.Type type)
+		{
+			return SetParameter(name, val, GuessType(type));
+		}
+
+
 		public IQuery SetParameter(string name, object val)
 		{
 			if (!parameterMetadata.NamedParameterNames.Contains(name))
