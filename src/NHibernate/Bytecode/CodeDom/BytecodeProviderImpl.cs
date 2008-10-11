@@ -5,23 +5,39 @@ using System.Text;
 using log4net;
 using Microsoft.CSharp;
 using NHibernate.Properties;
+using NHibernate.Util;
 
 namespace NHibernate.Bytecode.CodeDom
 {
 	/// <summary>
 	/// CodeDOM-based bytecode provider.
 	/// </summary>
-	public class BytecodeProviderImpl : IBytecodeProvider
+	public class BytecodeProviderImpl : IBytecodeProvider, IInjectableProxyFactoryFactory
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(BytecodeProviderImpl));
+		private static readonly ILog log = LogManager.GetLogger(typeof (BytecodeProviderImpl));
+		private System.Type proxyFactoryFactory;
 
 		#region IBytecodeProvider Members
 
 		public IProxyFactoryFactory ProxyFactoryFactory
 		{
-			get { return new DefaultProxyFactoryFactory(); }
-		}
+			get
+			{
+				if (proxyFactoryFactory != null)
+				{
+					try
+					{
+						return (IProxyFactoryFactory) Activator.CreateInstance(proxyFactoryFactory);
+					}
+					catch (Exception e)
+					{
+						throw new HibernateException("Failed to create an instance of '" + proxyFactoryFactory.FullName + "'!", e);
+					}
+				}
 
+				throw new HibernateException("The ProxyFactoryFactory was not configured. Initialize the 'proxyfactory.factory_class' property of the session-factory section.");
+			}
+		}
 
 		public IReflectionOptimizer GetReflectionOptimizer(System.Type clazz, IGetter[] getters, ISetter[] setters)
 		{
@@ -36,12 +52,71 @@ namespace NHibernate.Bytecode.CodeDom
 
 		#endregion
 
+		#region Implementation of IInjectableProxyFactoryFactory
+
+		public void SetProxyFactoryFactory(string typeName)
+		{
+			System.Type pffc;
+			try
+			{
+				pffc = ReflectHelper.ClassForName(typeName);
+			}
+			catch (HibernateException he)
+			{
+				throw new HibernateException("Unable to load type '" + typeName + "' during configuration of proxy factory class.",
+				                             he);
+			}
+
+			if (typeof (IProxyFactoryFactory).IsAssignableFrom(pffc) == false)
+			{
+				var he = new HibernateException(pffc.FullName + " does not implement " + typeof (IProxyFactoryFactory).FullName);
+				throw he;
+			}
+			proxyFactoryFactory = pffc;
+		}
+
+		#endregion
+
+		#region Nested type: Generator
+
 		public class Generator
 		{
-			private CompilerParameters cp = new CompilerParameters();
-			private System.Type mappedClass;
-			private IGetter[] getters;
-			private ISetter[] setters;
+			private const string classDef =
+				@"public class GetSetHelper_{0} : IReflectionOptimizer, IAccessOptimizer {{
+					ISetter[] setters;
+					IGetter[] getters;
+					
+					public GetSetHelper_{0}(ISetter[] setters, IGetter[] getters) {{
+						this.setters = setters;
+						this.getters = getters;
+					}}
+
+					public IInstantiationOptimizer InstantiationOptimizer {{
+						get {{ return null; }}
+					}}
+
+					public IAccessOptimizer AccessOptimizer {{
+						get {{ return this; }}
+					}}
+					";
+
+			private const string closeGetMethod = "  return ret;\n" + "}\n";
+			private const string closeSetMethod = "}\n";
+
+			private const string header =
+				"using System;\n" + "using NHibernate.Property;\n" + "namespace NHibernate.Bytecode.CodeDom {\n";
+
+			private const string startGetMethod =
+				"public object[] GetPropertyValues(object obj) {{\n" + "  {0} t = ({0})obj;\n"
+				+ "  object[] ret = new object[{1}];\n";
+
+			private const string startSetMethod =
+				"public void SetPropertyValues(object obj, object[] values) {{\n" + "  {0} t = ({0})obj;\n";
+
+			private readonly CompilerParameters cp = new CompilerParameters();
+			private readonly IGetter[] getters;
+			private readonly System.Type mappedClass;
+			private readonly ISetter[] setters;
 
 			/// <summary>
 			/// ctor
@@ -106,7 +181,10 @@ namespace NHibernate.Bytecode.CodeDom
 			/// <param name="name"></param>
 			private void AddAssembly(string name)
 			{
-				if (name.StartsWith("System.")) return;
+				if (name.StartsWith("System."))
+				{
+					return;
+				}
 
 				if (!cp.ReferencedAssemblies.Contains(name))
 				{
@@ -126,17 +204,14 @@ namespace NHibernate.Bytecode.CodeDom
 			private IReflectionOptimizer Build(string code)
 			{
 				CodeDomProvider provider = new CSharpCodeProvider();
-				CompilerResults res = provider.CompileAssemblyFromSource(cp, new string[] {code});
+				CompilerResults res = provider.CompileAssemblyFromSource(cp, new[] {code});
 
 				if (res.Errors.HasErrors)
 				{
 					log.Debug("Compiled with error:\n" + code);
 					foreach (CompilerError e in res.Errors)
 					{
-						log.Debug(
-							String.Format("Line:{0}, Column:{1} Message:{2}",
-							              e.Line, e.Column, e.ErrorText)
-							);
+						log.Debug(String.Format("Line:{0}, Column:{1} Message:{2}", e.Line, e.Column, e.ErrorText));
 					}
 					throw new InvalidOperationException(res.Errors[0].ErrorText);
 				}
@@ -150,53 +225,13 @@ namespace NHibernate.Bytecode.CodeDom
 
 				Assembly assembly = res.CompiledAssembly;
 				System.Type[] types = assembly.GetTypes();
-				IReflectionOptimizer optimizer = (IReflectionOptimizer) assembly.CreateInstance(types[0].FullName, false,
-				                                                                                BindingFlags.CreateInstance, null,
-				                                                                                new object[] {setters, getters},
-				                                                                                null, null);
+				var optimizer =
+					(IReflectionOptimizer)
+					assembly.CreateInstance(types[0].FullName, false, BindingFlags.CreateInstance, null,
+					                        new object[] {setters, getters}, null, null);
 
 				return optimizer;
 			}
-
-			private const string header =
-				"using System;\n" +
-				"using NHibernate.Property;\n" +
-				"namespace NHibernate.Bytecode.CodeDom {\n";
-
-			private const string classDef =
-				@"public class GetSetHelper_{0} : IReflectionOptimizer, IAccessOptimizer {{
-					ISetter[] setters;
-					IGetter[] getters;
-					
-					public GetSetHelper_{0}(ISetter[] setters, IGetter[] getters) {{
-						this.setters = setters;
-						this.getters = getters;
-					}}
-
-					public IInstantiationOptimizer InstantiationOptimizer {{
-						get {{ return null; }}
-					}}
-
-					public IAccessOptimizer AccessOptimizer {{
-						get {{ return this; }}
-					}}
-					";
-
-			private const string startSetMethod =
-				"public void SetPropertyValues(object obj, object[] values) {{\n" +
-				"  {0} t = ({0})obj;\n";
-
-			private const string closeSetMethod =
-				"}\n";
-
-			private const string startGetMethod =
-				"public object[] GetPropertyValues(object obj) {{\n" +
-				"  {0} t = ({0})obj;\n" +
-				"  object[] ret = new object[{1}];\n";
-
-			private const string closeGetMethod =
-				"  return ret;\n" +
-				"}\n";
 
 			/// <summary>
 			/// Check if the property is public
@@ -218,7 +253,7 @@ namespace NHibernate.Bytecode.CodeDom
 			/// <returns>C# code</returns>
 			private string GenerateCode()
 			{
-				StringBuilder sb = new StringBuilder();
+				var sb = new StringBuilder();
 
 				sb.Append(header);
 				sb.AppendFormat(classDef, mappedClass.FullName.Replace('.', '_').Replace("+", "__"));
@@ -234,18 +269,12 @@ namespace NHibernate.Bytecode.CodeDom
 
 						if (type.IsValueType)
 						{
-							sb.AppendFormat(
-								"  t.{0} = values[{2}] == null ? new {1}() : ({1})values[{2}];\n",
-								setter.PropertyName,
-								type.FullName.Replace('+', '.'),
-								i);
+							sb.AppendFormat("  t.{0} = values[{2}] == null ? new {1}() : ({1})values[{2}];\n", setter.PropertyName,
+							                type.FullName.Replace('+', '.'), i);
 						}
 						else
 						{
-							sb.AppendFormat("  t.{0} = ({1})values[{2}];\n",
-							                setter.PropertyName,
-							                type.FullName.Replace('+', '.'),
-							                i);
+							sb.AppendFormat("  t.{0} = ({1})values[{2}];\n", setter.PropertyName, type.FullName.Replace('+', '.'), i);
 						}
 					}
 					else
@@ -276,5 +305,7 @@ namespace NHibernate.Bytecode.CodeDom
 				return sb.ToString();
 			}
 		}
+
+		#endregion
 	}
 }

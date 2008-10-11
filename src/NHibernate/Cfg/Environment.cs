@@ -4,8 +4,9 @@ using System.Configuration;
 using System.Reflection;
 using log4net;
 using NHibernate.Bytecode;
-using NHibernate.Util;
+using NHibernate.Bytecode.CodeDom;
 using NHibernate.Cfg.ConfigurationSchema;
+using NHibernate.Util;
 
 namespace NHibernate.Cfg
 {
@@ -34,7 +35,7 @@ namespace NHibernate.Cfg
 	/// Properties in hibernate.cfg.xml override/merge properties in application configuration file where same
 	/// property is found. For others configuration a merge is applied.
 	/// </remarks>
-	public sealed class Environment
+	public static class Environment
 	{
 		private static string cachedVersion;
 
@@ -48,9 +49,9 @@ namespace NHibernate.Cfg
 				if (cachedVersion == null)
 				{
 					Assembly thisAssembly = Assembly.GetExecutingAssembly();
-					AssemblyInformationalVersionAttribute[] attrs = (AssemblyInformationalVersionAttribute[])
-																													thisAssembly.GetCustomAttributes(
-																														typeof(AssemblyInformationalVersionAttribute), false);
+					var attrs =
+						(AssemblyInformationalVersionAttribute[])
+						thisAssembly.GetCustomAttributes(typeof (AssemblyInformationalVersionAttribute), false);
 
 					if (attrs != null && attrs.Length > 0)
 					{
@@ -80,8 +81,10 @@ namespace NHibernate.Cfg
 		public const string SessionFactoryName = "session_factory_name";
 
 		public const string Dialect = "dialect";
+
 		/// <summary> A default database schema (owner) name to use for unqualified tablenames</summary>
 		public const string DefaultSchema = "default_schema";
+
 		/// <summary> A default database catalog name to use for unqualified tablenames</summary>
 		public const string DefaultCatalog = "default_catalog";
 
@@ -156,16 +159,14 @@ namespace NHibernate.Cfg
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;
 
-		private static readonly ILog log = LogManager.GetLogger(typeof(Environment));
+		private static readonly ILog log = LogManager.GetLogger(typeof (Environment));
 
 		/// <summary>
 		/// Issue warnings to user when any obsolete property names are used.
 		/// </summary>
 		/// <param name="props"></param>
 		/// <returns></returns>
-		public static void VerifyProperties(IDictionary<string, string> props)
-		{
-		}
+		public static void VerifyProperties(IDictionary<string, string> props) {}
 
 		static Environment()
 		{
@@ -177,6 +178,7 @@ namespace NHibernate.Cfg
 
 			GlobalProperties = new Dictionary<string, string>();
 			GlobalProperties[PropertyUseReflectionOptimizer] = bool.TrueString;
+			SetDefaultProxyFactoryFactory();
 			LoadGlobalPropertiesFromAppConfig();
 			VerifyProperties(GlobalProperties);
 
@@ -189,6 +191,12 @@ namespace NHibernate.Cfg
 			}
 		}
 
+		private static void SetDefaultProxyFactoryFactory()
+		{
+			// maitaining the optionality of set the proxyfactory.factory_class property
+			GlobalProperties[ProxyFactoryFactoryClass] = "NHibernate.Bytecode.Castle.DefaultProxyFactoryFactory, NHibernate";
+		}
+
 		private static void LoadGlobalPropertiesFromAppConfig()
 		{
 			object config = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName);
@@ -199,16 +207,19 @@ namespace NHibernate.Cfg
 				return;
 			}
 
-			IHibernateConfiguration NHconfig = config as IHibernateConfiguration;
-			if (NHconfig == null)
+			var nhConfig = config as IHibernateConfiguration;
+			if (nhConfig == null)
 			{
-				log.Info(string.Format("{0} section handler, in application configuration file, is not IHibernateConfiguration, section ignored", CfgXmlHelper.CfgSectionName));
+				log.Info(
+					string.Format(
+						"{0} section handler, in application configuration file, is not IHibernateConfiguration, section ignored",
+						CfgXmlHelper.CfgSectionName));
 				return;
 			}
 
-			GlobalProperties[PropertyBytecodeProvider] = CfgXmlHelper.ByteCodeProviderToString(NHconfig.ByteCodeProviderType);
-			GlobalProperties[PropertyUseReflectionOptimizer] = NHconfig.UseReflectionOptimizer.ToString();
-			foreach (KeyValuePair<string, string> kvp in NHconfig.SessionFactory.Properties)
+			GlobalProperties[PropertyBytecodeProvider] = CfgXmlHelper.ByteCodeProviderToString(nhConfig.ByteCodeProviderType);
+			GlobalProperties[PropertyUseReflectionOptimizer] = nhConfig.UseReflectionOptimizer.ToString();
+			foreach (KeyValuePair<string, string> kvp in nhConfig.SessionFactory.Properties)
 			{
 				GlobalProperties[kvp.Key] = kvp.Value;
 			}
@@ -221,23 +232,28 @@ namespace NHibernate.Cfg
 
 			// Save values loaded and used in static constructor
 			if (GlobalProperties.ContainsKey(PropertyBytecodeProvider))
+			{
 				savedBytecodeProvider = GlobalProperties[PropertyBytecodeProvider];
+			}
 			if (GlobalProperties.ContainsKey(PropertyUseReflectionOptimizer))
+			{
 				savedUseReflectionOptimizer = GlobalProperties[PropertyUseReflectionOptimizer];
+			}
 			// Clean all property loaded from app.config
 			GlobalProperties.Clear();
 
 			// Restore values loaded and used in static constructor
 			if (savedBytecodeProvider != null)
+			{
 				GlobalProperties[PropertyBytecodeProvider] = savedBytecodeProvider;
+			}
 
 			if (savedUseReflectionOptimizer != null)
+			{
 				GlobalProperties[PropertyUseReflectionOptimizer] = savedUseReflectionOptimizer;
-		}
+			}
 
-		private Environment()
-		{
-			// should not be created.	
+			SetDefaultProxyFactoryFactory();
 		}
 
 		/// <summary>
@@ -250,12 +266,6 @@ namespace NHibernate.Cfg
 		public static IDictionary<string, string> Properties
 		{
 			get { return new Dictionary<string, string>(GlobalProperties); }
-		}
-
-		[Obsolete]
-		public static bool UseStreamsForBinary
-		{
-			get { return true; }
 		}
 
 		/// <summary>
@@ -294,9 +304,8 @@ namespace NHibernate.Cfg
 
 		public static IBytecodeProvider BuildBytecodeProvider(IDictionary<string, string> properties)
 		{
-			string defaultBytecodeProvider = "lcg";
-			string provider = PropertiesHelper.GetString(PropertyBytecodeProvider, properties,
-																									 defaultBytecodeProvider);
+			const string defaultBytecodeProvider = "lcg";
+			string provider = PropertiesHelper.GetString(PropertyBytecodeProvider, properties, defaultBytecodeProvider);
 			log.Info("Bytecode provider name : " + provider);
 			return BuildBytecodeProvider(provider);
 		}
@@ -306,7 +315,7 @@ namespace NHibernate.Cfg
 			switch (providerName)
 			{
 				case "codedom":
-					return new Bytecode.CodeDom.BytecodeProviderImpl();
+					return new BytecodeProviderImpl();
 				case "lcg":
 					return new Bytecode.Lightweight.BytecodeProviderImpl();
 				case "null":

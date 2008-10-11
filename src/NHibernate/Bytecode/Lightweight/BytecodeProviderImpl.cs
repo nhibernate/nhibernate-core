@@ -33,7 +33,7 @@ namespace NHibernate.Bytecode.Lightweight
 						throw new HibernateException("Failed to create an instance of '" + proxyFactoryFactory.FullName + "'!", e);
 					}
 				}
-				return new DefaultProxyFactoryFactory();
+				throw new HibernateException("The ProxyFactoryFactory was not configured. Initialize the 'proxyfactory.factory_class' property of the session-factory section.");
 			}
 		}
 
