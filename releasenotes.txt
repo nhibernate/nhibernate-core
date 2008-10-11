@@ -3,6 +3,7 @@ Build 2.1.0.GA
 ** BREAKING CHANGES from NH2.0.xGA to NH2.1.0
 	##### Possible Breaking Changes for external frameworks #####
 		* ISession interface have additional methods
+		* DefaultProxyFactoryFactory moved to NHibernate.Bytecode.Castle
 
 	##### Initialization time #####
 		* The ProxyTypeValidator check for "internal virtual" (to be proxied need "protected internal virtual")
