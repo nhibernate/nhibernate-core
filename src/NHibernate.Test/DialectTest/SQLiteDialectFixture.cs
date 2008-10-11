@@ -31,7 +31,7 @@ namespace NHibernate.Test.DialectTest
             Assert.AreEqual("SELECT id, name, email FROM Users limit 10, 5", s.ToString());
         }
 
-        [Test, Ignore("was broken in r3839")]
+        [Test]
         public void QuotedSchemaNameWithSqlLite()
         {
             Table tbl = new Table();
@@ -39,7 +39,7 @@ namespace NHibernate.Test.DialectTest
             tbl.Name = "`name`";
 
             Assert.AreEqual("\"schema_name\"", tbl.GetQualifiedName(dialect));
-            Assert.AreEqual("\"schema_table\"", dialect.Qualify("","\"schema\"", "\"table\""));
+            Assert.AreEqual("\"schema_table\"", dialect.Qualify("", "\"schema\"", "\"table\""));
         }
 
         [Test]
@@ -51,8 +51,8 @@ namespace NHibernate.Test.DialectTest
             Assert.AreEqual("\"name\"", tbl.GetQualifiedName(dialect));
         }
 
-				[Test, Ignore("was broken in r3839")]
-				public void QuotedSchemaNameWithUnqoutedTableInSqlLite()
+        [Test]
+        public void QuotedSchemaNameWithUnqoutedTableInSqlLite()
         {
             Table tbl = new Table();
             tbl.Schema = "`schema`";
@@ -62,8 +62,8 @@ namespace NHibernate.Test.DialectTest
             Assert.AreEqual("\"schema_table\"", dialect.Qualify("", "\"schema\"", "table"));
         }
 
-				[Test, Ignore("was broken in r3839")]
-				public void QuotedCatalogSchemaNameWithSqlLite()
+        [Test]
+        public void QuotedCatalogSchemaNameWithSqlLite()
         {
             Table tbl = new Table();
             tbl.Catalog = "dbo";
@@ -92,7 +92,7 @@ namespace NHibernate.Test.DialectTest
             tbl.Name = "name";
 
             Assert.AreEqual("schema_name", tbl.GetQualifiedName(dialect));
-            Assert.AreEqual("schema_table", dialect.Qualify("","schema","table"));
+            Assert.AreEqual("schema_table", dialect.Qualify("", "schema", "table"));
         }
     }
 }

@@ -114,8 +114,8 @@ namespace NHibernate.Dialect
 		{
 			StringBuilder qualifiedName = new StringBuilder();
 		    bool quoted = false;
-
-			if (!string.IsNullOrEmpty(catalog))
+			
+            if (!string.IsNullOrEmpty(catalog))
 			{
                 if (catalog.StartsWith(OpenQuote.ToString()))
                 {
@@ -133,12 +133,12 @@ namespace NHibernate.Dialect
 			{
 				if (schema.StartsWith(OpenQuote.ToString()))
 				{
-				    schema = schema.Substring(0, schema.Length - 1);
+                    schema = schema.Substring(1, schema.Length - 1);
 				    quoted = true;
 				}
-                if (schema.EndsWith(OpenQuote.ToString()))
+                if (schema.EndsWith(CloseQuote.ToString()))
                 {
-                    schema = schema.Substring(1, schema.Length - 1);
+                    schema = schema.Substring(0, schema.Length - 1);
                     quoted = true;
                 } 
                 qualifiedName.Append(schema).Append(StringHelper.Underscore);
@@ -149,7 +149,7 @@ namespace NHibernate.Dialect
 			    table = table.Substring(1, table.Length - 1);
 			    quoted = true;
 			}
-            if (table.EndsWith(OpenQuote.ToString()))
+            if (table.EndsWith(CloseQuote.ToString()))
             {
                 table = table.Substring(0, table.Length - 1);
                 quoted = true;
