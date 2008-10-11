@@ -113,24 +113,52 @@ namespace NHibernate.Dialect
 		public override string Qualify(string catalog, string schema, string table)
 		{
 			StringBuilder qualifiedName = new StringBuilder();
+		    bool quoted = false;
 
 			if (!string.IsNullOrEmpty(catalog))
 			{
-				if (catalog.EndsWith(CloseQuote.ToString()))
-					catalog = catalog.Substring(0, catalog.Length - 1);
+                if (catalog.StartsWith(OpenQuote.ToString()))
+                {
+                    catalog = catalog.Substring(1, catalog.Length - 1);
+                    quoted = true;
+                } 
+                if (catalog.EndsWith(CloseQuote.ToString()))
+				{
+				    catalog = catalog.Substring(0, catalog.Length - 1);
+				    quoted = true;
+				}
 				qualifiedName.Append(catalog).Append(StringHelper.Underscore);
 			}
 			if (!string.IsNullOrEmpty(schema))
 			{
 				if (schema.StartsWith(OpenQuote.ToString()))
-					schema = schema.Substring(0, schema.Length - 1);
-				qualifiedName.Append(schema).Append(StringHelper.Underscore);
+				{
+				    schema = schema.Substring(0, schema.Length - 1);
+				    quoted = true;
+				}
+                if (schema.EndsWith(OpenQuote.ToString()))
+                {
+                    schema = schema.Substring(1, schema.Length - 1);
+                    quoted = true;
+                } 
+                qualifiedName.Append(schema).Append(StringHelper.Underscore);
 			}
 
 			if (table.StartsWith(OpenQuote.ToString()))
-				table = table.Substring(1, table.Length - 1);
+			{
+			    table = table.Substring(1, table.Length - 1);
+			    quoted = true;
+			}
+            if (table.EndsWith(OpenQuote.ToString()))
+            {
+                table = table.Substring(0, table.Length - 1);
+                quoted = true;
+            }
 
-			return qualifiedName.Append(table).ToString();
+		    string name = qualifiedName.Append(table).ToString();
+            if (quoted)
+                return OpenQuote + name + CloseQuote;
+		    return name;
 
 		}
 
