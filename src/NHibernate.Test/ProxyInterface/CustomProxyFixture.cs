@@ -72,6 +72,11 @@ namespace NHibernate.Test.ProxyInterface
 			return new DataBindingProxyFactory();
 		}
 
+		public IProxyValidator ProxyValidator
+		{
+			get { return new DynProxyTypeValidator(); }
+		}
+
 		#endregion
 	}
 

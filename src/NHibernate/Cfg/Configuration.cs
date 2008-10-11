@@ -785,13 +785,14 @@ namespace NHibernate.Cfg
 		{
 			bool validateProxy = PropertiesHelper.GetBoolean(Environment.UseProxyValidator, properties, true);
 			HashedSet<string> allProxyErrors = null;
+			IProxyValidator pvalidator = Environment.BytecodeProvider.ProxyFactoryFactory.ProxyValidator;
 
 			foreach (var clazz in classes.Values)
 			{
 				clazz.Validate(mapping);
 				if (validateProxy)
 				{
-					ICollection<string> errors = ValidateProxyInterface(clazz);
+					ICollection<string> errors = ValidateProxyInterface(clazz, pvalidator);
 					if (errors != null)
 					{
 						if (allProxyErrors == null)
@@ -817,7 +818,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		private static ICollection<string> ValidateProxyInterface(PersistentClass persistentClass)
+		private static ICollection<string> ValidateProxyInterface(PersistentClass persistentClass, IProxyValidator validator)
 		{
 			if (!persistentClass.IsLazy)
 			{
@@ -831,7 +832,7 @@ namespace NHibernate.Cfg
 				return null;
 			}
 
-			return ProxyTypeValidator.ValidateType(persistentClass.ProxyInterface);
+			return validator.ValidateType(persistentClass.ProxyInterface);
 		}
 
 		/// <summary> 

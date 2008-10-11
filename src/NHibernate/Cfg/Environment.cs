@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Reflection;
@@ -194,7 +193,7 @@ namespace NHibernate.Cfg
 		private static void SetDefaultProxyFactoryFactory()
 		{
 			// maitaining the optionality of set the proxyfactory.factory_class property
-			GlobalProperties[ProxyFactoryFactoryClass] = "NHibernate.Bytecode.Castle.DefaultProxyFactoryFactory, NHibernate";
+			GlobalProperties[ProxyFactoryFactoryClass] = "NHibernate.Bytecode.Castle.ProxyFactoryFactory, NHibernate";
 		}
 
 		private static void LoadGlobalPropertiesFromAppConfig()

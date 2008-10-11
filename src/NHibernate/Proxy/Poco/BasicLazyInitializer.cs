@@ -77,7 +77,7 @@ namespace NHibernate.Proxy.Poco
 				{
 					return Identifier;
 				}
-				else if (methodName == "Finalize")
+				else if (methodName == "Dispose")
 				{
 					return null;
 				}

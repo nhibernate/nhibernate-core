@@ -8,6 +8,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1515
 	[TestFixture]
 	public class Fixture
 	{
+		private readonly IProxyValidator pv = new DynProxyTypeValidator();
+
 		public class ClassWithInternal
 		{
 			internal virtual void DoSomething() {}
@@ -21,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1515
 		[Test]
 		public void NoExceptionForMethod()
 		{
-			ICollection<string> errs = ProxyTypeValidator.ValidateType(typeof(ClassWithInternal));
+			ICollection<string> errs = pv.ValidateType(typeof(ClassWithInternal));
 			Assert.That(errs, Is.Not.Null);
 			Assert.That(errs.Count, Is.EqualTo(1));
 		}
@@ -29,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1515
 		[Test]
 		public void NoExceptionForProperty()
 		{
-			ICollection<string> errs = ProxyTypeValidator.ValidateType(typeof(ClassWithInternalProperty));
+			ICollection<string> errs = pv.ValidateType(typeof(ClassWithInternalProperty));
 			Assert.That(errs, Is.Not.Null);
 			Assert.That(errs.Count, Is.EqualTo(2));
 		}

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using NHibernate.Proxy;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -9,9 +8,11 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 	[TestFixture]
 	public class Fixture
 	{
+		private readonly IProxyValidator pv = new DynProxyTypeValidator();
+
 		private void Validate(System.Type type)
 		{
-			ICollection<string> errors = ProxyTypeValidator.ValidateType(type);
+			ICollection<string> errors = pv.ValidateType(type);
 			if (errors != null)
 			{
 				throw new InvalidProxyTypeException(errors);

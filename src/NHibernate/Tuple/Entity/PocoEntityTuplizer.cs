@@ -23,6 +23,7 @@ namespace NHibernate.Tuple.Entity
 		private readonly bool isValidatableImplementor;
 		private readonly HashedSet<string> lazyPropertyNames = new HashedSet<string>();
 		private readonly IReflectionOptimizer optimizer;
+		private readonly IProxyValidator proxyValidator;
 
 		public PocoEntityTuplizer(EntityMetamodel entityMetamodel, PersistentClass mappedEntity)
 			: base(entityMetamodel, mappedEntity)
@@ -46,6 +47,8 @@ namespace NHibernate.Tuple.Entity
 			{
 				optimizer = Cfg.Environment.BytecodeProvider.GetReflectionOptimizer(mappedClass, getters, setters);
 			}
+
+			proxyValidator = Cfg.Environment.BytecodeProvider.ProxyFactoryFactory.ProxyValidator;
 		}
 
 		public override System.Type ConcreteProxyClass
@@ -163,33 +166,32 @@ namespace NHibernate.Tuple.Entity
 			return pf;
 		}
 
-		private static void LogPropertyAccessorsErrors(PersistentClass persistentClass)
+		private void LogPropertyAccessorsErrors(PersistentClass persistentClass)
 		{
+			if (proxyValidator == null)
+			{
+				return;
+			}
+
 			// This method work when Environment.UseProxyValidator is off
 			System.Type clazz = persistentClass.MappedClass;
 			foreach (Mapping.Property property in persistentClass.PropertyIterator)
 			{
 				MethodInfo method = property.GetGetter(clazz).Method;
-				if (ShouldLogError(method))
+				if (!proxyValidator.IsProxeable(method))
 				{
 					log.Error(
 						string.Format("Getters of lazy classes cannot be final: {0}.{1}", persistentClass.MappedClass.FullName,
 						              property.Name));
 				}
 				method = property.GetSetter(clazz).Method;
-				if (ShouldLogError(method))
+				if (!proxyValidator.IsProxeable(method))
 				{
 					log.Error(
 						string.Format("Setters of lazy classes cannot be final: {0}.{1}", persistentClass.MappedClass.FullName,
 						              property.Name));
 				}
 			}
-		}
-
-		private static bool ShouldLogError(MethodBase method)
-		{
-			// In NET if IsVirtual is false or IsFinal is true, then the method cannot be overridden.
-			return method != null && (!method.IsVirtual || method.IsFinal || (method.IsVirtual && method.IsAssembly));
 		}
 
 		protected virtual IProxyFactory BuildProxyFactoryInternal(PersistentClass @class, IGetter getter, ISetter setter)

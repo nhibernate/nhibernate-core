@@ -303,7 +303,7 @@
     <Compile Include="Proxy\IProxyFactory.cs" />
     <Compile Include="Proxy\AbstractLazyInitializer.cs" />
     <Compile Include="Proxy\NHibernateProxyHelper.cs" />
-    <Compile Include="Proxy\ProxyTypeValidator.cs" />
+    <Compile Include="Proxy\DynProxyTypeValidator.cs" />
     <Compile Include="QueryException.cs" />
     <Compile Include="ReplicationMode.cs" />
     <Compile Include="SqlCommand\Alias.cs" />
@@ -452,7 +452,7 @@
     <Compile Include="AdoNet\TooManyRowsAffectedException.cs" />
     <Compile Include="Properties\BackFieldStrategy.cs" />
     <Compile Include="Bytecode\CodeDom\BytecodeProviderImpl.cs" />
-    <Compile Include="Bytecode\Castle\DefaultProxyFactoryFactory.cs" />
+    <Compile Include="Bytecode\Castle\ProxyFactoryFactory.cs" />
     <Compile Include="Bytecode\IAccessOptimizer.cs" />
     <Compile Include="Bytecode\IBytecodeProvider.cs" />
     <Compile Include="Bytecode\IInjectableProxyFactoryFactory.cs" />
@@ -830,6 +830,7 @@
     <Compile Include="Properties\IndexPropertyAccessor.cs" />
     <Compile Include="Properties\MapAccessor.cs" />
     <Compile Include="Properties\NoopAccessor.cs" />
+    <Compile Include="Proxy\IProxyValidator.cs" />
     <Compile Include="Proxy\IEntityNotFoundDelegate.cs" />
     <Compile Include="Proxy\ILazyInitializer.cs" />
     <Compile Include="Proxy\Map\MapLazyInitializer.cs" />
