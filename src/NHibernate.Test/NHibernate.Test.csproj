@@ -373,6 +373,9 @@
     <Compile Include="NHSpecificTest\CollectionFixture.cs" />
     <Compile Include="NHSpecificTest\CriteriaFromHql\Fixture.cs" />
     <Compile Include="NHSpecificTest\CriteriaFromHql\Person.cs" />
+    <Compile Include="NHSpecificTest\NH1033\Animal.cs" />
+    <Compile Include="NHSpecificTest\NH1033\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1033\Reptile.cs" />
     <Compile Include="NHSpecificTest\NH1077\A.cs" />
     <Compile Include="NHSpecificTest\NH1077\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1098\FilterParameterOrderFixture.cs" />
@@ -1497,6 +1500,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1033\Mappings.hbm.xml" />
     <EmbeddedResource Include="EntityModeTest\Multi\Stock.hbm.xml" />
     <EmbeddedResource Include="EntityModeTest\Multi\Valuation.hbm.xml" />
     <EmbeddedResource Include="EntityModeTest\Xml\Many2One\Car.hbm.xml" />
