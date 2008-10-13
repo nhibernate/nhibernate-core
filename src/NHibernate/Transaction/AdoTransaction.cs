@@ -206,7 +206,7 @@ namespace NHibernate.Transaction
 			}
 			finally
 			{
-				CloseIfRequerid();
+				CloseIfRequired();
 			}
 		}
 
@@ -249,7 +249,7 @@ namespace NHibernate.Transaction
 				finally
 				{
 					AfterTransactionCompletion(false);
-					CloseIfRequerid();
+					CloseIfRequired();
 				}
 			}
 		}
@@ -288,7 +288,7 @@ namespace NHibernate.Transaction
 			get { return trans.IsolationLevel; }
 		}
 
-		void CloseIfRequerid()
+		void CloseIfRequired()
 		{
 			//bool close = session.ShouldAutoClose() && !transactionContext.isClosed();
 			//if (close)
