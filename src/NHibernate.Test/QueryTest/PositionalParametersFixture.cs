@@ -59,7 +59,7 @@ namespace NHibernate.Test.QueryTest
 			}
 		}
 
-		[Test, ExpectedException(typeof(IndexOutOfRangeException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void TestPositionOutOfBounds()
 		{
 			ISession s = OpenSession();
@@ -80,7 +80,7 @@ namespace NHibernate.Test.QueryTest
 			}
 		}
 
-		[Test, ExpectedException(typeof(IndexOutOfRangeException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void TestNoPositionalParameters()
 		{
 			ISession s = OpenSession();
