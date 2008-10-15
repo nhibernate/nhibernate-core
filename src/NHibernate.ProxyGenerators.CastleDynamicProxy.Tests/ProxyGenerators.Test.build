@@ -32,6 +32,10 @@
 			<include name="nunit.framework.dll"/>
 		</assemblyfileset>
 
+		<resourcefileset id="project.resources" prefix="NHibernate.ProxyGenerators.CastleDynamicProxy.Tests" dynamicprefix="true">
+			<include name="**/*.xml" />
+			<exclude name="bin/**/*.xml" />
+		</resourcefileset>
 	</target>
 
 	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
