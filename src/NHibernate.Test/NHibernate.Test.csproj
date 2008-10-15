@@ -757,6 +757,10 @@
     <Compile Include="Ondelete\ParentChildFixture.cs" />
     <Compile Include="Ondelete\Person.cs" />
     <Compile Include="Ondelete\Salesperson.cs" />
+    <Compile Include="ProjectionFixtures\Key.cs" />
+    <Compile Include="ProjectionFixtures\Fixture.cs" />
+    <Compile Include="ProjectionFixtures\NodeType.cs" />
+    <Compile Include="ProjectionFixtures\TreeNode.cs" />
     <Compile Include="PropertyRef\A.cs" />
     <Compile Include="PropertyRef\B.cs" />
     <Compile Include="PropertyRef\KeyPropertyRefFixture.cs" />
@@ -1499,6 +1503,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="ProjectionFixtures\Mapping.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1033\Mappings.hbm.xml" />
     <EmbeddedResource Include="EntityModeTest\Multi\Stock.hbm.xml" />
     <EmbeddedResource Include="EntityModeTest\Multi\Valuation.hbm.xml" />

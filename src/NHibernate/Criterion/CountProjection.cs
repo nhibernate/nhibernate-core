@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -34,7 +35,19 @@ namespace NHibernate.Criterion
 			{
 				buf.Add("distinct ");
 			}
-			buf.Add(criteriaQuery.GetColumn(criteria, propertyName)).Add(") as y").Add(position.ToString()).Add("_");
+		    string column;
+            if(projection!=null)
+            {
+                column =
+                    StringHelper.RemoveAsAliasesFromSql(projection.ToSqlString(criteria, position, criteriaQuery,
+                                                                               enabledFilters)).ToString();
+            }
+            else
+            {
+                column = criteriaQuery.GetColumn(criteria, propertyName);
+            }
+
+		    buf.Add(column).Add(") as y").Add(position.ToString()).Add("_");
 			return buf.ToSqlString();
 		}
 

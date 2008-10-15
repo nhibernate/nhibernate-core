@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.ProjectionFixtures">
+
+  <class name="TreeNode">
+    <composite-id name="Key">
+      <key-property name="Id" />
+      <key-property name="Area" />
+    </composite-id>
+    <many-to-one name="Parent">
+      <column name="Parent"/>
+      <column name="ParentArea"/>
+    </many-to-one>
+    <set name="DirectChildren">
+      <key>
+        <column name="Parent"/>
+        <column name="ParentArea"/>
+      </key>
+      <one-to-many class="TreeNode"/>
+    </set>
+    <property name="Type"/>
+  </class>
+ 
+</hibernate-mapping>

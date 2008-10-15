@@ -193,7 +193,15 @@ namespace NHibernate.AdoNet
 		{
 			CheckReaders();
 			Prepare(cmd);
-			return cmd.ExecuteNonQuery();
+		    try
+		    {
+		        return cmd.ExecuteNonQuery();
+		    }
+		    catch (Exception e)
+		    {
+		        e.Data["actual-sql-query"] = cmd.CommandText;
+		        throw;
+		    }
 		}
 
 		public IDataReader ExecuteReader(IDbCommand cmd)
@@ -201,9 +209,18 @@ namespace NHibernate.AdoNet
 			CheckReaders();
 			Prepare(cmd);
 
-			IDataReader reader = cmd.ExecuteReader();
+			IDataReader reader;
+		    try
+		    {
+		        reader = cmd.ExecuteReader();
+		    }
+		    catch (Exception e)
+		    {
+		        e.Data["actual-sql-query"] = cmd.CommandText;
+		        throw;
+		    }
 
-			if (!factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders)
+		    if (!factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders)
 			{
 				reader = new NHybridDataReader(reader);
 			}
