@@ -5,6 +5,7 @@ namespace NHibernate.Test.ProjectionFixtures
 {
     public class TreeNode
     {
+        public virtual string Name { get; set; }
         public virtual Key Key { get; set; }
         public virtual TreeNode Parent { get; set; }
         public virtual NodeType Type { get; set; }

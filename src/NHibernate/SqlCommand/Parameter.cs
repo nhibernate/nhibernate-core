@@ -10,10 +10,24 @@ namespace NHibernate.SqlCommand
 	[Serializable]
 	public class Parameter
 	{
-		/// <summary>
-		/// Used as a placeholder when parsing HQL or SQL queries.
-		/// </summary>
-		public static readonly Parameter Placeholder = new Parameter();
+        /// <summary>
+        /// We need to know what the position of the parameter was in a query
+        /// before we rearranged the query.
+        /// This is used only by dialects that rearrange the query, unforantely, 
+        /// the MS SQL 2005 dialect have to re shuffle the query (and ruin positional parameter
+        /// support) because the SQL 2005 and 2008 SQL dialects have a completely broken
+        /// support for paging, which is just a tad less important than SELECT.
+        /// See  	 NH-1528
+        /// </summary>
+	    public int? OriginalPositionInQuery;
+
+	    /// <summary>
+	    /// Used as a placeholder when parsing HQL or SQL queries.
+	    /// </summary>
+	    public static Parameter Placeholder
+	    {
+            get { return new Parameter(); }
+	    }
 
 		private Parameter()
 		{
@@ -44,8 +58,9 @@ namespace NHibernate.SqlCommand
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			// All parameters are equal
-			return obj == this || obj is Parameter;
+			// All parameters are equal, this check that
+            // the other one is not null and a parameter
+			return obj is Parameter;
 		}
 
 		/// <summary>
@@ -64,5 +79,35 @@ namespace NHibernate.SqlCommand
 		{
 			return StringHelper.SqlParameter;
 		}
+
+        public static bool operator ==(Parameter a, Parameter b)
+        {
+            return Equals(a, b);
+        }
+
+        public static bool operator ==(object a, Parameter b)
+        {
+            return Equals(a, b);
+        }
+
+        public static bool operator ==(Parameter a, object b)
+        {
+            return Equals(a, b);
+        }
+
+	    public static bool operator !=(Parameter a, object b)
+	    {
+	        return !(a == b);
+	    }
+
+	    public static bool operator !=(object a, Parameter b)
+	    {
+	        return !(a == b);
+	    }
+
+	    public static bool operator !=(Parameter a, Parameter b)
+	    {
+	        return !(a == b);
+	    }
 	}
 }

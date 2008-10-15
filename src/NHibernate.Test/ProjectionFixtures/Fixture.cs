@@ -140,5 +140,25 @@ Positional parameters:  #0>2
                 criteria.List();
             }
         }
+
+        [Test]
+        public void QueryingWithParemetersAndParaemtersInOrderBy()
+        {
+            using (var s = OpenSession())
+            {
+                ICriteria criteria = s.CreateCriteria(typeof(TreeNode), "parent")
+                    .Add(Restrictions.Like("Name","ayende"))
+                    .Add(Restrictions.Gt("Key.Id", 0));
+
+                var currentAssessment = DetachedCriteria.For<TreeNode>("child")
+                    .Add(Restrictions.Eq("Type", NodeType.Smart))
+                    .SetProjection(Projections.Property("Type"));
+
+                criteria.AddOrder(Order.Asc(Projections.SubQuery(currentAssessment)))
+                    .SetMaxResults(1000);
+
+                criteria.List();
+            }
+        }
     }
 }

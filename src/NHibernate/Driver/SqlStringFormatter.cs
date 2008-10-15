@@ -35,9 +35,10 @@ namespace NHibernate.Driver
 			result.Append(sqlString.ToString());
 		}
 
-		void ISqlStringVisitor.Parameter()
+		void ISqlStringVisitor.Parameter(Parameter parameter)
 		{
-			string name = formatter.GetParameterName(parameterIndex);
+			string name = formatter.GetParameterName(
+                parameter.OriginalPositionInQuery ?? parameterIndex);
 			parameterIndex++;
 			result.Append(name);
 		}

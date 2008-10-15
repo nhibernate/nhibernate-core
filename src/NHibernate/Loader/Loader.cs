@@ -445,6 +445,11 @@ namespace NHibernate.Loader
 					log.Debug(string.Format("done processing result set ({0} rows)", count));
 				}
 			}
+            catch(Exception e)
+            {
+                e.Data["actual-sql-query"] = st.CommandText;
+                throw;
+            }
 			finally
 			{
 				session.Batcher.CloseCommand(st, rs);

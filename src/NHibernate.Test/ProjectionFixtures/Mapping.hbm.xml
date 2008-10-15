@@ -20,6 +20,7 @@
       <one-to-many class="TreeNode"/>
     </set>
     <property name="Type"/>
+    <property name="Name"/>
   </class>
  
 </hibernate-mapping>

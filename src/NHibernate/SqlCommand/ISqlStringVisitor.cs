@@ -6,6 +6,6 @@ namespace NHibernate.SqlCommand
 	{
 		void String(string text);
 		void String(SqlString sqlString);
-		void Parameter();
+		void Parameter(Parameter parameter);
 	}
 }

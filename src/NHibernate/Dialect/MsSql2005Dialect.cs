@@ -44,6 +44,20 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		public override SqlString GetLimitString(SqlString querySqlString, int offset, int last)
 		{
+            // we have to do this in order to support parameters in order clause, the foramt 
+            // that sql 2005 uses for paging means that we move the parameters around, which means,
+            // that positions are lost, so we record them before making any changes.
+            //  NH-1528
+		    int parameterPositon = 0;
+		    foreach (var part in querySqlString.Parts)
+		    {
+		        Parameter param = part as Parameter;
+		        if (param == null) 
+                    continue;
+		        param.OriginalPositionInQuery = parameterPositon;
+		        parameterPositon += 1;
+		    }
+
 			int fromIndex = GetFromIndex(querySqlString);
 			SqlString select = querySqlString.Substring(0, fromIndex);
             List<SqlString> columnsOrAliases;

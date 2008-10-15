@@ -664,7 +664,7 @@ namespace NHibernate.SqlCommand
 				}
 				else
 				{
-					visitor.Parameter();
+					visitor.Parameter((Parameter)part);
 				}
 			}
 		}

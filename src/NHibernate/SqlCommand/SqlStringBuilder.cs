@@ -338,9 +338,9 @@ namespace NHibernate.SqlCommand
 				parent.Add(sqlString);
 			}
 
-			public void Parameter()
+			public void Parameter(Parameter parameter)
 			{
-				parent.AddParameter();
+				parent.Add(parameter);
 			}
 		}
 
