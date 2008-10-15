@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using NHibernate.Util;
@@ -734,5 +735,40 @@ namespace NHibernate.SqlCommand
 		{
 			return new SubselectClauseExtractor(Compact().sqlParts).GetSqlString();
 		}
+
+	    public bool EndsWithCaseInsensitive(string value)
+	    {
+            SqlString tempSql = Compact();
+            if (tempSql.Count == 0)
+            {
+                return false;
+            }
+
+            string lastPart = tempSql.sqlParts[tempSql.Count - 1] as string;
+
+            return lastPart != null && lastPart.EndsWith(value,StringComparison.InvariantCultureIgnoreCase);
+		
+	    }
+
+	    public SqlString[] Split(string splitter)
+	    {
+	        int iterations = 0;
+	        SqlString temp = Compact();
+            List<SqlString> results = new List<SqlString>();
+            int index;
+	        do
+            {
+	            index = temp.IndexOfCaseInsensitive(splitter);
+                int locationOfComma = index == -1 ?
+                    temp.Length :
+                    index;
+                if (iterations++ > 100)
+                    Debugger.Break();
+
+                results.Add(temp.Substring(0, locationOfComma));
+                temp = temp.Substring(locationOfComma+1);
+	        } while (index != -1);
+	        return results.ToArray();
+	    }
 	}
 }

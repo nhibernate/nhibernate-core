@@ -46,24 +46,24 @@ namespace NHibernate.Dialect
 		{
 			int fromIndex = GetFromIndex(querySqlString);
 			SqlString select = querySqlString.Substring(0, fromIndex);
-			List<string> columnsOrAliases;
-			Dictionary<string, string> aliasToColumn;
+            List<SqlString> columnsOrAliases;
+            Dictionary<SqlString, SqlString> aliasToColumn;
 			ExtractColumnOrAliasNames(select, out columnsOrAliases, out aliasToColumn);
 
 			int orderIndex = querySqlString.LastIndexOfCaseInsensitive(" order by ");
 			SqlString from;
-			string[] sortExpressions;
+			SqlString[] sortExpressions;
 			if (orderIndex > 0)
 			{
 				from = querySqlString.Substring(fromIndex, orderIndex - fromIndex).Trim();
-				string orderBy = querySqlString.Substring(orderIndex).ToString().Trim();
-				sortExpressions = orderBy.Substring(9).Split(',');
+				SqlString orderBy = querySqlString.Substring(orderIndex).Trim();
+                sortExpressions = orderBy.Substring(9).Split(",");
 			}
 			else
 			{
 				from = querySqlString.Substring(fromIndex).Trim();
 				// Use dummy sort to avoid errors
-				sortExpressions = new string[] { "CURRENT_TIMESTAMP" };
+                sortExpressions = new SqlString[] { new SqlString("CURRENT_TIMESTAMP"), };
 			}
 
 			SqlStringBuilder result =
@@ -85,7 +85,7 @@ namespace NHibernate.Dialect
 			}
 			for (int i = 0; i < sortExpressions.Length; i++)
 			{
-				string sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
+                SqlString sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
 				if (!columnsOrAliases.Contains(sortExpression))
 				{
 					result.Add(", query.__hibernate_sort_expr_").Add(i.ToString()).Add("__");
@@ -96,7 +96,7 @@ namespace NHibernate.Dialect
 
 			for (int i = 0; i < sortExpressions.Length; i++)
 			{
-				string sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
+				SqlString sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
 
 				if (columnsOrAliases.Contains(sortExpression))
 				{
@@ -118,13 +118,16 @@ namespace NHibernate.Dialect
 			return result.ToSqlString();
 		}
 
-		private static string RemoveSortOrderDirection(string sortExpression)
+        private static SqlString RemoveSortOrderDirection(SqlString sortExpression)
 		{
-			// Drop the ASC/DESC at the end of the sort expression which might look like "count(distinct frog.Id)desc" or "frog.Name asc".
-			return Regex.Replace(sortExpression.Trim(), @"(\)|\s)(?i:asc|desc)$", "$1").Trim();
+            if (sortExpression.EndsWithCaseInsensitive("asc"))
+                return sortExpression.Substring(0, sortExpression.Length - 3).Trim();
+            if (sortExpression.EndsWithCaseInsensitive("desc"))
+                return sortExpression.Substring(0, sortExpression.Length - 4).Trim();
+            return sortExpression.Trim();
 		}
 
-		private static void AppendSortExpressions(ICollection<string> columnsOrAliases, string[] sortExpressions,
+		private static void AppendSortExpressions(ICollection<SqlString> columnsOrAliases, SqlString[] sortExpressions,
 																							SqlStringBuilder result)
 		{
 			for (int i = 0; i < sortExpressions.Length; i++)
@@ -134,7 +137,7 @@ namespace NHibernate.Dialect
 					result.Add(", ");
 				}
 
-				string sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
+				SqlString sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
 				if (columnsOrAliases.Contains(sortExpression))
 				{
 					result.Add(sortExpression);
@@ -143,7 +146,7 @@ namespace NHibernate.Dialect
 				{
 					result.Add("__hibernate_sort_expr_").Add(i.ToString()).Add("__");
 				}
-				if (sortExpressions[i].Trim().ToLower().EndsWith("desc"))
+				if (sortExpressions[i].Trim().EndsWithCaseInsensitive("desc"))
 				{
 					result.Add(" DESC");
 				}
@@ -161,11 +164,11 @@ namespace NHibernate.Dialect
 			return fromIndex;
 		}
 
-		private static void ExtractColumnOrAliasNames(SqlString select, out List<string> columnsOrAliases,
-																									out Dictionary<string, string> aliasToColumn)
+        private static void ExtractColumnOrAliasNames(SqlString select, out List<SqlString> columnsOrAliases,
+            out Dictionary<SqlString, SqlString> aliasToColumn)
 		{
-			columnsOrAliases = new List<string>();
-			aliasToColumn = new Dictionary<string, string>();
+            columnsOrAliases = new List<SqlString>();
+            aliasToColumn = new Dictionary<SqlString, SqlString>();
 
 			IList<string> tokens = new QuotedAndParenthesisStringTokenizer(select.ToString()).GetTokens();
 			int index = 0;
@@ -222,8 +225,8 @@ namespace NHibernate.Dialect
 					index += 2; //skip the "as" and the alias	\
 				}
 
-				columnsOrAliases.Add(alias);
-				aliasToColumn[alias] = token;
+				columnsOrAliases.Add(new SqlString(alias));
+                aliasToColumn[new SqlString(alias)] = new SqlString(token);
 			}
 		}
 

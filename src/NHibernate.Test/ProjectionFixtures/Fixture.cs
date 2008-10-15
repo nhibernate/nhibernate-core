@@ -119,5 +119,26 @@ Positional parameters:  #0>2
                 tx.Commit();
             }
         }
+
+        [Test]
+        public void LimitingResultSetOnQueryThatIsOrderedByProjection()
+        {
+            using(var s = OpenSession())
+            {
+                ICriteria criteria = s.CreateCriteria(typeof(TreeNode), "parent")
+                    .Add(Restrictions.Gt("Key.Id", 0));
+
+                var currentAssessment = DetachedCriteria.For<TreeNode>("child")
+                    .Add(Restrictions.EqProperty("Key.Id", "parent.Key.Id"))
+                    .Add(Restrictions.EqProperty("Key.Area", "parent.Key.Area"))
+                    .Add(Restrictions.Eq("Type", NodeType.Smart))
+                    .SetProjection(Projections.Property("Type"));
+
+                criteria.AddOrder(Order.Asc(Projections.SubQuery(currentAssessment)))
+                    .SetMaxResults(1000);
+
+                criteria.List();
+            }
+        }
     }
 }
