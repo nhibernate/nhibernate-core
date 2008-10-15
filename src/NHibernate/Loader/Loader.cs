@@ -1688,10 +1688,10 @@ namespace NHibernate.Loader
 		protected IList DoList(ISessionImplementor session, QueryParameters queryParameters)
 		{
 			bool statsEnabled = Factory.Statistics.IsStatisticsEnabled;
-			var stopWath = new Stopwatch();
+			var stopWatch = new Stopwatch();
 			if (statsEnabled)
 			{
-				stopWath.Start();
+				stopWatch.Start();
 			}
 
 			IList result;
@@ -1711,8 +1711,8 @@ namespace NHibernate.Loader
 			}
 			if (statsEnabled)
 			{
-				stopWath.Stop();
-				Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, result.Count, stopWath.Elapsed);
+				stopWatch.Stop();
+				Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, result.Count, stopWatch.Elapsed);
 			}
 			return result;
 		}
