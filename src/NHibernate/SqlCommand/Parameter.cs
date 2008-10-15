@@ -13,7 +13,7 @@ namespace NHibernate.SqlCommand
         /// <summary>
         /// We need to know what the position of the parameter was in a query
         /// before we rearranged the query.
-        /// This is used only by dialects that rearrange the query, unforantely, 
+        /// This is used only by dialects that rearrange the query, unfortunately, 
         /// the MS SQL 2005 dialect have to re shuffle the query (and ruin positional parameter
         /// support) because the SQL 2005 and 2008 SQL dialects have a completely broken
         /// support for paging, which is just a tad less important than SELECT.
