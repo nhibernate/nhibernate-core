@@ -127,5 +127,74 @@ namespace NHibernate.Test.UtilityTest
 		{
 			TypeNameParser.Parse("\\");
 		}
+
+		[Test]
+		public void ParseGenericTypeNameWithDefaults()
+		{
+			string fullSpec = "TName`1[PartialName]";
+			string defaultassembly = "SomeAssembly";
+			string defaultNamespace = "SomeAssembly.MyNS";
+			string expectedType = "SomeAssembly.MyNS.TName`1[SomeAssembly.MyNS.PartialName, SomeAssembly]";
+			string expectedAssembly = "SomeAssembly";
+
+			AssemblyQualifiedTypeName tn = TypeNameParser.Parse(fullSpec, defaultNamespace, defaultassembly);
+			Assert.AreEqual(expectedType, tn.Type, "Type name should match");
+			Assert.AreEqual(expectedAssembly, tn.Assembly, "Assembly name should match");
+
+			fullSpec = "TName`1[[PartialName]]";
+			defaultassembly = "SomeAssembly";
+			defaultNamespace = "SomeAssembly.MyNS";
+			expectedType = "SomeAssembly.MyNS.TName`1[[SomeAssembly.MyNS.PartialName, SomeAssembly]]";
+			expectedAssembly = "SomeAssembly";
+
+			tn = TypeNameParser.Parse(fullSpec, defaultNamespace, defaultassembly);
+			Assert.AreEqual(expectedType, tn.Type, "Type name should match");
+			Assert.AreEqual(expectedAssembly, tn.Assembly, "Assembly name should match");
+
+			fullSpec = "TName`2[[PartialName],[OtherPartialName]]";
+			defaultassembly = "SomeAssembly";
+			defaultNamespace = "SomeAssembly.MyNS";
+			expectedType = "SomeAssembly.MyNS.TName`2[[SomeAssembly.MyNS.PartialName, SomeAssembly],[SomeAssembly.MyNS.OtherPartialName, SomeAssembly]]";
+			expectedAssembly = "SomeAssembly";
+			tn = TypeNameParser.Parse(fullSpec, defaultNamespace, defaultassembly);
+			Assert.AreEqual(expectedType, tn.Type, "Type name should match");
+			Assert.AreEqual(expectedAssembly, tn.Assembly, "Assembly name should match");
+		}
+
+		[Test]
+		public void ParseGenericTypeNameWithDefaultNamespaceUnused()
+		{
+			string fullSpec = "TName`1[SomeAssembly.MyOtherNS.PartialName]";
+			string defaultassembly = "SomeAssembly";
+			string defaultNamespace = "SomeAssembly.MyNS";
+			string expectedType = "SomeAssembly.MyNS.TName`1[SomeAssembly.MyOtherNS.PartialName, SomeAssembly]";
+			string expectedAssembly = "SomeAssembly";
+
+			AssemblyQualifiedTypeName tn = TypeNameParser.Parse(fullSpec, defaultNamespace, defaultassembly);
+			Assert.AreEqual(expectedType, tn.Type, "Type name should match");
+			Assert.AreEqual(expectedAssembly, tn.Assembly, "Assembly name should match");
+
+			fullSpec = "SomeType`1[System.Int32]";
+			defaultassembly = "SomeAssembly";
+			defaultNamespace = null;
+			expectedType = "SomeType`1[System.Int32]";
+			expectedAssembly = "SomeAssembly";
+
+			tn = TypeNameParser.Parse(fullSpec, defaultNamespace, defaultassembly);
+			Assert.AreEqual(expectedType, tn.Type, "Type name should match");
+			Assert.AreEqual(expectedAssembly, tn.Assembly, "Assembly name should match");
+
+			fullSpec = typeof(MyGClass<int>).AssemblyQualifiedName;
+			defaultassembly = "SomeAssembly";
+			defaultNamespace = "SomeAssembly.MyNS";
+			expectedType = typeof(MyGClass<int>).AssemblyQualifiedName;
+			tn = TypeNameParser.Parse(fullSpec, defaultNamespace, defaultassembly);
+			Assert.AreEqual(expectedType, tn.Type + ", " + tn.Assembly, "Type name should match");
+		}
+
+		public class MyGClass<T>
+		{
+			
+		}
 	}
 }

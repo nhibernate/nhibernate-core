@@ -7,10 +7,7 @@ namespace NHibernate.Util
 {
 	public class ParserException : ApplicationException
 	{
-		public ParserException(string message)
-			: base(message)
-		{
-		}
+		public ParserException(string message) : base(message) {}
 	}
 
 	public class TypeNameParser
@@ -27,7 +24,7 @@ namespace NHibernate.Util
 
 		private char[] Characters(int count)
 		{
-			char[] chars = new char[count];
+			var chars = new char[count];
 			if (input.ReadBlock(chars, 0, count) < count)
 			{
 				throw new ParserException(count + " characters expected");
@@ -50,13 +47,13 @@ namespace NHibernate.Util
 
 		private string AssemblyName()
 		{
-			StringBuilder result = new StringBuilder();
+			var result = new StringBuilder();
 			SkipSpaces();
 
 			int code;
 			while ((code = input.Peek()) != -1)
 			{
-				char ch = (char) code;
+				var ch = (char) code;
 
 				if (ch == ']')
 				{
@@ -69,26 +66,46 @@ namespace NHibernate.Util
 			return result.ToString();
 		}
 
-		private string BracketedPart()
+		private string BracketedPart(string defaultNamespace, string defaultAssembly)
 		{
 			Debug.Assert(input.Peek() == '[');
 
-			StringBuilder result = new StringBuilder();
+			var result = new StringBuilder();
+			var genericTypeName = new StringBuilder(200);
 
 			int depth = 0;
 			do
 			{
-				if (input.Peek() == '[')
+				int c = input.Peek();
+				if (c == '[')
 				{
 					depth++;
+					result.Append(PossiblyEscapedCharacter());
 				}
-				else if (input.Peek() == ']')
+				else if (c == ']')
 				{
 					depth--;
+					if (genericTypeName.Length > 0)
+					{
+						var r = Parse(genericTypeName.ToString(), defaultNamespace, defaultAssembly);
+						result.Append(r.ToString());
+						genericTypeName.Remove(0, genericTypeName.Length);
+					}
+					result.Append(PossiblyEscapedCharacter());
 				}
-
-				result.Append(PossiblyEscapedCharacter());
-			} while (depth > 0 && input.Peek() != -1);
+				else if (c == ',' || c == ' ')
+				{
+					if (genericTypeName.Length > 0)
+						genericTypeName.Append(PossiblyEscapedCharacter());
+					else
+						result.Append(PossiblyEscapedCharacter());
+				}
+				else
+				{
+					genericTypeName.Append(PossiblyEscapedCharacter());
+				}
+			}
+			while (depth > 0 && input.Peek() != -1);
 
 			if (depth > 0 && input.Peek() == -1)
 			{
@@ -101,51 +118,54 @@ namespace NHibernate.Util
 		public AssemblyQualifiedTypeName ParseTypeName(string text, string defaultNamespace, string defaultAssembly)
 		{
 			text = text.Trim();
-
-			StringBuilder type = new StringBuilder(text.Length);
+			if (IsSystemType(text))
+			{
+				defaultNamespace = null;
+				defaultAssembly = null;
+			}
+			var type = new StringBuilder(text.Length);
 			string assembly = StringHelper.IsEmpty(defaultAssembly) ? null : defaultAssembly;
 
 			try
 			{
 				bool seenNamespace = false;
 
-				input = new StringReader(text);
-
-				int code;
-				while ((code = input.Peek()) != -1)
+				using (input = new StringReader(text))
 				{
-					char ch = (char) code;
-
-					if (ch == '.')
+					int code;
+					while ((code = input.Peek()) != -1)
 					{
-						seenNamespace = true;
-					}
+						var ch = (char) code;
 
-					if (ch == ',')
-					{
-						input.Read();
-						assembly = AssemblyName();
-						if (input.Peek() != -1)
+						if (ch == '.')
 						{
-							throw new ParserException("Extra characters found at the end of the type name");
+							seenNamespace = true;
+						}
+
+						if (ch == ',')
+						{
+							input.Read();
+							assembly = AssemblyName();
+							if (input.Peek() != -1)
+							{
+								throw new ParserException("Extra characters found at the end of the type name");
+							}
+						}
+						else if (ch == '[')
+						{
+							type.Append(BracketedPart(defaultNamespace, defaultAssembly));
+						}
+						else
+						{
+							type.Append(PossiblyEscapedCharacter());
 						}
 					}
-					else if (ch == '[')
-					{
-						type.Append(BracketedPart());
-					}
-					else
-					{
-						type.Append(PossiblyEscapedCharacter());
-					}
+
+					input.Close();
 				}
-
-				input.Close();
-
 				if (!seenNamespace && StringHelper.IsNotEmpty(defaultNamespace))
 				{
-					type.Insert(0, '.')
-						.Insert(0, defaultNamespace);
+					type.Insert(0, '.').Insert(0, defaultNamespace);
 				}
 				return new AssemblyQualifiedTypeName(type.ToString(), assembly);
 			}
@@ -153,6 +173,11 @@ namespace NHibernate.Util
 			{
 				throw new ArgumentException("Invalid fully-qualified type name: " + text, "text", e);
 			}
+		}
+
+		private bool IsSystemType(string tyname)
+		{
+			return tyname.StartsWith("System"); // ugly
 		}
 
 		public static AssemblyQualifiedTypeName Parse(string text)

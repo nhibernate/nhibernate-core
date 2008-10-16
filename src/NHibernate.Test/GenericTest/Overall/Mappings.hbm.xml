@@ -4,7 +4,7 @@
 	assembly="NHibernate.Test"
 	namespace="NHibernate.Test.GenericTest.Overall">
 
-	<class name="A`1[System.Int32]" table="A">
+	<class name="A`1[System.Int32]" table="AInt" entity-name="AInt">
 
 		<id name="Id">
 			<generator class="native" />
