@@ -12,15 +12,15 @@ namespace NHibernate
 		{
 		}
 
-		public void OnCollectionRecreate(object collection, object key)
+		public virtual void OnCollectionRecreate(object collection, object key)
 		{
 		}
 
-		public void OnCollectionRemove(object collection, object key)
+		public virtual void OnCollectionRemove(object collection, object key)
 		{
 		}
 
-		public void OnCollectionUpdate(object collection, object key)
+		public virtual void OnCollectionUpdate(object collection, object key)
 		{
 		}
 
@@ -63,7 +63,7 @@ namespace NHibernate
 			return null;
 		}
 
-		public object GetEntity(string entityName, object id)
+		public virtual object GetEntity(string entityName, object id)
 		{
 			return null;
 		}
@@ -90,7 +90,7 @@ namespace NHibernate
 		{
 		}
 
-		public SqlString OnPrepareStatement(SqlString sql)
+		public virtual SqlString OnPrepareStatement(SqlString sql)
 		{
 			return sql;
 		}
