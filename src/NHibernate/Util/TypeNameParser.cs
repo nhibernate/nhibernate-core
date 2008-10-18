@@ -177,7 +177,7 @@ namespace NHibernate.Util
 
 		private bool IsSystemType(string tyname)
 		{
-			return tyname.StartsWith("System"); // ugly
+			return tyname.StartsWith("System."); // ugly
 		}
 
 		public static AssemblyQualifiedTypeName Parse(string text)
