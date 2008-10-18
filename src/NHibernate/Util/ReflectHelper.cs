@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using log4net;
@@ -12,6 +13,9 @@ namespace NHibernate.Util
 	/// </summary>
 	public sealed class ReflectHelper
 	{
+		private const BindingFlags defaultBindingFlags =
+			BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+
 		private static readonly ILog log = LogManager.GetLogger(typeof(ReflectHelper));
 
 		public static BindingFlags AnyVisibilityInstance = BindingFlags.Instance | BindingFlags.Public |
@@ -444,6 +448,90 @@ namespace NHibernate.Util
 		{
 			Exception_InternalPreserveStackTrace.Invoke(ex.InnerException, new Object[] {});
 			return ex.InnerException;
+		}
+
+		/// <summary>
+		/// Try to find a method in a given type.
+		/// </summary>
+		/// <param name="type">The given type.</param>
+		/// <param name="method">The method info.</param>
+		/// <returns>The found method or null.</returns>
+		/// <remarks>
+		/// The <paramref name="method"/>, in general, become from another <see cref="Type"/>.
+		/// </remarks>
+		public static MethodInfo TryGetMethod(System.Type type, MethodInfo method)
+		{
+			if (type == null)
+			{
+				throw new ArgumentNullException("type");
+			}
+
+			if (method == null)
+			{
+				return null;
+			}
+
+			System.Type[] tps = GetMethodSignature(method);
+			try
+			{
+				return type.GetMethod(method.Name, defaultBindingFlags, null, tps, null);
+			}
+			catch (Exception)
+			{
+				return null;
+			}
+		}
+
+		/// <summary>
+		/// Try to find a method in a serie of given types.
+		/// </summary>
+		/// <param name="types">The serie of types where find.</param>
+		/// <param name="method">The method info.</param>
+		/// <returns>The found method or null.</returns>
+		/// <remarks>
+		/// The <paramref name="method"/>, in general, become from another <see cref="Type"/>.
+		/// </remarks>
+		public static MethodInfo TryGetMethod(IEnumerable<System.Type> types, MethodInfo method)
+		{
+			// This method will be used when we support multiple proxy interfaces.
+			if (types == null)
+			{
+				throw new ArgumentNullException("types");
+			}
+			if (method == null)
+			{
+				return null;
+			}
+
+			System.Type[] tps = GetMethodSignature(method);
+			MethodInfo result = null;
+			foreach (var type in types)
+			{
+				try
+				{
+					result = type.GetMethod(method.Name, defaultBindingFlags, null, tps, null);
+					if (result != null)
+					{
+						return result;
+					}
+				}
+				catch (Exception)
+				{
+					return null;
+				}
+			}
+			return result;
+		}
+
+		private static System.Type[] GetMethodSignature(MethodInfo method)
+		{
+			var pi = method.GetParameters();
+			var tps = new System.Type[pi.Length];
+			for (int i = 0; i < pi.Length; i++)
+			{
+				tps[i] = pi[i].ParameterType;
+			}
+			return tps;
 		}
 	}
 }

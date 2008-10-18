@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1495">
+	
+	<class name="Person" proxy="IPerson">
+		<id name="Id" type="Int64" access="backfield">
+			<generator class="hilo" />
+		</id>
+		<property name="Name" />
+	</class>
+</hibernate-mapping>

@@ -10,6 +10,7 @@ using NHibernate.Mapping;
 using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Tuple.Entity
 {
@@ -144,13 +145,11 @@ namespace NHibernate.Tuple.Entity
 			MethodInfo idGetterMethod = idGetter == null ? null : idGetter.Method;
 			MethodInfo idSetterMethod = idSetter == null ? null : idSetter.Method;
 
-			MethodInfo proxyGetIdentifierMethod = idGetterMethod == null || _proxyInterface == null ? null : 
-				idGetterMethod;
-				// TODO H3.2 different behaviour  ReflectHelper.GetMethod(_proxyInterface, idGetterMethod);
+			MethodInfo proxyGetIdentifierMethod = idGetterMethod == null || _proxyInterface == null ? null :
+				ReflectHelper.TryGetMethod(_proxyInterface, idGetterMethod);
 
-			MethodInfo proxySetIdentifierMethod = idSetterMethod == null || _proxyInterface == null ? null : 
-				idSetterMethod;
-				// TODO H3.2 different behaviour ReflectHelper.GetMethod(_proxyInterface, idSetterMethod);
+			MethodInfo proxySetIdentifierMethod = idSetterMethod == null || _proxyInterface == null ? null :
+				ReflectHelper.TryGetMethod(_proxyInterface, idSetterMethod);
 
 			IProxyFactory pf = BuildProxyFactoryInternal(persistentClass, idGetter, idSetter);
 			try

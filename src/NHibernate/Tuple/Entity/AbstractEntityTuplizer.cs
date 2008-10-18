@@ -71,20 +71,7 @@ namespace NHibernate.Tuple.Entity
 
 			if (entityMetamodel.IsLazy)
 			{
-				/* NH Different implementation
-				 * When we are using an interface we need to use the interface itself to have
-				 * the getter and setter of the identifier to prevent proxy initialization.
-				 * The BasicLazyInitializer use method.Equals to recognize the the identifier setter.
-				 */
-				IGetter pidGetter = idGetter;
-				ISetter pidSetter = idSetter;
-				if (mappingInfo.HasIdentifierProperty && mappingInfo.ProxyInterface != null)
-				{
-					pidGetter = mappingInfo.IdentifierProperty.GetGetter(mappingInfo.ProxyInterface);
-					pidSetter = mappingInfo.IdentifierProperty.GetSetter(mappingInfo.ProxyInterface);
-				}
-				proxyFactory = BuildProxyFactory(mappingInfo, pidGetter, pidSetter);
-				/*******************************************************************************/
+				proxyFactory = BuildProxyFactory(mappingInfo, idGetter, idSetter);
 				if (proxyFactory == null)
 				{
 					entityMetamodel.IsLazy = false;
