@@ -47,7 +47,7 @@ namespace NHibernate.Impl
 
 		private readonly IInterceptor interceptor;
 
-		[NonSerialized] private readonly EntityMode entityMode = NHibernate.EntityMode.Poco;
+		[NonSerialized] private readonly EntityMode entityMode = EntityMode.Poco;
 
 		[NonSerialized]
 		private readonly EventListeners listeners;
@@ -58,7 +58,7 @@ namespace NHibernate.Impl
 		private readonly ConnectionManager connectionManager;
 
 		[NonSerialized]
-		private int dontFlushFromFind = 0;
+		private int dontFlushFromFind;
 
 		[NonSerialized] private readonly IDictionary<string, IFilter> enabledFilters = new Dictionary<string, IFilter>();
 
@@ -541,7 +541,7 @@ namespace NHibernate.Impl
 
 		public IEnumerable Enumerable(string query, object value, IType type)
 		{
-			return Enumerable(query, new object[] { value }, new IType[] { type });
+			return Enumerable(query, new[] { value }, new[] { type });
 		}
 
 		public IEnumerable Enumerable(string query, object[] values, IType[] types)
@@ -594,7 +594,7 @@ namespace NHibernate.Impl
 
 		public int Delete(string query, object value, IType type)
 		{
-			return Delete(query, new object[] { value }, new IType[] { type });
+			return Delete(query, new[] { value }, new[] { type });
 		}
 
 		public int Delete(string query, object[] values, IType[] types)
@@ -937,33 +937,12 @@ namespace NHibernate.Impl
 			return autoFlushEvent.FlushRequired;
 		}
 
+		#region load()/get() operations
+
 		public void Load(object obj, object id)
 		{
 			LoadEvent loadEvent = new LoadEvent(id, obj, this);
 			FireLoad(loadEvent, LoadEventListener.Reload);
-		}
-
-		public object Load(System.Type clazz, object id)
-		{
-			if (id == null)
-			{
-				throw new ArgumentNullException("id", "null is not a valid identifier");
-			}
-			LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, false, this);
-			bool success = false;
-			try
-			{
-				FireLoad(loadEvent, LoadEventListener.Load);
-				if (loadEvent.Result == null)
-					Factory.EntityNotFoundDelegate.HandleEntityNotFound(clazz.FullName, id);
-
-				success = true;
-				return loadEvent.Result;
-			}
-			finally
-			{
-				AfterOperation(success);
-			}
 		}
 
 		public T Load<T>(object id)
@@ -976,6 +955,62 @@ namespace NHibernate.Impl
 			return (T)Load(typeof(T), id, lockMode);
 		}
 
+		/// <summary>
+		/// Load the data for the object with the specified id into a newly created object
+		/// using "for update", if supported. A new key will be assigned to the object.
+		/// This should return an existing proxy where appropriate.
+		/// 
+		/// If the object does not exist in the database, an exception is thrown.
+		/// </summary>
+		/// <param name="entityClass"></param>
+		/// <param name="id"></param>
+		/// <param name="lockMode"></param>
+		/// <returns></returns>
+		/// <exception cref="ObjectNotFoundException">
+		/// Thrown when the object with the specified id does not exist in the database.
+		/// </exception>
+		public object Load(System.Type entityClass, object id, LockMode lockMode)
+		{
+			return Load(entityClass.FullName, id, lockMode);
+		}
+
+		public object Load(string entityName, object id)
+		{
+			if (id == null)
+			{
+				throw new ArgumentNullException("id", "null is not a valid identifier");
+			}
+
+			var @event = new LoadEvent(id, entityName, false, this);
+			bool success = false;
+			try
+			{
+				FireLoad(@event, LoadEventListener.Load);
+				if (@event.Result == null)
+				{
+					Factory.EntityNotFoundDelegate.HandleEntityNotFound(entityName, id);
+				}
+				success = true;
+				return @event.Result;
+			}
+			finally
+			{
+				AfterOperation(success);
+			}
+		}
+
+		public object Load(string entityName, object id, LockMode lockMode)
+		{
+			var @event = new LoadEvent(id, entityName, lockMode, this);
+			FireLoad(@event, LoadEventListener.Load);
+			return @event.Result;
+		}
+
+		public object Load(System.Type entityClass, object id)
+		{
+			return Load(entityClass.FullName, id);
+		}
+
 		public T Get<T>(object id)
 		{
 			return (T)Get(typeof(T), id);
@@ -984,6 +1019,29 @@ namespace NHibernate.Impl
 		public T Get<T>(object id, LockMode lockMode)
 		{
 			return (T)Get(typeof(T), id, lockMode);
+		}
+
+		public object Get(System.Type entityClass, object id)
+		{
+			return Get(entityClass.FullName, id);
+		}
+
+		/// <summary>
+		/// Load the data for the object with the specified id into a newly created object
+		/// using "for update", if supported. A new key will be assigned to the object.
+		/// This should return an existing proxy where appropriate.
+		/// 
+		/// If the object does not exist in the database, null is returned.
+		/// </summary>
+		/// <param name="clazz"></param>
+		/// <param name="id"></param>
+		/// <param name="lockMode"></param>
+		/// <returns></returns>
+		public object Get(System.Type clazz, object id, LockMode lockMode)
+		{
+			LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, lockMode, this);
+			FireLoad(loadEvent, LoadEventListener.Get);
+			return loadEvent.Result;
 		}
 
 		public string GetEntityName(object obj)
@@ -1009,11 +1067,6 @@ namespace NHibernate.Impl
 					+ obj.GetType().FullName);
 			}
 			return entry.Persister.EntityName;
-		}
-
-		public object Get(System.Type entityClass, object id)
-		{
-			return Get(entityClass.FullName, id);
 		}
 
 		public object Get(string entityName, object id)
@@ -1068,44 +1121,7 @@ namespace NHibernate.Impl
 			return loadEvent.Result; 
 		}
 
-		/// <summary>
-		/// Load the data for the object with the specified id into a newly created object
-		/// using "for update", if supported. A new key will be assigned to the object.
-		/// This should return an existing proxy where appropriate.
-		/// 
-		/// If the object does not exist in the database, an exception is thrown.
-		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="id"></param>
-		/// <param name="lockMode"></param>
-		/// <returns></returns>
-		/// <exception cref="ObjectNotFoundException">
-		/// Thrown when the object with the specified id does not exist in the database.
-		/// </exception>
-		public object Load(System.Type clazz, object id, LockMode lockMode)
-		{
-			LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, lockMode, this);
-			FireLoad(loadEvent, LoadEventListener.Load);
-			return loadEvent.Result;
-		}
-
-		/// <summary>
-		/// Load the data for the object with the specified id into a newly created object
-		/// using "for update", if supported. A new key will be assigned to the object.
-		/// This should return an existing proxy where appropriate.
-		/// 
-		/// If the object does not exist in the database, null is returned.
-		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="id"></param>
-		/// <param name="lockMode"></param>
-		/// <returns></returns>
-		public object Get(System.Type clazz, object id, LockMode lockMode)
-		{
-			LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, lockMode, this);
-			FireLoad(loadEvent, LoadEventListener.Get);
-			return loadEvent.Result;
-		}
+		#endregion
 
 		public void Refresh(object obj)
 		{
@@ -1616,7 +1632,7 @@ namespace NHibernate.Impl
 		public IQuery CreateSQLQuery(string sql, string returnAlias, System.Type returnClass)
 		{
 			CheckAndUpdateSessionStatus();
-			return new SqlQueryImpl(sql, new string[] { returnAlias }, new System.Type[] { returnClass }, this, Factory.QueryPlanCache.GetSQLParameterMetadata(sql));
+			return new SqlQueryImpl(sql, new[] { returnAlias }, new[] { returnClass }, this, Factory.QueryPlanCache.GetSQLParameterMetadata(sql));
 		}
 
 		public IQuery CreateSQLQuery(string sql, string[] returnAliases, System.Type[] returnClasses)
@@ -1798,7 +1814,7 @@ namespace NHibernate.Impl
 			}
 			string filterName = filterParameterName.Substring(0, dot);
 			string parameterName = filterParameterName.Substring(dot + 1);
-			return new string[] { filterName, parameterName };
+			return new[] { filterName, parameterName };
 		}
 
 		public override ConnectionManager ConnectionManager

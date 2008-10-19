@@ -214,6 +214,16 @@ namespace NHibernate
 		/// <returns>the persistent instance</returns>
 		object Load(System.Type theType, object id, LockMode lockMode);
 
+		/// <summary> 
+		/// Return the persistent instance of the given entity class with the given identifier,
+		/// obtaining the specified lock mode, assuming the instance exists. 
+		/// </summary>
+		/// <param name="entityName">The entity-name of a persistent class</param>
+		/// <param name="id">a valid identifier of an existing persistent instance of the class </param>
+		/// <param name="lockMode">the lock level </param>
+		/// <returns> the persistent instance or proxy </returns>
+		object Load(string entityName, object id, LockMode lockMode);
+
 		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier,
 		/// assuming that the instance exists.
@@ -251,6 +261,20 @@ namespace NHibernate
 		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
 		/// <returns>The persistent instance or proxy</returns>
 		T Load<T>(object id);
+
+		/// <summary> 
+		/// Return the persistent instance of the given <paramref name="entityName"/> with the given identifier,
+		/// assuming that the instance exists.
+		/// </summary>
+		/// <param name="entityName">The entity-name of a persistent class</param>
+		/// <param name="id">a valid identifier of an existing persistent instance of the class </param>
+		/// <returns> The persistent instance or proxy </returns>
+		/// <remarks>
+		/// You should not use this method to determine if an instance exists (use <see cref="Get(string,object)"/>
+		/// instead). Use this only to retrieve an instance that you assume exists, where non-existence
+		/// would be an actual error.
+		/// </remarks>
+		object Load(string entityName, object id);
 
 		/// <summary>
 		/// Read the persistent state associated with the given identifier into the given transient 
