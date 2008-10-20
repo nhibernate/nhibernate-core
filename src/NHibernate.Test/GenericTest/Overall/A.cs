@@ -14,4 +14,11 @@ namespace NHibernate.Test.GenericTest.Overall
 
 		public virtual IList<T> Collection { get; set; }
 	}
+
+	public class B
+	{
+		public virtual int? Id { get; set; }
+
+		public virtual int Prop { get; set; }
+	}
 }

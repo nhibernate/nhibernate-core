@@ -20,4 +20,35 @@
 
 	</class>
 
+	<class name="A`1[[B]]" table="AB" entity-name="AB">
+
+		<id name="Id">
+			<generator class="native" />
+
+		</id>
+
+		<list name="Collection" table="CollectionList" lazy="false" cascade="all">
+			<key column="CollectionId"/>
+			<index column="CollectionOrder"/>
+
+			<many-to-any meta-type="string" id-type="int">
+				<column name="CollectionType" />
+				<column name="CollectionValue" />
+
+			</many-to-any>
+
+		</list>
+
+	</class>
+
+	<class name="B" table="BTable">
+
+		<id name="Id">
+			<generator class="native" />
+
+		</id>
+
+		<property name="Prop" column="property" type="int"/>
+	</class>
+	
 </hibernate-mapping>
