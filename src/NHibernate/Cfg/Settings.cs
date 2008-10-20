@@ -14,73 +14,20 @@ namespace NHibernate.Cfg
 	/// </summary>
 	public sealed class Settings
 	{
-		private bool isShowSqlEnabled;
-		private bool isFormatSqlEnabled;
 		private int maximumFetchDepth = -1;
-		private IDictionary<string, string> querySubstitutions;
-		private Dialect.Dialect dialect;
-		private int adoBatchSize;
-		private int defaultBatchFetchSize;
-		private bool isScrollableResultSetsEnabled;
-		private bool isGetGeneratedKeysEnabled;
-		private string defaultSchemaName;
-		private string defaultCatalogName;
-		private string sessionFactoryName;
-		private bool isAutoCreateSchema;
-		private bool isAutoDropSchema;
-		private bool isAutoUpdateSchema;
-		private bool isAutoValidateSchema;
-		private bool isQueryCacheEnabled;
-		private bool isStructuredCacheEntriesEnabled;
-		private bool isSecondLevelCacheEnabled;
-		private string cacheRegionPrefix;
-		private bool isMinimalPutsEnabled;
-		private bool isCommentsEnabled;
-		private bool isStatisticsEnabled;
-		private bool isIdentifierRollbackEnabled;
-		private bool isFlushBeforeCompletionEnabled;
-		private bool isAutoCloseSessionEnabled;
-		private ConnectionReleaseMode connectionReleaseMode;
-		private ICacheProvider cacheProvider;
-		private IQueryCacheFactory queryCacheFactory;
-		private IConnectionProvider connectionProvider;
-		private ITransactionFactory transactionFactory;
 		// not ported - private TransactionManagerLookup transactionManagerLookup;
-		private IBatcherFactory batcherFactory;
-		private IQueryTranslatorFactory queryTranslatorFactory;
-		private ISQLExceptionConverter sqlExceptionConverter;
-		private bool isWrapResultSetsEnabled;
-		private bool isOrderUpdatesEnabled;
-		private bool isOrderInsertsEnabled;
-		private EntityMode defaultEntityMode;
-		private bool isDataDefinitionImplicitCommit;
-		private bool isDataDefinitionInTransactionSupported;
 		// not ported - private bool strictJPAQLCompliance;
-		private bool isNamedQueryStartupCheckingEnabled;
 
 		#region JDBC Specific (Not Ported)
+
 		//private int jdbcFetchSize;
 		//private bool isJdbcBatchVersionedData;
-		#endregion
-
-		#region NH specific
-
-		private IsolationLevel isolationLevel;
-		private bool isOuterJoinFetchEnabled;
 
 		#endregion
 
-		public bool IsShowSqlEnabled
-		{
-			get { return isShowSqlEnabled; }
-			internal set { isShowSqlEnabled = value; }
-		}
+		public bool IsShowSqlEnabled { get; internal set; }
 
-		public bool IsFormatSqlEnabled
-		{
-			get { return isFormatSqlEnabled; }
-			internal set { isFormatSqlEnabled = value; }
-		}
+		public bool IsFormatSqlEnabled { get; internal set; }
 
 		public int MaximumFetchDepth
 		{
@@ -88,247 +35,87 @@ namespace NHibernate.Cfg
 			internal set { maximumFetchDepth = value; }
 		}
 
-		public IDictionary<string,string> QuerySubstitutions
-		{
-			get { return querySubstitutions; }
-			internal set { querySubstitutions = value; }
-		}
+		public IDictionary<string, string> QuerySubstitutions { get; internal set; }
 
-		public Dialect.Dialect Dialect
-		{
-			get { return dialect; }
-			internal set { dialect = value; }
-		}
+		public Dialect.Dialect Dialect { get; internal set; }
 
-		public int AdoBatchSize
-		{
-			get { return adoBatchSize; }
-			internal set { adoBatchSize = value; }
-		}
+		public int AdoBatchSize { get; internal set; }
 
-		public int DefaultBatchFetchSize
-		{
-			get { return defaultBatchFetchSize; }
-			internal set { defaultBatchFetchSize = value; }
-		}
+		public int DefaultBatchFetchSize { get; internal set; }
 
-		public bool IsScrollableResultSetsEnabled
-		{
-			get { return isScrollableResultSetsEnabled; }
-			internal set { isScrollableResultSetsEnabled = value; }
-		}
+		public bool IsScrollableResultSetsEnabled { get; internal set; }
 
-		public bool IsGetGeneratedKeysEnabled
-		{
-			get { return isGetGeneratedKeysEnabled; }
-			internal set { isGetGeneratedKeysEnabled = value; }
-		}
+		public bool IsGetGeneratedKeysEnabled { get; internal set; }
 
-		public string DefaultSchemaName
-		{
-			get { return defaultSchemaName; }
-			set { defaultSchemaName = value; }
-		}
+		public string DefaultSchemaName { get; set; }
 
-		public string DefaultCatalogName
-		{
-			get { return defaultCatalogName; }
-			internal set { defaultCatalogName = value; }
-		}
+		public string DefaultCatalogName { get; internal set; }
 
-		public string SessionFactoryName
-		{
-			get { return sessionFactoryName; }
-			internal set { sessionFactoryName = value; }
-		}
+		public string SessionFactoryName { get; internal set; }
 
-		public bool IsAutoCreateSchema
-		{
-			get { return isAutoCreateSchema; }
-			internal set { isAutoCreateSchema = value; }
-		}
+		public bool IsAutoCreateSchema { get; internal set; }
 
-		public bool IsAutoDropSchema
-		{
-			get { return isAutoDropSchema; }
-			internal set { isAutoDropSchema = value; }
-		}
+		public bool IsAutoDropSchema { get; internal set; }
 
-		public bool IsAutoUpdateSchema
-		{
-			get { return isAutoUpdateSchema; }
-			internal set { isAutoUpdateSchema = value; }
-		}
+		public bool IsAutoUpdateSchema { get; internal set; }
 
-		public bool IsAutoValidateSchema
-		{
-			get { return isAutoValidateSchema; }
-			internal set { isAutoValidateSchema = value; }
-		}
+		public bool IsAutoValidateSchema { get; internal set; }
 
-		public bool IsQueryCacheEnabled
-		{
-			get { return isQueryCacheEnabled; }
-			internal set { isQueryCacheEnabled = value; }
-		}
+		public bool IsQueryCacheEnabled { get; internal set; }
 
-		public bool IsStructuredCacheEntriesEnabled
-		{
-			get { return isStructuredCacheEntriesEnabled; }
-			internal set { isStructuredCacheEntriesEnabled = value; }
-		}
+		public bool IsStructuredCacheEntriesEnabled { get; internal set; }
 
-		public bool IsSecondLevelCacheEnabled
-		{
-			get { return isSecondLevelCacheEnabled; }
-			internal set { isSecondLevelCacheEnabled = value; }
-		}
+		public bool IsSecondLevelCacheEnabled { get; internal set; }
 
-		public string CacheRegionPrefix
-		{
-			get { return cacheRegionPrefix; }
-			internal set { cacheRegionPrefix = value; }
-		}
+		public string CacheRegionPrefix { get; internal set; }
 
-		public bool IsMinimalPutsEnabled
-		{
-			get { return isMinimalPutsEnabled; }
-			internal set { isMinimalPutsEnabled = value; }
-		}
+		public bool IsMinimalPutsEnabled { get; internal set; }
 
-		public bool IsCommentsEnabled
-		{
-			get { return isCommentsEnabled; }
-			internal set { isCommentsEnabled = value; }
-		}
+		public bool IsCommentsEnabled { get; internal set; }
 
-		public bool IsStatisticsEnabled
-		{
-			get { return isStatisticsEnabled; }
-			internal set { isStatisticsEnabled = value; }
-		}
+		public bool IsStatisticsEnabled { get; internal set; }
 
-		public bool IsIdentifierRollbackEnabled
-		{
-			get { return isIdentifierRollbackEnabled; }
-			internal set { isIdentifierRollbackEnabled = value; }
-		}
+		public bool IsIdentifierRollbackEnabled { get; internal set; }
 
-		public bool IsFlushBeforeCompletionEnabled
-		{
-			get { return isFlushBeforeCompletionEnabled; }
-			internal set { isFlushBeforeCompletionEnabled = value; }
-		}
+		public bool IsFlushBeforeCompletionEnabled { get; internal set; }
 
-		public bool IsAutoCloseSessionEnabled
-		{
-			get { return isAutoCloseSessionEnabled; }
-			internal set { isAutoCloseSessionEnabled = value; }
-		}
+		public bool IsAutoCloseSessionEnabled { get; internal set; }
 
-		public ConnectionReleaseMode ConnectionReleaseMode
-		{
-			get { return connectionReleaseMode; }
-			internal set { connectionReleaseMode = value; }
-		}
+		public ConnectionReleaseMode ConnectionReleaseMode { get; internal set; }
 
-		public ICacheProvider CacheProvider
-		{
-			get { return cacheProvider; }
-			internal set { cacheProvider = value; }
-		}
+		public ICacheProvider CacheProvider { get; internal set; }
 
-		public IQueryCacheFactory QueryCacheFactory
-		{
-			get { return queryCacheFactory; }
-			internal set { queryCacheFactory = value; }
-		}
+		public IQueryCacheFactory QueryCacheFactory { get; internal set; }
 
-		public IConnectionProvider ConnectionProvider
-		{
-			get { return connectionProvider; }
-			internal set { connectionProvider = value; }
-		}
+		public IConnectionProvider ConnectionProvider { get; internal set; }
 
-		public ITransactionFactory TransactionFactory
-		{
-			get { return transactionFactory; }
-			internal set { transactionFactory = value; }
-		}
+		public ITransactionFactory TransactionFactory { get; internal set; }
 
-		public IBatcherFactory BatcherFactory
-		{
-			get { return batcherFactory; }
-			internal set { batcherFactory = value; }
-		}
+		public IBatcherFactory BatcherFactory { get; internal set; }
 
-		public IQueryTranslatorFactory QueryTranslatorFactory
-		{
-			get { return queryTranslatorFactory; }
-			internal set { queryTranslatorFactory = value; }
-		}
+		public IQueryTranslatorFactory QueryTranslatorFactory { get; internal set; }
 
-		public ISQLExceptionConverter SqlExceptionConverter
-		{
-			get { return sqlExceptionConverter; }
-			internal set { sqlExceptionConverter = value; }
-		}
+		public ISQLExceptionConverter SqlExceptionConverter { get; internal set; }
 
-		public bool IsWrapResultSetsEnabled
-		{
-			get { return isWrapResultSetsEnabled; }
-			internal set { isWrapResultSetsEnabled = value; }
-		}
+		public bool IsWrapResultSetsEnabled { get; internal set; }
 
-		public bool IsOrderUpdatesEnabled
-		{
-			get { return isOrderUpdatesEnabled; }
-			internal set { isOrderUpdatesEnabled = value; }
-		}
+		public bool IsOrderUpdatesEnabled { get; internal set; }
 
-		public bool IsOrderInsertsEnabled
-		{
-			get { return isOrderInsertsEnabled; }
-			internal set { isOrderInsertsEnabled = value; }
-		}
+		public bool IsOrderInsertsEnabled { get; internal set; }
 
-		public EntityMode DefaultEntityMode
-		{
-			get { return defaultEntityMode; }
-			internal set { defaultEntityMode = value; }
-		}
+		public EntityMode DefaultEntityMode { get; internal set; }
 
-		public bool IsDataDefinitionImplicitCommit
-		{
-			get { return isDataDefinitionImplicitCommit; }
-			internal set { isDataDefinitionImplicitCommit = value; }
-		}
+		public bool IsDataDefinitionImplicitCommit { get; internal set; }
 
-		public bool IsDataDefinitionInTransactionSupported
-		{
-			get { return isDataDefinitionInTransactionSupported; }
-			internal set { isDataDefinitionInTransactionSupported = value; }
-		}
+		public bool IsDataDefinitionInTransactionSupported { get; internal set; }
 
-		public bool IsNamedQueryStartupCheckingEnabled
-		{
-			get { return isNamedQueryStartupCheckingEnabled; }
-			internal set { isNamedQueryStartupCheckingEnabled = value; }
-		}
+		public bool IsNamedQueryStartupCheckingEnabled { get; internal set; }
 
 		#region NH specific
 
-		public IsolationLevel IsolationLevel
-		{
-			get { return isolationLevel; }
-			internal set { isolationLevel = value; }
-		}
+		public IsolationLevel IsolationLevel { get; internal set; }
 
-		public bool IsOuterJoinFetchEnabled
-		{
-			get { return isOuterJoinFetchEnabled; }
-			internal set { isOuterJoinFetchEnabled = value; }
-		}
+		public bool IsOuterJoinFetchEnabled { get; internal set; }
 
 		#endregion
 	}
