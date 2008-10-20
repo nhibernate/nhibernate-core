@@ -4,7 +4,7 @@ using System.Globalization;
 using NHibernate.Dialect.Function;
 using NUnit.Framework;
 
-namespace NHibernate.Test.HQLFunctionTest
+namespace NHibernate.Test.Hql
 {
 	[TestFixture]
 	public class SQLFunctionTemplateTest : BaseFunctionFixture

@@ -1,4 +1,4 @@
-namespace NHibernate.Test.HQLFunctionTest
+namespace NHibernate.Test.Hql
 {
 	public class Animal
 	{

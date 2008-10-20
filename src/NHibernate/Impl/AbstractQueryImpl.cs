@@ -43,8 +43,9 @@ namespace NHibernate.Impl
 		private bool shouldIgnoredUnknownNamedParameters;
 		private CacheMode? cacheMode;
 		private CacheMode? sessionCacheMode;
+		private string comment;
 
-		public AbstractQueryImpl(string queryString, FlushMode flushMode, ISessionImplementor session,
+		protected AbstractQueryImpl(string queryString, FlushMode flushMode, ISessionImplementor session,
 			ParameterMetadata parameterMetadata)
 		{
 			this.session = session;
@@ -76,7 +77,7 @@ namespace NHibernate.Impl
 		{
 			if (parameterMetadata.NamedParameterNames.Count != namedParameters.Count + namedParameterLists.Count)
 			{
-				HashedSet<string> missingParams = new HashedSet<string>(parameterMetadata.NamedParameterNames);
+				var missingParams = new HashedSet<string>(parameterMetadata.NamedParameterNames);
 				missingParams.RemoveAll(namedParameterLists.Keys);
 				missingParams.RemoveAll(namedParameters.Keys);
 				throw new QueryException("Not all named parameters have been set: " + CollectionPrinter.ToString(missingParams), QueryString);
@@ -119,51 +120,31 @@ namespace NHibernate.Impl
 
 		protected internal virtual IType DetermineType(int paramPosition, object paramValue, IType defaultType)
 		{
-			IType type = parameterMetadata.GetOrdinalParameterExpectedType(paramPosition + 1);
-			if (type == null)
-			{
-				type = defaultType;
-			}
+			IType type = parameterMetadata.GetOrdinalParameterExpectedType(paramPosition + 1) ?? defaultType;
 			return type;
 		}
 
 		protected internal virtual IType DetermineType(int paramPosition, object paramValue)
 		{
-			IType type = parameterMetadata.GetOrdinalParameterExpectedType(paramPosition + 1);
-			if (type == null)
-			{
-				type = GuessType(paramValue);
-			}
+			IType type = parameterMetadata.GetOrdinalParameterExpectedType(paramPosition + 1) ?? GuessType(paramValue);
 			return type;
 		}
 
 		protected internal virtual IType DetermineType(string paramName, object paramValue, IType defaultType)
 		{
-			IType type = parameterMetadata.GetNamedParameterExpectedType(paramName);
-			if (type == null)
-			{
-				type = defaultType;
-			}
+			IType type = parameterMetadata.GetNamedParameterExpectedType(paramName) ?? defaultType;
 			return type;
 		}
 
 		protected internal virtual IType DetermineType(string paramName, object paramValue)
 		{
-			IType type = parameterMetadata.GetNamedParameterExpectedType(paramName);
-			if (type == null)
-			{
-				type = GuessType(paramValue);
-			}
+			IType type = parameterMetadata.GetNamedParameterExpectedType(paramName) ?? GuessType(paramValue);
 			return type;
 		}
 
 		protected internal virtual IType DetermineType(string paramName, System.Type clazz)
 		{
-			IType type = parameterMetadata.GetNamedParameterExpectedType(paramName);
-			if (type == null)
-			{
-				type = GuessType(clazz);
-			}
+			IType type = parameterMetadata.GetNamedParameterExpectedType(paramName) ?? GuessType(clazz);
 			return type;
 		}
 
@@ -248,7 +229,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		private string ExpandParameterList(string query, string name, TypedValue typedList, IDictionary<string, TypedValue> namedParamsCopy)
 		{
-			ICollection vals = (ICollection)typedList.Value;
+			var vals = (ICollection)typedList.Value;
 			IType type = typedList.Type;
 			if (vals.Count == 1)
 			{
@@ -259,7 +240,7 @@ namespace NHibernate.Impl
 				return query;
 			}
 
-			StringBuilder list = new StringBuilder(16);
+			var list = new StringBuilder(16);
 			int i = 0;
 			bool isJpaPositionalParam = parameterMetadata.GetNamedParameterDescriptor(name).JpaStyle;
 			foreach (object obj in vals)
@@ -732,6 +713,11 @@ namespace NHibernate.Impl
 			get { return session.Factory.GetReturnTypes(queryString); }
 		}
 
+		public virtual string[] ReturnAliases
+		{
+			get { return session.Factory.GetReturnAliases(queryString); }
+		}
+
 		// TODO: maybe call it RowSelection ?
 		public RowSelection Selection
 		{
@@ -771,6 +757,12 @@ namespace NHibernate.Impl
 		}
 
 		public abstract IQuery SetLockMode(string alias, LockMode lockMode);
+
+		public IQuery SetComment(string comment)
+		{
+			this.comment = comment;
+			return this;
+		}
 
 		internal protected ISessionImplementor Session
 		{
@@ -921,14 +913,14 @@ namespace NHibernate.Impl
 					ValueArray(),
 					namedParams,
 					LockModes,
-					selection,
+					Selection,
 					readOnly,
 					cacheable,
 					cacheRegion,
-					string.Empty,
-					collectionKey == null ? null : new object[] { collectionKey },
+					comment,
+					collectionKey == null ? null : new[] { collectionKey },
 					optionalObject,
-					optionalEntityName ?? null,
+					optionalEntityName,
 					optionalId,
 					resultTransformer);
 		}

@@ -5,7 +5,7 @@ using NHibernate.SqlTypes;
 using NUnit.Framework;
 using NHibernate.SqlCommand;
 
-namespace NHibernate.Test.HQLFunctionTest
+namespace NHibernate.Test.Hql
 {
 	[TestFixture]
 	public class SimpleFunctionsTest : BaseFunctionFixture

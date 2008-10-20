@@ -4,7 +4,7 @@ using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
 using NUnit.Framework;
 
-namespace NHibernate.Test.HQLFunctionTest
+namespace NHibernate.Test.Hql
 {
 	/// <summary>
 	/// This test run each HQL function separatelly so is easy to know wich function need
@@ -42,7 +42,7 @@ namespace NHibernate.Test.HQLFunctionTest
 
 		protected override IList Mappings
 		{
-			get { return new string[] { "HQLFunctionTest.Animal.hbm.xml", "HQLFunctionTest.MaterialResource.hbm.xml" }; }
+			get { return new string[] { "HQL.Animal.hbm.xml", "HQL.MaterialResource.hbm.xml" }; }
 		}
 
 		protected override void OnTearDown()

@@ -62,6 +62,10 @@ namespace NHibernate
 		/// </summary>
 		IType[] ReturnTypes { get; }
 
+		/// <summary> Return the HQL select clause aliases (if any)</summary>
+		/// <returns> an array of aliases as strings </returns>
+		string[] ReturnAliases{get;}
+
 		/// <summary>
 		/// The names of all named parameters of the query
 		/// </summary>
@@ -123,11 +127,16 @@ namespace NHibernate
 		/// </exception>
 		object UniqueResult();
 
-
 		/// <summary>
 		/// Strongly-typed version of <see cref="UniqueResult()"/>.
 		/// </summary>
 		T UniqueResult<T>();
+
+		/// <summary> 
+		/// Execute the update or delete statement.
+		/// </summary>
+		/// <returns> The number of entities updated or deleted. </returns>
+		int ExecuteUpdate();
 
 		/// <summary>
 		/// Set the maximum number of rows to retrieve.
@@ -141,6 +150,13 @@ namespace NHibernate
 		/// <param name="firstResult">The first row to retreive.</param>
 		IQuery SetFirstResult(int firstResult);
 
+		/// <summary> 
+		/// Entities retrieved by this query will be loaded in 
+		/// a read-only mode where Hibernate will never dirty-check
+		/// them or make changes persistent. 
+		/// </summary>
+		IQuery SetReadOnly(bool readOnly);
+
 		/// <summary>
 		/// Enable caching of this query result set.
 		/// </summary>
@@ -152,18 +168,15 @@ namespace NHibernate
 		/// for the default query cache</param>
 		IQuery SetCacheRegion(string cacheRegion);
 
-		/// <summary> 
-		/// Entities retrieved by this query will be loaded in 
-		/// a read-only mode where Hibernate will never dirty-check
-		/// them or make changes persistent. 
-		/// </summary>
-		IQuery SetReadOnly(bool readOnly);
-
 		/// <summary>
 		/// The timeout for the underlying ADO query
 		/// </summary>
 		/// <param name="timeout"></param>
 		IQuery SetTimeout(int timeout);
+
+		/// <summary> Set a fetch size for the underlying ADO query.</summary>
+		/// <param name="fetchSize">the fetch size </param>
+		IQuery SetFetchSize(int fetchSize);
 
 		/// <summary>
 		/// Set the lockmode for the objects idententified by the
@@ -172,6 +185,20 @@ namespace NHibernate
 		/// <param name="alias">alias a query alias, or <c>this</c> for a collection filter</param>
 		/// <param name="lockMode"></param>
 		IQuery SetLockMode(string alias, LockMode lockMode);
+
+		/// <summary> Add a comment to the generated SQL.</summary>
+		/// <param name="comment">a human-readable string </param>
+		IQuery SetComment(string comment);
+
+		/// <summary>
+		/// Override the current session flush mode, just for this query.
+		/// </summary>
+		IQuery SetFlushMode(FlushMode flushMode);
+
+		/// <summary> Override the current session cache mode, just for this query. </summary>
+		/// <param name="cacheMode">The cache mode to use. </param>
+		/// <returns> this (for method chaining) </returns>
+		IQuery SetCacheMode(CacheMode cacheMode);
 
 		/// <summary>
 		/// Bind a value to an indexed parameter.
@@ -395,20 +422,6 @@ namespace NHibernate
 		IQuery SetDouble(string name, double val);
 
 		/// <summary>
-		/// Bind an instance of a mapped persistent class to an indexed parameter.
-		/// </summary>
-		/// <param name="position">Position of the parameter in the query string, numbered from <c>0</c></param>
-		/// <param name="val">A non-null instance of a persistent class</param>
-		IQuery SetEntity(int position, object val);
-
-		/// <summary>
-		/// Bind an instance of a mapped persistent class to a named parameter.
-		/// </summary>
-		/// <param name="name">The name of the parameter</param>
-		/// <param name="val">A non-null instance of a persistent class</param>
-		IQuery SetEntity(string name, object val);
-
-		/// <summary>
 		/// Bind an instance of a persistent enumeration class to an indexed parameter
 		/// using an NHibernate <see cref="PersistentEnumType"/>.
 		/// </summary>
@@ -553,25 +566,23 @@ namespace NHibernate
 		IQuery SetGuid(string name, Guid val);
 
 		/// <summary>
-		/// Override the current session flush mode, just for this query.
+		/// Bind an instance of a mapped persistent class to an indexed parameter.
 		/// </summary>
-		IQuery SetFlushMode(FlushMode flushMode);
+		/// <param name="position">Position of the parameter in the query string, numbered from <c>0</c></param>
+		/// <param name="val">A non-null instance of a persistent class</param>
+		IQuery SetEntity(int position, object val);
+
+		/// <summary>
+		/// Bind an instance of a mapped persistent class to a named parameter.
+		/// </summary>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">A non-null instance of a persistent class</param>
+		IQuery SetEntity(string name, object val);
 
 		/// <summary>
 		/// Set a strategy for handling the query results. This can be used to change
 		/// "shape" of the query result.
 		/// </summary>
 		IQuery SetResultTransformer(IResultTransformer resultTransformer);
-
-		/// <summary> Override the current session cache mode, just for this query. </summary>
-		/// <param name="cacheMode">The cache mode to use. </param>
-		/// <returns> this (for method chaining) </returns>
-		IQuery SetCacheMode(CacheMode cacheMode);
-
-		/// <summary> 
-		/// Execute the update or delete statement.
-		/// </summary>
-		/// <returns> The number of entities updated or deleted. </returns>
-		int ExecuteUpdate();
 	}
 }

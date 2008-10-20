@@ -3,7 +3,7 @@ using NHibernate.Cfg;
 using NHibernate.Engine;
 using NUnit.Framework;
 
-namespace NHibernate.Test.HQLFunctionTest
+namespace NHibernate.Test.Hql
 {
 	public class BaseFunctionFixture
 	{

@@ -93,6 +93,7 @@ namespace NHibernate.Cfg
 		public const string ShowSql = "show_sql";
 		public const string MaxFetchDepth = "max_fetch_depth";
 		public const string CurrentSessionContextClass = "current_session_context_class";
+		public const string UseSqlComments = "use_sql_comments";
 
 		// Unused, Java-specific
 		public const string UseGetGeneratedKeys = "jdbc.use_get_generated_keys";

@@ -104,15 +104,15 @@ namespace NHibernate.Impl
 			return result;
 		}
 
-		//public string[] ReturnAliases
-		//{
-		//    get { throw new NotSupportedException( "SQL queries do not currently support returning aliases" ); }
-		//}
+		public override string[] ReturnAliases
+		{
+			get { throw new NotSupportedException("SQL queries do not currently support returning aliases"); }
+		}
 
-		//public override IType[] ReturnTypes
-		//{
-		//    get { throw new NotSupportedException( "not yet implemented for SQL queries" ); }
-		//}
+		public override IType[] ReturnTypes
+		{
+			get { throw new NotSupportedException("not yet implemented for SQL queries"); }
+		}
 
 		public override IList List()
 		{

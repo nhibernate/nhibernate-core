@@ -274,16 +274,18 @@
     <Compile Include="GenericTest\SetGeneric\A.cs" />
     <Compile Include="GenericTest\SetGeneric\B.cs" />
     <Compile Include="GenericTest\SetGeneric\SetGenericFixture.cs" />
-    <Compile Include="HQLFunctionTest\Animal.cs" />
-    <Compile Include="HQLFunctionTest\BaseFunctionFixture.cs" />
-    <Compile Include="HQLFunctionTest\HQLFunctions.cs" />
-    <Compile Include="HQLFunctionTest\Human.cs" />
-    <Compile Include="HQLFunctionTest\MaterialResource.cs" />
-    <Compile Include="HQLFunctionTest\Name.cs" />
-    <Compile Include="HQLFunctionTest\SimpleFunctionsTest.cs" />
-    <Compile Include="HQLFunctionTest\SQLFunctionTemplateTest.cs" />
+    <Compile Include="HQL\Animal.cs" />
+    <Compile Include="HQL\BaseFunctionFixture.cs" />
+    <Compile Include="HQL\HQLFunctions.cs" />
+    <Compile Include="HQL\Human.cs" />
+    <Compile Include="HQL\MaterialResource.cs" />
+    <Compile Include="HQL\Name.cs" />
+    <Compile Include="HQL\SimpleFunctionsTest.cs" />
+    <Compile Include="HQL\SqlCommentsFixture.cs" />
+    <Compile Include="HQL\SQLFunctionTemplateTest.cs" />
     <Compile Include="BulkManipulation\NativeSQLBulkOperations.cs" />
     <Compile Include="BulkManipulation\Vehicles.cs" />
+    <Compile Include="HQL\HqlFixture.cs" />
     <Compile Include="IdGen\Enhanced\SequenceStyleConfigUnitFixture.cs" />
     <Compile Include="IdTest\Car.cs" />
     <Compile Include="IdTest\HiLoInt16Class.cs" />
@@ -1184,7 +1186,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH712\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="HQLFunctionTest\Animal.hbm.xml" />
+    <EmbeddedResource Include="HQL\Animal.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ExpressionTest\SubQueries\Mappings.hbm.xml" />
@@ -1294,7 +1296,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH980\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="HQLFunctionTest\MaterialResource.hbm.xml" />
+    <EmbeddedResource Include="HQL\MaterialResource.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Join\CompositeKey.hbm.xml" />
