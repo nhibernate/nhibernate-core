@@ -380,6 +380,10 @@
     <Compile Include="NHSpecificTest\NH1033\Reptile.cs" />
     <Compile Include="NHSpecificTest\NH1077\A.cs" />
     <Compile Include="NHSpecificTest\NH1077\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1090\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1090\MainClass.cs" />
+    <Compile Include="NHSpecificTest\NH1090\MainClassDescriptionOnly.cs" />
+    <Compile Include="NHSpecificTest\NH1090\TuppleToPropertyResultTransformer.cs" />
     <Compile Include="NHSpecificTest\NH1098\FilterParameterOrderFixture.cs" />
     <Compile Include="NHSpecificTest\NH1098\Model.cs" />
     <Compile Include="NHSpecificTest\NH1101\Domain.cs" />
@@ -1509,6 +1513,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1090\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH662\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1495\Mappings.hbm.xml" />
     <EmbeddedResource Include="ProjectionFixtures\Mapping.hbm.xml" />

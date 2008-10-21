@@ -62,7 +62,7 @@ namespace NHibernate.Loader.Criteria
 		}
 
 		[CLSCompliant(false)] // TODO: Why does this cause a problem in 1.1
-			public string RootSQLAlias
+		public string RootSQLAlias
 		{
 			get { return rootSQLAlias; }
 		}

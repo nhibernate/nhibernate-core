@@ -146,7 +146,7 @@ namespace NHibernate.Test.QueryTest
 			firstQueryResults.Add(4);
 
 			IList secondQueryResults = (IList)cachedQuery[1];
-			secondQueryResults[0] = 2;
+			secondQueryResults[0] = new object[]{2};
 
 			using (ISession s = sessions.OpenSession())
 			{
