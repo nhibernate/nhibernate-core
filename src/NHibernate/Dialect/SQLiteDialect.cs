@@ -183,7 +183,7 @@ namespace NHibernate.Dialect
 
 			if (offset > 0)
 			{
-				pagingBuilder.Add(", ");
+				pagingBuilder.Add(" offset ");
 				pagingBuilder.Add(offset.ToString());
 			}
 
