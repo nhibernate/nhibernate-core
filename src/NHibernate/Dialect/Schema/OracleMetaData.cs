@@ -10,7 +10,7 @@ namespace NHibernate.Dialect.Schema
 
 		public override ITableMetadata GetTableMetadata(DataRow rs, bool extras)
 		{
-			return new MsSqlTableMetadata(rs, this, extras);
+			return new OracleTableMetadata(rs, this, extras);
 		}
 	}
 
