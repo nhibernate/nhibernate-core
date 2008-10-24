@@ -1,7 +1,8 @@
-using System;
+using System.Collections;
 using System.Data;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
+using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using Environment=NHibernate.Cfg.Environment;
 using System.Data.Common;
@@ -110,15 +111,19 @@ namespace NHibernate.Dialect
 			RegisterFunction("sysdate", new NoArgSQLFunction("sysdate", NHibernateUtil.Date, false));
 			RegisterFunction("uid", new NoArgSQLFunction("uid", NHibernateUtil.Int32, false));
 			RegisterFunction("user", new NoArgSQLFunction("user", NHibernateUtil.String, false));
+			RegisterFunction("current_timestamp", new CurrentTimeStamp());
+
+			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar2(2000))"));
 
 			// Multi-param string dialect functions...
-			RegisterFunction("concat", new StandardSQLFunction("concat", NHibernateUtil.String));
+			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "||", ")"));
 			RegisterFunction("instr", new StandardSQLFunction("instr", NHibernateUtil.String));
 			RegisterFunction("instrb", new StandardSQLFunction("instrb", NHibernateUtil.String));
 			RegisterFunction("lpad", new StandardSQLFunction("lpad", NHibernateUtil.String));
 			RegisterFunction("replace", new StandardSQLFunction("replace", NHibernateUtil.String));
 			RegisterFunction("rpad", new StandardSQLFunction("rpad", NHibernateUtil.String));
 			RegisterFunction("substr", new StandardSQLFunction("substr", NHibernateUtil.String));
+			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String)); 
 			RegisterFunction("substrb", new StandardSQLFunction("substrb", NHibernateUtil.String));
 			RegisterFunction("translate", new StandardSQLFunction("translate", NHibernateUtil.String));
 
@@ -184,9 +189,12 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		public override SqlString GetLimitString(SqlString querySqlString, bool hasOffset)
+
+		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
 		{
 			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
+			var hasOffset = offset > 0;
+
 			if (hasOffset)
 			{
 				pagingBuilder.Add("select * from ( select row_.*, rownum rownum_ from ( ");
@@ -199,14 +207,14 @@ namespace NHibernate.Dialect
 			if (hasOffset)
 			{
 				pagingBuilder.Add(" ) row_ where rownum <= ");
-				pagingBuilder.Add(Parameter.Placeholder);
+				pagingBuilder.Add(offset.ToString());
 				pagingBuilder.Add(" ) where rownum_ > ");
-				pagingBuilder.Add(Parameter.Placeholder);
+				pagingBuilder.Add((limit + offset).ToString());
 			}
 			else
 			{
 				pagingBuilder.Add(" ) where rownum <= ");
-				pagingBuilder.Add(Parameter.Placeholder);
+				pagingBuilder.Add(offset.ToString());
 			}
 
 			return pagingBuilder.ToSqlString();
@@ -242,6 +250,18 @@ namespace NHibernate.Dialect
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new OracleDataBaseSchema(connection);
+		}
+
+		private class CurrentTimeStamp : NoArgSQLFunction
+		{
+			public CurrentTimeStamp()
+				: base("current_timestamp", NHibernateUtil.DateTime, true)
+			{ }
+
+			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
+			{
+				return new SqlString(name);
+			}
 		}
 	}
 }

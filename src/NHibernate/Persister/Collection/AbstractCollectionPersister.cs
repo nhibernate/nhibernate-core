@@ -1445,7 +1445,7 @@ namespace NHibernate.Persister.Collection
 				{
 					KeyType.NullSafeSet(st, key, 0, session);
 					rs = session.Batcher.ExecuteReader(st);
-					return rs.Read() ? rs.GetInt32(0) - baseIndex : 0;
+					return rs.Read() ? Convert.ToInt32(rs.GetValue(0)) - baseIndex : 0;
 				}
 				finally
 				{
