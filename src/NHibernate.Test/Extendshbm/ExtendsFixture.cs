@@ -105,10 +105,34 @@ namespace NHibernate.Test.Extendshbm
 		}
 
 		[Test]
+		public void JoinedSubclassAndEntityNamesOnlyWithCollection()
+		{
+			Configuration cfg = new Configuration();
+
+			cfg.AddResource(BaseForMappings + "Extendshbm.entitynamesWithColl.hbm.xml", typeof(ExtendsFixture).Assembly);
+
+			cfg.BuildMappings();
+			Assert.That(cfg.GetClassMapping("EntityHasName"), Is.Not.Null);
+			Assert.That(cfg.GetClassMapping("EntityCompany"), Is.Not.Null);
+		}
+
+		[Test]
 		public void EntityNamesWithPackageFailureExpected()
 		{
 			Configuration cfg = new Configuration();
 			cfg.AddResource(BaseForMappings + "Extendshbm.packageentitynames.hbm.xml", typeof (ExtendsFixture).Assembly);
+
+			cfg.BuildMappings();
+
+			Assert.That(cfg.GetClassMapping("EntityHasName"), Is.Not.Null);
+			Assert.That(cfg.GetClassMapping("EntityCompany"), Is.Not.Null);
+		}
+
+		[Test]
+		public void EntityNamesWithPackageWithCollection()
+		{
+			Configuration cfg = new Configuration();
+			cfg.AddResource(BaseForMappings + "Extendshbm.packageentitynamesWithColl.hbm.xml", typeof(ExtendsFixture).Assembly);
 
 			cfg.BuildMappings();
 
