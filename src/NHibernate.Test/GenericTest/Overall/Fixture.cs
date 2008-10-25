@@ -27,14 +27,14 @@ namespace NHibernate.Test.GenericTest.Overall
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				session.Save("AInt", entity);
+				session.Save(entity);
 				transaction.Commit();
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				session.Delete("AInt", entity);
+				session.Delete(entity);
 				transaction.Commit();
 			}
 		}
@@ -53,14 +53,14 @@ namespace NHibernate.Test.GenericTest.Overall
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				session.Save("AB", entity);
+				session.Save(entity);
 				transaction.Commit();
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				session.Delete("AB", entity);
+				session.Delete(entity);
 				transaction.Commit();
 			}
 		}

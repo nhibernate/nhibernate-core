@@ -102,6 +102,13 @@ namespace NHibernate.Impl
 		[NonSerialized] private readonly ICurrentSessionContext currentSessionContext;
 		[NonSerialized] private readonly IEntityNotFoundDelegate entityNotFoundDelegate;
 		[NonSerialized] private readonly IDictionary<string, IEntityPersister> entityPersisters;
+
+		/// <summary>
+		/// NH specific : to avoid the use of entityName for generic implementation
+		/// </summary>
+		/// <remarks>this is a shortcut.</remarks>
+		[NonSerialized] private readonly IDictionary<System.Type, string> implementorToEntityName;
+
 		[NonSerialized] private readonly EventListeners eventListeners;
 
 		[NonSerialized] private readonly Dictionary<string, FilterDefinition> filters;
@@ -178,6 +185,8 @@ namespace NHibernate.Impl
 
 			Dictionary<string, ICacheConcurrencyStrategy> caches = new Dictionary<string, ICacheConcurrencyStrategy>();
 			entityPersisters = new Dictionary<string, IEntityPersister>();
+			implementorToEntityName = new Dictionary<System.Type, string>();
+
 			Dictionary<string, IClassMetadata> classMeta = new Dictionary<string, IClassMetadata>();
 
 			foreach (PersistentClass model in cfg.ClassMappings)
@@ -198,6 +207,11 @@ namespace NHibernate.Impl
 				IEntityPersister cp = PersisterFactory.CreateClassPersister(model, cache, this, mapping);
 				entityPersisters[model.EntityName] = cp;
 				classMeta[model.EntityName] = cp.ClassMetadata;
+
+				if (model.HasPocoRepresentation)
+				{
+					implementorToEntityName[model.MappedClass] = model.EntityName;
+				}
 			}
 			classMetadata = new UnmodifiableDictionary<string, IClassMetadata>(classMeta);
 
@@ -1125,5 +1139,15 @@ namespace NHibernate.Impl
 				return null;
 			}
 		}
+
+		#region NHibernate specific
+		public string TryGetGuessEntityName(System.Type implementor)
+		{
+			string result;
+			implementorToEntityName.TryGetValue(implementor, out result);
+			return result;
+		}
+
+		#endregion
 	}
 }

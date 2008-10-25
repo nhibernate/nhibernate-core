@@ -40,7 +40,6 @@ namespace NHibernate.Hql.Util
 			 * to link an entityName with its AssemblyQualifiedName (strongly typed).
 			 * I would like to maitain <imports> like the holder of the association of an entityName (or a class Name) and
 			 * its Type (in the future: Dictionary<string, System.Type> imports;)
-			 * Note : The same AssemblyQualifiedName should be associaded with more than one emtityName (in case of use generic).
 			 * *********************************************************************************************************
 			 */
 			return TypeNameParser.Parse(assemblyQualifiedName).Type;

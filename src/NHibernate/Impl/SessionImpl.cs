@@ -870,7 +870,8 @@ namespace NHibernate.Impl
 			string entityName = interceptor.GetEntityName(entity);
 			if (entityName == null)
 			{
-				entityName = entity.GetType().FullName;
+				System.Type t = entity.GetType();
+				entityName = Factory.TryGetGuessEntityName(t) ?? t.FullName;
 			}
 			return entityName;
 		}

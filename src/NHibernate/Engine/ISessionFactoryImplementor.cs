@@ -177,6 +177,12 @@ namespace NHibernate.Engine
 		/// </returns>
 		IEntityPersister TryGetEntityPersister(string entityName);
 
+		/// <summary>
+		/// Get the entity-name for a given mapped class.
+		/// </summary>
+		/// <param name="implementor">the mapped class</param>
+		/// <returns>the enntity name where available or null</returns>
+		string TryGetGuessEntityName(System.Type implementor);
 		#endregion
 	}
 }
