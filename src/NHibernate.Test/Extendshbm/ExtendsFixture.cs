@@ -117,6 +117,19 @@ namespace NHibernate.Test.Extendshbm
 		}
 
 		[Test]
+		public void EntityNamesWithPackageFailureExpectedDiffFiles()
+		{
+			Configuration cfg = new Configuration();
+			cfg.AddResource(BaseForMappings + "Extendshbm.packageentitynamesf1.hbm.xml", typeof(ExtendsFixture).Assembly);
+			cfg.AddResource(BaseForMappings + "Extendshbm.packageentitynamesf2.hbm.xml", typeof(ExtendsFixture).Assembly);
+
+			cfg.BuildMappings();
+
+			Assert.That(cfg.GetClassMapping("EntityHasName"), Is.Not.Null);
+			Assert.That(cfg.GetClassMapping("EntityCompany"), Is.Not.Null);
+		}
+
+		[Test]
 		public void UnionSubclass()
 		{
 			Configuration cfg = new Configuration();

@@ -10,7 +10,7 @@ namespace NHibernate.Cfg
 	{
 		private readonly HashedSet<string> containedClassNames;
 		private readonly NamedXmlDocument document;
-		private readonly HashedSet<string> requiredClassNames;
+		private readonly HashedSet<RequiredEntityName> requiredClassNames;
 
 		public MappingsQueueEntry(NamedXmlDocument document, IEnumerable<ClassExtractor.ClassEntry> classEntries)
 		{
@@ -29,7 +29,7 @@ namespace NHibernate.Cfg
 		/// Gets the names of all entities outside this resource
 		/// needed by the classes in this resource.
 		/// </summary>
-		public ICollection<string> RequiredClassNames
+		public ICollection<RequiredEntityName> RequiredClassNames
 		{
 			get { return requiredClassNames; }
 		}
@@ -44,9 +44,9 @@ namespace NHibernate.Cfg
 
 		private static HashedSet<string> GetClassNames(IEnumerable<ClassExtractor.ClassEntry> classEntries)
 		{
-			HashedSet<string> result = new HashedSet<string>();
+			var result = new HashedSet<string>();
 
-			foreach (ClassExtractor.ClassEntry ce in classEntries)
+			foreach (var ce in classEntries)
 			{
 				if (ce.EntityName != null)
 				{
@@ -61,20 +61,80 @@ namespace NHibernate.Cfg
 			return result;
 		}
 
-		private static HashedSet<string> GetRequiredClassNames(IEnumerable<ClassExtractor.ClassEntry> classEntries,
+		private static HashedSet<RequiredEntityName> GetRequiredClassNames(IEnumerable<ClassExtractor.ClassEntry> classEntries,
 		                                                       ICollection<string> containedNames)
 		{
-			HashedSet<string> result = new HashedSet<string>();
+			var result = new HashedSet<RequiredEntityName>();
 
-			foreach (ClassExtractor.ClassEntry ce in classEntries)
+			foreach (var ce in classEntries)
 			{
-				if (ce.ExtendsEntityName != null && !containedNames.Contains(ce.FullExtends.Type) && !containedNames.Contains(ce.ExtendsEntityName))
+				if (ce.ExtendsEntityName != null && !containedNames.Contains(ce.FullExtends.Type)
+				    && !containedNames.Contains(ce.ExtendsEntityName))
 				{
-					result.Add(ce.FullExtends.Type);
+					result.Add(new RequiredEntityName(ce.ExtendsEntityName, ce.FullExtends.Type));
 				}
 			}
 
 			return result;
+		}
+
+		public class RequiredEntityName
+		{
+			public RequiredEntityName(string entityName, string fullClassName)
+			{
+				EntityName = entityName;
+				FullClassName = fullClassName;
+			}
+
+			public string EntityName { get; private set; }
+
+			public string FullClassName { get; private set; }
+
+			public bool Equals(RequiredEntityName obj)
+			{
+				if (obj == null)
+				{
+					return false;
+				}
+				if (ReferenceEquals(this, obj))
+				{
+					return true;
+				}
+				return Equals(obj.EntityName, EntityName) && Equals(obj.FullClassName, FullClassName);
+			}
+
+			public override bool Equals(object obj)
+			{
+				if (obj == null)
+				{
+					return false;
+				}
+				var thatSimple = obj as string;
+				if (thatSimple != null && (thatSimple.Equals(EntityName) || thatSimple.Equals(FullClassName)))
+				{
+					return true;
+				}
+				var that = obj as RequiredEntityName;
+				if (that != null)
+				{
+					return false;
+				}
+				return Equals(that);
+			}
+
+			public override int GetHashCode()
+			{
+				unchecked
+				{
+					return ((EntityName != null ? EntityName.GetHashCode() : 0) * 397)
+					       ^ (FullClassName != null ? FullClassName.GetHashCode() : 0);
+				}
+			}
+
+			public override string ToString()
+			{
+				return string.Format("FullName:{0} - Name:{1}", FullClassName ?? "<null>", EntityName ?? "<null>");
+			}
 		}
 	}
 }

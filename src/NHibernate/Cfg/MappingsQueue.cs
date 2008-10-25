@@ -98,7 +98,12 @@ namespace NHibernate.Cfg
 
 		private bool CanProcess(MappingsQueueEntry ce)
 		{
-			return _processedClassNames.ContainsAll(ce.RequiredClassNames);
+			foreach (var c in ce.RequiredClassNames)
+			{
+				if (!(_processedClassNames.Contains(c.FullClassName) || _processedClassNames.Contains(c.EntityName)))
+					return false;
+			}
+			return true;
 		}
 
 		private static string FormatExceptionMessage(ICollection resourceEntries)
@@ -108,10 +113,9 @@ namespace NHibernate.Cfg
 
 			foreach (MappingsQueueEntry resourceEntry in resourceEntries)
 			{
-				foreach (string className in resourceEntry.RequiredClassNames)
+				foreach (var className in resourceEntry.RequiredClassNames)
 				{
-					message.Append('\n')
-						.Append(className);
+					message.Append('\n').Append(className);
 				}
 			}
 
