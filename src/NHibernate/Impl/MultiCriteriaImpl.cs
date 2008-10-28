@@ -151,16 +151,7 @@ namespace NHibernate.Impl
 					CriteriaImpl critImp = criteriaQueries[i] as CriteriaImpl;
 					if(critImp==null || critImp.ResultTransformer==null)
 						continue;
-					ArrayList resultForOneCriteria = ((ArrayList) results[i]);
-					for (int j = 0; j < resultForOneCriteria.Count; j++)
-					{
-						if (!(critImp.ResultTransformer is RootEntityResultTransformer))
-						{
-							object[] itemsForOneRow = (object[]) resultForOneCriteria[j];
-							resultForOneCriteria[j] = critImp.ResultTransformer.TransformTuple(itemsForOneRow, new string[] {});
-						}
-					}
-					critImp.ResultTransformer.TransformList(resultForOneCriteria);
+					results[i] = critImp.ResultTransformer.TransformList((IList)results[i]);
 				}
 			}
 			return results;

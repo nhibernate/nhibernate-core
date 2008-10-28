@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -29,7 +28,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly string[] userAliases;
 
 		public CriteriaLoader(IOuterJoinLoadable persister, ISessionFactoryImplementor factory, CriteriaImpl rootCriteria,
-							  string rootEntityName, IDictionary<string, IFilter> enabledFilters)
+		                      string rootEntityName, IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters)
 		{
 			translator = new CriteriaQueryTranslator(factory, rootCriteria, rootEntityName, CriteriaQueryTranslator.RootSqlAlias);
@@ -75,9 +74,10 @@ namespace NHibernate.Loader.Criteria
 		}
 
 		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
-													   ISessionImplementor session)
+		                                               ISessionImplementor session)
 		{
 			object[] result;
+			string[] aliases;
 
 			if (translator.HasProjection)
 			{
@@ -96,15 +96,11 @@ namespace NHibernate.Loader.Criteria
 				result = row;
 				aliases = userAliases;
 			}
-			if (translator.RootCriteria.ResultTransformer is RootEntityResultTransformer)
-				return row[row.Length-1];
-			else
-				return result;
+			return translator.RootCriteria.ResultTransformer.TransformTuple(result, aliases);
 		}
 
-		private string[] aliases;
 		protected override SqlString ApplyLocks(SqlString sqlSelectString, IDictionary<string, LockMode> lockModes,
-												Dialect.Dialect dialect)
+		                                        Dialect.Dialect dialect)
 		{
 			if (lockModes == null || lockModes.Count == 0)
 			{
@@ -119,7 +115,7 @@ namespace NHibernate.Loader.Criteria
 				LockMode lockMode;
 				if (lockModes.TryGetValue(drivingSqlAliases[i], out lockMode))
 				{
-					ILockable drivingPersister = (ILockable)EntityPersisters[i];
+					ILockable drivingPersister = (ILockable) EntityPersisters[i];
 					string rootSqlAlias = drivingPersister.GetRootTableAlias(drivingSqlAliases[i]);
 					aliasedLockModes[rootSqlAlias] = lockMode;
 					if (keyColumnNames != null)
@@ -155,15 +151,7 @@ namespace NHibernate.Loader.Criteria
 
 		protected override IList GetResultList(IList results, IResultTransformer resultTransformer)
 		{
-			if (!(resultTransformer is RootEntityResultTransformer))
-			{
-				for (int i = 0; i < results.Count; i++)
-				{
-					object[] row = (object[]) results[i];
-					results[i] = resultTransformer.TransformTuple(row, aliases);
-				}
-			}
-			return resultTransformer.TransformList(results);
+			return translator.RootCriteria.ResultTransformer.TransformList(results);
 		}
 	}
 }
