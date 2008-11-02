@@ -22,5 +22,16 @@ namespace NHibernate.Transform
 		{
 			return new AliasToBeanResultTransformer(target);
 		}
+
+        public static readonly IResultTransformer DistinctRootEntity = new DistinctRootEntityResultTransformer();
+
+        public static IResultTransformer AliasToBeanConstructor(System.Reflection.ConstructorInfo constructor)
+        {
+            return new AliasToBeanConstructorResultTransformer(constructor);
+        }
+
+	    public static readonly IResultTransformer PassThrough = new PassThroughResultTransformer();
+
+	    public static readonly IResultTransformer RootEntity = new RootEntityResultTransformer();
 	}
 }
