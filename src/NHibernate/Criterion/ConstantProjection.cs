@@ -13,11 +13,17 @@ namespace NHibernate.Criterion
 	public class ConstantProjection : SimpleProjection
 	{
 		private readonly object value;
-
-		public ConstantProjection(object value)
+		private readonly IType type;
+		public ConstantProjection(object value):this(value,NHibernateUtil.GuessType(value.GetType()))
+		{
+			
+		}
+		public ConstantProjection(object value,IType type)
 		{
 			this.value = value;
+			this.type = type;
 		}
+
 
 		public override bool IsAggregate
 		{
@@ -36,7 +42,7 @@ namespace NHibernate.Criterion
 
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			criteriaQuery.AddUsedTypedValues(new TypedValue[] { new TypedValue(NHibernateUtil.GuessType(value), value, EntityMode.Poco) });
+			criteriaQuery.AddUsedTypedValues(new TypedValue[] { new TypedValue(type, value, EntityMode.Poco) });
 			return new SqlStringBuilder()
 				.AddParameter()
 				.Add(" as ")
@@ -46,12 +52,12 @@ namespace NHibernate.Criterion
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new IType[] {NHibernateUtil.GuessType(value)};
+			return new IType[] { type };
 		}
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[] {new TypedValue(NHibernateUtil.GuessType(value), value, EntityMode.Poco)};
+			return new TypedValue[] { new TypedValue(type, value, EntityMode.Poco) };
 		}
 	}
 }
