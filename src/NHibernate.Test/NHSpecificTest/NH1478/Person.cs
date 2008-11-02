@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NHibernate.Test.NHSpecificTest.NH1447
+namespace NHibernate.Test.NHSpecificTest.NH1478
 {
 	public class Person
 	{
@@ -12,14 +11,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1447
 
 		}
 
-		public Person(string name, bool wantsNewsLetter)
+		public Person(string name, string bio)
 		{
 			this.Name = name;
-			this.WantsNewsletter = wantsNewsLetter;
+			this.Biography = bio;
 		}
 
 		public virtual int Id
-		{ get;
+		{
+			get;
 			set;
 		}
 
@@ -28,12 +28,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1447
 			get;
 			set;
 		}
-		public virtual bool WantsNewsletter
+		public virtual string Biography
 		{
 			get;
 			set;
 		}
 
 	}
-
 }
