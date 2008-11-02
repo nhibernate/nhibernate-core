@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false" namespace="NHibernate.Test.TypesTest" assembly="NHibernate.Test">
+	<class name="EnumCharClass" table="bc_echr">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+		<property name="EnumValue" type="NHibernate.Type.EnumCharType`1[[NHibernate.Test.TypesTest.SampleCharEnum, NHibernate.Test]], NHibernate" column="enumc"/>
+	</class>
+	<class name="EnumCharFoo" table="bc_ecfoobarbaz" discriminator-value="Dimmed">
+		<id name="Id">
+			<generator class="assigned"/>
+		</id>
+		<discriminator type="NHibernate.Type.EnumCharType`1[[NHibernate.Test.TypesTest.SampleCharEnum, NHibernate.Test]], NHibernate" column="type"/>
+		<subclass name="EnumCharBar" discriminator-value="Off"/>
+	</class>
+
+	<class name="EnumCharBaz" table="bc_ecfoobarbaz">
+		<id name="Id">
+			<generator class="assigned"/>
+		</id>
+		<property name="Type" column="type" type="NHibernate.Type.EnumCharType`1[[NHibernate.Test.TypesTest.SampleCharEnum, NHibernate.Test]], NHibernate"/>
+	</class>
+</hibernate-mapping>

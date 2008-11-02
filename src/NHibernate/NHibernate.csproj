@@ -1053,6 +1053,7 @@
     <Compile Include="Type\CollectionType.cs" />
     <Compile Include="Type\CustomCollectionType.cs" />
     <Compile Include="Type\EmbeddedComponentType.cs" />
+    <Compile Include="Type\EnumCharType.cs" />
     <Compile Include="Type\EnumStringType`1.cs" />
     <Compile Include="Type\GenericOrderedSetType.cs" />
     <Compile Include="Type\ICacheAssembler.cs" />
