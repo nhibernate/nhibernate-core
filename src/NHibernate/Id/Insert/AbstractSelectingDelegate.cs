@@ -51,7 +51,7 @@ namespace NHibernate.Id.Insert
 			try
 			{
 				//fetch the generated id in a separate query
-				IDbCommand idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSQL, SqlTypeFactory.NoTypes);
+				IDbCommand idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSQL, ParametersTypes);
 				try
 				{
 					BindParameters(session, idSelect, binder.Entity);
@@ -91,10 +91,22 @@ namespace NHibernate.Id.Insert
 		/// <returns> The generated identifier </returns>
 		protected internal abstract object GetResult(ISessionImplementor session, IDataReader rs, object entity);
 
-		/// <summary> Bind any required parameter values into the SQL command {@link #getSelectSQL}. </summary>
+		/// <summary> Bind any required parameter values into the SQL command <see cref="SelectSQL"/>. </summary>
 		/// <param name="session">The session </param>
-		/// <param name="ps">The prepared {@link #getSelectSQL SQL} command </param>
+		/// <param name="ps">The prepared <see cref="SelectSQL"/> command </param>
 		/// <param name="entity">The entity being saved. </param>
-		protected internal virtual void BindParameters(ISessionImplementor session, IDbCommand ps, object entity) {}
+		protected internal virtual void BindParameters(ISessionImplementor session, IDbCommand ps, object entity) { }
+
+		#region NH Specific
+
+		/// <summary>
+		/// Types of any required parameter values into the SQL command <see cref="SelectSQL"/>.
+		/// </summary>
+		protected internal virtual SqlType[] ParametersTypes
+		{
+			get { return SqlTypeFactory.NoTypes; }
+		}
+
+		#endregion
 	}
 }

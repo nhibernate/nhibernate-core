@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.Generatedkeys.Select" 
+				   default-access="field">
+
+	<class name="MyEntity" table="my_entity">
+
+    	<id name="id">
+    		<generator class="select"/>
+    	</id>
+        <natural-id>
+            <property name="name"/>
+        </natural-id>
+	</class>
+
+	<database-object>
+		<create>
+CREATE GENERATOR MYGENERATOR;
+		</create>
+		<drop>
+DROP GENERATOR MYGENERATOR;
+		</drop>
+		<dialect-scope name="NHibernate.Dialect.FirebirdDialect"/>
+	</database-object>
+	
+	<database-object>
+        <create>
+CREATE TRIGGER my_entity_BI FOR my_entity
+ACTIVE BEFORE INSERT
+POSITION 0
+AS
+BEGIN
+NEW.ID = GEN_ID (MYGENERATOR, 1);
+END
+		</create>
+        <drop>
+DROP TRIGGER my_entity_BI;
+		</drop>
+        <dialect-scope name="NHibernate.Dialect.FirebirdDialect"/>
+    </database-object>
+	
+</hibernate-mapping>

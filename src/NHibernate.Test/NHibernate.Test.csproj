@@ -243,6 +243,8 @@
     <Compile Include="Generatedkeys\Identity\MyChild.cs" />
     <Compile Include="Generatedkeys\Identity\MyEntity.cs" />
     <Compile Include="Generatedkeys\Identity\MySibling.cs" />
+    <Compile Include="Generatedkeys\Select\MyEntity.cs" />
+    <Compile Include="Generatedkeys\Select\SelectGeneratorTest.cs" />
     <Compile Include="GeneratedTest\AbstractGeneratedPropertyTest.cs" />
     <Compile Include="GeneratedTest\Component.cs" />
     <Compile Include="GeneratedTest\ComponentOwner.cs" />
@@ -1515,6 +1517,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="Generatedkeys\Select\MyEntity.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1478\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1447\Mappings.hbm.xml" />
     <EmbeddedResource Include="TypesTest\EnumCharClass.hbm.xml" />

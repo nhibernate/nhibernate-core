@@ -165,6 +165,7 @@ namespace NHibernate.Id
 			idgenerators.Add("foreign", typeof(ForeignGenerator));
 			idgenerators.Add("guid", typeof(GuidGenerator));
 			idgenerators.Add("guid.comb", typeof(GuidCombGenerator));
+			idgenerators.Add("select", typeof(SelectGenerator));
 		}
 
 		private IdentifierGeneratorFactory()
