@@ -39,17 +39,13 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Castle.Core, Version=1.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\2.0\Castle.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.DynamicProxy2, Version=2.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\2.0\Castle.DynamicProxy2.dll</HintPath>
-    </Reference>
     <Reference Include="Iesi.Collections, Version=1.0.0.1, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\2.0\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="LinFu.DynamicProxy, Version=1.0.3233.760, Culture=neutral, PublicKeyToken=62a6874124340d6e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\2.0\LinFu.DynamicProxy.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.9.0, Culture=neutral, PublicKeyToken=b32731d11ce58905">
       <SpecificVersion>False</SpecificVersion>
@@ -1026,13 +1022,13 @@
     <None Include="NHibernate.Test.nunit" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NHibernate.ByteCode.LinFu\NHibernate.ByteCode.LinFu.csproj">
+      <Project>{8289D6AD-9714-42D3-A94D-D4D9814D1281}</Project>
+      <Name>NHibernate.ByteCode.LinFu</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel.csproj">
       <Project>{5C649B55-1B3F-4C38-9998-1B043E94A244}</Project>
       <Name>NHibernate.DomainModel</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NHibernate.ProxyGenerators.CastleDynamicProxy\NHibernate.ProxyGenerators.CastleDynamicProxy.csproj">
-      <Project>{31C3F0EA-0FED-4A2F-B68D-96CE29844487}</Project>
-      <Name>NHibernate.ProxyGenerators.CastleDynamicProxy</Name>
     </ProjectReference>
     <ProjectReference Include="..\NHibernate\NHibernate.csproj">
       <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>

@@ -11,14 +11,13 @@
 			<include name="System.dll" />
 			<include name="System.Transactions.dll" />
 			<include name="System.Configuration.dll" />
-			<include name="System.XML.dll" />
+			<include name="System.Xml.dll" />
 			<include name="System.Data.dll" />
 			<include name="Iesi.Collections.dll" />
 			<include name="log4net.dll" />
 			<include name="NHibernate.DomainModel.dll" />
 			<include name="NHibernate.dll" />
-			<include name="Castle.DynamicProxy2.dll" />
-			<include name="Castle.Core.dll" />
+			<include name="LinFu.DynamicProxy.dll" />
 			<include name="nunit.framework.dll" />
 		</assemblyfileset>
 		<resourcefileset id="project.resources" prefix="NHibernate.Test" dynamicprefix="true">

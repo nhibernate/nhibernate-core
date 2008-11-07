@@ -1,65 +1,56 @@
-using Castle.DynamicProxy;
+using LinFu.DynamicProxy;
 
 namespace NHibernate.Test.DynamicEntity
 {
 	public class ProxyHelper
 	{
-		private static readonly ProxyGenerator proxyGenerator = new ProxyGenerator();
+		private static readonly ProxyFactory proxyGenerator = new ProxyFactory();
+
+		private static T NewProxy<T>(object id)
+		{
+			return proxyGenerator.CreateProxy<T>(new DataProxyHandler(typeof (T).FullName, id),
+			                                     new[] {typeof (IProxyMarker), typeof (T)});
+
+		}
 
 		public static Person NewPersonProxy()
 		{
-			return NewPersonProxy(0L);
+			return NewProxy<Person>(0L);
 		}
 
 		public static Person NewPersonProxy(object id)
 		{
-			return
-				(Person)
-				proxyGenerator.CreateInterfaceProxyWithoutTarget(typeof (Person),
-				                                                 new System.Type[] {typeof (IProxyMarker), typeof (Person)},
-				                                                 new DataProxyHandler(typeof (Person).FullName, id));
+			return NewProxy<Person>(id);
 		}
 
 		public static Customer NewCustomerProxy()
 		{
-			return NewCustomerProxy(0L);
+			return NewProxy<Customer>(0L);
 		}
 
 		public static Customer NewCustomerProxy(object id)
 		{
-			return
-				(Customer)
-				proxyGenerator.CreateInterfaceProxyWithoutTarget(typeof (Customer),
-				                                                 new System.Type[] {typeof (IProxyMarker), typeof (Customer)},
-				                                                 new DataProxyHandler(typeof (Customer).FullName, id));
+			return NewProxy<Customer>(id);
 		}
 
 		public static Company NewCompanyProxy()
 		{
-			return NewCompanyProxy(0L);
+			return NewProxy<Company>(0L);
 		}
 
 		public static Company NewCompanyProxy(object id)
 		{
-			return
-				(Company)
-				proxyGenerator.CreateInterfaceProxyWithoutTarget(typeof (Company),
-				                                                 new System.Type[] {typeof (IProxyMarker), typeof (Company)},
-				                                                 new DataProxyHandler(typeof (Company).FullName, id));
+			return NewProxy<Company>(id);
 		}
 
 		public static Address NewAddressProxy()
 		{
-			return NewAddressProxy(0L);
+			return NewProxy<Address>(0L);
 		}
 
 		public static Address NewAddressProxy(object id)
 		{
-			return
-				(Address)
-				proxyGenerator.CreateInterfaceProxyWithoutTarget(typeof (Address),
-				                                                 new System.Type[] {typeof (IProxyMarker), typeof (Address)},
-				                                                 new DataProxyHandler(typeof (Address).FullName, id));
+			return NewProxy<Address>(id);
 		}
 
 		public static string ExtractEntityName(object obj)

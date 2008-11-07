@@ -14,5 +14,6 @@ for your own use before compile tests in VisualStudio.
 		<property name="show_sql">false</property>
 		<property name="dialect">NHibernate.Dialect.OracleDialect</property>
 		<property name="query.substitutions">true 1, false 0, yes 'Y', no 'N'</property>
+		<property name="proxyfactory.factory_class">NHibernate.ByteCode.LinFu.ProxyFactoryFactory, NHibernate.ByteCode.LinFu</property>
 	</session-factory>
 </hibernate-configuration>
