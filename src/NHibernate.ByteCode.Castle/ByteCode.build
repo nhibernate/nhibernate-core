@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" ?>
 
 <project 
-	name="NHibernate.ProxyGenerators.CastleDynamicProxy" 
+	name="NHibernate.ByteCode.Castle" 
 	default="build" 
 	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
@@ -32,6 +32,6 @@
 	</target>
 
 	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
-	<target name="build" depends="init generate-assemblyinfo common.compile-dll" description="Build Castle ProxyGenerators" />
+	<target name="build" depends="init generate-assemblyinfo common.compile-dll" description="Build Castle ByteCode" />
 
 </project>
