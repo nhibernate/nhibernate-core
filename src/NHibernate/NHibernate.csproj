@@ -1046,6 +1046,7 @@
     <Compile Include="Tuple\VersionProperty.cs" />
     <Compile Include="TypeMismatchException.cs" />
     <Compile Include="Type\AbstractBynaryType.cs" />
+    <Compile Include="Type\AbstractEnumType.cs" />
     <Compile Include="Type\AbstractStringType.cs" />
     <Compile Include="Type\AnsiCharType.cs" />
     <Compile Include="Type\AnyType.cs" />

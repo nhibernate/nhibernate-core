@@ -858,6 +858,11 @@
     <Compile Include="SubclassFilterTest\DiscrimSubclassFilterTest.cs" />
     <Compile Include="SubclassFilterTest\Employee.cs" />
     <Compile Include="SubclassFilterTest\Person.cs" />
+    <Compile Include="Subclass\EnumDiscriminator\Bar.cs" />
+    <Compile Include="Subclass\EnumDiscriminator\Baz.cs" />
+    <Compile Include="Subclass\EnumDiscriminator\Colors.cs" />
+    <Compile Include="Subclass\EnumDiscriminator\EnumDiscriminatorFixture.cs" />
+    <Compile Include="Subclass\EnumDiscriminator\Foo.cs" />
     <Compile Include="Subclass\SubclassAssert.cs" />
     <Compile Include="Subclass\SubclassBase.cs" />
     <Compile Include="Subclass\SubclassExtendsFixture.cs" />
@@ -1517,6 +1522,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="Subclass\EnumDiscriminator\EnumDiscriminator.hbm.xml" />
     <EmbeddedResource Include="Generatedkeys\Select\MyEntity.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1478\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1447\Mappings.hbm.xml" />

@@ -10,7 +10,7 @@ namespace NHibernate.Type
 	/// PersistentEnumType
 	/// </summary>
 	[Serializable]
-	public class PersistentEnumType : PrimitiveType
+	public class PersistentEnumType : AbstractEnumType
 	{
 		#region Converters
 
@@ -160,19 +160,11 @@ namespace NHibernate.Type
 		}
 
 		private static readonly Dictionary<System.Type, IEnumConverter> converters;
-		private readonly System.Type enumClass;
 		private readonly IEnumConverter converter;
-		private readonly object defaultValue;
 
-		public PersistentEnumType(System.Type enumClass) : base(GetEnumCoverter(enumClass).SqlType)
+		public PersistentEnumType(System.Type enumClass) : base(GetEnumCoverter(enumClass).SqlType,enumClass)
 		{
-			if (!enumClass.IsEnum)
-			{
-				throw new MappingException(enumClass.Name + " did not inherit from System.Enum");
-			}
 			converter = GetEnumCoverter(enumClass);
-			this.enumClass = enumClass;
-			defaultValue = Enum.GetValues(enumClass).GetValue(0);
 		}
 
 		public static IEnumConverter GetEnumCoverter(System.Type enumClass)
@@ -207,7 +199,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return converter.ToObject(enumClass, code);
+				return converter.ToObject(this.ReturnedClass, code);
 			}
 			catch (ArgumentException ae)
 			{
@@ -230,10 +222,6 @@ namespace NHibernate.Type
 			return converter.ToEnumValue(code);
 		}
 
-		public override System.Type ReturnedClass
-		{
-			get { return enumClass; }
-		}
 
 		public override void Set(IDbCommand cmd, object value, int index)
 		{
@@ -248,7 +236,7 @@ namespace NHibernate.Type
 
 		public override string Name
 		{
-			get { return enumClass.FullName; }
+			get { return ReturnedClass.FullName; }
 		}
 
 		public override string ToString(object value)
@@ -283,22 +271,13 @@ namespace NHibernate.Type
 				return false;
 			}
 
-			return ((PersistentEnumType) obj).enumClass == enumClass;
+			return ((PersistentEnumType)obj).ReturnedClass == ReturnedClass;
 		}
 
 		public override int GetHashCode()
 		{
-			return enumClass.GetHashCode();
+			return ReturnedClass.GetHashCode();
 		}
 
-		public override System.Type PrimitiveClass
-		{
-			get { return enumClass; }
-		}
-
-		public override object DefaultValue
-		{
-			get { return defaultValue; }
-		}
 	}
 }

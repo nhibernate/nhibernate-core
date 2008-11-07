@@ -62,9 +62,8 @@ namespace NHibernate.Type
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public abstract class EnumStringType : ImmutableType, IDiscriminatorType
+	public abstract class EnumStringType : AbstractEnumType
 	{
-		private readonly System.Type enumClass;
 
 		/// <summary>
 		/// Hardcoding of <c>255</c> for the maximum length
@@ -91,16 +90,9 @@ namespace NHibernate.Type
 		/// <param name="enumClass">The <see cref="System.Type"/> of the Enum.</param>
 		/// <param name="length">The length of the string that can be written to the column.</param>
 		protected EnumStringType(System.Type enumClass, int length)
-			: base(SqlTypeFactory.GetString(length))
+			:base(SqlTypeFactory.GetString(length),enumClass)
 		{
-			if (enumClass.IsEnum)
-			{
-				this.enumClass = enumClass;
-			}
-			else
-			{
-				throw new MappingException(enumClass.Name + " did not inherit from System.Enum");
-			}
+
 		}
 
 		/// <summary>
@@ -113,11 +105,11 @@ namespace NHibernate.Type
 			//code is an named constants defined for the enumeration.
 			try
 			{
-				return Enum.Parse(enumClass, code as string, true);
+				return StringToObject(code as string);
 			}
 			catch (ArgumentException ae)
 			{
-				throw new HibernateException(string.Format("Can't Parse {0} as {1}", code, enumClass.Name), ae);
+				throw new HibernateException(string.Format("Can't Parse {0} as {1}", code, this.ReturnedClass.Name), ae);
 			}
 		}
 
@@ -135,14 +127,6 @@ namespace NHibernate.Type
 		/// <summary>
 		/// 
 		/// </summary>
-		public override System.Type ReturnedClass
-		{
-			get { return enumClass; }
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
 		/// <param name="cmd"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
@@ -155,7 +139,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				par.Value = Enum.Format(this.enumClass, value, "G");
+				par.Value = Enum.Format(this.ReturnedClass, value, "G");
 			}
 		}
 
@@ -200,7 +184,7 @@ namespace NHibernate.Type
 		/// </remarks>
 		public override string Name
 		{
-			get { return "enumstring - " + enumClass.Name; }
+			get { return "enumstring - " + this.ReturnedClass.Name; }
 		}
 
 		/// <summary>
@@ -237,22 +221,8 @@ namespace NHibernate.Type
 			return (value == null) ? null : GetValue(value);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		public object StringToObject(string xml)
-		{
-			return (string.IsNullOrEmpty(xml)) ? null : FromStringValue(xml);
-		}
 
-		public override object FromStringValue(string xml)
-		{
-			return GetInstance(xml);
-		}
-
-		public string ObjectToSQLString(object value, Dialect.Dialect dialect)
+		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
 			return GetValue(value).ToString();
 		}

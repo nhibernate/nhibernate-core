@@ -6,21 +6,12 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public class EnumCharType<T> : ImmutableType, IDiscriminatorType
+	public class EnumCharType<T> : AbstractEnumType
 	{
 
-		public EnumCharType() : base(new StringFixedLengthSqlType(1))
+		public EnumCharType() : base(new StringFixedLengthSqlType(1),typeof(T))
 		{
-			if (typeof(T).IsEnum)
-			{
-				this.enumClass = typeof(T);
-			}
-			else
-			{
-				throw new MappingException(enumClass.Name + " did not inherit from System.Enum");
-			}
 		}
-		private readonly System.Type enumClass;
 
 		public virtual object GetInstance(object code)
 		{
@@ -34,13 +25,13 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				throw new HibernateException(string.Format("Can't Parse {0} as {1}", code, enumClass.Name));
+				throw new HibernateException(string.Format("Can't Parse {0} as {1}", code, ReturnedClass.Name));
 			}
 		}
 
 		private object GetInstanceFromString(String s)
 		{
-			if (s.Length == 0) throw new HibernateException(string.Format("Can't Parse empty string as {0}", enumClass.Name));
+			if (s.Length == 0) throw new HibernateException(string.Format("Can't Parse empty string as {0}", this.ReturnedClass.Name));
 
 			if (s.Length == 1)
 			{
@@ -52,17 +43,17 @@ namespace NHibernate.Type
 				//Name of enum value e.g. "Red"
 				try
 				{
-					return Enum.Parse(enumClass, s, false);
+					return Enum.Parse(this.ReturnedClass, s, false);
 				}
 				catch (ArgumentException)
 				{
 					try
 					{
-						return Enum.Parse(enumClass, s, true);
+						return Enum.Parse(this.ReturnedClass, s, true);
 					}
 					catch (ArgumentException ae)
 					{
-						throw new HibernateException(string.Format("Can't Parse {0} as {1}", s, enumClass.Name), ae);
+						throw new HibernateException(string.Format("Can't Parse {0} as {1}", s, this.ReturnedClass.Name), ae);
 					}
 				}
 			}
@@ -72,13 +63,13 @@ namespace NHibernate.Type
 		{
 			Object instance;
 
-			instance = Enum.ToObject(enumClass, c);
-			if (Enum.IsDefined(enumClass, instance)) return instance;
+			instance = Enum.ToObject(this.ReturnedClass, c);
+			if (Enum.IsDefined(this.ReturnedClass, instance)) return instance;
 
-			instance = Enum.ToObject(enumClass, Alternate(c));
-			if (Enum.IsDefined(enumClass, instance)) return instance;
+			instance = Enum.ToObject(this.ReturnedClass, Alternate(c));
+			if (Enum.IsDefined(this.ReturnedClass, instance)) return instance;
 
-			throw new HibernateException(string.Format("Can't Parse {0} as {1}", c, enumClass.Name));
+			throw new HibernateException(string.Format("Can't Parse {0} as {1}", c, this.ReturnedClass.Name));
 		}
 
 		private Char Alternate(Char c)
@@ -103,10 +94,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override System.Type ReturnedClass
-		{
-			get { return enumClass; }
-		}
 
 		public override void Set(IDbCommand cmd, object value, int index)
 		{
@@ -141,7 +128,7 @@ namespace NHibernate.Type
 
 		public override string Name
 		{
-			get { return "enumchar - " + enumClass.Name; }
+			get { return "enumchar - " + this.ReturnedClass.Name; }
 		}
 
 		public override string ToString(object value)
@@ -166,17 +153,13 @@ namespace NHibernate.Type
 			return (value == null) ? null : GetValue(value);
 		}
 
-		public virtual object StringToObject(string xml)
-		{
-			return (string.IsNullOrEmpty(xml)) ? null : FromStringValue(xml);
-		}
 
 		public override object FromStringValue(string xml)
 		{
 			return GetInstance(xml);
 		}
 
-		public virtual string ObjectToSQLString(object value, Dialect.Dialect dialect)
+		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
 			return '\'' + GetValue(value).ToString() + '\'';
 		}

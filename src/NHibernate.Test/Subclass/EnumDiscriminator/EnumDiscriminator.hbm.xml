@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false" namespace="NHibernate.Test.Subclass.EnumDiscriminator" assembly="NHibernate.Test">
+	<class name="Foo" table="subclass_enumdiscriminator" discriminator-value="Green">
+		<id name="Id" type="Int64">
+			<generator class="assigned"/>  
+		</id>
+		<discriminator column="Color" type="NHibernate.Test.Subclass.EnumDiscriminator.Colors, NHibernate.Test"/>
+		<subclass name="Bar" discriminator-value="Blue"/>
+	</class>
+
+	<class name="Baz" table="subclass_enumdiscriminator">
+		<id name="Id" type="Int64">
+			<generator class="assigned"/>
+		</id>
+		<property name="Color"/>
+	</class>
+</hibernate-mapping>
