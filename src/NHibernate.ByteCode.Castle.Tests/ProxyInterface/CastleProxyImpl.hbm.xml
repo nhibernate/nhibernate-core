@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.ByteCode.Castle.Tests"
+				   namespace="NHibernate.ByteCode.Castle.Tests.ProxyInterface">
+	<class name="CastleProxyImpl" proxy="CastleProxy" table="avalon_p">
+		<id	name="Id">
+			<generator class="assigned" />
+		</id>
+		
+		<property name="Name" />
+	</class>
+</hibernate-mapping>

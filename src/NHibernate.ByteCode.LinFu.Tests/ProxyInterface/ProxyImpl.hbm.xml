@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.ByteCode.LinFu.Tests"
+				   namespace="NHibernate.ByteCode.LinFu.Tests.ProxyInterface">
+	<class name="MyProxyImpl" proxy="IMyProxy">
+		<id	name="Id">
+			<generator class="assigned" />
+		</id>
+
+		<property name="Name" />
+	</class>
+</hibernate-mapping>
