@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" ?>
+
+<project 
+	name="NHibernate.ProxyGenerators.LinFuDynamicProxy" 
+	default="build" 
+	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
+>
+
+	<property name="root.dir" value="../.." />
+	<include buildfile="${root.dir}/build-common/common-project.xml" />
+
+	<target name="init" depends="common.init">
+
+		<property name="assembly.is-cls-compliant" value="true" />
+		<property name="assembly.description"
+			value="LinFu Dynamic proxy generator adapters for NHibernate." />
+		<property name="assembly.copyright"
+			value="Licensed under LGPL." />
+		<property name="assembly.allow-partially-trusted-callers" value="true" />
+
+		<property name="clover.instrument" value="true" />
+
+		<assemblyfileset basedir="${bin.dir}" id="project.references">
+			<include name="System.dll" />
+			<include name="Iesi.Collections.dll" />
+			<include name="log4net.dll" />
+			<include name="LinFu.DynamicProxy.dll" />
+			<include name="NHibernate.dll" />
+		</assemblyfileset>
+
+	</target>
+
+	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
+	<target name="build" depends="init generate-assemblyinfo common.compile-dll" description="Build LinFu ProxyGenerators" />
+
+</project>
