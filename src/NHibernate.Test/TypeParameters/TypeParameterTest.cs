@@ -70,7 +70,7 @@ namespace NHibernate.Test.TypeParameters
 			              "Default value should have been mapped to null");
 			Assert.IsTrue(reader.GetValue(reader.GetOrdinal("VALUE_TWO")) == DBNull.Value,
 			              "Default value should have been mapped to null");
-			Assert.AreEqual(reader.GetInt32(reader.GetOrdinal("VALUE_THREE")), 5,
+			Assert.AreEqual(Convert.ToInt32(reader.GetValue(reader.GetOrdinal("VALUE_THREE"))), 5,
 			                "Non-Default value should not be changed");
 			Assert.IsTrue(reader.GetValue(reader.GetOrdinal("VALUE_FOUR")) == DBNull.Value,
 			              "Default value should have been mapped to null");

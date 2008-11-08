@@ -13,7 +13,7 @@
 		<dynamic-component name="Properties">
 			<set name="Phones" table="NH1039_Phone">
 				<key column="PersonId"/>
-				<element column="Number" type="string"/>
+				<element column="`Number`" type="string"/>
 			</set>
 		</dynamic-component>
 	</class>

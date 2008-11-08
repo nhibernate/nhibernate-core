@@ -5,7 +5,7 @@
 
 	<class name="Foo" table="XFoos">
 		<id name="Oid" column="ID">
-			<generator class="identity"/>
+			<generator class="native"/>
 		</id>
 
 		<version name="Version" column="Version" />

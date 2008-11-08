@@ -6,7 +6,7 @@
 	<class name="DbResource" table="Resources">
 		<cache usage="nonstrict-read-write" />
 		<id name="Oid" column="ID">
-			<generator class="identity"/>
+			<generator class="native"/>
 		</id>
 		<discriminator column="Type" type="String(25)" not-null="true" />
 		<version name="Version" column="Version" />
@@ -27,7 +27,7 @@
 	<class name="DbResourceKey" table="ResourceKeys">
 		<cache usage="nonstrict-read-write" />
 		<id name="Oid" column="ID">
-			<generator class="identity"/>
+			<generator class="native"/>
 		</id>
 
 		<version name="Version" column="Version" />

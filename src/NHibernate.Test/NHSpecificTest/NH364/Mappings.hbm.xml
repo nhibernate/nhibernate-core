@@ -37,7 +37,7 @@
 		<id name="Id">
 			<generator class="native"/>
 		</id>
-		<property name="Number"/>
+		<property name="Number" column="`Number`"/>
 		<idbag name="Items" table="InvoiceItem364" lazy="true" access="field.pascalcase-underscore">
 			<collection-id column="Id" type="Int32">
 				<generator class="native"/>

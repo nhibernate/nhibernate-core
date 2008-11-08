@@ -15,7 +15,7 @@
 	</class>
 	<class name="UserToRole">
 		<id name="Id">
-			<generator class="identity"/>
+			<generator class="native"/>
 		</id>
 		<many-to-one class="User" column="UserName"
 					 name="User"/>
