@@ -20,6 +20,11 @@ namespace NHibernate.Dialect.Schema
 			this.connection = connection;
 		}
 
+		protected DbConnection Connection
+		{
+			get { return connection; }
+		}
+
 		#region IDataBaseSchema Members
 
 		public virtual bool StoresMixedCaseQuotedIdentifiers
