@@ -2,6 +2,7 @@ using System.Data;
 using System.Text;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
+using System.Data.Common;
 
 namespace NHibernate.Dialect
 {
@@ -34,6 +35,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Double, "NUMERIC");
 			RegisterColumnType(DbType.Single, "NUMERIC");
 			RegisterColumnType(DbType.VarNumeric, "NUMERIC");
+			RegisterColumnType(DbType.AnsiString, "TEXT");
 			RegisterColumnType(DbType.String, "TEXT");
 			RegisterColumnType(DbType.AnsiStringFixedLength, "TEXT");
 			RegisterColumnType(DbType.StringFixedLength, "TEXT");
@@ -42,6 +44,19 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Time, "DATETIME");
 			RegisterColumnType(DbType.Boolean, "INTEGER");
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
+		}
+
+		public override Schema.IDataBaseSchema GetDataBaseSchema(DbConnection connection)
+		{
+			return new Schema.SQLiteDataBaseMetaData(connection);
+		}
+
+		public override string AddColumnString
+		{
+			get
+			{
+				return "add column";
+			}
 		}
 
 		public override string IdentitySelectString
