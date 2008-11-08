@@ -16,7 +16,7 @@ namespace NHibernate.Test.Cascade
 
 		protected override IList Mappings
 		{
-			get { return new string[] { "Cascade.Job.hbm.xml", "Cascade.JobBatch.hbm.xml" }; }
+			get { return new[] { "Cascade.Job.hbm.xml", "Cascade.JobBatch.hbm.xml" }; }
 		}
 
 		[Test]
@@ -57,5 +57,58 @@ namespace NHibernate.Test.Cascade
 			session.Transaction.Enlist(cmd);
 			cmd.ExecuteNonQuery();
 		}
+
+		[Test]
+		public void RefreshIgnoringTransient()
+		{
+			// No exception expected
+			ISession session = OpenSession();
+			ITransaction txn = session.BeginTransaction();
+
+			var batch = new JobBatch(DateTime.Now);
+			session.Refresh(batch);
+
+			txn.Rollback();
+			session.Close();
+		}
+
+		[Test]
+		public void RefreshIgnoringTransientInCollection()
+		{
+			ISession session = OpenSession();
+			ITransaction txn = session.BeginTransaction();
+
+			var batch = new JobBatch(DateTime.Now);
+			batch.CreateJob().ProcessingInstructions = "Just do it!";
+			session.Persist(batch);
+			session.Flush();
+
+			batch.CreateJob().ProcessingInstructions = "I know you can do it!";
+			session.Refresh(batch);
+			Assert.That(batch.Jobs.Count == 1);
+
+			txn.Rollback();
+			session.Close();
+		}
+
+		[Test]
+		public void RefreshNotIgnoringTransientByUnsavedValue()
+		{
+			ISession session = OpenSession();
+			ITransaction txn = session.BeginTransaction();
+
+			var batch = new JobBatch { BatchDate = DateTime.Now, Id = 1 };
+			try
+			{
+				session.Refresh(batch);
+			}
+			catch (UnresolvableObjectException)
+			{
+				// as expected
+				txn.Rollback();
+				session.Close();
+			}
+		}
+
 	}
 }

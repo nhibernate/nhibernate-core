@@ -97,8 +97,10 @@ namespace NHibernate.Event.Default
 			source.FetchProfile = "refresh";
 			object result = persister.Load(id, obj, @event.LockMode, source);
 			source.FetchProfile = previousFetchProfile;
-
-			UnresolvableObjectException.ThrowIfNull(result, id, persister.EntityName);
+			// NH Different behavior : we are ignoring transient entities without throw any kind of exception 
+			// because a transient entity is "self refreshed"
+			if (!ForeignKeys.IsTransient(persister.EntityName, obj, result == null, @event.Session))
+				UnresolvableObjectException.ThrowIfNull(result, id, persister.EntityName);
 		}
 
 		// Evict collections from the factory-level cache
