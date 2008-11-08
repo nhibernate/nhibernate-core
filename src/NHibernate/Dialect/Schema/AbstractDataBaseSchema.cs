@@ -1,6 +1,5 @@
 using System.Data;
 using System.Data.Common;
-using NHibernate.Dialect.Schema;
 
 namespace NHibernate.Dialect.Schema
 {
@@ -16,10 +15,12 @@ namespace NHibernate.Dialect.Schema
 	{
 		private readonly DbConnection connection;
 
-		public AbstractDataBaseSchema(DbConnection connection)
+		protected AbstractDataBaseSchema(DbConnection connection)
 		{
 			this.connection = connection;
 		}
+
+		#region IDataBaseSchema Members
 
 		public virtual bool StoresMixedCaseQuotedIdentifiers
 		{
@@ -48,7 +49,7 @@ namespace NHibernate.Dialect.Schema
 
 		public virtual DataTable GetTables(string catalog, string schemaPattern, string tableNamePattern, string[] types)
 		{
-			string[] restrictions = new string[4] { catalog, schemaPattern, tableNamePattern, null };
+			var restrictions = new[] {catalog, schemaPattern, tableNamePattern, null};
 			return connection.GetSchema("Tables", restrictions);
 		}
 
@@ -59,28 +60,31 @@ namespace NHibernate.Dialect.Schema
 
 		public abstract ITableMetadata GetTableMetadata(DataRow rs, bool extras);
 
-		public virtual DataTable GetColumns(string catalog, string schemaPattern, string tableNamePattern, string columnNamePattern)
+		public virtual DataTable GetColumns(string catalog, string schemaPattern, string tableNamePattern,
+		                                    string columnNamePattern)
 		{
-			string[] restrictions = new string[4] { catalog, schemaPattern, tableNamePattern, columnNamePattern };
+			var restrictions = new[] {catalog, schemaPattern, tableNamePattern, columnNamePattern};
 			return connection.GetSchema("Columns", restrictions);
 		}
 
-		public DataTable GetIndexInfo(string catalog, string schemaPattern, string tableName)
+		public virtual DataTable GetIndexInfo(string catalog, string schemaPattern, string tableName)
 		{
-			string[] restrictions = new string[4] { catalog, schemaPattern, tableName, null };
+			var restrictions = new[] {catalog, schemaPattern, tableName, null};
 			return connection.GetSchema("Indexes", restrictions);
 		}
 
-		public DataTable GetIndexColumns(string catalog, string schemaPattern, string tableName, string indexName)
+		public virtual DataTable GetIndexColumns(string catalog, string schemaPattern, string tableName, string indexName)
 		{
-			string[] restrictions = new string[5] { catalog, schemaPattern, tableName, indexName, null };
+			var restrictions = new[] {catalog, schemaPattern, tableName, indexName, null};
 			return connection.GetSchema("IndexColumns", restrictions);
 		}
 
 		public virtual DataTable GetForeignKeys(string catalog, string schema, string table)
 		{
-			string[] restrictions = new string[4] { catalog, schema, table, null };
+			var restrictions = new[] {catalog, schema, table, null};
 			return connection.GetSchema("ForeignKeys", restrictions);
 		}
+
+		#endregion
 	}
 }
