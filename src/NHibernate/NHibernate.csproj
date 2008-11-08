@@ -440,6 +440,9 @@
     <Compile Include="AdoNet\ResultSetWrapper.cs" />
     <Compile Include="AdoNet\SqlClientBatchingBatcherFactory.cs" />
     <Compile Include="AdoNet\TooManyRowsAffectedException.cs" />
+    <Compile Include="Bytecode\HibernateByteCodeException.cs" />
+    <Compile Include="Bytecode\ProxyFactoryFactoryNotConfiguredException.cs" />
+    <Compile Include="Bytecode\UnableToLoadProxyFactoryFactoryException.cs" />
     <Compile Include="Id\SelectGenerator.cs" />
     <Compile Include="Properties\BackFieldStrategy.cs" />
     <Compile Include="Bytecode\CodeDom\BytecodeProviderImpl.cs" />

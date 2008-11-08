@@ -178,7 +178,6 @@ namespace NHibernate.Cfg
 
 			GlobalProperties = new Dictionary<string, string>();
 			GlobalProperties[PropertyUseReflectionOptimizer] = bool.TrueString;
-			SetDefaultProxyFactoryFactory();
 			LoadGlobalPropertiesFromAppConfig();
 			VerifyProperties(GlobalProperties);
 
@@ -189,12 +188,6 @@ namespace NHibernate.Cfg
 			{
 				log.Info("Using reflection optimizer");
 			}
-		}
-
-		private static void SetDefaultProxyFactoryFactory()
-		{
-			// maitaining the optionality of set the proxyfactory.factory_class property
-			GlobalProperties[ProxyFactoryFactoryClass] = "NHibernate.ProxyGenerators.CastleDynamicProxy.ProxyFactoryFactory, NHibernate.ProxyGenerators.CastleDynamicProxy";
 		}
 
 		private static void LoadGlobalPropertiesFromAppConfig()
@@ -252,8 +245,6 @@ namespace NHibernate.Cfg
 			{
 				GlobalProperties[PropertyUseReflectionOptimizer] = savedUseReflectionOptimizer;
 			}
-
-			SetDefaultProxyFactoryFactory();
 		}
 
 		/// <summary>

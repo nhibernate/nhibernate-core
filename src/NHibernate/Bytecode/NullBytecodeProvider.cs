@@ -26,10 +26,10 @@ namespace NHibernate.Bytecode
 					}
 					catch (Exception e)
 					{
-						throw new HibernateException("Failed to create an instance of '" + proxyFactoryFactory.FullName + "'!", e);
+						throw new HibernateByteCodeException("Failed to create an instance of '" + proxyFactoryFactory.FullName + "'!", e);
 					}
 				}
-				throw new HibernateException("The ProxyFactoryFactory was not configured. Initialize the 'proxyfactory.factory_class' property of the session-factory section.");
+				throw new ProxyFactoryFactoryNotConfiguredException();
 			}
 		}
 
@@ -49,15 +49,14 @@ namespace NHibernate.Bytecode
 			{
 				pffc = ReflectHelper.ClassForName(typeName);
 			}
-			catch (HibernateException he)
+			catch (Exception he)
 			{
-				throw new HibernateException("Unable to load type '" + typeName + "' during configuration of proxy factory class.",
-				                             he);
+				throw new UnableToLoadProxyFactoryFactoryException(typeName, he);
 			}
 
 			if (typeof (IProxyFactoryFactory).IsAssignableFrom(pffc) == false)
 			{
-				var he = new HibernateException(pffc.FullName + " does not implement " + typeof (IProxyFactoryFactory).FullName);
+				var he = new HibernateByteCodeException(pffc.FullName + " does not implement " + typeof(IProxyFactoryFactory).FullName);
 				throw he;
 			}
 			proxyFactoryFactory = pffc;
