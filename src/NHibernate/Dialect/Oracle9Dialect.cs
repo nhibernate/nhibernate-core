@@ -103,6 +103,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
 			RegisterFunction("ascii", new StandardSQLFunction("ascii", NHibernateUtil.Int32));
 			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int64));
+			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1, 1, ?2)"));
+			RegisterFunction("right", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1, -?2)"));
 
 			RegisterFunction("to_char", new StandardSQLFunction("to_char", NHibernateUtil.String));
 			RegisterFunction("to_date", new StandardSQLFunction("to_date", NHibernateUtil.Timestamp));
@@ -189,32 +191,30 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		public override bool SupportsVariableLimit
+		{
+			get { return false; }
+		}
+
 
 		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
 		{
 			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
 			var hasOffset = offset > 0;
 
-			if (hasOffset)
-			{
-				pagingBuilder.Add("select * from ( select row_.*, rownum rownum_ from ( ");
-			}
-			else
-			{
-				pagingBuilder.Add("select * from ( ");
-			}
+			pagingBuilder.Add("SELECT * FROM (");
 			pagingBuilder.Add(querySqlString);
 			if (hasOffset)
 			{
-				pagingBuilder.Add(" ) row_ where rownum <= ");
+				pagingBuilder.Add(") WHERE rownum BETWEEN ");
 				pagingBuilder.Add(offset.ToString());
-				pagingBuilder.Add(" ) where rownum_ > ");
+				pagingBuilder.Add(" AND ");
 				pagingBuilder.Add((limit + offset).ToString());
 			}
 			else
 			{
-				pagingBuilder.Add(" ) where rownum <= ");
-				pagingBuilder.Add(offset.ToString());
+				pagingBuilder.Add(") WHERE rownum <= ");
+				pagingBuilder.Add(limit.ToString());
 			}
 
 			return pagingBuilder.ToSqlString();

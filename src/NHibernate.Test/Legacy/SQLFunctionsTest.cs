@@ -76,9 +76,17 @@ namespace NHibernate.Test.Legacy
 				rset = s.CreateQuery("select abs(round(s.Pay)) from s in class Simple").List();
 				Assert.AreEqual(46f, rset[0], "abs(round(-45.8)) result was incorrect");
 
+				rset = s.CreateQuery("select left('abc', 2), right('abc', 2) from s in class Simple").List();
+				row = (object[]) rset[0];
+				Assert.AreEqual("ab", row[0], "Left function is broken.");
+				Assert.AreEqual("bc", row[1], "Right function is broken.");
+
 				// Test a larger depth 3 function example - Not a useful combo other than for testing
 				Assert.AreEqual(1,
-				                s.CreateQuery("select trunc(round(sysdate)) from s in class Simple").List().Count);
+												s.CreateQuery("select trunc(round(length('A'))) from s in class Simple").List().Count);
+				// NOTE: In Oracle this will fail as the translator will expect two columns in return
+				//Assert.AreEqual(1,
+				//                s.CreateQuery("select trunc(round(sysdate)) from s in class Simple").List().Count);
 
 				// Test the oracle standard NVL funtion as a test of multi-param functions...
 				// NOTE: commented out for NH, since Pay is a value type and will never be null
