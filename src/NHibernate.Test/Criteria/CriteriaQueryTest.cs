@@ -431,7 +431,7 @@ namespace NHibernate.Test.Criteria
 			s.Close();
 		}
 
-		[Test]
+		[Test, Ignore("Not supported.")]
 		public void NH_1155_ShouldNotLoadAllChildrenInPagedSubSelect()
 		{
 			if (this.Dialect.GetType().Equals((typeof(MsSql2000Dialect))))

@@ -516,7 +516,7 @@ namespace NHibernate.Loader
 						if (rowKeys[i] != null && loadables[i].HasSubselectLoadableCollections)
 						{
 							SubselectFetch subselectFetch =
-								new SubselectFetch(aliases[i], factory.Dialect, loadables[i], queryParameters, keySets[i], namedParameterLocMap);
+								new SubselectFetch(aliases[i], loadables[i], queryParameters, keySets[i], namedParameterLocMap);
 
 							session.PersistenceContext.BatchFetchQueue.AddSubselect(rowKeys[i], subselectFetch);
 						}
