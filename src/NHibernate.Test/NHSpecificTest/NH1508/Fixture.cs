@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-
-using NHibernate.Criterion;
-
+using NHibernate.Driver;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1508
@@ -11,6 +7,17 @@ namespace NHibernate.Test.NHSpecificTest.NH1508
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		[TestFixtureSetUp]
+		public void CheckMultiQuerySupport()
+		{
+			TestFixtureSetUp();
+			IDriver driver = sessions.ConnectionProvider.Driver;
+			if (!driver.SupportsMultipleQueries)
+			{
+				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
+			}			
+		}
+
 		protected override void OnSetUp()
 		{
 			Person john = new Person();
