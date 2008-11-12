@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.Operations">
+
+	<class name="Employer" polymorphism="explicit">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<version column="vers" name="Vers"/>
+		<bag name="Employees" cascade="persist,merge" table="EMPLOYER_EMPLOYEE">
+			<key column="EMPER_ID"/>
+			<many-to-many class="Employee" column="EMPEE_ID" />
+		</bag>
+	</class>
+
+	<class name="Employee" polymorphism="explicit">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<bag name="Employers" inverse="true" cascade="persist,merge,save-update" table="EMPLOYER_EMPLOYEE">
+			<key column="EMPEE_ID"/>
+			<many-to-many class="Employer" column="EMPER_ID" />
+		</bag>
+	</class>
+
+</hibernate-mapping>
+

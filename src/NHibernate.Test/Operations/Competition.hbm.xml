@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.Operations">
+
+	<class name="Competition">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<list name="Competitors" table="COMPET_ION_OR" cascade="persist,merge,delete">
+			<key column="TION_ID"/>
+			<list-index column="INDEX_COL"/>
+			<many-to-many class="Competitor" column="TOR_ID" />
+		</list>
+	</class>
+
+	<class name="Competitor">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Name"/>
+	</class>
+
+</hibernate-mapping>
+

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.Operations">
+
+	<class name="Node" polymorphism="explicit">
+		<id name="Name">
+			<generator class="assigned"/>
+		</id>
+		<property name="Description"/>
+		<many-to-one name="Parent"/>
+		<property name="Created" not-null="true"/>
+		<set name="Children" inverse="true" cascade="persist,merge,save-update,evict">
+			<key column="parent"/>
+			<one-to-many class="Node"/>
+		</set>
+		<set name="CascadingChildren" inverse="false" cascade="persist,merge,save-update,evict,delete">
+			<key column="CASC_PARENT"/>
+			<one-to-many class="Node"/>
+		</set>
+	</class>
+
+	<class name="NumberedNode" polymorphism="explicit">
+		<id name="Id" unsaved-value="0">
+			<generator class="native"/>
+		</id>
+		<property name="Name">
+			<column name="name" index="iname" not-null="true"/>
+		</property>
+		<property name="Description"/>
+		<property name="Created" not-null="true"/>
+		<many-to-one name="Parent" class="NumberedNode"/>
+		<set name="Children" inverse="true" cascade="persist,merge,save-update" access="field.camelcase">
+			<key column="parent"/>
+			<one-to-many class="NumberedNode"/>
+		</set>
+	</class>
+
+</hibernate-mapping>
+
