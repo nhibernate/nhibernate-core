@@ -1052,7 +1052,7 @@
     <Compile Include="Tuple\StandardProperty.cs" />
     <Compile Include="Tuple\VersionProperty.cs" />
     <Compile Include="TypeMismatchException.cs" />
-    <Compile Include="Type\AbstractBynaryType.cs" />
+    <Compile Include="Type\AbstractBinaryType.cs" />
     <Compile Include="Type\AbstractEnumType.cs" />
     <Compile Include="Type\AbstractStringType.cs" />
     <Compile Include="Type\AnsiCharType.cs" />

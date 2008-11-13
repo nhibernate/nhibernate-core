@@ -7,7 +7,7 @@ namespace NHibernate.Type
 	/// BinaryType.
 	/// </summary>
 	[Serializable]
-	public class BinaryType : AbstractBynaryType
+	public class BinaryType : AbstractBinaryType
 	{
 		internal BinaryType()
 			: this(new BinarySqlType())
