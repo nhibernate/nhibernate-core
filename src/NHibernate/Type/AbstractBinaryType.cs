@@ -83,20 +83,7 @@ namespace NHibernate.Type
 		{
 			int length = (int)rs.GetBytes(index, 0, null, 0, 0);
 			byte[] buffer = new byte[length];
-
-			int offset = 0;
-
-			while (length - offset > 0)
-			{
-				int countRead = (int)rs.GetBytes(index, offset, buffer, offset, length - offset);
-				offset += countRead;
-
-				if (countRead == 0)
-				{
-					// Should never happen
-					throw new AssertionFailure("Error in BinaryType.Get, IDataRecord.GetBytes read zero bytes");
-				}
-			}
+			rs.GetBytes(index, 0, buffer, 0, length);
 			return ToExternalFormat(buffer);
 		}
 
