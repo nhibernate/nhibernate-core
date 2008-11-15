@@ -911,6 +911,8 @@
     <Compile Include="TypesTest\EnumCharTypeFixture.cs" />
     <Compile Include="TypesTest\EnumStringClass.cs" />
     <Compile Include="TypesTest\EnumStringTypeFixture.cs" />
+    <Compile Include="TypesTest\GenericEnumStringClass.cs" />
+    <Compile Include="TypesTest\GenericEnumStringTypeFixture.cs" />
     <Compile Include="TypesTest\GuidClass.cs" />
     <Compile Include="TypesTest\GuidTypeFixture.cs" />
     <Compile Include="TypesTest\Int16TypeFixture.cs" />
@@ -1533,6 +1535,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="TypesTest\GenericEnumStringClass.hbm.xml" />
     <EmbeddedResource Include="Operations\Competition.hbm.xml" />
     <EmbeddedResource Include="Operations\Employer.hbm.xml" />
     <EmbeddedResource Include="Operations\Node.hbm.xml" />
