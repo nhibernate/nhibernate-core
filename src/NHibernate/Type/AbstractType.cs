@@ -241,7 +241,7 @@ namespace NHibernate.Type
 		public virtual int Compare(object x, object y, EntityMode? entityMode)
 		{
 			IComparable xComp = x as IComparable;
-			IComparable yComp = x as IComparable;
+			IComparable yComp = y as IComparable;
 			if (xComp != null)
 				return xComp.CompareTo(y);
 			if (yComp != null)
