@@ -887,6 +887,8 @@
     <Compile Include="TestCase.cs" />
     <Compile Include="TestConfigurationHelper.cs" />
     <Compile Include="TestTestCase.cs" />
+    <Compile Include="Tools\hbm2ddl\SchemaValidator\SchemaValidateFixture.cs" />
+    <Compile Include="Tools\hbm2ddl\SchemaValidator\Version.cs" />
     <Compile Include="TransactionTest\TransactionFixture.cs" />
     <Compile Include="TransactionTest\TransactionNotificationFixture.cs" />
     <Compile Include="TypeParameters\DefaultValueIntegerType.cs" />
@@ -1535,6 +1537,8 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="Tools\hbm2ddl\SchemaValidator\2_Version.hbm.xml" />
+    <EmbeddedResource Include="Tools\hbm2ddl\SchemaValidator\1_Version.hbm.xml" />
     <EmbeddedResource Include="TypesTest\GenericEnumStringClass.hbm.xml" />
     <EmbeddedResource Include="Operations\Competition.hbm.xml" />
     <EmbeddedResource Include="Operations\Employer.hbm.xml" />

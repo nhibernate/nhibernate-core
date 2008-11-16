@@ -1981,6 +1981,47 @@ namespace NHibernate.Cfg
 			return script.ToArray();
 		}
 
+		public void ValidateSchema(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata)
+		{
+			SecondPassCompile();
+
+			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
+			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
+
+			var iter = this.TableMappings;
+			foreach (var table in iter)
+			{
+				if (table.IsPhysicalTable)
+				{
+					/*NH Different Implementation :
+						TableMetadata tableInfo = databaseMetadata.getTableMetadata(
+						table.getName(),
+						( table.getSchema() == null ) ? defaultSchema : table.getSchema(),
+						( table.getCatalog() == null ) ? defaultCatalog : table.getCatalog(),
+								table.isQuoted());*/
+					ITableMetadata tableInfo = databaseMetadata.GetTableMetadata(
+						table.Name,
+						table.Schema??defaultSchema,
+						table.Catalog,//??defaultCatalog,
+						table.IsQuoted);
+					if (tableInfo == null)
+						throw new HibernateException("Missing table: " + table.Name);
+					else
+						table.ValidateColumns(dialect, mapping, tableInfo);
+				}
+			}
+
+			var persistenceIdentifierGenerators = IterateGenerators(dialect);
+			foreach (var generator in persistenceIdentifierGenerators)
+			{
+				string key = generator.GeneratorKey();
+				if (!databaseMetadata.IsSequence(key) && !databaseMetadata.IsTable(key))
+				{
+					throw new HibernateException(string.Format("Missing sequence or table: ", key));
+				}
+			}
+		}
+
 		private IEnumerable<IPersistentIdentifierGenerator> IterateGenerators(Dialect.Dialect dialect)
 		{
 			var generators = new Dictionary<string, IPersistentIdentifierGenerator>();

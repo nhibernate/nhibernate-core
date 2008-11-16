@@ -1018,9 +1018,34 @@ namespace NHibernate.Mapping
 			return buf.ToString();
 		}
 
-		public void ValidateColumns(Dialect.Dialect dialect, IMapping mapping, DataTable tableInfo)
+		public void ValidateColumns(Dialect.Dialect dialect, IMapping mapping, ITableMetadata tableInfo)
 		{
-			throw new NotSupportedException();
+			var iter = this.ColumnIterator;
+			foreach (var column in iter)
+			{
+
+				var columnInfo = tableInfo.GetColumnMetadata(column.Name);
+
+				if (columnInfo == null)
+					throw new HibernateException(string.Format("Missing column: {0} in {1}", column.Name,
+					                                           Table.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name)));
+
+				else
+				{
+					//TODO: Add new method to ColumnMetadata :getTypeCode
+					bool typesMatch = column.GetSqlType(dialect, mapping).ToLower()
+						.StartsWith(columnInfo.TypeName.ToLower())
+						; //|| columnInfo.get() == column.GetSqlTypeCode(mapping);
+					if (!typesMatch)
+					{
+						throw new HibernateException(
+							string.Format("Wrong column type in {0} for column {1}. Found: {2}, Expected {3}",
+							              Table.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name),
+							              column.Name, columnInfo.TypeName.ToLower(), column.GetSqlType(dialect, mapping)));
+					}
+				}
+			}
+
 		}
 
 		public static string Qualify(string catalog, string schema, string table)

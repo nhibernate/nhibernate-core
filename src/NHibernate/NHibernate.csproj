@@ -1020,6 +1020,7 @@
     <Compile Include="Tool\hbm2ddl\ManagedProviderConnectionHelper.cs" />
     <Compile Include="Dialect\Schema\AbstractDataBaseSchema.cs" />
     <Compile Include="Tool\hbm2ddl\SchemaUpdate.cs" />
+    <Compile Include="Tool\hbm2ddl\SchemaValidator.cs" />
     <Compile Include="Tool\hbm2ddl\SuppliedConnectionHelper.cs" />
     <Compile Include="Tool\hbm2ddl\SuppliedConnectionProviderConnectionHelper.cs" />
     <Compile Include="Transaction\AdoNetTransactionFactory.cs" />
