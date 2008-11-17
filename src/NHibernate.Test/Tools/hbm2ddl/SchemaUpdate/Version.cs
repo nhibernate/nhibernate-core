@@ -1,4 +1,4 @@
-namespace NHibernate.Test.SchemaUpdate
+namespace NHibernate.Test.Tools.hbm2ddl.SchemaUpdate
 {
 	public class Version
 	{

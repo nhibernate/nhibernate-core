@@ -5,7 +5,7 @@ using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
 
-namespace NHibernate.Test.SchemaUpdate
+namespace NHibernate.Test.Tools.hbm2ddl.SchemaUpdate
 {
 	[TestFixture]
 	public class MigrationFixture
@@ -13,8 +13,8 @@ namespace NHibernate.Test.SchemaUpdate
 		[Test]
 		public void SimpleColumnAddition()
 		{
-			String resource2 = "NHibernate.Test.SchemaUpdate.2_Version.hbm.xml";
-			String resource1 = "NHibernate.Test.SchemaUpdate.1_Version.hbm.xml";
+			String resource2 = "NHibernate.Test.Tools.hbm2ddl.SchemaUpdate.2_Version.hbm.xml";
+			String resource1 = "NHibernate.Test.Tools.hbm2ddl.SchemaUpdate.1_Version.hbm.xml";
 
 			Configuration v1cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource1))

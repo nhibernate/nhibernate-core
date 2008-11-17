@@ -818,8 +818,8 @@
     <Compile Include="QueryTest\PositionalParametersFixture.cs" />
     <Compile Include="QueryTest\QueryParametersFixture.cs" />
     <Compile Include="ReflectionOptimizerTest\LcgFixture.cs" />
-    <Compile Include="SchemaUpdate\MigrationFixture.cs" />
-    <Compile Include="SchemaUpdate\Version.cs" />
+    <Compile Include="Tools\hbm2ddl\SchemaUpdate\MigrationFixture.cs" />
+    <Compile Include="Tools\hbm2ddl\SchemaUpdate\Version.cs" />
     <Compile Include="SecondLevelCacheTest\AnotherItem.cs" />
     <Compile Include="SecondLevelCacheTest\Item.cs" />
     <Compile Include="SecondLevelCacheTest\SecondLevelCacheTest.cs" />
@@ -1396,8 +1396,8 @@
     <EmbeddedResource Include="NHSpecificTest\NH995\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="SchemaUpdate\1_Version.hbm.xml" />
-    <EmbeddedResource Include="SchemaUpdate\2_Version.hbm.xml" />
+    <EmbeddedResource Include="Tools\hbm2ddl\SchemaUpdate\1_Version.hbm.xml" />
+    <EmbeddedResource Include="Tools\hbm2ddl\SchemaUpdate\2_Version.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="BulkManipulation\Vehicle.hbm.xml" />
