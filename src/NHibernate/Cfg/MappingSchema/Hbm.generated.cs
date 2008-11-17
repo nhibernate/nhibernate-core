@@ -1353,11 +1353,11 @@ namespace NHibernate.Cfg.MappingSchema {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public bool collable;
+        public bool callable;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool collableSpecified;
+        public bool callableSpecified;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]

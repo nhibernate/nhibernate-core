@@ -1111,7 +1111,7 @@ namespace NHibernate.Loader
 
 			sqlString = PreprocessSQL(sqlString, queryParameters, dialect);
 
-			// TODO NH: Collable for SP -> PrepareCallableQueryCommand
+			// TODO NH: Callable for SP -> PrepareCallableQueryCommand
 			IDbCommand command =
 				session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString,
 				                                    GetParameterTypes(queryParameters, useLimit, useOffset));
@@ -1347,7 +1347,7 @@ namespace NHibernate.Loader
 			try
 			{
 				log.Info(st.CommandText);
-				// TODO NH: Collable
+				// TODO NH: Callable
 				rs = session.Batcher.ExecuteReader(st);
 				rs = WrapResultSetIfEnabled(rs, session);
 

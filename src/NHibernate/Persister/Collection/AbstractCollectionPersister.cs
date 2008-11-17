@@ -1866,7 +1866,7 @@ namespace NHibernate.Persister.Collection
 		public abstract bool IsOneToMany { get; }
 
 		protected object PerformInsert(object ownerId, IPersistentCollection collection, IExpectation expectation,
-		                               object entry, int index, bool useBatch, bool collable, ISessionImplementor session)
+		                               object entry, int index, bool useBatch, bool callable, ISessionImplementor session)
 		{
 			object entryId = null;
 			int offset = 0;

@@ -1669,7 +1669,7 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="customSQL" mixed="true">
-		<xs:attribute name="collable" type="xs:boolean" />
+		<xs:attribute name="callable" type="xs:boolean" />
 		<xs:attribute name="check" type="customSQLCheck" use="optional" />
 	</xs:complexType>
 	<xs:simpleType name="versionGeneration">
