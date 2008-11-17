@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   default-access="nosetter.camelcase"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1556">
+
+  <class name="Claim" table="Claims">
+    <id name="Id" column="Id" type="System.Guid">
+      <generator class="guid.comb" />
+    </id>
+    <property type="System.DateTime" not-null="true" name="LastFilled" column="[LastFilled]" />
+    <many-to-one name="ProductIdentifier" cascade="none" column="ProductIdentifierId" not-null="true" class="ProductIdentifier" />
+    <many-to-one name="Patient" cascade="none" column="PatientId" not-null="true" class="Patient" />
+  </class>
+
+  <class name="Patient" table="Patients">
+    <id name="Id" column="Id" type="System.Int64">
+      <generator class="native" />
+    </id>
+    <property type="System.String" not-null="true" name="FirstName" column="[FirstName]" />
+    <property type="System.String" not-null="true" name="LastName" column="[LastName]" />
+  </class>
+
+  <class name="ProductIdentifier" table="ProductIdentifier">
+    <id name="Id" column="Id" type="System.Int64">
+      <generator class="native" />
+    </id>
+    <property type="System.String" not-null="true" name="IdentifierField" column="[IdentifierField]" />
+    <many-to-one name="Product" cascade="none" column="ProductId" class="Product" />
+  </class>
+  
+  <class name="Product" table="Product">
+    <id name="Id" column="Id" type="System.Int64">
+      <generator class="native" />
+    </id>
+    <property type="System.String" not-null="true" name="ProductName" column="[ProductName]" unique="true" />
+    <bag name="ProductIdentifiers" inverse="true" lazy="true" cascade="all">
+      <key column="ProductId" />
+      <one-to-many class="ProductIdentifier" />
+    </bag>
+  </class>
+  
+</hibernate-mapping>
