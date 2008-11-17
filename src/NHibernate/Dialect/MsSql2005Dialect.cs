@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
-using System.Text.RegularExpressions;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -44,24 +43,24 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		public override SqlString GetLimitString(SqlString querySqlString, int offset, int last)
 		{
-            // we have to do this in order to support parameters in order clause, the foramt 
-            // that sql 2005 uses for paging means that we move the parameters around, which means,
-            // that positions are lost, so we record them before making any changes.
-            //  NH-1528
-		    int parameterPositon = 0;
-		    foreach (var part in querySqlString.Parts)
-		    {
-		        Parameter param = part as Parameter;
-		        if (param == null) 
-                    continue;
-		        param.OriginalPositionInQuery = parameterPositon;
-		        parameterPositon += 1;
-		    }
+			// we have to do this in order to support parameters in order clause, the foramt 
+			// that sql 2005 uses for paging means that we move the parameters around, which means,
+			// that positions are lost, so we record them before making any changes.
+			//  NH-1528
+			int parameterPositon = 0;
+			foreach (var part in querySqlString.Parts)
+			{
+				Parameter param = part as Parameter;
+				if (param == null)
+					continue;
+				param.OriginalPositionInQuery = parameterPositon;
+				parameterPositon += 1;
+			}
 
 			int fromIndex = GetFromIndex(querySqlString);
 			SqlString select = querySqlString.Substring(0, fromIndex);
-            List<SqlString> columnsOrAliases;
-            Dictionary<SqlString, SqlString> aliasToColumn;
+			List<SqlString> columnsOrAliases;
+			Dictionary<SqlString, SqlString> aliasToColumn;
 			ExtractColumnOrAliasNames(select, out columnsOrAliases, out aliasToColumn);
 
 			int orderIndex = querySqlString.LastIndexOfCaseInsensitive(" order by ");
@@ -71,13 +70,13 @@ namespace NHibernate.Dialect
 			{
 				from = querySqlString.Substring(fromIndex, orderIndex - fromIndex).Trim();
 				SqlString orderBy = querySqlString.Substring(orderIndex).Trim();
-                sortExpressions = orderBy.Substring(9).Split(",");
+				sortExpressions = orderBy.Substring(9).Split(",");
 			}
 			else
 			{
 				from = querySqlString.Substring(fromIndex).Trim();
 				// Use dummy sort to avoid errors
-                sortExpressions = new SqlString[] { new SqlString("CURRENT_TIMESTAMP"), };
+				sortExpressions = new[] { new SqlString("CURRENT_TIMESTAMP"), };
 			}
 
 			SqlStringBuilder result =
@@ -99,7 +98,7 @@ namespace NHibernate.Dialect
 			}
 			for (int i = 0; i < sortExpressions.Length; i++)
 			{
-                SqlString sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
+				SqlString sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
 				if (!columnsOrAliases.Contains(sortExpression))
 				{
 					result.Add(", query.__hibernate_sort_expr_").Add(i.ToString()).Add("__");
@@ -132,13 +131,14 @@ namespace NHibernate.Dialect
 			return result.ToSqlString();
 		}
 
-        private static SqlString RemoveSortOrderDirection(SqlString sortExpression)
+		private static SqlString RemoveSortOrderDirection(SqlString sortExpression)
 		{
-            if (sortExpression.EndsWithCaseInsensitive("asc"))
-                return sortExpression.Substring(0, sortExpression.Length - 3).Trim();
-            if (sortExpression.EndsWithCaseInsensitive("desc"))
-                return sortExpression.Substring(0, sortExpression.Length - 4).Trim();
-            return sortExpression.Trim();
+			SqlString trimmedExpression = sortExpression.Trim();
+			if (trimmedExpression.EndsWithCaseInsensitive("asc"))
+				return trimmedExpression.Substring(0, trimmedExpression.Length - 3).Trim();
+			if (trimmedExpression.EndsWithCaseInsensitive("desc"))
+				return trimmedExpression.Substring(0, trimmedExpression.Length - 4).Trim();
+			return trimmedExpression.Trim();
 		}
 
 		private static void AppendSortExpressions(ICollection<SqlString> columnsOrAliases, SqlString[] sortExpressions,
@@ -167,7 +167,7 @@ namespace NHibernate.Dialect
 			}
 		}
 
-		private int GetFromIndex(SqlString querySqlString)
+		private static int GetFromIndex(SqlString querySqlString)
 		{
 			string subselect = querySqlString.GetSubselectString().ToString();
 			int fromIndex = querySqlString.IndexOfCaseInsensitive(subselect);
@@ -178,11 +178,11 @@ namespace NHibernate.Dialect
 			return fromIndex;
 		}
 
-        private static void ExtractColumnOrAliasNames(SqlString select, out List<SqlString> columnsOrAliases,
-            out Dictionary<SqlString, SqlString> aliasToColumn)
+		private static void ExtractColumnOrAliasNames(SqlString select, out List<SqlString> columnsOrAliases,
+				out Dictionary<SqlString, SqlString> aliasToColumn)
 		{
-            columnsOrAliases = new List<SqlString>();
-            aliasToColumn = new Dictionary<SqlString, SqlString>();
+			columnsOrAliases = new List<SqlString>();
+			aliasToColumn = new Dictionary<SqlString, SqlString>();
 
 			IList<string> tokens = new QuotedAndParenthesisStringTokenizer(select.ToString()).GetTokens();
 			int index = 0;
@@ -240,7 +240,7 @@ namespace NHibernate.Dialect
 				}
 
 				columnsOrAliases.Add(new SqlString(alias));
-                aliasToColumn[new SqlString(alias)] = new SqlString(token);
+				aliasToColumn[new SqlString(alias)] = new SqlString(token);
 			}
 		}
 

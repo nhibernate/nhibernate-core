@@ -15,7 +15,12 @@ namespace NHibernate.Test.DialectTest
 		{
 			MsSql2005Dialect d = new MsSql2005Dialect();
 
-			SqlString str = d.GetLimitString(new SqlString("SELECT fish.id FROM fish"), 0, 10);
+			SqlString str = d.GetLimitString(new SqlString("select distinct c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_ from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name"), 0, 10);
+			Assert.AreEqual(
+				"SELECT TOP 10 Contact1_19_0_, Rating2_19_0_ FROM (SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_0__ DESC, __hibernate_sort_expr_1__, __hibernate_sort_expr_2__) as row, query.Contact1_19_0_, query.Rating2_19_0_, query.__hibernate_sort_expr_0__, query.__hibernate_sort_expr_1__, query.__hibernate_sort_expr_2__ FROM (select distinct c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_, c.Rating as __hibernate_sort_expr_0__, c.Last_Name as __hibernate_sort_expr_1__, c.First_Name as __hibernate_sort_expr_2__ from dbo.Contact c where COALESCE(c.Rating, 0) > 0) query ) page WHERE page.row > 0 ORDER BY __hibernate_sort_expr_0__ DESC, __hibernate_sort_expr_1__, __hibernate_sort_expr_2__",
+				str.ToString());
+
+			str = d.GetLimitString(new SqlString("SELECT fish.id FROM fish"), 0, 10);
 			Assert.AreEqual(
 				"SELECT TOP 10 id FROM (SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_0__) as row, query.id, query.__hibernate_sort_expr_0__ FROM (SELECT fish.id, CURRENT_TIMESTAMP as __hibernate_sort_expr_0__ FROM fish) query ) page WHERE page.row > 0 ORDER BY __hibernate_sort_expr_0__",
 				str.ToString());
