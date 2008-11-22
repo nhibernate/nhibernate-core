@@ -312,7 +312,7 @@ namespace NHibernate.Impl
 			if (settings.IsAutoValidateSchema)
 			{
 				// TODO NH : Schema validator not ported yet
-				// new SchemaValidator(cfg, settings).validate();
+				 new SchemaValidator(cfg, settings).Validate();
 			}
 			if (settings.IsAutoDropSchema)
 			{
