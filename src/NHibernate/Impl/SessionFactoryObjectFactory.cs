@@ -28,8 +28,8 @@ namespace NHibernate.Impl
 		private static readonly ILog log;
 
 		// in h2.0.3 these use a class called "FastHashMap"
-		private static readonly Hashtable Instances = new Hashtable();
-		private static readonly Hashtable NamedInstances = new Hashtable();
+		private static readonly IDictionary<string, ISessionFactory> Instances = new Dictionary<string, ISessionFactory>();
+		private static readonly IDictionary<string, ISessionFactory> NamedInstances = new Dictionary<string, ISessionFactory>();
 
 		/// <summary></summary>
 		static SessionFactoryObjectFactory()
@@ -54,13 +54,13 @@ namespace NHibernate.Impl
 		{
 			if (log.IsDebugEnabled)
 			{
-				string nameMsg = ((name != null && name.Length > 0) ? name : "unnamed");
+				string nameMsg = ((!string.IsNullOrEmpty(name)) ? name : "unnamed");
 
 				log.Debug("registered: " + uid + "(" + nameMsg + ")");
 			}
 
 			Instances[uid] = instance;
-			if (name != null && name.Length > 0)
+			if (!string.IsNullOrEmpty(name))
 			{
 				log.Info("Factory name:" + name);
 				NamedInstances[name] = instance;
@@ -79,7 +79,7 @@ namespace NHibernate.Impl
 		/// <param name="properties">The configured properties for the ISessionFactory.</param>
 		public static void RemoveInstance(string uid, string name, IDictionary<string, string> properties)
 		{
-			if (name != null && name.Length > 0)
+			if (!string.IsNullOrEmpty(name))
 			{
 				log.Info("unbinding factory: " + name);
 
@@ -97,7 +97,7 @@ namespace NHibernate.Impl
 		public static ISessionFactory GetNamedInstance(string name)
 		{
 			log.Debug("lookup: name=" + name);
-			ISessionFactory factory = NamedInstances[name] as ISessionFactory;
+			ISessionFactory factory = NamedInstances[name];
 			if (factory == null)
 			{
 				log.Warn("Not found: " + name);
@@ -113,7 +113,7 @@ namespace NHibernate.Impl
 		public static ISessionFactory GetInstance(string uid)
 		{
 			log.Debug("lookup: uid=" + uid);
-			ISessionFactory factory = Instances[uid] as ISessionFactory;
+			ISessionFactory factory = Instances[uid];
 			if (factory == null)
 			{
 				log.Warn("Not found: " + uid);

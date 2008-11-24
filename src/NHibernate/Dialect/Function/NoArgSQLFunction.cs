@@ -58,13 +58,13 @@ namespace NHibernate.Dialect.Function
 			{
 				throw new QueryException("function takes no arguments: " + name);
 			}
-			SqlStringBuilder buf = new SqlStringBuilder(2);
-			buf.Add(name);
+
 			if (hasParenthesesIfNoArguments)
 			{
-				buf.Add("()");
+				return new SqlString(name + "()");
 			}
-			return buf.ToSqlString();
+
+			return new SqlString(name);
 		}
 
 		#endregion

@@ -73,7 +73,7 @@ namespace NHibernate.Test.Naturalid.Immutable
 				s.Flush();
 				Assert.Fail();
 			}
-			catch (HibernateException he) {}
+			catch (HibernateException) {}
 			u.UserName = "steve";
 			s.Delete(u);
 			t.Commit();

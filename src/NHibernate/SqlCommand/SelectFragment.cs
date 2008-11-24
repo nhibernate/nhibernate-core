@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using Iesi.Collections;
 using NHibernate.Util;
@@ -12,8 +13,8 @@ namespace NHibernate.SqlCommand
 	public class SelectFragment
 	{
 		private string suffix;
-		private IList columns = new ArrayList();
-		private IList columnAliases = new ArrayList();
+		private IList<string> columns = new List<string>();
+		private IList<string> columnAliases = new List<string>();
 		private Dialect.Dialect dialect;
 		private string[] usedAliases;
 		private string extraSelectList;
@@ -57,7 +58,7 @@ namespace NHibernate.SqlCommand
 
 		public SelectFragment AddColumn(string tableAlias, string columnName, string columnAlias)
 		{
-			if (tableAlias == null || tableAlias.Length == 0)
+			if (string.IsNullOrEmpty(tableAlias))
 			{
 				columns.Add(columnName);
 			}
@@ -140,8 +141,8 @@ namespace NHibernate.SqlCommand
 			bool found = false;
 			for (int i = 0; i < columns.Count; i++)
 			{
-				string col = columns[i] as string;
-				string columnAlias = columnAliases[i] as string;
+				string col = columns[i];
+				string columnAlias = columnAliases[i];
 
 				if (columnsUnique.Add(columnAlias))
 				{

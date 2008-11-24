@@ -160,8 +160,8 @@ namespace NHibernate.Persister.Collection
 
 		private readonly string[] spaces;
 
-		private readonly IDictionary collectionPropertyColumnAliases = new Hashtable();
-		private readonly IDictionary collectionPropertyColumnNames = new Hashtable();
+		private readonly IDictionary<string, object> collectionPropertyColumnAliases = new Dictionary<string, object>();
+		private readonly IDictionary<string, object> collectionPropertyColumnNames = new Dictionary<string, object>();
 
 		private static readonly ILog log = LogManager.GetLogger(typeof (ICollectionPersister));
 

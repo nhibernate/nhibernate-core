@@ -113,7 +113,7 @@ namespace NHibernate.Id.Enhanced
 								{
 									rs.Close();
 								}
-								catch (Exception ignore)
+								catch
 								{
 									// intentionally empty
 								}

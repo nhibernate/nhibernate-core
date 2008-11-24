@@ -59,7 +59,7 @@ namespace NHibernate.Test.ConnectionTest
 					session.CreateQuery("from Silly");
 					Assert.Fail("method other than beginTransaction{} allowed");
 				}
-				catch (HibernateException e)
+				catch (HibernateException)
 				{
 					// ok
 				}

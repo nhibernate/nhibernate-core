@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 
@@ -15,8 +16,8 @@ namespace NHibernate.AdoNet
 		private int countOfCommands = 0;
 		private int totalExpectedRowsAffected;
 		private IDbCommand currentBatch;
-		private Hashtable parameterValueArrayHashTable;
-		private Hashtable parameterIsAllNullsHashTable;
+		private IDictionary<string, ArrayList> parameterValueArrayHashTable;
+		private IDictionary<string, bool> parameterIsAllNullsHashTable;
 
 
 		public OracleDataClientBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
@@ -36,10 +37,10 @@ namespace NHibernate.AdoNet
 			{
 				// use first command as the batching command
 				currentBatch = CurrentCommand;
-				parameterValueArrayHashTable = new Hashtable();
+				parameterValueArrayHashTable = new Dictionary<string, ArrayList>();
 				//oracle does not allow array containing all null values
-				// so this HashTable is keeping track if all values are null or not
-				parameterIsAllNullsHashTable = new Hashtable();
+				// so this Dictionary is keeping track if all values are null or not
+				parameterIsAllNullsHashTable = new Dictionary<string, bool>();
 			}
 			else
 			{
@@ -57,7 +58,7 @@ namespace NHibernate.AdoNet
 				}
 				else
 				{
-					parameterValueArray = parameterValueArrayHashTable[currentParameter.ParameterName] as ArrayList;
+					parameterValueArray = parameterValueArrayHashTable[currentParameter.ParameterName];
 				}
 
 				if (currentParameter.Value != DBNull.Value)
@@ -73,8 +74,6 @@ namespace NHibernate.AdoNet
 			{
 				DoExecuteBatch(currentBatch);
 			}
-
-			
 		}
 
 		protected override void DoExecuteBatch(IDbCommand ps)
@@ -90,7 +89,7 @@ namespace NHibernate.AdoNet
 
 				foreach (IDataParameter currentParameter in currentBatch.Parameters)
 				{
-					ArrayList parameterValueArray = parameterValueArrayHashTable[currentParameter.ParameterName] as ArrayList;
+					ArrayList parameterValueArray = parameterValueArrayHashTable[currentParameter.ParameterName];
 					currentParameter.Value = parameterValueArray.ToArray();
 					arraySize = parameterValueArray.Count;
 				}

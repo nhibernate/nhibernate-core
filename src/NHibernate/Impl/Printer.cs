@@ -27,7 +27,7 @@ namespace NHibernate.Impl
 				return entity.GetType().FullName;
 			}
 
-			IDictionary result = new Hashtable();
+			IDictionary<string, string> result = new Dictionary<string, string>();
 
 			if (cm.HasIdentifierProperty)
 			{
@@ -49,7 +49,8 @@ namespace NHibernate.Impl
 
 		public string ToString(IType[] types, object[] values)
 		{
-			IList list = new ArrayList(types.Length);
+			List<string> list = new List<string>(types.Length);
+
 			for (int i = 0; i < types.Length; i++)
 			{
 				if (types[i] != null)
@@ -62,7 +63,7 @@ namespace NHibernate.Impl
 
 		public string ToString(IDictionary<string, TypedValue> namedTypedValues)
 		{
-			IDictionary result = new Hashtable(namedTypedValues.Count);
+			IDictionary<string, string> result = new Dictionary<string, string>(namedTypedValues.Count);
 
 			foreach (KeyValuePair<string, TypedValue> me in namedTypedValues)
 			{

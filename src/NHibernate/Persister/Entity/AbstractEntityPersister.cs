@@ -204,7 +204,7 @@ namespace NHibernate.Persister.Entity
 
 		#endregion
 
-		private readonly Hashtable uniqueKeyLoaders = new Hashtable();
+		private readonly Dictionary<string, EntityLoader> uniqueKeyLoaders = new Dictionary<string, EntityLoader>();
 		private readonly Dictionary<LockMode, ILockingStrategy> lockers = new Dictionary<LockMode, ILockingStrategy>();
 		private readonly Dictionary<string, IUniqueEntityLoader> loaders = new Dictionary<string, IUniqueEntityLoader>();
 
@@ -1996,12 +1996,10 @@ namespace NHibernate.Persister.Entity
 
 			if (useStaticLoader)
 			{
-				return (EntityLoader)uniqueKeyLoaders[propertyName];
+				return uniqueKeyLoaders[propertyName];
 			}
-			else
-			{
-				return CreateUniqueKeyLoader(propertyMapping.ToType(propertyName), propertyMapping.ToColumns(propertyName), enabledFilters);
-			}
+
+			return CreateUniqueKeyLoader(propertyMapping.ToType(propertyName), propertyMapping.ToColumns(propertyName), enabledFilters);
 		}
 
 		public int GetPropertyIndex(string propertyName)

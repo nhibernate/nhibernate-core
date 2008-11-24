@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Xml;
@@ -311,7 +312,7 @@ namespace NHibernate.Type
 			{
 				return "null";
 			}
-			IDictionary result = new Hashtable();
+			IDictionary<string, string> result = new Dictionary<string, string>();
 			EntityMode? entityMode = tuplizerMapping.GuessEntityMode(value);
 			if (!entityMode.HasValue)
 			{

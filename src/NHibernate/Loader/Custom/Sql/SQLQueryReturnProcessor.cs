@@ -293,7 +293,7 @@ namespace NHibernate.Loader.Custom.Sql
 		public IList GenerateCustomReturns(bool queryHadAliases)
 		{
 			IList customReturns = new ArrayList();
-			IDictionary customReturnsByAlias = new Hashtable();
+			IDictionary<string, object> customReturnsByAlias = new Dictionary<string, object>();
 			for (int i = 0; i < queryReturns.Length; i++)
 			{
 				if (queryReturns[i] is NativeSQLQueryScalarReturn)
