@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using NHibernate.Util;
 
@@ -479,14 +480,14 @@ namespace NHibernate.Driver
 			private readonly object[][] records;
 			private int colCount = 0;
 
-			private DataTable schemaTable;
+			private readonly DataTable schemaTable;
 
 			// key = field name
 			// index = field index
-			private readonly IDictionary fieldNameToIndex = new Hashtable();
-			private readonly ArrayList fieldIndexToName = new ArrayList();
-			private readonly ArrayList fieldTypes = new ArrayList();
-			private readonly ArrayList fieldDataTypeNames = new ArrayList();
+			private readonly IDictionary<string, int> fieldNameToIndex = new Dictionary<string, int>();
+			private readonly IList<string> fieldIndexToName = new List<string>();
+			private readonly IList<System.Type> fieldTypes = new List<System.Type>();
+			private readonly IList<string> fieldDataTypeNames = new List<string>();
 
 			/// <summary>
 			/// Initializes a new instance of the NResult class.
@@ -532,7 +533,6 @@ namespace NHibernate.Driver
 					isMidstream = false;
 				}
 
-
 				records = (object[][]) recordsList.ToArray(typeof(object[]));
 			}
 
@@ -543,7 +543,7 @@ namespace NHibernate.Driver
 			/// <returns></returns>
 			public string GetDataTypeName(int colIndex)
 			{
-				return (string) fieldDataTypeNames[colIndex];
+				return fieldDataTypeNames[colIndex];
 			}
 
 			/// <summary>
@@ -562,7 +562,7 @@ namespace NHibernate.Driver
 			/// <returns></returns>
 			public System.Type GetFieldType(int colIndex)
 			{
-				return (System.Type) fieldTypes[colIndex];
+				return fieldTypes[colIndex];
 			}
 
 			/// <summary>
@@ -572,7 +572,7 @@ namespace NHibernate.Driver
 			/// <returns></returns>
 			public string GetName(int colIndex)
 			{
-				return (string) fieldIndexToName[colIndex];
+				return fieldIndexToName[colIndex];
 			}
 
 			/// <summary></summary>
@@ -593,21 +593,20 @@ namespace NHibernate.Driver
 				// interface, see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpref/html/frlrfSystemDataIDataRecordClassItemTopic1.asp.
 				// This is necessary for databases that don't preserve the case of field names when
 				// they are created without quotes (e.g. DB2, PostgreSQL).
-				if (fieldNameToIndex[colName] != null)
+				if (fieldNameToIndex.ContainsKey(colName))
 				{
-					return (int) fieldNameToIndex[colName];
+					return fieldNameToIndex[colName];
 				}
-				else
+
+				foreach (KeyValuePair<string, int> pair in fieldNameToIndex)
 				{
-					foreach (DictionaryEntry entry in fieldNameToIndex)
+					if (StringHelper.EqualsCaseInsensitive(pair.Key, colName))
 					{
-						if (StringHelper.EqualsCaseInsensitive((string) entry.Key, colName))
-						{
-							return (int) entry.Value;
-						}
+						return pair.Value;
 					}
-					throw new IndexOutOfRangeException(String.Format("No column with the specified name was found: {0}.", colName));
 				}
+
+				throw new IndexOutOfRangeException(String.Format("No column with the specified name was found: {0}.", colName));
 			}
 
 			/// <summary>
