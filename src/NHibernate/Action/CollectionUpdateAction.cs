@@ -31,10 +31,11 @@ namespace NHibernate.Action
 			bool affectedByFilters = persister.IsAffectedByEnabledFilters(session);
 
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
-			var stopWath = new Stopwatch();
+			Stopwatch stopwatch = null;
 			if (statsEnabled)
 			{
-				stopWath.Start();
+				stopwatch = new Stopwatch();
+				stopwatch.Start();
 			}
 
 			PreUpdate();
@@ -82,8 +83,8 @@ namespace NHibernate.Action
 
 			if (statsEnabled)
 			{
-				stopWath.Stop();
-				Session.Factory.StatisticsImplementor.UpdateCollection(Persister.Role, stopWath.Elapsed);
+				stopwatch.Stop();
+				Session.Factory.StatisticsImplementor.UpdateCollection(Persister.Role, stopwatch.Elapsed);
 			}
 		}
 

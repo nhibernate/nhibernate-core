@@ -43,10 +43,11 @@ namespace NHibernate.Action
 			object id = Id;
 
 			bool statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
-			var stopWath = new Stopwatch();
+			Stopwatch stopwatch = null;
 			if (statsEnabled)
 			{
-				stopWath.Start();
+				stopwatch = new Stopwatch();
+				stopwatch.Start();
 			}
 
 			bool veto = PreInsert();
@@ -97,8 +98,8 @@ namespace NHibernate.Action
 
 			if (statsEnabled && !veto)
 			{
-				stopWath.Stop();
-				factory.StatisticsImplementor.InsertEntity(Persister.EntityName, stopWath.Elapsed);
+				stopwatch.Stop();
+				factory.StatisticsImplementor.InsertEntity(Persister.EntityName, stopwatch.Elapsed);
 			}
 		}
 

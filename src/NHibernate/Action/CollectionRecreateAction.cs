@@ -21,10 +21,11 @@ namespace NHibernate.Action
 		public override void Execute()
 		{
 			bool statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
-			var stopWath = new Stopwatch();
+			Stopwatch stopwatch = null;
 			if (statsEnabled)
 			{
-				stopWath.Start();
+				stopwatch = new Stopwatch();
+				stopwatch.Start();
 			}
 			IPersistentCollection collection = Collection;
 
@@ -39,8 +40,8 @@ namespace NHibernate.Action
 			PostRecreate();
 			if (statsEnabled)
 			{
-				stopWath.Stop();
-				Session.Factory.StatisticsImplementor.RecreateCollection(Persister.Role, stopWath.Elapsed);
+				stopwatch.Stop();
+				Session.Factory.StatisticsImplementor.RecreateCollection(Persister.Role, stopwatch.Elapsed);
 			}
 		}
 
