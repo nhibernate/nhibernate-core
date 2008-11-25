@@ -19,10 +19,10 @@ namespace NHibernate.Tuple.Entity
 		private readonly IGetter idGetter;
 		private readonly ISetter idSetter;
 
-		protected internal int propertySpan;
-		protected internal IGetter[] getters;
-		protected internal ISetter[] setters;
-		protected internal bool hasCustomAccessors;
+		protected int propertySpan;
+		protected IGetter[] getters;
+		protected ISetter[] setters;
+		protected bool hasCustomAccessors;
 		protected IInstantiator instantiator;
 		private readonly IProxyFactory proxyFactory;
 		private readonly IAbstractComponentType identifierMapperType;
@@ -30,7 +30,7 @@ namespace NHibernate.Tuple.Entity
 		/// <summary> Constructs a new AbstractEntityTuplizer instance. </summary>
 		/// <param name="entityMetamodel">The "interpreted" information relating to the mapped entity. </param>
 		/// <param name="mappingInfo">The parsed "raw" mapping data relating to the given entity. </param>
-		public AbstractEntityTuplizer(EntityMetamodel entityMetamodel, PersistentClass mappingInfo)
+		protected AbstractEntityTuplizer(EntityMetamodel entityMetamodel, PersistentClass mappingInfo)
 		{
 			this.entityMetamodel = entityMetamodel;
 
@@ -303,13 +303,13 @@ namespace NHibernate.Tuple.Entity
 		/// <summary> Return the entity-mode handled by this tuplizer instance. </summary>
 		public abstract EntityMode EntityMode { get;}
 
-		protected internal virtual IInstantiator Instantiator
+		protected virtual IInstantiator Instantiator
 		{
 			get { return instantiator; }
 		}
 
 		/// <summary>Retrieves the defined entity-name for the tuplized entity. </summary>
-		protected internal virtual string EntityName
+		protected virtual string EntityName
 		{
 			get { return entityMetamodel.Name; }
 		}
@@ -317,7 +317,7 @@ namespace NHibernate.Tuple.Entity
 		/// <summary> 
 		/// Retrieves the defined entity-names for any subclasses defined for this entity. 
 		/// </summary>
-		protected internal virtual ISet<string> SubclassEntityNames
+		protected virtual ISet<string> SubclassEntityNames
 		{
 			get { return entityMetamodel.SubclassEntityNames; }
 		}
@@ -326,32 +326,32 @@ namespace NHibernate.Tuple.Entity
 		/// <param name="mappedProperty">The property to be accessed via the built Getter. </param>
 		/// <param name="mappedEntity">The entity information regarding the mapped entity owning this property. </param>
 		/// <returns> An appropriate Getter instance. </returns>
-		protected internal abstract IGetter BuildPropertyGetter(Mapping.Property mappedProperty, PersistentClass mappedEntity);
+		protected abstract IGetter BuildPropertyGetter(Mapping.Property mappedProperty, PersistentClass mappedEntity);
 
 		/// <summary> Build an appropriate Setter for the given property. </summary>
 		/// <param name="mappedProperty">The property to be accessed via the built Setter. </param>
 		/// <param name="mappedEntity">The entity information regarding the mapped entity owning this property. </param>
 		/// <returns> An appropriate Setter instance. </returns>
-		protected internal abstract ISetter BuildPropertySetter(Mapping.Property mappedProperty, PersistentClass mappedEntity);
+		protected abstract ISetter BuildPropertySetter(Mapping.Property mappedProperty, PersistentClass mappedEntity);
 
 		/// <summary> Build an appropriate Instantiator for the given mapped entity. </summary>
 		/// <param name="mappingInfo">The mapping information regarding the mapped entity. </param>
 		/// <returns> An appropriate Instantiator instance. </returns>
-		protected internal abstract IInstantiator BuildInstantiator(PersistentClass mappingInfo);
+		protected abstract IInstantiator BuildInstantiator(PersistentClass mappingInfo);
 
 		/// <summary> Build an appropriate ProxyFactory for the given mapped entity. </summary>
 		/// <param name="mappingInfo">The mapping information regarding the mapped entity. </param>
 		/// <param name="idGetter">The constructed Getter relating to the entity's id property. </param>
 		/// <param name="idSetter">The constructed Setter relating to the entity's id property. </param>
 		/// <returns> An appropriate ProxyFactory instance. </returns>
-		protected internal abstract IProxyFactory BuildProxyFactory(PersistentClass mappingInfo, IGetter idGetter, ISetter idSetter);
+		protected abstract IProxyFactory BuildProxyFactory(PersistentClass mappingInfo, IGetter idGetter, ISetter idSetter);
 
 		/// <summary> Extract a component property value. </summary>
 		/// <param name="type">The component property types. </param>
 		/// <param name="component">The component instance itself. </param>
 		/// <param name="propertyPath">The property path for the property to be extracted. </param>
 		/// <returns> The property value extracted. </returns>
-		protected internal virtual object GetComponentValue(ComponentType type, object component, string propertyPath)
+		protected virtual object GetComponentValue(ComponentType type, object component, string propertyPath)
 		{
 			int loc = propertyPath.IndexOf('.');
 			string basePropertyName = loc > 0 ? propertyPath.Substring(0, (loc) - (0)) : propertyPath;
@@ -381,17 +381,17 @@ namespace NHibernate.Tuple.Entity
 			}
 		}
 
-		protected internal virtual IProxyFactory ProxyFactory
+		protected virtual IProxyFactory ProxyFactory
 		{
 			get { return proxyFactory; }
 		}
 
-		protected internal virtual bool ShouldGetAllProperties(object entity)
+		protected virtual bool ShouldGetAllProperties(object entity)
 		{
 			return !HasUninitializedLazyProperties(entity);
 		}
 
-		protected internal EntityMetamodel EntityMetamodel
+		protected EntityMetamodel EntityMetamodel
 		{
 			get { return entityMetamodel; }
 		}

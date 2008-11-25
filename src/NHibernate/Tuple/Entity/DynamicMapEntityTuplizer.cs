@@ -40,7 +40,7 @@ namespace NHibernate.Tuple.Entity
 			get { return EntityMode.Map; }
 		}
 
-		protected internal override IGetter BuildPropertyGetter(Mapping.Property mappedProperty, PersistentClass mappedEntity)
+		protected override IGetter BuildPropertyGetter(Mapping.Property mappedProperty, PersistentClass mappedEntity)
 		{
 			return BuildPropertyAccessor(mappedProperty).GetGetter(null, mappedProperty.Name);
 		}
@@ -50,17 +50,17 @@ namespace NHibernate.Tuple.Entity
 			return PropertyAccessorFactory.DynamicMapPropertyAccessor;
 		}
 
-		protected internal override ISetter BuildPropertySetter(Mapping.Property mappedProperty, PersistentClass mappedEntity)
+		protected override ISetter BuildPropertySetter(Mapping.Property mappedProperty, PersistentClass mappedEntity)
 		{
 			return BuildPropertyAccessor(mappedProperty).GetSetter(null, mappedProperty.Name);
 		}
 
-		protected internal override IInstantiator BuildInstantiator(PersistentClass mappingInfo)
+		protected override IInstantiator BuildInstantiator(PersistentClass mappingInfo)
 		{
 			return new DynamicMapInstantiator(mappingInfo);
 		}
 
-		protected internal override IProxyFactory BuildProxyFactory(PersistentClass mappingInfo, IGetter idGetter,
+		protected override IProxyFactory BuildProxyFactory(PersistentClass mappingInfo, IGetter idGetter,
 		                                                            ISetter idSetter)
 		{
 			IProxyFactory pf = new MapProxyFactory();

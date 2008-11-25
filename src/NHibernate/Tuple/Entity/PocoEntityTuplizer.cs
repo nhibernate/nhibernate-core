@@ -70,17 +70,17 @@ namespace NHibernate.Tuple.Entity
 			get { return mappedClass; }
 		}
 
-		protected internal override IGetter BuildPropertyGetter(Mapping.Property mappedProperty, PersistentClass mappedEntity)
+		protected override IGetter BuildPropertyGetter(Mapping.Property mappedProperty, PersistentClass mappedEntity)
 		{
 			return mappedProperty.GetGetter(mappedEntity.MappedClass);
 		}
 
-		protected internal override ISetter BuildPropertySetter(Mapping.Property mappedProperty, PersistentClass mappedEntity)
+		protected override ISetter BuildPropertySetter(Mapping.Property mappedProperty, PersistentClass mappedEntity)
 		{
 			return mappedProperty.GetSetter(mappedEntity.MappedClass);
 		}
 
-		protected internal override IInstantiator BuildInstantiator(PersistentClass persistentClass)
+		protected override IInstantiator BuildInstantiator(PersistentClass persistentClass)
 		{
 			if (optimizer == null)
 			{
@@ -94,7 +94,7 @@ namespace NHibernate.Tuple.Entity
 			}
 		}
 
-		protected internal override IProxyFactory BuildProxyFactory(PersistentClass persistentClass, IGetter idGetter,
+		protected override IProxyFactory BuildProxyFactory(PersistentClass persistentClass, IGetter idGetter,
 		                                                            ISetter idSetter)
 		{
 			bool needAccesorCheck = true; // NH specific (look the comment below)
