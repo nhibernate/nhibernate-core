@@ -40,13 +40,16 @@ namespace NHibernate.Tuple.Entity
 					lazyPropertyNames.Add(property.Name);
 			}
 
-			if (hasCustomAccessors || !Cfg.Environment.UseReflectionOptimizer)
+			if (Cfg.Environment.UseReflectionOptimizer)
+			{
+				// NH different behavior fo NH-1587
+				optimizer = Cfg.Environment.BytecodeProvider.GetReflectionOptimizer(mappedClass, getters, setters);
+			}
+			instantiator = BuildInstantiator(mappedEntity);
+
+			if (hasCustomAccessors)
 			{
 				optimizer = null;
-			}
-			else
-			{
-				optimizer = Cfg.Environment.BytecodeProvider.GetReflectionOptimizer(mappedClass, getters, setters);
 			}
 
 			proxyValidator = Cfg.Environment.BytecodeProvider.ProxyFactoryFactory.ProxyValidator;
@@ -81,10 +84,12 @@ namespace NHibernate.Tuple.Entity
 		{
 			if (optimizer == null)
 			{
+				log.Debug("Create Instantiator without optimizer for:" + persistentClass.MappedClass.FullName);
 				return new PocoInstantiator(persistentClass, null);
 			}
 			else
 			{
+				log.Debug("Create Instantiator using optimizer for:" + persistentClass.MappedClass.FullName);
 				return new PocoInstantiator(persistentClass, optimizer.InstantiationOptimizer);
 			}
 		}

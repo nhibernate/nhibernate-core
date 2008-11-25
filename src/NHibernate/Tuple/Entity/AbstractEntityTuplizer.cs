@@ -23,7 +23,7 @@ namespace NHibernate.Tuple.Entity
 		protected internal IGetter[] getters;
 		protected internal ISetter[] setters;
 		protected internal bool hasCustomAccessors;
-		private readonly IInstantiator instantiator;
+		protected IInstantiator instantiator;
 		private readonly IProxyFactory proxyFactory;
 		private readonly IAbstractComponentType identifierMapperType;
 
@@ -67,7 +67,8 @@ namespace NHibernate.Tuple.Entity
 			}
 			hasCustomAccessors = foundCustomAccessor;
 
-			instantiator = BuildInstantiator(mappingInfo);
+			//NH-1587
+			//instantiator = BuildInstantiator(mappingInfo);
 
 			if (entityMetamodel.IsLazy)
 			{

@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1587
 	[TestFixture]
 	public class Fixture
 	{
-		[Test, Ignore("Not fixed yet")]
+		[Test]
 		public void Bug()
 		{
 			XmlConfigurator.Configure();
