@@ -6,6 +6,7 @@ using System.Text;
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
+using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 {
@@ -26,7 +27,6 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 		}
 
 		[Test]
-		[ExpectedException(typeof(HibernateException), ExpectedMessage = "Missing column: Name in nhibernate.dbo.Version")]
 		public void ShouldNotVerifyModifiedTable()
 		{
 			string resource1 = "NHibernate.Test.Tools.hbm2ddl.SchemaValidator.1_Version.hbm.xml";
@@ -39,7 +39,14 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 				v2cfg.AddInputStream(stream);
 			new NHibernate.Tool.hbm2ddl.SchemaExport(v1cfg).Execute(true, true, false, true);
 			var v2schemaValidator = new NHibernate.Tool.hbm2ddl.SchemaValidator((v2cfg));
-			v2schemaValidator.Validate();
+			try
+			{
+				v2schemaValidator.Validate();				
+			}
+			catch (HibernateException e)
+			{
+				Assert.That(e.Message, Text.StartsWith("Missing column: Name"));
+			}
 		}
 	}
 }
