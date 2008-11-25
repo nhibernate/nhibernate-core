@@ -447,6 +447,7 @@
     <Compile Include="Dialect\Schema\SybaseAnywhereMetaData.cs" />
     <Compile Include="Dialect\SybaseASA10Dialect.cs" />
     <Compile Include="Dialect\SybaseASA9Dialect.cs" />
+    <Compile Include="Driver\IfxDriver.cs" />
     <Compile Include="Id\SelectGenerator.cs" />
     <Compile Include="Properties\BackFieldStrategy.cs" />
     <Compile Include="Bytecode\CodeDom\BytecodeProviderImpl.cs" />
