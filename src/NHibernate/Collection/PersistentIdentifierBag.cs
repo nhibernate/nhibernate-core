@@ -95,7 +95,7 @@ namespace NHibernate.Collection
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
 			identifiers = anticipatedSize <= 0 ? new Dictionary<int, object>() : new Dictionary<int, object>(anticipatedSize + 1);
-			values = anticipatedSize <= 0 ? new ArrayList() : new ArrayList(anticipatedSize);
+			values = anticipatedSize <= 0 ? new List<object>() : new List<object>(anticipatedSize);
 		}
 
 		public override object Disassemble(ICollectionPersister persister)

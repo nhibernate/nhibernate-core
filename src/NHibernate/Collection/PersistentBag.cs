@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using NHibernate.DebugHelpers;
@@ -134,7 +135,7 @@ namespace NHibernate.Collection
 		public override ICollection GetSnapshot(ICollectionPersister persister)
 		{
 			EntityMode entityMode = Session.EntityMode;
-			ArrayList clonedList = new ArrayList(bag.Count);
+			List<object> clonedList = new List<object>(bag.Count);
 			foreach (object current in bag)
 			{
 				clonedList.Add(persister.ElementType.DeepCopy(current, entityMode, persister.Factory));
@@ -210,7 +211,7 @@ namespace NHibernate.Collection
 		{
 			IType elementType = persister.ElementType;
 			EntityMode entityMode = Session.EntityMode;
-			ArrayList deletes = new ArrayList();
+			List<object> deletes = new List<object>();
 			IList sn = (IList) GetSnapshot();
 			int i = 0;
 			foreach (object old in sn)
@@ -440,7 +441,7 @@ namespace NHibernate.Collection
 			if (persister.IsOneToMany && HasQueuedOperations)
 			{
 				int additionStartFrom = bag.Count;
-				IList additionQueue = new ArrayList(additionStartFrom);
+				IList additionQueue = new List<object>(additionStartFrom);
 				foreach (object o in QueuedAdditionIterator)
 				{
 					if (o != null)

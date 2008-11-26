@@ -292,8 +292,8 @@ namespace NHibernate.Engine
 
 				SqlStringBuilder result = new SqlStringBuilder();
 
-				IList parameters = new ArrayList();
-				IList parameterTypes = new ArrayList();
+				List<object> parameters = new List<object>();
+				List<IType> parameterTypes = new List<IType>();
 				int parameterCount = 0; // keep track of the positional parameter
 
 				foreach (object part in sql.Parts)
@@ -367,8 +367,8 @@ namespace NHibernate.Engine
 					}
 				}
 
-				processedPositionalParameterValues = ((ArrayList)parameters).ToArray();
-				processedPositionalParameterTypes = (IType[])((ArrayList)parameterTypes).ToArray(typeof(IType));
+				processedPositionalParameterValues = parameters.ToArray();
+				processedPositionalParameterTypes = parameterTypes.ToArray();
 				processedSQL = result.ToSqlString();
 			}
 		}

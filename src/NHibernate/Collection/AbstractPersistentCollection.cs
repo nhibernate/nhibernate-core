@@ -646,8 +646,8 @@ namespace NHibernate.Collection
 		{
 			if (HasQueuedOperations)
 			{
-				ArrayList additions = new ArrayList(operationQueue.Count);
-				ArrayList removals = new ArrayList(operationQueue.Count);
+				List<object> additions = new List<object>(operationQueue.Count);
+				List<object> removals = new List<object>(operationQueue.Count);
 				for (int i = 0; i < operationQueue.Count; i++)
 				{
 					IDelayedOperation op = operationQueue[i];
@@ -662,10 +662,8 @@ namespace NHibernate.Collection
 				}
 				return GetOrphans(removals, additions, entityName, session);
 			}
-			else
-			{
-				return CollectionHelper.EmptyCollection;
-			}
+
+			return CollectionHelper.EmptyCollection;
 		}
 
 		/// <summary>
@@ -707,7 +705,7 @@ namespace NHibernate.Collection
 			IType idType = session.Factory.GetEntityPersister(entityName).IdentifierType;
 
 			// create the collection holding the orphans
-			ArrayList res = new ArrayList();
+			List<object> res = new List<object>();
 
 			// collect EntityIdentifier(s) of the *current* elements - add them into a HashSet for fast access
 			HashedSet<TypedValue> currentIds = new HashedSet<TypedValue>();
@@ -740,7 +738,7 @@ namespace NHibernate.Collection
 				IType idType = session.Factory.GetEntityPersister(entityName).IdentifierType;
 
 				object idOfCurrent = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, obj, session);
-				ArrayList toRemove = new ArrayList(list.Count);
+				List<object> toRemove = new List<object>(list.Count);
 				foreach (object current in list)
 				{
 					if (current == null)

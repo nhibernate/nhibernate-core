@@ -51,8 +51,7 @@ namespace NHibernate.Action
 			Stopwatch stopwatch = null;
 			if (statsEnabled)
 			{
-				stopwatch = new Stopwatch();
-				stopwatch.Start();
+				stopwatch = Stopwatch.StartNew();
 			}
 
 			bool veto = PreUpdate();

@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+
 using NHibernate.Engine.Query.Sql;
 
 namespace NHibernate.Engine
@@ -6,7 +8,7 @@ namespace NHibernate.Engine
 	public class ResultSetMappingDefinition
 	{
 		private readonly string name;
-		private readonly IList queryReturns = new ArrayList();
+		private readonly IList<INativeSQLQueryReturn> queryReturns = new List<INativeSQLQueryReturn>();
 
 		public ResultSetMappingDefinition(string name)
 		{

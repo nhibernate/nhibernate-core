@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using Iesi.Collections;
@@ -102,15 +103,13 @@ namespace NHibernate.Collection
 			{
 				return false;
 			}
-			else
+
+			foreach (object obj in set)
 			{
-				foreach (object obj in set)
+				object oldValue = snapshot[obj];
+				if (oldValue == null || elementType.IsDirty(oldValue, obj, Session))
 				{
-					object oldValue = snapshot[obj];
-					if (oldValue == null || elementType.IsDirty(oldValue, obj, Session))
-					{
-						return false;
-					}
+					return false;
 				}
 			}
 
@@ -177,7 +176,7 @@ namespace NHibernate.Collection
 		public override void BeginRead()
 		{
 			base.BeginRead();
-			tempList = new ArrayList();
+			tempList = new List<object>();
 		}
 
 		/// <summary>
@@ -214,7 +213,7 @@ namespace NHibernate.Collection
 		{
 			IType elementType = persister.ElementType;
 			IDictionary sn = (IDictionary) GetSnapshot();
-			ArrayList deletes = new ArrayList(sn.Count);
+			List<object> deletes = new List<object>(sn.Count);
 			foreach (object obj in sn.Keys)
 			{
 				if (!set.Contains(obj))

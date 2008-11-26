@@ -501,7 +501,7 @@ namespace NHibernate.Driver
 			{
 				schemaTable = reader.GetSchemaTable();
 
-				ArrayList recordsList = new ArrayList();
+				List<object[]> recordsList = new List<object[]>();
 				int rowIndex = 0;
 
 				// if we are in the middle of processing the reader then don't bother
@@ -533,7 +533,7 @@ namespace NHibernate.Driver
 					isMidstream = false;
 				}
 
-				records = (object[][]) recordsList.ToArray(typeof(object[]));
+				records = recordsList.ToArray();
 			}
 
 			/// <summary>

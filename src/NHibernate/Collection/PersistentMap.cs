@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using NHibernate.DebugHelpers;
@@ -152,7 +153,7 @@ namespace NHibernate.Collection
 
 		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
-			IList deletes = new ArrayList();
+			IList deletes = new List<object>();
 			IDictionary sn = (IDictionary) GetSnapshot();
 			foreach (DictionaryEntry e in sn)
 			{

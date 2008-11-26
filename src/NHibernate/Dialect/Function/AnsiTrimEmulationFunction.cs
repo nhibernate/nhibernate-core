@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -95,101 +97,96 @@ namespace NHibernate.Dialect.Function
 				//      so we trim leading and trailing spaces
 				return BothSpaceTrim.Render(args, factory);
 			}
-			else if (StringHelper.EqualsCaseInsensitive("from", firstArg))
+			
+			if (StringHelper.EqualsCaseInsensitive("from", firstArg))
 			{
 				// we have the form: trim(from trimSource).
 				//      This is functionally equivalent to trim(trimSource)
 				return BothSpaceTrimFrom.Render(args, factory);
 			}
+			
+			// otherwise, a trim-specification and/or a trim-character
+			// have been specified;  we need to decide which options
+			// are present and "do the right thing"
+			bool leading = true; // should leading trim-characters be trimmed?
+			bool trailing = true; // should trailing trim-characters be trimmed?
+			string trimCharacter = null; // the trim-character
+			object trimSource = null; // the trim-source
+
+			// potentialTrimCharacterArgIndex = 1 assumes that a
+			// trim-specification has been specified.  we handle the
+			// exception to that explicitly
+			int potentialTrimCharacterArgIndex = 1;
+			if (StringHelper.EqualsCaseInsensitive("leading", firstArg))
+			{
+				trailing = false;
+			}
+			else if (StringHelper.EqualsCaseInsensitive("trailing", firstArg))
+			{
+				leading = false;
+			}
+			else if (StringHelper.EqualsCaseInsensitive("both", firstArg))
+			{
+			}
 			else
 			{
-				// otherwise, a trim-specification and/or a trim-character
-				// have been specified;  we need to decide which options
-				// are present and "do the right thing"
-				bool leading = true; // should leading trim-characters be trimmed?
-				bool trailing = true; // should trailing trim-characters be trimmed?
-				string trimCharacter = null; // the trim-character
-				object trimSource = null; // the trim-source
+				potentialTrimCharacterArgIndex = 0;
+			}
 
-				// potentialTrimCharacterArgIndex = 1 assumes that a
-				// trim-specification has been specified.  we handle the
-				// exception to that explicitly
-				int potentialTrimCharacterArgIndex = 1;
-				if (StringHelper.EqualsCaseInsensitive("leading", firstArg))
+			object potentialTrimCharacter = args[potentialTrimCharacterArgIndex];
+			if (StringHelper.EqualsCaseInsensitive("from", potentialTrimCharacter.ToString()))
+			{
+				trimCharacter = "' '";
+				trimSource = args[potentialTrimCharacterArgIndex + 1];
+			}
+			else if (potentialTrimCharacterArgIndex + 1 >= args.Count)
+			{
+				trimCharacter = "' '";
+				trimSource = potentialTrimCharacter;
+			}
+			else
+			{
+				trimCharacter = potentialTrimCharacter.ToString();
+				if (StringHelper.EqualsCaseInsensitive("from", args[potentialTrimCharacterArgIndex + 1].ToString()))
 				{
-					trailing = false;
-				}
-				else if (StringHelper.EqualsCaseInsensitive("trailing", firstArg))
-				{
-					leading = false;
-				}
-				else if (StringHelper.EqualsCaseInsensitive("both", firstArg))
-				{
+					trimSource = args[potentialTrimCharacterArgIndex + 2];
 				}
 				else
 				{
-					potentialTrimCharacterArgIndex = 0;
-				}
-
-				object potentialTrimCharacter = args[potentialTrimCharacterArgIndex];
-				if (StringHelper.EqualsCaseInsensitive("from", potentialTrimCharacter.ToString()))
-				{
-					trimCharacter = "' '";
 					trimSource = args[potentialTrimCharacterArgIndex + 1];
 				}
-				else if (potentialTrimCharacterArgIndex + 1 >= args.Count)
-				{
-					trimCharacter = "' '";
-					trimSource = potentialTrimCharacter;
-				}
-				else
-				{
-					trimCharacter = potentialTrimCharacter.ToString();
-					if (StringHelper.EqualsCaseInsensitive("from", args[potentialTrimCharacterArgIndex + 1].ToString()))
-					{
-						trimSource = args[potentialTrimCharacterArgIndex + 2];
-					}
-					else
-					{
-						trimSource = args[potentialTrimCharacterArgIndex + 1];
-					}
-				}
-
-				IList argsToUse = new ArrayList();
-				argsToUse.Add(trimSource);
-				argsToUse.Add(trimCharacter);
-
-				if (trimCharacter.Equals("' '"))
-				{
-					if (leading && trailing)
-					{
-						return BothSpaceTrim.Render(argsToUse, factory);
-					}
-					else if (leading)
-					{
-						return LeadingSpaceTrim.Render(argsToUse, factory);
-					}
-					else
-					{
-						return TrailingSpaceTrim.Render(argsToUse, factory);
-					}
-				}
-				else
-				{
-					if (leading && trailing)
-					{
-						return BothTrim.Render(argsToUse, factory);
-					}
-					else if (leading)
-					{
-						return LeadingTrim.Render(argsToUse, factory);
-					}
-					else
-					{
-						return TrailingTrim.Render(argsToUse, factory);
-					}
-				}
 			}
+
+			IList argsToUse = new List<object>();
+			argsToUse.Add(trimSource);
+			argsToUse.Add(trimCharacter);
+
+			if (trimCharacter.Equals("' '"))
+			{
+				if (leading && trailing)
+				{
+					return BothSpaceTrim.Render(argsToUse, factory);
+				}
+				
+				if (leading)
+				{
+					return LeadingSpaceTrim.Render(argsToUse, factory);
+				}
+				
+				return TrailingSpaceTrim.Render(argsToUse, factory);
+			}
+			
+			if (leading && trailing)
+			{
+				return BothTrim.Render(argsToUse, factory);
+			}
+			
+			if (leading)
+			{
+				return LeadingTrim.Render(argsToUse, factory);
+			}
+			
+			return TrailingTrim.Render(argsToUse, factory);
 		}
 
 		#endregion

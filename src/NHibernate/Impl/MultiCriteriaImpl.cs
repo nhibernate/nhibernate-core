@@ -95,7 +95,7 @@ namespace NHibernate.Impl
 			ISet filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
 
 			ISet<string> querySpaces = new HashedSet<string>();
-			ArrayList resultTypesList = new ArrayList();
+			List<IType[]> resultTypesList = new List<IType[]>();
 			int[] maxRows = new int[loaders.Count];
 			int[] firstRows = new int[loaders.Count];
 			for (int i = 0; i < loaders.Count; i++)
@@ -159,7 +159,7 @@ namespace NHibernate.Impl
 
 		private IList DoList()
 		{
-			ArrayList results = new ArrayList();
+			List<IList> results = new List<IList>();
 			GetResultsFromDatabase(results);
 			return results;
 		}

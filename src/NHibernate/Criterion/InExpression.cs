@@ -115,7 +115,7 @@ namespace NHibernate.Criterion
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			ArrayList list = new ArrayList();
+			List<TypedValue> list = new List<TypedValue>();
 			IType type;
 			if (_projection == null)
 			{
@@ -158,7 +158,7 @@ namespace NHibernate.Criterion
 				}
 			}
 
-			return (TypedValue[]) list.ToArray(typeof (TypedValue));
+			return list.ToArray();
 		}
 
 		public object[] Values

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using log4net;
@@ -29,7 +30,7 @@ namespace NHibernate.Collection
 		/// A temporary list that holds the objects while the PersistentArrayHolder is being
 		/// populated from the database.
 		/// </summary>
-		[NonSerialized] private ArrayList tempList;
+		[NonSerialized] private List<object> tempList;
 
 		public PersistentArrayHolder(ISessionImplementor session, object array) : base(session)
 		{
@@ -97,7 +98,7 @@ namespace NHibernate.Collection
 		{
 			object[] sn = (object[]) snapshot;
 			object[] arr = (object[]) array;
-			ArrayList result = new ArrayList(sn);
+			List<object> result = new List<object>(sn);
 			for (int i = 0; i < sn.Length; i++)
 			{
 				IdentityRemove(result, arr[i], entityName, Session);
@@ -165,7 +166,7 @@ namespace NHibernate.Collection
 		public override void BeginRead()
 		{
 			base.BeginRead();
-			tempList = new ArrayList();
+			tempList = new List<object>();
 		}
 
 		/// <summary>
@@ -223,7 +224,7 @@ namespace NHibernate.Collection
 
 		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
-			IList deletes = new ArrayList();
+			IList deletes = new List<object>();
 			Array sn = (Array) GetSnapshot();
 			int snSize = sn.Length;
 			int arraySize = array.Length;

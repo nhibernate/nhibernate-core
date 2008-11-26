@@ -218,7 +218,7 @@ namespace NHibernate.Engine.Query
 				queryParametersToUse = queryParameters;
 			}
 
-			IList combinedResults = results ?? new ArrayList();
+			IList combinedResults = results ?? new List<object>();
 			IdentitySet distinction = new IdentitySet();
 			int includedCount = -1;
 			for (int i = 0; i < translators.Length; i++)

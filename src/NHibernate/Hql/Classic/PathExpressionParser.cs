@@ -469,12 +469,12 @@ namespace NHibernate.Hql.Classic
 		}
 
 		private bool expectingCollectionIndex;
-		private ArrayList collectionElements = new ArrayList();
+		private readonly List<CollectionElement> collectionElements = new List<CollectionElement>();
 
 		/// <summary></summary>
 		public CollectionElement LastCollectionElement()
 		{
-			CollectionElement ce = (CollectionElement) collectionElements[collectionElements.Count - 1];
+			CollectionElement ce = collectionElements[collectionElements.Count - 1];
 			collectionElements.RemoveAt(collectionElements.Count - 1);
 			return ce; //remove last
 		}
@@ -482,7 +482,7 @@ namespace NHibernate.Hql.Classic
 		/// <summary></summary>
 		public void SetLastCollectionElementIndexValue(SqlString value)
 		{
-			((CollectionElement) collectionElements[collectionElements.Count - 1]).IndexValue.Add(value); //getlast
+			collectionElements[collectionElements.Count - 1].IndexValue.Add(value); //getlast
 		}
 
 		/// <summary></summary>
@@ -569,11 +569,9 @@ namespace NHibernate.Hql.Classic
 			{
 				return AddFromCollection(q);
 			}
-			else
-			{
-				q.AddFrom(currentName, joinSequence);
-				return currentName;
-			}
+			
+			q.AddFrom(currentName, joinSequence);
+			return currentName;
 		}
 
 		/// <summary>
@@ -615,12 +613,10 @@ namespace NHibernate.Hql.Classic
 				currentPropertyMapping = new CollectionPropertyMapping(collectionPersister);
 				return elementName;
 			}
-			else
-			{
-				// collection of values
-				q.AddFromCollection(collectionName, collectionRole, joinSequence);
-				return collectionName;
-			}
+			
+			// collection of values
+			q.AddFromCollection(collectionName, collectionRole, joinSequence);
+			return collectionName;
 		}
 
 		/// <summary></summary>

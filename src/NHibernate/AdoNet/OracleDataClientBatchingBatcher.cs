@@ -16,7 +16,7 @@ namespace NHibernate.AdoNet
 		private int countOfCommands = 0;
 		private int totalExpectedRowsAffected;
 		private IDbCommand currentBatch;
-		private IDictionary<string, ArrayList> parameterValueArrayHashTable;
+		private IDictionary<string, List<object>> parameterValueListHashTable;
 		private IDictionary<string, bool> parameterIsAllNullsHashTable;
 
 
@@ -37,7 +37,7 @@ namespace NHibernate.AdoNet
 			{
 				// use first command as the batching command
 				currentBatch = CurrentCommand;
-				parameterValueArrayHashTable = new Dictionary<string, ArrayList>();
+				parameterValueListHashTable = new Dictionary<string, List<object>>();
 				//oracle does not allow array containing all null values
 				// so this Dictionary is keeping track if all values are null or not
 				parameterIsAllNullsHashTable = new Dictionary<string, bool>();
@@ -47,25 +47,25 @@ namespace NHibernate.AdoNet
 				firstOnBatch = false;
 			}
 
-			ArrayList parameterValueArray;
+			List<object> parameterValueList;
 			foreach (IDataParameter currentParameter in CurrentCommand.Parameters)
 			{                
 				if (firstOnBatch)
 				{
-					parameterValueArray = new ArrayList();
-					parameterValueArrayHashTable.Add(currentParameter.ParameterName, parameterValueArray);
+					parameterValueList = new List<object>();
+					parameterValueListHashTable.Add(currentParameter.ParameterName, parameterValueList);
 					parameterIsAllNullsHashTable.Add(currentParameter.ParameterName, true);
 				}
 				else
 				{
-					parameterValueArray = parameterValueArrayHashTable[currentParameter.ParameterName];
+					parameterValueList = parameterValueListHashTable[currentParameter.ParameterName];
 				}
 
 				if (currentParameter.Value != DBNull.Value)
 				{
 					parameterIsAllNullsHashTable[currentParameter.ParameterName] = false;
 				}
-				parameterValueArray.Add(currentParameter.Value);
+				parameterValueList.Add(currentParameter.Value);
 			} 
 			
 			countOfCommands++;
@@ -89,7 +89,7 @@ namespace NHibernate.AdoNet
 
 				foreach (IDataParameter currentParameter in currentBatch.Parameters)
 				{
-					ArrayList parameterValueArray = parameterValueArrayHashTable[currentParameter.ParameterName];
+					List<object> parameterValueArray = parameterValueListHashTable[currentParameter.ParameterName];
 					currentParameter.Value = parameterValueArray.ToArray();
 					arraySize = parameterValueArray.Count;
 				}
@@ -104,7 +104,7 @@ namespace NHibernate.AdoNet
 
 				totalExpectedRowsAffected = 0;
 				currentBatch = null;
-				parameterValueArrayHashTable = null; 
+				parameterValueListHashTable = null; 
 			}
 		}
 

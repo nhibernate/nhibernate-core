@@ -177,7 +177,7 @@ namespace NHibernate.Engine.Query
 
 		private SqlType[] GetParameterTypes(QueryParameters parameters, ISessionImplementor session)
 		{
-			ArrayList paramTypeList = new ArrayList();
+			List<IType> paramTypeList = new List<IType>();
 			int span = 0;
 
 			foreach (IType type in parameters.FilteredPositionalParameterTypes)
@@ -207,7 +207,7 @@ namespace NHibernate.Engine.Query
 			return ConvertITypesToSqlTypes(paramTypeList, span, session);
 		}
 
-		private static SqlType[] ConvertITypesToSqlTypes(ArrayList nhTypes, int totalSpan, ISessionImplementor session)
+		private static SqlType[] ConvertITypesToSqlTypes(IList<IType> nhTypes, int totalSpan, ISessionImplementor session)
 		{
 			SqlType[] result = new SqlType[totalSpan];
 

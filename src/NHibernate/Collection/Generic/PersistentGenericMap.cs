@@ -50,7 +50,7 @@ namespace NHibernate.Collection.Generic
 
 		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
-			IList deletes = new ArrayList();
+			IList deletes = new List<object>();
 			IDictionary<TKey, TValue> sn = (IDictionary<TKey, TValue>)GetSnapshot();
 			foreach (KeyValuePair<TKey, TValue> e in sn)
 			{

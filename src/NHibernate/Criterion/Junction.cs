@@ -14,7 +14,7 @@ namespace NHibernate.Criterion
 	[Serializable]
 	public abstract class Junction : AbstractCriterion
 	{
-		private IList _criteria = new ArrayList();
+		private readonly IList<ICriterion> criteria = new List<ICriterion>();
 
 		/// <summary>
 		/// Adds an <see cref="ICriterion"/> to the list of <see cref="ICriterion"/>s
@@ -26,7 +26,7 @@ namespace NHibernate.Criterion
 		/// </returns>
 		public Junction Add(ICriterion criterion)
 		{
-			_criteria.Add(criterion);
+			criteria.Add(criterion);
 			return this;
 		}
 
@@ -39,7 +39,7 @@ namespace NHibernate.Criterion
 		{
 			ArrayList typedValues = new ArrayList();
 
-			foreach (ICriterion criterion in _criteria)
+			foreach (ICriterion criterion in this.criteria)
 			{
 				TypedValue[] subvalues = criterion.GetTypedValues(criteria, criteriaQuery);
 				ArrayHelper.AddAll(typedValues, subvalues);
@@ -56,7 +56,7 @@ namespace NHibernate.Criterion
 
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			if (_criteria.Count == 0)
+			if (this.criteria.Count == 0)
 			{
 				return EmptyExpression;
 			}
@@ -66,15 +66,13 @@ namespace NHibernate.Criterion
 
 			sqlBuilder.Add("(");
 
-			for (int i = 0; i < _criteria.Count - 1; i++)
+			for (int i = 0; i < this.criteria.Count - 1; i++)
 			{
-				sqlBuilder.Add(
-					((ICriterion) _criteria[i]).ToSqlString(criteria, criteriaQuery, enabledFilters));
+				sqlBuilder.Add(this.criteria[i].ToSqlString(criteria, criteriaQuery, enabledFilters));
 				sqlBuilder.Add(Op);
 			}
 
-			sqlBuilder.Add(
-				((ICriterion) _criteria[_criteria.Count - 1]).ToSqlString(criteria, criteriaQuery, enabledFilters));
+			sqlBuilder.Add(this.criteria[this.criteria.Count - 1].ToSqlString(criteria, criteriaQuery, enabledFilters));
 
 
 			sqlBuilder.Add(")");
@@ -84,7 +82,7 @@ namespace NHibernate.Criterion
 
 		public override string ToString()
 		{
-			return '(' + StringHelper.Join(Op, _criteria) + ')';
+			return '(' + StringHelper.Join(Op, criteria) + ')';
 		}
 
 		public override IProjection[] GetProjections()

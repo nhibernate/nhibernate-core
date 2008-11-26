@@ -1072,7 +1072,7 @@ namespace NHibernate.Hql.Classic
 					ExtractFunctionClause(tokens, ref tokenIdx);
 
 				// The function render simply translate its name for a specific dialect.
-				return func.Render(new ArrayList(), Factory);
+				return func.Render(new List<object>(), Factory);
 			}
 			functionTokens = ExtractFunctionClause(tokens, ref tokenIdx);
 
@@ -1080,7 +1080,7 @@ namespace NHibernate.Hql.Classic
 			if (fg == null)
 				fg = new CommonGrammar();
 
-			IList args = new ArrayList();
+			IList args = new List<object>();
 			SqlStringBuilder argBuf = new SqlStringBuilder();
 			// Extract args splitting first 2 token because are: FuncName(
 			// last token is ')'

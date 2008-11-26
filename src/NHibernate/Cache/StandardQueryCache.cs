@@ -65,31 +65,29 @@ namespace NHibernate.Cache
 			{
 				return false;
 			}
-			else
+
+			long ts = session.Timestamp;
+
+			if (log.IsDebugEnabled)
 			{
-				long ts = session.Timestamp;
-
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("caching query results in region: " + regionName);
-				}
-
-				IList cacheable = new ArrayList(result.Count + 1);
-				cacheable.Add(ts);
-				for (int i = 0; i < result.Count; i++)
-				{
-					if (returnTypes.Length == 1)
-					{
-						cacheable.Add(returnTypes[0].Disassemble(result[i], session, null));
-					}
-					else
-					{
-						cacheable.Add(TypeFactory.Disassemble((object[]) result[i], returnTypes, null, session, null));
-					}
-				}
-				queryCache.Put(key, cacheable);
-				return true;
+				log.Debug("caching query results in region: " + regionName);
 			}
+
+			IList cacheable = new List<object>(result.Count + 1);
+			cacheable.Add(ts);
+			for (int i = 0; i < result.Count; i++)
+			{
+				if (returnTypes.Length == 1)
+				{
+					cacheable.Add(returnTypes[0].Disassemble(result[i], session, null));
+				}
+				else
+				{
+					cacheable.Add(TypeFactory.Disassemble((object[]) result[i], returnTypes, null, session, null));
+				}
+			}
+			queryCache.Put(key, cacheable);
+			return true;
 		}
 
 		public IList Get(QueryKey key, ICacheAssembler[] returnTypes, bool isNaturalKeyLookup, ISet<string> spaces,
@@ -125,7 +123,7 @@ namespace NHibernate.Cache
 					TypeFactory.BeforeAssemble((object[])cacheable[i], returnTypes, session);
 				}
 			}
-			IList result = new ArrayList(cacheable.Count - 1);
+			IList result = new List<object>(cacheable.Count - 1);
 			for (int i = 1; i < cacheable.Count; i++)
 			{
 				try
@@ -151,10 +149,8 @@ namespace NHibernate.Cache
 						queryCache.Remove(key);
 						return null;
 					}
-					else
-					{
-						throw;
-					}
+
+					throw;
 				}
 			}
 			return result;

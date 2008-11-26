@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -30,7 +32,7 @@ namespace NHibernate.SqlCommand
 	public class SqlStringBuilder : ISqlStringBuilder
 	{
 		// this holds the strings and parameters that make up the full sql statement.
-		private ArrayList sqlParts;
+		private List<object> sqlParts;
 
 		private AddingSqlStringVisitor addingVisitor;
 
@@ -59,7 +61,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="partsCapacity">The number of parts expected.</param>
 		public SqlStringBuilder(int partsCapacity)
 		{
-			sqlParts = new ArrayList(partsCapacity);
+			sqlParts = new List<object>(partsCapacity);
 		}
 
 		/// <summary>
@@ -68,7 +70,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="sqlString">The SqlString to modify.</param>
 		public SqlStringBuilder(SqlString sqlString)
 		{
-			sqlParts = new ArrayList(sqlString.Count);
+			sqlParts = new List<object>(sqlString.Count);
 			Add(sqlString);
 		}
 
@@ -311,7 +313,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlString that was built.</returns>
 		public SqlString ToSqlString()
 		{
-			return new SqlString((object[]) sqlParts.ToArray(typeof(object)));
+			return new SqlString(sqlParts.ToArray());
 		}
 
 		public override string ToString()

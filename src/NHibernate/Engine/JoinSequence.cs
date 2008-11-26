@@ -12,7 +12,7 @@ namespace NHibernate.Engine
 	public class JoinSequence
 	{
 		private readonly ISessionFactoryImplementor factory;
-		private readonly ArrayList joins = new ArrayList();
+		private readonly List<Join> joins = new List<Join>();
 		private bool useThetaStyle = false;
 		private readonly SqlStringBuilder conditions = new SqlStringBuilder();
 		private string rootAlias;
@@ -162,7 +162,7 @@ namespace NHibernate.Engine
 
 			for (int i = 0; i < joins.Count; i++)
 			{
-				Join join = (Join) joins[i];
+				Join join = joins[i];
 				string on = join.AssociationType.GetOnCondition(join.Alias, factory, enabledFilters);
 				string condition;
 				if (last != null &&

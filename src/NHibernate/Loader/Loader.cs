@@ -255,7 +255,7 @@ namespace NHibernate.Loader
 		                               bool returnProxies)
 		{
 			int entitySpan = EntityPersisters.Length;
-			IList hydratedObjects = entitySpan == 0 ? null : new ArrayList(entitySpan);
+			IList hydratedObjects = entitySpan == 0 ? null : new List<object>(entitySpan);
 
 			object result;
 			try
@@ -391,7 +391,7 @@ namespace NHibernate.Loader
 
 			int entitySpan = EntityPersisters.Length;
 
-			ArrayList hydratedObjects = entitySpan == 0 ? null : new ArrayList(entitySpan * 10);
+			List<object> hydratedObjects = entitySpan == 0 ? null : new List<object>(entitySpan * 10);
 			
 			IDbCommand st = PrepareQueryCommand(queryParameters, false, session);
 
@@ -408,7 +408,7 @@ namespace NHibernate.Loader
 
 			bool createSubselects = IsSubselectLoadingEnabled;
 			List<EntityKey[]> subselectResultKeys = createSubselects ? new List<EntityKey[]>() : null;
-			IList results = new ArrayList();
+			IList results = new List<object>();
 
 			try
 			{
@@ -1764,7 +1764,7 @@ namespace NHibernate.Loader
 			return new SqlCommandInfo(sqlString, GetParameterTypes(parameters, useLimit, useOffset));
 		}
 
-		protected SqlType[] ConvertITypesToSqlTypes(ArrayList nhTypes, int totalSpan)
+		protected SqlType[] ConvertITypesToSqlTypes(List<IType> nhTypes, int totalSpan)
 		{
 			SqlType[] result = new SqlType[totalSpan];
 
@@ -1782,7 +1782,7 @@ namespace NHibernate.Loader
 		/// <returns><see cref="IList" /> of <see cref="IType" /></returns>
 		protected SqlType[] GetParameterTypes(QueryParameters parameters, bool addLimit, bool addOffset)
 		{
-			ArrayList paramTypeList = new ArrayList();
+			List<IType> paramTypeList = new List<IType>();
 			int span = 0;
 
 			foreach (IType type in parameters.FilteredPositionalParameterTypes)

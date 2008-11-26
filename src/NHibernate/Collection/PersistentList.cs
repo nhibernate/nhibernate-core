@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using NHibernate.DebugHelpers;
@@ -54,7 +55,7 @@ namespace NHibernate.Collection
 		{
 			EntityMode entityMode = Session.EntityMode;
 
-			ArrayList clonedList = new ArrayList(list.Count);
+			List<object> clonedList = new List<object>(list.Count);
 			foreach (object current in list)
 			{
 				object deepCopy = persister.ElementType.DeepCopy(current, entityMode, persister.Factory);
@@ -164,7 +165,7 @@ namespace NHibernate.Collection
 
 		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
-			IList deletes = new ArrayList();
+			IList deletes = new List<object>();
 			IList sn = (IList) GetSnapshot();
 			int end;
 			if (sn.Count > list.Count)
