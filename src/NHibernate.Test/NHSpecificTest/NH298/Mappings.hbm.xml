@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH298">
+                   
+	<class name="Category" lazy="false">
+		<id name="Id"><generator class="assigned"/></id>
+		<property name="Name"/>
+		<list name="SubCategories" cascade="all">
+			<key column="ParentCategoryID"/>
+			<index column="PositionInList"/>
+			<one-to-many class="Category"/>
+		</list>
+		<many-to-one name="ParentCategory" column="ParentCategoryID" insert="false" update="false"/>
+	</class>
+
+</hibernate-mapping>

@@ -535,6 +535,8 @@
     <Compile Include="NHSpecificTest\NH1054\NH1054Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1080\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1080\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH298\Category.cs" />
+    <Compile Include="NHSpecificTest\NH298\IndexedBidirectionalOneToManyTest.cs" />
     <Compile Include="NHSpecificTest\NH364\Invoice.cs" />
     <Compile Include="NHSpecificTest\NH662\Domain.cs" />
     <Compile Include="NHSpecificTest\NH662\Fixture.cs" />
@@ -1544,6 +1546,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH298\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1587\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1556\Mappings.hbm.xml" />
     <EmbeddedResource Include="Tools\hbm2ddl\SchemaValidator\2_Version.hbm.xml" />
