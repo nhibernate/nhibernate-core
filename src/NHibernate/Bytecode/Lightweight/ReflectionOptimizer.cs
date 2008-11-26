@@ -52,7 +52,7 @@ namespace NHibernate.Bytecode.Lightweight
 		/// Generates a dynamic method which creates a new instance of <paramref name="type" />
 		/// when invoked.
 		/// </summary>
-		private static CreateInstanceInvoker CreateCreateInstanceMethod(System.Type type)
+		protected virtual CreateInstanceInvoker CreateCreateInstanceMethod(System.Type type)
 		{
 			if (type.IsInterface || type.IsAbstract)
 			{
@@ -110,7 +110,7 @@ namespace NHibernate.Bytecode.Lightweight
 		/// </summary>
 		private GetPropertyValuesInvoker GenerateGetPropertyValuesMethod(IGetter[] getters)
 		{
-			System.Type[] methodArguments = new System.Type[] {typeof (object), typeof (GetterCallback)};
+			System.Type[] methodArguments = new[] {typeof (object), typeof (GetterCallback)};
 			DynamicMethod method = CreateDynamicMethod(typeof (object[]), methodArguments);
 
 			ILGenerator il = method.GetILGenerator();
@@ -151,7 +151,7 @@ namespace NHibernate.Bytecode.Lightweight
 				{
 					// using the getter itself via a callback
 					MethodInfo invokeMethod = typeof (GetterCallback).GetMethod("Invoke",
-					                                                            new System.Type[] {typeof (object), typeof (int)});
+					                                                            new[] {typeof (object), typeof (int)});
 					il.Emit(OpCodes.Ldarg_1);
 					il.Emit(OpCodes.Ldarg_0);
 					il.Emit(OpCodes.Ldc_I4, i);
@@ -175,7 +175,7 @@ namespace NHibernate.Bytecode.Lightweight
 		/// <returns></returns>
 		private SetPropertyValuesInvoker GenerateSetPropertyValuesMethod(IGetter[] getters, ISetter[] setters)
 		{
-			System.Type[] methodArguments = new System.Type[] {typeof (object), typeof (object[]), typeof (SetterCallback)};
+			System.Type[] methodArguments = new[] {typeof (object), typeof (object[]), typeof (SetterCallback)};
 			DynamicMethod method = CreateDynamicMethod(null, methodArguments);
 
 			ILGenerator il = method.GetILGenerator();
@@ -213,8 +213,7 @@ namespace NHibernate.Bytecode.Lightweight
 				{
 					// using the setter itself via a callback
 					MethodInfo invokeMethod = typeof (SetterCallback).GetMethod("Invoke",
-					                                                            new System.Type[]
-					                                                            	{typeof (object), typeof (int), typeof (object)});
+					                                                            new[] {typeof (object), typeof (int), typeof (object)});
 					il.Emit(OpCodes.Ldarg_2);
 					il.Emit(OpCodes.Ldarg_0);
 					il.Emit(OpCodes.Ldc_I4, i);
