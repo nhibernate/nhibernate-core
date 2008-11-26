@@ -24,9 +24,9 @@ namespace NHibernate.Bytecode.Lightweight
 			get { return this; }
 		}
 
-		public object CreateInstance()
+		public virtual object CreateInstance()
 		{
-			return createInstanceMethod();
+			return createInstanceMethod != null ? createInstanceMethod() : null;
 		}
 
 		/// <summary>
@@ -59,7 +59,7 @@ namespace NHibernate.Bytecode.Lightweight
 				return null;
 			}
 
-			DynamicMethod method = new DynamicMethod(string.Empty, typeof (object), null, type, true);
+			var method = new DynamicMethod(string.Empty, typeof (object), null, type, true);
 
 			ILGenerator il = method.GetILGenerator();
 
@@ -70,20 +70,31 @@ namespace NHibernate.Bytecode.Lightweight
 				il.Emit(OpCodes.Initobj, type);
 				il.Emit(OpCodes.Ldloc, tmpLocal);
 				il.Emit(OpCodes.Box, type);
+				il.Emit(OpCodes.Ret);
+
+				return (CreateInstanceInvoker)method.CreateDelegate(typeof(CreateInstanceInvoker));
 			}
 			else
 			{
 				ConstructorInfo constructor = ReflectHelper.GetDefaultConstructor(type);
-				if (constructor == null)
+				if (constructor != null)
 				{
-					throw new InstantiationException("Object class " + type + " must declare a default (no-argument) constructor", type);
+					il.Emit(OpCodes.Newobj, constructor);
+					il.Emit(OpCodes.Ret);
+
+					return (CreateInstanceInvoker) method.CreateDelegate(typeof (CreateInstanceInvoker));
 				}
-				il.Emit(OpCodes.Newobj, constructor);
+				else
+				{
+					ThrowExceptionForNoDefaultCtor(type);
+				}
 			}
+			return null;
+		}
 
-			il.Emit(OpCodes.Ret);
-
-			return (CreateInstanceInvoker) method.CreateDelegate(typeof (CreateInstanceInvoker));
+		protected virtual void ThrowExceptionForNoDefaultCtor(System.Type type)
+		{
+			throw new InstantiationException("Object class " + type + " must declare a default (no-argument) constructor", type);
 		}
 
 		protected DynamicMethod CreateDynamicMethod(System.Type returnType, System.Type[] argumentTypes)
@@ -110,7 +121,7 @@ namespace NHibernate.Bytecode.Lightweight
 		/// </summary>
 		private GetPropertyValuesInvoker GenerateGetPropertyValuesMethod(IGetter[] getters)
 		{
-			System.Type[] methodArguments = new[] {typeof (object), typeof (GetterCallback)};
+			var methodArguments = new[] {typeof (object), typeof (GetterCallback)};
 			DynamicMethod method = CreateDynamicMethod(typeof (object[]), methodArguments);
 
 			ILGenerator il = method.GetILGenerator();
@@ -139,7 +150,7 @@ namespace NHibernate.Bytecode.Lightweight
 				il.Emit(OpCodes.Ldc_I4, i);
 
 				// get the value...
-				IOptimizableGetter optimizableGetter = getter as IOptimizableGetter;
+				var optimizableGetter = getter as IOptimizableGetter;
 				if (optimizableGetter != null)
 				{
 					// using the getter's emitted IL code
@@ -175,7 +186,7 @@ namespace NHibernate.Bytecode.Lightweight
 		/// <returns></returns>
 		private SetPropertyValuesInvoker GenerateSetPropertyValuesMethod(IGetter[] getters, ISetter[] setters)
 		{
-			System.Type[] methodArguments = new[] {typeof (object), typeof (object[]), typeof (SetterCallback)};
+			var methodArguments = new[] {typeof (object), typeof (object[]), typeof (SetterCallback)};
 			DynamicMethod method = CreateDynamicMethod(null, methodArguments);
 
 			ILGenerator il = method.GetILGenerator();
@@ -192,7 +203,7 @@ namespace NHibernate.Bytecode.Lightweight
 				ISetter setter = setters[i];
 				System.Type valueType = getters[i].ReturnType;
 
-				IOptimizableSetter optimizableSetter = setter as IOptimizableSetter;
+				var optimizableSetter = setter as IOptimizableSetter;
 
 				if (optimizableSetter != null)
 				{
