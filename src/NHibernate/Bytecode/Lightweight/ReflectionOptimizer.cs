@@ -11,7 +11,7 @@ namespace NHibernate.Bytecode.Lightweight
 	{
 		private readonly IAccessOptimizer accessOptimizer;
 		private readonly CreateInstanceInvoker createInstanceMethod;
-		private readonly System.Type mappedType;
+		protected readonly System.Type mappedType;
 		private readonly System.Type typeOfThis;
 
 		public IAccessOptimizer AccessOptimizer
