@@ -28,23 +28,9 @@ namespace NHibernate.Criterion
 		{
 			//TODO: set default capacity
 			SqlStringBuilder builder = new SqlStringBuilder();
-
-			bool needsParens = criteriaQuery.Factory.Dialect is MySQLDialect;
-			if (needsParens)
-			{
-				builder.Add("not (");
-			}
-			else
-			{
-				builder.Add("not ");
-			}
-
+			builder.Add("not (");
 			builder.Add(_criterion.ToSqlString(criteria, criteriaQuery, enabledFilters));
-
-			if (needsParens)
-			{
-				builder.Add(")");
-			}
+			builder.Add(")");
 
 			return builder.ToSqlString();
 		}
@@ -56,7 +42,7 @@ namespace NHibernate.Criterion
 
 		public override string ToString()
 		{
-			return "not " + _criterion.ToString();
+			return string.Format("not ({0})", _criterion.ToString());
 		}
 
 		public override IProjection[] GetProjections()

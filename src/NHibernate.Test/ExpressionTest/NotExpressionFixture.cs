@@ -23,12 +23,8 @@ namespace NHibernate.Test.ExpressionTest
 			CreateObjects(typeof(Simple), session);
 			SqlString sqlString = notExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
 
-			string expectedSql = dialect is MySQLDialect ?
-			                     "not (sql_alias.address = ?)" :
-			                     "not sql_alias.address = ?";
-
+			string expectedSql = "not (sql_alias.address = ?)";
 			CompareSqlStrings(sqlString, expectedSql, 1);
-
 			session.Close();
 		}
 	}
