@@ -7,6 +7,7 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using NUnit.Framework;
+using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.Criteria
 {
@@ -1589,7 +1590,35 @@ namespace NHibernate.Test.Criteria
 			t.Commit();
 			session.Close();
 		}
+		[Test]
+		public void CacheDetachedCriteria()
+		{
+			using (ISession session = OpenSession())
+			{
+				bool current = sessions.Statistics.IsStatisticsEnabled;
+				sessions.Statistics.IsStatisticsEnabled = true;
+				sessions.Statistics.Clear();
+				DetachedCriteria dc = DetachedCriteria.For(typeof (Student))
+				.Add(Property.ForName("Name").Eq("Gavin King"))
+				.SetProjection(Property.ForName("StudentNumber"))
+				.SetCacheable(true);
+				Assert.That(sessions.Statistics.QueryCacheMissCount,Is.EqualTo(0));
+				Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(0));
+				dc.GetExecutableCriteria(session).List();
+				Assert.That(sessions.Statistics.QueryCacheMissCount, Is.EqualTo(1));
 
+				dc = DetachedCriteria.For(typeof(Student))
+				.Add(Property.ForName("Name").Eq("Gavin King"))
+				.SetProjection(Property.ForName("StudentNumber"))
+				.SetCacheable(true);
+				dc.GetExecutableCriteria(session).List();
+
+				Assert.That(sessions.Statistics.QueryCacheMissCount, Is.EqualTo(1));
+				Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(1));
+				sessions.Statistics.IsStatisticsEnabled = false;
+			}
+
+		}
 		[Test]
 		public void PropertyWithFormulaAndPagingTest()
 		{

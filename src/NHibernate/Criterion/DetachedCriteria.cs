@@ -166,6 +166,18 @@ namespace NHibernate.Criterion
 			return this;
 		}
 
+		public DetachedCriteria SetCacheRegion(string region)
+		{
+			criteria.SetCacheRegion(region);
+			return this;
+		}
+
+		public DetachedCriteria SetCacheable(bool cacheable)
+		{
+			criteria.SetCacheable(cacheable);
+			return this;
+		}
+
 		public DetachedCriteria SetProjection(IProjection projection)
 		{
 			criteria.SetProjection(projection);
