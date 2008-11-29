@@ -524,6 +524,12 @@
     <Compile Include="NHSpecificTest\NH1556\Patient.cs" />
     <Compile Include="NHSpecificTest\NH1556\Product.cs" />
     <Compile Include="NHSpecificTest\NH1556\ProductIdentifier.cs" />
+    <Compile Include="NHSpecificTest\NH1579\Apple.cs" />
+    <Compile Include="NHSpecificTest\NH1579\Cart.cs" />
+    <Compile Include="NHSpecificTest\NH1579\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH1579\Fruit.cs" />
+    <Compile Include="NHSpecificTest\NH1579\NH1579Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1579\Orange.cs" />
     <Compile Include="NHSpecificTest\NH1587\A.cs" />
     <Compile Include="NHSpecificTest\NH1587\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
@@ -1546,6 +1552,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1579\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH298\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1587\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1556\Mappings.hbm.xml" />

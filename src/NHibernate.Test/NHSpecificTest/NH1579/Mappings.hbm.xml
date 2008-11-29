@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="NHibernate.Test.NHSpecificTest.NH1579" assembly="NHibernate.Test" default-lazy="false">
+  <class name="Entity" abstract="true" table="Entities">
+    <id name="ID">
+      <generator class="guid.comb" />
+    </id>
+    <discriminator column="EntityType" length="64"/>
+  </class>
+
+  <subclass name="Fruit" abstract="true" discriminator-value="Fruit" extends="NHibernate.Test.NHSpecificTest.NH1579.Entity, NHibernate.Test">
+    <many-to-one name="Container" column="ContainerID" />
+  </subclass>
+  <subclass name="Apple" discriminator-value="Apple" extends="NHibernate.Test.NHSpecificTest.NH1579.Fruit, NHibernate.Test"/>
+  <subclass name="Orange" discriminator-value="Orange" extends="NHibernate.Test.NHSpecificTest.NH1579.Fruit, NHibernate.Test"/>
+
+  <subclass name="Cart" discriminator-value="Cart" extends="NHibernate.Test.NHSpecificTest.NH1579.Entity, NHibernate.Test">
+    <property name="VendorName" length="128"/>
+    <bag name="Apples" cascade="all-delete-orphan" inverse="true">
+      <key column="ContainerID"/>
+      <one-to-many class="NHibernate.Test.NHSpecificTest.NH1579.Apple, NHibernate.Test"/>
+    </bag>
+    <bag name="Oranges" cascade="all-delete-orphan" inverse="true">
+      <key column="ContainerID"/>
+      <one-to-many class="NHibernate.Test.NHSpecificTest.NH1579.Orange, NHibernate.Test"/>
+    </bag>
+  </subclass>
+</hibernate-mapping>
