@@ -522,7 +522,8 @@ namespace NHibernate.Persister.Entity
 
 		public override string OneToManyFilterFragment(string alias)
 		{
-			return forceDiscriminator ? DiscriminatorFilterFragment(alias) : string.Empty;
+			//Previous code was checking forceDiscriminator value here, which caused issues with collection loading.
+			return DiscriminatorFilterFragment(alias);
 		}
 
 		private string DiscriminatorFilterFragment(string alias)
