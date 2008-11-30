@@ -4,7 +4,7 @@
     <id name="ID">
       <generator class="guid.comb" />
     </id>
-    <discriminator column="EntityType" length="64"/>
+    <discriminator column="EntityType" length="64" force="true"/>
   </class>
 
   <subclass name="Fruit" abstract="true" discriminator-value="Fruit" extends="NHibernate.Test.NHSpecificTest.NH1579.Entity, NHibernate.Test">
