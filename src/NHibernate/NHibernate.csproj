@@ -616,7 +616,6 @@
     <Compile Include="Engine\IdentifierValue.cs" />
     <Compile Include="Engine\IPersistenceContext.cs" />
     <Compile Include="Engine\Loading\CollectionLoadContext.cs" />
-    <Compile Include="Engine\Loading\EntityLoadContext.cs" />
     <Compile Include="Engine\Loading\LoadContexts.cs" />
     <Compile Include="Engine\Loading\LoadingCollectionEntry.cs" />
     <Compile Include="Engine\Nullability.cs" />

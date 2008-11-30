@@ -31,7 +31,6 @@ namespace NHibernate.Engine.Loading
 		[NonSerialized]
 		private readonly IPersistenceContext persistenceContext;
 		private IDictionary collectionLoadContexts;
-		private IDictionary entityLoadContexts;
 
 		private Dictionary<CollectionKey, LoadingCollectionEntry> xrefLoadingCollectionEntries;
 
@@ -72,19 +71,9 @@ namespace NHibernate.Engine.Loading
 		{
 			if (collectionLoadContexts != null)
 			{
-				object tempObject;
-				tempObject = collectionLoadContexts[resultSet];
-				collectionLoadContexts.Remove(resultSet);
-				CollectionLoadContext collectionLoadContext = (CollectionLoadContext)tempObject;
+				CollectionLoadContext collectionLoadContext = (CollectionLoadContext)collectionLoadContexts[resultSet];
 				collectionLoadContext.Cleanup();
-			}
-			if (entityLoadContexts != null)
-			{
-				object tempObject2;
-				tempObject2 = entityLoadContexts[resultSet];
-				entityLoadContexts.Remove(resultSet);
-				EntityLoadContext entityLoadContext = (EntityLoadContext)tempObject2;
-				entityLoadContext.Cleanup();
+				collectionLoadContexts.Remove(resultSet);
 			}
 		}
 
@@ -103,15 +92,6 @@ namespace NHibernate.Engine.Loading
 					collectionLoadContext.Cleanup();
 				}
 				collectionLoadContexts.Clear();
-			}
-			if (entityLoadContexts != null)
-			{
-				foreach (EntityLoadContext entityLoadContext in entityLoadContexts.Values)
-				{
-					log.Warn("fail-safe cleanup (entities) : " + entityLoadContext);
-					entityLoadContext.Cleanup();
-				}
-				entityLoadContexts.Clear();
 			}
 		}
 
@@ -261,25 +241,6 @@ namespace NHibernate.Engine.Loading
 		{
 			foreach (CollectionKey entryKey in entryKeys)
 				xrefLoadingCollectionEntries.Remove(entryKey);
-		}
-
-		public EntityLoadContext GetEntityLoadContext(IDataReader resultSet)
-		{
-			EntityLoadContext context = null;
-			if (entityLoadContexts == null)
-			{
-				entityLoadContexts = IdentityMap.Instantiate(8);
-			}
-			else
-			{
-				context = (EntityLoadContext)entityLoadContexts[resultSet];
-			}
-			if (context == null)
-			{
-				context = new EntityLoadContext(this, resultSet);
-				entityLoadContexts[resultSet] = context;
-			}
-			return context;
 		}
 	}
 }
