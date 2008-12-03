@@ -443,11 +443,16 @@
     <Compile Include="Bytecode\HibernateByteCodeException.cs" />
     <Compile Include="Bytecode\ProxyFactoryFactoryNotConfiguredException.cs" />
     <Compile Include="Bytecode\UnableToLoadProxyFactoryFactoryException.cs" />
+    <Compile Include="Dialect\InformixDialect0940.cs" />
+    <Compile Include="Dialect\InformixDialect1000.cs" />
     <Compile Include="Dialect\Schema\SQLiteMetaData.cs" />
     <Compile Include="Dialect\Schema\SybaseAnywhereMetaData.cs" />
     <Compile Include="Dialect\SybaseASA10Dialect.cs" />
     <Compile Include="Dialect\SybaseASA9Dialect.cs" />
     <Compile Include="Driver\IfxDriver.cs" />
+    <Compile Include="Exceptions\ReflectionBasedSqlStateExtracter.cs" />
+    <Compile Include="Exceptions\SqlStateExtracter.cs" />
+    <Compile Include="Exceptions\TemplatedViolatedConstraintNameExtracter.cs" />
     <Compile Include="Id\SelectGenerator.cs" />
     <Compile Include="Properties\BackFieldStrategy.cs" />
     <Compile Include="Bytecode\CodeDom\BytecodeProviderImpl.cs" />
@@ -836,6 +841,7 @@
     <Compile Include="Proxy\Poco\BasicLazyInitializer.cs" />
     <Compile Include="QueryParameterException.cs" />
     <Compile Include="SessionException.cs" />
+    <Compile Include="SqlCommand\InformixJoinFragment.cs" />
     <Compile Include="SqlCommand\SubselectClauseExtractor.cs" />
     <Compile Include="Engine\SubselectFetch.cs" />
     <Compile Include="Criterion\DetachedCriteria.cs" />
