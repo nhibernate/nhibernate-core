@@ -408,7 +408,7 @@ namespace NHibernate.Dialect
 		/// <returns>The database type name used by ddl.</returns>
 		public virtual string GetTypeName(SqlType sqlType)
 		{
-			if (sqlType.LengthDefined)
+            if (sqlType.LengthDefined || sqlType.PrecisionDefined)
 			{
 				string resultWithLength = typeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
 				if (resultWithLength != null) return resultWithLength;
