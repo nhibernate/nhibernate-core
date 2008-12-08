@@ -1962,6 +1962,14 @@ namespace NHibernate.Cfg
 							}
 						}
 					}
+
+					foreach (var index in table.IndexIterator)
+					{
+						if (tableInfo == null || tableInfo.GetIndexMetadata(index.Name) == null)
+						{
+							script.Add(index.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+						}
+					}
 				}
 			}
 

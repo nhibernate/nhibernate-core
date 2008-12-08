@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="NHibernate.Test.NHSpecificTest.NH1593" assembly="NHibernate.Test"> 
+  <class name="TestIndex" lazy="false"> 
+    <id name="Id"> 
+      <generator class="native"/> 
+    </id> 
+    <property name="Name" index="test_index_name"/> 
+  </class> 
+</hibernate-mapping> 

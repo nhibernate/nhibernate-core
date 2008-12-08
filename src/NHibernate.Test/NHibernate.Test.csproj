@@ -532,6 +532,8 @@
     <Compile Include="NHSpecificTest\NH1579\Orange.cs" />
     <Compile Include="NHSpecificTest\NH1587\A.cs" />
     <Compile Include="NHSpecificTest\NH1587\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1593\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1593\TestIndex.cs" />
     <Compile Include="NHSpecificTest\NH1594\A.cs" />
     <Compile Include="NHSpecificTest\NH1594\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
@@ -1554,6 +1556,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1593\TestIndex.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1594\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1579\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH298\Mappings.hbm.xml" />
