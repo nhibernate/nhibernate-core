@@ -29,12 +29,13 @@ namespace NHibernate.Dialect
 		/// The <c>LIMIT</c> SQL will look like
 		/// <code>
 		/// 
-		/// SELECT TOP last (columns) FROM (
-		/// SELECT ROW_NUMBER() OVER(ORDER BY __hibernate_sort_expr_1__ {sort direction 1} [, __hibernate_sort_expr_2__ {sort direction 2}, ...]) as row, (query.columns) FROM (
-		///		{original select query part}, {sort field 1} as __hibernate_sort_expr_1__ [, {sort field 2} as __hibernate_sort_expr_2__, ...]
-		///		{remainder of original query minus the order by clause}
-		/// ) query
-		/// ) page WHERE page.row > offset
+		/// SELECT
+		///		TOP last (columns)
+		///	FROM
+		///		(SELECT (columns), ROW_NUMBER() OVER(ORDER BY {original order by, with un-aliased column names) as __hibernate_sort_row
+		///		{original from}) as query
+		/// WHERE query.__hibernate_sort_row > offset
+		/// ORDER BY query.__hibernate_sort_row
 		/// 
 		/// </code>
 		/// 
@@ -76,58 +77,26 @@ namespace NHibernate.Dialect
 			{
 				from = querySqlString.Substring(fromIndex).Trim();
 				// Use dummy sort to avoid errors
-				sortExpressions = new[] { new SqlString("CURRENT_TIMESTAMP"), };
+				sortExpressions = new[] {new SqlString("CURRENT_TIMESTAMP"),};
 			}
 
 			SqlStringBuilder result =
-				new SqlStringBuilder().Add("SELECT TOP ").Add(last.ToString()).Add(" ").Add(StringHelper.Join(", ", columnsOrAliases))
-					.Add(" FROM (SELECT ROW_NUMBER() OVER(ORDER BY ");
+				new SqlStringBuilder()
+					.Add("SELECT TOP ")
+					.Add(last.ToString())
+					.Add(" ")
+					.Add(StringHelper.Join(", ", columnsOrAliases))
+					.Add(" FROM (")
+					.Add(select)
+					.Add(", ROW_NUMBER() OVER(ORDER BY ");
 
-			AppendSortExpressions(columnsOrAliases, sortExpressions, result);
+			AppendSortExpressions(aliasToColumn, sortExpressions, result);
 
-			result.Add(") as row, ");
-
-			for (int i = 0; i < columnsOrAliases.Count; i++)
-			{
-				result.Add("query.").Add(columnsOrAliases[i]);
-				bool notLastColumn = i != columnsOrAliases.Count - 1;
-				if (notLastColumn)
-				{
-					result.Add(", ");
-				}
-			}
-			for (int i = 0; i < sortExpressions.Length; i++)
-			{
-				SqlString sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
-				if (!columnsOrAliases.Contains(sortExpression))
-				{
-					result.Add(", query.__hibernate_sort_expr_").Add(i.ToString()).Add("__");
-				}
-			}
-
-			result.Add(" FROM (").Add(select);
-
-			for (int i = 0; i < sortExpressions.Length; i++)
-			{
-				SqlString sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
-
-				if (columnsOrAliases.Contains(sortExpression))
-				{
-					continue;
-				}
-
-				if (aliasToColumn.ContainsKey(sortExpression))
-				{
-					sortExpression = aliasToColumn[sortExpression];
-				}
-
-				result.Add(", ").Add(sortExpression).Add(" as __hibernate_sort_expr_").Add(i.ToString()).Add("__");
-			}
-
-			result.Add(" ").Add(from).Add(") query ) page WHERE page.row > ").Add(offset.ToString()).Add(" ORDER BY ");
-
-			AppendSortExpressions(columnsOrAliases, sortExpressions, result);
-
+			result.Add(") as __hibernate_sort_row ")
+					.Add(from)
+					.Add(") as query WHERE query.__hibernate_sort_row > ")
+					.Add(offset.ToString()).Add(" ORDER BY query.__hibernate_sort_row");
+				
 			return result.ToSqlString();
 		}
 
@@ -141,7 +110,7 @@ namespace NHibernate.Dialect
 			return trimmedExpression.Trim();
 		}
 
-		private static void AppendSortExpressions(ICollection<SqlString> columnsOrAliases, SqlString[] sortExpressions,
+		private static void AppendSortExpressions(Dictionary<SqlString, SqlString> aliasToColumn, SqlString[] sortExpressions,
 																							SqlStringBuilder result)
 		{
 			for (int i = 0; i < sortExpressions.Length; i++)
@@ -152,13 +121,13 @@ namespace NHibernate.Dialect
 				}
 
 				SqlString sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
-				if (columnsOrAliases.Contains(sortExpression))
+				if (aliasToColumn.ContainsKey(sortExpression))
 				{
-					result.Add(sortExpression);
+					result.Add(aliasToColumn[sortExpression]);
 				}
 				else
 				{
-					result.Add("__hibernate_sort_expr_").Add(i.ToString()).Add("__");
+					result.Add(sortExpression);
 				}
 				if (sortExpressions[i].Trim().EndsWithCaseInsensitive("desc"))
 				{
@@ -240,7 +209,7 @@ namespace NHibernate.Dialect
 				}
 
 				columnsOrAliases.Add(new SqlString(alias));
-				aliasToColumn[new SqlString(alias)] = new SqlString(token);
+				aliasToColumn[SqlString.Parse(alias)] = SqlString.Parse(token);
 			}
 		}
 
@@ -443,3 +412,4 @@ namespace NHibernate.Dialect
 		}
 	}
 }
+
