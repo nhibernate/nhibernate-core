@@ -96,7 +96,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1533
 					Assert.That(results.Count, Is.EqualTo(3));
 					Assert.That(((IList)results[0])[0], Is.EqualTo("Fred"));
 					Assert.That(((IList)results[1])[0], Is.EqualTo("Tim"));
-					Assert.That(((IList)results[1])[0], Is.EqualTo("Mike"));
+					Assert.That(((IList)results[2])[0], Is.EqualTo("Mike"));
 				}
 			}
 		}
