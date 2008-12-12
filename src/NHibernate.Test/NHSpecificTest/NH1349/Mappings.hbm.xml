@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 namespace="NHibernate.Test.NHSpecificTest.NH1349"
+								   assembly="NHibernate.Test">
+	<class name="Services" table="services">
+		<id name="Id" column="id" type="int">
+			<generator class="increment" />
+		</id>
+		<property name="AccountNumber" column="accountNumber" type="String" length="30"/>
+		<property name="Name" type="String" length="30"/>
+		<property name="Type" type="String" length="30"/>
+		<property name ="CompanyCount"
+							formula="(SELECT COUNT(*) FROM services as c WHERE c.accountNumber LIKE '63%' )"
+							update="false" insert="false"  access="nosetter.camelcase"/>
+		<!-- Using a formula seems to trigger it. I guess the query isn't being generated
+      correctly when some formulas are used.
+  -->
+	</class>
+</hibernate-mapping>
