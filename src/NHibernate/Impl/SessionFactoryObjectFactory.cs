@@ -21,7 +21,7 @@ namespace NHibernate.Impl
 	/// TODO: verify that the AppDomain statements are correct.
 	/// </para>
 	/// </remarks>
-	public sealed class SessionFactoryObjectFactory
+	public static class SessionFactoryObjectFactory
 	{
 		// to stop this class from being unloaded - this is a comment
 		// from h2.0.3 - is this applicable to .net also???
@@ -36,11 +36,6 @@ namespace NHibernate.Impl
 		{
 			log = LogManager.GetLogger(typeof(SessionFactoryObjectFactory));
 			log.Debug("initializing class SessionFactoryObjectFactory");
-		}
-
-		private SessionFactoryObjectFactory()
-		{
-			// should not be created	
 		}
 
 		/// <summary>
@@ -82,10 +77,8 @@ namespace NHibernate.Impl
 			if (!string.IsNullOrEmpty(name))
 			{
 				log.Info("unbinding factory: " + name);
-
 				NamedInstances.Remove(name);
 			}
-
 			Instances.Remove(uid);
 		}
 
@@ -97,8 +90,9 @@ namespace NHibernate.Impl
 		public static ISessionFactory GetNamedInstance(string name)
 		{
 			log.Debug("lookup: name=" + name);
-			ISessionFactory factory = NamedInstances[name];
-			if (factory == null)
+			ISessionFactory factory;
+			bool found=NamedInstances.TryGetValue(name, out factory);
+			if (!found)
 			{
 				log.Warn("Not found: " + name);
 			}
@@ -113,8 +107,9 @@ namespace NHibernate.Impl
 		public static ISessionFactory GetInstance(string uid)
 		{
 			log.Debug("lookup: uid=" + uid);
-			ISessionFactory factory = Instances[uid];
-			if (factory == null)
+			ISessionFactory factory;
+			bool found = Instances.TryGetValue(uid, out factory);
+			if (!found)
 			{
 				log.Warn("Not found: " + uid);
 			}
