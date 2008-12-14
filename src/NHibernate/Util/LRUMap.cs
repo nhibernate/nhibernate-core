@@ -50,7 +50,7 @@ namespace NHibernate.Util
 			}
 			set
 			{
-				base[key] = value;
+				Add(key, value);
 			}
 		}
 
@@ -68,7 +68,7 @@ namespace NHibernate.Util
 				}
 			}
 
-			base.Add(key, value);
+			base[key] = value;
 		}
 
 		private void RemoveLRU()

@@ -542,6 +542,7 @@
     <Compile Include="NHSpecificTest\NH1593\TestIndex.cs" />
     <Compile Include="NHSpecificTest\NH1594\A.cs" />
     <Compile Include="NHSpecificTest\NH1594\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1608\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
