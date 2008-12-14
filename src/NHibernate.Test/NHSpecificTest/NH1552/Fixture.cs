@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using NHibernate.Dialect;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
 
@@ -10,6 +11,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1552
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2005Dialect;
+		}
 		protected override void OnSetUp()
 		{
 			using (var session = this.OpenSession())
