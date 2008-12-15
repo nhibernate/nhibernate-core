@@ -39,7 +39,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			XmlAttribute catalogNode = subnode.Attributes["catalog"];
 			string catalog = catalogNode == null ? mappings.CatalogName : catalogNode.Value;
 
-			Table mytable = mappings.AddTable(schema, catalog, GetClassTableName(subclass, subnode), null, false);
+			XmlAttribute actionNode = subnode.Attributes["schema-action"];
+			string action = actionNode == null ? "all" : actionNode.Value;
+            
+			Table mytable = mappings.AddTable(schema, catalog, GetClassTableName(subclass, subnode), null, false, action);
 			((ITableOwner)subclass).Table = mytable;
 
 			log.InfoFormat("Mapping joined-subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);

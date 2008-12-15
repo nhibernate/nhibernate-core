@@ -91,7 +91,24 @@ namespace NHibernate.Type
 
 		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			return session.GetContextEntityIdentifier(owner);
+			IType type = GetIdentifierOrUniqueKeyType(session.Factory);
+			object identifier = session.GetContextEntityIdentifier(owner);
+
+			//This ugly mess is only used when mapping one-to-one entities with component ID types
+			EmbeddedComponentType componentType = type as EmbeddedComponentType;
+			if (componentType != null)
+			{
+				EmbeddedComponentType ownerIdType = session.GetEntityPersister(null, owner).IdentifierType as EmbeddedComponentType;
+				if (ownerIdType != null)
+				{
+					object[] values = ownerIdType.GetPropertyValues(identifier, session);
+					object id = componentType.ResolveIdentifier(values, session, null);
+					IEntityPersister persister = session.Factory.GetEntityPersister(type.ReturnedClass.FullName);
+					var key = new EntityKey(id, persister, session.EntityMode);
+					return session.PersistenceContext.GetEntity(key);
+				}
+			}
+			return identifier;
 		}
 
 		public override bool IsNullable

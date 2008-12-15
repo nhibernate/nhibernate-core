@@ -30,7 +30,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 						rootClass.EntityName));
 			}
 
-			Table table = mappings.AddTable(schema, catalog, tableName, null, rootClass.IsAbstract.GetValueOrDefault());
+			Table table = mappings.AddTable(schema, catalog, tableName, null, rootClass.IsAbstract.GetValueOrDefault(), classSchema.schemaaction);
 			((ITableOwner) rootClass).Table = table;
 
 			log.InfoFormat("Mapping class: {0} -> {1}", rootClass.EntityName, rootClass.Table.Name);

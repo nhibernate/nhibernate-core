@@ -196,7 +196,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				XmlAttribute catalogNode = node.Attributes["catalog"];
 				string catalog = catalogNode == null ? mappings.CatalogName : catalogNode.Value;
 
-				model.CollectionTable = mappings.AddTable(schema, catalog, tableName, null, false);
+				XmlAttribute actionNode = node.Attributes["schema-action"];
+				string action = actionNode == null ? "all" : actionNode.Value;
+                
+				model.CollectionTable = mappings.AddTable(schema, catalog, tableName, null, false, action);
 
 				log.InfoFormat("Mapping collection: {0} -> {1}", model.Role, model.CollectionTable.Name);
 			}

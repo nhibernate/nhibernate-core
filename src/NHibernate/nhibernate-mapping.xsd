@@ -184,6 +184,7 @@
 			<xs:attribute name="proxy" type="xs:string" />
 			<xs:attribute name="lazy" type="xs:boolean">
 			</xs:attribute>
+      <xs:attribute name="schema-action" type="xs:string" />
 			<xs:attribute name="table" type="xs:string" />
 			<xs:attribute name="schema" type="xs:string" />
 			<xs:attribute name="catalog" type="xs:string" />

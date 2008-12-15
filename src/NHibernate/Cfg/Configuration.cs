@@ -671,11 +671,11 @@ namespace NHibernate.Cfg
 			{
 				foreach (var table in TableMappings)
 				{
-					if (table.IsPhysicalTable)
+					if (table.IsPhysicalTable && table.SchemaDrop)
 					{
 						foreach (var fk in table.ForeignKeyIterator)
 						{
-							if (fk.HasPhysicalConstraint)
+							if (fk.HasPhysicalConstraint && fk.ReferencedTable.SchemaDrop)
 							{
 								script.Add(fk.SqlDropString(dialect, defaultCatalog, defaultSchema));
 							}
@@ -686,7 +686,7 @@ namespace NHibernate.Cfg
 
 			foreach (var table in TableMappings)
 			{
-				if (table.IsPhysicalTable)
+				if (table.IsPhysicalTable && table.SchemaDrop)
 				{
 					script.Add(table.SqlDropString(dialect, defaultCatalog, defaultSchema));
 				}
@@ -723,7 +723,7 @@ namespace NHibernate.Cfg
 
 			foreach (var table in TableMappings)
 			{
-				if (table.IsPhysicalTable)
+				if (table.IsPhysicalTable && table.SchemaExport)
 				{
 					script.Add(table.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 					script.AddRange(table.SqlCommentStrings(dialect, defaultCatalog, defaultSchema));
@@ -732,7 +732,7 @@ namespace NHibernate.Cfg
 
 			foreach (var table in TableMappings)
 			{
-				if (table.IsPhysicalTable)
+				if (table.IsPhysicalTable && table.SchemaExport)
 				{
 					if (!dialect.SupportsUniqueConstraintInCreateAlterTable)
 					{
@@ -755,7 +755,7 @@ namespace NHibernate.Cfg
 					{
 						foreach (var fk in table.ForeignKeyIterator)
 						{
-							if (fk.HasPhysicalConstraint)
+							if (fk.HasPhysicalConstraint && fk.ReferencedTable.SchemaExport)
 							{
 								script.Add(fk.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 							}
@@ -790,6 +790,7 @@ namespace NHibernate.Cfg
 			foreach (var clazz in classes.Values)
 			{
 				clazz.Validate(mapping);
+				
 				if (validateProxy)
 				{
 					ICollection<string> errors = ValidateProxyInterface(clazz, pvalidator);
@@ -1919,7 +1920,7 @@ namespace NHibernate.Cfg
 			var script = new List<string>(50);
 			foreach (var table in TableMappings)
 			{
-				if (table.IsPhysicalTable)
+				if (table.IsPhysicalTable && table.SchemaUpdate)
 				{
 					ITableMetadata tableInfo = databaseMetadata.GetTableMetadata(table.Name, table.Schema ?? defaultSchema,
 					                                                             table.Catalog ?? defaultCatalog, table.IsQuoted);
@@ -1940,7 +1941,7 @@ namespace NHibernate.Cfg
 
 			foreach (var table in TableMappings)
 			{
-				if (table.IsPhysicalTable)
+				if (table.IsPhysicalTable && table.SchemaUpdate)
 				{
 					ITableMetadata tableInfo = databaseMetadata.GetTableMetadata(table.Name, table.Schema, table.Catalog,
 					                                                             table.IsQuoted);
@@ -1949,7 +1950,7 @@ namespace NHibernate.Cfg
 					{
 						foreach (var fk in table.ForeignKeyIterator)
 						{
-							if (fk.HasPhysicalConstraint)
+							if (fk.HasPhysicalConstraint && fk.ReferencedTable.SchemaUpdate)
 							{
 								bool create = tableInfo == null
 								              ||
@@ -1999,7 +2000,7 @@ namespace NHibernate.Cfg
 			var iter = this.TableMappings;
 			foreach (var table in iter)
 			{
-				if (table.IsPhysicalTable)
+				if (table.IsPhysicalTable && table.SchemaValidate)
 				{
 					/*NH Different Implementation :
 						TableMetadata tableInfo = databaseMetadata.getTableMetadata(

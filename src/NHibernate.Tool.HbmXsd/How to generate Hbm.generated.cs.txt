@@ -1,0 +1,4 @@
+1) Clean the "EveryThing" solution
+2) Build all
+3) open console and change dir to "src\NHibernate.Tool.HbmXsd\bin\Debug"
+4) run: hbmxsd ..\..\..\NHibernate\Cfg\MappingSchema\Hbm.generated.cs

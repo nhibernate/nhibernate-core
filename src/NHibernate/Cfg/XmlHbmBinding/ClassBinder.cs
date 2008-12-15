@@ -308,7 +308,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			XmlAttribute catalogNode = node.Attributes["catalog"];
 			string catalog = catalogNode == null ? mappings.CatalogName : catalogNode.Value;
 
-			Table table = mappings.AddTable(schema, catalog, GetClassTableName(persistentClass, node), null, false);
+			XmlAttribute actionNode = node.Attributes["schema-action"];
+			string action = actionNode == null ? "all" : actionNode.Value;
+
+			Table table = mappings.AddTable(schema, catalog, GetClassTableName(persistentClass, node), null, false, action);
 			join.Table = table;
 
 			XmlAttribute fetchNode = node.Attributes["fetch"];

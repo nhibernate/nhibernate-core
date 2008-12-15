@@ -246,7 +246,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		public Table AddTable(string schema, string catalog, string name, string subselect, bool isAbstract)
+		public Table AddTable(string schema, string catalog, string name, string subselect, bool isAbstract, string schemaAction)
 		{
 			string key = subselect ?? dialect.Qualify(catalog, schema, name);
 			Table table;
@@ -258,6 +258,10 @@ namespace NHibernate.Cfg
 				table.Schema = schema;
 				table.Catalog = catalog;
 				table.Subselect = subselect;
+				table.SchemaDrop = SchemaActionRequested(schemaAction, "drop");
+				table.SchemaUpdate = SchemaActionRequested(schemaAction, "update");
+				table.SchemaExport = SchemaActionRequested(schemaAction, "export");
+				table.SchemaValidate = SchemaActionRequested(schemaAction, "validate");
 				tables[key] = table;
 			}
 			else
@@ -267,6 +271,11 @@ namespace NHibernate.Cfg
 			}
 
 			return table;
+		}
+
+		private static bool SchemaActionRequested(string schemaAction, string check)
+		{
+			return string.IsNullOrEmpty(schemaAction) || schemaAction.Contains("all") || schemaAction.Contains(check);
 		}
 
 		public Table AddDenormalizedTable(string schema, string catalog, string name, bool isAbstract, string subselect, Table includedTable)

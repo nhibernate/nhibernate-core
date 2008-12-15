@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity">
+
+  <class name="Primary" table="PrimaryTable">
+    <composite-id>
+      <key-property name="ID"/>
+    </composite-id>
+
+    <one-to-one name="Adjunct" lazy="false" />
+
+    <property name="Description" />    
+  </class>
+
+  <class name="Adjunct" table="AdjunctTable">
+    <composite-id>
+      <key-property name="ID"/>
+    </composite-id>
+    <property name="AdjunctDescription" />
+  </class>
+
+
+</hibernate-mapping>
+

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH1274ExportExclude">
+
+  <class name="Home_None" schema-action="none">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <property name="City"/>
+    <property name="Zip"/>
+  </class>
+
+  <class name="Home_Drop" schema-action="drop">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <property name="City"/>
+    <property name="Zip"/>
+  </class>
+
+  <class name="Home_Export" schema-action="export">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <property name="City"/>
+    <property name="Zip"/>
+  </class>
+
+  <class name="Home_Update" schema-action="update">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <property name="City"/>
+    <property name="Zip"/>
+  </class>
+
+  <class name="Home_Validate" schema-action="validate">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <property name="City"/>
+    <property name="Zip"/>
+  </class>
+
+  <class name="Home_All" schema-action="all">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <property name="City"/>
+    <property name="Zip"/>
+  </class>
+
+  <class name="Person">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <property name="Name"/>
+    <many-to-one name="Home_Drop" column="Home_DropID" />
+    <many-to-one name="Home_Export" column="Home_ExportID" />
+    <many-to-one name="Home_Update" column="Home_UpdateID" />
+    <many-to-one name="Home_Validate" column="Home_ValidateID" />
+  </class>
+
+
+</hibernate-mapping>

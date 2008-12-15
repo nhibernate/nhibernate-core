@@ -84,6 +84,11 @@ namespace NHibernate.Mapping
 		private string subselect;
 		private string rowId;
 		private bool isSchemaQuoted;
+		private bool schemaDrop = true;
+		private bool schemaUpdate = true;
+		private bool schemaExport = true;
+		private bool schemaValidate = true;
+
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="Table"/>.
@@ -921,6 +926,30 @@ namespace NHibernate.Mapping
 		public bool IsPhysicalTable
 		{
 			get { return !IsSubselect && !IsAbstractUnionTable; }
+		}
+
+		public bool SchemaDrop
+		{
+			get { return schemaDrop; }
+			set { schemaDrop = value; }
+		}
+
+		public bool SchemaUpdate
+		{
+			get { return schemaUpdate; }
+			set { schemaUpdate = value; }
+		}
+
+		public bool SchemaExport
+		{
+			get { return schemaExport; }
+			set { schemaExport = value; }
+		}
+
+		public bool SchemaValidate
+		{
+			get { return schemaValidate; }
+			set { schemaValidate = value; }
 		}
 
 		public string RowId
