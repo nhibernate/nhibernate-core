@@ -1,3 +1,4 @@
+using System.Data;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
@@ -7,11 +8,11 @@ namespace NHibernate.Dialect
 	/// </summary>
 	public class OracleDialect : Oracle9Dialect
 	{
-		/// <summary></summary>
-		public OracleDialect() : base()
+		public OracleDialect()
 		{
+			RegisterColumnType(DbType.DateTime, "DATE");
 		}
-
+ 
 		/// <summary></summary>
 		public override JoinFragment CreateOuterJoinFragment()
 		{
