@@ -118,14 +118,10 @@ namespace NHibernate.Mapping
 		/// Gets the schema qualified name of the Table using the specified qualifier
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect"/> that knows how to Quote the Table name.</param>
-		/// <param name="defaultQualifier">The Qualifier to use when accessing the table.</param>
+		/// <param name="defaultCatalog">The catalog name.</param>
+		/// <param name="defaultSchema">The schema name.</param>
 		/// <returns>A String representing the Qualified name.</returns>
 		/// <remarks>If this were used with MSSQL it would return a dbo.table_name.</remarks>
-		public string GetQualifiedName(Dialect.Dialect dialect, string defaultQualifier)
-		{
-			return GetQualifiedName(dialect, null, defaultQualifier);
-		}
-
 		public virtual string GetQualifiedName(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
 		{
 			if (!string.IsNullOrEmpty(subselect))
@@ -410,7 +406,7 @@ namespace NHibernate.Mapping
 			                                      		dialect.CreateTableString
 			                                      	: dialect.CreateMultisetTableString)
 				.Append(' ')
-				.Append(GetQualifiedName(dialect, defaultSchema))
+				.Append(GetQualifiedName(dialect, defaultCatalog, defaultSchema))
 				.Append(" (");
 
 			bool identityColumn = idValue != null && idValue.IsIdentityColumn(dialect);

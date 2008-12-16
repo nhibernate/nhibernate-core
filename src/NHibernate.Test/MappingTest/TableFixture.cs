@@ -20,9 +20,9 @@ namespace NHibernate.Test.MappingTest
 
 			Assert.AreEqual("[keyword]", tbl.GetQuotedName(dialect));
 
-			Assert.AreEqual("dbo.[keyword]", tbl.GetQualifiedName(dialect, "dbo"));
+			Assert.AreEqual("dbo.[keyword]", tbl.GetQualifiedName(dialect, null, "dbo"));
 
-			Assert.AreEqual("[keyword]", tbl.GetQualifiedName(dialect, null));
+			Assert.AreEqual("[keyword]", tbl.GetQualifiedName(dialect, null, null));
 
 			tbl.Schema = "sch";
 
@@ -39,9 +39,9 @@ namespace NHibernate.Test.MappingTest
 
 			Assert.AreEqual("notkeyword", tbl.GetQuotedName(dialect));
 
-			Assert.AreEqual("dbo.notkeyword", tbl.GetQualifiedName(dialect, "dbo"));
+			Assert.AreEqual("dbo.notkeyword", tbl.GetQualifiedName(dialect, null, "dbo"));
 
-			Assert.AreEqual("notkeyword", tbl.GetQualifiedName(dialect, null));
+			Assert.AreEqual("notkeyword", tbl.GetQualifiedName(dialect, null, null));
 
 			tbl.Schema = "sch";
 

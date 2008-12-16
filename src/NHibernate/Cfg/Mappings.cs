@@ -289,6 +289,7 @@ namespace NHibernate.Cfg
 			Table table = new DenormalizedTable(includedTable);
 			table.IsAbstract = isAbstract;
 			table.Name = name;
+			table.Catalog = catalog;
 			table.Schema = schema;
 			table.Subselect = subselect;
 			tables[key] = table;

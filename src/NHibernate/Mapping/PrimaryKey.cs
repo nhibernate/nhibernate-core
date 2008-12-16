@@ -76,7 +76,7 @@ namespace NHibernate.Mapping
 		public override string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
 		{
 			string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
-			string drop = string.Format("alter table {0}{1}", Table.GetQualifiedName(dialect, defaultSchema), dialect.GetDropPrimaryKeyConstraintString(Name));
+			string drop = string.Format("alter table {0}{1}", Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema), dialect.GetDropPrimaryKeyConstraintString(Name));
 			string end = dialect.GetIfExistsDropConstraintEnd(Table, Name);
 			return ifExists + Environment.NewLine + drop + Environment.NewLine + end;
 		}

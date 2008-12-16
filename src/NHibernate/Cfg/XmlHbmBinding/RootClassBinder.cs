@@ -20,7 +20,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			//TABLENAME
 			string schema = classSchema.schema ?? mappings.SchemaName;
-			string catalog = mappings.CatalogName; //string catalog = classSchema.catalog ?? mappings.CatalogName;
+			string catalog = classSchema.catalog ?? mappings.CatalogName;
 			string tableName = GetClassTableName(rootClass, classSchema);
 			if (string.IsNullOrEmpty(tableName))
 			{
