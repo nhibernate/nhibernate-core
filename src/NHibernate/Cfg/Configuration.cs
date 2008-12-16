@@ -671,11 +671,11 @@ namespace NHibernate.Cfg
 			{
 				foreach (var table in TableMappings)
 				{
-					if (table.IsPhysicalTable && table.SchemaDrop)
+					if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Drop))
 					{
 						foreach (var fk in table.ForeignKeyIterator)
 						{
-							if (fk.HasPhysicalConstraint && fk.ReferencedTable.SchemaDrop)
+							if (fk.HasPhysicalConstraint && IncludeAction(fk.ReferencedTable.SchemaActions, SchemaAction.Drop))
 							{
 								script.Add(fk.SqlDropString(dialect, defaultCatalog, defaultSchema));
 							}
@@ -686,7 +686,7 @@ namespace NHibernate.Cfg
 
 			foreach (var table in TableMappings)
 			{
-				if (table.IsPhysicalTable && table.SchemaDrop)
+				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Drop))
 				{
 					script.Add(table.SqlDropString(dialect, defaultCatalog, defaultSchema));
 				}
@@ -708,6 +708,11 @@ namespace NHibernate.Cfg
 			return script.ToArray();
 		}
 
+		public static bool IncludeAction(SchemaAction actionsSource, SchemaAction includedAction)
+		{
+			return (actionsSource & includedAction) != SchemaAction.None;
+		}
+
 		/// <summary>
 		/// Generate DDL for creating tables
 		/// </summary>
@@ -723,7 +728,7 @@ namespace NHibernate.Cfg
 
 			foreach (var table in TableMappings)
 			{
-				if (table.IsPhysicalTable && table.SchemaExport)
+				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Export))
 				{
 					script.Add(table.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 					script.AddRange(table.SqlCommentStrings(dialect, defaultCatalog, defaultSchema));
@@ -732,7 +737,7 @@ namespace NHibernate.Cfg
 
 			foreach (var table in TableMappings)
 			{
-				if (table.IsPhysicalTable && table.SchemaExport)
+				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Export))
 				{
 					if (!dialect.SupportsUniqueConstraintInCreateAlterTable)
 					{
@@ -755,7 +760,7 @@ namespace NHibernate.Cfg
 					{
 						foreach (var fk in table.ForeignKeyIterator)
 						{
-							if (fk.HasPhysicalConstraint && fk.ReferencedTable.SchemaExport)
+							if (fk.HasPhysicalConstraint && IncludeAction(fk.ReferencedTable.SchemaActions, SchemaAction.Export))
 							{
 								script.Add(fk.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 							}
@@ -1920,7 +1925,7 @@ namespace NHibernate.Cfg
 			var script = new List<string>(50);
 			foreach (var table in TableMappings)
 			{
-				if (table.IsPhysicalTable && table.SchemaUpdate)
+				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Update))
 				{
 					ITableMetadata tableInfo = databaseMetadata.GetTableMetadata(table.Name, table.Schema ?? defaultSchema,
 					                                                             table.Catalog ?? defaultCatalog, table.IsQuoted);
@@ -1941,7 +1946,7 @@ namespace NHibernate.Cfg
 
 			foreach (var table in TableMappings)
 			{
-				if (table.IsPhysicalTable && table.SchemaUpdate)
+				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Update))
 				{
 					ITableMetadata tableInfo = databaseMetadata.GetTableMetadata(table.Name, table.Schema, table.Catalog,
 					                                                             table.IsQuoted);
@@ -1950,7 +1955,7 @@ namespace NHibernate.Cfg
 					{
 						foreach (var fk in table.ForeignKeyIterator)
 						{
-							if (fk.HasPhysicalConstraint && fk.ReferencedTable.SchemaUpdate)
+							if (fk.HasPhysicalConstraint && IncludeAction(fk.ReferencedTable.SchemaActions, SchemaAction.Update))
 							{
 								bool create = tableInfo == null
 								              ||
@@ -1997,10 +2002,10 @@ namespace NHibernate.Cfg
 			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
 			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
 
-			var iter = this.TableMappings;
+			var iter = TableMappings;
 			foreach (var table in iter)
 			{
-				if (table.IsPhysicalTable && table.SchemaValidate)
+				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Validate))
 				{
 					/*NH Different Implementation :
 						TableMetadata tableInfo = databaseMetadata.getTableMetadata(
@@ -2011,7 +2016,7 @@ namespace NHibernate.Cfg
 					ITableMetadata tableInfo = databaseMetadata.GetTableMetadata(
 						table.Name,
 						table.Schema??defaultSchema,
-						table.Catalog,//??defaultCatalog,
+						table.Catalog??defaultCatalog,
 						table.IsQuoted);
 					if (tableInfo == null)
 						throw new HibernateException("Missing table: " + table.Name);

@@ -258,10 +258,7 @@ namespace NHibernate.Cfg
 				table.Schema = schema;
 				table.Catalog = catalog;
 				table.Subselect = subselect;
-				table.SchemaDrop = SchemaActionRequested(schemaAction, "drop");
-				table.SchemaUpdate = SchemaActionRequested(schemaAction, "update");
-				table.SchemaExport = SchemaActionRequested(schemaAction, "export");
-				table.SchemaValidate = SchemaActionRequested(schemaAction, "validate");
+				table.SchemaActions = GetSchemaActions(schemaAction);
 				tables[key] = table;
 			}
 			else
@@ -273,9 +270,46 @@ namespace NHibernate.Cfg
 			return table;
 		}
 
-		private static bool SchemaActionRequested(string schemaAction, string check)
+		private static SchemaAction GetSchemaActions(string schemaAction)
 		{
-			return string.IsNullOrEmpty(schemaAction) || schemaAction.Contains("all") || schemaAction.Contains(check);
+			if (string.IsNullOrEmpty(schemaAction))
+			{
+				return SchemaAction.All;
+			}
+			else
+			{
+				SchemaAction sa = SchemaAction.None;
+				string[] acts = schemaAction.Split(new[] {',', ' '});
+				foreach (var s in acts)
+				{
+					switch (s.ToLowerInvariant())
+					{
+						case "":
+						case "all":
+							sa |= SchemaAction.All;
+							break;
+						case "drop":
+							sa |= SchemaAction.Drop;
+							break;
+						case "update":
+							sa |= SchemaAction.Update;
+							break;
+						case "export":
+							sa |= SchemaAction.Export;
+							break;
+						case "validate":
+							sa |= SchemaAction.Validate;
+							break;
+						case "none":
+							sa |= SchemaAction.None;
+							break;
+						default:
+							throw new MappingException(
+								string.Format("Invalid schema-export value; Expected(all drop update export validate none), Found ({0})", s));
+					}
+				}
+				return sa;
+			}
 		}
 
 		public Table AddDenormalizedTable(string schema, string catalog, string name, bool isAbstract, string subselect, Table includedTable)

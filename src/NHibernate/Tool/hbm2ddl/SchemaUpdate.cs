@@ -8,26 +8,22 @@ using NHibernate.Util;
 
 namespace NHibernate.Tool.hbm2ddl
 {
-
 	public class SchemaUpdate
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(SchemaUpdate));
-		private readonly IConnectionHelper connectionHelper;
+		private static readonly ILog log = LogManager.GetLogger(typeof (SchemaUpdate));
 		private readonly Configuration configuration;
+		private readonly IConnectionHelper connectionHelper;
 		private readonly Dialect.Dialect dialect;
 		private readonly List<Exception> exceptions;
 
-		public SchemaUpdate(Configuration cfg)
-			: this(cfg, cfg.Properties)
-		{
-		}
+		public SchemaUpdate(Configuration cfg) : this(cfg, cfg.Properties) {}
 
 		public SchemaUpdate(Configuration cfg, IDictionary<string, string> connectionProperties)
 		{
 			configuration = cfg;
-			dialect = NHibernate.Dialect.Dialect.GetDialect(connectionProperties);
-			Dictionary<string, string> props = new Dictionary<string, string>(dialect.DefaultProperties);
-			foreach (KeyValuePair<string, string> prop in connectionProperties)
+			dialect = Dialect.Dialect.GetDialect(connectionProperties);
+			var props = new Dictionary<string, string>(dialect.DefaultProperties);
+			foreach (var prop in connectionProperties)
 			{
 				props[prop.Key] = prop.Value;
 			}
@@ -39,17 +35,24 @@ namespace NHibernate.Tool.hbm2ddl
 		{
 			configuration = cfg;
 			dialect = settings.Dialect;
-			connectionHelper = new SuppliedConnectionProviderConnectionHelper(
-				settings.ConnectionProvider
-				);
+			connectionHelper = new SuppliedConnectionProviderConnectionHelper(settings.ConnectionProvider);
 			exceptions = new List<Exception>();
+		}
+
+		/// <summary>
+		///  Returns a List of all Exceptions which occured during the export.
+		/// </summary>
+		/// <returns></returns>
+		public IList<Exception> Exceptions
+		{
+			get { return exceptions; }
 		}
 
 		public static void Main(string[] args)
 		{
 			try
 			{
-				Configuration cfg = new Configuration();
+				var cfg = new Configuration();
 
 				bool script = true;
 				// If true then execute db updates, otherwise just generate and display updates
@@ -80,8 +83,7 @@ namespace NHibernate.Tool.hbm2ddl
 						else if (args[i].StartsWith("--naming="))
 						{
 							cfg.SetNamingStrategy(
-								(INamingStrategy)Activator.CreateInstance(ReflectHelper.ClassForName(args[i].Substring(9)))
-								);
+								(INamingStrategy) Activator.CreateInstance(ReflectHelper.ClassForName(args[i].Substring(9))));
 						}
 					}
 					else
@@ -203,15 +205,6 @@ namespace NHibernate.Tool.hbm2ddl
 					log.Error("Error closing connection", e);
 				}
 			}
-		}
-
-		/// <summary>
-		///  Returns a List of all Exceptions which occured during the export.
-		/// </summary>
-		/// <returns></returns>
-		public IList<Exception> Exceptions
-		{
-			get { return exceptions; }
 		}
 	}
 }

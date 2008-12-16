@@ -19,23 +19,19 @@ namespace NHibernate.Tool.hbm2ddl
 	/// </remarks>
 	public class SchemaExport
 	{
-		private readonly string[] dropSQL;
-		private readonly string[] createSQL;
+		private static readonly ILog log = LogManager.GetLogger(typeof (SchemaExport));
 		private readonly IDictionary<string, string> connectionProperties;
-		private string outputFile = null;
+		private readonly string[] createSQL;
 		private readonly Dialect.Dialect dialect;
-		private string delimiter = null;
-
-		private static readonly ILog log = LogManager.GetLogger(typeof(SchemaExport));
+		private readonly string[] dropSQL;
+		private string delimiter;
+		private string outputFile;
 
 		/// <summary>
 		/// Create a schema exported for a given Configuration
 		/// </summary>
 		/// <param name="cfg">The NHibernate Configuration to generate the schema from.</param>
-		public SchemaExport(Configuration cfg)
-			: this(cfg, cfg.Properties)
-		{
-		}
+		public SchemaExport(Configuration cfg) : this(cfg, cfg.Properties) {}
 
 		/// <summary>
 		/// Create a schema exporter for the given Configuration, with the given
@@ -107,7 +103,7 @@ namespace NHibernate.Tool.hbm2ddl
 		}
 
 		private void Execute(Action<string> scriptAction, bool export, bool format, bool throwOnError, TextWriter exportOutput,
-												 IDbCommand statement, string sql)
+		                     IDbCommand statement, string sql)
 		{
 			try
 			{
@@ -169,8 +165,8 @@ namespace NHibernate.Tool.hbm2ddl
 		/// This overload is provided mainly to enable use of in memory databases. 
 		/// It does NOT close the given connection!
 		/// </remarks>
-		public void Execute(bool script, bool export, bool justDrop, bool format,
-												IDbConnection connection, TextWriter exportOutput)
+		public void Execute(bool script, bool export, bool justDrop, bool format, IDbConnection connection,
+		                    TextWriter exportOutput)
 		{
 			if (script)
 			{
@@ -182,8 +178,8 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 		}
 
-		public void Execute(Action<string> scriptAction, bool export, bool justDrop, bool format,
-										IDbConnection connection, TextWriter exportOutput)
+		public void Execute(Action<string> scriptAction, bool export, bool justDrop, bool format, IDbConnection connection,
+		                    TextWriter exportOutput)
 		{
 			IDbCommand statement = null;
 
@@ -236,9 +232,7 @@ namespace NHibernate.Tool.hbm2ddl
 					}
 				}
 			}
-
 		}
-
 
 		/// <summary>
 		/// Executes the Export of the Schema.
@@ -261,21 +255,22 @@ namespace NHibernate.Tool.hbm2ddl
 				Execute(null, export, justDrop, format);
 			}
 		}
+
 		public void Execute(Action<string> scriptAction, bool export, bool justDrop, bool format)
 		{
 			IDbConnection connection = null;
 			StreamWriter fileOutput = null;
 			IConnectionProvider connectionProvider = null;
 
-			Dictionary<string, string> props = new Dictionary<string, string>();
-			foreach (KeyValuePair<string, string> de in dialect.DefaultProperties)
+			var props = new Dictionary<string, string>();
+			foreach (var de in dialect.DefaultProperties)
 			{
 				props[de.Key] = de.Value;
 			}
 
 			if (connectionProperties != null)
 			{
-				foreach (KeyValuePair<string, string> de in connectionProperties)
+				foreach (var de in connectionProperties)
 				{
 					props[de.Key] = de.Value;
 				}
@@ -314,7 +309,6 @@ namespace NHibernate.Tool.hbm2ddl
 					connectionProvider.Dispose();
 				}
 			}
-
 		}
 
 		/// <summary>
@@ -350,8 +344,8 @@ namespace NHibernate.Tool.hbm2ddl
 
 			if (StringHelper.StartsWithCaseInsensitive(sql, "create table"))
 			{
-				StringBuilder result = new StringBuilder(60);
-				StringTokenizer tokens = new StringTokenizer(sql, "(,)", true);
+				var result = new StringBuilder(60);
+				var tokens = new StringTokenizer(sql, "(,)", true);
 
 				int depth = 0;
 

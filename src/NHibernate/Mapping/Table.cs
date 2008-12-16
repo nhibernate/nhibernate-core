@@ -9,6 +9,17 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
+	[Flags]
+	public enum SchemaAction
+	{
+		None = 0,
+		Drop = 1,
+    Update= 2,
+		Export= 4,
+		Validate= 8,
+		All = Drop | Update | Export | Validate
+	}
+
 	/// <summary>
 	/// Represents a Table in a database that an object gets mapped against.
 	/// </summary>
@@ -84,10 +95,7 @@ namespace NHibernate.Mapping
 		private string subselect;
 		private string rowId;
 		private bool isSchemaQuoted;
-		private bool schemaDrop = true;
-		private bool schemaUpdate = true;
-		private bool schemaExport = true;
-		private bool schemaValidate = true;
+		private SchemaAction schemaActions = SchemaAction.All;
 
 
 		/// <summary>
@@ -924,28 +932,10 @@ namespace NHibernate.Mapping
 			get { return !IsSubselect && !IsAbstractUnionTable; }
 		}
 
-		public bool SchemaDrop
+		public SchemaAction SchemaActions
 		{
-			get { return schemaDrop; }
-			set { schemaDrop = value; }
-		}
-
-		public bool SchemaUpdate
-		{
-			get { return schemaUpdate; }
-			set { schemaUpdate = value; }
-		}
-
-		public bool SchemaExport
-		{
-			get { return schemaExport; }
-			set { schemaExport = value; }
-		}
-
-		public bool SchemaValidate
-		{
-			get { return schemaValidate; }
-			set { schemaValidate = value; }
+			get { return schemaActions; }
+			set { schemaActions = value; }
 		}
 
 		public string RowId
