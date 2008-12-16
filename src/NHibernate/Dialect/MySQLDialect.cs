@@ -29,9 +29,19 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class MySQLDialect : Dialect
 	{
-		/// <summary></summary>
-		public MySQLDialect() : base()
+		public MySQLDialect()
 		{
+			//Reference 3-4.x
+			//Numeric:
+			//http://dev.mysql.com/doc/refman/4.1/en/numeric-type-overview.html
+			//Date and time:
+			//http://dev.mysql.com/doc/refman/4.1/en/date-and-time-type-overview.html
+			//String:
+			//http://dev.mysql.com/doc/refman/5.0/en/string-type-overview.html
+			//default:
+			//http://dev.mysql.com/doc/refman/5.0/en/data-type-defaults.html
+
+			//string type
 			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 255, "CHAR($l)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 65535, "TEXT");
@@ -40,23 +50,6 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.AnsiString, 255, "VARCHAR($l)");
 			RegisterColumnType(DbType.AnsiString, 65535, "TEXT");
 			RegisterColumnType(DbType.AnsiString, 16777215, "MEDIUMTEXT");
-			RegisterColumnType(DbType.Binary, "LONGBLOB");
-			RegisterColumnType(DbType.Binary, 127, "TINYBLOB");
-			RegisterColumnType(DbType.Binary, 65535, "BLOB");
-			RegisterColumnType(DbType.Binary, 16777215, "MEDIUMBLOB");
-			RegisterColumnType(DbType.Boolean, "TINYINT(1)");
-			RegisterColumnType(DbType.Byte, "TINYINT UNSIGNED");
-			RegisterColumnType(DbType.Currency, "MONEY");
-			RegisterColumnType(DbType.Date, "DATE");
-			RegisterColumnType(DbType.DateTime, "DATETIME");
-			RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "NUMERIC(19, $l)");
-			RegisterColumnType(DbType.Double, "DOUBLE");
-			RegisterColumnType(DbType.Guid, "VARCHAR(40)");
-			RegisterColumnType(DbType.Int16, "SMALLINT");
-			RegisterColumnType(DbType.Int32, "INTEGER");
-			RegisterColumnType(DbType.Int64, "BIGINT");
-			RegisterColumnType(DbType.Single, "FLOAT");
 			RegisterColumnType(DbType.StringFixedLength, "CHAR(255)");
 			RegisterColumnType(DbType.StringFixedLength, 255, "CHAR($l)");
 			RegisterColumnType(DbType.StringFixedLength, 65535, "TEXT");
@@ -65,7 +58,49 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 255, "VARCHAR($l)");
 			RegisterColumnType(DbType.String, 65535, "TEXT");
 			RegisterColumnType(DbType.String, 16777215, "MEDIUMTEXT");
+			//todo: future: add compatibility with decimal???
+			//An unpacked fixed-point number. Behaves like a CHAR column; 
+			//“unpacked” means the number is stored as a string, using one character for each digit of the value.
+			//M is the total number of digits and D is the number of digits after the decimal point
+			//DECIMAL[(M[,D])] [UNSIGNED] [ZEROFILL]
+
+			//binary type:
+			RegisterColumnType(DbType.Binary, "LONGBLOB");
+			RegisterColumnType(DbType.Binary, 127, "TINYBLOB");
+			RegisterColumnType(DbType.Binary, 65535, "BLOB");
+			RegisterColumnType(DbType.Binary, 16777215, "MEDIUMBLOB");
+
+			//Numeric type:
+			RegisterColumnType(DbType.Boolean, "TINYINT(1)"); // SELECT IF(0, 'true', 'false');
+			RegisterColumnType(DbType.Byte, "TINYINT UNSIGNED");
+			RegisterColumnType(DbType.Currency, "MONEY");
+			RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)");
+			RegisterColumnType(DbType.Decimal, 19, "NUMERIC(19, $l)");
+			RegisterColumnType(DbType.Double, "DOUBLE");
+			//The signed range is -32768 to 32767. The unsigned range is 0 to 65535. 
+			RegisterColumnType(DbType.Int16, "SMALLINT");
+			RegisterColumnType(DbType.Int32, "INTEGER"); //alias INT
+			//As of MySQL 4.1, SERIAL is an alias for BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE. 
+			RegisterColumnType(DbType.Int64, "BIGINT");
+			//!!!
+			//Using FLOAT might give you some unexpected problems because all calculations in MySQL are done with double precision
+			RegisterColumnType(DbType.Single, "FLOAT");
+			RegisterColumnType(DbType.Byte, 1, "BIT"); //Like TinyInt(i)
+			RegisterColumnType(DbType.SByte, "TINYINT");
+
+			//UNSINGED Numeric type:
+			RegisterColumnType(DbType.UInt16, "SMALLINT UNSIGNED");
+			RegisterColumnType(DbType.UInt32, "INTEGER UNSIGNED");
+			RegisterColumnType(DbType.UInt64, "BIGINT UNSIGNED");
+			//there are no other DbType unsigned...but mysql support Float unsigned, double unsigned, etc..
+
+			//Date and time type:
+			RegisterColumnType(DbType.Date, "DATE");
+			RegisterColumnType(DbType.DateTime, "DATETIME");
 			RegisterColumnType(DbType.Time, "TIME");
+
+			//special:
+			RegisterColumnType(DbType.Guid, "VARCHAR(40)");
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.MySqlDataDriver";
 		}
@@ -123,6 +158,11 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		public override bool SupportsSubSelects
+		{
+			get { return false; }
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -131,7 +171,7 @@ namespace NHibernate.Dialect
 		/// <returns></returns>
 		public override SqlString GetLimitString(SqlString querySqlString, bool hasOffset)
 		{
-			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
+			var pagingBuilder = new SqlStringBuilder();
 			pagingBuilder.Add(querySqlString);
 			pagingBuilder.Add(" limit ");
 			pagingBuilder.Add(Parameter.Placeholder);
@@ -141,27 +181,18 @@ namespace NHibernate.Dialect
 				pagingBuilder.Add(", ");
 				pagingBuilder.Add(Parameter.Placeholder);
 			}
-
 			return pagingBuilder.ToSqlString();
 		}
 
 		public override string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey,
-			string referencedTable, string[] primaryKey, bool referencesPrimaryKey)
+		                                                        string referencedTable, string[] primaryKey,
+		                                                        bool referencesPrimaryKey)
 		{
 			string cols = String.Join(StringHelper.CommaSpace, foreignKey);
-			return new StringBuilder(30)
-				.Append(" add index (")
-				.Append(cols)
-				.Append("), add constraint ")
-				.Append(constraintName)
-				.Append(" foreign key (")
-				.Append(cols)
-				.Append(") references ")
-				.Append(referencedTable)
-				.Append(" (")
-				.Append(String.Join(StringHelper.CommaSpace, primaryKey))
-				.Append(')')
-				.ToString();
+			return
+				new StringBuilder(30).Append(" add index (").Append(cols).Append("), add constraint ").Append(constraintName).Append
+					(" foreign key (").Append(cols).Append(") references ").Append(referencedTable).Append(" (").Append(
+					String.Join(StringHelper.CommaSpace, primaryKey)).Append(')').ToString();
 		}
 
 		/// <summary>
@@ -192,12 +223,6 @@ namespace NHibernate.Dialect
 		public override string GetDropIndexConstraintString(string constraintName)
 		{
 			return " drop index " + constraintName;
-		}
-
-		public override bool SupportsSubSelects
-		{
-			// TODO: newer MySQLs actually support subselects
-			get { return false; }
 		}
 	}
 }
