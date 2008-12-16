@@ -11,7 +11,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 	public class SchemaUpdate
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (SchemaUpdate));
+		private static readonly ILog log = LogManager.GetLogger(typeof(SchemaUpdate));
 		private readonly IConnectionHelper connectionHelper;
 		private readonly Configuration configuration;
 		private readonly Dialect.Dialect dialect;
@@ -80,7 +80,7 @@ namespace NHibernate.Tool.hbm2ddl
 						else if (args[i].StartsWith("--naming="))
 						{
 							cfg.SetNamingStrategy(
-								(INamingStrategy) Activator.CreateInstance(ReflectHelper.ClassForName(args[i].Substring(9)))
+								(INamingStrategy)Activator.CreateInstance(ReflectHelper.ClassForName(args[i].Substring(9)))
 								);
 						}
 					}
@@ -111,6 +111,23 @@ namespace NHibernate.Tool.hbm2ddl
 		/// Execute the schema updates
 		/// </summary>
 		public void Execute(bool script, bool doUpdate)
+		{
+			if (script)
+			{
+				Execute(Console.WriteLine, doUpdate);
+			}
+			else
+			{
+				Execute(null, doUpdate);
+			}
+		}
+
+		/// <summary>
+		/// Execute the schema updates
+		/// </summary>
+		/// <param name="scriptAction">The action to write the each schema line.</param>
+		/// <param name="doUpdate">Commit the script to DB</param>
+		public void Execute(Action<string> scriptAction, bool doUpdate)
 		{
 			log.Info("Running hbm2ddl schema update");
 
@@ -145,9 +162,9 @@ namespace NHibernate.Tool.hbm2ddl
 					string sql = createSQL[j];
 					try
 					{
-						if (script)
+						if (scriptAction != null)
 						{
-							Console.WriteLine(sql);
+							scriptAction(sql);
 						}
 						if (doUpdate)
 						{
