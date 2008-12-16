@@ -73,9 +73,22 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				return null;
 		}
 
-		private static INativeSQLQueryReturn CreateScalarReturn(HbmReturnScalar returnScalarSchema)
+		private INativeSQLQueryReturn CreateScalarReturn(HbmReturnScalar returnScalarSchema)
 		{
-			IType type = TypeFactory.HeuristicType(returnScalarSchema.type, null);
+			string typeName;
+			IDictionary<string, string> parameters = null;
+			TypeDef typeDef = mappings.GetTypeDef(returnScalarSchema.type);
+			if (typeDef != null)
+			{
+				typeName = typeDef.TypeClass;
+				parameters = typeDef.Parameters;
+			}
+			else
+			{
+				typeName = returnScalarSchema.type;
+			}
+
+			IType type = TypeFactory.HeuristicType(typeName, (IDictionary) parameters);
 
 			if (type == null)
 				throw new MappingException("could not interpret type: " + returnScalarSchema.type);

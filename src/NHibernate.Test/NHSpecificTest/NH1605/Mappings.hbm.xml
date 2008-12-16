@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1605">
+
+  <typedef name="CapitalCityString" class="NHibernate.Type.EnumStringType`1[[NHibernate.Test.NHSpecificTest.NH1605.CapitalCities, NHibernate.Test]], NHibernate" />
+  
+	<class name="Country">
+		<id type="int">
+			<generator class="native"/>
+		</id>
+		<property name="CapitalCity" type="CapitalCityString" />
+	</class>
+
+  <sql-query name="Country-GetCapital">
+    <return-scalar column="CapitalCity" type="CapitalCityString" />
+    -- Custom SQL omitted
+  </sql-query>
+</hibernate-mapping>
