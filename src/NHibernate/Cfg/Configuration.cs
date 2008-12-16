@@ -2031,7 +2031,7 @@ namespace NHibernate.Cfg
 				string key = generator.GeneratorKey();
 				if (!databaseMetadata.IsSequence(key) && !databaseMetadata.IsTable(key))
 				{
-					throw new HibernateException(string.Format("Missing sequence or table: ", key));
+					throw new HibernateException(string.Format("Missing sequence or table: "+ key));
 				}
 			}
 		}
