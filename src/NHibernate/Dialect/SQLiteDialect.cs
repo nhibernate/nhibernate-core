@@ -1,5 +1,6 @@
 using System.Data;
 using System.Text;
+using NHibernate.Dialect.Function;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using System.Data.Common;
@@ -44,6 +45,13 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Time, "DATETIME");
 			RegisterColumnType(DbType.Boolean, "INTEGER");
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
+
+			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "strftime(\"%S\", ?1)"));
+			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "strftime(\"%M\", ?1)"));
+			RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.Int32, "strftime(\"%H\", ?1)"));
+			RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.Int32, "strftime(\"%d\", ?1)"));
+			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "strftime(\"%m\", ?1)"));
+			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "strftime(\"%Y\", ?1)"));
 		}
 
 		public override Schema.IDataBaseSchema GetDataBaseSchema(DbConnection connection)
