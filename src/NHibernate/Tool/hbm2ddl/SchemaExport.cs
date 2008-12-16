@@ -43,7 +43,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// </summary>
 		/// <param name="cfg">The NHibernate Configuration to generate the schema from.</param>
 		/// <param name="connectionProperties">The Properties to use when connecting to the Database.</param>
-		public SchemaExport(Configuration cfg, IDictionary<string,string> connectionProperties)
+		public SchemaExport(Configuration cfg, IDictionary<string, string> connectionProperties)
 		{
 			this.connectionProperties = connectionProperties;
 			dialect = Dialect.Dialect.GetDialect(connectionProperties);
@@ -87,6 +87,11 @@ namespace NHibernate.Tool.hbm2ddl
 			Execute(script, export, false, true);
 		}
 
+		public void Create(Action<string> scriptAction, bool export)
+		{
+			Execute(scriptAction, export, false, true);
+		}
+
 		/// <summary>
 		/// Run the drop schema script
 		/// </summary>
@@ -101,8 +106,8 @@ namespace NHibernate.Tool.hbm2ddl
 			Execute(script, export, true, true);
 		}
 
-		private void Execute(bool script, bool export, bool format, bool throwOnError, TextWriter exportOutput,
-		                     IDbCommand statement, string sql)
+		private void Execute(Action<string> scriptAction, bool export, bool format, bool throwOnError, TextWriter exportOutput,
+												 IDbCommand statement, string sql)
 		{
 			try
 			{
@@ -120,9 +125,9 @@ namespace NHibernate.Tool.hbm2ddl
 				{
 					formatted += delimiter;
 				}
-				if (script)
+				if (scriptAction != null)
 				{
-					Console.WriteLine(formatted);
+					scriptAction(formatted);
 				}
 				log.Debug(formatted);
 				if (exportOutput != null)
@@ -165,7 +170,20 @@ namespace NHibernate.Tool.hbm2ddl
 		/// It does NOT close the given connection!
 		/// </remarks>
 		public void Execute(bool script, bool export, bool justDrop, bool format,
-		                    IDbConnection connection, TextWriter exportOutput)
+												IDbConnection connection, TextWriter exportOutput)
+		{
+			if (script)
+			{
+				Execute(Console.WriteLine, export, justDrop, format, connection, exportOutput);
+			}
+			else
+			{
+				Execute(null, export, justDrop, format, connection, exportOutput);
+			}
+		}
+
+		public void Execute(Action<string> scriptAction, bool export, bool justDrop, bool format,
+										IDbConnection connection, TextWriter exportOutput)
 		{
 			IDbCommand statement = null;
 
@@ -182,14 +200,14 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				for (int i = 0; i < dropSQL.Length; i++)
 				{
-					Execute(script, export, format, false, exportOutput, statement, dropSQL[i]);
+					Execute(scriptAction, export, format, false, exportOutput, statement, dropSQL[i]);
 				}
 
 				if (!justDrop)
 				{
 					for (int j = 0; j < createSQL.Length; j++)
 					{
-						Execute(script, export, format, true, exportOutput, statement, createSQL[j]);
+						Execute(scriptAction, export, format, true, exportOutput, statement, createSQL[j]);
 					}
 				}
 			}
@@ -218,7 +236,9 @@ namespace NHibernate.Tool.hbm2ddl
 					}
 				}
 			}
+
 		}
+
 
 		/// <summary>
 		/// Executes the Export of the Schema.
@@ -231,6 +251,17 @@ namespace NHibernate.Tool.hbm2ddl
 		/// This method allows for both the drop and create ddl script to be executed.
 		/// </remarks>
 		public void Execute(bool script, bool export, bool justDrop, bool format)
+		{
+			if (script)
+			{
+				Execute(Console.WriteLine, export, justDrop, format);
+			}
+			else
+			{
+				Execute(null, export, justDrop, format);
+			}
+		}
+		public void Execute(Action<string> scriptAction, bool export, bool justDrop, bool format)
 		{
 			IDbConnection connection = null;
 			StreamWriter fileOutput = null;
@@ -263,7 +294,7 @@ namespace NHibernate.Tool.hbm2ddl
 					connection = connectionProvider.GetConnection();
 				}
 
-				Execute(script, export, justDrop, format, connection, fileOutput);
+				Execute(scriptAction, export, justDrop, format, connection, fileOutput);
 			}
 			catch (HibernateException)
 			{
@@ -283,6 +314,7 @@ namespace NHibernate.Tool.hbm2ddl
 					connectionProvider.Dispose();
 				}
 			}
+
 		}
 
 		/// <summary>
