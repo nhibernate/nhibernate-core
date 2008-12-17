@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1609">
+
+  <class name="EntityA" table="EntityA">
+    <id name="Id" column="Id" type="long">
+      <generator class="identity"/>
+    </id>
+  </class>
+
+  <class name="EntityB" table="EntityB">
+    <id name="Id" column="Id" type="long">
+      <generator class="identity"/>
+    </id>
+
+    <many-to-one name="A" column="AId" class="EntityA" />
+    <many-to-one name="C" column="CId" class="EntityC" />
+    
+  </class>
+
+  <class name="EntityC" table="EntityC">
+    <id name="Id" column="Id" type="long">
+      <generator class="identity" />
+    </id>
+  </class>
+  
+</hibernate-mapping>
