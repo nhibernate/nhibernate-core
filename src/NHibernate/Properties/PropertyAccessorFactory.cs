@@ -23,6 +23,7 @@ namespace NHibernate.Properties
 			accessors["property"] = new BasicPropertyAccessor();
 			accessors["field"] = new FieldAccessor();
 			accessors["backfield"] = new FieldAccessor(new BackFieldStrategy());
+			accessors["readonly"] = new ReadOnlyAccessor();
 			accessors["field.camelcase"] = new FieldAccessor(new CamelCaseStrategy());
 			accessors["field.camelcase-underscore"] = new FieldAccessor(new CamelCaseUnderscoreStrategy());
 			accessors["field.lowercase"] = new FieldAccessor(new LowerCaseStrategy());
@@ -82,6 +83,14 @@ namespace NHibernate.Properties
 		///				Property's get method to retrieve the value and will use the field
 		///				to set the value.  This is a good option for &lt;id&gt; Properties because this access method 
 		///				allows users of the Class to get the value of the Id but not set the value.
+		///			</description>
+		///		</item>
+		///     <item>
+		///			<term>readonly</term>
+		///			<description>
+		///				The <c>name</c> attribute is the name of the Property.  NHibernate will use the 
+		///				Property's get method to retrieve the value but will never set the value back in the domain.
+		///				This is used for read-only calculated properties with only a get method.
 		///			</description>
 		///		</item>
 		///		<item>

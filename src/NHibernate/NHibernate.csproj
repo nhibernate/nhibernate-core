@@ -840,6 +840,7 @@
     <Compile Include="Proxy\Map\MapProxyFactory.cs" />
     <Compile Include="Proxy\Poco\BasicLazyInitializer.cs" />
     <Compile Include="QueryParameterException.cs" />
+    <Compile Include="Properties\ReadonlyAccessor.cs" />
     <Compile Include="SessionException.cs" />
     <Compile Include="SqlCommand\InformixJoinFragment.cs" />
     <Compile Include="SqlCommand\SubselectClauseExtractor.cs" />
