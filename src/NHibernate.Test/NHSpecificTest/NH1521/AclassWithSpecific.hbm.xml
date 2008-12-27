@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   namespace="NHibernate.Test.NHSpecificTest.NH1521" 
+				   assembly="NHibernate.Test"
+				   catalog="somethingDifferent"
+				   schema="somethingDifferent">
+	
+	<class name="Aclass" catalog="nhibernate" schema="dbo">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+	</class>
+</hibernate-mapping>
