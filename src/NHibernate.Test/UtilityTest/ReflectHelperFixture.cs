@@ -56,11 +56,13 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void TryGetMethod()
 		{
-			const BindingFlags bf = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-			MethodInfo mig = typeof (MyBaseImplementation).GetMethod("get_Id", bf);
+			//const BindingFlags bf = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+			const BindingFlags bf = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+			MethodInfo mig = typeof(MyBaseImplementation).GetMethod("get_Id", bf);
 			MethodInfo mis = typeof(MyBaseImplementation).GetMethod("set_Id", bf);
 			MethodInfo mng = typeof(MyBaseImplementation).GetMethod("get_Name", bf);
 			MethodInfo mns = typeof(MyBaseImplementation).GetMethod("set_Name", bf);
+
 			Assert.That(ReflectHelper.TryGetMethod(typeof(IMyBaseInterface), mig), Is.Not.Null);
 			Assert.That(ReflectHelper.TryGetMethod(typeof(IMyBaseInterface), mis), Is.Null);
 			Assert.That(ReflectHelper.TryGetMethod(typeof(IMyBaseInterface), mng), Is.Not.Null);
@@ -78,6 +80,20 @@ namespace NHibernate.Test.UtilityTest
 			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mns), Is.Not.Null);
 			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mdg), Is.Not.Null);
 			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mds), Is.Null);
+
+			MethodInfo mdig = typeof(MyDerivedImplementation).GetMethod("get_Id", bf);
+			MethodInfo mdis = typeof(MyDerivedImplementation).GetMethod("set_Id", bf);
+			MethodInfo mdng = typeof(MyDerivedImplementation).GetMethod("get_Name", bf);
+			MethodInfo mdns = typeof(MyDerivedImplementation).GetMethod("set_Name", bf);
+			MethodInfo mddg = typeof(MyDerivedImplementation).GetMethod("get_Description", bf);
+			MethodInfo mdds = typeof(MyDerivedImplementation).GetMethod("set_Description", bf);
+
+			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mdig), Is.Not.Null);
+			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mdis), Is.Null);
+			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mdng), Is.Not.Null);
+			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mdns), Is.Not.Null);
+			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mddg), Is.Not.Null);
+			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mdds), Is.Null);
 		}
 	}
 
@@ -115,11 +131,15 @@ namespace NHibernate.Test.UtilityTest
 		public string Name { get; set; }
 	}
 
+	public class MyDerivedImplementation : MyBaseImplementation, IMyInterface
+	{
+		public string Description { get; set; }
+	}
+
 	public class MyImplementation: IMyInterface
 	{
 		public int Id{ get; set; }
 		public string Name { get; set; }
 		public string Description { get; set; }
 	}
-
 }

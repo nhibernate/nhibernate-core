@@ -62,7 +62,7 @@ namespace NHibernate.Proxy.Poco
 		/// underlying proxied object is needed then it returns the result <see cref="AbstractLazyInitializer.InvokeImplementation"/>
 		/// which indicates that the Proxy will need to forward to the real implementation.
 		/// </returns>
-		public virtual object Invoke(MethodBase method, object[] args, object proxy)
+		public virtual object Invoke(MethodInfo method, object[] args, object proxy)
 		{
 			string methodName = method.Name;
 			int paramCount = method.GetParameters().Length;
@@ -73,7 +73,7 @@ namespace NHibernate.Proxy.Poco
 				{
 					return IdentityEqualityComparer.GetHashCode(proxy);
 				}
-				else if (IsUninitialized && method.Equals(getIdentifierMethod))
+				else if (IsUninitialized && IsEqualToIdentifierMethod(method))
 				{
 					return Identifier;
 				}
@@ -135,5 +135,18 @@ namespace NHibernate.Proxy.Poco
 			return InvokeImplementation;
 		}
 
+		private bool IsEqualToIdentifierMethod(MethodInfo method)
+		{
+			if (getIdentifierMethod != null)
+			{
+				// in the case of inherited identifier methods (from a base class or an iterface) the
+				// passed in MethodBase object is not equal to the getIdentifierMethod instance that we
+				// have... but if their names and return types are identical, then it is the correct 
+				// identifier method
+				return method.Name.Equals(getIdentifierMethod.Name) && method.ReturnType.Equals(getIdentifierMethod.ReturnType);
+			}
+
+			return false;
+		}
 	}
 }

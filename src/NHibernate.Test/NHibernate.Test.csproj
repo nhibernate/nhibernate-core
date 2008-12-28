@@ -378,6 +378,10 @@
     <Compile Include="NHSpecificTest\NH1274ExportExclude\Person.cs" />
     <Compile Include="NHSpecificTest\NH1443\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1521\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1549\CategoryWithInheritedId.cs" />
+    <Compile Include="NHSpecificTest\NH1549\EntityInt32.cs" />
+    <Compile Include="NHSpecificTest\NH1549\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1549\ProductWithInheritedId.cs" />
     <Compile Include="NHSpecificTest\NH1605\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1609\Entities.cs" />
     <Compile Include="NHSpecificTest\NH1609\Fixture.cs" />
@@ -1577,6 +1581,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1549\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1521\AclassWithSpecific.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1521\AclassWithNothing.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1521\AclassWithDefault.hbm.xml" />

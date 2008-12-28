@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	namespace="NHibernate.Test.NHSpecificTest.NH1549"
+	assembly="NHibernate.Test">
+	
+	<class name="CategoryWithInheritedId">
+		<id name="Id" 	type="System.Int32">
+			<generator class="native" />
+		</id>
+		<property name="Name" />
+	</class>
+
+	<class name="ProductWithInheritedId" lazy="false">
+		<id name="Id" 	type="System.Int32">
+			<generator class="native" />
+		</id>
+		<many-to-one name="CategoryWithInheritedId"/>
+	</class>
+
+  <class name="CategoryWithId">
+    <id name="Id" 	type="System.Int32">
+      <generator class="native" />
+    </id>
+    <property name="Name" />
+  </class>
+
+  <class name="ProductWithId" lazy="false">
+    <id name="Id" 	type="System.Int32">
+      <generator class="native" />
+    </id>
+    <many-to-one name="CategoryWithId"/>
+  </class>
+
+</hibernate-mapping>

@@ -19,7 +19,7 @@ namespace NHibernate.Util
 		private static readonly ILog log = LogManager.GetLogger(typeof(ReflectHelper));
 
 		public static BindingFlags AnyVisibilityInstance = BindingFlags.Instance | BindingFlags.Public |
-		                                                   BindingFlags.NonPublic;
+														   BindingFlags.NonPublic;
 
 		private ReflectHelper()
 		{
@@ -29,7 +29,7 @@ namespace NHibernate.Util
 		private static System.Type[] NoClasses = System.Type.EmptyTypes;
 
 		private static readonly MethodInfo Exception_InternalPreserveStackTrace =
-			typeof (Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic);
+			typeof(Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic);
 
 		/// <summary>
 		/// Determine if the specified <see cref="System.Type"/> overrides the
@@ -41,7 +41,7 @@ namespace NHibernate.Util
 		{
 			try
 			{
-				MethodInfo equals = clazz.GetMethod("Equals", new System.Type[] {typeof(object)});
+				MethodInfo equals = clazz.GetMethod("Equals", new System.Type[] { typeof(object) });
 				if (equals == null)
 				{
 					return false;
@@ -127,7 +127,7 @@ namespace NHibernate.Util
 			System.Type heuristicClass = propertyClass;
 
 			if (propertyClass.IsGenericType
-			    && propertyClass.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+				&& propertyClass.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
 			{
 				heuristicClass = propertyClass.GetGenericArguments()[0];
 			}
@@ -292,15 +292,15 @@ namespace NHibernate.Util
 
 		public static bool TryLoadAssembly(string assemblyName)
 		{
-			if(string.IsNullOrEmpty(assemblyName))
+			if (string.IsNullOrEmpty(assemblyName))
 				return false;
 
-			bool result= true;
+			bool result = true;
 			try
 			{
 				Assembly.Load(assemblyName);
 			}
-			catch(Exception)
+			catch (Exception)
 			{
 				result = false;
 			}
@@ -446,7 +446,7 @@ namespace NHibernate.Util
 		/// <returns>The unwrapped exception.</returns>
 		public static Exception UnwrapTargetInvocationException(TargetInvocationException ex)
 		{
-			Exception_InternalPreserveStackTrace.Invoke(ex.InnerException, new Object[] {});
+			Exception_InternalPreserveStackTrace.Invoke(ex.InnerException, new Object[] { });
 			return ex.InnerException;
 		}
 
@@ -472,14 +472,7 @@ namespace NHibernate.Util
 			}
 
 			System.Type[] tps = GetMethodSignature(method);
-			try
-			{
-				return type.GetMethod(method.Name, defaultBindingFlags, null, tps, null);
-			}
-			catch (Exception)
-			{
-				return null;
-			}
+			return SafeGetMethod(type, method, tps);
 		}
 
 		/// <summary>
@@ -493,6 +486,8 @@ namespace NHibernate.Util
 		/// </remarks>
 		public static MethodInfo TryGetMethod(IEnumerable<System.Type> types, MethodInfo method)
 		{
+			var bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
 			// This method will be used when we support multiple proxy interfaces.
 			if (types == null)
 			{
@@ -505,21 +500,16 @@ namespace NHibernate.Util
 
 			System.Type[] tps = GetMethodSignature(method);
 			MethodInfo result = null;
+
 			foreach (var type in types)
 			{
-				try
+				result = SafeGetMethod(type, method, tps);
+				if (result != null)
 				{
-					result = type.GetMethod(method.Name, defaultBindingFlags, null, tps, null);
-					if (result != null)
-					{
-						return result;
-					}
-				}
-				catch (Exception)
-				{
-					return null;
+					return result;
 				}
 			}
+
 			return result;
 		}
 
@@ -532,6 +522,20 @@ namespace NHibernate.Util
 				tps[i] = pi[i].ParameterType;
 			}
 			return tps;
+		}
+
+		private static MethodInfo SafeGetMethod(System.Type type, MethodInfo method, System.Type[] tps)
+		{
+			var bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+			try
+			{
+				return type.GetMethod(method.Name, bindingFlags, null, tps, null);
+			}
+			catch (Exception)
+			{
+				return null;
+			}
 		}
 	}
 }
