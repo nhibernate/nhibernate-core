@@ -166,7 +166,7 @@ namespace NHibernate.Driver
 
 		private void SetCommandText(IDbCommand cmd, SqlString sqlString)
 		{
-			SqlStringFormatter formatter = new SqlStringFormatter(this);
+			SqlStringFormatter formatter = new SqlStringFormatter(this, MultipleQueriesSeparator);
 			formatter.Format(sqlString);
 			cmd.CommandText = formatter.GetFormattedText();
 		}
@@ -226,6 +226,11 @@ namespace NHibernate.Driver
 		public virtual bool SupportsMultipleQueries
 		{
 			get { return false; }
+		}
+
+		public virtual string MultipleQueriesSeparator
+		{
+			get { return ";"; }
 		}
 	}
 }

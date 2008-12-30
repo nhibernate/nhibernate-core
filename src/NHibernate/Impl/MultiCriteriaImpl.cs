@@ -174,7 +174,7 @@ namespace NHibernate.Impl
 				parameters.Add(queryParameters);
 				SqlCommandInfo commandInfo = loader.GetQueryStringAndTypes(session, queryParameters);
 				sqlString = sqlString.Append(commandInfo.Text)
-					.Append(dialect.MultipleQueriesSeparator)
+					.Append(session.Factory.ConnectionProvider.Driver.MultipleQueriesSeparator)
 					.Append(Environment.NewLine);
 				types.AddRange(commandInfo.ParameterTypes);
 			}

@@ -66,6 +66,11 @@ namespace NHibernate.Driver
 		bool SupportsMultipleQueries { get; }
 
 		/// <summary>
+		/// How we separate the queries when we use multiply queries.
+		/// </summary>
+		string MultipleQueriesSeparator { get; }
+
+		/// <summary>
 		/// Generates an IDbCommand from the SqlString according to the requirements of the DataProvider.
 		/// </summary>
 		/// <param name="type">The <see cref="CommandType"/> of the command to generate.</param>

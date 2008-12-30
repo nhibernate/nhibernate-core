@@ -8,7 +8,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1609
 {
     [TestFixture]
-	[Ignore("not fixed yet")]
     public class Fixture : BugTestCase
     {
         [Test]

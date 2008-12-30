@@ -989,14 +989,6 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// How we separate the queries when we use multiply queries.
-		/// </summary>
-		public virtual string MultipleQueriesSeparator
-		{
-			get { return ";"; }
-		}
-
-		/// <summary>
 		/// The syntax used to drop a foreign key constraint from a table.
 		/// </summary>
 		/// <param name="constraintName">The name of the foreign key constraint to drop.</param>
