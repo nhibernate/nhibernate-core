@@ -13,6 +13,9 @@ Build 2.1.0.GA
 	##### Initialization time #####
 		* The ProxyValidator check for "internal virtual" (to be intercepted by proxy need "protected internal virtual")
 		* The session-factory configuration property "proxyfactory.factory_class" is mandatory; You must choose one of the availables NHibernate.ByteCode
+
+	##### Breaking Changes #####
+		* see NH-1633 if you are using SQL native queries
 		
 
 Build 2.0.1.GA
