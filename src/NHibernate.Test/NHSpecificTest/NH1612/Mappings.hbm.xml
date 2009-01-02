@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1612"
+                   default-cascade="save-update">
+
+  <class name="Area" table="areas">
+    <id name="Code" column="code" type="String" length="3">
+      <generator class="assigned"/>
+    </id>
+    <discriminator column="area_type" type="String" length="2" not-null="true" />
+    <version name="Version" column="version" type="Int32" generated="never" unsaved-value="0" />
+    <property name="Name" column="name" type="String" length="50" not-null="true" />
+    <map name="Statistics" table="stats">
+      <key column="area_code" />
+      <index column="year" type="Int32" />
+      <composite-element class="AreaStatistics">
+        <property name="CitizenCount" column="citizen_count" type="Int32" />
+        <nested-composite-element name="GDP" class="MonetaryValue">
+          <property name="CurrencySymbol" column="gdp_currency" type="String" length="3" />
+          <property name="Amount" column="gdp_amount" type="double" not-null="false" />
+        </nested-composite-element>
+        <many-to-one name="Reporter" column="reporter_id" class="Person" />
+      </composite-element>
+      <loader query-ref="AreaStatisticsLoader" />
+    </map>
+
+    <subclass name="Country" discriminator-value="CO">
+      <list name="Routes" table="routes" generic="true">
+        <key column="country_code" />
+        <index column="route_no" />
+        <element column="name" type="String" length="50" />
+        <loader query-ref="CountryRouteLoader" />
+      </list>
+
+      <bag name="Cities" table="cities" inverse="true" generic="true">
+        <key column="country_code" />
+        <one-to-many class="City" />
+        <loader query-ref="CountryCityLoader" />
+      </bag>
+    </subclass>
+
+    <subclass name="City" discriminator-value="CI">
+      <!-- Cascading saves disabled, because it causes exceptions -->
+      <many-to-one name="Country" column="country_code" class="Country" />
+    </subclass>
+  </class>
+
+  <class name="Person" table="persons">
+    <id name="PersonId" column="id">
+      <generator class="assigned" />
+    </id>
+    <version name="Version" column="version" type="Int32" generated="never" unsaved-value="0" />
+    <property name="Name" type="String" length="100" />
+  </class>
+  
+  <!-- 
+    Collection loaders
+    -->
+
+  <sql-query name="CountryRouteLoader" xml:space="preserve">
+    <load-collection role="Country.Routes" alias="r" />
+    SELECT  {r.*}
+    FROM    routes r 
+    WHERE   r.country_code = :country_code
+  </sql-query>
+
+  <sql-query name="CountryCityLoader" xml:space="preserve">
+    <load-collection role="Country.Cities" alias="ci" />
+    SELECT  {ci.*}
+    FROM    areas ci
+    WHERE   ci.country_code = :country_code
+    AND     ci.area_type = 'CI'
+  </sql-query>
+
+  <sql-query name="CountryStatisticsLoader" xml:space="preserve">
+    <load-collection role="Area.Statistics" alias="s">
+      <return-property name="key" column="code" />
+      <return-property name="index" column="year" />
+      <return-property name="element.CitizenCount" column="citizen_count" />
+      <return-property name="element.GDP">
+        <return-column name="gdp_currency" />
+        <return-column name="gdp_amount" />
+      </return-property>
+      <return-property name="element.Reporter" column="reporter_id" />
+    </load-collection>
+    SELECT  area_code
+        ,   year
+        ,   citizen_count
+        ,   gdp_currency
+        ,   gdp_amount
+        ,   reporter_id
+    FROM    stats
+    WHERE   area_code = :area_code
+  </sql-query>
+
+
+    <!-- 
+    Entity queries with non-lazy loading of collections 
+    -->
+
+  <sql-query name="LoadCountryRoutesWithSimpleHbmAliasInjection" xml:space="preserve">
+    <return class="Country" alias="c" />
+    <return-join alias="r" property="c.Routes" />
+    SELECT  {c.*}
+        ,   {r.*}
+    FROM    areas c
+    LEFT OUTER JOIN routes r 
+    ON      c.code = r.country_code
+    WHERE   c.code = :country_code
+  </sql-query>
+
+  <sql-query name="LoadCountryRoutesWithCustomAliases" xml:space="preserve">
+    <return class="Country" alias="c">
+      <return-property name="id" column="code" />
+      <return-property name="Version" column="version" />
+      <return-property name="Name" column="country_name" />
+    </return>
+    <return-join property="c.Routes" alias="r">
+      <return-property name="key" column="country_code" />
+      <return-property name="index" column="route_no" />
+      <return-property name="element" column="route_name" />
+    </return-join>
+    SELECT  c.code
+        ,   c.version
+        ,   c.name AS country_name
+        ,   r.country_code
+        ,   r.route_no
+        ,   r.name AS route_name
+    FROM    areas c
+    LEFT OUTER JOIN routes r 
+    ON      c.code = r.country_code
+    WHERE   c.code = :country_code
+  </sql-query>
+
+  <sql-query name="LoadCountryCitiesWithSimpleHbmAliasInjection" xml:space="preserve">
+    <return class="Country" alias="co" />
+    <return-join property="co.Cities" alias="ci" />
+    SELECT  {co.*}
+        ,   {ci.*}
+    FROM    areas co
+    LEFT OUTER JOIN areas ci
+    ON      ci.country_code = co.code
+    AND     ci.area_type = 'CI'
+    WHERE   co.code = :country_code
+    AND     co.area_type = 'CO'
+  </sql-query>
+
+  <sql-query name="LoadCountryCitiesWithComplexHbmAliasInjection" xml:space="preserve">
+    <return class="Country" alias="co" />
+    <return-join property="co.Cities" alias="ci" />
+    SELECT  co.code AS {co.id}
+        ,   co.version AS {co.Version}
+        ,   co.name AS {co.Name}
+        ,   ci.country_code AS {ci.key}
+        ,   ci.code AS {ci.element}
+        ,   ci.code AS {ci.element.id}
+        ,   ci.version AS {ci.element.Version}
+        ,   ci.name AS {ci.element.Name}
+        ,   ci.country_code AS {ci.element.Country}
+    FROM    areas co
+    LEFT OUTER JOIN areas ci
+    ON      ci.country_code = co.code
+    AND     ci.area_type = 'CI'
+    WHERE   co.code = :country_code
+    AND     co.area_type = 'CO'
+  </sql-query>
+
+  <sql-query name="LoadCountryCitiesWithCustomAliases" xml:space="preserve">
+    <return class="Country" alias="co">
+      <return-property name="id" column="country_code" />
+      <return-property name="Version" column="country_version" />
+      <return-property name="Name" column="country_name" />
+    </return>
+    <return-join property="co.Cities" alias="ci">
+      <return-property name="key" column="country_code" />
+      <return-property name="element" column="city_code" />
+      <return-property name="element.id" column="city_code" />
+      <return-property name="element.Version" column="city_version" />
+      <return-property name="element.Name" column="city_name" />
+      <return-property name="element.Country" column="country_name" />
+    </return-join>
+    SELECT  co.code AS country_code
+        ,   co.version AS country_version
+        ,   co.name AS country_name
+        ,   ci.code AS city_code
+        ,   ci.version AS city_version
+        ,   ci.name AS city_name
+    FROM    areas co
+    LEFT OUTER JOIN areas ci
+    ON      ci.country_code = co.code
+    AND     ci.area_type = 'CI'
+    WHERE   co.code = :country_code
+    AND     co.area_type = 'CO'
+  </sql-query>
+
+  <sql-query name="LoadAreaStatisticsWithSimpleHbmAliasInjection" xml:space="preserve">
+    <return class="Area" alias="a" />
+    <return-join property="a.Statistics" alias="s" />
+    SELECT  {a.*}
+        ,   {s.*}
+    FROM    areas a
+    LEFT OUTER JOIN stats s 
+    ON      a.code = s.area_code
+    WHERE   a.code = :country_code
+  </sql-query>
+
+  <sql-query name="LoadAreaStatisticsWithComplexHbmAliasInjection" xml:space="preserve">
+    <return class="Area" alias="a" />
+    <return-join property="a.Statistics" alias="s" />
+    SELECT  a.code AS {a.id}
+        ,   a.area_type AS {a.class}
+        ,   a.version AS {a.Version}
+        ,   a.name AS {a.Name}
+        ,   s.area_code AS {s.key}
+        ,   s.year AS {s.index}
+        ,   s.citizen_count AS {s.element.CitizenCount}
+        ,   s.gdp_currency AS {s.element.GDP.CurrencySymbol}
+        ,   s.gdp_amount AS {s.element.GDP.Amount}
+        ,   s.reporter_id AS {s.element.Reporter}
+    FROM    areas a
+    LEFT OUTER JOIN stats s 
+    ON      a.code = s.area_code
+    WHERE   a.code = :country_code
+  </sql-query>
+
+  <sql-query name="LoadAreaStatisticsWithCustomAliases" xml:space="preserve">
+    <return class="Area" alias="a">
+      <return-discriminator column="area_type" />
+      <return-property name="id" column="code" />
+      <return-property name="Version" column="version" />
+      <return-property name="Name" column="name" />
+    </return>
+    <return-join property="a.Statistics" alias="s">
+      <return-property name="key" column="code" />
+      <return-property name="index" column="year" />
+      <return-property name="element.CitizenCount" column="citizen_count" />
+      <return-property name="element.GDP">
+        <return-column name="gdp_currency" />
+        <return-column name="gdp_amount" />
+      </return-property>
+      <return-property name="element.Reporter" column="reporter_id" />
+    </return-join>
+    SELECT  a.code
+        ,   a.area_type
+        ,   a.version
+        ,   a.name
+        ,   s.year
+        ,   s.citizen_count
+        ,   s.gdp_currency
+        ,   s.gdp_amount
+        ,   s.reporter_id
+    FROM    areas a
+    LEFT OUTER JOIN stats s 
+    ON      a.code = s.area_code
+    WHERE   a.code = :country_code
+  </sql-query>
+
+  <sql-query name="LoadAreaStatisticsWithFaultyHbmAliasInjection" xml:space="preserve">
+    <return class="Area" alias="a" />
+    <return-join property="a.Statistics" alias="s" />
+    SELECT  a.code AS {a.id}
+        ,   a.area_type AS {a.class}
+        ,   a.version AS {a.Version}
+        ,   a.name AS {a.Name}
+        ,   s.area_code AS {s.key}
+        ,   s.year AS {s.index}
+        ,   s.citizen_count AS {s.element.CitizenCountMisspelled}
+        ,   s.gdp_currency AS {s.element.GDP.CurrencySymbol}
+        ,   s.gdp_amount AS {s.element.GDP.Amount}
+    FROM    areas a
+    LEFT OUTER JOIN stats s 
+    ON      a.code = s.area_code
+    WHERE   a.code = :country_code
+  </sql-query>
+
+
+  <!-- 
+    Update queries
+    -->
+
+  <sql-query name="UpdateQueryWithoutResults">
+    -- NOP
+  </sql-query>
+
+
+  <!-- 
+    Scalar queries
+    -->
+
+  <sql-query name="ScalarQueryWithDefinedResultset">
+    <return-scalar column="result" type="Int32" />
+    SELECT 2 AS result
+  </sql-query>
+
+  <sql-query name="ScalarQueryWithDefinedResultsetButNoResults">
+    <!-- Pathetic case, query declares resultset but does not deliver the goods -->
+    <return-scalar column="dummy" type="Int32" />
+    <return class="Area" alias="a" />
+    -- NOP
+  </sql-query>
+
+  <sql-query name="ScalarQueryWithUndefinedResultset">
+    SELECT 1
+  </sql-query>
+</hibernate-mapping>
