@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 
 using NHibernate.Engine.Query.Sql;
@@ -8,7 +7,7 @@ namespace NHibernate.Engine
 	public class ResultSetMappingDefinition
 	{
 		private readonly string name;
-		private readonly IList<INativeSQLQueryReturn> queryReturns = new List<INativeSQLQueryReturn>();
+		private readonly List<INativeSQLQueryReturn> queryReturns = new List<INativeSQLQueryReturn>();
 
 		public ResultSetMappingDefinition(string name)
 		{
@@ -22,14 +21,15 @@ namespace NHibernate.Engine
 
 		public void AddQueryReturn(INativeSQLQueryReturn queryReturn)
 		{
-			queryReturns.Add(queryReturn);
+			if (queryReturn != null)
+			{
+				queryReturns.Add(queryReturn);
+			}
 		}
 
 		public INativeSQLQueryReturn[] GetQueryReturns()
 		{
-			INativeSQLQueryReturn[] result = new INativeSQLQueryReturn[queryReturns.Count];
-			queryReturns.CopyTo(result, 0);
-			return result;
+			return queryReturns.ToArray();
 		}
 	}
 }
