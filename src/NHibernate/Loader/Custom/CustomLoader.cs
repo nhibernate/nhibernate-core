@@ -368,7 +368,8 @@ namespace NHibernate.Loader.Custom
 			public object BuildResultRow(object[] data, IDataReader resultSet, bool hasTransformer, ISessionImplementor session)
 			{
 				object[] resultRow;
-				if (!hasScalars)
+				// NH Different behavior (patched in NH-1612 to solve Hibernate issue HHH-2831).
+				if (!hasScalars && hasTransformer)
 				{
 					resultRow = data;
 				}

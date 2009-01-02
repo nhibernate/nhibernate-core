@@ -214,7 +214,8 @@ namespace NHibernate.Test.Extralazy
 
 			IList results = s.GetNamedQuery("UserSessionData").SetParameter("uname", "%in").List();
 			Assert.AreEqual(2, results.Count);
-			gavin = (User) ((object[]) results[0])[0];
+			// NH Different behavior : NH1612, HHH-2831
+			gavin = (User)results[0];
 			Assert.AreEqual("gavin", gavin.Name);
 			Assert.AreEqual(2, gavin.Session.Count);
 			t.Commit();
