@@ -1385,14 +1385,15 @@ namespace NHibernate.Persister.Collection
 
 		public string[] GetCollectionPropertyColumnAliases(string propertyName, string suffix)
 		{
-			string[] rawAliases = (string[]) collectionPropertyColumnAliases[propertyName];
-
-			if (rawAliases == null)
+			object aliases;
+			collectionPropertyColumnAliases.TryGetValue(propertyName, out aliases);
+			if (aliases == null)
 			{
 				return null;
 			}
+			var rawAliases = (string[]) aliases;
 
-			string[] result = new string[rawAliases.Length];
+			var result = new string[rawAliases.Length];
 			for (int i = 0; i < rawAliases.Length; i++)
 			{
 				result[i] = new Alias(suffix).ToUnquotedAliasString(rawAliases[i], dialect);
