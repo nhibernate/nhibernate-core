@@ -18,7 +18,7 @@ namespace NHibernate.Loader
 		private readonly IDictionary<string, string[]> userProvidedAliases;
 
 		public GeneratedCollectionAliases(IDictionary<string, string[]> userProvidedAliases, ICollectionPersister persister,
-		                                  string suffix)
+																			string suffix)
 		{
 			this.suffix = suffix;
 			this.userProvidedAliases = userProvidedAliases;
@@ -27,13 +27,31 @@ namespace NHibernate.Loader
 
 			indexAliases = GetUserProvidedAliases("index", persister.GetIndexColumnAliases(suffix));
 
-			elementAliases = GetUserProvidedAliases("element", persister.GetElementColumnAliases(suffix));
+			// NH-1612: Add aliases for all composite element properties to support access
+			// to individual composite element properties in <return-property> elements.
+			elementAliases = persister.ElementType.IsComponentType
+			                 	? GetUserProvidedCompositeElementAliases(persister.GetElementColumnAliases(suffix))
+			                 	: GetUserProvidedAliases("element", persister.GetElementColumnAliases(suffix));
 
 			identifierAlias = GetUserProvidedAlias("id", persister.GetIdentifierColumnAlias(suffix));
 		}
 
 		public GeneratedCollectionAliases(ICollectionPersister persister, string str)
 			: this(new CollectionHelper.EmptyMapClass<string, string[]>(), persister, str) {}
+
+		private string[] GetUserProvidedCompositeElementAliases(string[] defaultAliases)
+		{
+			var aliases = new List<string>();
+			foreach (KeyValuePair<string, string[]> userProvidedAlias in userProvidedAliases)
+			{
+				if (userProvidedAlias.Key.StartsWith("element."))
+				{
+					aliases.AddRange(userProvidedAlias.Value);
+				}
+			}
+
+			return aliases.Count > 0 ? aliases.ToArray() : defaultAliases;
+		}
 
 		/// <summary>
 		/// Returns the suffixed result-set column-aliases for columns making up the key for this collection (i.e., its FK to

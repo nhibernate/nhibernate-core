@@ -131,6 +131,7 @@ namespace NHibernate.Loader.Custom.Sql
 			ISqlLoadableCollection collectionPersister = context.GetCollectionPersisterByAlias(aliasName);
 			string collectionSuffix = context.GetCollectionSuffixByAlias(aliasName);
 
+			// NH Different behavior for NH-1612
 			if ("*".Equals(propertyName))
 			{
 				if (fieldResults.Count != 0)
@@ -140,37 +141,50 @@ namespace NHibernate.Loader.Custom.Sql
 
 				string selectFragment = collectionPersister.SelectFragment(aliasName, collectionSuffix);
 				aliasesFound++;
-				return selectFragment + ", " + ResolveProperties(aliasName, propertyName);
-			}
-			else if ("element.*".Equals(propertyName))
-			{
-				return ResolveProperties(aliasName, "*");
-			}
-			else
-			{
-				string[] columnAliases;
 
-				// Let return-propertys override whatever the persister has for aliases.
-				if (!fieldResults.TryGetValue(propertyName,out columnAliases))
-				{
-					columnAliases = collectionPersister.GetCollectionPropertyColumnAliases(propertyName, collectionSuffix);
-				}
-
-				if (columnAliases == null || columnAliases.Length == 0)
-				{
-					throw new QueryException("No column name found for property [" + propertyName + "] for alias [" + aliasName + "]",
-					                         originalQueryString);
-				}
-				if (columnAliases.Length != 1)
-				{
-					// TODO: better error message since we actually support composites if names are explicitly listed.
-					throw new QueryException(
-						"SQL queries only support properties mapped to a single column - property [" + propertyName + "] is mapped to "
-						+ columnAliases.Length + " columns.", originalQueryString);
-				}
-				aliasesFound++;
-				return columnAliases[0];
+				// Collection may just contain elements and no entities, in which case resolution of
+				// collection properties is enough.
+				return collectionPersister.ElementType.IsEntityType
+				       	? selectFragment + ", " + ResolveProperties(aliasName, "*")
+				       	: selectFragment;
 			}
+
+			if (propertyName.StartsWith("element."))
+			{
+				string elementPropertyName = propertyName.Substring("element.".Length);
+
+				if (collectionPersister.ElementType.IsEntityType)
+				{
+					return ResolveProperties(aliasName, elementPropertyName);
+				}
+				else if (elementPropertyName == "*")
+				{
+					throw new QueryException("Using element.* syntax is only supported for entity elements.");
+				}
+			}
+
+			string[] columnAliases;
+
+			// Let return-propertys override whatever the persister has for aliases.
+			if (!fieldResults.TryGetValue(propertyName, out columnAliases))
+			{
+				columnAliases = collectionPersister.GetCollectionPropertyColumnAliases(propertyName, collectionSuffix);
+			}
+
+			if (columnAliases == null || columnAliases.Length == 0)
+			{
+				throw new QueryException("No column name found for property [" + propertyName + "] for alias [" + aliasName + "]",
+				                         originalQueryString);
+			}
+			if (columnAliases.Length != 1)
+			{
+				// TODO: better error message since we actually support composites if names are explicitly listed.
+				throw new QueryException(
+					"SQL queries only support properties mapped to a single column - property [" + propertyName + "] is mapped to "
+					+ columnAliases.Length + " columns.", originalQueryString);
+			}
+			aliasesFound++;
+			return columnAliases[0];
 		}
 
 		private string ResolveProperties(string aliasName, string propertyName)

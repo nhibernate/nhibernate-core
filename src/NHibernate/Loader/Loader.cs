@@ -392,11 +392,11 @@ namespace NHibernate.Loader
 			int entitySpan = EntityPersisters.Length;
 
 			List<object> hydratedObjects = entitySpan == 0 ? null : new List<object>(entitySpan * 10);
-			
+
 			IDbCommand st = PrepareQueryCommand(queryParameters, false, session);
 
-			IDataReader rs =
-				GetResultSet(st, queryParameters.HasAutoDiscoverScalarTypes, queryParameters.Callable, selection, session);
+			IDataReader rs = GetResultSet(st, queryParameters.HasAutoDiscoverScalarTypes, queryParameters.Callable, selection,
+			                              session);
 
 			// would be great to move all this below here into another method that could also be used
 			// from the new scrolling stuff.
@@ -428,9 +428,8 @@ namespace NHibernate.Loader
 						log.Debug("result set row: " + count);
 					}
 
-					object result =
-						GetRowFromResultSet(rs, session, queryParameters, lockModeArray, optionalObjectKey, hydratedObjects, keys,
-						                    returnProxies);
+					object result = GetRowFromResultSet(rs, session, queryParameters, lockModeArray, optionalObjectKey, hydratedObjects,
+					                                    keys, returnProxies);
 					results.Add(result);
 
 					if (createSubselects)
@@ -445,11 +444,11 @@ namespace NHibernate.Loader
 					log.Debug(string.Format("done processing result set ({0} rows)", count));
 				}
 			}
-            catch(Exception e)
-            {
-                e.Data["actual-sql-query"] = st.CommandText;
-                throw;
-            }
+			catch (Exception e)
+			{
+				e.Data["actual-sql-query"] = st.CommandText;
+				throw;
+			}
 			finally
 			{
 				session.Batcher.CloseCommand(st, rs);

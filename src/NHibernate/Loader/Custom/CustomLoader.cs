@@ -369,7 +369,7 @@ namespace NHibernate.Loader.Custom
 			{
 				object[] resultRow;
 				// NH Different behavior (patched in NH-1612 to solve Hibernate issue HHH-2831).
-				if (!hasScalars && hasTransformer)
+				if (!hasScalars && (hasTransformer || data.Length == 0))
 				{
 					resultRow = data;
 				}

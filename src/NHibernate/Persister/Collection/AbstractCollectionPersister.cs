@@ -1386,8 +1386,7 @@ namespace NHibernate.Persister.Collection
 		public string[] GetCollectionPropertyColumnAliases(string propertyName, string suffix)
 		{
 			object aliases;
-			collectionPropertyColumnAliases.TryGetValue(propertyName, out aliases);
-			if (aliases == null)
+			if (!collectionPropertyColumnAliases.TryGetValue(propertyName, out aliases))
 			{
 				return null;
 			}
@@ -1425,13 +1424,29 @@ namespace NHibernate.Persister.Collection
 
 			if (type.IsComponentType)
 			{
-				IAbstractComponentType ct = (IAbstractComponentType) type;
+				// NH-1612: Recursively add column aliases for nested components to support the selection
+				// of individual component properties in native SQL queries. This also seems to provide
+				// a more complete solution to HHH-1019 (http://opensource.atlassian.com/projects/hibernate/browse/HHH-1019)
+				// because it works for <load-collection> and <return-join>.
+				int columnIndex = 0;
+
+				var ct = (IAbstractComponentType) type;
 				string[] propertyNames = ct.PropertyNames;
-				for (int i = 0; i < propertyNames.Length; i++)
+				for (int propertyIndex = 0; propertyIndex < propertyNames.Length; propertyIndex++)
 				{
-					string name = propertyNames[i];
-					collectionPropertyColumnAliases[aliasName + "." + name] = columnAliases[i];
-					collectionPropertyColumnNames[aliasName + "." + name] = columnNames[i];
+					string name = propertyNames[propertyIndex];
+					IType propertyType = ct.Subtypes[propertyIndex];
+					int propertyColSpan = propertyType.IsComponentType
+					                      	? ((IAbstractComponentType) propertyType).PropertyNames.Length
+					                      	: 1;
+
+					var propertyColumnAliases = new string[propertyColSpan];
+					var propertyColumnNames = new string[propertyColSpan];
+					System.Array.Copy(columnAliases, columnIndex, propertyColumnAliases, 0, propertyColSpan);
+					System.Array.Copy(columnNames, columnIndex, propertyColumnNames, 0, propertyColSpan);
+					InitCollectionPropertyMap(aliasName + "." + name, propertyType, propertyColumnAliases, propertyColumnNames);
+
+					columnIndex += propertyColSpan;
 				}
 			}
 		}

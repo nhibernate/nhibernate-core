@@ -75,7 +75,7 @@
 
   <sql-query name="AreaStatisticsLoader" xml:space="preserve">
     <load-collection role="Area.Statistics" alias="s">
-      <return-property name="key" column="code" />
+      <return-property name="key" column="area_code" />
       <return-property name="index" column="year" />
       <return-property name="element.CitizenCount" column="citizen_count" />
       <return-property name="element.GDP">
