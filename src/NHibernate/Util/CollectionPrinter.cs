@@ -24,7 +24,10 @@ namespace NHibernate.Util
 			}
 			else
 			{
-				builder.Append(value);
+				builder
+					.Append("'")
+					.Append(value)
+					.Append("'");
 			}
 		}
 

@@ -50,7 +50,7 @@ namespace NHibernate.Test.QueryTest
 		}
 
 		[Test]
-		[ExpectedException(typeof(QueryException), ExpectedMessage = "Not all named parameters have been set: [ids] [from Item i where i.Id in (:ids)]")]
+		[ExpectedException(typeof(QueryException), ExpectedMessage = "Not all named parameters have been set: ['ids'] [from Item i where i.Id in (:ids)]")]
 		public void NH_1085_WillGiveReasonableErrorIfBadParameterName()
 		{
 			using (ISession s = sessions.OpenSession())
