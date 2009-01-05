@@ -731,10 +731,15 @@ namespace NHibernate.Impl
 		public void Dispose()
 		{
 			log.Debug("running IStatelessSession.Dispose()");
+			if(TakingPartInDtcTransaction)
+			{
+				shouldCloseSessionOnDtcTransactionCompleted = true;
+				return;
+			}
 			Dispose(true);
 		}
 
-		private void Dispose(bool isDisposing)
+		protected override void Dispose(bool isDisposing)
 		{
 			if (_isAlreadyDisposed)
 			{

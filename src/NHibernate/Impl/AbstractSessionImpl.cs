@@ -26,6 +26,15 @@ namespace NHibernate.Impl
 		private bool closed = false;
 		private System.Transactions.Transaction ambientTransation;
 		private bool isAlreadyDisposed;
+		protected bool shouldCloseSessionOnDtcTransactionCompleted;
+
+		protected bool TakingPartInDtcTransaction
+		{
+			get
+			{
+				return ambientTransation != null;
+			}
+		}
 
 		internal AbstractSessionImpl() { }
 
@@ -246,7 +255,8 @@ namespace NHibernate.Impl
 			BeforeTransactionCompletion(null);
 			if (FlushMode != FlushMode.Never)
 			{
-				Flush();
+				using (ConnectionManager.FlushingFromDtcTransaction)
+					Flush();
 			} 
 			preparingEnlistment.Prepared();
 		}
@@ -282,9 +292,13 @@ namespace NHibernate.Impl
 			{
 				bool wasSuccessful = e.Transaction.TransactionInformation.Status == TransactionStatus.Committed;
 				AfterTransactionCompletion(wasSuccessful, null);
+				if (shouldCloseSessionOnDtcTransactionCompleted)
+					Dispose(true);
 			};
 			ambientTransation.EnlistVolatile(this, EnlistmentOptions.None);
 		}
+
+		protected abstract void Dispose(bool disposing);
 
 		#endregion
 	}

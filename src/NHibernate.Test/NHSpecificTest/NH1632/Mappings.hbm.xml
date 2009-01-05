@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   namespace="NHibernate.Test.NHSpecificTest.NH1632" 
+				   assembly="NHibernate.Test"
+>
+	<class name="Nums" table="nums">
+		<id name="ID">
+			<generator class="assigned"/>
+		</id>
+		<property name="NumA"/>
+		<property name="NumB"/>
+		<property name="Sum" access="readonly"/>
+	</class>
+</hibernate-mapping>

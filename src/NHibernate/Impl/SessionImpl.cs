@@ -1363,6 +1363,11 @@ namespace NHibernate.Impl
 		public void Dispose()
 		{
 			log.Debug("running ISession.Dispose()");
+			if (TakingPartInDtcTransaction)
+			{
+				shouldCloseSessionOnDtcTransactionCompleted = true;
+				return;
+			}
 			Dispose(true);
 		}
 
@@ -1375,7 +1380,7 @@ namespace NHibernate.Impl
 		/// If this Session is being Finalized (<c>isDisposing==false</c>) then make sure not
 		/// to call any methods that could potentially bring this Session back to life.
 		/// </remarks>
-		private void Dispose(bool isDisposing)
+		protected override void Dispose(bool isDisposing)
 		{
 			if (IsAlreadyDisposed)
 			{

@@ -44,6 +44,8 @@ namespace NHibernate.AdoNet
 		[NonSerialized]
 		private bool isFlushing;
 
+		private bool flushingFromDtcTransaction;
+
 		public ConnectionManager(
 			ISessionImplementor session,
 			IDbConnection suppliedConnection,
@@ -256,7 +258,7 @@ namespace NHibernate.AdoNet
 
 		private void AggressiveRelease()
 		{
-			if (ownConnection)
+			if (ownConnection && flushingFromDtcTransaction == false)
 			{
 				log.Debug("aggressively releasing database connection");
 				if (connection != null)
@@ -387,6 +389,30 @@ namespace NHibernate.AdoNet
 		public IBatcher Batcher
 		{
 			get { return batcher; }
+		}
+
+		public IDisposable FlushingFromDtcTransaction
+		{
+			get
+			{
+				flushingFromDtcTransaction = true;
+				return new StopFlushingFromDtcTransaction(this);
+			}
+		}
+
+		private class StopFlushingFromDtcTransaction : IDisposable
+		{
+			private readonly ConnectionManager manager;
+
+			public StopFlushingFromDtcTransaction(ConnectionManager manager)
+			{
+				this.manager = manager;
+			}
+
+			public void Dispose()
+			{
+				manager.flushingFromDtcTransaction = false;
+			}
 		}
 	}
 }
