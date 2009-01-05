@@ -5,6 +5,8 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Stats
 {
+	using Criterion;
+
 	[TestFixture]
 	public class SessionStatsFixture : TestCase
 	{
@@ -35,6 +37,32 @@ namespace NHibernate.Test.Stats
 		{
 			s.Delete("from Country");
 			s.Delete("from Continent");
+		}
+
+		[Test]
+		public void Can_use_cached_query_that_return_no_results()
+		{
+			Assert.IsTrue(sessions.Settings.IsQueryCacheEnabled);
+
+			using(ISession s = OpenSession())
+			{
+				IList list = s.CreateCriteria(typeof (Country))
+					.Add(Restrictions.Eq("Name", "Narnia"))
+					.SetCacheable(true)
+					.List();
+
+				Assert.AreEqual(0, list.Count);
+			}
+
+			using (ISession s = OpenSession())
+			{
+				IList list = s.CreateCriteria(typeof(Country))
+					.Add(Restrictions.Eq("Name", "Narnia"))
+					.SetCacheable(true)
+					.List();
+
+				Assert.AreEqual(0, list.Count);
+			}
 		}
 
 		[Test]
