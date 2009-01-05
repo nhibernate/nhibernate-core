@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
 
@@ -359,5 +360,23 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.AreEqual(" from table where (col = test) and id in (select id from foo order by bar)", sql.GetSubselectString().ToString());
 		}
 
+		[Test]
+		public void ParameterPropertyShouldReturnNewInstances()
+		{
+			Parameter[] parameters1 = new Parameter[1];
+			Parameter[] parameters2 = new Parameter[1];
+			
+			SqlString parameterString1 = SqlString.Parameter;
+			parameterString1.Parts.CopyTo(parameters1, 0);
+
+			SqlString parameterString2 = SqlString.Parameter;
+			parameterString2.Parts.CopyTo(parameters2, 0);
+
+			Assert.AreEqual(parameterString1, parameterString2);
+			Assert.AreNotSame(parameterString1, parameterString2);
+
+			parameters1[0].OriginalPositionInQuery = 231;
+			Assert.IsNull(parameters2[0].OriginalPositionInQuery);
+		}
 	}
 }

@@ -24,7 +24,11 @@ namespace NHibernate.SqlCommand
 		private readonly object[] sqlParts;
 
 		public static readonly SqlString Empty = new SqlString(new object[0]);
-		public static readonly SqlString Parameter = new SqlString(SqlCommand.Parameter.Placeholder);
+		
+		public static SqlString Parameter
+		{
+			get { return new SqlString(SqlCommand.Parameter.Placeholder); }
+		}
 
 		public SqlString(string sqlPart)
 		{
