@@ -415,9 +415,15 @@ namespace NHibernate.Event.Default
 				if (factory.Statistics.IsStatisticsEnabled)
 				{
 					if (ce == null)
+					{
 						factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
+						log.DebugFormat("Entity cache miss: {0}", ck);
+					}
 					else
+					{
 						factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
+						log.DebugFormat("Entity cache hit: {0}", ck);
+					}
 				}
 
 				if (ce != null)

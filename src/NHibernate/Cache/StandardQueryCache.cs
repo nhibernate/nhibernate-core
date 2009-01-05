@@ -70,7 +70,7 @@ namespace NHibernate.Cache
 
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("caching query results in region: " + regionName);
+				log.DebugFormat("caching query results in region: '{0}'; {1}", regionName, key);
 			}
 
 			IList cacheable = new List<object>(result.Count + 1);
@@ -95,23 +95,23 @@ namespace NHibernate.Cache
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("checking cached query results in region: " + regionName);
+				log.DebugFormat("checking cached query results in region: '{0}'; {1}", regionName, key);
 			}
 			IList cacheable = (IList)queryCache.Get(key);
 			if (cacheable == null)
 			{
-				log.Debug("query results were not found in cache");
+				log.DebugFormat("query results were not found in cache: {0}", key);
 				return null;
 			}
 			long timestamp = (long)cacheable[0];
-			log.Debug("Checking query spaces for up-to-dateness [" + spaces + "]");
+			log.DebugFormat("Checking query spaces for up-to-dateness [{0}]", spaces);
 			if (!isNaturalKeyLookup && !IsUpToDate(spaces, timestamp))
 			{
-				log.Debug("cached query results were not up to date");
+				log.DebugFormat("cached query results were not up to date for: {0}", key);
 				return null;
 			}
 
-			log.Debug("returning cached query results");
+			log.DebugFormat("returning cached query results for: {0}", key);
 			for (int i = 1; i < cacheable.Count; i++)
 			{
 				if (returnTypes.Length == 1)
