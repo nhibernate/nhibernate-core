@@ -4,9 +4,12 @@
 				   assembly="NHibernate.Test"
 >
 	<class name="Nums" table="nums">
+		<cache usage="read-write" />
+		
 		<id name="ID">
 			<generator class="assigned"/>
 		</id>
+		
 		<property name="NumA"/>
 		<property name="NumB"/>
 		<property name="Sum" access="readonly"/>

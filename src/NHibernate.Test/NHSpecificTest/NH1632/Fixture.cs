@@ -4,6 +4,8 @@ using NUnit.Framework.SyntaxHelpers;
 namespace NHibernate.Test.NHSpecificTest.NH1632
 {
 	using System.Transactions;
+	using Cache;
+	using Cfg;
 
 	[TestFixture]
 	public class Fixture : BugTestCase
@@ -11,6 +13,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 		public override string BugNumber
 		{
 			get { return "NH1632"; }
+		}
+
+		protected override void Configure(Configuration configuration)
+		{
+			configuration
+				.SetProperty(Environment.UseSecondLevelCache, "true")
+				.SetProperty(Environment.CacheProvider, typeof (HashtableCacheProvider).AssemblyQualifiedName);
 		}
 
 		[Test]
@@ -28,6 +37,54 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			}
 
 			Assert.IsFalse(s.IsOpen);
+		}
+
+
+		[Test]
+		public void When_commiting_items_in_DTC_transaction_will_add_items_to_2nd_level_cache()
+		{
+			using (var tx = new TransactionScope())
+			{
+				using (var s = sessions.OpenSession())
+				{
+					s.Save(new Nums {ID = 29, NumA = 1, NumB = 3});
+				}
+				tx.Complete();
+			}
+
+			using (var tx = new TransactionScope())
+			{
+				using (var s = sessions.OpenSession())
+				{
+					var nums = s.Load<Nums>(29);
+					Assert.AreEqual(1, nums.NumA);
+					Assert.AreEqual(3, nums.NumB);
+				}
+				tx.Complete();
+			}
+
+			//closing the connection to ensure we can't really use it.
+			var connection = sessions.ConnectionProvider.GetConnection();
+			sessions.ConnectionProvider.CloseConnection(connection);
+
+			using (var tx = new TransactionScope())
+			{
+				using (var s = sessions.OpenSession(connection))
+				{
+					var nums = s.Load<Nums>(29);
+					Assert.AreEqual(1, nums.NumA);
+					Assert.AreEqual(3, nums.NumB);
+				}
+				tx.Complete();
+			}
+
+			using (var s = sessions.OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var nums = s.Load<Nums>(29);
+				s.Delete(nums);
+				tx.Commit();
+			}
 		}
 
 		[Test]
