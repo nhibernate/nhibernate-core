@@ -17,6 +17,8 @@ using NHibernate.Type;
 
 namespace NHibernate.Impl
 {
+	using log4net;
+
 	/// <summary> Functionality common to stateless and stateful sessions </summary>
 	[Serializable]
 	public abstract class AbstractSessionImpl : ISessionImplementor, IEnlistmentNotification
@@ -27,6 +29,8 @@ namespace NHibernate.Impl
 		private System.Transactions.Transaction ambientTransation;
 		private bool isAlreadyDisposed;
 		protected bool shouldCloseSessionOnDtcTransactionCompleted;
+
+		private static readonly ILog logger = LogManager.GetLogger(typeof (AbstractSessionImpl));
 
 		protected bool TakingPartInDtcTransaction
 		{
@@ -259,10 +263,12 @@ namespace NHibernate.Impl
 					Flush();
 			} 
 			preparingEnlistment.Prepared();
+			logger.Debug("prepared for DTC transaction");
 		}
 
 		void IEnlistmentNotification.Commit(Enlistment enlistment)
 		{
+			logger.Debug("committing DTC transaction");
 			// we have nothing to do here, since it is the actual 
 			// DB connection that will commit the transaction
 			enlistment.Done();
@@ -271,12 +277,14 @@ namespace NHibernate.Impl
 		void IEnlistmentNotification.Rollback(Enlistment enlistment)
 		{
 			AfterTransactionCompletion(false, null);
+			logger.Debug("rolled back DTC transaction"); 
 			enlistment.Done();
 		}
 
 		void IEnlistmentNotification.InDoubt(Enlistment enlistment)
 		{
 			AfterTransactionCompletion(false, null);
+			logger.Debug("DTC transaction is in doubt"); 
 			enlistment.Done();
 		}
 
@@ -287,6 +295,7 @@ namespace NHibernate.Impl
 			if (System.Transactions.Transaction.Current==null)
 				return;
 			ambientTransation = System.Transactions.Transaction.Current;
+			logger.Debug("enlisted into DTC transaction");
 			AfterTransactionBegin(null);
 			ambientTransation.TransactionCompleted += delegate(object sender, TransactionEventArgs e)
 			{
