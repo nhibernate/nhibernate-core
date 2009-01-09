@@ -295,7 +295,7 @@ namespace NHibernate.Impl
 			if (System.Transactions.Transaction.Current==null)
 				return;
 			ambientTransation = System.Transactions.Transaction.Current;
-			logger.Debug("enlisted into DTC transaction");
+			logger.DebugFormat("enlisted into DTC transaction: {0}", ambientTransation.IsolationLevel);
 			AfterTransactionBegin(null);
 			ambientTransation.TransactionCompleted += delegate(object sender, TransactionEventArgs e)
 			{
