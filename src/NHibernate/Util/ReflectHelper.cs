@@ -11,22 +11,14 @@ namespace NHibernate.Util
 	/// <summary>
 	/// Helper class for Reflection related code.
 	/// </summary>
-	public sealed class ReflectHelper
+	public static class ReflectHelper
 	{
-		private const BindingFlags defaultBindingFlags =
-			BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-
 		private static readonly ILog log = LogManager.GetLogger(typeof(ReflectHelper));
 
-		public static BindingFlags AnyVisibilityInstance = BindingFlags.Instance | BindingFlags.Public |
+		public const BindingFlags AnyVisibilityInstance = BindingFlags.Instance | BindingFlags.Public |
 														   BindingFlags.NonPublic;
 
-		private ReflectHelper()
-		{
-			// not creatable
-		}
-
-		private static System.Type[] NoClasses = System.Type.EmptyTypes;
+		private static readonly System.Type[] NoClasses = System.Type.EmptyTypes;
 
 		private static readonly MethodInfo Exception_InternalPreserveStackTrace =
 			typeof(Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -41,7 +33,7 @@ namespace NHibernate.Util
 		{
 			try
 			{
-				MethodInfo equals = clazz.GetMethod("Equals", new System.Type[] { typeof(object) });
+				MethodInfo equals = clazz.GetMethod("Equals", new[] { typeof(object) });
 				if (equals == null)
 				{
 					return false;
@@ -199,7 +191,7 @@ namespace NHibernate.Util
 			}
 			else
 			{
-				if (classFullName != null && classFullName.Length > 0)
+				if (!string.IsNullOrEmpty(classFullName))
 				{
 					Assembly[] ass = AppDomain.CurrentDomain.GetAssemblies();
 					foreach (Assembly a in ass)
@@ -404,9 +396,9 @@ namespace NHibernate.Util
 			throw new InstantiationException(FormatConstructorNotFoundMessage(types), null, type);
 		}
 
-		private static string FormatConstructorNotFoundMessage(IType[] types)
+		private static string FormatConstructorNotFoundMessage(IEnumerable<IType> types)
 		{
-			StringBuilder result = new StringBuilder("no constructor compatible with (");
+			var result = new StringBuilder("no constructor compatible with (");
 			bool first = true;
 			foreach (IType type in types)
 			{
@@ -486,8 +478,6 @@ namespace NHibernate.Util
 		/// </remarks>
 		public static MethodInfo TryGetMethod(IEnumerable<System.Type> types, MethodInfo method)
 		{
-			var bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-
 			// This method will be used when we support multiple proxy interfaces.
 			if (types == null)
 			{
@@ -526,7 +516,7 @@ namespace NHibernate.Util
 
 		private static MethodInfo SafeGetMethod(System.Type type, MethodInfo method, System.Type[] tps)
 		{
-			var bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+			const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
 			try
 			{
