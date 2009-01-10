@@ -48,13 +48,17 @@ namespace NHibernate.Impl
 		{
 			CheckAndUpdateSessionStatus();
 			IEntityPersister persister = Factory.GetEntityPersister(entityName);
+			object loaded = temporaryPersistenceContext.GetEntity(new EntityKey(id, persister, EntityMode.Poco));
+			if(loaded != null)
+			{
+				return loaded;
+			}
 			if (!eager && persister.HasProxy)
 			{
 				return persister.CreateProxy(id, this);
 			}
-			object loaded = temporaryPersistenceContext.GetEntity(new EntityKey(id, persister, EntityMode.Poco));
 			//TODO: if not loaded, throw an exception
-			return loaded ?? Get(entityName, id);
+			return Get(entityName, id);
 		}
 
 		public override object ImmediateLoad(string entityName, object id)

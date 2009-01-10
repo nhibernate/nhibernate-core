@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1640">
+
+	<class name="Entity">
+		<id name="Id">
+			<generator class="assigned"/>
+		</id>
+		<property name="Name" />
+		<many-to-one name="Child" cascade="all"/>
+	</class>
+
+</hibernate-mapping>
