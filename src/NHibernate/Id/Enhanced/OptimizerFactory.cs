@@ -10,7 +10,7 @@ namespace NHibernate.Id.Enhanced
 		public const string HiLo = "hilo";
 		public const string None = "none";
 		public const string Pool = "pooled";
-		private static readonly System.Type[] CtorSignature = new System.Type[] {typeof (System.Type), typeof (int)};
+		private static readonly System.Type[] CtorSignature = new[] {typeof (System.Type), typeof (int)};
 		private static readonly ILog log = LogManager.GetLogger(typeof (OptimizerFactory));
 
 		public static IOptimizer BuildOptimizer(string type, System.Type returnClass, int incrementSize)
@@ -105,13 +105,13 @@ namespace NHibernate.Id.Enhanced
 					{
 						lastSourceValue = callback.NextValue;
 					}
-					hiValue = (lastSourceValue * incrementSize) + 1;
-					value_Renamed = hiValue - incrementSize;
+					hiValue = (lastSourceValue * IncrementSize) + 1;
+					value_Renamed = hiValue - IncrementSize;
 				}
 				else if (value_Renamed >= hiValue)
 				{
 					lastSourceValue = callback.NextValue;
-					hiValue = (lastSourceValue * incrementSize) + 1;
+					hiValue = (lastSourceValue * IncrementSize) + 1;
 				}
 				return Make(value_Renamed++);
 			}
@@ -160,30 +160,21 @@ namespace NHibernate.Id.Enhanced
 
 		public abstract class OptimizerSupport : IOptimizer
 		{
-			protected int incrementSize;
-			protected System.Type returnClass;
-
 			protected OptimizerSupport(System.Type returnClass, int incrementSize)
 			{
 				if (returnClass == null)
 				{
 					throw new HibernateException("return class is required");
 				}
-				this.returnClass = returnClass;
-				this.incrementSize = incrementSize;
+				ReturnClass = returnClass;
+				IncrementSize = incrementSize;
 			}
 
-			public System.Type ReturnClass
-			{
-				get { return returnClass; }
-			}
+			public System.Type ReturnClass { get; protected set; }
 
 			#region IOptimizer Members
 
-			public int IncrementSize
-			{
-				get { return incrementSize; }
-			}
+			public int IncrementSize { get; protected set; }
 
 			public abstract long LastSourceValue { get; }
 
@@ -194,7 +185,7 @@ namespace NHibernate.Id.Enhanced
 
 			protected virtual object Make(long value)
 			{
-				return IdentifierGeneratorFactory.CreateNumber(value, returnClass);
+				return IdentifierGeneratorFactory.CreateNumber(value, ReturnClass);
 			}
 		}
 
@@ -254,7 +245,7 @@ namespace NHibernate.Id.Enhanced
 				else if (value_Renamed >= hiValue)
 				{
 					hiValue = callback.NextValue;
-					value_Renamed = hiValue - incrementSize;
+					value_Renamed = hiValue - IncrementSize;
 				}
 				return Make(value_Renamed++);
 			}
