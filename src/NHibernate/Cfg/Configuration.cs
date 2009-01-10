@@ -55,19 +55,13 @@ namespace NHibernate.Cfg
 		private string currentDocumentName;
 
 		protected IDictionary<string, PersistentClass> classes; // entityName, PersistentClass
-		protected IDictionary<string, string> imports;
 		protected IDictionary<string, NHibernate.Mapping.Collection> collections;
 		protected IDictionary<string, Table> tables;
-		protected IDictionary<string, NamedQueryDefinition> namedQueries;
-		protected IDictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
-		protected IDictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
 		protected IList<SecondPassCommand> secondPasses;
 		protected IList<Mappings.PropertyReference> propertyReferences;
 		private IInterceptor interceptor;
 		private IDictionary<string, string> properties;
-		protected IDictionary<string, FilterDefinition> filterDefinitions;
 		protected IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects;
-		protected IDictionary<string, ISQLFunction> sqlFunctions;
 
 		private INamingStrategy namingStrategy = DefaultNamingStrategy.Instance;
 		private MappingsQueue mappingsQueue;
@@ -88,19 +82,19 @@ namespace NHibernate.Cfg
 		protected void Reset()
 		{
 			classes = new Dictionary<string, PersistentClass>(); //new SequencedHashMap(); - to make NH-369 bug deterministic
-			imports = new Dictionary<string, string>();
+			Imports = new Dictionary<string, string>();
 			collections = new Dictionary<string, NHibernate.Mapping.Collection>();
 			tables = new Dictionary<string, Table>();
-			namedQueries = new Dictionary<string, NamedQueryDefinition>();
-			namedSqlQueries = new Dictionary<string, NamedSQLQueryDefinition>();
-			sqlResultSetMappings = new Dictionary<string, ResultSetMappingDefinition>();
+			NamedQueries = new Dictionary<string, NamedQueryDefinition>();
+			NamedSQLQueries = new Dictionary<string, NamedSQLQueryDefinition>();
+			SqlResultSetMappings = new Dictionary<string, ResultSetMappingDefinition>();
 			secondPasses = new List<SecondPassCommand>();
 			propertyReferences = new List<Mappings.PropertyReference>();
-			filterDefinitions = new Dictionary<string, FilterDefinition>();
+			FilterDefinitions = new Dictionary<string, FilterDefinition>();
 			interceptor = emptyInterceptor;
 			properties = Environment.Properties;
 			auxiliaryDatabaseObjects = new List<IAuxiliaryDatabaseObject>();
-			sqlFunctions = new Dictionary<string, ISQLFunction>();
+			SqlFunctions = new Dictionary<string, ISQLFunction>();
 			mappingsQueue = new MappingsQueue();
 			eventListeners = new EventListeners();
 			typeDefs = new Dictionary<string, TypeDef>();
@@ -445,8 +439,8 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public Mappings CreateMappings(Dialect.Dialect dialect)
 		{
-			return new Mappings(classes, collections, tables, namedQueries, namedSqlQueries, sqlResultSetMappings, imports,
-			                    secondPasses, propertyReferences, namingStrategy, typeDefs, filterDefinitions, extendsQueue,
+			return new Mappings(classes, collections, tables, NamedQueries, NamedSQLQueries, SqlResultSetMappings, Imports,
+			                    secondPasses, propertyReferences, namingStrategy, typeDefs, FilterDefinitions, extendsQueue,
 			                    auxiliaryDatabaseObjects, tableNameBinding, columnNameBindingPerTable, defaultAssembly,
 			                    defaultNamespace, dialect);
 		}
@@ -947,10 +941,7 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// The named queries
 		/// </summary>
-		public IDictionary<string, NamedQueryDefinition> NamedQueries
-		{
-			get { return namedQueries; }
-		}
+		public IDictionary<string, NamedQueryDefinition> NamedQueries { get; protected set; }
 
 		private EventListeners GetInitializedEventListeners()
 		{
@@ -1295,7 +1286,7 @@ namespace NHibernate.Cfg
 				{
 					throw new HibernateConfigException("<mapping> element in configuration specifies no attributes");
 				}
-				if (!string.IsNullOrEmpty(mc.Resource))
+				if (!string.IsNullOrEmpty(mc.Resource) && !string.IsNullOrEmpty(mc.Assembly))
 				{
 					log.Debug(hc.SessionFactory.Name + "<-" + mc.Resource + " in " + mc.Assembly);
 					AddResource(mc.Resource, Assembly.Load(mc.Assembly));
@@ -1442,11 +1433,7 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// Get the query language imports (entityName/className -> AssemblyQualifiedName)
 		/// </summary>
-		/// <returns></returns>
-		public IDictionary<string, string> Imports
-		{
-			get { return imports; }
-		}
+		public IDictionary<string, string> Imports { get; protected set; }
 
 		/// <summary>
 		/// Create an object-oriented view of the configuration properties
@@ -1463,7 +1450,7 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public IDictionary<string, NamedSQLQueryDefinition> NamedSQLQueries
 		{
-			get { return namedSqlQueries; }
+			get; protected set;
 		}
 
 		/// <summary>
@@ -1487,17 +1474,15 @@ namespace NHibernate.Cfg
 
 		public IDictionary<string, ResultSetMappingDefinition> SqlResultSetMappings
 		{
-			get { return sqlResultSetMappings; }
+			get;
+			protected set;
 		}
 
-		public IDictionary<string, FilterDefinition> FilterDefinitions
-		{
-			get { return filterDefinitions; }
-		}
+		public IDictionary<string, FilterDefinition> FilterDefinitions { get; protected set; }
 
 		public void AddFilterDefinition(FilterDefinition definition)
 		{
-			filterDefinitions.Add(definition.FilterName, definition);
+			FilterDefinitions.Add(definition.FilterName, definition);
 		}
 
 		public void AddAuxiliaryDatabaseObject(IAuxiliaryDatabaseObject obj)
@@ -1505,14 +1490,11 @@ namespace NHibernate.Cfg
 			auxiliaryDatabaseObjects.Add(obj);
 		}
 
-		public IDictionary<string, ISQLFunction> SqlFunctions
-		{
-			get { return sqlFunctions; }
-		}
+		public IDictionary<string, ISQLFunction> SqlFunctions { get; protected set; }
 
 		public void AddSqlFunction(string functionName, ISQLFunction sqlFunction)
 		{
-			sqlFunctions[functionName] = sqlFunction;
+			SqlFunctions[functionName] = sqlFunction;
 		}
 
 		#region NHibernate-Specific Members
