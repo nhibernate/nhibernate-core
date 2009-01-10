@@ -225,9 +225,9 @@ namespace NHibernate.Dialect
 			{
 				return new SqlStringBuilder()
 					.Add("cast('")
-					.Add(name)
+					.Add(Name)
 					.Add("' as ")
-					.Add(returnType.SqlTypes(factory)[0].ToString())
+					.Add(FunctionReturnType.SqlTypes(factory)[0].ToString())
 					.Add(")")
 					.ToSqlString();
 			}
@@ -241,7 +241,7 @@ namespace NHibernate.Dialect
 
 			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{
-				return new SqlString(name);
+				return new SqlString(Name);
 			}
 		}
 

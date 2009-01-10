@@ -10,36 +10,27 @@ namespace NHibernate.Dialect.Function
 	/// </summary>
 	public class NoArgSQLFunction : ISQLFunction
 	{
-		protected readonly IType returnType = null;
-		protected readonly string name;
-		private readonly bool hasParenthesesIfNoArguments;
-
-		public NoArgSQLFunction(string name, IType returnType) : this(name, returnType, true)
+		public NoArgSQLFunction(string name, IType returnType)
+			: this(name, returnType, true)
 		{
 		}
 
 		public NoArgSQLFunction(string name, IType returnType, bool hasParenthesesIfNoArguments)
 		{
-			this.name = name;
-			this.returnType = returnType;
-			this.hasParenthesesIfNoArguments = hasParenthesesIfNoArguments;
+			Name = name;
+			FunctionReturnType = returnType;
+			HasParenthesesIfNoArguments = hasParenthesesIfNoArguments;
 		}
 
-		protected IType FunctionReturnType
-		{
-			get { return returnType; }
-		}
+		public IType FunctionReturnType { get; protected set; }
 
-		protected string Name
-		{
-			get { return name; }
-		}
+		public string Name { get; protected set; }
 
 		#region ISQLFunction Members
 
 		public IType ReturnType(IType columnType, IMapping mapping)
 		{
-			return returnType;
+			return FunctionReturnType;
 		}
 
 		public bool HasArguments
@@ -47,24 +38,21 @@ namespace NHibernate.Dialect.Function
 			get { return false; }
 		}
 
-		public bool HasParenthesesIfNoArguments
-		{
-			get { return hasParenthesesIfNoArguments; }
-		}
+		public bool HasParenthesesIfNoArguments { get; protected set; }
 
 		public virtual SqlString Render(IList args, ISessionFactoryImplementor factory)
 		{
 			if (args.Count > 0)
 			{
-				throw new QueryException("function takes no arguments: " + name);
+				throw new QueryException("function takes no arguments: " + Name);
 			}
 
-			if (hasParenthesesIfNoArguments)
+			if (HasParenthesesIfNoArguments)
 			{
-				return new SqlString(name + "()");
+				return new SqlString(Name + "()");
 			}
 
-			return new SqlString(name);
+			return new SqlString(Name);
 		}
 
 		#endregion

@@ -260,7 +260,7 @@ namespace NHibernate.Dialect
 
 			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{
-				return new SqlString(name);
+				return new SqlString(Name);
 			}
 		}
 	}
