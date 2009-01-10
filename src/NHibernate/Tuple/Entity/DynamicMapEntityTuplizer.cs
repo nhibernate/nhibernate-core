@@ -17,7 +17,7 @@ namespace NHibernate.Tuple.Entity
 			: base(entityMetamodel, mappingInfo)
 		{
 			// NH different behavior fo NH-1587
-			instantiator = BuildInstantiator(mappingInfo);
+			Instantiator = BuildInstantiator(mappingInfo);
 		}
 
 		public override System.Type ConcreteProxyClass

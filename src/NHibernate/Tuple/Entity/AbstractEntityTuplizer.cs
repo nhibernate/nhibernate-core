@@ -23,7 +23,6 @@ namespace NHibernate.Tuple.Entity
 		protected IGetter[] getters;
 		protected ISetter[] setters;
 		protected bool hasCustomAccessors;
-		protected IInstantiator instantiator;
 		private readonly IProxyFactory proxyFactory;
 		private readonly IAbstractComponentType identifierMapperType;
 
@@ -303,10 +302,7 @@ namespace NHibernate.Tuple.Entity
 		/// <summary> Return the entity-mode handled by this tuplizer instance. </summary>
 		public abstract EntityMode EntityMode { get;}
 
-		protected virtual IInstantiator Instantiator
-		{
-			get { return instantiator; }
-		}
+		protected virtual IInstantiator Instantiator { get; set; }
 
 		/// <summary>Retrieves the defined entity-name for the tuplized entity. </summary>
 		protected virtual string EntityName

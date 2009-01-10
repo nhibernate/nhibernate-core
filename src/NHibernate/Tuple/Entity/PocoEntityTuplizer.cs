@@ -45,7 +45,7 @@ namespace NHibernate.Tuple.Entity
 				// NH different behavior fo NH-1587
 				optimizer = Cfg.Environment.BytecodeProvider.GetReflectionOptimizer(mappedClass, getters, setters);
 			}
-			instantiator = BuildInstantiator(mappedEntity);
+			Instantiator = BuildInstantiator(mappedEntity);
 
 			if (hasCustomAccessors)
 			{
