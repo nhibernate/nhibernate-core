@@ -1,7 +1,6 @@
 using System.Data;
+using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
-using NHibernate.SqlCommand;
-using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
@@ -26,10 +25,10 @@ namespace NHibernate.Dialect
 	///		</item>
 	/// </list>
 	/// </remarks>
-    public class OracleLiteDialect : Oracle9Dialect
+	public class OracleLiteDialect : Oracle9Dialect
 	{
 		/// <summary></summary>
-        public OracleLiteDialect()
+		public OracleLiteDialect()
 		{
 			DefaultProperties[Environment.PrepareSql] = "false";
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.OracleLiteDataClientDriver";
@@ -115,7 +114,12 @@ namespace NHibernate.Dialect
 		/// <summary></summary>
 		public override string GetCreateSequenceString(string sequenceName)
 		{
-			return "create sequence " + sequenceName + " INCREMENT BY 1 START WITH 1";
+			return "create sequence " + sequenceName;
+		}
+
+		protected override string GetCreateSequenceString(string sequenceName, int initialValue, int incrementSize)
+		{
+			return GetCreateSequenceString(sequenceName) + " increment by " + incrementSize + " start with " + initialValue;
 		}
 	}
 }

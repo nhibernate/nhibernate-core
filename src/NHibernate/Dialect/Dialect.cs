@@ -1286,7 +1286,7 @@ namespace NHibernate.Dialect
 		/// dialects should only need to override this method if different key phrases
 		/// are used to apply the allocation information.
 		/// </remarks>
-		protected internal virtual string GetCreateSequenceString(string sequenceName, int initialValue, int incrementSize)
+		protected virtual string GetCreateSequenceString(string sequenceName, int initialValue, int incrementSize)
 		{
 			if (SupportsPooledSequences)
 			{
