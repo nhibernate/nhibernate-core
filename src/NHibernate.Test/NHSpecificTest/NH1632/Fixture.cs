@@ -6,6 +6,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 	using System.Transactions;
 	using Cache;
 	using Cfg;
+	using Engine;
+	using Id;
 
 	[TestFixture]
 	public class Fixture : BugTestCase
@@ -20,6 +22,42 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			configuration
 				.SetProperty(Environment.UseSecondLevelCache, "true")
 				.SetProperty(Environment.CacheProvider, typeof (HashtableCacheProvider).AssemblyQualifiedName);
+		}
+
+		[Test]
+		public void When_using_DTC_HiLo_knows_to_create_isolated_DTC_transaction()
+		{
+			object scalar1, scalar2;
+
+			using (var session = sessions.OpenSession())
+			using (var command = session.Connection.CreateCommand())
+			{
+				command.CommandText = "select next_hi from hibernate_unique_key with (updlock, rowlock)";
+				scalar1 = command.ExecuteScalar();
+			}
+
+			using (var tx = new TransactionScope())
+			{
+				var generator = sessions.GetIdentifierGenerator(typeof(Person).FullName);
+				Assert.IsInstanceOfType(typeof(TableHiLoGenerator), generator);
+
+				using(var session = sessions.OpenSession())
+				{
+					var id = generator.Generate((ISessionImplementor) session, new Person());
+				}
+
+				// intentionally dispose without committing
+				tx.Dispose();
+			}
+
+			using (var session = sessions.OpenSession())
+			using (var command = session.Connection.CreateCommand())
+			{
+				command.CommandText = "select next_hi from hibernate_unique_key with (updlock, rowlock)";
+				scalar2 = command.ExecuteScalar();
+			}
+
+			Assert.AreNotEqual(scalar1, scalar2,"HiLo must run with in its own transaction");
 		}
 
 		[Test]

@@ -13,6 +13,8 @@ using NHibernate.Util;
 
 namespace NHibernate.Id
 {
+	using System.Transactions;
+
 	/// <summary>
 	/// An <see cref="IIdentifierGenerator" /> that uses a database table to store the last
 	/// generated value.
@@ -158,21 +160,27 @@ namespace NHibernate.Id
 
 			bool isSQLite = session.Factory.Dialect is SQLiteDialect;
 			IDbConnection conn;
+			TransactionScope dtcTrans = null;
 			if (isSQLite)
 			{
 				conn = session.Connection;
 			}
 			else
 			{
+				// existing dtc transaction, creating a new one
+				// to override the ambient one
+				if (Transaction.Current != null)
+					dtcTrans = new TransactionScope(TransactionScopeOption.RequiresNew);
 				conn = session.Factory.ConnectionProvider.GetConnection();
 			}
 
+			IDbTransaction trans = null;
 			try
 			{
-				IDbTransaction trans = null;
 				if (!isSQLite)
 				{
-					trans = conn.BeginTransaction();
+					if(dtcTrans==null)
+						trans = conn.BeginTransaction();
 				}
 
 				long result;
@@ -239,7 +247,10 @@ namespace NHibernate.Id
 
 				if (!isSQLite)
 				{
-					trans.Commit();
+					if (dtcTrans != null)
+						dtcTrans.Complete();
+					else
+						trans.Commit();
 				}
 
 				return result;
@@ -249,6 +260,8 @@ namespace NHibernate.Id
 			{
 				if (!isSQLite)
 				{
+					if(dtcTrans!=null)
+						dtcTrans.Dispose();
 					session.Factory.ConnectionProvider.CloseConnection(conn);
 				}
 			}

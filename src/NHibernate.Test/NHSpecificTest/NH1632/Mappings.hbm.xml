@@ -14,4 +14,14 @@
 		<property name="NumB"/>
 		<property name="Sum" access="readonly"/>
 	</class>
+
+	<class name="Person">
+		<cache usage="read-write" />
+
+		<id name="Id">
+			<generator class="hilo"/>
+		</id>
+
+		<property name="Name"/>
+	</class>
 </hibernate-mapping>
