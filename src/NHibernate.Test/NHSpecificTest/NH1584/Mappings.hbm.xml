@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1584" >
+  <class name="Cat" abstract="true" >
+    <id name="Id" unsaved-value="0">
+      <generator class="native"/>
+    </id>
+    <property name="Name"/>
+
+    <joined-subclass name="Male">
+      <key column="CatId"/>
+      <one-to-one name="Coat" cascade="all"/>
+    </joined-subclass>
+
+    <joined-subclass name="Female">
+      <key column="CatId"/>
+      <one-to-one name="Coat" cascade="all"/>
+    </joined-subclass>
+  </class>
+
+  <class name="Tabby">
+    <id name="Id">
+      <generator class="foreign">
+        <param name="property">Cat</param>
+      </generator>
+    </id>
+    <property name="HasSpots" />
+    <property name="HasStripes" />
+    <property name="HasSwirls" />
+    <one-to-one name="Cat" constrained="true"/>
+  </class>
+
+  <class name="Calico">
+    <id name="Id">
+      <generator class="foreign">
+        <param name="property">Cat</param>
+      </generator>
+    </id>
+    <property name="HasPatches" />
+    <property name="IsMottled" />
+    <one-to-one name="Cat" constrained="true"/>
+  </class>
+
+</hibernate-mapping>
