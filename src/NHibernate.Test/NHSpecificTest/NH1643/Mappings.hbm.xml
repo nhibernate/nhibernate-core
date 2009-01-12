@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1643"
+				   assembly="NHibernate.Test">
+
+	<class name="Department" table="DEPARTMENTS">
+		<id name="Id" column="DEPARTMENT_ID" type="Int32">
+			<generator class="assigned" />
+		</id>
+		<property name="Name" column="DEPARTMENT_NAME" type="String" />
+	</class>
+
+	<class name="Employee" table="EMPLOYEES" >
+		<id name="Id" column="EMPLOYEE_ID" type="Int32">
+			<generator class="assigned" />
+		</id>
+
+		<property name="FirstName" column="FIRST_NAME" type="String" />
+		<property name="LastName" column="LAST_NAME" type="String" />
+
+    <set name="Departments">
+      <key column="Employee"/>
+      <one-to-many class="Department"/>
+    </set>
+	</class>
+</hibernate-mapping>

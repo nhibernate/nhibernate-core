@@ -48,14 +48,22 @@ namespace NHibernate.Type
 		/// <param name="session">The <see cref="ISessionImplementor"/> for the collection to be a part of.</param>
 		/// <param name="collection">The unwrapped <see cref="IList{T}"/>.</param>
 		/// <returns>
-		/// An <see cref="PersistentGenericSet&lt;T&gt;"/> that wraps the non NHibernate <see cref="IList&lt;T&gt;"/>.
+		/// An <see cref="PersistentGenericSet&lt;T&gt;"/> that wraps the non NHibernate <see cref="IList{T}"/>.
 		/// </returns>
 		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new PersistentGenericSet<T>(session, (ISet<T>) collection);
+		    var set = collection as ISet<T>;
+            if(set==null)
+            {
+                var stronglyTypedCollection = collection as ICollection<T>;
+                if(stronglyTypedCollection==null)
+                    throw new HibernateException(Role + " must be an implementation of ISet<T> or ICollection<T>");
+                set = new HashedSet<T>(stronglyTypedCollection);
+            }
+		    return new PersistentGenericSet<T>(session, set);
 		}
 
-		public override object Instantiate(int anticipatedSize)
+	    public override object Instantiate(int anticipatedSize)
 		{
 			return new HashedSet<T>();
 		}
