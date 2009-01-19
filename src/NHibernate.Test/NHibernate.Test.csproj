@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{7AEE5B37-C552-4E59-9B6F-88755BCB5070}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -373,6 +373,8 @@
     <Compile Include="NHSpecificTest\BasicTimeFixture.cs" />
     <Compile Include="NHSpecificTest\BugTestCase.cs" />
     <Compile Include="NHSpecificTest\CollectionFixture.cs" />
+    <Compile Include="NHSpecificTest\Futures\Fixture.cs" />
+    <Compile Include="NHSpecificTest\Futures\Person.cs" />
     <Compile Include="NHSpecificTest\NH1274ExportExclude\Home.cs" />
     <Compile Include="NHSpecificTest\NH1274ExportExclude\NH1274ExportExcludeFixture.cs" />
     <Compile Include="NHSpecificTest\NH1274ExportExclude\Person.cs" />
@@ -1602,6 +1604,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\Futures\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1643\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1640\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1584\Mappings.hbm.xml" />

@@ -283,5 +283,7 @@ namespace NHibernate.Engine
 
 		/// <summary> Execute a HQL update or delete query</summary>
 		int ExecuteUpdate(string query, QueryParameters queryParameters);
+
+        FutureCriteriaBatch FutureCriteriaBatch { get; }
 	}
 }

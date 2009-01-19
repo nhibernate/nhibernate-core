@@ -813,7 +813,12 @@ namespace NHibernate.Impl
 			return result;
 		}
 
-		public override IEntityPersister GetEntityPersister(string entityName, object obj)
+	    public override FutureCriteriaBatch FutureCriteriaBatch
+	    {
+	        get { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
+	    }
+
+	    public override IEntityPersister GetEntityPersister(string entityName, object obj)
 		{
 			CheckAndUpdateSessionStatus();
 			if (entityName == null)

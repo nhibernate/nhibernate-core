@@ -49,6 +49,8 @@ namespace NHibernate.Impl
 
 		[NonSerialized] private readonly EntityMode entityMode = EntityMode.Poco;
 
+	    [NonSerialized] private FutureCriteriaBatch futureCriteriaBatch;
+
 		[NonSerialized]
 		private readonly EventListeners listeners;
 
@@ -247,6 +249,16 @@ namespace NHibernate.Impl
 
 			CheckAndUpdateSessionStatus();
 		}
+
+	    public override FutureCriteriaBatch FutureCriteriaBatch
+	    {
+	        get
+	        {
+                if (futureCriteriaBatch == null)
+                    futureCriteriaBatch = new FutureCriteriaBatch(this);
+	            return futureCriteriaBatch;
+	        }
+	    }
 
 		/// <summary></summary>
 		public override IBatcher Batcher
@@ -2211,6 +2223,7 @@ namespace NHibernate.Impl
 			}
 			return result;
 		}
+
 
 		public override IEntityPersister GetEntityPersister(string entityName, object obj)
 		{
