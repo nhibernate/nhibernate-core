@@ -54,5 +54,36 @@ namespace NHibernate.Test.NHSpecificTest.Futures
                 }
             }
         }
+
+        [Test]
+        public void TwoFuturesRunInTwoRoundTrips()
+        {
+            using (var s = sessions.OpenSession())
+            {
+                if (((SessionFactoryImpl)sessions)
+                    .ConnectionProvider.Driver.SupportsMultipleQueries == false)
+                {
+                    Assert.Ignore("Not applicable for dialects that do not support multiple queries");
+                }
+
+                using (var logSpy = new SqlLogSpy())
+                {
+                    var persons10 = s.CreateCriteria(typeof(Person))
+                        .SetMaxResults(10)
+                        .Future<Person>();
+
+                    foreach (var person in persons10) { } // fire first future round-trip
+
+                    var persons5 = s.CreateCriteria(typeof(Person))
+                        .SetMaxResults(5)
+                        .Future<int>();
+
+                    foreach (var person in persons5) { } // fire second future round-trip
+
+                    var events = logSpy.Appender.GetEvents();
+                    Assert.AreEqual(2, events.Length);
+                }
+            }
+        }
     }
 }

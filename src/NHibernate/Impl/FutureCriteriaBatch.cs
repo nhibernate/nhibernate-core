@@ -27,6 +27,7 @@ namespace NHibernate.Impl
                         multiCriteria.Add(crit);
                     }
                     results = multiCriteria.List();
+                    ((SessionImpl)session).FutureCriteriaBatch = null;
                 }
                 return results;
             }

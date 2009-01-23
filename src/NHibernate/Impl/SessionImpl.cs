@@ -258,6 +258,10 @@ namespace NHibernate.Impl
                     futureCriteriaBatch = new FutureCriteriaBatch(this);
 	            return futureCriteriaBatch;
 	        }
+            internal set
+            {
+                futureCriteriaBatch = value;
+            }
 	    }
 
 		/// <summary></summary>

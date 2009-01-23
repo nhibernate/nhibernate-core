@@ -816,6 +816,7 @@ namespace NHibernate.Impl
 	    public override FutureCriteriaBatch FutureCriteriaBatch
 	    {
 	        get { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
+	        internal set { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
 	    }
 
 	    public override IEntityPersister GetEntityPersister(string entityName, object obj)
