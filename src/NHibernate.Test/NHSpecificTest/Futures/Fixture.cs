@@ -1,3 +1,4 @@
+using NHibernate.Criterion;
 using NHibernate.Impl;
 using NUnit.Framework;
 
@@ -85,5 +86,39 @@ namespace NHibernate.Test.NHSpecificTest.Futures
                 }
             }
         }
+
+		[Test]
+		public void CanCombineSingleFutureValueWithEnumerableFutures()
+		{
+			using (var s = sessions.OpenSession())
+			{
+				if (((SessionFactoryImpl)sessions)
+					.ConnectionProvider.Driver.SupportsMultipleQueries == false)
+				{
+					Assert.Ignore("Not applicable for dialects that do not support multiple queries");
+				}
+
+				var persons = s.CreateCriteria(typeof(Person))
+					.SetMaxResults(10)
+					.Future<Person>();
+
+				var personCount = s.CreateCriteria(typeof(Person))
+					.SetProjection(Projections.RowCount())
+					.FutureValue<int>();
+
+				using (var logSpy = new SqlLogSpy())
+				{
+					int count = personCount.Value;
+
+					foreach (var person in persons)
+					{
+
+					}
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(1, events.Length);
+				}
+			}
+		}
     }
 }

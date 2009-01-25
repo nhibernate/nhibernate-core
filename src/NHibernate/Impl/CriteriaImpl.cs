@@ -371,6 +371,12 @@ namespace NHibernate.Impl
 			return new Subcriteria(this, this, associationPath, alias, joinType);
 		}
 
+		public IFutureValue<T> FutureValue<T>()
+		{
+			session.FutureCriteriaBatch.Add(this);
+			return session.FutureCriteriaBatch.GetFutureValue<T>();
+		}
+
 	    public IEnumerable<T> Future<T>()
 	    {
             session.FutureCriteriaBatch.Add(this);
@@ -685,6 +691,11 @@ namespace NHibernate.Impl
 			public IList List()
 			{
 				return root.List();
+			}
+
+			public IFutureValue<T> FutureValue<T>()
+			{
+				return root.FutureValue<T>();
 			}
 
 		    public IEnumerable<T> Future<T>()

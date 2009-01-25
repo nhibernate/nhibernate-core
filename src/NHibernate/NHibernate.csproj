@@ -456,6 +456,7 @@
     <Compile Include="Exceptions\SqlStateExtracter.cs" />
     <Compile Include="Exceptions\TemplatedViolatedConstraintNameExtracter.cs" />
     <Compile Include="Id\SelectGenerator.cs" />
+    <Compile Include="IFutureValue.cs" />
     <Compile Include="Impl\FutureCriteriaBatch.cs" />
     <Compile Include="Properties\BackFieldStrategy.cs" />
     <Compile Include="Bytecode\CodeDom\BytecodeProviderImpl.cs" />

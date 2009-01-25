@@ -253,6 +253,16 @@ namespace NHibernate
         /// <returns></returns>
 	    IEnumerable<T> Future<T>();
 
+		/// <summary>
+		/// Get an IFutureValue instance, whose value can be retrieved through
+		/// its Value property. The query is not executed until the Value property
+		/// is retrieved, which will execute other Future queries as well in a
+		/// single roundtrip
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		IFutureValue<T> FutureValue<T>();
+
 		#region NHibernate specific
 
 		/// <summary>
