@@ -291,7 +291,7 @@ namespace NHibernate.Test
 
 			foreach (Mapping.Collection coll in configuration.CollectionMappings)
 			{
-				configuration.SetCacheConcurrencyStrategy(coll.Role, CacheConcurrencyStrategy);
+				configuration.SetCollectionCacheConcurrencyStrategy(coll.Role, CacheConcurrencyStrategy);
 			}
 		}
 

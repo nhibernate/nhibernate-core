@@ -1323,7 +1323,7 @@ namespace NHibernate.Cfg
 				}
 
 				string region = string.IsNullOrEmpty(ccc.Region) ? role : ccc.Region;
-				SetCacheConcurrencyStrategy(role, CfgXmlHelper.ClassCacheUsageConvertToString(ccc.Usage), region);
+				SetCollectionCacheConcurrencyStrategy(role, CfgXmlHelper.ClassCacheUsageConvertToString(ccc.Usage), region);
 			}
 
 			// Events
@@ -1352,6 +1352,20 @@ namespace NHibernate.Cfg
 
 			return this;
 		}
+
+        internal RootClass GetRootClassMapping(string clazz)
+        {
+            try
+            {
+                return (RootClass)GetClassMapping(clazz);
+            }
+            catch (InvalidCastException)
+            {
+                throw new HibernateConfigException(
+                    "class-cache Configuration: You may only specify a cache for root <class> mappings " + "(cache was specified for "
+                    + clazz + ")");
+            }
+        }
 
 		internal RootClass GetRootClassMapping(System.Type clazz)
 		{
@@ -1388,6 +1402,20 @@ namespace NHibernate.Cfg
 			SetCacheConcurrencyStrategy(clazz, concurrencyStrategy, region, true);
 		}
 
+        /// <summary>
+        /// Set up a cache for an entity class
+        /// </summary>
+        public Configuration SetCacheConcurrencyStrategy(string clazz, string concurrencyStrategy)
+        {
+            SetCacheConcurrencyStrategy(clazz, concurrencyStrategy, clazz);
+            return this;
+        }
+
+        internal void SetCacheConcurrencyStrategy(string clazz, string concurrencyStrategy, string region)
+        {
+            SetCacheConcurrencyStrategy(clazz, concurrencyStrategy, region, true);
+        }
+
 		internal void SetCacheConcurrencyStrategy(System.Type clazz, string concurrencyStrategy,
 			string region, bool includeLazy)
 		{
@@ -1397,16 +1425,25 @@ namespace NHibernate.Cfg
 			rootClass.SetLazyPropertiesCacheable(includeLazy);
 		}
 
+        internal void SetCacheConcurrencyStrategy(string clazz, string concurrencyStrategy,
+            string region, bool includeLazy)
+        {
+            RootClass rootClass = GetRootClassMapping(StringHelper.GetFullClassname(clazz));
+            rootClass.CacheConcurrencyStrategy = concurrencyStrategy;
+            rootClass.CacheRegionName = region;
+            rootClass.SetLazyPropertiesCacheable(includeLazy);
+        }
+
 		/// <summary>
 		/// Set up a cache for a collection role
 		/// </summary>
-		public Configuration SetCacheConcurrencyStrategy(string collectionRole, string concurrencyStrategy)
+		public Configuration SetCollectionCacheConcurrencyStrategy(string collectionRole, string concurrencyStrategy)
 		{
-			SetCacheConcurrencyStrategy(collectionRole, concurrencyStrategy, collectionRole);
+			SetCollectionCacheConcurrencyStrategy(collectionRole, concurrencyStrategy, collectionRole);
 			return this;
 		}
 
-		internal void SetCacheConcurrencyStrategy(string collectionRole, string concurrencyStrategy, string region)
+		internal void SetCollectionCacheConcurrencyStrategy(string collectionRole, string concurrencyStrategy, string region)
 		{
 			NHibernate.Mapping.Collection collection = GetCollectionMapping(collectionRole);
 			collection.CacheConcurrencyStrategy = concurrencyStrategy;
