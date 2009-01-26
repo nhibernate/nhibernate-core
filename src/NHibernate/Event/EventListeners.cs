@@ -12,6 +12,8 @@ namespace NHibernate.Event
 	[Serializable]
 	public class EventListeners
 	{
+        private readonly List<object> initializedListeners = new List<object>();
+
 		private static readonly IDictionary<ListenerType, System.Type> eventInterfaceFromType =
 			new Dictionary<ListenerType, System.Type>(28);
 
@@ -607,6 +609,7 @@ namespace NHibernate.Event
 
 		private void InitializeListeners(Configuration cfg, object[] list)
 		{
+		    initializedListeners.AddRange(list);
 			foreach (object i in list)
 			{
 				IInitializable initializable = i as IInitializable;
@@ -622,5 +625,24 @@ namespace NHibernate.Event
 			// todo-events Not ported
 			return this;
 		}
+
+	    public void DestroyListeners()
+        {
+            try
+            {
+                foreach (object i in initializedListeners)
+                {
+                    IDestructible destructible = i as IDestructible;
+                    if (destructible != null)
+                    {
+                        destructible.Cleanup();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                throw new HibernateException("could not destruct listeners", e);
+            }
+	    }
 	}
 }

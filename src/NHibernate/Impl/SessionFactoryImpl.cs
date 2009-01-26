@@ -743,6 +743,8 @@ namespace NHibernate.Impl
 			{
 				schemaExport.Drop(false, true);
 			}
+
+		    eventListeners.DestroyListeners();
 		}
 
 		public void Evict(System.Type persistentClass, object id)
