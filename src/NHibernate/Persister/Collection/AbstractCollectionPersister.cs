@@ -836,15 +836,25 @@ namespace NHibernate.Persister.Collection
 
 			return frag.ToSqlStringFragment(false);
 		}
-
+		private SqlString AddWhereFragment(SqlString sql)
+		{
+			if (!hasWhere)
+				return sql;
+			var sqlStringBuilder = new SqlStringBuilder(sql);
+			sqlStringBuilder.Add(" and ").Add(sqlWhereString);
+			return sqlStringBuilder.ToSqlString();
+		}
 		private SqlString GenerateSelectSizeString(bool isIntegerIndexed)
 		{
 			string selectValue = isIntegerIndexed
 			                     	? "max(" + IndexColumnNames[0] + ") + 1"
 			                     	: "count(" + ElementColumnNames[0] + ")"; //sets, maps, bags
-			return
-				new SqlSimpleSelectBuilder(dialect, factory).SetTableName(TableName).AddWhereFragment(KeyColumnNames, KeyType, "=").
-					AddColumn(selectValue).ToSqlString();
+			
+			var sqlString=new SqlSimpleSelectBuilder(dialect, factory)
+				.SetTableName(TableName)
+				.AddWhereFragment(KeyColumnNames, KeyType, "=")
+				.AddColumn(selectValue).ToSqlString();
+			return AddWhereFragment(sqlString);
 		}
 
 		private SqlString GenerateDetectRowByIndexString()
@@ -855,10 +865,14 @@ namespace NHibernate.Persister.Collection
 			}
 
 			// TODO NH: may be we need something else when Index is mixed with Formula
-			return
-				new SqlSimpleSelectBuilder(dialect, factory).SetTableName(TableName).AddWhereFragment(KeyColumnNames, KeyType, "=").
-					AddWhereFragment(IndexColumnNames, IndexType, "=").AddWhereFragment(indexFormulas, IndexType, "=").AddColumn("1").
-					ToSqlString();
+			var sqlString=
+				new SqlSimpleSelectBuilder(dialect, factory)
+					.SetTableName(TableName)
+					.AddWhereFragment(KeyColumnNames, KeyType, "=")
+					.AddWhereFragment(IndexColumnNames, IndexType, "=")
+					.AddWhereFragment(indexFormulas, IndexType, "=")
+					.AddColumn("1").ToSqlString();
+			return AddWhereFragment(sqlString);
 		}
 
 		private SqlString GenerateSelectRowByIndexString()
@@ -868,18 +882,26 @@ namespace NHibernate.Persister.Collection
 				return null;
 			}
 
-			return
-				new SqlSimpleSelectBuilder(dialect, factory).SetTableName(TableName).AddWhereFragment(KeyColumnNames, KeyType, "=").
-					AddWhereFragment(IndexColumnNames, IndexType, "=").AddWhereFragment(indexFormulas, IndexType, "=").AddColumns(
-					ElementColumnNames, elementColumnAliases).AddColumns(indexFormulas, indexColumnAliases).ToSqlString();
+			var sqlString=new SqlSimpleSelectBuilder(dialect, factory)
+				.SetTableName(TableName)
+				.AddWhereFragment(KeyColumnNames, KeyType, "=")
+				.AddWhereFragment(IndexColumnNames, IndexType, "=")
+				.AddWhereFragment(indexFormulas, IndexType, "=")
+				.AddColumns(ElementColumnNames, elementColumnAliases)
+				.AddColumns(indexFormulas, indexColumnAliases).ToSqlString();
+			return AddWhereFragment(sqlString);
 		}
 
 		private SqlString GenerateDetectRowByElementString()
 		{
-			return
-				new SqlSimpleSelectBuilder(dialect, factory).SetTableName(TableName).AddWhereFragment(KeyColumnNames, KeyType, "=").
-					AddWhereFragment(ElementColumnNames, ElementType, "=").AddWhereFragment(elementFormulas, ElementType, "=").
-					AddColumn("1").ToSqlString();
+			var sqlString=
+				new SqlSimpleSelectBuilder(dialect, factory)
+				.SetTableName(TableName)
+				.AddWhereFragment(KeyColumnNames, KeyType, "=")
+				.AddWhereFragment(ElementColumnNames, ElementType, "=")
+				.AddWhereFragment(elementFormulas, ElementType, "=")
+				.AddColumn("1").ToSqlString();
+			return AddWhereFragment(sqlString);
 		}
 
 		protected virtual SelectFragment GenerateSelectFragment(string alias, string columnSuffix)

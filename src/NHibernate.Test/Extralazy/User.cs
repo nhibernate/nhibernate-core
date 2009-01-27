@@ -9,6 +9,7 @@ namespace NHibernate.Test.Extralazy
 		private string password;
 		private IDictionary session = new Hashtable();
 		private ISet documents = new HashedSet();
+		private ISet photos = new HashedSet();
 		protected User() {}
 		public User(string name, string password)
 		{
@@ -38,6 +39,13 @@ namespace NHibernate.Test.Extralazy
 		{
 			get { return documents; }
 			set { documents = value; }
+		}
+
+
+		public virtual ISet Photos
+		{
+			get { return photos; }
+			set { photos = value; }
 		}
 	}
 }

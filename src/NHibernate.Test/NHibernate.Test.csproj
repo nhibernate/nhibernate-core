@@ -224,6 +224,7 @@
     <Compile Include="Extralazy\Document.cs" />
     <Compile Include="Extralazy\ExtraLazyFixture.cs" />
     <Compile Include="Extralazy\Group.cs" />
+    <Compile Include="Extralazy\Photo.cs" />
     <Compile Include="Extralazy\SessionAttribute.cs" />
     <Compile Include="Extralazy\User.cs" />
     <Compile Include="FilterTest\BinaryFiltered.cs" />

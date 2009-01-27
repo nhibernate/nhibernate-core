@@ -25,8 +25,15 @@
 			<key column="owner"/>
 			<one-to-many class="Document"/>
 		</set>
+		<set name="Photos" inverse="true" lazy="true" where="Title like 'PRV%'" cascade="all,delete-orphan">
+			<key column="owner"/>
+			<one-to-many class="Photo"/>
+		</set>
 	</class>
-	
+	<class name="Photo" table="photos">
+		<id name="Title"/>
+		<many-to-one name="Owner" not-null="true"/>
+	</class>
 	<class name="Document" table="documents">
 		<id name="Title"/>
 		<property name="Content" type="string" length="10000"/>

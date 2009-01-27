@@ -21,7 +21,40 @@ namespace NHibernate.Test.Extralazy
 		{
 			get { return null; }
 		}
+		[Test]
+		public void ExtraLazyWithWhereClause()
+		{
+			using(ISession s = OpenSession())
+			using(ITransaction t=s.BeginTransaction())
+			{
+				s.CreateSQLQuery("insert into Users (Name,Password) values('gavin','secret')")
+					.UniqueResult();
+				s.CreateSQLQuery("insert into Photos (Title,Owner) values('PRVaaa','gavin')")
+					.UniqueResult();
+				s.CreateSQLQuery("insert into Photos (Title,Owner) values('PUBbbb','gavin')")
+					.UniqueResult();
+				t.Commit();
+			}
 
+			using(ISession s = OpenSession())
+			{
+				var gavin = s.Get<User>("gavin");
+				Assert.AreEqual(1, gavin.Photos.Count);
+				Assert.IsFalse(NHibernateUtil.IsInitialized(gavin.Documents));
+			}
+			using(ISession s=OpenSession())
+			using(ITransaction t=s.BeginTransaction())
+			{
+				s.CreateSQLQuery("delete from Photos")
+	.UniqueResult();
+				s.CreateSQLQuery("delete from Users")
+	.UniqueResult();
+
+				t.Commit();
+			}
+			sessions.Evict(typeof(User));
+			sessions.Evict(typeof(Photo));
+		}
 		[Test]
 		public void OrphanDelete()
 		{
