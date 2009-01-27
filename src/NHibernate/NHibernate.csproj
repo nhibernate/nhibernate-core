@@ -458,8 +458,10 @@
     <Compile Include="Exceptions\TemplatedViolatedConstraintNameExtracter.cs" />
     <Compile Include="Id\SelectGenerator.cs" />
     <Compile Include="IFutureValue.cs" />
+    <Compile Include="Impl\DelayedEnumerator.cs" />
     <Compile Include="Impl\FutureQueryBatch.cs" />
     <Compile Include="Impl\FutureCriteriaBatch.cs" />
+    <Compile Include="Impl\FutureValue.cs" />
     <Compile Include="Properties\BackFieldStrategy.cs" />
     <Compile Include="Bytecode\CodeDom\BytecodeProviderImpl.cs" />
     <Compile Include="Bytecode\IAccessOptimizer.cs" />
