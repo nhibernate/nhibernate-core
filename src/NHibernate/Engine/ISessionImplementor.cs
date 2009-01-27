@@ -285,5 +285,7 @@ namespace NHibernate.Engine
 		int ExecuteUpdate(string query, QueryParameters queryParameters);
 
         FutureCriteriaBatch FutureCriteriaBatch { get; }
+
+        FutureQueryBatch FutureQueryBatch { get; }
 	}
 }

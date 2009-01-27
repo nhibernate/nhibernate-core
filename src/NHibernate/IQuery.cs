@@ -584,5 +584,22 @@ namespace NHibernate
 		/// "shape" of the query result.
 		/// </summary>
 		IQuery SetResultTransformer(IResultTransformer resultTransformer);
+
+        /// <summary>
+        /// Get a enumerable that when enumerated will execute
+        /// a batch of queries in a single database roundtrip
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        IEnumerable<T> Future<T>();
+
+        /// Get an IFutureValue instance, whose value can be retrieved through
+        /// its Value property. The query is not executed until the Value property
+        /// is retrieved, which will execute other Future queries as well in a
+        /// single roundtrip
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        IFutureValue<T> FutureValue<T>();
 	}
 }

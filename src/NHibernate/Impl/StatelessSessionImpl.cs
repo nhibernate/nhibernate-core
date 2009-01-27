@@ -819,6 +819,12 @@ namespace NHibernate.Impl
 	        internal set { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
 	    }
 
+	    public override FutureQueryBatch FutureQueryBatch
+	    {
+            get { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
+            internal set { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
+	    }
+
 	    public override IEntityPersister GetEntityPersister(string entityName, object obj)
 		{
 			CheckAndUpdateSessionStatus();

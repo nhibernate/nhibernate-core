@@ -826,7 +826,19 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		/// <summary> Override the current session cache mode, just for this query.
+	    public IEnumerable<T> Future<T>()
+	    {
+	        session.FutureQueryBatch.Add(this);
+	        return session.FutureQueryBatch.GetEnumerator<T>();
+	    }
+
+        public IFutureValue<T> FutureValue<T>()
+        {
+            session.FutureQueryBatch.Add(this);
+            return session.FutureQueryBatch.GetFutureValue<T>();
+        }
+
+	    /// <summary> Override the current session cache mode, just for this query.
 		/// </summary>
 		/// <param name="cacheMode">The cache mode to use. </param>
 		/// <returns> this (for method chaining) </returns>

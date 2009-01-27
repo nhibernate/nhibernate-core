@@ -129,6 +129,7 @@ namespace NHibernate.Impl
 		public abstract int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
 		public abstract int ExecuteUpdate(string query, QueryParameters queryParameters);
 	    public abstract FutureCriteriaBatch FutureCriteriaBatch { get; internal set; }
+        public abstract FutureQueryBatch FutureQueryBatch { get; internal set; }
 
 	    public virtual IQuery GetNamedQuery(string queryName)
 		{

@@ -50,6 +50,7 @@ namespace NHibernate.Impl
 		[NonSerialized] private readonly EntityMode entityMode = EntityMode.Poco;
 
 	    [NonSerialized] private FutureCriteriaBatch futureCriteriaBatch;
+        [NonSerialized] private FutureQueryBatch futureQueryBatch;
 
 		[NonSerialized]
 		private readonly EventListeners listeners;
@@ -263,6 +264,20 @@ namespace NHibernate.Impl
                 futureCriteriaBatch = value;
             }
 	    }
+
+        public override FutureQueryBatch FutureQueryBatch
+        {
+            get
+            {
+                if (futureQueryBatch == null)
+                    futureQueryBatch = new FutureQueryBatch(this);
+                return futureQueryBatch;
+            }
+            internal set
+            {
+                futureQueryBatch = value;
+            }
+        }
 
 		/// <summary></summary>
 		public override IBatcher Batcher
