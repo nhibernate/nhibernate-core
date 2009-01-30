@@ -12,25 +12,35 @@ namespace NHibernate.Engine
 	{
 		private readonly EntityKey ownerKey;
 		private readonly string propertyName;
+		private readonly int hashCode;
 
 		public AssociationKey(EntityKey ownerKey, string propertyName)
 		{
 			this.ownerKey = ownerKey;
 			this.propertyName = propertyName;
+			hashCode = ownerKey.GetHashCode() ^ propertyName.GetHashCode() ^ ownerKey.EntityName.GetHashCode();
 		}
 
 		public override bool Equals(object that)
 		{
-			if(this==that) return true;
+			// NH : Different behavior for NH-1584
+			if (this == that)
+			{
+				return true;
+			}
 
-			AssociationKey key = that as AssociationKey;
-			if(key==null) return false;
-			return key.propertyName.Equals(propertyName) && key.ownerKey.Equals(ownerKey);
+			var key = that as AssociationKey;
+			if (key == null)
+			{
+				return false;
+			}
+			return key.propertyName.Equals(propertyName) && key.ownerKey.Equals(ownerKey)
+			       && key.ownerKey.EntityName.Equals(ownerKey.EntityName);
 		}
 
 		public override int GetHashCode()
 		{
-			return ownerKey.GetHashCode() ^ propertyName.GetHashCode();
+			return hashCode;
 		}
 	}
 }

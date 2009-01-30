@@ -6,14 +6,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1584
 {
-	[TestFixture, Ignore("Not supported yet.")]
+	[TestFixture]
 	public class TestFixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1584"; }
-		}
-
 		protected override void OnTearDown()
 		{
 			using (ISession session = OpenSession())
