@@ -10,35 +10,32 @@ namespace NHibernate.Driver
 	public class OracleLiteDataClientDriver : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
 	{
 		/// <summary>
-        /// Initializes a new instance of <see cref="OracleLiteDataClientDriver"/>.
+		/// Initializes a new instance of <see cref="OracleLiteDataClientDriver"/>.
 		/// </summary>
 		/// <exception cref="HibernateException">
-        /// Thrown when the <c>Oracle.DataAccess.Lite_w32</c> assembly can not be loaded.
+		/// Thrown when the <c>Oracle.DataAccess.Lite_w32</c> assembly can not be loaded.
 		/// </exception>
-        public OracleLiteDataClientDriver()
+		public OracleLiteDataClientDriver()
 			: base(
-            "Oracle.DataAccess.Lite_w32",
-            "Oracle.DataAccess.Lite.OracleConnection",
-            "Oracle.DataAccess.Lite.OracleCommand")
+						"Oracle.DataAccess.Lite_w32",
+						"Oracle.DataAccess.Lite.OracleConnection",
+						"Oracle.DataAccess.Lite.OracleCommand")
 		{
 		}
 
-		/// <summary></summary>
 		public override bool UseNamedPrefixInSql
 		{
-			get { return true; }
+			get { return false; }
 		}
 
-		/// <summary></summary>
 		public override bool UseNamedPrefixInParameter
 		{
-			get { return true; }
+			get { return false; }
 		}
 
-		/// <summary></summary>
 		public override string NamedPrefix
 		{
-			get { return ":"; }
+			get { return string.Empty; }
 		}
 
 		/// <remarks>
@@ -60,7 +57,7 @@ namespace NHibernate.Driver
 
 		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass
 		{
-			get { return typeof (OracleDataClientBatchingBatcherFactory); }
+			get { return typeof(OracleDataClientBatchingBatcherFactory); }
 		}
 
 		#endregion
