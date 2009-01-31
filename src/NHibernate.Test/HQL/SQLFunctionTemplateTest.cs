@@ -94,6 +94,14 @@ namespace NHibernate.Test.Hql
 			args.Add(2);
 			args.Add(3);
 			Assert.AreEqual("func(1,3)", ft.Render(args, factoryImpl).ToString());
+
+			// Args in different position
+			args.Clear();
+			ft = new SQLFunctionTemplate(NHibernateUtil.String, "func(?2, ?1, ?3)");
+			args.Add(1);
+			args.Add(2);
+			args.Add(3);
+			Assert.AreEqual("func(2, 1, 3)", ft.Render(args, factoryImpl).ToString());
 		}
 	}
 }
