@@ -18,11 +18,18 @@ namespace NHibernate.Test.Hql
 		static HQLFunctions()
 		{
 			notSupportedStandardFunction.Add("locate",
-				new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect) ,typeof(FirebirdDialect), typeof(PostgreSQLDialect) });
+				new[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect) ,typeof(FirebirdDialect), typeof(PostgreSQLDialect) });
 			notSupportedStandardFunction.Add("bit_length",
-								new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect), typeof(Oracle9Dialect), typeof(OracleDialect), typeof(Oracle8iDialect), typeof(Oracle9iDialect), typeof(Oracle10gDialect) });
+								new[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect), typeof(Oracle9Dialect), typeof(OracleDialect), typeof(Oracle8iDialect), typeof(Oracle9iDialect), typeof(Oracle10gDialect) });
 			notSupportedStandardFunction.Add("extract",
-                new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect) });
+                new[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect) });
+			notSupportedStandardFunction.Add("nullif",
+								new[] { typeof(OracleDialect), typeof(Oracle8iDialect)});
+		}
+
+		private bool IsOracleDialect()
+		{
+			return typeof (Oracle8iDialect).IsInstanceOfType(Dialect);
 		}
 
 		private void IgnoreIfNotSupported(string functionName)
@@ -402,14 +409,23 @@ namespace NHibernate.Test.Hql
 		public void Nullif()
 		{
 			IgnoreIfNotSupported("nullif");
+			string hql1, hql2;
+			if(!IsOracleDialect())
+			{
+				hql1 = "select nullif(h.NickName, '1e1') from Human h";
+				hql2 = "from Human h where nullif(h.NickName, '1e1') not is null";
+			}
+			else
+			{
+				// Oracle need same specific types
+				hql1 = "select nullif(str(h.NickName), '1e1') from Human h";
+				hql2 = "from Human h where nullif(str(h.NickName), '1e1') not is null";				
+			}
 			// test only the parser and render
 			using (ISession s = OpenSession())
 			{
-				string hql = "select nullif(h.NickName, '1e1') from Human h";
-				IList result = s.CreateQuery(hql).List();
-
-				hql = "from Human h where nullif(h.NickName, '1e1') not is null";
-				result = s.CreateQuery(hql).List();
+				IList result = s.CreateQuery(hql1).List();
+				result = s.CreateQuery(hql2).List();
 			}
 		}
 
