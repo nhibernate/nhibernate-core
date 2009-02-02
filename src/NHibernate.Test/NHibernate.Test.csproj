@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{7AEE5B37-C552-4E59-9B6F-88755BCB5070}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -14,6 +14,9 @@
     <OldToolsVersion>2.0</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkSubset>
+    </TargetFrameworkSubset>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -377,6 +380,8 @@
     <Compile Include="NHSpecificTest\Futures\FutureQueryFixture.cs" />
     <Compile Include="NHSpecificTest\Futures\Fixture.cs" />
     <Compile Include="NHSpecificTest\Futures\Person.cs" />
+    <Compile Include="NHSpecificTest\DateTime2AndDateTimeOffSet\AllDates.cs" />
+    <Compile Include="NHSpecificTest\DateTime2AndDateTimeOffSet\DateTime2AndDateTimeOffSetFixture.cs" />
     <Compile Include="NHSpecificTest\NH1274ExportExclude\Home.cs" />
     <Compile Include="NHSpecificTest\NH1274ExportExclude\NH1274ExportExcludeFixture.cs" />
     <Compile Include="NHSpecificTest\NH1274ExportExclude\Person.cs" />
@@ -971,6 +976,7 @@
     <Compile Include="TypesTest\BooleanTypeFixture.cs" />
     <Compile Include="TypesTest\ByteClass.cs" />
     <Compile Include="TypesTest\ByteTypeFixture.cs" />
+    <Compile Include="TypesTest\Decima2lTypeFixture.cs" />
     <Compile Include="TypesTest\DateTimeTypeFixture.cs" />
     <Compile Include="TypesTest\DecimalClass.cs" />
     <Compile Include="TypesTest\DecimalTypeFixture.cs" />
@@ -1606,6 +1612,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\DateTime2AndDateTimeOffSet\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\Futures\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1643\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1640\Mappings.hbm.xml" />

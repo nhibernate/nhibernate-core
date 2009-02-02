@@ -22,9 +22,13 @@ namespace NHibernate.Type
 		private static readonly DateTime BaseDateValue = DateTime.MinValue;
 
 		/// <summary></summary>
-		internal DateTimeType() : base(SqlTypeFactory.DateTime)
+		public DateTimeType() : base(SqlTypeFactory.DateTime)
 		{
 		}
+
+	    public DateTimeType(SqlType sqlTypeDateTime) : base(sqlTypeDateTime)
+        {
+        }
 
 		/// <summary></summary>
 		public override string Name
@@ -100,7 +104,7 @@ namespace NHibernate.Type
 			        date1.Second == date2.Second);
 		}
 
-		public IComparer Comparator
+		public virtual IComparer Comparator
 		{
 			get { return Comparer<DateTime>.Default; }
 		}

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.MsSql2008"
+				   assembly="NHibernate.Test">
+
+	<class name="AllDates"  lazy="false">
+	
+		<id name="Id">
+			<generator class="identity"/>
+		</id>
+
+        <property name="Sql_datetime" />
+		<property name="Sql_datetime2" type="datetime2" />
+        <property name="Sql_datetimeoffset" type="datetimeoffset" />
+        
+	</class>
+	
+</hibernate-mapping>

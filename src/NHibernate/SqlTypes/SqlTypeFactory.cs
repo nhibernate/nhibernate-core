@@ -25,6 +25,8 @@ namespace NHibernate.SqlTypes
 		public static readonly SqlType Currency = new SqlType(DbType.Currency);
 		public static readonly SqlType Date = new SqlType(DbType.Date);
 		public static readonly SqlType DateTime = new SqlType(DbType.DateTime);
+        public static readonly SqlType DateTime2 = new SqlType(DbType.DateTime2);
+        public static readonly SqlType DateTimeOffSet = new SqlType(DbType.DateTimeOffset);
 		public static readonly SqlType Decimal = new SqlType(DbType.Decimal);
 		public static readonly SqlType Double = new SqlType(DbType.Double);
 		public static readonly SqlType Int16 = new SqlType(DbType.Int16);

@@ -47,6 +47,7 @@
 		</drop>
 		<dialect-scope name="NHibernate.Dialect.MsSql2000Dialect"/>
 		<dialect-scope name="NHibernate.Dialect.MsSql2005Dialect"/>
+        <dialect-scope name="NHibernate.Dialect.MsSql2008Dialect"/>
 	</database-object>
 
 	<database-object>

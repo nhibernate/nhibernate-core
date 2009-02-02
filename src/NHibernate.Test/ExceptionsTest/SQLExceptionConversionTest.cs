@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using NHibernate.Dialect;
 using NHibernate.Exceptions;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -22,7 +23,7 @@ namespace NHibernate.Test.ExceptionsTest
 
 		protected override void Configure(Cfg.Configuration configuration)
 		{
-			if((Dialect.GetType() == typeof(Dialect.MsSql2005Dialect)) || (Dialect.GetType() == typeof(Dialect.MsSql2000Dialect)))
+			if(Dialect is MsSql2000Dialect)
 			{
 				configuration.SetProperty(NHibernate.Cfg.Environment.SqlExceptionConverter,
 				                          typeof (MSSQLExceptionConverterExample).AssemblyQualifiedName);

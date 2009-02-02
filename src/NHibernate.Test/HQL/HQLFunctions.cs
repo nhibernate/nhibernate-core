@@ -18,11 +18,11 @@ namespace NHibernate.Test.Hql
 		static HQLFunctions()
 		{
 			notSupportedStandardFunction.Add("locate",
-				new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(FirebirdDialect), typeof(PostgreSQLDialect) });
+				new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect) ,typeof(FirebirdDialect), typeof(PostgreSQLDialect) });
 			notSupportedStandardFunction.Add("bit_length",
-				new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect) });
+                new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect) });
 			notSupportedStandardFunction.Add("extract",
-				new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect) });
+                new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect) });
 		}
 
 		private void IgnoreIfNotSupported(string functionName)
