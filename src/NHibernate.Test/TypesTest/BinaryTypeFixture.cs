@@ -77,9 +77,9 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void InsertZeroLength()
 		{
-			if (typeof(Oracle9Dialect).IsInstanceOfType(Dialect))
+			if (Dialect is Oracle9Dialect || Dialect is Oracle8iDialect)
 			{
-				return;
+				Assert.Ignore("Certain drivers (ie - Oralce) don't handle writing and reading byte[0]");
 			}
 			BinaryClass bcBinary = new BinaryClass();
 			bcBinary.Id = 1;

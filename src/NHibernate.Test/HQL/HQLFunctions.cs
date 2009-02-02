@@ -20,7 +20,7 @@ namespace NHibernate.Test.Hql
 			notSupportedStandardFunction.Add("locate",
 				new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect) ,typeof(FirebirdDialect), typeof(PostgreSQLDialect) });
 			notSupportedStandardFunction.Add("bit_length",
-                new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect) });
+								new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect), typeof(Oracle9Dialect), typeof(OracleDialect), typeof(Oracle8iDialect), typeof(Oracle9iDialect), typeof(Oracle10gDialect) });
 			notSupportedStandardFunction.Add("extract",
                 new System.Type[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect) });
 		}

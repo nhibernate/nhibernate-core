@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Data;
 using NHibernate.Dialect.Function;
@@ -30,6 +31,7 @@ namespace NHibernate.Dialect
 	///		</item>
 	/// </list>
 	/// </remarks>
+	[Obsolete("This dialect will be removed in the next NHibernate version; Use Oracle9iDialect")]
 	public class Oracle9Dialect : Dialect
 	{
 		/// <summary></summary>

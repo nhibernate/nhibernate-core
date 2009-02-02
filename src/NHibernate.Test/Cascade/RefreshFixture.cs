@@ -22,30 +22,32 @@ namespace NHibernate.Test.Cascade
 		[Test]
 		public void RefreshCascade()
 		{
-			ISession session = OpenSession();
-			ITransaction txn = session.BeginTransaction();
-
-			JobBatch batch = new JobBatch(DateTime.Now);
-			batch.CreateJob().ProcessingInstructions = "Just do it!";
-			batch.CreateJob().ProcessingInstructions = "I know you can do it!";
-
-			// write the stuff to the database; at this stage all job.status values are zero
-			session.Persist(batch);
-			session.Flush();
-
-			// behind the session's back, let's modify the statuses
-			UpdateStatuses(session);
-
-			// Now lets refresh the persistent batch, and see if the refresh cascaded to the jobs collection elements
-			session.Refresh(batch);
-
-			foreach (Job job in batch.Jobs)
+			using(ISession session = OpenSession())
 			{
-				Assert.That(job.Status, Is.EqualTo(1), "Jobs not refreshed!");
-			}
+				using (ITransaction txn = session.BeginTransaction())
+				{
+					JobBatch batch = new JobBatch(DateTime.Now);
+					batch.CreateJob().ProcessingInstructions = "Just do it!";
+					batch.CreateJob().ProcessingInstructions = "I know you can do it!";
 
-			txn.Rollback();
-			session.Close();
+					// write the stuff to the database; at this stage all job.status values are zero
+					session.Persist(batch);
+					session.Flush();
+
+					// behind the session's back, let's modify the statuses
+					UpdateStatuses(session);
+
+					// Now lets refresh the persistent batch, and see if the refresh cascaded to the jobs collection elements
+					session.Refresh(batch);
+
+					foreach (Job job in batch.Jobs)
+					{
+						Assert.That(job.Status, Is.EqualTo(1), "Jobs not refreshed!");
+					}
+
+					txn.Rollback();
+				}
+			}
 		}
 
 		private void UpdateStatuses(ISession session)
@@ -62,33 +64,38 @@ namespace NHibernate.Test.Cascade
 		public void RefreshIgnoringTransient()
 		{
 			// No exception expected
-			ISession session = OpenSession();
-			ITransaction txn = session.BeginTransaction();
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction txn = session.BeginTransaction())
+				{
+					var batch = new JobBatch(DateTime.Now);
+					session.Refresh(batch);
 
-			var batch = new JobBatch(DateTime.Now);
-			session.Refresh(batch);
-
-			txn.Rollback();
-			session.Close();
+					txn.Rollback();
+				}
+			}
 		}
 
 		[Test]
 		public void RefreshIgnoringTransientInCollection()
 		{
-			ISession session = OpenSession();
-			ITransaction txn = session.BeginTransaction();
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction txn = session.BeginTransaction())
+				{
 
-			var batch = new JobBatch(DateTime.Now);
-			batch.CreateJob().ProcessingInstructions = "Just do it!";
-			session.Persist(batch);
-			session.Flush();
+					var batch = new JobBatch(DateTime.Now);
+					batch.CreateJob().ProcessingInstructions = "Just do it!";
+					session.Persist(batch);
+					session.Flush();
 
-			batch.CreateJob().ProcessingInstructions = "I know you can do it!";
-			session.Refresh(batch);
-			Assert.That(batch.Jobs.Count == 1);
+					batch.CreateJob().ProcessingInstructions = "I know you can do it!";
+					session.Refresh(batch);
+					Assert.That(batch.Jobs.Count == 1);
 
-			txn.Rollback();
-			session.Close();
+					txn.Rollback();
+				}
+			}
 		}
 
 		[Test]

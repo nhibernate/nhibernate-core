@@ -1,5 +1,6 @@
 using System.Text;
 using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
@@ -9,6 +10,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1521
 	[TestFixture]
 	public class Fixture
 	{
+		private static void CheckDialect(Configuration configuration)
+		{
+			if (!configuration.Properties[Environment.Dialect].Contains("MsSql"))
+				Assert.Ignore("Specific test for MsSQL dialects");
+		}
+
 		private static void AssertThatCheckOnTableExistenceIsCorrect(Configuration configuration)
 		{
 			var su = new SchemaExport(configuration);
@@ -22,6 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1521
 		public void TestForClassWithDefaultSchema()
 		{
 			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			CheckDialect(cfg);
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1521.AclassWithNothing.hbm.xml", GetType().Assembly);
 			cfg.SetProperty(Environment.DefaultCatalog, "nhibernate");
 			cfg.SetProperty(Environment.DefaultSchema, "dbo");
@@ -32,6 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1521
 		public void WithDefaultValuesInMapping()
 		{
 			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			CheckDialect(cfg);
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1521.AclassWithDefault.hbm.xml", GetType().Assembly);
 			AssertThatCheckOnTableExistenceIsCorrect(cfg);
 		}
@@ -40,6 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1521
 		public void WithSpecificValuesInMapping()
 		{
 			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			CheckDialect(cfg);
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1521.AclassWithSpecific.hbm.xml", GetType().Assembly);
 			AssertThatCheckOnTableExistenceIsCorrect(cfg);
 		}
@@ -48,6 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1521
 		public void WithDefaultValuesInConfigurationPriorityToMapping()
 		{
 			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			CheckDialect(cfg);
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1521.AclassWithDefault.hbm.xml", GetType().Assembly);
 			cfg.SetProperty(Environment.DefaultCatalog, "somethingDifferent");
 			cfg.SetProperty(Environment.DefaultSchema, "somethingDifferent");
