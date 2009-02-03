@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.Pagination">
+
+	<class name="DataPoint"	dynamic-update="true">
+		<!--rowid="rowid"-->
+		<!-- remove this if not oracle -->
+		<id name="Id">
+			<generator class="increment"/>
+		</id>
+		<property name="X">
+			<column name="xval" not-null="true" precision="4" unique-key="xy"/>
+		</property>
+		<property name="Y">
+			<column name="yval" not-null="true" precision="4" unique-key="xy"/>
+		</property>
+		<property name="Description"/>
+	</class>
+
+</hibernate-mapping>
+

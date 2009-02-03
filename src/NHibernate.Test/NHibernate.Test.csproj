@@ -855,6 +855,8 @@
     <Compile Include="Operations\PersonalDetails.cs" />
     <Compile Include="Operations\TimestampedEntity.cs" />
     <Compile Include="Operations\VersionedEntity.cs" />
+    <Compile Include="Pagination\DataPoint.cs" />
+    <Compile Include="Pagination\PaginationFixture.cs" />
     <Compile Include="ProjectionFixtures\Key.cs" />
     <Compile Include="ProjectionFixtures\Fixture.cs" />
     <Compile Include="ProjectionFixtures\NodeType.cs" />
@@ -1614,6 +1616,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="Pagination\DataPoint.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\DateTime2AndDateTimeOffSet\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\Futures\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1643\Mappings.hbm.xml" />
