@@ -41,6 +41,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.AnsiStringFixedLength, "TEXT");
 			RegisterColumnType(DbType.StringFixedLength, "TEXT");
 
+			RegisterColumnType(DbType.Date, "DATETIME"); 
 			RegisterColumnType(DbType.DateTime, "DATETIME");
 			RegisterColumnType(DbType.Time, "DATETIME");
 			RegisterColumnType(DbType.Boolean, "INTEGER");
