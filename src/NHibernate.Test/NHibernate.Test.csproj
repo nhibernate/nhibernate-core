@@ -65,6 +65,7 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -197,6 +198,7 @@
     <Compile Include="Events\Collections\Values\ValuesBagCollectionEventFixture.cs" />
     <Compile Include="ExceptionsTest\Group.cs" />
     <Compile Include="ExceptionsTest\MSSQLExceptionConverterExample.cs" />
+    <Compile Include="ExceptionsTest\OracleClientExceptionConverterExample.cs" />
     <Compile Include="ExceptionsTest\PropertyAccessExceptionFixture.cs" />
     <Compile Include="ExceptionsTest\SQLExceptionConversionTest.cs" />
     <Compile Include="ExceptionsTest\User.cs" />

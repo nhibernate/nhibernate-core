@@ -18,15 +18,20 @@ namespace NHibernate.Test.ExceptionsTest
 
 		protected override IList Mappings
 		{
-			get { return new string[] { "ExceptionsTest.User.hbm.xml", "ExceptionsTest.Group.hbm.xml" }; }
+			get { return new[] { "ExceptionsTest.User.hbm.xml", "ExceptionsTest.Group.hbm.xml" }; }
 		}
 
 		protected override void Configure(Cfg.Configuration configuration)
 		{
 			if(Dialect is MsSql2000Dialect)
 			{
-				configuration.SetProperty(NHibernate.Cfg.Environment.SqlExceptionConverter,
+				configuration.SetProperty(Cfg.Environment.SqlExceptionConverter,
 				                          typeof (MSSQLExceptionConverterExample).AssemblyQualifiedName);
+			}
+			if (Dialect is Oracle8iDialect)
+			{
+				configuration.SetProperty(Cfg.Environment.SqlExceptionConverter,
+																	typeof(OracleClientExceptionConverterExample).AssemblyQualifiedName);
 			}
 		}
 
