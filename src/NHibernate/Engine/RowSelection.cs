@@ -60,8 +60,7 @@ namespace NHibernate.Engine
 
 		public bool DefinesLimits
 		{
-			get { return maxRows != NoValue || firstRow != NoValue; }
+			get { return maxRows != NoValue || firstRow > 0; }
 		}
-
 	}
 }
