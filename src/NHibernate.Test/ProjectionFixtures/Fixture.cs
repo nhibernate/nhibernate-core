@@ -1,7 +1,5 @@
-using System;
-using NHibernate;
 using NHibernate.Criterion;
-using NHibernate.Test.PropertyRef;
+using NHibernate.Driver;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ProjectionFixtures
@@ -65,12 +63,17 @@ namespace NHibernate.Test.ProjectionFixtures
 
 
         [Test]
-        [ExpectedException(typeof(ADOException), ExpectedMessage = @"could not execute query
-[ SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = @p0 ]
-Positional parameters:  #0>2
-[SQL: SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = @p0]")]
         public void ErrorFromDBWillGiveTheActualSQLExecuted()
         {
+        	string pName = ((ISqlParameterFormatter) sessions.ConnectionProvider.Driver).GetParameterName(0);
+        	string expectedMessage =
+        		string.Format(
+        			@"could not execute query
+[ SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = {0} ]
+Positional parameters:  #0>2
+[SQL: SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = {1}]",
+        			pName, pName);
+					
             DetachedCriteria projection = DetachedCriteria.For<TreeNode>("child")
                 .Add(Restrictions.Eq("child.Key.Id", 2))
                 .SetProjection(
@@ -78,7 +81,8 @@ Positional parameters:  #0>2
                     .Add(Projections.Property("child.Key.Id"))
                     .Add(Projections.Count("child.Key.Area"))
                 );
-
+        	try
+        	{
             using (var s = sessions.OpenSession())
             using (var tx = s.BeginTransaction())
             {
@@ -87,6 +91,13 @@ Positional parameters:  #0>2
                 
                 tx.Commit();
             }
+        		Assert.Fail();
+        	}
+					catch (ADOException e)
+        	{
+        		if(e.Message != expectedMessage)
+        			throw;
+        	}
         }
 
         [Test]
