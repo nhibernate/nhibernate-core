@@ -5,13 +5,13 @@
 
   <class name="EntityA" table="EntityA">
     <id name="Id" column="Id" type="long">
-      <generator class="identity"/>
+      <generator class="native"/>
     </id>
   </class>
 
   <class name="EntityB" table="EntityB">
     <id name="Id" column="Id" type="long">
-      <generator class="identity"/>
+      <generator class="native"/>
     </id>
 
     <many-to-one name="A" column="AId" class="EntityA" />
@@ -21,7 +21,7 @@
 
   <class name="EntityC" table="EntityC">
     <id name="Id" column="Id" type="long">
-      <generator class="identity" />
+      <generator class="native" />
     </id>
   </class>
   
