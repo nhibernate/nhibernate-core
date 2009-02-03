@@ -31,9 +31,12 @@
         <drop>
             <![CDATA[DROP TRIGGER t_iu_gen_prop]]>
         </drop>
-        <dialect-scope name="NHibernate.Dialect.Oracle9Dialect"/>
-        <dialect-scope name="NHibernate.Dialect.OracleDialect"/>
-    </database-object>
+		<dialect-scope name="NHibernate.Dialect.Oracle9Dialect"/>
+		<dialect-scope name="NHibernate.Dialect.OracleDialect"/>
+		<dialect-scope name="NHibernate.Dialect.Oracle8iDialect"/>
+		<dialect-scope name="NHibernate.Dialect.Oracle9iDialect"/>
+		<dialect-scope name="NHibernate.Dialect.Oracle10gDialect"/>
+	</database-object>
 
 	<database-object>
 		<create>
