@@ -2,11 +2,13 @@ using System;
 using System.Collections;
 using System.Data;
 using NHibernate.Dialect.Function;
+using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using Environment=NHibernate.Cfg.Environment;
+using System.Data.Common;
 
 namespace NHibernate.Dialect
 {
@@ -411,6 +413,11 @@ namespace NHibernate.Dialect
 		public override bool SupportsCurrentTimestampSelection
 		{
 			get { return true; }
+		}
+
+		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
+		{
+			return new OracleDataBaseSchema(connection);
 		}
 
 		#region Overridden informational metadata
