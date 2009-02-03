@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Criteria
@@ -70,6 +71,10 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UsingSqlFunctions_Concat_WithCast()
 		{
+			if(Dialect is Oracle8iDialect)
+			{
+				Assert.Ignore("Not supported by the active dialect:{0}.", Dialect);
+			}
 			using (ISession session = sessions.OpenSession())
 			{
 				string result = session.CreateCriteria(typeof(Student))
