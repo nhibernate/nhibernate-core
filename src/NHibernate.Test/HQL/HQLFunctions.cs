@@ -590,17 +590,23 @@ namespace NHibernate.Test.Hql
 				Assert.AreEqual(7f + 123f - 5f * 1.3f, l[0]);
 
 				// Rendered in SELECT using a property and nested functions
-				hql = "select cast(cast(a.BodyWeight as string) as Double) from Animal a";
-				l = s.CreateQuery(hql).List();
-				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(1.3F, l[0]);
+				if (!(Dialect is Oracle8iDialect))
+				{
+					hql = "select cast(cast(a.BodyWeight as string) as Double) from Animal a";
+					l = s.CreateQuery(hql).List();
+					Assert.AreEqual(1, l.Count);
+					Assert.AreEqual(1.3F, l[0]);
+				}
 
 				// TODO: Rendered in SELECT using string costant assigned with critic chars (separators)
 
 				// Rendered in WHERE using a property 
-				hql = "from Animal a where cast(a.BodyWeight as string) like '1.%'";
-				result = (Animal)s.CreateQuery(hql).UniqueResult();
-				Assert.AreEqual("abcdef", result.Description);
+				if (!(Dialect is Oracle8iDialect))
+				{
+					hql = "from Animal a where cast(a.BodyWeight as string) like '1.%'";
+					result = (Animal) s.CreateQuery(hql).UniqueResult();
+					Assert.AreEqual("abcdef", result.Description);
+				}
 
 				// Rendered in WHERE using a property in an operation with costants
 				hql = "from Animal a where cast(7+123-2*a.BodyWeight as Double)>0";
@@ -615,9 +621,12 @@ namespace NHibernate.Test.Hql
 				Assert.AreEqual("abcdef", result.Description);
 
 				// Rendered in WHERE using a property and nested functions
-				hql = "from Animal a where cast(cast(cast(a.BodyWeight as string) as double) as int) = 1";
-				result = (Animal)s.CreateQuery(hql).UniqueResult();
-				Assert.AreEqual("abcdef", result.Description);
+				if (!(Dialect is Oracle8iDialect))
+				{
+					hql = "from Animal a where cast(cast(cast(a.BodyWeight as string) as double) as int) = 1";
+					result = (Animal) s.CreateQuery(hql).UniqueResult();
+					Assert.AreEqual("abcdef", result.Description);
+				}
 
 				// Rendered in GROUP BY using a property 
 				hql = "select cast(a.BodyWeight as Double) from Animal a group by cast(a.BodyWeight as Double)";
@@ -632,10 +641,14 @@ namespace NHibernate.Test.Hql
 				Assert.AreEqual(7f + 123f - 5f * 1.3f, l[0]);
 
 				// Rendered in GROUP BY using a property and nested functions
-				hql = "select cast(cast(a.BodyWeight as string) as Double) from Animal a group by cast(cast(a.BodyWeight as string) as Double)";
-				l = s.CreateQuery(hql).List();
-				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(1.3F, l[0]);
+				if (!(Dialect is Oracle8iDialect))
+				{
+					hql =
+						"select cast(cast(a.BodyWeight as string) as Double) from Animal a group by cast(cast(a.BodyWeight as string) as Double)";
+					l = s.CreateQuery(hql).List();
+					Assert.AreEqual(1, l.Count);
+					Assert.AreEqual(1.3F, l[0]);
+				}
 
 				// Rendered in HAVING using a property 
 				hql = "select cast(a.BodyWeight as Double) from Animal a group by cast(a.BodyWeight as Double) having cast(a.BodyWeight as Double)>0";
@@ -664,21 +677,32 @@ namespace NHibernate.Test.Hql
 				}
 				catch (ADOException ex)
 				{
-					// This test raises an exception in SQL Server because named 
-					// parameters internally are always positional (@p0, @p1, etc.)
-					// and named differently hence they mismatch between GROUP BY and HAVING clauses.
-					if (!ex.InnerException.Message.Equals(
-						"Column 'Animal.BodyWeight' is invalid in the HAVING clause " +
-						"because it is not contained in either an aggregate function or the GROUP BY clause."))
-						throw;
+					if (Dialect is Oracle8iDialect)
+					{
+						if (!ex.InnerException.Message.StartsWith("ORA-00979"))
+							throw;
+					}
+					else
+					{
+						string msgToCheck =
+							"Column 'Animal.BodyWeight' is invalid in the HAVING clause because it is not contained in either an aggregate function or the GROUP BY clause.";
+						// This test raises an exception in SQL Server because named 
+						// parameters internally are always positional (@p0, @p1, etc.)
+						// and named differently hence they mismatch between GROUP BY and HAVING clauses.
+						if (!ex.InnerException.Message.Equals(msgToCheck))
+							throw;
+					}
 				}
 
 				// Rendered in HAVING using a property and nested functions
-				string castExpr = "cast(cast(cast(a.BodyWeight as string) as double) as int)";
-				hql = string.Format("select {0} from Animal a group by {0} having {0} = 1", castExpr);
-				l = s.CreateQuery(hql).List();
-				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(1, l[0]);
+				if (!(Dialect is Oracle8iDialect))
+				{
+					string castExpr = "cast(cast(cast(a.BodyWeight as string) as double) as int)";
+					hql = string.Format("select {0} from Animal a group by {0} having {0} = 1", castExpr);
+					l = s.CreateQuery(hql).List();
+					Assert.AreEqual(1, l.Count);
+					Assert.AreEqual(1, l[0]);
+				}
 			}
 		}
 
