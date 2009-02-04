@@ -10,7 +10,7 @@
 		<property name="Name" type="String" length="30"/>
 		<property name="Type" type="String" length="30"/>
 		<property name ="CompanyCount"
-							formula="(SELECT COUNT(*) FROM services as c WHERE c.accountNumber LIKE '63%' )"
+							formula="(SELECT COUNT(*) FROM services c WHERE c.accountNumber LIKE '63%' )"
 							update="false" insert="false"  access="nosetter.camelcase"/>
 		<!-- Using a formula seems to trigger it. I guess the query isn't being generated
       correctly when some formulas are used.
