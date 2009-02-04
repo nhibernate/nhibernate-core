@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1654"
+				   assembly="NHibernate.Test">
+
+	<class name="Employee" table="EMPLOYEES" >
+		<id name="Id" column="EMPLOYEE_ID" type="Int32">
+			<generator class="assigned" />
+		</id>
+		<property name="FirstName" column="FirstName" type="String" />
+		<property name="FirstNameFormula"
+        formula="(SELECT TOP 1 FirstName FROM EMPLOYEES e WHERE e.EMPLOYEE_ID = EMPLOYEE_ID)"
+        />
+
+	</class>
+</hibernate-mapping>
