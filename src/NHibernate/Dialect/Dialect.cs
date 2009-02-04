@@ -557,7 +557,7 @@ namespace NHibernate.Dialect
 		#endregion
 
 		#region keyword support
-		protected internal virtual void RegisterKeyword(string word)
+		protected void RegisterKeyword(string word)
 		{
 			Keywords.Add(word);
 		}

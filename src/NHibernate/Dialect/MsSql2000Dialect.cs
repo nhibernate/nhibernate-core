@@ -122,35 +122,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(day, ?1)"));
 			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(month, ?1)"));
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(year, ?1)"));
-
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
-			/*
-			RegisterFunction("julian_day", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction("microsecond", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction("midnight_seconds", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction("monthname", new StandardSQLFunction( NHibernateUtil.String ) );
-			RegisterFunction("quarter", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction("date", new StandardSQLFunction(Hibernate.DATE) );
-			RegisterFunction("dayname", new StandardSQLFunction( NHibernateUtil.String ) );
-			RegisterFunction("dayofweek", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction("dayofweek_iso", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction("dayofyear", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction("days", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction("time", new StandardSQLFunction( NHibernateUtil.Time ) );
-			RegisterFunction("timestamp", new StandardSQLFunction( NHibernateUtil.Timestamp ) );
-			RegisterFunction("timestamp_iso", new StandardSQLFunction( NHibernateUtil.Timestamp ) );
-			RegisterFunction("week", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction("week_iso", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-
-			RegisterFunction("double", new StandardSQLFunction( NHibernateUtil.Double ) );
-			RegisterFunction("varchar", new StandardSQLFunction( NHibernateUtil.String ) );
-			RegisterFunction("real", new StandardSQLFunction( NHibernateUtil.Single ) );
-			RegisterFunction("bigint", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction("char", new StandardSQLFunction( NHibernateUtil.Character ) );
-			RegisterFunction("integer", new StandardSQLFunction( NHibernateUtil.Int32 ) );
-			RegisterFunction("smallint", new StandardSQLFunction( NHibernateUtil.Int16 ) );
-			*/
-
 			RegisterFunction("digits", new StandardSQLFunction("digits", NHibernateUtil.String));
 			RegisterFunction("chr", new StandardSQLFunction("chr", NHibernateUtil.Character));
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
@@ -162,6 +134,8 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
+
+			RegisterKeyword("top");
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlClientDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";
