@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
 using NUnit.Framework;
 
@@ -80,10 +81,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 
 				ICriteria c = s.CreateCriteria(typeof (Person)).AddOrder(Order.Asc(Projections.SubQuery(dc)));
 				IList<Person> list = c.List<Person>();
-
-				Assert.AreEqual(list[2].Name, "Tim");
-				Assert.AreEqual(list[3].Name, "Joe");
-				Assert.AreEqual(list[4].Name, "Sally");
+				int nullRelationOffSet = 2;
+				if (Dialect is Oracle8iDialect)
+				{
+					// Oracle order NULL Last (ASC)
+					nullRelationOffSet = 0;
+				}
+				Assert.AreEqual(list[nullRelationOffSet].Name, "Tim");
+				Assert.AreEqual(list[nullRelationOffSet+1].Name, "Joe");
+				Assert.AreEqual(list[nullRelationOffSet+2].Name, "Sally");
 			}
 		}
 
@@ -99,9 +105,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 				ICriteria c = s.CreateCriteria(typeof (Person)).AddOrder(Order.Desc(Projections.SubQuery(dc)));
 				IList<Person> list = c.List<Person>();
 
-				Assert.AreEqual(list[2].Name, "Tim");
-				Assert.AreEqual(list[1].Name, "Joe");
-				Assert.AreEqual(list[0].Name, "Sally");
+				int nullRelationOffSet = 0;
+				if (Dialect is Oracle8iDialect)
+				{
+					// Oracle order NULL First (DESC)
+					nullRelationOffSet = 2;
+				}
+				Assert.AreEqual(list[nullRelationOffSet+2].Name, "Tim");
+				Assert.AreEqual(list[nullRelationOffSet+1].Name, "Joe");
+				Assert.AreEqual(list[nullRelationOffSet].Name, "Sally");
 			}
 		}
 
