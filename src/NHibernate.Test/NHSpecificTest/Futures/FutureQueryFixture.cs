@@ -1,5 +1,4 @@
-﻿using NHibernate.Criterion;
-using NHibernate.Impl;
+﻿using NHibernate.Impl;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.Futures

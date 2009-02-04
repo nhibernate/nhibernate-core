@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
     using System.Collections;
 
     [TestFixture]
-    public class Fixture : TestCase
+    public class FutureCriteriaFixture : TestCase
     {
 
         protected override IList Mappings

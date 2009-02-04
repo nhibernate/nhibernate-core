@@ -381,7 +381,7 @@
     <Compile Include="NHSpecificTest\BugTestCase.cs" />
     <Compile Include="NHSpecificTest\CollectionFixture.cs" />
     <Compile Include="NHSpecificTest\Futures\FutureQueryFixture.cs" />
-    <Compile Include="NHSpecificTest\Futures\Fixture.cs" />
+    <Compile Include="NHSpecificTest\Futures\FutureCriteriaFixture.cs" />
     <Compile Include="NHSpecificTest\Futures\Person.cs" />
     <Compile Include="NHSpecificTest\DateTime2AndDateTimeOffSet\AllDates.cs" />
     <Compile Include="NHSpecificTest\DateTime2AndDateTimeOffSet\DateTime2AndDateTimeOffSetFixture.cs" />
