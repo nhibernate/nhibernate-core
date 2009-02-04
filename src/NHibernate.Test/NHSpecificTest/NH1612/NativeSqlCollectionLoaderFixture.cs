@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using NHibernate.Dialect;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
 
@@ -230,6 +231,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		[Test]
 		public void NativeUpdateQueryWithoutResults()
 		{
+			if(!(Dialect is MsSql2000Dialect))
+			{
+				Assert.Ignore("This does not apply to {0}", Dialect);
+			}
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction tx = session.BeginTransaction())
@@ -243,6 +248,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		[Test]
 		public void NativeScalarQueryWithoutResults()
 		{
+			if (!(Dialect is MsSql2000Dialect))
+			{
+				Assert.Ignore("This does not apply to {0}", Dialect);
+			}
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction tx = session.BeginTransaction())
@@ -258,6 +267,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		[Test]
 		public void NativeScalarQueryWithUndefinedResultset()
 		{
+			if (!(Dialect is MsSql2000Dialect))
+			{
+				Assert.Ignore("This does not apply to {0}", Dialect);
+			}
 			using (ISession session = OpenSession())
 			{
 				using (session.BeginTransaction())
@@ -273,6 +286,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		[Test]
 		public void NativeScalarQueryWithDefinedResultset()
 		{
+			if (!(Dialect is MsSql2000Dialect))
+			{
+				Assert.Ignore("This does not apply to {0}", Dialect);
+			}
 			using (ISession session = OpenSession())
 			{
 				using (session.BeginTransaction())
