@@ -16,6 +16,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 1073741823, "NVARCHAR(MAX)");
 			RegisterColumnType(DbType.AnsiString, 2147483647, "VARCHAR(MAX)");
 			RegisterColumnType(DbType.Binary, 2147483647, "VARBINARY(MAX)");
+			RegisterKeyword("top");
 		}
 
 		/// <summary>

@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using NHibernate.Dialect;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1654
 {
@@ -10,7 +11,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1654
 			get { return "NH1654"; }
 		}
 
-		[Test,Ignore]
+		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2000Dialect;
+		}
+
+		[Test]
 		public void Test()
 		{
 			int employeeId;
