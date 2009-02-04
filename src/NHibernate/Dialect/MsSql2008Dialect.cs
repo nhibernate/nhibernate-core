@@ -8,6 +8,8 @@ namespace NHibernate.Dialect
         {
             RegisterColumnType(DbType.DateTime2, "DATETIME2");
             RegisterColumnType(DbType.DateTimeOffset, "DATETIMEOFFSET");
+			RegisterColumnType(DbType.Date, "DATE");
+			//RegisterColumnType(DbType.Time, "TIME");
         }
     }
 }

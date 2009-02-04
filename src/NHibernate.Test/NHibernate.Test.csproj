@@ -383,7 +383,9 @@
     <Compile Include="NHSpecificTest\BasicTimeFixture.cs" />
     <Compile Include="NHSpecificTest\BugTestCase.cs" />
     <Compile Include="NHSpecificTest\CollectionFixture.cs" />
-    <Compile Include="NHSpecificTest\Dates\DatesFixtureBase.cs" />
+    <Compile Include="NHSpecificTest\Dates\TimeFixture.cs" />
+    <Compile Include="NHSpecificTest\Dates\DateFixture.cs" />
+    <Compile Include="NHSpecificTest\Dates\FixtureBase.cs" />
     <Compile Include="NHSpecificTest\Dates\DateTime2Fixture.cs" />
     <Compile Include="NHSpecificTest\Dates\DateTimeAssert.cs" />
     <Compile Include="NHSpecificTest\Futures\FutureQueryFixture.cs" />
@@ -1626,6 +1628,8 @@
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
     <EmbeddedResource Include="IdGen\NativeGuid\NativeGuidPoid.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\Dates\Mappings\Time.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\Dates\Mappings\Date.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\Dates\Mappings\DateTimeOffset.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1654\Mappings.hbm.xml" />
     <EmbeddedResource Include="Pagination\DataPoint.hbm.xml" />
