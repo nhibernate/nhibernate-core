@@ -24,14 +24,14 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object Get(IDataReader rs, int index)
 		{
-            if (rs.GetFieldType(index) == typeof(Guid))
-            {
-                return rs.GetGuid(index);
-            }
-            else
-            {
-                return new Guid(Convert.ToString(rs[index]));
-            }
+			if (rs.GetFieldType(index) == typeof (Guid))
+			{
+				return rs.GetGuid(index);
+			}
+			else
+			{
+				return new Guid(Convert.ToString(rs[index]));
+			}
 		}
 
 		/// <summary>
