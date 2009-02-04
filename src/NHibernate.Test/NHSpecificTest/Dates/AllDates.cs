@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NHibernate.Test.NHSpecificTest.DateTime2AndDateTimeOffSet
+namespace NHibernate.Test.NHSpecificTest.Dates
 {
 	public class AllDates
 	{

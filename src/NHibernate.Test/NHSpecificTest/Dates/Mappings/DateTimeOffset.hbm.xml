@@ -1,16 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
-				   namespace="NHibernate.Test.NHSpecificTest.DateTime2AndDateTimeOffSet"
+				   namespace="NHibernate.Test.NHSpecificTest.Dates"
 				   assembly="NHibernate.Test">
 
 	<class name="AllDates"  lazy="false">
 	
 		<id name="Id">
-			<generator class="identity"/>
+			<generator class="native"/>
 		</id>
 
-        <property name="Sql_datetime" />
-		<property name="Sql_datetime2" type="datetime2" />
         <property name="Sql_datetimeoffset" type="datetimeoffset" />
         
 	</class>
