@@ -12,6 +12,46 @@ namespace NHibernate.Dialect.Schema
 		{
 			return new OracleTableMetadata(rs, this, extras);
 		}
+
+		public override bool StoresUpperCaseIdentifiers
+		{
+			get { return true; }
+		}
+
+		public override DataTable GetTables(string catalog, string schemaPattern, string tableNamePattern, string[] types)
+		{
+			string owner = string.IsNullOrEmpty(schemaPattern) ? null : schemaPattern;
+			var restrictions = new[] { owner, tableNamePattern };
+			return Connection.GetSchema("Tables", restrictions);
+		}
+
+		public override DataTable GetColumns(string catalog, string schemaPattern, string tableNamePattern, string columnNamePattern)
+		{
+			string owner = string.IsNullOrEmpty(schemaPattern) ? null : schemaPattern;
+			var restrictions = new[] { owner, tableNamePattern, columnNamePattern };
+			return Connection.GetSchema("Columns", restrictions);
+		}
+
+		public override DataTable GetIndexColumns(string catalog, string schemaPattern, string tableName, string indexName)
+		{
+			string owner = string.IsNullOrEmpty(schemaPattern) ? null : schemaPattern;
+			var restrictions = new[] { owner, indexName, null, tableName, null };
+			return Connection.GetSchema("IndexColumns", restrictions);
+		}
+
+		public override DataTable GetIndexInfo(string catalog, string schemaPattern, string tableName)
+		{
+			string owner = string.IsNullOrEmpty(schemaPattern) ? null : schemaPattern;
+			var restrictions = new[] { owner, null, null, tableName };
+			return Connection.GetSchema("Indexes", restrictions);
+		}
+
+		public override DataTable GetForeignKeys(string catalog, string schema, string table)
+		{
+			string owner = string.IsNullOrEmpty(schema) ? null : schema;
+			var restrictions = new[] { owner, table, null };
+			return Connection.GetSchema("ForeignKeys", restrictions);
+		}
 	}
 
 	public class OracleTableMetadata : AbstractTableMetadata
@@ -28,7 +68,7 @@ namespace NHibernate.Dialect.Schema
 
 		protected override string GetConstraintName(DataRow rs)
 		{
-			return Convert.ToString(rs["FOREIGN_KEY_CONSTRIANT_NAME"]);
+			return Convert.ToString(rs["FOREIGN_KEY_CONSTRAINT_NAME"]);
 		}
 
 		protected override string GetColumnName(DataRow rs)
@@ -92,7 +132,7 @@ namespace NHibernate.Dialect.Schema
 		public OracleForeignKeyMetadata(DataRow rs)
 			: base(rs)
 		{
-			Name = Convert.ToString(rs["FOREIGN_KEY_CONSTRIANT_NAME"]);
+			Name = Convert.ToString(rs["FOREIGN_KEY_CONSTRAINT_NAME"]);
 		}
 	}
 }
