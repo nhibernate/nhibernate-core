@@ -196,6 +196,7 @@
     <Compile Include="Events\Collections\IParentWithCollection.cs" />
     <Compile Include="Events\Collections\Values\ParentWithCollectionOfValues.cs" />
     <Compile Include="Events\Collections\Values\ValuesBagCollectionEventFixture.cs" />
+    <Compile Include="ExceptionsTest\PostgresExceptionConverterExample.cs" />
     <Compile Include="ExceptionsTest\Group.cs" />
     <Compile Include="ExceptionsTest\MSSQLExceptionConverterExample.cs" />
     <Compile Include="ExceptionsTest\OracleClientExceptionConverterExample.cs" />

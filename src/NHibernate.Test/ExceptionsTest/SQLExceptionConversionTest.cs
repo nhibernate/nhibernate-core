@@ -33,6 +33,12 @@ namespace NHibernate.Test.ExceptionsTest
 				configuration.SetProperty(Cfg.Environment.SqlExceptionConverter,
 																	typeof(OracleClientExceptionConverterExample).AssemblyQualifiedName);
 			}
+
+			if (Dialect is PostgreSQL82Dialect)
+			{
+				configuration.SetProperty(Cfg.Environment.SqlExceptionConverter,
+																	typeof(PostgresExceptionConverterExample).AssemblyQualifiedName);
+			}
 		}
 
 		[Test]
