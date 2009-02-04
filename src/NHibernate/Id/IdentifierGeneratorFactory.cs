@@ -40,6 +40,10 @@ namespace NHibernate.Id
 	///			<description><see cref="GuidCombGenerator"/></description>
 	///		</item>
 	///		<item>
+	///			<term>guid.native</term>
+	///			<description><see cref="NativeGuidGenerator"/></description>
+	///		</item>
+	///		<item>
 	///			<term>hilo</term>
 	///			<description><see cref="TableHiLoGenerator"/></description>
 	///		</item>
@@ -165,6 +169,7 @@ namespace NHibernate.Id
 			idgenerators.Add("foreign", typeof(ForeignGenerator));
 			idgenerators.Add("guid", typeof(GuidGenerator));
 			idgenerators.Add("guid.comb", typeof(GuidCombGenerator));
+			idgenerators.Add("guid.native", typeof(NativeGuidGenerator));
 			idgenerators.Add("select", typeof(SelectGenerator));
 		}
 

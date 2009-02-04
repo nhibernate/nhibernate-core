@@ -294,6 +294,9 @@
     <Compile Include="BulkManipulation\Vehicles.cs" />
     <Compile Include="HQL\HqlFixture.cs" />
     <Compile Include="IdGen\Enhanced\SequenceStyleConfigUnitFixture.cs" />
+    <Compile Include="IdGen\NativeGuid\NativeGuidFixture.cs" />
+    <Compile Include="IdGen\NativeGuid\NativeGuidGeneratorFixture.cs" />
+    <Compile Include="IdGen\NativeGuid\NativeGuidPoid.cs" />
     <Compile Include="IdTest\Car.cs" />
     <Compile Include="IdTest\HiLoInt16Class.cs" />
     <Compile Include="IdTest\HiLoInt32Class.cs" />
@@ -1622,6 +1625,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="IdGen\NativeGuid\NativeGuidPoid.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\Dates\Mappings\DateTimeOffset.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1654\Mappings.hbm.xml" />
     <EmbeddedResource Include="Pagination\DataPoint.hbm.xml" />

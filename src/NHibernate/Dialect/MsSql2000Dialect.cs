@@ -159,6 +159,11 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
+		public override string SelectGUIDString
+		{
+			get { return "select newid()"; }
+		}
+
 		/// <summary>
 		/// Generates the string to drop the table using SQL Server syntax.
 		/// </summary>

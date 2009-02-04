@@ -271,7 +271,7 @@ namespace NHibernate.Dialect
 		/// <returns> The appropriate command. </returns>
 		public virtual string SelectGUIDString
 		{
-			get{throw new NotSupportedException("dialect does not support GUIDs");}
+			get{throw new NotSupportedException("dialect does not support server side GUIDs generation.");}
 		}
 
 		/// <summary> Command used to create a table. </summary>
