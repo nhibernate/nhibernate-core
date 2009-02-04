@@ -4,6 +4,7 @@ Build 2.1.0.GA
 	##### Run time #####
 		* If you want work using lazy loading with LinFu.DynamicProxy now you must deploy NHibernate.ByteCode.LinFu.dll
 		* If you want work using lazy loading with Castle.DynamicProxy2 now you must deploy NHibernate.ByteCode.Castle.dll
+		* compatible only with .NET2.0 SP1 or above (System.DateTimeOffset)
 
 	##### Possible Breaking Changes for external frameworks #####
 		* ISession interface have additional methods
