@@ -14,6 +14,7 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public class OracleDataClientDriver : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
 	{
+		private static readonly SqlType GuidSqlType = new SqlType(DbType.Binary, 16);
 		/// <summary>
 		/// Initializes a new instance of <see cref="OracleDataClientDriver"/>.
 		/// </summary>
@@ -54,11 +55,18 @@ namespace NHibernate.Driver
 		{
 			// if the parameter coming in contains a boolean then we need to convert it 
 			// to another type since ODP.NET doesn't support DbType.Boolean
-			if (sqlType.DbType == DbType.Boolean)
+			switch (sqlType.DbType)
 			{
-				sqlType = SqlTypeFactory.Int16;
+				case DbType.Boolean:
+					base.InitializeParameter(dbParam, name, SqlTypeFactory.Int16);
+					break;
+				case DbType.Guid:
+					base.InitializeParameter(dbParam, name, GuidSqlType);
+					break;
+				default:
+					base.InitializeParameter(dbParam, name, sqlType);
+					break;
 			}
-			base.InitializeParameter(dbParam, name, sqlType);
 		}
 
 		#region IEmbeddedBatcherFactoryProvider Members

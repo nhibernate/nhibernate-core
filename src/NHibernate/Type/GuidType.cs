@@ -28,10 +28,13 @@ namespace NHibernate.Type
 			{
 				return rs.GetGuid(index);
 			}
-			else
+
+			if (rs.GetFieldType(index) == typeof(byte[]))
 			{
-				return new Guid(Convert.ToString(rs[index]));
-			}
+				return new Guid((byte[])(rs[index]));
+			} 
+
+			return new Guid(Convert.ToString(rs[index]));
 		}
 
 		/// <summary>
@@ -53,7 +56,9 @@ namespace NHibernate.Type
 
 		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			((IDataParameter)cmd.Parameters[index]).Value = value;
+			var dp = (IDataParameter) cmd.Parameters[index];
+
+			dp.Value = dp.DbType == DbType.Binary ? ((Guid)value).ToByteArray() : value;
 		}
 
 		/// <summary></summary>

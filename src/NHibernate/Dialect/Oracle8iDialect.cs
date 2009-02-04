@@ -68,12 +68,17 @@ namespace NHibernate.Dialect
 			RegisterNumericTypeMappings();
 			RegisterDateTimeTypeMappings();
 			RegisterLargeObjectTypeMappings();
-
+			RegisterGuidTypeMapping();
 			RegisterReverseHibernateTypeMappings();
 
 			RegisterFunctions();
 
 			RegisterDefaultProperties();
+		}
+
+		protected virtual void RegisterGuidTypeMapping()
+		{
+			RegisterColumnType(DbType.Guid, "RAW(16)");
 		}
 
 		protected virtual void RegisterCharacterTypeMappings()
