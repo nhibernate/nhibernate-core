@@ -38,7 +38,7 @@ namespace NHibernate.SqlCommand
 			}
 			buf.Append(StringHelper.ClosedParen);
 
-			if (returnColumnName != null)
+			if (!string.IsNullOrEmpty(returnColumnName))
 			{
 				buf.Append(" as ").Append(returnColumnName);
 			}
