@@ -108,11 +108,11 @@ namespace NHibernate.Type
 			RegisterType(typeof(Byte), NHibernateUtil.Byte, "byte");
 			RegisterType(typeof(Char), NHibernateUtil.Character, "character");
 			RegisterType(typeof(CultureInfo), NHibernateUtil.CultureInfo, "locale");
-            /*registering "datetime" after of "datetime2", 
-            NH will choose "datetime" when no type is specified in the mapping*/
-            RegisterType(typeof(DateTime), NHibernateUtil.DateTime2, "datetime2");
+			/*registering "datetime" after of "datetime2", 
+			NH will choose "datetime" when no type is specified in the mapping*/
+			RegisterType(typeof(DateTime), NHibernateUtil.DateTime2, "datetime2");
 			RegisterType(typeof(DateTime), NHibernateUtil.DateTime, "datetime");
-            RegisterType(typeof(DateTimeOffset), NHibernateUtil.DateTimeOffset, "datetimeoffset");
+			RegisterType(typeof(DateTimeOffset), NHibernateUtil.DateTimeOffset, "datetimeoffset");
 			RegisterType(typeof(Decimal), NHibernateUtil.Decimal, "big_decimal");
 			RegisterType(typeof(Double), NHibernateUtil.Double, "double");
 			RegisterType(typeof(Guid), NHibernateUtil.Guid, "guid");

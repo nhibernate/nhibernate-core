@@ -26,9 +26,9 @@ namespace NHibernate.Type
 		{
 		}
 
-	    public DateTimeType(SqlType sqlTypeDateTime) : base(sqlTypeDateTime)
-        {
-        }
+		public DateTimeType(SqlType sqlTypeDateTime) : base(sqlTypeDateTime)
+		{
+		}
 
 		/// <summary></summary>
 		public override string Name

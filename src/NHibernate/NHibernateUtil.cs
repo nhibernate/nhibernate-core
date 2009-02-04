@@ -115,15 +115,15 @@ namespace NHibernate
 		/// </summary>
 		public static readonly NullableType DateTime = new DateTimeType();
 
-        /// <summary>
-        /// NHibernate date type
-        /// </summary>
-        public static readonly NullableType DateTime2 = new DateTime2Type();
+		/// <summary>
+		/// NHibernate date type
+		/// </summary>
+		public static readonly NullableType DateTime2 = new DateTime2Type();
 
-        /// <summary>
-        /// NHibernate date type
-        /// </summary>
-        public static readonly NullableType DateTimeOffset = new DateTimeOffsetType();
+		/// <summary>
+		/// NHibernate date type
+		/// </summary>
+		public static readonly NullableType DateTimeOffset = new DateTimeOffsetType();
 
 		/// <summary>
 		/// NHibernate date type
