@@ -1,0 +1,54 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"  assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH1289">
+	<joined-subclass name="PurchaseOrder" table="PurchaseOrder"
+	extends="WorkflowItem">
+		<key column="Id"/>
+
+		<set name="PurchaseItems" lazy="true" inverse="true" cascade="all" table="PurchaseItem">
+			<key column="PurchaseOrderId" />
+			<one-to-many class="PurchaseItem" />
+		</set>
+	</joined-subclass>
+
+	<joined-subclass name="Cons_Product" table="Cons_Product" extends="Product">
+		<key column="Id"/>
+		<property name="ImageName" column="ImageName"  not-null="false"   />
+	</joined-subclass>
+
+	<joined-subclass name="Cons_PurchaseItem" table="Cons_PurchaseItem" extends="PurchaseItem">
+		<key column="Id"/>
+	</joined-subclass>
+
+	<joined-subclass name="Cons_PurchaseOrder" table="Cons_PurchaseOrder" extends="PurchaseOrder"  >
+		<key column="Id"/>
+	</joined-subclass>
+
+	<class name="Product" table="Product">
+
+		<id name="Id" column="Id" type="System.Int32">
+			<generator class="native"/>
+		</id>
+		<property name="Description" column="Description"  not-null="false"   />
+		<property name="Price" column="Price"  not-null="false"   />
+		<property name="ProductName" column="ProductName"  not-null="false"   />
+		<property name="Units" column="Units"  not-null="false"   />
+
+	</class>
+
+	<class name="PurchaseItem" table="PurchaseItem">
+		<id name="Id" column="Id" type="System.Int32">
+			<generator class="native"/>
+		</id>
+		<many-to-one name="Product" column="ProductId" not-null="true" />
+		<many-to-one name="PurchaseOrder" column="PurchaseOrderId" not-null="true" />
+	</class>
+
+
+
+	<class name="WorkflowItem" table="WorkflowItem">
+
+		<id name="Id" column="Id" type="System.Int32">
+			<generator class="native">
+			</generator>
+		</id>
+	</class>
+</hibernate-mapping>
