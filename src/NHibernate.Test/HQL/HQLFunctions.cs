@@ -750,6 +750,8 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Current_TimeStamp_Offset()
 		{
+			if (!Dialect.Functions.ContainsKey("current_timestamp_offset"))
+				Assert.Ignore(Dialect + " doesn't support current_timestamp_offset function");
 			IgnoreIfNotSupported("current_timestamp_offset");
 			using (ISession s = OpenSession())
 			{
