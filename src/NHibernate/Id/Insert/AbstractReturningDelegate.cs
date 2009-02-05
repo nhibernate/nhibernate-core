@@ -16,7 +16,7 @@ namespace NHibernate.Id.Insert
 	{
 		private readonly IPostInsertIdentityPersister persister;
 
-		public AbstractReturningDelegate(IPostInsertIdentityPersister persister)
+		protected AbstractReturningDelegate(IPostInsertIdentityPersister persister)
 		{
 			this.persister = persister;
 		}
