@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.FileStreamSql2008"
+				   assembly="NHibernate.Test">
+
+	<!-- Mapping the entity as usual -->
+	<class name="VendorCatalog">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Name"/>
+		<property name="CatalogID"/>
+		<property name="Catalog"/>
+	</class>
+
+	<!-- 	
+		The workaround consist in alter the table with the special 
+		columns needed to support the FileStream feature.
+	 -->
+	<database-object>
+		<create>
+			<![CDATA[
+			
+			ALTER TABLE VendorCatalog DROP COLUMN CatalogID
+			ALTER TABLE VendorCatalog ADD CatalogID UNIQUEIDENTIFIER ROWGUIDCOL NOT NULL UNIQUE
+			ALTER TABLE VendorCatalog DROP COLUMN Catalog 
+			ALTER TABLE VendorCatalog ADD Catalog varbinary(max) FILESTREAM
+			
+			]]>
+		</create>
+		<drop/>
+	</database-object>
+
+</hibernate-mapping>

@@ -390,6 +390,9 @@
     <Compile Include="NHSpecificTest\Dates\FixtureBase.cs" />
     <Compile Include="NHSpecificTest\Dates\DateTime2Fixture.cs" />
     <Compile Include="NHSpecificTest\Dates\DateTimeAssert.cs" />
+    <Compile Include="NHSpecificTest\FileStreamSql2008\VendorCatalog.cs" />
+    <Compile Include="NHSpecificTest\FileStreamSql2008\Fixture.cs" />
+    <Compile Include="NHSpecificTest\FileStreamSql2008\Convert.cs" />
     <Compile Include="NHSpecificTest\Futures\FutureQueryFixture.cs" />
     <Compile Include="NHSpecificTest\Futures\FutureCriteriaFixture.cs" />
     <Compile Include="NHSpecificTest\Futures\Person.cs" />
@@ -1629,6 +1632,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\FileStreamSql2008\Mappings.hbm.xml" />
     <EmbeddedResource Include="Generatedkeys\Seqidentity\MyEntity.hbm.xml" />
     <EmbeddedResource Include="IdGen\NativeGuid\NativeGuidPoid.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\Dates\Mappings\Time.hbm.xml" />
