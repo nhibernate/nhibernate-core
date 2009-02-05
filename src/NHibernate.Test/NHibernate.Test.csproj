@@ -250,6 +250,8 @@
     <Compile Include="Generatedkeys\Identity\MySibling.cs" />
     <Compile Include="Generatedkeys\Select\MyEntity.cs" />
     <Compile Include="Generatedkeys\Select\SelectGeneratorTest.cs" />
+    <Compile Include="Generatedkeys\Seqidentity\MyEntity.cs" />
+    <Compile Include="Generatedkeys\Seqidentity\SequenceIdentityFixture.cs" />
     <Compile Include="GeneratedTest\AbstractGeneratedPropertyTest.cs" />
     <Compile Include="GeneratedTest\Component.cs" />
     <Compile Include="GeneratedTest\ComponentOwner.cs" />
@@ -1627,6 +1629,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="Generatedkeys\Seqidentity\MyEntity.hbm.xml" />
     <EmbeddedResource Include="IdGen\NativeGuid\NativeGuidPoid.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\Dates\Mappings\Time.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\Dates\Mappings\Date.hbm.xml" />

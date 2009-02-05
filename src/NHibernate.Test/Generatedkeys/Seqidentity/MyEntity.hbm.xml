@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.Generatedkeys.Seqidentity"
+				   default-access="field">
+
+	<class name="MyEntity" table="my_entity">
+
+		<id name="id">
+			<generator class="sequence-identity"/>
+		</id>
+		<natural-id>
+			<property name="name"/>
+		</natural-id>
+	</class>
+
+</hibernate-mapping>
