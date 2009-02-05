@@ -744,6 +744,26 @@ namespace NHibernate.Test.Hql
 			}
 		}
 
+		/// <summary>
+		/// NH-1658
+		/// </summary>
+		[Test]
+		public void Current_TimeStamp_Offset()
+		{
+			IgnoreIfNotSupported("current_timestamp_offset");
+			using (ISession s = OpenSession())
+			{
+				Animal a1 = new Animal("abcdef", 1.3f);
+				s.Save(a1);
+				s.Flush();
+			}
+			using (ISession s = OpenSession())
+			{
+				string hql = "select current_timestamp_offset() from Animal";
+				IList result = s.CreateQuery(hql).List();
+			}
+		}
+
 		[Test]
 		public void Extract()
 		{

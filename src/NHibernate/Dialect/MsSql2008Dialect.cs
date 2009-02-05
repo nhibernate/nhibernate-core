@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using NHibernate.Dialect.Function;
 
 namespace NHibernate.Dialect
 {
@@ -10,6 +11,9 @@ namespace NHibernate.Dialect
             RegisterColumnType(DbType.DateTimeOffset, "DATETIMEOFFSET");
 			RegisterColumnType(DbType.Date, "DATE");
 			//RegisterColumnType(DbType.Time, "TIME");
+
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("sysdatetime", NHibernateUtil.DateTime2, true));
+			RegisterFunction("current_timestamp_offset", new NoArgSQLFunction("sysdatetimeoffset", NHibernateUtil.DateTimeOffset, true));
         }
     }
 }
