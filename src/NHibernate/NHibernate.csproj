@@ -464,6 +464,7 @@
     <Compile Include="Exceptions\ReflectionBasedSqlStateExtracter.cs" />
     <Compile Include="Exceptions\SqlStateExtracter.cs" />
     <Compile Include="Exceptions\TemplatedViolatedConstraintNameExtracter.cs" />
+    <Compile Include="Id\Insert\NoCommentsInsert.cs" />
     <Compile Include="Id\NativeGuidGenerator.cs" />
     <Compile Include="Id\SelectGenerator.cs" />
     <Compile Include="IFutureValue.cs" />
