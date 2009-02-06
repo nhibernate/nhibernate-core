@@ -45,6 +45,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.DateTime, "timestamp");
 			RegisterColumnType(DbType.Decimal, "decimal(19,5)");
 			RegisterColumnType(DbType.Decimal, 19, "decimal(18, $l)");
+			RegisterColumnType(DbType.Decimal, 19, "decimal($p, $s)");
 			RegisterColumnType(DbType.Double, "float8");
 			RegisterColumnType(DbType.Int16, "int2");
 			RegisterColumnType(DbType.Int32, "int4");
