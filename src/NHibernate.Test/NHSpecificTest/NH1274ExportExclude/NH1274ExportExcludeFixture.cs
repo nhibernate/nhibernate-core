@@ -14,7 +14,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 	[TestFixture]
 	public class NH1274ExportExcludeFixture
 	{
-
 		[Test]
 		public void SchemaExport_Drop_CreatesDropScript()
 		{
@@ -24,8 +23,19 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 			Console.SetOut(tw);
 			export.Drop(true, false);
 			string s = tw.ToString();
-			Assert.IsTrue(s.Contains("drop table Home_Drop"));
-			Assert.IsTrue(s.Contains("drop table Home_All"));
+
+			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
+
+			if (dialect.SupportsIfExistsBeforeTableName)
+			{
+				Assert.IsTrue(s.Contains("drop table if exists Home_Drop"));
+				Assert.IsTrue(s.Contains("drop table if exists Home_All"));
+			}
+			else
+			{
+				Assert.IsTrue(s.Contains("drop table Home_Drop"));
+				Assert.IsTrue(s.Contains("drop table Home_All"));
+			}
 		}
 
 		[Test]
@@ -37,8 +47,19 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 			Console.SetOut(tw);
 			export.Create(true, false);
 			string s = tw.ToString();
-			Assert.IsTrue(s.Contains("drop table Home_Drop"));
-			Assert.IsTrue(s.Contains("drop table Home_All"));
+			
+			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
+			if (dialect.SupportsIfExistsBeforeTableName)
+			{
+				Assert.IsTrue(s.Contains("drop table if exists Home_Drop"));
+				Assert.IsTrue(s.Contains("drop table if exists Home_All"));
+			}
+			else
+			{
+				Assert.IsTrue(s.Contains("drop table Home_Drop"));
+				Assert.IsTrue(s.Contains("drop table Home_All"));
+			}
+
 			Assert.IsTrue(s.Contains("create table Home_All"));
 			Assert.IsTrue(s.Contains("create table Home_Export"));
 		}
