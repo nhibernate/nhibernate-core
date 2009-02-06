@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.Dates
@@ -16,8 +17,17 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 		public void SavingAndRetrievingTest()
 		{
 			var now = DateTime.Parse("23:59:59").TimeOfDay;
+
 			SavingAndRetrievingAction(new AllDates {Sql_time = now},
-			                          entity => Assert.AreEqual(entity.Sql_time, now));
+			                          entity => 
+										  {
+										  	Assert.AreEqual(entity.Sql_time.Hours, now.Hours);
+											Assert.AreEqual(entity.Sql_time.Minutes, now.Minutes);
+											Assert.AreEqual(entity.Sql_time.Seconds, now.Seconds);
+										  });
+
+			if(Dialect is MsSql2008Dialect)
+				SavingAndRetrievingAction(new AllDates { Sql_time = now }, entity => Assert.AreEqual(entity.Sql_time, now));
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Data;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.Dates
@@ -10,6 +11,11 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 		protected override IList Mappings
 		{
 			get { return new[] {"NHSpecificTest.Dates.Mappings.DateTime2.hbm.xml"}; }
+		}
+
+		protected override DbType? AppliesTo()
+		{
+			return DbType.DateTime2;
 		}
 
 		[Test]

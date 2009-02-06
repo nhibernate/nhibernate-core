@@ -29,7 +29,12 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return (TimeSpan)rs[index];
+				object value = rs[index];
+				if(value is TimeSpan)
+					return (TimeSpan)value;
+
+                DateTime time = (DateTime)rs[index];
+				return new TimeSpan(Convert.ToInt64(time.Ticks));
 			}
 			catch (Exception ex)
 			{
@@ -41,9 +46,12 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				//DateTime time = (DateTime)rs[name];
-				//return new TimeSpan(Convert.ToInt64(time.Ticks));
-				return (TimeSpan)rs[name];
+				object value = rs[name];
+				if (value is TimeSpan) //For those dialects where DbType.Time means TimeSpan.
+					return (TimeSpan)value;
+
+				DateTime time = (DateTime)rs[name];
+				return new TimeSpan(Convert.ToInt64(time.Ticks));
 			}
 			catch (Exception ex)
 			{

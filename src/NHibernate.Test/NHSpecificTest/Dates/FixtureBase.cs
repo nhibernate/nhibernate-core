@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
+using System.Data;
 using NHibernate.Dialect;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.Dates
@@ -17,7 +19,25 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return dialect is MsSql2008Dialect;
+			var typeNames = (TypeNames)typeof(Dialect.Dialect).GetField("typeNames", ReflectHelper.AnyVisibilityInstance).GetValue(Dialect);
+			try
+			{
+				var value = AppliesTo();
+
+				if (value == null) return true;
+				
+				typeNames.Get(value.Value);
+			}
+			catch (ArgumentException arg)
+			{
+				return false;
+			}
+			catch (Exception arg)
+			{
+				Assert.Fail("Probably a bug in the test case.");
+			}
+
+			return true;
 		}
 
 		protected void SavingAndRetrievingAction(AllDates entity, Action<AllDates> action)
@@ -46,6 +66,11 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 				s.Delete(datesRecovered);
 				tx.Commit();
 			}
+		}
+
+		protected virtual DbType? AppliesTo() 
+		{
+			return null;
 		}
 	}
 }

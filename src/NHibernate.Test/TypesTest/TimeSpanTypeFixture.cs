@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Dialect;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -61,7 +62,13 @@ namespace NHibernate.Test.TypesTest
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				entityReturned = s.CreateQuery("from TimeSpanClass").UniqueResult<TimeSpanClass>();
-				Assert.AreEqual(ticks, entityReturned.TimeSpanValue);
+				
+				if(Dialect is MsSql2008Dialect)
+					Assert.AreEqual(ticks, entityReturned.TimeSpanValue);
+
+				Assert.AreEqual(entityReturned.TimeSpanValue.Hours,ticks.Hours);
+				Assert.AreEqual(entityReturned.TimeSpanValue.Minutes, ticks.Minutes);
+				Assert.AreEqual(entityReturned.TimeSpanValue.Seconds, ticks.Seconds);
 			}
 
 			using (ISession s = OpenSession())
