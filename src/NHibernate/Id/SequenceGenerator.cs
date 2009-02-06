@@ -52,6 +52,11 @@ namespace NHibernate.Id
 		private SqlString sql;
 		private string parameters;
 
+		public string SequenceName
+		{
+			get { return sequenceName; }
+		}
+
 		#region IConfigurable Members
 
 		/// <summary>

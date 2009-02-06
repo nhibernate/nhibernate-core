@@ -200,7 +200,7 @@ namespace NHibernate.Driver
 		/// <param name="name">The name to set for IDbDataParameter.Name</param>
 		/// <param name="sqlType">The SqlType to set for IDbDataParameter.</param>
 		/// <returns>An IDbDataParameter ready to be added to an IDbCommand.</returns>
-		protected IDbDataParameter GenerateParameter(IDbCommand command, string name, SqlType sqlType)
+		public IDbDataParameter GenerateParameter(IDbCommand command, string name, SqlType sqlType)
 		{
 			IDbDataParameter dbParam = command.CreateParameter();
 			InitializeParameter(dbParam, name, sqlType);

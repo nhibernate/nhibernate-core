@@ -465,8 +465,11 @@
     <Compile Include="Exceptions\SqlStateExtracter.cs" />
     <Compile Include="Exceptions\TemplatedViolatedConstraintNameExtracter.cs" />
     <Compile Include="Id\Insert\NoCommentsInsert.cs" />
+    <Compile Include="Id\Insert\ReturningIdentifierInsert.cs" />
+    <Compile Include="Id\Insert\OutputParamReturningDelegate.cs" />
     <Compile Include="Id\NativeGuidGenerator.cs" />
     <Compile Include="Id\SelectGenerator.cs" />
+    <Compile Include="Id\SequenceIdentityGenerator.cs" />
     <Compile Include="IFutureValue.cs" />
     <Compile Include="Impl\DelayedEnumerator.cs" />
     <Compile Include="Impl\FutureQueryBatch.cs" />

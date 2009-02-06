@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Generatedkeys.Seqidentity
 {
-	[TestFixture, Ignore("Solution not implemented yet.")]
+	[TestFixture]
 	public class SequenceIdentityFixture : TestCase
 	{
 		protected override IList Mappings

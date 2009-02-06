@@ -21,7 +21,7 @@ namespace NHibernate.Id.Insert
 			this.persister = persister;
 		}
 
-		protected internal virtual IPostInsertIdentityPersister Persister
+		protected IPostInsertIdentityPersister Persister
 		{
 			get { return persister; }
 		}

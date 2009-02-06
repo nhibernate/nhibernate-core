@@ -2061,5 +2061,14 @@ namespace NHibernate.Dialect
 				return null;
 			}
 		}
+
+		#region NH specific
+
+		public virtual SqlString AddIdentifierOutParameterToInsert(SqlString insertString, string identifierColumnName, string parameterName)
+		{
+			return insertString;
+		}
+
+		#endregion
 	}
 }

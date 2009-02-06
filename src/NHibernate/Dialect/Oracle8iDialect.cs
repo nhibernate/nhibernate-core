@@ -329,6 +329,11 @@ namespace NHibernate.Dialect
 			return sequenceName + ".nextval";
 		}
 
+		public override SqlString AddIdentifierOutParameterToInsert(SqlString insertString, string identifierColumnName, string parameterName)
+		{
+			return insertString.Append(" returning " + identifierColumnName + " into :" + parameterName);
+		}
+
 		public override string GetCreateSequenceString(string sequenceName)
 		{
 			return "create sequence " + sequenceName; //starts with 1, implicitly

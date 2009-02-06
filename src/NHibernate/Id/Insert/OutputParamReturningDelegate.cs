@@ -1,0 +1,62 @@
+using System.Data;
+using NHibernate.Engine;
+using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
+
+namespace NHibernate.Id.Insert
+{
+	/// <summary> 
+	/// <see cref="IInsertGeneratedIdentifierDelegate"/> implementation where the
+	/// underlying strategy causes the generated identitifer to be returned, as an
+	/// effect of performing the insert statement, in a Output parameter.
+	/// Thus, there is no need for an additional sql statement to determine the generated identitifer. 
+	/// </summary>
+	public class OutputParamReturningDelegate : AbstractReturningDelegate
+	{
+		private const string ReturnParameterName = "nhIdOutParam";
+		private readonly ISessionFactoryImplementor factory;
+		private readonly string idColumnName;
+		private readonly SqlType paramType;
+		private string driveGeneratedParamName = ReturnParameterName;
+
+		public OutputParamReturningDelegate(IPostInsertIdentityPersister persister, ISessionFactoryImplementor factory)
+			: base(persister)
+		{
+			if (Persister.RootTableKeyColumnNames.Length > 1)
+			{
+				throw new HibernateException("identity-style generator cannot be used with multi-column keys");
+			}
+			paramType = Persister.IdentifierType.SqlTypes(factory)[0];
+			idColumnName = Persister.RootTableKeyColumnNames[0];
+			this.factory = factory;
+		}
+
+		#region Overrides of AbstractReturningDelegate
+
+		public override IdentifierGeneratingInsert PrepareIdentifierGeneratingInsert()
+		{
+			return new ReturningIdentifierInsert(factory, idColumnName, ReturnParameterName);
+		}
+
+		protected internal override IDbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session)
+		{
+			IDbCommand command = session.Batcher.PrepareCommand(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes);
+			//Add the output parameter
+			IDbDataParameter idParameter = factory.ConnectionProvider.Driver.GenerateParameter(command, ReturnParameterName,
+			                                                                                         paramType);
+			driveGeneratedParamName = idParameter.ParameterName;
+			idParameter.Direction = ParameterDirection.ReturnValue;
+
+			command.Parameters.Add(idParameter);
+			return command;
+		}
+
+		public override object ExecuteAndExtract(IDbCommand insert, ISessionImplementor session)
+		{
+			session.Batcher.ExecuteNonQuery(insert);
+			return ((IDbDataParameter)insert.Parameters[driveGeneratedParamName]).Value;
+		}
+
+		#endregion
+	}
+}

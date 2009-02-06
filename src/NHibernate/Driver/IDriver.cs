@@ -85,5 +85,15 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="command"></param>
 		void PrepareCommand(IDbCommand command);
+
+		/// <summary>
+		/// Generates an IDbDataParameter for the IDbCommand.  It does not add the IDbDataParameter to the IDbCommand's
+		/// Parameter collection.
+		/// </summary>
+		/// <param name="command">The IDbCommand to use to create the IDbDataParameter.</param>
+		/// <param name="name">The name to set for IDbDataParameter.Name</param>
+		/// <param name="sqlType">The SqlType to set for IDbDataParameter.</param>
+		/// <returns>An IDbDataParameter ready to be added to an IDbCommand.</returns>
+		IDbDataParameter GenerateParameter(IDbCommand command, string name, SqlType sqlType);
 	}
 }
