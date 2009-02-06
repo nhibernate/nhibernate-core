@@ -12,12 +12,12 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 			get { return new[] {"NHSpecificTest.Dates.Mappings.Time.hbm.xml"}; }
 		}
 
-		[Test,Ignore]
+		[Test]
 		public void SavingAndRetrievingTest()
 		{
-			TimeSpan Now = TimeSpan.MaxValue;
-			SavingAndRetrievingAction(new AllDates {Sql_time = Now},
-			                          entity => Assert.AreEqual(entity.Sql_time, Now));
+			var now = DateTime.Parse("23:59:59").TimeOfDay;
+			SavingAndRetrievingAction(new AllDates {Sql_time = now},
+			                          entity => Assert.AreEqual(entity.Sql_time, now));
 		}
 	}
 }
