@@ -396,7 +396,7 @@
     <Compile Include="Type\StringClobType.cs" />
     <Compile Include="Type\StringType.cs" />
     <Compile Include="Type\TicksType.cs" />
-    <Compile Include="Type\TimeSpanType.cs" />
+    <Compile Include="Type\TimeSpanInt64Type.cs" />
     <Compile Include="Type\TimestampType.cs" />
     <Compile Include="Type\TimeType.cs" />
     <Compile Include="Type\TrueFalseType.cs" />
@@ -1084,6 +1084,7 @@
     <Compile Include="Type\AnsiCharType.cs" />
     <Compile Include="Type\AnyType.cs" />
     <Compile Include="Type\AbstractCharType.cs" />
+    <Compile Include="Type\TimeSpanType.cs" />
     <Compile Include="Type\DateTime2Type.cs" />
     <Compile Include="Type\ClassMetaType.cs" />
     <Compile Include="Type\CollectionType.cs" />

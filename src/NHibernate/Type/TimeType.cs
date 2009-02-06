@@ -14,7 +14,7 @@ namespace NHibernate.Type
 	/// using this Type indicates that you don't care about the Date portion of the DateTime.
 	/// </para>
 	/// <para>
-	/// A more appropriate choice to store the duration/time is the <see cref="TimeSpanType"/>.
+	/// A more appropriate choice to store the duration/time is the <see cref="TimeSpanInt64Type"/>.
 	/// The underlying <see cref="DbType.Time"/> tends to be handled differently by different
 	/// DataProviders.
 	/// </para>
@@ -37,6 +37,12 @@ namespace NHibernate.Type
 		{
 			try
 			{
+				if(rs[index] is TimeSpan) //For those dialects where DbType.Time means TimeSpan.
+				{
+					TimeSpan time = (TimeSpan) rs[index];
+					return BaseDateValue.AddTicks(time.Ticks);
+				}
+
 				DateTime dbValue = Convert.ToDateTime(rs[index]);
 				return new DateTime(1753, 01, 01, dbValue.Hour, dbValue.Minute, dbValue.Second);
 			}

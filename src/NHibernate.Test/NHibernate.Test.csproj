@@ -1004,6 +1004,9 @@
     <Compile Include="TypesTest\BooleanTypeFixture.cs" />
     <Compile Include="TypesTest\ByteClass.cs" />
     <Compile Include="TypesTest\ByteTypeFixture.cs" />
+    <Compile Include="TypesTest\TimeSpanClass.cs" />
+    <Compile Include="TypesTest\TimeSpanTypeFixture.cs" />
+    <Compile Include="TypesTest\TimeSpanInt64Class.cs" />
     <Compile Include="TypesTest\Decima2lTypeFixture.cs" />
     <Compile Include="TypesTest\DateTimeTypeFixture.cs" />
     <Compile Include="TypesTest\DecimalClass.cs" />
@@ -1032,7 +1035,7 @@
     <Compile Include="TypesTest\StringClobTypeFixture.cs" />
     <Compile Include="TypesTest\StringTypeFixture.cs" />
     <Compile Include="TypesTest\TicksTypeFixture.cs" />
-    <Compile Include="TypesTest\TimeSpanTypeFixture.cs" />
+    <Compile Include="TypesTest\TimeSpanInt64TypeFixture.cs" />
     <Compile Include="TypesTest\TimestampTypeFixture.cs" />
     <Compile Include="TypesTest\TypeFactoryFixture.cs" />
     <Compile Include="TypesTest\TypeFixtureBase.cs" />
@@ -1641,6 +1644,8 @@
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
     <EmbeddedResource Include="NHSpecificTest\NH1289\Mappings.hbm.xml" />
+    <EmbeddedResource Include="TypesTest\TimeSpanClass.hbm.xml" />
+    <EmbeddedResource Include="TypesTest\TimeSpanInt64Class.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\FileStreamSql2008\Mappings.hbm.xml" />
     <EmbeddedResource Include="Generatedkeys\Seqidentity\MyEntity.hbm.xml" />
     <EmbeddedResource Include="IdGen\NativeGuid\NativeGuidPoid.hbm.xml" />

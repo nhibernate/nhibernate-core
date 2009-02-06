@@ -8,12 +8,12 @@ namespace NHibernate.Test.TypesTest
 	/// Summary description for TimeSpanTypeFixture.
 	/// </summary>
 	[TestFixture]
-	public class TimeSpanTypeFixture
+	public class TimeSpanInt64TypeFixture
 	{
 		[Test]
 		public void Next()
 		{
-			var type = (TimeSpanType) NHibernateUtil.TimeSpan;
+			var type = (TimeSpanInt64Type) NHibernateUtil.TimeSpanInt64;
 			object current = new TimeSpan(DateTime.Now.Ticks - 5);
 			object next = type.Next(current, null);
 
@@ -25,25 +25,25 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Seed()
 		{
-			var type = (TimeSpanType) NHibernateUtil.TimeSpan;
+			var type = (TimeSpanInt64Type) NHibernateUtil.TimeSpanInt64;
 			Assert.IsTrue(type.Seed(null) is TimeSpan, "seed should be TimeSpan");
 		}
 	}
 
 	[TestFixture]
-	public class TimeSpanFixture2 : TypeFixtureBase
+	public class TimeSpanInt64Fixture2 : TypeFixtureBase
 	{
 		protected override string TypeName
 		{
-			get { return "TimeSpan"; }
+			get { return "TimeSpanInt64"; }
 		}
 
 		[Test]
 		public void SavingAndRetrieving()
 		{
-			var ticks = DateTime.Parse("23:59:59").TimeOfDay;
+			var ticks = new TimeSpan(1982);
 
-			var entity = new TimeSpanClass
+			var entity = new TimeSpanInt64Class
 			             	{
 			             		TimeSpanValue = ticks
 			             	};
@@ -55,12 +55,12 @@ namespace NHibernate.Test.TypesTest
 				tx.Commit();
 			}
 
-			TimeSpanClass entityReturned;
+			TimeSpanInt64Class entityReturned;
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				entityReturned = s.CreateQuery("from TimeSpanClass").UniqueResult<TimeSpanClass>();
+				entityReturned = s.CreateQuery("from TimeSpanInt64Class").UniqueResult<TimeSpanInt64Class>();
 				Assert.AreEqual(ticks, entityReturned.TimeSpanValue);
 			}
 

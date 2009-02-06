@@ -122,6 +122,7 @@ namespace NHibernate.Type
 			RegisterType(typeof(SByte), NHibernateUtil.SByte, null);
 			RegisterType(typeof(Single), NHibernateUtil.Single, "float");
 			RegisterType(typeof(String), NHibernateUtil.String, "string");
+			RegisterType(typeof(TimeSpan), NHibernateUtil.TimeSpanInt64,null);
 			RegisterType(typeof(TimeSpan), NHibernateUtil.TimeSpan, null);
 			RegisterType(typeof(System.Type), NHibernateUtil.Class, "class");
 
@@ -142,6 +143,7 @@ namespace NHibernate.Type
 			typeByTypeOfName[NHibernateUtil.TrueFalse.Name] = NHibernateUtil.TrueFalse;
 			typeByTypeOfName[NHibernateUtil.YesNo.Name] = NHibernateUtil.YesNo;
 			typeByTypeOfName[NHibernateUtil.Ticks.Name] = NHibernateUtil.Ticks;
+			typeByTypeOfName[NHibernateUtil.TimeSpanInt64.Name] = NHibernateUtil.TimeSpanInt64;
 			typeByTypeOfName[NHibernateUtil.TimeSpan.Name] = NHibernateUtil.TimeSpan;
 
 			// need to do add the key "Serializable" because the hbm files will have a 
