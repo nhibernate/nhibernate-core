@@ -79,7 +79,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public sealed class IdentifierGeneratorFactory
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(IdentifierGeneratorFactory));
+		private static readonly ILog log = LogManager.GetLogger(typeof (IdentifierGeneratorFactory));
 
 		/// <summary> Get the generated identifier when using identity columns</summary>
 		/// <param name="rs">The <see cref="IDataReader"/> to read the identifier value from.</param>
@@ -100,7 +100,6 @@ namespace NHibernate.Id
 			}
 			return id;
 		}
-
 
 		/// <summary>
 		/// Gets the value of the identifier from the <see cref="IDataReader"/> and
@@ -142,7 +141,7 @@ namespace NHibernate.Id
 		/// has already been saved.
 		/// </summary>
 		/// <value>
-		/// <see cref="String.Empty">String.Empty</see>
+		/// <see cref="string.Empty">String.Empty</see>
 		/// </value>
 		public static readonly object ShortCircuitIndicator = new object();
 
@@ -156,22 +155,22 @@ namespace NHibernate.Id
 		/// </summary>
 		static IdentifierGeneratorFactory()
 		{
-			idgenerators.Add("uuid.hex", typeof(UUIDHexGenerator));
-			idgenerators.Add("uuid.string", typeof(UUIDStringGenerator));
-			idgenerators.Add("hilo", typeof(TableHiLoGenerator));
-			idgenerators.Add("assigned", typeof(Assigned));
-			idgenerators.Add("counter", typeof(CounterGenerator));
-			idgenerators.Add("identity", typeof(IdentityGenerator));
-			idgenerators.Add("increment", typeof(IncrementGenerator));
-			idgenerators.Add("sequence", typeof(SequenceGenerator));
-			idgenerators.Add("seqhilo", typeof(SequenceHiLoGenerator));
-			idgenerators.Add("vm", typeof(CounterGenerator));
-			idgenerators.Add("foreign", typeof(ForeignGenerator));
-			idgenerators.Add("guid", typeof(GuidGenerator));
-			idgenerators.Add("guid.comb", typeof(GuidCombGenerator));
-			idgenerators.Add("guid.native", typeof(NativeGuidGenerator));
-			idgenerators.Add("select", typeof(SelectGenerator));
-			idgenerators.Add("sequence-identity", typeof(SequenceIdentityGenerator));
+			idgenerators.Add("uuid.hex", typeof (UUIDHexGenerator));
+			idgenerators.Add("uuid.string", typeof (UUIDStringGenerator));
+			idgenerators.Add("hilo", typeof (TableHiLoGenerator));
+			idgenerators.Add("assigned", typeof (Assigned));
+			idgenerators.Add("counter", typeof (CounterGenerator));
+			idgenerators.Add("increment", typeof (IncrementGenerator));
+			idgenerators.Add("sequence", typeof (SequenceGenerator));
+			idgenerators.Add("seqhilo", typeof (SequenceHiLoGenerator));
+			idgenerators.Add("vm", typeof (CounterGenerator));
+			idgenerators.Add("foreign", typeof (ForeignGenerator));
+			idgenerators.Add("guid", typeof (GuidGenerator));
+			idgenerators.Add("guid.comb", typeof (GuidCombGenerator));
+			idgenerators.Add("guid.native", typeof (NativeGuidGenerator));
+			idgenerators.Add("select", typeof (SelectGenerator));
+			idgenerators.Add("sequence-identity", typeof (SequenceIdentityGenerator));
+			idgenerators.Add("trigger-identity", typeof (TriggerIdentityGenerator));
 		}
 
 		private IdentifierGeneratorFactory()
@@ -196,15 +195,18 @@ namespace NHibernate.Id
 		/// <exception cref="MappingException">
 		/// Thrown if there are any exceptions while creating the <see cref="IIdentifierGenerator"/>.
 		/// </exception>
-		public static IIdentifierGenerator Create(string strategy, IType type, IDictionary<string, string> parms, Dialect.Dialect dialect)
+		public static IIdentifierGenerator Create(string strategy, IType type, IDictionary<string, string> parms,
+		                                          Dialect.Dialect dialect)
 		{
 			try
 			{
 				System.Type clazz = GetIdentifierGeneratorClass(strategy, dialect);
-				IIdentifierGenerator idgen = (IIdentifierGenerator)Activator.CreateInstance(clazz);
-				IConfigurable conf = idgen as IConfigurable;
+				var idgen = (IIdentifierGenerator) Activator.CreateInstance(clazz);
+				var conf = idgen as IConfigurable;
 				if (conf != null)
+				{
 					conf.Configure(type, parms, dialect);
+				}
 				return idgen;
 			}
 			catch (IdentifierGenerationException)
@@ -226,47 +228,47 @@ namespace NHibernate.Id
 		/// The identifier value converted to the <see cref="System.Type"/>.
 		/// </returns>
 		/// <exception cref="IdentifierGenerationException">
-		/// The <c>type</c> parameter must be an <see cref="Int16"/>, <see cref="Int32"/>,
-		/// or <see cref="Int64"/>.
+		/// The <c>type</c> parameter must be an <see cref="short"/>, <see cref="int"/>,
+		/// or <see cref="long"/>.
 		/// </exception>
 		public static object CreateNumber(long value, System.Type type)
 		{
 			// Convert.ChangeType would be better here, but it fails if the value does not fit
 			// in the destination type, while we need the value to be truncated in this case.
 
-			if (type == typeof(byte))
+			if (type == typeof (byte))
 			{
 				return (byte) value;
 			}
-			else if (type == typeof(sbyte))
+			else if (type == typeof (sbyte))
 			{
 				return (sbyte) value;
 			}
-			else if (type == typeof(short))
+			else if (type == typeof (short))
 			{
 				return (short) value;
 			}
-			else if (type == typeof(ushort))
+			else if (type == typeof (ushort))
 			{
 				return (ushort) value;
 			}
-			else if (type == typeof(int))
+			else if (type == typeof (int))
 			{
 				return (int) value;
 			}
-			else if (type == typeof(uint))
+			else if (type == typeof (uint))
 			{
 				return (uint) value;
 			}
-			else if (type == typeof(long))
+			else if (type == typeof (long))
 			{
 				return value;
 			}
-			else if (type == typeof(ulong))
+			else if (type == typeof (ulong))
 			{
 				return (ulong) value;
 			}
-			else if (type == typeof(decimal))
+			else if (type == typeof (decimal))
 			{
 				return (decimal) value;
 			}
@@ -286,13 +288,24 @@ namespace NHibernate.Id
 		public static System.Type GetIdentifierGeneratorClass(string strategy, Dialect.Dialect dialect)
 		{
 			System.Type clazz;
-			idgenerators.TryGetValue(strategy, out clazz);
 			if ("native".Equals(strategy))
+			{
 				clazz = dialect.NativeIdentifierGeneratorClass;
+			}
+			else if ("identity".Equals(strategy))
+			{
+				clazz = dialect.IdentityStyleIdentifierGeneratorClass;
+			}
+			else
+			{
+				idgenerators.TryGetValue(strategy, out clazz);
+			}
 			try
 			{
 				if (clazz == null)
+				{
 					clazz = ReflectHelper.ClassForName(strategy);
+				}
 			}
 			catch (Exception)
 			{

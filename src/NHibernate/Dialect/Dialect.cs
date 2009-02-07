@@ -2069,6 +2069,32 @@ namespace NHibernate.Dialect
 			return insertString;
 		}
 
+		/// <summary> 
+		/// The class (which implements <see cref="NHibernate.Id.IIdentifierGenerator"/>)
+		/// which acts as this dialects identity-style generation strategy.
+		/// </summary>
+		/// <returns> The native generator class. </returns>
+		/// <remarks>
+		/// Comes into play whenever the user specifies the "identity" generator.
+		/// </remarks>
+		public virtual System.Type IdentityStyleIdentifierGeneratorClass
+		{
+			get
+			{
+				if (SupportsIdentityColumns)
+				{
+					return typeof(IdentityGenerator);
+				}
+				else if (SupportsSequences)
+				{
+					return typeof(SequenceIdentityGenerator);
+				}
+				else
+				{
+					return typeof(TriggerIdentityGenerator);
+				}
+			}
+		}
 		#endregion
 	}
 }

@@ -244,10 +244,14 @@
     <Compile Include="FilterTest\Product.cs" />
     <Compile Include="FilterTest\Salesperson.cs" />
     <Compile Include="FilterTest\TestClass.cs" />
+    <Compile Include="Generatedkeys\ByTrigger\GeneratedIdentityFixture.cs" />
+    <Compile Include="Generatedkeys\ByTrigger\MyEntity.cs" />
     <Compile Include="Generatedkeys\Identity\IdentityGeneratedKeysTest.cs" />
     <Compile Include="Generatedkeys\Identity\MyChild.cs" />
     <Compile Include="Generatedkeys\Identity\MyEntity.cs" />
+    <Compile Include="Generatedkeys\Identity\MyEntityIdentity.cs" />
     <Compile Include="Generatedkeys\Identity\MySibling.cs" />
+    <Compile Include="Generatedkeys\Identity\SimpleIdentityGeneratedFixture.cs" />
     <Compile Include="Generatedkeys\Select\MyEntity.cs" />
     <Compile Include="Generatedkeys\Select\SelectGeneratorTest.cs" />
     <Compile Include="Generatedkeys\Seqidentity\MyEntity.cs" />
@@ -1645,6 +1649,8 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="Generatedkeys\ByTrigger\MyEntity.hbm.xml" />
+    <EmbeddedResource Include="Generatedkeys\Identity\MyEntityIdentity.hbm.xml" />
     <EmbeddedResource Include="SessionFactoryTest\Item.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1289\Mappings.hbm.xml" />
     <EmbeddedResource Include="TypesTest\TimeSpanClass.hbm.xml" />
