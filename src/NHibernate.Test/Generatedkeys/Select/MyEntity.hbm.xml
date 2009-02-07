@@ -5,7 +5,6 @@
 				   default-access="field">
 
 	<class name="MyEntity" table="my_entity">
-
     	<id name="id">
     		<generator class="select"/>
     	</id>
@@ -39,5 +38,35 @@ DROP TRIGGER my_entity_BI;
 		</drop>
         <dialect-scope name="NHibernate.Dialect.FirebirdDialect"/>
     </database-object>
-	
+
+	<database-object>
+		<create>
+			CREATE SEQUENCE MYGENERATOR START WITH 1 CACHE 20
+		</create>
+		<drop>
+			DROP SEQUENCE MYGENERATOR
+		</drop>
+		<dialect-scope name="NHibernate.Dialect.Oracle8iDialect"/>
+		<dialect-scope name="NHibernate.Dialect.Oracle9iDialect"/>
+		<dialect-scope name="NHibernate.Dialect.Oracle10gDialect"/>
+	</database-object>
+
+	<database-object>
+		<create>
+			CREATE OR REPLACE TRIGGER T_BI_my_entity
+			BEFORE INSERT ON my_entity
+			FOR EACH ROW
+			BEGIN
+			select MYGENERATOR.nextval into :new.ID from DUAL;
+			END;
+		</create>
+		<drop>
+			DROP TRIGGER T_BI_my_entity
+		</drop>
+		<dialect-scope name="NHibernate.Dialect.Oracle8iDialect"/>
+		<dialect-scope name="NHibernate.Dialect.Oracle9iDialect"/>
+		<dialect-scope name="NHibernate.Dialect.Oracle10gDialect"/>
+	</database-object>
+
+
 </hibernate-mapping>

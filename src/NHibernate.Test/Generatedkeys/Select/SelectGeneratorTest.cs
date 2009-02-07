@@ -18,7 +18,7 @@ namespace NHibernate.Test.Generatedkeys.Select
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return dialect is Dialect.FirebirdDialect;
+			return dialect is Dialect.FirebirdDialect || dialect is Dialect.Oracle8iDialect;
 		}
 
 		[Test]
