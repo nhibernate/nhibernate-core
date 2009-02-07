@@ -708,5 +708,19 @@ namespace NHibernate.Util
 		{
 			return str == null ? null : str.ToLowerInvariant();
 		}
+
+		public static bool IsBackticksEnclosed(string identifier)
+		{
+			return !string.IsNullOrEmpty(identifier) && identifier.StartsWith("`") && identifier.EndsWith("`");
+		}
+
+		public static string PurgeBackticksEnclosing(string identifier)
+		{
+			if (IsBackticksEnclosed(identifier))
+			{
+				return identifier.Substring(1, identifier.Length - 2);
+			}
+			return identifier;
+		}
 	}
 }

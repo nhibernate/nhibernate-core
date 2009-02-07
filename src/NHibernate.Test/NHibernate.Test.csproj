@@ -414,6 +414,8 @@
     <Compile Include="NHSpecificTest\NH1289\PurchaseItem.cs" />
     <Compile Include="NHSpecificTest\NH1289\PurchaseOrder.cs" />
     <Compile Include="NHSpecificTest\NH1289\WorkflowItem.cs" />
+    <Compile Include="NHSpecificTest\NH1665\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1665\MyEntity.cs" />
     <Compile Include="NHSpecificTest\NH1443\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1521\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1549\CategoryWithInheritedId.cs" />
@@ -1650,6 +1652,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1665\Mappings.hbm.xml" />
     <EmbeddedResource Include="Generatedkeys\ByTrigger\MyEntity.hbm.xml" />
     <EmbeddedResource Include="Generatedkeys\Identity\MyEntityIdentity.hbm.xml" />
     <EmbeddedResource Include="SessionFactoryTest\Item.hbm.xml" />

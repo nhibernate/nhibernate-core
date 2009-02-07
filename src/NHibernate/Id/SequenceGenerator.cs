@@ -68,7 +68,10 @@ namespace NHibernate.Id
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with Configuration.</param>
 		public virtual void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect dialect)
 		{
-			sequenceName = PropertiesHelper.GetString(Sequence, parms, "hibernate_sequence");
+			var nativeSequenceName = PropertiesHelper.GetString(Sequence, parms, "hibernate_sequence");
+			nativeSequenceName = StringHelper.Unqualify(nativeSequenceName);
+			nativeSequenceName = StringHelper.PurgeBackticksEnclosing(nativeSequenceName);
+			sequenceName = dialect.QuoteForTableName(nativeSequenceName);
 			string schemaName;
 			string catalogName;
 			parms.TryGetValue(Parameters, out parameters);

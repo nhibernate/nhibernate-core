@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using NHibernate.Util;
 using NUnit.Framework;
+using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.UtilityTest
 {
@@ -120,5 +121,22 @@ namespace NHibernate.Test.UtilityTest
 			Assert.AreEqual(expected, StringHelper.GetClassname(typeName));
 		}
 
+		[Test]
+		public void IsBackticksEnclosed()
+		{
+			Assert.That(!StringHelper.IsBackticksEnclosed(null));
+			Assert.That(!StringHelper.IsBackticksEnclosed("`something"));
+			Assert.That(!StringHelper.IsBackticksEnclosed("something`"));
+			Assert.That(StringHelper.IsBackticksEnclosed("`something`"));
+		}
+
+		[Test]
+		public void PurgeBackticksEnclosing()
+		{
+			Assert.That(StringHelper.PurgeBackticksEnclosing(null), Is.Null);
+			Assert.That(StringHelper.PurgeBackticksEnclosing("`something"), Is.EqualTo("`something"));
+			Assert.That(StringHelper.PurgeBackticksEnclosing("something`"), Is.EqualTo("something`"));
+			Assert.That(StringHelper.PurgeBackticksEnclosing("`something`"), Is.EqualTo("something"));
+		}
 	}
 }

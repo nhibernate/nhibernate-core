@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1665"
+				   default-access="backfield">
+
+	<class name="MyEntity">
+		<id type="int">
+			<generator class="sequence">
+				<param name="sequence">`Emp_Seq`</param>
+			</generator>
+		</id>
+		<property name="Name"/>
+	</class>
+
+</hibernate-mapping>
