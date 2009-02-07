@@ -394,6 +394,7 @@
     <Compile Include="NHSpecificTest\Dates\FixtureBase.cs" />
     <Compile Include="NHSpecificTest\Dates\DateTime2Fixture.cs" />
     <Compile Include="NHSpecificTest\Dates\DateTimeAssert.cs" />
+    <Compile Include="NHSpecificTest\EntityModeToTuplizerPerf\Fixture.cs" />
     <Compile Include="NHSpecificTest\FileStreamSql2008\VendorCatalog.cs" />
     <Compile Include="NHSpecificTest\FileStreamSql2008\Fixture.cs" />
     <Compile Include="NHSpecificTest\FileStreamSql2008\Convert.cs" />

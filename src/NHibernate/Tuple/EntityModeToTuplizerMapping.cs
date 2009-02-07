@@ -8,8 +8,9 @@ namespace NHibernate.Tuple
 	[Serializable]
 	public abstract class EntityModeToTuplizerMapping
 	{
-		// map of EntityMode -> Tuplizer
-		private readonly IDictionary<EntityMode, ITuplizer> tuplizers = new LinkedHashMap<EntityMode, ITuplizer>();
+		// NH-1660
+		private readonly IDictionary<EntityMode, ITuplizer> tuplizers
+												= new LinkedHashMap<EntityMode, ITuplizer>(5, new EntityModeEqualityComparer());
 
 		protected internal void AddTuplizer(EntityMode entityMode, ITuplizer tuplizer)
 		{
