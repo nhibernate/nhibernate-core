@@ -612,6 +612,8 @@
     <Compile Include="NHSpecificTest\NH1612\MonetaryValue.cs" />
     <Compile Include="NHSpecificTest\NH1612\NativeSqlCollectionLoaderFixture.cs" />
     <Compile Include="NHSpecificTest\NH1612\Person.cs" />
+    <Compile Include="NHSpecificTest\NH1619\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1619\Model.cs" />
     <Compile Include="NHSpecificTest\NH1621\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1621\Model.cs" />
     <Compile Include="NHSpecificTest\NH1632\Fixture.cs" />
@@ -1652,6 +1654,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1619\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1665\Mappings.hbm.xml" />
     <EmbeddedResource Include="Generatedkeys\ByTrigger\MyEntity.hbm.xml" />
     <EmbeddedResource Include="Generatedkeys\Identity\MyEntityIdentity.hbm.xml" />
