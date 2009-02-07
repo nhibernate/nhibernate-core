@@ -12,13 +12,6 @@ namespace NHibernate.Connection
 		private static readonly ILog log = LogManager.GetLogger(typeof(DriverConnectionProvider));
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DriverConnectionProvider"/> class.
-		/// </summary>
-		public DriverConnectionProvider()
-		{
-		}
-
-		/// <summary>
 		/// Closes and Disposes of the <see cref="IDbConnection"/>.
 		/// </summary>
 		/// <param name="conn">The <see cref="IDbConnection"/> to clean up.</param>
@@ -42,8 +35,17 @@ namespace NHibernate.Connection
 		{
 			log.Debug("Obtaining IDbConnection from Driver");
 			IDbConnection conn = Driver.CreateConnection();
-			conn.ConnectionString = ConnectionString;
-			conn.Open();
+			try
+			{
+				conn.ConnectionString = ConnectionString;
+				conn.Open();
+			}
+			catch (Exception)
+			{
+				conn.Dispose();
+				throw;
+			}
+			
 			return conn;
 		}
 	}
