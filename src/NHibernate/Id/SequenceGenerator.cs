@@ -69,16 +69,27 @@ namespace NHibernate.Id
 		public virtual void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect dialect)
 		{
 			var nativeSequenceName = PropertiesHelper.GetString(Sequence, parms, "hibernate_sequence");
-			nativeSequenceName = StringHelper.Unqualify(nativeSequenceName);
-			nativeSequenceName = StringHelper.PurgeBackticksEnclosing(nativeSequenceName);
-			sequenceName = dialect.QuoteForTableName(nativeSequenceName);
+			bool needQuote = StringHelper.IsBackticksEnclosed(nativeSequenceName);
+			bool isQuelified = nativeSequenceName.IndexOf('.') > 0;
+			if (isQuelified)
+			{
+				string qualifier = StringHelper.Qualifier(nativeSequenceName);
+				nativeSequenceName = StringHelper.Unqualify(nativeSequenceName);
+				nativeSequenceName = StringHelper.PurgeBackticksEnclosing(nativeSequenceName);
+				sequenceName = qualifier + '.' + (needQuote ? dialect.QuoteForTableName(nativeSequenceName) : nativeSequenceName);
+			}
+			else
+			{
+				nativeSequenceName = StringHelper.PurgeBackticksEnclosing(nativeSequenceName);
+				sequenceName = needQuote ? dialect.QuoteForTableName(nativeSequenceName) : nativeSequenceName;
+			}
 			string schemaName;
 			string catalogName;
 			parms.TryGetValue(Parameters, out parameters);
 			parms.TryGetValue(PersistentIdGeneratorParmsNames.Schema, out schemaName);
 			parms.TryGetValue(PersistentIdGeneratorParmsNames.Catalog, out catalogName);
 
-			if (sequenceName.IndexOf('.') < 0)
+			if (!isQuelified)
 			{
 				sequenceName = dialect.Qualify(catalogName, schemaName, sequenceName);
 			}
