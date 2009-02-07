@@ -85,7 +85,12 @@ namespace NHibernate.Dialect
 
 		public override string GetSequenceNextValString(string sequenceName)
 		{
-			return string.Concat("select nextval ('", sequenceName, "')");
+			return string.Concat("select ",GetSelectSequenceNextValString(sequenceName));
+		}
+
+		public override string GetSelectSequenceNextValString(string sequenceName)
+		{
+			return string.Concat("nextval ('", sequenceName, "')");
 		}
 
 		public override string GetCreateSequenceString(string sequenceName)
@@ -96,6 +101,11 @@ namespace NHibernate.Dialect
 		public override string GetDropSequenceString(string sequenceName)
 		{
 			return "drop sequence " + sequenceName;
+		}
+
+		public override SqlString AddIdentifierOutParameterToInsert(SqlString insertString, string identifierColumnName, string parameterName)
+		{
+			return insertString.Append(" returning " + identifierColumnName);
 		}
 
 		public override bool SupportsSequences
