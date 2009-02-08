@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
@@ -75,21 +76,25 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 		{
 			using (ISession s = OpenSession())
 			{
-				DetachedCriteria dc = DetachedCriteria.For<Person>("sub");
-				dc.CreateCriteria("Pets", "pets").SetProjection(Projections.Min("pets.Weight")).Add(
-					Restrictions.EqProperty("this.Id", "sub.Id"));
-
-				ICriteria c = s.CreateCriteria(typeof (Person)).AddOrder(Order.Asc(Projections.SubQuery(dc)));
-				IList<Person> list = c.List<Person>();
-				int nullRelationOffSet = 2;
-				if (Dialect is Oracle8iDialect)
+				using (new SqlLogSpy())
 				{
-					// Oracle order NULL Last (ASC)
-					nullRelationOffSet = 0;
+                    DetachedCriteria dc = DetachedCriteria.For<Person>("sub");
+					dc.CreateCriteria("Pets", "pets").SetProjection(Projections.Min("pets.Weight")).Add(
+						Restrictions.EqProperty("this.Id", "sub.Id"));
+
+					ICriteria c = s.CreateCriteria(typeof (Person)).AddOrder(Order.Asc(Projections.SubQuery(dc)));
+					Console.WriteLine("list()");
+					IList<Person> list = c.List<Person>();
+					int nullRelationOffSet = 2;
+					if (Dialect is Oracle8iDialect || Dialect is PostgreSQLDialect)
+					{
+						// Oracle order NULL Last (ASC)
+						nullRelationOffSet = 0;
+					}
+					Assert.AreEqual(list[nullRelationOffSet].Name, "Tim");
+					Assert.AreEqual(list[nullRelationOffSet + 1].Name, "Joe");
+					Assert.AreEqual(list[nullRelationOffSet + 2].Name, "Sally");
 				}
-				Assert.AreEqual(list[nullRelationOffSet].Name, "Tim");
-				Assert.AreEqual(list[nullRelationOffSet+1].Name, "Joe");
-				Assert.AreEqual(list[nullRelationOffSet+2].Name, "Sally");
 			}
 		}
 
@@ -106,7 +111,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 				IList<Person> list = c.List<Person>();
 
 				int nullRelationOffSet = 0;
-				if (Dialect is Oracle8iDialect)
+				if (Dialect is Oracle8iDialect || Dialect is PostgreSQLDialect)
 				{
 					// Oracle order NULL First (DESC)
 					nullRelationOffSet = 2;
