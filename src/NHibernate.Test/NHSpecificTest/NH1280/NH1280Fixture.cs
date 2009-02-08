@@ -1,5 +1,6 @@
 using System.Collections;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1280
@@ -223,6 +224,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 		[Test]
 		public void SubstringShouldUseAllParameters()
 		{
+			if(Dialect is PostgreSQLDialect) Assert.Ignore("The dialect {0} doesn't support LEFT function",Dialect.GetType().Name);
+	
 			using (ISession s = OpenSession())
 			{
 				using (ITransaction tx = s.BeginTransaction())
