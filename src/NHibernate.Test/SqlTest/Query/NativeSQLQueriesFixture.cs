@@ -1,10 +1,9 @@
-using System;
 using System.Collections;
 using NHibernate.Transform;
 using NUnit.Framework;
 using NHibernate.Criterion;
 
-namespace NHibernate.Test.SqlTest
+namespace NHibernate.Test.SqlTest.Query
 {
 	[TestFixture]
 	public class GeneralTest : TestCase
@@ -43,7 +42,7 @@ namespace NHibernate.Test.SqlTest
 
 		protected override IList Mappings
 		{
-			get { return new string[] {"SqlTest.General.hbm.xml"}; }
+			get { return new[] { "SqlTest.Query.NativeSQLQueries.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly

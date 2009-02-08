@@ -951,10 +951,10 @@
     <Compile Include="SqlTest\Dimension.cs" />
     <Compile Include="SqlTest\Employment.cs" />
     <Compile Include="SqlTest\FireBirdTest.cs" />
-    <Compile Include="SqlTest\GeneralTest.cs" />
+    <Compile Include="SqlTest\Query\NativeSQLQueriesFixture.cs" />
     <Compile Include="SqlTest\HandSQLTest.cs" />
     <Compile Include="SqlTest\IdentityInsertWithStoredProcsTest.cs" />
-    <Compile Include="SqlTest\Item.cs" />
+    <Compile Include="SqlTest\Query\Item.cs" />
     <Compile Include="SqlTest\MonetaryAmount.cs" />
     <Compile Include="SqlTest\MonetaryAmountUserType.cs" />
     <Compile Include="SqlTest\MSSQLIdentityInsertWithStoredProcsTest.cs" />
@@ -964,7 +964,7 @@
     <Compile Include="SqlTest\Organization.cs" />
     <Compile Include="SqlTest\Person.cs" />
     <Compile Include="SqlTest\Product.cs" />
-    <Compile Include="SqlTest\SelfReferencingCollectionLoadTest.cs" />
+    <Compile Include="SqlTest\Query\SelfReferencingCollectionLoadTest.cs" />
     <Compile Include="SqlTest\SpaceShip.cs" />
     <Compile Include="SqlTest\Speech.cs" />
     <Compile Include="Stateless\Document.cs" />
@@ -1255,7 +1255,7 @@
     <EmbeddedResource Include="SqlTest\MSSQLEmployment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="SqlTest\General.hbm.xml" />
+    <EmbeddedResource Include="SqlTest\Query\NativeSQLQueries.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH719\Mappings.hbm.xml" />
@@ -1343,7 +1343,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH776\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="SqlTest\Item.hbm.xml" />
+    <EmbeddedResource Include="SqlTest\Query\Item.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Criteria\Enrolment.hbm.xml" />
@@ -1770,6 +1770,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="SqlTest\Custom\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

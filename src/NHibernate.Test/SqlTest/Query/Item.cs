@@ -1,7 +1,6 @@
-using System;
 using Iesi.Collections;
 
-namespace NHibernate.Test.SqlTest
+namespace NHibernate.Test.SqlTest.Query
 {
 	public class Item
 	{
