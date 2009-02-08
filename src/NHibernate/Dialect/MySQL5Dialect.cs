@@ -2,7 +2,7 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
 {
-	internal class MySQL5Dialect : MySQLDialect
+	public class MySQL5Dialect : MySQLDialect
 	{
 		//Reference 5.x
 		//Numeric:
