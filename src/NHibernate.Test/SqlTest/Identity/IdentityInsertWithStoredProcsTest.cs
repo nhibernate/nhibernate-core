@@ -1,8 +1,7 @@
 using NUnit.Framework;
 
-namespace NHibernate.Test.SqlTest
+namespace NHibernate.Test.SqlTest.Identity
 {
-	// http://jira.nhibernate.org/browse/NH-727
 	public abstract class IdentityInsertWithStoredProcsTest : TestCase
 	{
 		protected override string MappingsAssembly

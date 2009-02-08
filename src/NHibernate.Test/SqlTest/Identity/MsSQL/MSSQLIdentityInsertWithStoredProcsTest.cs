@@ -2,14 +2,14 @@ using System.Collections;
 using NHibernate.Dialect;
 using NUnit.Framework;
 
-namespace NHibernate.Test.SqlTest
+namespace NHibernate.Test.SqlTest.Identity.MsSQL
 {
 	[TestFixture]
 	public class MSSQLIdentityInsertWithStoredProcsTest : IdentityInsertWithStoredProcsTest
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return dialect is MsSql2000Dialect || dialect is MsSql2005Dialect;
+			return dialect is MsSql2000Dialect;
 		}
 
 		protected override string GetExpectedInsertOrgLogStatement(string orgName)
@@ -19,7 +19,7 @@ namespace NHibernate.Test.SqlTest
 
 		protected override IList Mappings
 		{
-			get { return new[] {"SqlTest.MSSQLIdentityInsertWithStoredProcs.hbm.xml"}; }
+			get { return new[] { "SqlTest.Identity.MsSQL.MSSQLIdentityInsertWithStoredProcs.hbm.xml" }; }
 		}
 	}
 }
