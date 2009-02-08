@@ -445,9 +445,9 @@ namespace NHibernate.Test.SqlTest.Query
 			list = s.CreateSQLQuery(EmploymentSQL).SetResultTransformer(CriteriaSpecification.AliasToEntityMap).List();
 			Assert.AreEqual(1, list.Count);
 			m = (IDictionary) list[0];
-			Assert.IsTrue(m.Contains("EMPID"));
-			Assert.IsTrue(m.Contains("AVALUE"));
-			Assert.IsTrue(m.Contains("ENDDATE"));
+			Assert.IsTrue(m.Contains("EMPID") || m.Contains("empid"));
+			Assert.IsTrue(m.Contains("AVALUE") || m.Contains("avalue"));
+			Assert.IsTrue(m.Contains("ENDDATE") || m.Contains("enddate"));
 			Assert.AreEqual(8, m.Count);
 
 			// TODO H3: H3.2 can guess the return column type so they can use just addScalar("employerid"),
