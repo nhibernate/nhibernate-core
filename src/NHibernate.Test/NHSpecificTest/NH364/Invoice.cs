@@ -53,6 +53,29 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 			get { return _Quantity; }
 			set { _Quantity = value; }
 		}
+
+		public bool Equals(InvoiceItem other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			return other._Quantity == _Quantity && Equals(other._Product, _Product);
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			if (obj.GetType() != typeof(InvoiceItem)) return false;
+			return Equals((InvoiceItem)obj);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				return (_Quantity.GetHashCode() * 397) ^ (_Product != null ? _Product.GetHashCode() : 0);
+			}
+		}
 	}
 
 	[Serializable]
@@ -76,6 +99,26 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 		{
 			get { return _Name; }
 			set { _Name = value; }
+		}
+
+		public bool Equals(Product other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			return other._Id == _Id;
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			if (obj.GetType() != typeof (Product)) return false;
+			return Equals((Product) obj);
+		}
+
+		public override int GetHashCode()
+		{
+			return _Id;
 		}
 	}
 }

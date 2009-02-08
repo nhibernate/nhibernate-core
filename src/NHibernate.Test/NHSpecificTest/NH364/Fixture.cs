@@ -86,11 +86,15 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 		[Test]
 		public void IdBagWithCompositeElementThatContainsAManyToOne_Update()
 		{
+			InvoiceItem itemToUpdate = null;
 			IdBagWithCompositeElementThatContainsAManyToOne_Setup();
 			using (ISession s = OpenSession())
 			{
 				Invoice invToUpdate = s.Get<Invoice>(inv.Id);
-				((InvoiceItem)invToUpdate.Items[0]).Quantity = 10m; // update information of an element
+				
+				itemToUpdate = ((InvoiceItem)invToUpdate.Items[0]); // update information of an element
+				itemToUpdate.Quantity = 10m; 
+					
 				invToUpdate.Items.Add(new InvoiceItem(product3, 1)); // update the idbag collection
 				s.Flush();
 				s.Clear();
@@ -98,8 +102,9 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 			using (ISession s = OpenSession())
 			{
 				Invoice invLoaded = s.Get<Invoice>(inv.Id);
-				Assert.AreEqual(10m, ((InvoiceItem)invLoaded.Items[0]).Quantity);
 				Assert.AreEqual(3, invLoaded.Items.Count, "The collection should have a new item");
+				Assert.IsTrue(invLoaded.Items.Contains(itemToUpdate));
+
 				s.Clear();
 			}
 			IdBagWithCompositeElementThatContainsAManyToOne_CleanUp();
