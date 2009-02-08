@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- 
+    This version is for Oracle drivers handling of stored procedures/functions.
+	
+	
+	NOTE: so far this is the JAVA syntax, probably we will do something different in .NET
+	or we can use the same syntax and solve the problem in each Oracle drive
+-->
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.SqlTest"
+	default-access="field">
+	
+	<sql-query name="simpleScalar" callable="true">
+		<return-scalar column="name" type="string"/>
+		<return-scalar column="value" type="long"/>
+		call simpleScalar(:number)
+	</sql-query>
+
+	<sql-query name="paramhandling" callable="true">
+		<return-scalar column="value" type="long"/>
+		<return-scalar column="value2" type="long"/>
+		call testParamHandling(?,?)
+	</sql-query>
+
+	<sql-query name="paramhandling_mixed" callable="true">
+		<return-scalar column="value" type="long"/>
+		<return-scalar column="value2" type="long"/>
+		call testParamHandling(?,:second)
+	</sql-query>
+
+	<sql-query name="selectAllEmployments" callable="true">
+		<return alias="emp" class="Employment">
+			<return-property name="employee" column="EMPLOYEE"/>
+			<return-property name="employer" column="EMPLOYER"/>
+			<return-property name="startDate" column="STARTDATE"/>
+			<return-property name="endDate" column="ENDDATE"/>
+			<return-property name="regionCode" column="REGIONCODE"/>
+			<return-property name="employmentId" column="EMPID"/>
+			<return-property name="salary">
+				<return-column name="VALUE"/>
+				<return-column name="CURRENCY"/>
+			</return-property>
+		</return>
+		call allEmployments()
+	</sql-query>
+
+</hibernate-mapping>

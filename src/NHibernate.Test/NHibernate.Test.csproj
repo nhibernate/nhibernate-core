@@ -933,6 +933,7 @@
     <Compile Include="SessionFactoryTest\SessionFactorySerializationFixture.cs" />
     <Compile Include="SqlTest\Custom\CustomSQLSupportTest.cs" />
     <Compile Include="SqlTest\Custom\CustomStoredProcSupportTest.cs" />
+    <Compile Include="SqlTest\Custom\Oracle\OracleCustomSQLFixture.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaUpdate\MigrationFixture.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaUpdate\Version.cs" />
     <Compile Include="SecondLevelCacheTest\AnotherItem.cs" />
@@ -1655,6 +1656,8 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="SqlTest\Custom\Oracle\Mappings.hbm.xml" />
+    <EmbeddedResource Include="SqlTest\Custom\Oracle\StoredProcedures.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1619\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1665\Mappings.hbm.xml" />
     <EmbeddedResource Include="Generatedkeys\ByTrigger\MyEntity.hbm.xml" />
@@ -1771,7 +1774,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
-    <Folder Include="SqlTest\Custom\Oracle\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
