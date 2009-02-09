@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using NHibernate.Dialect;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
 
@@ -7,6 +8,17 @@ namespace NHibernate.Test.NHSpecificTest.NH1490
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override System.Collections.IList Mappings
+		{
+			get
+			{
+				if (Dialect is PostgreSQLDialect)
+					return new[] { "NHSpecificTest.NH1490.MappingsFilterAsBoolean.hbm.xml" };
+
+				return base.Mappings;
+			}
+		}
+
 		[Test]
 		public void Can_Translate_Correctly_Without_Filter()
 		{
@@ -59,7 +71,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1490
 			{
 				s.DisableFilter("onlyActive");
 				IFilter fltr = s.EnableFilter("onlyActive");
-				fltr.SetParameter("activeFlag", 1);
+				
+				if (Dialect is PostgreSQLDialect)
+					fltr.SetParameter("activeFlag", true);
+				else
+					fltr.SetParameter("activeFlag", 1);
 
 				// Customer is parametrized
 				IQuery query = s.CreateQuery("from Customer c where c.Name = :customerName");
@@ -97,7 +113,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1490
 			{
 				s.DisableFilter("onlyActive");
 				IFilter fltr = s.EnableFilter("onlyActive");
-				fltr.SetParameter("activeFlag", 1);
+				if (Dialect is PostgreSQLDialect)
+					fltr.SetParameter("activeFlag", true);
+				else
+					fltr.SetParameter("activeFlag", 1);
+
 				// related entity Customer.Category is parametrized
 				IQuery query = s.CreateQuery("from Customer c where c.Category.Name = :catName");
 				query.SetParameter("catName", "User");
