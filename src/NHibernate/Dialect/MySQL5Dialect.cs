@@ -49,5 +49,13 @@ namespace NHibernate.Dialect
 
 			return pagingBuilder.ToSqlString();
 		}
+
+		public override string SelectGUIDString
+		{
+			get
+			{
+				return "select uuid()";
+			}
+		}
 	}
 }
