@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1293
@@ -8,6 +9,17 @@ namespace NHibernate.Test.NHSpecificTest.NH1293
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override System.Collections.IList Mappings
+		{
+			get
+			{
+				if (Dialect is PostgreSQLDialect)
+					return new[] {"NHSpecificTest.NH1293.MappingsFilterAsBoolean.hbm.xml"};
+
+				return base.Mappings;
+			}
+		}
+
 		[Test]
 		public void Criteria_Does_Not_Equal_To_HQL()
 		{
@@ -29,7 +41,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1293
 			{
 				s.DisableFilter("onlyActive");
 				IFilter fltr = s.EnableFilter("onlyActive");
-				fltr.SetParameter("activeFlag", 1);
+
+				if(Dialect is PostgreSQLDialect)
+					fltr.SetParameter("activeFlag", true);
+				else
+					fltr.SetParameter("activeFlag", 1);
 
 				// with HQL, Category.IsActive=true filter applied, result count=2
 				IQuery hqlQuery = s.CreateQuery("from Customer c where c.Category.Name = ?");
