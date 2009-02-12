@@ -395,6 +395,8 @@
     <Compile Include="NHSpecificTest\Dates\DateTime2Fixture.cs" />
     <Compile Include="NHSpecificTest\Dates\DateTimeAssert.cs" />
     <Compile Include="NHSpecificTest\EntityModeToTuplizerPerf\Fixture.cs" />
+    <Compile Include="NHSpecificTest\Evicting\Employee.cs" />
+    <Compile Include="NHSpecificTest\Evicting\Fixture.cs" />
     <Compile Include="NHSpecificTest\FileStreamSql2008\VendorCatalog.cs" />
     <Compile Include="NHSpecificTest\FileStreamSql2008\Fixture.cs" />
     <Compile Include="NHSpecificTest\FileStreamSql2008\Convert.cs" />
@@ -1657,6 +1659,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\Evicting\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1490\MappingsFilterAsBoolean.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1293\MappingsFilterAsBoolean.hbm.xml" />
     <EmbeddedResource Include="SqlTest\Custom\MySQL\MySQLEmployment.hbm.xml" />
