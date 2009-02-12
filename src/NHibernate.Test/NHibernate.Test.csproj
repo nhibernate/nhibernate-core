@@ -931,8 +931,6 @@
     <Compile Include="QueryTest\PositionalParametersFixture.cs" />
     <Compile Include="QueryTest\QueryParametersFixture.cs" />
     <Compile Include="ReflectionOptimizerTest\LcgFixture.cs" />
-    <Compile Include="SessionFactoryTest\Item.cs" />
-    <Compile Include="SessionFactoryTest\SessionFactorySerializationFixture.cs" />
     <Compile Include="SqlTest\Custom\CustomSQLSupportTest.cs" />
     <Compile Include="SqlTest\Custom\CustomStoredProcSupportTest.cs" />
     <Compile Include="SqlTest\Custom\MySQL\MySQLTest.cs" />
@@ -1669,7 +1667,6 @@
     <EmbeddedResource Include="NHSpecificTest\NH1665\Mappings.hbm.xml" />
     <EmbeddedResource Include="Generatedkeys\ByTrigger\MyEntity.hbm.xml" />
     <EmbeddedResource Include="Generatedkeys\Identity\MyEntityIdentity.hbm.xml" />
-    <EmbeddedResource Include="SessionFactoryTest\Item.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1289\Mappings.hbm.xml" />
     <EmbeddedResource Include="TypesTest\TimeSpanClass.hbm.xml" />
     <EmbeddedResource Include="TypesTest\TimeSpanInt64Class.hbm.xml" />
