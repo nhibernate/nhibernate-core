@@ -1003,7 +1003,7 @@ namespace NHibernate.Mapping
 		}
 
 		#region Nested type: ForeignKeyKey
-
+		[Serializable]
 		internal class ForeignKeyKey : IEqualityComparer<ForeignKeyKey>
 		{
 			internal List<Column> columns;

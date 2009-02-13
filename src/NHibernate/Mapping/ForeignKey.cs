@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using NHibernate.Util;
+using System;
 
 namespace NHibernate.Mapping
 {
 	/// <summary>
 	/// A Foreign Key constraint in the database.
 	/// </summary>
+	[Serializable]
 	public class ForeignKey : Constraint
 	{
 		private Table referencedTable;
