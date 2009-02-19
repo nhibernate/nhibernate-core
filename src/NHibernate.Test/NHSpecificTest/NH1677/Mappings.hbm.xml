@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+									 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+									 xmlns="urn:nhibernate-mapping-2.2">
+	<class entity-name="Entity1" table="Table1">
+		<id name="Id" column="Id" type="Int32">
+			<generator class="native"/>
+		</id>
+		<property name="Entity1Property" column="Table1Column" type="String"/>
+	</class>
+	<class entity-name="Entity2" table="Table2">
+		<id column="Id" type="Int32" name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Entity2Property" column="Table2Column" type="String"/>
+	</class>
+</hibernate-mapping>
