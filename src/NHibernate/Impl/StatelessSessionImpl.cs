@@ -664,10 +664,9 @@ namespace NHibernate.Impl
 		/// <typeparam name="T">A class, which is persistent, or has persistent subclasses</typeparam>
 		/// <returns> The <see cref="ICriteria"/>. </returns>
 		/// <remarks>Entities returned by the query are detached.</remarks>
-		public ICriteria CreateCriteria<T>()
+		public ICriteria CreateCriteria<T>() where T: class
 		{
-			CheckAndUpdateSessionStatus();
-			return new CriteriaImpl(typeof(T), this);
+			return CreateCriteria(typeof (T));
 		}
 
 		/// <summary>
@@ -678,10 +677,21 @@ namespace NHibernate.Impl
 		/// <param name="alias">The alias of the entity</param>
 		/// <returns> The <see cref="ICriteria"/>. </returns>
 		/// <remarks>Entities returned by the query are detached.</remarks>
-		public ICriteria CreateCriteria<T>(string alias)
+		public ICriteria CreateCriteria<T>(string alias) where T : class
+		{
+			return CreateCriteria(typeof(T), alias);
+		}
+
+		public ICriteria CreateCriteria(System.Type entityType)
 		{
 			CheckAndUpdateSessionStatus();
-			return new CriteriaImpl(typeof(T), alias, this);
+			return new CriteriaImpl(entityType, this);
+		}
+
+		public ICriteria CreateCriteria(System.Type entityType, string alias)
+		{
+			CheckAndUpdateSessionStatus();
+			return new CriteriaImpl(entityType, alias, this);
 		}
 
 		/// <summary> 
@@ -692,7 +702,8 @@ namespace NHibernate.Impl
 		/// <remarks>Entities returned by the query are detached.</remarks>
 		public ICriteria CreateCriteria(string entityName)
 		{
-			throw new NotImplementedException();
+			CheckAndUpdateSessionStatus();
+			return new CriteriaImpl(entityName, this);
 		}
 
 		/// <summary> 
@@ -705,7 +716,8 @@ namespace NHibernate.Impl
 		/// <remarks>Entities returned by the query are detached.</remarks>
 		public ICriteria CreateCriteria(string entityName, string alias)
 		{
-			throw new NotImplementedException();
+			CheckAndUpdateSessionStatus();
+			return new CriteriaImpl(entityName, alias, this);
 		}
 
 		/// <summary> Begin a NHibernate transaction.</summary>

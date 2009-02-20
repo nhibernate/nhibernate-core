@@ -7,7 +7,8 @@ Build 2.1.0.GA
 		* compatible only with .NET2.0 SP1 or above (System.DateTimeOffset)
 
 	##### Possible Breaking Changes for external frameworks #####
-		* ISession interface have additional methods
+		* ISession interface has additional methods
+		* IStatelessSession interface has additional methods
 		* DefaultProxyFactoryFactory removed
 		* IProxyFactoryFactory now provide the IProxyValidator implementation
 

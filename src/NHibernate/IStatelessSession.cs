@@ -130,7 +130,7 @@ namespace NHibernate
 		/// <typeparam name="T">A class, which is persistent, or has persistent subclasses</typeparam>
 		/// <returns> The <see cref="ICriteria"/>. </returns>
 		/// <remarks>Entities returned by the query are detached.</remarks>
-		ICriteria CreateCriteria<T>();
+		ICriteria CreateCriteria<T>() where T: class;
 
 		/// <summary>
 		/// Create a new <see cref="ICriteria"/> instance, for the given entity class,
@@ -140,7 +140,26 @@ namespace NHibernate
 		/// <param name="alias">The alias of the entity</param>
 		/// <returns> The <see cref="ICriteria"/>. </returns>
 		/// <remarks>Entities returned by the query are detached.</remarks>
-		ICriteria CreateCriteria<T>(string alias);
+		ICriteria CreateCriteria<T>(string alias) where T : class;
+
+		/// <summary>
+		/// Create a new <see cref="ICriteria"/> instance, for the given entity class,
+		/// or a superclass of an entity class. 
+		/// </summary>
+		/// <param name="entityType">A class, which is persistent, or has persistent subclasses</param>
+		/// <returns> The <see cref="ICriteria"/>. </returns>
+		/// <remarks>Entities returned by the query are detached.</remarks>
+		ICriteria CreateCriteria(System.Type entityType);
+
+		/// <summary>
+		/// Create a new <see cref="ICriteria"/> instance, for the given entity class,
+		/// or a superclass of an entity class, with the given alias. 
+		/// </summary>
+		/// <param name="entityType">A class, which is persistent, or has persistent subclasses</param>
+		/// <param name="alias">The alias of the entity</param>
+		/// <returns> The <see cref="ICriteria"/>. </returns>
+		/// <remarks>Entities returned by the query are detached.</remarks>
+		ICriteria CreateCriteria(System.Type entityType, string alias);
 
 		/// <summary> 
 		/// Create a new <see cref="ICriteria"/> instance, for the given entity name.

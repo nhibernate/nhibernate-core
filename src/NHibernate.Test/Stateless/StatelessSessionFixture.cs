@@ -77,7 +77,11 @@ namespace NHibernate.Test.Stateless
 				Assert.AreEqual("Blahs", doc2.Name);
 				Assert.AreEqual(doc.Text, doc2.Text);
 
-				doc2 = (Document)ss.CreateCriteria<Document>().UniqueResult();
+				doc2 = ss.CreateCriteria<Document>().UniqueResult<Document>();
+				Assert.AreEqual("Blahs", doc2.Name);
+				Assert.AreEqual(doc.Text, doc2.Text);
+
+				doc2 = (Document)ss.CreateCriteria(typeof(Document)).UniqueResult();
 				Assert.AreEqual("Blahs", doc2.Name);
 				Assert.AreEqual(doc.Text, doc2.Text);
 

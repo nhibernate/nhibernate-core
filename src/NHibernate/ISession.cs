@@ -739,6 +739,21 @@ namespace NHibernate
 		/// <summary>
 		/// Creates a new <c>Criteria</c> for the entity class.
 		/// </summary>
+		/// <typeparam name="T">The entity class</typeparam>
+		/// <returns>An ICriteria object</returns>
+		ICriteria CreateCriteria<T>() where T : class;
+
+		/// <summary>
+		/// Creates a new <c>Criteria</c> for the entity class with a specific alias
+		/// </summary>
+		/// <typeparam name="T">The entity class</typeparam>
+		/// <param name="alias">The alias of the entity</param>
+		/// <returns>An ICriteria object</returns>
+		ICriteria CreateCriteria<T>(string alias) where T : class;
+
+		/// <summary>
+		/// Creates a new <c>Criteria</c> for the entity class.
+		/// </summary>
 		/// <param name="persistentClass">The class to Query</param>
 		/// <returns>An ICriteria object</returns>
 		ICriteria CreateCriteria(System.Type persistentClass);

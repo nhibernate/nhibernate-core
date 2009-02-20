@@ -1515,11 +1515,21 @@ namespace NHibernate.Impl
 			return plan.PerformIterate<T>(queryParameters, this);
 		}
 
+		public ICriteria CreateCriteria<T>() where T: class
+		{
+			return CreateCriteria(typeof (T));
+		}
+
 		public ICriteria CreateCriteria(System.Type persistentClass)
 		{
 			CheckAndUpdateSessionStatus();
 
 			return new CriteriaImpl(persistentClass, this);
+		}
+
+		public ICriteria CreateCriteria<T>(string alias) where T : class
+		{
+			return CreateCriteria(typeof (T), alias);
 		}
 
 		public ICriteria CreateCriteria(System.Type persistentClass, string alias)

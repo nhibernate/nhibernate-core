@@ -1274,7 +1274,7 @@ namespace NHibernate.Test.Criteria
 			ITransaction t = s.BeginTransaction();
 
 			// HQL: from Animal a where a.mother.class = Reptile
-			ICriteria c = s.CreateCriteria(typeof(Animal), "a")
+			ICriteria c = s.CreateCriteria<Animal>("a")
 				.CreateAlias("mother", "m")
 				.Add(Property.ForName("m.class").Eq(typeof(Reptile)));
 			c.List();
@@ -1298,7 +1298,7 @@ namespace NHibernate.Test.Criteria
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			s.CreateCriteria(typeof(Course)).SetProjection(Projections.Property("CourseCode")).List();
+			s.CreateCriteria<Course>().SetProjection(Projections.Property("CourseCode")).List();
 			CriteriaTransformer.Clone(s.CreateCriteria(typeof(Course)).SetProjection(Projections.Id())).List();
 			t.Rollback();
 			s.Close();
