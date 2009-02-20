@@ -10,13 +10,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1679
 		[Test]
 		public void UsingExpression()
 		{
-			TestAction(criteria => { criteria.Add(Expression.Eq("alias.BooleanData", true)); });
+			TestAction(criteria => criteria.Add(Restrictions.Eq("alias.BooleanData", true)));
 		}
 
-		[Test,Ignore]
+		[Test]
 		public void UsingExpressionProjection()
 		{
-			TestAction(criteria => { criteria.Add(Expression.Eq(Projections.Property("alias.BooleanData"), true)); });
+			TestAction(criteria => criteria.Add(Restrictions.Eq(Projections.Property("alias.BooleanData"), true)));
 		}
 
 		protected override void OnSetUp()

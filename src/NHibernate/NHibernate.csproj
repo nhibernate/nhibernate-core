@@ -447,6 +447,7 @@
     <Compile Include="Bytecode\HibernateByteCodeException.cs" />
     <Compile Include="Bytecode\ProxyFactoryFactoryNotConfiguredException.cs" />
     <Compile Include="Bytecode\UnableToLoadProxyFactoryFactoryException.cs" />
+    <Compile Include="Criterion\IPropertyProjection.cs" />
     <Compile Include="Dialect\MsSql2008Dialect.cs" />
     <Compile Include="Dialect\InformixDialect0940.cs" />
     <Compile Include="Dialect\InformixDialect1000.cs" />

@@ -101,11 +101,13 @@ namespace NHibernate.Criterion
 		                                          params object[] values)
 		{
 			List<TypedValue> types = new List<TypedValue>();
-			if (projection == null)
+			var propertyProjection = projection as IPropertyProjection;
+			if (projection == null || propertyProjection != null)
 			{
+				var pn = propertyProjection != null ? propertyProjection.PropertyName : propertyName;
 				foreach (object value in values)
 				{
-					TypedValue typedValue = criteriaQuery.GetTypedValue(criteria, propertyName, value); 					
+					TypedValue typedValue = criteriaQuery.GetTypedValue(criteria, pn, value); 					
 					types.Add(typedValue);
 				}
 			}
