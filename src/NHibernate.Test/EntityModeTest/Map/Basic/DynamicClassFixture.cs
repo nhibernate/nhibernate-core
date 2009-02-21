@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NHibernate.Cfg;
 using NHibernate.Engine;
 using NUnit.Framework;
+using NHibernate.Criterion;
 
 namespace NHibernate.Test.EntityModeTest.Map.Basic
 {
@@ -24,13 +25,30 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 			configuration.SetProperty(Environment.DefaultEntityMode, EntityModeHelper.ToString(EntityMode.Map));
 		}
 
+		public delegate IDictionary SingleCarQueryDelegate(ISession session);
+		public delegate IList AllModelQueryDelegate(ISession session);
+
 		[Test]
-		public void TestLazyDynamicClass()
+		public void ShouldWorkWithHQL()
+		{
+			TestLazyDynamicClass(s => (IDictionary) s.CreateQuery("from ProductLine pl order by pl.Description").UniqueResult(),
+			                     s => s.CreateQuery("from Model m").List());
+		}
+
+		[Test]
+		public void ShouldWorkWithCriteria()
+		{
+			TestLazyDynamicClass(
+				s => (IDictionary) s.CreateCriteria("ProductLine").AddOrder(Order.Asc("Description")).UniqueResult(),
+				s => s.CreateCriteria("Model").List());
+		}
+
+		public void TestLazyDynamicClass(SingleCarQueryDelegate singleCarQueryHandler, AllModelQueryDelegate allModelQueryHandler)
 		{
 			ITransaction t;
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			{
-				ISessionImplementor si = (ISessionImplementor) s;
+				var si = (ISessionImplementor)s;
 				Assert.IsTrue(si.EntityMode == EntityMode.Map, "Incorrectly handled default_entity_mode");
 				ISession other = s.GetSession(EntityMode.Poco);
 				other.Close();
@@ -55,9 +73,7 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 				hsv["Name"] = "hsv";
 				hsv["Description"] = "Holden hsv";
 
-				models = new List<IDictionary>();
-				models.Add(monaro);
-				models.Add(hsv);
+				models = new List<IDictionary> {monaro, hsv};
 
 				cars["Models"] = models;
 
@@ -68,19 +84,19 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 			using (ISession s = OpenSession())
 			{
 				t = s.BeginTransaction();
-				cars = (IDictionary) s.CreateQuery("from ProductLine pl order by pl.Description").UniqueResult();
-				models = (IList) cars["Models"];
+				cars = singleCarQueryHandler(s);
+				models = (IList)cars["Models"];
 				Assert.IsFalse(NHibernateUtil.IsInitialized(models));
 				Assert.AreEqual(2, models.Count);
 				Assert.IsTrue(NHibernateUtil.IsInitialized(models));
 				s.Clear();
-				IList list = s.CreateQuery("from Model m").List();
+				IList list = allModelQueryHandler(s);
 				foreach (IDictionary ht in list)
 				{
 					Assert.IsFalse(NHibernateUtil.IsInitialized(ht["ProductLine"]));
 				}
-				IDictionary model = (IDictionary) list[0];
-				Assert.IsTrue(((IList) ((IDictionary) model["ProductLine"])["Models"]).Contains(model));
+				var model = (IDictionary)list[0];
+				Assert.IsTrue(((IList)((IDictionary)model["ProductLine"])["Models"]).Contains(model));
 				s.Clear();
 
 				t.Commit();
@@ -89,7 +105,7 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 			using (ISession s = OpenSession())
 			{
 				t = s.BeginTransaction();
-				cars = (IDictionary) s.CreateQuery("from ProductLine pl order by pl.Description").UniqueResult();
+				cars = singleCarQueryHandler(s);
 				s.Delete(cars);
 				t.Commit();
 			}

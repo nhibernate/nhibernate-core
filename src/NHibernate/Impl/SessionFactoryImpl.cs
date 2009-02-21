@@ -583,24 +583,35 @@ namespace NHibernate.Impl
 		public string[] GetImplementors(string className)
 		{
 			System.Type clazz = null;
-			// NH Different implementation: we have better performance checking, first of all, if we know the class
-			// and take the System.Type directly from the persister (className have high probability to be entityName)
-			IEntityPersister checkPersister;
-			if (entityPersisters.TryGetValue(className, out checkPersister))
+
+			// NH Different implementation for performance: a class without at least a namespace sure can't be found by reflection
+			if (className.IndexOf('.') > 0)
 			{
-				clazz = checkPersister.GetMappedClass(EntityMode.Poco);
+				IEntityPersister checkPersister;
+				// NH Different implementation: we have better performance checking, first of all, if we know the class
+				// and take the System.Type directly from the persister (className have high probability to be entityName)
+				if (entityPersisters.TryGetValue(className, out checkPersister))
+				{
+					// NH : take care with this because we are forcing the Poco EntityMode
+					clazz = checkPersister.GetMappedClass(EntityMode.Poco);
+				}
+
+				if (clazz == null)
+				{
+					try
+					{
+						clazz = ReflectHelper.ClassForFullName(className);
+					}
+					catch (Exception)
+					{
+						clazz = null;
+					}
+				}
 			}
 
 			if (clazz == null)
 			{
-				try
-				{
-					clazz = ReflectHelper.ClassForFullName(className);
-				}
-				catch (Exception)
-				{
-					return new string[] {className}; //for a dynamic-class
-				}
+				return new[] {className}; //for a dynamic-class
 			}
 
 			List<string> results = new List<string>();
