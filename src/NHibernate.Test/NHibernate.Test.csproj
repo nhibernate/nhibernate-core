@@ -1105,6 +1105,9 @@
     <Compile Include="UtilityTest\ThreadSafeDictionaryFixture.cs" />
     <Compile Include="UtilityTest\TypeNameParserFixture.cs" />
     <Compile Include="UtilityTest\WeakHashtableFixture.cs" />
+    <Compile Include="VersionTest\Db\MsSQL\BinaryTimestamp.cs" />
+    <Compile Include="VersionTest\Db\MsSQL\GeneratedBinaryVersionFixture.cs" />
+    <Compile Include="VersionTest\Db\MsSQL\SimpleVersioned.cs" />
     <Compile Include="VersionTest\Person.cs" />
     <Compile Include="VersionTest\Task.cs" />
     <Compile Include="VersionTest\Thing.cs" />
@@ -1662,6 +1665,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="VersionTest\Db\MsSQL\SimpleVersioned.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1675\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1677\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1679\Mappings.hbm.xml" />
