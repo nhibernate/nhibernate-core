@@ -459,5 +459,10 @@ namespace NHibernate.Dialect
 		{
 			return new MsSqlDataBaseSchema(connection);
 		}
+
+		public override bool SupportsUnionAll
+		{
+			get { return true; }
+		}
 	}
 }
