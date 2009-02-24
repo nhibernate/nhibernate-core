@@ -44,11 +44,7 @@ namespace NHibernate.Util
 
 			public T Current
 			{
-				get
-				{
-					if (hasNext) hasNext = false;
-					return current;
-				}
+				get { return current; }
 			}
 
 			#endregion
@@ -65,7 +61,9 @@ namespace NHibernate.Util
 
 			public bool MoveNext()
 			{
-				return hasNext;
+				var result = hasNext;
+				hasNext = false;
+				return result;
 			}
 
 			public void Reset()

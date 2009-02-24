@@ -1100,6 +1100,7 @@
     <Compile Include="UtilityTest\ReflectHelperFixture.cs" />
     <Compile Include="UtilityTest\SafetyEnumerableFixture.cs" />
     <Compile Include="UtilityTest\SequencedHashMapFixture.cs" />
+    <Compile Include="UtilityTest\SingletonEnumerableFixture.cs" />
     <Compile Include="UtilityTest\StringHelperFixture.cs" />
     <Compile Include="UtilityTest\StringTokenizerFixture.cs" />
     <Compile Include="UtilityTest\ThreadSafeDictionaryFixture.cs" />
