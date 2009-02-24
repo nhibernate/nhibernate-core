@@ -1927,9 +1927,6 @@
         </member>
         <member name="T:Castle.Core.Configuration.IConfiguration">
             <summary>
-            Summary description for IConfiguration.
-            </summary>
-            <summary>
             <see cref="T:Castle.Core.Configuration.IConfiguration"/> is a interface encapsulating a configuration node
             used to retrieve configuration values.
             </summary>
@@ -2024,16 +2021,10 @@
             Creates a new instance of <c>ConfigurationCollection</c>.
             </summary>
         </member>
-        <member name="M:Castle.Core.Configuration.ConfigurationCollection.#ctor(System.Collections.Generic.IList{Castle.Core.Configuration.IConfiguration})">
+        <member name="M:Castle.Core.Configuration.ConfigurationCollection.#ctor(System.Collections.Generic.IEnumerable{Castle.Core.Configuration.IConfiguration})">
             <summary>
             Creates a new instance of <c>ConfigurationCollection</c>.
             </summary>
-        </member>
-        <member name="M:Castle.Core.Configuration.ConfigurationCollection.AddRange(System.Collections.Generic.IList{Castle.Core.Configuration.IConfiguration})">
-            <summary>
-            Adds an array of <see cref="T:Castle.Core.Configuration.IConfiguration"/>.
-            </summary>
-            <param name="value">The Array of <see cref="T:Castle.Core.Configuration.IConfiguration"/> to add.</param>
         </member>
         <member name="T:Castle.Core.Configuration.MutableConfiguration">
             <summary>
@@ -2045,6 +2036,14 @@
             Initializes a new instance of the <see cref="T:Castle.Core.Configuration.MutableConfiguration"/> class.
             </summary>
             <param name="name">The name.</param>
+        </member>
+        <member name="P:Castle.Core.Configuration.MutableConfiguration.Value">
+            <summary>
+            Gets the value of <see cref="T:Castle.Core.Configuration.IConfiguration"/>.
+            </summary>
+            <value>
+            The Value of the <see cref="T:Castle.Core.Configuration.IConfiguration"/>.
+            </value>
         </member>
         <member name="T:Castle.Core.LifestyleType">
             <summary>
@@ -2381,7 +2380,7 @@
             Initializes a new instance of the <see cref="T:Castle.Core.DependencyModelCollection"/> class.
             </summary>
         </member>
-        <member name="M:Castle.Core.DependencyModelCollection.#ctor(System.Collections.Generic.IList{Castle.Core.DependencyModel})">
+        <member name="M:Castle.Core.DependencyModelCollection.#ctor(System.Collections.Generic.IEnumerable{Castle.Core.DependencyModel})">
             <summary>
             Initializes a new instance of the <see cref="T:Castle.Core.DependencyModelCollection"/> class.
             </summary>
@@ -2450,28 +2449,28 @@
         </member>
         <member name="M:Castle.Core.InterceptorReferenceCollection.Add(Castle.Core.InterceptorReference)">
             <summary>
-            Adds the specified interceptor.
+            Adds the specified item.
             </summary>
-            <param name="interceptor">The interceptor.</param>
+            <param name="item">The interceptor.</param>
         </member>
         <member name="M:Castle.Core.InterceptorReferenceCollection.AddFirst(Castle.Core.InterceptorReference)">
             <summary>
-            Adds the the specified interceptor as the first.
+            Adds the specified interceptor as the first.
             </summary>
-            <param name="interceptor">The interceptor.</param>
+            <param name="item">The interceptor.</param>
         </member>
         <member name="M:Castle.Core.InterceptorReferenceCollection.AddLast(Castle.Core.InterceptorReference)">
             <summary>
-            Adds the the specified interceptor as the last.
+            Adds the specified interceptor as the last.
             </summary>
-            <param name="interceptor">The interceptor.</param>
+            <param name="item">The interceptor.</param>
         </member>
         <member name="M:Castle.Core.InterceptorReferenceCollection.Insert(System.Int32,Castle.Core.InterceptorReference)">
             <summary>
             Inserts the specified interceptor at the specified index.
             </summary>
             <param name="index">The index.</param>
-            <param name="interceptor">The interceptor.</param>
+            <param name="item">The interceptor.</param>
         </member>
         <member name="M:Castle.Core.InterceptorReferenceCollection.CopyTo(System.Array,System.Int32)">
             <summary>
@@ -2565,6 +2564,13 @@
         <member name="M:Castle.Core.LifecycleStepCollection.Add(Castle.Core.LifecycleStepType,System.Object)">
             <summary>
             Adds a step to the commission or decomission phases.
+            </summary>
+            <param name="type"></param>
+            <param name="stepImplementation"></param>
+        </member>
+        <member name="M:Castle.Core.LifecycleStepCollection.AddFirst(Castle.Core.LifecycleStepType,System.Object)">
+            <summary>
+            Adds a step as the first step to execute for the commission or decomission phase.
             </summary>
             <param name="type"></param>
             <param name="stepImplementation"></param>
@@ -2928,7 +2934,7 @@
             
             </summary>
         </member>
-        <member name="F:Castle.Core.Resource.AbstractStreamResource.CreateStream">
+        <member name="F:Castle.Core.Resource.AbstractStreamResource.createStream">
             <summary>
             This returns a new stream instance each time it is called.
             It is the responsability of the caller to dispose of this stream
@@ -3038,6 +3044,21 @@
             </summary>
             <param name="first"></param>
             <param name="second"></param>
+        </member>
+        <member name="T:Castle.Core.ProxyServices">
+            <summary>
+            List of utility methods related to dynamic proxy operations
+            </summary>
+        </member>
+        <member name="M:Castle.Core.ProxyServices.IsDynamicProxy(System.Type)">
+            <summary>
+            Determines whether the specified type is a proxy generated by
+            DynamicProxy (1 or 2).
+            </summary>
+            <param name="type">The type.</param>
+            <returns>
+            	<c>true</c> if it is a proxy; otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="T:Castle.Core.ReflectionBasedDictionaryAdapter">
             <summary>

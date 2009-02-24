@@ -43,7 +43,7 @@
             </summary>
         </member>
         <member name="T:Castle.DynamicProxy.Generators.Emitters.LdcOpCodesDictionary">
-            <summary>
+            <summary>s
             Provides appropriate Ldc.X opcode for the type of primitive value to be loaded.
             </summary>
         </member>
@@ -110,7 +110,6 @@
             </summary>
             <remarks>
             TODO: 
-            - Use the interceptor selector if provided
             - Add tests and fixes for 'leaking this' problem
             </remarks>
         </member>
@@ -366,15 +365,16 @@
             <param name="options"></param>
             <returns></returns>
         </member>
-        <member name="M:Castle.DynamicProxy.IProxyBuilder.CreateInterfaceProxyTypeWithTargetInterface(System.Type,Castle.DynamicProxy.ProxyGenerationOptions)">
+        <member name="M:Castle.DynamicProxy.IProxyBuilder.CreateInterfaceProxyTypeWithTargetInterface(System.Type,System.Type[],Castle.DynamicProxy.ProxyGenerationOptions)">
             <summary>
             Implementors should return a proxy for the specified
-            interface that delegate all executions to the
+            interface(s) that delegate all executions to the
             specified interceptor(s) and uses an instance of the interface
             as their targets, rather than a class. All IInvocation's
             should then implement IChangeProxyTarget.
             </summary>
             <param name="theInterface"></param>
+            <param name="interfaces"></param>
             <param name="options"></param>
             <returns></returns>
         </member>
@@ -386,9 +386,9 @@
         </member>
         <member name="M:Castle.DynamicProxy.InternalsHelper.IsInternalToDynamicProxy(System.Reflection.Assembly)">
             <summary>
-            Determines whether this assembly has internals visisble to dynamic proxy.
+            Determines whether this assembly has internals visible to dynamic proxy.
             </summary>
-            <param name="asm">The asm.</param>
+            <param name="asm">The assembly to inspect.</param>
         </member>
         <member name="M:Castle.DynamicProxy.InternalsHelper.IsInternal(System.Reflection.MethodInfo)">
             <summary>
