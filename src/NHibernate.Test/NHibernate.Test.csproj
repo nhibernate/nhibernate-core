@@ -632,6 +632,8 @@
     <Compile Include="NHSpecificTest\NH1677\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1679\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH1679\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1689\DomainClass.cs" />
+    <Compile Include="NHSpecificTest\NH1689\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH280\Foo.cs" />
     <Compile Include="NHSpecificTest\NH1018\Employee.cs" />
@@ -1666,6 +1668,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1689\Mappings.hbm.xml" />
     <EmbeddedResource Include="VersionTest\Db\MsSQL\SimpleVersioned.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1675\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1677\Mappings.hbm.xml" />

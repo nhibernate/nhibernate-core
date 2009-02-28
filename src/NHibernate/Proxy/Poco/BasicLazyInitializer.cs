@@ -92,7 +92,7 @@ namespace NHibernate.Proxy.Poco
 				{
 					return IdentityEqualityComparer.Equals(args[0], proxy);
 				}
-				else if (method.Equals(setIdentifierMethod))
+				else if (setIdentifierMethod!=null&&method.Equals(setIdentifierMethod))
 				{
 					Initialize();
 					Identifier = args[0];
