@@ -4,7 +4,7 @@
 	using Dialect;
 	using NUnit.Framework;
 
-	[TestFixture,Ignore]
+	[TestFixture]
 	public class SampleTest : BugTestCase
 	{
 		protected override void OnSetUp()
