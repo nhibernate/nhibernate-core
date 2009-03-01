@@ -1446,7 +1446,7 @@ namespace NHibernate.Persister.Collection
 
 			if (type.IsComponentType)
 			{
-				// NH-1612: Recursively add column aliases for nested components to support the selection
+				// NH-1612+NH-1691: Recursively add column aliases for nested components to support the selection
 				// of individual component properties in native SQL queries. This also seems to provide
 				// a more complete solution to HHH-1019 (http://opensource.atlassian.com/projects/hibernate/browse/HHH-1019)
 				// because it works for <load-collection> and <return-join>.
@@ -1458,9 +1458,9 @@ namespace NHibernate.Persister.Collection
 				{
 					string name = propertyNames[propertyIndex];
 					IType propertyType = ct.Subtypes[propertyIndex];
-					int propertyColSpan = propertyType.IsComponentType
-					                      	? ((IAbstractComponentType) propertyType).PropertyNames.Length
-					                      	: 1;
+
+					int propertyColSpan = 0;
+					CalcPropertyColumnSpan(propertyType, ref propertyColSpan);
 
 					var propertyColumnAliases = new string[propertyColSpan];
 					var propertyColumnNames = new string[propertyColSpan];
@@ -1469,6 +1469,22 @@ namespace NHibernate.Persister.Collection
 					InitCollectionPropertyMap(aliasName + "." + name, propertyType, propertyColumnAliases, propertyColumnNames);
 
 					columnIndex += propertyColSpan;
+				}
+			}
+		}
+
+		private static void CalcPropertyColumnSpan(IType propertyType, ref int count)
+		{
+			if (!propertyType.IsComponentType)
+			{
+				count++;
+			}
+			else
+			{
+				var componentType = (IAbstractComponentType) propertyType;
+				foreach (var subtype in componentType.Subtypes)
+				{
+					CalcPropertyColumnSpan(subtype, ref count);
 				}
 			}
 		}

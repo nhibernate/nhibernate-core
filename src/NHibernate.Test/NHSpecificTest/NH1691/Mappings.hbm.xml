@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+									 namespace="NHibernate.Test.NHSpecificTest.NH1691" 
+									 assembly="NHibernate.Test" 
+									 default-lazy="false">
+	<class name="Nest">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+
+		<bag name="Components"
+					access="property"
+					table="Nest_Components"
+					cascade="all-delete-orphan"
+					lazy="false">
+			<key column="NestId"/>
+			<composite-element class="Component">
+				<property name="Name" column="Component_Name"	/>
+				<nested-composite-element name="SubComponent" access="property" class="SubComponent">
+					<property name="SubName" column="Component_SubComponent_SubName"	/>
+					<property name="SubName1" column="Component_SubComponent_SubName1"	/>
+					<nested-composite-element name="Nested" access="property" class="SubComponent">
+						<property name="SubName" column="Component_SubComponent_Nested_SubName"	/>
+						<property name="SubName1" column="Component_SubComponent_Nested_SubName1"	/>
+					</nested-composite-element>
+				</nested-composite-element>
+			</composite-element>
+		</bag>
+
+		<bag name="ComplexComponents"
+					access="property"
+					table="Nest_DeepComponents"
+					cascade="all-delete-orphan"
+					lazy="false">
+			<key column="NestId"/>
+			<composite-element class="DeepComponent">
+				<property name="Prop1" column="DeepComponent_Prop1"	/>
+				<property name="Prop2" column="DeepComponent_Prop2"	/>
+				<property name="Prop3" column="DeepComponent_Prop3"	/>
+				<property name="Prop4" column="DeepComponent_Prop4"	/>
+				<nested-composite-element name="Component" class="Component">
+					<property name="Name" column="Component_Name"	/>
+					<nested-composite-element name="SubComponent" access="property" class="SubComponent">
+						<property name="SubName" column="Component_SubComponent_SubName"	/>
+						<nested-composite-element name="Nested" access="property" class="SubComponent">
+							<property name="SubName" column="Component_SubComponent_Nested_SubName"	/>
+							<property name="SubName1" column="Component_SubComponent_Nested_SubName1"	/>
+						</nested-composite-element>
+					</nested-composite-element>
+				</nested-composite-element>
+				
+			</composite-element>
+		</bag>
+		
+	</class>
+</hibernate-mapping>
