@@ -67,6 +67,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1098
             b4.Enabled = true;
             session.Save( b4 );
 
+            a1.C.Add( a1.Id, "Text1" );
+            a1.C.Add( a2.Id, "Text2" );
+
             session.Flush();
             session.Close();
         }
@@ -118,7 +121,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1098
             Assert.AreEqual( 1, result.Count );
         }
 
-        [Test, Ignore("Known issue, parameter order is wrong when named and positional parameters are mixed")]
+        [Test, Ignore( "Known issue, parameter order is wrong when named and positional parameters are mixed" )]
         public void QueryWithNamedParameters()
         {
             ISession session = OpenSession();
@@ -229,5 +232,26 @@ namespace NHibernate.Test.NHSpecificTest.NH1098
             Assert.AreEqual( 1, result.Count );
         }
 
+        [Test,Ignore("Parameter order is wrong when index is used")]
+        public void QueryMapElements()
+        {
+            IQuery query = OpenSession().CreateQuery( "from A a where a.C[:ValC] = :Text" );
+            query.SetInt32( "ValC", 1 );
+            query.SetString( "Text", "Text1" );
+            
+            // Query:
+            // {select a0_.id as id0_, a0_.val_a as val2_0_, a0_.enabled as enabled0_ 
+            //         from table_a a0_, table_c c1_ 
+            //         where (c1_.text = (?) and a0_.id=c1_.val_a and c1_.val_c = (?) ); }
+            // Parameter:
+            // 1) "c1_.text = (?)" [named parameter #2 Text]
+            // 2) "c1_.val_c = (?)" [named parameter #1 ValC]
+            //
+            // => ERROR, parameters are in wrong order: named ValC, named Text
+
+            A a = query.UniqueResult<A>();
+            
+            Assert.AreEqual( a.C[1], "Text1" );
+        }
     }
 }

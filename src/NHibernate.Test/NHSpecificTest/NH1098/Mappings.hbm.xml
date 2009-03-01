@@ -13,6 +13,12 @@
     <property name="ValueA" column="val_a" type="int"/>
     <property name="Enabled" column="enabled" type="boolean"/>
 
+    <map name="C" table="table_c" cascade="all">
+      <key column="val_a" />
+      <index column="val_c" type="int" />
+      <element column="text" type="string" />
+    </map>
+    
     <filter name="EnabledObjects" condition="enabled = :Enabled" />
 
   </class>
@@ -29,7 +35,7 @@
     <filter name="EnabledObjects" condition="enabled = :Enabled" />
 
   </class>
-
+  
   <filter-def name="EnabledObjects">
     <filter-param name="Enabled" type="boolean"/>
   </filter-def>

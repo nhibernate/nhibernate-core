@@ -30,6 +30,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1098
             set { enabled = value; }
         }
 
+        public IDictionary<int, string> C
+        {
+            get { return c; }
+            set { c = value; }
+        }
+
+        private IDictionary<int, string> c = new Dictionary<int,string>();
     }
 
     class B
