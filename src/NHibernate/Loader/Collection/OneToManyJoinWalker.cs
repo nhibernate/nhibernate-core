@@ -45,26 +45,29 @@ namespace NHibernate.Loader.Collection
 		private void InitStatementString(IOuterJoinLoadable elementPersister, string alias, int batchSize, SqlString subquery)
 		{
 			int joins = CountEntityPersisters(associations);
-			Suffixes = BasicLoader.GenerateSuffixes(joins + 1);
+			this.Suffixes = BasicLoader.GenerateSuffixes(joins + 1);
 
 			int collectionJoins = CountCollectionPersisters(associations) + 1;
-			CollectionSuffixes = BasicLoader.GenerateSuffixes(joins + 1, collectionJoins);
+			this.CollectionSuffixes = BasicLoader.GenerateSuffixes(joins + 1, collectionJoins);
 
 			SqlStringBuilder whereString = WhereString(alias, oneToManyPersister.KeyColumnNames, subquery, batchSize);
+			
 			string filter = oneToManyPersister.FilterFragment(alias, EnabledFilters);
 			whereString.Insert(0, StringHelper.MoveAndToBeginning(filter));
-
+			whereString.Add(elementPersister.FilterFragment(alias, new CollectionHelper.EmptyMapClass<string, IFilter>()));
 			JoinFragment ojf = MergeOuterJoins(associations);
 			SqlSelectBuilder select =
-				new SqlSelectBuilder(Factory).SetSelectClause(
-					oneToManyPersister.SelectFragment(null, null, alias, Suffixes[joins], CollectionSuffixes[0], true)
-					+ SelectString(associations)).SetFromClause(elementPersister.FromTableFragment(alias)
-					                                            + elementPersister.FromJoinFragment(alias, true, true)).SetWhereClause(
-					whereString.ToSqlString()).SetOuterJoins(ojf.ToFromFragmentString,
-					                                         ojf.ToWhereFragmentString
-					                                         + elementPersister.WhereJoinFragment(alias, true, true));
+				new SqlSelectBuilder(Factory)
+					.SetSelectClause(
+					oneToManyPersister.SelectFragment(null, null, alias, this.Suffixes[joins], this.CollectionSuffixes[0], true)
+					+ SelectString(associations))
+					.SetFromClause(elementPersister.FromTableFragment(alias)
+					               + elementPersister.FromJoinFragment(alias, true, true))
+					.SetWhereClause(whereString.ToSqlString())
+					.SetOuterJoins(ojf.ToFromFragmentString,
+					               ojf.ToWhereFragmentString + elementPersister.WhereJoinFragment(alias, true, true))
+					.SetOrderByClause(OrderBy(associations, oneToManyPersister.GetSQLOrderByString(alias)));
 
-			select.SetOrderByClause(OrderBy(associations, oneToManyPersister.GetSQLOrderByString(alias)));
 
 			if (Factory.Settings.IsCommentsEnabled)
 			{

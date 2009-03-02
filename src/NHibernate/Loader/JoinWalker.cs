@@ -19,76 +19,25 @@ namespace NHibernate.Loader
 		private readonly ISet<AssociationKey> visitedAssociationKeys = new HashedSet<AssociationKey>();
 		private readonly IDictionary<string, IFilter> enabledFilters;
 
-		private string[] suffixes;
-		private string[] collectionSuffixes;
-		private ILoadable[] persisters;
-		private int[] owners;
-		private EntityType[] ownerAssociationTypes;
-		private ICollectionPersister[] collectionPersisters;
-		private int[] collectionOwners;
-		private string[] aliases;
-		private LockMode[] lockModeArray;
-		private SqlString sql;
+		public string[] CollectionSuffixes { get; set; }
 
-		public string[] CollectionSuffixes
-		{
-			get { return collectionSuffixes; }
-			set { collectionSuffixes = value; }
-		}
+		public LockMode[] LockModeArray { get; set; }
 
-		public LockMode[] LockModeArray
-		{
-			get { return lockModeArray; }
-			set { lockModeArray = value; }
-		}
+		public string[] Suffixes { get; set; }
 
-		public string[] Suffixes
-		{
-			get { return suffixes; }
-			set { suffixes = value; }
-		}
+		public string[] Aliases { get; set; }
 
-		public string[] Aliases
-		{
-			get { return aliases; }
-			set { aliases = value; }
-		}
+		public int[] CollectionOwners { get; set; }
 
-		public int[] CollectionOwners
-		{
-			get { return collectionOwners; }
-			set { collectionOwners = value; }
-		}
+		public ICollectionPersister[] CollectionPersisters { get; set; }
 
-		public ICollectionPersister[] CollectionPersisters
-		{
-			get { return collectionPersisters; }
-			set { collectionPersisters = value; }
-		}
+		public EntityType[] OwnerAssociationTypes { get; set; }
 
-		public EntityType[] OwnerAssociationTypes
-		{
-			get { return ownerAssociationTypes; }
-			set { ownerAssociationTypes = value; }
-		}
+		public int[] Owners { get; set; }
 
-		public int[] Owners
-		{
-			get { return owners; }
-			set { owners = value; }
-		}
+		public ILoadable[] Persisters { get; set; }
 
-		public ILoadable[] Persisters
-		{
-			get { return persisters; }
-			set { persisters = value; }
-		}
-
-		public SqlString SqlString
-		{
-			get { return sql; }
-			set { sql = value; }
-		}
+		public SqlString SqlString { get; set; }
 
 		protected ISessionFactoryImplementor Factory
 		{
@@ -708,15 +657,15 @@ namespace NHibernate.Loader
 			int joins = CountEntityPersisters(associations);
 			int collections = CountCollectionPersisters(associations);
 
-			collectionOwners = collections == 0 ? null : new int[collections];
-			collectionPersisters = collections == 0 ? null : new ICollectionPersister[collections];
-			collectionSuffixes = BasicLoader.GenerateSuffixes(joins + 1, collections);
+			this.CollectionOwners = collections == 0 ? null : new int[collections];
+			this.CollectionPersisters = collections == 0 ? null : new ICollectionPersister[collections];
+			this.CollectionSuffixes = BasicLoader.GenerateSuffixes(joins + 1, collections);
 
-			persisters = new ILoadable[joins];
-			aliases = new String[joins];
-			owners = new int[joins];
-			ownerAssociationTypes = new EntityType[joins];
-			lockModeArray = ArrayHelper.FillArray(lockMode, joins);
+			this.Persisters = new ILoadable[joins];
+			this.Aliases = new String[joins];
+			this.Owners = new int[joins];
+			this.OwnerAssociationTypes = new EntityType[joins];
+			this.LockModeArray = ArrayHelper.FillArray(lockMode, joins);
 
 			int i = 0;
 			int j = 0;
@@ -725,10 +674,10 @@ namespace NHibernate.Loader
 			{
 				if (!oj.IsCollection)
 				{
-					persisters[i] = (ILoadable)oj.Joinable;
-					aliases[i] = oj.RHSAlias;
-					owners[i] = oj.GetOwner(associations);
-					ownerAssociationTypes[i] = (EntityType)oj.JoinableType;
+					this.Persisters[i] = (ILoadable)oj.Joinable;
+					this.Aliases[i] = oj.RHSAlias;
+					this.Owners[i] = oj.GetOwner(associations);
+					this.OwnerAssociationTypes[i] = (EntityType)oj.JoinableType;
 					i++;
 				}
 				else
@@ -738,25 +687,25 @@ namespace NHibernate.Loader
 					if (oj.JoinType == JoinType.LeftOuterJoin)
 					{
 						//it must be a collection fetch
-						collectionPersisters[j] = collPersister;
-						collectionOwners[j] = oj.GetOwner(associations);
+						this.CollectionPersisters[j] = collPersister;
+						this.CollectionOwners[j] = oj.GetOwner(associations);
 						j++;
 					}
 
 					if (collPersister.IsOneToMany)
 					{
-						persisters[i] = (ILoadable)collPersister.ElementPersister;
-						aliases[i] = oj.RHSAlias;
+						this.Persisters[i] = (ILoadable)collPersister.ElementPersister;
+						this.Aliases[i] = oj.RHSAlias;
 						i++;
 					}
 				}
 			}
 
-			if (ArrayHelper.IsAllNegative(owners))
-				owners = null;
+			if (ArrayHelper.IsAllNegative(this.Owners))
+				this.Owners = null;
 
-			if (collectionOwners != null && ArrayHelper.IsAllNegative(collectionOwners))
-				collectionOwners = null;
+			if (this.CollectionOwners != null && ArrayHelper.IsAllNegative(this.CollectionOwners))
+				this.CollectionOwners = null;
 		}
 
 		/// <summary>
@@ -782,11 +731,11 @@ namespace NHibernate.Loader
 					OuterJoinableAssociation next = (i == associations.Count - 1) ? null : associations[i + 1];
 
 					IJoinable joinable = join.Joinable;
-					string entitySuffix = (suffixes == null || entityAliasCount >= suffixes.Length) ? null : suffixes[entityAliasCount];
+					string entitySuffix = (this.Suffixes == null || entityAliasCount >= this.Suffixes.Length) ? null : this.Suffixes[entityAliasCount];
 
-					string collectionSuffix = (collectionSuffixes == null || collectionAliasCount >= collectionSuffixes.Length)
+					string collectionSuffix = (this.CollectionSuffixes == null || collectionAliasCount >= this.CollectionSuffixes.Length)
 																			? null
-																			: collectionSuffixes[collectionAliasCount];
+																			: this.CollectionSuffixes[collectionAliasCount];
 
 					string selectFragment =
 						joinable.SelectFragment(next == null ? null : next.Joinable, next == null ? null : next.RHSAlias, join.RHSAlias,
