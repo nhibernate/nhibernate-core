@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" ?>
+
+<project 
+	name="NHibernate.ByteCode.Spring.Tests" 
+	default="build" 
+	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
+>
+	<property name="root.dir" value="../.." />
+
+	<include buildfile="${root.dir}/build-common/common-project.xml" />
+
+	<target name="init" depends="common.init">
+
+		<property name="assembly.is-cls-compliant" value="false" />
+		<property name="assembly.description" value="The Unit Tests for Spring ByteCode." />
+		<property name="assembly.version" value="1.0.0.1" />
+		<property name="assembly.version.informational" value="1.0" />
+
+		<property name="clover.instrument" value="false" />
+
+		<assemblyfileset id="project.references" basedir="${bin.dir}">
+			<include name="System.dll" />
+			<include name="System.XML.dll" />
+			<include name="System.Data.dll" />
+			<include name="System.Core.dll" />
+			<include name="Common.Logging.dll" />
+			<include name="Iesi.Collections.dll" />
+			<include name="log4net.dll" />
+			<include name="antlr.runtime.dll" />
+			<include name="Spring.Aop.dll" />
+			<include name="Spring.Core.dll" />
+			<include name="NHibernate.dll" />
+			<include name="NHibernate.ByteCode.Spring.dll" />
+			<include name="nunit.framework.dll"/>
+		</assemblyfileset>
+
+		<resourcefileset id="project.resources" prefix="NHibernate.ByteCode.Spring.Tests" dynamicprefix="true">
+			<include name="**/*.xml" />
+			<exclude name="bin/**/*.xml" />
+		</resourcefileset>
+	</target>
+
+	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
+	<target name="build" depends="init generate-assemblyinfo common.compile-tests" />
+	<target name="test" depends="init build common.run-tests" />
+
+</project>

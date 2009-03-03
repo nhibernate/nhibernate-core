@@ -30,6 +30,8 @@
 		<include name="NHibernate.ByteCode.LinFu.Tests/ByteCode.Test.build" />
 		<include name="NHibernate.ByteCode.Castle/ByteCode.build" />
 		<include name="NHibernate.ByteCode.Castle.Tests/ByteCode.Test.build" />
+		<include name="NHibernate.ByteCode.Spring/ByteCode.build" />
+		<include name="NHibernate.ByteCode.Spring.Tests/ByteCode.Test.build" />
 		<include name="NHibernate.DomainModel/NHibernate.DomainModel.build" />
 		<include name="NHibernate.Test/NHibernate.Test.build" />
 		<include name="NHibernate.Test.Performance/NHibernate.Test.Performance.build" />
@@ -41,6 +43,7 @@
 		<include name="Iesi.Collections.Test/Iesi.Collections.Test.build" />
 		<include name="NHibernate.ByteCode.LinFu.Tests/ByteCode.Test.build" />
 		<include name="NHibernate.ByteCode.Castle.Tests/ByteCode.Test.build" />
+		<include name="NHibernate.ByteCode.Spring.Tests/ByteCode.Test.build" />
 		<include name="NHibernate.Test/NHibernate.Test.build" />
 		<include name="NHibernate.Test.Performance/NHibernate.Test.Performance.build"
 			if="${run.performance.tests}" />
@@ -89,10 +92,12 @@
 				-->
 				<exclude name="Iesi.Collections.dll" />
 				<exclude name="Iesi.Collections.xml" />
-				<exclude name="NHibernate.ByteCode.LinFuDynamicProxy.dll" />
-				<exclude name="NHibernate.ByteCode.LinFuDynamicProxy.xml" />
-				<exclude name="NHibernate.ByteCode.CastleDynamicProxy.dll" />
-				<exclude name="NHibernate.ByteCode.CastleDynamicProxy.xml" />
+				<exclude name="NHibernate.ByteCode.LinFu.dll" />
+				<exclude name="NHibernate.ByteCode.LinFu.xml" />
+				<exclude name="NHibernate.ByteCode.Castle.dll" />
+				<exclude name="NHibernate.ByteCode.Castle.xml" />
+				<exclude name="NHibernate.ByteCode.Spring.dll" />
+				<exclude name="NHibernate.ByteCode.Spring.xml" />
 				<include name="*.dll" />
 				<include name="*.xml" />
 				<include name="*.license.txt" />
