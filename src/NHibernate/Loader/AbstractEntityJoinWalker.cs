@@ -44,7 +44,7 @@ namespace NHibernate.Loader
 			SqlString orderByString, string groupByString, SqlString havingString, LockMode lockMode)
 		{
 			WalkEntityTree(persister, Alias);
-			this.Persisters = new ILoadable[0];
+			Persisters = new ILoadable[0];
 			InitStatementString(projectionString, whereString, orderByString, groupByString, havingString, lockMode);
 		}
 
@@ -57,12 +57,12 @@ namespace NHibernate.Loader
 			SqlString orderBy,string groupBy, SqlString having, LockMode lockMode)
 		{
 			int joins = CountEntityPersisters(associations);
-			this.Suffixes = BasicLoader.GenerateSuffixes(joins + 1);
+			Suffixes = BasicLoader.GenerateSuffixes(joins + 1);
 			JoinFragment ojf = MergeOuterJoins(associations);
 
 			SqlString selectClause = projection
 			                         ??
-			                         new SqlString(persister.SelectFragment(alias, this.Suffixes[joins]) + SelectString(associations));
+			                         new SqlString(persister.SelectFragment(alias, Suffixes[joins]) + SelectString(associations));
 			
 			SqlSelectBuilder select = new SqlSelectBuilder(Factory)
 				.SetLockMode(lockMode)

@@ -40,8 +40,8 @@ namespace NHibernate.Loader.Collection
 		{
 			int joins = CountEntityPersisters(associations);
 			int collectionJoins = CountCollectionPersisters(associations) + 1;
-			this.Suffixes = BasicLoader.GenerateSuffixes(joins);
-			this.CollectionSuffixes = BasicLoader.GenerateSuffixes(joins, collectionJoins);
+			Suffixes = BasicLoader.GenerateSuffixes(joins);
+			CollectionSuffixes = BasicLoader.GenerateSuffixes(joins, collectionJoins);
 
 			SqlStringBuilder whereString = WhereString(alias, collectionPersister.KeyColumnNames, subquery, batchSize);
 
@@ -72,7 +72,7 @@ namespace NHibernate.Loader.Collection
 
 			SqlSelectBuilder select =
 				new SqlSelectBuilder(Factory)
-				.SetSelectClause(collectionPersister.SelectFragment(alias, this.CollectionSuffixes[0])
+				.SetSelectClause(collectionPersister.SelectFragment(alias, CollectionSuffixes[0])
 				                                              + SelectString(associations))
 				.SetFromClause(collectionPersister.TableName, alias)
 				.SetWhereClause(whereString.ToSqlString())

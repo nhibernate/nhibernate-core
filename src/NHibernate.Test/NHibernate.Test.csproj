@@ -416,9 +416,6 @@
     <Compile Include="NHSpecificTest\NH1289\PurchaseItem.cs" />
     <Compile Include="NHSpecificTest\NH1289\PurchaseOrder.cs" />
     <Compile Include="NHSpecificTest\NH1289\WorkflowItem.cs" />
-    <Compile Include="NHSpecificTest\NH1391\Company.cs" />
-    <Compile Include="NHSpecificTest\NH1391\Fixture.cs" />
-    <Compile Include="NHSpecificTest\NH1391\Product.cs" />
     <Compile Include="NHSpecificTest\NH1665\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1665\MyEntity.cs" />
     <Compile Include="NHSpecificTest\NH1443\Fixture.cs" />
@@ -1673,7 +1670,6 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
-    <EmbeddedResource Include="NHSpecificTest\NH1391\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1691\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1689\Mappings.hbm.xml" />
     <EmbeddedResource Include="VersionTest\Db\MsSQL\SimpleVersioned.hbm.xml" />
