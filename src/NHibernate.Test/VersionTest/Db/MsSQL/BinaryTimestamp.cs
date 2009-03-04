@@ -73,26 +73,7 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 		{
 			var xbytes = (byte[]) x;
 			var ybytes = (byte[]) y;
-			if (xbytes.Length < ybytes.Length)
-			{
-				return -1;
-			}
-			if (xbytes.Length > ybytes.Length)
-			{
-				return 1;
-			}
-			for (int i = 0; i < xbytes.Length; i++)
-			{
-				if (xbytes[i] < ybytes[i])
-				{
-					return -1;
-				}
-				if (xbytes[i] > ybytes[i])
-				{
-					return 1;
-				}
-			}
-			return 0;
+			return CompareValues(xbytes, ybytes);
 		}
 
 		bool IUserType.Equals(object x, object y)
@@ -101,5 +82,34 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 		}
 
 		#endregion
+
+		private static int CompareValues(byte[] x, byte[] y)
+		{
+			if (x.Length < y.Length)
+			{
+				return -1;
+			}
+			if (x.Length > y.Length)
+			{
+				return 1;
+			}
+			for (int i = 0; i < x.Length; i++)
+			{
+				if (x[i] < y[i])
+				{
+					return -1;
+				}
+				if (x[i] > y[i])
+				{
+					return 1;
+				}
+			}
+			return 0;
+		}
+
+		public static bool Equals(byte[] x, byte[] y)
+		{
+			return CompareValues(x, y) == 0;
+		}
 	}
 }

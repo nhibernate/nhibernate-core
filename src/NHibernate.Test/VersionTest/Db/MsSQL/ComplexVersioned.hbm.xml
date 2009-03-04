@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   default-cascade="save-update"
+				   auto-import="true"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.VersionTest.Db.MsSQL">
+
+	<typedef name="ByteTimestamp"
+	 class="NHibernate.Test.VersionTest.Db.MsSQL.BinaryTimestamp, NHibernate.Test"/>
+	
+	<class name="Bar" table="Bar" optimistic-lock="version">
+		<id name="Id">
+			<generator class="identity" />
+		</id>
+		<version name="Timestamp" type="ByteTimestamp" generated="always" unsaved-value="null" access="backfield">
+			<column name="LastModified" not-null="false" sql-type="timestamp"/>
+		</version>
+		<property name="AField"/>
+		<many-to-one name="Foo" column="FooID" cascade="all" class="Foo" not-null="true" />
+	</class>
+	
+	<class name="Foo" table="Foo" optimistic-lock="version">
+		<id name="Id">
+			<generator class="identity" />
+		</id>
+		<version name="Timestamp" type="ByteTimestamp" generated="always" unsaved-value="null" access="backfield">
+			<column name="LastModified" not-null="false" sql-type="timestamp"/>
+		</version>
+		<property name="AField"/>
+		<set name="Bars" cascade="all" access="backfield" inverse="true">
+			<key column="FooID" />
+			<one-to-many class="Bar" />
+		</set>
+	</class>
+</hibernate-mapping>
