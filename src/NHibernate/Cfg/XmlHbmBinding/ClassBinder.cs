@@ -1297,8 +1297,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		protected static void BindColumn(HbmColumn columnSchema, Column column, bool isNullable)
+		protected void BindColumn(HbmColumn columnSchema, Column column, bool isNullable)
 		{
+			column.Name = mappings.NamingStrategy.ColumnName(columnSchema.name);
+
 			if (columnSchema.length != null)
 				column.Length = int.Parse(columnSchema.length);
 			if (columnSchema.scale != null)

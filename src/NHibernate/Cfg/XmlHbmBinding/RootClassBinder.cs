@@ -213,11 +213,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void BindColumns(HbmVersion versionSchema, SimpleValue model, bool isNullable, string propertyPath)
 		{
 			Table table = model.Table;
-
 			if (versionSchema.column1 != null)
 			{
-				Column col = new Column();
-				col.Value = model;
+				var col = new Column {Value = model};
 				BindColumn(col, isNullable);
 				col.Name = mappings.NamingStrategy.ColumnName(versionSchema.column1);
 
@@ -226,11 +224,22 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				model.AddColumn(col);
 			}
+			else if (versionSchema.column != null)
+			{
+				foreach (HbmColumn hbmColumn in versionSchema.column)
+				{
+					var col = new Column {Value = model};
+					BindColumn(hbmColumn, col, isNullable);
+					if (table != null)
+						table.AddColumn(col);
+
+					model.AddColumn(col);
+				}
+			}
 
 			if (model.ColumnSpan == 0)
 			{
-				Column col = new Column();
-				col.Value = model;
+				var col = new Column {Value = model};
 				BindColumn(col, isNullable);
 				col.Name = mappings.NamingStrategy.PropertyToColumnName(propertyPath);
 				model.Table.AddColumn(col);
