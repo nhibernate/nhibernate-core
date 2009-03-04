@@ -12,8 +12,6 @@ namespace NHibernate.ByteCode.Spring
 	[Serializable]
 	public class LazyInitializer : BasicLazyInitializer, IMethodInterceptor, ITargetSource
 	{
-		private static readonly object NULL = new object();
-
 		private static readonly MethodInfo exceptionInternalPreserveStackTrace =
 			typeof (Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -51,7 +49,8 @@ namespace NHibernate.ByteCode.Spring
 			object returnValue;
 			try
 			{
-				returnValue = base.Invoke(info.Method, info.Arguments, info.Target);
+				var methodInfo = info.Method;
+				returnValue = base.Invoke(methodInfo, info.Arguments, info.Proxy);
 
 				if (returnValue != InvokeImplementation)
 				{
@@ -59,7 +58,7 @@ namespace NHibernate.ByteCode.Spring
 				}
 				if (InterceptCalls)
 				{
-					var method = new SafeMethod(info.Method);
+					var method = new SafeMethod(methodInfo);
 					return method.Invoke(GetImplementation(), info.Arguments);
 				}
 			}
@@ -78,11 +77,7 @@ namespace NHibernate.ByteCode.Spring
 
 		object ITargetSource.GetTarget()
 		{
-			if (!IsUninitialized)
-			{
-				return Target;
-			}
-			return NULL;
+			return Target ?? this;
 		}
 
 		void ITargetSource.ReleaseTarget(object target)

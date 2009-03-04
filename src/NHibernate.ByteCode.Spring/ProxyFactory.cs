@@ -31,10 +31,8 @@ namespace NHibernate.ByteCode.Spring
 				var initializer = new LazyInitializer(EntityName, PersistentClass, id, GetIdentifierMethod, SetIdentifierMethod,
 				                                      ComponentIdType, session);
 
-				var proxyFactory = new SerializableProxyFactory();
-				proxyFactory.Interfaces = Interfaces;
-				proxyFactory.TargetSource = initializer;
-				proxyFactory.ProxyTargetType = IsClassProxy;
+				var proxyFactory = new SerializableProxyFactory
+				                   	{Interfaces = Interfaces, TargetSource = initializer, ProxyTargetType = IsClassProxy};
 				proxyFactory.AddAdvice(initializer);
 
 				object proxyInstance = proxyFactory.GetProxy();
