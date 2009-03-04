@@ -1075,6 +1075,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			XmlAttribute lengthNode = node.Attributes["length"];
 			if (lengthNode != null)
 				model.Length = int.Parse(lengthNode.Value);
+			XmlAttribute scaleNode = node.Attributes["scale"];
+			if (scaleNode != null)
+				model.Scale = int.Parse(scaleNode.Value);
+			XmlAttribute precNode = node.Attributes["precision"];
+			if (precNode != null)
+				model.Precision = int.Parse(precNode.Value);
 
 			XmlAttribute nullNode = node.Attributes["not-null"];
 			model.IsNullable = (nullNode != null) ? !StringHelper.BooleanValue(nullNode.Value) : isNullable;
@@ -1087,6 +1093,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			XmlAttribute typeNode = node.Attributes["sql-type"];
 			model.SqlType = (typeNode == null) ? null : typeNode.Value;
+
+			XmlAttribute defaAttribute = node.Attributes["default"];
+			model.DefaultValue = (defaAttribute == null) ? null : defaAttribute.Value;
 		}
 
 		protected static void BindIndex(XmlAttribute indexAttribute, Table table, Column column)
@@ -1292,11 +1301,18 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			if (columnSchema.length != null)
 				column.Length = int.Parse(columnSchema.length);
+			if (columnSchema.scale != null)
+				column.Scale = int.Parse(columnSchema.scale);
+			if (columnSchema.precision != null)
+				column.Precision = int.Parse(columnSchema.precision);
 
 			column.IsNullable = columnSchema.notnullSpecified ? !columnSchema.notnull : isNullable;
 			column.IsUnique = columnSchema.uniqueSpecified && columnSchema.unique;
 			column.CheckConstraint = columnSchema.check ?? string.Empty;
 			column.SqlType = columnSchema.sqltype;
+			column.DefaultValue = columnSchema.@default;
+			if (columnSchema.comment != null)
+				column.Comment = string.Concat(columnSchema.comment.Text).Trim();
 		}
 	}
 }

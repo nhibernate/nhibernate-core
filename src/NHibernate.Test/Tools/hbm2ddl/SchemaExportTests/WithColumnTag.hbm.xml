@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.Tools.hbm2ddl.SchemaExportTests"
+				   assembly="NHibernate.Test">
+
+	<class name="WithColumnTag">
+		<id type="int"/>
+		<property name="WithServerFuction">
+			<column name="created_by" length="50" default="SYSTEM_USER"/>
+		</property>
+		<property name="WithSimpleValue">
+			<column name="my_value" default="77"/>
+		</property>
+	</class>
+
+</hibernate-mapping>
