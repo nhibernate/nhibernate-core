@@ -1,5 +1,4 @@
 using System.Reflection;
-using Common.Logging;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Proxy;
@@ -14,8 +13,6 @@ namespace NHibernate.ByteCode.Spring
 	/// <author>Erich Eichinger (Spring.NET Team)</author>
 	public abstract class AbstractProxyFactory : IProxyFactory
 	{
-		protected readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
 		protected string EntityName { get; private set; }
 		protected System.Type PersistentClass { get; private set; }
 		protected System.Type[] Interfaces { get; private set; }
