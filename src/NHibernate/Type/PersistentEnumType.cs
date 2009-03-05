@@ -6,6 +6,8 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
 {
+	using System.Runtime.Serialization;
+
 	/// <summary>
 	/// PersistentEnumType
 	/// </summary>
@@ -23,7 +25,7 @@ namespace NHibernate.Type
 			object ToEnumValue(object value);
 			SqlType SqlType { get; }
 		}
-
+		[Serializable]
 		private abstract class AbstractEnumConverter<T> : IEnumConverter
 		{
 			public object ToObject(System.Type enumClass, object code)
@@ -39,7 +41,7 @@ namespace NHibernate.Type
 			public abstract T Convert(object input);
 			public abstract SqlType SqlType { get; }
 		}
-
+		[Serializable]
 		private class SystemByteEnumConverter : AbstractEnumConverter<Byte>
 		{
 			public override byte Convert(object input)
@@ -52,7 +54,7 @@ namespace NHibernate.Type
 				get { return SqlTypeFactory.Byte; }
 			}
 		}
-
+		[Serializable]
 		private class SystemSByteEnumConverter : AbstractEnumConverter<SByte>
 		{
 			public override sbyte Convert(object input)
@@ -65,7 +67,7 @@ namespace NHibernate.Type
 				get { return SqlTypeFactory.SByte; }
 			}
 		}
-
+		[Serializable]
 		private class SystemInt16EnumConverter : AbstractEnumConverter<Int16>
 		{
 			public override short Convert(object input)
@@ -78,7 +80,7 @@ namespace NHibernate.Type
 				get { return SqlTypeFactory.Int16; }
 			}
 		}
-
+		[Serializable]
 		private class SystemInt32EnumConverter : AbstractEnumConverter<Int32>
 		{
 			public override int Convert(object input)
@@ -91,7 +93,7 @@ namespace NHibernate.Type
 				get { return SqlTypeFactory.Int32; }
 			}
 		}
-
+		[Serializable]
 		private class SystemInt64EnumConverter : AbstractEnumConverter<Int64>
 		{
 			public override long Convert(object input)
@@ -104,7 +106,7 @@ namespace NHibernate.Type
 				get { return SqlTypeFactory.Int64; }
 			}
 		}
-
+		[Serializable]
 		private class SystemUInt16EnumConverter : AbstractEnumConverter<UInt16>
 		{
 			public override ushort Convert(object input)
@@ -117,7 +119,7 @@ namespace NHibernate.Type
 				get { return SqlTypeFactory.UInt16; }
 			}
 		}
-
+		[Serializable]
 		private class SystemUInt32EnumConverter : AbstractEnumConverter<UInt32>
 		{
 			public override uint Convert(object input)
@@ -130,7 +132,7 @@ namespace NHibernate.Type
 				get { return SqlTypeFactory.UInt32; }
 			}
 		}
-
+		[Serializable]
 		private class SystemUInt64EnumConverter : AbstractEnumConverter<UInt64>
 		{
 			public override ulong Convert(object input)
@@ -158,7 +160,6 @@ namespace NHibernate.Type
 			converters.Add(typeof (UInt32), new SystemUInt32EnumConverter());
 			converters.Add(typeof (UInt64), new SystemUInt64EnumConverter());
 		}
-
 		private static readonly Dictionary<System.Type, IEnumConverter> converters;
 		private readonly IEnumConverter converter;
 

@@ -2,16 +2,19 @@ using NHibernate.Engine;
 
 namespace NHibernate.Type
 {
+	using System;
+
 	/// <summary>
 	/// Represents directionality of the foreign key constraint
 	/// </summary>
+	[Serializable]
 	public abstract class ForeignKeyDirection
 	{
 		/// <summary></summary>
 		protected ForeignKeyDirection()
 		{
 		}
-
+		[Serializable]
 		private class ForeignKeyToParentClass : ForeignKeyDirection
 		{
 			public override bool CascadeNow(CascadePoint cascadePoint)
@@ -19,7 +22,7 @@ namespace NHibernate.Type
 				return cascadePoint != CascadePoint.BeforeInsertAfterDelete;
 			}
 		}
-
+		[Serializable]
 		private class ForeignKeyFromParentClass : ForeignKeyDirection
 		{
 			public override bool CascadeNow(CascadePoint cascadePoint)
