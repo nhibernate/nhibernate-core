@@ -30,8 +30,6 @@
 		<include name="NHibernate.ByteCode.LinFu.Tests/ByteCode.Test.build" />
 		<include name="NHibernate.ByteCode.Castle/ByteCode.build" />
 		<include name="NHibernate.ByteCode.Castle.Tests/ByteCode.Test.build" />
-		<include name="NHibernate.ByteCode.Spring/ByteCode.build" />
-		<include name="NHibernate.ByteCode.Spring.Tests/ByteCode.Test.build" />
 		<include name="NHibernate.DomainModel/NHibernate.DomainModel.build" />
 		<include name="NHibernate.Test/NHibernate.Test.build" />
 		<include name="NHibernate.Test.Performance/NHibernate.Test.Performance.build" />
@@ -43,7 +41,6 @@
 		<include name="Iesi.Collections.Test/Iesi.Collections.Test.build" />
 		<include name="NHibernate.ByteCode.LinFu.Tests/ByteCode.Test.build" />
 		<include name="NHibernate.ByteCode.Castle.Tests/ByteCode.Test.build" />
-		<include name="NHibernate.ByteCode.Spring.Tests/ByteCode.Test.build" />
 		<include name="NHibernate.Test/NHibernate.Test.build" />
 		<include name="NHibernate.Test.Performance/NHibernate.Test.Performance.build"
 			if="${run.performance.tests}" />
