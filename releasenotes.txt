@@ -1,4 +1,4 @@
-Build 2.1.0.GA
+Build 2.1.0
 ========================
 ** BREAKING CHANGES from NH2.0.xGA to NH2.1.0
 	##### Run time #####
