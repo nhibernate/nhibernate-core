@@ -95,6 +95,55 @@ namespace NHibernate.Test.Classic
 		}
 
 		[Test]
+		public void SaveOrUpdateCopy()
+		{
+			Video v = new Video("Shinobi", 10, 10);
+			using (ISession s = OpenSession())
+			{
+				s.Save(v);
+				s.Flush();
+			}
+			v.Heigth = 0;
+			try
+			{
+				using (ISession s = OpenSession())
+				{
+					s.SaveOrUpdateCopy(v);
+					s.Flush();
+				}
+				Assert.Fail("Updated an invalid entity");
+			}
+			catch (ValidationFailure)
+			{
+				// Ok
+			}
+
+			Video v1 = new Video("Shinobi", 0, 10);
+			try
+			{
+				using (ISession s = OpenSession())
+				{
+					s.SaveOrUpdateCopy(v1);
+					s.Flush();
+				}
+				Assert.Fail("saved an invalid entity");
+			}
+			catch (ValidationFailure)
+			{
+				// Ok
+			}
+
+
+			// cleanup
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				s.Delete("from Video");
+				tx.Commit();
+			}
+		}
+
+		[Test]
 		public void Delete()
 		{
 			Video v = new Video("Shinobi", 10, 10);
