@@ -1,6 +1,8 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Text;
+using NHibernate.Dialect.Schema;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using Environment=NHibernate.Cfg.Environment;
@@ -156,6 +158,11 @@ namespace NHibernate.Dialect
 		public override bool SupportsLimit
 		{
 			get { return true; }
+		}
+
+		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
+		{
+			return new MySQLDataBaseSchema(connection);
 		}
 
 		public override bool SupportsSubSelects

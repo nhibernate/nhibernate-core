@@ -454,6 +454,7 @@
     <Compile Include="Dialect\Oracle8iDialect.cs" />
     <Compile Include="Dialect\Oracle9iDialect.cs" />
     <Compile Include="Dialect\OracleLiteDialect.cs" />
+    <Compile Include="Dialect\Schema\MySQLMetaData.cs" />
     <Compile Include="Dialect\Schema\SQLiteMetaData.cs" />
     <Compile Include="Dialect\Schema\SybaseAnywhereMetaData.cs" />
     <Compile Include="Dialect\SybaseASA10Dialect.cs" />

@@ -87,7 +87,12 @@ namespace NHibernate.Dialect.Schema
 		public virtual DataTable GetForeignKeys(string catalog, string schema, string table)
 		{
 			var restrictions = new[] {catalog, schema, table, null};
-			return connection.GetSchema("ForeignKeys", restrictions);
+			return connection.GetSchema(ForeignKeysSchemaName, restrictions);
+		}
+
+		protected virtual string ForeignKeysSchemaName
+		{
+			get { return "ForeignKeys"; }
 		}
 
 		#endregion
