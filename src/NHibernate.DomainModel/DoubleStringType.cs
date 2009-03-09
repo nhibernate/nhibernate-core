@@ -7,6 +7,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.DomainModel
 {
+	[Serializable]
 	public class DoubleStringType : ICompositeUserType
 	{
 		public System.Type ReturnedClass

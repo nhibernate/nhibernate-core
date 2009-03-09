@@ -7,6 +7,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.DomainModel
 {
+	[Serializable]
 	public class MultiplicityType : ICompositeUserType
 	{
 		private static readonly string[] PROP_NAMES = new String[]

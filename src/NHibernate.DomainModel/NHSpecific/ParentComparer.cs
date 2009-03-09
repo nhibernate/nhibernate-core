@@ -6,6 +6,7 @@ namespace NHibernate.DomainModel.NHSpecific
 	/// <summary>
 	/// Summary description for ParentComparer.
 	/// </summary>
+	[Serializable]
 	public class ParentComparer : IComparer
 	{
 		public ParentComparer()

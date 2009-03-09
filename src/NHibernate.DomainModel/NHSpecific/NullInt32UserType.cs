@@ -10,6 +10,7 @@ namespace NHibernate.DomainModel.NHSpecific
 	/// <summary>
 	/// Converts a value of 0 to a DbNull
 	/// </summary>
+	[Serializable]
 	public class NullInt32UserType : IUserType
 	{
 		private static NullableType _int32Type = NHibernateUtil.Int32;
