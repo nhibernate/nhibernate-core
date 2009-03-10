@@ -1,4 +1,5 @@
 using NHibernate.Util;
+using System;
 
 namespace NHibernate.Cfg
 {
@@ -6,6 +7,7 @@ namespace NHibernate.Cfg
 	/// The default <cref name="INamingStrategy"/>
 	/// </summary>
 	/// <remarks>See <cref name="ImprovedNamingStrategy"/> for a better alternative</remarks>
+	[Serializable]
 	public class DefaultNamingStrategy : INamingStrategy
 	{
 		/// <summary>

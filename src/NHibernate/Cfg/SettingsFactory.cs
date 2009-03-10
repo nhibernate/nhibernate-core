@@ -17,6 +17,7 @@ namespace NHibernate.Cfg
 	/// <summary>
 	/// Reads configuration properties and configures a <see cref="Settings"/> instance. 
 	/// </summary>
+	[Serializable]
 	public sealed class SettingsFactory
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(SettingsFactory));

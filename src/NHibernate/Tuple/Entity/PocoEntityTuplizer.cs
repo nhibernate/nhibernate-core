@@ -11,9 +11,11 @@ using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Runtime.Serialization;
 
 namespace NHibernate.Tuple.Entity
 {
+
 	/// <summary> An <see cref="IEntityTuplizer"/> specific to the POCO entity mode. </summary>
 	public class PocoEntityTuplizer : AbstractEntityTuplizer
 	{
@@ -23,9 +25,23 @@ namespace NHibernate.Tuple.Entity
 		private readonly bool islifecycleImplementor;
 		private readonly bool isValidatableImplementor;
 		private readonly HashedSet<string> lazyPropertyNames = new HashedSet<string>();
-		private readonly IReflectionOptimizer optimizer;
+		[NonSerialized]
+		private IReflectionOptimizer optimizer;
 		private readonly IProxyValidator proxyValidator;
 
+		[OnDeserialized]
+		internal void OnDeserialized(StreamingContext context)
+		{
+			SetReflectionOptimizer();
+		}
+		protected void SetReflectionOptimizer()
+		{
+			if (Cfg.Environment.UseReflectionOptimizer)
+			{
+				// NH different behavior fo NH-1587
+				optimizer = Cfg.Environment.BytecodeProvider.GetReflectionOptimizer(mappedClass, getters, setters);
+			}
+		}
 		public PocoEntityTuplizer(EntityMetamodel entityMetamodel, PersistentClass mappedEntity)
 			: base(entityMetamodel, mappedEntity)
 		{
@@ -39,12 +55,8 @@ namespace NHibernate.Tuple.Entity
 				if (property.IsLazy)
 					lazyPropertyNames.Add(property.Name);
 			}
+			SetReflectionOptimizer();
 
-			if (Cfg.Environment.UseReflectionOptimizer)
-			{
-				// NH different behavior fo NH-1587
-				optimizer = Cfg.Environment.BytecodeProvider.GetReflectionOptimizer(mappedClass, getters, setters);
-			}
 			Instantiator = BuildInstantiator(mappedEntity);
 
 			if (hasCustomAccessors)

@@ -91,6 +91,7 @@
     <Compile Include="Cascade\RefreshFixture.cs" />
     <Compile Include="CfgTest\ConfigurationFixture.cs" />
     <Compile Include="CfgTest\ConfigurationSchemaFixture.cs" />
+    <Compile Include="CfgTest\ConfigurationSerializationTests.cs" />
     <Compile Include="CfgTest\DefaultNsAssmFixture.cs" />
     <Compile Include="CfgTest\HbmBinderFixture.cs" />
     <Compile Include="CfgTest\HbmOrderingFixture.cs" />
@@ -161,6 +162,7 @@
     <Compile Include="DynamicEntity\Tuplizer\MyEntityInstantiator.cs" />
     <Compile Include="DynamicEntity\Tuplizer\MyEntityTuplizer.cs" />
     <Compile Include="DynamicEntity\Tuplizer\TuplizerDynamicEntity.cs" />
+    <Compile Include="EngineTest\NativeSqlQueryReturnTest.cs" />
     <Compile Include="EngineTest\TypedValueFixture.cs" />
     <Compile Include="EntityModeTest\Map\Basic\DynamicClassFixture.cs" />
     <Compile Include="EntityModeTest\Multi\MultiRepresentationFixture.cs" />

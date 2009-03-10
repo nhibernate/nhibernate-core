@@ -101,6 +101,15 @@ namespace NHibernate
 		/// </summary>
 		public static readonly LockMode Force = new LockMode(15, "Force");
 
+		public override bool Equals(object obj)
+		{
+			LockMode lm = obj as LockMode;
+			if(lm!=null)
+			{
+				return (lm.level == this.level) && (lm.name == this.name);
+			}
+			return base.Equals(obj);
+		}
 
 		//TODO: need to implement .NET equivalent of readResolve - believe it is
 		// the IObjectReference interface...

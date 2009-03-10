@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 
 using NHibernate.Engine.Query.Sql;
+using System;
 
 namespace NHibernate.Engine
 {
+	[Serializable]
 	public class ResultSetMappingDefinition
 	{
 		private readonly string name;

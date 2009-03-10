@@ -81,11 +81,11 @@ namespace NHibernate.AdoNet
 
 		public static IExpectation AppropriateExpectation(ExecuteUpdateResultCheckStyle style)
 		{
-			if (style == ExecuteUpdateResultCheckStyle.None)
+			if (style.Equals(ExecuteUpdateResultCheckStyle.None))
 			{
 				return None;
 			}
-			else if (style == ExecuteUpdateResultCheckStyle.Count)
+			else if (style.Equals(ExecuteUpdateResultCheckStyle.Count))
 			{
 				return Basic;
 			}

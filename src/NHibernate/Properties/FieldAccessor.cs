@@ -151,6 +151,7 @@ namespace NHibernate.Properties
 		/// <summary>
 		/// An <see cref="IGetter"/> that uses a Field instead of the Property <c>get</c>.
 		/// </summary>
+		[Serializable]
 		public sealed class FieldGetter : IGetter, IOptimizableGetter
 		{
 			private readonly FieldInfo field;
@@ -234,6 +235,7 @@ namespace NHibernate.Properties
 		/// <summary>
 		/// An <see cref="IGetter"/> that uses a Field instead of the Property <c>set</c>.
 		/// </summary>
+		[Serializable]
 		public sealed class FieldSetter : ISetter, IOptimizableSetter
 		{
 			private readonly FieldInfo field;

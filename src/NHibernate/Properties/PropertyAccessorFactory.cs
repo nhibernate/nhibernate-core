@@ -273,7 +273,7 @@ namespace NHibernate.Properties
 				throw new MappingException("could not instantiate PropertyAccessor class: " + accessorName, e);
 			}
 		}
-
+		[NonSerialized]
 		private static readonly IPropertyAccessor MapAccessor = new MapAccessor();
 		public static IPropertyAccessor DynamicMapPropertyAccessor
 		{

@@ -208,7 +208,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				include = ForeignKeyDirection.ForeignKeyFromParent == foreignKeyDirection;
+				include = ForeignKeyDirection.ForeignKeyFromParent.Equals(foreignKeyDirection);
 			}
 			return include ? Replace(original, target, session, owner, copyCache) : target;
 		}

@@ -113,7 +113,7 @@ namespace NHibernate.Type
 
 		public override bool IsNullable
 		{
-			get { return foreignKeyDirection == ForeignKeyDirection.ForeignKeyToParent; }
+			get { return foreignKeyDirection.Equals(ForeignKeyDirection.ForeignKeyToParent); }
 		}
 
 		public override bool UseLHSPrimaryKey

@@ -1,5 +1,6 @@
 using System;
 using NHibernate.SqlCommand;
+using System.Runtime.Serialization;
 
 namespace NHibernate.Engine
 {
@@ -44,7 +45,6 @@ namespace NHibernate.Engine
 			}
 			return false;
 		}
-
 		public override int GetHashCode()
 		{
 			return name.GetHashCode();

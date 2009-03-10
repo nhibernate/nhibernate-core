@@ -341,7 +341,7 @@ namespace NHibernate.Event.Default
 		{
 			object[] copiedValues;
 
-			if (foreignKeyDirection == ForeignKeyDirection.ForeignKeyToParent)
+			if (foreignKeyDirection.Equals( ForeignKeyDirection.ForeignKeyToParent))
 			{
 				// this is the second pass through on a merge op, so here we limit the
 				// replacement to associations types (value types were already replaced

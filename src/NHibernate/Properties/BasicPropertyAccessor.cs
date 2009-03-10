@@ -160,6 +160,7 @@ namespace NHibernate.Properties
 		/// <summary>
 		/// An <see cref="IGetter"/> for a Property <c>get</c>.
 		/// </summary>
+		[Serializable]
 		public sealed class BasicGetter : IGetter, IOptimizableGetter
 		{
 			private readonly System.Type clazz;
@@ -255,6 +256,7 @@ namespace NHibernate.Properties
 		/// <summary>
 		/// An <see cref="ISetter"/> for a Property <c>set</c>.
 		/// </summary>
+		[Serializable]
 		public sealed class BasicSetter : ISetter, IOptimizableSetter
 		{
 			private readonly System.Type clazz;

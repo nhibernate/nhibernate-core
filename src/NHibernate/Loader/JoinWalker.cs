@@ -464,7 +464,7 @@ namespace NHibernate.Loader
 			string foreignKeyTable;
 			string[] foreignKeyColumns;
 
-			if (type.ForeignKeyDirection == ForeignKeyDirection.ForeignKeyFromParent)
+			if (type.ForeignKeyDirection.Equals(ForeignKeyDirection.ForeignKeyFromParent))
 			{
 				foreignKeyTable = lhsTable;
 				foreignKeyColumns = lhsColumnNames;

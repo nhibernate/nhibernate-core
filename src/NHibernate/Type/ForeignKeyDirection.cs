@@ -3,6 +3,7 @@ using NHibernate.Engine;
 namespace NHibernate.Type
 {
 	using System;
+	using System.Runtime.Serialization;
 
 	/// <summary>
 	/// Represents directionality of the foreign key constraint
@@ -19,7 +20,10 @@ namespace NHibernate.Type
 		{
 			public override bool CascadeNow(CascadePoint cascadePoint)
 			{
-				return cascadePoint != CascadePoint.BeforeInsertAfterDelete;
+				return cascadePoint != CascadePoint.BeforeInsertAfterDelete;}
+			public override bool Equals(object obj)
+			{
+				return obj is ForeignKeyToParentClass; ;
 			}
 		}
 		[Serializable]
@@ -28,6 +32,10 @@ namespace NHibernate.Type
 			public override bool CascadeNow(CascadePoint cascadePoint)
 			{
 				return cascadePoint != CascadePoint.AfterInsertBeforeDelete;
+			}
+			public override bool Equals(object obj)
+			{
+				return obj is ForeignKeyFromParentClass; ;
 			}
 		}
 

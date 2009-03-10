@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Reflection;
 using NHibernate.Engine;
-
+using System;
 namespace NHibernate.Properties
 {
 	public class MapAccessor : IPropertyAccessor
@@ -24,7 +24,7 @@ namespace NHibernate.Properties
 		}
 
 		#endregion
-
+		[Serializable]
 		public sealed class MapSetter : ISetter
 		{
 			private readonly string name;
@@ -49,7 +49,7 @@ namespace NHibernate.Properties
 				((IDictionary)target)[name] = value;
 			}
 		}
-
+		[Serializable]
 		public sealed class MapGetter : IGetter
 		{
 			private readonly string name;

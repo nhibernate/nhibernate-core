@@ -4,6 +4,8 @@ using NHibernate.Properties;
 
 namespace NHibernate.Tuple.Component
 {
+	using System.Runtime.Serialization;
+
 	/// <summary> 
 	/// A <see cref="IComponentTuplizer"/> specific to the POCO entity mode. 
 	/// </summary>
@@ -13,8 +15,15 @@ namespace NHibernate.Tuple.Component
 		private readonly System.Type componentClass;
 		private readonly ISetter parentSetter;
 		private readonly IGetter parentGetter;
-		private readonly IReflectionOptimizer optimizer;
+		[NonSerialized]
+		private IReflectionOptimizer optimizer;
 
+
+		[OnDeserialized]
+		internal void OnDeserialized(StreamingContext context)
+		{
+			this.optimizer = Cfg.Environment.BytecodeProvider.GetReflectionOptimizer(componentClass, getters, setters);
+		}
 		public PocoComponentTuplizer(Mapping.Component component) : base(component)
 		{
 			componentClass = component.ComponentClass;

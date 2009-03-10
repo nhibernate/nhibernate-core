@@ -26,6 +26,7 @@ using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
 using NHibernate.Util;
 using Array=System.Array;
+using System.Runtime.Serialization;
 
 namespace NHibernate.Cfg
 {
@@ -44,7 +45,8 @@ namespace NHibernate.Cfg
 	/// is immutable and does not retain any association back to the <see cref="Configuration" />
 	/// </para>
 	/// </remarks>
-	public class Configuration
+	[Serializable]
+	public class Configuration:ISerializable
 	{
 		/// <summary>The XML Namespace for the nhibernate-mapping</summary>
 		public const string MappingSchemaXMLNS = "urn:nhibernate-mapping-2.2";
@@ -74,7 +76,88 @@ namespace NHibernate.Cfg
 
 		private static readonly ILog log = LogManager.GetLogger(typeof (Configuration));
 
+
 		protected internal SettingsFactory settingsFactory;
+
+		#region ISerializable Members
+		public Configuration(SerializationInfo info, StreamingContext context)
+		{
+			this.Reset();
+
+			this.EntityNotFoundDelegate = GetSerialedObject<IEntityNotFoundDelegate>(info, "entityNotFoundDelegate");
+
+
+			this.auxiliaryDatabaseObjects = GetSerialedObject<IList<IAuxiliaryDatabaseObject>>(info, "auxiliaryDatabaseObjects");
+			this.classes = GetSerialedObject<IDictionary<string, PersistentClass>>(info, "classes");
+			this.collections = GetSerialedObject<IDictionary<string, NHibernate.Mapping.Collection>>(info, "collections");
+			
+			this.columnNameBindingPerTable = GetSerialedObject<IDictionary<Table, Mappings.ColumnNames>>(info,
+																										 "columnNameBindingPerTable");
+			this.defaultAssembly = GetSerialedObject<string>(info, "defaultAssembly");
+			this.defaultNamespace = GetSerialedObject<string>(info, "defaultNamespace");
+			this.eventListeners = GetSerialedObject<EventListeners>(info, "eventListeners");
+			//this.extendsQueue = GetSerialedObject<ISet<ExtendsQueueEntry>>(info, "extendsQueue");
+			this.FilterDefinitions = GetSerialedObject<IDictionary<string, FilterDefinition>>(info, "filterDefinitions");
+			this.Imports = GetSerialedObject<IDictionary<string, string>>(info, "imports");
+			this.interceptor = GetSerialedObject<IInterceptor>(info, "interceptor");
+			this.mapping = GetSerialedObject<IMapping>(info, "mapping");
+			this.NamedQueries = GetSerialedObject<IDictionary<string, NamedQueryDefinition>>(info, "namedQueries");
+			this.NamedSQLQueries = GetSerialedObject<IDictionary<string, NamedSQLQueryDefinition>>(info, "namedSqlQueries");
+			this.namingStrategy = GetSerialedObject<INamingStrategy>(info, "namingStrategy");
+			this.properties = GetSerialedObject<IDictionary<string, string>>(info, "properties");
+			this.propertyReferences = GetSerialedObject<IList<Mappings.PropertyReference>>(info, "propertyReferences");
+			this.settingsFactory = GetSerialedObject<SettingsFactory>(info, "settingsFactory");
+			this.SqlFunctions = GetSerialedObject<IDictionary<string, ISQLFunction>>(info, "sqlFunctions");
+			this.SqlResultSetMappings = GetSerialedObject<IDictionary<string, ResultSetMappingDefinition>>(info, "sqlResultSetMappings");
+			this.tableNameBinding = GetSerialedObject<IDictionary<string, Mappings.TableDescription>>(info, "tableNameBinding");
+			this.tables = GetSerialedObject<IDictionary<string, Table>>(info, "tables");
+			this.typeDefs = GetSerialedObject<IDictionary<string, TypeDef>>(info, "typeDefs");
+			
+
+			
+
+			
+			
+		}
+		private T GetSerialedObject<T>(SerializationInfo info, string name)
+		{
+			return (T)info.GetValue(name, typeof(T));
+		}
+		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			ConfigureProxyFactoryFactory();
+			SecondPassCompile();
+			Validate();
+			
+			
+			info.AddValue("entityNotFoundDelegate", this.EntityNotFoundDelegate);
+
+
+			info.AddValue("auxiliaryDatabaseObjects", this.auxiliaryDatabaseObjects);
+			info.AddValue("classes", this.classes);
+			info.AddValue("collections", this.collections);
+			info.AddValue("columnNameBindingPerTable", this.columnNameBindingPerTable);
+			info.AddValue("defaultAssembly", this.defaultAssembly);
+			info.AddValue("defaultNamespace", this.defaultNamespace);
+			info.AddValue("eventListeners", this.eventListeners);
+			//info.AddValue("extendsQueue", this.extendsQueue);
+			info.AddValue("filterDefinitions", this.FilterDefinitions);
+			info.AddValue("imports", this.Imports);
+			info.AddValue("interceptor", this.interceptor);
+			info.AddValue("mapping", this.mapping);
+			info.AddValue("namedQueries", this.NamedQueries);
+			info.AddValue("namedSqlQueries", this.NamedSQLQueries);
+			info.AddValue("namingStrategy", this.namingStrategy);
+			info.AddValue("properties", this.properties);
+			info.AddValue("propertyReferences", this.propertyReferences);
+			info.AddValue("settingsFactory", this.settingsFactory);
+			info.AddValue("sqlFunctions", this.SqlFunctions);
+			info.AddValue("sqlResultSetMappings", this.SqlResultSetMappings);
+			info.AddValue("tableNameBinding", this.tableNameBinding);
+			info.AddValue("tables", this.tables);
+			info.AddValue("typeDefs", this.typeDefs);
+		}
+		#endregion
 
 		/// <summary>
 		/// Clear the internal state of the <see cref="Configuration"/> object.
@@ -101,8 +184,9 @@ namespace NHibernate.Cfg
 			extendsQueue = new HashedSet<ExtendsQueueEntry>();
 			tableNameBinding = new Dictionary<string, Mappings.TableDescription>();
 			columnNameBindingPerTable = new Dictionary<Table, Mappings.ColumnNames>();
-		}
 
+		}
+		[Serializable]
 		private class Mapping : IMapping
 		{
 			private readonly Configuration configuration;
@@ -155,7 +239,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		[NonSerialized] private IMapping mapping;
+		private IMapping mapping;
 
 		protected Configuration(SettingsFactory settingsFactory)
 		{
@@ -969,13 +1053,7 @@ namespace NHibernate.Cfg
 		private string defaultAssembly;
 		private string defaultNamespace;
 
-		/// <summary>
-		/// Instantiate a new <see cref="ISessionFactory" />, using the properties and mappings in this
-		/// configuration. The <see cref="ISessionFactory" /> will be immutable, so changes made to the
-		/// configuration after building the <see cref="ISessionFactory" /> will not affect it.
-		/// </summary>
-		/// <returns>An <see cref="ISessionFactory" /> instance.</returns>
-		public ISessionFactory BuildSessionFactory()
+		protected virtual void ConfigureProxyFactoryFactory()
 		{
 			#region Way for the user to specify their own ProxyFactory
 
@@ -990,7 +1068,17 @@ namespace NHibernate.Cfg
 			}
 
 			#endregion
+		}
+		/// <summary>
+		/// Instantiate a new <see cref="ISessionFactory" />, using the properties and mappings in this
+		/// configuration. The <see cref="ISessionFactory" /> will be immutable, so changes made to the
+		/// configuration after building the <see cref="ISessionFactory" /> will not affect it.
+		/// </summary>
+		/// <returns>An <see cref="ISessionFactory" /> instance.</returns>
+		public ISessionFactory BuildSessionFactory()
+		{
 
+			ConfigureProxyFactoryFactory();
 			SecondPassCompile();
 			Validate();
 			Environment.VerifyProperties(properties);
@@ -2056,5 +2144,7 @@ namespace NHibernate.Cfg
 
 			return generators.Values;
 		}
+
+
 	}
 }
