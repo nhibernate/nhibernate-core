@@ -10,6 +10,7 @@ namespace NHibernate.Dialect.Function
 	/// <summary>
 	/// ANSI-SQL style cast(foo as type) where the type is a NHibernate type
 	/// </summary>
+	[Serializable]
 	public class CastFunction : ISQLFunction, IFunctionGrammar
 	{
 		#region ISQLFunction Members

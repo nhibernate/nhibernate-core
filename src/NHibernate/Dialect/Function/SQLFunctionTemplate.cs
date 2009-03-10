@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using System;
 
 namespace NHibernate.Dialect.Function
 {
@@ -16,6 +17,7 @@ namespace NHibernate.Dialect.Function
 	/// Each dialect will define a template as a string (exactly like above) marking function 
 	/// parameters with '?' followed by parameter's index (first index is 1).
 	/// </summary>
+	[Serializable]
 	public class SQLFunctionTemplate : ISQLFunction
 	{
 		private const int InvalidArgumentIndex = -1;

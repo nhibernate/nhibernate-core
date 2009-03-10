@@ -1952,7 +1952,7 @@ namespace NHibernate.Dialect
 		#endregion
 
 		#region Agregate function redefinition
-
+		[Serializable]
 		protected class CountQueryFunctionInfo : ClassicAggregateFunction
 		{
 			public CountQueryFunctionInfo() : base("count",true)
@@ -1964,7 +1964,7 @@ namespace NHibernate.Dialect
 				return NHibernateUtil.Int64;
 			}
 		}
-
+		[Serializable]
 		protected class AvgQueryFunctionInfo : ClassicAggregateFunction
 		{
 			public AvgQueryFunctionInfo() : base("avg",false)
@@ -1994,7 +1994,8 @@ namespace NHibernate.Dialect
 				return NHibernateUtil.Double;
 			}
 		}
-
+		
+		[Serializable]
 		protected class SumQueryFunctionInfo : ClassicAggregateFunction
 		{
 			public SumQueryFunctionInfo() : base("sum",false)

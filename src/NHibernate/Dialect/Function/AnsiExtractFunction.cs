@@ -27,6 +27,7 @@ namespace NHibernate.Dialect.Function
 	///			TIMEZONE_MINUTE
 	/// ]]>
 	/// </remarks>
+	[Serializable]
 	public class AnsiExtractFunction: SQLFunctionTemplate, IFunctionGrammar
 	{
 		public AnsiExtractFunction()

@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace NHibernate.Dialect.Function
 {
+	[Serializable]
 	public class AnsiTrimFunction : SQLFunctionTemplate, IFunctionGrammar
 	{
 		public AnsiTrimFunction()

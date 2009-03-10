@@ -17,6 +17,7 @@ namespace NHibernate.Dialect.Function
 	/// which it uses in various combinations to emulate the desired ANSI trim()
 	/// functionality.
 	/// </summary>
+	[Serializable]
 	public class AnsiTrimEmulationFunction : ISQLFunction, IFunctionGrammar
 	{
 		private static readonly ISQLFunction LeadingSpaceTrim = new SQLFunctionTemplate(NHibernateUtil.String, "ltrim( ?1 )");

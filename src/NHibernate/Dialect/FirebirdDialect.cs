@@ -7,7 +7,8 @@ using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Type;
 using System.Data.Common;
-
+using System;
+using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Dialect
 {
 	/// <summary>
@@ -214,6 +215,7 @@ namespace NHibernate.Dialect
 			return -1;
 		}
 
+		[Serializable]
 		private class CastedFunction : NoArgSQLFunction
 		{
 			public CastedFunction(string name, IType returnType)
@@ -233,6 +235,7 @@ namespace NHibernate.Dialect
 			}
 		}
 
+		[Serializable]
 		private class CurrentTimeStamp : NoArgSQLFunction
 		{
 			public CurrentTimeStamp()

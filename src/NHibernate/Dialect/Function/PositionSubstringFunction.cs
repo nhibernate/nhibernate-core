@@ -10,6 +10,7 @@ namespace NHibernate.Dialect.Function
 	/// <summary>
 	/// Emulation of locate() on PostgreSQL
 	/// </summary>
+	[Serializable]
 	public class PositionSubstringFunction : ISQLFunction
 	{
 		public PositionSubstringFunction()

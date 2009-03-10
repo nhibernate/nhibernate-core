@@ -140,6 +140,7 @@
     <Compile Include="DialectTest\DB2DialectFixture.cs" />
     <Compile Include="DialectTest\DialectFixture.cs" />
     <Compile Include="DialectTest\FirebirdDialectFixture.cs" />
+    <Compile Include="DialectTest\FunctionTests\SerializableTypesFixture.cs" />
     <Compile Include="DialectTest\MsSql2005DialectFixture.cs" />
     <Compile Include="DialectTest\MsSqlDialectFixture.cs" />
     <Compile Include="DialectTest\SqlCEDialectFixture.cs" />

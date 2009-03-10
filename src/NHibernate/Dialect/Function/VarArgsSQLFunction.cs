@@ -11,6 +11,7 @@ namespace NHibernate.Dialect.Function
 	/// Support for slightly more general templating than StandardSQLFunction,
 	/// with an unlimited number of arguments.
 	/// </summary>
+	[Serializable]
 	public class VarArgsSQLFunction : ISQLFunction
 	{
 		private readonly string begin;

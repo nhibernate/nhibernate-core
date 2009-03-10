@@ -445,7 +445,7 @@ namespace NHibernate.Dialect
 		#endregion
 
 		#region Functions
-
+		[Serializable]
 		private class CurrentTimeStamp : NoArgSQLFunction
 		{
 			public CurrentTimeStamp() : base("current_timestamp", NHibernateUtil.DateTime, true) {}
@@ -455,7 +455,7 @@ namespace NHibernate.Dialect
 				return new SqlString(Name);
 			}
 		}
-
+		[Serializable]
 		private class LocateFunction : ISQLFunction
 		{
 			private static readonly ISQLFunction LocateWith2Params = new SQLFunctionTemplate(NHibernateUtil.Int32,

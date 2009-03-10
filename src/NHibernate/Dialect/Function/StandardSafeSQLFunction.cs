@@ -14,6 +14,7 @@ namespace NHibernate.Dialect.Function
 	/// The Dialect and its sub-classes use this class to provide details required
 	/// for processing of the associated function.
 	/// </remarks>	
+	[Serializable]
 	public class StandardSafeSQLFunction : StandardSQLFunction
 	{
 		private int allowedArgsCount = 1;

@@ -21,6 +21,7 @@ namespace NHibernate.Dialect.Function
 	/// [ FOR <string length> ] <right paren>
 	///]]>
 	/// </remarks>
+	[Serializable]
 	public class AnsiSubstringFunction : ISQLFunction
 	{
 		#region ISQLFunction Members

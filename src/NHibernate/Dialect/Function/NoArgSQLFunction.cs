@@ -2,12 +2,14 @@ using System.Collections;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using System;
 
 namespace NHibernate.Dialect.Function
 {
 	/// <summary>
 	/// Summary description for NoArgSQLFunction.
 	/// </summary>
+	[Serializable]
 	public class NoArgSQLFunction : ISQLFunction
 	{
 		public NoArgSQLFunction(string name, IType returnType)

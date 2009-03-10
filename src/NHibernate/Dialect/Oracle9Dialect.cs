@@ -254,6 +254,7 @@ namespace NHibernate.Dialect
 			return new OracleDataBaseSchema(connection);
 		}
 
+		[Serializable]
 		private class CurrentTimeStamp : NoArgSQLFunction
 		{
 			public CurrentTimeStamp()
