@@ -292,6 +292,7 @@
     <Compile Include="GenericTest\SetGeneric\SetGenericFixture.cs" />
     <Compile Include="HQL\Animal.cs" />
     <Compile Include="HQL\BaseFunctionFixture.cs" />
+    <Compile Include="NHSpecificTest\NH645\HQLFunctionFixture.cs" />
     <Compile Include="HQL\HQLFunctions.cs" />
     <Compile Include="HQL\Human.cs" />
     <Compile Include="HQL\MaterialResource.cs" />

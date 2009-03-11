@@ -361,7 +361,13 @@ namespace NHibernate.Hql.Classic
 				//unaryCounts.removeLast(); //check that its zero? (As an assertion)
 				SqlStringBuilder join = joins[joins.Count - 1];
 				joins.RemoveAt(joins.Count - 1);
-				joins[joins.Count - 1].Add(join.ToSqlString());
+
+				//let special non-boolean-functions works like: "from Animal a where fx(a.Text,'x');"
+				//and 'fx' isn't a boolean function.
+				if (joins.Count == 0)
+					AppendToken(q, join.ToSqlString());
+				else
+					joins[joins.Count - 1].Add(join.ToSqlString());
 			}
 
 			bool lastNots = nots[nots.Count - 1];
