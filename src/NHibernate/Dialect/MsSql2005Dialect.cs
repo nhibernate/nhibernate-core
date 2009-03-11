@@ -258,6 +258,14 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
+        /// <summary>
+        /// Sql Server 2005 defaults to creating a clustered primary key, which is typically undesirable.
+        /// </summary>
+        public override string PrimaryKeyString
+        {
+            get { return base.PrimaryKeyString + " nonclustered"; }
+        }
+
 		/// <summary>
 		/// This specialized string tokenizier will break a string to tokens, taking
 		/// into account single quotes, parenthesis and commas and [ ]

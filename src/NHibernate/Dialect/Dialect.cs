@@ -397,6 +397,14 @@ namespace NHibernate.Dialect
 			get { return String.Empty; }
 		}
 
+	    /// <summary>
+	    /// The keyword used to create a primary key constraint
+	    /// </summary>
+        public virtual string PrimaryKeyString
+	    {
+            get { return "primary key"; }
+	    }
+
 		#region database type mapping support
 
 		/// <summary>
