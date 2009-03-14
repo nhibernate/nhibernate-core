@@ -1023,6 +1023,8 @@
     <Compile Include="Tools\hbm2ddl\SchemaValidator\Version.cs" />
     <Compile Include="TransactionTest\TransactionFixture.cs" />
     <Compile Include="TransactionTest\TransactionNotificationFixture.cs" />
+    <Compile Include="TransformTests\AliasToBeanResultTransformerFixture.cs" />
+    <Compile Include="TransformTests\Simple.cs" />
     <Compile Include="TypeParameters\DefaultValueIntegerType.cs" />
     <Compile Include="TypeParameters\TypeParameterTest.cs" />
     <Compile Include="TypeParameters\Widget.cs" />
@@ -1679,6 +1681,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="TransformTests\Simple.hbm.xml" />
     <EmbeddedResource Include="VersionTest\Db\MsSQL\ComplexVersioned.hbm.xml" />
     <EmbeddedResource Include="Tools\hbm2ddl\SchemaExportTests\WithColumnTag.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1691\Mappings.hbm.xml" />

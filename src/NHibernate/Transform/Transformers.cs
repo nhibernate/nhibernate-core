@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 
 namespace NHibernate.Transform
@@ -23,15 +22,20 @@ namespace NHibernate.Transform
 			return new AliasToBeanResultTransformer(target);
 		}
 
-        public static readonly IResultTransformer DistinctRootEntity = new DistinctRootEntityResultTransformer();
+		public static IResultTransformer AliasToBean<T>() where T: class
+		{
+			return AliasToBean(typeof (T));
+		}
 
-        public static IResultTransformer AliasToBeanConstructor(System.Reflection.ConstructorInfo constructor)
-        {
-            return new AliasToBeanConstructorResultTransformer(constructor);
-        }
+		public static readonly IResultTransformer DistinctRootEntity = new DistinctRootEntityResultTransformer();
 
-	    public static readonly IResultTransformer PassThrough = new PassThroughResultTransformer();
+		public static IResultTransformer AliasToBeanConstructor(System.Reflection.ConstructorInfo constructor)
+		{
+			return new AliasToBeanConstructorResultTransformer(constructor);
+		}
 
-	    public static readonly IResultTransformer RootEntity = new RootEntityResultTransformer();
+		public static readonly IResultTransformer PassThrough = new PassThroughResultTransformer();
+
+		public static readonly IResultTransformer RootEntity = new RootEntityResultTransformer();
 	}
 }

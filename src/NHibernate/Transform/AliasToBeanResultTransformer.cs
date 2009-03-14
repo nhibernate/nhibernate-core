@@ -62,7 +62,7 @@ namespace NHibernate.Transform
 						}
 					}
 				}
-				result = Activator.CreateInstance(resultClass);
+				result = Activator.CreateInstance(resultClass, true);
 
 				for (int i = 0; i < aliases.Length; i++)
 				{

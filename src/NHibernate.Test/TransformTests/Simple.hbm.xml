@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   namespace="NHibernate.Test.TransformTests" 
+				   assembly="NHibernate.Test" >
+	<class name="Simple">
+		<id type="int">
+			<generator class="native" />
+		</id>
+		<property name="Name" type="string" length="40"/>
+	</class>
+</hibernate-mapping>
