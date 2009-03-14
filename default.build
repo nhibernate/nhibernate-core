@@ -190,7 +190,7 @@
 	<target name="binaries" depends="init">
 		<property name="clover.enabled" value="false" />
 
-		<call target="build-all-frameworks" />
+		<call target="build" />
 	</target>
 
 	<target name="test-all-frameworks" depends="init">
