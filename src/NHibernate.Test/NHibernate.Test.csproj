@@ -948,7 +948,6 @@
     <Compile Include="SqlTest\Custom\CustomStoredProcSupportTest.cs" />
     <Compile Include="SqlTest\Custom\MySQL\MySQLTest.cs" />
     <Compile Include="SqlTest\Custom\Oracle\OracleCustomSQLFixture.cs" />
-    <Compile Include="Tools\hbm2ddl\SchemaExportTests\NonClusteredPrimaryKeyFixture.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaExportTests\WithColumnTag.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaExportTests\WithColumnTagFixture.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaUpdate\MigrationFixture.cs" />
