@@ -13,7 +13,7 @@ namespace NHibernate.ByteCode.Spring
 	/// <author>Erich Eichinger (Spring.NET Team)</author>
 	public class ProxyFactory : AbstractProxyFactory
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(ProxyFactory));
+		private static readonly ILog log = LogManager.GetLogger(typeof (ProxyFactory));
 
 		[Serializable]
 		private class SerializableProxyFactory : global::Spring.Aop.Framework.ProxyFactory
@@ -31,17 +31,14 @@ namespace NHibernate.ByteCode.Spring
 		{
 			try
 			{
-				var initializer = new LazyInitializer(EntityName, PersistentClass, id, GetIdentifierMethod, SetIdentifierMethod,
-				                                      ComponentIdType, session);
+				var initializer = new LazyInitializer(EntityName, PersistentClass.IsInterface ? typeof (object) : PersistentClass,
+				                                      id, GetIdentifierMethod, SetIdentifierMethod, ComponentIdType, session);
 
 				var proxyFactory = new SerializableProxyFactory
 				                   	{Interfaces = Interfaces, TargetSource = initializer, ProxyTargetType = IsClassProxy};
 				proxyFactory.AddAdvice(initializer);
 
 				object proxyInstance = proxyFactory.GetProxy();
-
-				initializer.InterceptCalls = true;
-
 				return (INHibernateProxy) proxyInstance;
 			}
 			catch (Exception ex)
