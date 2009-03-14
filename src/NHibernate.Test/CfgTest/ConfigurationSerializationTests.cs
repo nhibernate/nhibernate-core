@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
-using NHibernate.Cfg;
-using System.Runtime.Serialization.Formatters.Binary;
+﻿using System.IO;
 using System.Reflection;
-using NHibernate.Tool.hbm2ddl;
+using System.Runtime.Serialization.Formatters.Binary;
+using NHibernate.Cfg;
 using NHibernate.DomainModel;
-using System.IO;
+using NHibernate.Tool.hbm2ddl;
+using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
+
 namespace NHibernate.Test.CfgTest
 {
 	[TestFixture]
@@ -24,37 +22,44 @@ namespace NHibernate.Test.CfgTest
 		public void Basic_CRUD_should_work()
 		{
 			Assembly assembly = Assembly.Load("NHibernate.DomainModel");
-			Configuration cfg = new Configuration();
+			var cfg = new Configuration();
+			if (TestConfigurationHelper.hibernateConfigFile != null)
+			{
+				cfg.Configure(TestConfigurationHelper.hibernateConfigFile);
+			}
 			cfg.AddResource("NHibernate.DomainModel.ParentChild.hbm.xml", assembly);
 
-			BinaryFormatter formatter = new BinaryFormatter();
+			var formatter = new BinaryFormatter();
 			var memoryStream = new MemoryStream();
 			formatter.Serialize(memoryStream, cfg);
 			memoryStream.Position = 0;
 			cfg = formatter.Deserialize(memoryStream) as Configuration;
-			SchemaExport export = new SchemaExport(cfg);
+			Assert.That(cfg, Is.Not.Null);
+
+			var export = new SchemaExport(cfg);
 			export.Execute(true, true, false, true);
-			var sf = cfg.BuildSessionFactory();
-			using(var session=sf.OpenSession())
-			using(var tran=session.BeginTransaction())
+			ISessionFactory sf = cfg.BuildSessionFactory();
+			using (ISession session = sf.OpenSession())
 			{
-				Parent parent = new Parent();
-				Child child = new Child();
-				parent.Child = child;
-				parent.X = 9;
-				parent.Count = 5;
-				child.Parent = parent;
-				child.Count = 3;
-				child.X = 4;
-				session.Save(parent);
-				session.Save(child);
-				tran.Commit();
+				using (ITransaction tran = session.BeginTransaction())
+				{
+					var parent = new Parent();
+					var child = new Child();
+					parent.Child = child;
+					parent.X = 9;
+					parent.Count = 5;
+					child.Parent = parent;
+					child.Count = 3;
+					child.X = 4;
+					session.Save(parent);
+					session.Save(child);
+					tran.Commit();
+				}
 			}
 
-			using (var session = sf.OpenSession())
-			using (var tran = session.BeginTransaction())
+			using (ISession session = sf.OpenSession())
 			{
-				Parent parent = session.Get<Parent>(1L);
+				var parent = session.Get<Parent>(1L);
 				Assert.That(parent.Count, Is.EqualTo(5));
 				Assert.That(parent.X, Is.EqualTo(9));
 				Assert.That(parent.Child, Is.Not.Null);
@@ -63,18 +68,18 @@ namespace NHibernate.Test.CfgTest
 				Assert.That(parent.Child.Parent, Is.EqualTo(parent));
 			}
 
-			
-			using (var session = sf.OpenSession())
-			using (var tran = session.BeginTransaction())
+			using (ISession session = sf.OpenSession())
 			{
-				var p = session.Get<Parent>(1L);
-				var c = session.Get<Child>(1L);
-				session.Delete(c);
-				session.Delete(p);
-				tran.Commit();
+				using (ITransaction tran = session.BeginTransaction())
+				{
+					var p = session.Get<Parent>(1L);
+					var c = session.Get<Child>(1L);
+					session.Delete(c);
+					session.Delete(p);
+					tran.Commit();
+				}
 			}
-			using (var session = sf.OpenSession())
-			using (var tran = session.BeginTransaction())
+			using (ISession session = sf.OpenSession())
 			{
 				var p = session.Get<Parent>(1L);
 				Assert.That(p, Is.Null);
