@@ -1,26 +1,14 @@
-<?xml version="1.0" ?>
-<project 
-	name="NHibernate" 
-	default="build"
-	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
->
-
+<?xml version="1.0"?>
+<project name="NHibernate" default="build">
 	<property name="root.dir" value="." />
-
 	<include buildfile="${root.dir}/build-common/common.xml" />
-
 	<!-- Pass -D:skip.tests=true to NAnt to skip running tests when building -->
 	<property name="skip.tests" value="false" overwrite="false" />
-
 	<!-- Disable performance tests by default. They take too much time. -->
 	<property name="run.performance.tests" value="false" overwrite="false" />
-
-	<!--
-		Supported versions of .NET Framework, separated by spaces.
-		Used by *-all-frameworks targets.
-	-->
+	<!-- Supported versions of .NET Framework, separated by spaces.
+		Used by *-all-frameworks targets. -->
 	<property name="supported.frameworks" value="net-2.0" />
-
 	<fileset id="buildfiles.all" basedir="src">
 		<!-- Files have to be in dependency order -->
 		<include name="Iesi.Collections/Iesi.Collections.build" />
@@ -36,27 +24,21 @@
 		<include name="NHibernate.Examples/NHibernate.Examples.build" />
 		<include name="NHibernate.Tool.HbmXsd/NHibernate.Tool.HbmXsd.build" />
 	</fileset>
-
 	<fileset id="buildfiles.tests" basedir="src">
 		<include name="Iesi.Collections.Test/Iesi.Collections.Test.build" />
 		<include name="NHibernate.ByteCode.LinFu.Tests/ByteCode.Test.build" />
 		<include name="NHibernate.ByteCode.Castle.Tests/ByteCode.Test.build" />
 		<include name="NHibernate.Test/NHibernate.Test.build" />
-		<include name="NHibernate.Test.Performance/NHibernate.Test.Performance.build"
-			if="${run.performance.tests}" />
+		<include name="NHibernate.Test.Performance/NHibernate.Test.Performance.build" if="${run.performance.tests}" />
 	</fileset>
-
-	<target name="init" depends="common.init"
-		description="Initializes build properties" />
-
+	<target name="init" depends="common.init" description="Initializes build properties" />
 	<target name="prepare-build-directory" depends="init">
 		<mkdir dir="${bin.dir}" />
 		<call target="copy-referenced-assemblies" />
 	</target>
-
 	<target name="copy-referenced-assemblies">
 		<!-- Copy framework-neutral libraries -->
-		<copy todir="${bin.dir}" >
+		<copy todir="${bin.dir}">
 			<fileset basedir="${lib.dir}">
 				<include name="*.dll" />
 				<include name="*.xml" />
@@ -64,13 +46,9 @@
 				<include name="nant/*.*" />
 			</fileset>
 		</copy>
-		
-		<!-- Copy family-specific libraries -->
-		<!-- 
-			The builds of log4net and nunit work just fine for all versions of .NET.
+		<!-- Copy family-specific libraries | The builds of log4net and nunit work just fine for all versions of .NET.
 			When they do get framework specific extensions then we
-			can just move them to the framework specific section
-		-->
+			can just move them to the framework specific section -->
 		<copy todir="${bin.dir}">
 			<fileset basedir="${lib.family.dir}">
 				<include name="*.dll" />
@@ -78,7 +56,6 @@
 				<include name="*.license.txt" />
 			</fileset>
 		</copy>
-
 		<!-- Copy framework-specific libraries -->
 		<copy todir="${bin.dir}">
 			<fileset basedir="${lib.framework.dir}">
@@ -101,22 +78,15 @@
 			</fileset>
 		</copy>
 	</target>
-
-	<target name="build"
-		depends="check-framework-version init prepare-build-directory"
-		description="Builds NHibernate in the current configuration">
-
+	<target name="build" depends="check-framework-version init prepare-build-directory" description="Builds NHibernate in the current configuration">
 		<nant target="build">
 			<buildfiles refid="buildfiles.all" />
 		</nant>
-
 	</target>
-	
 	<target name="check-framework-version">
-			<echo>Running with ${framework::get-target-framework()}</echo>
-			<fail message="ERROR: NHibernate requires .Net 3.5 to compile (but can run on .Net 2.0), please use the -t:net-3.5 parameter when starting nant" if="${framework::get-target-framework()!='net-3.5'}"/>
+		<echo>Running with ${framework::get-target-framework()}</echo>
+		<fail message="ERROR: NHibernate requires .Net 3.5 to compile (but can run on .Net 2.0), please use the -t:net-3.5 parameter when starting nant" if="${framework::get-target-framework()!='net-3.5'}" />
 	</target>
-
 	<target name="test-report" if="${nunit2report.installed}">
 		<mkdir dir="${build.dir}/testresults" />
 		<nunit2report out="${build.dir}/testresults/index.html" format="Frames" todir="${build.dir}/testresults">
@@ -125,14 +95,10 @@
 			</fileset>
 		</nunit2report>
 	</target>
-
 	<target name="test" depends="init build" description="Runs all NHibernate tests for the current framework" unless="${skip.tests}">
-		<!--
-		<nant target="test">
+		<!-- <nant target="test">
 			<buildfiles refid="buildfiles.tests" />
-		</nant>
-		-->
-		<!-- -->
+		</nant> |  -->
 		<foreach item="File" property="buildfile">
 			<in>
 				<items refid="buildfiles.tests" />
@@ -148,100 +114,74 @@
 		</foreach>
 		<!-- -->
 	</target>
-	
-	<target name="coverage-report" description="Builds the test coverage reports"
-		 if="${clover.enabled}">
-
+	<target name="coverage-report" description="Builds the test coverage reports" if="${clover.enabled}">
 		<mkdir dir="${build.dir}/clover" />
-		<clover-setup 
-			initstring="${clover.db}"
-			flushinterval="1000"
-		/>
-
+		<clover-setup initstring="${clover.db}" flushinterval="1000" />
 		<clover-report>
-			<current title="NHibernate Clover Report" output="${build.dir}/clover" >
+			<current title="NHibernate Clover Report" output="${build.dir}/clover">
 				<format type="html" orderby="Alpha" />
 			</current>
 		</clover-report>
-
 	</target>
-
-	<target name="doc" depends="init binaries"
-		description="Builds the Help Documentation and the API documentation">
+	<target name="doc" depends="init binaries" description="Builds the Help Documentation and the API documentation">
 		<nant buildfile="doc/documentation.build" target="api manual" />
 	</target>
-
 	<target name="build-all-frameworks" depends="init">
 		<!-- Save the current framework -->
 		<property name="current.framework.saved" value="${nant.settings.currentframework}" />
-
 		<!-- Execute build for each framework -->
 		<foreach item="String" delim=" " property="framework" in="${supported.frameworks}">
 			<call target="set-${framework}-framework-configuration" />
 			<call target="build" />
 			<!-- Copy and rename the license -->
-			<copy file="lgpl.txt" tofile="${bin.dir}/NHibernate.license.txt"  />
+			<copy file="lgpl.txt" tofile="${bin.dir}/NHibernate.license.txt" />
 		</foreach>
-
 		<!-- Reset the current framework to the saved value -->
 		<call target="set-${current.framework.saved}-framework-configuration" />
 	</target>
-
 	<target name="binaries" depends="init">
 		<property name="clover.enabled" value="false" />
-
 		<call target="build-all-frameworks" />
 	</target>
-
 	<target name="test-all-frameworks" depends="init">
 		<!-- Save the current framework -->
 		<property name="current.framework.saved" value="${nant.settings.currentframework}" />
-
 		<!-- Execute build for each framework -->
 		<foreach item="String" delim=" " property="framework" in="${supported.frameworks}">
 			<call target="set-${framework}-framework-configuration" />
 			<call target="test" />
 		</foreach>
-
 		<!-- Reset the current framework to the saved value -->
 		<call target="set-${current.framework.saved}-framework-configuration" />
 	</target>
-
 	<target name="reports" depends="init">
 		<property name="clover.enabled" value="false" />
 		<call target="test-all-frameworks" />
 		<call target="test-report" />
 		<call target="coverage-report" />
 	</target>
-
 	<target name="sources">
 		<property name="source.tmpdir" value="${build.dir}/tmp-src" />
 		<copy todir="${source.tmpdir}">
 			<fileset>
 				<!-- copy dlls used by this build -->
-				<include name="${lib.dir}/**"  />
-
+				<include name="${lib.dir}/**" />
 				<!-- copy all of the NHibernate source -->
 				<include name="src/NHibernate*/**" />
 				<include name="src/Iesi*/**" />
 				<include name="src/*.*" />
-
 				<include name="build-common/**" />
-
 				<include name="*.build" />
 				<include name="gfdl.txt" />
 				<include name="lgpl.txt" />
 				<include name="releasenotes.txt" />
 				<include name="readme.html" />
-
 				<!-- exclude the Clover modified source files. -->
 				<exclude name="${clover.src}/**" />
-
 				<!-- exclude ReSharper stuff -->
 				<exclude name="**/_ReSharper*/**" />
 				<exclude name="**/*.resharperoptions" />
 				<exclude name="**/*resharper*" />
-
 				<!-- exclude VS.NET stuff -->
 				<exclude name="**/*.suo" />
 				<exclude name="**/*.user" />
@@ -249,12 +189,9 @@
 				<exclude name="**/obj/**" />
 			</fileset>
 		</copy>
-
 		<!-- Generate AssemblyInfo.cs files for Visual Studio -->
 		<nant buildfile="${source.tmpdir}/default.build" target="visual-studio" />
-
 	</target>
-
 	<target name="sources-zip" depends="init sources">
 		<mkdir dir="${build.dir}/src" />
 		<zip zipfile="${build.dir}/src/NHibernate-${project.version}-src.zip">
@@ -263,16 +200,12 @@
 			</fileset>
 		</zip>
 	</target>
-
 	<target name="copy-release-notes" depends="init">
 		<copy file="releasenotes.txt" todir="${build.dir}" />
 	</target>
-
 	<target name="copy-xml-schemas" depends="init">
-		<!--
-			TODO: Probably need to think of a better place for the XML schemas since
-			they are used by NHibernate and this build file.
-		-->
+		<!-- TODO: Probably need to think of a better place for the XML schemas since
+			they are used by NHibernate and this build file. -->
 		<copy todir="${build.dir}">
 			<fileset basedir="src/NHibernate">
 				<include name="nhibernate-mapping.xsd" />
@@ -280,42 +213,32 @@
 			</fileset>
 		</copy>
 	</target>
-
 	<target name="copy-config-templates" depends="init">
-		<!--
-			TODO: I don't like where these are put now.  Should think of a better 
-			place for these.
-		-->
+		<!-- TODO: I don't like where these are put now.  Should think of a better 
+			place for these. -->
 		<copy todir="${build.dir}/config.templates">
 			<fileset basedir="src/NHibernate.Config.Templates">
-				<include name="*"/>
+				<include name="*" />
 			</fileset>
 		</copy>
 	</target>
-	
 	<target name="binaries-zip" depends="init binaries copy-release-notes copy-xml-schemas copy-config-templates">
 		<zip zipfile="${build.dir}/bin/NHibernate-${project.version}-bin.zip">
 			<fileset basedir="${build.dir}">
 				<include name="releasenotes.txt" />
 				<include name="*.xsd" />
 				<include name="bin/**" />
-
 				<exclude name="**/*.hbm.xml" />
 				<exclude name="**/*.commandlog" />
 				<exclude name="**/MyTest*" />
 			</fileset>
 		</zip>
 	</target>
-
 	<target name="prepare-installer-files" depends="init sources-zip copy-release-notes" />
-
 	<target name="installer" depends="init binaries doc prepare-installer-files">
 		<nant buildfile="src/NHibernate.Setup/NHibernate.Setup.build" target="msi" />
 	</target>
-
-	<target name="package" depends="init test-all-frameworks binaries doc sources-zip binaries-zip installer"
-		description="Creates files for the File Release System on SourceForge">
-
+	<target name="package" depends="init test-all-frameworks binaries doc sources-zip binaries-zip installer" description="Creates files for the File Release System on SourceForge">
 		<property name="dist.output.dir" value="${project::get-base-directory()}/build/" />
 		<move todir="${dist.output.dir}" flatten="true" overwrite="true">
 			<fileset basedir="${build.dir}">
@@ -324,45 +247,30 @@
 				<include name="bin/NHibernate-${project.version}-bin.zip" />
 			</fileset>
 		</move>
-
 		<echo message="Created a '${project.config}' package in ${dist.output.dir}" />
-
 	</target>
-
-	<target name="fxcop" depends="init" >
- 		<exec program="${fxcop.exe}" 
- 			  commandline="/f:${build.dir}\bin\nhibernate.dll /o:${build.dir}\bin\fxcop-results.xml"
- 			  failonerror="false"/>
- 	</target>
- 	
- 	<target name="simian" depends="init" >
- 		<exec program="${simian.exe}" verbose="true" 
- 			  commandline="-recurse=src/*.cs -formatter=xml:${build.dir}\bin\simian-results.xml -failOnDuplication-"
- 			  failonerror="false"/>
- 	</target>
-
+	<target name="fxcop" depends="init">
+		<exec program="${fxcop.exe}" commandline="/f:${build.dir}\bin\nhibernate.dll /o:${build.dir}\bin\fxcop-results.xml" failonerror="false" />
+	</target>
+	<target name="simian" depends="init">
+		<exec program="${simian.exe}" verbose="true" commandline="-recurse=src/*.cs -formatter=xml:${build.dir}\bin\simian-results.xml -failOnDuplication-" failonerror="false" />
+	</target>
 	<target name="visual-studio" depends="init" description="Modifies AssemblyInfo.cs files to work with Visual Studio">
 		<property name="visual-studio" value="true" />
 		<nant target="generate-assemblyinfo">
 			<buildfiles refid="buildfiles.all" />
 		</nant>
 	</target>
-
 	<target name="cleanall" description="Deletes every build configuration">
 		<echo message="Deleting all builds from all configurations" />
 		<delete dir="build" failonerror="false" />
 		<delete dir="${clover.src}" failonerror="false" />
 	</target>
-
 	<target name="clean" depends="init" description="Deletes current build">
 		<delete dir="${build.dir}" failonerror="false" />
 		<delete dir="${clover.src}" failonerror="false" />
 	</target>
-
 	<target name="gen-schema-classes" descripton="Generates schema classes from nhibernate-mapping.xsd">
-		<exec program="xsd.exe"
-			commandline="src\NHibernate\nhibernate-mapping.xsd /classes /fields /order /namespace:NHibernate.Cfg.MappingSchema /out:src\NHibernate\Cfg\MappingSchema\"/>
-		
+		<exec program="xsd.exe" commandline="src\NHibernate\nhibernate-mapping.xsd /classes /fields /order /namespace:NHibernate.Cfg.MappingSchema /out:src\NHibernate\Cfg\MappingSchema\" />
 	</target>
-
 </project>
