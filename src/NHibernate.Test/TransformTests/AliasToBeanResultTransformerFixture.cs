@@ -25,6 +25,17 @@ namespace NHibernate.Test.TransformTests
 			}
 		}
 
+		public class PublicParameterLessCtor
+		{
+			private string something;
+
+			public string Something
+			{
+				get { return something; }
+				set { something = value; }
+			}
+		}
+
 		#region Overrides of TestCase
 
 		protected override IList Mappings
@@ -54,6 +65,32 @@ namespace NHibernate.Test.TransformTests
 			}
 
 			Cleanup();
+		}
+
+		[Test]
+		public void WorkWithPublicParameterLessCtor()
+		{
+			Setup();
+
+			var queryString = "select s.Name as something from Simple s";
+      AssertAreWorking(queryString); // working for field access
+			
+			queryString = "select s.Name as Something from Simple s";
+			AssertAreWorking(queryString); // working for property access
+
+			Cleanup();
+		}
+
+		private void AssertAreWorking(string queryString)
+		{
+			using (ISession s = OpenSession())
+			{
+				IList<PublicParameterLessCtor> l =
+					s.CreateSQLQuery(queryString).SetResultTransformer(
+						Transformers.AliasToBean<PublicParameterLessCtor>()).List<PublicParameterLessCtor>();
+				Assert.That(l.Count, Is.EqualTo(2));
+				Assert.That(l, Has.All.Not.Null);
+			}
 		}
 
 		private void Cleanup()

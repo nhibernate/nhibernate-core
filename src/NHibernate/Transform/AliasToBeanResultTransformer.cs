@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Reflection;
 using NHibernate.Properties;
 
 namespace NHibernate.Transform
@@ -26,22 +27,32 @@ namespace NHibernate.Transform
 	[Serializable]
 	public class AliasToBeanResultTransformer : IResultTransformer
 	{
+		private const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 		private readonly System.Type resultClass;
 		private ISetter[] setters;
-		private IPropertyAccessor propertyAccessor;
+		private readonly IPropertyAccessor propertyAccessor;
+		private readonly ConstructorInfo constructor;
 
 		public AliasToBeanResultTransformer(System.Type resultClass)
 		{
 			if (resultClass == null)
+			{
 				throw new ArgumentNullException("resultClass");
+			}
 			this.resultClass = resultClass;
-			propertyAccessor = new ChainedPropertyAccessor(
-				new IPropertyAccessor[]
-					{
-						// TODO H3:	PropertyAccessorFactory.GetPropertyAccessor(resultClass, null),
-						PropertyAccessorFactory.GetPropertyAccessor(null),
-						PropertyAccessorFactory.GetPropertyAccessor("field")
-					});
+			constructor = resultClass.GetConstructor(flags, null, System.Type.EmptyTypes, null);
+			if (constructor == null)
+			{
+				throw new ArgumentException("The target class of a AliasToBeanResultTransformer need a parameter-less constructor",
+				                            "resultClass");
+			}
+
+			propertyAccessor =
+				new ChainedPropertyAccessor(new[]
+				                            	{
+				                            		PropertyAccessorFactory.GetPropertyAccessor(null),
+				                            		PropertyAccessorFactory.GetPropertyAccessor("field")
+				                            	});
 		}
 
 		public object TransformTuple(object[] tuple, String[] aliases)
@@ -62,7 +73,7 @@ namespace NHibernate.Transform
 						}
 					}
 				}
-				result = Activator.CreateInstance(resultClass, true);
+				result = constructor.Invoke(null);
 
 				for (int i = 0; i < aliases.Length; i++)
 				{
