@@ -1,9 +1,14 @@
 using System;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Join
 {
 	public class Person
 	{
+		public Person()
+		{
+			OthersPhones = new HashedSet<string>();
+		}
 		private char _Sex;
 		public virtual char Sex
 		{
@@ -67,5 +72,6 @@ namespace NHibernate.Test.Join
 			set { _StuffName = value; }
 		}
 
+		public virtual ISet<string> OthersPhones { get; set; }
 	}
 }

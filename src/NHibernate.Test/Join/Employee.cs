@@ -1,9 +1,14 @@
 using System;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.Join
 {
 	public class Employee : Person
 	{
+		public Employee()
+		{
+			Meetings = new List<Meeting>();
+		}
 		private string _Title;
 		public virtual string Title
 		{
@@ -25,5 +30,13 @@ namespace NHibernate.Test.Join
 			set { _Salary = value; }
 		}
 
+		public virtual IList<Meeting> Meetings { get; set; }
+	}
+
+	public class Meeting
+	{
+		public virtual int Id { get; set; }
+		public virtual Employee Employee { get; set; }
+		public virtual string Description { get; set; }
 	}
 }

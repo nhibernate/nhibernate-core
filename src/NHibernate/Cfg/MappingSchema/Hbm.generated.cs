@@ -3780,10 +3780,17 @@ namespace NHibernate.Cfg.MappingSchema {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("any", typeof(HbmAny))]
+        [System.Xml.Serialization.XmlElementAttribute("array", typeof(HbmArray))]
+        [System.Xml.Serialization.XmlElementAttribute("bag", typeof(HbmBag))]
         [System.Xml.Serialization.XmlElementAttribute("component", typeof(HbmComponent))]
         [System.Xml.Serialization.XmlElementAttribute("dynamic-component", typeof(HbmDynamicComponent))]
+        [System.Xml.Serialization.XmlElementAttribute("idbag", typeof(HbmIdbag))]
+        [System.Xml.Serialization.XmlElementAttribute("list", typeof(HbmList))]
         [System.Xml.Serialization.XmlElementAttribute("many-to-one", typeof(HbmManyToOne))]
+        [System.Xml.Serialization.XmlElementAttribute("map", typeof(HbmMap))]
+        [System.Xml.Serialization.XmlElementAttribute("primitive-array", typeof(HbmPrimitiveArray))]
         [System.Xml.Serialization.XmlElementAttribute("property", typeof(HbmProperty))]
+        [System.Xml.Serialization.XmlElementAttribute("set", typeof(HbmSet))]
         public object[] Items;
         
         /// <remarks/>

@@ -616,6 +616,13 @@
 					<xs:element ref="component" />
 					<xs:element ref="dynamic-component" />
 					<xs:element ref="any" />
+					<xs:element ref="map" />
+					<xs:element ref="set" />
+					<xs:element ref="list" />
+					<xs:element ref="bag" />
+					<xs:element ref="idbag" />
+					<xs:element ref="array" />
+					<xs:element ref="primitive-array" />
 				</xs:choice>
 				<xs:element ref="sql-insert" minOccurs="0" />
 				<xs:element ref="sql-update" minOccurs="0" />

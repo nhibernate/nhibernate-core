@@ -27,6 +27,10 @@
 			<key column="phone_id"/>
 			<property name="HomePhone"/>
 			<property name="BusinessPhone"/>
+			<set name="OthersPhones" cascade="all" access="property">
+				<key column="phone_id"/>
+				<element column="phone" type="string" length="20"/>
+			</set>
 		</join>
 
 		<join table="inversed_stuff" inverse="true">
@@ -40,6 +44,10 @@
 				<property name="Title" not-null="true" length="20"/>
 				<property name="Salary"/>
 				<many-to-one name="Manager"/>
+				<bag name="Meetings" cascade="all" inverse="true" access="property">
+					<key column="person_id" on-delete="cascade"/>
+					<one-to-many class="Meeting"/>
+				</bag>
 			</join>
 		</subclass>
 
@@ -62,5 +70,12 @@
 			</join>
 		</subclass>
 	</class>
-	
+
+	<class name="Meeting">
+		<id name="Id" access="property">
+			<generator class="native"/>
+		</id>
+		<many-to-one name="Employee" column="person_id" access="property"/>
+		<property name="Description" length="100" access="property"/>
+	</class>
 </hibernate-mapping>

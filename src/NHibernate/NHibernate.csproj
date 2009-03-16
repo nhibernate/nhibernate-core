@@ -1149,16 +1149,10 @@
       <SubType>
       </SubType>
     </EmbeddedResource>
-    <None Include="nhibernate-configuration.xsx">
-      <DependentUpon>nhibernate-configuration.xsd</DependentUpon>
-    </None>
     <EmbeddedResource Include="nhibernate-mapping.xsd">
       <SubType>
       </SubType>
     </EmbeddedResource>
-    <None Include="nhibernate-mapping.xsx">
-      <DependentUpon>nhibernate-mapping.xsd</DependentUpon>
-    </None>
     <None Include="NHibernate.build" />
     <None Include="Type\IType.cs.xmldoc" />
   </ItemGroup>

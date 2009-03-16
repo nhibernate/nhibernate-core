@@ -1,3 +1,4 @@
+using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Criterion;
 using NUnit.Framework;
@@ -154,7 +155,7 @@ namespace NHibernate.Test.Join
 				Person p = CreatePerson("A guy");
 				p.HomePhone = null;
 				p.BusinessPhone = null;
-
+				p.OthersPhones = null;
 				s.Save(p);
 				s.Flush();
 				s.Clear();
@@ -295,7 +296,7 @@ namespace NHibernate.Test.Join
 			p.Country = "Canada";
 			p.HomePhone = "555-1234";
 			p.BusinessPhone = "555-4321";
-
+			p.OthersPhones = new HashedSet<string> {"555-9876", "555-6789"};
 			return p;
 		}
 
@@ -308,7 +309,10 @@ namespace NHibernate.Test.Join
 			if (!string.Equals(x.Country, y.Country)) return false;
 			if (!string.Equals(x.HomePhone, y.HomePhone)) return false;
 			if (!string.Equals(x.BusinessPhone, y.BusinessPhone)) return false;
-
+			if(x.OthersPhones.Count != y.OthersPhones.Count)
+			{
+				return false;
+			}
 			return true;
 		}
 
@@ -399,7 +403,8 @@ namespace NHibernate.Test.Join
 
 			p.Title = title;
 			p.Salary = 100;
-
+			p.Meetings.Add(new Meeting {Employee = p, Description = "salary definition"});
+			p.Meetings.Add(new Meeting { Employee = p, Description = "targets definition" });
 			return p;
 		}
 
@@ -475,7 +480,7 @@ namespace NHibernate.Test.Join
 			if (!PersonsAreEqual(x, y)) return false;
 			if (!string.Equals(x.Title, y.Title)) return false;
 			if (x.Salary != y.Salary) return false;
-
+			if (x.Meetings.Count != y.Meetings.Count) return false;
 			if (x.Manager != null && y.Manager != null)
 			{
 				return x.Manager.Id == y.Manager.Id;
@@ -509,6 +514,9 @@ namespace NHibernate.Test.Join
 				emp0.Salary = 20000;
 				emp0.Title = "Title";
 				emp0.Zip = "Zip";
+				NHibernateUtil.Initialize(emp0.Meetings);
+				NHibernateUtil.Initialize(emp0.OthersPhones);
+				emp0.Meetings.Add(new Meeting { Employee = emp0, Description = "vacation def" });
 				// Not updating emp0.Sex because it is marked update=false in the mapping file.
 
 				s.Flush();

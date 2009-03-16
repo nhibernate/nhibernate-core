@@ -348,28 +348,40 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				string propertyName = nameAttribute == null ? null : nameAttribute.Value;
 
 				IValue value = null;
-				switch (name)
+				var collectionBinder = new CollectionBinder(this);
+				if (collectionBinder.CanCreate(name))
 				{
-					case "many-to-one":
-						value = new ManyToOne(table);
-						BindManyToOne(subnode, (ManyToOne) value, propertyName, true);
-						break;
-					case "any":
-						value = new Any(table);
-						BindAny(subnode, (Any) value, true);
-						break;
-					case "property":
-						value = new SimpleValue(table);
-						BindSimpleValue(subnode, (SimpleValue) value, true, propertyName);
-						break;
-					case "component":
-					case "dynamic-component":
-						string subpath = StringHelper.Qualify(path, propertyName);
-						value = new Component(join);
-						BindComponent(subnode, (Component) value, join.PersistentClass.MappedClass, join.PersistentClass.ClassName,  propertyName, subpath, true);
-						break;
-				}
+					Mapping.Collection collection = collectionBinder.Create(name, subnode, persistentClass.EntityName,
+																																	propertyName, persistentClass, persistentClass.MappedClass);
 
+					mappings.AddCollection(collection);
+					value = collection;
+				}
+				else
+				{
+					switch (name)
+					{
+						case "many-to-one":
+							value = new ManyToOne(table);
+							BindManyToOne(subnode, (ManyToOne) value, propertyName, true);
+							break;
+						case "any":
+							value = new Any(table);
+							BindAny(subnode, (Any) value, true);
+							break;
+						case "property":
+							value = new SimpleValue(table);
+							BindSimpleValue(subnode, (SimpleValue) value, true, propertyName);
+							break;
+						case "component":
+						case "dynamic-component":
+							string subpath = StringHelper.Qualify(path, propertyName);
+							value = new Component(join);
+							BindComponent(subnode, (Component) value, join.PersistentClass.MappedClass, join.PersistentClass.ClassName,
+							              propertyName, subpath, true);
+							break;
+					}
+				}
 				if (value != null)
 				{
 					Mapping.Property prop = CreateProperty(value, propertyName, persistentClass.MappedClass.AssemblyQualifiedName, subnode);
