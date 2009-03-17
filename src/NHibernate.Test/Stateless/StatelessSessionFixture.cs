@@ -1,11 +1,6 @@
 using System;
 using System.Collections;
 using System.Threading;
-using NHibernate.Cfg;
-using NHibernate.Engine;
-using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
-using NHibernate.Type;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Stateless
@@ -20,7 +15,7 @@ namespace NHibernate.Test.Stateless
 
 		protected override IList Mappings
 		{
-			get { return new string[] { "Stateless.Document.hbm.xml" }; }
+			get { return new[] {"Stateless.Document.hbm.xml"}; }
 		}
 
 		protected override void OnTearDown()
@@ -56,7 +51,7 @@ namespace NHibernate.Test.Stateless
 					doc.Text = "blah blah blah .... blah";
 					ss.Update(doc);
 					Assert.IsTrue(doc.LastModified.HasValue);
-					Assert.AreNotEqual(initVersion, doc.LastModified); 
+					Assert.AreNotEqual(initVersion, doc.LastModified);
 					tx.Commit();
 				}
 				using (tx = ss.BeginTransaction())
@@ -65,15 +60,15 @@ namespace NHibernate.Test.Stateless
 					ss.Update(doc);
 					tx.Commit();
 				}
-				Document doc2 = (Document)ss.Get<Document>("Blahs");
+				var doc2 = ss.Get<Document>("Blahs");
 				Assert.AreEqual("Blahs", doc2.Name);
 				Assert.AreEqual(doc.Text, doc2.Text);
 
-				doc2 = (Document)ss.CreateQuery("from Document where text is not null").UniqueResult();
+				doc2 = (Document) ss.CreateQuery("from Document where text is not null").UniqueResult();
 				Assert.AreEqual("Blahs", doc2.Name);
 				Assert.AreEqual(doc.Text, doc2.Text);
 
-				doc2 = (Document)ss.CreateSQLQuery("select * from Document").AddEntity(typeof(Document)).UniqueResult();
+				doc2 = (Document) ss.CreateSQLQuery("select * from Document").AddEntity(typeof (Document)).UniqueResult();
 				Assert.AreEqual("Blahs", doc2.Name);
 				Assert.AreEqual(doc.Text, doc2.Text);
 
@@ -81,7 +76,7 @@ namespace NHibernate.Test.Stateless
 				Assert.AreEqual("Blahs", doc2.Name);
 				Assert.AreEqual(doc.Text, doc2.Text);
 
-				doc2 = (Document)ss.CreateCriteria(typeof(Document)).UniqueResult();
+				doc2 = (Document) ss.CreateCriteria(typeof (Document)).UniqueResult();
 				Assert.AreEqual("Blahs", doc2.Name);
 				Assert.AreEqual(doc.Text, doc2.Text);
 
@@ -98,22 +93,18 @@ namespace NHibernate.Test.Stateless
 		{
 			IStatelessSession ss = sessions.OpenStatelessSession();
 			ITransaction tx = ss.BeginTransaction();
-			Document doc = new Document("blah blah blah", "Blahs");
+			var doc = new Document("blah blah blah", "Blahs");
 			ss.Insert(doc);
-			Paper paper = new Paper();
-			paper.Color = "White";
+			var paper = new Paper {Color = "White"};
 			ss.Insert(paper);
 			tx.Commit();
 
 			tx = ss.BeginTransaction();
-			int count = ss.CreateQuery("update Document set name = :newName where name = :oldName")
-					.SetString("newName", "Foos")
-					.SetString("oldName", "Blahs")
-					.ExecuteUpdate();
+			int count =
+				ss.CreateQuery("update Document set name = :newName where name = :oldName").SetString("newName", "Foos").SetString(
+					"oldName", "Blahs").ExecuteUpdate();
 			Assert.AreEqual(1, count, "hql-delete on stateless session");
-			count = ss.CreateQuery("update Paper set color = :newColor")
-					.SetString("newColor", "Goldenrod")
-					.ExecuteUpdate();
+			count = ss.CreateQuery("update Paper set color = :newColor").SetString("newColor", "Goldenrod").ExecuteUpdate();
 			Assert.AreEqual(1, count, "hql-delete on stateless session");
 			tx.Commit();
 
@@ -136,8 +127,7 @@ namespace NHibernate.Test.Stateless
 				ITransaction tx;
 				using (tx = ss.BeginTransaction())
 				{
-					paper = new Paper();
-					paper.Color = "White";
+					paper = new Paper {Color = "White"};
 					ss.Insert(paper);
 					Assert.IsTrue(paper.Id != 0);
 					tx.Commit();
@@ -156,29 +146,34 @@ namespace NHibernate.Test.Stateless
 			Paper paper;
 
 			using (IStatelessSession ss = sessions.OpenStatelessSession())
-			using (ITransaction tx = ss.BeginTransaction())
 			{
-				paper = new Paper();
-				paper.Color = "whtie";
-				ss.Insert(paper);
-				tx.Commit();
+				using (ITransaction tx = ss.BeginTransaction())
+				{
+					paper = new Paper {Color = "whtie"};
+					ss.Insert(paper);
+					tx.Commit();
+				}
 			}
 			using (IStatelessSession ss = sessions.OpenStatelessSession())
-			using (ITransaction tx = ss.BeginTransaction())
 			{
-				Paper p2 = ss.Get<Paper>(paper.Id);
-				p2.Color = "White";
-				ss.Update(p2);
-				tx.Commit();
+				using (ITransaction tx = ss.BeginTransaction())
+				{
+					var p2 = ss.Get<Paper>(paper.Id);
+					p2.Color = "White";
+					ss.Update(p2);
+					tx.Commit();
+				}
 			}
 			using (IStatelessSession ss = sessions.OpenStatelessSession())
-			using (ITransaction tx = ss.BeginTransaction())
 			{
-				Assert.AreEqual("whtie", paper.Color);
-				ss.Refresh(paper);
-				Assert.AreEqual("White", paper.Color);
-				ss.Delete(paper);
-				tx.Commit();
+				using (ITransaction tx = ss.BeginTransaction())
+				{
+					Assert.AreEqual("whtie", paper.Color);
+					ss.Refresh(paper);
+					Assert.AreEqual("White", paper.Color);
+					ss.Delete(paper);
+					tx.Commit();
+				}
 			}
 		}
 	}
