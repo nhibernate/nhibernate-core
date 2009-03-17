@@ -138,7 +138,7 @@ namespace NHibernate.Dialect
 			RegisterKeyword("top");
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlClientDriver";
-			DefaultProperties[Environment.PrepareSql] = "false";
+			DefaultProperties[Environment.PrepareSql] = "true";
 		}
 
 		/// <summary></summary>
