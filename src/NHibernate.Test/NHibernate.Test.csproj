@@ -292,6 +292,8 @@
     <Compile Include="GenericTest\SetGeneric\SetGenericFixture.cs" />
     <Compile Include="HQL\Animal.cs" />
     <Compile Include="HQL\BaseFunctionFixture.cs" />
+    <Compile Include="NHSpecificTest\NH1706\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH1706\KeyPropertyRefFixture.cs" />
     <Compile Include="NHSpecificTest\NH645\HQLFunctionFixture.cs" />
     <Compile Include="HQL\HQLFunctions.cs" />
     <Compile Include="HQL\Human.cs" />
@@ -668,7 +670,6 @@
     <Compile Include="NHSpecificTest\Docs\ExampleParentChild\UpdateFixture.cs" />
     <Compile Include="NHSpecificTest\Docs\PersistentClasses\Cat.cs" />
     <Compile Include="NHSpecificTest\EmptyMappingsFixture.cs" />
-    <Compile Include="NHSpecificTest\EntityKeyFixture.cs" />
     <Compile Include="NHSpecificTest\GetSetHelperFixture.cs" />
     <Compile Include="NHSpecificTest\GetTest.cs" />
     <Compile Include="NHSpecificTest\LazyLoadBugTest.cs" />
@@ -1683,6 +1684,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1706\Mappings.hbm.xml" />
     <EmbeddedResource Include="Stateless\Naturalness.hbm.xml" />
     <EmbeddedResource Include="TransformTests\Simple.hbm.xml" />
     <EmbeddedResource Include="VersionTest\Db\MsSQL\ComplexVersioned.hbm.xml" />

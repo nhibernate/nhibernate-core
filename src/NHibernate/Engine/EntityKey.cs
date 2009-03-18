@@ -41,14 +41,6 @@ namespace NHibernate.Engine
 			if (identifier == null)
 				throw new AssertionFailure("null identifier");
 
-			System.Type expected = identifier.GetType();
-			System.Type found = identifierType.ReturnedClass;
-			if (!found.IsAssignableFrom(expected))
-			{
-				throw new ArgumentException(string.Format("Identifier type mismatch; Found:<{0}> Expected:<{1}>", found, expected),
-																		"identifier");
-			}
-
 			this.identifier = identifier;
 			this.rootEntityName = rootEntityName;
 			this.entityName = entityName;
@@ -76,7 +68,7 @@ namespace NHibernate.Engine
 
 		public override bool Equals(object other)
 		{
-			EntityKey otherKey = other as EntityKey;
+			var otherKey = other as EntityKey;
 			if(otherKey==null) return false;
 
 			return
@@ -108,10 +100,10 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// To use in deserialization callback
 		/// </summary>
-		/// <param name="factory"></param>
-		internal void SetSessionFactory(ISessionFactoryImplementor factory)
+		/// <param name="sessionFactory"></param>
+		internal void SetSessionFactory(ISessionFactoryImplementor sessionFactory)
 		{
-			this.factory = factory;
+			factory = sessionFactory;
 			hashCode = GetHashCode();
 		}
 	}
