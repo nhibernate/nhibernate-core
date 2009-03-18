@@ -948,6 +948,8 @@
     <Compile Include="SqlTest\Custom\CustomStoredProcSupportTest.cs" />
     <Compile Include="SqlTest\Custom\MySQL\MySQLTest.cs" />
     <Compile Include="SqlTest\Custom\Oracle\OracleCustomSQLFixture.cs" />
+    <Compile Include="Stateless\Naturalness.cs" />
+    <Compile Include="Stateless\StatelessWithRelationsFixture.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaExportTests\WithColumnTag.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaExportTests\WithColumnTagFixture.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaUpdate\MigrationFixture.cs" />
@@ -1681,6 +1683,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="Stateless\Naturalness.hbm.xml" />
     <EmbeddedResource Include="TransformTests\Simple.hbm.xml" />
     <EmbeddedResource Include="VersionTest\Db\MsSQL\ComplexVersioned.hbm.xml" />
     <EmbeddedResource Include="Tools\hbm2ddl\SchemaExportTests\WithColumnTag.hbm.xml" />
