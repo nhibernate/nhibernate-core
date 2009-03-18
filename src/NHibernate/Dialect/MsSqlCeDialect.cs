@@ -1,6 +1,6 @@
-using System;
 using System.Data;
-using NHibernate.SqlCommand;
+using System.Data.Common;
+using NHibernate.Dialect.Schema;
 using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
@@ -91,6 +91,11 @@ namespace NHibernate.Dialect
 		public override bool SupportsVariableLimit
 		{
 			get { return false; }
+		}
+
+		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
+		{
+			return new MsSqlCeDataBaseSchema(connection);
 		}
 	}
 }
