@@ -56,16 +56,9 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Currency, "MONEY");
 			RegisterColumnType(DbType.Date, "DATETIME");
 			RegisterColumnType(DbType.DateTime, "DATETIME");
-			// TODO: figure out if this is the good way to fix the problem
-			// with exporting a DECIMAL column
-			// NUMERIC(precision, scale) has a hardcoded precision of 19, even though it can range from 1 to 38
-			// and the scale has to be 0 <= scale <= precision.
-			// I think how I might handle it is keep the type="Decimal(29,5)" and make them specify a 
-			// sql-type="decimal(20,5)" if they need to do that.  The Decimal parameter and ddl will get generated
-			// correctly with minimal work.
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
 			RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $l)");
-            RegisterColumnType(DbType.Decimal, 19, "DECIMAL($p, $s)");
+			RegisterColumnType(DbType.Decimal, 19, "DECIMAL($p, $s)");
 			RegisterColumnType(DbType.Double, "DOUBLE PRECISION"); //synonym for FLOAT(53)
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
@@ -136,6 +129,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 
 			RegisterKeyword("top");
+			RegisterKeyword("integer");
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlClientDriver";
 			DefaultProperties[Environment.PrepareSql] = "true";
