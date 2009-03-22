@@ -258,14 +258,23 @@ namespace NHibernate.Impl
 
 		void IEnlistmentNotification.Prepare(PreparingEnlistment preparingEnlistment)
 		{
-			BeforeTransactionCompletion(null);
-			if (FlushMode != FlushMode.Never)
-			{
-				using (ConnectionManager.FlushingFromDtcTransaction)
-					Flush();
-			} 
-			preparingEnlistment.Prepared();
-			logger.Debug("prepared for DTC transaction");
+		    try
+		    {
+		        BeforeTransactionCompletion(null);
+		        if (FlushMode != FlushMode.Never)
+		        {
+		            using (ConnectionManager.FlushingFromDtcTransaction)
+		                Flush();
+		        } 
+		        preparingEnlistment.Prepared();
+		        logger.Debug("prepared for DTC transaction");
+		    }
+		    catch (Exception exception)
+		    {
+		        logger.Error("DTC transaction prepre phase failed", exception);
+                preparingEnlistment.ForceRollback(exception);
+
+		    }
 		}
 
 		void IEnlistmentNotification.Commit(Enlistment enlistment)

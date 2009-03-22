@@ -292,6 +292,8 @@
     <Compile Include="GenericTest\SetGeneric\SetGenericFixture.cs" />
     <Compile Include="HQL\Animal.cs" />
     <Compile Include="HQL\BaseFunctionFixture.cs" />
+    <Compile Include="NHSpecificTest\DtcFailures\FutureCriteriaFixture.cs" />
+    <Compile Include="NHSpecificTest\DtcFailures\Person.cs" />
     <Compile Include="NHSpecificTest\NH1694\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1706\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1706\KeyPropertyRefFixture.cs" />
@@ -1685,6 +1687,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\DtcFailures\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1694\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1706\Mappings.hbm.xml" />
     <EmbeddedResource Include="Stateless\Naturalness.hbm.xml" />
