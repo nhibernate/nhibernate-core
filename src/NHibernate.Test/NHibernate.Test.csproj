@@ -292,7 +292,7 @@
     <Compile Include="GenericTest\SetGeneric\SetGenericFixture.cs" />
     <Compile Include="HQL\Animal.cs" />
     <Compile Include="HQL\BaseFunctionFixture.cs" />
-    <Compile Include="NHSpecificTest\DtcFailures\FutureCriteriaFixture.cs" />
+    <Compile Include="NHSpecificTest\DtcFailures\DtcFailuresFixture.cs" />
     <Compile Include="NHSpecificTest\DtcFailures\Person.cs" />
     <Compile Include="NHSpecificTest\NH1694\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1706\Domain.cs" />

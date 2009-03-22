@@ -56,6 +56,35 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
             }
         }
 
+        [Test]
+        public void CanDeleteItemInDtc()
+        {
+            object id;
+            using (var tx = new TransactionScope())
+            using (var s = sessions.OpenSession())
+            {
+                id = s.Save(new Person
+                {
+                    CreatedAt = DateTime.Today
+                });
+
+                new ForceEscalationToDistributedTx();
+                
+                tx.Complete();
+            }
+
+            using (var tx = new TransactionScope())
+            using (var s = sessions.OpenSession())
+            {
+                new ForceEscalationToDistributedTx(); 
+                
+                s.Delete(s.Get<Person>(id));
+
+                tx.Complete();
+            }
+
+        }
+
         public class ForceEscalationToDistributedTx : IEnlistmentNotification
         {
             private readonly int thread;
