@@ -260,14 +260,19 @@ namespace NHibernate.Impl
 		{
 		    try
 		    {
-		        BeforeTransactionCompletion(null);
-		        if (FlushMode != FlushMode.Never)
+		        using(var tx = new TransactionScope(ambientTransation))
 		        {
-		            using (ConnectionManager.FlushingFromDtcTransaction)
-		                Flush();
-		        } 
-		        preparingEnlistment.Prepared();
-		        logger.Debug("prepared for DTC transaction");
+                    BeforeTransactionCompletion(null);
+                    if (FlushMode != FlushMode.Never)
+                    {
+                        using (ConnectionManager.FlushingFromDtcTransaction)
+                            Flush();
+                    }
+                    logger.Debug("prepared for DTC transaction");
+
+                    tx.Complete();
+		        }
+                preparingEnlistment.Prepared();
 		    }
 		    catch (Exception exception)
 		    {
@@ -315,7 +320,7 @@ namespace NHibernate.Impl
 				if (shouldCloseSessionOnDtcTransactionCompleted)
 					Dispose(true);
 			};
-			ambientTransation.EnlistVolatile(this, EnlistmentOptions.None);
+			ambientTransation.EnlistVolatile(this, EnlistmentOptions.EnlistDuringPrepareRequired);
 		}
 
 		protected abstract void Dispose(bool disposing);
