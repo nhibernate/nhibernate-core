@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading;
@@ -57,6 +58,31 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
         }
 
         [Test]
+        public void Can_roll_back_transaction()
+        {
+            var tx = new TransactionScope();
+            using (var s = sessions.OpenSession())
+            {
+                new ForceEscalationToDistributedTx(true);//will rollback tx
+                s.Save(new Person
+                {
+                    CreatedAt = DateTime.Today
+                });
+
+                tx.Complete();
+            }
+            try
+            {
+                tx.Dispose();
+                Assert.Fail("Expected tx abort");
+            }
+            catch (TransactionAbortedException)
+            {
+             //expected   
+            }
+        }
+
+        [Test]
         public void CanDeleteItemInDtc()
         {
             object id;
@@ -87,17 +113,28 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 
         public class ForceEscalationToDistributedTx : IEnlistmentNotification
         {
+            private readonly bool shouldRollBack;
             private readonly int thread;
-            public ForceEscalationToDistributedTx()
+
+            public ForceEscalationToDistributedTx(bool shouldRollBack) 
             {
+                this.shouldRollBack = shouldRollBack;
                 thread = Thread.CurrentThread.ManagedThreadId;
                 System.Transactions.Transaction.Current.EnlistDurable(Guid.NewGuid(), this, EnlistmentOptions.None);
+            }
+
+            public ForceEscalationToDistributedTx():this(false)
+            {
+                
             }
 
             public void Prepare(PreparingEnlistment preparingEnlistment)
             {
                 Assert.AreNotEqual(thread, Thread.CurrentThread.ManagedThreadId);
-                preparingEnlistment.Prepared();
+                if (shouldRollBack)
+                    preparingEnlistment.ForceRollback();
+                else
+                    preparingEnlistment.Prepared();
             }
 
             public void Commit(Enlistment enlistment)

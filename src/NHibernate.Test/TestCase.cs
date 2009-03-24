@@ -123,7 +123,8 @@ namespace NHibernate.Test
 
 			if (fail)
 			{
-				Assert.Fail("Test didn't clean up after itself");
+                Assert.Fail("Test didn't clean up after itself. session closed: " + wasClosed + " database cleaned: "+ wasCleaned
+                    + " connection closed: " + wereConnectionsClosed);
 			}
 		}
 
