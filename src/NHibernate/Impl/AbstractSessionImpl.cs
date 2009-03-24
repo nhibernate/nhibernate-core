@@ -190,6 +190,15 @@ namespace NHibernate.Impl
 
 		protected internal void SetClosed()
 		{
+		    try
+		    {
+                if (ambientTransation != null)
+                    ambientTransation.Dispose();
+		    }
+		    catch (Exception)
+		    {
+                //ignore
+		    }
 			closed = true;
 		}
 
@@ -310,7 +319,7 @@ namespace NHibernate.Impl
 				return;
 			if (System.Transactions.Transaction.Current==null)
 				return;
-			ambientTransation = System.Transactions.Transaction.Current;
+		    ambientTransation = System.Transactions.Transaction.Current.Clone();
 			logger.DebugFormat("enlisted into DTC transaction: {0}", ambientTransation.IsolationLevel);
 			AfterTransactionBegin(null);
 			ambientTransation.TransactionCompleted += delegate(object sender, TransactionEventArgs e)
