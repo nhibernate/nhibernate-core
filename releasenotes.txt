@@ -20,6 +20,7 @@ Build 2.1.0
 	##### Breaking Changes #####
 		* see NH-1633 if you are using SQL native queries
 		* see NH-1657 if you are using 'TimeSpan' NH type.
+		* CriteriaUtil is gone. NHibernate.Transform.Transformers now returns predefined IResultTransformer.
 		
 Build 2.1.0.Alpha1
 ========================
