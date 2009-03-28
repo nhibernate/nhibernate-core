@@ -57,58 +57,6 @@ namespace NHibernate.Engine.Query
 			}
 		}
 
-		/// <summary> 
-		/// Bind positional parameter values to the <tt>PreparedStatement</tt>
-		/// (these are parameters specified by a JDBC-style ?).
-		/// </summary>
-		private static int BindPositionalParameters(IDbCommand st, QueryParameters queryParameters, int start, ISessionImplementor session)
-		{
-			object[] values = queryParameters.FilteredPositionalParameterValues;
-			IType[] types = queryParameters.FilteredPositionalParameterTypes;
-			int span = 0;
-			for (int i = 0; i < values.Length; i++)
-			{
-				types[i].NullSafeSet(st, values[i], start + span, session);
-				span += types[i].GetColumnSpan(session.Factory);
-			}
-			return span;
-		}
-
-		/// <summary> 
-		/// Bind named parameters to the <tt>PreparedStatement</tt>. This has an
-		/// empty implementation on this superclass and should be implemented by
-		/// subclasses (queries) which allow named parameters.
-		/// </summary>
-		private void BindNamedParameters(IDbCommand ps, IEnumerable<KeyValuePair<string, TypedValue>> namedParams, int start, ISessionImplementor session)
-		{
-			if (namedParams != null)
-			{
-				// assumes that types are all of span 1
-				int result = 0;
-				foreach (KeyValuePair<string, TypedValue> param in namedParams)
-				{
-					string name = param.Key;
-					TypedValue typedval = param.Value;
-
-					int[] locs = GetNamedParameterLocs(name);
-					for (int i = 0; i < locs.Length; i++)
-					{
-						if (log.IsDebugEnabled)
-						{
-							log.Debug(string.Format("BindNamedParameters() {0} -> {1} [{2}]", typedval.Value, name, (locs[i] + start)));
-						}
-						typedval.Type.NullSafeSet(ps, typedval.Value, locs[i] + start, session);
-					}
-					result += locs.Length;
-				}
-				return;
-			}
-			else
-			{
-				return;
-			}
-		}
-
 		private void CoordinateSharedCacheCleanup(ISessionImplementor session)
 		{
 			BulkOperationCleanupAction action = new BulkOperationCleanupAction(session, CustomQuery.QuerySpaces);
@@ -149,9 +97,12 @@ namespace NHibernate.Engine.Query
 						// NH Difference : set Timeout for native query
 						ps.CommandTimeout = selection.Timeout;
 					}
-					int col = 0; // NH Different (initialized to 1 in JAVA)
-					col += BindPositionalParameters(ps, queryParameters, col, session);
-					BindNamedParameters(ps, queryParameters.NamedParameters, col, session);
+					// NH Different behavior:
+					// The inital value is 0 (initialized to 1 in JAVA)
+					// The responsibility of parameter binding was entirely moved to QueryParameters
+					// to deal with positionslParameter+NamedParameter+ParameterOfFilters
+					
+					queryParameters.BindParameters(ps, GetNamedParameterLocs, 0, session);
 					result = session.Batcher.ExecuteNonQuery(ps);
 				}
 				finally
@@ -180,7 +131,7 @@ namespace NHibernate.Engine.Query
 			List<IType> paramTypeList = new List<IType>();
 			int span = 0;
 
-			foreach (IType type in parameters.FilteredPositionalParameterTypes)
+			foreach (IType type in parameters.PositionalParameterTypes)
 			{
 				paramTypeList.Add(type);
 				span += type.GetColumnSpan(session.Factory);

@@ -632,8 +632,7 @@ namespace NHibernate.Impl
 			{
 				QueryTranslator translator = Translators[i];
 				QueryParameters parameter = Parameters[i];
-				colIndex += translator.BindPositionalParameters(command, parameter, colIndex, session);
-				colIndex += translator.BindNamedParameters(command, parameter.NamedParameters, colIndex, session);
+				colIndex += parameter.BindParameters(command, translator.GetNamedParameterLocs, colIndex, session);
 			}
 			return colIndex;
 		}

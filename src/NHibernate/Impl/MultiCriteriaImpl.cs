@@ -307,8 +307,7 @@ namespace NHibernate.Impl
 			for (int i = 0; i < loaders.Count; i++)
 			{
 				QueryParameters parameter = parameters[i];
-				colIndex += loaders[i].BindPositionalParameters(command, parameter, colIndex, session);
-				colIndex += loaders[i].BindNamedParameters(command, parameter.NamedParameters, colIndex, session);
+				colIndex += parameter.BindParameters(command, loaders[i].GetNamedParameterLocs, colIndex, session);
 			}
 			return colIndex;
 		}

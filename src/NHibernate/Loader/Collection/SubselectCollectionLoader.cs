@@ -28,8 +28,9 @@ namespace NHibernate.Loader.Collection
 			}
 
 			namedParameters = queryParameters.NamedParameters;
-			types = queryParameters.FilteredPositionalParameterTypes;
-			values = queryParameters.FilteredPositionalParameterValues;
+			// NH Different behavior: to deal with positionslParameter+NamedParameter+ParameterOfFilters
+			types = queryParameters.PositionalParameterTypes;
+			values = queryParameters.PositionalParameterValues;
 			this.namedParameterLocMap = namedParameterLocMap;
 		}
 
@@ -41,6 +42,24 @@ namespace NHibernate.Loader.Collection
 		public override int[] GetNamedParameterLocs(string name)
 		{
 			return namedParameterLocMap[name];
+		}
+
+		protected override void AdjustNamedParameterLocationsForQueryParameters(QueryParameters parameters)
+		{
+			if (namedParameterLocMap == null)
+				return;
+
+			foreach (int existingParameterLocation in parameters.FilteredParameterLocations)
+			{
+				foreach (IList<int> namedParameterLocations in namedParameterLocMap.Values)
+				{
+					for (int index = 0; index < namedParameterLocations.Count; index++)
+					{
+						if (namedParameterLocations[index] >= existingParameterLocation)
+							namedParameterLocations[index]++;
+					}
+				}
+			}
 		}
 	}
 }

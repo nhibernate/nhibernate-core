@@ -320,6 +320,30 @@ namespace NHibernate.Loader.Custom
 			}
 		}
 
+		protected override void AdjustNamedParameterLocationsForQueryParameters(QueryParameters parameters)
+		{
+			var existingParameterLocations = parameters.FilteredParameterLocations.GetEnumerator();
+			while (existingParameterLocations.MoveNext())
+			{
+				foreach (string name in parameters.NamedParameters.Keys)
+				{
+					object locations = namedParameterBindPoints[name];
+					if (locations is int)
+					{
+						namedParameterBindPoints[name] = ((int)locations) + 1;
+					}
+					else
+					{
+						IList locationsList = (IList)locations;
+						for (int i = 0; i < locationsList.Count; i++)
+						{
+							locationsList[i] = ((int)locationsList[i]) + 1;
+						}
+					}
+				}
+			}
+		}
+
 		protected override void AutoDiscoverTypes(IDataReader rs)
 		{
 			MetaData metadata = new MetaData(rs);

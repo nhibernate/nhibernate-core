@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Data;
 using log4net;
 using NHibernate.Hql.Classic;
 using NHibernate.Impl;
@@ -7,7 +9,6 @@ using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Collections.Generic;
 
 namespace NHibernate.Engine
 {
@@ -17,45 +18,39 @@ namespace NHibernate.Engine
 	[Serializable]
 	public sealed class QueryParameters
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(QueryParameters));
+		public delegate int[] GetNamedParameterLocations(string parameterName);
+
+		private static readonly ILog log = LogManager.GetLogger(typeof (QueryParameters));
 
 		private IType[] _positionalParameterTypes;
 		private object[] _positionalParameterValues;
+		private int[] _positionalParameterLocations;
 		private IDictionary<string, TypedValue> _namedParameters;
 		private IDictionary<string, LockMode> _lockModes;
+		private IList<IType> filteredParameterTypes;
+		private IList<object> filteredParameterValues;
+		private IList<int> filteredParameterLocations;
 		private RowSelection _rowSelection;
 		private bool _cacheable;
 		private string _cacheRegion;
-		private bool _forceCacheRefresh;
 		private object[] _collectionKeys;
 		private object _optionalObject;
 		private string _optionalEntityName;
 		private object _optionalId;
 		private string _comment;
-		private bool _naturalKeyLookup;
 		private bool _readOnly;
-		private bool _callable;
-		private bool autoDiscoverTypes;
 
 		private SqlString processedSQL;
-		private IType[] processedPositionalParameterTypes;
-		private object[] processedPositionalParameterValues;
 
 		private readonly IResultTransformer _resultTransformer;
 		// not implemented: private ScrollMode _scrollMode;
 
-		public QueryParameters()
-			: this(ArrayHelper.EmptyTypeArray, ArrayHelper.EmptyObjectArray)
-		{
-		}
+		public QueryParameters() : this(ArrayHelper.EmptyTypeArray, ArrayHelper.EmptyObjectArray) {}
 
-		public QueryParameters(IType type, object value)
-			: this(new IType[] { type }, new object[] { value })
-		{
-		}
+		public QueryParameters(IType type, object value) : this(new[] {type}, new[] {value}) {}
 
-		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues,
-			object optionalObject, string optionalEntityName, object optionalObjectId)
+		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, object optionalObject,
+		                       string optionalEntityName, object optionalObjectId)
 			: this(positionalParameterTypes, postionalParameterValues)
 		{
 			_optionalObject = optionalObject;
@@ -64,33 +59,31 @@ namespace NHibernate.Engine
 		}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues)
-			: this(positionalParameterTypes, postionalParameterValues, null, null, false, null, null, false, null)
-		{
-		}
+			: this(positionalParameterTypes, postionalParameterValues, null, null, false, null, null, false, null) {}
+
+		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, object[] collectionKeys)
+			: this(positionalParameterTypes, postionalParameterValues, null, collectionKeys) {}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues,
-			object[] collectionKeys)
-			: this(positionalParameterTypes, postionalParameterValues, null, collectionKeys)
-		{
-		}
+		                       IDictionary<string, TypedValue> namedParameters, object[] collectionKeys)
+			: this(
+				positionalParameterTypes, postionalParameterValues, namedParameters, null, null, false, false, null, null,
+				collectionKeys, null) {}
 
-		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues,
-			IDictionary<string, TypedValue> namedParameters, object[] collectionKeys)
-			: this(positionalParameterTypes, postionalParameterValues, namedParameters, null, null, false, false, null, null, collectionKeys, null)
+		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues,
+		                       IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool cacheable,
+		                       string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
+			: this(
+				positionalParameterTypes, positionalParameterValues, null, lockModes, rowSelection, false, cacheable, cacheRegion,
+				comment, null, transformer)
 		{
+			NaturalKeyLookup = isLookupByNaturalKey;
 		}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues,
-			IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
-			: this(positionalParameterTypes, positionalParameterValues, null, lockModes, rowSelection, false, cacheable, cacheRegion, comment, null, transformer)
-		{
-			_naturalKeyLookup = isLookupByNaturalKey;
-		}
-
-		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues,
-			IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection,
-			bool readOnly, bool cacheable, string cacheRegion, string comment,
-			object[] collectionKeys, IResultTransformer transformer)
+		                       IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes,
+		                       RowSelection rowSelection, bool readOnly, bool cacheable, string cacheRegion, string comment,
+		                       object[] collectionKeys, IResultTransformer transformer)
 		{
 			_positionalParameterTypes = positionalParameterTypes;
 			_positionalParameterValues = positionalParameterValues;
@@ -103,13 +96,21 @@ namespace NHibernate.Engine
 			_collectionKeys = collectionKeys;
 			_readOnly = readOnly;
 			_resultTransformer = transformer;
+
+			if (_positionalParameterLocations == null)
+			{
+				CreatePositionalParameterLocations();
+			}
 		}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues,
-			IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection,
-			bool readOnly, bool cacheable, string cacheRegion, string comment, object[] collectionKeys,
-			object optionalObject, string optionalEntityName, object optionalId, IResultTransformer transformer)
-			: this(positionalParameterTypes, positionalParameterValues, namedParameters, lockModes, rowSelection, readOnly, cacheable, cacheRegion, comment, collectionKeys, transformer)
+		                       IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes,
+		                       RowSelection rowSelection, bool readOnly, bool cacheable, string cacheRegion, string comment,
+		                       object[] collectionKeys, object optionalObject, string optionalEntityName, object optionalId,
+		                       IResultTransformer transformer)
+			: this(
+				positionalParameterTypes, positionalParameterValues, namedParameters, lockModes, rowSelection, readOnly, cacheable,
+				cacheRegion, comment, collectionKeys, transformer)
 		{
 			_optionalEntityName = optionalEntityName;
 			_optionalId = optionalId;
@@ -139,6 +140,11 @@ namespace NHibernate.Engine
 		{
 			get { return _positionalParameterTypes; }
 			set { _positionalParameterTypes = value; }
+		}
+
+		public int[] PositionalParameterLocations
+		{
+			get { return _positionalParameterLocations; }
 		}
 
 		/// <summary>
@@ -171,6 +177,18 @@ namespace NHibernate.Engine
 			set { _lockModes = value; }
 		}
 
+		private void CreatePositionalParameterLocations()
+		{
+			if (_positionalParameterTypes != null)
+			{
+				_positionalParameterLocations = new int[_positionalParameterTypes.Length];
+				for (int i = 0; i < _positionalParameterLocations.Length; i++)
+				{
+					_positionalParameterLocations[i] = i;
+				}
+			}
+		}
+
 		private int SafeLength(Array array)
 		{
 			if (array == null)
@@ -183,11 +201,10 @@ namespace NHibernate.Engine
 		/// <summary></summary>
 		public void LogParameters(ISessionFactoryImplementor factory)
 		{
-			Printer print = new Printer(factory);
+			var print = new Printer(factory);
 			if (_positionalParameterValues.Length != 0)
 			{
-				log.Debug("parameters: "
-									+ print.ToString(_positionalParameterTypes, _positionalParameterValues));
+				log.Debug("parameters: " + print.ToString(_positionalParameterTypes, _positionalParameterValues));
 			}
 
 			if (_namedParameters != null)
@@ -228,16 +245,12 @@ namespace NHibernate.Engine
 
 			if (typesLength != valuesLength)
 			{
-				throw new QueryException("Number of positional parameter types (" + typesLength +
-																 ") does not match number of positional parameter values (" + valuesLength + ")");
+				throw new QueryException("Number of positional parameter types (" + typesLength
+				                         + ") does not match number of positional parameter values (" + valuesLength + ")");
 			}
 		}
 
-		public bool ForceCacheRefresh
-		{
-			get { return _forceCacheRefresh; }
-			set { _forceCacheRefresh = value; }
-		}
+		public bool ForceCacheRefresh { get; set; }
 
 		public string OptionalEntityName
 		{
@@ -263,11 +276,7 @@ namespace NHibernate.Engine
 			set { _collectionKeys = value; }
 		}
 
-		public bool Callable
-		{
-			get { return _callable; }
-			set { _callable = value; }
-		}
+		public bool Callable { get; set; }
 
 		public bool ReadOnly
 		{
@@ -277,100 +286,178 @@ namespace NHibernate.Engine
 
 		/************** Filters ********************************/
 
+		private void AdjustPostionalParameterLocations(int parameterIndex)
+		{
+			for (int i = 0; i < _positionalParameterLocations.Length; i++)
+			{
+				if (_positionalParameterLocations[i] >= parameterIndex)
+				{
+					_positionalParameterLocations[i]++;
+				}
+			}
+		}
+
 		public void ProcessFilters(SqlString sql, ISessionImplementor session)
 		{
+			filteredParameterValues = new List<object>();
+			filteredParameterTypes = new List<IType>();
+			filteredParameterLocations = new List<int>();
+
 			if (session.EnabledFilters.Count == 0 || sql.ToString().IndexOf(ParserHelper.HqlVariablePrefix) < 0)
 			{
-				processedPositionalParameterValues = PositionalParameterValues;
-				processedPositionalParameterTypes = PositionalParameterTypes;
 				processedSQL = sql;
+				return;
 			}
-			else
+
+			Dialect.Dialect dialect = session.Factory.Dialect;
+			string symbols = ParserHelper.HqlSeparators + dialect.OpenQuote + dialect.CloseQuote;
+
+			var result = new SqlStringBuilder();
+
+			int parameterIndex = 0; // keep track of the positional parameter
+
+			foreach (var part in sql.Parts)
 			{
-				Dialect.Dialect dialect = session.Factory.Dialect;
-				string symbols = ParserHelper.HqlSeparators + dialect.OpenQuote + dialect.CloseQuote;
-
-				SqlStringBuilder result = new SqlStringBuilder();
-
-				List<object> parameters = new List<object>();
-				List<IType> parameterTypes = new List<IType>();
-				int parameterCount = 0; // keep track of the positional parameter
-
-				foreach (object part in sql.Parts)
+				if (part is Parameter)
 				{
-					if (part is Parameter)
+					result.AddParameter();
+
+					// (?) can be a position parameter or a named parameter (already substituted by (?),
+					// but only the positional parameters are available at this point. Adding them in the
+					// order of appearance is best that can be done at this point of time, but if they
+					// are mixed with named parameters, the order is still wrong, because values and
+					// types for the named parameters are added later to the end of the list.
+					// see test fixture NH-1098
+
+					parameterIndex++;
+					continue;
+				}
+
+				var tokenizer = new StringTokenizer((string) part, symbols, true);
+
+				foreach (var token in tokenizer)
+				{
+					if (token.StartsWith(ParserHelper.HqlVariablePrefix))
 					{
-						result.AddParameter();
+						string filterParameterName = token.Substring(1);
+						object value = session.GetFilterParameterValue(filterParameterName);
+						IType type = session.GetFilterParameterType(filterParameterName);
 
-						// (?) can be a position parameter or a named parameter (already substituted by (?),
-						// but only the positional parameters are available at this point. Adding them in the
-						// order of appearance is best that can be done at this point of time, but if they
-						// are mixed with named parameters, the order is still wrong, because values and
-						// types for the named parameters are added later to the end of the list.
-						// see test fixture NH-1098
-						if (parameterCount < PositionalParameterValues.Length)
+						// If the value is not a value of the type but a collection of values...
+						if (value != null && !type.ReturnedClass.IsAssignableFrom(value.GetType()) && // Added to fix NH-882
+						    typeof (ICollection).IsAssignableFrom(value.GetType()))
 						{
-							parameters.Add(PositionalParameterValues[parameterCount]);
-							parameterTypes.Add(PositionalParameterTypes[parameterCount]);
-							parameterCount++;
-						}
-
-						continue;
-					}
-
-					StringTokenizer tokenizer = new StringTokenizer((string)part, symbols, true);
-
-					foreach (string token in tokenizer)
-					{
-						if (token.StartsWith(ParserHelper.HqlVariablePrefix))
-						{
-							string filterParameterName = token.Substring(1);
-							object value = session.GetFilterParameterValue(filterParameterName);
-							IType type = session.GetFilterParameterType(filterParameterName);
-
-							// If the value is not a value of the type but a collection of values...
-							if (value != null &&
-									!type.ReturnedClass.IsAssignableFrom(value.GetType()) && // Added to fix NH-882
-									typeof(ICollection).IsAssignableFrom(value.GetType()))
+							var coll = (ICollection) value;
+							int i = 0;
+							foreach (var elementValue in coll)
 							{
-								ICollection coll = (ICollection)value;
-								int i = 0;
-								foreach (object elementValue in coll)
-								{
-									i++;
-									int span = type.GetColumnSpan(session.Factory);
-									if (span > 0)
-									{
-										result.AddParameter();
-										parameters.Add(elementValue);
-										parameterTypes.Add(type);
-										if (i < coll.Count)
-											result.Add(", ");
-									}
-								}
-							}
-							else
-							{
+								i++;
 								int span = type.GetColumnSpan(session.Factory);
 								if (span > 0)
 								{
 									result.AddParameter();
-									parameters.Add(value);
-									parameterTypes.Add(type);
+									filteredParameterTypes.Add(type);
+									filteredParameterValues.Add(elementValue);
+									filteredParameterLocations.Add(parameterIndex);
+									AdjustPostionalParameterLocations(parameterIndex);
+									parameterIndex++;
+									if (i < coll.Count)
+									{
+										result.Add(", ");
+									}
 								}
 							}
 						}
 						else
 						{
-							result.Add(token);
+							int span = type.GetColumnSpan(session.Factory);
+							if (span > 0)
+							{
+								result.AddParameter();
+								filteredParameterTypes.Add(type);
+								filteredParameterValues.Add(value);
+								filteredParameterLocations.Add(parameterIndex);
+								AdjustPostionalParameterLocations(parameterIndex);
+								parameterIndex++;
+							}
 						}
 					}
+					else
+					{
+						result.Add(token);
+					}
 				}
-
-				processedPositionalParameterValues = parameters.ToArray();
-				processedPositionalParameterTypes = parameterTypes.ToArray();
-				processedSQL = result.ToSqlString();
 			}
+
+			processedSQL = result.ToSqlString();
+		}
+
+		public int BindParameters(IDbCommand command, GetNamedParameterLocations getNamedParameterLocations, int start,
+		                          ISessionImplementor session)
+		{
+			var values = new List<object>();
+			var types = new List<IType>();
+			var sources = new List<string>();
+
+			for (int i = 0; i < _positionalParameterLocations.Length; i++)
+			{
+				int location = _positionalParameterLocations[i];
+				object value = _positionalParameterValues[i];
+				IType type = _positionalParameterTypes[i];
+				ArrayHelper.SafeSetValue(values, location, value);
+				ArrayHelper.SafeSetValue(types, location, type);
+				ArrayHelper.SafeSetValue(sources, location, "Positional" + i);
+			}
+
+			for (int i = 0; i < filteredParameterLocations.Count; i++)
+			{
+				int location = filteredParameterLocations[i];
+				object value = filteredParameterValues[i];
+				IType type = filteredParameterTypes[i];
+				ArrayHelper.SafeSetValue(values, location, value);
+				ArrayHelper.SafeSetValue(types, location, type);
+				ArrayHelper.SafeSetValue(sources, location, "Filter" + i);
+			}
+
+			if ((_namedParameters != null) && (_namedParameters.Count > 0))
+			{
+				foreach (var namedParameter in _namedParameters)
+				{
+					string name = namedParameter.Key;
+					TypedValue typedval = namedParameter.Value;
+					int[] locations = getNamedParameterLocations(name);
+					for (int i = 0; i < locations.Length; i++)
+					{
+						int location = locations[i];
+
+						// can still clash with positional parameters
+						//  could consider throwing an exception to locate problem (NH-1098)
+						while ((location < types.Count) && (types[location] != null))
+						{
+							location++;
+						}
+
+						ArrayHelper.SafeSetValue(values, location, typedval.Value);
+						ArrayHelper.SafeSetValue(types, location, typedval.Type);
+						ArrayHelper.SafeSetValue(sources, location, "name" + i);
+					}
+				}
+			}
+
+			int span = 0;
+			for (int i = 0; i < values.Count; i++)
+			{
+				IType type = types[i];
+				object value = values[i];
+				if (log.IsDebugEnabled)
+				{
+					log.Debug(string.Format("BindParameters({0}:{1}) {2} -> [{3}]", "Named", type, value, i));
+				}
+				type.NullSafeSet(command, value, start + span, session);
+				span += type.GetColumnSpan(session.Factory);
+			}
+
+			return span;
 		}
 
 		public SqlString FilteredSQL
@@ -378,41 +465,40 @@ namespace NHibernate.Engine
 			get { return processedSQL; }
 		}
 
-		public object[] FilteredPositionalParameterValues
+		public IList<IType> FilteredParameterTypes
 		{
-			get { return processedPositionalParameterValues; }
+			get { return filteredParameterTypes; }
 		}
 
-		public IType[] FilteredPositionalParameterTypes
+		public IList<object> FilteredParameterValues
 		{
-			get { return processedPositionalParameterTypes; }
+			get { return filteredParameterValues; }
 		}
 
-		public bool NaturalKeyLookup
+		public IList<int> FilteredParameterLocations
 		{
-			get { return _naturalKeyLookup; }
-			set { _naturalKeyLookup = value; }
+			get { return filteredParameterLocations; }
 		}
+
+		public bool NaturalKeyLookup { get; set; }
 
 		public IResultTransformer ResultTransformer
 		{
 			get { return _resultTransformer; }
 		}
 
-		public bool HasAutoDiscoverScalarTypes
-		{
-			get { return autoDiscoverTypes; }
-			set { autoDiscoverTypes = value; }
-		}
+		public bool HasAutoDiscoverScalarTypes { get; set; }
 
 		public QueryParameters CreateCopyUsing(RowSelection selection)
 		{
-			QueryParameters copy = new QueryParameters(_positionalParameterTypes, _positionalParameterValues,
-				_namedParameters, _lockModes, selection, _readOnly, _cacheable, _cacheRegion, _comment,
-				_collectionKeys, _optionalObject, _optionalEntityName, _optionalId, _resultTransformer);
+			var copy = new QueryParameters(_positionalParameterTypes, _positionalParameterValues, _namedParameters, _lockModes,
+			                               selection, _readOnly, _cacheable, _cacheRegion, _comment, _collectionKeys,
+			                               _optionalObject, _optionalEntityName, _optionalId, _resultTransformer);
+			copy._positionalParameterLocations = _positionalParameterLocations;
 			copy.processedSQL = processedSQL;
-			copy.processedPositionalParameterTypes = processedPositionalParameterTypes;
-			copy.processedPositionalParameterValues = processedPositionalParameterValues;
+			copy.filteredParameterTypes = filteredParameterTypes;
+			copy.filteredParameterValues = filteredParameterValues;
+			copy.filteredParameterLocations = filteredParameterLocations;
 			return copy;
 		}
 	}

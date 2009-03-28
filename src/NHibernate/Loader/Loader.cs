@@ -1173,6 +1173,7 @@ namespace NHibernate.Loader
 		protected virtual SqlString ProcessFilters(QueryParameters parameters, ISessionImplementor session)
 		{
 			parameters.ProcessFilters(SqlString, session);
+			AdjustNamedParameterLocationsForQueryParameters(parameters);
 			return parameters.FilteredSQL;
 		}
 
@@ -1256,77 +1257,24 @@ namespace NHibernate.Loader
 		protected internal virtual int BindParameterValues(IDbCommand statement, QueryParameters queryParameters,
 		                                                   int startIndex, ISessionImplementor session)
 		{
-			int span = 0;
-			span += BindPositionalParameters(statement, queryParameters, startIndex, session);
-			span += BindNamedParameters(statement, queryParameters.NamedParameters, startIndex + span, session);
-			return span;
-		}
-
-		/// <summary>
-		/// Bind positional parameter values to the <c>IDbCommand</c>
-		/// (these are parameters specified by ?).
-		/// </summary>
-		/// <param name="st">The ADO prepared statement </param>
-		/// <param name="queryParameters">The encapsulation of the parameter values to be bound. </param>
-		/// <param name="start">The position from which to start binding parameter values. </param>
-		/// <param name="session">The originating session. </param>
-		/// <returns> The number of ADO bind positions actually bound during this method execution. </returns>
-		protected internal virtual int BindPositionalParameters(IDbCommand st, QueryParameters queryParameters, int start,
-		                                                        ISessionImplementor session)
-		{
-			object[] values = queryParameters.FilteredPositionalParameterValues;
-			IType[] types = queryParameters.FilteredPositionalParameterTypes;
-
-			int span = 0;
-			for (int i = 0; i < values.Length; i++)
-			{
-				types[i].NullSafeSet(st, values[i], start + span, session);
-				span += types[i].GetColumnSpan(session.Factory);
-			}
-
-			return span;
-		}
-
-		/// <summary>
-		/// Bind named parameters to the <c>IDbCommand</c>
-		/// </summary>
-		/// <param name="st">The <see cref="IDbCommand"/> that contains the parameters.</param>
-		/// <param name="namedParams">The named parameters (key) and the values to set.</param>
-		/// <param name="session">The <see cref="ISession"/> this Loader is using.</param>
-		/// <param name="start"></param>
-		protected internal virtual int BindNamedParameters(IDbCommand st, IDictionary<string, TypedValue> namedParams,
-		                                                   int start, ISessionImplementor session)
-		{
-			if (namedParams != null)
-			{
-				// assumes that types are all of span 1
-				int result = 0;
-				foreach (KeyValuePair<string, TypedValue> namedParam in namedParams)
-				{
-					string name = namedParam.Key;
-					TypedValue typedval = namedParam.Value;
-					int[] locs = GetNamedParameterLocs(name);
-					for (int i = 0; i < locs.Length; i++)
-					{
-						if (log.IsDebugEnabled)
-						{
-							log.Debug("BindNamedParameters() " + typedval.Value + " -> " + name + " [" + (locs[i] + start) + "]");
-						}
-						typedval.Type.NullSafeSet(st, typedval.Value, locs[i] + start, session);
-					}
-					result += locs.Length;
-				}
-				return result;
-			}
-			else
-			{
-				return 0;
-			}
+			// NH Different behavior:
+			// The responsibility of parameter binding was entirely moved to QueryParameters
+			// to deal with positionslParameter+NamedParameter+ParameterOfFilters
+			return queryParameters.BindParameters(statement, GetNamedParameterLocs, 0, session);
 		}
 
 		public virtual int[] GetNamedParameterLocs(string name)
 		{
 			throw new AssertionFailure("no named parameters");
+		}
+
+		protected virtual void AdjustNamedParameterLocationsForQueryParameters(QueryParameters parameters)
+		{
+			// if you support named parameter locations (by overriding GetNamedParameterLocs), then you might need to
+			//  allow for the locations to be adjusted by introduced filtered parameters by overriding
+			//  this method too.
+			if ((parameters.NamedParameters != null) && (parameters.NamedParameters.Keys.Count > 0))
+				throw new AssertionFailure(GetType() + " must override to handle implementation of named parameter locations");
 		}
 
 		/// <summary>
@@ -1784,16 +1732,24 @@ namespace NHibernate.Loader
 			List<IType> paramTypeList = new List<IType>();
 			int span = 0;
 
-			foreach (IType type in parameters.FilteredPositionalParameterTypes)
+			for (int index = 0; index < parameters.PositionalParameterTypes.Length; index++)
 			{
-				paramTypeList.Add(type);
+				int location = parameters.PositionalParameterLocations[index];
+				IType type = parameters.PositionalParameterTypes[index];
+				ArrayHelper.SafeSetValue(paramTypeList, location, type);
+				span += type.GetColumnSpan(Factory);
+			}
+
+			for (int index = 0; index < parameters.FilteredParameterTypes.Count; index++)
+			{
+				int location = parameters.FilteredParameterLocations[index];
+				IType type = parameters.FilteredParameterTypes[index];
+				ArrayHelper.SafeSetValue(paramTypeList, location, type);
 				span += type.GetColumnSpan(Factory);
 			}
 
 			if (parameters.NamedParameters != null && parameters.NamedParameters.Count > 0)
 			{
-				int offset = paramTypeList.Count;
-
 				// convert the named parameters to an array of types
 				foreach (KeyValuePair<string, TypedValue> namedParameter in parameters.NamedParameters)
 				{
@@ -1804,7 +1760,14 @@ namespace NHibernate.Loader
 
 					for (int i = 0; i < locs.Length; i++)
 					{
-						ArrayHelper.SafeSetValue(paramTypeList, locs[i] + offset, typedval.Type);
+						int location = locs[i];
+
+						// can still clash with positional parameters
+						//  could consider throwing an exception to locate problem (NH-1098)
+						while ((location < paramTypeList.Count) && (paramTypeList[location] != null))
+							location++;
+
+						ArrayHelper.SafeSetValue(paramTypeList, location, typedval.Type);
 					}
 				}
 			}

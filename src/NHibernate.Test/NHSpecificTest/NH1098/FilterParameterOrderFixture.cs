@@ -121,7 +121,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1098
             Assert.AreEqual( 1, result.Count );
         }
 
-        [Test, Ignore( "Known issue, parameter order is wrong when named and positional parameters are mixed" )]
+        [Test]
         public void QueryWithNamedParameters()
         {
             ISession session = OpenSession();

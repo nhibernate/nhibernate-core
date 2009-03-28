@@ -294,6 +294,8 @@
     <Compile Include="HQL\BaseFunctionFixture.cs" />
     <Compile Include="NHSpecificTest\DtcFailures\DtcFailuresFixture.cs" />
     <Compile Include="NHSpecificTest\DtcFailures\Person.cs" />
+    <Compile Include="NHSpecificTest\NH1693\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1693\Model.cs" />
     <Compile Include="NHSpecificTest\NH1694\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1706\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1706\KeyPropertyRefFixture.cs" />
@@ -1696,6 +1698,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1693\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1710\WithColumnNode.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1710\InLine.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1710\Heuristic.hbm.xml" />

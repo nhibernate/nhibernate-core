@@ -701,6 +701,21 @@ namespace NHibernate.Hql.Classic
 			return o.ToArray();
 		}
 
+		protected override void AdjustNamedParameterLocationsForQueryParameters(QueryParameters parameters)
+		{
+			foreach (int existingParameterLocation in parameters.FilteredParameterLocations)
+			{
+				foreach (IList<int> namedParameterLocations in namedParameters.Values)
+				{
+					for (int index = 0; index < namedParameterLocations.Count; index++)
+					{
+						if (namedParameterLocations[index] == existingParameterLocation)
+							namedParameterLocations[index]++;
+					}
+				}
+			}
+		}
+
 		public static string ScalarName(int x, int y)
 		{
 			return new StringBuilder()

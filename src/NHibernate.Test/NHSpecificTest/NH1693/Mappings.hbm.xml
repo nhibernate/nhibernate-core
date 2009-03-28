@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1693">
+
+  <class name="Invoice">
+    <id name="ID" type="Int32">
+      <generator class="hilo" />
+    </id>
+    <property name="Mode" type="String" />
+    <property name="Num" type="Int32" />
+    <property name="Category" type="Int32" />
+
+    <filter name="modeFilter" condition="Mode=:currentMode" />
+  </class>
+
+  <filter-def name="modeFilter">
+    <filter-param name="currentMode" type="String"/>
+  </filter-def>
+
+</hibernate-mapping>
