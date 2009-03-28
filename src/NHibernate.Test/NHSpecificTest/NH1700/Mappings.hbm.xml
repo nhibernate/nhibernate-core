@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1700">
+	
+	<class name="PayrollSegment" abstract="true" polymorphism="explicit">
+		<id name="Id" column="PayrollSegmentKey"/>
+		<union-subclass name="ActualPayrollSegment" table="PayrollSegment"/>
+		<union-subclass name="ProjectedPayrollSegment" table="ProjectedPayrollSegment"/>
+		<union-subclass name="ClosedPayrollSegment" table="ClosedPayrollSegment"/>
+	</class>
+</hibernate-mapping>

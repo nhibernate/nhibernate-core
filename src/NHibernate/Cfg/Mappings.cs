@@ -315,17 +315,25 @@ namespace NHibernate.Cfg
 		public Table AddDenormalizedTable(string schema, string catalog, string name, bool isAbstract, string subselect, Table includedTable)
 		{
 			string key = subselect ?? dialect.Qualify(schema, catalog, name);
-			if (tables.ContainsKey(key))
+
+			Table table = new DenormalizedTable(includedTable)
+			              	{
+												IsAbstract = isAbstract, 
+												Name = name, 
+												Catalog = catalog, 
+												Schema = schema, 
+												Subselect = subselect
+											};
+
+			Table existing;
+			if (tables.TryGetValue(key, out existing))
 			{
-				throw new DuplicateMappingException("table", name);
+				if (existing.IsPhysicalTable)
+				{
+					throw new DuplicateMappingException("table", name);
+				}
 			}
 
-			Table table = new DenormalizedTable(includedTable);
-			table.IsAbstract = isAbstract;
-			table.Name = name;
-			table.Catalog = catalog;
-			table.Schema = schema;
-			table.Subselect = subselect;
 			tables[key] = table;
 			return table;
 		}
