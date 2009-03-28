@@ -4,9 +4,7 @@
                    default-lazy="false">
 	
   <class name="DomainClass">
-    <id name="Id">
-      <generator class="assigned" />
-    </id>
+    <id name="Id"/>
     <property name="BooleanData" />
   </class>
 </hibernate-mapping>
