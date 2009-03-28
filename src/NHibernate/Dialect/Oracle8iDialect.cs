@@ -218,7 +218,6 @@ namespace NHibernate.Dialect
 
 		protected internal virtual void RegisterDefaultProperties()
 		{
-			DefaultProperties[Environment.PrepareSql] = "false";
 			//DefaultProperties[Environment.DefaultBatchFetchSize] = DefaultBatchSize; It can break some test and it is a user matter
 
 			// Oracle driver reports to support GetGeneratedKeys(), but they only

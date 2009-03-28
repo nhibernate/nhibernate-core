@@ -298,6 +298,12 @@
     <Compile Include="NHSpecificTest\NH1706\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1706\KeyPropertyRefFixture.cs" />
     <Compile Include="NHSpecificTest\NH1710\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1713\Domain.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NHSpecificTest\NH1713\Fixture.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="NHSpecificTest\NH1715\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1715\ClassA.cs" />
     <Compile Include="NHSpecificTest\NH645\HQLFunctionFixture.cs" />
@@ -1694,6 +1700,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1710\InLine.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1710\Heuristic.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1710\Defined.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1713\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1715\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\DtcFailures\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1694\Mappings.hbm.xml" />

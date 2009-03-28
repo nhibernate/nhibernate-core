@@ -131,7 +131,6 @@ namespace NHibernate.Dialect
 			RegisterKeyword("integer");
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlClientDriver";
-			DefaultProperties[Environment.PrepareSql] = "true";
 		}
 
 		/// <summary></summary>

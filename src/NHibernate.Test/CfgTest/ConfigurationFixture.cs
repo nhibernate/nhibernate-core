@@ -29,7 +29,8 @@ namespace NHibernate.Test.CfgTest
 
 			Assert.IsTrue(cfg.Properties.ContainsKey(Environment.ShowSql));
 			Assert.IsTrue(cfg.Properties.ContainsKey(Environment.UseQueryCache));
-			Assert.IsTrue(cfg.Properties.ContainsKey(Environment.PrepareSql));
+			Assert.IsFalse(cfg.Properties.ContainsKey(Environment.PrepareSql), 
+				"Our default conf should not include override the possible Dialect default configuration.");
 			Assert.IsTrue(cfg.Properties.ContainsKey(Environment.Isolation));
 			Assert.AreEqual("true 1, false 0, yes 1, no 0", cfg.Properties[Environment.QuerySubstitutions]);
 			Assert.AreEqual("Server=localhost;initial catalog=nhibernate;User Id=;Password=",
