@@ -57,7 +57,6 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "DATETIME");
 			RegisterColumnType(DbType.DateTime, "DATETIME");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $l)");
 			RegisterColumnType(DbType.Decimal, 19, "DECIMAL($p, $s)");
 			RegisterColumnType(DbType.Double, "DOUBLE PRECISION"); //synonym for FLOAT(53)
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");

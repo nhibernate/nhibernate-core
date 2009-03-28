@@ -109,9 +109,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Single, "FLOAT(24)");
 			RegisterColumnType(DbType.Double, "DOUBLE PRECISION");
 			RegisterColumnType(DbType.Double, 19, "NUMBER($p,$s)");
-			RegisterColumnType(DbType.Double, 19, "NUMBER(19, $l)");
 			RegisterColumnType(DbType.Decimal, "NUMBER(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "NUMBER(19, $l)");
 			RegisterColumnType(DbType.Decimal, 19, "NUMBER($p,$s)");
 		}
 

@@ -211,7 +211,10 @@ namespace NHibernate.Mapping
 		private string GetDialectTypeName(Dialect.Dialect dialect, IMapping mapping)
 		{
 			if (IsCaracteristicsDefined())
-				return dialect.GetTypeName(GetSqlTypeCode(mapping), Length, Precision, Scale);
+			{
+				// NH-1070 (the size should be 0 if the precision is defined)
+				return dialect.GetTypeName(GetSqlTypeCode(mapping), (!IsPrecisionDefined()) ? Length:0, Precision, Scale);
+			}
 			else
 				return dialect.GetTypeName(GetSqlTypeCode(mapping));
 		}
@@ -412,6 +415,11 @@ namespace NHibernate.Mapping
 		private bool IsCaracteristicsDefined()
 		{
 			return length.HasValue || precision.HasValue || scale.HasValue;
+		}
+
+		private bool IsPrecisionDefined()
+		{
+			return precision.HasValue || scale.HasValue;
 		}
 
 		#region ICloneable Members

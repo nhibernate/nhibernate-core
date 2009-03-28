@@ -156,11 +156,12 @@ namespace NHibernate.Type
 			// be created.
 			RegisterType(typeof(Object), NHibernateUtil.Object, "object");
 
-			// These are in here for Hibernate mapping compatibility
+			// These are in here because needed to NO override default CLR types and be available in mappings
 			typeByTypeOfName["int"] = NHibernateUtil.Int32;
 			typeByTypeOfName["date"] = NHibernateUtil.Date;
 			typeByTypeOfName["time"] = NHibernateUtil.Time;
 			typeByTypeOfName["timestamp"] = NHibernateUtil.Timestamp;
+			typeByTypeOfName["decimal"] = NHibernateUtil.Decimal;
 
 			typeByTypeOfName["serializable"] = NHibernateUtil.Serializable;
 			typeByTypeOfName["true_false"] = NHibernateUtil.TrueFalse;
