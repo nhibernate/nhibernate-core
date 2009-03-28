@@ -23,9 +23,9 @@ namespace NHibernate.Impl
 		private static readonly ILog log = LogManager.GetLogger(typeof(MultiQueryImpl));
 
 		private readonly List<IQuery> queries = new List<IQuery>();
-		private readonly List<QueryTranslator> translators = new List<QueryTranslator>();
+		private readonly List<IQueryTranslator> translators = new List<IQueryTranslator>();
 		private readonly List<QueryParameters> parameters = new List<QueryParameters>();
-		private IList criteriaResults;
+		private IList queryResults;
 		private readonly Dictionary<string, int> criteriaResultPositions = new Dictionary<string, int>();
 		private string cacheRegion;
 		private int commandTimeout = RowSelection.NoValue;
@@ -360,9 +360,7 @@ namespace NHibernate.Impl
 			try
 			{
 				Before();
-
-				criteriaResults = cacheable ? ListUsingQueryCache() : ListIgnoreQueryCache();
-				return criteriaResults;
+				return cacheable ? ListUsingQueryCache() : ListIgnoreQueryCache();
 			}
 			finally
 			{
@@ -405,9 +403,7 @@ namespace NHibernate.Impl
 				{
 					for (int j = 0; j < subList.Count; j++)
 					{
-						object[] row = subList[j] as object[];
-						if (row == null)
-							row = new object[] { subList[j] };
+						object[] row = subList[j] as object[] ?? new[] { subList[j] };
 						subList[j] = holderInstantiator.Instantiate(row);
 					}
 
@@ -458,10 +454,10 @@ namespace NHibernate.Impl
 					log.DebugFormat("Executing {0} queries", translators.Count);
 				for (int i = 0; i < translators.Count; i++)
 				{
-					QueryTranslator translator = Translators[i];
+					IQueryTranslator translator = Translators[i];
 					QueryParameters parameter = Parameters[i];
 					ArrayList tempResults = new ArrayList();
-					int entitySpan = translator.EntityPersisters.Length;
+					int entitySpan = translator.Loader.EntityPersisters.Length;
 					hydratedObjects[i] = entitySpan > 0 ? new ArrayList() : null;
 					RowSelection selection = parameter.RowSelection;
 					int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
@@ -470,13 +466,13 @@ namespace NHibernate.Impl
 						Loader.Loader.Advance(reader, selection);
 					}
 
-					LockMode[] lockModeArray = translator.GetLockModes(parameter.LockModes);
+					LockMode[] lockModeArray = translator.Loader.GetLockModes(parameter.LockModes);
 					EntityKey optionalObjectKey = Loader.Loader.GetOptionalObjectKey(parameter, session);
 
-					createSubselects[i] = translator.IsSubselectLoadingEnabled;
+					createSubselects[i] = translator.Loader.IsSubselectLoadingEnabled;
 					subselectResultKeys[i] = createSubselects[i] ? new List<EntityKey[]>() : null;
 
-					translator.HandleEmptyCollections(parameter.CollectionKeys, reader, session);
+					translator.Loader.HandleEmptyCollections(parameter.CollectionKeys, reader, session);
 					EntityKey[] keys = new EntityKey[entitySpan]; // we can reuse it each time
 
 					if (log.IsDebugEnabled)
@@ -493,7 +489,7 @@ namespace NHibernate.Impl
 						}
 
 						object result =
-							translator.GetRowFromResultSet(reader,
+							translator.Loader.GetRowFromResultSet(reader,
 														   session,
 														   parameter,
 														   lockModeArray,
@@ -536,14 +532,14 @@ namespace NHibernate.Impl
 			}
 			for (int i = 0; i < translators.Count; i++)
 			{
-				QueryTranslator translator = translators[i];
+				IQueryTranslator translator = translators[i];
 				QueryParameters parameter = parameters[i];
 
-				translator.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false);
+				translator.Loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false);
 
 				if (createSubselects[i])
 				{
-					translator.CreateSubselects(subselectResultKeys[i], parameter, session);
+					translator.Loader.CreateSubselects(subselectResultKeys[i], parameter, session);
 				}
 			}
 			return results;
@@ -630,23 +626,26 @@ namespace NHibernate.Impl
 		{
 			for (int i = 0; i < queries.Count; i++)
 			{
-				QueryTranslator translator = Translators[i];
+				IQueryTranslator translator = Translators[i];
 				QueryParameters parameter = Parameters[i];
-				colIndex += parameter.BindParameters(command, translator.GetNamedParameterLocs, colIndex, session);
+				colIndex += parameter.BindParameters(command, translator.Loader.GetNamedParameterLocs, colIndex, session);
 			}
 			return colIndex;
 		}
 
 		public object GetResult(string key)
 		{
-			if (criteriaResults == null) List();
+			if (queryResults == null)
+			{
+				queryResults= List();
+			}
 
 			if (!criteriaResultPositions.ContainsKey(key))
 			{
 				throw new InvalidOperationException(String.Format("The key '{0}' is unknown", key));
 			}
 
-			return criteriaResults[criteriaResultPositions[key]];
+			return queryResults[criteriaResultPositions[key]];
 		}
 
 		private int BindLimitParametersFirstIfNeccesary(IDbCommand command, int colIndex)
@@ -685,7 +684,7 @@ namespace NHibernate.Impl
 			List<IType[]> resultTypesList = new List<IType[]>(Translators.Count);
 			for (int i = 0; i < Translators.Count; i++)
 			{
-				QueryTranslator queryTranslator = Translators[i];
+				IQueryTranslator queryTranslator = Translators[i];
 				querySpaces.AddAll(queryTranslator.QuerySpaces);
 				resultTypesList.Add(queryTranslator.ActualReturnTypes);
 			}
@@ -717,7 +716,7 @@ namespace NHibernate.Impl
 			return GetResultList(result);
 		}
 
-		private IList<QueryTranslator> Translators
+		private IList<IQueryTranslator> Translators
 		{
 			get
 			{

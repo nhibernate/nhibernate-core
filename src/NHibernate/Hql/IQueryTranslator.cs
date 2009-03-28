@@ -116,5 +116,9 @@ namespace NHibernate.Hql
 		bool ContainsCollectionFetches { get; }
 
 		bool IsManipulationStatement { get; }
+
+		Loader.Loader Loader { get; }
+
+		IType[] ActualReturnTypes { get; }
 	}
 }

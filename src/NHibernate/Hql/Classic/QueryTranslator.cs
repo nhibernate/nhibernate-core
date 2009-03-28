@@ -356,7 +356,12 @@ namespace NHibernate.Hql.Classic
 			get { return returnTypes; }
 		}
 
-		internal virtual IType[] ActualReturnTypes
+		public Loader.Loader Loader
+		{
+			get { return this; }
+		}
+
+		public virtual IType[] ActualReturnTypes
 		{
 			get { return actualReturnTypes; }
 		}
