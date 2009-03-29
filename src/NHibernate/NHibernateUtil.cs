@@ -141,6 +141,11 @@ namespace NHibernate
 		public static readonly NullableType Double = new DoubleType();
 
 		/// <summary>
+		/// NHibernate Currency type (System.Decimal - DbType.Currency)
+		/// </summary>
+		public static readonly NullableType Currency = new CurrencyType();
+
+		/// <summary>
 		/// NHibernate Guid type.
 		/// </summary>
 		public static readonly NullableType Guid = new GuidType();

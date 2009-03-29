@@ -95,8 +95,6 @@ namespace NHibernate.Type
 			//basicTypes.Add(NHibernate.Blob.Name, NHibernate.Blob);
 			//basicTypes.Add(NHibernate.Clob.Name, NHibernate.Clob);
 
-			//basicTypes.Add(NHibernate.Currency.Name, NHibernate.Currency);
-
 			// the Timezone class .NET is not even close to the java.util.Timezone class - in
 			// .NET all you can do is get the local Timezone - there is no "factory" method to
 			// get a Timezone by name...
@@ -145,6 +143,7 @@ namespace NHibernate.Type
 			typeByTypeOfName[NHibernateUtil.Ticks.Name] = NHibernateUtil.Ticks;
 			typeByTypeOfName[NHibernateUtil.TimeSpanInt64.Name] = NHibernateUtil.TimeSpanInt64;
 			typeByTypeOfName[NHibernateUtil.TimeSpan.Name] = NHibernateUtil.TimeSpan;
+			typeByTypeOfName[NHibernateUtil.Currency.Name] = NHibernateUtil.Currency;
 
 			// need to do add the key "Serializable" because the hbm files will have a 
 			// type="Serializable", but the SerializableType returns the Name as 
@@ -162,6 +161,7 @@ namespace NHibernate.Type
 			typeByTypeOfName["time"] = NHibernateUtil.Time;
 			typeByTypeOfName["timestamp"] = NHibernateUtil.Timestamp;
 			typeByTypeOfName["decimal"] = NHibernateUtil.Decimal;
+			typeByTypeOfName["currency"] = NHibernateUtil.Currency;
 
 			typeByTypeOfName["serializable"] = NHibernateUtil.Serializable;
 			typeByTypeOfName["true_false"] = NHibernateUtil.TrueFalse;

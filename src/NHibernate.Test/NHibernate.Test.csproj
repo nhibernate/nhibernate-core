@@ -1059,6 +1059,8 @@
     <Compile Include="TypesTest\BooleanTypeFixture.cs" />
     <Compile Include="TypesTest\ByteClass.cs" />
     <Compile Include="TypesTest\ByteTypeFixture.cs" />
+    <Compile Include="TypesTest\CurrencyClass.cs" />
+    <Compile Include="TypesTest\CurrencyTypeFixture.cs" />
     <Compile Include="TypesTest\TimeSpanClass.cs" />
     <Compile Include="TypesTest\TimeSpanTypeFixture.cs" />
     <Compile Include="TypesTest\TimeSpanInt64Class.cs" />
@@ -1705,6 +1707,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="TypesTest\CurrencyClass.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1635\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1688\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1700\Mappings.hbm.xml" />
