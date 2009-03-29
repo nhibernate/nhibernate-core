@@ -19,8 +19,38 @@ Build 2.1.0
 
 	##### Breaking Changes #####
 		* see NH-1633 if you are using SQL native queries
-		* see NH-1657 if you are using 'TimeSpan' NH type.
 		* CriteriaUtil is gone. NHibernate.Transform.Transformers now returns predefined IResultTransformer.
+
+Build 2.1.0.Alpha2 (rev4167)
+========================
+
+** Sub-task
+    * [NH-1688] - System.Boolean type incorrectly mapped to YesNoType when the criterion is created by using a projection instead of a property name
+
+** Bug
+    * [NH-1635] - <many-to-one formula="select id from..."> should not require a column
+    * [NH-1671] - SoftLimitMRUCache has a softReferenceCache which is NOT soft
+    * [NH-1693] -  Wrong parameters order in query with subselect and filter
+    * [NH-1694] - SQL2005Dialect - Sorting fails on a Formula property containing a comma while using paging (MaxResults)
+    * [NH-1700] - union-subclass with same name as abstract superclass causes NHibernate.DuplicateMappingException.
+    * [NH-1706] - property-ref does not work for different data type than PK type
+    * [NH-1710] - Decimal fields are not create correctly in SQL Server 2005/2008 using SchemaExport
+    * [NH-1711] - Failure of DTC transaction with multiple durable enlistment will crash the process
+    * [NH-1715] - Timespan type doesn't work with SqlServer 2005
+
+** Improvement
+    * [NH-1707] - MsSQL : prepare_sql should be true by-default
+    * [NH-1716] - By default map TimeSpan as int64
+
+** New Feature
+    * [NH-1222] - <Join> elements: collections support
+    * [NH-1718] - CurrencyType
+    * [NH-1719] - Current TimeSpan moved to TimeAsTimeSpan and TimeSpanInt64 moved back to TimeSpan
+
+** Patch
+    * [NH-1708] - MS SQL CE Metadata implementation
+    * [NH-1712] - Release notes missing info about removal of CriteriaUtil
+    * [NH-1713] - NH-1707 results in buggy PrepareStatement behavior
 		
 Build 2.1.0.Alpha1
 ========================
