@@ -9,7 +9,7 @@
 			<generator class="native"/>
 		</id>
 
-        <property name="Sql_time" type="time" />
+        <property name="Sql_TimeAsTimeSpan" type="TimeAsTimeSpan" />
         
 	</class>
 	

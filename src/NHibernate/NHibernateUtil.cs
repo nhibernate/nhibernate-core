@@ -213,12 +213,12 @@ namespace NHibernate
 		/// <summary>
 		/// NHibernate Ticks type
 		/// </summary>
-		public static readonly NullableType TimeSpan = new TimeSpanType();
+		public static readonly NullableType TimeAsTimeSpan = new TimeAsTimeSpanType();
 
 		/// <summary>
 		/// NHibernate Ticks type
 		/// </summary>
-		public static readonly NullableType TimeSpanInt64 = new TimeSpanInt64Type();
+		public static readonly NullableType TimeSpan = new TimeSpanType();
 
 		/// <summary>
 		/// NHibernate Timestamp type

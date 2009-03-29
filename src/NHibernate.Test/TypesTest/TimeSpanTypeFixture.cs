@@ -1,5 +1,4 @@
 using System;
-using NHibernate.Dialect;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -32,7 +31,7 @@ namespace NHibernate.Test.TypesTest
 	}
 
 	[TestFixture]
-	public class TimeSpanFixture2 : TypeFixtureBase
+	public class TimeSpanTypeFixture2 : TypeFixtureBase
 	{
 		protected override string TypeName
 		{
@@ -42,7 +41,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void SavingAndRetrieving()
 		{
-			var ticks = DateTime.Parse("23:59:59").TimeOfDay;
+			var ticks = new TimeSpan(1982);
 
 			var entity = new TimeSpanClass
 			             	{
@@ -62,13 +61,7 @@ namespace NHibernate.Test.TypesTest
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				entityReturned = s.CreateQuery("from TimeSpanClass").UniqueResult<TimeSpanClass>();
-				
-				if(Dialect is MsSql2008Dialect)
-					Assert.AreEqual(ticks, entityReturned.TimeSpanValue);
-
-				Assert.AreEqual(entityReturned.TimeSpanValue.Hours,ticks.Hours);
-				Assert.AreEqual(entityReturned.TimeSpanValue.Minutes, ticks.Minutes);
-				Assert.AreEqual(entityReturned.TimeSpanValue.Seconds, ticks.Seconds);
+				Assert.AreEqual(ticks, entityReturned.TimeSpanValue);
 			}
 
 			using (ISession s = OpenSession())

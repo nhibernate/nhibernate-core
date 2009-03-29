@@ -5,7 +5,7 @@
 		<id name="Id">
 			<generator class="native" />
 		</id>		
-		<property name="TimeSpanValue" type="TimeSpan" />
+		<property name="TimeSpanValue" type="TimeSpan" />		
 	</class>
 	
 </hibernate-mapping>

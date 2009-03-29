@@ -5,15 +5,15 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	/// <summary>
-	/// Summary description for TimeSpanTypeFixture.
+	/// Summary description for TimeAsTimeSpanTypeFixture.
 	/// </summary>
 	[TestFixture]
-	public class TimeSpanInt64TypeFixture
+	public class TimeAsTimeSpanTypeFixture
 	{
 		[Test]
 		public void Next()
 		{
-			var type = (TimeSpanInt64Type) NHibernateUtil.TimeSpanInt64;
+			var type = (TimeAsTimeSpanType) NHibernateUtil.TimeAsTimeSpan;
 			object current = new TimeSpan(DateTime.Now.Ticks - 5);
 			object next = type.Next(current, null);
 
@@ -25,25 +25,25 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Seed()
 		{
-			var type = (TimeSpanInt64Type) NHibernateUtil.TimeSpanInt64;
+			var type = (TimeAsTimeSpanType) NHibernateUtil.TimeAsTimeSpan;
 			Assert.IsTrue(type.Seed(null) is TimeSpan, "seed should be TimeSpan");
 		}
 	}
 
 	[TestFixture]
-	public class TimeSpanInt64Fixture2 : TypeFixtureBase
+	public class TimeSpanFixture2 : TypeFixtureBase
 	{
 		protected override string TypeName
 		{
-			get { return "TimeSpanInt64"; }
+			get { return "TimeAsTimeSpan"; }
 		}
 
 		[Test]
 		public void SavingAndRetrieving()
 		{
-			var ticks = new TimeSpan(1982);
+			var ticks = DateTime.Parse("23:59:59").TimeOfDay;
 
-			var entity = new TimeSpanInt64Class
+			var entity = new TimeAsTimeSpanClass
 			             	{
 			             		TimeSpanValue = ticks
 			             	};
@@ -55,13 +55,17 @@ namespace NHibernate.Test.TypesTest
 				tx.Commit();
 			}
 
-			TimeSpanInt64Class entityReturned;
+			TimeAsTimeSpanClass entityReturned;
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				entityReturned = s.CreateQuery("from TimeSpanInt64Class").UniqueResult<TimeSpanInt64Class>();
+				entityReturned = s.CreateQuery("from TimeAsTimeSpanClass").UniqueResult<TimeAsTimeSpanClass>();
+				
 				Assert.AreEqual(ticks, entityReturned.TimeSpanValue);
+				Assert.AreEqual(entityReturned.TimeSpanValue.Hours,ticks.Hours);
+				Assert.AreEqual(entityReturned.TimeSpanValue.Minutes, ticks.Minutes);
+				Assert.AreEqual(entityReturned.TimeSpanValue.Seconds, ticks.Seconds);
 			}
 
 			using (ISession s = OpenSession())

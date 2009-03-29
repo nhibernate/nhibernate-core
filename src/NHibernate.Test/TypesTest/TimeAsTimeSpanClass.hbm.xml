@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?> 
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
 	
-	<class name="NHibernate.Test.TypesTest.TimeSpanInt64Class, NHibernate.Test">
+	<class name="NHibernate.Test.TypesTest.TimeAsTimeSpanClass, NHibernate.Test">
 		<id name="Id">
 			<generator class="native" />
 		</id>		
-		<property name="TimeSpanValue" type="TimeSpanInt64" />		
+		<property name="TimeSpanValue" type="TimeAsTimeSpan" />
 	</class>
 	
 </hibernate-mapping>

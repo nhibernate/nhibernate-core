@@ -12,7 +12,9 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 
 		public DateTimeOffset Sql_datetimeoffset { get; set; }
 
-		public TimeSpan Sql_time { get; set; }
+		public TimeSpan Sql_TimeAsTimeSpan { get; set; }
+
+		public DateTime Sql_time { get; set; }
 		
 		public DateTime Sql_date { get; set; }
 	}

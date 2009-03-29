@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Data;
 using NHibernate.Engine;
@@ -8,18 +8,18 @@ using System.Collections.Generic;
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// Maps a <see cref="System.TimeSpan" /> Property to an <see cref="DbType.Time" /> column 
+	/// Maps a <see cref="System.TimeSpan" /> Property to an <see cref="DbType.Int64" /> column 
 	/// </summary>
 	[Serializable]
 	public class TimeSpanType : PrimitiveType, IVersionType, ILiteralType
 	{
-		private static readonly DateTime BaseDateValue = new DateTime(1753, 01, 01);
-
+		/// <summary></summary>
 		internal TimeSpanType()
-			: base(SqlTypeFactory.Time)
+			: base(SqlTypeFactory.Int64)
 		{
 		}
 
+		/// <summary></summary>
 		public override string Name
 		{
 			get { return "TimeSpan"; }
@@ -29,11 +29,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				object value = rs[index];
-				if(value is TimeSpan)
-					return (TimeSpan)value;
-                
-				return ((DateTime)value).Subtract(BaseDateValue);
+				return new TimeSpan(Convert.ToInt64(rs[index]));
 			}
 			catch (Exception ex)
 			{
@@ -45,11 +41,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				object value = rs[name];
-				if (value is TimeSpan) //For those dialects where DbType.Time means TimeSpan.
-					return (TimeSpan)value;
-
-				return ((DateTime)value).Subtract(BaseDateValue);
+				return new TimeSpan(Convert.ToInt64(rs[name]));
 			}
 			catch (Exception ex)
 			{
@@ -57,15 +49,21 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override void Set(IDbCommand st, object value, int index)
-		{
-			DateTime date = BaseDateValue.AddTicks(((TimeSpan)value).Ticks);
-			((IDataParameter) st.Parameters[index]).Value = date;
-		}
-
+		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
 			get { return typeof(TimeSpan); }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="st"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		public override void Set(IDbCommand st, object value, int index)
+		{
+			((IDataParameter)st.Parameters[index]).Value = ((TimeSpan)value).Ticks;
 		}
 
 		public override string ToString(object val)
@@ -80,6 +78,7 @@ namespace NHibernate.Type
 			return Seed(session);
 		}
 
+		/// <summary></summary>
 		public virtual object Seed(ISessionImplementor session)
 		{
 			return new TimeSpan(DateTime.Now.Ticks);
