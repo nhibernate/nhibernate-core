@@ -625,7 +625,7 @@ namespace NHibernate.Dialect
 		public virtual string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey,
 			string referencedTable, string[] primaryKey, bool referencesPrimaryKey)
 		{
-			StringBuilder res = new StringBuilder(30);
+			var res = new StringBuilder(200);
 
 			res.Append(" add constraint ")
 				.Append(constraintName)
