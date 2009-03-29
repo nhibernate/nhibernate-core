@@ -196,7 +196,7 @@ namespace NHibernate.Test
 			ApplyCacheSettings(cfg);
 		}
 
-		private void CreateSchema()
+		protected virtual void CreateSchema()
 		{
 			new SchemaExport(cfg).Create(OutputDdl, true);
 		}

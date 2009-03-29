@@ -852,7 +852,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		protected void BindManyToOne(XmlNode node, ManyToOne model, string defaultColumnName, bool isNullable)
 		{
-			BindColumns(node, model, isNullable, true, defaultColumnName);
+			BindColumnsOrFormula(node, model, defaultColumnName, isNullable);
 			InitOuterJoinFetchSetting(node, model);
 			InitLaziness(node, model, true);
 

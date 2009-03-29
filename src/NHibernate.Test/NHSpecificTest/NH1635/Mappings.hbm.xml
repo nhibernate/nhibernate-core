@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping 
+  xmlns="urn:nhibernate-mapping-2.2"
+  assembly="NHibernate.Test"
+  namespace="NHibernate.Test.NHSpecificTest.NH1635">
+
+  
+  <class name="ForumThread" table="ForumThread">
+
+    <id name="Id" column="ForumThreadId" type="Int32">
+      <generator class="assigned" />
+    </id>
+
+    <property name="Name" column="Name" type="String" length="25" not-null="true" />
+
+    <bag name="Messages" table="ForumMessage" inverse="true" cascade="all-delete-orphan">
+      <key column="ForumThreadId" />
+      <one-to-many class="ForumMessage" />
+    </bag>
+
+    <many-to-one 
+      name="LatestMessage"
+      class="ForumMessage"
+      formula="(SELECT MAX(m.ForumMessageId) FROM ForumMessage m WHERE m.ForumThreadId = ForumThreadId)" />
+    
+  </class>
+  
+  
+  <class name="ForumMessage" table="ForumMessage">
+
+    <id name="Id" column="ForumMessageId" type="Int32">
+      <generator class="assigned" />
+    </id>
+	
+	  <property name="Name" column="Name" type="String" length="25" not-null="true" />
+    
+    <many-to-one name="ForumThread" column="ForumThreadId" class="ForumThread" not-null="true" />
+    
+  </class>
+
+</hibernate-mapping>
