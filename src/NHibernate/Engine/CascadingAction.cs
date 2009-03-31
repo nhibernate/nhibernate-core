@@ -18,10 +18,6 @@ namespace NHibernate.Engine
 
 		#region The CascadingAction contract
 
-		internal CascadingAction()
-		{
-		}
-
 		/// <summary> Cascade the action to the child object. </summary>
 		/// <param name="session">The session within which the cascade is occurring. </param>
 		/// <param name="child">The child to which cascading should be performed. </param>
