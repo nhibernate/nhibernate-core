@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Cache
 {
@@ -104,7 +106,10 @@ namespace NHibernate.Cache
 				return null;
 			}
 			long timestamp = (long)cacheable[0];
-			log.DebugFormat("Checking query spaces for up-to-dateness [{0}]", spaces);
+			if (log.IsDebugEnabled)
+			{
+				log.DebugFormat("Checking query spaces for up-to-dateness [{0}]", StringHelper.CollectionToString((ICollection)spaces));
+			}
 			if (!isNaturalKeyLookup && !IsUpToDate(spaces, timestamp))
 			{
 				log.DebugFormat("cached query results were not up to date for: {0}", key);
