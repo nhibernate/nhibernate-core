@@ -969,6 +969,7 @@
     <Compile Include="QueryTest\PositionalParametersFixture.cs" />
     <Compile Include="QueryTest\QueryParametersFixture.cs" />
     <Compile Include="ReflectionOptimizerTest\LcgFixture.cs" />
+    <Compile Include="SecondLevelCacheTest\QueryCacheFixture.cs" />
     <Compile Include="SqlTest\Custom\CustomSQLSupportTest.cs" />
     <Compile Include="SqlTest\Custom\CustomStoredProcSupportTest.cs" />
     <Compile Include="SqlTest\Custom\MySQL\MySQLTest.cs" />

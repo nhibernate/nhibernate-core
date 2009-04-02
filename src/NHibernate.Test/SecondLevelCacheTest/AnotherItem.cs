@@ -4,6 +4,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 	{
 		private int id;
 		private string name;
+		private string description= string.Empty;
 		
 		public AnotherItem()
 		{
@@ -25,6 +26,12 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		{
 			get { return name; }
 			set { name = value; }
+		}
+
+		public virtual string Description
+		{
+			get { return description; }
+			set { description = value; }
 		}
 	}
 }

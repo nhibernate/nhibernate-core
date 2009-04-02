@@ -24,5 +24,10 @@
 			<generator class="assigned"/>
 		</id>
 		<property name="Name"/>
+		<property name="Description"/>
 	</class>
+
+	<query name="Stat" cacheable="true" read-only ="true" cache-region="Statistics">
+		select ai.Name, count(*) from AnotherItem ai group by ai.Name
+	</query>
 </hibernate-mapping>
