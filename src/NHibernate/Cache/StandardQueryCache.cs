@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Cfg;
@@ -75,8 +74,7 @@ namespace NHibernate.Cache
 				log.DebugFormat("caching query results in region: '{0}'; {1}", regionName, key);
 			}
 
-			IList cacheable = new List<object>(result.Count + 1);
-			cacheable.Add(ts);
+			IList cacheable = new List<object>(result.Count + 1) {ts};
 			for (int i = 0; i < result.Count; i++)
 			{
 				if (returnTypes.Length == 1)
@@ -99,13 +97,13 @@ namespace NHibernate.Cache
 			{
 				log.DebugFormat("checking cached query results in region: '{0}'; {1}", regionName, key);
 			}
-			IList cacheable = (IList)queryCache.Get(key);
+			var cacheable = (IList)queryCache.Get(key);
 			if (cacheable == null)
 			{
 				log.DebugFormat("query results were not found in cache: {0}", key);
 				return null;
 			}
-			long timestamp = (long)cacheable[0];
+			var timestamp = (long)cacheable[0];
 			if (log.IsDebugEnabled)
 			{
 				log.DebugFormat("Checking query spaces for up-to-dateness [{0}]", StringHelper.CollectionToString((ICollection)spaces));
@@ -148,8 +146,7 @@ namespace NHibernate.Cache
 					{
 						//TODO: not really completely correct, since
 						//      the UnresolvableObjectException could occur while resolving
-						//      associations, leaving the PC in an
-						//      inconsistent state
+						//      associations, leaving the PC in an inconsistent state
 						log.Debug("could not reassemble cached result set");
 						queryCache.Remove(key);
 						return null;
@@ -175,7 +172,7 @@ namespace NHibernate.Cache
 
 		#endregion
 
-		protected bool IsUpToDate(ISet<string> spaces, long timestamp)
+		protected virtual bool IsUpToDate(ISet<string> spaces, long timestamp)
 		{
 			return updateTimestampsCache.IsUpToDate(spaces, timestamp);
 		}
