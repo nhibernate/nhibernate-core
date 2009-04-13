@@ -839,7 +839,12 @@ namespace NHibernate.Impl
 
         public IFutureValue<T> FutureValue<T>()
         {
-            session.FutureQueryBatch.Add(this);
+			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
+			{
+				return new FutureValue<T>(List);
+			}
+			
+			session.FutureQueryBatch.Add(this);
             return session.FutureQueryBatch.GetFutureValue<T>();
         }
 

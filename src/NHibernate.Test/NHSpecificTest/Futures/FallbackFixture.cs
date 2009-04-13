@@ -2,16 +2,18 @@ using System;
 using System.Collections;
 
 using NHibernate.Cfg;
+using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 
 using NUnit.Framework;
+using NUnit.Framework.SyntaxHelpers;
 
 using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.Futures
 {
-	public class TestDriver : SqlClientDriver
+	public class TestDriverThatDoesntSupportQueryBatching : SqlClientDriver
 	{
 		public override bool SupportsMultipleQueries
 		{
@@ -36,12 +38,24 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 
 		protected override void Configure(Configuration configuration)
 		{
-			configuration.Properties[Environment.ConnectionDriver] = "NHibernate.Test.NHSpecificTest.Futures.TestDriver, NHibernate.Test";
+			configuration.Properties[Environment.ConnectionDriver] = 
+				"NHibernate.Test.NHSpecificTest.Futures.TestDriverThatDoesntSupportQueryBatching, NHibernate.Test";
 			base.Configure(configuration);
 		}
 
+		protected override void OnTearDown()
+		{
+			using (var session = sessions.OpenSession())
+			{
+				session.Delete("from Person");
+				session.Flush();
+			}
+
+			base.OnTearDown();
+		}
+
 		[Test]
-		public void CriteriaFallsBackToListImplementationWhenQueryBatchingIsNotSupported()
+		public void FutureOfCriteriaFallsBackToListImplementationWhenQueryBatchingIsNotSupported()
 		{
 			using (var session = sessions.OpenSession())
 			{
@@ -51,12 +65,78 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		}
 
 		[Test]
-		public void QueryFallsBackToListImplementationWhenQueryBatchingIsNotSupported()
+		public void FutureOfQueryFallsBackToListImplementationWhenQueryBatchingIsNotSupported()
 		{
 			using (var session = sessions.OpenSession())
 			{
 				var results = session.CreateQuery("from Person").Future<Person>();
 				results.GetEnumerator().MoveNext();
+			}
+		}
+
+		[Test]
+		public void FutureValueOfCriteriaCanGetSingleEntityWhenQueryBatchingIsNotSupported()
+		{
+			int personId = CreatePerson();
+
+			using (var session = sessions.OpenSession())
+			{
+				var futurePerson = session.CreateCriteria<Person>()
+					.Add(Restrictions.Eq("Id", personId))
+					.FutureValue<Person>();
+				Assert.IsNotNull(futurePerson.Value);
+			}
+		}
+
+		[Test]
+		public void FutureValueOfCriteriaCanGetScalarValueWhenQueryBatchingIsNotSupported()
+		{
+			CreatePerson();
+
+			using (var session = sessions.OpenSession())
+			{
+				var futureCount = session.CreateCriteria<Person>()
+					.SetProjection(Projections.RowCount())
+					.FutureValue<int>();
+				Assert.That(futureCount.Value, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public void FutureValueOfQueryCanGetSingleEntityWhenQueryBatchingIsNotSupported()
+		{
+			int personId = CreatePerson();
+
+			using (var session = sessions.OpenSession())
+			{
+				var futurePerson = session.CreateQuery("from Person where Id = :id")
+					.SetInt32("id", personId)
+					.FutureValue<Person>();
+				Assert.IsNotNull(futurePerson.Value);
+			}
+		}
+
+		[Test]
+		public void FutureValueOfQueryCanGetScalarValueWhenQueryBatchingIsNotSupported()
+		{
+			CreatePerson();
+
+			using (var session = sessions.OpenSession())
+			{
+				var futureCount = session.CreateQuery("select count(*) from Person")
+					.FutureValue<long>();
+				Assert.That(futureCount.Value, Is.EqualTo(1L));
+			}
+		}
+
+		private int CreatePerson()
+		{
+			using (var session = sessions.OpenSession())
+			{
+				var person = new Person();
+				session.Save(person);
+				session.Flush();
+				return person.Id;
 			}
 		}
 	}

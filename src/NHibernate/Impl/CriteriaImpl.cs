@@ -373,6 +373,11 @@ namespace NHibernate.Impl
 
 		public IFutureValue<T> FutureValue<T>()
 		{
+			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
+			{
+				return new FutureValue<T>(List);
+			}
+
 			session.FutureCriteriaBatch.Add(this);
 			return session.FutureCriteriaBatch.GetFutureValue<T>();
 		}
