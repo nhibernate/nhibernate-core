@@ -6,6 +6,7 @@ using Iesi.Collections;
 using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Cache;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Criterion;
 using NHibernate.Loader.Criteria;
@@ -44,12 +45,13 @@ namespace NHibernate.Impl
 		/// <param name="factory">The factory.</param>
 		internal MultiCriteriaImpl(SessionImpl session, ISessionFactoryImplementor factory)
 		{
-			dialect = session.Factory.Dialect;
-			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
+			IDriver driver = session.Factory.ConnectionProvider.Driver;
+			if (!driver.SupportsMultipleQueries)
 			{
 				throw new NotSupportedException(
-					string.Format("The dialect {0} does not support multiple queries.", dialect.GetType().FullName));
+					string.Format("The driver {0} does not support multiple queries.", driver.GetType().FullName));
 			}
+			dialect = session.Factory.Dialect;
 			this.session = session;
 			this.factory = factory;
 		}
