@@ -1,7 +1,5 @@
-using System;
-using System.Collections;
-
 using NHibernate.Cfg;
+using NHibernate.Connection;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NHibernate.Driver;
@@ -22,10 +20,10 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 	}
 
 	/// <summary>
-	/// I've restricted this fixture to MsSql and am using a Driver which derives from SqlClientDriver to
+	/// I'm using a Driver which derives from SqlClientDriver to
 	/// return false for the SupportsMultipleQueries property. This is purely to test the way NHibernate
 	/// will behave when the driver that's being used does not support multiple queries... so even though
-	/// the test is restricted to MsSql, it's only relevant for databases that don't support multiple queries
+	/// the test is using MsSql, it's only relevant for databases that don't support multiple queries
 	/// but this way it's just much easier to test this
 	/// </summary>
 	[TestFixture]
@@ -33,14 +31,18 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 	{
 		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
 		{
-			return dialect is MsSql2000Dialect;
+			var cp = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
+			return !cp.Driver.SupportsMultipleQueries;
 		}
 
 		protected override void Configure(Configuration configuration)
 		{
-			configuration.Properties[Environment.ConnectionDriver] = 
-				"NHibernate.Test.NHSpecificTest.Futures.TestDriverThatDoesntSupportQueryBatching, NHibernate.Test";
 			base.Configure(configuration);
+			if (Dialect is MsSql2000Dialect)
+			{
+				configuration.Properties[Environment.ConnectionDriver] =
+					typeof (TestDriverThatDoesntSupportQueryBatching).AssemblyQualifiedName;
+			}
 		}
 
 		protected override void OnTearDown()
