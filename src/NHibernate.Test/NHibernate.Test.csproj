@@ -295,6 +295,8 @@
     <Compile Include="NHSpecificTest\Dates\TimeFixture.cs" />
     <Compile Include="NHSpecificTest\DtcFailures\DtcFailuresFixture.cs" />
     <Compile Include="NHSpecificTest\DtcFailures\Person.cs" />
+    <Compile Include="NHSpecificTest\Futures\FallbackFixture.cs" />
+    <Compile Include="NHSpecificTest\Futures\FutureFixture.cs" />
     <Compile Include="NHSpecificTest\NH1635\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1635\ForumMessage.cs" />
     <Compile Include="NHSpecificTest\NH1635\ForumThread.cs" />

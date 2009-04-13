@@ -6,29 +6,14 @@ namespace NHibernate.Test.NHSpecificTest.Futures
     using System.Collections;
 
     [TestFixture]
-    public class FutureQueryFixture : TestCase
+    public class FutureQueryFixture : FutureFixture
     {
-
-        protected override IList Mappings
-        {
-            get { return new string[] { "NHSpecificTest.Futures.Mappings.hbm.xml" }; }
-        }
-
-        protected override string MappingsAssembly
-        {
-            get { return "NHibernate.Test"; }
-        }
-
         [Test]
         public void CanUseFutureQuery()
         {
             using (var s = sessions.OpenSession())
             {
-                if (((SessionFactoryImpl)sessions)
-                    .ConnectionProvider.Driver.SupportsMultipleQueries == false)
-                {
-                    Assert.Ignore("Not applicable for dialects that do not support multiple queries");
-                }
+				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 
                 var persons10 = s.CreateQuery("from Person")
                     .SetMaxResults(10)
@@ -60,11 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
         {
             using (var s = sessions.OpenSession())
             {
-                if (((SessionFactoryImpl)sessions)
-                    .ConnectionProvider.Driver.SupportsMultipleQueries == false)
-                {
-                    Assert.Ignore("Not applicable for dialects that do not support multiple queries");
-                }
+				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 
                 using (var logSpy = new SqlLogSpy())
                 {
@@ -91,11 +72,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
         {
             using (var s = sessions.OpenSession())
             {
-                if (((SessionFactoryImpl)sessions)
-                    .ConnectionProvider.Driver.SupportsMultipleQueries == false)
-                {
-                    Assert.Ignore("Not applicable for dialects that do not support multiple queries");
-                }
+				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 
                 var persons = s.CreateQuery("from Person")
                     .SetMaxResults(10)

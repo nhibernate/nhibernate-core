@@ -379,6 +379,11 @@ namespace NHibernate.Impl
 
 	    public IEnumerable<T> Future<T>()
 	    {
+	    	if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
+	    	{
+				return List<T>();
+	    	}
+
             session.FutureCriteriaBatch.Add(this);
 	        return session.FutureCriteriaBatch.GetEnumerator<T>();
 	    }
