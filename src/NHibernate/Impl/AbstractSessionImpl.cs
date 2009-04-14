@@ -25,7 +25,7 @@ namespace NHibernate.Impl
 	{
 		[NonSerialized]
 		private ISessionFactoryImplementor factory;
-		private bool closed = false;
+		private bool closed;
 		private System.Transactions.Transaction ambientTransation;
 		private bool isAlreadyDisposed;
 		protected bool shouldCloseSessionOnDtcTransactionCompleted;
@@ -105,7 +105,7 @@ namespace NHibernate.Impl
 				throw new MappingException("Named SQL query not known: " + name);
 			}
 			IQuery query = new SqlQueryImpl(nsqlqd, this, factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString));
-			//query.SetComment("named native SQL query " + name);
+			query.SetComment("named native SQL query " + name);
 			InitQuery(query, nsqlqd);
 			return query;
 		}
@@ -128,10 +128,10 @@ namespace NHibernate.Impl
 		public abstract IDbConnection Connection { get; }
 		public abstract int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
 		public abstract int ExecuteUpdate(string query, QueryParameters queryParameters);
-	    public abstract FutureCriteriaBatch FutureCriteriaBatch { get; internal set; }
-        public abstract FutureQueryBatch FutureQueryBatch { get; internal set; }
+		public abstract FutureCriteriaBatch FutureCriteriaBatch { get; internal set; }
+		public abstract FutureQueryBatch FutureQueryBatch { get; internal set; }
 
-	    public virtual IQuery GetNamedQuery(string queryName)
+		public virtual IQuery GetNamedQuery(string queryName)
 		{
 			CheckAndUpdateSessionStatus();
 			NamedQueryDefinition nqd = factory.GetNamedQuery(queryName);
@@ -140,7 +140,7 @@ namespace NHibernate.Impl
 			{
 				string queryString = nqd.QueryString;
 				query = new QueryImpl(queryString, nqd.FlushMode, this, GetHQLQueryPlan(queryString, false).ParameterMetadata);
-				//query.SetComment("named HQL query " + queryName);
+				query.SetComment("named HQL query " + queryName);
 			}
 			else
 			{
@@ -150,7 +150,7 @@ namespace NHibernate.Impl
 					throw new MappingException("Named query not known: " + queryName);
 				}
 				query = new SqlQueryImpl(nsqlqd, this, factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString));
-				//query.SetComment("named native SQL query " + queryName);
+				query.SetComment("named native SQL query " + queryName);
 				nqd = nsqlqd;
 			}
 			InitQuery(query, nqd);
@@ -210,25 +210,25 @@ namespace NHibernate.Impl
 			{
 				query.SetTimeout(nqd.Timeout);
 			}
-			//if (nqd.FetchSize != -1)
-			//{
-			//	query.SetFetchSize(nqd.FetchSize);
-			//}
+			if (nqd.FetchSize != -1)
+			{
+				query.SetFetchSize(nqd.FetchSize);
+			}
 			if (nqd.CacheMode.HasValue)
 				query.SetCacheMode(nqd.CacheMode.Value);
 
 			query.SetReadOnly(nqd.IsReadOnly);
-			//if (nqd.Comment != null)
-			//{
-			//	query.SetComment(nqd.Comment);
-			//}
+			if (nqd.Comment != null)
+			{
+				query.SetComment(nqd.Comment);
+			}
 		}
 
 		public virtual IQuery CreateQuery(string queryString)
 		{
 			CheckAndUpdateSessionStatus();
 			QueryImpl query = new QueryImpl(queryString, this, GetHQLQueryPlan(queryString, false).ParameterMetadata);
-			//query.SetComment(queryString);
+			query.SetComment(queryString);
 			return query;
 		}
 
@@ -236,7 +236,7 @@ namespace NHibernate.Impl
 		{
 			CheckAndUpdateSessionStatus();
 			SqlQueryImpl query = new SqlQueryImpl(sql, this, factory.QueryPlanCache.GetSQLParameterMetadata(sql));
-			//query.SetComment("dynamic native SQL query");
+			query.SetComment("dynamic native SQL query");
 			return query;
 		}
 
