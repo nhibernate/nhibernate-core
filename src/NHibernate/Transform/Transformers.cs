@@ -22,9 +22,9 @@ namespace NHibernate.Transform
 			return new AliasToBeanResultTransformer(target);
 		}
 
-		public static IResultTransformer AliasToBean<T>() where T: class
+		public static IResultTransformer AliasToBean<T>()
 		{
-			return AliasToBean(typeof (T));
+			return AliasToBean(typeof(T));
 		}
 
 		public static readonly IResultTransformer DistinctRootEntity = new DistinctRootEntityResultTransformer();

@@ -130,31 +130,32 @@ namespace NHibernate.Properties
 				return null;
 			}
 
+			// the BindingFlags.IgnoreCase is important here because if type is a struct, the GetProperty method does
+			// not ignore case by default. If type is a class, it _does_ ignore case... we're better off explicitly
+			// stating that casing should be ignored so we get the same behavior for both structs and classes
 			PropertyInfo property =
 				type.GetProperty(propertyName,
-				                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+				                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.IgnoreCase);
 
 			if (property != null && property.CanWrite)
 			{
 				return new BasicSetter(type, property, propertyName);
 			}
-			else
-			{
-				// recursively call this method for the base Type
-				BasicSetter setter = GetSetterOrNull(type.BaseType, propertyName);
 
-				// didn't find anything in the base class - check to see if there is 
-				// an explicit interface implementation.
-				if (setter == null)
+			// recursively call this method for the base Type
+			BasicSetter setter = GetSetterOrNull(type.BaseType, propertyName);
+
+			// didn't find anything in the base class - check to see if there is 
+			// an explicit interface implementation.
+			if (setter == null)
+			{
+				System.Type[] interfaces = type.GetInterfaces();
+				for (int i = 0; setter == null && i < interfaces.Length; i++)
 				{
-					System.Type[] interfaces = type.GetInterfaces();
-					for (int i = 0; setter == null && i < interfaces.Length; i++)
-					{
-						setter = GetSetterOrNull(interfaces[i], propertyName);
-					}
+					setter = GetSetterOrNull(interfaces[i], propertyName);
 				}
-				return setter;
 			}
+			return setter;
 		}
 
 		/// <summary>

@@ -40,8 +40,12 @@ namespace NHibernate.Transform
 				throw new ArgumentNullException("resultClass");
 			}
 			this.resultClass = resultClass;
+
 			constructor = resultClass.GetConstructor(flags, null, System.Type.EmptyTypes, null);
-			if (constructor == null)
+
+			// if resultClass is a ValueType (struct), GetConstructor will return null... 
+			// in that case, we'll use Activator.CreateInstance instead of the ConstructorInfo to create instances
+			if (constructor == null && resultClass.IsClass)
 			{
 				throw new ArgumentException("The target class of a AliasToBeanResultTransformer need a parameter-less constructor",
 				                            "resultClass");
@@ -73,7 +77,9 @@ namespace NHibernate.Transform
 						}
 					}
 				}
-				result = constructor.Invoke(null);
+				
+				// if resultClass is not a class but a value type, we need to use Activator.CreateInstance
+				result = resultClass.IsClass ? constructor.Invoke(null) : Activator.CreateInstance(resultClass, true);
 
 				for (int i = 0; i < aliases.Length; i++)
 				{
