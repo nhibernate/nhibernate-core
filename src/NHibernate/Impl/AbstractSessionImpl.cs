@@ -222,6 +222,7 @@ namespace NHibernate.Impl
 			{
 				query.SetComment(nqd.Comment);
 			}
+			query.SetFlushMode(nqd.FlushMode);
 		}
 
 		public virtual IQuery CreateQuery(string queryString)

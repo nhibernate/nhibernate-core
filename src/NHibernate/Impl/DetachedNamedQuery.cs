@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Engine;
 
 namespace NHibernate.Impl
 {
@@ -13,6 +14,15 @@ namespace NHibernate.Impl
 	public class DetachedNamedQuery : AbstractDetachedQuery
 	{
 		private readonly string queryName;
+		private bool cacheableWasSet;
+		private bool cacheModeWasSet;
+		private bool cacheRegionWasSet;
+		private bool readOnlyWasSet;
+		private bool timeoutWasSet;
+		private bool fetchSizeWasSet;
+		private bool commentWasSet;
+		private bool flushModeWasSet;
+
 		/// <summary>
 		/// Create a new instance of <see cref="DetachedNamedQuery"/> for a named query string defined in the mapping file.
 		/// </summary>
@@ -39,8 +49,54 @@ namespace NHibernate.Impl
 		public override IQuery GetExecutableQuery(ISession session)
 		{
 			IQuery result = session.GetNamedQuery(queryName);
+			SetDefaultProperties((ISessionFactoryImplementor)session.SessionFactory);
 			SetQueryProperties(result);
 			return result;
+		}
+
+		private void SetDefaultProperties(ISessionFactoryImplementor factory)
+		{
+			NamedQueryDefinition nqd = factory.GetNamedQuery(queryName) ?? factory.GetNamedSQLQuery(queryName);
+
+			if (!cacheableWasSet)
+			{
+				cacheable = nqd.IsCacheable;
+			}
+
+			if (!cacheRegionWasSet)
+			{
+				cacheRegion = nqd.CacheRegion;
+			}
+
+			if(!timeoutWasSet && nqd.Timeout != -1)
+			{
+				selection.Timeout= nqd.Timeout;
+			}
+
+			if (!fetchSizeWasSet && nqd.FetchSize != -1)
+			{
+				selection.FetchSize = nqd.FetchSize;
+			}
+
+			if (!cacheModeWasSet && nqd.CacheMode.HasValue)
+			{
+				cacheMode = nqd.CacheMode.Value;
+			}
+
+			if (!readOnlyWasSet)
+			{
+				readOnly = nqd.IsReadOnly;
+			}
+
+			if (!commentWasSet && nqd.Comment != null)
+			{
+				comment = nqd.Comment;
+			}
+
+			if(!flushModeWasSet)
+			{
+				flushMode = nqd.FlushMode;
+			}
 		}
 
 		/// <summary>
@@ -49,9 +105,56 @@ namespace NHibernate.Impl
 		/// <returns>The clone.</returns>
 		public DetachedNamedQuery Clone()
 		{
-			DetachedNamedQuery result = new DetachedNamedQuery(queryName);
+			var result = new DetachedNamedQuery(queryName);
 			CopyTo(result);
 			return result;
+		}
+
+		public override IDetachedQuery SetCacheable(bool cacheable)
+		{
+			cacheableWasSet = true;
+			return base.SetCacheable(cacheable);
+		}
+
+		public override IDetachedQuery SetCacheMode(CacheMode cacheMode)
+		{
+			cacheModeWasSet = true;
+			return base.SetCacheMode(cacheMode);
+		}
+		public override IDetachedQuery SetCacheRegion(string cacheRegion)
+		{
+			cacheRegionWasSet = true;
+			return base.SetCacheRegion(cacheRegion);
+		}
+
+		public override IDetachedQuery SetReadOnly(bool readOnly)
+		{
+			readOnlyWasSet = true;
+			return base.SetReadOnly(readOnly);
+		}
+
+		public override IDetachedQuery SetTimeout(int timeout)
+		{
+			timeoutWasSet = true;
+			return base.SetTimeout(timeout);
+		}
+
+		public override IDetachedQuery SetFetchSize(int fetchSize)
+		{
+			fetchSizeWasSet = true;
+			return base.SetFetchSize(fetchSize);
+		}
+
+		public override IDetachedQuery SetComment(string comment)
+		{
+			commentWasSet = true;
+			return base.SetComment(comment);
+		}
+
+		public override IDetachedQuery SetFlushMode(FlushMode flushMode)
+		{
+			flushModeWasSet = true;
+			return base.SetFlushMode(flushMode);
 		}
 	}
 }

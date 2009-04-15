@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using NHibernate;
 using NHibernate.Engine;
 using NHibernate.Proxy;
 using NHibernate.Transform;
@@ -51,6 +50,7 @@ namespace NHibernate.Impl
 		protected IResultTransformer resultTransformer;
 		protected bool shouldIgnoredUnknownNamedParameters;
 		protected CacheMode? cacheMode;
+		protected string comment;
 
 		#region IDetachedQuery Members
 
@@ -68,27 +68,39 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IDetachedQuery SetCacheable(bool cacheable)
+		public virtual IDetachedQuery SetComment(string comment)
+		{
+			this.comment = comment;
+			return this;
+		}
+
+		public virtual IDetachedQuery SetCacheable(bool cacheable)
 		{
 			this.cacheable = cacheable;
 			return this;
 		}
 
-		public IDetachedQuery SetCacheRegion(string cacheRegion)
+		public virtual IDetachedQuery SetCacheRegion(string cacheRegion)
 		{
 			this.cacheRegion = cacheRegion;
 			return this;
 		}
 
-		public IDetachedQuery SetReadOnly(bool readOnly)
+		public virtual IDetachedQuery SetReadOnly(bool readOnly)
 		{
 			this.readOnly = readOnly;
 			return this;
 		}
 
-		public IDetachedQuery SetTimeout(int timeout)
+		public virtual IDetachedQuery SetTimeout(int timeout)
 		{
 			selection.Timeout = timeout;
+			return this;
+		}
+
+		public virtual IDetachedQuery SetFetchSize(int fetchSize)
+		{
+			selection.FetchSize = fetchSize;
 			return this;
 		}
 
@@ -368,7 +380,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IDetachedQuery SetFlushMode(FlushMode flushMode)
+		public virtual IDetachedQuery SetFlushMode(FlushMode flushMode)
 		{
 			this.flushMode = flushMode;
 			return this;
@@ -389,7 +401,7 @@ namespace NHibernate.Impl
 		/// <summary> Override the current session cache mode, just for this query. </summary>
 		/// <param name="cacheMode">The cache mode to use. </param>
 		/// <returns> this (for method chaining) </returns>
-		public IDetachedQuery SetCacheMode(CacheMode cacheMode)
+		public virtual IDetachedQuery SetCacheMode(CacheMode cacheMode)
 		{
 			this.cacheMode = cacheMode;
 			return this;
@@ -411,7 +423,10 @@ namespace NHibernate.Impl
 				.SetCacheable(cacheable)
 				.SetReadOnly(readOnly)
 				.SetTimeout(selection.Timeout)
-				.SetFlushMode(flushMode);
+				.SetFlushMode(flushMode)
+				.SetFetchSize(selection.FetchSize);
+			if (!string.IsNullOrEmpty(comment))
+				q.SetComment(comment);
 			if (!string.IsNullOrEmpty(cacheRegion))
 				q.SetCacheRegion(cacheRegion);
 			if (resultTransformer != null)
@@ -474,6 +489,7 @@ namespace NHibernate.Impl
 			flushMode = FlushMode.Unspecified;
 			resultTransformer = null;
 			shouldIgnoredUnknownNamedParameters = false;
+			comment = null;
 		}
 
 		private void ClearParameters()
@@ -503,7 +519,10 @@ namespace NHibernate.Impl
 				.SetCacheable(cacheable)
 				.SetReadOnly(readOnly)
 				.SetTimeout(selection.Timeout)
-				.SetFlushMode(flushMode);
+				.SetFlushMode(flushMode)
+				.SetFetchSize(selection.FetchSize);
+			if (!string.IsNullOrEmpty(comment))
+				destination.SetComment(comment);
 			if (!string.IsNullOrEmpty(cacheRegion))
 				destination.SetCacheRegion(cacheRegion);
 			if (cacheMode.HasValue)

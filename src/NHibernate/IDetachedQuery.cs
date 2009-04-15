@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using NHibernate;
 using NHibernate.Transform;
 using NHibernate.Type;
 
@@ -54,6 +53,10 @@ namespace NHibernate
 		/// <param name="timeout"></param>
 		IDetachedQuery SetTimeout(int timeout);
 
+		/// <summary> Set a fetch size for the underlying ADO query.</summary>
+		/// <param name="fetchSize">the fetch size </param>
+		IDetachedQuery SetFetchSize(int fetchSize);
+
 		/// <summary>
 		/// Set the lockmode for the objects idententified by the
 		/// given alias that appears in the <c>FROM</c> clause.
@@ -61,6 +64,10 @@ namespace NHibernate
 		/// <param name="alias">alias a query alias, or <c>this</c> for a collection filter</param>
 		/// <param name="lockMode"></param>
 		void SetLockMode(string alias, LockMode lockMode);
+
+		/// <summary> Add a comment to the generated SQL.</summary>
+		/// <param name="comment">a human-readable string </param>
+		IDetachedQuery SetComment(string comment);
 
 		/// <summary>
 		/// Bind a value to an indexed parameter.

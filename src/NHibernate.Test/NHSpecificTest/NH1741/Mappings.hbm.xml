@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1741">
+
+	<class name="A">
+		<id type="int">
+			<generator class="native" />
+		</id>
+		<property name="Name"/>
+	</class>
+	
+	<query name="NH1741_All" 
+		   cacheable="true" 
+		   cache-region="region" 
+		   read-only="true" 
+		   timeout="10" 
+		   cache-mode="normal" 
+		   fetch-size="11" 
+		   flush-mode="auto"
+		   comment="the comment">
+		from A
+	</query>
+</hibernate-mapping>

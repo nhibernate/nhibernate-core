@@ -6,11 +6,12 @@ using NHibernate.Impl;
 using NHibernate.Transform;
 using NHibernate.Util;
 using NUnit.Framework;
+using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.QueryTest
 {
 	[TestFixture]
-	public class DetachedQueryFixture:TestCase
+	public class DetachedQueryFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{
@@ -23,6 +24,8 @@ namespace NHibernate.Test.QueryTest
 		}
 
 		public const int totalFoo = 15;
+		private const string MyComment = "My Comment";
+
 		protected override void OnSetUp()
 		{
 			using (ISession s = OpenSession())
@@ -50,8 +53,8 @@ namespace NHibernate.Test.QueryTest
 		{
 			TestDetachedQuery tdq = new TestDetachedQuery();
 			tdq.SetMaxResults(10).SetFirstResult(5).SetCacheable(true).SetReadOnly(true).SetTimeout(444).SetFlushMode(
-				FlushMode.Auto).SetCacheRegion("A_REGION").SetResultTransformer(new AliasToBeanResultTransformer(typeof (NoFoo))).
-				SetIgnoreUknownNamedParameters(true);
+				FlushMode.Auto).SetCacheRegion("A_REGION").SetResultTransformer(new AliasToBeanResultTransformer(typeof(NoFoo))).
+				SetIgnoreUknownNamedParameters(true).SetComment(MyComment);
 			Assert.AreEqual(10, tdq.Selection.MaxRows);
 			Assert.AreEqual(5, tdq.Selection.FirstRow);
 			Assert.AreEqual(444, tdq.Selection.Timeout);
@@ -61,6 +64,7 @@ namespace NHibernate.Test.QueryTest
 			Assert.AreEqual("A_REGION", tdq.CacheRegion);
 			Assert.IsNotNull(tdq.ResultTransformer);
 			Assert.IsTrue(tdq.ShouldIgnoredUnknownNamedParameters);
+			Assert.That(tdq.Comment, Is.EqualTo(MyComment));
 
 			tdq.SetLockMode("LM1", LockMode.Upgrade);
 			tdq.SetLockMode("LM2", LockMode.Write);
@@ -77,7 +81,7 @@ namespace NHibernate.Test.QueryTest
 			Assert.IsTrue(tdq.OptionalUntypeParams[1].Equals(new Foo("Fulano", "De Tal")));
 
 			tdq.SetAnsiString(1, "");
-			tdq.SetBinary(2, new byte[] {});
+			tdq.SetBinary(2, new byte[] { });
 			tdq.SetBoolean(3, false);
 			tdq.SetByte(4, 255);
 			tdq.SetCharacter(5, 'A');
@@ -158,7 +162,7 @@ namespace NHibernate.Test.QueryTest
 			Assert.AreEqual(1, tdq.NamedUntypeParams.Count);
 			Assert.IsTrue(tdq.NamedUntypeParams.ContainsKey("Any"));
 
-			tdq.SetParameterList("UntypedList", new int[] {1, 2, 3});
+			tdq.SetParameterList("UntypedList", new int[] { 1, 2, 3 });
 			Assert.IsTrue(tdq.NamedUntypeListParams.ContainsKey("UntypedList"));
 
 			tdq.SetParameterList("TypedList", new Int64[] { 1, 2, 3 }, NHibernateUtil.Int64);
@@ -171,18 +175,19 @@ namespace NHibernate.Test.QueryTest
 		{
 			TestDetachedQuery origin = new TestDetachedQuery();
 			origin.SetMaxResults(10).SetFirstResult(5).SetCacheable(true).SetReadOnly(true).SetTimeout(444).SetFlushMode
-				(FlushMode.Auto).SetCacheRegion("A_REGION").SetResultTransformer(new AliasToBeanResultTransformer(typeof (NoFoo)));
+				(FlushMode.Auto).SetCacheRegion("A_REGION").SetResultTransformer(new AliasToBeanResultTransformer(typeof(NoFoo)));
+			origin.SetComment(MyComment);
 			origin.SetLockMode("LM1", LockMode.Upgrade);
 			origin.SetProperties(new Foo("Pallino", "Pinco"));
 			origin.SetInt64(1, 1);
-			origin.SetBinary(2, new byte[] {});
+			origin.SetBinary(2, new byte[] { });
 			origin.SetBoolean(3, false);
 			origin.SetDateTime(6, DateTime.MaxValue);
 			origin.SetCharacter("5", 'A');
 			origin.SetDateTime("6", DateTime.MaxValue);
 			origin.SetDecimal("7", 10.15m);
-			origin.SetParameterList("UntypedList", new int[] {1, 2, 3});
-			origin.SetParameterList("TypedList", new Int64[] {1, 2, 3}, NHibernateUtil.Int64);
+			origin.SetParameterList("UntypedList", new int[] { 1, 2, 3 });
+			origin.SetParameterList("TypedList", new Int64[] { 1, 2, 3 }, NHibernateUtil.Int64);
 
 			TestDetachedQuery tdq = new TestDetachedQuery();
 			tdq.SetLockMode("LM1", LockMode.Read);
@@ -195,9 +200,9 @@ namespace NHibernate.Test.QueryTest
 			tdq.SetDateTime("6", DateTime.MinValue); // will be override
 			tdq.SetDouble("8", 8.1f);
 			tdq.SetEntity("9", new Foo("Fulano", "De Tal"));
-			tdq.SetParameterList("UntypedList", new int[] {5, 6, 7, 8}); // will be override
-			tdq.SetParameterList("TypedList", new Int64[] {5, 6, 7, 8}, NHibernateUtil.Int64); // will be override
-
+			tdq.SetParameterList("UntypedList", new int[] { 5, 6, 7, 8 }); // will be override
+			tdq.SetParameterList("TypedList", new Int64[] { 5, 6, 7, 8 }, NHibernateUtil.Int64); // will be override
+			tdq.SetComment("other comment"); // will be override
 			origin.CopyTo(tdq);
 
 			Assert.AreEqual(5, tdq.Selection.FirstRow);
@@ -207,6 +212,7 @@ namespace NHibernate.Test.QueryTest
 			Assert.AreEqual(FlushMode.Auto, tdq.FlushMode);
 			Assert.AreEqual("A_REGION", tdq.CacheRegion);
 			Assert.IsNotNull(tdq.ResultTransformer);
+			Assert.That(tdq.Comment, Is.EqualTo(MyComment));
 
 			// merge/override of LockModes
 			Assert.AreEqual(2, tdq.LockModes.Count);
@@ -235,7 +241,7 @@ namespace NHibernate.Test.QueryTest
 			Assert.IsTrue(tdq.NamedParams["6"].Value.Equals(DateTime.MaxValue));
 			Assert.IsTrue(tdq.NamedParams["7"].Type.Equals(NHibernateUtil.Decimal));
 			Assert.IsTrue(tdq.NamedParams["8"].Type.Equals(NHibernateUtil.Double));
-			Assert.IsTrue(tdq.NamedParams["9"].Type.Equals(NHibernateUtil.Entity(typeof (Foo))));
+			Assert.IsTrue(tdq.NamedParams["9"].Type.Equals(NHibernateUtil.Entity(typeof(Foo))));
 
 			// merge/override named parameters list
 			int expected = 1;
@@ -349,7 +355,7 @@ namespace NHibernate.Test.QueryTest
 
 			// With UnTyped Parameter List
 			dq = new DetachedQuery("from Foo f where f.IntValue in (:pn)");
-			dq.SetParameterList("pn", new int[] {2 ,3});
+			dq.SetParameterList("pn", new int[] { 2, 3 });
 			using (ISession s = OpenSession())
 			{
 				IQuery q = dq.GetExecutableQuery(s);
@@ -454,10 +460,10 @@ namespace NHibernate.Test.QueryTest
 
 
 			Console.WriteLine("DetachedQueryCycle={0} QueryCycl={1}  Diff={2}", sDQStop - sDQStart, sQStop - sQStart,
-			                  (sDQStop - sDQStart) - (sQStop - sQStart));
+												(sDQStop - sDQStart) - (sQStop - sQStart));
 		}
 
-		private class TestDetachedQuery:AbstractDetachedQuery
+		private class TestDetachedQuery : AbstractDetachedQuery
 		{
 			public Dictionary<int, object> PosUntypeParams
 			{
@@ -548,6 +554,11 @@ namespace NHibernate.Test.QueryTest
 			{
 				(this as IDetachedQueryImplementor).OverrideInfoFrom(origin);
 			}
+
+			public string Comment
+			{
+				get { return comment; }
+			}
 		}
 	}
 
@@ -593,7 +604,7 @@ namespace NHibernate.Test.QueryTest
 		}
 
 		public Foo(string name, string description, int intValue)
-			:this(name,description)
+			: this(name, description)
 		{
 			this.intValue = intValue;
 		}

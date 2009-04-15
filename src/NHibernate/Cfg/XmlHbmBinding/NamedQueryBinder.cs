@@ -29,7 +29,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			int timeout = string.IsNullOrEmpty(querySchema.timeout) ? RowSelection.NoValue : int.Parse(querySchema.timeout);
 			int fetchSize = querySchema.fetchsizeSpecified ? querySchema.fetchsize : -1;
 			bool readOnly = querySchema.readonlySpecified ? querySchema.@readonly : false;
-			string comment = null;
+			string comment = querySchema.comment;
 
 			FlushMode flushMode = FlushModeConverter.GetFlushMode(querySchema);
 			CacheMode? cacheMode = (querySchema.cachemodeSpecified)
