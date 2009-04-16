@@ -8,7 +8,6 @@ using NHibernate.Cache;
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Hql;
-using NHibernate.Hql.Classic;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Transform;
@@ -571,12 +570,12 @@ namespace NHibernate.Impl
 				query.VerifyParameters();
 				IQueryTranslator[] queryTranslators =
 					session.GetQueries(query.ExpandParameterLists(queryParameters.NamedParameters), false);
-				foreach (QueryTranslator translator in queryTranslators)
+				foreach (IQueryTranslator translator in queryTranslators)
 				{
 					translators.Add(translator);
 					parameters.Add(queryParameters);
 					queryParameters = GetFilteredQueryParameters(queryParameters, translator);
-					SqlCommandInfo commandInfo = translator.GetQueryStringAndTypes(session, queryParameters);
+					SqlCommandInfo commandInfo = translator.Loader.GetQueryStringAndTypes(session, queryParameters);
 					sqlString = sqlString.Append(commandInfo.Text).Append(session.Factory.ConnectionProvider.Driver.MultipleQueriesSeparator).Append(Environment.NewLine);
 					types.AddRange(commandInfo.ParameterTypes);
 				}
