@@ -37,7 +37,7 @@ namespace NHibernate.Test.UtilityTest
 			string expected = typeof (IDictionary<int, string>).FullName;
 			Assert.AreEqual(expected, StringHelper.GetFullClassname(typeName));
 			typeName = "some.namespace.SomeType`1[[System.Int32, mscorlib], System.Int32], some.assembly";
-			expected = "some.namespace.SomeType`1[[System.Int32, mscorlib], System.Int32]";
+			expected = "some.namespace.SomeType`1[[System.Int32, mscorlib],[System.Int32]]";
 			Assert.AreEqual(expected, StringHelper.GetFullClassname(typeName));
 		}
 
@@ -107,7 +107,7 @@ namespace NHibernate.Test.UtilityTest
 		public void GetClassnameFromGenericType()
 		{
 			const string typeName = "classname`1[innerns1.innerClass]";
-			const string expected = "classname`1[innerns1.innerClass]";
+			const string expected = "classname`1[[innerns1.innerClass]]";
 
 			Assert.AreEqual(expected, StringHelper.GetClassname(typeName));
 		}
@@ -116,7 +116,7 @@ namespace NHibernate.Test.UtilityTest
 		public void GetClassnameFromGenericFQClass()
 		{
 			const string typeName = "ns1.ns2.classname`1[innerns1.innerClass]";
-			const string expected = "classname`1[innerns1.innerClass]";
+			const string expected = "classname`1[[innerns1.innerClass]]";
 
 			Assert.AreEqual(expected, StringHelper.GetClassname(typeName));
 		}

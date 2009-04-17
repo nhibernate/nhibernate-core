@@ -1,193 +1,230 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
 
 namespace NHibernate.Util
 {
 	public class ParserException : ApplicationException
 	{
-		public ParserException(string message) : base(message) {}
+		public ParserException(string message) : base(message) { }
 	}
 
 	public class TypeNameParser
 	{
-		private TextReader input;
+		private readonly string defaultNamespace;
+		private readonly string defaultAssembly;
 
-		private void SkipSpaces()
+		public TypeNameParser(string defaultNamespace, string defaultAssembly)
 		{
-			while (input.Peek() == ' ')
-			{
-				input.Read();
-			}
+			this.defaultNamespace = defaultNamespace;
+			this.defaultAssembly = defaultAssembly;
 		}
 
-		private char[] Characters(int count)
+		public static AssemblyQualifiedTypeName Parse(string type)
 		{
-			var chars = new char[count];
-			if (input.ReadBlock(chars, 0, count) < count)
-			{
-				throw new ParserException(count + " characters expected");
-			}
-
-			return chars;
+			return Parse(type, null, null);
 		}
 
-		private char[] PossiblyEscapedCharacter()
+		public static AssemblyQualifiedTypeName Parse(string type, string defaultNamespace, string defaultAssembly)
 		{
-			if (input.Peek() == '\\')
+			return new TypeNameParser(defaultNamespace, defaultAssembly).ParseTypeName(type);
+		}
+
+		public AssemblyQualifiedTypeName ParseTypeName(string type)
+		{
+			if (type == null)
 			{
-				return Characters(2);
+				throw new ArgumentNullException("type");
+			}
+			if (type.Trim('[',']','\\', ',') == string.Empty)
+			{
+				throw new ArgumentException(string.Format("The type to parse is not a type name:{0}", type), "type");
+			}
+
+			int genericTypeArgsStartIdx = type.IndexOf('[');
+			int genericTypeArgsEndIdx = type.LastIndexOf(']');
+			int genericTypeCardinalityIdx = -1;
+			if (genericTypeArgsStartIdx >= 0)
+			{
+				genericTypeCardinalityIdx = type.IndexOf('`', 0, genericTypeArgsStartIdx);
+			}
+
+			if (genericTypeArgsStartIdx == -1 || genericTypeCardinalityIdx == -1)
+			{
+				return ParseNonGenericType(type);
 			}
 			else
 			{
-				return Characters(1);
+				var isArrayType = type.EndsWith("[]");
+				if(genericTypeCardinalityIdx < 0)
+				{
+					throw new ParserException("Invalid generic fully-qualified type name:" + type);
+				}
+				string cardinalityString = type.Substring(genericTypeCardinalityIdx + 1, genericTypeArgsStartIdx - genericTypeCardinalityIdx - 1);
+				int genericTypeCardinality = int.Parse(cardinalityString);
+
+				// get the FullName of the non-generic type
+				string fullName = type.Substring(0, genericTypeArgsStartIdx);
+				if (type.Length - genericTypeArgsEndIdx - 1 > 0)
+					fullName += type.Substring(genericTypeArgsEndIdx + 1, type.Length - genericTypeArgsEndIdx - 1);
+
+				// parse the type arguments
+				var genericTypeArgs = new List<AssemblyQualifiedTypeName>();
+				string typeArguments = type.Substring(genericTypeArgsStartIdx + 1, genericTypeArgsEndIdx - genericTypeArgsStartIdx - 1);
+				foreach (string item in GenericTypesArguments(typeArguments, genericTypeCardinality))
+				{
+					var typeArgument = ParseTypeName(item);
+					genericTypeArgs.Add(typeArgument);
+				}
+
+				// construct the generic type definition
+				return MakeGenericType(ParseNonGenericType(fullName), isArrayType, genericTypeArgs.ToArray());
 			}
 		}
 
-		private string AssemblyName()
+		public AssemblyQualifiedTypeName MakeGenericType(AssemblyQualifiedTypeName qualifiedName, bool isArrayType,
+		                                                 AssemblyQualifiedTypeName[] typeArguments)
 		{
-			var result = new StringBuilder();
-			SkipSpaces();
+			Debug.Assert(typeArguments.Length > 0);
 
-			int code;
-			while ((code = input.Peek()) != -1)
+			var baseType = qualifiedName.Type;
+			var sb = new StringBuilder(typeArguments.Length * 200);
+			sb.Append(baseType);
+			sb.Append('[');
+			for (int i = 0; i < typeArguments.Length; i++)
 			{
-				var ch = (char) code;
-
-				if (ch == ']')
+				if(i>0)
 				{
-					break;
+					sb.Append(",");
 				}
-
-				result.Append(PossiblyEscapedCharacter());
+				sb.Append('[').Append(typeArguments[i].ToString()).Append(']');
 			}
-
-			return result.ToString();
+			sb.Append(']');
+			if(isArrayType)
+			{
+				sb.Append("[]");
+			}
+			return new AssemblyQualifiedTypeName(sb.ToString(), qualifiedName.Assembly);
 		}
 
-		private string BracketedPart(string defaultNamespace, string defaultAssembly)
+		private static IEnumerable<string> GenericTypesArguments(string s, int cardinality)
 		{
-			Debug.Assert(input.Peek() == '[');
+			Debug.Assert(cardinality != 0);
+			Debug.Assert(string.IsNullOrEmpty(s) == false);
+			Debug.Assert(s.Length > 0);
 
-			var result = new StringBuilder();
-			var genericTypeName = new StringBuilder(200);
-
-			int depth = 0;
-			do
+			int startIndex = 0;
+			while (cardinality > 0)
 			{
-				int c = input.Peek();
-				if (c == '[')
+				var sb = new StringBuilder(s.Length);
+				int bracketCount = 0;
+
+				for (int i = startIndex; i < s.Length; i++)
 				{
-					depth++;
-					result.Append(PossiblyEscapedCharacter());
-				}
-				else if (c == ']')
-				{
-					depth--;
-					if (genericTypeName.Length > 0)
+					switch (s[i])
 					{
-						var r = Parse(genericTypeName.ToString(), defaultNamespace, defaultAssembly);
-						result.Append(r.ToString());
-						genericTypeName.Remove(0, genericTypeName.Length);
+						case '[':
+							bracketCount++;
+							continue;
+
+						case ']':
+							if (--bracketCount == 0)
+							{
+								string item = s.Substring(startIndex + 1, i - startIndex - 1);
+								yield return item;
+								sb = new StringBuilder(s.Length);
+								startIndex = i + 2; // 2 = '[' + ']'
+							}
+							break;
+
+						default:
+							sb.Append(s[i]);
+							continue;
 					}
-					result.Append(PossiblyEscapedCharacter());
 				}
-				else if (c == ',' || c == ' ')
+
+				if (bracketCount != 0)
 				{
-					if (genericTypeName.Length > 0)
-						genericTypeName.Append(PossiblyEscapedCharacter());
-					else
-						result.Append(PossiblyEscapedCharacter());
+					throw new ParserException(string.Format("The brackets are unbalanced in the type name: {0}", s));
+				}
+				if (sb.Length > 0)
+				{
+					var result = sb.ToString();
+					startIndex += result.Length;
+					yield return result.TrimStart(' ', ',');
+				}
+				cardinality--;
+			}
+		}
+
+		private AssemblyQualifiedTypeName ParseNonGenericType(string typeName)
+		{
+			string typeFullName;
+			string assembliQualifiedName;
+
+			if (NeedDefaultAssembly(typeName))
+			{
+				assembliQualifiedName = defaultAssembly;
+				typeFullName = typeName;
+			}
+			else
+			{
+				int assemblyFullNameIdx = FindAssemblyQualifiedNameStartIndex(typeName);
+				if (assemblyFullNameIdx > 0)
+				{
+					assembliQualifiedName =
+						typeName.Substring(assemblyFullNameIdx + 1, typeName.Length - assemblyFullNameIdx - 1).Trim();
+					typeFullName = typeName.Substring(0, assemblyFullNameIdx).Trim();
 				}
 				else
 				{
-					genericTypeName.Append(PossiblyEscapedCharacter());
+					assembliQualifiedName = null;
+					typeFullName = typeName.Trim();					
 				}
 			}
-			while (depth > 0 && input.Peek() != -1);
 
-			if (depth > 0 && input.Peek() == -1)
+			if (NeedDefaultNamespace(typeFullName) && !string.IsNullOrEmpty(defaultNamespace))
 			{
-				throw new ParserException("Unmatched left bracket ('[')");
+				typeFullName = string.Concat(defaultNamespace, ".", typeFullName);
 			}
 
-			return result.ToString();
+			return new AssemblyQualifiedTypeName(typeFullName, assembliQualifiedName);
 		}
 
-		public AssemblyQualifiedTypeName ParseTypeName(string text, string defaultNamespace, string defaultAssembly)
+		private static int FindAssemblyQualifiedNameStartIndex(string typeName)
 		{
-			text = text.Trim();
-			if (IsSystemType(text))
+			for (int i = 0; i < typeName.Length; i++)
 			{
-				defaultNamespace = null;
-				defaultAssembly = null;
-			}
-			var type = new StringBuilder(text.Length);
-			string assembly = StringHelper.IsEmpty(defaultAssembly) ? null : defaultAssembly;
-
-			try
-			{
-				bool seenNamespace = false;
-
-				using (input = new StringReader(text))
+				if(typeName[i] == ',' && typeName[i-1] != '\\')
 				{
-					int code;
-					while ((code = input.Peek()) != -1)
-					{
-						var ch = (char) code;
-
-						if (ch == '.')
-						{
-							seenNamespace = true;
-						}
-
-						if (ch == ',')
-						{
-							input.Read();
-							assembly = AssemblyName();
-							if (input.Peek() != -1)
-							{
-								throw new ParserException("Extra characters found at the end of the type name");
-							}
-						}
-						else if (ch == '[')
-						{
-							type.Append(BracketedPart(defaultNamespace, defaultAssembly));
-						}
-						else
-						{
-							type.Append(PossiblyEscapedCharacter());
-						}
-					}
-
-					input.Close();
+					return i;
 				}
-				if (!seenNamespace && StringHelper.IsNotEmpty(defaultNamespace))
-				{
-					type.Insert(0, '.').Insert(0, defaultNamespace);
-				}
-				return new AssemblyQualifiedTypeName(type.ToString(), assembly);
 			}
-			catch (Exception e)
+
+			return -1;
+		}
+
+		private static bool NeedDefaultNamespaceOrDefaultAssembly(string typeFullName)
+		{
+			return !typeFullName.StartsWith("System."); // ugly
+		}
+
+		private static bool NeedDefaultNamespace(string typeFullName)
+		{
+			if (!NeedDefaultNamespaceOrDefaultAssembly(typeFullName))
 			{
-				throw new ArgumentException("Invalid fully-qualified type name: " + text, "text", e);
+				return false;
 			}
+			int assemblyFullNameIndex = typeFullName.IndexOf(',');
+			int firstDotIndex = typeFullName.IndexOf('.');
+			// does not have a dot or the dot is part of AssemblyFullName
+			return firstDotIndex < 0 || (firstDotIndex > assemblyFullNameIndex && assemblyFullNameIndex > 0);
 		}
 
-		private bool IsSystemType(string tyname)
+		private static bool NeedDefaultAssembly(string typeFullName)
 		{
-			return tyname.StartsWith("System."); // ugly
-		}
-
-		public static AssemblyQualifiedTypeName Parse(string text)
-		{
-			return Parse(text, null, null);
-		}
-
-		public static AssemblyQualifiedTypeName Parse(string text, string defaultNamespace, string defaultAssembly)
-		{
-			return new TypeNameParser().ParseTypeName(text, defaultNamespace, defaultAssembly);
+			return NeedDefaultNamespaceOrDefaultAssembly(typeFullName) && typeFullName.IndexOf(',') < 0;
 		}
 	}
 }

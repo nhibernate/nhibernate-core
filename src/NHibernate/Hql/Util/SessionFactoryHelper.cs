@@ -11,6 +11,17 @@ namespace NHibernate.Hql.Util
 	{
 		public static IQueryable FindQueryableUsingImports(ISessionFactoryImplementor sfi, string className)
 		{
+			// NH : short cut
+			if(string.IsNullOrEmpty(className))
+			{
+				return null;
+			}
+		
+			if(!char.IsLetter(className[0]) && !className[0].Equals('_'))
+			{
+				return null;				
+			}
+
 			// NH : this method prevent unrecognized class when entityName != class.FullName
 			// this is a patch for the TODO below
 			var possibleResult = sfi.TryGetEntityPersister(GetEntityName(className)) as IQueryable;

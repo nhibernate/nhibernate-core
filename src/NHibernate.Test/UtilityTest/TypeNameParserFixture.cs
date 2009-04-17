@@ -1,13 +1,14 @@
 using System;
 using NHibernate.Util;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.UtilityTest
 {
 	[TestFixture]
 	public class TypeNameParserFixture
 	{
-		private void CheckInput(string input, string expectedType, string expectedAssembly)
+		private static void CheckInput(string input, string expectedType, string expectedAssembly)
 		{
 			AssemblyQualifiedTypeName tn = TypeNameParser.Parse(input);
 			Assert.AreEqual(expectedType, tn.Type, "Type name should match");
@@ -35,31 +36,33 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void ParseFullAssemblyName()
 		{
-			string assemblyName = "SomeAssembly, SomeCulture, SomethingElse";
+			const string assemblyName = "SomeAssembly, SomeCulture, SomethingElse";
 			CheckInput("SomeType, " + assemblyName, "SomeType", assemblyName);
 		}
 
 		[Test]
 		public void ParseGenericTypeName()
 		{
-			string assemblyName = "SomeAssembly";
-			string typeName = "SomeType`1[System.Int32]";
+			const string assemblyName = "SomeAssembly";
+			const string typeName = "SomeType`1[System.Int32]";
+			const string expectedTypeName = "SomeType`1[[System.Int32]]";
 
-			CheckInput(typeName + ", " + assemblyName, typeName, assemblyName);
+			CheckInput(typeName + ", " + assemblyName, expectedTypeName, assemblyName);
 		}
 
 		[Test]
 		public void ParseComplexGenericTypeName()
 		{
-			string typeName = "SomeType`1[[System.Int32, mscorlib], System.Int32]";
+			const string typeName = "SomeType`2[[System.Int32, mscorlib], System.Int32]";
+			const string expectedTypeName = "SomeType`2[[System.Int32, mscorlib],[System.Int32]]";
 
-			CheckInput(typeName, typeName, null);
+			CheckInput(typeName, expectedTypeName, null);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentException))]
+		[Test, Ignore("Not a big problem because the next type request will throw the exception"), ExpectedException(typeof(ParserException))]
 		public void ParseUnmatchedBracket()
 		{
-			TypeNameParser.Parse("SomeName[");
+		  TypeNameParser.Parse("SomeName[");
 		}
 
 		[Test]
@@ -71,7 +74,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void ParseWithDefaultAssemblyUnused()
 		{
-			string defaultAssembly = "DefaultAssembly";
+			const string defaultAssembly = "DefaultAssembly";
 			AssemblyQualifiedTypeName tn = TypeNameParser.Parse("SomeType, AnotherAssembly", null, defaultAssembly);
 			Assert.AreEqual("SomeType", tn.Type);
 			Assert.AreEqual("AnotherAssembly", tn.Assembly);
@@ -80,7 +83,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void ParseWithDefaultAssembly()
 		{
-			string defaultAssembly = "SomeAssembly";
+			const string defaultAssembly = "SomeAssembly";
 			AssemblyQualifiedTypeName tn = TypeNameParser.Parse("SomeType", null, defaultAssembly);
 			Assert.AreEqual("SomeType", tn.Type);
 			Assert.AreEqual(defaultAssembly, tn.Assembly);
@@ -89,8 +92,8 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void ParseWithDefaultNamespaceAndAssembly()
 		{
-			string defaultAssembly = "DefaultAssembly";
-			string defaultNamespace = "DefaultNamespace";
+			const string defaultAssembly = "DefaultAssembly";
+			const string defaultNamespace = "DefaultNamespace";
 
 			AssemblyQualifiedTypeName tn = TypeNameParser.Parse("SomeType", defaultNamespace, defaultAssembly);
 			Assert.AreEqual("DefaultNamespace.SomeType", tn.Type);
@@ -99,7 +102,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void ParseWithDefaultNamespaceNoAssembly()
 		{
-			string defaultNamespace = "DefaultNamespace";
+			const string defaultNamespace = "DefaultNamespace";
 
 			AssemblyQualifiedTypeName tn = TypeNameParser.Parse("SomeType", defaultNamespace, null);
 			Assert.AreEqual("DefaultNamespace.SomeType", tn.Type);
@@ -109,8 +112,8 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void ParseWithDefaultNamespaceUnused()
 		{
-			string defaultAssembly = "DefaultAssembly";
-			string defaultNamespace = "DefaultNamespace";
+			const string defaultAssembly = "DefaultAssembly";
+			const string defaultNamespace = "DefaultNamespace";
 
 			AssemblyQualifiedTypeName tn = TypeNameParser.Parse("SomeNamespace.SomeType", defaultNamespace, defaultAssembly);
 			Assert.AreEqual("SomeNamespace.SomeType", tn.Type);
@@ -134,7 +137,7 @@ namespace NHibernate.Test.UtilityTest
 			string fullSpec = "TName`1[PartialName]";
 			string defaultassembly = "SomeAssembly";
 			string defaultNamespace = "SomeAssembly.MyNS";
-			string expectedType = "SomeAssembly.MyNS.TName`1[SomeAssembly.MyNS.PartialName, SomeAssembly]";
+			string expectedType = "SomeAssembly.MyNS.TName`1[[SomeAssembly.MyNS.PartialName, SomeAssembly]]";
 			string expectedAssembly = "SomeAssembly";
 
 			AssemblyQualifiedTypeName tn = TypeNameParser.Parse(fullSpec, defaultNamespace, defaultassembly);
@@ -167,7 +170,7 @@ namespace NHibernate.Test.UtilityTest
 			string fullSpec = "TName`1[SomeAssembly.MyOtherNS.PartialName]";
 			string defaultassembly = "SomeAssembly";
 			string defaultNamespace = "SomeAssembly.MyNS";
-			string expectedType = "SomeAssembly.MyNS.TName`1[SomeAssembly.MyOtherNS.PartialName, SomeAssembly]";
+			string expectedType = "SomeAssembly.MyNS.TName`1[[SomeAssembly.MyOtherNS.PartialName, SomeAssembly]]";
 			string expectedAssembly = "SomeAssembly";
 
 			AssemblyQualifiedTypeName tn = TypeNameParser.Parse(fullSpec, defaultNamespace, defaultassembly);
@@ -177,7 +180,7 @@ namespace NHibernate.Test.UtilityTest
 			fullSpec = "SomeType`1[System.Int32]";
 			defaultassembly = "SomeAssembly";
 			defaultNamespace = null;
-			expectedType = "SomeType`1[System.Int32]";
+			expectedType = "SomeType`1[[System.Int32]]";
 			expectedAssembly = "SomeAssembly";
 
 			tn = TypeNameParser.Parse(fullSpec, defaultNamespace, defaultassembly);
@@ -195,6 +198,58 @@ namespace NHibernate.Test.UtilityTest
 		public class MyGClass<T>
 		{
 			
+		}
+
+		public class MyComplexClass<T1, T2, T3>
+		{
+
+		}
+
+		[Test]
+		public void ParseComplexGenericType()
+		{
+			var expectedType = typeof(MyComplexClass<MyGClass<int>, IDictionary<string, MyGClass<string>>, string>).AssemblyQualifiedName;
+			var a = TypeNameParser.Parse(expectedType);
+			Assert.AreEqual(expectedType, a.ToString(), "Type name should match");
+		}
+
+		[Test]
+		[Description("Should parse arrays of System types")]
+		public void SystemArray()
+		{
+			var expectedType = typeof(string[]).AssemblyQualifiedName;
+			var a = TypeNameParser.Parse(expectedType);
+			Assert.AreEqual(expectedType, a.ToString());
+		}
+
+		[Test]
+		[Description("Should parse arrays of custom types")]
+		public void CustomArray()
+		{
+			var expectedType = "A[]";
+			var a = TypeNameParser.Parse(expectedType);
+			Assert.AreEqual(expectedType, a.ToString());
+
+			expectedType = typeof(MyGClass<int>[]).FullName;
+			a = TypeNameParser.Parse(expectedType);
+			Assert.AreEqual(expectedType, a.ToString());
+
+			expectedType = typeof(MyGClass<int[]>[]).FullName;
+			a = TypeNameParser.Parse(expectedType);
+			Assert.AreEqual(expectedType, a.ToString());
+
+			expectedType = "MyGClass`1[[System.Int32[]]][]";
+			a = TypeNameParser.Parse(expectedType);
+			Assert.AreEqual(expectedType, a.ToString());
+		}
+
+		[Test]
+		public void NH1736()
+		{
+			var typeName =
+				"Test.NHMapping.CustomCollection`2[[Test.Common.InvoiceDetail, Test.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3a873a127e0d1872],[Test.ReadOnlyBusinessObjectList`1[[Test.Common.InvoiceDetail, Test.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3a873a127e0d1872]], Test, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3a873a127e0d1872]], Test.NHMapping, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3a873a127e0d1872";
+			var a = TypeNameParser.Parse(typeName);
+			Assert.AreEqual(typeName, a.ToString());
 		}
 	}
 }
