@@ -98,7 +98,8 @@
 								<xs:enumeration value="adonet.factory_class" />
 								<xs:enumeration value="default_batch_fetch_size" />
 								<xs:enumeration value="default_entity_mode" />
-								<xs:enumeration value="use_sql_comments" />								
+								<xs:enumeration value="use_sql_comments" />
+								<xs:enumeration value="format_sql" />
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>

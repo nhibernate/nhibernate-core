@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1443
 		{
 			var su = new SchemaExport(cfg);
 			var sb = new StringBuilder(500);
-			su.Execute(x => sb.AppendLine(x), false, false, true);
+			su.Execute(x => sb.AppendLine(x), false, false);
 			string script = sb.ToString();
 
 

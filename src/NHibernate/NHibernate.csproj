@@ -479,6 +479,7 @@
     <Compile Include="Impl\FutureQueryBatch.cs" />
     <Compile Include="Impl\FutureCriteriaBatch.cs" />
     <Compile Include="Impl\FutureValue.cs" />
+    <Compile Include="Pretty\DdlFormatter.cs" />
     <Compile Include="Properties\BackFieldStrategy.cs" />
     <Compile Include="Bytecode\CodeDom\BytecodeProviderImpl.cs" />
     <Compile Include="Bytecode\IAccessOptimizer.cs" />

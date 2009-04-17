@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Text;
 using log4net;
 using NHibernate.Cfg;
 using NHibernate.Connection;
+using NHibernate.Pretty;
 using NHibernate.Util;
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Tool.hbm2ddl
 {
@@ -20,12 +21,13 @@ namespace NHibernate.Tool.hbm2ddl
 	public class SchemaExport
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof (SchemaExport));
-		private readonly IDictionary<string, string> connectionProperties;
+		private readonly IDictionary<string, string> configProperties;
 		private readonly string[] createSQL;
 		private readonly Dialect.Dialect dialect;
 		private readonly string[] dropSQL;
 		private string delimiter;
 		private string outputFile;
+		private readonly bool format;
 
 		/// <summary>
 		/// Create a schema exported for a given Configuration
@@ -38,13 +40,14 @@ namespace NHibernate.Tool.hbm2ddl
 		/// database connection properties
 		/// </summary>
 		/// <param name="cfg">The NHibernate Configuration to generate the schema from.</param>
-		/// <param name="connectionProperties">The Properties to use when connecting to the Database.</param>
-		public SchemaExport(Configuration cfg, IDictionary<string, string> connectionProperties)
+		/// <param name="configProperties">The Properties to use when connecting to the Database.</param>
+		public SchemaExport(Configuration cfg, IDictionary<string, string> configProperties)
 		{
-			this.connectionProperties = connectionProperties;
-			dialect = Dialect.Dialect.GetDialect(connectionProperties);
+			this.configProperties = configProperties;
+			dialect = Dialect.Dialect.GetDialect(configProperties);
 			dropSQL = cfg.GenerateDropSchemaScript(dialect);
 			createSQL = cfg.GenerateSchemaCreationScript(dialect);
+			format = PropertiesHelper.GetBoolean(Environment.FormatSql, configProperties, true);
 		}
 
 		/// <summary>
@@ -75,17 +78,17 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <param name="script"><see langword="true" /> if the ddl should be outputted in the Console.</param>
 		/// <param name="export"><see langword="true" /> if the ddl should be executed against the Database.</param>
 		/// <remarks>
-		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool, bool)"/> and sets
-		/// the justDrop parameter to false and the format parameter to true.
+		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool)"/> and sets
+		/// the justDrop parameter to false.
 		/// </remarks>
 		public void Create(bool script, bool export)
 		{
-			Execute(script, export, false, true);
+			Execute(script, export, false);
 		}
 
 		public void Create(Action<string> scriptAction, bool export)
 		{
-			Execute(scriptAction, export, false, true);
+			Execute(scriptAction, export, false);
 		}
 
 		/// <summary>
@@ -94,28 +97,20 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <param name="script"><see langword="true" /> if the ddl should be outputted in the Console.</param>
 		/// <param name="export"><see langword="true" /> if the ddl should be executed against the Database.</param>
 		/// <remarks>
-		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool, bool)"/> and sets
-		/// the justDrop and format parameter to true.
+		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool)"/> and sets
+		/// the justDrop parameter to true.
 		/// </remarks>
 		public void Drop(bool script, bool export)
 		{
-			Execute(script, export, true, true);
+			Execute(script, export, true);
 		}
 
-		private void Execute(Action<string> scriptAction, bool export, bool format, bool throwOnError, TextWriter exportOutput,
+		private void Execute(Action<string> scriptAction, bool export, bool throwOnError, TextWriter exportOutput,
 		                     IDbCommand statement, string sql)
 		{
 			try
 			{
-				string formatted;
-				if (format)
-				{
-					formatted = Format(sql);
-				}
-				else
-				{
-					formatted = sql;
-				}
+				string formatted = Format(sql);
 
 				if (delimiter != null)
 				{
@@ -154,7 +149,6 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <param name="script"><see langword="true" /> if the ddl should be outputted in the Console.</param>
 		/// <param name="export"><see langword="true" /> if the ddl should be executed against the Database.</param>
 		/// <param name="justDrop"><see langword="true" /> if only the ddl to drop the Database objects should be executed.</param>
-		/// <param name="format"><see langword="true" /> if the ddl should be nicely formatted instead of one statement per line.</param>
 		/// <param name="connection">
 		/// The connection to use when executing the commands when export is <see langword="true" />.
 		/// Must be an opened connection. The method doesn't close the connection.
@@ -165,20 +159,20 @@ namespace NHibernate.Tool.hbm2ddl
 		/// This overload is provided mainly to enable use of in memory databases. 
 		/// It does NOT close the given connection!
 		/// </remarks>
-		public void Execute(bool script, bool export, bool justDrop, bool format, IDbConnection connection,
+		public void Execute(bool script, bool export, bool justDrop, IDbConnection connection,
 		                    TextWriter exportOutput)
 		{
 			if (script)
 			{
-				Execute(Console.WriteLine, export, justDrop, format, connection, exportOutput);
+				Execute(Console.WriteLine, export, justDrop, connection, exportOutput);
 			}
 			else
 			{
-				Execute(null, export, justDrop, format, connection, exportOutput);
+				Execute(null, export, justDrop, connection, exportOutput);
 			}
 		}
 
-		public void Execute(Action<string> scriptAction, bool export, bool justDrop, bool format, IDbConnection connection,
+		public void Execute(Action<string> scriptAction, bool export, bool justDrop, IDbConnection connection,
 		                    TextWriter exportOutput)
 		{
 			IDbCommand statement = null;
@@ -196,14 +190,14 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				for (int i = 0; i < dropSQL.Length; i++)
 				{
-					Execute(scriptAction, export, format, false, exportOutput, statement, dropSQL[i]);
+					Execute(scriptAction, export, false, exportOutput, statement, dropSQL[i]);
 				}
 
 				if (!justDrop)
 				{
 					for (int j = 0; j < createSQL.Length; j++)
 					{
-						Execute(scriptAction, export, format, true, exportOutput, statement, createSQL[j]);
+						Execute(scriptAction, export, true, exportOutput, statement, createSQL[j]);
 					}
 				}
 			}
@@ -240,23 +234,22 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <param name="script"><see langword="true" /> if the ddl should be outputted in the Console.</param>
 		/// <param name="export"><see langword="true" /> if the ddl should be executed against the Database.</param>
 		/// <param name="justDrop"><see langword="true" /> if only the ddl to drop the Database objects should be executed.</param>
-		/// <param name="format"><see langword="true" /> if the ddl should be nicely formatted instead of one statement per line.</param>
 		/// <remarks>
 		/// This method allows for both the drop and create ddl script to be executed.
 		/// </remarks>
-		public void Execute(bool script, bool export, bool justDrop, bool format)
+		public void Execute(bool script, bool export, bool justDrop)
 		{
 			if (script)
 			{
-				Execute(Console.WriteLine, export, justDrop, format);
+				Execute(Console.WriteLine, export, justDrop);
 			}
 			else
 			{
-				Execute(null, export, justDrop, format);
+				Execute(null, export, justDrop);
 			}
 		}
 
-		public void Execute(Action<string> scriptAction, bool export, bool justDrop, bool format)
+		public void Execute(Action<string> scriptAction, bool export, bool justDrop)
 		{
 			IDbConnection connection = null;
 			StreamWriter fileOutput = null;
@@ -268,9 +261,9 @@ namespace NHibernate.Tool.hbm2ddl
 				props[de.Key] = de.Value;
 			}
 
-			if (connectionProperties != null)
+			if (configProperties != null)
 			{
-				foreach (var de in connectionProperties)
+				foreach (var de in configProperties)
 				{
 					props[de.Key] = de.Value;
 				}
@@ -289,7 +282,7 @@ namespace NHibernate.Tool.hbm2ddl
 					connection = connectionProvider.GetConnection();
 				}
 
-				Execute(scriptAction, export, justDrop, format, connection, fileOutput);
+				Execute(scriptAction, export, justDrop, connection, fileOutput);
 			}
 			catch (HibernateException)
 			{
@@ -312,76 +305,13 @@ namespace NHibernate.Tool.hbm2ddl
 		}
 
 		/// <summary>
-		/// Format an SQL statement using simple rules
+		/// Format an SQL statement.
 		/// </summary>
 		/// <param name="sql">The string containing the sql to format.</param>
 		/// <returns>A string that contains formatted sql.</returns>
-		/// <remarks>
-		/// The simple rules to used when formatting are:
-		/// <list type="number">
-		///		<item>
-		///			<description>Insert a newline after each comma</description>
-		///		</item>
-		///		<item>
-		///			<description>Indent three spaces after each inserted newline</description>
-		///		</item>
-		///		<item>
-		///			<description>
-		///			If the statement contains single/double quotes return unchanged because
-		///			it is too complex and could be broken by simple formatting.
-		///			</description>
-		///		</item>
-		/// </list>
-		/// </remarks>
-		private static string Format(string sql)
+		private string Format(string sql)
 		{
-			if (sql.IndexOf("\"") > 0 || sql.IndexOf("'") > 0)
-			{
-				return sql;
-			}
-
-			string formatted;
-
-			if (StringHelper.StartsWithCaseInsensitive(sql, "create table"))
-			{
-				var result = new StringBuilder(60);
-				var tokens = new StringTokenizer(sql, "(,)", true);
-
-				int depth = 0;
-
-				foreach (string tok in tokens)
-				{
-					if (StringHelper.ClosedParen.Equals(tok))
-					{
-						depth--;
-						if (depth == 0)
-						{
-							result.Append("\n");
-						}
-					}
-					result.Append(tok);
-					if (StringHelper.Comma.Equals(tok) && depth == 1)
-					{
-						result.Append("\n  ");
-					}
-					if (StringHelper.OpenParen.Equals(tok))
-					{
-						depth++;
-						if (depth == 1)
-						{
-							result.Append("\n  ");
-						}
-					}
-				}
-
-				formatted = result.ToString();
-			}
-			else
-			{
-				formatted = sql;
-			}
-
-			return formatted;
+			return format ? new DdlFormatter(sql).Format() : sql;
 		}
 	}
 }

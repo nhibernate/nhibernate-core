@@ -19,7 +19,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 			string resource1 = "NHibernate.Test.Tools.hbm2ddl.SchemaValidator.1_Version.hbm.xml";
 			Configuration v1cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource1))
-			new NHibernate.Tool.hbm2ddl.SchemaExport(v1cfg).Execute(true,true,false,true);
+			new NHibernate.Tool.hbm2ddl.SchemaExport(v1cfg).Execute(true,true,false);
 
 			var v1schemaValidator = new NHibernate.Tool.hbm2ddl.SchemaValidator((v1cfg));
 			v1schemaValidator.Validate();
@@ -37,7 +37,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 				v1cfg.AddInputStream(stream);
 			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource2))
 				v2cfg.AddInputStream(stream);
-			new NHibernate.Tool.hbm2ddl.SchemaExport(v1cfg).Execute(true, true, false, true);
+			new NHibernate.Tool.hbm2ddl.SchemaExport(v1cfg).Execute(true, true, false);
 			var v2schemaValidator = new NHibernate.Tool.hbm2ddl.SchemaValidator((v2cfg));
 			try
 			{

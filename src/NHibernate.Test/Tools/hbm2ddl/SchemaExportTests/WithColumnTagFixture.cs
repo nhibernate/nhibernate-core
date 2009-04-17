@@ -20,7 +20,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(mapping))
 				cfg.AddInputStream(stream);
-			new SchemaExport(cfg).Execute(s => script.AppendLine(s), false, false, false);
+			new SchemaExport(cfg).Execute(s => script.AppendLine(s), false, false);
 
 			string wholeScript = script.ToString();
 			Assert.That(wholeScript, Text.Contains("default SYSTEM_USER"));

@@ -19,7 +19,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaUpdate
 			Configuration v1cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource1))
 				v1cfg.AddInputStream(stream);
-			new SchemaExport(v1cfg).Execute(false, true, true, false);
+			new SchemaExport(v1cfg).Execute(false, true, true);
 
 			Tool.hbm2ddl.SchemaUpdate v1schemaUpdate = new Tool.hbm2ddl.SchemaUpdate(v1cfg);
 			v1schemaUpdate.Execute(true, true);

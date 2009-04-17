@@ -95,6 +95,9 @@ namespace NHibernate.Cfg
 		public const string CurrentSessionContextClass = "current_session_context_class";
 		public const string UseSqlComments = "use_sql_comments";
 
+		/// <summary> Enable formatting of SQL logged to the console</summary>
+		public const string FormatSql = "format_sql";
+
 		// Unused, Java-specific
 		public const string UseGetGeneratedKeys = "jdbc.use_get_generated_keys";
 

@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1521
 		{
 			var su = new SchemaExport(configuration);
 			var sb = new StringBuilder(500);
-			su.Execute(x => sb.AppendLine(x), false, false, true);
+			su.Execute(x => sb.AppendLine(x), false, false);
 			string script = sb.ToString();
 			Assert.That(script, Text.Contains("if exists (select * from dbo.sysobjects where id = object_id(N'nhibernate.dbo.Aclass') and OBJECTPROPERTY(id, N'IsUserTable') = 1)"));
 		}

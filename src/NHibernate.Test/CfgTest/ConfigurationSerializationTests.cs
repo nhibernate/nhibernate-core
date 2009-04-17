@@ -37,7 +37,7 @@ namespace NHibernate.Test.CfgTest
 			Assert.That(cfg, Is.Not.Null);
 
 			var export = new SchemaExport(cfg);
-			export.Execute(true, true, false, true);
+			export.Execute(true, true, false);
 			ISessionFactory sf = cfg.BuildSessionFactory();
 			using (ISession session = sf.OpenSession())
 			{
