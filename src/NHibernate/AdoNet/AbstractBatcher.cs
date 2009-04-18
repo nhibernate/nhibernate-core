@@ -420,10 +420,7 @@ namespace NHibernate.AdoNet
 
 		protected void LogCommand(IDbCommand command)
 		{
-			if (!string.IsNullOrEmpty(command.CommandText))
-			{
-				factory.Settings.SqlStatementLogger.LogCommand(command, FormatStyle.Basic);
-			}
+			factory.Settings.SqlStatementLogger.LogCommand(command, FormatStyle.Basic);
 		}
 
 		private void LogOpenPreparedCommand()

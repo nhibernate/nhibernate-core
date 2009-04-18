@@ -197,8 +197,7 @@ namespace NHibernate.Id
 					qps.CommandText = query;
 					qps.CommandType = CommandType.Text;
 					qps.Transaction = trans;
-					log.Debug(string.Format("Reading high value:"));
-					PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(qps, FormatStyle.Basic);
+					PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Reading high value:", qps, FormatStyle.Basic);
 					try
 					{
 						rs = qps.ExecuteReader();
@@ -226,8 +225,7 @@ namespace NHibernate.Id
 						session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateSql, parameterTypes);
 					ups.Connection = conn;
 					ups.Transaction = trans;
-					log.Debug(string.Format("Updating high value:"));
-					PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(ups, FormatStyle.Basic);
+					PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Updating high value:", ups, FormatStyle.Basic);
 
 					try
 					{

@@ -14,7 +14,7 @@ namespace NHibernate.Test.SqlTest.Identity.MsSQL
 
 		protected override string GetExpectedInsertOrgLogStatement(string orgName)
 		{
-			return string.Format("exec nh_organization_native_id_insert @p0; @p0 = '{0}'", orgName);
+			return string.Format("exec nh_organization_native_id_insert @p0;@p0 = '{0}'", orgName);
 		}
 
 		protected override IList Mappings
