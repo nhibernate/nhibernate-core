@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using NHibernate.Cache;
 using NHibernate.Driver;
@@ -483,6 +484,24 @@ namespace NHibernate.Test.QueryTest
 
 			RemoveAllItems();
 		}
+
+        [Test]
+        public void CanGetResultsInAGenericList()
+        {
+            using (ISession s = OpenSession())
+            {
+                IQuery getItems = s.CreateQuery("from Item");
+                IQuery countItems = s.CreateQuery("select count(*) from Item");
+
+                IList results = s.CreateMultiQuery()
+                    .Add(getItems)
+                    .Add<long>(countItems)
+                    .List();
+
+                Assert.IsInstanceOfType(typeof(ArrayList), results[0]);
+                Assert.IsInstanceOfType(typeof(List<long>), results[1]);
+            }
+        }
 
 		public class ResultTransformerStub : IResultTransformer
 		{

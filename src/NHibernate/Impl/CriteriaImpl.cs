@@ -375,25 +375,25 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new FutureValue<T>(List);
+				return new FutureValue<T>(List<T>);
 			}
 
-			session.FutureCriteriaBatch.Add(this);
+			session.FutureCriteriaBatch.Add<T>(this);
 			return session.FutureCriteriaBatch.GetFutureValue<T>();
 		}
 
-	    public IEnumerable<T> Future<T>()
-	    {
-	    	if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
-	    	{
+		public IEnumerable<T> Future<T>()
+		{
+			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
+			{
 				return List<T>();
-	    	}
+			}
 
-            session.FutureCriteriaBatch.Add(this);
-	        return session.FutureCriteriaBatch.GetEnumerator<T>();
-	    }
+			session.FutureCriteriaBatch.Add<T>(this);
+			return session.FutureCriteriaBatch.GetEnumerator<T>();
+		}
 
-	    public object UniqueResult()
+		public object UniqueResult()
 		{
 			return AbstractQueryImpl.UniqueElement(List());
 		}

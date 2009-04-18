@@ -833,7 +833,7 @@ namespace NHibernate.Impl
 				return List<T>();
 			}
 
-			session.FutureQueryBatch.Add(this);
+			session.FutureQueryBatch.Add<T>(this);
 	        return session.FutureQueryBatch.GetEnumerator<T>();
 	    }
 
@@ -841,10 +841,10 @@ namespace NHibernate.Impl
         {
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new FutureValue<T>(List);
+				return new FutureValue<T>(List<T>);
 			}
 			
-			session.FutureQueryBatch.Add(this);
+			session.FutureQueryBatch.Add<T>(this);
             return session.FutureQueryBatch.GetFutureValue<T>();
         }
 

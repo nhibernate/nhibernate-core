@@ -6,6 +6,8 @@ namespace NHibernate.Impl
     public class FutureQueryBatch
     {
         private readonly List<IQuery> queries = new List<IQuery>();
+		private readonly IList<System.Type> resultCollectionGenericType = new List<System.Type>();
+
         private int index;
         private IList results;
         private readonly ISession session;
@@ -22,33 +24,39 @@ namespace NHibernate.Impl
                 if (results == null)
                 {
                     var multiQuery = session.CreateMultiQuery();
-                    foreach (var crit in queries)
-                    {
-                        multiQuery.Add(crit);
-                    }
-                    results = multiQuery.List();
+                	for (int i = 0; i < queries.Count; i++)
+                	{
+						multiQuery.Add(resultCollectionGenericType[i], queries[i]);
+                	}
+                	results = multiQuery.List();
                     ((SessionImpl)session).FutureQueryBatch = null;
                 }
                 return results;
             }
         }
 
-        public void Add(IQuery query)
+		public void Add<T>(IQuery query)
+		{
+			queries.Add(query);
+			resultCollectionGenericType.Add(typeof(T));
+			index = queries.Count - 1;
+		}
+
+		public void Add(IQuery query)
         {
-            queries.Add(query);
-            index = queries.Count - 1;
+			Add<object>(query);
         }
 
         public IFutureValue<T> GetFutureValue<T>()
         {
             int currentIndex = index;
-            return new FutureValue<T>(() => (IList)Results[currentIndex]);
+            return new FutureValue<T>(() => (IList<T>)Results[currentIndex]);
         }
 
         public IEnumerable<T> GetEnumerator<T>()
         {
             int currentIndex = index;
-            return new DelayedEnumerator<T>(() => (IList)Results[currentIndex]);
+            return new DelayedEnumerator<T>(() => (IList<T>)Results[currentIndex]);
         }
     }
 }

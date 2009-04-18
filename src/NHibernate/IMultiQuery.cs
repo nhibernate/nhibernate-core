@@ -11,9 +11,56 @@ namespace NHibernate
 	public interface IMultiQuery
 	{
 		/// <summary>
-		/// Get all the 
+		/// Get all the results
 		/// </summary>
 		IList List();
+
+		/// <summary>
+		/// Adds the specified criteria to the query. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
+		/// </summary>
+		/// <param name="resultGenericListType">Return results in a <see cref="System.Collections.Generic.List{resultGenericListType}"/></param>
+		/// <param name="criteria">The criteria.</param>
+		/// <returns></returns>
+		IMultiQuery Add(System.Type resultGenericListType, IQuery criteria);
+
+		/// <summary>
+		/// Add the specified HQL query to the multi query. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
+		/// </summary>
+		IMultiQuery Add<T>(IQuery query);
+		
+		/// <summary>
+        /// Add the specified HQL query to the multi query, and associate it with the given key. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        IMultiQuery Add<T>(string key, IQuery query);
+        
+        /// <summary>
+        /// Add the specified HQL Query to the multi query, and associate it with the given key. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="hql"></param>
+        /// <returns></returns>
+        IMultiQuery Add<T>(string key, string hql);
+
+        /// <summary>
+        /// Add the specified HQL query to the multi query. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
+        /// </summary>
+        IMultiQuery Add<T>(string hql);
+
+        /// <summary>
+        /// Add a named query to the multi query. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
+        /// </summary>
+        IMultiQuery AddNamedQuery<T>(string namedQuery);
+
+        /// <summary>
+        /// Add a named query to the multi query, and associate it with the given key. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="namedKey"></param>
+        /// <returns></returns>
+        IMultiQuery AddNamedQuery<T>(string key, string namedKey);
 
 		/// <summary>
 		/// Add the specified HQL query to the multi query, and associate it with the given key

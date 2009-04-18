@@ -22,9 +22,7 @@ namespace NHibernate.Impl
 		private static readonly ILog log = LogManager.GetLogger(typeof(MultiQueryImpl));
 
 		private readonly List<IQuery> queries = new List<IQuery>();
-		private readonly List<IQueryTranslator> translators = new List<IQueryTranslator>();
-		private readonly List<QueryParameters> parameters = new List<QueryParameters>();
-		private IList queryResults;
+		private readonly List<IQueryTranslator> translators = new List<IQueryTranslator>();        private readonly IList<System.Type> resultCollectionGenericType = new List<System.Type>();		private readonly List<QueryParameters> parameters = new List<QueryParameters>();		private IList queryResults;
 		private readonly Dictionary<string, int> criteriaResultPositions = new Dictionary<string, int>();
 		private string cacheRegion;
 		private int commandTimeout = RowSelection.NoValue;
@@ -290,44 +288,80 @@ namespace NHibernate.Impl
 			}
 			return this;
 		}
+        
+        public IMultiQuery AddNamedQuery<T>(string key, string namedQuery)
+        {
+            ThrowIfKeyAlreadyExists(key);
+            return Add<T>(key, session.GetNamedQuery(namedQuery));
+        }
 
-		public IMultiQuery Add(IQuery query)
+		public IMultiQuery Add(System.Type resultGenericListType, IQuery query)
 		{
-			AddQueryForLaterExecutionAndReturnIndexOfQuery(query);
+			AddQueryForLaterExecutionAndReturnIndexOfQuery(resultGenericListType, query);
+
 			return this;
 		}
 
-		public IMultiQuery Add(string key, IQuery query)
-		{
-			ThrowIfKeyAlreadyExists(key);
-			criteriaResultPositions.Add(key, AddQueryForLaterExecutionAndReturnIndexOfQuery(query));
-			return this;
-		}
+        public IMultiQuery Add(string key, IQuery query)
+        {
+            return Add<object>(key, query);
+        }
 
-		public IMultiQuery Add(string hql)
-		{
-			return Add(((ISession)session).CreateQuery(hql));
-		}
+        public IMultiQuery Add(IQuery query)
+        {
+            return Add<object>(query);
+        }
 
-		public IMultiQuery Add(string key, string hql)
-		{
-			ThrowIfKeyAlreadyExists(key);
-			return Add(key, ((ISession)session).CreateQuery(hql));
-		}
+        public IMultiQuery Add(string key, string hql)
+        {
+            return Add<object>(key, hql);
+        }
 
-		public IMultiQuery AddNamedQuery(string namedQuery)
-		{
-			return Add(session.GetNamedQuery(namedQuery));
-		}
+        public IMultiQuery Add(string hql)
+        {
+            return Add<object>(hql);
+        }
 
+        public IMultiQuery AddNamedQuery(string namedQuery)
+        {
+            return AddNamedQuery<object>(namedQuery);
+        }
 
-		public IMultiQuery AddNamedQuery(string key, string namedQuery)
-		{
-			ThrowIfKeyAlreadyExists(key);
-			return Add(key, session.GetNamedQuery(namedQuery));
-		}
+        public IMultiQuery AddNamedQuery(string key, string namedQuery)
+        {
+            return AddNamedQuery<object>(key, namedQuery);
+        }
 
-		public IMultiQuery SetCacheable(bool cacheable)
+		public IMultiQuery Add<T>(IQuery query)
+        {
+            AddQueryForLaterExecutionAndReturnIndexOfQuery(typeof(T), query);
+            return this;
+        }
+
+        public IMultiQuery Add<T>(string key, IQuery query)
+        {
+            ThrowIfKeyAlreadyExists(key);
+			criteriaResultPositions.Add(key, AddQueryForLaterExecutionAndReturnIndexOfQuery(typeof(T), query));
+            return this;
+        }
+
+        public IMultiQuery Add<T>(string hql)
+        {
+            return Add<T>(((ISession)session).CreateQuery(hql));
+        }
+
+        public IMultiQuery Add<T>(string key, string hql)
+        {
+            ThrowIfKeyAlreadyExists(key);
+            return Add<T>(key, ((ISession)session).CreateQuery(hql));
+        }
+
+        public IMultiQuery AddNamedQuery<T>(string namedQuery)
+        {
+            return Add<T>(session.GetNamedQuery(namedQuery));
+        }
+
+	    public IMultiQuery SetCacheable(bool cacheable)
 		{
 			isCacheable = cacheable;
 			return this;
@@ -455,7 +489,15 @@ namespace NHibernate.Impl
 				{
 					IQueryTranslator translator = Translators[i];
 					QueryParameters parameter = Parameters[i];
-					ArrayList tempResults = new ArrayList();
+                    IList tempResults;
+                    if (resultCollectionGenericType[i] == typeof(object))
+                    {
+                        tempResults = new ArrayList();
+                    }
+                    else
+                    {
+                        tempResults = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(resultCollectionGenericType[i]));
+                    }
 					int entitySpan = translator.Loader.EntityPersisters.Length;
 					hydratedObjects[i] = entitySpan > 0 ? new ArrayList() : null;
 					RowSelection selection = parameter.RowSelection;
@@ -496,8 +538,9 @@ namespace NHibernate.Impl
 														   hydratedObjects[i],
 														   keys,
 														   false);
-						tempResults.Add(result);
 
+                        tempResults.Add(result);
+	
 						if (createSubselects[i])
 						{
 							subselectResultKeys[i].Add(keys);
@@ -792,11 +835,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private int AddQueryForLaterExecutionAndReturnIndexOfQuery(IQuery query)
+		private int AddQueryForLaterExecutionAndReturnIndexOfQuery(System.Type resultGenericListType, IQuery query)
 		{
 			ThrowNotSupportedIfSqlQuery(query);
 			((AbstractQueryImpl)query).SetIgnoreUknownNamedParameters(true);
 			queries.Add(query);
+			resultCollectionGenericType.Add(resultGenericListType);
 			return queries.Count - 1;
 		}
 		protected void ThrowNotSupportedIfSqlQuery(IQuery query)

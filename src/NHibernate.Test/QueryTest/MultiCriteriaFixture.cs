@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using NHibernate.Cache;
 using NHibernate.Criterion;
@@ -504,5 +505,24 @@ namespace NHibernate.Test.QueryTest
 				s.Flush();
 			}
 		}
+
+        [Test]
+        public void CanGetResultInAGenericList()
+        {
+            using (ISession s = OpenSession())
+            {
+                ICriteria getItems = s.CreateCriteria(typeof(Item));
+                ICriteria countItems = s.CreateCriteria(typeof(Item))
+                    .SetProjection(Projections.RowCount());
+
+                IMultiCriteria multiCriteria = s.CreateMultiCriteria()
+                    .Add(getItems) // we expect a non-generic result from this (ArrayList)
+                    .Add<int>(countItems); // we expect a generic result from this (List<int>)
+                IList results = multiCriteria.List();
+
+                Assert.IsInstanceOfType(typeof(ArrayList), results[0]);
+                Assert.IsInstanceOfType(typeof(List<int>), results[1]);
+            }
+        }
 	}
 }

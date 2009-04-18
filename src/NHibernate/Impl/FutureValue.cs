@@ -1,10 +1,11 @@
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Impl
 {
     internal class FutureValue<T> : IFutureValue<T>
     {
-        public delegate IList GetResult();
+        public delegate IList<T> GetResult();
 
         private readonly GetResult getResult;
 
@@ -24,7 +25,7 @@ namespace NHibernate.Impl
                     return default(T);
                 }
 
-                return (T)result[0];
+                return result[0];
             }
         }
     }
