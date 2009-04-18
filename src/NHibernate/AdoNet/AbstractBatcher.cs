@@ -45,7 +45,7 @@ namespace NHibernate.AdoNet
 		/// </summary>
 		/// <param name="connectionManager">The <see cref="ConnectionManager"/> owning this batcher.</param>
 		/// <param name="interceptor"></param>
-		public AbstractBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
+		protected AbstractBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
 		{
 			this.connectionManager = connectionManager;
 			this.interceptor = interceptor;
@@ -420,7 +420,10 @@ namespace NHibernate.AdoNet
 
 		protected void LogCommand(IDbCommand command)
 		{
-			factory.Settings.SqlStatementLogger.LogCommand(command, FormatStyle.Basic);
+			if (!string.IsNullOrEmpty(command.CommandText))
+			{
+				factory.Settings.SqlStatementLogger.LogCommand(command, FormatStyle.Basic);
+			}
 		}
 
 		private void LogOpenPreparedCommand()

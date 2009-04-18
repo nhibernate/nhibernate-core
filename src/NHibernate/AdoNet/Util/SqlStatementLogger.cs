@@ -26,49 +26,49 @@ namespace NHibernate.AdoNet.Util
 
 		public bool FormatSql { get; set; }
 
-		/// <summary> Log a SQL statement string. </summary>
-		/// <param name="statement">The SQL statement. </param>
-		/// <param name="style">The requested formatting style. </param>
-		public virtual void LogStatement(string statement, FormatStyle style)
+		public bool IsDebugEnabled
 		{
-			if (!log.IsDebugEnabled && !LogToStdout)
+			get { return log.IsDebugEnabled; }
+		}
+
+		/// <summary> Log a IDbCommand. </summary>
+		/// <param name="message">Title</param>
+		/// <param name="command">The SQL statement. </param>
+		/// <param name="style">The requested formatting style. </param>
+		public virtual void LogCommand(string message, IDbCommand command, FormatStyle style)
+		{
+			if (!log.IsDebugEnabled && !LogToStdout || string.IsNullOrEmpty(command.CommandText))
 			{
 				return;
 			}
+
 			style = DetermineActualStyle(style);
-			statement = style.Formatter.Format(statement);
-			log.Debug(statement);
+			string statement = style.Formatter.Format(GetCommandLineWithParameters(command));
+			string logMessage;
+			if (string.IsNullOrEmpty(message))
+			{
+				logMessage= statement;
+			}
+			else
+			{
+				 logMessage= message + statement;
+			}
+			log.Debug(logMessage);
 			if (LogToStdout)
 			{
 				Console.Out.WriteLine("NHibernate: " + statement);
 			}
 		}
 
-		public virtual void LogInfo(string info)
-		{
-			log.Debug(info);
-		}
-
 		/// <summary> Log a IDbCommand. </summary>
 		/// <param name="command">The SQL statement. </param>
 		/// <param name="style">The requested formatting style. </param>
-		public virtual string LogCommand(IDbCommand command, FormatStyle style)
+		public virtual void LogCommand(IDbCommand command, FormatStyle style)
 		{
-			if (log.IsDebugEnabled || LogToStdout)
-			{
-				style = DetermineActualStyle(style);
-				string statement = style.Formatter.Format(GetCommandLineWithParameters(command));
-				log.Debug(statement);
-				if (LogToStdout)
-				{
-					Console.Out.WriteLine("NHibernate: " + statement);
-				}
-				return statement;
-			}
-			return null;
+			LogCommand(null, command, style);
 		}
 
-		protected string GetCommandLineWithParameters(IDbCommand command)
+		public string GetCommandLineWithParameters(IDbCommand command)
 		{
 			string outputText;
 
@@ -79,8 +79,8 @@ namespace NHibernate.AdoNet.Util
 			else
 			{
 				var output = new StringBuilder(command.CommandText.Length + (command.Parameters.Count * 20));
-				output.Append(command.CommandText);
-				output.Append("; ");
+				output.Append(command.CommandText.TrimEnd(' ',';','\n'));
+				output.Append(";");
 
 				IDataParameter p;
 				int count = command.Parameters.Count;
@@ -93,11 +93,30 @@ namespace NHibernate.AdoNet.Util
 					}
 					appendComma = true;
 					p = (IDataParameter)command.Parameters[i];
-					output.Append(string.Format("{0} = '{1}'", p.ParameterName, p.Value));
+					output.Append(string.Format("{0} = {1}", p.ParameterName, GetParameterLogableValue(p)));
 				}
 				outputText = output.ToString();
 			}
 			return outputText;
+		}
+
+		public string GetParameterLogableValue(IDataParameter parameter)
+		{
+			if(parameter.Value == null || DBNull.Value.Equals(parameter.Value))
+			{
+				return "null";
+			}
+			else if (IsStringType(parameter.DbType))
+			{
+				return string.Concat("'", parameter.Value.ToString(), "'");
+			}
+			return parameter.Value.ToString();
+		}
+
+		private static bool IsStringType(DbType dbType)
+		{
+			return DbType.String.Equals(dbType) || DbType.AnsiString.Equals(dbType)
+			       || DbType.AnsiStringFixedLength.Equals(dbType) || DbType.StringFixedLength.Equals(dbType);
 		}
 
 		private FormatStyle DetermineActualStyle(FormatStyle style)
