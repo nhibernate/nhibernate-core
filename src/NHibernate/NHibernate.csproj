@@ -443,6 +443,10 @@
     <Compile Include="AdoNet\ResultSetWrapper.cs" />
     <Compile Include="AdoNet\SqlClientBatchingBatcherFactory.cs" />
     <Compile Include="AdoNet\TooManyRowsAffectedException.cs" />
+    <Compile Include="AdoNet\Util\BasicFormatter.cs" />
+    <Compile Include="AdoNet\Util\FormatStyle.cs" />
+    <Compile Include="AdoNet\Util\IFormatter.cs" />
+    <Compile Include="AdoNet\Util\SqlStatementLogger.cs" />
     <Compile Include="Bytecode\HibernateByteCodeException.cs" />
     <Compile Include="Bytecode\ProxyFactoryFactoryNotConfiguredException.cs" />
     <Compile Include="Bytecode\UnableToLoadProxyFactoryFactoryException.cs" />
@@ -479,7 +483,7 @@
     <Compile Include="Impl\FutureQueryBatch.cs" />
     <Compile Include="Impl\FutureCriteriaBatch.cs" />
     <Compile Include="Impl\FutureValue.cs" />
-    <Compile Include="Pretty\DdlFormatter.cs" />
+    <Compile Include="AdoNet\Util\DdlFormatter.cs" />
     <Compile Include="Properties\BackFieldStrategy.cs" />
     <Compile Include="Bytecode\CodeDom\BytecodeProviderImpl.cs" />
     <Compile Include="Bytecode\IAccessOptimizer.cs" />

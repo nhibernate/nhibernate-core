@@ -1,6 +1,5 @@
 using System;
 using System.Data;
-using System.Text;
 using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Driver;
@@ -9,6 +8,7 @@ using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
+using NHibernate.AdoNet.Util;
 
 namespace NHibernate.AdoNet
 {
@@ -18,7 +18,6 @@ namespace NHibernate.AdoNet
 	public abstract class AbstractBatcher : IBatcher
 	{
 		protected static readonly ILog log = LogManager.GetLogger(typeof(AbstractBatcher));
-		protected static readonly ILog logSql = LogManager.GetLogger("NHibernate.SQL");
 
 		private static int openCommandCount;
 		private static int openReaderCount;
@@ -421,48 +420,7 @@ namespace NHibernate.AdoNet
 
 		protected void LogCommand(IDbCommand command)
 		{
-			if (logSql.IsDebugEnabled || factory.Settings.IsShowSqlEnabled)
-			{
-				string outputText = GetCommandLogString(command);
-				logSql.Debug(outputText);
-
-				if (factory.Settings.IsShowSqlEnabled)
-				{
-					Console.Out.Write("NHibernate: ");
-					Console.Out.WriteLine(outputText);
-				}
-			}
-		}
-
-		protected string GetCommandLogString(IDbCommand command)
-		{
-			string outputText;
-
-			if (command.Parameters.Count == 0)
-			{
-				outputText = command.CommandText;
-			}
-			else
-			{
-				StringBuilder output = new StringBuilder();
-				output.Append(command.CommandText);
-				output.Append("; ");
-
-				IDataParameter p;
-				int count = command.Parameters.Count;
-				for (int i = 0; i < count; i++)
-				{
-					p = (IDataParameter) command.Parameters[i];
-					output.Append(string.Format("{0} = '{1}'", p.ParameterName, p.Value));
-
-					if (i + 1 < count)
-					{
-						output.Append(", ");
-					}
-				}
-				outputText = output.ToString();
-			}
-			return outputText;
+			factory.Settings.SqlStatementLogger.LogCommand(command, FormatStyle.Basic);
 		}
 
 		private void LogOpenPreparedCommand()

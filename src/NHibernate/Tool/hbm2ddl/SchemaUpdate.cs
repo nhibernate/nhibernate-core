@@ -5,6 +5,8 @@ using System.Data.Common;
 using log4net;
 using NHibernate.Cfg;
 using NHibernate.Util;
+using Environment=NHibernate.Cfg.Environment;
+using NHibernate.AdoNet.Util;
 
 namespace NHibernate.Tool.hbm2ddl
 {
@@ -15,20 +17,22 @@ namespace NHibernate.Tool.hbm2ddl
 		private readonly IConnectionHelper connectionHelper;
 		private readonly Dialect.Dialect dialect;
 		private readonly List<Exception> exceptions;
+		private IFormatter formatter;
 
 		public SchemaUpdate(Configuration cfg) : this(cfg, cfg.Properties) {}
 
-		public SchemaUpdate(Configuration cfg, IDictionary<string, string> connectionProperties)
+		public SchemaUpdate(Configuration cfg, IDictionary<string, string> configProperties)
 		{
 			configuration = cfg;
-			dialect = Dialect.Dialect.GetDialect(connectionProperties);
+			dialect = Dialect.Dialect.GetDialect(configProperties);
 			var props = new Dictionary<string, string>(dialect.DefaultProperties);
-			foreach (var prop in connectionProperties)
+			foreach (var prop in configProperties)
 			{
 				props[prop.Key] = prop.Value;
 			}
 			connectionHelper = new ManagedProviderConnectionHelper(props);
 			exceptions = new List<Exception>();
+			formatter = (PropertiesHelper.GetBoolean(Environment.FormatSql, configProperties, true) ? FormatStyle.Ddl : FormatStyle.None).Formatter;
 		}
 
 		public SchemaUpdate(Configuration cfg, Settings settings)
@@ -37,6 +41,7 @@ namespace NHibernate.Tool.hbm2ddl
 			dialect = settings.Dialect;
 			connectionHelper = new SuppliedConnectionProviderConnectionHelper(settings.ConnectionProvider);
 			exceptions = new List<Exception>();
+			formatter = (settings.SqlStatementLogger.FormatSql ? FormatStyle.Ddl : FormatStyle.None).Formatter;
 		}
 
 		/// <summary>
@@ -162,11 +167,13 @@ namespace NHibernate.Tool.hbm2ddl
 				for (int j = 0; j < createSQL.Length; j++)
 				{
 					string sql = createSQL[j];
+					string formatted = formatter.Format(sql);
+
 					try
 					{
 						if (scriptAction != null)
 						{
-							scriptAction(sql);
+							scriptAction(formatted);
 						}
 						if (doUpdate)
 						{

@@ -1,9 +1,15 @@
 using System;
+using NHibernate.AdoNet.Util;
 
 namespace NHibernate.Id
 {
 	public struct PersistentIdGeneratorParmsNames
 	{
+		static PersistentIdGeneratorParmsNames()
+		{
+			SqlStatementLogger = new SqlStatementLogger(false, false);
+		}
+		
 		/// <summary> The configuration parameter holding the schema name</summary>
 		public readonly static string Schema = "schema";
 
@@ -27,6 +33,8 @@ namespace NHibernate.Id
 
 		/// <summary> The configuration parameter holding the catalog name</summary>
 		public readonly static string Catalog = "catalog";
+
+		public readonly static SqlStatementLogger SqlStatementLogger;
 	}
 
 	/// <summary>

@@ -1,3 +1,4 @@
+using NHibernate.Cfg;
 using NUnit.Framework;
 
 namespace NHibernate.Test.SqlTest.Identity
@@ -7,6 +8,12 @@ namespace NHibernate.Test.SqlTest.Identity
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
+		}
+
+		protected override void Configure(NHibernate.Cfg.Configuration configuration)
+		{
+			base.Configure(configuration);
+			configuration.SetProperty(Environment.FormatSql, "false");
 		}
 
 		protected abstract string GetExpectedInsertOrgLogStatement(string orgName);

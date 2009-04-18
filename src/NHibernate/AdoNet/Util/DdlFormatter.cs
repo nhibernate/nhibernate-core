@@ -2,20 +2,13 @@ using System.Collections.Generic;
 using System.Text;
 using NHibernate.Util;
 
-namespace NHibernate.Pretty
+namespace NHibernate.AdoNet.Util
 {
-	public class DdlFormatter
+	public class DdlFormatter: IFormatter
 	{
 		private const string Indent1 = "\n    ";
 		private const string Indent2 = "\n      ";
 		private const string Indent3 = "\n        ";
-
-		private readonly string sql;
-
-		public DdlFormatter(string sql)
-		{
-			this.sql = sql;
-		}
 
 		/// <summary> Format an SQL statement using simple rules:
 		/// a) Insert newline after each comma;
@@ -23,19 +16,19 @@ namespace NHibernate.Pretty
 		/// If the statement contains single/double quotes return unchanged,
 		/// it is too complex and could be broken by simple formatting.
 		/// </summary>
-		public virtual string Format()
+		public virtual string Format(string sql)
 		{
 			if (sql.ToLowerInvariant().StartsWith("create table"))
 			{
-				return FormatCreateTable();
+				return FormatCreateTable(sql);
 			}
 			else if (sql.ToLowerInvariant().StartsWith("alter table"))
 			{
-				return FormatAlterTable();
+				return FormatAlterTable(sql);
 			}
 			else if (sql.ToLowerInvariant().StartsWith("comment on"))
 			{
-				return FormatCommentOn();
+				return FormatCommentOn(sql);
 			}
 			else
 			{
@@ -43,7 +36,7 @@ namespace NHibernate.Pretty
 			}
 		}
 
-		private string FormatCommentOn()
+		protected virtual string FormatCommentOn(string sql)
 		{
 			StringBuilder result = new StringBuilder(60).Append(Indent1);
 			IEnumerator<string> tokens = (new StringTokenizer(sql, " '[]\"", true)).GetEnumerator();
@@ -69,7 +62,7 @@ namespace NHibernate.Pretty
 			return result.ToString();
 		}
 
-		private string FormatAlterTable()
+		protected virtual string FormatAlterTable(string sql)
 		{
 			StringBuilder result = new StringBuilder(60).Append(Indent1);
 			IEnumerator<string> tokens = (new StringTokenizer(sql, " (,)'[]\"", true)).GetEnumerator();
@@ -95,7 +88,7 @@ namespace NHibernate.Pretty
 			return result.ToString();
 		}
 
-		private string FormatCreateTable()
+		protected virtual string FormatCreateTable(string sql)
 		{
 			StringBuilder result = new StringBuilder(60).Append(Indent1);
 			IEnumerator<string> tokens = (new StringTokenizer(sql, "(,)'[]\"", true)).GetEnumerator();

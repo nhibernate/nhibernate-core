@@ -1,5 +1,6 @@
 using System.Data;
 using System.Text;
+using NHibernate.AdoNet.Util;
 
 namespace NHibernate.AdoNet
 {
@@ -31,9 +32,11 @@ namespace NHibernate.AdoNet
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;
 			log.Debug("Adding to batch:");
 			IDbCommand batchUpdate = CurrentCommand;
-			string commandLoggedText = GetCommandLogString(batchUpdate);
-			currentBatchCommandsLog.Append("Batch command: ").
-				AppendLine(commandLoggedText);
+			if (log.IsDebugEnabled)
+			{
+				string commandLoggedText = Factory.Settings.SqlStatementLogger.LogCommand(batchUpdate, FormatStyle.Basic);
+				currentBatchCommandsLog.Append("Batch command: ").AppendLine(commandLoggedText);
+			}
 			currentBatch.Append((System.Data.SqlClient.SqlCommand) batchUpdate);
 			if (currentBatch.CountOfCommands >= batchSize)
 			{
@@ -47,7 +50,7 @@ namespace NHibernate.AdoNet
 			CheckReaders();
 			Prepare(currentBatch.BatchCommand);
 
-			logSql.Debug(currentBatchCommandsLog.ToString());
+			Factory.Settings.SqlStatementLogger.LogInfo(currentBatchCommandsLog.ToString());
 			currentBatchCommandsLog = new StringBuilder();
 			int rowsAffected = currentBatch.ExecuteNonQuery();
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Data;
 using NHibernate.AdoNet;
+using NHibernate.AdoNet.Util;
 using NHibernate.Cache;
 using NHibernate.Connection;
 using NHibernate.Exceptions;
@@ -14,7 +15,11 @@ namespace NHibernate.Cfg
 	/// </summary>
 	public sealed class Settings
 	{
-		private int maximumFetchDepth = -1;
+		public Settings()
+		{
+			MaximumFetchDepth = -1;
+		}
+
 		// not ported - private TransactionManagerLookup transactionManagerLookup;
 		// not ported - private bool strictJPAQLCompliance;
 
@@ -24,16 +29,9 @@ namespace NHibernate.Cfg
 		//private bool isJdbcBatchVersionedData;
 
 		#endregion
+		public SqlStatementLogger SqlStatementLogger { get; internal set; }
 
-		public bool IsShowSqlEnabled { get; internal set; }
-
-		public bool IsFormatSqlEnabled { get; internal set; }
-
-		public int MaximumFetchDepth
-		{
-			get { return maximumFetchDepth; }
-			internal set { maximumFetchDepth = value; }
-		}
+		public int MaximumFetchDepth { get; internal set; }
 
 		public IDictionary<string, string> QuerySubstitutions { get; internal set; }
 

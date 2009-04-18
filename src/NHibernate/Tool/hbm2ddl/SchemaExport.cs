@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using log4net;
+using NHibernate.AdoNet.Util;
 using NHibernate.Cfg;
 using NHibernate.Connection;
-using NHibernate.Pretty;
 using NHibernate.Util;
 using Environment=NHibernate.Cfg.Environment;
 
@@ -27,7 +27,7 @@ namespace NHibernate.Tool.hbm2ddl
 		private readonly string[] dropSQL;
 		private string delimiter;
 		private string outputFile;
-		private readonly bool format;
+		private readonly IFormatter formatter;
 
 		/// <summary>
 		/// Create a schema exported for a given Configuration
@@ -47,7 +47,7 @@ namespace NHibernate.Tool.hbm2ddl
 			dialect = Dialect.Dialect.GetDialect(configProperties);
 			dropSQL = cfg.GenerateDropSchemaScript(dialect);
 			createSQL = cfg.GenerateSchemaCreationScript(dialect);
-			format = PropertiesHelper.GetBoolean(Environment.FormatSql, configProperties, true);
+			formatter = (PropertiesHelper.GetBoolean(Environment.FormatSql, configProperties, true) ? FormatStyle.Ddl : FormatStyle.None).Formatter;
 		}
 
 		/// <summary>
@@ -110,7 +110,7 @@ namespace NHibernate.Tool.hbm2ddl
 		{
 			try
 			{
-				string formatted = Format(sql);
+				string formatted = formatter.Format(sql);
 
 				if (delimiter != null)
 				{
@@ -302,16 +302,6 @@ namespace NHibernate.Tool.hbm2ddl
 					connectionProvider.Dispose();
 				}
 			}
-		}
-
-		/// <summary>
-		/// Format an SQL statement.
-		/// </summary>
-		/// <param name="sql">The string containing the sql to format.</param>
-		/// <returns>A string that contains formatted sql.</returns>
-		private string Format(string sql)
-		{
-			return format ? new DdlFormatter(sql).Format() : sql;
 		}
 	}
 }

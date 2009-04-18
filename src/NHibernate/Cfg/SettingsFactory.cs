@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using log4net;
 using NHibernate.AdoNet;
+using NHibernate.AdoNet.Util;
 using NHibernate.Cache;
 using NHibernate.Connection;
 using NHibernate.Dialect;
@@ -118,6 +119,7 @@ namespace NHibernate.Cfg
 			{
 				log.Info("echoing all SQL to stdout");
 			}
+			bool formatSql = PropertiesHelper.GetBoolean(Environment.FormatSql, properties);
 
 			bool useStatistics = PropertiesHelper.GetBoolean(Environment.GenerateStatistics, properties);
 			log.Info("Statistics: " + EnabledDisabled(useStatistics));
@@ -232,7 +234,8 @@ namespace NHibernate.Cfg
 			// Not ported - settings.StatementFetchSize = statementFetchSize;
 			// Not ported - ScrollableResultSetsEnabled
 			// Not ported - GetGeneratedKeysEnabled
-			settings.IsShowSqlEnabled = showSql;
+			settings.SqlStatementLogger = new SqlStatementLogger(showSql, formatSql);
+
 			settings.ConnectionProvider = connectionProvider;
 			settings.QuerySubstitutions = querySubstitutions;
 			settings.TransactionFactory = transactionFactory;

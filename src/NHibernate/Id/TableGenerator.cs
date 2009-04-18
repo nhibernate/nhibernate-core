@@ -14,6 +14,7 @@ using NHibernate.Util;
 namespace NHibernate.Id
 {
 	using System.Transactions;
+	using NHibernate.AdoNet.Util;
 
 	/// <summary>
 	/// An <see cref="IIdentifierGenerator" /> that uses a database table to store the last
@@ -196,9 +197,10 @@ namespace NHibernate.Id
 					qps.CommandText = query;
 					qps.CommandType = CommandType.Text;
 					qps.Transaction = trans;
+					log.Debug(string.Format("Reading high value:"));
+					PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(qps, FormatStyle.Basic);
 					try
 					{
-						log.Debug(string.Format("Reading high value:{0}", qps.CommandText));
 						rs = qps.ExecuteReader();
 						if (!rs.Read())
 						{
@@ -224,16 +226,17 @@ namespace NHibernate.Id
 						session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateSql, parameterTypes);
 					ups.Connection = conn;
 					ups.Transaction = trans;
+					log.Debug(string.Format("Updating high value:"));
+					PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(ups, FormatStyle.Basic);
 
 					try
 					{
 						columnType.Set(ups, result + 1, 0);
 						columnType.Set(ups, result, 1);
 
-						log.Debug(string.Format("Updating high value:{0}", ups.CommandText));
 						rows = ups.ExecuteNonQuery();
 					} 
-						// TODO: change to SqlException
+					// TODO: change to SqlException
 					catch (Exception e)
 					{
 						log.Error("could not update hi value in: " + tableName, e);

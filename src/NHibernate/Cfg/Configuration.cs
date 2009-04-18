@@ -1530,7 +1530,11 @@ namespace NHibernate.Cfg
 		//protected Settings BuildSettings()
 		private Settings BuildSettings()
 		{
-			return settingsFactory.BuildSettings(properties);
+			var result = settingsFactory.BuildSettings(properties);
+			// NH : Set configuration for IdGenerator SQL logging
+			PersistentIdGeneratorParmsNames.SqlStatementLogger.FormatSql = result.SqlStatementLogger.FormatSql;
+			PersistentIdGeneratorParmsNames.SqlStatementLogger.LogToStdout = result.SqlStatementLogger.LogToStdout;
+			return result;
 		}
 
 		/// <summary>
