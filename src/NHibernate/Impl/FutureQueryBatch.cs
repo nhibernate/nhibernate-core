@@ -4,7 +4,7 @@ namespace NHibernate.Impl
 {
     public class FutureQueryBatch : FutureBatch<IQuery, IMultiQuery>
     {
-        public FutureQueryBatch(ISession session) : base(session) {}
+        public FutureQueryBatch(SessionImpl session) : base(session) {}
 
     	protected override IMultiQuery CreateMultiApproach()
     	{

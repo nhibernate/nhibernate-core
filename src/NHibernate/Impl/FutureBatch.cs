@@ -12,9 +12,9 @@ namespace NHibernate.Impl
 
 		protected readonly SessionImpl session;
 
-		protected FutureBatch(ISession session)
+		protected FutureBatch(SessionImpl session)
 		{
-			this.session = (SessionImpl)session;
+			this.session = session;
 		}
 
 		public IList Results

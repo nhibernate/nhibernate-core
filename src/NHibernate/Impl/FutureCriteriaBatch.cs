@@ -4,7 +4,7 @@ namespace NHibernate.Impl
 {
 	public class FutureCriteriaBatch : FutureBatch<ICriteria, IMultiCriteria>
 	{
-		public FutureCriteriaBatch(ISession session) : base(session) {}
+		public FutureCriteriaBatch(SessionImpl session) : base(session) {}
 
 		protected override IMultiCriteria CreateMultiApproach()
 		{
