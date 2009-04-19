@@ -1,62 +1,29 @@
 using System.Collections;
-using System.Collections.Generic;
 
 namespace NHibernate.Impl
 {
-	public class FutureCriteriaBatch
+	public class FutureCriteriaBatch : FutureBatch<ICriteria, IMultiCriteria>
 	{
-		private readonly List<ICriteria> criterias = new List<ICriteria>();
-		private readonly IList<System.Type> resultCollectionGenericType = new List<System.Type>();
+		public FutureCriteriaBatch(ISession session) : base(session) {}
 
-		private int index;
-		private IList results;
-		private readonly ISession session;
-
-		public FutureCriteriaBatch(ISession session)
+		protected override IMultiCriteria CreateMultiApproach()
 		{
-			this.session = session;
+			return session.CreateMultiCriteria();
 		}
 
-		public IList Results
+		protected override void AddTo(IMultiCriteria multiApproach, ICriteria query, System.Type resultType)
 		{
-			get
-			{
-				if (results == null)
-				{
-					var multiCriteria = session.CreateMultiCriteria();
-					for (int i = 0; i < criterias.Count; i++)
-					{
-						multiCriteria.Add(resultCollectionGenericType[i], criterias[i]);
-					}
-					results = multiCriteria.List();
-					((SessionImpl)session).FutureCriteriaBatch = null;
-				}
-				return results;
-			}
+			multiApproach.Add(resultType, query);
 		}
 
-		public void Add<T>(ICriteria criteria)
+		protected override IList GetResultsFrom(IMultiCriteria multiApproach)
 		{
-			criterias.Add(criteria);
-			resultCollectionGenericType.Add(typeof(T));
-			index = criterias.Count - 1;
+			return multiApproach.List();
 		}
 
-		public void Add(ICriteria criteria)
+		protected override void ClearCurrentFutureBatch()
 		{
-			Add<object>(criteria);
-		}
-
-		public IFutureValue<T> GetFutureValue<T>()
-		{
-			int currentIndex = index;
-			return new FutureValue<T>(() => (IList<T>)Results[currentIndex]);
-		}
-
-		public IEnumerable<T> GetEnumerator<T>()
-		{
-			int currentIndex = index;
-			return new DelayedEnumerator<T>(() => (IList<T>)Results[currentIndex]);
+			session.FutureCriteriaBatch = null;
 		}
 	}
 }
