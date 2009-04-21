@@ -39,7 +39,7 @@ namespace NHibernate.Transform
 
 		public IList TransformList(IList list)
 		{
-			IList result = new ArrayList();
+			IList result = (IList)Activator.CreateInstance(list.GetType());
 			ISet<Identity> distinct = new HashedSet<Identity>();
 
 			for (int i = 0; i < list.Count; i++)
