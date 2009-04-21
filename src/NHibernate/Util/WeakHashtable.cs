@@ -8,6 +8,7 @@ namespace NHibernate.Util
 	// This class does not inherit from WeakReference but uses composition
 	// instead to avoid requiring UnmanagedCode permission.
 	[DebuggerTypeProxy(typeof(DictionaryProxy))]
+	[Serializable]
 	public class WeakRefWrapper
 	{
 		private WeakReference reference;
@@ -139,6 +140,7 @@ namespace NHibernate.Util
 		}
 	}
 
+	[Serializable]
 	public class WeakHashtable : IDictionary
 	{
 		private Hashtable innerHashtable = new Hashtable();

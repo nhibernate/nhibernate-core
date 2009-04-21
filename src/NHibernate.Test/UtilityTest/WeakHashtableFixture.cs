@@ -1,5 +1,8 @@
 using System;
 using System.Collections;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+
 using NHibernate.Util;
 using NUnit.Framework;
 
@@ -101,6 +104,14 @@ namespace NHibernate.Test.UtilityTest
 			Assert.AreEqual(new WeakRefWrapper(obj), new WeakRefWrapper(obj));
 			Assert.IsFalse(new WeakRefWrapper(obj).Equals(null));
 			Assert.IsFalse(new WeakRefWrapper(obj).Equals(10));
+		}
+
+		[Test]
+		public void IsSerializable()
+		{
+			WeakHashtable weakHashtable = new WeakHashtable();
+			weakHashtable.Add("key", new object());
+			NHAssert.IsSerializable(weakHashtable);
 		}
 	}
 }
