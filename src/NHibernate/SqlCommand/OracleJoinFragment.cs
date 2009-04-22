@@ -19,7 +19,7 @@ namespace NHibernate.SqlCommand
 
 			for (int j = 0; j < fkColumns.Length; j++)
 			{
-				//HasThetaJoins = true;
+				HasThetaJoins = true;
 				afterWhere.Add(" and " + fkColumns[j]);
 				if (joinType == JoinType.RightOuterJoin || joinType == JoinType.FullJoin)
 				{
