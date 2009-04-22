@@ -3,6 +3,7 @@ using System.Collections;
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
 using NUnit.Framework;
+using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.Hql
 {
@@ -413,13 +414,13 @@ namespace NHibernate.Test.Hql
 			if(!IsOracleDialect())
 			{
 				hql1 = "select nullif(h.NickName, '1e1') from Human h";
-				hql2 = "from Human h where nullif(h.NickName, '1e1') not is null";
+				hql2 = "from Human h where not(nullif(h.NickName, '1e1') is null)";
 			}
 			else
 			{
 				// Oracle need same specific types
 				hql1 = "select nullif(str(h.NickName), '1e1') from Human h";
-				hql2 = "from Human h where nullif(str(h.NickName), '1e1') not is null";				
+				hql2 = "from Human h where not (nullif(str(h.NickName), '1e1') is null)";				
 			}
 			// test only the parser and render
 			using (ISession s = OpenSession())
@@ -576,18 +577,18 @@ namespace NHibernate.Test.Hql
 				string hql;
 				IList l;
 				Animal result;
-
+				double expectedBodyWeight = 1.3;
 				// Rendered in SELECT using a property 
 				hql = "select cast(a.BodyWeight as Double) from Animal a";
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(1.3f, l[0]);
+				Assert.That(l[0], Is.TypeOf(typeof (double)));
 
 				// Rendered in SELECT using a property in an operation with costant 
 				hql = "select cast(7+123-5*a.BodyWeight as Double) from Animal a";
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(7f + 123f - 5f * 1.3f, l[0]);
+				Assert.AreEqual(7 + 123 - 5 * 1.3d, l[0]);
 
 				// Rendered in SELECT using a property and nested functions
 				if (!(Dialect is Oracle8iDialect))
@@ -595,7 +596,7 @@ namespace NHibernate.Test.Hql
 					hql = "select cast(cast(a.BodyWeight as string) as Double) from Animal a";
 					l = s.CreateQuery(hql).List();
 					Assert.AreEqual(1, l.Count);
-					Assert.AreEqual(1.3F, l[0]);
+					Assert.That(l[0], Is.TypeOf(typeof(double)));
 				}
 
 				// TODO: Rendered in SELECT using string costant assigned with critic chars (separators)
@@ -632,13 +633,13 @@ namespace NHibernate.Test.Hql
 				hql = "select cast(a.BodyWeight as Double) from Animal a group by cast(a.BodyWeight as Double)";
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(1.3f, l[0]);
+				Assert.That(l[0], Is.TypeOf(typeof(double)));
 
 				// Rendered in GROUP BY using a property in an operation with costant 
 				hql = "select cast(7+123-5*a.BodyWeight as Double) from Animal a group by cast(7+123-5*a.BodyWeight as Double)";
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(7f + 123f - 5f * 1.3f, l[0]);
+				Assert.AreEqual(7 + 123 - 5 * 1.3d, l[0]);
 
 				// Rendered in GROUP BY using a property and nested functions
 				if (!(Dialect is Oracle8iDialect))
@@ -647,14 +648,14 @@ namespace NHibernate.Test.Hql
 						"select cast(cast(a.BodyWeight as string) as Double) from Animal a group by cast(cast(a.BodyWeight as string) as Double)";
 					l = s.CreateQuery(hql).List();
 					Assert.AreEqual(1, l.Count);
-					Assert.AreEqual(1.3F, l[0]);
+					Assert.That(l[0], Is.TypeOf(typeof(double)));
 				}
 
 				// Rendered in HAVING using a property 
 				hql = "select cast(a.BodyWeight as Double) from Animal a group by cast(a.BodyWeight as Double) having cast(a.BodyWeight as Double)>0";
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(1.3f, l[0]);
+				Assert.That(l[0], Is.TypeOf(typeof(double)));
 
 				// Rendered in HAVING using a property in an operation with costants
 				hql = "select cast(7+123.3-1*a.BodyWeight as int) from Animal a group by cast(7+123.3-1*a.BodyWeight as int) having cast(7+123.3-1*a.BodyWeight as int)>0";
