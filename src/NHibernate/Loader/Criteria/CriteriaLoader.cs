@@ -53,7 +53,7 @@ namespace NHibernate.Loader.Criteria
 			get { return querySpaces; }
 		}
 
-		protected internal override bool IsSubselectLoadingEnabled
+		public override bool IsSubselectLoadingEnabled
 		{
 			get { return HasSubselectLoadableCollections(); }
 		}
@@ -128,7 +128,7 @@ namespace NHibernate.Loader.Criteria
 			return dialect.ApplyLocksToSql(sqlSelectString, lockModes, keyColumnNames);
 		}
 
-		protected internal override LockMode[] GetLockModes(IDictionary<string, LockMode> lockModes)
+		public override LockMode[] GetLockModes(IDictionary<string, LockMode> lockModes)
 		{
 			string[] entityAliases = Aliases;
 			if (entityAliases == null)

@@ -247,17 +247,17 @@ namespace NHibernate.Loader.Custom
 			get { return sql.ToString(); }
 		}
 
-		protected internal override SqlString SqlString
+		public override SqlString SqlString
 		{
 			get { return sql; }
 		}
 
-		protected internal override LockMode[] GetLockModes(IDictionary<string, LockMode> lockModesMap)
+		public override LockMode[] GetLockModes(IDictionary<string, LockMode> lockModesMap)
 		{
 			return lockModes;
 		}
 
-		protected internal override ILoadable[] EntityPersisters
+		public override ILoadable[] EntityPersisters
 		{
 			get { return entityPersisters; }
 		}

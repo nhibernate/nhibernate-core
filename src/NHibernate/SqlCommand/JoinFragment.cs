@@ -17,8 +17,6 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public abstract class JoinFragment
 	{
-		private bool hasFilterCondition = false;
-
 		public abstract void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType);
 
 		public abstract void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType,
@@ -77,10 +75,8 @@ namespace NHibernate.SqlCommand
 			}
 		}
 
-		public bool HasFilterCondition
-		{
-			get { return hasFilterCondition; }
-			set { hasFilterCondition = value; }
-		}
+		public bool HasFilterCondition { get; set; }
+
+		public bool HasThetaJoins { get; set; }
 	}
 }

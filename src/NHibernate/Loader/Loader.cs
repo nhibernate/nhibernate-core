@@ -103,7 +103,7 @@ namespace NHibernate.Loader
 			get { return false; }
 		}
 
-		protected internal virtual bool IsSubselectLoadingEnabled
+		public virtual bool IsSubselectLoadingEnabled
 		{
 			get { return false; }
 		}
@@ -134,7 +134,7 @@ namespace NHibernate.Loader
 		/// it is parsing a subquery.
 		/// </para>
 		/// </remarks>
-		protected internal abstract SqlString SqlString { get; }
+		public abstract SqlString SqlString { get; }
 
 		/// <summary>
 		/// An array of persisters of entity classes contained in each row of results;
@@ -144,7 +144,7 @@ namespace NHibernate.Loader
 		/// The <c>setter</c> was added so that classes inheriting from Loader could write a 
 		/// value using the Property instead of directly to the field.
 		/// </remarks>
-		protected internal abstract ILoadable[] EntityPersisters { get; }
+		public abstract ILoadable[] EntityPersisters { get; }
 
 		/// <summary>
 		/// An (optional) persister for a collection to be initialized; only collection loaders
@@ -160,7 +160,7 @@ namespace NHibernate.Loader
 		/// </summary>
 		/// <param name="lockModes">A Collection of lock modes specified dynamically via the Query Interface</param>
 		/// <returns></returns>
-		protected internal abstract LockMode[] GetLockModes(IDictionary<string, LockMode> lockModes);
+		public abstract LockMode[] GetLockModes(IDictionary<string, LockMode> lockModes);
 
 		/// <summary>
 		/// Append <c>FOR UPDATE OF</c> clause, if necessary. This
@@ -1254,7 +1254,7 @@ namespace NHibernate.Loader
 		/// <param name="startIndex">The position from which to start binding parameter values. </param>
 		/// <param name="session">The originating session. </param>
 		/// <returns> The number of ADO bind positions actually bound during this method execution. </returns>
-		protected internal virtual int BindParameterValues(IDbCommand statement, QueryParameters queryParameters,
+		protected virtual int BindParameterValues(IDbCommand statement, QueryParameters queryParameters,
 		                                                   int startIndex, ISessionImplementor session)
 		{
 			// NH Different behavior:

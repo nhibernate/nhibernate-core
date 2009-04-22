@@ -5,6 +5,7 @@ using System.Text;
 using log4net;
 using NHibernate.Properties;
 using NHibernate.Type;
+using NHibernate.Engine;
 
 namespace NHibernate.Util
 {
@@ -526,6 +527,33 @@ namespace NHibernate.Util
 			{
 				return null;
 			}
+		}
+
+		internal static object GetConstantValue(string qualifiedName)
+		{
+			return GetConstantValue(qualifiedName, null);
+		}
+
+		internal static object GetConstantValue(string qualifiedName, ISessionFactoryImplementor sfi)
+		{
+			string className = StringHelper.Qualifier(qualifiedName);
+
+			if (!string.IsNullOrEmpty(className))
+			{
+				System.Type t = System.Type.GetType(className);
+
+				if (t == null && sfi != null)
+				{
+					t = System.Type.GetType(sfi.GetImportedClassName(className));
+				}
+
+				if (t != null)
+				{
+					return GetConstantValue(t, StringHelper.Unqualify(qualifiedName));
+				}
+			}
+
+			return null;
 		}
 	}
 }

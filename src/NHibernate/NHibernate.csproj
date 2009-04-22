@@ -43,6 +43,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.1.0.39271, Culture=neutral, PublicKeyToken=3a9cab8f8d22bfb7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\2.0\Antlr3.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="Iesi.Collections, Version=1.0.0.1, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\2.0\Iesi.Collections.dll</HintPath>
@@ -471,6 +475,115 @@
     <Compile Include="Exceptions\ReflectionBasedSqlStateExtracter.cs" />
     <Compile Include="Exceptions\SqlStateExtracter.cs" />
     <Compile Include="Exceptions\TemplatedViolatedConstraintNameExtracter.cs" />
+    <Compile Include="Hql\Ast\ANTLR\ASTQueryTranslatorFactory.cs" />
+    <Compile Include="Hql\Ast\ANTLR\CaseInsensitiveStringStream.cs" />
+    <Compile Include="Hql\Ast\ANTLR\CollectionProperties.cs" />
+    <Compile Include="Hql\Ast\ANTLR\DetailedSemanticException.cs" />
+    <Compile Include="Hql\Ast\ANTLR\ErrorCounter.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Generated\HqlLexer.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Generated\HqlParser.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Generated\HqlSqlWalker.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Generated\SqlGenerator.cs" />
+    <Compile Include="Hql\Ast\ANTLR\HqlLexer.cs" />
+    <Compile Include="Hql\Ast\ANTLR\HqlParser.cs" />
+    <Compile Include="Hql\Ast\ANTLR\HqlSqlWalker.cs" />
+    <Compile Include="Hql\Ast\ANTLR\HqlToken.cs" />
+    <Compile Include="Hql\Ast\ANTLR\IErrorReporter.cs" />
+    <Compile Include="Hql\Ast\ANTLR\InvalidPathException.cs" />
+    <Compile Include="Hql\Ast\ANTLR\InvalidWithClauseException.cs" />
+    <Compile Include="Hql\Ast\ANTLR\IParseErrorHandler.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Loader\QueryLoader.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Parameters\AbstractExplicitParameterSpecification.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Parameters\AggregatedIndexCollectionSelectorParameterSpecifications.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Parameters\CollectionFilterKeyParameterSpecification.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Parameters\DynamicFilterParameterSpecification.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Parameters\ExplicitParameterSpecification.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Parameters\IParameterSpecification.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Parameters\NamedParameterSpecification.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Parameters\ParameterTranslationsImpl.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Parameters\PositionalParameterSpecification.cs" />
+    <Compile Include="Hql\Ast\ANTLR\QuerySyntaxException.cs" />
+    <Compile Include="Hql\Ast\ANTLR\QueryTranslatorImpl.cs" />
+    <Compile Include="Hql\Ast\ANTLR\SemanticException.cs" />
+    <Compile Include="Hql\Ast\ANTLR\SessionFactoryHelperExtensions.cs" />
+    <Compile Include="Hql\Ast\ANTLR\SqlGenerator.cs" />
+    <Compile Include="Hql\Ast\ANTLR\TODO.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\AbstractNullnessCheckNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\AbstractRestrictableStatement.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\AbstractSelectExpression.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\AbstractStatement.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\AggregateNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\ASTFactory.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\ASTNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\ASTTreeAdaptor.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\BetweenOperatorNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\BinaryArithmeticOperatorNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\BinaryLogicOperatorNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\BooleanLiteralNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\Case2Node.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\CaseNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\CollectionFunction.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\ConstructorNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\CountNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\DotNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\FromClause.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\FromElement.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\FromElementFactory.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\FromElementType.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\FromReferenceNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\HqlSqlWalkerNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\HqlSqlWalkerTreeAdapter.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\HqlSqlWalkerTreeNodeStream.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\HqlTreeAdapter.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\IASTFactory.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\IASTNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\IBinaryOperatorNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\IdentNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\IDisplayableNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\IExpectedTypeAwareNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\IInitializableNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\ImpliedFromElement.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\IndexNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\InLogicOperatorNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\IntoClause.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\IOperatorNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\IParameterContainer.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\IPathNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\IResolvableNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\IRestrictableStatement.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\ISelectExpression.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\ISessionFactoryAwareNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\IsNotNullLogicOperatorNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\IsNullLogicOperatorNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\IStatement.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\IUnaryOperatorNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\JavaConstantNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\LiteralNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\MethodNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\OrderByClause.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\ParameterNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\QueryNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\SelectClause.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\SelectExpressionImpl.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\SelectExpressionList.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\SqlFragment.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\SqlNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\UnaryArithmeticNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\UnaryLogicOperatorNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Util\AliasGenerator.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Util\ASTAppender.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Util\ASTIterator.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Util\ASTPrinter.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Util\ASTUtil.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Util\CollectingNodeVisitor.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Util\ColumnHelper.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Util\IVisitationStrategy.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Util\JoinProcessor.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Util\LiteralProcessor.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Util\NodeTraverser.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Util\NullableDictionary.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Util\PathHelper.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Util\SyntheticAndFactory.cs" />
     <Compile Include="Id\TriggerIdentityGenerator.cs" />
     <Compile Include="Id\Insert\NoCommentsInsert.cs" />
     <Compile Include="Id\Insert\ReturningIdentifierInsert.cs" />
@@ -1161,6 +1274,9 @@
       <SubType>
       </SubType>
     </EmbeddedResource>
+    <None Include="Hql\Ast\ANTLR\Hql.g" />
+    <None Include="Hql\Ast\ANTLR\HqlSqlWalker.g" />
+    <None Include="Hql\Ast\ANTLR\SqlGenerator.g" />
     <None Include="NHibernate.build" />
     <None Include="Type\IType.cs.xmldoc" />
   </ItemGroup>
@@ -1171,11 +1287,6 @@
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Hql\Ast\ANTLR\Generated\" />
-    <Folder Include="Hql\Ast\ANTLR\Loader\" />
-    <Folder Include="Hql\Ast\ANTLR\Parameters\" />
-    <Folder Include="Hql\Ast\ANTLR\Tree\" />
-    <Folder Include="Hql\Ast\ANTLR\Util\" />
     <Folder Include="Loader\Hql\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

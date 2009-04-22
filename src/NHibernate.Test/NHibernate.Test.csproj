@@ -291,6 +291,7 @@
     <Compile Include="GenericTest\SetGeneric\B.cs" />
     <Compile Include="GenericTest\SetGeneric\SetGenericFixture.cs" />
     <Compile Include="HQL\Animal.cs" />
+    <Compile Include="HQL\Ast\ParsingFixture.cs" />
     <Compile Include="HQL\BaseFunctionFixture.cs" />
     <Compile Include="NHSpecificTest\Dates\TimeFixture.cs" />
     <Compile Include="NHSpecificTest\DtcFailures\DtcFailuresFixture.cs" />
@@ -1715,6 +1716,8 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="HQL\Ast\TestQueries.xml" />
+    <EmbeddedResource Include="HQL\Ast\TestQueriesWithResults.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1741\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1716\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\Dates\Mappings\TimeAsTimeSpan.hbm.xml" />
@@ -1862,7 +1865,6 @@
     <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="HQL\Ast\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

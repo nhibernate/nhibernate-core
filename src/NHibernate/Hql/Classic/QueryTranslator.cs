@@ -342,7 +342,7 @@ namespace NHibernate.Hql.Classic
 		/// <c>setter</c> will attempt to cast the <c>ILoadable</c> array passed in into an 
 		/// <c>IQueryable</c> array.
 		/// </remarks>
-		protected internal override ILoadable[] EntityPersisters
+		public override ILoadable[] EntityPersisters
 		{
 			get { return persisters; }
 		}
@@ -432,8 +432,7 @@ namespace NHibernate.Hql.Classic
 
 		/// <summary></summary>
 		[CLSCompliant(false)]
-		// TODO: Work out why this causes an error in 1.1 - the variable sqlString is private so we're only exposing one name
-		protected internal override SqlString SqlString
+		public override SqlString SqlString
 		{
 			// this needs internal access because the WhereParser needs to be able to "get" it.
 			get { return sqlString; }
@@ -1535,7 +1534,7 @@ namespace NHibernate.Hql.Classic
 			set { holderClass = value; }
 		}
 
-		protected internal override LockMode[] GetLockModes(IDictionary<string, LockMode> lockModes)
+		public override LockMode[] GetLockModes(IDictionary<string, LockMode> lockModes)
 		{
 			// unfortunately this stuff can't be cached because
 			// it is per-invocation, not constant for the
@@ -1627,7 +1626,7 @@ namespace NHibernate.Hql.Classic
 			AddJoin(name, joinSequence.GetFromPart());
 		}
 
-		protected internal override bool IsSubselectLoadingEnabled
+		public override bool IsSubselectLoadingEnabled
 		{
 			get { return HasSubselectLoadableCollections(); }
 		}

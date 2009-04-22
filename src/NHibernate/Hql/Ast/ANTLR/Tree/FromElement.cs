@@ -1,0 +1,661 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Antlr.Runtime;
+using log4net;
+using NHibernate.Hql.Ast.ANTLR.Parameters;
+using NHibernate.Hql.Ast.ANTLR.Util;
+using NHibernate.Persister.Collection;
+using NHibernate.Persister.Entity;
+using NHibernate.Type;
+using NHibernate.Util;
+
+namespace NHibernate.Hql.Ast.ANTLR.Tree
+{
+	public class FromElement : HqlSqlWalkerNode, IDisplayableNode, IParameterContainer
+	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(FromElement));
+
+		private bool _isAllPropertyFetch;
+		private FromElementType _elementType;
+		private string _tableAlias;
+		private string _classAlias;
+		private string _className;
+		private string _collectionTableAlias;
+		private FromClause _fromClause;
+		private string[] _columns;
+		private FromElement _origin;
+		private bool _manyToMany;
+		private bool _useFromFragment;
+		private bool _useWhereFragment = true;
+		private bool _includeSubclasses = true;
+		private List<FromElement> _destinations = new List<FromElement>();
+		private bool _dereferencedBySubclassProperty;
+		private bool _dereferencedBySuperclassProperty;
+		private bool _collectionJoin;
+		private string _role;
+		private int sequence = -1;
+		private bool initialized = false;
+		private string _withClauseFragment;
+		private string _withClauseJoinAlias;
+		private bool _filter;
+
+
+		public FromElement(IToken token) : base(token)
+		{
+		}
+
+		public void SetAllPropertyFetch(bool fetch)
+		{
+			_isAllPropertyFetch = fetch;
+		}
+
+		public void SetWithClauseFragment(String withClauseJoinAlias, String withClauseFragment)
+		{
+			_withClauseJoinAlias = withClauseJoinAlias;
+			_withClauseFragment = withClauseFragment;
+		}
+
+		public Engine.JoinSequence JoinSequence
+		{
+			get { return _elementType.JoinSequence; }
+			set { _elementType.JoinSequence = value; }
+		}
+
+		public string[] Columns
+		{
+			get { return _columns; }
+			set { _columns = value; }
+		}
+
+		public bool IsEntity
+		{
+			get { return _elementType.IsEntity; }
+		}
+
+		public bool IsFromOrJoinFragment
+		{
+			get { return Type == HqlSqlWalker.FROM_FRAGMENT || Type == HqlSqlWalker.JOIN_FRAGMENT; }
+		}
+
+		public bool IsAllPropertyFetch
+		{
+			get { return _isAllPropertyFetch; }
+			set { _isAllPropertyFetch = value; }
+		}
+
+		public virtual bool IsImpliedInFromClause
+		{
+			get { return false; }  // Since this is an explicit FROM element, it can't be implied in the FROM clause.
+		}
+
+		public bool IsFetch
+		{
+			get { return _fetch; }
+		}
+
+		public bool Filter
+		{
+			set { _filter = true; }
+		}
+
+		public bool IsFilter
+		{
+			get { return _filter; }
+		}
+
+		public IParameterSpecification[] GetEmbeddedParameters()
+		{
+			return _embeddedParameters.ToArray();
+		}
+
+		public bool HasEmbeddedParameters
+		{
+			get { return _embeddedParameters != null && _embeddedParameters.Count > 0; }
+		}
+
+		public IParameterSpecification IndexCollectionSelectorParamSpec
+		{
+			get { return _elementType.IndexCollectionSelectorParamSpec; }
+			set
+			{
+				if (value == null)
+				{
+					if (_elementType.IndexCollectionSelectorParamSpec != null)
+					{
+						_embeddedParameters.Remove(_elementType.IndexCollectionSelectorParamSpec);
+						_elementType.IndexCollectionSelectorParamSpec = null;
+					}
+				}
+				else
+				{
+					_elementType.IndexCollectionSelectorParamSpec = value;
+					AddEmbeddedParameter(value);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Returns true if this FromElement was implied by a path, or false if this FROM element is explicitly declared in
+		/// the FROM clause.
+		/// </summary>
+		public virtual bool IsImplied
+		{
+			get { return false; } // This is an explicit FROM element.
+		}
+
+		public bool IsDereferencedBySuperclassOrSubclassProperty
+		{
+			get 
+			{
+				return _dereferencedBySubclassProperty || _dereferencedBySuperclassProperty;
+			}
+		}
+
+		public bool IsDereferencedBySubclassProperty
+		{
+			get { return _dereferencedBySubclassProperty; }
+		}
+
+		public IEntityPersister EntityPersister
+		{
+			get { return _elementType.EntityPersister; }
+		}
+
+		public override IType DataType
+		{
+			get
+			{
+				return _elementType.DataType;
+			}
+			set
+			{
+				base.DataType = value;
+			}
+		}
+
+		public string TableAlias
+		{
+			get { return _tableAlias; }
+		}
+
+		private string TableName
+		{
+			get
+			{
+				IQueryable queryable = Queryable;
+				return (queryable != null) ? queryable.TableName : "{none}";
+			}
+		}
+
+		public string ClassAlias
+		{
+			get { return _classAlias; }
+		}
+
+		public string ClassName
+		{
+			get { return _className; }
+		}
+
+		public FromClause FromClause
+		{
+			get { return _fromClause; }
+		}
+
+		public IQueryable Queryable
+		{
+			get { return _elementType.Queryable; }
+		}
+
+		public IQueryableCollection QueryableCollection
+		{
+			get { return _elementType.QueryableCollection; }
+			set { _elementType.QueryableCollection = value; }
+		}
+
+		public string CollectionTableAlias
+		{
+			get { return _collectionTableAlias; }
+			set { _collectionTableAlias = value; }
+		}
+
+		public bool CollectionJoin
+		{
+			get { return _collectionJoin; }
+			set { _collectionJoin = value; }
+		}
+
+		public string CollectionSuffix
+		{
+			get { return _elementType.CollectionSuffix; }
+			set { _elementType.CollectionSuffix = value; }
+		}
+
+		public IType SelectType
+		{
+			get { return _elementType.SelectType; }
+		}
+
+		public bool IsCollectionOfValuesOrComponents
+		{
+			get { return _elementType.IsCollectionOfValuesOrComponents; }
+		}
+
+		public bool IsCollectionJoin
+		{
+			get { return _collectionJoin; }
+		}
+
+		public void SetRole(string role)
+		{
+			_role = role;
+		}
+
+		public FromElement Origin
+		{
+			get { return _origin; }
+		}
+
+		public FromElement RealOrigin
+		{
+			get
+			{
+				if (_origin == null)
+				{
+					return null;
+				}
+				if (String.IsNullOrEmpty(_origin.Text))
+				{
+					return _origin.RealOrigin;
+				}
+				return _origin;
+			}
+		}
+
+		public string WithClauseFragment
+		{
+			get { return _withClauseFragment; }
+		}
+
+		public string WithClauseJoinAlias
+		{
+			get { return _withClauseJoinAlias; }
+		}
+
+		/// <summary>
+		/// Returns the identifier select SQL fragment.
+		/// </summary>
+		/// <param name="size">The total number of returned types.</param>
+		/// <param name="k">The sequence of the current returned type.</param>
+		/// <returns>the identifier select SQL fragment.</returns>
+		public string RenderIdentifierSelect(int size, int k)
+		{
+			return _elementType.RenderIdentifierSelect(size, k);
+		}
+
+		/// <summary>
+		/// Returns the property select SQL fragment.
+		/// </summary>
+		/// <param name="size">The total number of returned types.</param>
+		/// <param name="k">The sequence of the current returned type.</param>
+		/// <returns>the property select SQL fragment.</returns>
+		public string RenderPropertySelect(int size, int k)
+		{
+			return _elementType.RenderPropertySelect(size, k, IsAllPropertyFetch);
+		}
+
+		public string RenderCollectionSelectFragment(int size, int k)
+		{
+			return _elementType.RenderCollectionSelectFragment(size, k);
+		}
+
+		public string RenderValueCollectionSelectFragment(int size, int k)
+		{
+			return _elementType.RenderValueCollectionSelectFragment(size, k);
+		}
+
+		public void SetIndexCollectionSelectorParamSpec(IParameterSpecification indexCollectionSelectorParamSpec)
+		{
+			if (indexCollectionSelectorParamSpec == null)
+			{
+				if (_elementType.IndexCollectionSelectorParamSpec != null)
+				{
+					_embeddedParameters.Remove(_elementType.IndexCollectionSelectorParamSpec);
+					_elementType.IndexCollectionSelectorParamSpec = null;
+				}
+			}
+			else
+			{
+				_elementType.IndexCollectionSelectorParamSpec = indexCollectionSelectorParamSpec;
+				AddEmbeddedParameter(indexCollectionSelectorParamSpec);
+			}
+		}
+
+		public virtual void SetImpliedInFromClause(bool flag)
+		{
+			throw new InvalidOperationException("Explicit FROM elements can't be implied in the FROM clause!");
+		}
+
+		public virtual bool IncludeSubclasses
+		{
+			get { return _includeSubclasses; }
+			set
+			{
+				if (IsDereferencedBySuperclassOrSubclassProperty)
+				{
+					if (!_includeSubclasses && log.IsInfoEnabled)
+					{
+						log.Info("attempt to disable subclass-inclusions", new Exception("stack-trace source"));
+					}
+				}
+				_includeSubclasses = value;
+			}
+		}
+
+		public virtual bool InProjectionList
+		{
+			get { return !IsImplied && IsFromOrJoinFragment; }
+			set 
+			{ 
+				// Do nothing, eplicit from elements are *always* in the projection list. 
+			}
+		}
+
+		private bool _fetch;
+		public bool Fetch
+		{
+			get { return _fetch; }
+			set
+			{
+				_fetch = value;
+				// Fetch can't be used with scroll() or iterate().
+				if (_fetch && Walker.IsShallowQuery)
+				{
+					throw new QueryException(LiteralProcessor.ErrorCannotFetchWithIterate);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Render the identifier select, but in a 'scalar' context (i.e. generate the column alias).
+		/// </summary>
+		/// <param name="i">the sequence of the returned type</param>
+		/// <returns>the identifier select with the column alias.</returns>
+		public string RenderScalarIdentifierSelect(int i)
+		{
+			return _elementType.RenderScalarIdentifierSelect(i);
+		}
+
+		public bool UseFromFragment
+		{
+			get
+			{
+				CheckInitialized();
+				// If it's not implied or it is implied and it's a many to many join where the target wasn't found.
+				return !IsImplied || _useFromFragment;
+			}
+			set { _useFromFragment = value; }
+		}
+
+		public bool UseWhereFragment
+		{
+			get { return _useWhereFragment;}
+			set { _useWhereFragment = value; }
+		}
+
+		public string[] ToColumns(string tableAlias, string path, bool inSelect)
+		{
+			return _elementType.ToColumns(tableAlias, path, inSelect);
+		}
+
+		public string[] ToColumns(string tableAlias, string path, bool inSelect, bool forceAlias)
+		{
+			return _elementType.ToColumns(tableAlias, path, inSelect, forceAlias);
+		}
+
+		public IPropertyMapping GetPropertyMapping(string propertyName)
+		{
+			return _elementType.GetPropertyMapping(propertyName);
+		}
+
+		public IType GetPropertyType(string propertyName, string propertyPath)
+		{
+			return _elementType.GetPropertyType(propertyName, propertyPath);
+		}
+
+		public string GetIdentityColumn()
+		{
+			CheckInitialized();
+			string table = TableAlias;
+
+			if (table == null)
+			{
+				throw new InvalidOperationException("No table alias for node " + this);
+			}
+			string[] cols;
+			string propertyName;
+			if (EntityPersister != null && EntityPersister.EntityMetamodel != null
+					&& EntityPersister.EntityMetamodel.HasNonIdentifierPropertyNamedId)
+			{
+				propertyName = EntityPersister.IdentifierPropertyName;
+			}
+			else
+			{
+				propertyName = NHibernate.Persister.Entity.EntityPersister.EntityID;
+			}
+			if (Walker.StatementType == HqlSqlWalker.SELECT)
+			{
+				cols = GetPropertyMapping(propertyName).ToColumns(table, propertyName);
+			}
+			else
+			{
+				cols = GetPropertyMapping(propertyName).ToColumns(propertyName);
+			}
+			string result = StringHelper.Join(", ", cols);
+
+			return cols.Length == 1 ? result : "(" + result + ")";
+		}
+
+		public void HandlePropertyBeingDereferenced(IType propertySource, string propertyName)
+		{
+			if (QueryableCollection != null && CollectionProperties.IsCollectionProperty(propertyName))
+			{
+				// propertyName refers to something like collection.size...
+				return;
+			}
+			if (propertySource.IsComponentType)
+			{
+				// property name is a sub-path of a component...
+				return;
+			}
+
+			IQueryable persister = Queryable;
+
+			if (persister != null)
+			{
+				try
+				{
+					Declarer propertyDeclarer = persister.GetSubclassPropertyDeclarer(propertyName);
+
+					if (log.IsInfoEnabled)
+					{
+						log.Info("handling property dereference [" + persister.EntityName + " (" + ClassAlias + ") -> " + propertyName + " (" + propertyDeclarer + ")]");
+					}
+					if (propertyDeclarer == Declarer.SubClass)
+					{
+						_dereferencedBySubclassProperty = true;
+						_includeSubclasses = true;
+					}
+					else if (propertyDeclarer == Declarer.SuperClass)
+					{
+						_dereferencedBySuperclassProperty = true;
+					}
+				}
+				catch (QueryException)
+				{
+					// ignore it; the incoming property could not be found so we
+					// cannot be sure what to do here.  At the very least, the
+					// safest is to simply not apply any dereference toggling...
+				}
+			}
+		}
+
+		public void SetOrigin(FromElement origin, bool manyToMany)
+		{
+			_origin = origin;
+			_manyToMany = manyToMany;
+			origin.AddDestination(this);
+
+			if (origin.FromClause == FromClause)
+			{
+				// TODO: Figure out a better way to get the FROM elements in a proper tree structure.
+				// If this is not the destination of a many-to-many, add it as a child of the origin.
+				if (manyToMany)
+				{
+					origin.AddSibling(this);
+				}
+				else
+				{
+					if (!Walker.IsInFrom && !Walker.IsInSelect)
+					{
+						FromClause.AddChild(this);
+					}
+					else
+					{
+						origin.AddChild(this);
+					}
+				}
+			}
+			else if (!Walker.IsInFrom)
+			{
+				// HHH-276 : implied joins in a subselect where clause - The destination needs to be added
+				// to the destination's from clause.
+				FromClause.AddChild(this);	// Not sure if this is will fix everything, but it works.
+			}
+			else
+			{
+				// Otherwise, the destination node was implied by the FROM clause and the FROM clause processor
+				// will automatically add it in the right place.
+			}
+		}
+
+		public void SetIncludeSubclasses(bool includeSubclasses)
+		{
+			if (IsDereferencedBySuperclassOrSubclassProperty)
+			{
+				if (!includeSubclasses && log.IsInfoEnabled)
+				{
+					log.Info("attempt to disable subclass-inclusions", new Exception("stack-trace source"));
+				}
+			}
+			_includeSubclasses = includeSubclasses;
+		}
+
+		public virtual string GetDisplayText()
+		{
+			StringBuilder buf = new StringBuilder();
+			buf.Append("FromElement{");
+			AppendDisplayText(buf);
+			buf.Append("}");
+			return buf.ToString();
+		}
+
+		public void InitializeCollection(FromClause fromClause, string classAlias, string tableAlias)
+		{
+			DoInitialize(fromClause, tableAlias, null, classAlias, null, null);
+			initialized = true;
+		}
+
+		public void InitializeEntity(FromClause fromClause,
+									string className,
+									IEntityPersister persister,
+									EntityType type,
+									string classAlias,
+									string tableAlias)
+		{
+			DoInitialize(fromClause, tableAlias, className, classAlias, persister, type);
+			this.sequence = fromClause.NextFromElementCounter();
+			initialized = true;
+		}
+
+		public void CheckInitialized()
+		{
+			if (!initialized)
+			{
+				throw new InvalidOperationException("FromElement has not been initialized!");
+			}
+		}
+
+		protected void AppendDisplayText(StringBuilder buf)
+		{
+			buf.Append(IsImplied ? (
+					IsImpliedInFromClause ? "implied in FROM clause" : "implied")
+					: "explicit");
+			buf.Append(",").Append(IsCollectionJoin ? "collection join" : "not a collection join");
+			buf.Append(",").Append(_fetch ? "fetch join" : "not a fetch join");
+			buf.Append(",").Append(IsAllPropertyFetch ? "fetch all properties" : "fetch non-lazy properties");
+			buf.Append(",classAlias=").Append(ClassAlias);
+			buf.Append(",role=").Append(_role);
+			buf.Append(",tableName=").Append(TableName);
+			buf.Append(",tableAlias=").Append(TableAlias);
+			FromElement origin = RealOrigin;
+			buf.Append(",origin=").Append(origin == null ? "null" : origin.Text);
+			buf.Append(",colums={");
+			if (_columns != null)
+			{
+				for (int i = 0; i < _columns.Length; i++)
+				{
+					buf.Append(_columns[i]);
+					if (i < _columns.Length)
+					{
+						buf.Append(" ");
+					}
+				}
+			}
+			buf.Append(",className=").Append(_className);
+			buf.Append("}");
+		}
+
+		private void AddDestination(FromElement fromElement)
+		{
+			_destinations.Add(fromElement);
+		}
+
+		private void DoInitialize(FromClause fromClause, string tableAlias, string className, string classAlias,
+								  IEntityPersister persister, EntityType type)
+		{
+			if (initialized)
+			{
+				throw new InvalidOperationException("Already initialized!!");
+			}
+			_fromClause = fromClause;
+			_tableAlias = tableAlias;
+			_className = className;
+			_classAlias = classAlias;
+			_elementType = new FromElementType(this, persister, type);
+
+			// Register the FromElement with the FROM clause, now that we have the names and aliases.
+			fromClause.RegisterFromElement(this);
+
+			if (log.IsDebugEnabled)
+			{
+				log.Debug(fromClause + " :  " + className + " ("
+						+ (classAlias ?? "no alias") + ") -> " + tableAlias);
+			}
+		}
+
+		// ParameterContainer impl ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		private List<IParameterSpecification> _embeddedParameters;
+
+		public void AddEmbeddedParameter(IParameterSpecification specification)
+		{
+			if (_embeddedParameters == null)
+			{
+				_embeddedParameters = new List<IParameterSpecification>();
+			}
+			_embeddedParameters.Add(specification);
+		}
+
+	}
+}

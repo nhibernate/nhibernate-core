@@ -73,17 +73,17 @@ namespace NHibernate.Loader
 			get { return collectionSuffixes; }
 		}
 
-		protected internal override SqlString SqlString
+		public override SqlString SqlString
 		{
 			get { return sql; }
 		}
 
-		protected internal override ILoadable[] EntityPersisters
+		public override ILoadable[] EntityPersisters
 		{
 			get { return persisters; }
 		}
 
-		protected internal override LockMode[] GetLockModes(IDictionary<string, LockMode> lockModes)
+		public override LockMode[] GetLockModes(IDictionary<string, LockMode> lockModes)
 		{
 			return lockModeArray;
 		}

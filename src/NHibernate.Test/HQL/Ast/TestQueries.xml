@@ -1,0 +1,3006 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Tests>
+  <TestGroup Name="Misc">
+    <Test>
+      <Query><![CDATA[select foo from foo in class NHibernate.DomainModel.Foo, baz in class NHibernate.DomainModel.Baz where foo in baz.FooArray.elements and 3 = some baz.IntArray.elements and 4 > all baz.IntArray.indices]]></Query>
+    </Test>
+  </TestGroup>
+
+  <TestGroup Name="ArrayExpr">
+    <Test>
+      <Query><![CDATA[from Order ord where ord.items[0].id = 1234]]></Query>
+    </Test>
+  </TestGroup>
+  <TestGroup Name="ComplexConstructor">
+    <Test>
+      <Query><![CDATA[select new Foo(count(bar)) from bar]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select new Foo(count(bar),(select count(*) from doofus d where d.gob = 'fat' )) from bar]]></Query>
+    </Test>
+  </TestGroup>
+
+  <TestGroup Name="DocExamplesAggregateFunctions">
+    <Test>
+      <Query><![CDATA[select avg(cat.weight), sum(cat.weight), max(cat.weight), count(cat) from eg.Cat cat]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select cat, count( elements(cat.kittens) )  from eg.Cat cat group by cat]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select distinct cat.name from eg.Cat cat]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select count(distinct cat.name), count(cat) from eg.Cat cat]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select avg(cat.weight), sum(cat.weight), max(cat.weight), count(cat) from Cat cat]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select cat.weight + sum(kitten.weight)
+        from Cat cat
+        join cat.kittens kitten
+        group by cat.id, cat.weight
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select firstName||' '||initial||' '||upper(lastName) from Person]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select distinct cat.name from Cat cat]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select count(distinct cat.name), count(cat) from Cat cat]]></Query>
+    </Test>
+  </TestGroup>
+
+  <TestGroup Name="DocExamplesAssociationsAndJoins">
+    <Test>
+      <Query><![CDATA[from eg.Cat as cat inner join cat.mate as mate left outer join cat.kittens as kitten]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Cat as cat left join cat.mate.kittens as kittens]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Formula form full join form.parameter param]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Cat as cat join cat.mate as mate left join cat.kittens as kitten]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Cat as cat inner join fetch cat.mate left join fetch cat.kittens]]></Query>
+    </Test>
+  </TestGroup>
+
+  <TestGroup Name="DocExamplesExpressions">
+    <Test>
+      <Query><![CDATA[from eg.DomesticCat cat where cat.name between 'A' and 'B']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.DomesticCat cat where cat.name in ( 'Foo', 'Bar', 'Baz' )]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.DomesticCat cat where cat.name not between 'A' and 'B']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.DomesticCat cat where cat.name not in ( 'Foo', 'Bar', 'Baz' )]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Cat cat where cat.kittens.size > 0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Cat cat where size(cat.kittens) > 0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Calendar cal where cal.holidays.maxElement > current_date]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Order order where maxindex(order.items) > 100]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Order order where minelement(order.items) > 10000]]></Query>
+    </Test>
+
+    <Test>
+      <Query><![CDATA[from Order ord where maxindex(ord.items) > 100]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Order ord where minelement(ord.items) > 10000]]></Query>
+    </Test>
+
+    <Test>
+      <Query><![CDATA[select mother from eg.Cat as mother, eg.Cat as kit where kit in elements(foo.kittens)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select p from eg.NameList list, eg.Person p where p.name = some elements(list.names)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Cat cat where exists elements(cat.kittens)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Player p where 3 > all elements(p.scores)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Show show where 'fizard' in indices(show.acts)]]></Query>
+    </Test>
+
+    <Test>
+      <Query><![CDATA[from Order order where order.items[0].id = 1234]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select person from Person person, Calendar calendar
+        where calendar.holidays['national day'] = person.birthDay
+        and person.nationality.calendar = calendar
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select item from Item item, Order order
+        where order.items[ order.deliveredItemIndices[0] ] = item and order.id = 11
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select item from Item item, Order order
+        where order.items[ maxindex(order.items) ] = item and order.id = 11
+      ]]></Query>
+    </Test>
+
+    <Test>
+      <Query><![CDATA[from Order ord where ord.items[0].id = 1234]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select person from Person person, Calendar calendar
+        where calendar.holidays['national day'] = person.birthDay
+        and person.nationality.calendar = calendar
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select item from Item item, Order ord
+        where ord.items[ ord.deliveredItemIndices[0] ] = item and ord.id = 11
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select item from Item item, Order ord where ord.items[ maxindex(ord.items) ] = item and ord.id = 11]]></Query>
+    </Test>
+
+    <Test>
+      <Query><![CDATA[select item from Item item, Order ord where ord.items[ size(ord.items) - 1 ] = item]]></Query>
+    </Test>
+
+    <Test>
+      <Query><![CDATA[from eg.DomesticCat cat where upper(cat.name) like 'FRI%']]></Query>
+    </Test>
+
+    <Test>
+      <Query><![CDATA[
+        select cust from Product prod, Store store
+        inner join store.customers cust
+        where prod.name = 'widget'
+        and store.location.name in ( 'Melbourne', 'Sydney' )
+        and prod = all elements(cust.currentOrder.lineItems)
+      ]]></Query>
+    </Test>
+  </TestGroup>
+
+  <TestGroup Name="DocExamplesFromClause">
+    <Test>
+      <Query><![CDATA[from eg.Cat]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Cat as cat]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Cat cat]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Formula, Parameter]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Formula as form, Parameter as param]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="DocExamplesGroupByClause">
+    <Test>
+      <Query><![CDATA[
+        select cat.color, sum(cat.weight), count(cat)
+        from eg.Cat cat group by cat.color
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select foo.id, avg( elements(foo.names) ), max( indices(foo.names) )
+        from eg.Foo foo group by foo.id
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select cat.color, sum(cat.weight), count(cat) from eg.Cat cat group by cat.color
+        having cat.color in (eg.Color.TABBY, eg.Color.BLACK)
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select cat from eg.Cat cat join cat.kittens kitten group by cat having avg(kitten.weight) > 100
+        order by count(kitten) asc, sum(kitten.weight) desc
+      ]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="DocExamplesHqlExamples">
+    <Test>
+      <Query><![CDATA[
+        select ord.id, sum(price.amount), count(item) from Order as ord join ord.lineItems as item
+        join item.product as product, Catalog as catalog join catalog.prices as price
+        where ord.paid = false and ord.customer = :customer and price.product = product
+        and catalog.effectiveDate < sysdate and catalog.effectiveDate >= all (
+        select cat.effectiveDate from Catalog as cat where cat.effectiveDate < sysdate) group by ord
+        having sum(price.amount) > :minAmount order by sum(price.amount) desc
+      ]]></Query>
+    </Test>
+
+    <Test>
+      <Query><![CDATA[
+        select ord.id, sum(price.amount), count(item)
+        from Order as ord join ord.lineItems as item join item.product as product,
+        Catalog as catalog join catalog.prices as price where ord.paid = false and ord.customer = :customer
+        and price.product = product and catalog = :currentCatalog
+        group by ord having sum(price.amount) > :minAmount order by sum(price.amount) desc
+      ]]></Query>
+    </Test>
+
+    <Test>
+      <Query><![CDATA[
+        select count(payment), status.name  from Payment as payment
+        join payment.currentStatus as status     join payment.statusChanges as statusChange
+        where payment.status.name <> PaymentStatus.AWAITING_APPROVAL     or (
+        statusChange.timeStamp = (              select max(change.timeStamp)
+        from PaymentStatusChange change              where change.payment = payment
+        )         and statusChange.user <> :currentUser     )
+        group by status.name, status.sortOrder order by status.sortOrder
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select count(payment), status.name  from Payment as payment
+        join payment.currentStatus as status
+        where payment.status.name <> PaymentStatus.AWAITING_APPROVAL
+        or payment.statusChanges[ maxIndex(payment.statusChanges) ].user <> :currentUser
+        group by status.name, status.sortOrder order by status.sortOrder
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select account, payment from Account as account     left outer join account.payments as payment
+        where :currentUser in elements(account.holder.users)
+        and PaymentStatus.UNPAID = isNull(payment.currentStatus.name, PaymentStatus.UNPAID)
+        order by account.type.sortOrder, account.accountNumber, payment.dueDate
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select account, payment from Account as account     join account.holder.users as user
+        left outer join account.payments as payment where :currentUser = user
+        and PaymentStatus.UNPAID = isNull(payment.currentStatus.name, PaymentStatus.UNPAID)
+        order by account.type.sortOrder, account.accountNumber, payment.dueDate
+      ]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="DocExamplesOrderByClause">
+
+    <Test>
+      <Query><![CDATA[from eg.DomesticCat cat order by cat.name asc, cat.weight desc, cat.birthdate]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="DocExamplesPolymorphicQueries">
+
+    <Test>
+      <Query><![CDATA[from eg.Cat as cat]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from System.Object o]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Named n, eg.Named m where n.name = m.name]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="DocExamplesSelectClause">
+
+    <Test>
+      <Query><![CDATA[select mate from eg.Cat as cat inner join cat.mate as mate]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select cat.mate from eg.Cat cat]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select elements(cat.kittens) from eg.Cat cat]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select cat.name from eg.DomesticCat cat where cat.name like 'fri%']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select cust.name.firstName from Customer as cust]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select mother, offspr, mate.name from eg.DomesticCat
+        as mother inner join mother.mate as mate left outer join mother.kittens as offspr
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select new Family(mother, mate, offspr) from eg.DomesticCat as mother join mother.mate as mate
+        left join mother.kittens as offspr
+      ]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="DocExamplesSubqueries">
+
+    <Test>
+      <Query><![CDATA[from eg.Cat as fatcat where fatcat.weight > ( select avg(cat.weight) from eg.DomesticCat cat)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.DomesticCat as cat where cat.name = some ( select name.nickName from eg.Name as name)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Cat as cat where not exists ( from eg.Cat as mate where mate.mate = cat)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.DomesticCat as cat where cat.name not in ( select name.nickName from eg.Name as name)]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="DocExamplesWhereClause">
+
+    <Test>
+      <Query><![CDATA[from eg.Cat as cat where cat.name='Fritz']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo from eg.Foo foo, eg.Bar bar where foo.startDate = bar.date ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Cat cat where cat.mate.name is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Cat cat, eg.Cat rival where cat.mate = rival.mate]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select cat, mate from eg.Cat cat, eg.Cat mate where cat.mate = mate]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Cat as cat where cat.id = 123]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Cat as cat where cat.mate.id = 69]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from bank.Person person where person.id.country = 'AU' and person.id.medicareNumber = 123456]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        from bank.Account account where account.owner.id.country = 'AU'
+        and account.owner.id.medicareNumber = 123456
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Cat cat where cat.class = eg.DomesticCat]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        from eg.AuditLog log, eg.Payment payment
+        where log.item.class = 'eg.Payment' and log.item.id = payment.id
+      ]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="DoubleLiteral">
+
+    <Test>
+      <Query><![CDATA[
+        from eg.Cat as tinycat where fatcat.weight < 3.1415
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Cat as enormouscat where fatcat.weight > 3.1415e3]]></Query>
+    </Test>
+  </TestGroup>
+
+  <TestGroup Name="Examples1">
+
+    <Test>
+      <Query><![CDATA[select new org.hibernate.test.S(s.count, s.address) from s in class Simple]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select s.name, sysdate, trunc(s.pay), round(s.pay) from s in class Simple]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select round(s.pay, 2) from s]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select abs(round(s.pay)) from s in class Simple]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select trunc(round(sysdate)) from s in class Simple]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="FromWithJoin">
+
+    <Test>
+      <Query><![CDATA[FROM eg.mypackage.Cat qat, com.toadstool.Foo f join net.sf.blurb.Blurb]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[FROM eg.mypackage.Cat qat  left join com.multijoin.JoinORama , com.toadstool.Foo f join net.sf.blurb.Blurb]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="GroupBy">
+
+    <Test>
+      <Query><![CDATA[FROM eg.mypackage.Cat qat group by qat.breed]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[FROM eg.mypackage.Cat qat group by qat.breed, qat.eyecolor]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="InNotIn">
+
+    <Test>
+      <Query><![CDATA[from foo where foo.bar in ('a' , 'b', 'c')]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo where foo.bar not in ('a' , 'b', 'c')]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="MultipleActualParameters">
+
+    <Test>
+      <Query><![CDATA[select round(s.pay, 2) from s]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="MultipleFromClasses">
+
+    <Test>
+      <Query><![CDATA[FROM eg.mypackage.Cat qat, com.toadstool.Foo f]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[FROM eg.mypackage.Cat qat, org.jabberwocky.Dipstick]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="OperatorPrecedence">
+
+    <Test>
+      <Query><![CDATA[from foo where foo.bar = 123 + foo.baz * foo.not]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo where foo.bar like 'testzzz' || foo.baz or foo.bar in ('duh', 'gob')]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="OrderBy">
+
+    <Test>
+      <Query><![CDATA[FROM eg.mypackage.Cat qat order by avg(qat.toes)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal an order by sqrt(an.bodyWeight)/2]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="Select">
+
+    <Test>
+      <Query><![CDATA[SELECT f FROM eg.mypackage.Cat qat, com.toadstool.Foo f join net.sf.blurb.Blurb]]></Query>
+    </Test>
+    parse(
+    "SELECT DISTINCT bar FROM eg.mypackage.Cat qat  left join com.multijoin.JoinORama as bar, com.toadstool.Foo f join net.sf.blurb.Blurb");
+    <Test>
+      <Query><![CDATA[SELECT count(*) FROM eg.mypackage.Cat qat]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[SELECT avg(qat.weight) FROM eg.mypackage.Cat qat]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="Where">
+
+    <Test>
+      <Query><![CDATA[FROM eg.mypackage.Cat qat where qat.name like '%fluffy%' or qat.toes > 5]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[FROM eg.mypackage.Cat qat where not qat.name like '%fluffy%' or qat.toes > 5]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[FROM eg.mypackage.Cat qat where not qat.name not like '%fluffy%']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[FROM eg.mypackage.Cat qat where qat.name in ('crater','bean','fluffy')]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[FROM eg.mypackage.Cat qat where qat.name not in ('crater','bean','fluffy')]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal an where sqrt(an.bodyWeight)/2 > 10]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        from Animal an where (an.bodyWeight > 10 and an.bodyWeight < 100) or an.bodyWeight is null
+      ]]></Query>
+    </Test>
+  </TestGroup>
+
+
+
+  <TestGroup Name="UnitTestHql">
+
+    <Test>
+      <Query><![CDATA[select foo from foo in class org.hibernate.test.Foo, fee in class org.hibernate.test.Fee where foo.dependent = fee order by foo.string desc, foo.component.count asc, fee.id]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.foo, foo.dependent from foo in class org.hibernate.test.Foo order by foo.foo.string desc, foo.component.count asc, foo.dependent.id]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo from foo in class org.hibernate.test.Foo order by foo.dependent.id, foo.dependent.fi]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[SELECT one FROM one IN CLASS org.hibernate.test.One ORDER BY one.value ASC]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[SELECT many.one FROM many IN CLASS org.hibernate.test.Many ORDER BY many.one.value ASC, many.one.id]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.id from org.hibernate.test.Foo foo where foo.joinedProp = 'foo']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Foo foo inner join fetch foo.foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz left outer join fetch baz.fooToGlarch]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.foo.foo.string from foo in class org.hibernate.test.Foo where foo.foo = 'bar']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.foo.foo.foo.string from foo in class org.hibernate.test.Foo where foo.foo.foo = 'bar']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.foo.foo.string from foo in class org.hibernate.test.Foo where foo.foo.foo.foo.string = 'bar']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.string from foo in class org.hibernate.test.Foo where foo.foo.foo = 'bar' and foo.foo.foo.foo = 'baz']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.string from foo in class org.hibernate.test.Foo where foo.foo.foo.foo.string = 'a' and foo.foo.string = 'b']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Foo as foo where foo.component.glarch.name is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Foo as foo left outer join foo.component.glarch as glarch where glarch.name = 'foo']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Foo foo left outer join foo.foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Foo, org.hibernate.test.Bar]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz left join baz.fooToGlarch, org.hibernate.test.Bar bar join bar.foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz left join baz.fooToGlarch join baz.fooSet]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz left join baz.fooToGlarch join fetch baz.fooSet foo left join fetch foo.foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where foo.string='osama bin laden' and foo.boolean = true order by foo.string asc, foo.component.count desc]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where foo.string='osama bin laden' order by foo.string asc, foo.component.count desc]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.foo from foo in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where foo.component.count is null order by foo.component.count]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where foo.component.name='foo']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select distinct foo.component.name, foo.component.name from foo in class org.hibernate.test.Foo where foo.component.name='foo']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select distinct foo.component.name, foo.id from foo in class org.hibernate.test.Foo where foo.component.name='foo']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where foo.id=?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where foo.key=?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.foo from foo in class org.hibernate.test.Foo where foo.string='fizard']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where foo.component.subcomponent.name='bar']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.foo from foo in class org.hibernate.test.Foo where foo.foo.id=?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where foo.foo = ?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from bar in class org.hibernate.test.Bar where bar.string='a string' or bar.string='a string']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.component.name, elements(foo.component.importantDates) from foo in class org.hibernate.test.Foo where foo.foo.id=?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select max(elements(foo.component.importantDates)) from foo in class org.hibernate.test.Foo group by foo.id]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.foo.foo.foo from foo in class org.hibernate.test.Foo, foo2 in class org.hibernate.test.Foo where foo = foo2.foo and not not ( not foo.string='fizard' ) and foo2.string between 'a' and (foo.foo.string) and ( foo2.string in ( 'fiz', 'blah') or 1=1 )]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where foo.string='from BoogieDown  -tinsel town  =!@#$^&*())']]></Query>
+    </Test>
+    <Test>
+      <Description>Added quote quote is an escape</Description>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where not foo.string='foo''bar']]></Query>
+    </Test>
+    <Test>
+
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where foo.component.glarch.next is null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[ from bar in class org.hibernate.test.Bar where bar.baz.count=667 and bar.baz.count!=123 and not bar.baz.name='1-E-1']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[ from i in class org.hibernate.test.Bar where i.baz.name='Bazza']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select count(distinct foo.foo) from foo in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select count(foo.foo.boolean) from foo in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select count(*), foo.int from foo in class org.hibernate.test.Foo group by foo.int]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select sum(foo.foo.int) from foo in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select count(foo) from foo in class org.hibernate.test.Foo where foo.id=?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where foo.boolean = ?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select new Foo(fo.x) from org.hibernate.test.Fo fo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select new Foo(fo.integer) from org.hibernate.test.Foo fo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select new Foo(fo.x) from org.hibernate.test.Foo fo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.long, foo.component.name, foo, foo.foo from foo in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select avg(foo.float), max(foo.component.name), count(distinct foo.id) from foo in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.long, foo.component, foo, foo.foo from foo in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.MoreStuff]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Many]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Fee]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Qux]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Y]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Fumm]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.X]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Simple]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Location]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Holder]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Part]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Vetoer]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Sortable]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Contained]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Stuff]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Immutable]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Container]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.One]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Fo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Glarch]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Fum]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n in class org.hibernate.test.Holder]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n in class org.hibernate.test.Baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n in class org.hibernate.test.Bar]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n in class org.hibernate.test.Glarch]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n in class org.hibernate.test.Holder where n.name is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n in class org.hibernate.test.Baz where n.name is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n in class org.hibernate.test.Bar where n.name is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n in class org.hibernate.test.Glarch where n.name is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n in class org.hibernate.test.Holder]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n in class org.hibernate.test.Baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n in class org.hibernate.test.Bar]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n in class org.hibernate.test.Glarch]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n0 in class org.hibernate.test.Holder, n1 in class org.hibernate.test.Holder where n0.name = n1.name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n0 in class org.hibernate.test.Baz, n1 in class org.hibernate.test.Holder where n0.name = n1.name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n0 in class org.hibernate.test.Bar, n1 in class org.hibernate.test.Holder where n0.name = n1.name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n0 in class org.hibernate.test.Glarch, n1 in class org.hibernate.test.Holder where n0.name = n1.name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n0 in class org.hibernate.test.Holder, n1 in class org.hibernate.test.Baz where n0.name = n1.name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n0 in class org.hibernate.test.Baz, n1 in class org.hibernate.test.Baz where n0.name = n1.name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n0 in class org.hibernate.test.Bar, n1 in class org.hibernate.test.Baz where n0.name = n1.name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n0 in class org.hibernate.test.Glarch, n1 in class org.hibernate.test.Baz where n0.name = n1.name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n0 in class org.hibernate.test.Holder, n1 in class org.hibernate.test.Bar where n0.name = n1.name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n0 in class org.hibernate.test.Baz, n1 in class org.hibernate.test.Bar where n0.name = n1.name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n0 in class org.hibernate.test.Bar, n1 in class org.hibernate.test.Bar where n0.name = n1.name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n0 in class org.hibernate.test.Glarch, n1 in class org.hibernate.test.Bar where n0.name = n1.name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n0 in class org.hibernate.test.Holder, n1 in class org.hibernate.test.Glarch where n0.name = n1.name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n0 in class org.hibernate.test.Baz, n1 in class org.hibernate.test.Glarch where n0.name = n1.name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n0 in class org.hibernate.test.Bar, n1 in class org.hibernate.test.Glarch where n0.name = n1.name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n0 in class org.hibernate.test.Glarch, n1 in class org.hibernate.test.Glarch where n0.name = n1.name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from n in class org.hibernate.test.Holder where n.name = :name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.MoreStuff]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Many]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Fee]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Qux]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Y]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Fumm]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.X]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Simple]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Location]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Holder]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Part]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Vetoer]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Sortable]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Contained]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Stuff]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Immutable]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Container]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.One]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Fo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Glarch]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Fum]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select baz.code, min(baz.count) from baz in class org.hibernate.test.Baz group by baz.code]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[selecT baz from baz in class org.hibernate.test.Baz where baz.stringDateMap['foo'] is not null or baz.stringDateMap['bar'] = ?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select baz from baz in class org.hibernate.test.Baz where baz.stringDateMap['now'] is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select baz from baz in class org.hibernate.test.Baz where baz.stringDateMap['now'] is not null and baz.stringDateMap['big bang'] < baz.stringDateMap['now']
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select index(date) from org.hibernate.test.Baz baz join baz.stringDateMap date]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        from foo in class org.hibernate.test.Foo where foo.integer not between 1 and 5 and foo.string not in ('cde', 'abc') and foo.string is not null and foo.integer<=3
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz inner join baz.collectionComponent.nested.foos foo where foo.string is null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz inner join baz.fooSet where '1' in (from baz.fooSet foo where foo.string is not null)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz where 'a' in elements(baz.collectionComponent.nested.foos) and 1.0 in elements(baz.collectionComponent.nested.floats)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Foo foo join foo.foo where foo.foo in ('1','2','3')]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.foo from org.hibernate.test.Foo foo where foo.foo in ('1','2','3')]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.foo.string from org.hibernate.test.Foo foo where foo.foo in ('1','2','3')]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.foo.string from org.hibernate.test.Foo foo where foo.foo.string in ('1','2','3')]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.foo.long from org.hibernate.test.Foo foo where foo.foo.string in ('1','2','3')]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select count(*) from org.hibernate.test.Foo foo where foo.foo.string in ('1','2','3') or foo.foo.long in (1,2,3)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select count(*) from org.hibernate.test.Foo foo where foo.foo.string in ('1','2','3') group by foo.foo.long]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Foo foo1 left join foo1.foo foo2 left join foo2.foo where foo1.string is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Foo foo1 left join foo1.foo.foo where foo1.string is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Foo foo1 left join foo1.foo foo2 left join foo1.foo.foo foo3 where foo1.string is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.formula from org.hibernate.test.Foo foo where foo.formula > 0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        from org.hibernate.test.Foo as foo join foo.foo as foo2 where foo2.id >'a' or foo2.id <'a'
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Holder]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz left outer join fetch baz.manyToAny]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz join baz.manyToAny]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select baz from org.hibernate.test.Baz baz join baz.manyToAny a where index(a) = 0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select bar from org.hibernate.test.Bar bar where bar.baz.stringDateMap['now'] is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select bar from org.hibernate.test.Bar bar join bar.baz b where b.stringDateMap['big bang'] < b.stringDateMap['now'] and b.stringDateMap['now'] is not null
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select bar from org.hibernate.test.Bar bar where bar.baz.stringDateMap['big bang'] < bar.baz.stringDateMap['now'] and bar.baz.stringDateMap['now'] is not null
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.string, foo.component, foo.id from org.hibernate.test.Bar foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select elements(baz.components) from org.hibernate.test.Baz baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select bc.name from org.hibernate.test.Baz baz join baz.components bc]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        from org.hibernate.test.Foo foo where foo.integer < 10 order by foo.string
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Fee]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Holder h join h.otherHolder oh where h.otherHolder.name = 'bar']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz join baz.fooSet foo join foo.foo.foo foo2 where foo2.string = 'foo']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz join baz.fooArray foo join foo.foo.foo foo2 where foo2.string = 'foo']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz join baz.stringDateMap date where index(date) = 'foo']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz join baz.topGlarchez g where index(g) = 'A']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select index(g) from org.hibernate.test.Baz baz join baz.topGlarchez g]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz left join baz.stringSet]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz join baz.stringSet str where str='foo']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz left join fetch baz.stringSet]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz join baz.stringSet string where string='foo']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz inner join baz.components comp where comp.name='foo']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Glarch g inner join g.fooComponents comp where comp.fee is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Glarch g inner join g.fooComponents comp join comp.fee fee where fee.count > 0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Glarch g inner join g.fooComponents comp where comp.fee.count is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz left join fetch baz.fooBag]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Glarch]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Fee]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz left join fetch baz.sortablez order by baz.name asc]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz order by baz.name asc]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Foo foo, org.hibernate.test.Baz baz left join fetch baz.fees]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Foo foo, org.hibernate.test.Bar bar]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Foo foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Foo foo, org.hibernate.test.Bar bar, org.hibernate.test.Bar bar2]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.X x]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Foo foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select distinct foo from org.hibernate.test.Foo foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Glarch g where g.multiple.glarch=g and g.multiple.count=12]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Bar bar left join bar.baz baz left join baz.cascadingBars b where bar.name like 'Bar %']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select bar, b from org.hibernate.test.Bar bar left join bar.baz baz left join baz.cascadingBars b where bar.name like 'Bar%']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select bar, b from org.hibernate.test.Bar bar left join bar.baz baz left join baz.cascadingBars b where ( bar.name in (:nameList0_, :nameList1_, :nameList2_) or bar.name in (:nameList0_, :nameList1_, :nameList2_) ) and bar.string = :stringVal]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select bar, b from org.hibernate.test.Bar bar inner join bar.baz baz inner join baz.cascadingBars b where bar.name like 'Bar%']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select bar, b from org.hibernate.test.Bar bar left join bar.baz baz left join baz.cascadingBars b where bar.name like :name and b.name like :name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select bar from org.hibernate.test.Bar as bar where bar.x > ? or bar.short = 1 or bar.string = 'ff ? bb']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select bar from org.hibernate.test.Bar as bar where bar.string = ' ? ' or bar.string = '?']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz, baz.fooArray foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Stuff where s.foo.id = ? and s.id.id = ? and s.moreStuff.id.intId = ? and s.moreStuff.id.stringId = ?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Stuff where s.foo.id = ? and s.id.id = ? and s.moreStuff.name = ?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Stuff where s.foo.string is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Stuff where s.foo > '0' order by s.foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from ms in class org.hibernate.test.MoreStuff]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from fee in class org.hibernate.test.Fee]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select new Result(foo.string, foo.long, foo.integer) from foo in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select new Result( baz.name, foo.long, count(elements(baz.fooArray)) ) from org.hibernate.test.Baz baz join baz.fooArray foo group by baz.name, foo.long]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select new Result( baz.name, max(foo.long), count(foo) ) from org.hibernate.test.Baz baz join baz.fooArray foo group by baz.name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select max( elements(bar.baz.fooArray) ) from org.hibernate.test.Bar as bar]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz left join baz.fooToGlarch join fetch baz.fooArray foo left join fetch foo.foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select baz.name from org.hibernate.test.Bar bar inner join bar.baz baz inner join baz.fooSet foo where baz.name = bar.string]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[SELECT baz.name FROM org.hibernate.test.Bar AS bar INNER JOIN bar.baz AS baz INNER JOIN baz.fooSet AS foo WHERE baz.name = bar.string]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select baz.name from org.hibernate.test.Bar bar join bar.baz baz left outer join baz.fooSet foo where baz.name = bar.string]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select baz.name from org.hibernate.test.Bar bar, bar.baz baz, baz.fooSet foo where baz.name = bar.string]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[SELECT baz.name FROM org.hibernate.test.Bar AS bar, bar.baz AS baz, baz.fooSet AS foo WHERE baz.name = bar.string]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select baz.name from org.hibernate.test.Bar bar left join bar.baz baz left join baz.fooSet foo where baz.name = bar.string]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.string from org.hibernate.test.Bar bar left join bar.baz.fooSet foo where bar.string = foo.string]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select baz.name from org.hibernate.test.Bar bar left join bar.baz baz left join baz.fooArray foo where baz.name = bar.string]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo.string from org.hibernate.test.Bar bar left join bar.baz.fooArray foo where bar.string = foo.string]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo from bar in class org.hibernate.test.Bar inner join bar.baz as baz inner join baz.fooSet as foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo from bar in class org.hibernate.test.Bar inner join bar.baz.fooSet as foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo from bar in class org.hibernate.test.Bar, bar.baz as baz, baz.fooSet as foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo from bar in class org.hibernate.test.Bar, bar.baz.fooSet as foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Bar bar join bar.baz.fooArray foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from bar in class org.hibernate.test.Bar, foo in elements( bar.baz.fooArray )]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select one.id, elements(one.manies) from one in class org.hibernate.test.One]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select max( elements(one.manies) ) from one in class org.hibernate.test.One]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select one, elements(one.manies) from one in class org.hibernate.test.One]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select one, max(elements(one.manies)) from one in class org.hibernate.test.One group by one]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select elements(baz.fooArray) from baz in class org.hibernate.test.Baz where baz.id=?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select elements(baz.fooArray) from baz in class org.hibernate.test.Baz where baz.id=?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select indices(baz.fooArray) from baz in class org.hibernate.test.Baz where baz.id=?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select baz, max(elements(baz.timeArray)) from baz in class org.hibernate.test.Baz group by baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select baz, baz.stringSet.size, count(distinct elements(baz.stringSet)), max(elements(baz.stringSet)) from baz in class org.hibernate.test.Baz group by baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select max( elements(baz.timeArray) ) from baz in class org.hibernate.test.Baz where baz.id=?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select max(elements(baz.stringSet)) from baz in class org.hibernate.test.Baz where baz.id=?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select size(baz.stringSet) from baz in class org.hibernate.test.Baz where baz.id=?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Foo foo where foo.component.glarch.id is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from baz in class org.hibernate.test.Baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select elements(baz.stringArray) from baz in class org.hibernate.test.Baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select elements(baz.stringList) from baz in class org.hibernate.test.Baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select count(*) from org.hibernate.test.Bar]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select count(*) from b in class org.hibernate.test.Bar]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from g in class org.hibernate.test.Glarch]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select baz, baz from baz in class org.hibernate.test.Baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select baz from baz in class org.hibernate.test.Baz order by baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from bar in class org.hibernate.test.Bar]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from g in class org.hibernate.test.Glarch]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from f in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.One]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from q in class org.hibernate.test.Qux]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo from foo in class org.hibernate.test.Foo where foo.string='foo bar']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo order by foo.string, foo.date]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where foo.class='B']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where foo.class=Bar]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select bar from bar in class org.hibernate.test.Bar, foo in class org.hibernate.test.Foo where bar.string = foo.string and not bar=foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where foo.string='foo bar']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo from foo in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from bar in class org.hibernate.test.Bar where bar.barString='bar bar']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from t in class org.hibernate.test.Trivial]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where foo.date = ?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.MoreStuff]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Many]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Fee]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Qux]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Y]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Fumm]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.X]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Simple]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Location]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Holder]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Part]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Vetoer]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Sortable]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Contained]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Stuff]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Immutable]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Container]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.One]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Fo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Glarch]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Fum]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from q in class org.hibernate.test.Qux where q.stuff is null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from q in class org.hibernate.test.Qux where q.stuff=?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from q in class org.hibernate.test.Qux]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from g in class org.hibernate.test.Glarch where g.version=2]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from g in class org.hibernate.test.Glarch where g.next is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from g in class org.hibernate.test.Glarch order by g.order asc]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo order by foo.string asc]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select parent, child from parent in class org.hibernate.test.Foo, child in class org.hibernate.test.Foo where parent.foo = child]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select count(distinct child.id), count(distinct parent.id) from parent in class org.hibernate.test.Foo, child in class org.hibernate.test.Foo where parent.foo = child]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select child.id, parent.id, child.long from parent in class org.hibernate.test.Foo, child in class org.hibernate.test.Foo where parent.foo = child]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select child.id, parent.id, child.long, child, parent.foo from parent in class org.hibernate.test.Foo, child in class org.hibernate.test.Foo where parent.foo = child]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select parent, child from parent in class org.hibernate.test.Foo, child in class org.hibernate.test.Foo where parent.foo = child and parent.string='a string']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from fee in class org.hibernate.test.Fee]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Foo foo where foo.custom.s1 = 'one']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from im in class org.hibernate.test.Immutable where im = ?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where foo.char='X']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select elements(baz.stringArray) from baz in class org.hibernate.test.Baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select distinct elements(baz.stringArray) from baz in class org.hibernate.test.Baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select elements(baz.fooArray) from baz in class org.hibernate.test.Baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Fo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where foo.dependent.qux.foo.string = 'foo2']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Bar bar where bar.object.id = ? and bar.object.class = ?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select one from org.hibernate.test.One one, org.hibernate.test.Bar bar where bar.object.id = one.id and bar.object.class = 'O']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from l in class org.hibernate.test.Location where l.countryCode = 'AU' and l.description='foo bar']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Bar bar]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[From org.hibernate.test.Bar bar]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[From org.hibernate.test.Foo foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from f in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select fum.id from fum in class org.hibernate.test.Fum where not fum.fum='FRIEND']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select fum.id from fum in class org.hibernate.test.Fum where not fum.fum='FRIEND']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from fum in class org.hibernate.test.Fum where not fum.fum='FRIEND']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from fo in class org.hibernate.test.Fo where fo.id.string like 'an instance of fo']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Inner]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Outer o where o.id.detailId = ?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Outer o where o.id.master.id.sup.dudu is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Outer o where o.id.master.id.sup.id.akey is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select o.id.master.id.sup.dudu from org.hibernate.test.Outer o where o.id.master.id.sup.dudu is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select o.id.master.id.sup.id.akey from org.hibernate.test.Outer o where o.id.master.id.sup.id.akey is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Outer o where o.id.master.bla = '']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Outer o where o.id.master.id.one = '']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Inner inn where inn.id.bkey is not null and inn.backOut.id.master.id.sup.id.akey > 'a']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Outer as o left join o.id.master m left join m.id.sup where o.bubu is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Outer as o left join o.id.master.id.sup s where o.bubu is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Outer as o left join o.id.master m left join o.id.master.id.sup s where o.bubu is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select fum1.fo from fum1 in class org.hibernate.test.Fum where fum1.fo.fum is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from fum1 in class org.hibernate.test.Fum where fum1.fo.fum is not null order by fum1.fo.fum]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select elements(fum1.friends) from fum1 in class org.hibernate.test.Fum]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from fum1 in class org.hibernate.test.Fum, fr in elements( fum1.friends )]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select new Jay(eye) from org.hibernate.test.Eye eye]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Category cat where cat.name='new foo']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Category cat where cat.name='new sub']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Up up order by up.id2 asc]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Down down]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Up up]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from m in class org.hibernate.test.Master]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Several]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Single]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        from d in class
+        org.hibernate.test.Detail
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from c in class org.hibernate.test.Category where c.name = org.hibernate.test.Category.ROOT_CATEGORY]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select c from c in class org.hibernate.test.Container, s in class org.hibernate.test.Simple where c.oneToMany[2] = s]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select c from c in class org.hibernate.test.Container, s in class org.hibernate.test.Simple where c.manyToMany[2] = s]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select c from c in class org.hibernate.test.Container, s in class org.hibernate.test.Simple where s = c.oneToMany[2]]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select c from c in class org.hibernate.test.Container, s in class org.hibernate.test.Simple where s = c.manyToMany[2]]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select c from c in class org.hibernate.test.Container where c.oneToMany[0].name = 's']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select c from c in class org.hibernate.test.Container where c.manyToMany[0].name = 's']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select c from c in class org.hibernate.test.Container where 's' = c.oneToMany[2 - 2].name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select c from c in class org.hibernate.test.Container where 's' = c.manyToMany[(3+1)/4-1].name]]></Query>
+    </Test>
+    <Test>
+      <Description>TODO: "count" is reserved</Description>
+      <Query><![CDATA[select c from c in class org.hibernate.test.Container where c.manyToMany[ maxindex(c.manyToMany) ].count = 2]]></Query>
+    </Test>
+    <Test>
+      <Description>TODO: "count" is reserved</Description>
+      <Query><![CDATA[select c from c in class org.hibernate.test.Container where c.oneToMany[ c.manyToMany[0].count ].name = 's']]></Query>
+    </Test>
+    <Test>
+      <Description>TODO: "count" is reserved</Description>
+      <Query><![CDATA[select c from org.hibernate.test.Container c where c.manyToMany[ c.oneToMany[0].count ].name = 's']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select count(comp.name) from org.hibernate.test.Container c join c.components comp]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Parent p left join fetch p.child]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Parent p join p.child c where c.x > 0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Child c join c.parent p where p.x > 0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Child]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.MoreStuff]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Many]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Fee]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Qux]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Fumm]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Parent]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Simple]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Holder]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Part]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Vetoer]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Sortable]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Contained]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Circular]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Stuff]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Immutable]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Container]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.One]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Fo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Glarch]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Fum]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Glarch g]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Part]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz join baz.parts]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from c in class org.hibernate.test.Child where c.parent.count=66]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Parent p join p.child c where p.count=66]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select c, c.parent from c in class org.hibernate.test.Child order by c.parent.count]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select c, c.parent from c in class org.hibernate.test.Child where c.parent.count=66 order by c.parent.count]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select c, c.parent, c.parent.count from c in class org.hibernate.test.Child order by c.parent.count]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[FROM p IN CLASS org.hibernate.test.Parent WHERE p.count = ?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select count(*) from org.hibernate.test.Container as c join c.components as ce join ce.simple as s where ce.name='foo']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select c, s from org.hibernate.test.Container as c join c.components as ce join ce.simple as s where ce.name='foo']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Simple]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from m in class org.hibernate.test.Many]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.One]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from c in class org.hibernate.test.Container]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Child]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.MoreStuff]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Many]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Fee]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Qux]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Fumm]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Parent]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Simple]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Holder]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Part]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Baz]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Vetoer]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Sortable]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Contained]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Circular]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Stuff]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Immutable]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Container]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.One]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Fo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Glarch]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Fum]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from c in class org.hibernate.test.C2 where 1=1 or 1=1]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from b in class org.hibernate.test.B]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from a in class org.hibernate.test.A]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from b in class org.hibernate.test.B]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.E e join e.reverse as b where b.count=1]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.E e join e.as as b where b.count=1]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.B]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.C1]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.C2]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.E e, org.hibernate.test.A a where e.reverse = a.forward and a = ?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.E e join fetch e.reverse]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.E e]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select max(s.count) from s in class org.hibernate.test.Simple]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select new org.hibernate.test.S(s.count, s.address) from s in class org.hibernate.test.Simple]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select max(s.count) from s in class org.hibernate.test.Simple]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select count(*) from s in class org.hibernate.test.Simple]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Simple where s.name=:name and s.count=:count]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Simple where s.name in (:several0_, :several1_)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Simple where s.name in (:stuff0_, :stuff1_)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Simple s where s.name=?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Simple s where s.name=:name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Simple where upper( s.name ) ='SIMPLE 1']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Simple where not( upper( s.name ) ='yada' or 1=2 or 'foo'='bar' or not('foo'='foo') or 'foo' like 'bar' )]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Simple where lower( s.name || ' foo' ) ='simple 1 foo']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Simple where upper( s.other.name ) ='SIMPLE 2']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Simple where not ( upper( s.other.name ) ='SIMPLE 2' )]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select distinct s from s in class org.hibernate.test.Simple where ( ( s.other.count + 3 ) = (15*2)/2 and s.count = 69) or ( ( s.other.count + 2 ) / 7 ) = 2]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select s from s in class org.hibernate.test.Simple where ( ( s.other.count + 3 ) = (15*2)/2 and s.count = 69) or ( ( s.other.count + 2 ) / 7 ) = 2 order by s.other.count]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select sum(s.count) from s in class org.hibernate.test.Simple group by s.count having sum(s.count) > 10]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select s.count from s in class org.hibernate.test.Simple group by s.count having s.count = 12]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select s.id, s.count, count(t), max(t.date) from s in class org.hibernate.test.Simple, t in class org.hibernate.test.Simple where s.count = t.count group by s.id, s.count order by s.count]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Simple]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Simple where s.name = ?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Simple where s.name = ? and upper(s.name) = ?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Simple where s.name = :foo and upper(s.name) = :bar or s.count=:count or s.count=:count + 1]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select s.id from s in class org.hibernate.test.Simple]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select all s, s.other from s in class org.hibernate.test.Simple where s = :s]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Simple where s.name in (:name_list0_, :name_list1_) and s.count > :count]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Simple s]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Simple s]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Assignable]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Category]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Simple]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.A]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo where foo.string=?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from foo in class org.hibernate.test.Foo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Po po, org.hibernate.test.Lower low where low.mypo = po]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Po po join po.set as sm where sm.amount > 0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Po po join po.top as low where low.foo = 'po']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.SubMulti sm join sm.children smc where smc.name > 'a']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select s, ya from org.hibernate.test.Lower s join s.yetanother ya]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Lower s1 join s1.bag s2]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Lower s1 left join s1.bag s2]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select s, a from org.hibernate.test.Lower s join s.another a]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select s, a from org.hibernate.test.Lower s left join s.another a]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Top s, org.hibernate.test.Lower ls]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Lower ls join ls.set s where s.name > 'a']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Po po join po.list sm where sm.name > 'a']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Lower ls inner join ls.another s where s.name is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Lower ls where ls.other.another.name is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Multi m where m.derived like 'F%']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.SubMulti m where m.derived like 'F%']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select s from org.hibernate.test.SubMulti as sm join sm.children as s where s.amount>-1 and s.name is null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select elements(sm.children) from org.hibernate.test.SubMulti as sm]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select distinct sm from org.hibernate.test.SubMulti as sm join sm.children as s where s.amount>-1 and s.name is null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select distinct s from s in class org.hibernate.test.SubMulti where s.moreChildren[1].amount < 1.0
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.TrivialClass where s.id = 2]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select s.count from s in class org.hibernate.test.Top]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Lower where s.another.name='name']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Lower where s.yetanother.name='name']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Lower where s.yetanother.name='name' and s.yetanother.foo is null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Top where s.count=1]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select s.count from s in class org.hibernate.test.Top, ls in class org.hibernate.test.Lower where ls.another=s]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select elements(ls.bag), elements(ls.set) from ls in class org.hibernate.test.Lower]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Lower]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Top]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from sm in class org.hibernate.test.SubMulti]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select
+
+        s from s in class org.hibernate.test.Top where s.count>0
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from m in class org.hibernate.test.Multi where m.count>0 and m.extraProp is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from m in class org.hibernate.test.Top where m.count>0 and m.name is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from m in class org.hibernate.test.Lower where m.other is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from m in class org.hibernate.test.Multi where m.other.id = 1]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from m in class org.hibernate.test.SubMulti where m.amount > 0.0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from m in class org.hibernate.test.Multi]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from m in class org.hibernate.test.Multi where m.class = SubMulti]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from m in class org.hibernate.test.Top where m.class = Multi]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from s in class org.hibernate.test.Top]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from ls in class org.hibernate.test.Lower]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from ls in class org.hibernate.test.Lower, s in elements(ls.bag) where s.id is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from ls in class org.hibernate.test.Lower, s in elements(ls.set) where s.id is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Top]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.Po]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from ChildMap cm where cm.parent is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from ParentMap cm where cm.child is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Componentizable]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="UnnamedParameter">
+
+    <Test>
+      <Description>Added '?' as a valid expression.</Description>
+      <Query><![CDATA[select foo, bar from org.hibernate.test.Foo foo left outer join foo.foo bar where foo = ?]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="InElements">
+
+    <Test>
+      <Description>Added collectionExpr as a valid 'in' clause.</Description>
+      <Query><![CDATA[from bar in class org.hibernate.test.Bar, foo in elements(bar.baz.fooArray)]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="DotElements">
+
+    <Test>
+      <Query><![CDATA[select distinct foo from baz in class org.hibernate.test.Baz, foo in elements(baz.fooArray)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo from baz in class org.hibernate.test.Baz, foo in elements(baz.fooSet)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select foo from baz in class org.hibernate.test.Baz, foo in elements(baz.fooArray)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Baz baz where 'b' in elements(baz.collectionComponent.nested.foos) and 1.0 in elements(baz.collectionComponent.nested.floats)]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="SelectAll">
+
+    <Test>
+      <Query><![CDATA[select all s, s.other from s in class org.hibernate.test.Simple where s = :s]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="Not">
+    <Description>Cover NOT optimization in HqlParser</Description>
+    <Test>
+      <Query><![CDATA[
+        from eg.Cat cat where not ( cat.kittens.size < 1 )
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Cat cat where not ( cat.kittens.size > 1 )]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.Cat cat where not ( cat.kittens.size >= 1 )]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        from eg.Cat cat where not ( cat.kittens.size <= 1 )
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.DomesticCat cat where not ( cat.name between 'A' and 'B' ) ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from eg.DomesticCat cat where not ( cat.name not between 'A' and 'B' ) ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        from eg.Cat cat where not ( not cat.kittens.size <= 1 )
+      ]]></Query>
+    </Test>
+    <Test>
+      <Description>double "NOT"</Description>
+      <Query><![CDATA[
+        from eg.Cat cat where not  not ( not cat.kittens.size <= 1 )
+      ]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="OtherSyntax">
+
+    <Test>
+      <Query><![CDATA[select bar from org.hibernate.test.Bar bar order by ((bar.x - :valueX)*(bar.x - :valueX))]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from bar in class org.hibernate.test.Bar, foo in elements(bar.baz.fooSet)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from one in class org.hibernate.test.One, many in elements(one.manies) where one.id = 1 and many.id = 1]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Inner _inner join _inner.middles middle]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[FROM m IN CLASS org.hibernate.test.Master WHERE NOT EXISTS ( FROM d IN elements(m.details) WHERE NOT d.i=5 )]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[FROM m IN CLASS org.hibernate.test.Master WHERE NOT 5 IN ( SELECT d.i FROM d IN elements(m.details) )]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[SELECT m FROM m IN CLASS org.hibernate.test.Master, d IN elements(m.details) WHERE d.i=5]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[SELECT m FROM m IN CLASS org.hibernate.test.Master, d IN elements(m.details) WHERE d.i=5]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[SELECT m.id FROM m IN CLASS org.hibernate.test.Master, d IN elements(m.details) WHERE d.i=5]]></Query>
+    </Test>
+    <Test Ignore="true">
+      <Description>from h3.2.6 I'm not sure about these... [jsd]</Description>
+      <Query><![CDATA[select bar.string, foo.string from bar in class org.hibernate.test.Bar inner join bar.baz as baz inner join elements(baz.fooSet) as foo where baz.name = 'name']]></Query>
+    </Test>
+    <Test Ignore="true">
+      <Description>from h3.2.6 I'm not sure about these... [jsd]</Description>
+      <Query><![CDATA[select bar.string, foo.string from bar in class org.hibernate.test.Bar, bar.baz as baz, elements(baz.fooSet) as foo where baz.name = 'name']]></Query>
+    </Test>
+    <Test Ignore="true">
+      <Description>from h3.2.6 I'm not sure about these... [jsd]</Description>
+      <Query><![CDATA[select count(*) where this.amount>-1 and this.name is null]]></Query>
+    </Test>
+    <Test>
+      <Description>from h3.2.6 I'm not sure about these... [jsd]</Description>
+      <Query><![CDATA[from sm in class org.hibernate.test.SubMulti where exists sm.children.elements]]></Query>
+    </Test>
+    <Test>
+      <Description>from h3.2.6 I'm not sure about these... [jsd]</Description>
+      <Query><![CDATA[from foo in class NHibernate.DomainModel.Foo where 111 in foo.Bytes.elements]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="EjbqlExtensions">
+
+    <Test>
+      <Query><![CDATA[select object(a) from Animal a where a.mother member of a.offspring]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select object(a) from Animal a where a.mother member a.offspring]]></Query>
+    </Test>
+    <Test>
+      <Description>no member of</Description>
+      <Query><![CDATA[select object(a) from Animal a where a.offspring is empty]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="HB1042">
+
+    <Test>
+      <Query><![CDATA[select x from fmc_web.pool.Pool x left join x.containers c0 where (upper(x.name) = upper(':') and c0.id = 1)]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="KeywordInPath">
+    <Test>
+      <Description>The keyword 'order' used as a property name.</Description>
+      <Query><![CDATA[from Customer c where c.order.status = 'argh']]></Query>
+    </Test>
+    <Test>
+      <Description>The keyword 'order' and 'count' used as a property name.</Description>
+      <Query><![CDATA[from Customer c where c.order.count > 3]]></Query>
+    </Test>
+
+    <Test>
+      <Description>The keywords 'where', 'order' and 'count' used as a property name.</Description>
+      <Query><![CDATA[select c.where from Customer c where c.order.count > 3]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Interval i where i.end <:end]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Letter l where l.case = :case]]></Query>
+    </Test>
+
+  </TestGroup>
+
+
+  <TestGroup Name="PathologicalKeywordAsIdentifier">
+    <Description>Super evil badness... a legitimate keyword!</Description>
+    <Test>
+      <Query><![CDATA[from Order order]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Order order join order.group]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from X x order by x.group.by.from]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Order x order by x.order.group.by.from]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select order.id from Order order]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select order from Order order]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Order order where order.group.by.from is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Order order order by order.group.by.from]]></Query>
+    </Test>
+    <Test>
+      <Description>Okay, now this is getting silly.</Description>
+      <Query><![CDATA[from Group as group group by group.by.from]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="HHH354">
+
+    <Test>
+      <Query><![CDATA[from Foo f where f.full = 'yep']]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="WhereAsIdentifier">
+    <Description>'where' as a package name</Description>
+    <Test>
+      <Query><![CDATA[from where.Order]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="EjbqlKeywordsAsIdentifier">
+
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Bar bar where bar.object.id = ? and bar.object.class = ?]]></Query>
+    </Test>
+  </TestGroup>
+
+
+
+  <TestGroup Name="ConstructorIn">
+
+    <Test>
+      <Query><![CDATA[from org.hibernate.test.Bar bar where (b.x, b.y, b.z) in (select foo, bar, baz from org.hibernate.test.Foo)]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="MultiByteCharacters">
+
+    <Test>
+      <Query><![CDATA[
+        from User user where user.name like '%nn\u4e2dnn%'
+      ]]></Query>
+    </Test>
+    <Test>
+      <Description>TODO support .NET identifier NH-685; won't fix ?</Description>
+      <Query><![CDATA[from ОдинТип ОснованиеTипа where ОснованиеTипа.Количество like '%\u4e2d%']]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="HHH719">
+    <Description>TODO Some SQLs have function names with package qualifiers.</Description>
+    <Test>
+      <Query><![CDATA[from Foo f order by com.fooco.SpecialFunction(f.id)]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="HHH1107">
+
+    <Test>
+      <Query><![CDATA[from Animal where zoo.address.street = '123 Bogus St.']]></Query>
+    </Test>
+  </TestGroup>
+
+
+
+  <TestGroup Name="HHH1247">
+    <Description>won't fix</Description>
+    <Test>
+      <Query><![CDATA[select distinct user.party from com.itf.iceclaims.domain.party.user.UserImpl user inner join user.party.$RelatedWorkgroups relatedWorkgroups where relatedWorkgroups.workgroup.id = :workgroup and relatedWorkgroups.effectiveTime.start <= :datesnow and relatedWorkgroups.effectiveTime.end > :dateenow ]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="WithClause">
+
+    <Test>
+      <Query><![CDATA[from Animal a inner join fetch a.offspring as o with o.bodyWeight = :someLimit]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Human h inner join h.friends as f with f.bodyWeight < :someLimit]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a inner join a.offspring o inner join o.mother as m inner join m.father as f with o.bodyWeight > 1]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Human h inner join h.offspring o with o.mother.father = :cousin]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Human h inner join h.offspring as o with o.bodyWeight < :someLimit]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a inner join a.mother as m with m.bodyWeight < :someLimit]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Human h inner join h.friends as f with f.nickName like 'bubba']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Human h where exists(from h.friends)]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="ExecutableQueries">
+
+    <Test>
+      <Query><![CDATA[update NonExistentEntity e set e.someProp = ?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[delete from Vehicle]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[delete from Car]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update BooleanLiteralEntity set yesNoBoolean = :b1, trueFalseBoolean = :b2, zeroOneBoolean = :b3]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update BooleanLiteralEntity set yesNoBoolean = true, trueFalseBoolean = true, zeroOneBoolean = true]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[insert into Pickup (id, vin, owner) select id, vin, owner from Car]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[delete Vehicle]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[insert into Animal (description, bodyWeight, mother) select description, bodyWeight, mother from Human]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[insert into Pickup (owner, vin, id) select id, vin, owner from Car]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[insert into Human (id, bodyWeight) select id, bodyWeight from Lizard]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[delete Animal where mother is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[delete Animal where father is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[delete Animal]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[insert into Joiner (name, joinedName) select vin, owner from Car]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[delete Joiner]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[insert into PettingZoo (name) select name from Zoo]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[insert into IntegerVersioned ( name ) select name from IntegerVersioned]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[delete IntegerVersioned]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[insert into TimestampVersioned ( name ) select name from TimestampVersioned]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[insert into Animal (description, bodyWeight) select h.description, h.bodyWeight from Human h where h.mother.mother is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update Human set Human.description = 'xyz' where Human.id = 1 and Human.description is null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        update Human h
+        set h.description = 'updated'
+        where exists (
+        select f.id
+        from h.friends f
+        where f.name.last = 'Public'
+        )
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        update SimpleEntityWithAssociation e
+        set e.name = 'updated'
+        where exists (
+        select a.id
+        from e.associatedEntities a
+        where a.name = 'one-to-many-association'
+        )
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        update SimpleEntityWithAssociation e
+        set e.name = 'updated'
+        where exists (
+        select a.id
+        from e.manyToManyAssociatedEntities a
+        where a.name = 'many-to-many-association'
+        )
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update versioned IntegerVersioned set name = name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update Human set name.first = :correction where id = :id]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update Animal a set a.mother = null where a.id = 2]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update Human set mother.name.initial = :initial]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[delete Human where mother is not null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update PettingZoo set name = name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update PettingZoo pz set pz.name = pz.name where pz.id = :id]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update Zoo as z set z.name = z.name]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update Zoo as z set name = name where id = :id]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update Animal set description = description where description = :desc]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update Animal set description = :newDesc where description = :desc]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update Animal set bodyWeight = bodyWeight + :w1 + :w2]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update Mammal set description = description]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update Mammal set bodyWeight = 25]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update Mammal set bodyWeight = ( select max(bodyWeight) from Animal )]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update Vehicle set owner = 'Steve']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update Vehicle set owner = null where owner = 'Steve']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[delete Vehicle where owner is null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update PettingZoo set address.city = null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[delete Zoo where address.city is null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[update Mammal set bodyWeight = null]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[delete SimpleEntityWithAssociation e where size( e.associatedEntities ) = 0 and e.name like '%']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[delete from Animal as a where a.id = :id]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[delete Animal where id = :id]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[delete from User u where u not in (select u from User u)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[delete EntityWithCrazyCompositeKey where id.id = 1 and id.otherId = 2]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[delete from EntityWithCrazyCompositeKey e where e.id.id = 1 and e.id.otherId = 2]]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="LikeWithEscape">
+
+    <Test>
+      <Query><![CDATA[from Animal a where a.description like 'x%ax%' escape 'x']]></Query>
+    </Test>
+  </TestGroup>
+
+  [Test, Ignore("Not supported")]
+  <TestGroup Name="InnerClass">
+    <Description>
+      TODO InnerClass but for NET
+      the problem with inner class is that in .NET the "separator" is '+' and
+      Path+Identifier is a valid MathAddExpression
+      because this is a special case and the use of entity-name is a valid workaroud we can wait
+      to support it or we can choose another character to query inner-classes (the same of JAVA '$' is a valid choice)
+    </Description>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.X$XX]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from o in class org.hibernate.test.X$XX]]></Query>
+    </Test>
+  </TestGroup>
+
+  <TestGroup Name="SupportUnicodeInStringLiteral">
+    <Description>TODO Support Unicode in StringLiteral</Description>
+    <Test>
+      <Query><![CDATA[from User where User.Strange like '%ОдинТип ОснованиеTипа%']]></Query>
+    </Test>
+  </TestGroup>
+
+
+  <TestGroup Name="HQLFuctions - Aggregates">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[select count(distinct a.id) from Animal a]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select count(*) from Animal]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select count(a.id) from Animal a having count(a.id)>1]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select avg(a.BodyWeight) from Animal a]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select avg(a.BodyWeight) from Animal a having avg(a.BodyWeight)>0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select max(a.BodyWeight) from Animal a]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select max(a.BodyWeight) from Animal a having max(a.BodyWeight)>0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select min(a.BodyWeight) from Animal a]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select min(a.BodyWeight) from Animal a having min(a.BodyWeight)>0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select sum(a.BodyWeight) from Animal a]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select sum(a.BodyWeight) from Animal a having sum(a.BodyWeight)>0]]></Query>
+    </Test>
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - Substring">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[select substring(a.Description, 3) from Animal a]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where substring(a.Description, 2, 3) = 'bcd']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where substring(a.Description, 2, 3) = ?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where substring(a.Description, 2, ?) = 'bcd']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where substring(a.Description, ?, ?) = ?]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select substring(a.Description, ?, ?) from Animal a]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where substring(a.Description, 4) = 'def']]></Query>
+    </Test>
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - Locate">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[select locate('bc', a.Description, 2) from Animal a]]></Query>
+    </Test>
+
+    <Test>
+      <Query><![CDATA[from Animal a where locate('bc', a.Description) = 2]]></Query>
+    </Test>
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - Trim">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[select trim(a.Description) from Animal a where a.Description='   def']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select trim(trailing from a.Description) from Animal a where a.Description= 'abc   ']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select trim(leading from a.Description) from Animal a where a.Description='   def']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where trim(a.Description) = 'abc']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where trim('_' from a.Description) = 'def']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where trim(trailing from a.Description) = 'abc']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where trim(leading from a.Description) = 'def']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where trim(both from a.Description) = 'abc']]></Query>
+    </Test>
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - Length">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[select length(a.Description) from Animal a where a.Description = '1234']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where length(a.Description) = 5]]></Query>
+    </Test>
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - Bit_length">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[from Animal a where bit_length(a.Description) = 24]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select bit_length(a.Description) from Animal a]]></Query>
+    </Test>
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - Coalesce">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[select coalesce(h.NickName, h.Name.First, h.Name.Last) from Human h]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Human h where coalesce(h.NickName, h.Name.First, h.Name.Last) = 'max']]></Query>
+    </Test>
+
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - Nullif">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[select nullif(h.NickName, '1e1') from Human h]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Human h where nullif(h.NickName, '1e1') is not null]]></Query>
+    </Test>
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - Abs">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[select abs(a.BodyWeight*-1) from Animal a]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where abs(a.BodyWeight*-1)>0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select abs(a.BodyWeight*-1) from Animal a group by abs(a.BodyWeight*-1) having abs(a.BodyWeight*-1)>0]]></Query>
+    </Test>
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - Mod">
+    <Description>from NHibernate tests</Description>
+
+    <Test>
+      <Query><![CDATA[select mod(cast(a.BodyWeight as int), 3) from Animal a]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where mod(20, 3) = 2]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where mod(cast(a.BodyWeight as int), 4)=0]]></Query>
+    </Test>
+
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - Sqrt">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[select sqrt(an.BodyWeight) from Animal an]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal an where sqrt(an.BodyWeight)/2 > 10]]></Query>
+    </Test>
+
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - Upper">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[select upper(an.Description) from Animal an]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal an where upper(an.Description)='ABCDEF']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select upper(an.Description) from Animal an group by upper(an.Description) having upper(an.Description)='ABCDEF']]></Query>
+    </Test>
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - Lower">
+    <Description>from NHibernate tests</Description>
+
+    <Test>
+      <Query><![CDATA[select lower(an.Description) from Animal an]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal an where lower(an.Description)='abcdef']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[
+        select lower(an.Description) from Animal an group by lower(an.Description) having lower(an.Description)='abcdef'
+      ]]></Query>
+    </Test>
+
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - Cast">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[select cast(a.BodyWeight as Double) from Animal a]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select cast(7+123-5*a.BodyWeight as Double) from Animal a]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select cast(cast(a.BodyWeight as string) as Double) from Animal a]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where cast(a.BodyWeight as string) like '1.%']]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where cast(7+123-2*a.BodyWeight as Double)>0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where cast(:aParam+a.BodyWeight as Double)>0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where cast(cast(cast(a.BodyWeight as string) as double) as int) = 1]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select cast(a.BodyWeight as Double) from Animal a group by cast(a.BodyWeight as Double)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select cast(7+123-5*a.BodyWeight as Double) from Animal a group by cast(7+123-5*a.BodyWeight as Double)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select cast(cast(a.BodyWeight as string) as Double) from Animal a group by cast(cast(a.BodyWeight as string) as Double)]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select cast(a.BodyWeight as Double) from Animal a group by cast(a.BodyWeight as Double) having cast(a.BodyWeight as Double)>0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select cast(7+123.3-1*a.BodyWeight as int) from Animal a group by cast(7+123.3-1*a.BodyWeight as int) having cast(7+123.3-1*a.BodyWeight as int)>0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select cast(:aParam+a.BodyWeight as int) from Animal a group by cast(:aParam+a.BodyWeight as int) having cast(:aParam+a.BodyWeight as int)>0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select cast(cast(cast(a.BodyWeight as string) as double) as int from Animal a group by cast(cast(cast(a.BodyWeight as string) as double) as int having cast(cast(cast(a.BodyWeight as string) as double) as int = 1]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select cast(a.BodyWeight As Double) from Animal a]]></Query>
+    </Test>
+
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - Current_TimeStamp">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[select current_timestamp() from Animal]]></Query>
+    </Test>
+
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - Extract">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[select extract(second from current_timestamp()), extract(minute from current_timestamp()), extract(hour from current_timestamp()) from Animal]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal where extract(day from cast(current_timestamp() as Date))>0]]></Query>
+    </Test>
+
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - Concat">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[select concat(a.Description,'zzz') from Animal a]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where a.Description = concat('a', concat('b','c'), 'd'||'e')||'f']]></Query>
+    </Test>
+
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - HourMinuteSecond">
+    <Description>from NHibernate tests</Description>
+
+    <Test>
+      <Query><![CDATA[select second(current_timestamp()), minute(current_timestamp()), hour(current_timestamp()) from Animal]]></Query>
+    </Test>
+
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - DayMonthYear">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[select day(h.Birthdate), month(h.Birthdate), year(h.Birthdate) from Human h]]></Query>
+    </Test>
+
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - Str">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[select str(a.BodyWeight) from Animal a]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where str(123) = '123']]></Query>
+    </Test>
+
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - iif">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[
+        select mr.Description,
+        sum(iif(mr.State= 0,1,0)),
+        sum(iif(mr.State= 1,1,0)),
+        sum(iif(mr.State= 2,1,0))
+        from MaterialResource mr
+        group by mr.Description
+      ]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from MaterialResource mr where iif(mr.State=2,true,false)=true]]></Query>
+    </Test>
+
+  </TestGroup>
+  <TestGroup Name="HQLFuctions - Parameter as Argument">
+    <Description>from NHibernate tests</Description>
+    <Test>
+      <Query><![CDATA[from Animal a where cast(:aParam as Double)>0]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[from Animal a where cast(:aParam+a.BodyWeight as Double)>3]]></Query>
+    </Test>
+    <Test>
+      <Query><![CDATA[select cast(:aParam+a.BodyWeight as int) from Animal a group by cast(:aParam+a.BodyWeight as int) having cast(:aParam+a.BodyWeight as Double)>0]]></Query>
+    </Test>
+  </TestGroup>
+
+</Tests>
