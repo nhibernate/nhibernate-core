@@ -661,7 +661,7 @@ namespace NHibernate.Test.Hql
 				hql = "select cast(7+123.3-1*a.BodyWeight as int) from Animal a group by cast(7+123.3-1*a.BodyWeight as int) having cast(7+123.3-1*a.BodyWeight as int)>0";
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(129, l[0]);
+				Assert.AreEqual((int)(7 + 123.3 - 1 * 1.3d), l[0]);
 
 				// Rendered in HAVING using a property and named param (NOT SUPPORTED)
 				try

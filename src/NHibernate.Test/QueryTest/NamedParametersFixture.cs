@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using NUnit.Framework;
+using NHibernate.Hql.Ast.ANTLR;
 
 namespace NHibernate.Test.QueryTest
 {
@@ -41,16 +42,22 @@ namespace NHibernate.Test.QueryTest
 		/// Verifying that a <see langword="null" /> value passed into SetParameter(name, val) throws
 		/// an exception
 		/// </summary>
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void TestNullNamedParameter()
 		{
+			if (sessions.Settings.QueryTranslatorFactory is ASTQueryTranslatorFactory)
+			{
+				Assert.Ignore("Not supported; The AST parser can guess the type.");
+			}
 			ISession s = OpenSession();
 
 			try
 			{
-				IQuery q = s.CreateQuery("from Simple as s where s.Name=:Name");
-				q.SetParameter("Name", null);
+				IQuery q = s.CreateQuery("from Simple as s where s.Name=:pName");
+				q.SetParameter("pName", null);
+				Assert.Fail("should throw if can't guess the type of parameter");
 			}
+			catch (ArgumentNullException) {}
 			finally
 			{
 				s.Close();
