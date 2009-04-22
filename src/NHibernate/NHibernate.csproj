@@ -1171,7 +1171,11 @@
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Hql\Ast\ANTLR\" />
+    <Folder Include="Hql\Ast\ANTLR\Generated\" />
+    <Folder Include="Hql\Ast\ANTLR\Loader\" />
+    <Folder Include="Hql\Ast\ANTLR\Parameters\" />
+    <Folder Include="Hql\Ast\ANTLR\Tree\" />
+    <Folder Include="Hql\Ast\ANTLR\Util\" />
     <Folder Include="Loader\Hql\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
