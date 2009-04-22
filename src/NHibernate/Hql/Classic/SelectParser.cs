@@ -150,7 +150,8 @@ namespace NHibernate.Hql.Classic
 			else if (funcStack.HasFunctions)
 			{
 				bool constantToken = false;
-				if (!readyForAliasOrExpression && parenCount != funcStack.NestedFunctionCount)
+				var expectedParen = parenCount + ((insideNew) ? -1 : 0);
+				if (!readyForAliasOrExpression && expectedParen != funcStack.NestedFunctionCount)
 				{
 					throw new QueryException("'(' expected after HQL function in SELECT");
 				}

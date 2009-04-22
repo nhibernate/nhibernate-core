@@ -900,6 +900,19 @@ group by mr.Description";
 			}
 		}
 
+		[Test]
+		public void NH1725()
+		{
+			// Only to test the parser
+			using (ISession s = OpenSession())
+			{
+				var hql = "select new ForNh1725(mr.Description, iif(mr.State= 0,1,0)) from MaterialResource mr";
+				s.CreateQuery(hql).List();
+				hql = "select new ForNh1725(mr.Description, cast(iif(mr.State= 0,1,0) as int)) from MaterialResource mr";
+				s.CreateQuery(hql).List();
+			}
+		}
+
 		[Test, Ignore("Not supported yet!")]
 		public void ParameterLikeArgument()
 		{
@@ -932,6 +945,17 @@ group by mr.Description";
 				l = s.CreateQuery(hql).SetInt32("aParam", 10).List();
 				Assert.AreEqual(1, l.Count);
 			}
+		}
+	}
+	public class ForNh1725
+	{
+		public string Description { get; set; }
+		public int Value { get; set; }
+
+		public ForNh1725(string description, int value)
+		{
+			Description = description;
+			Value = value;
 		}
 	}
 }

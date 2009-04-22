@@ -4,7 +4,7 @@
 	namespace="NHibernate.Test.Hql"
     default-access="field.camelcase-underscore"
 	default-lazy="true">
-
+	<import class="NHibernate.Test.Hql.ForNh1725, NHibernate.Test" rename="ForNh1725"/>
 	<class name="MaterialResource">
 		<id name ="Id">
 			<generator class="native" />
