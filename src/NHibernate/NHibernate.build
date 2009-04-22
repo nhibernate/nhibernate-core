@@ -24,6 +24,7 @@
 			<include name="System.Web.dll" />
 			<include name="Iesi.Collections.dll" />
 			<include name="log4net.dll" />
+			<include name="Antlr3.Runtime.dll" />
 		</assemblyfileset>
 
 		<resourcefileset id="project.resources" prefix="NHibernate" dynamicprefix="true">
