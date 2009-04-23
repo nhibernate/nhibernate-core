@@ -40,12 +40,19 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		[Test, ExpectedException(typeof(QueryException))]
+		[Test]
 		public void InvalidQuery()
 		{
-			using (ISession s = OpenSession())
+			try
 			{
-				s.CreateQuery("from SomeInvalidClass").List();
+				using (ISession s = OpenSession())
+				{
+					s.CreateQuery("from SomeInvalidClass").List();
+				}
+			}
+			catch (QueryException)
+			{
+				//
 			}
 		}
 
