@@ -27,6 +27,15 @@ namespace NHibernate.Test
 			get { return NHibernate.Dialect.Dialect.GetDialect(cfg.Properties); }
 		}
 
+	    protected bool IsClassicParser
+	    {
+	        get
+	        {
+	            return cfg.Properties[Cfg.Environment.QueryTranslator] ==
+                       typeof(NHibernate.Hql.Classic.ClassicQueryTranslatorFactory).FullName;
+	        }
+	    }
+
 		protected ISession lastOpenedSession;
 		private DebugConnectionProvider connectionProvider;
 

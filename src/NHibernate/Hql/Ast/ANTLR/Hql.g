@@ -323,8 +323,6 @@ inCollectionElementsDeclaration
 		-> ^(JOIN["join"] INNER["inner"] path alias)
 	| ELEMENTS OPEN path CLOSE AS alias
 		-> ^(JOIN["join"] INNER["inner"] path alias)
-	| alias IN path DOT ELEMENTS
-		-> ^(JOIN["join"] INNER["inner"] path alias)
     ;
 
 // Alias rule - Parses the optional 'as' token and forces an AST identifier node.
@@ -642,10 +640,8 @@ aggregateDistinctAll
 
 collectionExpr
 	: (ELEMENTS^ | INDICES^) OPEN! path CLOSE!
-	| path DOT! (ELEMENTS^ | INDICES^)
 	;
                                            
-// NOTE: compoundExpr can be a 'path' where the last token in the path is '.elements' or '.indicies'
 compoundExpr
 	: collectionExpr
 	| path
@@ -696,7 +692,7 @@ constant
 path
 @init {
 // TODO - need to clean up DotIdent - suspect that DotIdent2 supersedes the other one, but need to do the analysis
-HandleDotIdent2();
+//HandleDotIdent2();
 }
 	: identifier ( DOT^ { WeakKeywords(); } identifier )*
 	;

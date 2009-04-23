@@ -366,17 +366,19 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
+            string path = IsClassicParser ? "m.Details.elements" : "elements(m.Details)";
+
 			if (Dialect.SupportsSubSelects)
 			{
-				s.CreateQuery("FROM m IN CLASS Master WHERE NOT EXISTS ( FROM d in m.Details.elements WHERE NOT d.I=5 )").Enumerable
+				s.CreateQuery("FROM m IN CLASS Master WHERE NOT EXISTS ( FROM d in " + path + " WHERE NOT d.I=5 )").Enumerable
 					();
-				s.CreateQuery("FROM m IN CLASS Master WHERE NOT 5 IN ( SELECT d.I FROM d IN m.Details.elements )").Enumerable();
+                s.CreateQuery("FROM m IN CLASS Master WHERE NOT 5 IN ( SELECT d.I FROM d IN  " + path + " )").Enumerable();
 			}
 
-			s.CreateQuery("SELECT m FROM m in CLASS NHibernate.DomainModel.Master, d IN m.Details.elements WHERE d.I=5").
+            s.CreateQuery("SELECT m FROM m in CLASS NHibernate.DomainModel.Master, d IN  " + path + "  WHERE d.I=5").
 				Enumerable();
-			s.CreateQuery("SELECT m FROM m in CLASS NHibernate.DomainModel.Master, d IN m.Details.elements WHERE d.I=5").List();
-			s.CreateQuery("SELECT m.id FROM m IN CLASS NHibernate.DomainModel.Master, d IN m.Details.elements WHERE d.I=5").List();
+            s.CreateQuery("SELECT m FROM m in CLASS NHibernate.DomainModel.Master, d IN  " + path + "  WHERE d.I=5").List();
+            s.CreateQuery("SELECT m.id FROM m IN CLASS NHibernate.DomainModel.Master, d IN  " + path + "  WHERE d.I=5").List();
 			t.Commit();
 			s.Close();
 		}

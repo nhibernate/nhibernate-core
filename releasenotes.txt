@@ -8,6 +8,7 @@ Build 2.1.0
 		* compatible only with .NET2.0 SP1 or above (System.DateTimeOffset)
 		* In SchemaExport.Execute the parameter "format" was removed; (NH-1701) enabled configuration property format_sql (default true)
 		* Antlr3.Runtime.dll is required
+		* the syntax foo.bar.baz.elements or foo.bar.baz.indices is not longer supported.  Use the alternative syntax of elements(foo.bar.baz) or indices(foo.bar.baz) instead
 
 	##### Possible Breaking Changes for external frameworks #####
 		* ISession interface has additional methods

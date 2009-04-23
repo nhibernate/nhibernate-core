@@ -176,7 +176,14 @@ namespace NHibernate.Test.Legacy
 			s.CreateQuery("from s in class Lower where s.YetAnother.Name='name' and s.YetAnother.Foo is null").List();
 			s.CreateQuery("from s in class Top where s.Count=1").List();
 			s.CreateQuery("select s.Count from s in class Top, ls in class Lower where ls.Another=s").List();
-			s.CreateQuery("select ls.Bag.elements, ls.Set.elements from ls in class Lower").List();
+            if (IsClassicParser)
+            {
+                s.CreateQuery("select ls.Bag.elements, ls.Set.elements from ls in class Lower").List();
+            }
+            else
+            {
+                s.CreateQuery("select elements(ls.Bag), elements(ls.Set) from ls in class Lower").List();
+            }
 			s.CreateQuery("from s in class Lower").Enumerable();
 			s.CreateQuery("from s in class Top").Enumerable();
 			s.Delete(tc);
@@ -319,9 +326,18 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(0, s.CreateQuery("from ls in class Lower").List().Count);
 			Assert.AreEqual(1, s.CreateQuery("from sm in class SubMulti").List().Count);
 
-			s.CreateQuery("from ls in class Lower, s in ls.Bag.elements where s.id is not null").List();
-			s.CreateQuery("from ls in class Lower, s in ls.Set.elements where s.id is not null").List();
-			s.CreateQuery("from sm in class SubMulti where exists sm.Children.elements").List();
+            if (IsClassicParser)
+            {
+                s.CreateQuery("from ls in class Lower, s in ls.Bag.elements where s.id is not null").List();
+                s.CreateQuery("from ls in class Lower, s in ls.Set.elements where s.id is not null").List();
+                s.CreateQuery("from sm in class SubMulti where exists sm.Children.elements").List();
+            }
+            else
+            {
+                s.CreateQuery("from ls in class Lower, s in elements(ls.Bag) where s.id is not null").List();
+                s.CreateQuery("from ls in class Lower, s in elements(ls.Set) where s.id is not null").List();
+                s.CreateQuery("from sm in class SubMulti where exists elements(sm.Children)").List();
+            }
 
 			t.Commit();
 			s.Close();
@@ -427,8 +443,16 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(0, s.CreateQuery("from s in class Lower").List().Count);
 			Assert.AreEqual(1, s.CreateQuery("from sm in class SubMulti").List().Count);
 
-			s.CreateQuery("from ls in class Lower, s in ls.Bag.elements where s.id is not null").List();
-			s.CreateQuery("from sm in class SubMulti where exists sm.Children.elements").List();
+            if (IsClassicParser)
+            {
+                s.CreateQuery("from ls in class Lower, s in ls.Bag.elements where s.id is not null").List();
+                s.CreateQuery("from sm in class SubMulti where exists sm.Children.elements").List();
+            }
+            else
+            {
+                s.CreateQuery("from ls in class Lower, s in elements(ls.Bag) where s.id is not null").List();
+                s.CreateQuery("from sm in class SubMulti where exists elements(sm.Children)").List();
+            }
 
 			t.Commit();
 			s.Close();

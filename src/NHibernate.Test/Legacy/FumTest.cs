@@ -613,7 +613,14 @@ namespace NHibernate.Test.Legacy
 					s.CreateQuery("from fum1 in class Fum where exists elements(fum1.Friends)").List();
 					s.CreateQuery("from fum1 in class Fum where size(fum1.Friends) = 0").List();
 				}
-				s.CreateQuery("select fum1.Friends.elements from fum1 in class Fum").List();
+                if (IsClassicParser)
+                {
+                    s.CreateQuery("select fum1.Friends.elements from fum1 in class Fum").List();
+                }
+                else
+                {
+                    s.CreateQuery("select elements(fum1.Friends) from fum1 in class Fum").List();
+                }
 				s.CreateQuery("from fum1 in class Fum, fr in elements( fum1.Friends )").List();
 			}
 		}
