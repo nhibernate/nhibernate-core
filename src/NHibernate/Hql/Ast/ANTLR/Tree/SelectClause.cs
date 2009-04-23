@@ -14,6 +14,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// </summary>
 	public class SelectClause : SelectExpressionList
 	{
+		private const string JoinFetchWithoutOwnerExceptionMsg = "Query specified join fetching, but the owner of the fetched association was not present in the select list [{0}]";
 		private bool _prepared;
 		private bool _scalarSelect;
 		private List<FromElement> _collectionFromElements;
@@ -196,12 +197,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 							origin = fromElement.RealOrigin;
 						}
 
-						if ( !_fromElementsForLoad.Contains( origin ) ) {
-							throw new QueryException(
-									"query specified join fetching, but the owner " +
-									"of the fetched association was not present in the select list " +
-									"[" + fromElement.GetDisplayText() + "]"
-							);
+						if (!_fromElementsForLoad.Contains(origin))
+						{
+							throw new QueryException(string.Format(JoinFetchWithoutOwnerExceptionMsg, fromElement.GetDisplayText()));
 						}
 
 						IType type = fromElement.SelectType;

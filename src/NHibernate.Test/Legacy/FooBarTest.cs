@@ -2468,9 +2468,14 @@ namespace NHibernate.Test.Legacy
 				s.CreateQuery("select count(*) from Bar as bar where 1 in indices(bar.Baz.FooArray)").List();
 				s.CreateQuery(
 					"select count(*) from Bar as bar where '1' in (from bar.Component.Glarch.ProxyArray g where g.Name='foo')").List();
-				s.CreateQuery(
-					"select count(*) from Bar as bar where '1' in (from g in bar.Component.Glarch.ProxyArray.elements where g.Name='foo')")
-					.List();
+				
+				// The nex query is wrong and is not present in H3.2:
+				// The SQL result, from Classic parser, is the same of the previous query.
+				// The AST parser has some problem to parse 'from g in bar.Component.Glarch.ProxyArray'
+				// which should be parsed as 'from bar.Component.Glarch.ProxyArray g'
+				//s.CreateQuery(
+				//  "select count(*) from Bar as bar where '1' in (from g in bar.Component.Glarch.ProxyArray.elements where g.Name='foo')")
+				//  .List();
 
 				// TODO: figure out why this is throwing an ORA-1722 error
 				// probably the conversion ProxyArray.id (to_number ensuring a not null value)

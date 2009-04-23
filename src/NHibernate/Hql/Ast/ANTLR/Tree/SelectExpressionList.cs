@@ -25,21 +25,21 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// are not select expressions (e.g. DISTINCT).
 			IASTNode firstChild = GetFirstSelectExpression();
 			IASTNode parent = this;
-			List<ISelectExpression> list = new List<ISelectExpression>(parent.ChildCount);
+			var list = new List<ISelectExpression>(parent.ChildCount);
 
-			for (int i = firstChild.ChildIndex; i < this.ChildCount; i++)
+			for (IASTNode n = firstChild; n != null; n = n.NextSibling)
 			{
-				IASTNode n = GetChild(i);
-
-				if ( n is ISelectExpression ) 
+				var se = n as ISelectExpression;
+				if (se != null)
 				{
-					list.Add((ISelectExpression)n);
+					list.Add(se);
 				}
-				else 
+				else
 				{
-					throw new InvalidOperationException( "Unexpected AST: " + n.GetType().Name + " " + new ASTPrinter().ShowAsString( n, "" ) );
+					throw new InvalidOperationException("Unexpected AST: " + n.GetType().FullName + " " + new ASTPrinter().ShowAsString(n, ""));
 				}
 			}
+
 			return list.ToArray();
 		}
 
