@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using log4net;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Persister.Entity;
@@ -178,11 +179,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			Decimal number;
 			try
 			{
-				number = Decimal.Parse(literalValue);
+				number = Decimal.Parse(literalValue, NumberFormatInfo.InvariantInfo);
 			}
 			catch (Exception t)
 			{
-				throw new HibernateException("Could not parse literal [" + text + "] as big-decimal", t);
+				throw new HibernateException("Could not parse literal [" + text + "] as System.Decimal.", t);
 			}
 
 			return _formatters[DECIMAL_LITERAL_FORMAT].Format(number);
@@ -330,7 +331,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 		{
 			public string Format(Decimal number)
 			{
-				return number.ToString();
+				return number.ToString(NumberFormatInfo.InvariantInfo);
 			}
 		}
 
@@ -347,7 +348,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				}
 				catch (Exception t)
 				{
-					throw new HibernateException("Unable to format decimal literal in approximate format [" + number.ToString() + "]", t);
+					throw new HibernateException("Unable to format decimal literal in approximate format [" + number.ToString(NumberFormatInfo.InvariantInfo) + "]", t);
 				}
 			}
 		}

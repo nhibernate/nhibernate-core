@@ -6,10 +6,10 @@ namespace NHibernate.Test.HQL.Ast
 	[TestFixture]
 	public class SqlTranslationFixture : BaseFixture
 	{
-		[Test, Ignore("Bug not fixed yet")]
+		[Test]
 		public void ParseFloatConstant()
 		{
-			var query = "select 123.5, s from SimpleClass s";
+			const string query = "select 123.5, s from SimpleClass s";
 
 			Assert.That(GetSql(query), Text.StartsWith("select 123.5"));
 		}

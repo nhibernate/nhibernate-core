@@ -2,12 +2,21 @@ using System.Collections;
 using NHibernate.Hql.Ast.ANTLR;
 using System.Collections.Generic;
 using NHibernate.Util;
+using NUnit.Framework;
 
 namespace NHibernate.Test.HQL.Ast
 {
 	public class BaseFixture: TestCase
 	{
 		private readonly IDictionary<string, IFilter> emptyfilters = new CollectionHelper.EmptyMapClass<string, IFilter>();
+
+		protected override void OnSetUp()
+		{
+			if (!(sessions.Settings.QueryTranslatorFactory is ASTQueryTranslatorFactory))
+			{
+				Assert.Ignore("ASTQueryTranslator specific test");
+			}
+		}
 
 		#region Overrides of TestCase
 
@@ -37,11 +46,5 @@ namespace NHibernate.Test.HQL.Ast
 			qt.Compile(null, false);
 			return qt.SQLString;
 		}
-
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return sessions.Settings.QueryTranslatorFactory is ASTQueryTranslatorFactory;
-		}
-
 	}
 }
