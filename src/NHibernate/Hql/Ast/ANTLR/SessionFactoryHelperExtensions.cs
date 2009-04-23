@@ -4,6 +4,7 @@ using NHibernate.Dialect.Function;
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Hql.Ast.ANTLR.Util;
+using NHibernate.Hql.Util;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -251,22 +252,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// <returns>The defined persister for this class, or null if none found.</returns>
 		public static IQueryable FindQueryableUsingImports(ISessionFactoryImplementor sfi, string className) 
 		{
-			// NH : this method prevent unrecognized class when entityName != class.FullName
-			// this is a patch for the TODO below
-			var possibleResult = sfi.TryGetEntityPersister(GetEntityName(className)) as IQueryable;
-			if (possibleResult != null)
-			{
-				return possibleResult;
-			}
-
-			string importedClassName = sfi.GetImportedClassName(className);
-
-			if (importedClassName == null)
-			{
-				return null;
-			}
-			// NH: This method don't work if entityName != class.FullName
-			return (IQueryable)sfi.TryGetEntityPersister(GetEntityName(importedClassName));
+			return SessionFactoryHelper.FindQueryableUsingImports(sfi, className);
 		}
 
 		private static string GetEntityName(string assemblyQualifiedName)
@@ -292,24 +278,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// <returns>The defined persister for this entity, or null if none found.</returns>
 		private IEntityPersister FindEntityPersisterByName(string name)
 		{
-			// First, try to get the persister using the given name directly.
-			try 
-			{
-				return _sfi.GetEntityPersister( name );
-			}
-			catch (MappingException) 
-			{
-				// unable to locate it using this name
-			}
-
-			// If that didn't work, try using the 'import' name.
-			string importedClassName = _sfi.GetImportedClassName( name );
-			if ( importedClassName == null ) 
-			{
-				return null;
-			}
-
-			return _sfi.GetEntityPersister( importedClassName );
+			return SessionFactoryHelper.FindEntityPersisterUsingImports(_sfi, name);
 		}
 
 		/// <summary>

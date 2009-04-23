@@ -11,21 +11,26 @@ namespace NHibernate.Hql.Util
 	{
 		public static IQueryable FindQueryableUsingImports(ISessionFactoryImplementor sfi, string className)
 		{
+			return FindEntityPersisterUsingImports(sfi, className) as IQueryable;
+		}
+
+		public static IEntityPersister FindEntityPersisterUsingImports(ISessionFactoryImplementor sfi, string className)
+		{
 			// NH : short cut
-			if(string.IsNullOrEmpty(className))
+			if (string.IsNullOrEmpty(className))
 			{
 				return null;
 			}
-		
-			if(!char.IsLetter(className[0]) && !className[0].Equals('_'))
+
+			if (!char.IsLetter(className[0]) && !className[0].Equals('_'))
 			{
-				return null;				
+				return null;
 			}
 
 			// NH : this method prevent unrecognized class when entityName != class.FullName
 			// this is a patch for the TODO below
-			var possibleResult = sfi.TryGetEntityPersister(GetEntityName(className)) as IQueryable;
-			if(possibleResult != null)
+			var possibleResult = sfi.TryGetEntityPersister(GetEntityName(className));
+			if (possibleResult != null)
 			{
 				return possibleResult;
 			}
@@ -37,7 +42,7 @@ namespace NHibernate.Hql.Util
 				return null;
 			}
 			// NH: This method don't work if entityName != class.FullName
-			return (IQueryable)sfi.TryGetEntityPersister(GetEntityName(importedClassName));
+			return sfi.TryGetEntityPersister(GetEntityName(importedClassName));
 		}
 
 		private static string GetEntityName(string assemblyQualifiedName)
