@@ -462,7 +462,12 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(NHibernateUtil.IsInitialized(masterFromHql.Details));
 			dt = (Detail) s.Load(typeof(Detail), dtid);
 			Assert.IsTrue(masterFromHql.Details.Contains(dt));
-			list = s.CreateQuery("select m.id from Master m inner join fetch m.Details").List();
+
+			// This line is commentend in H3.2 tests because it work in the classic parser
+			// even if it as no sense ('join fetch' where the 'select' is a scalar)
+			// The AST check the case with an Exception
+			//list = s.CreateQuery("select m.id from Master m inner join fetch m.Details").List();
+
 			t.Commit();
 			s.Close();
 
