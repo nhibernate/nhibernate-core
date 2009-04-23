@@ -24,7 +24,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// </summary>
 		private int _fromElementCounter;
 
-		private readonly Dictionary<string, FromElement> _fromElementByClassAlias = new Dictionary<string, FromElement>();
+        private readonly NullableDictionary<string, FromElement> _fromElementByClassAlias = new NullableDictionary<string, FromElement>();
 		private readonly Dictionary<string, FromElement> _fromElementByTableAlias = new Dictionary<string, FromElement>();
 		private readonly NullableDictionary<string, FromElement> _fromElementsByPath = new NullableDictionary<string, FromElement>();
 		private readonly List<FromElement> _fromElements = new List<FromElement>();

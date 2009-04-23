@@ -478,15 +478,25 @@ namespace NHibernate.Hql.Ast.ANTLR
 
         private IASTNode PreProcessPathForJoin(IASTNode node)
         {
-            // Process LHS
-            node.SetChild(0, PreProcessPathForJoin3(node.GetChild(0)));
+            if (node is IdentNode)
+            {
+                return PreProcessPathForJoinIdent(node);
+            }
+            else if (node is DotNode)
+            {
+                node.SetChild(0, PreProcessPathForJoin(node.GetChild(0)));
+                node.SetChild(1, PreProcessPathForJoin(node.GetChild(1)));
 
-            return LookupProperty(node, false, true);
-
+                return PreProcessPathForJoinPath(node);
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
         }
 
-        private IASTNode PreProcessPathForJoin3(IASTNode node)
-        {
+	    private IASTNode PreProcessPathForJoinIdent(IASTNode node)
+	    {
 	        if (IsNonQualifiedPropertyRef(node))
             {
                 return LookupNonQualifiedProperty(node);
@@ -495,24 +505,12 @@ namespace NHibernate.Hql.Ast.ANTLR
             {
                 return Resolve(node);
             }
-        }
-
-	    private IASTNode PreProcessPathForJoin2(IASTNode node)
-	    {
-	       if (node is DotNode)
-	       {
-               // Process our child
-               node.SetChild(1, PreProcessPathForJoin2(node.GetChild(1)));
-
-               // And process us
-	           return LookupProperty(node, false, true);
-	       }
-	       else
-	       {
-	           return node;
-	       }
 	    }
 
+        private IASTNode PreProcessPathForJoinPath(IASTNode node)
+	    {
+            return LookupProperty(node, false, true);
+	    }
 
 	    IASTNode CreateFromFilterElement(IASTNode filterEntity, IASTNode alias)
 		{

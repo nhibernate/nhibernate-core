@@ -136,6 +136,51 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
+        public void WeakKeywords2()
+        {
+            /*
+             * path
+             * alias in class? path
+             * in open path close
+             * alias in elements open path close
+             * elements open path close
+             * alias in path dot elements
+            */
+            int t = input.LA(1);
+
+            switch (t)
+            {
+                case ORDER:
+                case GROUP:
+                    // Case 1: Multi token keywords GROUP BY and ORDER BY
+                    // The next token ( LT(2) ) should be 'by'... otherwise, this is just an ident.
+                    if (input.LA(2) != LITERAL_by)
+                    {
+                        input.LT(1).Type = IDENT;
+                        if (log.IsDebugEnabled)
+                        {
+                            log.Debug("weakKeywords() : new LT(1) token - " + input.LT(1));
+                        }
+                    }
+                    break;
+                default:
+                    // Case 2: The current token is after FROM and before '.'.
+                    if (t != IDENT && input.LA(-1) == FROM && input.LA(2) == DOT)
+                    {
+                        HqlToken hqlToken = (HqlToken)input.LT(1);
+                        if (hqlToken.PossibleId)
+                        {
+                            hqlToken.Type = IDENT;
+                            if (log.IsDebugEnabled)
+                            {
+                                log.Debug("weakKeywords() : new LT(1) token - " + input.LT(1));
+                            }
+                        }
+                    }
+                    break;
+            }
+        }
+
 		public IASTNode NegateNode(IASTNode node)
 		{
 			// TODO - copy code from HqlParser.java

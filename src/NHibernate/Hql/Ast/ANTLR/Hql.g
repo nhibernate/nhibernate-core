@@ -288,8 +288,8 @@ fromClause
 //##     ( ( 'left'|'right' 'outer'? ) | 'full' | 'inner' )? JOIN FETCH?;
 
 fromJoin
-	: ( ( ( LEFT | RIGHT ) (OUTER)? ) | FULL | INNER )? JOIN^ (FETCH)? 
-	  path (asAlias)? (propertyFetch)? (withClause)?
+	: ( ( ( LEFT | RIGHT ) (OUTER)? ) | FULL | INNER )? JOIN^ (FETCH)? path (asAlias)? (propertyFetch)? (withClause)?
+	| ( ( ( LEFT | RIGHT ) (OUTER)? ) | FULL | INNER )? JOIN^ (FETCH)? ELEMENTS! OPEN! path CLOSE! (asAlias)? (propertyFetch)? (withClause)?
 	;
 
 withClause
@@ -301,7 +301,7 @@ fromRange
 	| inClassDeclaration
 	| inCollectionDeclaration
 	| inCollectionElementsDeclaration
-	;
+	; 
 
 fromClassOrOuterQueryPath
 	: path { WeakKeywords(); } (asAlias)? (propertyFetch)? 
@@ -309,7 +309,7 @@ fromClassOrOuterQueryPath
 	;
 
 inClassDeclaration
-	: alias IN CLASS path 
+	: alias IN CLASS? path 
 		-> ^(RANGE path alias)
 	;
 
@@ -321,9 +321,10 @@ inCollectionDeclaration!
 inCollectionElementsDeclaration
 	: alias IN ELEMENTS OPEN path CLOSE 
 		-> ^(JOIN["join"] INNER["inner"] path alias)
+	| ELEMENTS OPEN path CLOSE AS alias
+		-> ^(JOIN["join"] INNER["inner"] path alias)
 	| alias IN path DOT ELEMENTS
 		-> ^(JOIN["join"] INNER["inner"] path alias)
-//		-> ^(RANGE path alias)
     ;
 
 // Alias rule - Parses the optional 'as' token and forces an AST identifier node.
