@@ -2,7 +2,6 @@ using System.Collections;
 using NHibernate.Hql.Ast.ANTLR;
 using System.Collections.Generic;
 using NHibernate.Util;
-using NUnit.Framework;
 
 namespace NHibernate.Test.HQL.Ast
 {
@@ -10,12 +9,9 @@ namespace NHibernate.Test.HQL.Ast
 	{
 		private readonly IDictionary<string, IFilter> emptyfilters = new CollectionHelper.EmptyMapClass<string, IFilter>();
 
-		protected override void OnSetUp()
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
 		{
-			if (!(sessions.Settings.QueryTranslatorFactory is ASTQueryTranslatorFactory))
-			{
-				Assert.Ignore("ASTQueryTranslator specific test");
-			}
+			return sessions.Settings.QueryTranslatorFactory is ASTQueryTranslatorFactory;
 		}
 
 		#region Overrides of TestCase

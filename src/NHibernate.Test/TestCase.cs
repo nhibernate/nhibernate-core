@@ -11,6 +11,8 @@ using NHibernate.Mapping;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
 using NUnit.Framework;
+using NHibernate.Hql.Classic;
+using NHibernate.Hql.Ast.ANTLR;
 
 namespace NHibernate.Test
 {
@@ -27,14 +29,27 @@ namespace NHibernate.Test
 			get { return NHibernate.Dialect.Dialect.GetDialect(cfg.Properties); }
 		}
 
-	    protected bool IsClassicParser
-	    {
-	        get
-	        {
-	            return cfg.Properties[Cfg.Environment.QueryTranslator] ==
-                       typeof(NHibernate.Hql.Classic.ClassicQueryTranslatorFactory).FullName;
-	        }
-	    }
+		/// <summary>
+		/// To use in in-line test
+		/// </summary>
+		protected bool IsClassicParser
+		{
+			get
+			{
+				return sessions.Settings.QueryTranslatorFactory is ClassicQueryTranslatorFactory;
+			}
+		}
+
+		/// <summary>
+		/// To use in in-line test
+		/// </summary>
+		protected bool IsAntlrParser
+		{
+			get
+			{
+				return sessions.Settings.QueryTranslatorFactory is ASTQueryTranslatorFactory;
+			}
+		}
 
 		protected ISession lastOpenedSession;
 		private DebugConnectionProvider connectionProvider;
@@ -74,6 +89,12 @@ namespace NHibernate.Test
 
 				CreateSchema();
 				BuildSessionFactory();
+				if (!AppliesTo(sessions))
+				{
+					DropSchema();
+					Cleanup();
+					Assert.Ignore(GetType() + " does not apply with the current session-factory configuration");
+				}
 			}
 			catch (Exception e)
 			{
@@ -223,7 +244,10 @@ namespace NHibernate.Test
 
 		private void Cleanup()
 		{
-			sessions.Close();
+			if (sessions != null)
+			{
+				sessions.Close();
+			}
 			sessions = null;
 			connectionProvider = null;
 			lastOpenedSession = null;
@@ -314,6 +338,11 @@ namespace NHibernate.Test
 		#region Properties overridable by subclasses
 
 		protected virtual bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return true;
+		}
+
+		protected virtual bool AppliesTo(ISessionFactoryImplementor factory)
 		{
 			return true;
 		}
