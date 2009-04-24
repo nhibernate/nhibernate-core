@@ -324,6 +324,8 @@
     <Compile Include="NHSpecificTest\NH1715\ClassA.cs" />
     <Compile Include="NHSpecificTest\NH1716\ClassA.cs" />
     <Compile Include="NHSpecificTest\NH1716\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1727\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1727\Model.cs" />
     <Compile Include="NHSpecificTest\NH1741\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1741\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1742\DomainClass.cs" />
@@ -1721,6 +1723,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1727\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1742\Mappings.hbm.xml" />
     <EmbeddedResource Include="HQL\Ast\SimpleClass.hbm.xml" />
     <EmbeddedResource Include="HQL\Ast\TestQueries.xml" />

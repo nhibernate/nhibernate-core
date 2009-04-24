@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1727"
+				   assembly="NHibernate.Test">
+  <class name="ClassA">
+    <id name="Id">
+      <generator class="guid.comb"/>
+    </id>
+    <bag name="BCollection">
+      <key column="classA"/>
+      <one-to-many class="ClassB"/>
+    </bag>
+    <many-to-one name="B"
+                 class="ClassB"/>
+    
+    <property name="Name"/>
+    <property name="Value" />
+    
+    <filter name="bEquals"
+            condition=":b = B"/>
+  </class>
+  
+  <class name="ClassB">
+    <id name="Id">
+      <generator class="guid.comb"/>
+    </id>
+  </class>
+
+  <filter-def name="bEquals">
+    <filter-param name="b"
+                  type="guid"/>
+  </filter-def>
+</hibernate-mapping>
