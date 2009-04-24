@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.NH1742" 
+									 default-lazy="false">
+
+	<class name="Event" table="tblEventi" >
+		<id name="ID"	column="ID">
+			<generator class="identity" />
+		</id>
+		<many-to-one name="SendedBy"	column="IDStrumento" class="Device"
+			access="property" />
+		<property name="Date" column="Data"/>
+		<bag name="descriptions" lazy="false" access="field" inverse="true" cascade="none" >
+			<key column="IDEvento" />
+			<one-to-many class="Description" />
+			<filter name="LanguageFilter" condition=":LanguageID = IDLingua"/>
+		</bag>
+	</class>
+
+	<class name="Device" table="tblStrumenti">
+		<id name="ID" column="ID" type="Int32" unsaved-value="0">
+			<generator class="identity" />
+		</id>
+	</class>
+
+	<class name="Description" table="tblDescrizioni">
+		<id name="ID" column="ID">
+			<generator class="identity" />
+		</id>
+		<many-to-one name="Event"	column="IDEvento" class="Event"
+			access="property" />
+		<property name="Value" column="Descrizione"/>
+		<property name="LanguageID" column="IDLingua"/>
+		<filter name="LanguageFilter" condition=":LanguageID = IDLingua"/>
+	</class>
+
+	<filter-def name="LanguageFilter">
+		<filter-param name="LanguageID" type="String"/>
+	</filter-def>
+
+</hibernate-mapping>

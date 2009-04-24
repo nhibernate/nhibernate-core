@@ -326,6 +326,8 @@
     <Compile Include="NHSpecificTest\NH1716\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1741\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1741\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1742\DomainClass.cs" />
+    <Compile Include="NHSpecificTest\NH1742\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH645\HQLFunctionFixture.cs" />
     <Compile Include="HQL\HQLFunctions.cs" />
     <Compile Include="HQL\Human.cs" />
@@ -1719,6 +1721,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1742\Mappings.hbm.xml" />
     <EmbeddedResource Include="HQL\Ast\SimpleClass.hbm.xml" />
     <EmbeddedResource Include="HQL\Ast\TestQueries.xml" />
     <EmbeddedResource Include="HQL\Ast\TestQueriesWithResults.xml" />

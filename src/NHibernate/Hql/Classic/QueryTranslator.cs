@@ -713,7 +713,7 @@ namespace NHibernate.Hql.Classic
 				{
 					for (int index = 0; index < namedParameterLocations.Count; index++)
 					{
-						if (namedParameterLocations[index] == existingParameterLocation)
+						if (namedParameterLocations[index] >= existingParameterLocation)
 							namedParameterLocations[index]++;
 					}
 				}
