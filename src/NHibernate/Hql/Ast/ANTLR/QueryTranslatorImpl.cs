@@ -27,7 +27,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private IDictionary<string, IFilter> _enabledFilters;
 		private readonly ISessionFactoryImplementor _factory;
 		private QueryLoader _queryLoader;
-		private IParameterTranslations _paramTranslations;
+        private ParameterTranslationsImpl _paramTranslations;
 
 		private HqlParseEngine _parser;
 		private HqlSqlTranslator _translator;
@@ -180,17 +180,13 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return _translator.SqlStatement.Walker.SelectClause.ColumnNames;
 		}
 
-	    public IDictionary<string, object> NamedParameters
-	    {
-            get { return _translator.NamedParameters; }
-	    }
-
 		public IParameterTranslations GetParameterTranslations()
 		{
 			if (_paramTranslations == null)
 			{
 				_paramTranslations = new ParameterTranslationsImpl(_translator.SqlStatement.Walker.Parameters);
 			}
+
 			return _paramTranslations;
 		}
 
@@ -400,6 +396,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 				throw new QueryExecutionRequestException("Not supported for DML operations", _hql);
 			}
 		}
+
+	    public void AdjustNamedParameterLocationsForQueryParameters(QueryParameters parameters)
+	    {
+	        ((ParameterTranslationsImpl) GetParameterTranslations()).AdjustNamedParameterLocationsForQueryParameters(parameters);
+	    }
 	}
 
 	public class HqlParseEngine
@@ -524,7 +525,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private readonly QueryTranslatorImpl _qti;
 		private readonly ISessionFactoryImplementor _sfi;
 		private readonly IDictionary<string, string> _tokenReplacements;
-	    private IDictionary<string, object> _namedParameters;
 		private readonly string _collectionRole;
 		private IStatement _resultAst;
 
@@ -548,12 +548,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			get { return _resultAst; }
 		}
 
-	    public IDictionary<string, object> NamedParameters
-	    {
-            get { return _namedParameters; }
-	    }
-
-		public IStatement Translate()
+        public IStatement Translate()
 		{
 			if (_resultAst == null)
 			{
@@ -565,8 +560,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				// Transform the tree.
 				_resultAst = (IStatement) hqlSqlWalker.statement().Tree;
-
-			    _namedParameters = hqlSqlWalker.NamedParameters;
 
 				/*
 				if ( AST_LOG.isDebugEnabled() ) {

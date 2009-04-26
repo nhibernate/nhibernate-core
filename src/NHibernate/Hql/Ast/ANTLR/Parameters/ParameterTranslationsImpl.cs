@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -65,6 +66,23 @@ namespace NHibernate.Hql.Ast.ANTLR.Parameters
 				_namedParameters.Add(holder.name, new ParameterInfo( ArrayHelper.ToIntArray( holder.positions ), holder.type ));
 			}
 		}
+
+        public void AdjustNamedParameterLocationsForQueryParameters(QueryParameters parameters)
+        {
+            foreach (int existingParameterLocation in parameters.FilteredParameterLocations)
+            {
+                foreach (ParameterInfo entry in _namedParameters.Values)
+                {
+                    for (int index = 0; index < entry.SqlLocations.Length; index++)
+                    {
+                        if (entry.SqlLocations[index] >= existingParameterLocation)
+                        {
+                            entry.SqlLocations[index]++;
+                        }
+                    }
+                }
+            }
+        }
 
 		public int GetOrdinalParameterSqlLocation(int ordinalPosition)
 		{

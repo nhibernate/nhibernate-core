@@ -61,36 +61,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 
         protected override void AdjustNamedParameterLocationsForQueryParameters(QueryParameters parameters)
         {
-            foreach (int existingParameterLocation in parameters.FilteredParameterLocations)
-            {
-                Dictionary<string, int> individualUpdates = new Dictionary<string, int>();
-
-                foreach (KeyValuePair<string, object> entry in _queryTranslator.NamedParameters)
-                {
-                    if (entry.Value is int)
-                    {
-                        int namedParameterLocation = (int) entry.Value;
-
-                        if (namedParameterLocation == existingParameterLocation)
-                            individualUpdates.Add(entry.Key, namedParameterLocation);
-                    }
-                    else
-                    {
-                        List<int> namedParameterLocations = (List<int>) entry.Value;
-
-                        for (int index = 0; index < namedParameterLocations.Count; index++)
-                        {
-                            if (namedParameterLocations[index] == existingParameterLocation)
-                                namedParameterLocations[index]++;
-                        }
-                    }
-                }
-
-                foreach (KeyValuePair<string, int> entry in individualUpdates)
-                {
-                    _queryTranslator.NamedParameters[entry.Key] = entry.Value;
-                }
-            }
+            _queryTranslator.AdjustNamedParameterLocationsForQueryParameters(parameters);
         }
 
 		protected override SqlString ApplyLocks(SqlString sql, IDictionary<string, LockMode> lockModes, Dialect.Dialect dialect)
