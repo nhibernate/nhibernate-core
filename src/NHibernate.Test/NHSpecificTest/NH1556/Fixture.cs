@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1556
 {
-	[TestFixture, Ignore("To investigate")]
+	[TestFixture]
 	public class Fixture : BugTestCase
 	{
 		// This test not fail but something very strange happen in various others tests
