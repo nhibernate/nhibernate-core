@@ -480,6 +480,7 @@
     <Compile Include="Hql\Ast\ANTLR\CollectionProperties.cs" />
     <Compile Include="Hql\Ast\ANTLR\DetailedSemanticException.cs" />
     <Compile Include="Hql\Ast\ANTLR\ErrorCounter.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Exec\IStatementExecutor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Generated\HqlLexer.cs" />
     <Compile Include="Hql\Ast\ANTLR\Generated\HqlParser.cs" />
     <Compile Include="Hql\Ast\ANTLR\Generated\HqlSqlWalker.cs" />
