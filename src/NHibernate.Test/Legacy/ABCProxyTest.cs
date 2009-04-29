@@ -264,6 +264,43 @@ namespace NHibernate.Test.Legacy
 		}
 
 		[Test]
+		public void OnoToOneComparing()
+		{
+			if (IsAntlrParser)
+			{
+				Assert.Ignore("ANTLR parser : Not supported ");
+			}
+			A a = new A();
+			E d1 = new E();
+			C1 c = new C1();
+			E d2 = new E();
+			a.Forward = d1;
+			d1.Reverse = a;
+			c.Forward = d2;
+			d2.Reverse = c;
+
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(a);
+				s.Save(d2);
+				t.Commit();
+			}
+			using (ISession s = OpenSession())
+			{
+				IList l = s.CreateQuery("from E e, A a where e.Reverse = a.Forward and a = ?").SetEntity(0, a).List();
+				Assert.AreEqual(1, l.Count);
+			}
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Delete("from A");
+				s.Delete("from E");
+				t.Commit();
+			}
+		}
+
+		[Test]
 		public void OneToOne()
 		{
 			A a = new A();
@@ -289,8 +326,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				IList l = s.CreateQuery("from E e, A a where e.Reverse = a.Forward and a = ?").SetEntity(0, a).List();
-				Assert.AreEqual(1, l.Count);
+				IList l;
 				l = s.CreateQuery("from E e join fetch e.Reverse").List();
 				Assert.AreEqual(2, l.Count);
 				t.Commit();
