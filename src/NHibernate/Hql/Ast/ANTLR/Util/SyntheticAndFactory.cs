@@ -1,4 +1,5 @@
-﻿using Antlr.Runtime.Tree;
+﻿using System;
+using Antlr.Runtime.Tree;
 using log4net;
 using NHibernate.Hql.Ast.ANTLR.Parameters;
 using NHibernate.Hql.Ast.ANTLR.Tree;
@@ -13,6 +14,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public class SyntheticAndFactory
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(SyntheticAndFactory));

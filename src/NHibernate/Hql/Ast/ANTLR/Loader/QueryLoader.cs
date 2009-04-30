@@ -19,6 +19,7 @@ using IQueryable=NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Hql.Ast.ANTLR.Loader
 {
+	[CLSCompliant(false)]
 	public class QueryLoader : BasicLoader
 	{
 		private readonly QueryTranslatorImpl _queryTranslator;

@@ -8,7 +8,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
-	public class SelectExpressionImpl :FromReferenceNode, ISelectExpression 
+	[CLSCompliant(false)]
+	public class SelectExpressionImpl : FromReferenceNode, ISelectExpression 
 	{
 		public SelectExpressionImpl(IToken token) : base(token)
 		{

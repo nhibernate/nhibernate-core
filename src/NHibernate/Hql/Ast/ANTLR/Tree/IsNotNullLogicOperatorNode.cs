@@ -1,4 +1,5 @@
-﻿using Antlr.Runtime;
+﻿using System;
+using Antlr.Runtime;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
@@ -8,6 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: Steve Ebersole
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public class IsNotNullLogicOperatorNode : AbstractNullnessCheckNode
 	{
 		public IsNotNullLogicOperatorNode(IToken token) : base(token)

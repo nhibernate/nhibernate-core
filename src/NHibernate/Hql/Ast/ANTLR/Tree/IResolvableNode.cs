@@ -1,10 +1,13 @@
-﻿namespace NHibernate.Hql.Ast.ANTLR.Tree
+﻿using System;
+
+namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	/// <summary>
 	/// The contract for expression sub-trees that can resolve themselves.
 	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public interface IResolvableNode
 	{
 		/// <summary>

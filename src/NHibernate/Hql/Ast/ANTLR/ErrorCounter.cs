@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Antlr.Runtime;
 using log4net;
@@ -8,6 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	/// <summary>
 	/// An error handler that counts parsing errors and warnings.
 	/// </summary>
+	[CLSCompliant(false)]
 	public class ErrorCounter : IParseErrorHandler 
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ErrorCounter));

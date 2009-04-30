@@ -1,5 +1,5 @@
-﻿using Antlr.Runtime;
-using NHibernate.Hql.Ast.ANTLR.Util;
+﻿using System;
+using Antlr.Runtime;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
@@ -8,6 +8,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: Steve Ebersole
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public class OrderByClause : HqlSqlWalkerNode 
 	{
 		public OrderByClause(IToken token) : base(token)

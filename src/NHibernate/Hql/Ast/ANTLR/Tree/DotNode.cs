@@ -17,6 +17,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: Joshua Davis
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public class DotNode : FromReferenceNode, ISelectExpression 
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DotNode));

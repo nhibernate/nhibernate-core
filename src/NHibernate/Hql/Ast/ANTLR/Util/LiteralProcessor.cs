@@ -9,6 +9,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Util
 {
+	[CLSCompliant(false)]
 	public class LiteralProcessor
 	{
 		public const string ErrorCannotFetchWithIterate = "fetch may not be used with scroll() or iterate()";

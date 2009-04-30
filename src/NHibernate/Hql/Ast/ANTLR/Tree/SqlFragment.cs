@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Antlr.Runtime;
 using NHibernate.Hql.Ast.ANTLR.Parameters;
 using NHibernate.SqlCommand;
@@ -10,6 +11,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public class SqlFragment : SqlNode, IParameterContainer 
 	{
 		private JoinFragment _joinFragment;

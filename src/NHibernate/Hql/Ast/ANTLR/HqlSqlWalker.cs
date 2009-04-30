@@ -14,6 +14,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
+	[CLSCompliant(false)]
 	public partial class HqlSqlWalker
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(HqlSqlWalker));

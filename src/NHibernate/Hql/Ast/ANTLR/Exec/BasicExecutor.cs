@@ -12,6 +12,7 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
+	[CLSCompliant(false)]
 	public class BasicExecutor : AbstractStatementExecutor
 	{
 		private readonly IQueryable persister;

@@ -16,6 +16,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: Steve Ebersole
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public class IntoClause : HqlSqlWalkerNode, IDisplayableNode
 	{
 		private IQueryable _persister;

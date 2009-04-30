@@ -1,4 +1,5 @@
-﻿using NHibernate.Type;
+﻿using System;
+using NHibernate.Type;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
@@ -7,6 +8,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public interface ISelectExpression
 	{
 		/// <summary>

@@ -1,4 +1,5 @@
-﻿using Antlr.Runtime;
+﻿using System;
+using Antlr.Runtime;
 using NHibernate.Type;
 using NHibernate.Hql.Ast.ANTLR.Util;
 
@@ -10,6 +11,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: Joshua Davis
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public class AggregateNode : AbstractSelectExpression, ISelectExpression
 	{
 		public AggregateNode(IToken token)

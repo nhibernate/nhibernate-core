@@ -5,6 +5,7 @@ using log4net;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
+	[CLSCompliant(false)]
 	public abstract class FromReferenceNode : AbstractSelectExpression, IResolvableNode, IDisplayableNode, IPathNode
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(FromReferenceNode));

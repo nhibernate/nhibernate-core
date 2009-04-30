@@ -1,8 +1,10 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Antlr.Runtime;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
+	[CLSCompliant(false)]
 	public class ImpliedFromElement : FromElement
 	{
 	    private bool _impliedInFromClause = false;

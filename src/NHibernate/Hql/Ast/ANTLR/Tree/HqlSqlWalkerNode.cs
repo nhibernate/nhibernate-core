@@ -1,5 +1,5 @@
-﻿using Antlr.Runtime;
-using Antlr.Runtime.Tree;
+﻿using System;
+using Antlr.Runtime;
 using NHibernate.Hql.Ast.ANTLR.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
@@ -9,6 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Authoer: josh
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public class HqlSqlWalkerNode : SqlNode, IInitializableNode
 	{
 		/**

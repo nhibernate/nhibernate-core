@@ -1,9 +1,11 @@
-﻿using Antlr.Runtime;
+﻿using System;
+using Antlr.Runtime;
 using log4net;
 using NHibernate.Hql.Ast.ANTLR.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
+	[CLSCompliant(false)]
 	public abstract class AbstractRestrictableStatement : AbstractStatement, IRestrictableStatement
 	{
 		private FromClause _fromClause;

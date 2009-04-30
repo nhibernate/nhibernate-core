@@ -1,4 +1,5 @@
-﻿using Antlr.Runtime;
+﻿using System;
+using Antlr.Runtime;
 using NHibernate.Type;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
@@ -7,6 +8,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: Steve Ebersole
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public class InLogicOperatorNode : BinaryLogicOperatorNode, IBinaryOperatorNode
 	{
 		public InLogicOperatorNode(IToken token)

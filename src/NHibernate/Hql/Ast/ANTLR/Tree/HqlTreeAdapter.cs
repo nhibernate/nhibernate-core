@@ -1,8 +1,10 @@
-﻿using Antlr.Runtime;
+﻿using System;
+using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
+	[CLSCompliant(false)]
 	public class HqlTreeAdaptor : CommonTreeAdaptor
 	{
 		private readonly HqlSqlWalker _walker;

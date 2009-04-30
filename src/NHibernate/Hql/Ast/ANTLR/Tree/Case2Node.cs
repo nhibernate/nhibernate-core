@@ -1,14 +1,14 @@
-﻿using Antlr.Runtime;
+﻿using System;
+using Antlr.Runtime;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Type;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
-	/**
-	 * Represents a case ... when .. then ... else ... end expression in a select.
-	 *
-	 * @author Gavin King
-	 */
+	/// <summary>
+	/// Represents a case ... when .. then ... else ... end expression in a select.
+	/// </summary>
+	[CLSCompliant(false)]
 	public class Case2Node : AbstractSelectExpression, ISelectExpression 
 	{
 		public Case2Node(IToken token) : base(token)

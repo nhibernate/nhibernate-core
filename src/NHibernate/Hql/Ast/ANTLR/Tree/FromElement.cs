@@ -12,6 +12,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
+	[CLSCompliant(false)]
 	public class FromElement : HqlSqlWalkerNode, IDisplayableNode, IParameterContainer
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(FromElement));

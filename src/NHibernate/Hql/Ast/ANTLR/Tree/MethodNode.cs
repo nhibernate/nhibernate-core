@@ -13,6 +13,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public class MethodNode : AbstractSelectExpression, ISelectExpression 
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(MethodNode));

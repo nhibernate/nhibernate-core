@@ -1,48 +1,18 @@
+using System;
 using NHibernate.Engine;
 
 namespace NHibernate.Type
 {
-	using System;
-	using System.Runtime.Serialization;
-
 	/// <summary>
 	/// Represents directionality of the foreign key constraint
 	/// </summary>
 	[Serializable]
 	public abstract class ForeignKeyDirection
 	{
-		/// <summary></summary>
-		protected ForeignKeyDirection()
-		{
-		}
-		[Serializable]
-		private class ForeignKeyToParentClass : ForeignKeyDirection
-		{
-			public override bool CascadeNow(CascadePoint cascadePoint)
-			{
-				return cascadePoint != CascadePoint.BeforeInsertAfterDelete;}
-			public override bool Equals(object obj)
-			{
-				return obj is ForeignKeyToParentClass; ;
-			}
-		}
-		[Serializable]
-		private class ForeignKeyFromParentClass : ForeignKeyDirection
-		{
-			public override bool CascadeNow(CascadePoint cascadePoint)
-			{
-				return cascadePoint != CascadePoint.AfterInsertBeforeDelete;
-			}
-			public override bool Equals(object obj)
-			{
-				return obj is ForeignKeyFromParentClass; ;
-			}
-		}
-
 		/// <summary>
-		/// Should we cascade at this cascade point?
+		/// A foreign key from parent to child
 		/// </summary>
-		public abstract bool CascadeNow(CascadePoint cascadePoint);
+		public static ForeignKeyDirection ForeignKeyFromParent = new ForeignKeyFromParentClass();
 
 		/// <summary>
 		/// A foreign key from child to parent
@@ -50,8 +20,64 @@ namespace NHibernate.Type
 		public static ForeignKeyDirection ForeignKeyToParent = new ForeignKeyToParentClass();
 
 		/// <summary>
-		/// A foreign key from parent to child
+		/// Should we cascade at this cascade point?
 		/// </summary>
-		public static ForeignKeyDirection ForeignKeyFromParent = new ForeignKeyFromParentClass();
+		public abstract bool CascadeNow(CascadePoint cascadePoint);
+
+		#region Nested type: ForeignKeyFromParentClass
+
+		[Serializable]
+		private class ForeignKeyFromParentClass : ForeignKeyDirection
+		{
+			public override bool CascadeNow(CascadePoint cascadePoint)
+			{
+				return cascadePoint != CascadePoint.AfterInsertBeforeDelete;
+			}
+
+			public override bool Equals(object obj)
+			{
+				return Equals(obj as ForeignKeyFromParentClass);
+			}
+
+			public bool Equals(ForeignKeyFromParentClass other)
+			{
+				return !ReferenceEquals(null, other);
+			}
+
+			public override int GetHashCode()
+			{
+				return 37;
+			}
+		}
+
+		#endregion
+
+		#region Nested type: ForeignKeyToParentClass
+
+		[Serializable]
+		private class ForeignKeyToParentClass : ForeignKeyDirection
+		{
+			public override bool CascadeNow(CascadePoint cascadePoint)
+			{
+				return cascadePoint != CascadePoint.BeforeInsertAfterDelete;
+			}
+
+			public override bool Equals(object obj)
+			{
+				return Equals(obj as ForeignKeyToParentClass);
+			}
+
+			public bool Equals(ForeignKeyToParentClass other)
+			{
+				return !ReferenceEquals(null, other);
+			}
+
+			public override int GetHashCode()
+			{
+				return 17;
+			}
+		}
+
+		#endregion
 	}
 }

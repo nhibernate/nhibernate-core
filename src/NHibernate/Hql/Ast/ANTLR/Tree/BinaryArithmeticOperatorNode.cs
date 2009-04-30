@@ -5,11 +5,10 @@ using NHibernate.Type;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
-	/**
-	 * Nodes which represent binary arithmetic operators.
-	 *
-	 * @author Gavin King
-	 */
+	/// <summary>
+	/// Nodes which represent binary arithmetic operators.
+	/// </summary>
+	[CLSCompliant(false)]
 	public class BinaryArithmeticOperatorNode : AbstractSelectExpression, IBinaryOperatorNode, IDisplayableNode
 	{
 		public BinaryArithmeticOperatorNode(IToken token)
@@ -81,13 +80,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public override IType DataType
 		{
-			/**
-			 * Figure out the type of the binary expression by looking at
-			 * the types of the operands. Sometimes we don't know both types,
-			 * if, for example, one is a parameter.
-			 */
 			get
 			{
+				/*
+				 * Figure out the type of the binary expression by looking at
+				 * the types of the operands. Sometimes we don't know both types,
+				 * if, for example, one is a parameter.
+				 */
 				if (base.DataType == null)
 				{
 					base.DataType = ResolveDataType();

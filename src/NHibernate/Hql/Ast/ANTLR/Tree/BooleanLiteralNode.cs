@@ -5,11 +5,10 @@ using NHibernate.Type;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
-	/**
-	 * Represents a boolean literal within a query.
-	 *
-	 * @author Steve Ebersole
-	 */
+	///<summary>
+	/// Represents a boolean literal within a query.
+	///</summary>
+	[CLSCompliant(false)]
 	public class BooleanLiteralNode : LiteralNode, IExpectedTypeAwareNode 
 	{
 		private IType expectedType;

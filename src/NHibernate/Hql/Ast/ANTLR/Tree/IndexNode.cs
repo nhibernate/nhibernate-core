@@ -16,6 +16,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public class IndexNode : FromReferenceNode
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(IndexNode));

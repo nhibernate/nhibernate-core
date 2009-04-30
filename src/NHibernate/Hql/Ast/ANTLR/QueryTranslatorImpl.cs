@@ -18,6 +18,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
+	[CLSCompliant(false)]
 	public class QueryTranslatorImpl : IFilterTranslator
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(QueryTranslatorImpl));
@@ -464,6 +465,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	    }
 	}
 
+	[CLSCompliant(false)]
 	public class HqlParseEngine
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(HqlParseEngine));
@@ -579,6 +581,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		}
 	}
 
+	[CLSCompliant(false)]
 	public class HqlSqlTranslator
 	{
 		private readonly IASTNode _inputAst;
@@ -636,6 +639,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		}
 	}
 
+	[CLSCompliant(false)]
 	public class HqlSqlGenerator
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(HqlSqlGenerator));

@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 
 namespace NHibernate.Hql.Ast.ANTLR.Util
 {
-	static public class ASTUtil
+	[CLSCompliant(false)]
+	public static class ASTUtil
 	{
 		public static void MakeSiblingOfParent(IASTNode parent, IASTNode child)
 		{

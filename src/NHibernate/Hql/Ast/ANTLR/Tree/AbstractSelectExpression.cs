@@ -1,7 +1,9 @@
-﻿using Antlr.Runtime;
+﻿using System;
+using Antlr.Runtime;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
+	[CLSCompliant(false)]
 	public abstract class AbstractSelectExpression : HqlSqlWalkerNode, ISelectExpression 
 	{
 		private string _alias;

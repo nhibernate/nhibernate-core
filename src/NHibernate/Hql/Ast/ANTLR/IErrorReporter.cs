@@ -1,4 +1,5 @@
-﻿using Antlr.Runtime;
+﻿using System;
+using Antlr.Runtime;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
@@ -7,6 +8,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public interface IErrorReporter
 	{
 		void ReportError(RecognitionException e);

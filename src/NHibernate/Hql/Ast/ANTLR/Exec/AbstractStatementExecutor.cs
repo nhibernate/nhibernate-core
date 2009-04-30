@@ -1,9 +1,11 @@
+using System;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using log4net;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
+	[CLSCompliant(false)]
 	public abstract class AbstractStatementExecutor : IStatementExecutor
 	{
 		private readonly ILog log;

@@ -8,6 +8,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Defines a top-level AST node representing an HQL delete statement. 
 	/// </summary>
 	[Serializable]
+	[CLSCompliant(false)]
 	public class DeleteStatement : AbstractRestrictableStatement
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(QueryNode));

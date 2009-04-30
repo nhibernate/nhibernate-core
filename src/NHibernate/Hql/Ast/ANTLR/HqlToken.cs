@@ -1,11 +1,13 @@
-﻿using Antlr.Runtime;
+﻿using System;
+using Antlr.Runtime;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
     /// <summary>
     /// A custom token class for the HQL grammar.
     /// </summary>
-    public class HqlToken : CommonToken
+	[CLSCompliant(false)]
+	public class HqlToken : CommonToken
     {
         /// <summary>
         /// The previous token type.

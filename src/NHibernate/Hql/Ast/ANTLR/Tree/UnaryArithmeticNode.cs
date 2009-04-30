@@ -1,9 +1,11 @@
-﻿using Antlr.Runtime;
+﻿using System;
+using Antlr.Runtime;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Type;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
+	[CLSCompliant(false)]
 	public class UnaryArithmeticNode : AbstractSelectExpression, IUnaryOperatorNode 
 	{
 		public UnaryArithmeticNode(IToken token) : base(token)

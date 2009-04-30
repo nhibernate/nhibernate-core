@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Antlr.Runtime;
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Parameters;
@@ -11,6 +12,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: Steve Ebersole
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public class ParameterNode : HqlSqlWalkerNode, IDisplayableNode, IExpectedTypeAwareNode
 	{
 		private IParameterSpecification _parameterSpecification;

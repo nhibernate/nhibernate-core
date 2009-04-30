@@ -1,4 +1,5 @@
-﻿using Antlr.Runtime;
+﻿using System;
+using Antlr.Runtime;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Type;
 
@@ -10,6 +11,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public class LiteralNode : AbstractSelectExpression
 	{
 		public LiteralNode(IToken token) : base(token)

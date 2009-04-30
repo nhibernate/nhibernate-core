@@ -15,6 +15,7 @@ namespace NHibernate
 	{
 		private readonly int level;
 		private readonly string name;
+		private readonly int hashcode;
 
 		/// <summary>
 		/// 
@@ -25,6 +26,10 @@ namespace NHibernate
 		{
 			this.level = level;
 			this.name = name;
+			unchecked
+			{
+				hashcode = (level * 37) ^ (name != null ? name.GetHashCode() : 0);
+			}
 		}
 
 		/// <summary></summary>
@@ -103,15 +108,28 @@ namespace NHibernate
 
 		public override bool Equals(object obj)
 		{
-			LockMode lm = obj as LockMode;
-			if(lm!=null)
+			return Equals(obj as LockMode);
+		}
+
+		public bool Equals(LockMode other)
+		{
+			if (other == null)
 			{
-				return (lm.level == this.level) && (lm.name == this.name);
+				return false;
 			}
-			return base.Equals(obj);
+			if (ReferenceEquals(this, other))
+			{
+				return true;
+			}
+			return other.level == level && Equals(other.name, name);
+		}
+
+		public override int GetHashCode()
+		{
+			return hashcode;
 		}
 
 		//TODO: need to implement .NET equivalent of readResolve - believe it is
-		// the IObjectReference interface...
+		// the IObjectReference interface...	
 	}
 }

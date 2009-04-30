@@ -11,6 +11,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
+	[CLSCompliant(false)]
 	public class IdentNode : FromReferenceNode, ISelectExpression
 	{
 		private static int UNKNOWN = 0;

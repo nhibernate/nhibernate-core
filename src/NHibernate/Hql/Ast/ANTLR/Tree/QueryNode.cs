@@ -1,10 +1,12 @@
-﻿using Antlr.Runtime;
+﻿using System;
+using Antlr.Runtime;
 using log4net;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Type;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
+	[CLSCompliant(false)]
 	public class QueryNode : AbstractRestrictableStatement, ISelectExpression
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(QueryNode));

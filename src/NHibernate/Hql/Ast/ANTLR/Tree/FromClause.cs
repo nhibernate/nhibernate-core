@@ -12,6 +12,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public class FromClause : HqlSqlWalkerNode, IDisplayableNode
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(FromClause));

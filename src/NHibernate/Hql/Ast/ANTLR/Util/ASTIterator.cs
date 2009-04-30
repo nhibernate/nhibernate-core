@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 
@@ -9,6 +10,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public class ASTIterator : IEnumerable<IASTNode>
 	{
 		private IASTNode _current;

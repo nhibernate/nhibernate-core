@@ -1,16 +1,16 @@
 ﻿using System;
-using Antlr.Runtime.Tree;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 
 namespace NHibernate.Hql.Ast.ANTLR.Util
 {
+	[CLSCompliant(false)]
 	public class NodeTraverser
 	{
 		private readonly IVisitationStrategy _visitor;
 
 		public NodeTraverser(IVisitationStrategy visitor)
 		{
-			_visitor = visitor;	
+			_visitor = visitor;
 		}
 
 		/// <summary>
@@ -24,7 +24,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			{
 				throw new ArgumentNullException("ast");
 			}
-		
+
 			for (int i = 0; i < ast.ChildCount; i++)
 			{
 				VisitDepthFirst(ast.GetChild(i));

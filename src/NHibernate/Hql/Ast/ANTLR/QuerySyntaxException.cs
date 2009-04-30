@@ -1,7 +1,9 @@
-﻿using Antlr.Runtime;
+﻿using System;
+using Antlr.Runtime;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
+	[CLSCompliant(false)]
 	public class QuerySyntaxException : QueryException
 	{
 		public QuerySyntaxException(string message) : base(message)

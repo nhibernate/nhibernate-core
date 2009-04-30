@@ -3,15 +3,14 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 
 namespace NHibernate.Hql.Ast.ANTLR.Util
 {
-	/**
-	 * Appends child nodes to a parent efficiently.
-	 *
-	 * @author Joshua Davis
-	 */
+	/// <summary>
+	/// Appends child nodes to a parent efficiently.
+	/// </summary>
+	[CLSCompliant(false)]
 	public class ASTAppender
 	{
-		private IASTNode parent;
-		private IASTFactory factory;
+		private readonly IASTFactory factory;
+		private readonly IASTNode parent;
 
 		public ASTAppender(IASTFactory factory, IASTNode parent)
 		{

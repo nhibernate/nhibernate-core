@@ -10,6 +10,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public abstract class SelectExpressionList : HqlSqlWalkerNode 
 	{
 		protected SelectExpressionList(IToken token) : base(token)
@@ -46,7 +47,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <summary>
 		/// Returns the first select expression node that should be considered when building the array of select
 		/// expressions.
-		/// <summary>
+		/// </summary>
 		protected internal abstract IASTNode GetFirstSelectExpression();
 	}
 }

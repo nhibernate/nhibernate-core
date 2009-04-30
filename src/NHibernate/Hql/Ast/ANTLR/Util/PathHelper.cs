@@ -1,9 +1,11 @@
-﻿using log4net;
+﻿using System;
+using log4net;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Util
 {
+	[CLSCompliant(false)]
 	public static class PathHelper
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(PathHelper));

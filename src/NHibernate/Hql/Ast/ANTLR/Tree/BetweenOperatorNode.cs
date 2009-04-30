@@ -1,13 +1,13 @@
-﻿using Antlr.Runtime;
+﻿using System;
+using Antlr.Runtime;
 using NHibernate.Type;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
-	/**
-	 * Contract for nodes representing logcial BETWEEN (ternary) operators.
-	 *
-	 * @author Steve Ebersole
-	 */
+	/// <summary>
+	/// Contract for nodes representing logcial BETWEEN (ternary) operators.
+	/// </summary>
+	[CLSCompliant(false)]
 	public class BetweenOperatorNode : SqlNode, IOperatorNode
 	{
 		public BetweenOperatorNode(IToken token)

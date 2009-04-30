@@ -21,6 +21,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	/// Author: Joshua Davis
 	/// Ported by: Steve Strong
  	/// </summary>
+	[CLSCompliant(false)]
 	public class JoinProcessor
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(JoinProcessor));

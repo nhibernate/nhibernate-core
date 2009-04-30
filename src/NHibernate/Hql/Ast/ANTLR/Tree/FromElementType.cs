@@ -16,6 +16,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
+	[CLSCompliant(false)]
 	public class FromElementType
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(FromElementType));
@@ -190,6 +191,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// </summary>
 		/// <param name="size">The total number of returned types.</param>
 		/// <param name="k">The sequence of the current returned type.</param>
+		/// <param name="allProperties"></param>
 		/// <returns>the property select SQL fragment.</returns>
 		public string RenderPropertySelect(int size, int k, bool allProperties)
 		{
