@@ -128,8 +128,5 @@ namespace NHibernate
 		{
 			return hashcode;
 		}
-
-		//TODO: need to implement .NET equivalent of readResolve - believe it is
-		// the IObjectReference interface...	
 	}
 }
