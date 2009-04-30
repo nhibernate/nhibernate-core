@@ -81,6 +81,9 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Assertions\InheritedAreMarkedSerializable.cs" />
     <Compile Include="Assertions\IsSerializable.cs" />
+    <Compile Include="BulkManipulation\BaseFixture.cs" />
+    <Compile Include="BulkManipulation\HQLBulkOperations.cs" />
+    <Compile Include="BulkManipulation\SimpleClass.cs" />
     <Compile Include="Bytecode\Lightweight\BytecodeProviderFixture.cs" />
     <Compile Include="Bytecode\WrongProxyFactoryFactory.cs" />
     <Compile Include="CacheTest\CacheFixture.cs" />
@@ -1722,6 +1725,7 @@
     <EmbeddedResource Include="Cascade\Job.hbm.xml" />
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
+    <EmbeddedResource Include="BulkManipulation\SimpleClass.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
     <EmbeddedResource Include="NHSpecificTest\NH1727\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1742\Mappings.hbm.xml" />

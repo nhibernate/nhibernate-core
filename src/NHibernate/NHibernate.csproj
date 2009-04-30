@@ -528,6 +528,7 @@
     <Compile Include="Hql\Ast\ANTLR\Tree\CollectionFunction.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\ConstructorNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\CountNode.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\DeleteStatement.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\DotNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\FromClause.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\FromElement.cs" />
