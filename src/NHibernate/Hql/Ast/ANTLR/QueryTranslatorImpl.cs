@@ -6,10 +6,12 @@ using Antlr.Runtime.Tree;
 using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Hql.Ast.ANTLR.Exec;
 using NHibernate.Hql.Ast.ANTLR.Loader;
 using NHibernate.Hql.Ast.ANTLR.Parameters;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Hql.Ast.ANTLR.Util;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -27,8 +29,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private IDictionary<string, IFilter> _enabledFilters;
 		private readonly ISessionFactoryImplementor _factory;
 		private QueryLoader _queryLoader;
-        private ParameterTranslationsImpl _paramTranslations;
-
+		private IStatementExecutor statementExecutor;
+		private IStatement sqlAst;
+		private ParameterTranslationsImpl _paramTranslations;
+		private IDictionary<string, string> tokenReplacements;
 		private HqlParseEngine _parser;
 		private HqlSqlTranslator _translator;
 		private HqlSqlGenerator _generator;
@@ -202,7 +206,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public IStatement SqlAST
 		{
-			get { return _translator.SqlStatement; }
+			get { return sqlAst; }
 		}
 
 		public IList<IParameterSpecification> CollectedParameterSpecifications
@@ -322,27 +326,21 @@ namespace NHibernate.Hql.Ast.ANTLR
 				return;
 			}
 
-			if (replacements == null) 
-			{
-				replacements = new Dictionary<string, string>();
-			}
+			// Remember the parameters for the compilation.
+			tokenReplacements = replacements ?? new Dictionary<string, string>(1);
 
 			_shallowQuery = shallow;
 
 			try 
 			{
 				// PHASE 1 : Parse the HQL into an AST.
-                if (_parser == null)
-                {
-                    _parser = new HqlParseEngine(_hql, true, _factory);
-                    _parser.Parse();
-                }
+				HqlParseEngine parser = Parse(true);
 
 			    // PHASE 2 : Analyze the HQL AST, and produce an SQL AST.
-				_translator = new HqlSqlTranslator(_parser.Ast, _parser.Tokens, this, _factory, replacements,
-                                                   collectionRole);
-				_translator.Translate();
-				
+				HqlSqlWalker w = Analyze(parser, collectionRole);
+
+				sqlAst = (IStatement)w.statement().Tree;
+
 				// at some point the generate phase needs to be moved out of here,
 				// because a single object-level DML might spawn multiple SQL DML
 				// command executions.
@@ -356,16 +354,15 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				if (_translator.SqlStatement.NeedsExecutor) 
 				{
-					throw new NotImplementedException(); // DML
-//					statementExecutor = buildAppropriateStatementExecutor( w );
+					statementExecutor = BuildAppropriateStatementExecutor(w);
 				}
 				else 
 				{
 					// PHASE 3 : Generate the SQL.
-					_generator = new HqlSqlGenerator(_translator.SqlStatement, _parser.Tokens, _factory);
+					_generator = new HqlSqlGenerator(_translator.SqlStatement, parser.Tokens, _factory);
 					_generator.Generate();
-					
-					_queryLoader = new QueryLoader( this, _factory, _translator.SqlStatement.Walker.SelectClause );
+
+					_queryLoader = new QueryLoader(this, _factory, w.SelectClause);
 				}
 
 				_compiled = true;
@@ -387,6 +384,70 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 
 			_enabledFilters = null; //only needed during compilation phase...
+		}
+
+		private IStatementExecutor BuildAppropriateStatementExecutor(HqlSqlWalker walker)
+		{
+			if (walker.StatementType == HqlSqlWalker.DELETE)
+			{
+				FromElement fromElement = walker.GetFinalFromClause().GetFromElement();
+				IQueryable persister = fromElement.Queryable;
+				if (persister.IsMultiTable)
+				{
+					throw new NotSupportedException();
+					//return new MultiTableDeleteExecutor(walker);
+				}
+				else
+				{
+					return new BasicExecutor(walker, persister);
+				}
+			}
+			else if (walker.StatementType == HqlSqlWalker.UPDATE)
+			{
+				FromElement fromElement = walker.GetFinalFromClause().GetFromElement();
+				IQueryable persister = fromElement.Queryable;
+				if (persister.IsMultiTable)
+				{
+					// even here, if only properties mapped to the "base table" are referenced
+					// in the set and where clauses, this could be handled by the BasicDelegate.
+					// TODO : decide if it is better performance-wise to perform that check, or to simply use the MultiTableUpdateDelegate
+					throw new NotSupportedException();
+					//return new MultiTableUpdateExecutor(walker);
+				}
+				else
+				{
+					return new BasicExecutor(walker, persister);
+				}
+			}
+			else if (walker.StatementType == HqlSqlWalker.INSERT)
+			{
+				//var statement = (IStatement)walker.statement().Tree;
+
+				throw new QueryException("Unexpected statement type");
+			}
+			else
+			{
+				throw new QueryException("Unexpected statement type");
+			}
+		}
+
+		private HqlSqlWalker Analyze(HqlParseEngine parser, string collectionRole)
+		{
+			_translator = new HqlSqlTranslator(parser.Ast, parser.Tokens, this, _factory, tokenReplacements,
+																								 collectionRole);
+			_translator.Translate();
+
+			return _translator.SqlStatement.Walker;
+		}
+
+		private HqlParseEngine Parse(bool isFilter)
+		{
+			if (_parser == null)
+			{
+				_parser = new HqlParseEngine(_hql, isFilter, _factory);
+				_parser.Parse();
+			}
+			return _parser;
 		}
 
 		private void ErrorIfDML()
