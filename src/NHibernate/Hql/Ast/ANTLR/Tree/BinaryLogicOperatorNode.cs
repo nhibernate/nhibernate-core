@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using Antlr.Runtime;
 using NHibernate.Engine;
-using NHibernate.Hql.Ast.ANTLR.Parameters;
+using NHibernate.Param;
 using NHibernate.Type;
 using NHibernate.Util;
 

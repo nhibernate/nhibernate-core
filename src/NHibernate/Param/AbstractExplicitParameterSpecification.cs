@@ -2,13 +2,8 @@
 using NHibernate.Engine;
 using NHibernate.Type;
 
-namespace NHibernate.Hql.Ast.ANTLR.Parameters
+namespace NHibernate.Param
 {
-	/**
-	 * Convenience base class for explicitly defined query parameters.
-	 *
-	 * @author Steve Ebersole
-	 */
 	public abstract class AbstractExplicitParameterSpecification : IExplicitParameterSpecification 
 	{
 		private readonly int _sourceLine;

@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 using log4net;
 using NHibernate.Engine;
-using NHibernate.Hql.Ast.ANTLR.Parameters;
+using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
 using NHibernate.Type;

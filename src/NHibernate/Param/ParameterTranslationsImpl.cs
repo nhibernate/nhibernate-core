@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using NHibernate.Engine;
-using NHibernate.Hql.Ast.ANTLR.Util;
+using NHibernate.Hql;
 using NHibernate.Type;
 using NHibernate.Util;
 
-namespace NHibernate.Hql.Ast.ANTLR.Parameters
+namespace NHibernate.Param
 {
 	/// <summary>
 	/// Defines the information available for parameters encountered during
@@ -46,13 +46,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Parameters
 				else {
 					// don't care about other param types here, just those explicitly user-defined...
 
-                    // Steve Strong Note:  The original Java does not do this decrement; it increments i for
-                    // every parameter type.  However, within the Loader.GetParameterTypes() method, this introduces
-                    // nulls into the paramTypeList array, which in turn causes Loader.ConvertITypesToSqlTypes() to crash
-                    // with a null dereference.  An alternative fix is to change the Loader to handle the null.  I'm
-                    // not sure which fix is the most appropriate.
-                    // Legacy.FumTest.CompositeIDQuery() shows the bug if you remove the decrement below...
-				    i--;
+					// Steve Strong Note:  The original Java does not do this decrement; it increments i for
+					// every parameter type.  However, within the Loader.GetParameterTypes() method, this introduces
+					// nulls into the paramTypeList array, which in turn causes Loader.ConvertITypesToSqlTypes() to crash
+					// with a null dereference.  An alternative fix is to change the Loader to handle the null.  I'm
+					// not sure which fix is the most appropriate.
+					// Legacy.FumTest.CompositeIDQuery() shows the bug if you remove the decrement below...
+					i--;
 				}
 
 				i++;
@@ -67,22 +67,22 @@ namespace NHibernate.Hql.Ast.ANTLR.Parameters
 			}
 		}
 
-        public void AdjustNamedParameterLocationsForQueryParameters(QueryParameters parameters)
-        {
-            foreach (int existingParameterLocation in parameters.FilteredParameterLocations)
-            {
-                foreach (ParameterInfo entry in _namedParameters.Values)
-                {
-                    for (int index = 0; index < entry.SqlLocations.Length; index++)
-                    {
-                        if (entry.SqlLocations[index] >= existingParameterLocation)
-                        {
-                            entry.SqlLocations[index]++;
-                        }
-                    }
-                }
-            }
-        }
+		public void AdjustNamedParameterLocationsForQueryParameters(QueryParameters parameters)
+		{
+			foreach (int existingParameterLocation in parameters.FilteredParameterLocations)
+			{
+				foreach (ParameterInfo entry in _namedParameters.Values)
+				{
+					for (int index = 0; index < entry.SqlLocations.Length; index++)
+					{
+						if (entry.SqlLocations[index] >= existingParameterLocation)
+						{
+							entry.SqlLocations[index]++;
+						}
+					}
+				}
+			}
+		}
 
 		public int GetOrdinalParameterSqlLocation(int ordinalPosition)
 		{

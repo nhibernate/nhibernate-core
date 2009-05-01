@@ -2,7 +2,7 @@
 using System.Data;
 using NHibernate.Engine;
 
-namespace NHibernate.Hql.Ast.ANTLR.Parameters
+namespace NHibernate.Param
 {
 	/// <summary>
 	/// Parameter bind specification for an explicit named parameter.
@@ -51,5 +51,4 @@ namespace NHibernate.Hql.Ast.ANTLR.Parameters
 			get { return _name; }
 		}
 	}
-
 }

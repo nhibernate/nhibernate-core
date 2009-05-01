@@ -1,13 +1,13 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using log4net;
 using NHibernate.Engine;
-using NHibernate.Hql.Ast.ANTLR.Parameters;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Hql.Classic;
 using NHibernate.Impl;
+using NHibernate.Param;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -180,7 +180,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				if ( token.StartsWith( ParserHelper.HqlVariablePrefix ) ) 
 				{
 					string filterParameterName = token.Substring( 1 );
-					string[] parts = LoadQueryInfluencers.ParseFilterParameterName( filterParameterName );
+					string[] parts = StringHelper.ParseFilterParameterName( filterParameterName );
 					FilterImpl filter = ( FilterImpl ) walker.EnabledFilters[parts[0]];
 					Object value = filter.GetParameter( parts[1] );
 					IType type = filter.FilterDefinition.GetParameterType( parts[1] );

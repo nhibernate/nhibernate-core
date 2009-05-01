@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
-using NHibernate.Hql.Ast.ANTLR.Parameters;
 using NHibernate.Hql.Ast.ANTLR.Tree;
+using NHibernate.Param;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Hql.Ast.ANTLR

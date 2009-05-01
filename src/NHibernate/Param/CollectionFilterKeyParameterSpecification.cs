@@ -3,7 +3,7 @@ using System.Data;
 using NHibernate.Engine;
 using NHibernate.Type;
 
-namespace NHibernate.Hql.Ast.ANTLR.Parameters
+namespace NHibernate.Param
 {
 	class CollectionFilterKeyParameterSpecification : IParameterSpecification
 	{
@@ -25,10 +25,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Parameters
 		}
 
 		public int Bind(
-				IDbCommand statement,
-				QueryParameters qp,
-				ISessionImplementor session,
-				int position)
+			IDbCommand statement,
+			QueryParameters qp,
+			ISessionImplementor session,
+			int position)
 		{
 			object value = qp.PositionalParameterValues[_queryParameterPosition];
 			_keyType.NullSafeSet(statement, value, position, session);

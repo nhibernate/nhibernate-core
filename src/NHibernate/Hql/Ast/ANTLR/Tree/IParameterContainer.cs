@@ -1,4 +1,4 @@
-﻿using NHibernate.Hql.Ast.ANTLR.Parameters;
+using NHibernate.Param;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {

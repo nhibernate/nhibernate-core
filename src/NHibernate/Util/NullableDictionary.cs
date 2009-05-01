@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace NHibernate.Hql.Ast.ANTLR.Util
+namespace NHibernate.Util
 {
 	public class NullableDictionary<TKey, TValue> : IDictionary<TKey, TValue>
 		where TKey : class

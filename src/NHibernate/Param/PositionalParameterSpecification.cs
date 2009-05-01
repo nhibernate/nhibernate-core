@@ -2,7 +2,7 @@
 using System.Data;
 using NHibernate.Type;
 
-namespace NHibernate.Hql.Ast.ANTLR.Parameters
+namespace NHibernate.Param
 {
 	/// <summary>
 	/// Parameter bind specification for an explicit  positional (or ordinal) parameter.

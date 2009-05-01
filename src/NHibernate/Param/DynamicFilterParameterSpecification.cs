@@ -4,7 +4,7 @@ using System.Data;
 using NHibernate.Engine;
 using NHibernate.Type;
 
-namespace NHibernate.Hql.Ast.ANTLR.Parameters
+namespace NHibernate.Param
 {
 	public class DynamicFilterParameterSpecification : IParameterSpecification
 	{
@@ -19,9 +19,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Parameters
 		/// <param name="parameterName">The name of the parameter</param>
 		/// <param name="definedParameterType">The paremeter type specified on the filter metadata</param>
 		public DynamicFilterParameterSpecification(
-				string filterName,
-				string parameterName,
-				IType definedParameterType)
+			string filterName,
+			string parameterName,
+			IType definedParameterType)
 		{
 			_filterName = filterName;
 			_parameterName = parameterName;

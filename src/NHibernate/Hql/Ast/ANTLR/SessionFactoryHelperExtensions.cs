@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
-using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Hql.Util;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;

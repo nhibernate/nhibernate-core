@@ -4,7 +4,7 @@ using System.Text;
 using NHibernate.Engine;
 using NHibernate.Type;
 
-namespace NHibernate.Hql.Ast.ANTLR.Parameters
+namespace NHibernate.Param
 {
 	public class AggregatedIndexCollectionSelectorParameterSpecifications : IParameterSpecification
 	{

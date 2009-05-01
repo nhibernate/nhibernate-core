@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Antlr.Runtime;
 using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Hql.Ast.ANTLR.Util;
+using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {

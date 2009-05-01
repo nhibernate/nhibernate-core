@@ -6,7 +6,7 @@ using Antlr.Runtime;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
-using NHibernate.Hql.Ast.ANTLR.Parameters;
+using NHibernate.Param;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 

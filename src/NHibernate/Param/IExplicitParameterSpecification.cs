@@ -1,4 +1,4 @@
-﻿namespace NHibernate.Hql.Ast.ANTLR.Parameters
+﻿namespace NHibernate.Param
 {
 	/// <summary>
 	/// An additional contract for parameters which originate from parameters explicitly encountered in the source statement

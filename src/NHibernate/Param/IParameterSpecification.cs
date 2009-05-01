@@ -2,7 +2,7 @@
 using NHibernate.Engine;
 using NHibernate.Type;
 
-namespace NHibernate.Hql.Ast.ANTLR.Parameters
+namespace NHibernate.Param
 {
 	/// <summary>
 	/// Maintains information relating to parameters which need to get bound into a

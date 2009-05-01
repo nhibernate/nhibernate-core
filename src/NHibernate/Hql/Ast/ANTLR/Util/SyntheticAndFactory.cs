@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using Antlr.Runtime.Tree;
 using log4net;
-using NHibernate.Hql.Ast.ANTLR.Parameters;
 using NHibernate.Hql.Ast.ANTLR.Tree;
+using NHibernate.Param;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
