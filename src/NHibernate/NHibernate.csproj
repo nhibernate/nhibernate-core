@@ -500,7 +500,7 @@
     <Compile Include="Hql\Ast\ANTLR\Parameters\AggregatedIndexCollectionSelectorParameterSpecifications.cs" />
     <Compile Include="Hql\Ast\ANTLR\Parameters\CollectionFilterKeyParameterSpecification.cs" />
     <Compile Include="Hql\Ast\ANTLR\Parameters\DynamicFilterParameterSpecification.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Parameters\ExplicitParameterSpecification.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Parameters\IExplicitParameterSpecification.cs" />
     <Compile Include="Hql\Ast\ANTLR\Parameters\IParameterSpecification.cs" />
     <Compile Include="Hql\Ast\ANTLR\Parameters\NamedParameterSpecification.cs" />
     <Compile Include="Hql\Ast\ANTLR\Parameters\ParameterTranslationsImpl.cs" />
