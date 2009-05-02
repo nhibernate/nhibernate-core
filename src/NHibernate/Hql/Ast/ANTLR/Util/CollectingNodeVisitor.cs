@@ -4,6 +4,11 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 
 namespace NHibernate.Hql.Ast.ANTLR.Util
 {
+	/// <summary>
+	/// Filters nodes in/out of a tree.
+	/// </summary>
+	/// <param name="node">The node to check.</param>
+	/// <returns>true to keep the node, false if the node should be filtered out.</returns>
 	[CLSCompliant(false)]
 	public delegate bool FilterPredicate(IASTNode node);
 

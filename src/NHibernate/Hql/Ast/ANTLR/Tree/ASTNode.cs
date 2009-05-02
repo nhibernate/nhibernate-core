@@ -273,7 +273,17 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return _children[index];
 		}
 
-        public void SetChild(int index, IASTNode newChild)
+		public IASTNode GetFirstChild()
+		{
+			return GetChild(0);
+		}
+
+		public void SetFirstChild(IASTNode newChild)
+		{
+			SetChild(0, newChild);
+		}
+
+		public void SetChild(int index, IASTNode newChild)
         {
             if ((_children == null) || _children.Count <= index)
             {

@@ -6,7 +6,7 @@ namespace NHibernate.Test.BulkManipulation
 	[TestFixture]
 	public class HqlBulkOperations: BaseFixture
 	{
-		[Test, Ignore("Not supported yet.")]
+		[Test]
 		public void SimpleDelete()
 		{
 			using (var s = OpenSession())

@@ -3,7 +3,7 @@
 	assembly="NHibernate.Test"
 	namespace="NHibernate.Test.BulkManipulation">
 
-	<class name="SimpleClass">
+	<class name="SimpleClass" table="TSIMPLE">
 		<id type="int">
 			<generator class="native" />
 		</id>

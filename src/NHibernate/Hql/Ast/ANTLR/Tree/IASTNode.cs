@@ -17,7 +17,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		IASTNode Parent { get; set; }
 		IASTNode NextSibling { get; }
 		IASTNode GetChild(int index);
-	    void SetChild(int index, IASTNode newChild);
+		IASTNode GetFirstChild();
+		void SetFirstChild(IASTNode newChild);
+		void SetChild(int index, IASTNode newChild);
 		IASTNode AddChild(IASTNode childNode);
 		IASTNode InsertChild(int index, IASTNode child);
 		IASTNode AddSibling(IASTNode newSibling);
@@ -30,7 +32,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		// TODO - not sure we need this...
 		IToken Token { get; }
-		
+
 		string ToStringTree();
 	}
 }

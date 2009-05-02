@@ -6,9 +6,11 @@ using Antlr.Runtime;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
+using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Param;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
@@ -17,24 +19,27 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 	{
 		private readonly IQueryable persister;
 		private static readonly ILog log = LogManager.GetLogger(typeof(QueryTranslatorImpl));
-		private SqlString sql;
+		private readonly SqlString sql;
 
-		public BasicExecutor(HqlSqlWalker walker, IQueryable persister) : base(walker, log)
+		public BasicExecutor(IStatement statement, ITokenStream tokenStream, IQueryable persister)
+			: base(statement.Walker, log)
 		{
 			this.persister = persister;
 			try
 			{
+				var generator = new HqlSqlGenerator(statement, tokenStream, Factory);
+				generator.Generate();
 
-				//SqlGenerator gen = new SqlGenerator(Factory);
-				//gen.statement(walker.getAST());
-				//sql = gen.GetSQL();
-				//gen.ParseErrorHandler.ThrowQueryException();
+				sql = generator.Sql;
+				Parameters = generator.CollectionParameters;
 			}
 			catch (RecognitionException e)
 			{
 				throw QuerySyntaxException.Convert(e);
 			}
 		}
+
+		protected IList<IParameterSpecification> Parameters{get;private set;}
 
 		protected ISessionFactoryImplementor Factory
 		{
@@ -60,8 +65,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			{
 				try
 				{
-					//st = session.Batcher.PrepareCommand(CommandType.Text, sql, parameterTypes);
-					IEnumerator<IParameterSpecification> paramSpecifications = Walker.Parameters.GetEnumerator();
+					var parameterTypes = new List<SqlType>(Parameters.Count);
+					foreach (var parameterSpecification in Parameters)
+					{
+						parameterTypes.AddRange(parameterSpecification.ExpectedType.SqlTypes(Factory));
+					}
+					st = session.Batcher.PrepareCommand(CommandType.Text, sql, parameterTypes.ToArray());
+					IEnumerator<IParameterSpecification> paramSpecifications = Parameters.GetEnumerator();
 					int pos = 1;
 					while (paramSpecifications.MoveNext())
 					{

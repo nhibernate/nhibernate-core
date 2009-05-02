@@ -1,11 +1,12 @@
 using System;
-using Antlr.Runtime.Tree;
 using log4net;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Param;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
+using NHibernate.Persister.Entity;
+using System.Collections.Generic;
 
 namespace NHibernate.Hql.Ast.ANTLR.Util
 {
@@ -143,5 +144,45 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 		{
 			return _hqlSqlWalker.ASTFactory.CreateNode(tokenType, text);
 		}
+
+		public virtual void AddDiscriminatorWhereFragment(IRestrictableStatement statement, IQueryable persister, IDictionary<string, IFilter> enabledFilters, string alias)
+		{
+			string whereFragment = persister.FilterFragment(alias, enabledFilters).Trim();
+			if (string.Empty.Equals(whereFragment))
+			{
+				return;
+			}
+			if (whereFragment.StartsWith("and"))
+			{
+				whereFragment = whereFragment.Substring(4);
+			}
+
+			// Need to parse off the column qualifiers; this is assuming (which is true as of now)
+			// that this is only used from update and delete HQL statement parsing
+			whereFragment = StringHelper.Replace(whereFragment, persister.GenerateFilterConditionAlias(alias) + ".", "");
+
+			// Note: this simply constructs a "raw" SQL_TOKEN representing the
+			// where fragment and injects this into the tree.  This "works";
+			// however it is probably not the best long-term solution.
+			//
+			// At some point we probably want to apply an additional grammar to
+			// properly tokenize this where fragment into constituent parts
+			// focused on the operators embedded within the fragment.
+			IASTNode discrimNode = Create(HqlSqlWalker.SQL_TOKEN, whereFragment);
+
+			if (statement.WhereClause.ChildCount == 0)
+			{
+				statement.WhereClause.SetFirstChild(discrimNode);
+			}
+			else
+			{
+				IASTNode and = Create(HqlSqlWalker.AND, "{and}");
+				IASTNode currentFirstChild = statement.WhereClause.GetFirstChild();
+				and.SetFirstChild(discrimNode);
+				and.AddChild(currentFirstChild);
+				statement.WhereClause.SetFirstChild(and);
+			}
+		}
+
 	}
 }

@@ -360,5 +360,23 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			return "FromClause{" + "level=" + _level + "}";
 		}
+
+		public virtual void Resolve()
+		{
+			// Make sure that all from elements registered with this FROM clause are actually in the AST.
+			var iter = (new ASTIterator(GetFirstChild())).GetEnumerator();
+			var childrenInTree = new HashedSet<IASTNode>();
+			while (iter.MoveNext())
+			{
+				childrenInTree.Add(iter.Current);
+			}
+			foreach (var fromElement in _fromElements)
+			{
+				if (!childrenInTree.Contains(fromElement))
+				{
+					throw new SemanticException("Element not in AST: " + fromElement);
+				}
+			}
+		}
 	}
 }

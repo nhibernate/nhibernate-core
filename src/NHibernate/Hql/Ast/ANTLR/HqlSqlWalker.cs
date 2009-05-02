@@ -165,12 +165,30 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		void PostProcessDelete(IASTNode delete)
 		{
-			throw new NotImplementedException(); // DML
+			PostProcessDML((DeleteStatement)delete);
 		}
 
 		void PostProcessInsert(IASTNode insert)
 		{
 			throw new NotImplementedException(); // DML
+		}
+
+		private void PostProcessDML(IRestrictableStatement statement)
+		{
+			statement.FromClause.Resolve();
+
+			var fromElement = (FromElement)statement.FromClause.GetFromElements()[0];
+			IQueryable persister = fromElement.Queryable;
+			// Make #@%$^#^&# sure no alias is applied to the table name
+			fromElement.Text = persister.TableName;
+
+			// append any filter fragments; the EMPTY_MAP is used under the assumption that
+			// currently enabled filters should not affect this process
+			if (persister.DiscriminatorType != null)
+			{
+				new SyntheticAndFactory(this)
+					.AddDiscriminatorWhereFragment(statement, persister, new CollectionHelper.EmptyMapClass<string, IFilter>(), fromElement.TableAlias);
+			}
 		}
 
 		void AfterStatementCompletion(string statementName)

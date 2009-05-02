@@ -166,7 +166,16 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public int ExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session)
 		{
-			throw new System.NotImplementedException(); // DML
+			ErrorIfSelect();
+			return statementExecutor.Execute(queryParameters, session);
+		}
+
+		private void ErrorIfSelect()
+		{
+			if (!sqlAst.NeedsExecutor)
+			{
+				throw new QueryExecutionRequestException("Not supported for select queries:", _hql);
+			}
 		}
 
 		public NHibernate.Loader.Loader Loader
@@ -229,17 +238,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			get
 			{
-				List<string> list = new List<string>();
+				var list = new List<string>();
 				if (IsManipulationStatement)
 				{
-					throw new NotImplementedException(); // DML
-					/*
-					String[] sqlStatements = statementExecutor.getSqlStatements();
-					for (int i = 0; i < sqlStatements.length; i++)
+					SqlString[] sqlStatements = statementExecutor.SqlStatements;
+					foreach (var sqlStatement in sqlStatements)
 					{
-						list.Add(sqlStatements[i]);
+						list.Add(sqlStatement.ToString());
 					}
-					*/
 				}
 				else
 				{
@@ -340,7 +346,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			    // PHASE 2 : Analyze the HQL AST, and produce an SQL AST.
 				HqlSqlWalker w = Analyze(parser, collectionRole);
 
-				sqlAst = (IStatement)w.statement().Tree;
+				sqlAst = _translator.SqlStatement;
 
 				// at some point the generate phase needs to be moved out of here,
 				// because a single object-level DML might spawn multiple SQL DML
@@ -353,14 +359,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 				// QueryLoader currently even has a dependency on this at all; does
 				// it need it?  Ideally like to see the walker itself given to the delegates directly...
 
-				if (_translator.SqlStatement.NeedsExecutor) 
+				if (sqlAst.NeedsExecutor) 
 				{
-					statementExecutor = BuildAppropriateStatementExecutor(w);
+					statementExecutor = BuildAppropriateStatementExecutor(sqlAst);
 				}
 				else 
 				{
 					// PHASE 3 : Generate the SQL.
-					_generator = new HqlSqlGenerator(_translator.SqlStatement, parser.Tokens, _factory);
+					_generator = new HqlSqlGenerator(sqlAst, parser.Tokens, _factory);
 					_generator.Generate();
 
 					_queryLoader = new QueryLoader(this, _factory, w.SelectClause);
@@ -387,8 +393,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_enabledFilters = null; //only needed during compilation phase...
 		}
 
-		private IStatementExecutor BuildAppropriateStatementExecutor(HqlSqlWalker walker)
+		private IStatementExecutor BuildAppropriateStatementExecutor(IStatement statement)
 		{
+			HqlSqlWalker walker = statement.Walker;
 			if (walker.StatementType == HqlSqlWalker.DELETE)
 			{
 				FromElement fromElement = walker.GetFinalFromClause().GetFromElement();
@@ -400,7 +407,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				}
 				else
 				{
-					return new BasicExecutor(walker, persister);
+					return new BasicExecutor(statement, _parser.Tokens, persister);
 				}
 			}
 			else if (walker.StatementType == HqlSqlWalker.UPDATE)
@@ -417,7 +424,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				}
 				else
 				{
-					return new BasicExecutor(walker, persister);
+					return new BasicExecutor(statement, _parser.Tokens, persister);
 				}
 			}
 			else if (walker.StatementType == HqlSqlWalker.INSERT)
@@ -645,12 +652,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private static readonly ILog log = LogManager.GetLogger(typeof(HqlSqlGenerator));
 
 		private readonly IASTNode _ast;
-		private readonly CommonTokenStream _tokens;
+		private readonly ITokenStream _tokens;
 		private readonly ISessionFactoryImplementor _sfi;
 		private SqlString _sql;
 		private IList<IParameterSpecification> _parameters;
 
-		public HqlSqlGenerator(IStatement ast, CommonTokenStream tokens, ISessionFactoryImplementor sfi)
+		public HqlSqlGenerator(IStatement ast, ITokenStream tokens, ISessionFactoryImplementor sfi)
 		{
 			_ast = (IASTNode) ast;
 			_tokens = tokens;

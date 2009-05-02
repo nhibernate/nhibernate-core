@@ -13,13 +13,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	[CLSCompliant(false)]
 	public class ASTIterator : IEnumerable<IASTNode>
 	{
-		private IASTNode _current;
 		private readonly Stack<IASTNode> _stack = new Stack<IASTNode>();
+		private IASTNode _current;
 
 		public ASTIterator(IASTNode tree)
 		{
 			_current = tree;
 		}
+
+		#region IEnumerable<IASTNode> Members
 
 		public IEnumerator<IASTNode> GetEnumerator()
 		{
@@ -45,17 +47,20 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			}
 		}
 
-		private void Down() {
-			while ( _current != null && _current.ChildCount > 0) 
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+
+		#endregion
+
+		private void Down()
+		{
+			while (_current != null && _current.ChildCount > 0)
 			{
 				_stack.Push(_current);
 				_current = _current.GetChild(0);
 			}
-		}
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
 		}
 	}
 }

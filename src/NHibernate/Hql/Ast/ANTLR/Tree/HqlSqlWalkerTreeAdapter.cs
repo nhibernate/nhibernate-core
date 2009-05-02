@@ -33,8 +33,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					ret = new SqlNode(payload);
 					break;
 				case HqlSqlWalker.DELETE:
-					//return DeleteStatement.class;
-					ret = new SqlNode(payload);
+					ret = new DeleteStatement(payload);
 					break;
 				case HqlSqlWalker.INSERT:
 					//return InsertStatement.class;
