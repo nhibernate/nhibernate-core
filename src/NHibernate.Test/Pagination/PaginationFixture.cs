@@ -3,7 +3,6 @@ using System.Collections;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.Pagination

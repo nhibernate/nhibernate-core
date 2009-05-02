@@ -3,7 +3,6 @@ using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.IdGen.NativeGuid
 {

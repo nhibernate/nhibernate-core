@@ -66,32 +66,26 @@ namespace NHibernate.Test.NHSpecificTest.NH1508
 		}
 
 		[Test]
-		[ExpectedException(typeof(NotSupportedException))]
 		public void ThrowsExceptionWhenSqlQueryIsGiven()
 		{
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				ISQLQuery sqlQuery = session.CreateSQLQuery("select * from Document");
-				IMultiQuery q = session
-					.CreateMultiQuery()
-					.Add(sqlQuery);
-				q.List();
+				Assert.Throws<NotSupportedException>(() => session.CreateMultiQuery().Add(sqlQuery));
 			}
 		}
 
 		[Test]
-		[ExpectedException(typeof(NotSupportedException))]
 		public void ThrowsExceptionWhenNamedSqlQueryIsGiven()
 		{
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
 
-				IMultiQuery q = session
+				Assert.Throws<NotSupportedException>(() =>session
 					.CreateMultiQuery()
-					.AddNamedQuery("SampleSqlQuery");
-				q.List();
+					.AddNamedQuery("SampleSqlQuery"));
 			}
 		}
 

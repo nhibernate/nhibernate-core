@@ -1,7 +1,6 @@
 using System.Text;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.NHSpecificTest.NH1635
 {

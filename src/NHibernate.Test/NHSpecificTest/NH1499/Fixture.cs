@@ -43,7 +43,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1499
 			}
 		}
 		[Test]
-		[ExpectedException(typeof(QueryException))]
 		public void CheckIfDetachedCriteriaCanBeUsedOnPropertyRestriction()
 		{
 			using (ISession session = OpenSession())
@@ -56,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1499
 							Property.ForName("Title").Eq("Spec"),
 							Property.ForName("Person").Eq(detached)
 							));
-				IList<Document> results = criteria.List<Document>();
+				Assert.Throws<QueryException>(() => criteria.List<Document>());
 			}
 		}
 

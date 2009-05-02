@@ -1,7 +1,6 @@
 using NHibernate.Dialect;
 using NHibernate.Type;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.TypesTest
 {

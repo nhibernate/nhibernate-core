@@ -78,10 +78,9 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		}
 
 		[Test]
-		[ExpectedException(typeof(InvalidProxyTypeException))]
 		public void PrivateConstructor()
 		{
-			Validate(typeof(InvalidPrivateConstructor));
+			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidPrivateConstructor)));
 		}
 
 		public class InvalidNonVirtualProperty : ValidClass
@@ -94,10 +93,9 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		}
 
 		[Test]
-		[ExpectedException(typeof(InvalidProxyTypeException))]
 		public void NonVirtualProperty()
 		{
-			Validate(typeof(InvalidNonVirtualProperty));
+			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidNonVirtualProperty)));
 		}
 
 		public class InvalidPublicField : ValidClass
@@ -106,10 +104,9 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		}
 
 		[Test]
-		[ExpectedException(typeof(InvalidProxyTypeException))]
 		public void PublicField()
 		{
-			Validate(typeof(InvalidPublicField));
+			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidPublicField)));
 		}
 
 		public class InvalidNonVirtualEvent : ValidClass
@@ -120,10 +117,9 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		}
 
 		[Test]
-		[ExpectedException(typeof(InvalidProxyTypeException))]
 		public void NonVirtualEvent()
 		{
-			Validate(typeof(InvalidNonVirtualEvent));
+			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidNonVirtualEvent)));
 		}
 
 		public interface ValidInterface
@@ -185,17 +181,15 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		}
 
 		[Test]
-		[ExpectedException(typeof(InvalidProxyTypeException))]
 		public void NonVirtualInternal()
 		{
-			Validate(typeof(InvalidNonVirtualInternalProperty));
+			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidNonVirtualInternalProperty)));
 		}
 
 		[Test]
-		[ExpectedException(typeof(InvalidProxyTypeException))]
 		public void InternalField()
 		{
-			Validate(typeof(InvalidInternalField));
+			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidInternalField)));
 		}
 
 		public class InvalidNonVirtualProtectedProperty : ValidClass
@@ -224,10 +218,9 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		}
 
 		[Test]
-		[ExpectedException(typeof(InvalidProxyTypeException))]
 		public void NonVirtualProtectedInternal()
 		{
-			Validate(typeof(InvalidNonVirtualProtectedInternalProperty));
+			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidNonVirtualProtectedInternalProperty)));
 		}
 
 		interface INonVirtualPublicImplementsInterface
@@ -244,10 +237,9 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		}
 
 		[Test]
-		[ExpectedException(typeof(InvalidProxyTypeException))]
 		public void VirtualPublicImplementsInterface()
 		{
-			Validate(typeof(NonVirtualPublicImplementsInterface));
+			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(NonVirtualPublicImplementsInterface)));
 		} 
 	}
 }

@@ -6,16 +6,16 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		[Test, ExpectedException(typeof(QueryException))]
+		[Test]
 		public void Bug()
 		{
 			using (ISession session = OpenSession())
 			{
 				User user = new User("test");
 				user.UserId = 10;
-				session.CreateCriteria(typeof(Blog))
+				Assert.Throws<QueryException>(() => session.CreateCriteria(typeof(Blog))
 					.Add(Expression.In("Users", new User[] {user}))
-					.List();
+					.List());
 			}
 		}
 	}

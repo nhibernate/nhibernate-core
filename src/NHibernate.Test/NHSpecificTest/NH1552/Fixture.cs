@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Text;
 using NHibernate.Dialect;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.NHSpecificTest.NH1552
 {

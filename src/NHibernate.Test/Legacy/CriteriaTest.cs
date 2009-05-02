@@ -117,14 +117,13 @@ namespace NHibernate.Test.Legacy
 		}
 
 		[Test]
-		[ExpectedException(typeof(QueryException))]
 		public void CriteriaTypeMismatch()
 		{
 			using (ISession s = OpenSession())
 			{
-				s.CreateCriteria(typeof(Master))
+				Assert.Throws<QueryException>(() =>s.CreateCriteria(typeof(Master))
 					.Add(Expression.Like("Details", "SomeString"))
-					.List();
+					.List());
 			}
 		}
 
@@ -144,14 +143,13 @@ namespace NHibernate.Test.Legacy
 		}
 
 		[Test]
-		[ExpectedException(typeof(QueryException))]
 		public void CriteriaCompositeProperty()
 		{
 			using (ISession s = OpenSession())
 			{
-				s.CreateCriteria(typeof(Master))
+				Assert.Throws<QueryException>(() =>s.CreateCriteria(typeof(Master))
 					.Add(Expression.Eq("Details.I", 10))
-					.List();
+					.List());
 			}
 		}
 

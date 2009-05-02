@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Data;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.Cascade
 {

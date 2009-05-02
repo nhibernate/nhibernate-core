@@ -125,10 +125,10 @@ namespace NHibernate.Test.UtilityTest
 			CheckInput("\t  \nSomeType, SomeAssembly\n   \r\t", "SomeType", "SomeAssembly");
 		}
 
-		[Test, ExpectedException(typeof(ArgumentException))]
+		[Test]
 		public void ParseInvalidEscape()
 		{
-			TypeNameParser.Parse("\\");
+			Assert.Throws<ArgumentException>(() => TypeNameParser.Parse("\\"));
 		}
 
 		[Test]

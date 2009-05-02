@@ -4,7 +4,6 @@ using NHibernate.Collection;
 using NHibernate.Event;
 using NHibernate.Test.Events.Collections.Association.Bidirectional.ManyToMany;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.Events.Collections
 {

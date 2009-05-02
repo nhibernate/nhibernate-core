@@ -121,39 +121,45 @@ namespace NHibernate.Test.UtilityTest
 		}
 
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void GetEnumeratorModifyExceptionFromAdd()
 		{
 			IDictionary<string, Player> lhm = new LinkedHashMap<string, Player>();
 			lhm["123"] = new Player("123", "yyyyyyy");
-			foreach (KeyValuePair<string, Player> pair in lhm)
-			{
-				lhm["78945"] = new Player("78945", "Someone");
-			}
+			Assert.Throws<InvalidOperationException>(() =>
+			                                         	{
+			                                         		foreach (KeyValuePair<string, Player> pair in lhm)
+			                                         		{
+			                                         			lhm["78945"] = new Player("78945", "Someone");
+			                                         		}
+			                                         	});
 		}
 
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void GetEnumeratorModifyExceptionFromRemove()
 		{
 			IDictionary<string, Player> lhm = new LinkedHashMap<string, Player>();
 			lhm["123"] = new Player("123", "yyyyyyy");
-			foreach (KeyValuePair<string, Player> pair in lhm)
-			{
-				lhm.Remove(pair.Key);
-			}
+			Assert.Throws<InvalidOperationException>(() =>
+			                                         	{
+			                                         		foreach (KeyValuePair<string, Player> pair in lhm)
+			                                         		{
+			                                         			lhm.Remove(pair.Key);
+			                                         		}
+			                                         	});
 		}
 
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void GetEnumeratorModifyExceptionFromUpdate()
 		{
 			IDictionary<string, Player> lhm = new LinkedHashMap<string, Player>();
 			lhm["123"] = new Player("123", "yyyyyyy");
-			foreach (KeyValuePair<string, Player> pair in lhm)
-			{
-				lhm["123"] = new Player("123", "aaaaaaa");
-			}
+			Assert.Throws<InvalidOperationException>(() =>
+			                                         	{
+			                                         		foreach (KeyValuePair<string, Player> pair in lhm)
+			                                         		{
+			                                         			lhm["123"] = new Player("123", "aaaaaaa");
+			                                         		}
+			                                         	});
 		}
 
 		[Test]

@@ -55,7 +55,6 @@ namespace NHibernate.Test.FilterTest
 
 
 		[Test]
-		[ExpectedException(typeof(HibernateException))]
 		public void TestFilterThrowsWithNoParameterSet()
 		{
 			Configuration cfg = new Configuration();
@@ -65,7 +64,7 @@ namespace NHibernate.Test.FilterTest
 
 			ISession session = factory.OpenSession();
 			IFilter filter = session.EnableFilter("LiveFilter");
-			filter.Validate();
+			Assert.Throws<HibernateException>(() => filter.Validate());
 		}
 	}
 }

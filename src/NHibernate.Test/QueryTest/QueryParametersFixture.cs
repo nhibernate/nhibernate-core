@@ -24,14 +24,14 @@ namespace NHibernate.Test.QueryTest
 			qp.ValidateParameters();
 		}
 
-		[Test, ExpectedException(typeof(QueryException))]
+		[Test]
 		public void ValidateFailureDifferentLengths()
 		{
 			QueryParameters qp = new QueryParameters(
 				new IType[] {NHibernateUtil.String},
 				new object[] {});
 
-			qp.ValidateParameters();
+			Assert.Throws<QueryException>(() => qp.ValidateParameters());
 		}
 	}
 }

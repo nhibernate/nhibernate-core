@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Transform;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.TransformTests
 {

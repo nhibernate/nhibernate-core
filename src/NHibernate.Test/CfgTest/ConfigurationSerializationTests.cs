@@ -5,7 +5,6 @@ using NHibernate.Cfg;
 using NHibernate.DomainModel;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.CfgTest
 {

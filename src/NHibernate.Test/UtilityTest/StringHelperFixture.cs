@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using NHibernate.Util;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.UtilityTest
 {
@@ -57,13 +56,13 @@ namespace NHibernate.Test.UtilityTest
 			Assert.AreEqual(1, StringHelper.CountUnquoted("abcd ? ef '?' tf", '?'));
 		}
 
-		[Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[Test]
 		/// <summary>
 		/// Try to locate single quotes which isn't allowed
 		/// </summary>
 		public void CantCountQuotes()
 		{
-			Assert.AreEqual(0, StringHelper.CountUnquoted("abcd eftf", StringHelper.SingleQuote));
+			Assert.Throws<ArgumentOutOfRangeException>(() => StringHelper.CountUnquoted("abcd eftf", StringHelper.SingleQuote));
 		}
 
 		[Test]

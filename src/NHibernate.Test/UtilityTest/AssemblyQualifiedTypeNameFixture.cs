@@ -37,10 +37,10 @@ namespace NHibernate.Test.UtilityTest
 				CreateDefaultName().GetHashCode());
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void ConstructWithNullType()
 		{
-			new AssemblyQualifiedTypeName(null, "SomeAssembly");
+			Assert.Throws<ArgumentNullException>(() => new AssemblyQualifiedTypeName(null, "SomeAssembly"));
 		}
 
 		[Test]

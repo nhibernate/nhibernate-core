@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH712
 	[TestFixture]
 	public class Fixture
 	{
-		[Test, ExpectedException(typeof(InstantiationException))]
+		[Test]
 		public void Bug()
 		{
 			if (!Cfg.Environment.UseReflectionOptimizer)
@@ -22,9 +22,9 @@ namespace NHibernate.Test.NHSpecificTest.NH712
 				Assert.Ignore("Test only works with reflection optimization enabled");
 			}
 			else
-				new Configuration()
-					.AddResource(GetType().Namespace + ".Mappings.hbm.xml", GetType().Assembly)
-					.BuildSessionFactory();
+				Assert.Throws<InstantiationException>(
+					() =>
+					new Configuration().AddResource(GetType().Namespace + ".Mappings.hbm.xml", GetType().Assembly).BuildSessionFactory());
 		}
 	}
 }

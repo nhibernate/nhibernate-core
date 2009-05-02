@@ -1,7 +1,6 @@
 using System.Collections;
 using NHibernate.Dialect;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.VersionTest.Db.MsSQL
 {

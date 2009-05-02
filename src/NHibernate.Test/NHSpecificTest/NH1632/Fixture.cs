@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.NHSpecificTest.NH1632
 {

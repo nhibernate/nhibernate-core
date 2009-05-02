@@ -2,7 +2,6 @@ using System.Collections;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.Naturalid.Immutable
 {

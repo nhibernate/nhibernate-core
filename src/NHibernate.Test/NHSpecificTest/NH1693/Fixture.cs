@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.NHSpecificTest.NH1693
 {
@@ -43,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1693
 				var list = session.CreateQuery(q1)
 					.SetParameter("cat", 10)
 					.List<Invoice>();
-				Assert.That(list, Has.Count(2));
+				Assert.That(list.Count, Is.EqualTo(2));
 				Assert.That(list[0].Num == 2 && list[0].Mode == "a");
 				Assert.That(list[1].Num == 4 && list[1].Mode == "a");
 
@@ -64,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1693
 				var list = session.CreateQuery(q1)
 					.SetParameter("cat", 10)
 					.List<Invoice>();
-				Assert.That(list, Has.Count(2));
+				Assert.That(list.Count, Is.EqualTo(2));
 				Assert.That(list[0].Num == 2 && list[0].Mode == "a");
 				Assert.That(list[1].Num == 4 && list[1].Mode == "a");
 

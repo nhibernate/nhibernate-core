@@ -11,14 +11,14 @@ namespace NHibernate.Test.MappingExceptions
 	[TestFixture]
 	public class MissingDefCtorFixture
 	{
-		[Test, ExpectedException(typeof(InstantiationException))]
+		[Test]
 		public void ClassMissingDefaultCtor()
 		{
 			// add a resource that doesn't exist
 			string resource = "NHibernate.Test.MappingExceptions.MissingDefCtor.hbm.xml";
 			Configuration cfg = new Configuration();
-				cfg.AddResource(resource, this.GetType().Assembly);
-				cfg.BuildSessionFactory();
+			cfg.AddResource(resource, this.GetType().Assembly);
+			Assert.Throws<InstantiationException>(() =>cfg.BuildSessionFactory());
 		}
 	}
 }

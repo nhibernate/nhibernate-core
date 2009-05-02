@@ -5,7 +5,6 @@ using NHibernate.Cfg;
 using NHibernate.Criterion;
 using NHibernate.Transform;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.EntityModeTest.Xml.Basic

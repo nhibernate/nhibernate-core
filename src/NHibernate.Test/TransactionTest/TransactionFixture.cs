@@ -33,26 +33,24 @@ namespace NHibernate.Test.TransactionTest
 		}
 
 		[Test]
-		[ExpectedException(typeof(ObjectDisposedException))]
 		public void CommitAfterDisposeThrowsException()
 		{
 			using (ISession s = OpenSession())
 			{
 				ITransaction t = s.BeginTransaction();
 				t.Dispose();
-				t.Commit();
+				Assert.Throws<ObjectDisposedException>(() => t.Commit());
 			}
 		}
 
 		[Test]
-		[ExpectedException(typeof(ObjectDisposedException))]
 		public void RollbackAfterDisposeThrowsException()
 		{
 			using (ISession s = OpenSession())
 			{
 				ITransaction t = s.BeginTransaction();
 				t.Dispose();
-				t.Rollback();
+				Assert.Throws<ObjectDisposedException>(() => t.Rollback());
 			}
 		}
 

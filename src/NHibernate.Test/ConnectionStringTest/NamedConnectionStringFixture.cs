@@ -11,13 +11,12 @@ namespace NHibernate.Test.ConnectionStringTest
 	public class NamedConnectionStringFixture
 	{
 		[Test]
-		[ExpectedException(typeof(HibernateException), "Could not find named connection string MyConStr")]
 		public void InvalidNamedConnectedStringThrows()
 		{
 			Dictionary<string, string> settings = new Dictionary<string, string>();
 			settings.Add(Environment.ConnectionStringName, "MyConStr");
 			ConnectionProvider cp = new MockConnectionProvider();
-			cp.Configure(settings);
+			Assert.Throws<HibernateException>(()=>cp.Configure(settings), "Could not find named connection string MyConStr");
 		}
 
 		[Test]

@@ -79,8 +79,6 @@
     <Compile Include="Any\IPropertyValue.cs" />
     <Compile Include="Any\StringPropertyValue.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Assertions\InheritedAreMarkedSerializable.cs" />
-    <Compile Include="Assertions\IsSerializable.cs" />
     <Compile Include="BulkManipulation\BaseFixture.cs" />
     <Compile Include="BulkManipulation\HQLBulkOperations.cs" />
     <Compile Include="BulkManipulation\SimpleClass.cs" />
@@ -998,7 +996,6 @@
     <Compile Include="SecondLevelCacheTest\AnotherItem.cs" />
     <Compile Include="SecondLevelCacheTest\Item.cs" />
     <Compile Include="SecondLevelCacheTest\SecondLevelCacheTest.cs" />
-    <Compile Include="Assertions\HaveSerializableAttributeAsserter.cs" />
     <Compile Include="SessionCacheTest.cs" />
     <Compile Include="SqlLogSpy.cs" />
     <Compile Include="SqlCommandTest\SqlDeleteBuilderFixture.cs" />

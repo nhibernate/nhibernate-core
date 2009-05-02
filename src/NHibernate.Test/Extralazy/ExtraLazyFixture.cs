@@ -1,6 +1,5 @@
 using System.Collections;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.Extralazy
 {

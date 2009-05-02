@@ -46,7 +46,6 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 		}
 
 		[Test]
-		[ExpectedException(typeof(PropertyValueException))]
 		public void TestErrorUsage()
 		{
 			using (ISession session = OpenSession())
@@ -59,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 				fred.Address = flinstoneWay;
 				wilma.Address = flinstoneWay;
 
-				session.Save(fred);
+				Assert.Throws<PropertyValueException>(() => session.Save(fred));
 			}
 		}
 	}

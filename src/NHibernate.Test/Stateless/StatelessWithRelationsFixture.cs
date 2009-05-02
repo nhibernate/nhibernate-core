@@ -1,7 +1,6 @@
 using System.Collections;
 using Iesi.Collections.Generic;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 using System.Collections.Generic;
 
 namespace NHibernate.Test.Stateless

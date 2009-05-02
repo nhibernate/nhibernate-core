@@ -6,7 +6,6 @@ using NHibernate.Impl;
 using NHibernate.Transform;
 using NHibernate.Util;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.QueryTest
 {

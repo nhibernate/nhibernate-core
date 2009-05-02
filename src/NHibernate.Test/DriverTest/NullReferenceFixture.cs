@@ -24,27 +24,20 @@ namespace NHibernate.Test.DriverTest
 		/// but all properties were null.
 		/// </remarks>
 		/// TODO: I think this fixture is redundant now due to the QueryTest fixtures, just mark it so that it catches the new exception type for now
-		[Test, ExpectedException(typeof(QueryException))]
+		[Test]
 		public void NoParameterNameNullReference()
 		{
 			ISession s = null;
 			try
 			{
 				s = OpenSession();
-				Console.WriteLine("about to run query");
 				IQuery q = s.CreateQuery("from Simple s where s.Name = :missing");
 				Assert.IsNotNull(q);
 				q.List();
 			}
-			catch (ADOException ae)
+			catch (QueryException ae)
 			{
-				Assert.IsTrue(ae.InnerException is QueryException);
-				Assert.IsTrue(ae.InnerException.Message.StartsWith("No value assigned to parameter"));
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine(e.ToString());
-				throw;
+				Assert.IsTrue(ae.Message.StartsWith("Not all named parameters have been set"));
 			}
 			finally
 			{

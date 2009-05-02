@@ -16,7 +16,7 @@ namespace NHibernate.Test.ReflectionOptimizerTest
 			}
 		}
 		
-		[Test, ExpectedException(typeof(PropertyNotFoundException))]
+		[Test]
 		public void NoSetter()
 		{
 			IGetter[] getters = new IGetter[]
@@ -28,7 +28,7 @@ namespace NHibernate.Test.ReflectionOptimizerTest
 					new BasicPropertyAccessor.BasicSetter(typeof (NoSetterClass), typeof (NoSetterClass).GetProperty("Property"), "Property")
 				};
 
-			new ReflectionOptimizer(typeof (NoSetterClass), getters, setters);
+			Assert.Throws<PropertyNotFoundException>(() => new ReflectionOptimizer(typeof(NoSetterClass), getters, setters));
 		}
 
 		public class NoGetterClass
@@ -39,7 +39,7 @@ namespace NHibernate.Test.ReflectionOptimizerTest
 			}
 		}
 		
-		[Test, ExpectedException(typeof(PropertyNotFoundException))]
+		[Test]
 		public void NoGetter()
 		{
 			IGetter[] getters = new IGetter[]
@@ -51,7 +51,7 @@ namespace NHibernate.Test.ReflectionOptimizerTest
 					new BasicPropertyAccessor.BasicSetter(typeof (NoGetterClass), typeof (NoGetterClass).GetProperty("Property"), "Property")
 				};
 
-			new ReflectionOptimizer(typeof (NoGetterClass), getters, setters);
+			Assert.Throws<PropertyNotFoundException>(() => new ReflectionOptimizer(typeof (NoGetterClass), getters, setters));
 		}
 	}
 }

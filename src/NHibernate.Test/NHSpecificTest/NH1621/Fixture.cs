@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.NHSpecificTest.NH1621
 {
@@ -32,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1621
 
 				var nums = session.CreateQuery("from Nums b where b.Sum > 4").List<Nums>();
 
-				Assert.That(nums, Has.Count(1));
+				Assert.That(nums.Count, Is.EqualTo(1));
 				Assert.That(nums[0].Sum, Is.EqualTo(7));
 
 				session.Delete("from Nums");

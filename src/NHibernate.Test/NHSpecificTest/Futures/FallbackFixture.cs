@@ -5,7 +5,6 @@ using NHibernate.Dialect;
 using NHibernate.Driver;
 
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 using Environment=NHibernate.Cfg.Environment;
 

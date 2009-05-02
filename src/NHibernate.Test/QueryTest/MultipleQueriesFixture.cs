@@ -51,7 +51,6 @@ namespace NHibernate.Test.QueryTest
 		}
 
 		[Test]
-		[ExpectedException(typeof(QueryException), ExpectedMessage = "Not all named parameters have been set: ['ids'] [from Item i where i.Id in (:ids)]")]
 		public void NH_1085_WillGiveReasonableErrorIfBadParameterName()
 		{
 			using (ISession s = sessions.OpenSession())
@@ -59,7 +58,8 @@ namespace NHibernate.Test.QueryTest
 				IMultiQuery MultiQuery = s.CreateMultiQuery()
 					.Add("from Item i where i.Id in (:ids)")
 					.Add("from Item i where i.Id in (:ids2)");
-				MultiQuery.List();
+				var e = Assert.Throws<QueryException>(() => MultiQuery.List());
+				Assert.That(e.Message, Is.EqualTo("Not all named parameters have been set: ['ids'] [from Item i where i.Id in (:ids)]"));
 			}
 		}
 

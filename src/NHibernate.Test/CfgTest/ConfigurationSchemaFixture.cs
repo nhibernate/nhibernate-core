@@ -11,7 +11,7 @@ namespace NHibernate.Test.CfgTest
 	[TestFixture]
 	public class ConfigurationSchemaFixture
 	{
-		[Test, ExpectedException(typeof(HibernateConfigException))]
+		[Test]
 		public void InvalidConfig()
 		{
 			string xml =
@@ -21,7 +21,7 @@ namespace NHibernate.Test.CfgTest
 </hibernate-configuration>";
 
 			XmlTextReader xtr = new XmlTextReader(xml, XmlNodeType.Document, null);
-			HibernateConfiguration hc = new HibernateConfiguration(xtr);
+			Assert.Throws<HibernateConfigException>(()=>new HibernateConfiguration(xtr));
 		}
 
 		[Test]
@@ -52,7 +52,7 @@ namespace NHibernate.Test.CfgTest
 			Assert.AreEqual(hc.UseReflectionOptimizer, newhc.UseReflectionOptimizer);
 		}
 
-		[Test, ExpectedException(typeof(HibernateConfigException))]
+		[Test]
 		public void EmptyFactoryNotAllowed()
 		{
 			// session-factory omission not allowed out of App.config
@@ -63,7 +63,7 @@ namespace NHibernate.Test.CfgTest
 </hibernate-configuration>";
 
 			XmlTextReader xtr = new XmlTextReader(xml, XmlNodeType.Document, null);
-			HibernateConfiguration hc = new HibernateConfiguration(xtr);
+			Assert.Throws<HibernateConfigException>(()=> new HibernateConfiguration(xtr));
 		}
 
 		[Test]
@@ -148,7 +148,7 @@ namespace NHibernate.Test.CfgTest
 				(new MappingConfiguration("AAssembly", null))));
 		}
 
-		[Test, ExpectedException(typeof(HibernateConfigException))]
+		[Test]
 		public void NotAllowedMappings()
 		{
 			string xml =
@@ -160,7 +160,7 @@ namespace NHibernate.Test.CfgTest
 </hibernate-configuration>";
 
 			XmlTextReader xtr = new XmlTextReader(xml, XmlNodeType.Document, null);
-			HibernateConfiguration hc = new HibernateConfiguration(xtr);
+			Assert.Throws<HibernateConfigException>(()=>new HibernateConfiguration(xtr));
 		}
 
 		[Test]

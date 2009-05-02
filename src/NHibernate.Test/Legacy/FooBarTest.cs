@@ -1985,24 +1985,22 @@ namespace NHibernate.Test.Legacy
 		}
 
 		[Test]
-		[ExpectedException(typeof(QueryException))]
 		public void VerifyParameterNamedMissing()
 		{
 			using (ISession s = OpenSession())
 			{
 				IQuery q = s.CreateQuery("select bar from Bar as bar where bar.X > :myX");
-				q.List();
+				Assert.Throws<QueryException>(() =>q.List());
 			}
 		}
 
 		[Test]
-		[ExpectedException(typeof(QueryException))]
 		public void VerifyParameterPositionalMissing()
 		{
 			using (ISession s = OpenSession())
 			{
 				IQuery q = s.CreateQuery("select bar from Bar as bar where bar.X > ?");
-				q.List();
+				Assert.Throws<QueryException>(() =>q.List());
 			}
 		}
 
@@ -2028,7 +2026,6 @@ namespace NHibernate.Test.Legacy
 		}
 
 		[Test]
-		[ExpectedException(typeof(QueryException))]
 		public void VerifyParameterPositionalMissing2()
 		{
 			using (ISession s = OpenSession())
@@ -2036,7 +2033,7 @@ namespace NHibernate.Test.Legacy
 				IQuery q = s.CreateQuery("select bar from Bar as bar where bar.String = ? or bar.String = ? or bar.String = ?");
 				q.SetParameter(0, "bull");
 				q.SetParameter(2, "shit");
-				q.List();
+				Assert.Throws<QueryException>(() =>q.List());
 			}
 		}
 

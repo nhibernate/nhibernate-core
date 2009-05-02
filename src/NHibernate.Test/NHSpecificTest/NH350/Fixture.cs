@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH350
 
 		// We pass an Int32 id to Load and expect an exception, since the class
 		// uses Int64 ids.
-		[Test, ExpectedException(typeof(TypeMismatchException))]
+		[Test]
 		public void Loading()
 		{
 			object parentId;
@@ -31,9 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH350
 			{
 				using (ISession session = OpenSession())
 				{
-					SecurityDomain aDomain = (SecurityDomain) session.Load(typeof(SecurityDomain), 1);
-					Assert.AreEqual("Name", aDomain.Name);
-					Assert.IsTrue(aDomain.ChildDomains.Count > 0);
+					Assert.Throws<TypeMismatchException>(() => session.Load(typeof(SecurityDomain), 1));
 				}
 			}
 			finally

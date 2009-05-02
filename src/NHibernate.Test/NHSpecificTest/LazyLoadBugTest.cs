@@ -14,7 +14,6 @@ namespace NHibernate.Test.NHSpecificTest
 		}
 
 		[Test]
-		[ExpectedException(typeof(LazyInitializationException))]
 		public void TestLazyLoad()
 		{
 			int parentId = 0;
@@ -45,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest
 					// Because it maintains logic to maintain the collection during the property set it should
 					// tell NHibernate to skip the setter and access the field.  If it doesn't, then throw
 					// a LazyInitializationException.
-					int count = parent2.Children.Count;
+					Assert.Throws<LazyInitializationException>(() => { int count = parent2.Children.Count; });
 				}
 			}
 			finally

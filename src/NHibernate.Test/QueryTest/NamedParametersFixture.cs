@@ -16,7 +16,7 @@ namespace NHibernate.Test.QueryTest
 			get { return new string[] {"Simple.hbm.xml"}; }
 		}
 
-		[Test, ExpectedException(typeof(QueryException))]
+		[Test]
 		public void TestMissingHQLParameters()
 		{
 			ISession s = OpenSession();
@@ -29,7 +29,7 @@ namespace NHibernate.Test.QueryTest
 				q.SetAnsiString("Name", "Fred");
 
 				// Try to execute it
-				IList list = q.List();
+				Assert.Throws<QueryException>(() =>q.List());
 			}
 			finally
 			{

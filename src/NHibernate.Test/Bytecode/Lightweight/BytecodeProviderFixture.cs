@@ -1,7 +1,6 @@
 using NHibernate.Bytecode;
 using NHibernate.Bytecode.Lightweight;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.Bytecode.Lightweight
 {

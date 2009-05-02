@@ -1,7 +1,6 @@
 using System;
 using NHibernate.Proxy;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1464

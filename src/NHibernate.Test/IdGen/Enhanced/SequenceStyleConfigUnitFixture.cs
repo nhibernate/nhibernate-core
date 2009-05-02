@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using NHibernate.Id.Enhanced;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.IdGen.Enhanced
 {

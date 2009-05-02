@@ -1,6 +1,8 @@
 using System;
-using NHibernate.Test.Assertions;
+using System.Reflection;
+using System.Text;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace NHibernate.Test
 {
@@ -15,7 +17,7 @@ namespace NHibernate.Test
 
 		public static void HaveSerializableAttribute(System.Type clazz, string message, params object[] args)
 		{
-			Assert.DoAssert(new HaveSerializableAttributeAsserter(clazz, message, args));
+			Assert.That(clazz, Has.Attribute<SerializableAttribute>(), message, args);
 		}
 
 		public static void InheritedAreMarkedSerializable(System.Type clazz)
@@ -25,7 +27,20 @@ namespace NHibernate.Test
 
 		public static void InheritedAreMarkedSerializable(System.Type clazz, string message, params object[] args)
 		{
-			Assert.DoAssert(new InheritedAreMarkedSerializable(clazz, message, args));
+			var sb = new StringBuilder();
+			int failedCount = 0;
+			Assembly nhbA = Assembly.GetAssembly(clazz);
+			IList<System.Type> types = ClassList(nhbA, clazz);
+			foreach (System.Type tp in types)
+			{
+				object[] atts = tp.GetCustomAttributes(typeof(SerializableAttribute), false);
+				if (atts.Length == 0)
+				{
+					sb.AppendLine(string.Format("    class {0} is not marked as Serializable", tp.FullName));
+					failedCount++;
+				}
+			}
+			Assert.That(failedCount, Is.EqualTo(0));
 		}
 
 		public static void IsSerializable(object obj)
@@ -35,9 +50,23 @@ namespace NHibernate.Test
 
 		public static void IsSerializable(object obj, string message, params object[] args)
 		{
-			Assert.DoAssert(new IsSerializable(obj, message, args));
+			Assert.That(obj, Is.BinarySerializable, message, args);
 		}
 
 		#endregion
+		private static IList<System.Type> ClassList(Assembly assembly, System.Type type)
+		{
+			IList<System.Type> result = new List<System.Type>();
+			if (assembly != null)
+			{
+				System.Type[] types = assembly.GetTypes();
+				foreach (System.Type tp in types)
+				{
+					if (tp != type && type.IsAssignableFrom(tp) && !tp.IsInterface)
+						result.Add(tp);
+				}
+			}
+			return result;
+		}
 	}
 }

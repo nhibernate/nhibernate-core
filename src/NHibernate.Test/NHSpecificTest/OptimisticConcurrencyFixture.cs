@@ -35,7 +35,6 @@ namespace NHibernate.Test.NHSpecificTest
 		}
 
 		[Test]
-		[ExpectedException(typeof(StaleObjectStateException))]
 		public void StaleObjectStateCheckWithNormalizedEntityPersister()
 		{
 			Top top = new Top();
@@ -56,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest
 					}
 
 					top.Name = "new name";
-					session.Flush();
+					Assert.Throws<StaleObjectStateException>(() => session.Flush());
 				}
 			}
 			finally
@@ -70,7 +69,6 @@ namespace NHibernate.Test.NHSpecificTest
 		}
 
 		[Test]
-		[ExpectedException(typeof(StaleObjectStateException))]
 		public void StaleObjectStateCheckWithEntityPersisterAndOptimisticLock()
 		{
 			Optimistic optimistic = new Optimistic();
@@ -91,7 +89,7 @@ namespace NHibernate.Test.NHSpecificTest
 					}
 
 					optimistic.String = "new string";
-					session.Flush();
+					Assert.Throws<StaleObjectStateException>(() => session.Flush());
 				}
 			}
 			finally

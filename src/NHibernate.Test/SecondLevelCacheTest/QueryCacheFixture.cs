@@ -3,7 +3,6 @@ using System.Collections;
 using System.Threading;
 using NHibernate.Stat;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 using NHibernate.Transform;
 
 namespace NHibernate.Test.SecondLevelCacheTests

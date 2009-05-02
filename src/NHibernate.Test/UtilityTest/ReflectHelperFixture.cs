@@ -3,7 +3,6 @@ using System.Reflection;
 using NHibernate.DomainModel;
 using NHibernate.Util;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.UtilityTest
 {

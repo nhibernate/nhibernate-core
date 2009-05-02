@@ -36,8 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH496
 				using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					obj = (WronglyMappedClass) s.Get(typeof(WronglyMappedClass), obj.Id);
-					Assert.AreEqual(10, obj.SomeInt);
+					Assert.Throws<PropertyAccessException>(() => s.Get(typeof(WronglyMappedClass), obj.Id));
 					t.Commit();
 				}
 			}

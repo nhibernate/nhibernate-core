@@ -7,7 +7,6 @@ namespace NHibernate.Test.MappingTest
 	public class ForeignKeyFixture
 	{
 		[Test]
-		[ExpectedException(typeof(FKUnmatchingColumnsException))]
 		public void UnmatchingColumns()
 		{
 			Table primaryTable = new Table("pktable");
@@ -38,7 +37,7 @@ namespace NHibernate.Test.MappingTest
 			fk.Table = fkTable;
 
 			fk.ReferencedTable = primaryTable;
-			fk.AlignColumns();
+			Assert.Throws<FKUnmatchingColumnsException>(() => fk.AlignColumns());
 		}
 	}
 }

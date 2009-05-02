@@ -4,7 +4,6 @@ using System.Text;
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 {

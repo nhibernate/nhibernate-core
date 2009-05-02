@@ -12,10 +12,10 @@ namespace NHibernate.Test.IdTest
 		/// caught with a bad class name passed in.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(IdentifierGenerationException), "Could not interpret id generator strategy: Guid")]
 		public void NonCreatableStrategy()
 		{
-			IdentifierGeneratorFactory.Create("Guid", NHibernateUtil.Guid, null, new MsSql2000Dialect());
+			Assert.Throws<IdentifierGenerationException>(() => IdentifierGeneratorFactory.Create("Guid", NHibernateUtil.Guid, null, new MsSql2000Dialect()),
+				"Could not interpret id generator strategy: Guid");
 		}
 	}
 }

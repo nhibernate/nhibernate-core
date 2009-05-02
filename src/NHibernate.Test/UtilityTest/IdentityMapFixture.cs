@@ -121,13 +121,12 @@ namespace NHibernate.Test.UtilityTest
 		/// is used as the key.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void AddValueTypeException()
 		{
 			IDictionary map = GetIdentityMap();
 			int intKey = 3;
 			object objectValue = new object();
-			map.Add(intKey, objectValue);
+			Assert.Throws<ArgumentException>(() => map.Add(intKey, objectValue));
 		}
 
 		[Test]

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using Iesi.Collections.Generic;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.NHSpecificTest.NH1289
 {

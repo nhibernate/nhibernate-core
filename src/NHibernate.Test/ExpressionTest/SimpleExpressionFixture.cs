@@ -71,7 +71,6 @@ namespace NHibernate.Test.ExpressionTest
 		}
 
 		[Test]
-		[ExpectedException(typeof(QueryException))]
 		public void MisspelledPropertyWithNormalizedEntityPersister()
 		{
 			using (ISession session = factory.OpenSession())
@@ -79,7 +78,7 @@ namespace NHibernate.Test.ExpressionTest
 				CreateObjects(typeof(Multi), session);
 
 				ICriterion expression = Expression.Eq("MisspelledProperty", DateTime.Now);
-				expression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
+				Assert.Throws<QueryException>(() =>expression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>()));
 			}
 		}
 	}

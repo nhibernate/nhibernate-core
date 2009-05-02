@@ -1,6 +1,5 @@
 using NHibernate.Cfg;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.Extendshbm
 {

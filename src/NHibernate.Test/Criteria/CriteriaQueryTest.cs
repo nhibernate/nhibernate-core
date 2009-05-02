@@ -7,7 +7,6 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.Criteria
 {
@@ -1434,14 +1433,14 @@ namespace NHibernate.Test.Criteria
 			session.Close();
 		}
 
-		[Test, ExpectedException(typeof(QueryException))]
+		[Test]
 		public void TypeMismatch()
 		{
 			using (ISession session = OpenSession())
 			{
-				session.CreateCriteria(typeof(Enrolment))
+				Assert.Throws<QueryException>(() => session.CreateCriteria(typeof(Enrolment))
 					.Add(Expression.Eq("Student", 10)) // Type mismatch!
-					.List();
+					.List());
 			}
 		}
 

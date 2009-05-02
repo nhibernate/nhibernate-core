@@ -161,7 +161,6 @@ namespace NHibernate.Test.CfgTest
 		}
 
 		[Test]
-		[ExpectedException(typeof(HibernateConfigException))]
 		public void CacheConfigurationForUnmappedClass()
 		{
 			string cfgString =
@@ -173,11 +172,10 @@ namespace NHibernate.Test.CfgTest
 							</hibernate-configuration>";
 
 			Configuration cfg = new Configuration();
-			cfg.Configure(new XmlTextReader(cfgString, XmlNodeType.Document, null));
+			Assert.Throws<HibernateConfigException>(()=>cfg.Configure(new XmlTextReader(cfgString, XmlNodeType.Document, null)));
 		}
 
 		[Test]
-		[ExpectedException(typeof(HibernateConfigException))]
 		public void CacheConfigurationForUnmappedCollection()
 		{
 			string cfgString =
@@ -190,17 +188,16 @@ namespace NHibernate.Test.CfgTest
 							</hibernate-configuration>";
 
 			Configuration cfg = new Configuration();
-			cfg.Configure(new XmlTextReader(cfgString, XmlNodeType.Document, null));
+			Assert.Throws<HibernateConfigException>(()=>cfg.Configure(new XmlTextReader(cfgString, XmlNodeType.Document, null)));
 		}
 
 		[Test]
-		[ExpectedException(typeof(HibernateConfigException))]
 		public void NoSessionFactoriesInConfiguration()
 		{
 			string cfgString = @"<?xml version='1.0' encoding='utf-8' ?><someElement />";
 
 			Configuration cfg = new Configuration();
-			cfg.Configure(new XmlTextReader(cfgString, XmlNodeType.Document, null));
+			Assert.Throws<HibernateConfigException>(()=>cfg.Configure(new XmlTextReader(cfgString, XmlNodeType.Document, null)));
 		}
 
 		[Test]

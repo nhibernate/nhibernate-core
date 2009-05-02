@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.EntityModeTest.Multi
 {

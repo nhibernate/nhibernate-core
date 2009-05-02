@@ -15,7 +15,7 @@ namespace NHibernate.Test.QueryTest
 			get { return new string[] {"Simple.hbm.xml"}; }
 		}
 
-		[Test, ExpectedException(typeof(QueryException))]
+		[Test]
 		public void TestMissingHQLParameters()
 		{
 			ISession s = OpenSession();
@@ -28,7 +28,7 @@ namespace NHibernate.Test.QueryTest
 				q.SetParameter(0, "Fred");
 
 				// Try to execute it
-				IList list = q.List();
+				Assert.Throws<QueryException>(() => q.List());
 			}
 			finally
 			{
@@ -37,7 +37,7 @@ namespace NHibernate.Test.QueryTest
 			}
 		}
 
-		[Test, ExpectedException(typeof(QueryException))]
+		[Test]
 		public void TestMissingHQLParameters2()
 		{
 			ISession s = OpenSession();
@@ -50,7 +50,7 @@ namespace NHibernate.Test.QueryTest
 				q.SetParameter(1, "Fred");
 
 				// Try to execute it
-				IList list = q.List();
+				Assert.Throws<QueryException>(() => q.List());
 			}
 			finally
 			{
@@ -59,7 +59,7 @@ namespace NHibernate.Test.QueryTest
 			}
 		}
 
-		[Test, ExpectedException(typeof(ArgumentException))]
+		[Test]
 		public void TestPositionOutOfBounds()
 		{
 			ISession s = OpenSession();
@@ -68,10 +68,7 @@ namespace NHibernate.Test.QueryTest
 			{
 				IQuery q = s.CreateQuery("from s in class Simple where s.Name=? and s.Count=?");
 				// Try to set the third positional parameter
-				q.SetParameter(3, "Fred");
-
-				// Try to execute it
-				IList list = q.List();
+				Assert.Throws<ArgumentException>(() => q.SetParameter(3, "Fred"));
 			}
 			finally
 			{
@@ -80,7 +77,7 @@ namespace NHibernate.Test.QueryTest
 			}
 		}
 
-		[Test, ExpectedException(typeof(ArgumentException))]
+		[Test]
 		public void TestNoPositionalParameters()
 		{
 			ISession s = OpenSession();
@@ -89,10 +86,7 @@ namespace NHibernate.Test.QueryTest
 			{
 				IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");
 				// Try to set the first property
-				q.SetParameter(0, "Fred");
-
-				// Try to execute it
-				IList list = q.List();
+				Assert.Throws<ArgumentException>(() => q.SetParameter(0, "Fred"));
 			}
 			finally
 			{
@@ -105,7 +99,7 @@ namespace NHibernate.Test.QueryTest
 		/// Verifying that a <see langword="null" /> value passed into SetParameter(index, val) throws
 		/// an exception
 		/// </summary>
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void TestNullIndexedParameter()
 		{
 			ISession s = OpenSession();
@@ -113,7 +107,7 @@ namespace NHibernate.Test.QueryTest
 			try
 			{
 				IQuery q = s.CreateQuery("from Simple as s where s.Name=?");
-				q.SetParameter(0, null);
+				Assert.Throws<ArgumentNullException>(() => q.SetParameter(0, null));
 			}
 			finally
 			{

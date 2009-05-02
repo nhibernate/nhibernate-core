@@ -30,13 +30,13 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		[Test, ExpectedException(typeof(ObjectDisposedException))]
+		[Test]
 		public void ReconnectAfterClose()
 		{
 			using (ISession s = OpenSession())
 			{
 				s.Close();
-				s.Reconnect();
+				Assert.Throws<ObjectDisposedException>(() => s.Reconnect());
 			}
 		}
 
@@ -56,11 +56,11 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void NullInterceptor()
 		{
 			IInterceptor nullInterceptor = null;
-			sessions.OpenSession(nullInterceptor).Close();
+			Assert.Throws<ArgumentNullException>(() => sessions.OpenSession(nullInterceptor).Close());
 		}
 
 		[Test]

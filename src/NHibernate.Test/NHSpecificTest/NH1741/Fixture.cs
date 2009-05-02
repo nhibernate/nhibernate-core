@@ -3,7 +3,6 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NUnit.Framework;
 using NHibernate.Util;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.NHSpecificTest.NH1741
 {

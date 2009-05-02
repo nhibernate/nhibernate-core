@@ -3,7 +3,6 @@ using System.Collections;
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.Hql
 {
@@ -186,7 +185,7 @@ namespace NHibernate.Test.Hql
 			}
 		}
 
-		[Test, ExpectedException(typeof(QueryException))]
+		[Test]
 		public void AggregateSumNH1100()
 		{
 			using (ISession s = OpenSession())
@@ -199,7 +198,7 @@ namespace NHibernate.Test.Hql
 			}
 			using (ISession s = OpenSession())
 			{
-				s.CreateQuery("select distinct new SummaryItem(a.Description, sum(BodyWeight)) from Animal a").List<SummaryItem>();
+				Assert.Throws<QueryException>(() => s.CreateQuery("select distinct new SummaryItem(a.Description, sum(BodyWeight)) from Animal a").List<SummaryItem>());
 			}
 		}
 

@@ -26,13 +26,13 @@ namespace NHibernate.Test.NHSpecificTest.NH606
 	[TestFixture]
 	public class Fixture
 	{
-		[Test, ExpectedException(typeof(MappingException))]
+		[Test]
 		public void InvalidGenericMapping()
 		{
-			ISessionFactory sf = new Configuration()
-				.AddResource(typeof (Fixture).Namespace + ".Mapping.hbm.xml", typeof (Fixture).Assembly)
-				.BuildSessionFactory();
-			sf.Close();
+			Assert.Throws<MappingException>(
+				() =>
+				new Configuration().AddResource(typeof (Fixture).Namespace + ".Mapping.hbm.xml", typeof (Fixture).Assembly).
+					BuildSessionFactory());
 		}
 	}
 }

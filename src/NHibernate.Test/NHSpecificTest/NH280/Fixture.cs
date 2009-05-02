@@ -55,12 +55,12 @@ namespace NHibernate.Test.NHSpecificTest.NH280
 			}
 		}
 
-		[Test, ExpectedException(typeof(NHibernate.QueryException))]
+		[Test]
 		public void TokenUnknow()
 		{
 			using (ISession s = OpenSession())
 			{
-				IList l = s.CreateQuery("select 123, notRecognized, f.Description from Foo f").List();
+				Assert.Throws<QueryException>(() =>s.CreateQuery("select 123, notRecognized, f.Description from Foo f").List());
 			}
 		}
 	}

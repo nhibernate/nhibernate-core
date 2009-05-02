@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Test.NHSpecificTest.NH1694
 {

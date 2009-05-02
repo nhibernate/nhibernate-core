@@ -92,7 +92,7 @@ namespace NHibernate.Test.TypesTest
 			}
 		}
 
-		[Test, ExpectedException(typeof(QueryException))]
+		[Test]
 		public void UsageInHqlSelectNewInvalidConstructor()
 		{
 			using (ISession s = OpenSession())
@@ -104,7 +104,8 @@ namespace NHibernate.Test.TypesTest
 			ISession s2 = sessions.OpenSession();
 			try
 			{
-				s2.CreateQuery("select new PersistentEnumHolder(p.id, p.A, p.B) from PersistentEnumClass p").List();
+				Assert.Throws<QueryException>(
+					() => s2.CreateQuery("select new PersistentEnumHolder(p.id, p.A, p.B) from PersistentEnumClass p").List());
 			}
 			finally
 			{
