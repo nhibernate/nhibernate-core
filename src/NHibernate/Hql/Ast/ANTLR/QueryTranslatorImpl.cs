@@ -25,7 +25,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private bool _shallowQuery;
 		private bool _compiled;
-		private string _queryIdentifier;
+		private readonly string _queryIdentifier;
 		private readonly string _hql;
 		private IDictionary<string, IFilter> _enabledFilters;
 		private readonly ISessionFactoryImplementor _factory;
@@ -35,7 +35,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private ParameterTranslationsImpl _paramTranslations;
 		private IDictionary<string, string> tokenReplacements;
 		private HqlParseEngine _parser;
-		private HqlSqlTranslator _translator;
 		private HqlSqlGenerator _generator;
 
         /// <summary>
@@ -96,7 +95,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			// Delegate to the QueryLoader...
 			ErrorIfDML();
-			QueryNode query = ( QueryNode ) _translator.SqlStatement;
+			var query = ( QueryNode ) sqlAst;
 			bool hasLimit = queryParameters.RowSelection != null && queryParameters.RowSelection.DefinesLimits;
 			bool needsDistincting = ( query.GetSelectClause().IsDistinct || hasLimit ) && ContainsCollectionFetches;
 
@@ -105,9 +104,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if ( hasLimit && ContainsCollectionFetches ) 
 			{
 				log.Warn( "firstResult/maxResults specified with collection fetch; applying in memory!" );
-				RowSelection selection = new RowSelection();
-				selection.FetchSize = queryParameters.RowSelection.FetchSize;
-				selection.Timeout = queryParameters.RowSelection.Timeout;
+				var selection = new RowSelection
+				                         	{
+				                         		FetchSize = queryParameters.RowSelection.FetchSize,
+				                         		Timeout = queryParameters.RowSelection.Timeout
+				                         	};
 				queryParametersToUse = queryParameters.CreateCopyUsing( selection );
 			}
 			else 
@@ -129,8 +130,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 							: queryParameters.RowSelection.MaxRows;
 
 				int size = results.Count;
-				List<object> tmp = new List<object>();
-				IdentitySet distinction = new IdentitySet();
+				var tmp = new List<object>();
+				var distinction = new IdentitySet();
 
 				for ( int i = 0; i < size; i++ ) 
 				{
@@ -191,14 +192,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 		public string[][] GetColumnNames()
 		{
 			ErrorIfDML();
-			return _translator.SqlStatement.Walker.SelectClause.ColumnNames;
+			return sqlAst.Walker.SelectClause.ColumnNames;
 		}
 
 		public IParameterTranslations GetParameterTranslations()
 		{
 			if (_paramTranslations == null)
 			{
-				_paramTranslations = new ParameterTranslationsImpl(_translator.SqlStatement.Walker.Parameters);
+				_paramTranslations = new ParameterTranslationsImpl(sqlAst.Walker.Parameters);
 			}
 
 			return _paramTranslations;
@@ -206,7 +207,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public ISet<string> QuerySpaces
 		{
-			get { return _translator.SqlStatement.Walker.QuerySpaces; }
+			get { return sqlAst.Walker.QuerySpaces; }
 		}
 
 		public string SQLString
@@ -270,7 +271,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			get
 			{
 				ErrorIfDML();
-				return _translator.SqlStatement.Walker.ReturnTypes;
+				return sqlAst.Walker.ReturnTypes;
 			}
 		}
 
@@ -279,7 +280,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			get
 			{
 				ErrorIfDML();
-				return _translator.SqlStatement.Walker.ReturnAliases;
+				return sqlAst.Walker.ReturnAliases;
 			}
 		}
 
@@ -288,14 +289,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 			get
 			{
 				ErrorIfDML();
-				IList<IASTNode> collectionFetches = ((QueryNode)_translator.SqlStatement).FromClause.GetCollectionFetches();
+				IList<IASTNode> collectionFetches = ((QueryNode)sqlAst).FromClause.GetCollectionFetches();
 				return collectionFetches != null && collectionFetches.Count > 0;
 			}
 		}
 
 		public bool IsManipulationStatement
 		{
-			get { return _translator.SqlStatement.NeedsExecutor; }
+			get { return sqlAst.NeedsExecutor; }
 		}
 
 		/// <summary>
@@ -344,9 +345,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 				HqlParseEngine parser = Parse(true);
 
 			    // PHASE 2 : Analyze the HQL AST, and produce an SQL AST.
-				HqlSqlWalker w = Analyze(parser, collectionRole);
+				var translator = Analyze(parser, collectionRole);
 
-				sqlAst = _translator.SqlStatement;
+				sqlAst = translator.SqlStatement;
 
 				// at some point the generate phase needs to be moved out of here,
 				// because a single object-level DML might spawn multiple SQL DML
@@ -369,7 +370,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 					_generator = new HqlSqlGenerator(sqlAst, parser.Tokens, _factory);
 					_generator.Generate();
 
-					_queryLoader = new QueryLoader(this, _factory, w.SelectClause);
+					_queryLoader = new QueryLoader(this, _factory, sqlAst.Walker.SelectClause);
 				}
 
 				_compiled = true;
@@ -439,13 +440,13 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
-		private HqlSqlWalker Analyze(HqlParseEngine parser, string collectionRole)
+		private HqlSqlTranslator Analyze(HqlParseEngine parser, string collectionRole)
 		{
-			_translator = new HqlSqlTranslator(parser.Ast, parser.Tokens, this, _factory, tokenReplacements,
+			var translator = new HqlSqlTranslator(parser.Ast, parser.Tokens, this, _factory, tokenReplacements,
 																								 collectionRole);
-			_translator.Translate();
+			translator.Translate();
 
-			return _translator.SqlStatement.Walker;
+			return translator;
 		}
 
 		private HqlParseEngine Parse(bool isFilter)
@@ -460,7 +461,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private void ErrorIfDML()
 		{
-			if (_translator.SqlStatement.NeedsExecutor)
+			if (sqlAst.NeedsExecutor)
 			{
 				throw new QueryExecutionRequestException("Not supported for DML operations", _hql);
 			}
@@ -481,20 +482,20 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private CommonTokenStream _tokens;
 		private readonly bool _filter;
 		private IASTNode _ast;
-	    private ISessionFactoryImplementor _sfi;
+		private readonly ISessionFactoryImplementor _sfi;
 
-        public HqlParseEngine(string hql, bool filter, ISessionFactoryImplementor sfi)
+		public HqlParseEngine(string hql, bool filter, ISessionFactoryImplementor sfi)
 		{
 			_hql = hql;
 			_filter = filter;
-            _sfi = sfi;
+			_sfi = sfi;
 		}
 
-        public HqlParseEngine(IASTNode ast, ISessionFactoryImplementor sfi)
-        {
-            _sfi = sfi;
-            _ast = ast;
-        }
+		public HqlParseEngine(IASTNode ast, ISessionFactoryImplementor sfi)
+		{
+			_sfi = sfi;
+			_ast = ast;
+		}
 
 		public string Hql
 		{
@@ -516,10 +517,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if (_ast == null)
 			{
 				// Parse the query string into an HQL AST.
-				HqlLexer lex = new HqlLexer(new CaseInsensitiveStringStream(_hql));
+				var lex = new HqlLexer(new CaseInsensitiveStringStream(_hql));
 				_tokens = new CommonTokenStream(lex);
 
-				HqlParser parser = new HqlParser(_tokens);
+				var parser = new HqlParser(_tokens);
 				parser.TreeAdaptor = new ASTTreeAdaptor();
 
 				parser.Filter = _filter;
@@ -529,9 +530,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 					log.Debug("parse() - HQL: " + _hql);
 				}
 
-				_ast = (IASTNode) parser.statement().Tree;
+				_ast = (IASTNode)parser.statement().Tree;
 
-				NodeTraverser walker = new NodeTraverser(new ConstantConverter(_sfi));
+				var walker = new NodeTraverser(new ConstantConverter(_sfi));
 				walker.TraverseDepthFirst(_ast);
 
 				//showHqlAst( hqlAst );
@@ -543,14 +544,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 		class ConstantConverter : IVisitationStrategy
 		{
 			private IASTNode dotRoot;
-            private ISessionFactoryImplementor _sfi;
+			private ISessionFactoryImplementor _sfi;
 
-            public ConstantConverter(ISessionFactoryImplementor sfi)
-            {
-                _sfi = sfi;
-            }
+			public ConstantConverter(ISessionFactoryImplementor sfi)
+			{
+				_sfi = sfi;
+			}
 
-		    public void Visit(IASTNode node)
+			public void Visit(IASTNode node)
 			{
 				if (dotRoot != null)
 				{
@@ -578,7 +579,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				object constant = ReflectHelper.GetConstantValue(expression, _sfi);
 
-				if ( constant != null ) 
+				if (constant != null)
 				{
 					dotStructureRoot.ClearChildren();
 					dotStructureRoot.Type = HqlSqlWalker.JAVA_CONSTANT;
@@ -619,18 +620,18 @@ namespace NHibernate.Hql.Ast.ANTLR
 			get { return _resultAst; }
 		}
 
-        public IStatement Translate()
+		public IStatement Translate()
 		{
 			if (_resultAst == null)
 			{
-                HqlSqlWalkerTreeNodeStream nodes = new HqlSqlWalkerTreeNodeStream(_inputAst);
+				var nodes = new HqlSqlWalkerTreeNodeStream(_inputAst);
 				nodes.TokenStream = _tokens;
-                
-				HqlSqlWalker hqlSqlWalker = new HqlSqlWalker(_qti, _sfi, nodes, _tokenReplacements, _collectionRole);
+
+				var hqlSqlWalker = new HqlSqlWalker(_qti, _sfi, nodes, _tokenReplacements, _collectionRole);
 				hqlSqlWalker.TreeAdaptor = new HqlSqlWalkerTreeAdaptor(hqlSqlWalker);
 
 				// Transform the tree.
-				_resultAst = (IStatement) hqlSqlWalker.statement().Tree;
+				_resultAst = (IStatement)hqlSqlWalker.statement().Tree;
 
 				/*
 				if ( AST_LOG.isDebugEnabled() ) {
@@ -659,7 +660,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public HqlSqlGenerator(IStatement ast, ITokenStream tokens, ISessionFactoryImplementor sfi)
 		{
-			_ast = (IASTNode) ast;
+			_ast = (IASTNode)ast;
 			_tokens = tokens;
 			_sfi = sfi;
 		}
@@ -678,10 +679,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			if (_sql == null)
 			{
-				CommonTreeNodeStream nodes = new CommonTreeNodeStream(_ast);
+				var nodes = new CommonTreeNodeStream(_ast);
 				nodes.TokenStream = _tokens;
 
-                SqlGenerator gen = new SqlGenerator(_sfi, nodes);
+				var gen = new SqlGenerator(_sfi, nodes);
 				//gen.TreeAdaptor = new ASTTreeAdaptor();
 
 				gen.statement();
