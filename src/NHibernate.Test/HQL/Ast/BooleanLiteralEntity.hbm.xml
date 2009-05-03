@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.HQL.Ast">
+
+	<class name="BooleanLiteralEntity">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+        <property name="YesNoBoolean" column="Y_N_BOOL" type="yes_no"/>
+        <property name="TrueFalseBoolean" column="T_F_BOOL" type="true_false"/>
+        <property name="ZeroOneBoolean" column="NUM_BOOL" type="boolean"/>
+    </class>
+
+</hibernate-mapping>

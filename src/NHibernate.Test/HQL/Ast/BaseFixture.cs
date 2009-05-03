@@ -2,6 +2,7 @@ using System.Collections;
 using NHibernate.Hql.Ast.ANTLR;
 using System.Collections.Generic;
 using NHibernate.Util;
+using NHibernate.Hql.Classic;
 
 namespace NHibernate.Test.HQL.Ast
 {
@@ -11,7 +12,7 @@ namespace NHibernate.Test.HQL.Ast
 
 		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
 		{
-			return sessions.Settings.QueryTranslatorFactory is ASTQueryTranslatorFactory;
+			return !(sessions.Settings.QueryTranslatorFactory is ClassicQueryTranslatorFactory);
 		}
 
 		#region Overrides of TestCase

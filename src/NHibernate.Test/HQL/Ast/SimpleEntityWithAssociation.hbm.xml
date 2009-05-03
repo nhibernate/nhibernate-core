@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.HQL.Ast">
+	
+	<!-- *Very* important for the test cases that these entities have identically named columns! -->
+
+    <class name="SimpleEntityWithAssociation" table="SIMPLE_1">
+        <id name="Id" column="ID" type="long">
+            <generator class="native"/>
+        </id>
+        <property name="Name" column="NAME" type="string"/>
+        <set name="AssociatedEntities" cascade="all" inverse="true" lazy="true">
+            <key column="SIMPLE_1_ID"/>
+            <one-to-many class="SimpleAssociatedEntity"/>
+        </set>
+        <set name="ManyToManyAssociatedEntities" cascade="save-update" inverse="false" lazy="true" table="MANY_TO_MANY">
+            <key column="IN_ID"/>
+            <many-to-many class="SimpleEntityWithAssociation" column="OUT_ID"/>
+        </set>
+    </class>
+
+    <class name="SimpleAssociatedEntity" table="SIMPLE_2">
+        <id name="Id" column="ID" type="long">
+            <generator class="native"/>
+        </id>
+        <property name="Name" column="NAME" type="string" />
+        <many-to-one name="Owner" class="SimpleEntityWithAssociation" column="SIMPLE_1_ID"/>
+    </class>
+
+</hibernate-mapping>

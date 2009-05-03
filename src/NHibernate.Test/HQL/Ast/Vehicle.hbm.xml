@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.HQL.Ast">
+
+	<!-- Vehicle represents an abstract root of a union-subclass hierarchy -->
+	<class name="Vehicle" abstract="true">
+		<id name="id" access="field" type="long">
+			<generator class="increment"/>
+		</id>
+		<property name="Vin" type="string"/>
+		<property name="Owner" type="string"/>
+
+		<!-- Car represents a concrete leaf of a union-subclass hierarchy with no concrete super -->
+		<union-subclass name="Car"/>
+
+		<!-- Truck represents a concrete subclass in a union-subclass hierarchy with concrete subclasses and no concrete super -->
+		<union-subclass name="Truck">
+			<!-- Both SUV and Pickup represent concrete leaf of a union-subclass hierarchy (like Car), but with a concrete super -->
+			<union-subclass name="SUV"/>
+			<union-subclass name="Pickup"/>
+		</union-subclass>
+	</class>
+
+	<sql-query name="native-delete-car">
+	    <synchronize table="Car"/>
+		delete from CAR where owner = ?
+	</sql-query>
+</hibernate-mapping>

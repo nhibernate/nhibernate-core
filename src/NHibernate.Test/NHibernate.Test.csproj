@@ -293,6 +293,7 @@
     <Compile Include="GenericTest\SetGeneric\SetGenericFixture.cs" />
     <Compile Include="HQL\Animal.cs" />
     <Compile Include="HQL\Ast\BaseFixture.cs" />
+    <Compile Include="HQL\Ast\BulkManipulation.cs" />
     <Compile Include="HQL\Ast\ParsingFixture.cs" />
     <Compile Include="HQL\Ast\SimpleClass.cs" />
     <Compile Include="HQL\Ast\SqlTranslationFixture.cs" />
@@ -1724,6 +1725,15 @@
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <EmbeddedResource Include="BulkManipulation\SimpleClass.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <Content Include="HQL\Ast\Animal.hbm.xml" />
+    <Content Include="HQL\Ast\BooleanLiteralEntity.hbm.xml" />
+    <Content Include="HQL\Ast\EntityWithCrazyCompositeKey.hbm.xml" />
+    <Content Include="HQL\Ast\FooBarCopy.hbm.xml" />
+    <Content Include="HQL\Ast\KeyManyToOneEntity.hbm.xml" />
+    <Content Include="HQL\Ast\Multi.hbm.xml" />
+    <Content Include="HQL\Ast\SimpleEntityWithAssociation.hbm.xml" />
+    <Content Include="HQL\Ast\Vehicle.hbm.xml" />
+    <Content Include="HQL\Ast\Versions.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1727\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1742\Mappings.hbm.xml" />
     <EmbeddedResource Include="HQL\Ast\SimpleClass.hbm.xml" />
