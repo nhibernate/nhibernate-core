@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
-	assembly="NHibernate.Test"
-	namespace="NHibernate.Test.HQL.Ast"
+	assembly="NHibernate.DomainModel"
+	namespace="NHibernate.DomainModel"
 	default-lazy="false">
 
     <!-- a slightly modified copy of FooBar.hbm.xml from the legacy test package -->
@@ -30,17 +30,17 @@
 				<column name="foo" length="36" index="fbmtoidx"/>
 		</many-to-one>
 
-		<property name="long">
+		<property name="Long">
 			<column name="long_" index="fbmtoidx" unique-key="abc" not-null="true"/>
 		</property>
-		<property name="integer">
+		<property name="Integer">
 				<column name="`integer__`" unique-key="abc" not-null="true"/>
 		</property>
-		<property name="float">
+		<property name="Float">
 				<column name="float_" unique-key="abc" not-null="true" check="float_ > 0.0"/>
 		</property>
 		<property name="x"/>
-		<property name="double" column="double_"/>
+		<property name="Double" column="double_"/>
 
 		<primitive-array name="bytes" table="foobytes">
 			<key column="id"/>
@@ -48,31 +48,34 @@
 			<element column="byte_" type="byte"/>
 		</primitive-array>
 
-		<property name="date" type="date" column="date_"/>
-		<property name="timestamp" type="timestamp" column="timestamp_"/>
-		<property name="boolean" column="boolean_"/>
-		<property name="bool" column="bool_"/>
-		<property name="null" column="null_"/>
-		<property name="short" column="short_"/>
-		<property name="char" column="char_"/>
-		<property name="zero" column="zero_"/>
-		<property name="int" column="int_"/>
-		<property name="string">
+		<property name="Date" type="date" column="date_"/>
+		<property name="Timestamp" type="timestamp" column="timestamp_"/>
+		<property name="Boolean" column="boolean_"/>
+		<property name="Bool" column="bool_"/>
+		<property name="Null" column="null_"/>
+		<property name="Short" column="short_"/>
+		<property name="Char" column="char_"/>
+		<property name="Zero" column="zero_"/>
+		<property name="Int" column="int_"/>
+		<property name="String">
             <column name="string_" length="48" index="fbstridx"/>
 		</property>
-		<property name="byte" column="byte_"/>
-		<property name="yesno" type="yes_no"/>
+		<property name="Byte" column="byte_"/>
+		<property name="YesNo" type="yes_no"/>
+		<!--
 		<property name="blob" type="org.hibernate.test.legacy.Foo$Struct" column="blobb_"/>
 		<property name="nullBlob" type="serializable"/>
 		<property name="binary" column="bin_"/>
-		<property name="theLocale" access="field" column="`localeayzabc123`"/>
+		-->
+		<property name="Locale" column="`localeayzabc123`" access="field.camelcase-underscore" type="locale"/>
 
-		<property name="formula" formula="int_/2"/>
+		<property name="formula" formula="int_*2"/>
 
-		<property name="custom" type="org.hibernate.test.legacy.DoubleStringType" access="field">
+		<property name="Custom" type="NHibernate.DomainModel.DoubleStringType, NHibernate.DomainModel" access="field.camelcase">
 			<column name="first_name" length="66"/>
 			<column name="surname" length="66"/>
 		</property>
+		
 		<component name="nullComponent">
 			<property name="name" column="null_cmpnt_"/>
 		</component>

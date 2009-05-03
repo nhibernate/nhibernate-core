@@ -107,7 +107,7 @@
 		</id>
 		<discriminator column="zooType" type="character"/>
 		<property name="name" type="string"/>
-        <property name="classification" type="org.hibernate.test.hql.ClassificationType"/>
+        <property name="classification"/>
         <map name="mammals">
 			<key column="mammalZoo_id"/>
 			<index type="string" column="name"/>

@@ -1,15 +1,31 @@
+using NUnit.Framework;
+using NHibernate.Hql.Ast.ANTLR;
+
 namespace NHibernate.Test.HQL.Ast
 {
+	[TestFixture]
 	public class BulkManipulation: BaseFixture
 	{
-				//    "hql/Animal.hbm.xml",
-				//    "hql/Vehicle.hbm.xml",
-				//    "hql/KeyManyToOneEntity.hbm.xml",
-				//    "hql/Versions.hbm.xml",
-				//"hql/FooBarCopy.hbm.xml",
-				//"legacy/Multi.hbm.xml",
-				//"hql/EntityWithCrazyCompositeKey.hbm.xml",
-				//"hql/SimpleEntityWithAssociation.hbm.xml",
-				//"hql/BooleanLiteralEntity.hbm.xml"
+		#region Non-exists
+
+		[Test]
+		public void DeleteNonExistentEntity()
+		{
+			using (ISession s = OpenSession())
+			{
+				Assert.Throws<QuerySyntaxException>(() => s.CreateQuery("delete NonExistentEntity").ExecuteUpdate());
+			}
+		}
+
+		[Test]
+		public void UpdateNonExistentEntity()
+		{
+			using (ISession s = OpenSession())
+			{
+				Assert.Throws<QuerySyntaxException>(() => s.CreateQuery("update NonExistentEntity e set e.someProp = ?").ExecuteUpdate());
+			}
+		}
+
+		#endregion
 	}
 }

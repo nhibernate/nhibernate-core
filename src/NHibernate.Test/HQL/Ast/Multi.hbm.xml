@@ -1,101 +1,104 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
-	assembly="NHibernate.Test"
-	namespace="NHibernate.Test.HQL.Ast"
+	assembly="NHibernate.DomainModel"
+	namespace="NHibernate.DomainModel"
 	default-lazy="false">
 
-	<class 
-    	name="org.hibernate.test.legacy.Top" 
-    	table="rootclass" 
-    	dynamic-insert="true" 
+	<class
+    	name="Top"
+    	table="rootclass"
+    	dynamic-insert="true"
     	dynamic-update="true"
     	select-before-update="true"
-    	where="id1_ is not null">
-        <!--cache-->
-        <id name="id" type="long" column="id1_" unsaved-value="0">
-            <generator class="native"/>
-        </id>
-        <version name="count" column="count_"/>
-        <property name="name"/>
-        <property name="address"/>
-        <property name="date" column="date_"/>
-        <many-to-one name="top" access="field" column="top_"/>
-                
-        <joined-subclass name="org.hibernate.test.legacy.TrivialClass">
-        	<key column="tcid"/>
-        </joined-subclass>
-        
-	    <joined-subclass 
-	    	name="org.hibernate.test.legacy.Lower" 
-	    	table="leafsubclass"
-	    	dynamic-insert="true" 
-    		dynamic-update="true">
-	        <key column="id__"/>
-	        <property name="intprop" not-null="true"/>
-	        <one-to-one name="other" class="org.hibernate.test.legacy.Lower"/>
-	        <many-to-one name="another" column="other1" class="org.hibernate.test.legacy.Top"/>
-	        <many-to-one name="yetanother" column="other3" class="org.hibernate.test.legacy.Lower"/>
-	        <property name="foo"/>
-	        <set name="set" lazy="false">
-	        	<key column="parent"/>
-	        	<one-to-many class="org.hibernate.test.legacy.Top"/>
-	        </set>
-	        <bag name="bag" lazy="true" table="simple_simple">
-	        	<key column="simple1"/>
-	        	<many-to-many column="simple2" class="org.hibernate.test.legacy.Top"/>
-	        </bag>
-	        <one-to-one name="mypo"/>
-	    </joined-subclass>
-	    
-	    <joined-subclass name="org.hibernate.test.legacy.Multi" table="nonleafsubclass">
-	    	<key column="sid" on-delete="cascade"/>
-	        <property name="extraProp" column="dupe"/>
-	        <many-to-one name="other" column="other2" class="org.hibernate.test.legacy.Multi" />
-	        <many-to-one name="po"/>
-	        <property name="derived" formula="upper(dupe)"/>
-	        
-	        <component name="comp" class="org.hibernate.test.legacy.Multi$Component">
-	        	<property name="cal"/>
-	        	<property name="floaty"/>
-	        </component>
-	        
-	        <joined-subclass name="org.hibernate.test.legacy.SubMulti" table="leafsubsubclass">
-	        	<key column="sid"/>
-	        	<property name="amount" column="dupe"/>
-	        	<bag name="children" lazy="true" inverse="true">
-	        		<key column="parent"/>
-	        		<one-to-many class="org.hibernate.test.legacy.SubMulti"/>
-	        	</bag>
-	        	<many-to-one name="parent"/>
-				<list name="moreChildren" lazy="true">
-	        		<key column="another_parent"/>
-	        		<index column="list_ind"/>
-	        		<one-to-many class="org.hibernate.test.legacy.SubMulti"/>
-	        	</list>
-	        </joined-subclass>
-	        
-	    </joined-subclass>
+    	where="id1_ is not null"
+    >
+		<!--<jcs-cache usage="read-write"/> -->
+		<!-- commented out in h2.1 test also -->
+		<id name="Id" type="Int64" column="id1_" unsaved-value="0">
+			<generator class="native"/>
+		</id>
 
-    </class>
-    
-    <class 
-    	name="org.hibernate.test.legacy.Po"
-    	dynamic-insert="true">
-    	<id type="long" column="id_">
-    		<generator class="native"/>
-    	</id>
-    	<property name="value" column="value_"/>
-    	<list name="list" cascade="all">
-    		<key column="list_po"/>
-    		<index column="i"/>
-    		<one-to-many class="org.hibernate.test.legacy.SubMulti"/>
-    	</list>
-    	<set name="set" inverse="true" cascade="all">
-    		<key column="po"/>
-    		<one-to-many class="org.hibernate.test.legacy.Multi"/>
-    	</set>
-    	<many-to-one name="top" column="tl" insert="false" update="false"/>
-    	<many-to-one name="lower" column="tl"/>
-    </class>
+		<version name="Count" column="count_" />
+		<property name="Name" />
+		<property name="Address" />
+		<property name="Date" column="date_" />
+		<many-to-one name="top" access="field" column="`_top`"/>
+		<!-- changed column name because of MSSQL conflicts -->
+		<joined-subclass name="TrivialClass">
+			<key column="tcid"/>
+		</joined-subclass>
+
+		<joined-subclass name="Lower"
+	    	table="leafsubclass" dynamic-insert="true" dynamic-update="true">
+			<key column="id__"/>
+			<property  name="Intprop" not-null="true" />
+			<one-to-one name="Other" class="Lower" />
+			<many-to-one name="Another" column="other1" class="Top" />
+			<many-to-one name="YetAnother" column="other3" class="Lower" />
+			<property name="Foo"/>
+			<set name="Set" lazy="false">
+				<key column="parent"/>
+				<one-to-many class="Top"/>
+			</set>
+			<bag name="Bag" lazy="true" table="simple_simple">
+				<key column="simple1"/>
+				<many-to-many column="simple2" class="Top"
+	        	/>
+			</bag>
+			<one-to-one name="MyPo"/>
+		</joined-subclass>
+
+		<joined-subclass name="Multi" table="nonleafsubclass">
+			<key column="sid"/>
+			<property name="ExtraProp" column="dupe"/>
+			<many-to-one name="Other" column="other2" class="Multi" />
+			<many-to-one name="Po" column="po"/>
+			<many-to-one name="OtherPo" />
+			<property name="Derived" formula="upper(dupe)" />
+			<component name="Comp"  class="Multi+Component">
+				<property name="Cal"/>
+				<property name="Floaty"/>
+			</component>
+
+			<joined-subclass name="SubMulti" table="leafsubsubclass">
+				<key column="sid"/>
+				<property name="Amount" column="dupe"/>
+				<bag name="Children" lazy="true" inverse="true" >
+					<key column="parent"/>
+					<one-to-many class="SubMulti"/>
+				</bag>
+				<many-to-one name="Parent" column="parent" />
+				<list name="MoreChildren" lazy="true">
+					<key column="another_parent"/>
+					<index column="list_ind"/>
+					<one-to-many class="SubMulti"/>
+				</list>
+			</joined-subclass>
+
+		</joined-subclass>
+
+	</class>
+
+	<class name="NHibernate.DomainModel.Po, NHibernate.DomainModel" dynamic-insert="true">
+		<id type="Int64" column="id_" unsaved-value="0">
+			<generator class="native"/>
+		</id>
+		<property name="Value" column="value_" />
+		<list name="List" cascade="all" >
+			<key column="list_po"/>
+			<index column="i"/>
+			<one-to-many class="NHibernate.DomainModel.SubMulti, NHibernate.DomainModel" />
+		</list>
+		<set name="Set" inverse="true" cascade="all" lazy="true">
+			<key column="po" />
+			<one-to-many class="NHibernate.DomainModel.Multi, NHibernate.DomainModel" />
+		</set>
+		<set name="EagerSet" inverse="true" cascade="all" outer-join="true">
+			<key column="OtherPo" />
+			<one-to-many class="NHibernate.DomainModel.Multi, NHibernate.DomainModel" />
+		</set>
+		<many-to-one name="Top" column="t1" insert="false" update="false" />
+		<many-to-one name="Lower" column="t1" />
+	</class>
 
 </hibernate-mapping>

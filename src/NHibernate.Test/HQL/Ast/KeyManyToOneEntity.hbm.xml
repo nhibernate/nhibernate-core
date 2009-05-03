@@ -11,9 +11,9 @@
 	</class>
 
 	<class name="KeyManyToOneEntity">
-		<composite-id name="id" access="field" class="KeyManyToOneEntity$Id" unsaved-value="undefined" >
-			<key-many-to-one name="key1" class="KeyManyToOneKeyEntity" />
-			<key-property name="key2" type="string"/>
+		<composite-id name="id" access="field" class="KeyManyToOneEntity+Id" unsaved-value="undefined" >
+			<key-many-to-one name="Key1" class="KeyManyToOneKeyEntity" />
+			<key-property name="Key2" type="string"/>
 		</composite-id>
 		<property name="Name" type="string"/> 
 	</class>
