@@ -32,6 +32,26 @@ namespace NHibernate.Test.HQL.Ast
 		}
 
 		#endregion
+		[Test]
+		public void DeleteOnDiscriminatorSubclass()
+		{
+			var data = new TestData(this);
+			data.Prepare();
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			int count = s.CreateQuery("delete PettingZoo").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass delete count");
+
+			count = s.CreateQuery("delete Zoo").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass delete count");
+
+			t.Commit();
+			s.Close();
+
+			data.Cleanup();
+		}
 
 		[Test]
 		public void DeleteOnJoinedSubclass()
