@@ -6,7 +6,7 @@
 	<!-- Vehicle represents an abstract root of a union-subclass hierarchy -->
 	<class name="Vehicle" abstract="true">
 		<id name="id" access="field" type="long">
-			<generator class="increment"/>
+			<generator class="hilo"/>
 		</id>
 		<property name="Vin" type="string"/>
 		<property name="Owner" type="string"/>

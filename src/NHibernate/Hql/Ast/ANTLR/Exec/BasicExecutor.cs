@@ -18,11 +18,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 	public class BasicExecutor : AbstractStatementExecutor
 	{
 		private readonly IQueryable persister;
-		private static readonly ILog log = LogManager.GetLogger(typeof(QueryTranslatorImpl));
+		private static readonly ILog log = LogManager.GetLogger(typeof(BasicExecutor));
 		private readonly SqlString sql;
 
 		public BasicExecutor(IStatement statement, ITokenStream tokenStream, IQueryable persister)
-			: base(statement.Walker, log)
+			: base(statement, log)
 		{
 			this.persister = persister;
 			try
@@ -40,14 +40,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		}
 
 		protected IList<IParameterSpecification> Parameters{get;private set;}
-
-		protected ISessionFactoryImplementor Factory
-		{
-			get
-			{
-				return Walker.SessionFactoryHelper.Factory;
-			}
-		}
 
 		public override SqlString[] SqlStatements
 		{
@@ -72,7 +64,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					}
 					st = session.Batcher.PrepareCommand(CommandType.Text, sql, parameterTypes.ToArray());
 					IEnumerator<IParameterSpecification> paramSpecifications = Parameters.GetEnumerator();
-					int pos = 1;
+					// NH Different behavior: The inital value is 0 (initialized to 1 in JAVA)
+					int pos = 0;
 					while (paramSpecifications.MoveNext())
 					{
 						var paramSpec = paramSpecifications.Current;

@@ -15,7 +15,7 @@ namespace NHibernate.SqlCommand
 		private static readonly ILog log = LogManager.GetLogger(typeof(SqlDeleteBuilder));
 		private string tableName;
 
-		private readonly List<SqlString> whereStrings = new List<SqlString>();
+		private List<SqlString> whereStrings = new List<SqlString>();
 		private readonly List<SqlType> parameterTypes = new List<SqlType>();
 		private string comment;
 
@@ -81,7 +81,6 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
-
 		public SqlDeleteBuilder AddWhereFragment(string columnName, SqlType type, string op)
 		{
 			if (!string.IsNullOrEmpty(columnName))
@@ -91,6 +90,7 @@ namespace NHibernate.SqlCommand
 			}
 			return this;
 		}
+
 		/// <summary>
 		/// Adds a string to the WhereFragement
 		/// </summary>
@@ -101,6 +101,15 @@ namespace NHibernate.SqlCommand
 			if (StringHelper.IsNotEmpty(whereSql))
 				whereStrings.Add(new SqlString(whereSql));
 
+			return this;
+		}
+
+		public virtual SqlDeleteBuilder SetWhere(string whereSql)
+		{
+			if (StringHelper.IsNotEmpty(whereSql))
+			{
+				whereStrings = new List<SqlString>(new[]{ new SqlString(whereSql)});
+			}
 			return this;
 		}
 

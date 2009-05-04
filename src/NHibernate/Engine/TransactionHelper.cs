@@ -1,4 +1,5 @@
 using System.Data;
+using System.Data.Common;
 using NHibernate.Engine.Transaction;
 using NHibernate.Exceptions;
 
@@ -30,7 +31,7 @@ namespace NHibernate.Engine
 				{
 					generatedValue = owner.DoWorkInCurrentTransaction(connection, null);
 				}
-				catch (System.Data.OleDb.OleDbException sqle)
+				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "could not get or update next value", null);
 				}

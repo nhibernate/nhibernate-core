@@ -60,5 +60,15 @@ namespace NHibernate.Test.HQL.Ast
 			get { return serialNumber; }
 			set { serialNumber = value; }
 		}
+
+		public virtual void AddOffspring(Animal offSpring)
+		{
+			if (offspring == null)
+			{
+				offspring = new HashedSet();
+			}
+
+			offspring.Add(offSpring);
+		}
 	}
 }

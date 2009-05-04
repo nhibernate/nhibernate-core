@@ -276,6 +276,21 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		public override bool SupportsTemporaryTables
+		{
+			get { return true; }
+		}
+
+		public override string GenerateTemporaryTableName(string baseTableName)
+		{
+			return "#" + baseTableName;
+		}
+
+		public override bool DropTemporaryTableAfterUse()
+		{
+			return true;
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>

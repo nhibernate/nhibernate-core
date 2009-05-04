@@ -483,6 +483,7 @@
     <Compile Include="Hql\Ast\ANTLR\Exec\AbstractStatementExecutor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Exec\BasicExecutor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Exec\IStatementExecutor.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Exec\MultiTableDeleteExecutor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Generated\HqlLexer.cs" />
     <Compile Include="Hql\Ast\ANTLR\Generated\HqlParser.cs" />
     <Compile Include="Hql\Ast\ANTLR\Generated\HqlSqlWalker.cs" />
@@ -584,6 +585,7 @@
     <Compile Include="Hql\Ast\ANTLR\Util\JoinProcessor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Util\LiteralProcessor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Util\NodeTraverser.cs" />
+    <Compile Include="SqlCommand\InsertSelect.cs" />
     <Compile Include="Util\NullableDictionary.cs" />
     <Compile Include="Hql\Ast\ANTLR\Util\PathHelper.cs" />
     <Compile Include="Hql\Ast\ANTLR\Util\SyntheticAndFactory.cs" />

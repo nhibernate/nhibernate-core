@@ -33,7 +33,7 @@ namespace NHibernate.Test.HQL.Ast
 
 		#endregion
 
-		[Test, Ignore("Not supported")]
+		[Test]
 		public void DeleteRestrictedOnManyToOne()
 		{
 			var data = new TestData(this);
@@ -95,12 +95,12 @@ namespace NHibernate.Test.HQL.Ast
 				Frog = new Animal { BodyWeight = 34, Description = "Frog" };
 
 				Polliwog.Father = Frog;
-				Frog.Offspring.Add(Polliwog);
+				Frog.AddOffspring(Polliwog);
 
 				Butterfly = new Animal { BodyWeight = 9, Description = "Butterfly" };
 
 				Catepillar.Mother = Butterfly;
-				Butterfly.Offspring.Add(Catepillar);
+				Butterfly.AddOffspring(Catepillar);
 
 				s.Save(Frog);
 				s.Save(Polliwog);

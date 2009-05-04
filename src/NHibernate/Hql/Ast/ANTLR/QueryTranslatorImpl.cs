@@ -403,8 +403,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				IQueryable persister = fromElement.Queryable;
 				if (persister.IsMultiTable)
 				{
-					throw new NotSupportedException();
-					//return new MultiTableDeleteExecutor(walker);
+					return new MultiTableDeleteExecutor(statement);
 				}
 				else
 				{
@@ -420,8 +419,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 					// even here, if only properties mapped to the "base table" are referenced
 					// in the set and where clauses, this could be handled by the BasicDelegate.
 					// TODO : decide if it is better performance-wise to perform that check, or to simply use the MultiTableUpdateDelegate
-					throw new NotSupportedException();
-					//return new MultiTableUpdateExecutor(walker);
+					return new MultiTableDeleteExecutor(statement);
 				}
 				else
 				{

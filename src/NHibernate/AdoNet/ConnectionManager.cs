@@ -414,5 +414,12 @@ namespace NHibernate.AdoNet
 				manager.flushingFromDtcTransaction = false;
 			}
 		}
+
+		public IDbCommand CreateCommand()
+		{
+			var result = GetConnection().CreateCommand();
+			Transaction.Enlist(result);
+			return result;
+		}
 	}
 }

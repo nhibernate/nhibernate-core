@@ -207,7 +207,9 @@ namespace NHibernate.SqlCommand
 			// plus the number of parts in outerJoinsAfterWhere SqlString.
 			// 1 = the whereClause
 			// 2 = the "ORDER BY" and orderByClause
-			int initialCapacity = 4 + outerJoinsAfterFrom.Count + 1 + outerJoinsAfterWhere.Count + 1 + 2;
+			var joinAfterFrom = outerJoinsAfterFrom != null ? outerJoinsAfterFrom.Count : 0;
+			var joinAfterWhere = outerJoinsAfterWhere != null ? outerJoinsAfterWhere.Count : 0;
+			int initialCapacity = 4 + joinAfterFrom + 1 + joinAfterWhere + 1 + 2;
 			if (!string.IsNullOrEmpty(comment))
 				initialCapacity++;
 
@@ -218,8 +220,12 @@ namespace NHibernate.SqlCommand
 			sqlBuilder.Add("SELECT ")
 				.Add(selectClause)
 				.Add(" FROM ")
-				.Add(fromClause)
-				.Add(outerJoinsAfterFrom);
+				.Add(fromClause);
+
+			if (StringHelper.IsNotEmpty(outerJoinsAfterFrom))
+			{
+				sqlBuilder.Add(outerJoinsAfterFrom);
+			}
 
 			if (StringHelper.IsNotEmpty(whereClause) || StringHelper.IsNotEmpty(outerJoinsAfterWhere))
 			{
