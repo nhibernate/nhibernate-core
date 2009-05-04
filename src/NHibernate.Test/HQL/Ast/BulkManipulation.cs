@@ -34,6 +34,30 @@ namespace NHibernate.Test.HQL.Ast
 		#endregion
 
 		[Test]
+		public void DeleteUnionSubclassLeafSubclass()
+		{
+			var data = new TestData(this);
+			data.Prepare();
+
+			// These should only affect the given table
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			int count = s.CreateQuery("delete Car where Owner = :owner")
+				.SetString("owner", "Kirsten")
+				.ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "incorrect restricted update count");
+
+			count = s.CreateQuery("delete Car").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(0), "incorrect update count");
+
+			t.Commit();
+			s.Close();
+
+			data.Cleanup();
+		}
+
+		[Test]
 		public void DeleteRestrictedOnManyToOne()
 		{
 			var data = new TestData(this);
