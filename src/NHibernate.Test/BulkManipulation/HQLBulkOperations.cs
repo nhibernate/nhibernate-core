@@ -19,14 +19,17 @@ namespace NHibernate.Test.BulkManipulation
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				s.CreateQuery("delete from SimpleClass").ExecuteUpdate();
+				Assert.That(s.CreateQuery("delete from SimpleClass where Description = 'simple2'").ExecuteUpdate(),
+					Is.EqualTo(1));
 				tx.Commit();
 			}
 
 			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
-				var l = s.CreateQuery("from SimpleClass").List();
-				Assert.That(l.Count, Is.EqualTo(0));
+				Assert.That(s.CreateQuery("delete from SimpleClass").ExecuteUpdate(),
+					Is.EqualTo(1));
+				tx.Commit();
 			}
 		}
 	}
