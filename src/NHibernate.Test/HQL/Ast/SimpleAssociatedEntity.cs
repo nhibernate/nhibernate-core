@@ -30,12 +30,12 @@ namespace NHibernate.Test.HQL.Ast
 			if (owner != this.owner)
 			{
 				UnbindFromCurrentOwner();
-				if (owner != null)
-				{
-					owner.AssociatedEntities.Add(this);
-				}
 			}
 			this.owner = owner;
+			if (owner != null)
+			{
+				owner.AssociatedEntities.Add(this);
+			}
 		}
 
 		public virtual void UnbindFromCurrentOwner()

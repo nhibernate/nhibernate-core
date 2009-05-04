@@ -1,3 +1,4 @@
+using System;
 using Iesi.Collections;
 
 namespace NHibernate.Test.HQL.Ast
@@ -31,6 +32,30 @@ namespace NHibernate.Test.HQL.Ast
 		{
 			get { return manyToManyAssociatedEntities; }
 			set { manyToManyAssociatedEntities = value; }
+		}
+
+		public virtual SimpleAssociatedEntity AddAssociation(string aName)
+		{
+			var result = new SimpleAssociatedEntity {Name = aName, Owner = this};
+			AddAssociation(result);
+			return result;
+		}
+
+		public virtual void AddAssociation(SimpleAssociatedEntity association)
+		{
+			association.BindToOwner(this);
+		}
+
+		public virtual void RemoveAssociation(SimpleAssociatedEntity association)
+		{
+			if (AssociatedEntities.Contains(association))
+			{
+				association.UnbindFromCurrentOwner();
+			}
+			else
+			{
+				throw new ArgumentException("SimpleAssociatedEntity [" + association + "] not currently bound to this [" + this + "]");
+			}
 		}
 	}
 }

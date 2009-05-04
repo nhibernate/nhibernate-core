@@ -35,6 +35,48 @@ namespace NHibernate.Test.HQL.Ast
 
 		#endregion
 
+		#region DELETES
+
+		[Test]
+		public void DeleteWithSubquery()
+		{
+			// setup the test data...
+			ISession s = OpenSession();
+			s.BeginTransaction();
+			var owner = new SimpleEntityWithAssociation { Name = "myEntity-1" };
+			owner.AddAssociation("assoc-1");
+			owner.AddAssociation("assoc-2");
+			owner.AddAssociation("assoc-3");
+			s.Save(owner);
+			var owner2 = new SimpleEntityWithAssociation { Name = "myEntity-2" };
+			owner2.AddAssociation("assoc-1");
+			owner2.AddAssociation("assoc-2");
+			owner2.AddAssociation("assoc-3");
+			owner2.AddAssociation("assoc-4");
+			s.Save(owner2);
+			var owner3 = new SimpleEntityWithAssociation { Name = "myEntity-3" };
+			s.Save(owner3);
+			s.Transaction.Commit();
+			s.Close();
+
+			// now try the bulk delete
+			s = OpenSession();
+			s.BeginTransaction();
+			int count = s.CreateQuery("delete SimpleEntityWithAssociation e where size(e.AssociatedEntities ) = 0 and e.Name like '%'")
+				.ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
+			s.Transaction.Commit();
+			s.Close();
+
+			// finally, clean up
+			s = OpenSession();
+			s.BeginTransaction();
+			s.CreateQuery("delete SimpleAssociatedEntity").ExecuteUpdate();
+			s.CreateQuery("delete SimpleEntityWithAssociation").ExecuteUpdate();
+			s.Transaction.Commit();
+			s.Close();
+		}
+
 		[Test]
 		public void SimpleDeleteOnAnimal()
 		{
@@ -245,6 +287,8 @@ namespace NHibernate.Test.HQL.Ast
 			t.Commit();
 			s.Close();
 		}
+
+		#endregion
 
 		private class TestData
 		{
