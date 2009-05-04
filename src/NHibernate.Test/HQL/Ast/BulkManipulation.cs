@@ -34,6 +34,29 @@ namespace NHibernate.Test.HQL.Ast
 		#endregion
 
 		[Test]
+		public void DeleteUnionSubclassAbstractRoot()
+		{
+			var data = new TestData(this);
+			data.Prepare();
+
+			// These should reach out into *all* subclass tables...
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			int count = s.CreateQuery("delete Vehicle where Owner = :owner")
+				.SetString("owner", "Steve").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "incorrect restricted update count");
+
+			count = s.CreateQuery("delete Vehicle").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(3), "incorrect update count");
+
+			t.Commit();
+			s.Close();
+
+			data.Cleanup();
+		}
+
+		[Test]
 		public void DeleteUnionSubclassConcreteSubclass()
 		{
 			var data = new TestData(this);
