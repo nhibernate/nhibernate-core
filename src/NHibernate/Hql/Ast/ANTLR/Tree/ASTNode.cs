@@ -280,7 +280,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public void SetFirstChild(IASTNode newChild)
 		{
-			SetChild(0, newChild);
+			if (_children == null || _children.Count == 0)
+			{
+				AddChild(newChild);
+			}
+			else
+			{
+				_children[0] = newChild;				
+			}
 		}
 
 		public void SetChild(int index, IASTNode newChild)

@@ -34,6 +34,30 @@ namespace NHibernate.Test.HQL.Ast
 		#endregion
 
 		[Test]
+		public void DeleteOnJoinedSubclass()
+		{
+			var data = new TestData(this);
+			data.Prepare();
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			int count = s.CreateQuery("delete Mammal where bodyWeight > 150").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "Incorrect deletion count on joined subclass");
+
+			count = s.CreateQuery("delete Mammal").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "Incorrect deletion count on joined subclass");
+
+			count = s.CreateQuery("delete SubMulti").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(0), "Incorrect deletion count on joined subclass");
+
+			t.Commit();
+			s.Close();
+
+			data.Cleanup();
+		}
+
+		[Test]
 		public void DeleteOnMappedJoin()
 		{
 			var data = new TestData(this);
@@ -44,7 +68,7 @@ namespace NHibernate.Test.HQL.Ast
 
 			int count = s.CreateQuery("delete Joiner where joinedName = :joinedName")
 				.SetString("joinedName", "joined-name").ExecuteUpdate();
-			Assert.That(count, Is.EqualTo(1), "Incorrect deletion count on joined subclass");
+			Assert.That(count, Is.EqualTo(1), "Incorrect deletion count on joined class");
 
 			t.Commit();
 			s.Close();
