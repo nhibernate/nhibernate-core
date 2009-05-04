@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using Antlr.Runtime;
+using Antlr.Runtime.Tree;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
@@ -21,17 +22,17 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		private static readonly ILog log = LogManager.GetLogger(typeof(BasicExecutor));
 		private readonly SqlString sql;
 
-		public BasicExecutor(IStatement statement, ITokenStream tokenStream, IQueryable persister)
+		public BasicExecutor(IStatement statement, IQueryable persister)
 			: base(statement, log)
 		{
 			this.persister = persister;
 			try
 			{
-				var generator = new HqlSqlGenerator(statement, tokenStream, Factory);
-				generator.Generate();
-
-				sql = generator.Sql;
-				Parameters = generator.CollectionParameters;
+				var gen = new SqlGenerator(Factory, new CommonTreeNodeStream(statement));
+				gen.statement();
+				sql = gen.GetSQL();
+				gen.ParseErrorHandler.ThrowQueryException();
+				Parameters = gen.GetCollectedParameters();
 			}
 			catch (RecognitionException e)
 			{

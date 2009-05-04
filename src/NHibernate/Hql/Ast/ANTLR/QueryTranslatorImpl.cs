@@ -407,7 +407,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				}
 				else
 				{
-					return new BasicExecutor(statement, _parser.Tokens, persister);
+					return new BasicExecutor(statement, persister);
 				}
 			}
 			else if (walker.StatementType == HqlSqlWalker.UPDATE)
@@ -423,7 +423,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				}
 				else
 				{
-					return new BasicExecutor(statement, _parser.Tokens, persister);
+					return new BasicExecutor(statement, persister);
 				}
 			}
 			else if (walker.StatementType == HqlSqlWalker.INSERT)
