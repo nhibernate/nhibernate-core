@@ -56,7 +56,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 		public override int Execute(QueryParameters parameters, ISessionImplementor session)
 		{
-			//CoordinateSharedCacheCleanup(session);
+			CoordinateSharedCacheCleanup(session);
 
 			IDbCommand st = null;
 			RowSelection selection = parameters.RowSelection;
@@ -100,6 +100,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
 																 "could not execute update query", sql);
 			}
+		}
+
+		protected override IQueryable[] AffectedQueryables
+		{
+			get { return new[] { persister }; }
 		}
 	}
 }
