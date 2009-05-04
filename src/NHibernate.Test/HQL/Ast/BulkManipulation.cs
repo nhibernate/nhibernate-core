@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Diagnostics;
 using NUnit.Framework;
 using NHibernate.Hql.Ast.ANTLR;
 
@@ -32,6 +34,50 @@ namespace NHibernate.Test.HQL.Ast
 		}
 
 		#endregion
+
+		[Test]
+		public void SimpleDeleteOnAnimal()
+		{
+			if (Dialect.HasSelfReferentialForeignKeyBug)
+			{
+				Assert.Ignore("self referential FK bug", "HQL delete testing");
+				return;
+			}
+
+			var data = new TestData(this);
+			data.Prepare();
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			int count = s.CreateQuery("delete from Animal as a where a.id = :id")
+					.SetInt64("id", data.Polliwog.Id)
+					.ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
+
+			count = s.CreateQuery("delete Animal where id = :id")
+					.SetInt64("id", data.Catepillar.Id)
+					.ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
+
+			// HHH-873...
+			if (Dialect.SupportsSubqueryOnMutatingTable)
+			{
+				count = s.CreateQuery("delete from User u where u not in (select u from User u)").ExecuteUpdate();
+				Assert.That(count, Is.EqualTo(0));
+			}
+
+			count = s.CreateQuery("delete Animal a").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(4), "Incorrect delete count");
+
+			IList list = s.CreateQuery("select a from Animal as a").List();
+			Assert.That(list, Is.Empty, "table not empty");
+
+			t.Commit();
+			s.Close();
+			data.Cleanup();
+		}
+
 		[Test]
 		public void DeleteOnDiscriminatorSubclass()
 		{
