@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Diagnostics;
+using System.Threading;
 using NUnit.Framework;
 using NHibernate.Hql.Ast.ANTLR;
 
@@ -136,7 +138,35 @@ namespace NHibernate.Test.HQL.Ast
 			s.Close();
 		}
 
-		#endregion
+		[Test]
+		public void IncrementTimestampVersion()
+		{
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			var entity = new TimestampVersioned {Name = "ts-vers"};
+			s.Save(entity);
+			t.Commit();
+			s.Close();
+
+			DateTime initialVersion = entity.Version;
+
+			Thread.Sleep(300);
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			int count = s.CreateQuery("update versioned TimestampVersioned set name = name").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "incorrect exec count");
+			t.Commit();
+
+			t = s.BeginTransaction();
+			entity = s.Load<TimestampVersioned>(entity.Id);
+			Assert.That(entity.Version, Is.GreaterThan(initialVersion), "version not incremented");
+
+			s.Delete(entity);
+			t.Commit();
+			s.Close();
+		}		#endregion
 
 		#region DELETES
 
