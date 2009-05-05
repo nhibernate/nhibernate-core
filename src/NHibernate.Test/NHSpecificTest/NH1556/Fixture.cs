@@ -71,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1556
 						session.CreateQuery(
 							@"select p.Id, p.ProductName, max(c.LastFilled), count(c.Id)
 from Claim as c
-from c.ProductIdentifier.Product as p
+join c.ProductIdentifier.Product as p
 where c.Patient = :patient
 group by p.Id, p.ProductName
 order by max(c.LastFilled) asc, p.ProductName")
