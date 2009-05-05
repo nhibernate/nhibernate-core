@@ -1,4 +1,4 @@
-// $ANTLR 3.1.2 /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g 2009-04-16 21:34:40
+// $ANTLR 3.1.2 C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g 2009-05-05 16:13:02
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 168, 219
@@ -169,147 +169,147 @@ public partial class HqlSqlWalker : TreeParser
 		"BOGUS"
     };
 
-    public const int EXPR_LIST = 73;
-    public const int EXISTS = 19;
-    public const int COMMA = 98;
-    public const int FETCH = 21;
-    public const int MINUS = 110;
-    public const int AS = 7;
-    public const int END = 56;
-    public const int INTO = 30;
-    public const int NAMED_PARAM = 142;
-    public const int FROM_FRAGMENT = 128;
-    public const int FALSE = 20;
-    public const int ELEMENTS = 17;
-    public const int THEN = 58;
-    public const int FILTERS = 140;
-    public const int ALIAS = 70;
-    public const int ALIAS_REF = 134;
-    public const int ON = 60;
-    public const int DOT = 15;
-    public const int ORDER = 41;
-    public const int AND = 6;
-    public const int CONSTANT = 92;
-    public const int UNARY_MINUS = 88;
-    public const int METHOD_CALL = 79;
-    public const int RIGHT = 44;
-    public const int CONCAT = 108;
-    public const int PROPERTIES = 43;
-    public const int SELECT = 45;
-    public const int LE = 106;
-    public const int RIGHT_OUTER = 133;
-    public const int BETWEEN = 10;
-    public const int SQL_TOKEN = 136;
-    public const int NUM_INT = 93;
-    public const int LEFT_OUTER = 132;
-    public const int BOTH = 62;
-    public const int METHOD_NAME = 141;
-    public const int PLUS = 109;
-    public const int VERSIONED = 52;
-    public const int MEMBER = 65;
-    public const int UNION = 50;
-    public const int DISTINCT = 16;
-    public const int RANGE = 85;
-    public const int FILTER_ENTITY = 74;
-    public const int IDENT = 118;
-    public const int WHEN = 59;
-    public const int DESCENDING = 14;
-    public const int WS = 122;
-    public const int NEW = 37;
-    public const int EQ = 99;
-    public const int LT = 104;
-    public const int ESCqs = 121;
-    public const int OF = 67;
-    public const int UPDATE = 51;
-    public const int SELECT_FROM = 87;
-    public const int LITERAL_by = 54;
-    public const int FLOAT_SUFFIX = 124;
-    public const int ANY = 5;
-    public const int UNARY_PLUS = 89;
-    public const int NUM_FLOAT = 95;
-    public const int GE = 107;
-    public const int CASE = 55;
-    public const int OPEN_BRACKET = 113;
-    public const int ELSE = 57;
-    public const int OPEN = 100;
-    public const int COUNT = 12;
-    public const int NULL = 39;
-    public const int THETA_JOINS = 139;
-    public const int IMPLIED_FROM = 129;
-    public const int COLON = 115;
-    public const int DIV = 112;
-    public const int HAVING = 25;
-    public const int ALL = 4;
-    public const int SET = 46;
-    public const int INSERT = 29;
-    public const int TRUE = 49;
-    public const int CASE2 = 72;
-    public const int IS_NOT_NULL = 77;
-    public const int WHERE = 53;
-    public const int AGGREGATE = 69;
-    public const int VECTOR_EXPR = 90;
-    public const int LEADING = 64;
-    public const int CLOSE_BRACKET = 114;
-    public const int NUM_DOUBLE = 94;
-    public const int T__126 = 126;
-    public const int INNER = 28;
-    public const int QUERY = 84;
-    public const int ORDER_ELEMENT = 83;
-    public const int SELECT_EXPR = 138;
-    public const int OR = 40;
-    public const int JOIN_FRAGMENT = 130;
-    public const int FULL = 23;
-    public const int INDICES = 27;
-    public const int IS_NULL = 78;
-    public const int GROUP = 24;
-    public const int ESCAPE = 18;
-    public const int T__127 = 127;
-    public const int PARAM = 116;
-    public const int ID_LETTER = 120;
-    public const int INDEX_OP = 76;
-    public const int HEX_DIGIT = 125;
-    public const int LEFT = 33;
-    public const int TRAILING = 68;
-    public const int JOIN = 32;
-    public const int NOT_BETWEEN = 80;
-    public const int SUM = 48;
-    public const int ROW_STAR = 86;
-    public const int OUTER = 42;
-    public const int NOT_IN = 81;
-    public const int FROM = 22;
-    public const int DELETE = 13;
-    public const int OBJECT = 66;
-    public const int MAX = 35;
-    public const int NOT_LIKE = 82;
-    public const int EMPTY = 63;
-    public const int QUOTED_String = 117;
-    public const int ASCENDING = 8;
-    public const int NUM_LONG = 96;
-    public const int IS = 31;
-    public const int SQL_NE = 103;
-    public const int IN_LIST = 75;
-    public const int WEIRD_IDENT = 91;
-    public const int NE = 102;
-    public const int GT = 105;
-    public const int MIN = 36;
-    public const int LIKE = 34;
-    public const int WITH = 61;
-    public const int IN = 26;
-    public const int PROPERTY_REF = 135;
-    public const int CONSTRUCTOR = 71;
-    public const int SOME = 47;
-    public const int CLASS = 11;
     public const int SELECT_COLUMNS = 137;
+    public const int LT = 104;
     public const int EXPONENT = 123;
-    public const int BOGUS = 143;
-    public const int ID_START_LETTER = 119;
-    public const int EOF = -1;
-    public const int CLOSE = 101;
-    public const int AVG = 9;
-    public const int SELECT_CLAUSE = 131;
     public const int STAR = 111;
+    public const int FLOAT_SUFFIX = 124;
+    public const int FILTERS = 140;
+    public const int LITERAL_by = 54;
+    public const int PROPERTY_REF = 135;
+    public const int THETA_JOINS = 139;
+    public const int CASE = 55;
+    public const int NEW = 37;
+    public const int FILTER_ENTITY = 74;
+    public const int PARAM = 116;
+    public const int COUNT = 12;
     public const int NOT = 38;
+    public const int EOF = -1;
+    public const int UNARY_PLUS = 89;
+    public const int QUOTED_String = 117;
+    public const int ESCqs = 121;
+    public const int WEIRD_IDENT = 91;
+    public const int OPEN_BRACKET = 113;
+    public const int FULL = 23;
+    public const int ORDER_ELEMENT = 83;
+    public const int IS_NULL = 78;
+    public const int ESCAPE = 18;
+    public const int INSERT = 29;
+    public const int FROM_FRAGMENT = 128;
+    public const int NAMED_PARAM = 142;
+    public const int BOTH = 62;
+    public const int SELECT_CLAUSE = 131;
+    public const int VERSIONED = 52;
+    public const int EQ = 99;
+    public const int SELECT = 45;
+    public const int INTO = 30;
+    public const int NE = 102;
+    public const int GE = 107;
+    public const int CONCAT = 108;
+    public const int ID_LETTER = 120;
+    public const int NULL = 39;
+    public const int ELSE = 57;
+    public const int SELECT_FROM = 87;
+    public const int TRAILING = 68;
+    public const int ON = 60;
+    public const int NUM_LONG = 96;
+    public const int NUM_DOUBLE = 94;
+    public const int UNARY_MINUS = 88;
+    public const int DELETE = 13;
+    public const int INDICES = 27;
+    public const int OF = 67;
+    public const int METHOD_CALL = 79;
+    public const int LEADING = 64;
+    public const int METHOD_NAME = 141;
+    public const int EMPTY = 63;
+    public const int T__126 = 126;
+    public const int GROUP = 24;
+    public const int T__127 = 127;
+    public const int WS = 122;
+    public const int FETCH = 21;
+    public const int VECTOR_EXPR = 90;
+    public const int NOT_IN = 81;
+    public const int SELECT_EXPR = 138;
+    public const int NUM_INT = 93;
+    public const int OR = 40;
+    public const int ALIAS = 70;
     public const int JAVA_CONSTANT = 97;
+    public const int CONSTANT = 92;
+    public const int GT = 105;
+    public const int QUERY = 84;
+    public const int INDEX_OP = 76;
+    public const int NUM_FLOAT = 95;
+    public const int FROM = 22;
+    public const int END = 56;
+    public const int FALSE = 20;
+    public const int DISTINCT = 16;
+    public const int CONSTRUCTOR = 71;
+    public const int CLOSE_BRACKET = 114;
+    public const int WHERE = 53;
+    public const int CLASS = 11;
+    public const int MEMBER = 65;
+    public const int INNER = 28;
+    public const int PROPERTIES = 43;
+    public const int BOGUS = 143;
+    public const int ORDER = 41;
+    public const int MAX = 35;
+    public const int UPDATE = 51;
+    public const int JOIN_FRAGMENT = 130;
+    public const int SQL_NE = 103;
+    public const int AND = 6;
+    public const int SUM = 48;
+    public const int ASCENDING = 8;
+    public const int EXPR_LIST = 73;
+    public const int AS = 7;
+    public const int IN = 26;
+    public const int THEN = 58;
+    public const int OBJECT = 66;
+    public const int COMMA = 98;
+    public const int SQL_TOKEN = 136;
+    public const int IS = 31;
+    public const int LEFT = 33;
+    public const int AVG = 9;
+    public const int SOME = 47;
+    public const int ALL = 4;
+    public const int IMPLIED_FROM = 129;
+    public const int IDENT = 118;
+    public const int CASE2 = 72;
+    public const int PLUS = 109;
+    public const int EXISTS = 19;
+    public const int DOT = 15;
+    public const int WITH = 61;
+    public const int LIKE = 34;
+    public const int OUTER = 42;
+    public const int ID_START_LETTER = 119;
+    public const int LEFT_OUTER = 132;
+    public const int ROW_STAR = 86;
+    public const int NOT_LIKE = 82;
+    public const int RIGHT_OUTER = 133;
+    public const int RANGE = 85;
+    public const int NOT_BETWEEN = 80;
+    public const int HEX_DIGIT = 125;
+    public const int SET = 46;
+    public const int RIGHT = 44;
+    public const int HAVING = 25;
+    public const int MIN = 36;
+    public const int IS_NOT_NULL = 77;
+    public const int MINUS = 110;
+    public const int ELEMENTS = 17;
+    public const int TRUE = 49;
+    public const int JOIN = 32;
+    public const int IN_LIST = 75;
+    public const int UNION = 50;
+    public const int OPEN = 100;
+    public const int COLON = 115;
+    public const int ANY = 5;
+    public const int CLOSE = 101;
+    public const int WHEN = 59;
+    public const int ALIAS_REF = 134;
+    public const int DIV = 112;
+    public const int DESCENDING = 14;
+    public const int AGGREGATE = 69;
+    public const int BETWEEN = 10;
+    public const int LE = 106;
 
     // delegates
     // delegators
@@ -342,7 +342,7 @@ public partial class HqlSqlWalker : TreeParser
     }
 
     override public string GrammarFileName {
-		get { return "/Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g"; }
+		get { return "C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g"; }
     }
 
 
@@ -357,7 +357,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "statement"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:40:1: statement : ( selectStatement | updateStatement | deleteStatement | insertStatement );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:40:1: statement : ( selectStatement | updateStatement | deleteStatement | insertStatement );
     public HqlSqlWalker.statement_return statement() // throws RecognitionException [1]
     {   
         HqlSqlWalker.statement_return retval = new HqlSqlWalker.statement_return();
@@ -380,7 +380,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:41:2: ( selectStatement | updateStatement | deleteStatement | insertStatement )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:41:2: ( selectStatement | updateStatement | deleteStatement | insertStatement )
             int alt1 = 4;
             switch ( input.LA(1) ) 
             {
@@ -414,7 +414,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt1) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:41:4: selectStatement
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:41:4: selectStatement
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -428,7 +428,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:41:22: updateStatement
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:41:22: updateStatement
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -442,7 +442,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:41:40: deleteStatement
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:41:40: deleteStatement
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -456,7 +456,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:41:58: insertStatement
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:41:58: insertStatement
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -497,7 +497,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "selectStatement"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:44:1: selectStatement : query ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:44:1: selectStatement : query ;
     public HqlSqlWalker.selectStatement_return selectStatement() // throws RecognitionException [1]
     {   
         HqlSqlWalker.selectStatement_return retval = new HqlSqlWalker.selectStatement_return();
@@ -514,8 +514,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:45:2: ( query )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:45:4: query
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:45:2: ( query )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:45:4: query
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -554,7 +554,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "updateStatement"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:51:1: updateStatement : ^(u= UPDATE (v= VERSIONED )? f= fromClause s= setClause (w= whereClause )? ) -> ^( $u $f $s ( $w)? ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:51:1: updateStatement : ^(u= UPDATE (v= VERSIONED )? f= fromClause s= setClause (w= whereClause )? ) -> ^( $u $f $s ( $w)? ) ;
     public HqlSqlWalker.updateStatement_return updateStatement() // throws RecognitionException [1]
     {   
         HqlSqlWalker.updateStatement_return retval = new HqlSqlWalker.updateStatement_return();
@@ -578,13 +578,13 @@ public partial class HqlSqlWalker : TreeParser
         IASTNode v_tree=null;
         RewriteRuleNodeStream stream_UPDATE = new RewriteRuleNodeStream(adaptor,"token UPDATE");
         RewriteRuleNodeStream stream_VERSIONED = new RewriteRuleNodeStream(adaptor,"token VERSIONED");
-        RewriteRuleSubtreeStream stream_fromClause = new RewriteRuleSubtreeStream(adaptor,"rule fromClause");
         RewriteRuleSubtreeStream stream_whereClause = new RewriteRuleSubtreeStream(adaptor,"rule whereClause");
         RewriteRuleSubtreeStream stream_setClause = new RewriteRuleSubtreeStream(adaptor,"rule setClause");
+        RewriteRuleSubtreeStream stream_fromClause = new RewriteRuleSubtreeStream(adaptor,"rule fromClause");
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:58:2: ( ^(u= UPDATE (v= VERSIONED )? f= fromClause s= setClause (w= whereClause )? ) -> ^( $u $f $s ( $w)? ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:58:4: ^(u= UPDATE (v= VERSIONED )? f= fromClause s= setClause (w= whereClause )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:58:2: ( ^(u= UPDATE (v= VERSIONED )? f= fromClause s= setClause (w= whereClause )? ) -> ^( $u $f $s ( $w)? ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:58:4: ^(u= UPDATE (v= VERSIONED )? f= fromClause s= setClause (w= whereClause )? )
             {
             	_last = (IASTNode)input.LT(1);
             	{
@@ -598,7 +598,7 @@ public partial class HqlSqlWalker : TreeParser
             	 BeforeStatement( "update", UPDATE ); 
 
             	Match(input, Token.DOWN, null); 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:58:57: (v= VERSIONED )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:58:57: (v= VERSIONED )?
             	int alt2 = 2;
             	int LA2_0 = input.LA(1);
 
@@ -609,7 +609,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt2) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:58:58: v= VERSIONED
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:58:58: v= VERSIONED
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	v=(IASTNode)Match(input,VERSIONED,FOLLOW_VERSIONED_in_updateStatement222);  
@@ -633,7 +633,7 @@ public partial class HqlSqlWalker : TreeParser
             	state.followingStackPointer--;
 
             	stream_setClause.Add(s.Tree);
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:58:97: (w= whereClause )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:58:97: (w= whereClause )?
             	int alt3 = 2;
             	int LA3_0 = input.LA(1);
 
@@ -644,7 +644,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt3) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:58:98: w= whereClause
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:58:98: w= whereClause
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	PushFollow(FOLLOW_whereClause_in_updateStatement237);
@@ -667,28 +667,28 @@ public partial class HqlSqlWalker : TreeParser
             	// AST REWRITE
             	// elements:          w, u, s, f
             	// token labels:      u
-            	// rule labels:       w, f, retval, s
+            	// rule labels:       f, w, retval, s
             	// token list labels: 
             	// rule list labels:  
             	// wildcard labels: 
             	retval.Tree = root_0;
             	RewriteRuleNodeStream stream_u = new RewriteRuleNodeStream(adaptor, "token u", u);
-            	RewriteRuleSubtreeStream stream_w = new RewriteRuleSubtreeStream(adaptor, "rule w", w!=null ? w.Tree : null);
             	RewriteRuleSubtreeStream stream_f = new RewriteRuleSubtreeStream(adaptor, "rule f", f!=null ? f.Tree : null);
+            	RewriteRuleSubtreeStream stream_w = new RewriteRuleSubtreeStream(adaptor, "rule w", w!=null ? w.Tree : null);
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
             	RewriteRuleSubtreeStream stream_s = new RewriteRuleSubtreeStream(adaptor, "rule s", s!=null ? s.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
             	// 59:3: -> ^( $u $f $s ( $w)? )
             	{
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:59:6: ^( $u $f $s ( $w)? )
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:59:6: ^( $u $f $s ( $w)? )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_u.NextNode(), root_1);
 
             	    adaptor.AddChild(root_1, stream_f.NextTree());
             	    adaptor.AddChild(root_1, stream_s.NextTree());
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:59:17: ( $w)?
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:59:17: ( $w)?
             	    if ( stream_w.HasNext() )
             	    {
             	        adaptor.AddChild(root_1, stream_w.NextTree());
@@ -708,7 +708,7 @@ public partial class HqlSqlWalker : TreeParser
 
 
             		BeforeStatementCompletion( "update" );
-            		PrepareVersioned( ((IASTNode)retval.Tree), v_tree );
+            		PrepareVersioned( ((IASTNode)retval.Tree), v );
             		PostProcessUpdate( ((IASTNode)retval.Tree) );
             		AfterStatementCompletion( "update" );
             	
@@ -736,7 +736,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "deleteStatement"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:62:1: deleteStatement : ^( DELETE fromClause ( whereClause )? ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:62:1: deleteStatement : ^( DELETE fromClause ( whereClause )? ) ;
     public HqlSqlWalker.deleteStatement_return deleteStatement() // throws RecognitionException [1]
     {   
         HqlSqlWalker.deleteStatement_return retval = new HqlSqlWalker.deleteStatement_return();
@@ -757,8 +757,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:68:2: ( ^( DELETE fromClause ( whereClause )? ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:68:4: ^( DELETE fromClause ( whereClause )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:68:2: ( ^( DELETE fromClause ( whereClause )? ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:68:4: ^( DELETE fromClause ( whereClause )? )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -782,7 +782,7 @@ public partial class HqlSqlWalker : TreeParser
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_1, fromClause7.Tree);
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:68:66: ( whereClause )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:68:66: ( whereClause )?
             	int alt4 = 2;
             	int LA4_0 = input.LA(1);
 
@@ -793,7 +793,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt4) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:68:67: whereClause
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:68:67: whereClause
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	PushFollow(FOLLOW_whereClause_in_deleteStatement287);
@@ -845,7 +845,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "insertStatement"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:71:1: insertStatement : ^( INSERT intoClause query ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:71:1: insertStatement : ^( INSERT intoClause query ) ;
     public HqlSqlWalker.insertStatement_return insertStatement() // throws RecognitionException [1]
     {   
         HqlSqlWalker.insertStatement_return retval = new HqlSqlWalker.insertStatement_return();
@@ -866,8 +866,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:80:2: ( ^( INSERT intoClause query ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:80:4: ^( INSERT intoClause query )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:80:2: ( ^( INSERT intoClause query ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:80:4: ^( INSERT intoClause query )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -935,7 +935,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "intoClause"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:83:1: intoClause : ^( INTO (p= path ) ps= insertablePropertySpec ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:83:1: intoClause : ^( INTO (p= path ) ps= insertablePropertySpec ) ;
     public HqlSqlWalker.intoClause_return intoClause() // throws RecognitionException [1]
     {   
         HqlSqlWalker.intoClause_return retval = new HqlSqlWalker.intoClause_return();
@@ -956,8 +956,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:84:2: ( ^( INTO (p= path ) ps= insertablePropertySpec ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:84:4: ^( INTO (p= path ) ps= insertablePropertySpec )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:84:2: ( ^( INTO (p= path ) ps= insertablePropertySpec ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:84:4: ^( INTO (p= path ) ps= insertablePropertySpec )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -975,8 +975,8 @@ public partial class HqlSqlWalker : TreeParser
             	 HandleClauseStart( INTO ); 
 
             	Match(input, Token.DOWN, null); 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:84:43: (p= path )
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:84:44: p= path
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:84:43: (p= path )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:84:44: p= path
             	{
             		_last = (IASTNode)input.LT(1);
             		PushFollow(FOLLOW_path_in_intoClause348);
@@ -1029,7 +1029,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "insertablePropertySpec"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:89:1: insertablePropertySpec : ^( RANGE ( IDENT )+ ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:89:1: insertablePropertySpec : ^( RANGE ( IDENT )+ ) ;
     public HqlSqlWalker.insertablePropertySpec_return insertablePropertySpec() // throws RecognitionException [1]
     {   
         HqlSqlWalker.insertablePropertySpec_return retval = new HqlSqlWalker.insertablePropertySpec_return();
@@ -1048,8 +1048,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:90:2: ( ^( RANGE ( IDENT )+ ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:90:4: ^( RANGE ( IDENT )+ )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:90:2: ( ^( RANGE ( IDENT )+ ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:90:4: ^( RANGE ( IDENT )+ )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -1066,7 +1066,7 @@ public partial class HqlSqlWalker : TreeParser
 
 
             	Match(input, Token.DOWN, null); 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:90:13: ( IDENT )+
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:90:13: ( IDENT )+
             	int cnt5 = 0;
             	do 
             	{
@@ -1082,7 +1082,7 @@ public partial class HqlSqlWalker : TreeParser
             	    switch (alt5) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:90:14: IDENT
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:90:14: IDENT
             			    {
             			    	_last = (IASTNode)input.LT(1);
             			    	IDENT14=(IASTNode)Match(input,IDENT,FOLLOW_IDENT_in_insertablePropertySpec373); 
@@ -1139,7 +1139,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "setClause"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:93:1: setClause : ^( SET ( assignment )* ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:93:1: setClause : ^( SET ( assignment )* ) ;
     public HqlSqlWalker.setClause_return setClause() // throws RecognitionException [1]
     {   
         HqlSqlWalker.setClause_return retval = new HqlSqlWalker.setClause_return();
@@ -1158,8 +1158,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:94:2: ( ^( SET ( assignment )* ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:94:4: ^( SET ( assignment )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:94:2: ( ^( SET ( assignment )* ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:94:4: ^( SET ( assignment )* )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -1179,7 +1179,7 @@ public partial class HqlSqlWalker : TreeParser
             	if ( input.LA(1) == Token.DOWN )
             	{
             	    Match(input, Token.DOWN, null); 
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:94:41: ( assignment )*
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:94:41: ( assignment )*
             	    do 
             	    {
             	        int alt6 = 2;
@@ -1194,7 +1194,7 @@ public partial class HqlSqlWalker : TreeParser
             	        switch (alt6) 
             	    	{
             	    		case 1 :
-            	    		    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:94:42: assignment
+            	    		    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:94:42: assignment
             	    		    {
             	    		    	_last = (IASTNode)input.LT(1);
             	    		    	PushFollow(FOLLOW_assignment_in_setClause395);
@@ -1248,7 +1248,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "assignment"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:97:1: assignment : ^( EQ (p= propertyRef ) ( newValue ) ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:97:1: assignment : ^( EQ (p= propertyRef ) ( newValue ) ) ;
     public HqlSqlWalker.assignment_return assignment() // throws RecognitionException [1]
     {   
         HqlSqlWalker.assignment_return retval = new HqlSqlWalker.assignment_return();
@@ -1269,8 +1269,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:103:2: ( ^( EQ (p= propertyRef ) ( newValue ) ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:103:4: ^( EQ (p= propertyRef ) ( newValue ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:103:2: ( ^( EQ (p= propertyRef ) ( newValue ) ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:103:4: ^( EQ (p= propertyRef ) ( newValue ) )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -1287,8 +1287,8 @@ public partial class HqlSqlWalker : TreeParser
 
 
             	Match(input, Token.DOWN, null); 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:103:10: (p= propertyRef )
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:103:11: p= propertyRef
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:103:10: (p= propertyRef )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:103:11: p= propertyRef
             	{
             		_last = (IASTNode)input.LT(1);
             		PushFollow(FOLLOW_propertyRef_in_assignment427);
@@ -1300,8 +1300,8 @@ public partial class HqlSqlWalker : TreeParser
             	}
 
             	 Resolve(((p != null) ? ((IASTNode)p.Tree) : null)); 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:103:48: ( newValue )
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:103:49: newValue
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:103:48: ( newValue )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:103:49: newValue
             	{
             		_last = (IASTNode)input.LT(1);
             		PushFollow(FOLLOW_newValue_in_assignment433);
@@ -1348,7 +1348,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "newValue"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:107:1: newValue : ( expr | query );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:107:1: newValue : ( expr | query );
     public HqlSqlWalker.newValue_return newValue() // throws RecognitionException [1]
     {   
         HqlSqlWalker.newValue_return retval = new HqlSqlWalker.newValue_return();
@@ -1367,7 +1367,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:108:2: ( expr | query )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:108:2: ( expr | query )
             int alt7 = 2;
             int LA7_0 = input.LA(1);
 
@@ -1389,7 +1389,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt7) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:108:4: expr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:108:4: expr
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -1403,7 +1403,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:108:11: query
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:108:11: query
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -1444,7 +1444,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "query"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:113:1: query : ^( QUERY ^( SELECT_FROM f= fromClause (s= selectClause )? ) (w= whereClause )? (g= groupClause )? (o= orderClause )? ) -> ^( SELECT ( $s)? $f ( $w)? ( $g)? ( $o)? ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:113:1: query : ^( QUERY ^( SELECT_FROM f= fromClause (s= selectClause )? ) (w= whereClause )? (g= groupClause )? (o= orderClause )? ) -> ^( SELECT ( $s)? $f ( $w)? ( $g)? ( $o)? ) ;
     public HqlSqlWalker.query_return query() // throws RecognitionException [1]
     {   
         HqlSqlWalker.query_return retval = new HqlSqlWalker.query_return();
@@ -1470,17 +1470,17 @@ public partial class HqlSqlWalker : TreeParser
 
         IASTNode QUERY21_tree=null;
         IASTNode SELECT_FROM22_tree=null;
-        RewriteRuleNodeStream stream_QUERY = new RewriteRuleNodeStream(adaptor,"token QUERY");
         RewriteRuleNodeStream stream_SELECT_FROM = new RewriteRuleNodeStream(adaptor,"token SELECT_FROM");
-        RewriteRuleSubtreeStream stream_selectClause = new RewriteRuleSubtreeStream(adaptor,"rule selectClause");
-        RewriteRuleSubtreeStream stream_fromClause = new RewriteRuleSubtreeStream(adaptor,"rule fromClause");
-        RewriteRuleSubtreeStream stream_orderClause = new RewriteRuleSubtreeStream(adaptor,"rule orderClause");
+        RewriteRuleNodeStream stream_QUERY = new RewriteRuleNodeStream(adaptor,"token QUERY");
         RewriteRuleSubtreeStream stream_whereClause = new RewriteRuleSubtreeStream(adaptor,"rule whereClause");
+        RewriteRuleSubtreeStream stream_orderClause = new RewriteRuleSubtreeStream(adaptor,"rule orderClause");
         RewriteRuleSubtreeStream stream_groupClause = new RewriteRuleSubtreeStream(adaptor,"rule groupClause");
+        RewriteRuleSubtreeStream stream_fromClause = new RewriteRuleSubtreeStream(adaptor,"rule fromClause");
+        RewriteRuleSubtreeStream stream_selectClause = new RewriteRuleSubtreeStream(adaptor,"rule selectClause");
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:120:2: ( ^( QUERY ^( SELECT_FROM f= fromClause (s= selectClause )? ) (w= whereClause )? (g= groupClause )? (o= orderClause )? ) -> ^( SELECT ( $s)? $f ( $w)? ( $g)? ( $o)? ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:120:4: ^( QUERY ^( SELECT_FROM f= fromClause (s= selectClause )? ) (w= whereClause )? (g= groupClause )? (o= orderClause )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:120:2: ( ^( QUERY ^( SELECT_FROM f= fromClause (s= selectClause )? ) (w= whereClause )? (g= groupClause )? (o= orderClause )? ) -> ^( SELECT ( $s)? $f ( $w)? ( $g)? ( $o)? ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:120:4: ^( QUERY ^( SELECT_FROM f= fromClause (s= selectClause )? ) (w= whereClause )? (g= groupClause )? (o= orderClause )? )
             {
             	_last = (IASTNode)input.LT(1);
             	{
@@ -1511,7 +1511,7 @@ public partial class HqlSqlWalker : TreeParser
             	state.followingStackPointer--;
 
             	stream_fromClause.Add(f.Tree);
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:124:5: (s= selectClause )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:124:5: (s= selectClause )?
             	int alt8 = 2;
             	int LA8_0 = input.LA(1);
 
@@ -1522,7 +1522,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt8) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:124:6: s= selectClause
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:124:6: s= selectClause
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	PushFollow(FOLLOW_selectClause_in_query504);
@@ -1540,7 +1540,7 @@ public partial class HqlSqlWalker : TreeParser
             	Match(input, Token.UP, null); adaptor.AddChild(root_1, root_2);_last = _save_last_2;
             	}
 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:126:4: (w= whereClause )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:126:4: (w= whereClause )?
             	int alt9 = 2;
             	int LA9_0 = input.LA(1);
 
@@ -1551,7 +1551,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt9) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:126:5: w= whereClause
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:126:5: w= whereClause
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	PushFollow(FOLLOW_whereClause_in_query519);
@@ -1565,7 +1565,7 @@ public partial class HqlSqlWalker : TreeParser
 
             	}
 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:127:4: (g= groupClause )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:127:4: (g= groupClause )?
             	int alt10 = 2;
             	int LA10_0 = input.LA(1);
 
@@ -1576,7 +1576,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt10) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:127:5: g= groupClause
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:127:5: g= groupClause
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	PushFollow(FOLLOW_groupClause_in_query529);
@@ -1590,7 +1590,7 @@ public partial class HqlSqlWalker : TreeParser
 
             	}
 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:128:4: (o= orderClause )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:128:4: (o= orderClause )?
             	int alt11 = 2;
             	int LA11_0 = input.LA(1);
 
@@ -1601,7 +1601,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt11) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:128:5: o= orderClause
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:128:5: o= orderClause
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	PushFollow(FOLLOW_orderClause_in_query539);
@@ -1622,29 +1622,29 @@ public partial class HqlSqlWalker : TreeParser
 
 
             	// AST REWRITE
-            	// elements:          g, s, w, f, o
+            	// elements:          s, f, g, w, o
             	// token labels:      
-            	// rule labels:       o, w, f, retval, g, s
+            	// rule labels:       w, f, g, retval, s, o
             	// token list labels: 
             	// rule list labels:  
             	// wildcard labels: 
             	retval.Tree = root_0;
-            	RewriteRuleSubtreeStream stream_o = new RewriteRuleSubtreeStream(adaptor, "rule o", o!=null ? o.Tree : null);
             	RewriteRuleSubtreeStream stream_w = new RewriteRuleSubtreeStream(adaptor, "rule w", w!=null ? w.Tree : null);
             	RewriteRuleSubtreeStream stream_f = new RewriteRuleSubtreeStream(adaptor, "rule f", f!=null ? f.Tree : null);
-            	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
             	RewriteRuleSubtreeStream stream_g = new RewriteRuleSubtreeStream(adaptor, "rule g", g!=null ? g.Tree : null);
+            	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
             	RewriteRuleSubtreeStream stream_s = new RewriteRuleSubtreeStream(adaptor, "rule s", s!=null ? s.Tree : null);
+            	RewriteRuleSubtreeStream stream_o = new RewriteRuleSubtreeStream(adaptor, "rule o", o!=null ? o.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
             	// 130:2: -> ^( SELECT ( $s)? $f ( $w)? ( $g)? ( $o)? )
             	{
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:130:5: ^( SELECT ( $s)? $f ( $w)? ( $g)? ( $o)? )
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:130:5: ^( SELECT ( $s)? $f ( $w)? ( $g)? ( $o)? )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(SELECT, "SELECT"), root_1);
 
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:130:14: ( $s)?
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:130:14: ( $s)?
             	    if ( stream_s.HasNext() )
             	    {
             	        adaptor.AddChild(root_1, stream_s.NextTree());
@@ -1652,21 +1652,21 @@ public partial class HqlSqlWalker : TreeParser
             	    }
             	    stream_s.Reset();
             	    adaptor.AddChild(root_1, stream_f.NextTree());
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:130:21: ( $w)?
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:130:21: ( $w)?
             	    if ( stream_w.HasNext() )
             	    {
             	        adaptor.AddChild(root_1, stream_w.NextTree());
 
             	    }
             	    stream_w.Reset();
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:130:25: ( $g)?
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:130:25: ( $g)?
             	    if ( stream_g.HasNext() )
             	    {
             	        adaptor.AddChild(root_1, stream_g.NextTree());
 
             	    }
             	    stream_g.Reset();
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:130:29: ( $o)?
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:130:29: ( $o)?
             	    if ( stream_o.HasNext() )
             	    {
             	        adaptor.AddChild(root_1, stream_o.NextTree());
@@ -1714,7 +1714,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "orderClause"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:133:1: orderClause : ^( ORDER orderExprs ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:133:1: orderClause : ^( ORDER orderExprs ) ;
     public HqlSqlWalker.orderClause_return orderClause() // throws RecognitionException [1]
     {   
         HqlSqlWalker.orderClause_return retval = new HqlSqlWalker.orderClause_return();
@@ -1733,8 +1733,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:134:2: ( ^( ORDER orderExprs ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:134:4: ^( ORDER orderExprs )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:134:2: ( ^( ORDER orderExprs ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:134:4: ^( ORDER orderExprs )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -1791,7 +1791,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "orderExprs"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:137:1: orderExprs : expr ( ASCENDING | DESCENDING )? ( orderExprs )? ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:137:1: orderExprs : expr ( ASCENDING | DESCENDING )? ( orderExprs )? ;
     public HqlSqlWalker.orderExprs_return orderExprs() // throws RecognitionException [1]
     {   
         HqlSqlWalker.orderExprs_return retval = new HqlSqlWalker.orderExprs_return();
@@ -1812,8 +1812,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:138:2: ( expr ( ASCENDING | DESCENDING )? ( orderExprs )? )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:138:4: expr ( ASCENDING | DESCENDING )? ( orderExprs )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:138:2: ( expr ( ASCENDING | DESCENDING )? ( orderExprs )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:138:4: expr ( ASCENDING | DESCENDING )? ( orderExprs )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -1823,7 +1823,7 @@ public partial class HqlSqlWalker : TreeParser
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, expr25.Tree);
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:138:9: ( ASCENDING | DESCENDING )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:138:9: ( ASCENDING | DESCENDING )?
             	int alt12 = 2;
             	int LA12_0 = input.LA(1);
 
@@ -1834,7 +1834,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt12) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	set26 = (IASTNode)input.LT(1);
@@ -1860,7 +1860,7 @@ public partial class HqlSqlWalker : TreeParser
 
             	}
 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:138:37: ( orderExprs )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:138:37: ( orderExprs )?
             	int alt13 = 2;
             	int LA13_0 = input.LA(1);
 
@@ -1871,7 +1871,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt13) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:138:38: orderExprs
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:138:38: orderExprs
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	PushFollow(FOLLOW_orderExprs_in_orderExprs614);
@@ -1914,7 +1914,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "groupClause"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:141:1: groupClause : ^( GROUP ( expr )+ ( ^( HAVING logicalExpr ) )? ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:141:1: groupClause : ^( GROUP ( expr )+ ( ^( HAVING logicalExpr ) )? ) ;
     public HqlSqlWalker.groupClause_return groupClause() // throws RecognitionException [1]
     {   
         HqlSqlWalker.groupClause_return retval = new HqlSqlWalker.groupClause_return();
@@ -1937,8 +1937,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:142:2: ( ^( GROUP ( expr )+ ( ^( HAVING logicalExpr ) )? ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:142:4: ^( GROUP ( expr )+ ( ^( HAVING logicalExpr ) )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:142:2: ( ^( GROUP ( expr )+ ( ^( HAVING logicalExpr ) )? ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:142:4: ^( GROUP ( expr )+ ( ^( HAVING logicalExpr ) )? )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -1956,7 +1956,7 @@ public partial class HqlSqlWalker : TreeParser
             	 HandleClauseStart( GROUP ); 
 
             	Match(input, Token.DOWN, null); 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:142:44: ( expr )+
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:142:44: ( expr )+
             	int cnt14 = 0;
             	do 
             	{
@@ -1972,7 +1972,7 @@ public partial class HqlSqlWalker : TreeParser
             	    switch (alt14) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:142:45: expr
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:142:45: expr
             			    {
             			    	_last = (IASTNode)input.LT(1);
             			    	PushFollow(FOLLOW_expr_in_groupClause633);
@@ -1996,7 +1996,7 @@ public partial class HqlSqlWalker : TreeParser
             	loop14:
             		;	// Stops C# compiler whinging that label 'loop14' has no statements
 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:142:52: ( ^( HAVING logicalExpr ) )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:142:52: ( ^( HAVING logicalExpr ) )?
             	int alt15 = 2;
             	int LA15_0 = input.LA(1);
 
@@ -2007,7 +2007,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt15) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:142:54: ^( HAVING logicalExpr )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:142:54: ^( HAVING logicalExpr )
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	{
@@ -2071,7 +2071,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "selectClause"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:145:1: selectClause : ^( SELECT (d= DISTINCT )? x= selectExprList ) -> ^( SELECT_CLAUSE[\"{select clause}\"] ( $d)? $x) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:145:1: selectClause : ^( SELECT (d= DISTINCT )? x= selectExprList ) -> ^( SELECT_CLAUSE[\"{select clause}\"] ( $d)? $x) ;
     public HqlSqlWalker.selectClause_return selectClause() // throws RecognitionException [1]
     {   
         HqlSqlWalker.selectClause_return retval = new HqlSqlWalker.selectClause_return();
@@ -2089,13 +2089,13 @@ public partial class HqlSqlWalker : TreeParser
 
         IASTNode d_tree=null;
         IASTNode SELECT32_tree=null;
-        RewriteRuleNodeStream stream_DISTINCT = new RewriteRuleNodeStream(adaptor,"token DISTINCT");
         RewriteRuleNodeStream stream_SELECT = new RewriteRuleNodeStream(adaptor,"token SELECT");
+        RewriteRuleNodeStream stream_DISTINCT = new RewriteRuleNodeStream(adaptor,"token DISTINCT");
         RewriteRuleSubtreeStream stream_selectExprList = new RewriteRuleSubtreeStream(adaptor,"rule selectExprList");
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:146:2: ( ^( SELECT (d= DISTINCT )? x= selectExprList ) -> ^( SELECT_CLAUSE[\"{select clause}\"] ( $d)? $x) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:146:4: ^( SELECT (d= DISTINCT )? x= selectExprList )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:146:2: ( ^( SELECT (d= DISTINCT )? x= selectExprList ) -> ^( SELECT_CLAUSE[\"{select clause}\"] ( $d)? $x) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:146:4: ^( SELECT (d= DISTINCT )? x= selectExprList )
             {
             	_last = (IASTNode)input.LT(1);
             	{
@@ -2109,7 +2109,7 @@ public partial class HqlSqlWalker : TreeParser
             	 HandleClauseStart( SELECT ); BeforeSelectClause(); 
 
             	Match(input, Token.DOWN, null); 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:146:68: (d= DISTINCT )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:146:68: (d= DISTINCT )?
             	int alt16 = 2;
             	int LA16_0 = input.LA(1);
 
@@ -2120,7 +2120,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt16) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:146:69: d= DISTINCT
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:146:69: d= DISTINCT
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	d=(IASTNode)Match(input,DISTINCT,FOLLOW_DISTINCT_in_selectClause668);  
@@ -2145,7 +2145,7 @@ public partial class HqlSqlWalker : TreeParser
 
 
             	// AST REWRITE
-            	// elements:          d, x
+            	// elements:          x, d
             	// token labels:      d
             	// rule labels:       retval, x
             	// token list labels: 
@@ -2159,12 +2159,12 @@ public partial class HqlSqlWalker : TreeParser
             	root_0 = (IASTNode)adaptor.GetNilNode();
             	// 147:2: -> ^( SELECT_CLAUSE[\"{select clause}\"] ( $d)? $x)
             	{
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:147:5: ^( SELECT_CLAUSE[\"{select clause}\"] ( $d)? $x)
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:147:5: ^( SELECT_CLAUSE[\"{select clause}\"] ( $d)? $x)
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(SELECT_CLAUSE, "{select clause}"), root_1);
 
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:147:40: ( $d)?
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:147:40: ( $d)?
             	    if ( stream_d.HasNext() )
             	    {
             	        adaptor.AddChild(root_1, stream_d.NextNode());
@@ -2207,7 +2207,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "selectExprList"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:150:1: selectExprList : ( selectExpr | aliasedSelectExpr )+ ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:150:1: selectExprList : ( selectExpr | aliasedSelectExpr )+ ;
     public HqlSqlWalker.selectExprList_return selectExprList() // throws RecognitionException [1]
     {   
         HqlSqlWalker.selectExprList_return retval = new HqlSqlWalker.selectExprList_return();
@@ -2230,12 +2230,12 @@ public partial class HqlSqlWalker : TreeParser
         	
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:154:2: ( ( selectExpr | aliasedSelectExpr )+ )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:154:4: ( selectExpr | aliasedSelectExpr )+
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:154:2: ( ( selectExpr | aliasedSelectExpr )+ )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:154:4: ( selectExpr | aliasedSelectExpr )+
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:154:4: ( selectExpr | aliasedSelectExpr )+
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:154:4: ( selectExpr | aliasedSelectExpr )+
             	int cnt17 = 0;
             	do 
             	{
@@ -2255,7 +2255,7 @@ public partial class HqlSqlWalker : TreeParser
             	    switch (alt17) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:154:6: selectExpr
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:154:6: selectExpr
             			    {
             			    	_last = (IASTNode)input.LT(1);
             			    	PushFollow(FOLLOW_selectExpr_in_selectExprList709);
@@ -2267,7 +2267,7 @@ public partial class HqlSqlWalker : TreeParser
             			    }
             			    break;
             			case 2 :
-            			    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:154:19: aliasedSelectExpr
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:154:19: aliasedSelectExpr
             			    {
             			    	_last = (IASTNode)input.LT(1);
             			    	PushFollow(FOLLOW_aliasedSelectExpr_in_selectExprList713);
@@ -2323,7 +2323,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "aliasedSelectExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:159:1: aliasedSelectExpr : ^( AS se= selectExpr i= identifier ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:159:1: aliasedSelectExpr : ^( AS se= selectExpr i= identifier ) ;
     public HqlSqlWalker.aliasedSelectExpr_return aliasedSelectExpr() // throws RecognitionException [1]
     {   
         HqlSqlWalker.aliasedSelectExpr_return retval = new HqlSqlWalker.aliasedSelectExpr_return();
@@ -2344,8 +2344,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:164:2: ( ^( AS se= selectExpr i= identifier ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:164:4: ^( AS se= selectExpr i= identifier )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:164:2: ( ^( AS se= selectExpr i= identifier ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:164:4: ^( AS se= selectExpr i= identifier )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -2411,7 +2411,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "selectExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:167:1: selectExpr : (p= propertyRef | ^( ALL ar2= aliasRef ) | ^( OBJECT ar3= aliasRef ) | con= constructor | functionCall | count | collectionFunction | literal | arithmeticExpr | query );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:167:1: selectExpr : (p= propertyRef | ^( ALL ar2= aliasRef ) | ^( OBJECT ar3= aliasRef ) | con= constructor | functionCall | count | collectionFunction | literal | arithmeticExpr | query );
     public HqlSqlWalker.selectExpr_return selectExpr() // throws RecognitionException [1]
     {   
         HqlSqlWalker.selectExpr_return retval = new HqlSqlWalker.selectExpr_return();
@@ -2450,7 +2450,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:168:2: (p= propertyRef | ^( ALL ar2= aliasRef ) | ^( OBJECT ar3= aliasRef ) | con= constructor | functionCall | count | collectionFunction | literal | arithmeticExpr | query )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:168:2: (p= propertyRef | ^( ALL ar2= aliasRef ) | ^( OBJECT ar3= aliasRef ) | con= constructor | functionCall | count | collectionFunction | literal | arithmeticExpr | query )
             int alt18 = 10;
             switch ( input.LA(1) ) 
             {
@@ -2528,7 +2528,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt18) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:168:4: p= propertyRef
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:168:4: p= propertyRef
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -2543,7 +2543,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:169:4: ^( ALL ar2= aliasRef )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:169:4: ^( ALL ar2= aliasRef )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -2575,7 +2575,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:170:4: ^( OBJECT ar3= aliasRef )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:170:4: ^( OBJECT ar3= aliasRef )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -2607,7 +2607,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:171:4: con= constructor
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:171:4: con= constructor
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -2622,7 +2622,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 5 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:172:4: functionCall
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:172:4: functionCall
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -2636,7 +2636,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 6 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:173:4: count
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:173:4: count
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -2650,7 +2650,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 7 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:174:4: collectionFunction
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:174:4: collectionFunction
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -2664,7 +2664,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 8 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:175:4: literal
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:175:4: literal
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -2678,7 +2678,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 9 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:176:4: arithmeticExpr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:176:4: arithmeticExpr
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -2692,7 +2692,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 10 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:177:4: query
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:177:4: query
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -2733,7 +2733,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "count"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:180:1: count : ^( COUNT ( DISTINCT | ALL )? ( aggregateExpr | ROW_STAR ) ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:180:1: count : ^( COUNT ( DISTINCT | ALL )? ( aggregateExpr | ROW_STAR ) ) ;
     public HqlSqlWalker.count_return count() // throws RecognitionException [1]
     {   
         HqlSqlWalker.count_return retval = new HqlSqlWalker.count_return();
@@ -2756,8 +2756,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:181:2: ( ^( COUNT ( DISTINCT | ALL )? ( aggregateExpr | ROW_STAR ) ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:181:4: ^( COUNT ( DISTINCT | ALL )? ( aggregateExpr | ROW_STAR ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:181:2: ( ^( COUNT ( DISTINCT | ALL )? ( aggregateExpr | ROW_STAR ) ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:181:4: ^( COUNT ( DISTINCT | ALL )? ( aggregateExpr | ROW_STAR ) )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -2774,7 +2774,7 @@ public partial class HqlSqlWalker : TreeParser
 
 
             	Match(input, Token.DOWN, null); 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:181:12: ( DISTINCT | ALL )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:181:12: ( DISTINCT | ALL )?
             	int alt19 = 2;
             	int LA19_0 = input.LA(1);
 
@@ -2785,7 +2785,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt19) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	set45 = (IASTNode)input.LT(1);
@@ -2811,7 +2811,7 @@ public partial class HqlSqlWalker : TreeParser
 
             	}
 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:181:32: ( aggregateExpr | ROW_STAR )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:181:32: ( aggregateExpr | ROW_STAR )
             	int alt20 = 2;
             	int LA20_0 = input.LA(1);
 
@@ -2833,7 +2833,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt20) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:181:34: aggregateExpr
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:181:34: aggregateExpr
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	PushFollow(FOLLOW_aggregateExpr_in_count869);
@@ -2845,7 +2845,7 @@ public partial class HqlSqlWalker : TreeParser
             	        }
             	        break;
             	    case 2 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:181:50: ROW_STAR
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:181:50: ROW_STAR
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	ROW_STAR47=(IASTNode)Match(input,ROW_STAR,FOLLOW_ROW_STAR_in_count873); 
@@ -2892,7 +2892,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "constructor"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:184:1: constructor : ^( CONSTRUCTOR path ( selectExpr | aliasedSelectExpr )* ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:184:1: constructor : ^( CONSTRUCTOR path ( selectExpr | aliasedSelectExpr )* ) ;
     public HqlSqlWalker.constructor_return constructor() // throws RecognitionException [1]
     {   
         HqlSqlWalker.constructor_return retval = new HqlSqlWalker.constructor_return();
@@ -2915,8 +2915,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:185:2: ( ^( CONSTRUCTOR path ( selectExpr | aliasedSelectExpr )* ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:185:4: ^( CONSTRUCTOR path ( selectExpr | aliasedSelectExpr )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:185:2: ( ^( CONSTRUCTOR path ( selectExpr | aliasedSelectExpr )* ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:185:4: ^( CONSTRUCTOR path ( selectExpr | aliasedSelectExpr )* )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -2939,7 +2939,7 @@ public partial class HqlSqlWalker : TreeParser
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_1, path49.Tree);
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:185:23: ( selectExpr | aliasedSelectExpr )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:185:23: ( selectExpr | aliasedSelectExpr )*
             	do 
             	{
             	    int alt21 = 3;
@@ -2958,7 +2958,7 @@ public partial class HqlSqlWalker : TreeParser
             	    switch (alt21) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:185:25: selectExpr
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:185:25: selectExpr
             			    {
             			    	_last = (IASTNode)input.LT(1);
             			    	PushFollow(FOLLOW_selectExpr_in_constructor895);
@@ -2970,7 +2970,7 @@ public partial class HqlSqlWalker : TreeParser
             			    }
             			    break;
             			case 2 :
-            			    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:185:38: aliasedSelectExpr
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:185:38: aliasedSelectExpr
             			    {
             			    	_last = (IASTNode)input.LT(1);
             			    	PushFollow(FOLLOW_aliasedSelectExpr_in_constructor899);
@@ -3023,7 +3023,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "aggregateExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:188:1: aggregateExpr : ( expr | collectionFunction );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:188:1: aggregateExpr : ( expr | collectionFunction );
     public HqlSqlWalker.aggregateExpr_return aggregateExpr() // throws RecognitionException [1]
     {   
         HqlSqlWalker.aggregateExpr_return retval = new HqlSqlWalker.aggregateExpr_return();
@@ -3042,7 +3042,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:189:2: ( expr | collectionFunction )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:189:2: ( expr | collectionFunction )
             int alt22 = 2;
             int LA22_0 = input.LA(1);
 
@@ -3064,7 +3064,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt22) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:189:4: expr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:189:4: expr
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -3078,7 +3078,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:190:4: collectionFunction
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:190:4: collectionFunction
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -3119,7 +3119,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "fromClause"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:194:1: fromClause : ^(f= FROM fromElementList ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:194:1: fromClause : ^(f= FROM fromElementList ) ;
     public HqlSqlWalker.fromClause_return fromClause() // throws RecognitionException [1]
     {   
         HqlSqlWalker.fromClause_return retval = new HqlSqlWalker.fromClause_return();
@@ -3143,8 +3143,8 @@ public partial class HqlSqlWalker : TreeParser
         	
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:200:2: ( ^(f= FROM fromElementList ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:200:4: ^(f= FROM fromElementList )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:200:2: ( ^(f= FROM fromElementList ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:200:4: ^(f= FROM fromElementList )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -3201,7 +3201,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "fromElementList"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:203:1: fromElementList : ( fromElement )+ ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:203:1: fromElementList : ( fromElement )+ ;
     public HqlSqlWalker.fromElementList_return fromElementList() // throws RecognitionException [1]
     {   
         HqlSqlWalker.fromElementList_return retval = new HqlSqlWalker.fromElementList_return();
@@ -3222,12 +3222,12 @@ public partial class HqlSqlWalker : TreeParser
         		
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:207:2: ( ( fromElement )+ )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:207:4: ( fromElement )+
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:207:2: ( ( fromElement )+ )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:207:4: ( fromElement )+
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:207:4: ( fromElement )+
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:207:4: ( fromElement )+
             	int cnt23 = 0;
             	do 
             	{
@@ -3243,7 +3243,7 @@ public partial class HqlSqlWalker : TreeParser
             	    switch (alt23) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:207:5: fromElement
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:207:5: fromElement
             			    {
             			    	_last = (IASTNode)input.LT(1);
             			    	PushFollow(FOLLOW_fromElement_in_fromElementList963);
@@ -3299,7 +3299,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "fromElement"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:212:1: fromElement : ( ^( RANGE p= path (a= ALIAS )? (pf= FETCH )? ) -> {fromElement != null}? ^() -> | je= joinElement -> | fe= FILTER_ENTITY a3= ALIAS -> ^() );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:212:1: fromElement : ( ^( RANGE p= path (a= ALIAS )? (pf= FETCH )? ) -> {fromElement != null}? ^() -> | je= joinElement -> | fe= FILTER_ENTITY a3= ALIAS -> ^() );
     public HqlSqlWalker.fromElement_return fromElement() // throws RecognitionException [1]
     {   
         HqlSqlWalker.fromElement_return retval = new HqlSqlWalker.fromElement_return();
@@ -3325,9 +3325,9 @@ public partial class HqlSqlWalker : TreeParser
         IASTNode fe_tree=null;
         IASTNode a3_tree=null;
         IASTNode RANGE56_tree=null;
-        RewriteRuleNodeStream stream_FETCH = new RewriteRuleNodeStream(adaptor,"token FETCH");
-        RewriteRuleNodeStream stream_RANGE = new RewriteRuleNodeStream(adaptor,"token RANGE");
         RewriteRuleNodeStream stream_FILTER_ENTITY = new RewriteRuleNodeStream(adaptor,"token FILTER_ENTITY");
+        RewriteRuleNodeStream stream_RANGE = new RewriteRuleNodeStream(adaptor,"token RANGE");
+        RewriteRuleNodeStream stream_FETCH = new RewriteRuleNodeStream(adaptor,"token FETCH");
         RewriteRuleNodeStream stream_ALIAS = new RewriteRuleNodeStream(adaptor,"token ALIAS");
         RewriteRuleSubtreeStream stream_joinElement = new RewriteRuleSubtreeStream(adaptor,"rule joinElement");
         RewriteRuleSubtreeStream stream_path = new RewriteRuleSubtreeStream(adaptor,"rule path");
@@ -3336,7 +3336,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:217:2: ( ^( RANGE p= path (a= ALIAS )? (pf= FETCH )? ) -> {fromElement != null}? ^() -> | je= joinElement -> | fe= FILTER_ENTITY a3= ALIAS -> ^() )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:217:2: ( ^( RANGE p= path (a= ALIAS )? (pf= FETCH )? ) -> {fromElement != null}? ^() -> | je= joinElement -> | fe= FILTER_ENTITY a3= ALIAS -> ^() )
             int alt26 = 3;
             switch ( input.LA(1) ) 
             {
@@ -3365,7 +3365,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt26) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:217:4: ^( RANGE p= path (a= ALIAS )? (pf= FETCH )? )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:217:4: ^( RANGE p= path (a= ALIAS )? (pf= FETCH )? )
                     {
                     	_last = (IASTNode)input.LT(1);
                     	{
@@ -3384,7 +3384,7 @@ public partial class HqlSqlWalker : TreeParser
                     	state.followingStackPointer--;
 
                     	stream_path.Add(p.Tree);
-                    	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:217:19: (a= ALIAS )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:217:19: (a= ALIAS )?
                     	int alt24 = 2;
                     	int LA24_0 = input.LA(1);
 
@@ -3395,7 +3395,7 @@ public partial class HqlSqlWalker : TreeParser
                     	switch (alt24) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:217:20: a= ALIAS
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:217:20: a= ALIAS
                     	        {
                     	        	_last = (IASTNode)input.LT(1);
                     	        	a=(IASTNode)Match(input,ALIAS,FOLLOW_ALIAS_in_fromElement997);  
@@ -3407,7 +3407,7 @@ public partial class HqlSqlWalker : TreeParser
 
                     	}
 
-                    	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:217:30: (pf= FETCH )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:217:30: (pf= FETCH )?
                     	int alt25 = 2;
                     	int LA25_0 = input.LA(1);
 
@@ -3418,7 +3418,7 @@ public partial class HqlSqlWalker : TreeParser
                     	switch (alt25) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:217:31: pf= FETCH
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:217:31: pf= FETCH
                     	        {
                     	        	_last = (IASTNode)input.LT(1);
                     	        	pf=(IASTNode)Match(input,FETCH,FOLLOW_FETCH_in_fromElement1004);  
@@ -3451,7 +3451,7 @@ public partial class HqlSqlWalker : TreeParser
                     	// 218:3: -> {fromElement != null}? ^()
                     	if (fromElement != null)
                     	{
-                    	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:218:29: ^()
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:218:29: ^()
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(fromElement, root_1);
@@ -3469,7 +3469,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:220:4: je= joinElement
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:220:4: je= joinElement
                     {
                     	_last = (IASTNode)input.LT(1);
                     	PushFollow(FOLLOW_joinElement_in_fromElement1031);
@@ -3499,7 +3499,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:223:4: fe= FILTER_ENTITY a3= ALIAS
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:223:4: fe= FILTER_ENTITY a3= ALIAS
                     {
                     	_last = (IASTNode)input.LT(1);
                     	fe=(IASTNode)Match(input,FILTER_ENTITY,FOLLOW_FILTER_ENTITY_in_fromElement1046);  
@@ -3524,7 +3524,7 @@ public partial class HqlSqlWalker : TreeParser
                     	root_0 = (IASTNode)adaptor.GetNilNode();
                     	// 224:3: -> ^()
                     	{
-                    	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:224:6: ^()
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:224:6: ^()
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(CreateFromFilterElement(fe,a3), root_1);
@@ -3565,7 +3565,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "joinElement"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:227:1: joinElement : ^( JOIN (j= joinType )? (f= FETCH )? pRef= propertyRef (a= ALIAS )? (pf= FETCH )? (with= WITH )? ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:227:1: joinElement : ^( JOIN (j= joinType )? (f= FETCH )? pRef= propertyRef (a= ALIAS )? (pf= FETCH )? (with= WITH )? ) ;
     public HqlSqlWalker.joinElement_return joinElement() // throws RecognitionException [1]
     {   
         HqlSqlWalker.joinElement_return retval = new HqlSqlWalker.joinElement_return();
@@ -3594,8 +3594,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:231:2: ( ^( JOIN (j= joinType )? (f= FETCH )? pRef= propertyRef (a= ALIAS )? (pf= FETCH )? (with= WITH )? ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:231:4: ^( JOIN (j= joinType )? (f= FETCH )? pRef= propertyRef (a= ALIAS )? (pf= FETCH )? (with= WITH )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:231:2: ( ^( JOIN (j= joinType )? (f= FETCH )? pRef= propertyRef (a= ALIAS )? (pf= FETCH )? (with= WITH )? ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:231:4: ^( JOIN (j= joinType )? (f= FETCH )? pRef= propertyRef (a= ALIAS )? (pf= FETCH )? (with= WITH )? )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -3612,7 +3612,7 @@ public partial class HqlSqlWalker : TreeParser
 
 
             	Match(input, Token.DOWN, null); 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:231:11: (j= joinType )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:231:11: (j= joinType )?
             	int alt27 = 2;
             	int LA27_0 = input.LA(1);
 
@@ -3623,7 +3623,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt27) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:231:12: j= joinType
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:231:12: j= joinType
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	PushFollow(FOLLOW_joinType_in_joinElement1084);
@@ -3638,7 +3638,7 @@ public partial class HqlSqlWalker : TreeParser
 
             	}
 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:231:56: (f= FETCH )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:231:56: (f= FETCH )?
             	int alt28 = 2;
             	int LA28_0 = input.LA(1);
 
@@ -3649,7 +3649,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt28) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:231:57: f= FETCH
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:231:57: f= FETCH
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	f=(IASTNode)Match(input,FETCH,FOLLOW_FETCH_in_joinElement1094); 
@@ -3669,7 +3669,7 @@ public partial class HqlSqlWalker : TreeParser
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_1, pRef.Tree);
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:231:84: (a= ALIAS )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:231:84: (a= ALIAS )?
             	int alt29 = 2;
             	int LA29_0 = input.LA(1);
 
@@ -3680,7 +3680,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt29) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:231:85: a= ALIAS
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:231:85: a= ALIAS
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	a=(IASTNode)Match(input,ALIAS,FOLLOW_ALIAS_in_joinElement1105); 
@@ -3694,7 +3694,7 @@ public partial class HqlSqlWalker : TreeParser
 
             	}
 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:231:95: (pf= FETCH )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:231:95: (pf= FETCH )?
             	int alt30 = 2;
             	int LA30_0 = input.LA(1);
 
@@ -3705,7 +3705,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt30) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:231:96: pf= FETCH
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:231:96: pf= FETCH
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	pf=(IASTNode)Match(input,FETCH,FOLLOW_FETCH_in_joinElement1112); 
@@ -3719,7 +3719,7 @@ public partial class HqlSqlWalker : TreeParser
 
             	}
 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:231:107: (with= WITH )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:231:107: (with= WITH )?
             	int alt31 = 2;
             	int LA31_0 = input.LA(1);
 
@@ -3730,7 +3730,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt31) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:231:108: with= WITH
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:231:108: with= WITH
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	with=(IASTNode)Match(input,WITH,FOLLOW_WITH_in_joinElement1119); 
@@ -3782,7 +3782,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "joinType"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:240:1: joinType returns [int j] : ( ( (left= LEFT | right= RIGHT ) (outer= OUTER )? ) | FULL | INNER );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:240:1: joinType returns [int j] : ( ( (left= LEFT | right= RIGHT ) (outer= OUTER )? ) | FULL | INNER );
     public HqlSqlWalker.joinType_return joinType() // throws RecognitionException [1]
     {   
         HqlSqlWalker.joinType_return retval = new HqlSqlWalker.joinType_return();
@@ -3810,7 +3810,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:244:2: ( ( (left= LEFT | right= RIGHT ) (outer= OUTER )? ) | FULL | INNER )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:244:2: ( ( (left= LEFT | right= RIGHT ) (outer= OUTER )? ) | FULL | INNER )
             int alt34 = 3;
             switch ( input.LA(1) ) 
             {
@@ -3840,14 +3840,14 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt34) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:244:4: ( (left= LEFT | right= RIGHT ) (outer= OUTER )? )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:244:4: ( (left= LEFT | right= RIGHT ) (outer= OUTER )? )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:244:4: ( (left= LEFT | right= RIGHT ) (outer= OUTER )? )
-                    	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:244:6: (left= LEFT | right= RIGHT ) (outer= OUTER )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:244:4: ( (left= LEFT | right= RIGHT ) (outer= OUTER )? )
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:244:6: (left= LEFT | right= RIGHT ) (outer= OUTER )?
                     	{
-                    		// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:244:6: (left= LEFT | right= RIGHT )
+                    		// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:244:6: (left= LEFT | right= RIGHT )
                     		int alt32 = 2;
                     		int LA32_0 = input.LA(1);
 
@@ -3869,7 +3869,7 @@ public partial class HqlSqlWalker : TreeParser
                     		switch (alt32) 
                     		{
                     		    case 1 :
-                    		        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:244:7: left= LEFT
+                    		        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:244:7: left= LEFT
                     		        {
                     		        	_last = (IASTNode)input.LT(1);
                     		        	left=(IASTNode)Match(input,LEFT,FOLLOW_LEFT_in_joinType1155); 
@@ -3881,7 +3881,7 @@ public partial class HqlSqlWalker : TreeParser
                     		        }
                     		        break;
                     		    case 2 :
-                    		        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:244:19: right= RIGHT
+                    		        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:244:19: right= RIGHT
                     		        {
                     		        	_last = (IASTNode)input.LT(1);
                     		        	right=(IASTNode)Match(input,RIGHT,FOLLOW_RIGHT_in_joinType1161); 
@@ -3895,7 +3895,7 @@ public partial class HqlSqlWalker : TreeParser
 
                     		}
 
-                    		// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:244:32: (outer= OUTER )?
+                    		// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:244:32: (outer= OUTER )?
                     		int alt33 = 2;
                     		int LA33_0 = input.LA(1);
 
@@ -3906,7 +3906,7 @@ public partial class HqlSqlWalker : TreeParser
                     		switch (alt33) 
                     		{
                     		    case 1 :
-                    		        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:244:33: outer= OUTER
+                    		        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:244:33: outer= OUTER
                     		        {
                     		        	_last = (IASTNode)input.LT(1);
                     		        	outer=(IASTNode)Match(input,OUTER,FOLLOW_OUTER_in_joinType1167); 
@@ -3932,7 +3932,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:250:4: FULL
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:250:4: FULL
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -3949,7 +3949,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:253:4: INNER
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:253:4: INNER
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -3994,7 +3994,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "path"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:260:1: path returns [String p] : (a= identifier | ^( DOT x= path y= identifier ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:260:1: path returns [String p] : (a= identifier | ^( DOT x= path y= identifier ) );
     public HqlSqlWalker.path_return path() // throws RecognitionException [1]
     {   
         HqlSqlWalker.path_return retval = new HqlSqlWalker.path_return();
@@ -4017,7 +4017,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:261:2: (a= identifier | ^( DOT x= path y= identifier ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:261:2: (a= identifier | ^( DOT x= path y= identifier ) )
             int alt35 = 2;
             int LA35_0 = input.LA(1);
 
@@ -4039,7 +4039,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt35) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:261:4: a= identifier
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:261:4: a= identifier
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -4054,7 +4054,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:262:4: ^( DOT x= path y= identifier )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:262:4: ^( DOT x= path y= identifier )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -4123,7 +4123,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "pathAsIdent"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:270:1: pathAsIdent : path -> ^( IDENT[$path.p] ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:270:1: pathAsIdent : path -> ^( IDENT[$path.p] ) ;
     public HqlSqlWalker.pathAsIdent_return pathAsIdent() // throws RecognitionException [1]
     {   
         HqlSqlWalker.pathAsIdent_return retval = new HqlSqlWalker.pathAsIdent_return();
@@ -4140,8 +4140,8 @@ public partial class HqlSqlWalker : TreeParser
         RewriteRuleSubtreeStream stream_path = new RewriteRuleSubtreeStream(adaptor,"rule path");
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:271:5: ( path -> ^( IDENT[$path.p] ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:271:7: path
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:271:5: ( path -> ^( IDENT[$path.p] ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:271:7: path
             {
             	_last = (IASTNode)input.LT(1);
             	PushFollow(FOLLOW_path_in_pathAsIdent1245);
@@ -4164,7 +4164,7 @@ public partial class HqlSqlWalker : TreeParser
             	root_0 = (IASTNode)adaptor.GetNilNode();
             	// 272:5: -> ^( IDENT[$path.p] )
             	{
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:272:8: ^( IDENT[$path.p] )
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:272:8: ^( IDENT[$path.p] )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(IDENT, ((path61 != null) ? path61.p : default(String))), root_1);
@@ -4203,7 +4203,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "withClause"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:275:1: withClause : ^(w= WITH b= logicalExpr ) -> ^( $w $b) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:275:1: withClause : ^(w= WITH b= logicalExpr ) -> ^( $w $b) ;
     public HqlSqlWalker.withClause_return withClause() // throws RecognitionException [1]
     {   
         HqlSqlWalker.withClause_return retval = new HqlSqlWalker.withClause_return();
@@ -4223,8 +4223,8 @@ public partial class HqlSqlWalker : TreeParser
         RewriteRuleSubtreeStream stream_logicalExpr = new RewriteRuleSubtreeStream(adaptor,"rule logicalExpr");
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:282:2: ( ^(w= WITH b= logicalExpr ) -> ^( $w $b) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:282:4: ^(w= WITH b= logicalExpr )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:282:2: ( ^(w= WITH b= logicalExpr ) -> ^( $w $b) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:282:4: ^(w= WITH b= logicalExpr )
             {
             	_last = (IASTNode)input.LT(1);
             	{
@@ -4265,7 +4265,7 @@ public partial class HqlSqlWalker : TreeParser
             	root_0 = (IASTNode)adaptor.GetNilNode();
             	// 283:2: -> ^( $w $b)
             	{
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:283:5: ^( $w $b)
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:283:5: ^( $w $b)
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_w.NextNode(), root_1);
@@ -4306,7 +4306,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "whereClause"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:286:1: whereClause : ^(w= WHERE b= logicalExpr ) -> ^( $w $b) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:286:1: whereClause : ^(w= WHERE b= logicalExpr ) -> ^( $w $b) ;
     public HqlSqlWalker.whereClause_return whereClause() // throws RecognitionException [1]
     {   
         HqlSqlWalker.whereClause_return retval = new HqlSqlWalker.whereClause_return();
@@ -4326,8 +4326,8 @@ public partial class HqlSqlWalker : TreeParser
         RewriteRuleSubtreeStream stream_logicalExpr = new RewriteRuleSubtreeStream(adaptor,"rule logicalExpr");
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:287:2: ( ^(w= WHERE b= logicalExpr ) -> ^( $w $b) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:287:4: ^(w= WHERE b= logicalExpr )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:287:2: ( ^(w= WHERE b= logicalExpr ) -> ^( $w $b) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:287:4: ^(w= WHERE b= logicalExpr )
             {
             	_last = (IASTNode)input.LT(1);
             	{
@@ -4368,7 +4368,7 @@ public partial class HqlSqlWalker : TreeParser
             	root_0 = (IASTNode)adaptor.GetNilNode();
             	// 288:2: -> ^( $w $b)
             	{
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:288:5: ^( $w $b)
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:288:5: ^( $w $b)
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_w.NextNode(), root_1);
@@ -4409,7 +4409,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "logicalExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:291:1: logicalExpr : ( ^( AND logicalExpr logicalExpr ) | ^( OR logicalExpr logicalExpr ) | ^( NOT logicalExpr ) | comparisonExpr );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:291:1: logicalExpr : ( ^( AND logicalExpr logicalExpr ) | ^( OR logicalExpr logicalExpr ) | ^( NOT logicalExpr ) | comparisonExpr );
     public HqlSqlWalker.logicalExpr_return logicalExpr() // throws RecognitionException [1]
     {   
         HqlSqlWalker.logicalExpr_return retval = new HqlSqlWalker.logicalExpr_return();
@@ -4442,7 +4442,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:292:2: ( ^( AND logicalExpr logicalExpr ) | ^( OR logicalExpr logicalExpr ) | ^( NOT logicalExpr ) | comparisonExpr )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:292:2: ( ^( AND logicalExpr logicalExpr ) | ^( OR logicalExpr logicalExpr ) | ^( NOT logicalExpr ) | comparisonExpr )
             int alt36 = 4;
             switch ( input.LA(1) ) 
             {
@@ -4490,7 +4490,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt36) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:292:4: ^( AND logicalExpr logicalExpr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:292:4: ^( AND logicalExpr logicalExpr )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -4527,7 +4527,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:293:4: ^( OR logicalExpr logicalExpr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:293:4: ^( OR logicalExpr logicalExpr )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -4564,7 +4564,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:294:4: ^( NOT logicalExpr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:294:4: ^( NOT logicalExpr )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -4595,7 +4595,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:295:4: comparisonExpr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:295:4: comparisonExpr
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -4636,7 +4636,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "comparisonExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:299:1: comparisonExpr : ( ^( EQ exprOrSubquery exprOrSubquery ) | ^( NE exprOrSubquery exprOrSubquery ) | ^( LT exprOrSubquery exprOrSubquery ) | ^( GT exprOrSubquery exprOrSubquery ) | ^( LE exprOrSubquery exprOrSubquery ) | ^( GE exprOrSubquery exprOrSubquery ) | ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( IN exprOrSubquery inRhs ) | ^( NOT_IN exprOrSubquery inRhs ) | ^( IS_NULL exprOrSubquery ) | ^( IS_NOT_NULL exprOrSubquery ) | ^( EXISTS ( expr | collectionFunctionOrSubselect ) ) ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:299:1: comparisonExpr : ( ^( EQ exprOrSubquery exprOrSubquery ) | ^( NE exprOrSubquery exprOrSubquery ) | ^( LT exprOrSubquery exprOrSubquery ) | ^( GT exprOrSubquery exprOrSubquery ) | ^( LE exprOrSubquery exprOrSubquery ) | ^( GE exprOrSubquery exprOrSubquery ) | ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( IN exprOrSubquery inRhs ) | ^( NOT_IN exprOrSubquery inRhs ) | ^( IS_NULL exprOrSubquery ) | ^( IS_NOT_NULL exprOrSubquery ) | ^( EXISTS ( expr | collectionFunctionOrSubselect ) ) ) ;
     public HqlSqlWalker.comparisonExpr_return comparisonExpr() // throws RecognitionException [1]
     {   
         HqlSqlWalker.comparisonExpr_return retval = new HqlSqlWalker.comparisonExpr_return();
@@ -4749,12 +4749,12 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:303:2: ( ( ^( EQ exprOrSubquery exprOrSubquery ) | ^( NE exprOrSubquery exprOrSubquery ) | ^( LT exprOrSubquery exprOrSubquery ) | ^( GT exprOrSubquery exprOrSubquery ) | ^( LE exprOrSubquery exprOrSubquery ) | ^( GE exprOrSubquery exprOrSubquery ) | ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( IN exprOrSubquery inRhs ) | ^( NOT_IN exprOrSubquery inRhs ) | ^( IS_NULL exprOrSubquery ) | ^( IS_NOT_NULL exprOrSubquery ) | ^( EXISTS ( expr | collectionFunctionOrSubselect ) ) ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:304:2: ( ^( EQ exprOrSubquery exprOrSubquery ) | ^( NE exprOrSubquery exprOrSubquery ) | ^( LT exprOrSubquery exprOrSubquery ) | ^( GT exprOrSubquery exprOrSubquery ) | ^( LE exprOrSubquery exprOrSubquery ) | ^( GE exprOrSubquery exprOrSubquery ) | ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( IN exprOrSubquery inRhs ) | ^( NOT_IN exprOrSubquery inRhs ) | ^( IS_NULL exprOrSubquery ) | ^( IS_NOT_NULL exprOrSubquery ) | ^( EXISTS ( expr | collectionFunctionOrSubselect ) ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:303:2: ( ( ^( EQ exprOrSubquery exprOrSubquery ) | ^( NE exprOrSubquery exprOrSubquery ) | ^( LT exprOrSubquery exprOrSubquery ) | ^( GT exprOrSubquery exprOrSubquery ) | ^( LE exprOrSubquery exprOrSubquery ) | ^( GE exprOrSubquery exprOrSubquery ) | ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( IN exprOrSubquery inRhs ) | ^( NOT_IN exprOrSubquery inRhs ) | ^( IS_NULL exprOrSubquery ) | ^( IS_NOT_NULL exprOrSubquery ) | ^( EXISTS ( expr | collectionFunctionOrSubselect ) ) ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:304:2: ( ^( EQ exprOrSubquery exprOrSubquery ) | ^( NE exprOrSubquery exprOrSubquery ) | ^( LT exprOrSubquery exprOrSubquery ) | ^( GT exprOrSubquery exprOrSubquery ) | ^( LE exprOrSubquery exprOrSubquery ) | ^( GE exprOrSubquery exprOrSubquery ) | ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( IN exprOrSubquery inRhs ) | ^( NOT_IN exprOrSubquery inRhs ) | ^( IS_NULL exprOrSubquery ) | ^( IS_NOT_NULL exprOrSubquery ) | ^( EXISTS ( expr | collectionFunctionOrSubselect ) ) )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:304:2: ( ^( EQ exprOrSubquery exprOrSubquery ) | ^( NE exprOrSubquery exprOrSubquery ) | ^( LT exprOrSubquery exprOrSubquery ) | ^( GT exprOrSubquery exprOrSubquery ) | ^( LE exprOrSubquery exprOrSubquery ) | ^( GE exprOrSubquery exprOrSubquery ) | ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( IN exprOrSubquery inRhs ) | ^( NOT_IN exprOrSubquery inRhs ) | ^( IS_NULL exprOrSubquery ) | ^( IS_NOT_NULL exprOrSubquery ) | ^( EXISTS ( expr | collectionFunctionOrSubselect ) ) )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:304:2: ( ^( EQ exprOrSubquery exprOrSubquery ) | ^( NE exprOrSubquery exprOrSubquery ) | ^( LT exprOrSubquery exprOrSubquery ) | ^( GT exprOrSubquery exprOrSubquery ) | ^( LE exprOrSubquery exprOrSubquery ) | ^( GE exprOrSubquery exprOrSubquery ) | ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( IN exprOrSubquery inRhs ) | ^( NOT_IN exprOrSubquery inRhs ) | ^( IS_NULL exprOrSubquery ) | ^( IS_NOT_NULL exprOrSubquery ) | ^( EXISTS ( expr | collectionFunctionOrSubselect ) ) )
             	int alt40 = 15;
             	switch ( input.LA(1) ) 
             	{
@@ -4843,7 +4843,7 @@ public partial class HqlSqlWalker : TreeParser
             	switch (alt40) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:304:4: ^( EQ exprOrSubquery exprOrSubquery )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:304:4: ^( EQ exprOrSubquery exprOrSubquery )
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	{
@@ -4878,7 +4878,7 @@ public partial class HqlSqlWalker : TreeParser
             	        }
             	        break;
             	    case 2 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:305:4: ^( NE exprOrSubquery exprOrSubquery )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:305:4: ^( NE exprOrSubquery exprOrSubquery )
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	{
@@ -4913,7 +4913,7 @@ public partial class HqlSqlWalker : TreeParser
             	        }
             	        break;
             	    case 3 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:306:4: ^( LT exprOrSubquery exprOrSubquery )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:306:4: ^( LT exprOrSubquery exprOrSubquery )
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	{
@@ -4948,7 +4948,7 @@ public partial class HqlSqlWalker : TreeParser
             	        }
             	        break;
             	    case 4 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:307:4: ^( GT exprOrSubquery exprOrSubquery )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:307:4: ^( GT exprOrSubquery exprOrSubquery )
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	{
@@ -4983,7 +4983,7 @@ public partial class HqlSqlWalker : TreeParser
             	        }
             	        break;
             	    case 5 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:308:4: ^( LE exprOrSubquery exprOrSubquery )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:308:4: ^( LE exprOrSubquery exprOrSubquery )
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	{
@@ -5018,7 +5018,7 @@ public partial class HqlSqlWalker : TreeParser
             	        }
             	        break;
             	    case 6 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:309:4: ^( GE exprOrSubquery exprOrSubquery )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:309:4: ^( GE exprOrSubquery exprOrSubquery )
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	{
@@ -5053,7 +5053,7 @@ public partial class HqlSqlWalker : TreeParser
             	        }
             	        break;
             	    case 7 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:310:4: ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:310:4: ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? )
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	{
@@ -5080,7 +5080,7 @@ public partial class HqlSqlWalker : TreeParser
             	        	state.followingStackPointer--;
 
             	        	adaptor.AddChild(root_1, expr91.Tree);
-            	        	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:310:31: ( ^( ESCAPE expr ) )?
+            	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:310:31: ( ^( ESCAPE expr ) )?
             	        	int alt37 = 2;
             	        	int LA37_0 = input.LA(1);
 
@@ -5091,7 +5091,7 @@ public partial class HqlSqlWalker : TreeParser
             	        	switch (alt37) 
             	        	{
             	        	    case 1 :
-            	        	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:310:33: ^( ESCAPE expr )
+            	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:310:33: ^( ESCAPE expr )
             	        	        {
             	        	        	_last = (IASTNode)input.LT(1);
             	        	        	{
@@ -5130,7 +5130,7 @@ public partial class HqlSqlWalker : TreeParser
             	        }
             	        break;
             	    case 8 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:311:4: ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:311:4: ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? )
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	{
@@ -5157,7 +5157,7 @@ public partial class HqlSqlWalker : TreeParser
             	        	state.followingStackPointer--;
 
             	        	adaptor.AddChild(root_1, expr96.Tree);
-            	        	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:311:35: ( ^( ESCAPE expr ) )?
+            	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:311:35: ( ^( ESCAPE expr ) )?
             	        	int alt38 = 2;
             	        	int LA38_0 = input.LA(1);
 
@@ -5168,7 +5168,7 @@ public partial class HqlSqlWalker : TreeParser
             	        	switch (alt38) 
             	        	{
             	        	    case 1 :
-            	        	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:311:37: ^( ESCAPE expr )
+            	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:311:37: ^( ESCAPE expr )
             	        	        {
             	        	        	_last = (IASTNode)input.LT(1);
             	        	        	{
@@ -5207,7 +5207,7 @@ public partial class HqlSqlWalker : TreeParser
             	        }
             	        break;
             	    case 9 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:312:4: ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:312:4: ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery )
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	{
@@ -5248,7 +5248,7 @@ public partial class HqlSqlWalker : TreeParser
             	        }
             	        break;
             	    case 10 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:313:4: ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:313:4: ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery )
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	{
@@ -5289,7 +5289,7 @@ public partial class HqlSqlWalker : TreeParser
             	        }
             	        break;
             	    case 11 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:314:4: ^( IN exprOrSubquery inRhs )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:314:4: ^( IN exprOrSubquery inRhs )
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	{
@@ -5324,7 +5324,7 @@ public partial class HqlSqlWalker : TreeParser
             	        }
             	        break;
             	    case 12 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:315:4: ^( NOT_IN exprOrSubquery inRhs )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:315:4: ^( NOT_IN exprOrSubquery inRhs )
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	{
@@ -5359,7 +5359,7 @@ public partial class HqlSqlWalker : TreeParser
             	        }
             	        break;
             	    case 13 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:316:4: ^( IS_NULL exprOrSubquery )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:316:4: ^( IS_NULL exprOrSubquery )
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	{
@@ -5388,7 +5388,7 @@ public partial class HqlSqlWalker : TreeParser
             	        }
             	        break;
             	    case 14 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:317:4: ^( IS_NOT_NULL exprOrSubquery )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:317:4: ^( IS_NOT_NULL exprOrSubquery )
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	{
@@ -5417,7 +5417,7 @@ public partial class HqlSqlWalker : TreeParser
             	        }
             	        break;
             	    case 15 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:320:4: ^( EXISTS ( expr | collectionFunctionOrSubselect ) )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:320:4: ^( EXISTS ( expr | collectionFunctionOrSubselect ) )
             	        {
             	        	_last = (IASTNode)input.LT(1);
             	        	{
@@ -5432,7 +5432,7 @@ public partial class HqlSqlWalker : TreeParser
 
 
             	        	Match(input, Token.DOWN, null); 
-            	        	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:320:13: ( expr | collectionFunctionOrSubselect )
+            	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:320:13: ( expr | collectionFunctionOrSubselect )
             	        	int alt39 = 2;
             	        	int LA39_0 = input.LA(1);
 
@@ -5454,7 +5454,7 @@ public partial class HqlSqlWalker : TreeParser
             	        	switch (alt39) 
             	        	{
             	        	    case 1 :
-            	        	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:320:15: expr
+            	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:320:15: expr
             	        	        {
             	        	        	_last = (IASTNode)input.LT(1);
             	        	        	PushFollow(FOLLOW_expr_in_comparisonExpr1590);
@@ -5466,7 +5466,7 @@ public partial class HqlSqlWalker : TreeParser
             	        	        }
             	        	        break;
             	        	    case 2 :
-            	        	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:320:22: collectionFunctionOrSubselect
+            	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:320:22: collectionFunctionOrSubselect
             	        	        {
             	        	        	_last = (IASTNode)input.LT(1);
             	        	        	PushFollow(FOLLOW_collectionFunctionOrSubselect_in_comparisonExpr1594);
@@ -5522,7 +5522,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "inRhs"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:324:1: inRhs : ^( IN_LIST ( collectionFunctionOrSubselect | ( expr )* ) ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:324:1: inRhs : ^( IN_LIST ( collectionFunctionOrSubselect | ( expr )* ) ) ;
     public HqlSqlWalker.inRhs_return inRhs() // throws RecognitionException [1]
     {   
         HqlSqlWalker.inRhs_return retval = new HqlSqlWalker.inRhs_return();
@@ -5545,8 +5545,8 @@ public partial class HqlSqlWalker : TreeParser
         	
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:326:2: ( ^( IN_LIST ( collectionFunctionOrSubselect | ( expr )* ) ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:326:4: ^( IN_LIST ( collectionFunctionOrSubselect | ( expr )* ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:326:2: ( ^( IN_LIST ( collectionFunctionOrSubselect | ( expr )* ) ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:326:4: ^( IN_LIST ( collectionFunctionOrSubselect | ( expr )* ) )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -5565,7 +5565,7 @@ public partial class HqlSqlWalker : TreeParser
             	if ( input.LA(1) == Token.DOWN )
             	{
             	    Match(input, Token.DOWN, null); 
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:326:14: ( collectionFunctionOrSubselect | ( expr )* )
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:326:14: ( collectionFunctionOrSubselect | ( expr )* )
             	    int alt42 = 2;
             	    int LA42_0 = input.LA(1);
 
@@ -5587,7 +5587,7 @@ public partial class HqlSqlWalker : TreeParser
             	    switch (alt42) 
             	    {
             	        case 1 :
-            	            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:326:16: collectionFunctionOrSubselect
+            	            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:326:16: collectionFunctionOrSubselect
             	            {
             	            	_last = (IASTNode)input.LT(1);
             	            	PushFollow(FOLLOW_collectionFunctionOrSubselect_in_inRhs1623);
@@ -5599,9 +5599,9 @@ public partial class HqlSqlWalker : TreeParser
             	            }
             	            break;
             	        case 2 :
-            	            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:326:48: ( expr )*
+            	            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:326:48: ( expr )*
             	            {
-            	            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:326:48: ( expr )*
+            	            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:326:48: ( expr )*
             	            	do 
             	            	{
             	            	    int alt41 = 2;
@@ -5616,7 +5616,7 @@ public partial class HqlSqlWalker : TreeParser
             	            	    switch (alt41) 
             	            		{
             	            			case 1 :
-            	            			    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:326:48: expr
+            	            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:326:48: expr
             	            			    {
             	            			    	_last = (IASTNode)input.LT(1);
             	            			    	PushFollow(FOLLOW_expr_in_inRhs1627);
@@ -5676,7 +5676,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "exprOrSubquery"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:329:1: exprOrSubquery : ( expr | query | ^( ANY collectionFunctionOrSubselect ) | ^( ALL collectionFunctionOrSubselect ) | ^( SOME collectionFunctionOrSubselect ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:329:1: exprOrSubquery : ( expr | query | ^( ANY collectionFunctionOrSubselect ) | ^( ALL collectionFunctionOrSubselect ) | ^( SOME collectionFunctionOrSubselect ) );
     public HqlSqlWalker.exprOrSubquery_return exprOrSubquery() // throws RecognitionException [1]
     {   
         HqlSqlWalker.exprOrSubquery_return retval = new HqlSqlWalker.exprOrSubquery_return();
@@ -5707,7 +5707,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:330:2: ( expr | query | ^( ANY collectionFunctionOrSubselect ) | ^( ALL collectionFunctionOrSubselect ) | ^( SOME collectionFunctionOrSubselect ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:330:2: ( expr | query | ^( ANY collectionFunctionOrSubselect ) | ^( ALL collectionFunctionOrSubselect ) | ^( SOME collectionFunctionOrSubselect ) )
             int alt43 = 5;
             switch ( input.LA(1) ) 
             {
@@ -5771,7 +5771,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt43) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:330:4: expr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:330:4: expr
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -5785,7 +5785,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:331:4: query
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:331:4: query
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -5799,7 +5799,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:332:4: ^( ANY collectionFunctionOrSubselect )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:332:4: ^( ANY collectionFunctionOrSubselect )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -5830,7 +5830,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:333:4: ^( ALL collectionFunctionOrSubselect )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:333:4: ^( ALL collectionFunctionOrSubselect )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -5861,7 +5861,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 5 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:334:4: ^( SOME collectionFunctionOrSubselect )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:334:4: ^( SOME collectionFunctionOrSubselect )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -5919,7 +5919,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "collectionFunctionOrSubselect"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:337:1: collectionFunctionOrSubselect : ( collectionFunction | query );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:337:1: collectionFunctionOrSubselect : ( collectionFunction | query );
     public HqlSqlWalker.collectionFunctionOrSubselect_return collectionFunctionOrSubselect() // throws RecognitionException [1]
     {   
         HqlSqlWalker.collectionFunctionOrSubselect_return retval = new HqlSqlWalker.collectionFunctionOrSubselect_return();
@@ -5938,7 +5938,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:338:2: ( collectionFunction | query )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:338:2: ( collectionFunction | query )
             int alt44 = 2;
             int LA44_0 = input.LA(1);
 
@@ -5960,7 +5960,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt44) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:338:4: collectionFunction
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:338:4: collectionFunction
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -5974,7 +5974,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:339:4: query
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:339:4: query
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6015,7 +6015,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "expr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:342:1: expr : (ae= addrExpr[ true ] | ^( VECTOR_EXPR ( expr )* ) | constant | arithmeticExpr | functionCall | parameter | count );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:342:1: expr : (ae= addrExpr[ true ] | ^( VECTOR_EXPR ( expr )* ) | constant | arithmeticExpr | functionCall | parameter | count );
     public HqlSqlWalker.expr_return expr() // throws RecognitionException [1]
     {   
         HqlSqlWalker.expr_return retval = new HqlSqlWalker.expr_return();
@@ -6046,7 +6046,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:343:2: (ae= addrExpr[ true ] | ^( VECTOR_EXPR ( expr )* ) | constant | arithmeticExpr | functionCall | parameter | count )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:343:2: (ae= addrExpr[ true ] | ^( VECTOR_EXPR ( expr )* ) | constant | arithmeticExpr | functionCall | parameter | count )
             int alt46 = 7;
             switch ( input.LA(1) ) 
             {
@@ -6114,7 +6114,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt46) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:343:4: ae= addrExpr[ true ]
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:343:4: ae= addrExpr[ true ]
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6129,7 +6129,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:344:4: ^( VECTOR_EXPR ( expr )* )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:344:4: ^( VECTOR_EXPR ( expr )* )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6148,7 +6148,7 @@ public partial class HqlSqlWalker : TreeParser
                     	if ( input.LA(1) == Token.DOWN )
                     	{
                     	    Match(input, Token.DOWN, null); 
-                    	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:344:19: ( expr )*
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:344:19: ( expr )*
                     	    do 
                     	    {
                     	        int alt45 = 2;
@@ -6163,7 +6163,7 @@ public partial class HqlSqlWalker : TreeParser
                     	        switch (alt45) 
                     	    	{
                     	    		case 1 :
-                    	    		    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:344:20: expr
+                    	    		    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:344:20: expr
                     	    		    {
                     	    		    	_last = (IASTNode)input.LT(1);
                     	    		    	PushFollow(FOLLOW_expr_in_expr1721);
@@ -6192,7 +6192,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:345:4: constant
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:345:4: constant
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6206,7 +6206,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:346:4: arithmeticExpr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:346:4: arithmeticExpr
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6220,7 +6220,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 5 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:347:4: functionCall
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:347:4: functionCall
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6234,7 +6234,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 6 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:348:4: parameter
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:348:4: parameter
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6248,7 +6248,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 7 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:349:4: count
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:349:4: count
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6289,7 +6289,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "arithmeticExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:352:1: arithmeticExpr : ( ^( PLUS expr expr ) | ^( MINUS expr expr ) | ^( DIV expr expr ) | ^( STAR expr expr ) | ^( UNARY_MINUS expr ) | c= caseExpr );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:352:1: arithmeticExpr : ( ^( PLUS expr expr ) | ^( MINUS expr expr ) | ^( DIV expr expr ) | ^( STAR expr expr ) | ^( UNARY_MINUS expr ) | c= caseExpr );
     public HqlSqlWalker.arithmeticExpr_return arithmeticExpr() // throws RecognitionException [1]
     {   
         HqlSqlWalker.arithmeticExpr_return retval = new HqlSqlWalker.arithmeticExpr_return();
@@ -6334,7 +6334,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:359:2: ( ^( PLUS expr expr ) | ^( MINUS expr expr ) | ^( DIV expr expr ) | ^( STAR expr expr ) | ^( UNARY_MINUS expr ) | c= caseExpr )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:359:2: ( ^( PLUS expr expr ) | ^( MINUS expr expr ) | ^( DIV expr expr ) | ^( STAR expr expr ) | ^( UNARY_MINUS expr ) | c= caseExpr )
             int alt47 = 6;
             switch ( input.LA(1) ) 
             {
@@ -6379,7 +6379,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt47) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:359:4: ^( PLUS expr expr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:359:4: ^( PLUS expr expr )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6416,7 +6416,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:360:4: ^( MINUS expr expr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:360:4: ^( MINUS expr expr )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6453,7 +6453,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:361:4: ^( DIV expr expr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:361:4: ^( DIV expr expr )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6490,7 +6490,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:362:4: ^( STAR expr expr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:362:4: ^( STAR expr expr )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6527,7 +6527,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 5 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:364:4: ^( UNARY_MINUS expr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:364:4: ^( UNARY_MINUS expr )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6558,7 +6558,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 6 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:365:4: c= caseExpr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:365:4: c= caseExpr
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6605,7 +6605,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "caseExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:368:1: caseExpr : ( ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:368:1: caseExpr : ( ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) );
     public HqlSqlWalker.caseExpr_return caseExpr() // throws RecognitionException [1]
     {   
         HqlSqlWalker.caseExpr_return retval = new HqlSqlWalker.caseExpr_return();
@@ -6646,7 +6646,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:369:2: ( ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:369:2: ( ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) )
             int alt52 = 2;
             int LA52_0 = input.LA(1);
 
@@ -6668,7 +6668,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt52) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:369:4: ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:369:4: ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6686,7 +6686,7 @@ public partial class HqlSqlWalker : TreeParser
                     	 _inCase = true; 
 
                     	Match(input, Token.DOWN, null); 
-                    	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:369:31: ( ^( WHEN logicalExpr expr ) )+
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:369:31: ( ^( WHEN logicalExpr expr ) )+
                     	int cnt48 = 0;
                     	do 
                     	{
@@ -6702,7 +6702,7 @@ public partial class HqlSqlWalker : TreeParser
                     	    switch (alt48) 
                     		{
                     			case 1 :
-                    			    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:369:32: ^( WHEN logicalExpr expr )
+                    			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:369:32: ^( WHEN logicalExpr expr )
                     			    {
                     			    	_last = (IASTNode)input.LT(1);
                     			    	{
@@ -6749,7 +6749,7 @@ public partial class HqlSqlWalker : TreeParser
                     	loop48:
                     		;	// Stops C# compiler whinging that label 'loop48' has no statements
 
-                    	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:369:59: ( ^( ELSE expr ) )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:369:59: ( ^( ELSE expr ) )?
                     	int alt49 = 2;
                     	int LA49_0 = input.LA(1);
 
@@ -6760,7 +6760,7 @@ public partial class HqlSqlWalker : TreeParser
                     	switch (alt49) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:369:60: ^( ELSE expr )
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:369:60: ^( ELSE expr )
                     	        {
                     	        	_last = (IASTNode)input.LT(1);
                     	        	{
@@ -6800,7 +6800,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:370:4: ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:370:4: ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6824,7 +6824,7 @@ public partial class HqlSqlWalker : TreeParser
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_1, expr161.Tree);
-                    	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:370:37: ( ^( WHEN expr expr ) )+
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:370:37: ( ^( WHEN expr expr ) )+
                     	int cnt50 = 0;
                     	do 
                     	{
@@ -6840,7 +6840,7 @@ public partial class HqlSqlWalker : TreeParser
                     	    switch (alt50) 
                     		{
                     			case 1 :
-                    			    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:370:38: ^( WHEN expr expr )
+                    			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:370:38: ^( WHEN expr expr )
                     			    {
                     			    	_last = (IASTNode)input.LT(1);
                     			    	{
@@ -6887,7 +6887,7 @@ public partial class HqlSqlWalker : TreeParser
                     	loop50:
                     		;	// Stops C# compiler whinging that label 'loop50' has no statements
 
-                    	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:370:58: ( ^( ELSE expr ) )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:370:58: ( ^( ELSE expr ) )?
                     	int alt51 = 2;
                     	int LA51_0 = input.LA(1);
 
@@ -6898,7 +6898,7 @@ public partial class HqlSqlWalker : TreeParser
                     	switch (alt51) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:370:59: ^( ELSE expr )
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:370:59: ^( ELSE expr )
                     	        {
                     	        	_last = (IASTNode)input.LT(1);
                     	        	{
@@ -6965,7 +6965,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "collectionFunction"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:375:1: collectionFunction : ( ^(e= ELEMENTS p1= propertyRef ) | ^(i= INDICES p2= propertyRef ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:375:1: collectionFunction : ( ^(e= ELEMENTS p1= propertyRef ) | ^(i= INDICES p2= propertyRef ) );
     public HqlSqlWalker.collectionFunction_return collectionFunction() // throws RecognitionException [1]
     {   
         HqlSqlWalker.collectionFunction_return retval = new HqlSqlWalker.collectionFunction_return();
@@ -6988,7 +6988,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:376:2: ( ^(e= ELEMENTS p1= propertyRef ) | ^(i= INDICES p2= propertyRef ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:376:2: ( ^(e= ELEMENTS p1= propertyRef ) | ^(i= INDICES p2= propertyRef ) )
             int alt53 = 2;
             int LA53_0 = input.LA(1);
 
@@ -7010,7 +7010,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt53) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:376:4: ^(e= ELEMENTS p1= propertyRef )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:376:4: ^(e= ELEMENTS p1= propertyRef )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7045,7 +7045,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:378:4: ^(i= INDICES p2= propertyRef )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:378:4: ^(i= INDICES p2= propertyRef )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7107,7 +7107,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "functionCall"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:382:1: functionCall : ( ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | comparisonExpr )* ) )? ) | ^( AGGREGATE aggregateExpr ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:382:1: functionCall : ( ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | comparisonExpr )* ) )? ) | ^( AGGREGATE aggregateExpr ) );
     public HqlSqlWalker.functionCall_return functionCall() // throws RecognitionException [1]
     {   
         HqlSqlWalker.functionCall_return retval = new HqlSqlWalker.functionCall_return();
@@ -7136,7 +7136,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:383:2: ( ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | comparisonExpr )* ) )? ) | ^( AGGREGATE aggregateExpr ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:383:2: ( ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | comparisonExpr )* ) )? ) | ^( AGGREGATE aggregateExpr ) )
             int alt56 = 2;
             int LA56_0 = input.LA(1);
 
@@ -7158,7 +7158,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt56) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:383:4: ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | comparisonExpr )* ) )? )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:383:4: ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | comparisonExpr )* ) )? )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7182,7 +7182,7 @@ public partial class HqlSqlWalker : TreeParser
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_1, pathAsIdent167.Tree);
-                    	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:383:57: ( ^( EXPR_LIST ( expr | comparisonExpr )* ) )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:383:57: ( ^( EXPR_LIST ( expr | comparisonExpr )* ) )?
                     	int alt55 = 2;
                     	int LA55_0 = input.LA(1);
 
@@ -7193,7 +7193,7 @@ public partial class HqlSqlWalker : TreeParser
                     	switch (alt55) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:383:59: ^( EXPR_LIST ( expr | comparisonExpr )* )
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:383:59: ^( EXPR_LIST ( expr | comparisonExpr )* )
                     	        {
                     	        	_last = (IASTNode)input.LT(1);
                     	        	{
@@ -7210,7 +7210,7 @@ public partial class HqlSqlWalker : TreeParser
                     	        	if ( input.LA(1) == Token.DOWN )
                     	        	{
                     	        	    Match(input, Token.DOWN, null); 
-                    	        	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:383:71: ( expr | comparisonExpr )*
+                    	        	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:383:71: ( expr | comparisonExpr )*
                     	        	    do 
                     	        	    {
                     	        	        int alt54 = 3;
@@ -7229,7 +7229,7 @@ public partial class HqlSqlWalker : TreeParser
                     	        	        switch (alt54) 
                     	        	    	{
                     	        	    		case 1 :
-                    	        	    		    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:383:72: expr
+                    	        	    		    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:383:72: expr
                     	        	    		    {
                     	        	    		    	_last = (IASTNode)input.LT(1);
                     	        	    		    	PushFollow(FOLLOW_expr_in_functionCall1995);
@@ -7241,7 +7241,7 @@ public partial class HqlSqlWalker : TreeParser
                     	        	    		    }
                     	        	    		    break;
                     	        	    		case 2 :
-                    	        	    		    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:383:79: comparisonExpr
+                    	        	    		    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:383:79: comparisonExpr
                     	        	    		    {
                     	        	    		    	_last = (IASTNode)input.LT(1);
                     	        	    		    	PushFollow(FOLLOW_comparisonExpr_in_functionCall1999);
@@ -7281,7 +7281,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:385:4: ^( AGGREGATE aggregateExpr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:385:4: ^( AGGREGATE aggregateExpr )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7339,7 +7339,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "constant"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:388:1: constant : ( literal | NULL | t= TRUE | f= FALSE | JAVA_CONSTANT );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:388:1: constant : ( literal | NULL | t= TRUE | f= FALSE | JAVA_CONSTANT );
     public HqlSqlWalker.constant_return constant() // throws RecognitionException [1]
     {   
         HqlSqlWalker.constant_return retval = new HqlSqlWalker.constant_return();
@@ -7364,7 +7364,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:389:2: ( literal | NULL | t= TRUE | f= FALSE | JAVA_CONSTANT )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:389:2: ( literal | NULL | t= TRUE | f= FALSE | JAVA_CONSTANT )
             int alt57 = 5;
             switch ( input.LA(1) ) 
             {
@@ -7407,7 +7407,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt57) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:389:4: literal
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:389:4: literal
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7421,7 +7421,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:390:4: NULL
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:390:4: NULL
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7435,7 +7435,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:391:4: t= TRUE
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:391:4: t= TRUE
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7450,7 +7450,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:392:4: f= FALSE
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:392:4: f= FALSE
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7465,7 +7465,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 5 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:393:4: JAVA_CONSTANT
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:393:4: JAVA_CONSTANT
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7506,7 +7506,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "literal"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:396:1: literal : ( numericLiteral | stringLiteral );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:396:1: literal : ( numericLiteral | stringLiteral );
     public HqlSqlWalker.literal_return literal() // throws RecognitionException [1]
     {   
         HqlSqlWalker.literal_return retval = new HqlSqlWalker.literal_return();
@@ -7525,7 +7525,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:397:2: ( numericLiteral | stringLiteral )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:397:2: ( numericLiteral | stringLiteral )
             int alt58 = 2;
             int LA58_0 = input.LA(1);
 
@@ -7547,7 +7547,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt58) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:397:4: numericLiteral
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:397:4: numericLiteral
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7561,7 +7561,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:398:4: stringLiteral
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:398:4: stringLiteral
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7602,7 +7602,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "numericLiteral"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:401:1: numericLiteral : ( NUM_INT | NUM_LONG | NUM_FLOAT | NUM_DOUBLE );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:401:1: numericLiteral : ( NUM_INT | NUM_LONG | NUM_FLOAT | NUM_DOUBLE );
     public HqlSqlWalker.numericLiteral_return numericLiteral() // throws RecognitionException [1]
     {   
         HqlSqlWalker.numericLiteral_return retval = new HqlSqlWalker.numericLiteral_return();
@@ -7619,8 +7619,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:406:2: ( NUM_INT | NUM_LONG | NUM_FLOAT | NUM_DOUBLE )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:406:2: ( NUM_INT | NUM_LONG | NUM_FLOAT | NUM_DOUBLE )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7675,7 +7675,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "stringLiteral"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:412:1: stringLiteral : QUOTED_String ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:412:1: stringLiteral : QUOTED_String ;
     public HqlSqlWalker.stringLiteral_return stringLiteral() // throws RecognitionException [1]
     {   
         HqlSqlWalker.stringLiteral_return retval = new HqlSqlWalker.stringLiteral_return();
@@ -7692,8 +7692,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:413:2: ( QUOTED_String )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:413:4: QUOTED_String
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:413:2: ( QUOTED_String )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:413:4: QUOTED_String
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7732,7 +7732,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "identifier"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:416:1: identifier : ( IDENT | WEIRD_IDENT ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:416:1: identifier : ( IDENT | WEIRD_IDENT ) ;
     public HqlSqlWalker.identifier_return identifier() // throws RecognitionException [1]
     {   
         HqlSqlWalker.identifier_return retval = new HqlSqlWalker.identifier_return();
@@ -7749,8 +7749,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:417:2: ( ( IDENT | WEIRD_IDENT ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:417:4: ( IDENT | WEIRD_IDENT )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:417:2: ( ( IDENT | WEIRD_IDENT ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:417:4: ( IDENT | WEIRD_IDENT )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7801,7 +7801,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "addrExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:420:1: addrExpr[ bool root ] : ( addrExprDot[root] | addrExprIndex[root] | addrExprIdent[root] );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:420:1: addrExpr[ bool root ] : ( addrExprDot[root] | addrExprIndex[root] | addrExprIdent[root] );
     public HqlSqlWalker.addrExpr_return addrExpr(bool root) // throws RecognitionException [1]
     {   
         HqlSqlWalker.addrExpr_return retval = new HqlSqlWalker.addrExpr_return();
@@ -7822,7 +7822,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:421:2: ( addrExprDot[root] | addrExprIndex[root] | addrExprIdent[root] )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:421:2: ( addrExprDot[root] | addrExprIndex[root] | addrExprIdent[root] )
             int alt59 = 3;
             switch ( input.LA(1) ) 
             {
@@ -7852,7 +7852,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt59) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:421:4: addrExprDot[root]
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:421:4: addrExprDot[root]
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7866,7 +7866,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:422:4: addrExprIndex[root]
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:422:4: addrExprIndex[root]
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7880,7 +7880,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:423:4: addrExprIdent[root]
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:423:4: addrExprIdent[root]
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7921,7 +7921,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "addrExprDot"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:426:1: addrExprDot[ bool root ] : ^(d= DOT lhs= addrExprLhs rhs= propertyName ) -> ^( $d $lhs $rhs) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:426:1: addrExprDot[ bool root ] : ^(d= DOT lhs= addrExprLhs rhs= propertyName ) -> ^( $d $lhs $rhs) ;
     public HqlSqlWalker.addrExprDot_return addrExprDot(bool root) // throws RecognitionException [1]
     {   
         HqlSqlWalker.addrExprDot_return retval = new HqlSqlWalker.addrExprDot_return();
@@ -7944,8 +7944,8 @@ public partial class HqlSqlWalker : TreeParser
         RewriteRuleSubtreeStream stream_addrExprLhs = new RewriteRuleSubtreeStream(adaptor,"rule addrExprLhs");
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:431:2: ( ^(d= DOT lhs= addrExprLhs rhs= propertyName ) -> ^( $d $lhs $rhs) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:431:4: ^(d= DOT lhs= addrExprLhs rhs= propertyName )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:431:2: ( ^(d= DOT lhs= addrExprLhs rhs= propertyName ) -> ^( $d $lhs $rhs) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:431:4: ^(d= DOT lhs= addrExprLhs rhs= propertyName )
             {
             	_last = (IASTNode)input.LT(1);
             	{
@@ -7977,22 +7977,22 @@ public partial class HqlSqlWalker : TreeParser
 
 
             	// AST REWRITE
-            	// elements:          d, lhs, rhs
+            	// elements:          lhs, rhs, d
             	// token labels:      d
-            	// rule labels:       lhs, retval, rhs
+            	// rule labels:       retval, rhs, lhs
             	// token list labels: 
             	// rule list labels:  
             	// wildcard labels: 
             	retval.Tree = root_0;
             	RewriteRuleNodeStream stream_d = new RewriteRuleNodeStream(adaptor, "token d", d);
-            	RewriteRuleSubtreeStream stream_lhs = new RewriteRuleSubtreeStream(adaptor, "rule lhs", lhs!=null ? lhs.Tree : null);
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
             	RewriteRuleSubtreeStream stream_rhs = new RewriteRuleSubtreeStream(adaptor, "rule rhs", rhs!=null ? rhs.Tree : null);
+            	RewriteRuleSubtreeStream stream_lhs = new RewriteRuleSubtreeStream(adaptor, "rule lhs", lhs!=null ? lhs.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
             	// 432:3: -> ^( $d $lhs $rhs)
             	{
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:432:6: ^( $d $lhs $rhs)
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:432:6: ^( $d $lhs $rhs)
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_d.NextNode(), root_1);
@@ -8037,7 +8037,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "addrExprIndex"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:435:1: addrExprIndex[ bool root ] : ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr ) -> ^( $i $lhs2 $rhs2) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:435:1: addrExprIndex[ bool root ] : ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr ) -> ^( $i $lhs2 $rhs2) ;
     public HqlSqlWalker.addrExprIndex_return addrExprIndex(bool root) // throws RecognitionException [1]
     {   
         HqlSqlWalker.addrExprIndex_return retval = new HqlSqlWalker.addrExprIndex_return();
@@ -8056,12 +8056,12 @@ public partial class HqlSqlWalker : TreeParser
 
         IASTNode i_tree=null;
         RewriteRuleNodeStream stream_INDEX_OP = new RewriteRuleNodeStream(adaptor,"token INDEX_OP");
-        RewriteRuleSubtreeStream stream_expr = new RewriteRuleSubtreeStream(adaptor,"rule expr");
         RewriteRuleSubtreeStream stream_addrExprLhs = new RewriteRuleSubtreeStream(adaptor,"rule addrExprLhs");
+        RewriteRuleSubtreeStream stream_expr = new RewriteRuleSubtreeStream(adaptor,"rule expr");
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:441:2: ( ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr ) -> ^( $i $lhs2 $rhs2) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:441:4: ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:441:2: ( ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr ) -> ^( $i $lhs2 $rhs2) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:441:4: ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr )
             {
             	_last = (IASTNode)input.LT(1);
             	{
@@ -8093,22 +8093,22 @@ public partial class HqlSqlWalker : TreeParser
 
 
             	// AST REWRITE
-            	// elements:          i, lhs2, rhs2
+            	// elements:          lhs2, i, rhs2
             	// token labels:      i
-            	// rule labels:       rhs2, retval, lhs2
+            	// rule labels:       retval, rhs2, lhs2
             	// token list labels: 
             	// rule list labels:  
             	// wildcard labels: 
             	retval.Tree = root_0;
             	RewriteRuleNodeStream stream_i = new RewriteRuleNodeStream(adaptor, "token i", i);
-            	RewriteRuleSubtreeStream stream_rhs2 = new RewriteRuleSubtreeStream(adaptor, "rule rhs2", rhs2!=null ? rhs2.Tree : null);
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
+            	RewriteRuleSubtreeStream stream_rhs2 = new RewriteRuleSubtreeStream(adaptor, "rule rhs2", rhs2!=null ? rhs2.Tree : null);
             	RewriteRuleSubtreeStream stream_lhs2 = new RewriteRuleSubtreeStream(adaptor, "rule lhs2", lhs2!=null ? lhs2.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
             	// 442:3: -> ^( $i $lhs2 $rhs2)
             	{
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:442:6: ^( $i $lhs2 $rhs2)
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:442:6: ^( $i $lhs2 $rhs2)
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_i.NextNode(), root_1);
@@ -8153,7 +8153,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "addrExprIdent"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:445:1: addrExprIdent[ bool root ] : p= identifier -> {IsNonQualifiedPropertyRef($p.tree)}? ^() -> ^() ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:445:1: addrExprIdent[ bool root ] : p= identifier -> {IsNonQualifiedPropertyRef($p.tree)}? ^() -> ^() ;
     public HqlSqlWalker.addrExprIdent_return addrExprIdent(bool root) // throws RecognitionException [1]
     {   
         HqlSqlWalker.addrExprIdent_return retval = new HqlSqlWalker.addrExprIdent_return();
@@ -8170,8 +8170,8 @@ public partial class HqlSqlWalker : TreeParser
         RewriteRuleSubtreeStream stream_identifier = new RewriteRuleSubtreeStream(adaptor,"rule identifier");
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:446:2: (p= identifier -> {IsNonQualifiedPropertyRef($p.tree)}? ^() -> ^() )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:446:4: p= identifier
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:446:2: (p= identifier -> {IsNonQualifiedPropertyRef($p.tree)}? ^() -> ^() )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:446:4: p= identifier
             {
             	_last = (IASTNode)input.LT(1);
             	PushFollow(FOLLOW_identifier_in_addrExprIdent2275);
@@ -8195,7 +8195,7 @@ public partial class HqlSqlWalker : TreeParser
             	// 447:2: -> {IsNonQualifiedPropertyRef($p.tree)}? ^()
             	if (IsNonQualifiedPropertyRef(((p != null) ? ((IASTNode)p.Tree) : null)))
             	{
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:447:43: ^()
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:447:43: ^()
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot(LookupNonQualifiedProperty(((p != null) ? ((IASTNode)p.Tree) : null)), root_1);
@@ -8206,7 +8206,7 @@ public partial class HqlSqlWalker : TreeParser
             	}
             	else // 448:2: -> ^()
             	{
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:448:5: ^()
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:448:5: ^()
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot(Resolve(((p != null) ? ((IASTNode)p.Tree) : null)), root_1);
@@ -8245,7 +8245,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "addrExprLhs"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:451:1: addrExprLhs : addrExpr[ false ] ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:451:1: addrExprLhs : addrExpr[ false ] ;
     public HqlSqlWalker.addrExprLhs_return addrExprLhs() // throws RecognitionException [1]
     {   
         HqlSqlWalker.addrExprLhs_return retval = new HqlSqlWalker.addrExprLhs_return();
@@ -8262,8 +8262,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:452:2: ( addrExpr[ false ] )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:452:4: addrExpr[ false ]
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:452:2: ( addrExpr[ false ] )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:452:4: addrExpr[ false ]
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -8302,7 +8302,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "propertyName"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:455:1: propertyName : ( identifier | CLASS | ELEMENTS | INDICES );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:455:1: propertyName : ( identifier | CLASS | ELEMENTS | INDICES );
     public HqlSqlWalker.propertyName_return propertyName() // throws RecognitionException [1]
     {   
         HqlSqlWalker.propertyName_return retval = new HqlSqlWalker.propertyName_return();
@@ -8325,7 +8325,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:456:2: ( identifier | CLASS | ELEMENTS | INDICES )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:456:2: ( identifier | CLASS | ELEMENTS | INDICES )
             int alt60 = 4;
             switch ( input.LA(1) ) 
             {
@@ -8360,7 +8360,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt60) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:456:4: identifier
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:456:4: identifier
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -8374,7 +8374,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:457:4: CLASS
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:457:4: CLASS
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -8388,7 +8388,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:458:4: ELEMENTS
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:458:4: ELEMENTS
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -8402,7 +8402,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:459:4: INDICES
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:459:4: INDICES
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -8443,7 +8443,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "propertyRef"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:462:1: propertyRef : ( propertyRefPath | propertyRefIdent );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:462:1: propertyRef : ( propertyRefPath | propertyRefIdent );
     public HqlSqlWalker.propertyRef_return propertyRef() // throws RecognitionException [1]
     {   
         HqlSqlWalker.propertyRef_return retval = new HqlSqlWalker.propertyRef_return();
@@ -8462,7 +8462,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:463:2: ( propertyRefPath | propertyRefIdent )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:463:2: ( propertyRefPath | propertyRefIdent )
             int alt61 = 2;
             int LA61_0 = input.LA(1);
 
@@ -8484,7 +8484,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt61) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:463:4: propertyRefPath
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:463:4: propertyRefPath
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -8498,7 +8498,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:464:4: propertyRefIdent
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:464:4: propertyRefIdent
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -8539,7 +8539,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "propertyRefPath"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:467:1: propertyRefPath : ^(d= DOT lhs= propertyRefLhs rhs= propertyName ) -> ^( $d $lhs $rhs) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:467:1: propertyRefPath : ^(d= DOT lhs= propertyRefLhs rhs= propertyName ) -> ^( $d $lhs $rhs) ;
     public HqlSqlWalker.propertyRefPath_return propertyRefPath() // throws RecognitionException [1]
     {   
         HqlSqlWalker.propertyRefPath_return retval = new HqlSqlWalker.propertyRefPath_return();
@@ -8562,8 +8562,8 @@ public partial class HqlSqlWalker : TreeParser
         RewriteRuleSubtreeStream stream_propertyRefLhs = new RewriteRuleSubtreeStream(adaptor,"rule propertyRefLhs");
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:472:2: ( ^(d= DOT lhs= propertyRefLhs rhs= propertyName ) -> ^( $d $lhs $rhs) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:472:4: ^(d= DOT lhs= propertyRefLhs rhs= propertyName )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:472:2: ( ^(d= DOT lhs= propertyRefLhs rhs= propertyName ) -> ^( $d $lhs $rhs) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:472:4: ^(d= DOT lhs= propertyRefLhs rhs= propertyName )
             {
             	_last = (IASTNode)input.LT(1);
             	{
@@ -8595,22 +8595,22 @@ public partial class HqlSqlWalker : TreeParser
 
 
             	// AST REWRITE
-            	// elements:          lhs, rhs, d
+            	// elements:          lhs, d, rhs
             	// token labels:      d
-            	// rule labels:       lhs, retval, rhs
+            	// rule labels:       retval, rhs, lhs
             	// token list labels: 
             	// rule list labels:  
             	// wildcard labels: 
             	retval.Tree = root_0;
             	RewriteRuleNodeStream stream_d = new RewriteRuleNodeStream(adaptor, "token d", d);
-            	RewriteRuleSubtreeStream stream_lhs = new RewriteRuleSubtreeStream(adaptor, "rule lhs", lhs!=null ? lhs.Tree : null);
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
             	RewriteRuleSubtreeStream stream_rhs = new RewriteRuleSubtreeStream(adaptor, "rule rhs", rhs!=null ? rhs.Tree : null);
+            	RewriteRuleSubtreeStream stream_lhs = new RewriteRuleSubtreeStream(adaptor, "rule lhs", lhs!=null ? lhs.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
             	// 473:3: -> ^( $d $lhs $rhs)
             	{
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:473:6: ^( $d $lhs $rhs)
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:473:6: ^( $d $lhs $rhs)
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_d.NextNode(), root_1);
@@ -8656,7 +8656,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "propertyRefIdent"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:476:1: propertyRefIdent : p= identifier ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:476:1: propertyRefIdent : p= identifier ;
     public HqlSqlWalker.propertyRefIdent_return propertyRefIdent() // throws RecognitionException [1]
     {   
         HqlSqlWalker.propertyRefIdent_return retval = new HqlSqlWalker.propertyRefIdent_return();
@@ -8673,8 +8673,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:490:2: (p= identifier )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:490:4: p= identifier
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:490:2: (p= identifier )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:490:4: p= identifier
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -8726,7 +8726,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "propertyRefLhs"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:493:1: propertyRefLhs : propertyRef ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:493:1: propertyRefLhs : propertyRef ;
     public HqlSqlWalker.propertyRefLhs_return propertyRefLhs() // throws RecognitionException [1]
     {   
         HqlSqlWalker.propertyRefLhs_return retval = new HqlSqlWalker.propertyRefLhs_return();
@@ -8743,8 +8743,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:494:2: ( propertyRef )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:494:4: propertyRef
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:494:2: ( propertyRef )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:494:4: propertyRef
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -8783,7 +8783,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "aliasRef"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:497:1: aliasRef : i= identifier ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:497:1: aliasRef : i= identifier ;
     public HqlSqlWalker.aliasRef_return aliasRef() // throws RecognitionException [1]
     {   
         HqlSqlWalker.aliasRef_return retval = new HqlSqlWalker.aliasRef_return();
@@ -8800,8 +8800,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:502:2: (i= identifier )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:502:4: i= identifier
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:502:2: (i= identifier )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:502:4: i= identifier
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -8843,7 +8843,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "parameter"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:506:1: parameter : ( ^(c= COLON a= identifier ) -> ^() | ^(p= PARAM (n= NUM_INT )? ) -> {n != null}? ^() -> ^() );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:506:1: parameter : ( ^(c= COLON a= identifier ) -> ^() | ^(p= PARAM (n= NUM_INT )? ) -> {n != null}? ^() -> ^() );
     public HqlSqlWalker.parameter_return parameter() // throws RecognitionException [1]
     {   
         HqlSqlWalker.parameter_return retval = new HqlSqlWalker.parameter_return();
@@ -8863,13 +8863,13 @@ public partial class HqlSqlWalker : TreeParser
         IASTNode c_tree=null;
         IASTNode p_tree=null;
         IASTNode n_tree=null;
+        RewriteRuleNodeStream stream_COLON = new RewriteRuleNodeStream(adaptor,"token COLON");
         RewriteRuleNodeStream stream_PARAM = new RewriteRuleNodeStream(adaptor,"token PARAM");
         RewriteRuleNodeStream stream_NUM_INT = new RewriteRuleNodeStream(adaptor,"token NUM_INT");
-        RewriteRuleNodeStream stream_COLON = new RewriteRuleNodeStream(adaptor,"token COLON");
         RewriteRuleSubtreeStream stream_identifier = new RewriteRuleSubtreeStream(adaptor,"rule identifier");
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:507:2: ( ^(c= COLON a= identifier ) -> ^() | ^(p= PARAM (n= NUM_INT )? ) -> {n != null}? ^() -> ^() )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:507:2: ( ^(c= COLON a= identifier ) -> ^() | ^(p= PARAM (n= NUM_INT )? ) -> {n != null}? ^() -> ^() )
             int alt63 = 2;
             int LA63_0 = input.LA(1);
 
@@ -8891,7 +8891,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt63) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:507:4: ^(c= COLON a= identifier )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:507:4: ^(c= COLON a= identifier )
                     {
                     	_last = (IASTNode)input.LT(1);
                     	{
@@ -8929,7 +8929,7 @@ public partial class HqlSqlWalker : TreeParser
                     	root_0 = (IASTNode)adaptor.GetNilNode();
                     	// 509:3: -> ^()
                     	{
-                    	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:509:6: ^()
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:509:6: ^()
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(GenerateNamedParameter( c, ((a != null) ? ((IASTNode)a.Tree) : null) ), root_1);
@@ -8943,7 +8943,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:510:4: ^(p= PARAM (n= NUM_INT )? )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:510:4: ^(p= PARAM (n= NUM_INT )? )
                     {
                     	_last = (IASTNode)input.LT(1);
                     	{
@@ -8958,7 +8958,7 @@ public partial class HqlSqlWalker : TreeParser
                     	if ( input.LA(1) == Token.DOWN )
                     	{
                     	    Match(input, Token.DOWN, null); 
-                    	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:510:14: (n= NUM_INT )?
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:510:14: (n= NUM_INT )?
                     	    int alt62 = 2;
                     	    int LA62_0 = input.LA(1);
 
@@ -8969,7 +8969,7 @@ public partial class HqlSqlWalker : TreeParser
                     	    switch (alt62) 
                     	    {
                     	        case 1 :
-                    	            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:510:15: n= NUM_INT
+                    	            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:510:15: n= NUM_INT
                     	            {
                     	            	_last = (IASTNode)input.LT(1);
                     	            	n=(IASTNode)Match(input,NUM_INT,FOLLOW_NUM_INT_in_parameter2494);  
@@ -9002,7 +9002,7 @@ public partial class HqlSqlWalker : TreeParser
                     	// 511:3: -> {n != null}? ^()
                     	if (n != null)
                     	{
-                    	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:511:19: ^()
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:511:19: ^()
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(GenerateNamedParameter( p, n ), root_1);
@@ -9013,7 +9013,7 @@ public partial class HqlSqlWalker : TreeParser
                     	}
                     	else // 512:3: -> ^()
                     	{
-                    	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:512:6: ^()
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:512:6: ^()
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(GeneratePositionalParameter( p ), root_1);
@@ -9054,7 +9054,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "numericInteger"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:515:1: numericInteger : NUM_INT ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:515:1: numericInteger : NUM_INT ;
     public HqlSqlWalker.numericInteger_return numericInteger() // throws RecognitionException [1]
     {   
         HqlSqlWalker.numericInteger_return retval = new HqlSqlWalker.numericInteger_return();
@@ -9071,8 +9071,8 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:516:2: ( NUM_INT )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/HqlSqlWalker.g:516:4: NUM_INT
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:516:2: ( NUM_INT )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\HqlSqlWalker.g:516:4: NUM_INT
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 

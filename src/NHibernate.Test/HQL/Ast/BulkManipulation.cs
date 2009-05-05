@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics;
 using NUnit.Framework;
 using NHibernate.Hql.Ast.ANTLR;
 
@@ -50,7 +51,7 @@ namespace NHibernate.Test.HQL.Ast
 			// multi-table ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			var joe = new Human { Name = new Name { First = "Joe", Initial = 'Q', Last = "Public" } };
+			var joe = new Human {Name = new Name {First = "Joe", Initial = 'Q', Last = "Public"}};
 			s.Save(joe);
 			var doll = new Human {Name = new Name {First = "Kyu", Initial = 'P', Last = "Doll"}, Friends = new[] {joe}};
 			s.Save(doll);
@@ -59,13 +60,9 @@ namespace NHibernate.Test.HQL.Ast
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			string updateQryString = "update Human h " +
-															 "set h.description = 'updated' " +
-															 "where exists (" +
-															 "      select f.id " +
-															 "      from h.friends f " +
-															 "      where f.name.last = 'Public' " +
-															 ")";
+			string updateQryString = "update Human h " + "set h.description = 'updated' " + "where exists ("
+			                         + "      select f.id " + "      from h.friends f " + "      where f.name.last = 'Public' "
+			                         + ")";
 			int count = s.CreateQuery(updateQryString).ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(1));
 			s.Delete(doll);
@@ -78,8 +75,8 @@ namespace NHibernate.Test.HQL.Ast
 			t = s.BeginTransaction();
 			var entity = new SimpleEntityWithAssociation();
 			var other = new SimpleEntityWithAssociation();
-			entity.Name= "main";
-			other.Name= "many-to-many-association";
+			entity.Name = "main";
+			other.Name = "many-to-many-association";
 			entity.ManyToManyAssociatedEntities.Add(other);
 			entity.AddAssociation("one-to-many-association");
 			s.Save(entity);
@@ -89,31 +86,51 @@ namespace NHibernate.Test.HQL.Ast
 			s = OpenSession();
 			t = s.BeginTransaction();
 			// one-to-many test
-			updateQryString = "update SimpleEntityWithAssociation e " +
-															 "set e.Name = 'updated' " +
-															 "where exists (" +
-															 "      select a.id " +
-															 "      from e.AssociatedEntities a " +
-															 "      where a.Name = 'one-to-many-association' " +
-															 ")";
+			updateQryString = "update SimpleEntityWithAssociation e set e.Name = 'updated' where "
+												+ "exists(select a.id from e.AssociatedEntities a "
+			                  + "where a.Name = 'one-to-many-association')";
 			count = s.CreateQuery(updateQryString).ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(1));
 			// many-to-many test
 			if (Dialect.SupportsSubqueryOnMutatingTable)
 			{
-				updateQryString = "update SimpleEntityWithAssociation e " +
-										 "set e.Name = 'updated' " +
-										 "where exists (" +
-										 "      select a.id " +
-										 "      from e.ManyToManyAssociatedEntities a " +
-										 "      where a.Name = 'many-to-many-association' " +
-										 ")";
+				updateQryString = "update SimpleEntityWithAssociation e set e.Name = 'updated' where "
+													+ "exists(select a.id from e.ManyToManyAssociatedEntities a "
+				                  + "where a.Name = 'many-to-many-association')";
 				count = s.CreateQuery(updateQryString).ExecuteUpdate();
 				Assert.That(count, Is.EqualTo(1));
 			}
 			var mtm = entity.ManyToManyAssociatedEntities.GetEnumerator();
 			mtm.MoveNext();
 			s.Delete(mtm.Current);
+			s.Delete(entity);
+			t.Commit();
+			s.Close();
+		}
+
+		[Test]
+		public void IncrementCounterVersion()
+		{
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			var entity = new IntegerVersioned{Name = "int-vers"};
+			s.Save(entity);
+			t.Commit();
+			s.Close();
+
+			int initialVersion = entity.Version;
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			int count = s.CreateQuery("update versioned IntegerVersioned set name = name").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "incorrect exec count");
+			t.Commit();
+
+			t = s.BeginTransaction();
+			entity = s.Load<IntegerVersioned>(entity.Id);
+			Assert.That(entity.Version, Is.EqualTo(initialVersion + 1), "version not incremented");
+
 			s.Delete(entity);
 			t.Commit();
 			s.Close();

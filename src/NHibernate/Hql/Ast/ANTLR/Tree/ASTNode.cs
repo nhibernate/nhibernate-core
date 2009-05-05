@@ -17,9 +17,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private readonly IToken _token;
 		private List<IASTNode> _children;
 
-        public ASTNode() : this((IToken) null)
-        {
-        }
+		public ASTNode()
+			: this((IToken)null) {}
 
 		public ASTNode(IToken token)
 		{
@@ -214,10 +213,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public void ClearChildren()
 		{
-            if (_children != null)
-            {
-                _children.Clear();
-            }
+			if (_children != null)
+			{
+				_children.Clear();
+			}
 		}
 
 		public void AddChildren(IEnumerable<IASTNode> children)
@@ -304,19 +303,21 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else
 			{
-				_children[0] = newChild;				
+				SetChild(0, newChild);
 			}
 		}
 
 		public void SetChild(int index, IASTNode newChild)
-        {
-            if ((_children == null) || _children.Count <= index)
-            {
-                throw new InvalidOperationException();
-            }
-
-            _children[index] = newChild;
-        }
+		{
+			if ((_children == null) || _children.Count <= index)
+			{
+				throw new InvalidOperationException();
+			}
+			var childNode = (ASTNode)newChild;
+			childNode.Parent = this;
+			childNode._childIndex = index;
+			_children[index] = childNode;
+		}
 
 		public IToken Token
 		{
@@ -370,10 +371,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public IEnumerator<IASTNode> GetEnumerator()
 		{
-            if (_children == null)
-            {
-                _children = new List<IASTNode>();
-            }
+			if (_children == null)
+			{
+				_children = new List<IASTNode>();
+			}
 
 			return _children.GetEnumerator();
 		}

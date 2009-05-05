@@ -1,4 +1,4 @@
-// $ANTLR 3.1.2 /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g 2009-04-07 16:32:59
+// $ANTLR 3.1.2 C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g 2009-05-05 16:13:08
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 168, 219
@@ -177,147 +177,147 @@ public partial class SqlGenerator : TreeParser
 		"BOGUS"
     };
 
-    public const int COMMA = 98;
-    public const int EXISTS = 19;
-    public const int EXPR_LIST = 73;
-    public const int FETCH = 21;
-    public const int MINUS = 110;
-    public const int AS = 7;
-    public const int END = 56;
-    public const int INTO = 30;
-    public const int NAMED_PARAM = 142;
-    public const int FROM_FRAGMENT = 128;
-    public const int FALSE = 20;
-    public const int ELEMENTS = 17;
-    public const int THEN = 58;
-    public const int FILTERS = 140;
-    public const int ALIAS = 70;
-    public const int ALIAS_REF = 134;
-    public const int ON = 60;
-    public const int DOT = 15;
-    public const int ORDER = 41;
-    public const int AND = 6;
-    public const int CONSTANT = 92;
-    public const int RIGHT = 44;
-    public const int METHOD_CALL = 79;
-    public const int UNARY_MINUS = 88;
-    public const int CONCAT = 108;
-    public const int PROPERTIES = 43;
-    public const int SELECT = 45;
-    public const int LE = 106;
-    public const int RIGHT_OUTER = 133;
-    public const int BETWEEN = 10;
-    public const int NUM_INT = 93;
-    public const int SQL_TOKEN = 136;
-    public const int LEFT_OUTER = 132;
-    public const int BOTH = 62;
-    public const int METHOD_NAME = 141;
-    public const int PLUS = 109;
-    public const int VERSIONED = 52;
-    public const int MEMBER = 65;
-    public const int UNION = 50;
-    public const int DISTINCT = 16;
-    public const int RANGE = 85;
-    public const int FILTER_ENTITY = 74;
-    public const int IDENT = 118;
-    public const int WHEN = 59;
-    public const int DESCENDING = 14;
-    public const int WS = 122;
-    public const int NEW = 37;
-    public const int EQ = 99;
-    public const int LT = 104;
-    public const int ESCqs = 121;
-    public const int OF = 67;
-    public const int UPDATE = 51;
-    public const int SELECT_FROM = 87;
-    public const int LITERAL_by = 54;
-    public const int FLOAT_SUFFIX = 124;
-    public const int ANY = 5;
-    public const int UNARY_PLUS = 89;
-    public const int NUM_FLOAT = 95;
-    public const int GE = 107;
-    public const int CASE = 55;
-    public const int OPEN_BRACKET = 113;
-    public const int ELSE = 57;
-    public const int OPEN = 100;
-    public const int COUNT = 12;
-    public const int NULL = 39;
-    public const int THETA_JOINS = 139;
-    public const int IMPLIED_FROM = 129;
-    public const int COLON = 115;
-    public const int DIV = 112;
-    public const int HAVING = 25;
-    public const int ALL = 4;
-    public const int SET = 46;
-    public const int INSERT = 29;
-    public const int TRUE = 49;
-    public const int CASE2 = 72;
-    public const int IS_NOT_NULL = 77;
-    public const int WHERE = 53;
-    public const int AGGREGATE = 69;
-    public const int VECTOR_EXPR = 90;
-    public const int LEADING = 64;
-    public const int CLOSE_BRACKET = 114;
-    public const int NUM_DOUBLE = 94;
-    public const int T__126 = 126;
-    public const int INNER = 28;
-    public const int QUERY = 84;
-    public const int ORDER_ELEMENT = 83;
-    public const int SELECT_EXPR = 138;
-    public const int OR = 40;
-    public const int JOIN_FRAGMENT = 130;
-    public const int FULL = 23;
-    public const int INDICES = 27;
-    public const int IS_NULL = 78;
-    public const int GROUP = 24;
-    public const int T__127 = 127;
-    public const int ESCAPE = 18;
-    public const int PARAM = 116;
-    public const int INDEX_OP = 76;
-    public const int ID_LETTER = 120;
-    public const int HEX_DIGIT = 125;
-    public const int LEFT = 33;
-    public const int TRAILING = 68;
-    public const int JOIN = 32;
-    public const int NOT_BETWEEN = 80;
-    public const int SUM = 48;
-    public const int ROW_STAR = 86;
-    public const int OUTER = 42;
-    public const int FROM = 22;
-    public const int NOT_IN = 81;
-    public const int DELETE = 13;
-    public const int OBJECT = 66;
-    public const int MAX = 35;
-    public const int QUOTED_String = 117;
-    public const int EMPTY = 63;
-    public const int NOT_LIKE = 82;
-    public const int ASCENDING = 8;
-    public const int NUM_LONG = 96;
-    public const int IS = 31;
-    public const int SQL_NE = 103;
-    public const int IN_LIST = 75;
-    public const int WEIRD_IDENT = 91;
-    public const int GT = 105;
-    public const int NE = 102;
-    public const int MIN = 36;
-    public const int LIKE = 34;
-    public const int WITH = 61;
-    public const int IN = 26;
-    public const int CONSTRUCTOR = 71;
-    public const int PROPERTY_REF = 135;
-    public const int CLASS = 11;
-    public const int SOME = 47;
     public const int SELECT_COLUMNS = 137;
     public const int EXPONENT = 123;
-    public const int ID_START_LETTER = 119;
-    public const int BOGUS = 143;
-    public const int EOF = -1;
-    public const int CLOSE = 101;
-    public const int AVG = 9;
-    public const int SELECT_CLAUSE = 131;
+    public const int LT = 104;
     public const int STAR = 111;
+    public const int FLOAT_SUFFIX = 124;
+    public const int FILTERS = 140;
+    public const int LITERAL_by = 54;
+    public const int PROPERTY_REF = 135;
+    public const int THETA_JOINS = 139;
+    public const int CASE = 55;
+    public const int NEW = 37;
+    public const int FILTER_ENTITY = 74;
+    public const int PARAM = 116;
+    public const int COUNT = 12;
     public const int NOT = 38;
+    public const int EOF = -1;
+    public const int UNARY_PLUS = 89;
+    public const int QUOTED_String = 117;
+    public const int WEIRD_IDENT = 91;
+    public const int ESCqs = 121;
+    public const int OPEN_BRACKET = 113;
+    public const int FULL = 23;
+    public const int ORDER_ELEMENT = 83;
+    public const int INSERT = 29;
+    public const int ESCAPE = 18;
+    public const int IS_NULL = 78;
+    public const int FROM_FRAGMENT = 128;
+    public const int NAMED_PARAM = 142;
+    public const int BOTH = 62;
+    public const int SELECT_CLAUSE = 131;
+    public const int EQ = 99;
+    public const int VERSIONED = 52;
+    public const int SELECT = 45;
+    public const int INTO = 30;
+    public const int NE = 102;
+    public const int GE = 107;
+    public const int ID_LETTER = 120;
+    public const int CONCAT = 108;
+    public const int NULL = 39;
+    public const int ELSE = 57;
+    public const int SELECT_FROM = 87;
+    public const int TRAILING = 68;
+    public const int ON = 60;
+    public const int NUM_LONG = 96;
+    public const int NUM_DOUBLE = 94;
+    public const int UNARY_MINUS = 88;
+    public const int DELETE = 13;
+    public const int INDICES = 27;
+    public const int OF = 67;
+    public const int METHOD_CALL = 79;
+    public const int LEADING = 64;
+    public const int METHOD_NAME = 141;
+    public const int EMPTY = 63;
+    public const int T__126 = 126;
+    public const int GROUP = 24;
+    public const int T__127 = 127;
+    public const int WS = 122;
+    public const int FETCH = 21;
+    public const int VECTOR_EXPR = 90;
+    public const int NOT_IN = 81;
+    public const int SELECT_EXPR = 138;
+    public const int NUM_INT = 93;
+    public const int OR = 40;
+    public const int ALIAS = 70;
     public const int JAVA_CONSTANT = 97;
+    public const int CONSTANT = 92;
+    public const int GT = 105;
+    public const int QUERY = 84;
+    public const int INDEX_OP = 76;
+    public const int NUM_FLOAT = 95;
+    public const int FROM = 22;
+    public const int END = 56;
+    public const int FALSE = 20;
+    public const int DISTINCT = 16;
+    public const int CONSTRUCTOR = 71;
+    public const int CLOSE_BRACKET = 114;
+    public const int WHERE = 53;
+    public const int CLASS = 11;
+    public const int MEMBER = 65;
+    public const int INNER = 28;
+    public const int PROPERTIES = 43;
+    public const int BOGUS = 143;
+    public const int ORDER = 41;
+    public const int MAX = 35;
+    public const int UPDATE = 51;
+    public const int JOIN_FRAGMENT = 130;
+    public const int SQL_NE = 103;
+    public const int AND = 6;
+    public const int SUM = 48;
+    public const int ASCENDING = 8;
+    public const int EXPR_LIST = 73;
+    public const int AS = 7;
+    public const int THEN = 58;
+    public const int IN = 26;
+    public const int OBJECT = 66;
+    public const int COMMA = 98;
+    public const int IS = 31;
+    public const int SQL_TOKEN = 136;
+    public const int AVG = 9;
+    public const int LEFT = 33;
+    public const int SOME = 47;
+    public const int ALL = 4;
+    public const int IMPLIED_FROM = 129;
+    public const int IDENT = 118;
+    public const int PLUS = 109;
+    public const int CASE2 = 72;
+    public const int EXISTS = 19;
+    public const int DOT = 15;
+    public const int LIKE = 34;
+    public const int WITH = 61;
+    public const int OUTER = 42;
+    public const int ID_START_LETTER = 119;
+    public const int LEFT_OUTER = 132;
+    public const int ROW_STAR = 86;
+    public const int NOT_LIKE = 82;
+    public const int HEX_DIGIT = 125;
+    public const int NOT_BETWEEN = 80;
+    public const int RANGE = 85;
+    public const int RIGHT_OUTER = 133;
+    public const int RIGHT = 44;
+    public const int SET = 46;
+    public const int HAVING = 25;
+    public const int MIN = 36;
+    public const int MINUS = 110;
+    public const int IS_NOT_NULL = 77;
+    public const int ELEMENTS = 17;
+    public const int TRUE = 49;
+    public const int JOIN = 32;
+    public const int UNION = 50;
+    public const int IN_LIST = 75;
+    public const int COLON = 115;
+    public const int OPEN = 100;
+    public const int ANY = 5;
+    public const int CLOSE = 101;
+    public const int WHEN = 59;
+    public const int ALIAS_REF = 134;
+    public const int DIV = 112;
+    public const int DESCENDING = 14;
+    public const int BETWEEN = 10;
+    public const int AGGREGATE = 69;
+    public const int LE = 106;
 
     // delegates
     // delegators
@@ -341,18 +341,18 @@ public partial class SqlGenerator : TreeParser
     }
 
     override public string GrammarFileName {
-		get { return "/Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g"; }
+		get { return "C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g"; }
     }
 
 
 
     // $ANTLR start "statement"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:27:1: statement : ( selectStatement | updateStatement | deleteStatement | insertStatement );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:27:1: statement : ( selectStatement | updateStatement | deleteStatement | insertStatement );
     public void statement() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:28:2: ( selectStatement | updateStatement | deleteStatement | insertStatement )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:28:2: ( selectStatement | updateStatement | deleteStatement | insertStatement )
             int alt1 = 4;
             switch ( input.LA(1) ) 
             {
@@ -387,7 +387,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt1) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:28:4: selectStatement
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:28:4: selectStatement
                     {
                     	PushFollow(FOLLOW_selectStatement_in_statement57);
                     	selectStatement();
@@ -397,7 +397,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:29:4: updateStatement
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:29:4: updateStatement
                     {
                     	PushFollow(FOLLOW_updateStatement_in_statement62);
                     	updateStatement();
@@ -407,7 +407,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:30:4: deleteStatement
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:30:4: deleteStatement
                     {
                     	PushFollow(FOLLOW_deleteStatement_in_statement67);
                     	deleteStatement();
@@ -417,7 +417,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:31:4: insertStatement
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:31:4: insertStatement
                     {
                     	PushFollow(FOLLOW_insertStatement_in_statement72);
                     	insertStatement();
@@ -443,13 +443,13 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "selectStatement"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:34:1: selectStatement : ^( SELECT selectClause from ( ^( WHERE whereExpr ) )? ( ^( GROUP groupExprs ( ^( HAVING booleanExpr[false] ) )? ) )? ( ^( ORDER orderExprs ) )? ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:34:1: selectStatement : ^( SELECT selectClause from ( ^( WHERE whereExpr ) )? ( ^( GROUP groupExprs ( ^( HAVING booleanExpr[false] ) )? ) )? ( ^( ORDER orderExprs ) )? ) ;
     public void selectStatement() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:35:2: ( ^( SELECT selectClause from ( ^( WHERE whereExpr ) )? ( ^( GROUP groupExprs ( ^( HAVING booleanExpr[false] ) )? ) )? ( ^( ORDER orderExprs ) )? ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:35:4: ^( SELECT selectClause from ( ^( WHERE whereExpr ) )? ( ^( GROUP groupExprs ( ^( HAVING booleanExpr[false] ) )? ) )? ( ^( ORDER orderExprs ) )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:35:2: ( ^( SELECT selectClause from ( ^( WHERE whereExpr ) )? ( ^( GROUP groupExprs ( ^( HAVING booleanExpr[false] ) )? ) )? ( ^( ORDER orderExprs ) )? ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:35:4: ^( SELECT selectClause from ( ^( WHERE whereExpr ) )? ( ^( GROUP groupExprs ( ^( HAVING booleanExpr[false] ) )? ) )? ( ^( ORDER orderExprs ) )? )
             {
             	Match(input,SELECT,FOLLOW_SELECT_in_selectStatement84); if (state.failed) return ;
 
@@ -467,7 +467,7 @@ public partial class SqlGenerator : TreeParser
             	from();
             	state.followingStackPointer--;
             	if (state.failed) return ;
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:38:3: ( ^( WHERE whereExpr ) )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:38:3: ( ^( WHERE whereExpr ) )?
             	int alt2 = 2;
             	int LA2_0 = input.LA(1);
 
@@ -478,7 +478,7 @@ public partial class SqlGenerator : TreeParser
             	switch (alt2) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:38:5: ^( WHERE whereExpr )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:38:5: ^( WHERE whereExpr )
             	        {
             	        	Match(input,WHERE,FOLLOW_WHERE_in_selectStatement101); if (state.failed) return ;
 
@@ -500,7 +500,7 @@ public partial class SqlGenerator : TreeParser
 
             	}
 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:39:3: ( ^( GROUP groupExprs ( ^( HAVING booleanExpr[false] ) )? ) )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:39:3: ( ^( GROUP groupExprs ( ^( HAVING booleanExpr[false] ) )? ) )?
             	int alt4 = 2;
             	int LA4_0 = input.LA(1);
 
@@ -511,7 +511,7 @@ public partial class SqlGenerator : TreeParser
             	switch (alt4) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:39:5: ^( GROUP groupExprs ( ^( HAVING booleanExpr[false] ) )? )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:39:5: ^( GROUP groupExprs ( ^( HAVING booleanExpr[false] ) )? )
             	        {
             	        	Match(input,GROUP,FOLLOW_GROUP_in_selectStatement117); if (state.failed) return ;
 
@@ -525,7 +525,7 @@ public partial class SqlGenerator : TreeParser
             	        	groupExprs();
             	        	state.followingStackPointer--;
             	        	if (state.failed) return ;
-            	        	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:39:47: ( ^( HAVING booleanExpr[false] ) )?
+            	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:39:47: ( ^( HAVING booleanExpr[false] ) )?
             	        	int alt3 = 2;
             	        	int LA3_0 = input.LA(1);
 
@@ -536,7 +536,7 @@ public partial class SqlGenerator : TreeParser
             	        	switch (alt3) 
             	        	{
             	        	    case 1 :
-            	        	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:39:49: ^( HAVING booleanExpr[false] )
+            	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:39:49: ^( HAVING booleanExpr[false] )
             	        	        {
             	        	        	Match(input,HAVING,FOLLOW_HAVING_in_selectStatement126); if (state.failed) return ;
 
@@ -566,7 +566,7 @@ public partial class SqlGenerator : TreeParser
 
             	}
 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:40:3: ( ^( ORDER orderExprs ) )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:40:3: ( ^( ORDER orderExprs ) )?
             	int alt5 = 2;
             	int LA5_0 = input.LA(1);
 
@@ -577,7 +577,7 @@ public partial class SqlGenerator : TreeParser
             	switch (alt5) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:40:5: ^( ORDER orderExprs )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:40:5: ^( ORDER orderExprs )
             	        {
             	        	Match(input,ORDER,FOLLOW_ORDER_in_selectStatement147); if (state.failed) return ;
 
@@ -619,13 +619,13 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "updateStatement"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:47:1: updateStatement : ^( UPDATE ^( FROM fromTable ) setClause ( whereClause )? ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:47:1: updateStatement : ^( UPDATE ^( FROM fromTable ) setClause ( whereClause )? ) ;
     public void updateStatement() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:48:2: ( ^( UPDATE ^( FROM fromTable ) setClause ( whereClause )? ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:48:4: ^( UPDATE ^( FROM fromTable ) setClause ( whereClause )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:48:2: ( ^( UPDATE ^( FROM fromTable ) setClause ( whereClause )? ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:48:4: ^( UPDATE ^( FROM fromTable ) setClause ( whereClause )? )
             {
             	Match(input,UPDATE,FOLLOW_UPDATE_in_updateStatement174); if (state.failed) return ;
 
@@ -648,7 +648,7 @@ public partial class SqlGenerator : TreeParser
             	setClause();
             	state.followingStackPointer--;
             	if (state.failed) return ;
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:51:3: ( whereClause )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:51:3: ( whereClause )?
             	int alt6 = 2;
             	int LA6_0 = input.LA(1);
 
@@ -659,7 +659,7 @@ public partial class SqlGenerator : TreeParser
             	switch (alt6) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:51:4: whereClause
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:51:4: whereClause
             	        {
             	        	PushFollow(FOLLOW_whereClause_in_updateStatement195);
             	        	whereClause();
@@ -691,13 +691,13 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "deleteStatement"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:55:1: deleteStatement : ^( DELETE from ( whereClause )? ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:55:1: deleteStatement : ^( DELETE from ( whereClause )? ) ;
     public void deleteStatement() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:57:2: ( ^( DELETE from ( whereClause )? ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:57:4: ^( DELETE from ( whereClause )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:57:2: ( ^( DELETE from ( whereClause )? ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:57:4: ^( DELETE from ( whereClause )? )
             {
             	Match(input,DELETE,FOLLOW_DELETE_in_deleteStatement214); if (state.failed) return ;
 
@@ -711,7 +711,7 @@ public partial class SqlGenerator : TreeParser
             	from();
             	state.followingStackPointer--;
             	if (state.failed) return ;
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:59:3: ( whereClause )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:59:3: ( whereClause )?
             	int alt7 = 2;
             	int LA7_0 = input.LA(1);
 
@@ -722,7 +722,7 @@ public partial class SqlGenerator : TreeParser
             	switch (alt7) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:59:4: whereClause
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:59:4: whereClause
             	        {
             	        	PushFollow(FOLLOW_whereClause_in_deleteStatement225);
             	        	whereClause();
@@ -754,15 +754,15 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "insertStatement"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:63:1: insertStatement : ^( INSERT i= INTO selectStatement ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:63:1: insertStatement : ^( INSERT i= INTO selectStatement ) ;
     public void insertStatement() // throws RecognitionException [1]
     {   
         IASTNode i = null;
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:64:2: ( ^( INSERT i= INTO selectStatement ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:64:4: ^( INSERT i= INTO selectStatement )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:64:2: ( ^( INSERT i= INTO selectStatement ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:64:4: ^( INSERT i= INTO selectStatement )
             {
             	Match(input,INSERT,FOLLOW_INSERT_in_insertStatement242); if (state.failed) return ;
 
@@ -801,13 +801,13 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "setClause"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:70:1: setClause : ^( SET comparisonExpr[false] ( comparisonExpr[false] )* ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:70:1: setClause : ^( SET comparisonExpr[false] ( comparisonExpr[false] )* ) ;
     public void setClause() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:73:2: ( ^( SET comparisonExpr[false] ( comparisonExpr[false] )* ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:73:4: ^( SET comparisonExpr[false] ( comparisonExpr[false] )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:73:2: ( ^( SET comparisonExpr[false] ( comparisonExpr[false] )* ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:73:4: ^( SET comparisonExpr[false] ( comparisonExpr[false] )* )
             {
             	Match(input,SET,FOLLOW_SET_in_setClause276); if (state.failed) return ;
 
@@ -821,7 +821,7 @@ public partial class SqlGenerator : TreeParser
             	comparisonExpr(false);
             	state.followingStackPointer--;
             	if (state.failed) return ;
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:73:51: ( comparisonExpr[false] )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:73:51: ( comparisonExpr[false] )*
             	do 
             	{
             	    int alt8 = 2;
@@ -836,7 +836,7 @@ public partial class SqlGenerator : TreeParser
             	    switch (alt8) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:73:53: comparisonExpr[false]
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:73:53: comparisonExpr[false]
             			    {
             			    	if ( (state.backtracking==0) )
             			    	{
@@ -878,13 +878,13 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "whereClause"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:76:1: whereClause : ^( WHERE whereClauseExpr ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:76:1: whereClause : ^( WHERE whereClauseExpr ) ;
     public void whereClause() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:77:2: ( ^( WHERE whereClauseExpr ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:77:4: ^( WHERE whereClauseExpr )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:77:2: ( ^( WHERE whereClauseExpr ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:77:4: ^( WHERE whereClauseExpr )
             {
             	Match(input,WHERE,FOLLOW_WHERE_in_whereClause305); if (state.failed) return ;
 
@@ -918,12 +918,12 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "whereClauseExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:80:1: whereClauseExpr : ( ( SQL_TOKEN )=> conditionList | booleanExpr[ false ] );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:80:1: whereClauseExpr : ( ( SQL_TOKEN )=> conditionList | booleanExpr[ false ] );
     public void whereClauseExpr() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:81:2: ( ( SQL_TOKEN )=> conditionList | booleanExpr[ false ] )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:81:2: ( ( SQL_TOKEN )=> conditionList | booleanExpr[ false ] )
             int alt9 = 2;
             int LA9_0 = input.LA(1);
 
@@ -963,7 +963,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt9) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:81:4: ( SQL_TOKEN )=> conditionList
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:81:4: ( SQL_TOKEN )=> conditionList
                     {
                     	PushFollow(FOLLOW_conditionList_in_whereClauseExpr328);
                     	conditionList();
@@ -973,7 +973,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:82:4: booleanExpr[ false ]
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:82:4: booleanExpr[ false ]
                     {
                     	PushFollow(FOLLOW_booleanExpr_in_whereClauseExpr333);
                     	booleanExpr(false);
@@ -999,7 +999,7 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "orderExprs"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:85:1: orderExprs : ( expr ) (dir= orderDirection )? ( orderExprs )? ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:85:1: orderExprs : ( expr ) (dir= orderDirection )? ( orderExprs )? ;
     public void orderExprs() // throws RecognitionException [1]
     {   
         SqlGenerator.orderDirection_return dir = default(SqlGenerator.orderDirection_return);
@@ -1007,11 +1007,11 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:87:2: ( ( expr ) (dir= orderDirection )? ( orderExprs )? )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:87:4: ( expr ) (dir= orderDirection )? ( orderExprs )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:87:2: ( ( expr ) (dir= orderDirection )? ( orderExprs )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:87:4: ( expr ) (dir= orderDirection )? ( orderExprs )?
             {
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:87:4: ( expr )
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:87:6: expr
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:87:4: ( expr )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:87:6: expr
             	{
             		PushFollow(FOLLOW_expr_in_orderExprs349);
             		expr();
@@ -1020,7 +1020,7 @@ public partial class SqlGenerator : TreeParser
 
             	}
 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:87:13: (dir= orderDirection )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:87:13: (dir= orderDirection )?
             	int alt10 = 2;
             	int LA10_0 = input.LA(1);
 
@@ -1031,7 +1031,7 @@ public partial class SqlGenerator : TreeParser
             	switch (alt10) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:87:14: dir= orderDirection
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:87:14: dir= orderDirection
             	        {
             	        	PushFollow(FOLLOW_orderDirection_in_orderExprs356);
             	        	dir = orderDirection();
@@ -1047,7 +1047,7 @@ public partial class SqlGenerator : TreeParser
 
             	}
 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:87:66: ( orderExprs )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:87:66: ( orderExprs )?
             	int alt11 = 2;
             	int LA11_0 = input.LA(1);
 
@@ -1058,7 +1058,7 @@ public partial class SqlGenerator : TreeParser
             	switch (alt11) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:87:68: orderExprs
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:87:68: orderExprs
             	        {
             	        	if ( (state.backtracking==0) )
             	        	{
@@ -1092,19 +1092,19 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "groupExprs"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:90:1: groupExprs : expr ( groupExprs )? ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:90:1: groupExprs : expr ( groupExprs )? ;
     public void groupExprs() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:92:2: ( expr ( groupExprs )? )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:92:4: expr ( groupExprs )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:92:2: ( expr ( groupExprs )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:92:4: expr ( groupExprs )?
             {
             	PushFollow(FOLLOW_expr_in_groupExprs381);
             	expr();
             	state.followingStackPointer--;
             	if (state.failed) return ;
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:92:9: ( groupExprs )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:92:9: ( groupExprs )?
             	int alt12 = 2;
             	int LA12_0 = input.LA(1);
 
@@ -1115,7 +1115,7 @@ public partial class SqlGenerator : TreeParser
             	switch (alt12) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:92:11: groupExprs
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:92:11: groupExprs
             	        {
             	        	if ( (state.backtracking==0) )
             	        	{
@@ -1152,7 +1152,7 @@ public partial class SqlGenerator : TreeParser
     };
 
     // $ANTLR start "orderDirection"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:95:1: orderDirection : ( ASCENDING | DESCENDING );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:95:1: orderDirection : ( ASCENDING | DESCENDING );
     public SqlGenerator.orderDirection_return orderDirection() // throws RecognitionException [1]
     {   
         SqlGenerator.orderDirection_return retval = new SqlGenerator.orderDirection_return();
@@ -1160,8 +1160,8 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:96:2: ( ASCENDING | DESCENDING )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:96:2: ( ASCENDING | DESCENDING )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:
             {
             	if ( input.LA(1) == ASCENDING || input.LA(1) == DESCENDING ) 
             	{
@@ -1193,12 +1193,12 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "whereExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:100:1: whereExpr : ( filters ( thetaJoins )? ( booleanExpr[ true ] )? | thetaJoins ( booleanExpr[ true ] )? | booleanExpr[false] );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:100:1: whereExpr : ( filters ( thetaJoins )? ( booleanExpr[ true ] )? | thetaJoins ( booleanExpr[ true ] )? | booleanExpr[false] );
     public void whereExpr() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:104:2: ( filters ( thetaJoins )? ( booleanExpr[ true ] )? | thetaJoins ( booleanExpr[ true ] )? | booleanExpr[false] )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:104:2: ( filters ( thetaJoins )? ( booleanExpr[ true ] )? | thetaJoins ( booleanExpr[ true ] )? | booleanExpr[false] )
             int alt16 = 3;
             switch ( input.LA(1) ) 
             {
@@ -1246,13 +1246,13 @@ public partial class SqlGenerator : TreeParser
             switch (alt16) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:104:4: filters ( thetaJoins )? ( booleanExpr[ true ] )?
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:104:4: filters ( thetaJoins )? ( booleanExpr[ true ] )?
                     {
                     	PushFollow(FOLLOW_filters_in_whereExpr422);
                     	filters();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
-                    	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:105:3: ( thetaJoins )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:105:3: ( thetaJoins )?
                     	int alt13 = 2;
                     	int LA13_0 = input.LA(1);
 
@@ -1263,7 +1263,7 @@ public partial class SqlGenerator : TreeParser
                     	switch (alt13) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:105:5: thetaJoins
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:105:5: thetaJoins
                     	        {
                     	        	if ( (state.backtracking==0) )
                     	        	{
@@ -1279,7 +1279,7 @@ public partial class SqlGenerator : TreeParser
 
                     	}
 
-                    	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:106:3: ( booleanExpr[ true ] )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:106:3: ( booleanExpr[ true ] )?
                     	int alt14 = 2;
                     	int LA14_0 = input.LA(1);
 
@@ -1290,7 +1290,7 @@ public partial class SqlGenerator : TreeParser
                     	switch (alt14) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:106:5: booleanExpr[ true ]
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:106:5: booleanExpr[ true ]
                     	        {
                     	        	if ( (state.backtracking==0) )
                     	        	{
@@ -1310,13 +1310,13 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:107:4: thetaJoins ( booleanExpr[ true ] )?
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:107:4: thetaJoins ( booleanExpr[ true ] )?
                     {
                     	PushFollow(FOLLOW_thetaJoins_in_whereExpr451);
                     	thetaJoins();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
-                    	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:108:3: ( booleanExpr[ true ] )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:108:3: ( booleanExpr[ true ] )?
                     	int alt15 = 2;
                     	int LA15_0 = input.LA(1);
 
@@ -1327,7 +1327,7 @@ public partial class SqlGenerator : TreeParser
                     	switch (alt15) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:108:5: booleanExpr[ true ]
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:108:5: booleanExpr[ true ]
                     	        {
                     	        	if ( (state.backtracking==0) )
                     	        	{
@@ -1347,7 +1347,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:109:4: booleanExpr[false]
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:109:4: booleanExpr[false]
                     {
                     	PushFollow(FOLLOW_booleanExpr_in_whereExpr470);
                     	booleanExpr(false);
@@ -1373,13 +1373,13 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "filters"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:112:1: filters : ^( FILTERS conditionList ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:112:1: filters : ^( FILTERS conditionList ) ;
     public void filters() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:113:2: ( ^( FILTERS conditionList ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:113:4: ^( FILTERS conditionList )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:113:2: ( ^( FILTERS conditionList ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:113:4: ^( FILTERS conditionList )
             {
             	Match(input,FILTERS,FOLLOW_FILTERS_in_filters483); if (state.failed) return ;
 
@@ -1408,13 +1408,13 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "thetaJoins"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:116:1: thetaJoins : ^( THETA_JOINS conditionList ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:116:1: thetaJoins : ^( THETA_JOINS conditionList ) ;
     public void thetaJoins() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:117:2: ( ^( THETA_JOINS conditionList ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:117:4: ^( THETA_JOINS conditionList )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:117:2: ( ^( THETA_JOINS conditionList ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:117:4: ^( THETA_JOINS conditionList )
             {
             	Match(input,THETA_JOINS,FOLLOW_THETA_JOINS_in_thetaJoins499); if (state.failed) return ;
 
@@ -1443,19 +1443,19 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "conditionList"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:120:1: conditionList : sqlToken ( conditionList )? ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:120:1: conditionList : sqlToken ( conditionList )? ;
     public void conditionList() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:121:2: ( sqlToken ( conditionList )? )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:121:4: sqlToken ( conditionList )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:121:2: ( sqlToken ( conditionList )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:121:4: sqlToken ( conditionList )?
             {
             	PushFollow(FOLLOW_sqlToken_in_conditionList514);
             	sqlToken();
             	state.followingStackPointer--;
             	if (state.failed) return ;
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:121:13: ( conditionList )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:121:13: ( conditionList )?
             	int alt17 = 2;
             	int LA17_0 = input.LA(1);
 
@@ -1466,7 +1466,7 @@ public partial class SqlGenerator : TreeParser
             	switch (alt17) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:121:15: conditionList
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:121:15: conditionList
             	        {
             	        	if ( (state.backtracking==0) )
             	        	{
@@ -1500,18 +1500,18 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "selectClause"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:124:1: selectClause : ^( SELECT_CLAUSE ( distinctOrAll )? ( selectColumn )+ ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:124:1: selectClause : ^( SELECT_CLAUSE ( distinctOrAll )? ( selectColumn )+ ) ;
     public void selectClause() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:125:2: ( ^( SELECT_CLAUSE ( distinctOrAll )? ( selectColumn )+ ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:125:4: ^( SELECT_CLAUSE ( distinctOrAll )? ( selectColumn )+ )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:125:2: ( ^( SELECT_CLAUSE ( distinctOrAll )? ( selectColumn )+ ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:125:4: ^( SELECT_CLAUSE ( distinctOrAll )? ( selectColumn )+ )
             {
             	Match(input,SELECT_CLAUSE,FOLLOW_SELECT_CLAUSE_in_selectClause535); if (state.failed) return ;
 
             	Match(input, Token.DOWN, null); if (state.failed) return ;
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:125:20: ( distinctOrAll )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:125:20: ( distinctOrAll )?
             	int alt18 = 2;
             	int LA18_0 = input.LA(1);
 
@@ -1522,7 +1522,7 @@ public partial class SqlGenerator : TreeParser
             	switch (alt18) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:125:21: distinctOrAll
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:125:21: distinctOrAll
             	        {
             	        	PushFollow(FOLLOW_distinctOrAll_in_selectClause538);
             	        	distinctOrAll();
@@ -1534,7 +1534,7 @@ public partial class SqlGenerator : TreeParser
 
             	}
 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:125:37: ( selectColumn )+
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:125:37: ( selectColumn )+
             	int cnt19 = 0;
             	do 
             	{
@@ -1550,7 +1550,7 @@ public partial class SqlGenerator : TreeParser
             	    switch (alt19) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:125:39: selectColumn
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:125:39: selectColumn
             			    {
             			    	PushFollow(FOLLOW_selectColumn_in_selectClause544);
             			    	selectColumn();
@@ -1593,7 +1593,7 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "selectColumn"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:128:1: selectColumn : p= selectExpr (sc= SELECT_COLUMNS )? ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:128:1: selectColumn : p= selectExpr (sc= SELECT_COLUMNS )? ;
     public void selectColumn() // throws RecognitionException [1]
     {   
         IASTNode sc = null;
@@ -1602,14 +1602,14 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:129:2: (p= selectExpr (sc= SELECT_COLUMNS )? )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:129:4: p= selectExpr (sc= SELECT_COLUMNS )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:129:2: (p= selectExpr (sc= SELECT_COLUMNS )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:129:4: p= selectExpr (sc= SELECT_COLUMNS )?
             {
             	PushFollow(FOLLOW_selectExpr_in_selectColumn562);
             	p = selectExpr();
             	state.followingStackPointer--;
             	if (state.failed) return ;
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:129:17: (sc= SELECT_COLUMNS )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:129:17: (sc= SELECT_COLUMNS )?
             	int alt20 = 2;
             	int LA20_0 = input.LA(1);
 
@@ -1620,7 +1620,7 @@ public partial class SqlGenerator : TreeParser
             	switch (alt20) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:129:18: sc= SELECT_COLUMNS
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:129:18: sc= SELECT_COLUMNS
             	        {
             	        	sc=(IASTNode)Match(input,SELECT_COLUMNS,FOLLOW_SELECT_COLUMNS_in_selectColumn567); if (state.failed) return ;
             	        	if ( (state.backtracking==0) )
@@ -1658,7 +1658,7 @@ public partial class SqlGenerator : TreeParser
     };
 
     // $ANTLR start "selectExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:132:1: selectExpr : (e= selectAtom | count | ^( CONSTRUCTOR ( DOT | IDENT ) ( selectColumn )+ ) | methodCall | aggregate | c= constant | arithmeticExpr | param= PARAM | selectStatement );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:132:1: selectExpr : (e= selectAtom | count | ^( CONSTRUCTOR ( DOT | IDENT ) ( selectColumn )+ ) | methodCall | aggregate | c= constant | arithmeticExpr | param= PARAM | selectStatement );
     public SqlGenerator.selectExpr_return selectExpr() // throws RecognitionException [1]
     {   
         SqlGenerator.selectExpr_return retval = new SqlGenerator.selectExpr_return();
@@ -1672,7 +1672,7 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:133:2: (e= selectAtom | count | ^( CONSTRUCTOR ( DOT | IDENT ) ( selectColumn )+ ) | methodCall | aggregate | c= constant | arithmeticExpr | param= PARAM | selectStatement )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:133:2: (e= selectAtom | count | ^( CONSTRUCTOR ( DOT | IDENT ) ( selectColumn )+ ) | methodCall | aggregate | c= constant | arithmeticExpr | param= PARAM | selectStatement )
             int alt22 = 9;
             switch ( input.LA(1) ) 
             {
@@ -1750,7 +1750,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt22) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:133:4: e= selectAtom
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:133:4: e= selectAtom
                     {
                     	PushFollow(FOLLOW_selectAtom_in_selectExpr587);
                     	e = selectAtom();
@@ -1764,7 +1764,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:134:4: count
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:134:4: count
                     {
                     	PushFollow(FOLLOW_count_in_selectExpr594);
                     	count();
@@ -1774,7 +1774,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:135:4: ^( CONSTRUCTOR ( DOT | IDENT ) ( selectColumn )+ )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:135:4: ^( CONSTRUCTOR ( DOT | IDENT ) ( selectColumn )+ )
                     {
                     	Match(input,CONSTRUCTOR,FOLLOW_CONSTRUCTOR_in_selectExpr600); if (state.failed) return retval;
 
@@ -1791,7 +1791,7 @@ public partial class SqlGenerator : TreeParser
                     	    throw mse;
                     	}
 
-                    	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:135:32: ( selectColumn )+
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:135:32: ( selectColumn )+
                     	int cnt21 = 0;
                     	do 
                     	{
@@ -1807,7 +1807,7 @@ public partial class SqlGenerator : TreeParser
                     	    switch (alt21) 
                     		{
                     			case 1 :
-                    			    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:135:34: selectColumn
+                    			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:135:34: selectColumn
                     			    {
                     			    	PushFollow(FOLLOW_selectColumn_in_selectExpr612);
                     			    	selectColumn();
@@ -1836,7 +1836,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:136:4: methodCall
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:136:4: methodCall
                     {
                     	PushFollow(FOLLOW_methodCall_in_selectExpr622);
                     	methodCall();
@@ -1846,7 +1846,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 5 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:137:4: aggregate
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:137:4: aggregate
                     {
                     	PushFollow(FOLLOW_aggregate_in_selectExpr627);
                     	aggregate();
@@ -1856,7 +1856,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 6 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:138:4: c= constant
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:138:4: c= constant
                     {
                     	PushFollow(FOLLOW_constant_in_selectExpr634);
                     	c = constant();
@@ -1870,7 +1870,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 7 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:139:4: arithmeticExpr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:139:4: arithmeticExpr
                     {
                     	PushFollow(FOLLOW_arithmeticExpr_in_selectExpr641);
                     	arithmeticExpr();
@@ -1880,7 +1880,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 8 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:140:4: param= PARAM
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:140:4: param= PARAM
                     {
                     	param=(IASTNode)Match(input,PARAM,FOLLOW_PARAM_in_selectExpr648); if (state.failed) return retval;
                     	if ( (state.backtracking==0) )
@@ -1891,7 +1891,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 9 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:142:4: selectStatement
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:142:4: selectStatement
                     {
                     	if ( (state.backtracking==0) )
                     	{
@@ -1925,13 +1925,13 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "count"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:145:1: count : ^( COUNT ( distinctOrAll )? countExpr ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:145:1: count : ^( COUNT ( distinctOrAll )? countExpr ) ;
     public void count() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:146:2: ( ^( COUNT ( distinctOrAll )? countExpr ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:146:4: ^( COUNT ( distinctOrAll )? countExpr )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:146:2: ( ^( COUNT ( distinctOrAll )? countExpr ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:146:4: ^( COUNT ( distinctOrAll )? countExpr )
             {
             	Match(input,COUNT,FOLLOW_COUNT_in_count672); if (state.failed) return ;
 
@@ -1941,7 +1941,7 @@ public partial class SqlGenerator : TreeParser
             	}
 
             	Match(input, Token.DOWN, null); if (state.failed) return ;
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:146:32: ( distinctOrAll )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:146:32: ( distinctOrAll )?
             	int alt23 = 2;
             	int LA23_0 = input.LA(1);
 
@@ -1952,7 +1952,7 @@ public partial class SqlGenerator : TreeParser
             	switch (alt23) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:146:34: distinctOrAll
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:146:34: distinctOrAll
             	        {
             	        	PushFollow(FOLLOW_distinctOrAll_in_count679);
             	        	distinctOrAll();
@@ -1992,12 +1992,12 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "distinctOrAll"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:149:1: distinctOrAll : ( DISTINCT | ^( ALL ( . )* ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:149:1: distinctOrAll : ( DISTINCT | ^( ALL ( . )* ) );
     public void distinctOrAll() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:150:2: ( DISTINCT | ^( ALL ( . )* ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:150:2: ( DISTINCT | ^( ALL ( . )* ) )
             int alt25 = 2;
             int LA25_0 = input.LA(1);
 
@@ -2020,7 +2020,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt25) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:150:4: DISTINCT
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:150:4: DISTINCT
                     {
                     	Match(input,DISTINCT,FOLLOW_DISTINCT_in_distinctOrAll700); if (state.failed) return ;
                     	if ( (state.backtracking==0) )
@@ -2031,14 +2031,14 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:151:4: ^( ALL ( . )* )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:151:4: ^( ALL ( . )* )
                     {
                     	Match(input,ALL,FOLLOW_ALL_in_distinctOrAll708); if (state.failed) return ;
 
                     	if ( input.LA(1) == Token.DOWN )
                     	{
                     	    Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:151:10: ( . )*
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:151:10: ( . )*
                     	    do 
                     	    {
                     	        int alt24 = 2;
@@ -2057,7 +2057,7 @@ public partial class SqlGenerator : TreeParser
                     	        switch (alt24) 
                     	    	{
                     	    		case 1 :
-                    	    		    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:151:10: .
+                    	    		    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:151:10: .
                     	    		    {
                     	    		    	MatchAny(input); if (state.failed) return ;
 
@@ -2099,12 +2099,12 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "countExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:154:1: countExpr : ( ROW_STAR | simpleExpr );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:154:1: countExpr : ( ROW_STAR | simpleExpr );
     public void countExpr() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:156:2: ( ROW_STAR | simpleExpr )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:156:2: ( ROW_STAR | simpleExpr )
             int alt26 = 2;
             int LA26_0 = input.LA(1);
 
@@ -2127,7 +2127,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt26) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:156:4: ROW_STAR
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:156:4: ROW_STAR
                     {
                     	Match(input,ROW_STAR,FOLLOW_ROW_STAR_in_countExpr727); if (state.failed) return ;
                     	if ( (state.backtracking==0) )
@@ -2138,7 +2138,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:157:4: simpleExpr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:157:4: simpleExpr
                     {
                     	PushFollow(FOLLOW_simpleExpr_in_countExpr734);
                     	simpleExpr();
@@ -2167,7 +2167,7 @@ public partial class SqlGenerator : TreeParser
     };
 
     // $ANTLR start "selectAtom"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:160:1: selectAtom : ( ^( DOT ( . )* ) | ^( SQL_TOKEN ( . )* ) | ^( ALIAS_REF ( . )* ) | ^( SELECT_EXPR ( . )* ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:160:1: selectAtom : ( ^( DOT ( . )* ) | ^( SQL_TOKEN ( . )* ) | ^( ALIAS_REF ( . )* ) | ^( SELECT_EXPR ( . )* ) );
     public SqlGenerator.selectAtom_return selectAtom() // throws RecognitionException [1]
     {   
         SqlGenerator.selectAtom_return retval = new SqlGenerator.selectAtom_return();
@@ -2175,7 +2175,7 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:161:2: ( ^( DOT ( . )* ) | ^( SQL_TOKEN ( . )* ) | ^( ALIAS_REF ( . )* ) | ^( SELECT_EXPR ( . )* ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:161:2: ( ^( DOT ( . )* ) | ^( SQL_TOKEN ( . )* ) | ^( ALIAS_REF ( . )* ) | ^( SELECT_EXPR ( . )* ) )
             int alt31 = 4;
             switch ( input.LA(1) ) 
             {
@@ -2210,14 +2210,14 @@ public partial class SqlGenerator : TreeParser
             switch (alt31) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:161:4: ^( DOT ( . )* )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:161:4: ^( DOT ( . )* )
                     {
                     	Match(input,DOT,FOLLOW_DOT_in_selectAtom746); if (state.failed) return retval;
 
                     	if ( input.LA(1) == Token.DOWN )
                     	{
                     	    Match(input, Token.DOWN, null); if (state.failed) return retval;
-                    	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:161:10: ( . )*
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:161:10: ( . )*
                     	    do 
                     	    {
                     	        int alt27 = 2;
@@ -2236,7 +2236,7 @@ public partial class SqlGenerator : TreeParser
                     	        switch (alt27) 
                     	    	{
                     	    		case 1 :
-                    	    		    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:161:10: .
+                    	    		    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:161:10: .
                     	    		    {
                     	    		    	MatchAny(input); if (state.failed) return retval;
 
@@ -2258,14 +2258,14 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:162:4: ^( SQL_TOKEN ( . )* )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:162:4: ^( SQL_TOKEN ( . )* )
                     {
                     	Match(input,SQL_TOKEN,FOLLOW_SQL_TOKEN_in_selectAtom756); if (state.failed) return retval;
 
                     	if ( input.LA(1) == Token.DOWN )
                     	{
                     	    Match(input, Token.DOWN, null); if (state.failed) return retval;
-                    	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:162:16: ( . )*
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:162:16: ( . )*
                     	    do 
                     	    {
                     	        int alt28 = 2;
@@ -2284,7 +2284,7 @@ public partial class SqlGenerator : TreeParser
                     	        switch (alt28) 
                     	    	{
                     	    		case 1 :
-                    	    		    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:162:16: .
+                    	    		    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:162:16: .
                     	    		    {
                     	    		    	MatchAny(input); if (state.failed) return retval;
 
@@ -2306,14 +2306,14 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:163:4: ^( ALIAS_REF ( . )* )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:163:4: ^( ALIAS_REF ( . )* )
                     {
                     	Match(input,ALIAS_REF,FOLLOW_ALIAS_REF_in_selectAtom766); if (state.failed) return retval;
 
                     	if ( input.LA(1) == Token.DOWN )
                     	{
                     	    Match(input, Token.DOWN, null); if (state.failed) return retval;
-                    	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:163:16: ( . )*
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:163:16: ( . )*
                     	    do 
                     	    {
                     	        int alt29 = 2;
@@ -2332,7 +2332,7 @@ public partial class SqlGenerator : TreeParser
                     	        switch (alt29) 
                     	    	{
                     	    		case 1 :
-                    	    		    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:163:16: .
+                    	    		    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:163:16: .
                     	    		    {
                     	    		    	MatchAny(input); if (state.failed) return retval;
 
@@ -2354,14 +2354,14 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:164:4: ^( SELECT_EXPR ( . )* )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:164:4: ^( SELECT_EXPR ( . )* )
                     {
                     	Match(input,SELECT_EXPR,FOLLOW_SELECT_EXPR_in_selectAtom776); if (state.failed) return retval;
 
                     	if ( input.LA(1) == Token.DOWN )
                     	{
                     	    Match(input, Token.DOWN, null); if (state.failed) return retval;
-                    	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:164:18: ( . )*
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:164:18: ( . )*
                     	    do 
                     	    {
                     	        int alt30 = 2;
@@ -2380,7 +2380,7 @@ public partial class SqlGenerator : TreeParser
                     	        switch (alt30) 
                     	    	{
                     	    		case 1 :
-                    	    		    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:164:18: .
+                    	    		    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:164:18: .
                     	    		    {
                     	    		    	MatchAny(input); if (state.failed) return retval;
 
@@ -2418,15 +2418,15 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "from"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:172:1: from : ^(f= FROM ( fromTable )* ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:172:1: from : ^(f= FROM ( fromTable )* ) ;
     public void from() // throws RecognitionException [1]
     {   
         IASTNode f = null;
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:173:2: ( ^(f= FROM ( fromTable )* ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:173:4: ^(f= FROM ( fromTable )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:173:2: ( ^(f= FROM ( fromTable )* ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:173:4: ^(f= FROM ( fromTable )* )
             {
             	f=(IASTNode)Match(input,FROM,FOLLOW_FROM_in_from799); if (state.failed) return ;
 
@@ -2438,7 +2438,7 @@ public partial class SqlGenerator : TreeParser
             	if ( input.LA(1) == Token.DOWN )
             	{
             	    Match(input, Token.DOWN, null); if (state.failed) return ;
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:174:3: ( fromTable )*
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:174:3: ( fromTable )*
             	    do 
             	    {
             	        int alt32 = 2;
@@ -2453,7 +2453,7 @@ public partial class SqlGenerator : TreeParser
             	        switch (alt32) 
             	    	{
             	    		case 1 :
-            	    		    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:174:4: fromTable
+            	    		    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:174:4: fromTable
             	    		    {
             	    		    	PushFollow(FOLLOW_fromTable_in_from806);
             	    		    	fromTable();
@@ -2492,14 +2492,14 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "fromTable"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:177:1: fromTable : ( ^(a= FROM_FRAGMENT ( tableJoin[ a ] )* ) | ^(a= JOIN_FRAGMENT ( tableJoin[ a ] )* ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:177:1: fromTable : ( ^(a= FROM_FRAGMENT ( tableJoin[ a ] )* ) | ^(a= JOIN_FRAGMENT ( tableJoin[ a ] )* ) );
     public void fromTable() // throws RecognitionException [1]
     {   
         IASTNode a = null;
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:182:2: ( ^(a= FROM_FRAGMENT ( tableJoin[ a ] )* ) | ^(a= JOIN_FRAGMENT ( tableJoin[ a ] )* ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:182:2: ( ^(a= FROM_FRAGMENT ( tableJoin[ a ] )* ) | ^(a= JOIN_FRAGMENT ( tableJoin[ a ] )* ) )
             int alt35 = 2;
             int LA35_0 = input.LA(1);
 
@@ -2522,7 +2522,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt35) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:182:4: ^(a= FROM_FRAGMENT ( tableJoin[ a ] )* )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:182:4: ^(a= FROM_FRAGMENT ( tableJoin[ a ] )* )
                     {
                     	a=(IASTNode)Match(input,FROM_FRAGMENT,FOLLOW_FROM_FRAGMENT_in_fromTable832); if (state.failed) return ;
 
@@ -2534,7 +2534,7 @@ public partial class SqlGenerator : TreeParser
                     	if ( input.LA(1) == Token.DOWN )
                     	{
                     	    Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:182:36: ( tableJoin[ a ] )*
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:182:36: ( tableJoin[ a ] )*
                     	    do 
                     	    {
                     	        int alt33 = 2;
@@ -2549,7 +2549,7 @@ public partial class SqlGenerator : TreeParser
                     	        switch (alt33) 
                     	    	{
                     	    		case 1 :
-                    	    		    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:182:37: tableJoin[ a ]
+                    	    		    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:182:37: tableJoin[ a ]
                     	    		    {
                     	    		    	PushFollow(FOLLOW_tableJoin_in_fromTable838);
                     	    		    	tableJoin(a);
@@ -2574,7 +2574,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:183:4: ^(a= JOIN_FRAGMENT ( tableJoin[ a ] )* )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:183:4: ^(a= JOIN_FRAGMENT ( tableJoin[ a ] )* )
                     {
                     	a=(IASTNode)Match(input,JOIN_FRAGMENT,FOLLOW_JOIN_FRAGMENT_in_fromTable853); if (state.failed) return ;
 
@@ -2586,7 +2586,7 @@ public partial class SqlGenerator : TreeParser
                     	if ( input.LA(1) == Token.DOWN )
                     	{
                     	    Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:183:36: ( tableJoin[ a ] )*
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:183:36: ( tableJoin[ a ] )*
                     	    do 
                     	    {
                     	        int alt34 = 2;
@@ -2601,7 +2601,7 @@ public partial class SqlGenerator : TreeParser
                     	        switch (alt34) 
                     	    	{
                     	    		case 1 :
-                    	    		    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:183:37: tableJoin[ a ]
+                    	    		    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:183:37: tableJoin[ a ]
                     	    		    {
                     	    		    	PushFollow(FOLLOW_tableJoin_in_fromTable859);
                     	    		    	tableJoin(a);
@@ -2648,7 +2648,7 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "tableJoin"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:186:1: tableJoin[ IASTNode parent ] : ( ^(c= JOIN_FRAGMENT ( tableJoin[ c ] )* ) | ^(d= FROM_FRAGMENT ( tableJoin[ d ] )* ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:186:1: tableJoin[ IASTNode parent ] : ( ^(c= JOIN_FRAGMENT ( tableJoin[ c ] )* ) | ^(d= FROM_FRAGMENT ( tableJoin[ d ] )* ) );
     public void tableJoin(IASTNode parent) // throws RecognitionException [1]
     {   
         IASTNode c = null;
@@ -2656,7 +2656,7 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:187:2: ( ^(c= JOIN_FRAGMENT ( tableJoin[ c ] )* ) | ^(d= FROM_FRAGMENT ( tableJoin[ d ] )* ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:187:2: ( ^(c= JOIN_FRAGMENT ( tableJoin[ c ] )* ) | ^(d= FROM_FRAGMENT ( tableJoin[ d ] )* ) )
             int alt38 = 2;
             int LA38_0 = input.LA(1);
 
@@ -2679,7 +2679,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt38) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:187:4: ^(c= JOIN_FRAGMENT ( tableJoin[ c ] )* )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:187:4: ^(c= JOIN_FRAGMENT ( tableJoin[ c ] )* )
                     {
                     	c=(IASTNode)Match(input,JOIN_FRAGMENT,FOLLOW_JOIN_FRAGMENT_in_tableJoin882); if (state.failed) return ;
 
@@ -2691,7 +2691,7 @@ public partial class SqlGenerator : TreeParser
                     	if ( input.LA(1) == Token.DOWN )
                     	{
                     	    Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:187:46: ( tableJoin[ c ] )*
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:187:46: ( tableJoin[ c ] )*
                     	    do 
                     	    {
                     	        int alt36 = 2;
@@ -2706,7 +2706,7 @@ public partial class SqlGenerator : TreeParser
                     	        switch (alt36) 
                     	    	{
                     	    		case 1 :
-                    	    		    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:187:47: tableJoin[ c ]
+                    	    		    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:187:47: tableJoin[ c ]
                     	    		    {
                     	    		    	PushFollow(FOLLOW_tableJoin_in_tableJoin887);
                     	    		    	tableJoin(c);
@@ -2731,7 +2731,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:188:4: ^(d= FROM_FRAGMENT ( tableJoin[ d ] )* )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:188:4: ^(d= FROM_FRAGMENT ( tableJoin[ d ] )* )
                     {
                     	d=(IASTNode)Match(input,FROM_FRAGMENT,FOLLOW_FROM_FRAGMENT_in_tableJoin903); if (state.failed) return ;
 
@@ -2743,7 +2743,7 @@ public partial class SqlGenerator : TreeParser
                     	if ( input.LA(1) == Token.DOWN )
                     	{
                     	    Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:188:58: ( tableJoin[ d ] )*
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:188:58: ( tableJoin[ d ] )*
                     	    do 
                     	    {
                     	        int alt37 = 2;
@@ -2758,7 +2758,7 @@ public partial class SqlGenerator : TreeParser
                     	        switch (alt37) 
                     	    	{
                     	    		case 1 :
-                    	    		    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:188:59: tableJoin[ d ]
+                    	    		    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:188:59: tableJoin[ d ]
                     	    		    {
                     	    		    	PushFollow(FOLLOW_tableJoin_in_tableJoin908);
                     	    		    	tableJoin(d);
@@ -2799,12 +2799,12 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "booleanOp"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:191:1: booleanOp[ bool parens ] : ( ^( AND booleanExpr[true] booleanExpr[true] ) | ^( OR booleanExpr[false] booleanExpr[false] ) | ^( NOT booleanExpr[false] ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:191:1: booleanOp[ bool parens ] : ( ^( AND booleanExpr[true] booleanExpr[true] ) | ^( OR booleanExpr[false] booleanExpr[false] ) | ^( NOT booleanExpr[false] ) );
     public void booleanOp(bool parens) // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:192:2: ( ^( AND booleanExpr[true] booleanExpr[true] ) | ^( OR booleanExpr[false] booleanExpr[false] ) | ^( NOT booleanExpr[false] ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:192:2: ( ^( AND booleanExpr[true] booleanExpr[true] ) | ^( OR booleanExpr[false] booleanExpr[false] ) | ^( NOT booleanExpr[false] ) )
             int alt39 = 3;
             switch ( input.LA(1) ) 
             {
@@ -2834,7 +2834,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt39) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:192:4: ^( AND booleanExpr[true] booleanExpr[true] )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:192:4: ^( AND booleanExpr[true] booleanExpr[true] )
                     {
                     	Match(input,AND,FOLLOW_AND_in_booleanOp928); if (state.failed) return ;
 
@@ -2857,7 +2857,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:193:4: ^( OR booleanExpr[false] booleanExpr[false] )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:193:4: ^( OR booleanExpr[false] booleanExpr[false] )
                     {
                     	Match(input,OR,FOLLOW_OR_in_booleanOp943); if (state.failed) return ;
 
@@ -2889,7 +2889,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:194:4: ^( NOT booleanExpr[false] )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:194:4: ^( NOT booleanExpr[false] )
                     {
                     	Match(input,NOT,FOLLOW_NOT_in_booleanOp962); if (state.failed) return ;
 
@@ -2929,14 +2929,14 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "booleanExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:197:1: booleanExpr[ bool parens ] : ( booleanOp[ parens ] | comparisonExpr[ parens ] | st= SQL_TOKEN );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:197:1: booleanExpr[ bool parens ] : ( booleanOp[ parens ] | comparisonExpr[ parens ] | st= SQL_TOKEN );
     public void booleanExpr(bool parens) // throws RecognitionException [1]
     {   
         IASTNode st = null;
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:198:2: ( booleanOp[ parens ] | comparisonExpr[ parens ] | st= SQL_TOKEN )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:198:2: ( booleanOp[ parens ] | comparisonExpr[ parens ] | st= SQL_TOKEN )
             int alt40 = 3;
             switch ( input.LA(1) ) 
             {
@@ -2982,7 +2982,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt40) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:198:4: booleanOp[ parens ]
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:198:4: booleanOp[ parens ]
                     {
                     	PushFollow(FOLLOW_booleanOp_in_booleanExpr983);
                     	booleanOp(parens);
@@ -2992,7 +2992,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:199:4: comparisonExpr[ parens ]
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:199:4: comparisonExpr[ parens ]
                     {
                     	PushFollow(FOLLOW_comparisonExpr_in_booleanExpr990);
                     	comparisonExpr(parens);
@@ -3002,7 +3002,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:200:4: st= SQL_TOKEN
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:200:4: st= SQL_TOKEN
                     {
                     	st=(IASTNode)Match(input,SQL_TOKEN,FOLLOW_SQL_TOKEN_in_booleanExpr999); if (state.failed) return ;
                     	if ( (state.backtracking==0) )
@@ -3029,12 +3029,12 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "comparisonExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:203:1: comparisonExpr[ bool parens ] : ( binaryComparisonExpression | exoticComparisonExpression );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:203:1: comparisonExpr[ bool parens ] : ( binaryComparisonExpression | exoticComparisonExpression );
     public void comparisonExpr(bool parens) // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:204:2: ( binaryComparisonExpression | exoticComparisonExpression )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:204:2: ( binaryComparisonExpression | exoticComparisonExpression )
             int alt41 = 2;
             int LA41_0 = input.LA(1);
 
@@ -3057,7 +3057,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt41) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:204:4: binaryComparisonExpression
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:204:4: binaryComparisonExpression
                     {
                     	PushFollow(FOLLOW_binaryComparisonExpression_in_comparisonExpr1015);
                     	binaryComparisonExpression();
@@ -3067,7 +3067,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:205:4: exoticComparisonExpression
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:205:4: exoticComparisonExpression
                     {
                     	if ( (state.backtracking==0) )
                     	{
@@ -3101,12 +3101,12 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "binaryComparisonExpression"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:208:1: binaryComparisonExpression : ( ^( EQ expr expr ) | ^( NE expr expr ) | ^( GT expr expr ) | ^( GE expr expr ) | ^( LT expr expr ) | ^( LE expr expr ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:208:1: binaryComparisonExpression : ( ^( EQ expr expr ) | ^( NE expr expr ) | ^( GT expr expr ) | ^( GE expr expr ) | ^( LT expr expr ) | ^( LE expr expr ) );
     public void binaryComparisonExpression() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:209:2: ( ^( EQ expr expr ) | ^( NE expr expr ) | ^( GT expr expr ) | ^( GE expr expr ) | ^( LT expr expr ) | ^( LE expr expr ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:209:2: ( ^( EQ expr expr ) | ^( NE expr expr ) | ^( GT expr expr ) | ^( GE expr expr ) | ^( LT expr expr ) | ^( LE expr expr ) )
             int alt42 = 6;
             switch ( input.LA(1) ) 
             {
@@ -3151,7 +3151,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt42) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:209:4: ^( EQ expr expr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:209:4: ^( EQ expr expr )
                     {
                     	Match(input,EQ,FOLLOW_EQ_in_binaryComparisonExpression1037); if (state.failed) return ;
 
@@ -3174,7 +3174,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:210:4: ^( NE expr expr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:210:4: ^( NE expr expr )
                     {
                     	Match(input,NE,FOLLOW_NE_in_binaryComparisonExpression1050); if (state.failed) return ;
 
@@ -3197,7 +3197,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:211:4: ^( GT expr expr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:211:4: ^( GT expr expr )
                     {
                     	Match(input,GT,FOLLOW_GT_in_binaryComparisonExpression1063); if (state.failed) return ;
 
@@ -3220,7 +3220,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:212:4: ^( GE expr expr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:212:4: ^( GE expr expr )
                     {
                     	Match(input,GE,FOLLOW_GE_in_binaryComparisonExpression1076); if (state.failed) return ;
 
@@ -3243,7 +3243,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 5 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:213:4: ^( LT expr expr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:213:4: ^( LT expr expr )
                     {
                     	Match(input,LT,FOLLOW_LT_in_binaryComparisonExpression1089); if (state.failed) return ;
 
@@ -3266,7 +3266,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 6 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:214:4: ^( LE expr expr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:214:4: ^( LE expr expr )
                     {
                     	Match(input,LE,FOLLOW_LE_in_binaryComparisonExpression1102); if (state.failed) return ;
 
@@ -3305,12 +3305,12 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "exoticComparisonExpression"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:217:1: exoticComparisonExpression : ( ^( LIKE expr expr likeEscape ) | ^( NOT_LIKE expr expr likeEscape ) | ^( BETWEEN expr expr expr ) | ^( NOT_BETWEEN expr expr expr ) | ^( IN expr inList ) | ^( NOT_IN expr inList ) | ^( EXISTS quantified ) | ^( IS_NULL expr ) | ^( IS_NOT_NULL expr ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:217:1: exoticComparisonExpression : ( ^( LIKE expr expr likeEscape ) | ^( NOT_LIKE expr expr likeEscape ) | ^( BETWEEN expr expr expr ) | ^( NOT_BETWEEN expr expr expr ) | ^( IN expr inList ) | ^( NOT_IN expr inList ) | ^( EXISTS quantified ) | ^( IS_NULL expr ) | ^( IS_NOT_NULL expr ) );
     public void exoticComparisonExpression() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:218:2: ( ^( LIKE expr expr likeEscape ) | ^( NOT_LIKE expr expr likeEscape ) | ^( BETWEEN expr expr expr ) | ^( NOT_BETWEEN expr expr expr ) | ^( IN expr inList ) | ^( NOT_IN expr inList ) | ^( EXISTS quantified ) | ^( IS_NULL expr ) | ^( IS_NOT_NULL expr ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:218:2: ( ^( LIKE expr expr likeEscape ) | ^( NOT_LIKE expr expr likeEscape ) | ^( BETWEEN expr expr expr ) | ^( NOT_BETWEEN expr expr expr ) | ^( IN expr inList ) | ^( NOT_IN expr inList ) | ^( EXISTS quantified ) | ^( IS_NULL expr ) | ^( IS_NOT_NULL expr ) )
             int alt43 = 9;
             switch ( input.LA(1) ) 
             {
@@ -3370,7 +3370,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt43) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:218:4: ^( LIKE expr expr likeEscape )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:218:4: ^( LIKE expr expr likeEscape )
                     {
                     	Match(input,LIKE,FOLLOW_LIKE_in_exoticComparisonExpression1122); if (state.failed) return ;
 
@@ -3397,7 +3397,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:219:4: ^( NOT_LIKE expr expr likeEscape )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:219:4: ^( NOT_LIKE expr expr likeEscape )
                     {
                     	Match(input,NOT_LIKE,FOLLOW_NOT_LIKE_in_exoticComparisonExpression1138); if (state.failed) return ;
 
@@ -3424,7 +3424,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:220:4: ^( BETWEEN expr expr expr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:220:4: ^( BETWEEN expr expr expr )
                     {
                     	Match(input,BETWEEN,FOLLOW_BETWEEN_in_exoticComparisonExpression1153); if (state.failed) return ;
 
@@ -3455,7 +3455,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:221:4: ^( NOT_BETWEEN expr expr expr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:221:4: ^( NOT_BETWEEN expr expr expr )
                     {
                     	Match(input,NOT_BETWEEN,FOLLOW_NOT_BETWEEN_in_exoticComparisonExpression1170); if (state.failed) return ;
 
@@ -3486,7 +3486,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 5 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:222:4: ^( IN expr inList )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:222:4: ^( IN expr inList )
                     {
                     	Match(input,IN,FOLLOW_IN_in_exoticComparisonExpression1187); if (state.failed) return ;
 
@@ -3509,7 +3509,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 6 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:223:4: ^( NOT_IN expr inList )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:223:4: ^( NOT_IN expr inList )
                     {
                     	Match(input,NOT_IN,FOLLOW_NOT_IN_in_exoticComparisonExpression1201); if (state.failed) return ;
 
@@ -3532,7 +3532,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 7 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:224:4: ^( EXISTS quantified )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:224:4: ^( EXISTS quantified )
                     {
                     	Match(input,EXISTS,FOLLOW_EXISTS_in_exoticComparisonExpression1215); if (state.failed) return ;
 
@@ -3552,7 +3552,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 8 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:225:4: ^( IS_NULL expr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:225:4: ^( IS_NULL expr )
                     {
                     	Match(input,IS_NULL,FOLLOW_IS_NULL_in_exoticComparisonExpression1227); if (state.failed) return ;
 
@@ -3571,7 +3571,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 9 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:226:4: ^( IS_NOT_NULL expr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:226:4: ^( IS_NOT_NULL expr )
                     {
                     	Match(input,IS_NOT_NULL,FOLLOW_IS_NOT_NULL_in_exoticComparisonExpression1238); if (state.failed) return ;
 
@@ -3606,15 +3606,15 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "likeEscape"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:229:1: likeEscape : ( ^( ESCAPE expr ) )? ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:229:1: likeEscape : ( ^( ESCAPE expr ) )? ;
     public void likeEscape() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:230:2: ( ( ^( ESCAPE expr ) )? )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:230:4: ( ^( ESCAPE expr ) )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:230:2: ( ( ^( ESCAPE expr ) )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:230:4: ( ^( ESCAPE expr ) )?
             {
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:230:4: ( ^( ESCAPE expr ) )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:230:4: ( ^( ESCAPE expr ) )?
             	int alt44 = 2;
             	int LA44_0 = input.LA(1);
 
@@ -3625,7 +3625,7 @@ public partial class SqlGenerator : TreeParser
             	switch (alt44) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:230:6: ^( ESCAPE expr )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:230:6: ^( ESCAPE expr )
             	        {
             	        	Match(input,ESCAPE,FOLLOW_ESCAPE_in_likeEscape1257); if (state.failed) return ;
 
@@ -3665,13 +3665,13 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "inList"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:233:1: inList : ^( IN_LIST ( parenSelect | simpleExprList ) ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:233:1: inList : ^( IN_LIST ( parenSelect | simpleExprList ) ) ;
     public void inList() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:234:2: ( ^( IN_LIST ( parenSelect | simpleExprList ) ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:234:4: ^( IN_LIST ( parenSelect | simpleExprList ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:234:2: ( ^( IN_LIST ( parenSelect | simpleExprList ) ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:234:4: ^( IN_LIST ( parenSelect | simpleExprList ) )
             {
             	Match(input,IN_LIST,FOLLOW_IN_LIST_in_inList1277); if (state.failed) return ;
 
@@ -3683,7 +3683,7 @@ public partial class SqlGenerator : TreeParser
             	if ( input.LA(1) == Token.DOWN )
             	{
             	    Match(input, Token.DOWN, null); if (state.failed) return ;
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:234:28: ( parenSelect | simpleExprList )
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:234:28: ( parenSelect | simpleExprList )
             	    int alt45 = 2;
             	    int LA45_0 = input.LA(1);
 
@@ -3706,7 +3706,7 @@ public partial class SqlGenerator : TreeParser
             	    switch (alt45) 
             	    {
             	        case 1 :
-            	            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:234:30: parenSelect
+            	            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:234:30: parenSelect
             	            {
             	            	PushFollow(FOLLOW_parenSelect_in_inList1283);
             	            	parenSelect();
@@ -3716,7 +3716,7 @@ public partial class SqlGenerator : TreeParser
             	            }
             	            break;
             	        case 2 :
-            	            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:234:44: simpleExprList
+            	            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:234:44: simpleExprList
             	            {
             	            	PushFollow(FOLLOW_simpleExprList_in_inList1287);
             	            	simpleExprList();
@@ -3749,7 +3749,7 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "simpleExprList"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:237:1: simpleExprList : (e= simpleExpr )* ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:237:1: simpleExprList : (e= simpleExpr )* ;
     public void simpleExprList() // throws RecognitionException [1]
     {   
         SqlGenerator.simpleExpr_return e = default(SqlGenerator.simpleExpr_return);
@@ -3757,14 +3757,14 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:238:2: ( (e= simpleExpr )* )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:238:4: (e= simpleExpr )*
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:238:2: ( (e= simpleExpr )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:238:4: (e= simpleExpr )*
             {
             	if ( (state.backtracking==0) )
             	{
             	   Out("("); 
             	}
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:238:18: (e= simpleExpr )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:238:18: (e= simpleExpr )*
             	do 
             	{
             	    int alt46 = 2;
@@ -3779,7 +3779,7 @@ public partial class SqlGenerator : TreeParser
             	    switch (alt46) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:238:19: e= simpleExpr
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:238:19: e= simpleExpr
             			    {
             			    	PushFollow(FOLLOW_simpleExpr_in_simpleExprList1308);
             			    	e = simpleExpr();
@@ -3826,7 +3826,7 @@ public partial class SqlGenerator : TreeParser
     };
 
     // $ANTLR start "expr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:242:1: expr : ( simpleExpr | ^( VECTOR_EXPR (e= expr )* ) | parenSelect | ^( ANY quantified ) | ^( ALL quantified ) | ^( SOME quantified ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:242:1: expr : ( simpleExpr | ^( VECTOR_EXPR (e= expr )* ) | parenSelect | ^( ANY quantified ) | ^( ALL quantified ) | ^( SOME quantified ) );
     public SqlGenerator.expr_return expr() // throws RecognitionException [1]
     {   
         SqlGenerator.expr_return retval = new SqlGenerator.expr_return();
@@ -3837,7 +3837,7 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:243:2: ( simpleExpr | ^( VECTOR_EXPR (e= expr )* ) | parenSelect | ^( ANY quantified ) | ^( ALL quantified ) | ^( SOME quantified ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:243:2: ( simpleExpr | ^( VECTOR_EXPR (e= expr )* ) | parenSelect | ^( ANY quantified ) | ^( ALL quantified ) | ^( SOME quantified ) )
             int alt48 = 6;
             switch ( input.LA(1) ) 
             {
@@ -3908,7 +3908,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt48) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:243:4: simpleExpr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:243:4: simpleExpr
                     {
                     	PushFollow(FOLLOW_simpleExpr_in_expr1327);
                     	simpleExpr();
@@ -3918,7 +3918,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:244:4: ^( VECTOR_EXPR (e= expr )* )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:244:4: ^( VECTOR_EXPR (e= expr )* )
                     {
                     	Match(input,VECTOR_EXPR,FOLLOW_VECTOR_EXPR_in_expr1334); if (state.failed) return retval;
 
@@ -3930,7 +3930,7 @@ public partial class SqlGenerator : TreeParser
                     	if ( input.LA(1) == Token.DOWN )
                     	{
                     	    Match(input, Token.DOWN, null); if (state.failed) return retval;
-                    	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:244:33: (e= expr )*
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:244:33: (e= expr )*
                     	    do 
                     	    {
                     	        int alt47 = 2;
@@ -3945,7 +3945,7 @@ public partial class SqlGenerator : TreeParser
                     	        switch (alt47) 
                     	    	{
                     	    		case 1 :
-                    	    		    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:244:34: e= expr
+                    	    		    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:244:34: e= expr
                     	    		    {
                     	    		    	PushFollow(FOLLOW_expr_in_expr1341);
                     	    		    	e = expr();
@@ -3978,7 +3978,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:245:4: parenSelect
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:245:4: parenSelect
                     {
                     	PushFollow(FOLLOW_parenSelect_in_expr1356);
                     	parenSelect();
@@ -3988,7 +3988,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:246:4: ^( ANY quantified )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:246:4: ^( ANY quantified )
                     {
                     	Match(input,ANY,FOLLOW_ANY_in_expr1362); if (state.failed) return retval;
 
@@ -4008,7 +4008,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 5 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:247:4: ^( ALL quantified )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:247:4: ^( ALL quantified )
                     {
                     	Match(input,ALL,FOLLOW_ALL_in_expr1374); if (state.failed) return retval;
 
@@ -4028,7 +4028,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 6 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:248:4: ^( SOME quantified )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:248:4: ^( SOME quantified )
                     {
                     	Match(input,SOME,FOLLOW_SOME_in_expr1386); if (state.failed) return retval;
 
@@ -4064,19 +4064,19 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "quantified"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:251:1: quantified : ( sqlToken | selectStatement ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:251:1: quantified : ( sqlToken | selectStatement ) ;
     public void quantified() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:252:2: ( ( sqlToken | selectStatement ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:252:4: ( sqlToken | selectStatement )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:252:2: ( ( sqlToken | selectStatement ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:252:4: ( sqlToken | selectStatement )
             {
             	if ( (state.backtracking==0) )
             	{
             	   Out("("); 
             	}
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:252:18: ( sqlToken | selectStatement )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:252:18: ( sqlToken | selectStatement )
             	int alt49 = 2;
             	int LA49_0 = input.LA(1);
 
@@ -4099,7 +4099,7 @@ public partial class SqlGenerator : TreeParser
             	switch (alt49) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:252:20: sqlToken
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:252:20: sqlToken
             	        {
             	        	PushFollow(FOLLOW_sqlToken_in_quantified1408);
             	        	sqlToken();
@@ -4109,7 +4109,7 @@ public partial class SqlGenerator : TreeParser
             	        }
             	        break;
             	    case 2 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:252:31: selectStatement
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:252:31: selectStatement
             	        {
             	        	PushFollow(FOLLOW_selectStatement_in_quantified1412);
             	        	selectStatement();
@@ -4143,13 +4143,13 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "parenSelect"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:255:1: parenSelect : selectStatement ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:255:1: parenSelect : selectStatement ;
     public void parenSelect() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:256:2: ( selectStatement )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:256:4: selectStatement
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:256:2: ( selectStatement )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:256:4: selectStatement
             {
             	if ( (state.backtracking==0) )
             	{
@@ -4184,7 +4184,7 @@ public partial class SqlGenerator : TreeParser
     };
 
     // $ANTLR start "simpleExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:259:1: simpleExpr : (c= constant | NULL | addrExpr | sqlToken | aggregate | methodCall | count | parameter | arithmeticExpr );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:259:1: simpleExpr : (c= constant | NULL | addrExpr | sqlToken | aggregate | methodCall | count | parameter | arithmeticExpr );
     public SqlGenerator.simpleExpr_return simpleExpr() // throws RecognitionException [1]
     {   
         SqlGenerator.simpleExpr_return retval = new SqlGenerator.simpleExpr_return();
@@ -4195,7 +4195,7 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:260:2: (c= constant | NULL | addrExpr | sqlToken | aggregate | methodCall | count | parameter | arithmeticExpr )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:260:2: (c= constant | NULL | addrExpr | sqlToken | aggregate | methodCall | count | parameter | arithmeticExpr )
             int alt50 = 9;
             switch ( input.LA(1) ) 
             {
@@ -4273,7 +4273,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt50) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:260:4: c= constant
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:260:4: c= constant
                     {
                     	PushFollow(FOLLOW_constant_in_simpleExpr1447);
                     	c = constant();
@@ -4287,7 +4287,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:261:4: NULL
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:261:4: NULL
                     {
                     	Match(input,NULL,FOLLOW_NULL_in_simpleExpr1454); if (state.failed) return retval;
                     	if ( (state.backtracking==0) )
@@ -4298,7 +4298,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:262:4: addrExpr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:262:4: addrExpr
                     {
                     	PushFollow(FOLLOW_addrExpr_in_simpleExpr1461);
                     	addrExpr();
@@ -4308,7 +4308,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:263:4: sqlToken
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:263:4: sqlToken
                     {
                     	PushFollow(FOLLOW_sqlToken_in_simpleExpr1466);
                     	sqlToken();
@@ -4318,7 +4318,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 5 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:264:4: aggregate
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:264:4: aggregate
                     {
                     	PushFollow(FOLLOW_aggregate_in_simpleExpr1471);
                     	aggregate();
@@ -4328,7 +4328,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 6 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:265:4: methodCall
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:265:4: methodCall
                     {
                     	PushFollow(FOLLOW_methodCall_in_simpleExpr1476);
                     	methodCall();
@@ -4338,7 +4338,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 7 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:266:4: count
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:266:4: count
                     {
                     	PushFollow(FOLLOW_count_in_simpleExpr1481);
                     	count();
@@ -4348,7 +4348,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 8 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:267:4: parameter
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:267:4: parameter
                     {
                     	PushFollow(FOLLOW_parameter_in_simpleExpr1486);
                     	parameter();
@@ -4358,7 +4358,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 9 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:268:4: arithmeticExpr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:268:4: arithmeticExpr
                     {
                     	PushFollow(FOLLOW_arithmeticExpr_in_simpleExpr1491);
                     	arithmeticExpr();
@@ -4387,7 +4387,7 @@ public partial class SqlGenerator : TreeParser
     };
 
     // $ANTLR start "constant"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:271:1: constant : ( NUM_DOUBLE | NUM_FLOAT | NUM_INT | NUM_LONG | QUOTED_String | CONSTANT | JAVA_CONSTANT | TRUE | FALSE | IDENT );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:271:1: constant : ( NUM_DOUBLE | NUM_FLOAT | NUM_INT | NUM_LONG | QUOTED_String | CONSTANT | JAVA_CONSTANT | TRUE | FALSE | IDENT );
     public SqlGenerator.constant_return constant() // throws RecognitionException [1]
     {   
         SqlGenerator.constant_return retval = new SqlGenerator.constant_return();
@@ -4395,8 +4395,8 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:272:2: ( NUM_DOUBLE | NUM_FLOAT | NUM_INT | NUM_LONG | QUOTED_String | CONSTANT | JAVA_CONSTANT | TRUE | FALSE | IDENT )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:272:2: ( NUM_DOUBLE | NUM_FLOAT | NUM_INT | NUM_LONG | QUOTED_String | CONSTANT | JAVA_CONSTANT | TRUE | FALSE | IDENT )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:
             {
             	if ( input.LA(1) == FALSE || input.LA(1) == TRUE || (input.LA(1) >= CONSTANT && input.LA(1) <= JAVA_CONSTANT) || (input.LA(1) >= QUOTED_String && input.LA(1) <= IDENT) ) 
             	{
@@ -4428,12 +4428,12 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "arithmeticExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:284:1: arithmeticExpr : ( additiveExpr | multiplicativeExpr | ^( UNARY_MINUS expr ) | caseExpr );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:284:1: arithmeticExpr : ( additiveExpr | multiplicativeExpr | ^( UNARY_MINUS expr ) | caseExpr );
     public void arithmeticExpr() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:285:2: ( additiveExpr | multiplicativeExpr | ^( UNARY_MINUS expr ) | caseExpr )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:285:2: ( additiveExpr | multiplicativeExpr | ^( UNARY_MINUS expr ) | caseExpr )
             int alt51 = 4;
             switch ( input.LA(1) ) 
             {
@@ -4471,7 +4471,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt51) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:285:4: additiveExpr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:285:4: additiveExpr
                     {
                     	PushFollow(FOLLOW_additiveExpr_in_arithmeticExpr1560);
                     	additiveExpr();
@@ -4481,7 +4481,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:286:4: multiplicativeExpr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:286:4: multiplicativeExpr
                     {
                     	PushFollow(FOLLOW_multiplicativeExpr_in_arithmeticExpr1565);
                     	multiplicativeExpr();
@@ -4491,7 +4491,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:288:4: ^( UNARY_MINUS expr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:288:4: ^( UNARY_MINUS expr )
                     {
                     	Match(input,UNARY_MINUS,FOLLOW_UNARY_MINUS_in_arithmeticExpr1572); if (state.failed) return ;
 
@@ -4511,7 +4511,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:289:4: caseExpr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:289:4: caseExpr
                     {
                     	PushFollow(FOLLOW_caseExpr_in_arithmeticExpr1582);
                     	caseExpr();
@@ -4537,12 +4537,12 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "additiveExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:292:1: additiveExpr : ( ^( PLUS expr expr ) | ^( MINUS expr nestedExprAfterMinusDiv ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:292:1: additiveExpr : ( ^( PLUS expr expr ) | ^( MINUS expr nestedExprAfterMinusDiv ) );
     public void additiveExpr() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:293:2: ( ^( PLUS expr expr ) | ^( MINUS expr nestedExprAfterMinusDiv ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:293:2: ( ^( PLUS expr expr ) | ^( MINUS expr nestedExprAfterMinusDiv ) )
             int alt52 = 2;
             int LA52_0 = input.LA(1);
 
@@ -4565,7 +4565,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt52) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:293:4: ^( PLUS expr expr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:293:4: ^( PLUS expr expr )
                     {
                     	Match(input,PLUS,FOLLOW_PLUS_in_additiveExpr1594); if (state.failed) return ;
 
@@ -4588,7 +4588,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:294:4: ^( MINUS expr nestedExprAfterMinusDiv )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:294:4: ^( MINUS expr nestedExprAfterMinusDiv )
                     {
                     	Match(input,MINUS,FOLLOW_MINUS_in_additiveExpr1607); if (state.failed) return ;
 
@@ -4627,12 +4627,12 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "multiplicativeExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:297:1: multiplicativeExpr : ( ^( STAR nestedExpr nestedExpr ) | ^( DIV nestedExpr nestedExprAfterMinusDiv ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:297:1: multiplicativeExpr : ( ^( STAR nestedExpr nestedExpr ) | ^( DIV nestedExpr nestedExprAfterMinusDiv ) );
     public void multiplicativeExpr() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:298:2: ( ^( STAR nestedExpr nestedExpr ) | ^( DIV nestedExpr nestedExprAfterMinusDiv ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:298:2: ( ^( STAR nestedExpr nestedExpr ) | ^( DIV nestedExpr nestedExprAfterMinusDiv ) )
             int alt53 = 2;
             int LA53_0 = input.LA(1);
 
@@ -4655,7 +4655,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt53) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:298:4: ^( STAR nestedExpr nestedExpr )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:298:4: ^( STAR nestedExpr nestedExpr )
                     {
                     	Match(input,STAR,FOLLOW_STAR_in_multiplicativeExpr1626); if (state.failed) return ;
 
@@ -4678,7 +4678,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:299:4: ^( DIV nestedExpr nestedExprAfterMinusDiv )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:299:4: ^( DIV nestedExpr nestedExprAfterMinusDiv )
                     {
                     	Match(input,DIV,FOLLOW_DIV_in_multiplicativeExpr1639); if (state.failed) return ;
 
@@ -4717,18 +4717,18 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "nestedExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:302:1: nestedExpr : ( ( additiveExpr )=> additiveExpr | expr );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:302:1: nestedExpr : ( ( additiveExpr )=> additiveExpr | expr );
     public void nestedExpr() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:304:2: ( ( additiveExpr )=> additiveExpr | expr )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:304:2: ( ( additiveExpr )=> additiveExpr | expr )
             int alt54 = 2;
             alt54 = dfa54.Predict(input);
             switch (alt54) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:304:4: ( additiveExpr )=> additiveExpr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:304:4: ( additiveExpr )=> additiveExpr
                     {
                     	if ( (state.backtracking==0) )
                     	{
@@ -4746,7 +4746,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:305:4: expr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:305:4: expr
                     {
                     	PushFollow(FOLLOW_expr_in_nestedExpr1674);
                     	expr();
@@ -4772,18 +4772,18 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "nestedExprAfterMinusDiv"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:308:1: nestedExprAfterMinusDiv : ( ( arithmeticExpr )=> arithmeticExpr | expr );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:308:1: nestedExprAfterMinusDiv : ( ( arithmeticExpr )=> arithmeticExpr | expr );
     public void nestedExprAfterMinusDiv() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:310:2: ( ( arithmeticExpr )=> arithmeticExpr | expr )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:310:2: ( ( arithmeticExpr )=> arithmeticExpr | expr )
             int alt55 = 2;
             alt55 = dfa55.Predict(input);
             switch (alt55) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:310:4: ( arithmeticExpr )=> arithmeticExpr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:310:4: ( arithmeticExpr )=> arithmeticExpr
                     {
                     	if ( (state.backtracking==0) )
                     	{
@@ -4801,7 +4801,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:311:4: expr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:311:4: expr
                     {
                     	PushFollow(FOLLOW_expr_in_nestedExprAfterMinusDiv1703);
                     	expr();
@@ -4827,12 +4827,12 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "caseExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:314:1: caseExpr : ( ^( CASE ( ^( WHEN booleanExpr[false] expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:314:1: caseExpr : ( ^( CASE ( ^( WHEN booleanExpr[false] expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) );
     public void caseExpr() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:315:2: ( ^( CASE ( ^( WHEN booleanExpr[false] expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:315:2: ( ^( CASE ( ^( WHEN booleanExpr[false] expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) )
             int alt60 = 2;
             int LA60_0 = input.LA(1);
 
@@ -4855,7 +4855,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt60) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:315:4: ^( CASE ( ^( WHEN booleanExpr[false] expr ) )+ ( ^( ELSE expr ) )? )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:315:4: ^( CASE ( ^( WHEN booleanExpr[false] expr ) )+ ( ^( ELSE expr ) )? )
                     {
                     	Match(input,CASE,FOLLOW_CASE_in_caseExpr1715); if (state.failed) return ;
 
@@ -4865,7 +4865,7 @@ public partial class SqlGenerator : TreeParser
                     	}
 
                     	Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:316:3: ( ^( WHEN booleanExpr[false] expr ) )+
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:316:3: ( ^( WHEN booleanExpr[false] expr ) )+
                     	int cnt56 = 0;
                     	do 
                     	{
@@ -4881,7 +4881,7 @@ public partial class SqlGenerator : TreeParser
                     	    switch (alt56) 
                     		{
                     			case 1 :
-                    			    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:316:5: ^( WHEN booleanExpr[false] expr )
+                    			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:316:5: ^( WHEN booleanExpr[false] expr )
                     			    {
                     			    	Match(input,WHEN,FOLLOW_WHEN_in_caseExpr1725); if (state.failed) return ;
 
@@ -4922,7 +4922,7 @@ public partial class SqlGenerator : TreeParser
                     	loop56:
                     		;	// Stops C# compiler whinging that label 'loop56' has no statements
 
-                    	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:317:3: ( ^( ELSE expr ) )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:317:3: ( ^( ELSE expr ) )?
                     	int alt57 = 2;
                     	int LA57_0 = input.LA(1);
 
@@ -4933,7 +4933,7 @@ public partial class SqlGenerator : TreeParser
                     	switch (alt57) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:317:5: ^( ELSE expr )
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:317:5: ^( ELSE expr )
                     	        {
                     	        	Match(input,ELSE,FOLLOW_ELSE_in_caseExpr1746); if (state.failed) return ;
 
@@ -4965,7 +4965,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:319:4: ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:319:4: ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? )
                     {
                     	Match(input,CASE2,FOLLOW_CASE2_in_caseExpr1766); if (state.failed) return ;
 
@@ -4979,7 +4979,7 @@ public partial class SqlGenerator : TreeParser
                     	expr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
-                    	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:320:3: ( ^( WHEN expr expr ) )+
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:320:3: ( ^( WHEN expr expr ) )+
                     	int cnt58 = 0;
                     	do 
                     	{
@@ -4995,7 +4995,7 @@ public partial class SqlGenerator : TreeParser
                     	    switch (alt58) 
                     		{
                     			case 1 :
-                    			    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:320:5: ^( WHEN expr expr )
+                    			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:320:5: ^( WHEN expr expr )
                     			    {
                     			    	Match(input,WHEN,FOLLOW_WHEN_in_caseExpr1777); if (state.failed) return ;
 
@@ -5036,7 +5036,7 @@ public partial class SqlGenerator : TreeParser
                     	loop58:
                     		;	// Stops C# compiler whinging that label 'loop58' has no statements
 
-                    	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:321:3: ( ^( ELSE expr ) )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:321:3: ( ^( ELSE expr ) )?
                     	int alt59 = 2;
                     	int LA59_0 = input.LA(1);
 
@@ -5047,7 +5047,7 @@ public partial class SqlGenerator : TreeParser
                     	switch (alt59) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:321:5: ^( ELSE expr )
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:321:5: ^( ELSE expr )
                     	        {
                     	        	Match(input,ELSE,FOLLOW_ELSE_in_caseExpr1797); if (state.failed) return ;
 
@@ -5095,15 +5095,15 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "aggregate"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:325:1: aggregate : ^(a= AGGREGATE expr ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:325:1: aggregate : ^(a= AGGREGATE expr ) ;
     public void aggregate() // throws RecognitionException [1]
     {   
         IASTNode a = null;
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:326:2: ( ^(a= AGGREGATE expr ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:326:4: ^(a= AGGREGATE expr )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:326:2: ( ^(a= AGGREGATE expr ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:326:4: ^(a= AGGREGATE expr )
             {
             	a=(IASTNode)Match(input,AGGREGATE,FOLLOW_AGGREGATE_in_aggregate1825); if (state.failed) return ;
 
@@ -5141,7 +5141,7 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "methodCall"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:330:1: methodCall : ^(m= METHOD_CALL i= METHOD_NAME ( ^( EXPR_LIST ( arguments )? ) )? ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:330:1: methodCall : ^(m= METHOD_CALL i= METHOD_NAME ( ^( EXPR_LIST ( arguments )? ) )? ) ;
     public void methodCall() // throws RecognitionException [1]
     {   
         IASTNode m = null;
@@ -5149,8 +5149,8 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:331:2: ( ^(m= METHOD_CALL i= METHOD_NAME ( ^( EXPR_LIST ( arguments )? ) )? ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:331:4: ^(m= METHOD_CALL i= METHOD_NAME ( ^( EXPR_LIST ( arguments )? ) )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:331:2: ( ^(m= METHOD_CALL i= METHOD_NAME ( ^( EXPR_LIST ( arguments )? ) )? ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:331:4: ^(m= METHOD_CALL i= METHOD_NAME ( ^( EXPR_LIST ( arguments )? ) )? )
             {
             	m=(IASTNode)Match(input,METHOD_CALL,FOLLOW_METHOD_CALL_in_methodCall1849); if (state.failed) return ;
 
@@ -5160,7 +5160,7 @@ public partial class SqlGenerator : TreeParser
             	{
             	   BeginFunctionTemplate(m,i); 
             	}
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:332:3: ( ^( EXPR_LIST ( arguments )? ) )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:332:3: ( ^( EXPR_LIST ( arguments )? ) )?
             	int alt62 = 2;
             	int LA62_0 = input.LA(1);
 
@@ -5171,14 +5171,14 @@ public partial class SqlGenerator : TreeParser
             	switch (alt62) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:332:5: ^( EXPR_LIST ( arguments )? )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:332:5: ^( EXPR_LIST ( arguments )? )
             	        {
             	        	Match(input,EXPR_LIST,FOLLOW_EXPR_LIST_in_methodCall1862); if (state.failed) return ;
 
             	        	if ( input.LA(1) == Token.DOWN )
             	        	{
             	        	    Match(input, Token.DOWN, null); if (state.failed) return ;
-            	        	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:332:17: ( arguments )?
+            	        	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:332:17: ( arguments )?
             	        	    int alt61 = 2;
             	        	    int LA61_0 = input.LA(1);
 
@@ -5189,7 +5189,7 @@ public partial class SqlGenerator : TreeParser
             	        	    switch (alt61) 
             	        	    {
             	        	        case 1 :
-            	        	            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:332:18: arguments
+            	        	            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:332:18: arguments
             	        	            {
             	        	            	PushFollow(FOLLOW_arguments_in_methodCall1865);
             	        	            	arguments();
@@ -5234,15 +5234,15 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "arguments"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:336:1: arguments : ( expr | comparisonExpr[true] ) ( ( expr | comparisonExpr[true] ) )* ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:336:1: arguments : ( expr | comparisonExpr[true] ) ( ( expr | comparisonExpr[true] ) )* ;
     public void arguments() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:337:2: ( ( expr | comparisonExpr[true] ) ( ( expr | comparisonExpr[true] ) )* )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:337:4: ( expr | comparisonExpr[true] ) ( ( expr | comparisonExpr[true] ) )*
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:337:2: ( ( expr | comparisonExpr[true] ) ( ( expr | comparisonExpr[true] ) )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:337:4: ( expr | comparisonExpr[true] ) ( ( expr | comparisonExpr[true] ) )*
             {
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:337:4: ( expr | comparisonExpr[true] )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:337:4: ( expr | comparisonExpr[true] )
             	int alt63 = 2;
             	int LA63_0 = input.LA(1);
 
@@ -5265,7 +5265,7 @@ public partial class SqlGenerator : TreeParser
             	switch (alt63) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:337:5: expr
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:337:5: expr
             	        {
             	        	PushFollow(FOLLOW_expr_in_arguments1890);
             	        	expr();
@@ -5275,7 +5275,7 @@ public partial class SqlGenerator : TreeParser
             	        }
             	        break;
             	    case 2 :
-            	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:337:12: comparisonExpr[true]
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:337:12: comparisonExpr[true]
             	        {
             	        	PushFollow(FOLLOW_comparisonExpr_in_arguments1894);
             	        	comparisonExpr(true);
@@ -5287,7 +5287,7 @@ public partial class SqlGenerator : TreeParser
 
             	}
 
-            	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:337:34: ( ( expr | comparisonExpr[true] ) )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:337:34: ( ( expr | comparisonExpr[true] ) )*
             	do 
             	{
             	    int alt65 = 2;
@@ -5302,13 +5302,13 @@ public partial class SqlGenerator : TreeParser
             	    switch (alt65) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:337:36: ( expr | comparisonExpr[true] )
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:337:36: ( expr | comparisonExpr[true] )
             			    {
             			    	if ( (state.backtracking==0) )
             			    	{
             			    	   CommaBetweenParameters(", "); 
             			    	}
-            			    	// /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:337:70: ( expr | comparisonExpr[true] )
+            			    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:337:70: ( expr | comparisonExpr[true] )
             			    	int alt64 = 2;
             			    	int LA64_0 = input.LA(1);
 
@@ -5331,7 +5331,7 @@ public partial class SqlGenerator : TreeParser
             			    	switch (alt64) 
             			    	{
             			    	    case 1 :
-            			    	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:337:71: expr
+            			    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:337:71: expr
             			    	        {
             			    	        	PushFollow(FOLLOW_expr_in_arguments1903);
             			    	        	expr();
@@ -5341,7 +5341,7 @@ public partial class SqlGenerator : TreeParser
             			    	        }
             			    	        break;
             			    	    case 2 :
-            			    	        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:337:78: comparisonExpr[true]
+            			    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:337:78: comparisonExpr[true]
             			    	        {
             			    	        	PushFollow(FOLLOW_comparisonExpr_in_arguments1907);
             			    	        	comparisonExpr(true);
@@ -5383,7 +5383,7 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "parameter"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:340:1: parameter : (n= NAMED_PARAM | p= PARAM );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:340:1: parameter : (n= NAMED_PARAM | p= PARAM );
     public void parameter() // throws RecognitionException [1]
     {   
         IASTNode n = null;
@@ -5391,7 +5391,7 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:341:2: (n= NAMED_PARAM | p= PARAM )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:341:2: (n= NAMED_PARAM | p= PARAM )
             int alt66 = 2;
             int LA66_0 = input.LA(1);
 
@@ -5414,7 +5414,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt66) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:341:4: n= NAMED_PARAM
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:341:4: n= NAMED_PARAM
                     {
                     	n=(IASTNode)Match(input,NAMED_PARAM,FOLLOW_NAMED_PARAM_in_parameter1925); if (state.failed) return ;
                     	if ( (state.backtracking==0) )
@@ -5425,7 +5425,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:342:4: p= PARAM
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:342:4: p= PARAM
                     {
                     	p=(IASTNode)Match(input,PARAM,FOLLOW_PARAM_in_parameter1934); if (state.failed) return ;
                     	if ( (state.backtracking==0) )
@@ -5452,7 +5452,7 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "addrExpr"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:345:1: addrExpr : ( ^(r= DOT . . ) | i= ALIAS_REF | ^(j= INDEX_OP ( . )* ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:345:1: addrExpr : ( ^(r= DOT . . ) | i= ALIAS_REF | ^(j= INDEX_OP ( . )* ) );
     public void addrExpr() // throws RecognitionException [1]
     {   
         IASTNode r = null;
@@ -5461,7 +5461,7 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:346:2: ( ^(r= DOT . . ) | i= ALIAS_REF | ^(j= INDEX_OP ( . )* ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:346:2: ( ^(r= DOT . . ) | i= ALIAS_REF | ^(j= INDEX_OP ( . )* ) )
             int alt68 = 3;
             switch ( input.LA(1) ) 
             {
@@ -5491,7 +5491,7 @@ public partial class SqlGenerator : TreeParser
             switch (alt68) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:346:4: ^(r= DOT . . )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:346:4: ^(r= DOT . . )
                     {
                     	r=(IASTNode)Match(input,DOT,FOLLOW_DOT_in_addrExpr1950); if (state.failed) return ;
 
@@ -5508,7 +5508,7 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:347:4: i= ALIAS_REF
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:347:4: i= ALIAS_REF
                     {
                     	i=(IASTNode)Match(input,ALIAS_REF,FOLLOW_ALIAS_REF_in_addrExpr1964); if (state.failed) return ;
                     	if ( (state.backtracking==0) )
@@ -5519,14 +5519,14 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:348:4: ^(j= INDEX_OP ( . )* )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:348:4: ^(j= INDEX_OP ( . )* )
                     {
                     	j=(IASTNode)Match(input,INDEX_OP,FOLLOW_INDEX_OP_in_addrExpr1974); if (state.failed) return ;
 
                     	if ( input.LA(1) == Token.DOWN )
                     	{
                     	    Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:348:17: ( . )*
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:348:17: ( . )*
                     	    do 
                     	    {
                     	        int alt67 = 2;
@@ -5545,7 +5545,7 @@ public partial class SqlGenerator : TreeParser
                     	        switch (alt67) 
                     	    	{
                     	    		case 1 :
-                    	    		    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:348:17: .
+                    	    		    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:348:17: .
                     	    		    {
                     	    		    	MatchAny(input); if (state.failed) return ;
 
@@ -5587,15 +5587,15 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "sqlToken"
-    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:351:1: sqlToken : ^(t= SQL_TOKEN ( . )* ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:351:1: sqlToken : ^(t= SQL_TOKEN ( . )* ) ;
     public void sqlToken() // throws RecognitionException [1]
     {   
         IASTNode t = null;
 
         try 
     	{
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:352:2: ( ^(t= SQL_TOKEN ( . )* ) )
-            // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:352:4: ^(t= SQL_TOKEN ( . )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:352:2: ( ^(t= SQL_TOKEN ( . )* ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:352:4: ^(t= SQL_TOKEN ( . )* )
             {
             	t=(IASTNode)Match(input,SQL_TOKEN,FOLLOW_SQL_TOKEN_in_sqlToken1994); if (state.failed) return ;
 
@@ -5607,7 +5607,7 @@ public partial class SqlGenerator : TreeParser
             	if ( input.LA(1) == Token.DOWN )
             	{
             	    Match(input, Token.DOWN, null); if (state.failed) return ;
-            	    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:352:30: ( . )*
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:352:30: ( . )*
             	    do 
             	    {
             	        int alt69 = 2;
@@ -5626,7 +5626,7 @@ public partial class SqlGenerator : TreeParser
             	        switch (alt69) 
             	    	{
             	    		case 1 :
-            	    		    // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:352:30: .
+            	    		    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:352:30: .
             	    		    {
             	    		    	MatchAny(input); if (state.failed) return ;
 
@@ -5662,8 +5662,8 @@ public partial class SqlGenerator : TreeParser
 
     // $ANTLR start "synpred1_SqlGenerator"
     public void synpred1_SqlGenerator_fragment() {
-        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:81:4: ( SQL_TOKEN )
-        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:81:5: SQL_TOKEN
+        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:81:4: ( SQL_TOKEN )
+        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:81:5: SQL_TOKEN
         {
         	Match(input,SQL_TOKEN,FOLLOW_SQL_TOKEN_in_synpred1_SqlGenerator323); if (state.failed) return ;
 
@@ -5673,8 +5673,8 @@ public partial class SqlGenerator : TreeParser
 
     // $ANTLR start "synpred2_SqlGenerator"
     public void synpred2_SqlGenerator_fragment() {
-        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:304:4: ( additiveExpr )
-        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:304:5: additiveExpr
+        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:304:4: ( additiveExpr )
+        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:304:5: additiveExpr
         {
         	PushFollow(FOLLOW_additiveExpr_in_synpred2_SqlGenerator1660);
         	additiveExpr();
@@ -5687,8 +5687,8 @@ public partial class SqlGenerator : TreeParser
 
     // $ANTLR start "synpred3_SqlGenerator"
     public void synpred3_SqlGenerator_fragment() {
-        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:310:4: ( arithmeticExpr )
-        // /Users/Steve/Projects/uNhAddins/Trunk/ANTLR-HQL/ANTLR-HQL/SqlGenerator.g:310:5: arithmeticExpr
+        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:310:4: ( arithmeticExpr )
+        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\SqlGenerator.g:310:5: arithmeticExpr
         {
         	PushFollow(FOLLOW_arithmeticExpr_in_synpred3_SqlGenerator1689);
         	arithmeticExpr();
@@ -5719,13 +5719,13 @@ public partial class SqlGenerator : TreeParser
    	    state.failed = false;
    	    return success;
    	}
-   	public bool synpred1_SqlGenerator() 
+   	public bool synpred3_SqlGenerator() 
    	{
    	    state.backtracking++;
    	    int start = input.Mark();
    	    try 
    	    {
-   	        synpred1_SqlGenerator_fragment(); // can never throw exception
+   	        synpred3_SqlGenerator_fragment(); // can never throw exception
    	    }
    	    catch (RecognitionException re) 
    	    {
@@ -5737,13 +5737,13 @@ public partial class SqlGenerator : TreeParser
    	    state.failed = false;
    	    return success;
    	}
-   	public bool synpred3_SqlGenerator() 
+   	public bool synpred1_SqlGenerator() 
    	{
    	    state.backtracking++;
    	    int start = input.Mark();
    	    try 
    	    {
-   	        synpred3_SqlGenerator_fragment(); // can never throw exception
+   	        synpred1_SqlGenerator_fragment(); // can never throw exception
    	    }
    	    catch (RecognitionException re) 
    	    {
@@ -5780,13 +5780,13 @@ public partial class SqlGenerator : TreeParser
     const string DFA54_specialS =
         "\x01\uffff\x01\x00\x01\x01\x16\uffff}>";
     static readonly string[] DFA54_transitionS = {
-            "\x02\x03\x06\uffff\x01\x03\x02\uffff\x01\x03\x04\uffff\x01\x03"+
-            "\x12\uffff\x01\x03\x05\uffff\x01\x03\x01\uffff\x01\x03\x01\uffff"+
-            "\x01\x03\x05\uffff\x01\x03\x0d\uffff\x01\x03\x02\uffff\x01\x03"+
-            "\x03\uffff\x01\x03\x02\uffff\x01\x03\x08\uffff\x01\x03\x01\uffff"+
-            "\x01\x03\x01\uffff\x06\x03\x0b\uffff\x01\x01\x01\x02\x02\x03"+
-            "\x03\uffff\x03\x03\x0f\uffff\x01\x03\x01\uffff\x01\x03\x05\uffff"+
-            "\x01\x03",
+            "\x02\x03\x06\uffff\x01\x03\x02\uffff\x01\x03\x04\uffff\x01"+
+            "\x03\x12\uffff\x01\x03\x05\uffff\x01\x03\x01\uffff\x01\x03\x01"+
+            "\uffff\x01\x03\x05\uffff\x01\x03\x0d\uffff\x01\x03\x02\uffff"+
+            "\x01\x03\x03\uffff\x01\x03\x02\uffff\x01\x03\x08\uffff\x01\x03"+
+            "\x01\uffff\x01\x03\x01\uffff\x06\x03\x0b\uffff\x01\x01\x01\x02"+
+            "\x02\x03\x03\uffff\x03\x03\x0f\uffff\x01\x03\x01\uffff\x01\x03"+
+            "\x05\uffff\x01\x03",
             "\x01\uffff",
             "\x01\uffff",
             "",
@@ -5899,16 +5899,16 @@ public partial class SqlGenerator : TreeParser
     const string DFA55_acceptS =
         "\x08\uffff\x01\x02\x0f\uffff\x01\x01";
     const string DFA55_specialS =
-        "\x01\uffff\x01\x00\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06"+
-        "\x11\uffff}>";
+        "\x01\uffff\x01\x00\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01"+
+        "\x06\x11\uffff}>";
     static readonly string[] DFA55_transitionS = {
-            "\x02\x08\x06\uffff\x01\x08\x02\uffff\x01\x08\x04\uffff\x01\x08"+
-            "\x12\uffff\x01\x08\x05\uffff\x01\x08\x01\uffff\x01\x08\x01\uffff"+
-            "\x01\x08\x05\uffff\x01\x06\x0d\uffff\x01\x08\x02\uffff\x01\x07"+
-            "\x03\uffff\x01\x08\x02\uffff\x01\x08\x08\uffff\x01\x05\x01\uffff"+
-            "\x01\x08\x01\uffff\x06\x08\x0b\uffff\x01\x01\x01\x02\x01\x03"+
-            "\x01\x04\x03\uffff\x03\x08\x0f\uffff\x01\x08\x01\uffff\x01\x08"+
-            "\x05\uffff\x01\x08",
+            "\x02\x08\x06\uffff\x01\x08\x02\uffff\x01\x08\x04\uffff\x01"+
+            "\x08\x12\uffff\x01\x08\x05\uffff\x01\x08\x01\uffff\x01\x08\x01"+
+            "\uffff\x01\x08\x05\uffff\x01\x06\x0d\uffff\x01\x08\x02\uffff"+
+            "\x01\x07\x03\uffff\x01\x08\x02\uffff\x01\x08\x08\uffff\x01\x05"+
+            "\x01\uffff\x01\x08\x01\uffff\x06\x08\x0b\uffff\x01\x01\x01\x02"+
+            "\x01\x03\x01\x04\x03\uffff\x03\x08\x0f\uffff\x01\x08\x01\uffff"+
+            "\x01\x08\x05\uffff\x01\x08",
             "\x01\uffff",
             "\x01\uffff",
             "\x01\uffff",

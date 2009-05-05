@@ -51,7 +51,7 @@ selectStatement
 updateStatement!
 	@after{
 		BeforeStatementCompletion( "update" );
-		PrepareVersioned( $updateStatement.tree, $v.tree );
+		PrepareVersioned( $updateStatement.tree, $v );
 		PostProcessUpdate( $updateStatement.tree );
 		AfterStatementCompletion( "update" );
 	}
