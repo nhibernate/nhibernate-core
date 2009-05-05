@@ -34,6 +34,18 @@ namespace NHibernate.Test.HQL.Ast
 
 		#endregion
 
+		#region UPDATES
+		[Test]
+		public void IncorrectSyntax()
+		{
+			using(ISession s = OpenSession())
+			{
+				Assert.Throws<QueryException>(() => s.CreateQuery("update Human set Human.description = 'xyz' where Human.id = 1 and Human.description is null"));
+			}
+		}
+
+		#endregion
+
 		#region DELETES
 
 		[Test]
