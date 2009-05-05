@@ -20,8 +20,9 @@ namespace NHibernate.SqlCommand
 		// columns-> (ColumnName, Value) or (ColumnName, SqlType) for parametrized column
 		private readonly LinkedHashMap<string, object> columns = new LinkedHashMap<string, object>();
 
-		private readonly List<SqlString> whereStrings = new List<SqlString>();
+		private List<SqlString> whereStrings = new List<SqlString>();
 		private readonly List<SqlType> whereParameterTypes = new List<SqlType>();
+		private SqlString assignments;
 
 		public SqlUpdateBuilder(Dialect.Dialect dialect, IMapping mapping)
 			: base(dialect, mapping) {}
@@ -117,6 +118,28 @@ namespace NHibernate.SqlCommand
 				}
 			}
 
+			return this;
+		}
+
+		public SqlUpdateBuilder AppendAssignmentFragment(SqlString fragment)
+		{
+			if (assignments == null)
+			{
+				assignments = fragment;
+			}
+			else
+			{
+				assignments.Append(", ").Append(fragment);
+			}
+			return this;
+		}
+
+		public SqlUpdateBuilder SetWhere(string whereSql)
+		{
+			if (StringHelper.IsNotEmpty(whereSql))
+			{
+				whereStrings = new List<SqlString>(new[] { new SqlString(whereSql) });
+			}
 			return this;
 		}
 
@@ -229,7 +252,7 @@ namespace NHibernate.SqlCommand
 			if (!string.IsNullOrEmpty(comment))
 				initialCapacity++;
 
-			SqlStringBuilder sqlBuilder = new SqlStringBuilder(initialCapacity + 2);
+			var sqlBuilder = new SqlStringBuilder(initialCapacity + 2);
 			if (!string.IsNullOrEmpty(comment))
 				sqlBuilder.Add("/* " + comment + " */ ");
 
@@ -237,6 +260,7 @@ namespace NHibernate.SqlCommand
 				.Add(tableName)
 				.Add(" SET ");
 
+			bool assignmentsAppended = false;
 			bool commaNeeded = false;
 			foreach (KeyValuePair<string, object> valuePair in columns)
 			{
@@ -253,6 +277,15 @@ namespace NHibernate.SqlCommand
 					sqlBuilder.Add(Parameter.Placeholder);
 				else
 					sqlBuilder.Add((string) valuePair.Value);
+				assignmentsAppended = true;
+			}
+			if (assignments != null)
+			{
+				if (assignmentsAppended)
+				{
+					sqlBuilder.Add(", ");
+				}
+				sqlBuilder.Add(assignments);
 			}
 
 			sqlBuilder.Add(" WHERE ");

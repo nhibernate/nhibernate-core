@@ -484,6 +484,7 @@
     <Compile Include="Hql\Ast\ANTLR\Exec\BasicExecutor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Exec\IStatementExecutor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Exec\MultiTableDeleteExecutor.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Exec\MultiTableUpdateExecutor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Generated\HqlLexer.cs" />
     <Compile Include="Hql\Ast\ANTLR\Generated\HqlParser.cs" />
     <Compile Include="Hql\Ast\ANTLR\Generated\HqlSqlWalker.cs" />
@@ -497,6 +498,7 @@
     <Compile Include="Hql\Ast\ANTLR\InvalidWithClauseException.cs" />
     <Compile Include="Hql\Ast\ANTLR\IParseErrorHandler.cs" />
     <Compile Include="Hql\Ast\ANTLR\Loader\QueryLoader.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\AssignmentSpecification.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\InsertStatement.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\UpdateStatement.cs" />
     <Compile Include="Param\AbstractExplicitParameterSpecification.cs" />

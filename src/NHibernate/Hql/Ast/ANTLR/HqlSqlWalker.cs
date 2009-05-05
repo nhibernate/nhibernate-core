@@ -53,6 +53,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private IParseErrorHandler _parseErrorHandler = new ErrorCounter();
 
 		private IASTFactory _nodeFactory;
+		private readonly List<AssignmentSpecification> assignmentSpecifications = new List<AssignmentSpecification>();
+		private int numberOfParametersInSetClause;
 
 		public HqlSqlWalker(QueryTranslatorImpl qti,
 					  ISessionFactoryImplementor sfi,
@@ -66,6 +68,16 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_literalProcessor = new LiteralProcessor(this);
 			_tokenReplacements = tokenReplacements;
 			_collectionFilterRole = collectionRole;
+		}
+
+		public IList<AssignmentSpecification> AssignmentSpecifications
+		{
+			get { return assignmentSpecifications; }
+		}
+
+		public int NumberOfParametersInSetClause
+		{
+			get { return numberOfParametersInSetClause; }
 		}
 
 		public IParseErrorHandler ParseErrorHandler
@@ -333,9 +345,29 @@ namespace NHibernate.Hql.Ast.ANTLR
 			constructorNode.Prepare();
 		}
 
-		static void EvaluateAssignment(IASTNode eq)
+		protected void EvaluateAssignment(IASTNode eq)
 		{
-			throw new NotImplementedException(); // DML
+			PrepareLogicOperator(eq);
+			IQueryable persister = CurrentFromClause.GetFromElement().Queryable;
+			EvaluateAssignment(eq, persister, -1);
+		}
+
+		private void EvaluateAssignment(IASTNode eq, IQueryable persister, int targetIndex)
+		{
+			if (persister.IsMultiTable)
+			{
+				// no need to even collect this information if the persister is considered multi-table
+				var specification = new AssignmentSpecification(eq, persister);
+				if (targetIndex >= 0)
+				{
+					assignmentSpecifications.Insert(targetIndex, specification);
+				}
+				else
+				{
+					assignmentSpecifications.Add(specification);
+				}
+				numberOfParametersInSetClause += specification.Parameters.Length;
+			}
 		}
 
 		void BeforeSelectClause()

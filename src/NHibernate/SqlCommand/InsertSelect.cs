@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using log4net;
-using NHibernate.Engine;
 
 namespace NHibernate.SqlCommand
 {
@@ -8,7 +7,6 @@ namespace NHibernate.SqlCommand
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(InsertSelect));
 
-		private readonly ISessionFactoryImplementor factory;
 		private string tableName;
 		private string comment;
 		private readonly List<string> columnNames = new List<string>();
