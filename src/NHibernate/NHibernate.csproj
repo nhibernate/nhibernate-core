@@ -589,6 +589,7 @@
     <Compile Include="Hql\Ast\ANTLR\Util\JoinProcessor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Util\LiteralProcessor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Util\NodeTraverser.cs" />
+    <Compile Include="Param\VersionTypeSeedParameterSpecification.cs" />
     <Compile Include="SqlCommand\InsertSelect.cs" />
     <Compile Include="Util\NullableDictionary.cs" />
     <Compile Include="Hql\Ast\ANTLR\Util\PathHelper.cs" />

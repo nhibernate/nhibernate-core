@@ -11,6 +11,7 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.UserTypes;
 using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR
@@ -167,12 +168,69 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		void PrepareVersioned(IASTNode updateNode, IASTNode versioned)
 		{
-			throw new NotImplementedException();  // DML
+			var updateStatement = (UpdateStatement)updateNode;
+			FromClause fromClause = updateStatement.FromClause;
+			if (versioned != null)
+			{
+				// Make sure that the persister is versioned
+				IQueryable persister = fromClause.GetFromElement().Queryable;
+				if (!persister.IsVersioned)
+				{
+					throw new SemanticException("increment option specified for update of non-versioned entity");
+				}
+
+				IVersionType versionType = persister.VersionType;
+				if (versionType is IUserVersionType)
+				{
+					throw new SemanticException("user-defined version types not supported for increment option");
+				}
+
+				IASTNode eq = ASTFactory.CreateNode(EQ, "=");
+				IASTNode versionPropertyNode = GenerateVersionPropertyNode(persister);
+
+				eq.SetFirstChild(versionPropertyNode);
+
+				IASTNode versionIncrementNode;
+				if (typeof(DateTime).IsAssignableFrom(versionType.ReturnedClass))
+				{
+					versionIncrementNode = ASTFactory.CreateNode(PARAM, "?");
+					IParameterSpecification paramSpec = new VersionTypeSeedParameterSpecification(versionType);
+					((ParameterNode)versionIncrementNode).HqlParameterSpecification = paramSpec;
+					Parameters.Insert(0, paramSpec);
+				}
+				else
+				{
+					// Not possible to simply re-use the versionPropertyNode here as it causes
+					// OOM errors due to circularity :(
+					versionIncrementNode = ASTFactory.CreateNode(PLUS, "+");
+					versionIncrementNode.SetFirstChild(GenerateVersionPropertyNode(persister));
+					versionIncrementNode.AddChild(ASTFactory.CreateNode(IDENT, "1"));
+				}
+
+				eq.AddChild(versionIncrementNode);
+
+				EvaluateAssignment(eq, persister, 0);
+
+				IASTNode setClause = updateStatement.SetClause;
+				IASTNode currentFirstSetElement = setClause.GetFirstChild();
+				setClause.SetFirstChild(eq);
+				eq.NextSibling= currentFirstSetElement;
+			}
+		}
+
+		private IASTNode GenerateVersionPropertyNode(IQueryable persister)
+		{
+			string versionPropertyName = persister.PropertyNames[persister.VersionProperty];
+			var versionPropertyRef = ASTFactory.CreateNode(IDENT, versionPropertyName);
+			var versionPropertyNode = LookupNonQualifiedProperty(versionPropertyRef);
+			Resolve(versionPropertyNode);
+			return versionPropertyNode;
 		}
 
 		void PostProcessUpdate(IASTNode update)
 		{
-			throw new NotImplementedException(); // DML
+			var updateStatement = (UpdateStatement)update;
+			PostProcessDML(updateStatement);
 		}
 
 		void PostProcessDelete(IASTNode delete)

@@ -44,6 +44,81 @@ namespace NHibernate.Test.HQL.Ast
 			}
 		}
 
+		[Test]
+		public void UpdateWithWhereExistsSubquery()
+		{
+			// multi-table ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			var joe = new Human { Name = new Name { First = "Joe", Initial = 'Q', Last = "Public" } };
+			s.Save(joe);
+			var doll = new Human {Name = new Name {First = "Kyu", Initial = 'P', Last = "Doll"}, Friends = new[] {joe}};
+			s.Save(doll);
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			string updateQryString = "update Human h " +
+															 "set h.description = 'updated' " +
+															 "where exists (" +
+															 "      select f.id " +
+															 "      from h.friends f " +
+															 "      where f.name.last = 'Public' " +
+															 ")";
+			int count = s.CreateQuery(updateQryString).ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1));
+			s.Delete(doll);
+			s.Delete(joe);
+			t.Commit();
+			s.Close();
+
+			// single-table (one-to-many & many-to-many) ~~~~~~~~~~~~~~~~~~~~~~~~~~
+			s = OpenSession();
+			t = s.BeginTransaction();
+			var entity = new SimpleEntityWithAssociation();
+			var other = new SimpleEntityWithAssociation();
+			entity.Name= "main";
+			other.Name= "many-to-many-association";
+			entity.ManyToManyAssociatedEntities.Add(other);
+			entity.AddAssociation("one-to-many-association");
+			s.Save(entity);
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			// one-to-many test
+			updateQryString = "update SimpleEntityWithAssociation e " +
+															 "set e.Name = 'updated' " +
+															 "where exists (" +
+															 "      select a.id " +
+															 "      from e.AssociatedEntities a " +
+															 "      where a.Name = 'one-to-many-association' " +
+															 ")";
+			count = s.CreateQuery(updateQryString).ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1));
+			// many-to-many test
+			if (Dialect.SupportsSubqueryOnMutatingTable)
+			{
+				updateQryString = "update SimpleEntityWithAssociation e " +
+										 "set e.Name = 'updated' " +
+										 "where exists (" +
+										 "      select a.id " +
+										 "      from e.ManyToManyAssociatedEntities a " +
+										 "      where a.Name = 'many-to-many-association' " +
+										 ")";
+				count = s.CreateQuery(updateQryString).ExecuteUpdate();
+				Assert.That(count, Is.EqualTo(1));
+			}
+			var mtm = entity.ManyToManyAssociatedEntities.GetEnumerator();
+			mtm.MoveNext();
+			s.Delete(mtm.Current);
+			s.Delete(entity);
+			t.Commit();
+			s.Close();
+		}
+
 		#endregion
 
 		#region DELETES

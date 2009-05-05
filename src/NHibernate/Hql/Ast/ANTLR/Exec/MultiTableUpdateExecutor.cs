@@ -22,7 +22,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		private readonly SqlString[] updates;
 		private readonly IParameterSpecification[][] hqlParameters;
 
-		public MultiTableUpdateExecutor(IStatement statement, ILog log) : base(statement, log)
+		public MultiTableUpdateExecutor(IStatement statement) : base(statement, log)
 		{
 			if (!Factory.Dialect.SupportsTemporaryTables)
 			{

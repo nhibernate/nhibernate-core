@@ -242,10 +242,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 				var list = new List<string>();
 				if (IsManipulationStatement)
 				{
-					SqlString[] sqlStatements = statementExecutor.SqlStatements;
-					foreach (var sqlStatement in sqlStatements)
+					foreach (var sqlStatement in statementExecutor.SqlStatements)
 					{
-						list.Add(sqlStatement.ToString());
+						if (sqlStatement != null)
+						{
+							list.Add(sqlStatement.ToString());
+						}
 					}
 				}
 				else
@@ -419,7 +421,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 					// even here, if only properties mapped to the "base table" are referenced
 					// in the set and where clauses, this could be handled by the BasicDelegate.
 					// TODO : decide if it is better performance-wise to perform that check, or to simply use the MultiTableUpdateDelegate
-					return new MultiTableDeleteExecutor(statement);
+					return new MultiTableUpdateExecutor(statement);
 				}
 				else
 				{

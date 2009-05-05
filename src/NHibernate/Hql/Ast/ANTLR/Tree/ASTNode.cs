@@ -262,6 +262,24 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 				return null;
 			}
+			set
+			{
+				if (_parent != null)
+				{
+					if (_parent.ChildCount > (ChildIndex + 1))
+					{
+						_parent.SetChild(ChildIndex + 1, value);
+					}
+					else
+					{
+						AddSibling(value);
+					}
+				}
+				else
+				{
+					throw new InvalidOperationException("Trying set NextSibling without a parent.");
+				}
+			}
 		}
 
 		public IASTNode GetChild(int index)
