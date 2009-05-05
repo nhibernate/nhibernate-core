@@ -29,15 +29,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					ret = new QueryNode(payload);
 					break;
 				case HqlSqlWalker.UPDATE:
-					//return UpdateStatement.class;
-					ret = new SqlNode(payload);
+					ret = new UpdateStatement(payload);
 					break;
 				case HqlSqlWalker.DELETE:
 					ret = new DeleteStatement(payload);
 					break;
 				case HqlSqlWalker.INSERT:
-					//return InsertStatement.class;
-					ret = new SqlNode(payload);
+					ret = new InsertStatement(payload);
 					break;
 				case HqlSqlWalker.INTO:
 					ret = new IntoClause(payload);
@@ -57,7 +55,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				case HqlSqlWalker.INDEX_OP:
 					ret = new IndexNode(payload);
 					break;
-				// Alias references and identifiers use the same node class.
+					// Alias references and identifiers use the same node class.
 				case HqlSqlWalker.ALIAS_REF:
 				case HqlSqlWalker.IDENT:
 					ret = new IdentNode(payload);
@@ -154,7 +152,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				default:
 					ret = new SqlNode(payload);
 					break;
-
 			}
 
 			Initialise(ret);
@@ -163,11 +160,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public override object DupNode(object t)
 		{
-			IASTNode node = t as IASTNode;
+			var node = t as IASTNode;
 
 			if (node != null)
 			{
-				IASTNode dupped = (IASTNode)Create(node.Token);
+				var dupped = (IASTNode) Create(node.Token);
 
 				dupped.Parent = node.Parent;
 
@@ -179,16 +176,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
-		void Initialise(object node)
+		private void Initialise(object node)
 		{
-			IInitializableNode initableNode = node as IInitializableNode;
+			var initableNode = node as IInitializableNode;
 
 			if (initableNode != null)
 			{
 				initableNode.Initialize(_walker);
 			}
 
-			ISessionFactoryAwareNode sessionNode = node as ISessionFactoryAwareNode;
+			var sessionNode = node as ISessionFactoryAwareNode;
 
 			if (sessionNode != null)
 			{

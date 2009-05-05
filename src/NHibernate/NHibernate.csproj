@@ -497,6 +497,8 @@
     <Compile Include="Hql\Ast\ANTLR\InvalidWithClauseException.cs" />
     <Compile Include="Hql\Ast\ANTLR\IParseErrorHandler.cs" />
     <Compile Include="Hql\Ast\ANTLR\Loader\QueryLoader.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\InsertStatement.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\UpdateStatement.cs" />
     <Compile Include="Param\AbstractExplicitParameterSpecification.cs" />
     <Compile Include="Param\AggregatedIndexCollectionSelectorParameterSpecifications.cs" />
     <Compile Include="Param\CollectionFilterKeyParameterSpecification.cs" />

@@ -14,6 +14,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
+	[CLSCompliant(false)]
 	public class MultiTableDeleteExecutor : AbstractStatementExecutor
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(MultiTableDeleteExecutor));
