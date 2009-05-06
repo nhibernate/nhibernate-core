@@ -262,9 +262,9 @@ namespace NHibernate.Test.HQL.Ast
 			t.Rollback();
 			t = s.BeginTransaction();
 
-			count = s.CreateQuery("update PettingZoo pz set pz.name = pz.name where pz.id = :id")
-					.SetInt64("id", data.PettingZoo.Id)
-					.ExecuteUpdate();
+			count =
+				s.CreateQuery("update PettingZoo pz set pz.name = pz.name where pz.id = :id").SetInt64("id", data.PettingZoo.Id).
+					ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass update count");
 
 			t.Rollback();
@@ -278,10 +278,80 @@ namespace NHibernate.Test.HQL.Ast
 
 			// TODO : not so sure this should be allowed.  Seems to me that if they specify an alias,
 			// property-refs should be required to be qualified.
-			count = s.CreateQuery("update Zoo as z set name = name where id = :id")
-					.SetInt64("id", data.Zoo.Id)
-					.ExecuteUpdate();
+			count = s.CreateQuery("update Zoo as z set name = name where id = :id").SetInt64("id", data.Zoo.Id).ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass update count");
+
+			t.Commit();
+			s.Close();
+
+			data.Cleanup();
+		}
+
+		[Test]
+		public void UpdateOnAnimal()
+		{
+			var data = new TestData(this);
+			data.Prepare();
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			int count =
+				s.CreateQuery("update Animal set description = description where description = :desc")
+				.SetString("desc", data.Frog.Description)
+				.ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "Incorrect entity-updated count");
+
+			count =
+				s.CreateQuery("update Animal set description = :newDesc where description = :desc")
+				.SetString("desc",data.Polliwog.Description)
+				.SetString("newDesc", "Tadpole")
+				.ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "Incorrect entity-updated count");
+
+			var tadpole = s.Load<Animal>(data.Polliwog.Id);
+
+			Assert.That(tadpole.Description, Is.EqualTo("Tadpole"), "Update did not take effect");
+
+			count =
+				s.CreateQuery("update Animal set bodyWeight = bodyWeight + :w1 + :w2")
+				.SetDouble("w1", 1)
+				.SetDouble("w2", 2)
+				.ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(6), "incorrect count on 'complex' update assignment");
+
+			if (! (Dialect is MySQLDialect))
+			{
+				// MySQL does not support (even un-correlated) subqueries against the update-mutating table
+				s.CreateQuery("update Animal set bodyWeight = ( select max(bodyWeight) from Animal )").ExecuteUpdate();
+			}
+
+			t.Commit();
+			s.Close();
+
+			data.Cleanup();
+		}
+
+		[Test]
+		public void UpdateOnMammal()
+		{
+			var data = new TestData(this);
+			data.Prepare();
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			int count = s.CreateQuery("update Mammal set description = description").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(2), "incorrect update count against 'middle' of joined-subclass hierarchy");
+
+			count = s.CreateQuery("update Mammal set bodyWeight = 25").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(2), "incorrect update count against 'middle' of joined-subclass hierarchy");
+
+			if (! (Dialect is MySQLDialect))
+			{
+				// MySQL does not support (even un-correlated) subqueries against the update-mutating table
+				count = s.CreateQuery("update Mammal set bodyWeight = ( select max(bodyWeight) from Animal )").ExecuteUpdate();
+				Assert.That(count, Is.EqualTo(2), "incorrect update count against 'middle' of joined-subclass hierarchy");
+			}
 
 			t.Commit();
 			s.Close();
