@@ -1,15 +1,14 @@
 using System;
 using System.Collections;
-using System.Diagnostics;
 using System.Threading;
 using NHibernate.Dialect;
-using NUnit.Framework;
 using NHibernate.Hql.Ast.ANTLR;
+using NUnit.Framework;
 
 namespace NHibernate.Test.HQL.Ast
 {
 	[TestFixture]
-	public class BulkManipulation: BaseFixture
+	public class BulkManipulation : BaseFixture
 	{
 		public ISession OpenNewSession()
 		{
@@ -32,19 +31,22 @@ namespace NHibernate.Test.HQL.Ast
 		{
 			using (ISession s = OpenSession())
 			{
-				Assert.Throws<QuerySyntaxException>(() => s.CreateQuery("update NonExistentEntity e set e.someProp = ?").ExecuteUpdate());
+				Assert.Throws<QuerySyntaxException>(
+					() => s.CreateQuery("update NonExistentEntity e set e.someProp = ?").ExecuteUpdate());
 			}
 		}
 
 		#endregion
 
 		#region UPDATES
+
 		[Test]
 		public void IncorrectSyntax()
 		{
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			{
-				Assert.Throws<QueryException>(() => s.CreateQuery("update Human set Human.description = 'xyz' where Human.id = 1 and Human.description is null"));
+				Assert.Throws<QueryException>(
+					() => s.CreateQuery("update Human set Human.description = 'xyz' where Human.id = 1 and Human.description is null"));
 			}
 		}
 
@@ -90,20 +92,19 @@ namespace NHibernate.Test.HQL.Ast
 			t = s.BeginTransaction();
 			// one-to-many test
 			updateQryString = "update SimpleEntityWithAssociation e set e.Name = 'updated' where "
-												+ "exists(select a.id from e.AssociatedEntities a "
-			                  + "where a.Name = 'one-to-many-association')";
+			                  + "exists(select a.id from e.AssociatedEntities a " + "where a.Name = 'one-to-many-association')";
 			count = s.CreateQuery(updateQryString).ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(1));
 			// many-to-many test
 			if (Dialect.SupportsSubqueryOnMutatingTable)
 			{
 				updateQryString = "update SimpleEntityWithAssociation e set e.Name = 'updated' where "
-													+ "exists(select a.id from e.ManyToManyAssociatedEntities a "
+				                  + "exists(select a.id from e.ManyToManyAssociatedEntities a "
 				                  + "where a.Name = 'many-to-many-association')";
 				count = s.CreateQuery(updateQryString).ExecuteUpdate();
 				Assert.That(count, Is.EqualTo(1));
 			}
-			var mtm = entity.ManyToManyAssociatedEntities.GetEnumerator();
+			IEnumerator mtm = entity.ManyToManyAssociatedEntities.GetEnumerator();
 			mtm.MoveNext();
 			s.Delete(mtm.Current);
 			s.Delete(entity);
@@ -117,7 +118,7 @@ namespace NHibernate.Test.HQL.Ast
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			var entity = new IntegerVersioned{Name = "int-vers"};
+			var entity = new IntegerVersioned {Name = "int-vers"};
 			s.Save(entity);
 			t.Commit();
 			s.Close();
@@ -184,9 +185,8 @@ namespace NHibernate.Test.HQL.Ast
 
 			t = s.BeginTransaction();
 			int count =
-				s.CreateQuery("update Human set name.first = :correction where id = :id")
-				.SetString("correction", correctName)
-				.SetInt64("id", human.Id).ExecuteUpdate();
+				s.CreateQuery("update Human set name.first = :correction where id = :id").SetString("correction", correctName).
+					SetInt64("id", human.Id).ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(1), "incorrect update count");
 			t.Commit();
 
@@ -208,12 +208,41 @@ namespace NHibernate.Test.HQL.Ast
 			ITransaction t = s.BeginTransaction();
 
 			s.CreateQuery("update Animal a set a.mother = null where a.id = 2").ExecuteUpdate();
-			if (! (Dialect is MySQLDialect) )
+			if (! (Dialect is MySQLDialect))
 			{
 				// MySQL does not support (even un-correlated) subqueries against the update-mutating table
 				s.CreateQuery("update Animal a set a.mother = (from Animal where id = 1) where a.id = 2").ExecuteUpdate();
 			}
 
+			t.Commit();
+			s.Close();
+		}
+
+		[Test]
+		public void UpdateOnImplicitJoinFails()
+		{
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			var human = new Human {Name = new Name {First = "Steve", Initial = 'E', Last = null}};
+
+			var mother = new Human {Name = new Name {First = "Jane", Initial = 'E', Last = null}};
+			human.Mother = (mother);
+
+			s.Save(human);
+			s.Save(mother);
+			s.Flush();
+
+			t.Commit();
+
+			t = s.BeginTransaction();
+			var e =
+				Assert.Throws<QueryException>(
+					() => s.CreateQuery("update Human set mother.name.initial = :initial").SetString("initial", "F").ExecuteUpdate());
+			Assert.That(e.Message, Text.StartsWith("Implied join paths are not assignable in update"));
+
+			s.CreateQuery("delete Human where mother is not null").ExecuteUpdate();
+			s.CreateQuery("delete Human").ExecuteUpdate();
 			t.Commit();
 			s.Close();
 		}
@@ -228,18 +257,18 @@ namespace NHibernate.Test.HQL.Ast
 			// setup the test data...
 			ISession s = OpenSession();
 			s.BeginTransaction();
-			var owner = new SimpleEntityWithAssociation { Name = "myEntity-1" };
+			var owner = new SimpleEntityWithAssociation {Name = "myEntity-1"};
 			owner.AddAssociation("assoc-1");
 			owner.AddAssociation("assoc-2");
 			owner.AddAssociation("assoc-3");
 			s.Save(owner);
-			var owner2 = new SimpleEntityWithAssociation { Name = "myEntity-2" };
+			var owner2 = new SimpleEntityWithAssociation {Name = "myEntity-2"};
 			owner2.AddAssociation("assoc-1");
 			owner2.AddAssociation("assoc-2");
 			owner2.AddAssociation("assoc-3");
 			owner2.AddAssociation("assoc-4");
 			s.Save(owner2);
-			var owner3 = new SimpleEntityWithAssociation { Name = "myEntity-3" };
+			var owner3 = new SimpleEntityWithAssociation {Name = "myEntity-3"};
 			s.Save(owner3);
 			s.Transaction.Commit();
 			s.Close();
@@ -247,8 +276,9 @@ namespace NHibernate.Test.HQL.Ast
 			// now try the bulk delete
 			s = OpenSession();
 			s.BeginTransaction();
-			int count = s.CreateQuery("delete SimpleEntityWithAssociation e where size(e.AssociatedEntities ) = 0 and e.Name like '%'")
-				.ExecuteUpdate();
+			int count =
+				s.CreateQuery("delete SimpleEntityWithAssociation e where size(e.AssociatedEntities ) = 0 and e.Name like '%'").
+					ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
 			s.Transaction.Commit();
 			s.Close();
@@ -277,14 +307,11 @@ namespace NHibernate.Test.HQL.Ast
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			int count = s.CreateQuery("delete from Animal as a where a.id = :id")
-					.SetInt64("id", data.Polliwog.Id)
-					.ExecuteUpdate();
+			int count =
+				s.CreateQuery("delete from Animal as a where a.id = :id").SetInt64("id", data.Polliwog.Id).ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
 
-			count = s.CreateQuery("delete Animal where id = :id")
-					.SetInt64("id", data.Catepillar.Id)
-					.ExecuteUpdate();
+			count = s.CreateQuery("delete Animal where id = :id").SetInt64("id", data.Catepillar.Id).ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
 
 			// HHH-873...
@@ -359,8 +386,8 @@ namespace NHibernate.Test.HQL.Ast
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			int count = s.CreateQuery("delete Joiner where joinedName = :joinedName")
-				.SetString("joinedName", "joined-name").ExecuteUpdate();
+			int count =
+				s.CreateQuery("delete Joiner where joinedName = :joinedName").SetString("joinedName", "joined-name").ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(1), "Incorrect deletion count on joined class");
 
 			t.Commit();
@@ -379,8 +406,7 @@ namespace NHibernate.Test.HQL.Ast
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			int count = s.CreateQuery("delete Vehicle where Owner = :owner")
-				.SetString("owner", "Steve").ExecuteUpdate();
+			int count = s.CreateQuery("delete Vehicle where Owner = :owner").SetString("owner", "Steve").ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(1), "incorrect restricted update count");
 
 			count = s.CreateQuery("delete Vehicle").ExecuteUpdate();
@@ -402,9 +428,7 @@ namespace NHibernate.Test.HQL.Ast
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			int count = s.CreateQuery("delete Truck where Owner = :owner")
-				.SetString("owner", "Steve")
-				.ExecuteUpdate();
+			int count = s.CreateQuery("delete Truck where Owner = :owner").SetString("owner", "Steve").ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(1), "incorrect restricted update count");
 
 			count = s.CreateQuery("delete Truck").ExecuteUpdate();
@@ -425,9 +449,7 @@ namespace NHibernate.Test.HQL.Ast
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			int count = s.CreateQuery("delete Car where Owner = :owner")
-				.SetString("owner", "Kirsten")
-				.ExecuteUpdate();
+			int count = s.CreateQuery("delete Car where Owner = :owner").SetString("owner", "Kirsten").ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(1), "incorrect restricted update count");
 
 			count = s.CreateQuery("delete Car").ExecuteUpdate();
@@ -448,9 +470,7 @@ namespace NHibernate.Test.HQL.Ast
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			int count = s.CreateQuery("delete Animal where mother = :mother")
-					.SetEntity("mother", data.Butterfly)
-					.ExecuteUpdate();
+			int count = s.CreateQuery("delete Animal where mother = :mother").SetEntity("mother", data.Butterfly).ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(1));
 
 			t.Commit();
@@ -496,16 +516,16 @@ namespace NHibernate.Test.HQL.Ast
 				ISession s = tc.OpenNewSession();
 				ITransaction txn = s.BeginTransaction();
 
-				Polliwog = new Animal { BodyWeight = 12, Description = "Polliwog" };
+				Polliwog = new Animal {BodyWeight = 12, Description = "Polliwog"};
 
-				Catepillar = new Animal { BodyWeight = 10, Description = "Catepillar" };
+				Catepillar = new Animal {BodyWeight = 10, Description = "Catepillar"};
 
-				Frog = new Animal { BodyWeight = 34, Description = "Frog" };
+				Frog = new Animal {BodyWeight = 34, Description = "Frog"};
 
 				Polliwog.Father = Frog;
 				Frog.AddOffspring(Polliwog);
 
-				Butterfly = new Animal { BodyWeight = 9, Description = "Butterfly" };
+				Butterfly = new Animal {BodyWeight = 9, Description = "Butterfly"};
 
 				Catepillar.Mother = Butterfly;
 				Butterfly.AddOffspring(Catepillar);
@@ -515,36 +535,36 @@ namespace NHibernate.Test.HQL.Ast
 				s.Save(Butterfly);
 				s.Save(Catepillar);
 
-				var dog = new Dog { BodyWeight = 200, Description = "dog" };
+				var dog = new Dog {BodyWeight = 200, Description = "dog"};
 				s.Save(dog);
 
-				var cat = new Cat { BodyWeight = 100, Description = "cat" };
+				var cat = new Cat {BodyWeight = 100, Description = "cat"};
 				s.Save(cat);
 
-				Zoo = new Zoo { Name = "Zoo" };
-				var add = new Address { City = "MEL", Country = "AU", Street = "Main st", PostalCode = "3000" };
+				Zoo = new Zoo {Name = "Zoo"};
+				var add = new Address {City = "MEL", Country = "AU", Street = "Main st", PostalCode = "3000"};
 				Zoo.Address = add;
 
-				PettingZoo = new PettingZoo { Name = "Petting Zoo" };
-				var addr = new Address { City = "Sydney", Country = "AU", Street = "High st", PostalCode = "2000" };
+				PettingZoo = new PettingZoo {Name = "Petting Zoo"};
+				var addr = new Address {City = "Sydney", Country = "AU", Street = "High st", PostalCode = "2000"};
 				PettingZoo.Address = addr;
 
 				s.Save(Zoo);
 				s.Save(PettingZoo);
 
-				var joiner = new Joiner { JoinedName = "joined-name", Name = "name" };
+				var joiner = new Joiner {JoinedName = "joined-name", Name = "name"};
 				s.Save(joiner);
 
-				var car = new Car { Vin = "123c", Owner = "Kirsten" };
+				var car = new Car {Vin = "123c", Owner = "Kirsten"};
 				s.Save(car);
 
-				var truck = new Truck { Vin = "123t", Owner = "Steve" };
+				var truck = new Truck {Vin = "123t", Owner = "Steve"};
 				s.Save(truck);
 
-				var suv = new SUV { Vin = "123s", Owner = "Joe" };
+				var suv = new SUV {Vin = "123s", Owner = "Joe"};
 				s.Save(suv);
 
-				var pickup = new Pickup { Vin = "123p", Owner = "Cecelia" };
+				var pickup = new Pickup {Vin = "123p", Owner = "Cecelia"};
 				s.Save(pickup);
 
 				var b = new BooleanLiteralEntity();
