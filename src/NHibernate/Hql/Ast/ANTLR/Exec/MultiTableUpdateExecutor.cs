@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
@@ -16,7 +17,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 	[CLSCompliant(false)]
 	public class MultiTableUpdateExecutor : AbstractStatementExecutor
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(MultiTableDeleteExecutor));
+		private static readonly ILog log = LogManager.GetLogger(typeof (MultiTableDeleteExecutor));
 		private readonly IQueryable persister;
 		private readonly SqlString idInsertSelect;
 		private readonly SqlString[] updates;
@@ -28,7 +29,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			{
 				throw new HibernateException("cannot perform multi-table updates using dialect not supporting temp tables");
 			}
-			var updateStatement = (UpdateStatement)statement;
+			var updateStatement = (UpdateStatement) statement;
 
 			FromElement fromElement = updateStatement.FromClause.GetFromElement();
 			string bulkTargetAlias = fromElement.TableAlias;
@@ -41,7 +42,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			string[][] columnNames = persister.ContraintOrderedTableKeyColumnClosure;
 
 			string idSubselect = GenerateIdSubselect(persister);
-			var assignmentSpecifications = Walker.AssignmentSpecifications;
+			IList<AssignmentSpecification> assignmentSpecifications = Walker.AssignmentSpecifications;
 
 			updates = new SqlString[tableNames.Length];
 			hqlParameters = new IParameterSpecification[tableNames.Length][];
@@ -49,9 +50,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			{
 				bool affected = false;
 				var parameterList = new List<IParameterSpecification>();
-				SqlUpdateBuilder update = new SqlUpdateBuilder(Factory.Dialect, Factory)
-					.SetTableName(tableNames[tableIndex])
-					.SetWhere("(" + StringHelper.Join(", ", columnNames[tableIndex]) + ") IN (" + idSubselect + ")");
+				SqlUpdateBuilder update =
+					new SqlUpdateBuilder(Factory.Dialect, Factory).SetTableName(tableNames[tableIndex])
+					.SetWhere(
+						string.Format("({0}) IN ({1})", StringHelper.Join(", ", columnNames[tableIndex]), idSubselect));
 
 				if (Factory.Settings.IsCommentsEnabled)
 				{
@@ -100,28 +102,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				{
 					try
 					{
-						var parameterTypes = new List<SqlType>(Walker.Parameters.Count);
-						foreach (var parameterSpecification in Walker.Parameters)
-						{
-							parameterTypes.AddRange(parameterSpecification.ExpectedType.SqlTypes(Factory));
-						}
-
-						ps = session.Batcher.PrepareCommand(CommandType.Text, idInsertSelect, parameterTypes.ToArray());
-
 						int parameterStart = Walker.NumberOfParametersInSetClause;
 
-						var allParams = Walker.Parameters;
+						IList<IParameterSpecification> allParams = Walker.Parameters;
 
-						IEnumerator<IParameterSpecification> whereParams =
-							(new List<IParameterSpecification>(allParams)).GetRange(parameterStart, allParams.Count - parameterStart).
-								GetEnumerator();
-						// NH Different behavior: The inital value is 0 (initialized to 1 in JAVA)
-						int pos = 0;
-						while (whereParams.MoveNext())
-						{
-							var paramSpec = whereParams.Current;
-							pos += paramSpec.Bind(ps, parameters, session, pos);
-						}
+						List<IParameterSpecification> whereParams = (new List<IParameterSpecification>(allParams)).GetRange(
+							parameterStart, allParams.Count - parameterStart);
+
+						ps = session.Batcher.PrepareCommand(CommandType.Text, idInsertSelect, GetParametersTypes(whereParams));
+
+						BindParameters(whereParams, ps, parameters, session);
 						resultCount = session.Batcher.ExecuteNonQuery(ps);
 					}
 					finally
@@ -132,9 +122,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						}
 					}
 				}
-				catch (System.Data.OleDb.OleDbException e)
+				catch (DbException e)
 				{
-					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not insert/select ids for bulk update", idInsertSelect);
+					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not insert/select ids for bulk update",
+					                                 idInsertSelect);
 				}
 
 				// Start performing the updates
@@ -148,16 +139,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					{
 						try
 						{
-							ps = session.Batcher.PrepareCommand(CommandType.Text, updates[i], new SqlType[0]);
-
-							if (hqlParameters[i] != null)
-							{
-								int position = 1; // ADO params are 0-based
-								for (int x = 0; x < hqlParameters[i].Length; x++)
-								{
-									position += hqlParameters[i][x].Bind(ps, parameters, session, position);
-								}
-							}
+							ps = session.Batcher.PrepareCommand(CommandType.Text, updates[i], GetParametersTypes(hqlParameters[i]));
+							BindParameters(hqlParameters[i], ps, parameters, session);
 							session.Batcher.ExecuteNonQuery(ps);
 						}
 						finally
@@ -168,7 +151,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 							}
 						}
 					}
-					catch (System.Data.OleDb.OleDbException e)
+					catch (DbException e)
 					{
 						throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "error performing bulk update", updates[i]);
 					}
@@ -182,9 +165,37 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 		}
 
+		private SqlType[] GetParametersTypes(IEnumerable<IParameterSpecification> specifications)
+		{
+			if (specifications == null)
+			{
+				return new SqlType[0];
+			}
+			var result = new List<SqlType>();
+			foreach (var specification in specifications)
+			{
+				result.AddRange(specification.ExpectedType.SqlTypes(Factory));
+			}
+			return result.ToArray();
+		}
+
+		private static void BindParameters(IEnumerable<IParameterSpecification> specifications, IDbCommand command,
+		                                   QueryParameters parameters, ISessionImplementor session)
+		{
+			if (specifications == null)
+			{
+				return;
+			}
+			int position = 0; // ADO params are 0-based
+			foreach (var specification in specifications)
+			{
+				position += specification.Bind(command, parameters, session, position);
+			}
+		}
+
 		protected override IQueryable[] AffectedQueryables
 		{
-			get { return new[] { persister }; }
+			get { return new[] {persister}; }
 		}
 	}
 }

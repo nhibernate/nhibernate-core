@@ -82,20 +82,19 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				{
 					try
 					{
-						var parameterTypes = new List<SqlType>(Walker.Parameters.Count);
-						foreach (var parameterSpecification in Walker.Parameters)
+						var paramsSpec = Walker.Parameters;
+						var parameterTypes = new List<SqlType>(paramsSpec.Count);
+						foreach (var parameterSpecification in paramsSpec)
 						{
 							parameterTypes.AddRange(parameterSpecification.ExpectedType.SqlTypes(Factory));
 						}
 
 						ps = session.Batcher.PrepareCommand(CommandType.Text, idInsertSelect, parameterTypes.ToArray());
-						IEnumerator<IParameterSpecification> paramSpecifications = Walker.Parameters.GetEnumerator();
 						// NH Different behavior: The inital value is 0 (initialized to 1 in JAVA)
 						int pos = 0;
-						while (paramSpecifications.MoveNext())
+						foreach (var specification in paramsSpec)
 						{
-							var paramSpec = paramSpecifications.Current;
-							pos += paramSpec.Bind(ps, parameters, session, pos);
+							pos += specification.Bind(ps, parameters, session, pos);
 						}
 						resultCount = session.Batcher.ExecuteNonQuery(ps);
 					}

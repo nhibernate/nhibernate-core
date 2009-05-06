@@ -166,7 +166,41 @@ namespace NHibernate.Test.HQL.Ast
 			s.Delete(entity);
 			t.Commit();
 			s.Close();
-		}		#endregion
+		}
+
+		[Test]
+		public void UpdateOnComponent()
+		{
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			var human = new Human {Name = new Name {First = "Stevee", Initial = 'X', Last = "Ebersole"}};
+
+			s.Save(human);
+			t.Commit();
+
+			string correctName = "Steve";
+
+			t = s.BeginTransaction();
+			int count =
+				s.CreateQuery("update Human set name.first = :correction where id = :id")
+				.SetString("correction", correctName)
+				.SetInt64("id", human.Id).ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "incorrect update count");
+			t.Commit();
+
+			t = s.BeginTransaction();
+			s.Refresh(human);
+
+			Assert.That(human.Name.First, Is.EqualTo(correctName), "Update did not execute properly");
+
+			s.CreateQuery("delete Human").ExecuteUpdate();
+			t.Commit();
+
+			s.Close();
+		}
+
+		#endregion
 
 		#region DELETES
 
