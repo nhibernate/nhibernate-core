@@ -247,6 +247,48 @@ namespace NHibernate.Test.HQL.Ast
 			s.Close();
 		}
 
+		[Test]
+		public void UpdateOnDiscriminatorSubclass()
+		{
+			var data = new TestData(this);
+			data.Prepare();
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			int count = s.CreateQuery("update PettingZoo set name = name").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass update count");
+
+			t.Rollback();
+			t = s.BeginTransaction();
+
+			count = s.CreateQuery("update PettingZoo pz set pz.name = pz.name where pz.id = :id")
+					.SetInt64("id", data.PettingZoo.Id)
+					.ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass update count");
+
+			t.Rollback();
+			t = s.BeginTransaction();
+
+			count = s.CreateQuery("update Zoo as z set z.name = z.name").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(2), "Incorrect discrim subclass update count");
+
+			t.Rollback();
+			t = s.BeginTransaction();
+
+			// TODO : not so sure this should be allowed.  Seems to me that if they specify an alias,
+			// property-refs should be required to be qualified.
+			count = s.CreateQuery("update Zoo as z set name = name where id = :id")
+					.SetInt64("id", data.Zoo.Id)
+					.ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass update count");
+
+			t.Commit();
+			s.Close();
+
+			data.Cleanup();
+		}
+
 		#endregion
 
 		#region DELETES
