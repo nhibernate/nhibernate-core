@@ -359,6 +359,86 @@ namespace NHibernate.Test.HQL.Ast
 			data.Cleanup();
 		}
 
+		[Test]
+		public void UpdateSetNullUnionSubclass()
+		{
+			var data = new TestData(this);
+			data.Prepare();
+
+			// These should reach out into *all* subclass tables...
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			int count = s.CreateQuery("update Vehicle set Owner = 'Steve'").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(4), "incorrect restricted update count");
+			count = s.CreateQuery("update Vehicle set Owner = null where Owner = 'Steve'").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(4), "incorrect restricted update count");
+
+			count = s.CreateQuery("delete Vehicle where Owner is null").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(4), "incorrect restricted update count");
+
+			t.Commit();
+			s.Close();
+
+			data.Cleanup();
+		}
+
+		[Test]
+		public void WrongPropertyNameThrowQueryException()
+		{
+			using (ISession s = OpenSession())
+			{
+				var e = Assert.Throws<QueryException>(() => s.CreateQuery("update Vehicle set owner = null where owner = 'Steve'").ExecuteUpdate());
+				Assert.That(e.Message, Text.StartsWith("Left side of assigment should be a case sensitive property or a field"));
+			}
+		}
+
+		[Test]
+		public void UpdateSetNullOnDiscriminatorSubclass()
+		{
+			var data = new TestData(this);
+			data.Prepare();
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			int count = s.CreateQuery("update PettingZoo set address.city = null").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass delete count");
+			count = s.CreateQuery("delete Zoo where address.city is null").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass delete count");
+
+			count = s.CreateQuery("update Zoo set address.city = null").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass delete count");
+			count = s.CreateQuery("delete Zoo where address.city is null").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass delete count");
+
+			t.Commit();
+			s.Close();
+
+			data.Cleanup();
+		}
+
+		[Test]
+		public void UpdateSetNullOnJoinedSubclass()
+		{
+			var data = new TestData(this);
+			data.Prepare();
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			int count = s.CreateQuery("update Mammal set bodyWeight = null").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(2), "Incorrect deletion count on joined subclass");
+
+			count = s.CreateQuery("delete Animal where bodyWeight = null").ExecuteUpdate();
+			Assert.That(count, Is.EqualTo(2), "Incorrect deletion count on joined subclass");
+
+			t.Commit();
+			s.Close();
+
+			data.Cleanup();
+		}
+
 		#endregion
 
 		#region DELETES
