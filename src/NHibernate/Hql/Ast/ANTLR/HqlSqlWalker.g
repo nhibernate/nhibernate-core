@@ -81,9 +81,10 @@ insertStatement
 	;
 
 intoClause! 
-	: ^( INTO { HandleClauseStart( INTO ); } (p=path) ps=insertablePropertySpec ) {
+	@after {
 		$intoClause.tree = CreateIntoClause($p.p, $ps.tree);
 	}
+	: ^( INTO { HandleClauseStart( INTO ); } (p=path) ps=insertablePropertySpec ) 
 	;
 
 insertablePropertySpec

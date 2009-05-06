@@ -38,6 +38,31 @@ namespace NHibernate.Test.HQL.Ast
 
 		#endregion
 
+		#region INSERTS
+		[Test, Ignore("Need fix.")]
+		public void SimpleInsert()
+		{
+			var data = new TestData(this);
+			data.Prepare();
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			s.CreateQuery("insert into Pickup (id, Vin, Owner) select id, Vin, Owner from Car").ExecuteUpdate();
+
+			t.Commit();
+			t = s.BeginTransaction();
+
+			s.CreateQuery("delete Vehicle").ExecuteUpdate();
+
+			t.Commit();
+			s.Close();
+
+			data.Cleanup();
+		}
+
+		#endregion
+
 		#region UPDATES
 
 		[Test]

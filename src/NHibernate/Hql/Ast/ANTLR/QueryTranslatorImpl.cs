@@ -430,9 +430,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 			else if (walker.StatementType == HqlSqlWalker.INSERT)
 			{
-				//var statement = (IStatement)walker.statement().Tree;
-
-				throw new QueryException("Unexpected statement type");
+				return new BasicExecutor(statement, ((InsertStatement)statement).IntoClause.Queryable);
 			}
 			else
 			{

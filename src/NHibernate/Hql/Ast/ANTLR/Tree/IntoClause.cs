@@ -5,7 +5,6 @@ using Antlr.Runtime;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
@@ -19,13 +18,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class IntoClause : HqlSqlWalkerNode, IDisplayableNode
 	{
-		private IQueryable _persister;
-		private String _columnSpec = "";
-		private IType[] _types;
+		private IQueryable persister;
+		private String columnSpec = string.Empty;
+		private IType[] types;
 
-		private bool _discriminated;
-		private bool _explicitIdInsertion;
-		private bool _explicitVersionInsertion;
+		private bool discriminated;
+		private bool explicitIdInsertion;
+		private bool explicitVersionInsertion;
 
 		public IntoClause(IToken token)
 			: base(token)
@@ -39,13 +38,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				throw new QueryException("cannot insert into abstract class (no table)");
 			}
 
-			_persister = persister;
+			this.persister = persister;
 			InitializeColumns();
 
 			if (Walker.SessionFactoryHelper.HasPhysicalDiscriminatorColumn(persister))
 			{
-				_discriminated = true;
-				_columnSpec += ", " + persister.DiscriminatorColumnName;
+				discriminated = true;
+				columnSpec += ", " + persister.DiscriminatorColumnName;
 			}
 
 			ResetText();
@@ -53,53 +52,53 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private void ResetText()
 		{
-			Text = "into " + TableName + " ( " + _columnSpec + " )";
+			Text = "into " + TableName + " ( " + columnSpec + " )";
 		}
 
 		public string TableName
 		{
-			get { return _persister.GetSubclassTableName(0); }
+			get { return persister.GetSubclassTableName(0); }
 		}
 
 		public IQueryable Queryable
 		{
-			get { return _persister; }
+			get { return persister; }
 		}
 
 		public string EntityName
 		{
-			get { return _persister.EntityName; }
+			get { return persister.EntityName; }
 		}
 
 		public IType[] InsertionTypes
 		{
-			get { return _types; }
+			get { return types; }
 		}
 
 		public bool IsDiscriminated
 		{
-			get { return _discriminated; }
+			get { return discriminated; }
 		}
 
 		public bool IsExplicitIdInsertion
 		{
-			get { return _explicitIdInsertion; }
+			get { return explicitIdInsertion; }
 		}
 
 		public bool IsExplicitVersionInsertion
 		{
-			get { return _explicitVersionInsertion; }
+			get { return explicitVersionInsertion; }
 		}
 
 		public void PrependIdColumnSpec()
 		{
-			_columnSpec = _persister.IdentifierColumnNames[0] + ", " + _columnSpec;
+			columnSpec = persister.IdentifierColumnNames[0] + ", " + columnSpec;
 			ResetText();
 		}
 
 		public void PrependVersionColumnSpec()
 		{
-			_columnSpec = _persister.GetPropertyColumnNames(_persister.VersionProperty)[0] + ", " + _columnSpec;
+			columnSpec = persister.GetPropertyColumnNames(persister.VersionProperty)[0] + ", " + columnSpec;
 			ResetText();
 		}
 
@@ -107,17 +106,17 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			IType[] selectTypes = selectClause.QueryReturnTypes;
 
-			if (selectTypes.Length != _types.Length)
+			if (selectTypes.Length != types.Length)
 			{
 				throw new QueryException("number of select types did not match those for insert");
 			}
 
-			for (int i = 0; i < _types.Length; i++)
+			for (int i = 0; i < types.Length; i++)
 			{
-				if (!AreCompatible(_types[i], selectTypes[i]))
+				if (!AreCompatible(types[i], selectTypes[i]))
 				{
 					throw new QueryException(
-							"insertion type [" + _types[i] + "] and selection type [" +
+							"insertion type [" + types[i] + "] and selection type [" +
 							selectTypes[i] + "] at position " + i + " are not compatible"
 					);
 				}
@@ -132,22 +131,22 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <returns>The additional display text.</returns>
 		public string GetDisplayText()
 		{
-			StringBuilder buf = new StringBuilder();
+			var buf = new StringBuilder();
 			buf.Append("IntoClause{");
 			buf.Append("entityName=").Append(EntityName);
 			buf.Append(",tableName=").Append(TableName);
-			buf.Append(",columns={").Append(_columnSpec).Append("}");
+			buf.Append(",columns={").Append(columnSpec).Append("}");
 			buf.Append("}");
 			return buf.ToString();
 		}
 
 		private void InitializeColumns()
 		{
-			IASTNode propertySpec = GetChild(0);
-			List<IType> types = new List<IType>();
-			VisitPropertySpecNodes(propertySpec.GetChild(0), types);
-			_types = ArrayHelper.ToTypeArray(types);
-			_columnSpec = _columnSpec.Substring(0, _columnSpec.Length - 2);
+			IASTNode propertySpec = GetFirstChild();
+			var ts = new List<IType>();
+			VisitPropertySpecNodes(propertySpec.GetFirstChild(), ts);
+			types = ts.ToArray();
+			columnSpec = columnSpec.Substring(0, columnSpec.Length - 2);
 		}
 
 		private void VisitPropertySpecNodes(IASTNode propertyNode, ICollection<IType> types)
@@ -172,33 +171,33 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				throw new QueryException("INSERT statements cannot refer to superclass/joined properties [" + name + "]");
 			}
 
-			if (name == _persister.IdentifierPropertyName)
+			if (name == persister.IdentifierPropertyName)
 			{
-				_explicitIdInsertion = true;
+				explicitIdInsertion = true;
 			}
 
-			if (_persister.IsVersioned)
+			if (persister.IsVersioned)
 			{
-				if (name == _persister.PropertyNames[_persister.VersionProperty])
+				if (name == persister.PropertyNames[persister.VersionProperty])
 				{
-					_explicitVersionInsertion = true;
+					explicitVersionInsertion = true;
 				}
 			}
 
-			string[] columnNames = _persister.ToColumns(name);
-			renderColumns(columnNames);
-			types.Add(_persister.ToType(name));
+			string[] columnNames = persister.ToColumns(name);
+			RenderColumns(columnNames);
+			types.Add(persister.ToType(name));
 
 			// visit width-first, then depth
 			VisitPropertySpecNodes(propertyNode.NextSibling, types);
-			VisitPropertySpecNodes(propertyNode.GetChild(0), types);
+			VisitPropertySpecNodes(propertyNode.GetFirstChild(), types);
 		}
 
-		private void renderColumns(string[] columnNames)
+		private void RenderColumns(string[] columnNames)
 		{
 			for (int i = 0; i < columnNames.Length; i++)
 			{
-				_columnSpec += columnNames[i] + ", ";
+				columnSpec += columnNames[i] + ", ";
 			}
 		}
 
@@ -215,7 +214,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			//
 			// we may want to disallow it for discrim-subclass just for
 			// consistency-sake (currently does not work anyway)...
-			return _persister.GetSubclassPropertyTableNumber(propertyName) != 0;
+			return persister.GetSubclassPropertyTableNumber(propertyName) != 0;
 		}
 
 		/// <summary>
@@ -260,6 +259,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private static bool AreSqlTypesCompatible(SqlType target, SqlType source)
 		{
+			// TODO NH: May be are not equals but are compatible
 			return target.Equals(source);
 		}
 	}
