@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Threading;
+using NHibernate.Dialect;
 using NUnit.Framework;
 using NHibernate.Hql.Ast.ANTLR;
 
@@ -197,6 +198,23 @@ namespace NHibernate.Test.HQL.Ast
 			s.CreateQuery("delete Human").ExecuteUpdate();
 			t.Commit();
 
+			s.Close();
+		}
+
+		[Test]
+		public void UpdateOnManyToOne()
+		{
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			s.CreateQuery("update Animal a set a.mother = null where a.id = 2").ExecuteUpdate();
+			if (! (Dialect is MySQLDialect) )
+			{
+				// MySQL does not support (even un-correlated) subqueries against the update-mutating table
+				s.CreateQuery("update Animal a set a.mother = (from Animal where id = 1) where a.id = 2").ExecuteUpdate();
+			}
+
+			t.Commit();
 			s.Close();
 		}
 
