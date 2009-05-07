@@ -117,7 +117,7 @@ namespace NHibernate.Action
 			bool veto = false;
 			if (preListeners.Length > 0)
 			{
-				PreDeleteEvent preEvent = new PreDeleteEvent(Instance, Id, state, Persister);
+				var preEvent = new PreDeleteEvent(Instance, Id, state, Persister, (IEventSource)Session);
 				foreach (IPreDeleteEventListener listener in preListeners)
 				{
 					veto |= listener.OnPreDelete(preEvent);

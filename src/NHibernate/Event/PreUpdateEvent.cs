@@ -1,62 +1,29 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Event
 {
 	/// <summary> 
-	/// Occurs before updating the datastore
+	/// Represents a <tt>pre-update</tt> event, which occurs just prior to
+	/// performing the update of an entity in the database.
 	/// </summary>
-	public class PreUpdateEvent
+	public class PreUpdateEvent : AbstractPreDatabaseOperationEvent
 	{
-		private readonly object entity;
-		private readonly object id;
-		private readonly object[] state;
-		private readonly object[] oldState;
-		private readonly IEntityPersister persister;
-		private readonly ISessionImplementor source;
-
-		public PreUpdateEvent(object entity, object id, object[] state, object[] oldState, 
-			IEntityPersister persister, ISessionImplementor source)
+		public PreUpdateEvent(object entity, object id, object[] state, object[] oldState, IEntityPersister persister,
+		                      IEventSource source) : base(source, entity, id, persister)
 		{
-			this.entity = entity;
-			this.id = id;
-			this.state = state;
-			this.oldState = oldState;
-			this.persister = persister;
-			this.source = source;
+			State = state;
+			OldState = oldState;
 		}
 
-		public object Entity
-		{
-			get { return entity; }
-		}
+		/// <summary>
+		/// Retrieves the state to be used in the update.
+		/// </summary>
+		public object[] State { get; private set; }
 
-		public object Id
-		{
-			get { return id; }
-		}
-
-		public object[] State
-		{
-			get { return state; }
-		}
-
-		public object[] OldState
-		{
-			get { return oldState; }
-		}
-
-		public IEntityPersister Persister
-		{
-			get { return persister; }
-		}
-
-		public ISessionImplementor Source
-		{
-			get { return source; }
-		}
+		/// <summary>
+		/// The old state of the entity at the time it was last loaded from the
+		/// database; can be null in the case of detached entities.
+		/// </summary>
+		public object[] OldState { get; private set; }
 	}
 }

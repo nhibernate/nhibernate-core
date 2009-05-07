@@ -1,51 +1,22 @@
-using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Event
 {
 	/// <summary> 
-	/// Occurs before inserting an item in the datastore
+	/// Represents a <tt>pre-insert</tt> event, which occurs just prior to
+	/// performing the insert of an entity into the database.
 	/// </summary>
-	public class PreInsertEvent
+	public class PreInsertEvent : AbstractPreDatabaseOperationEvent
 	{
-		private readonly object entity;
-		private readonly object id;
-		private readonly object[] state;
-		private readonly IEntityPersister persister;
-		private readonly ISessionImplementor source;
-
-		public PreInsertEvent(object entity, object id, object[] state, IEntityPersister persister, ISessionImplementor source)
+		public PreInsertEvent(object entity, object id, object[] state, IEntityPersister persister, IEventSource source)
+			: base(source, entity, id, persister)
 		{
-			this.entity = entity;
-			this.id = id;
-			this.state = state;
-			this.persister = persister;
-			this.source = source;
+			State = state;
 		}
 
-		public object Entity
-		{
-			get { return entity; }
-		}
-
-		public object Id
-		{
-			get { return id; }
-		}
-
-		public object[] State
-		{
-			get { return state; }
-		}
-
-		public IEntityPersister Persister
-		{
-			get { return persister; }
-		}
-
-		public ISessionImplementor Source
-		{
-			get { return source; }
-		}
+		/// <summary> 
+		/// These are the values to be inserted. 
+		/// </summary>
+		public object[] State { get; private set; }
 	}
 }

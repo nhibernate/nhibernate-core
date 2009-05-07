@@ -154,7 +154,7 @@ namespace NHibernate.Action
 			bool veto = false;
 			if (preListeners.Length > 0)
 			{
-				PreInsertEvent preEvent = new PreInsertEvent(Instance, Id, state, Persister, Session);
+				var preEvent = new PreInsertEvent(Instance, Id, state, Persister, (IEventSource) Session);
 				foreach (IPreInsertEventListener listener in preListeners)
 				{
 					veto |= listener.OnPreInsert(preEvent);

@@ -121,7 +121,7 @@ namespace NHibernate.Action
 			IPostInsertEventListener[] postListeners = Session.Listeners.PostCommitInsertEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostInsertEvent postEvent = new PostInsertEvent(Instance, generatedId, state, Persister, (IEventSource)Session);
+				var postEvent = new PostInsertEvent(Instance, generatedId, state, Persister, (IEventSource) Session);
 				foreach (IPostInsertEventListener listener in postListeners)
 				{
 					listener.OnPostInsert(postEvent);
@@ -135,7 +135,7 @@ namespace NHibernate.Action
 			bool veto = false;
 			if (preListeners.Length > 0)
 			{
-				PreInsertEvent preEvent = new PreInsertEvent(Instance, null, state, Persister, Session);
+				var preEvent = new PreInsertEvent(Instance, null, state, Persister, (IEventSource) Session);
 				foreach (IPreInsertEventListener listener in preListeners)
 				{
 					veto |= listener.OnPreInsert(preEvent);
@@ -144,7 +144,7 @@ namespace NHibernate.Action
 			return veto;
 		}
 
-			//Make 100% certain that this is called before any subsequent ScheduledUpdate.afterTransactionCompletion()!!
+		//Make 100% certain that this is called before any subsequent ScheduledUpdate.afterTransactionCompletion()!!
 		public override void AfterTransactionCompletion(bool success)
 		{
 			//TODO from H3.2: reenable if we also fix the above todo

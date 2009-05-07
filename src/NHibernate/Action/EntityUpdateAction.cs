@@ -193,7 +193,7 @@ namespace NHibernate.Action
 			bool veto = false;
 			if (preListeners.Length > 0)
 			{
-				PreUpdateEvent preEvent = new PreUpdateEvent(Instance, Id, state, previousState, Persister, Session);
+				var preEvent = new PreUpdateEvent(Instance, Id, state, previousState, Persister, (IEventSource) Session);
 				foreach (IPreUpdateEventListener listener in preListeners)
 				{
 					veto |= listener.OnPreUpdate(preEvent);

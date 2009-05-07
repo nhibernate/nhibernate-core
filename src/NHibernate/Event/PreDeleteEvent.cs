@@ -3,41 +3,29 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Event
 {
 	/// <summary>
-	/// Occurs before deleting an item from the datastore
+	/// Represents a <tt>pre-delete</tt> event, which occurs just prior to
+	/// performing the deletion of an entity from the database.
 	/// </summary>
-	public class PreDeleteEvent
+	public class PreDeleteEvent : AbstractPreDatabaseOperationEvent
 	{
-		private readonly object entity;
-		private readonly object id;
-		private readonly object[] deletedState;
-		private readonly IEntityPersister persister;
-
-		public PreDeleteEvent(object entity, object id, object[] deletedState, IEntityPersister persister)
+		/// <summary> 
+		/// Constructs an event containing the pertinent information. 
+		/// </summary>
+		/// <param name="entity">The entity to be deleted. </param>
+		/// <param name="id">The id to use in the deletion. </param>
+		/// <param name="deletedState">The entity's state at deletion time. </param>
+		/// <param name="persister">The entity's persister. </param>
+		/// <param name="source">The session from which the event originated. </param>
+		public PreDeleteEvent(object entity, object id, object[] deletedState, IEntityPersister persister, IEventSource source)
+			: base(source, entity, id, persister)
 		{
-			this.entity = entity;
-			this.id = id;
-			this.deletedState = deletedState;
-			this.persister = persister;
+			DeletedState = deletedState;
 		}
 
-		public object Entity
-		{
-			get { return entity; }
-		}
-
-		public object Id
-		{
-			get { return id; }
-		}
-
-		public object[] DeletedState
-		{
-			get { return deletedState; }
-		}
-
-		public IEntityPersister Persister
-		{
-			get { return persister; }
-		}
+		/// <summary> 
+		/// This is the entity state at the
+		/// time of deletion (useful for optomistic locking and such). 
+		/// </summary>
+		public object[] DeletedState { get; private set; }
 	}
 }

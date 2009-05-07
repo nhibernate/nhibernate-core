@@ -471,6 +471,7 @@
     <Compile Include="Driver\IfxDriver.cs" />
     <Compile Include="Driver\OracleLiteDataClientDriver.cs" />
     <Compile Include="EntityModeEqualityComparer.cs" />
+    <Compile Include="Event\AbstractPreDatabaseOperationEvent.cs" />
     <Compile Include="Event\IDestructible.cs" />
     <Compile Include="Exceptions\ReflectionBasedSqlStateExtracter.cs" />
     <Compile Include="Exceptions\SqlStateExtracter.cs" />
