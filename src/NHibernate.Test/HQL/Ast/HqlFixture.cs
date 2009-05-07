@@ -3,21 +3,11 @@ using NHibernate.Engine.Query;
 using NHibernate.Util;
 using NUnit.Framework;
 
-namespace NHibernate.Test.Hql
+namespace NHibernate.Test.HQL.Ast
 {
-	[TestFixture, Ignore("Not supported yet.")]
-	public class HqlFixture : TestCase
+	[TestFixture]
+	public class HqlFixture : BaseFixture
 	{
-		protected override string MappingsAssembly
-		{
-			get { return "NHibernate.Test"; }
-		}
-
-		protected override IList Mappings
-		{
-			get { return new[] {"HQL.Animal.hbm.xml"}; }
-		}
-
 		protected HQLQueryPlan CreateQueryPlan(string hql, bool scalar)
 		{
 			return new HQLQueryPlan(hql, scalar, new CollectionHelper.EmptyMapClass<string, IFilter>(), sessions);
@@ -64,11 +54,42 @@ namespace NHibernate.Test.Hql
 			plan = CreateQueryPlan("select a as animal from Animal a");
 			Check(plan.ReturnMetadata, false, false);
 
-			plan = CreateQueryPlan("from java.lang.Object");
+			plan = CreateQueryPlan("from System.Object");
 			Check(plan.ReturnMetadata, true, true);
 
-			plan = CreateQueryPlan("select o as entity from java.lang.Object o");
+			plan = CreateQueryPlan("select o as entity from System.Object o");
 			Check(plan.ReturnMetadata, true, false);
+		}
+
+		[Test]
+		public void CaseClauseInSelect()
+		{
+			// NH-322
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.Save(new Animal {BodyWeight = 12, Description = "Polliwog"});
+				s.Transaction.Commit();
+			}
+		
+			using (ISession s = OpenSession())
+			{
+				var l = s.CreateQuery("select a.id, case when a.description = 'Polliwog' then 2 else 0 end from Animal a").List();
+				var element = (IList)l[0];
+				Assert.That(element[1], Is.EqualTo(2));
+
+				// work with alias
+				l = s.CreateQuery("select a.id, case when a.description = 'Polliwog' then 2 else 0 end as value from Animal a").List();
+				element = (IList)l[0];
+				Assert.That(element[1], Is.EqualTo(2));
+			}
+
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.CreateQuery("delete from Animal").ExecuteUpdate();
+				s.Transaction.Commit();
+			}
 		}
 	}
 }

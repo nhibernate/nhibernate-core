@@ -364,7 +364,7 @@
     <Compile Include="HQL\SQLFunctionTemplateTest.cs" />
     <Compile Include="BulkManipulation\NativeSQLBulkOperations.cs" />
     <Compile Include="BulkManipulation\Vehicles.cs" />
-    <Compile Include="HQL\HqlFixture.cs" />
+    <Compile Include="HQL\Ast\HqlFixture.cs" />
     <Compile Include="IdGen\Enhanced\SequenceStyleConfigUnitFixture.cs" />
     <Compile Include="IdGen\NativeGuid\NativeGuidFixture.cs" />
     <Compile Include="IdGen\NativeGuid\NativeGuidGeneratorFixture.cs" />
