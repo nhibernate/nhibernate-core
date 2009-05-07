@@ -12,6 +12,8 @@ namespace NHibernate
 	{
 		private string queryString;
 
+		protected QueryException() {}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="QueryException"/> class.
 		/// </summary>

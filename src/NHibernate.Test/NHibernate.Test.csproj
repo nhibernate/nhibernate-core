@@ -322,6 +322,7 @@
     <Compile Include="HQL\Ast\TimestampVersioned.cs" />
     <Compile Include="HQL\Ast\User.cs" />
     <Compile Include="HQL\Ast\Vehicles.cs" />
+    <Compile Include="HQL\Ast\WithClauseFixture.cs" />
     <Compile Include="HQL\Ast\Zoo.cs" />
     <Compile Include="HQL\BaseFunctionFixture.cs" />
     <Compile Include="NHSpecificTest\Dates\TimeFixture.cs" />
