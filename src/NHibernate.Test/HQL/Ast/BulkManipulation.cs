@@ -39,7 +39,7 @@ namespace NHibernate.Test.HQL.Ast
 		#endregion
 
 		#region INSERTS
-		[Test, Ignore("Need fix.")]
+		[Test]
 		public void SimpleInsert()
 		{
 			var data = new TestData(this);

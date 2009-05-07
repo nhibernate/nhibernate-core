@@ -62,7 +62,7 @@ deleteStatement
 
 insertStatement
 	: ^(INSERT { Out( "insert " ); }
-		i=INTO { Out( i ); Out( " " ); }
+		^(i=INTO { Out( i ); Out( " " ); } .*)
 		selectStatement
 	)
 	;
