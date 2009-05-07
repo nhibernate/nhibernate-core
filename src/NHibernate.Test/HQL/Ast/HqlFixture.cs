@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Engine.Query;
 using NHibernate.Util;
@@ -82,6 +83,31 @@ namespace NHibernate.Test.HQL.Ast
 				l = s.CreateQuery("select a.id, case when a.description = 'Polliwog' then 2 else 0 end as value from Animal a").List();
 				element = (IList)l[0];
 				Assert.That(element[1], Is.EqualTo(2));
+			}
+
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.CreateQuery("delete from Animal").ExecuteUpdate();
+				s.Transaction.Commit();
+			}
+		}
+
+		[Test, Ignore("Not fixed yet.")]
+		public void SumShouldReturnDouble()
+		{
+			// NH-1734
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.Save(new Human{ IntValue = 11, BodyWeight = 12.5f, Description = "Polliwog" });
+				s.Transaction.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var l = s.CreateQuery("select sum(a.intValue * a.bodyWeight) from Animal a group by a.id").List();
+				Assert.That(l[0], Is.InstanceOf<Double>());
 			}
 
 			using (ISession s = OpenSession())
