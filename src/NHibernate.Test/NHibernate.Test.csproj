@@ -42,6 +42,10 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.1.0.39271, Culture=neutral, PublicKeyToken=3a9cab8f8d22bfb7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\2.0\Antlr3.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="Iesi.Collections, Version=1.0.0.1, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\2.0\Iesi.Collections.dll</HintPath>
@@ -1750,7 +1754,6 @@
     <EmbeddedResource Include="HQL\Ast\Animal.hbm.xml" />
     <EmbeddedResource Include="HQL\Ast\BooleanLiteralEntity.hbm.xml" />
     <EmbeddedResource Include="HQL\Ast\EntityWithCrazyCompositeKey.hbm.xml" />
-    <Content Include="HQL\Ast\FooBarCopy.hbm.xml" />
     <EmbeddedResource Include="HQL\Ast\KeyManyToOneEntity.hbm.xml" />
     <EmbeddedResource Include="HQL\Ast\Multi.hbm.xml" />
     <EmbeddedResource Include="HQL\Ast\SimpleEntityWithAssociation.hbm.xml" />

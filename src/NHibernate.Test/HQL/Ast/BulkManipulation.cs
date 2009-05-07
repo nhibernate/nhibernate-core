@@ -3,6 +3,8 @@ using System.Collections;
 using System.Threading;
 using NHibernate.Dialect;
 using NHibernate.Hql.Ast.ANTLR;
+using NHibernate.Id;
+using NHibernate.Persister.Entity;
 using NUnit.Framework;
 
 namespace NHibernate.Test.HQL.Ast
@@ -39,6 +41,7 @@ namespace NHibernate.Test.HQL.Ast
 		#endregion
 
 		#region INSERTS
+
 		[Test]
 		public void SimpleInsert()
 		{
@@ -59,6 +62,255 @@ namespace NHibernate.Test.HQL.Ast
 			s.Close();
 
 			data.Cleanup();
+		}
+
+		[Test]
+		public void InsertWithManyToOne()
+		{
+			var data = new TestData(this);
+			data.Prepare();
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			s.CreateQuery(
+				"insert into Animal (description, bodyWeight, mother) select description, bodyWeight, mother from Human").
+				ExecuteUpdate();
+
+			t.Commit();
+			t = s.BeginTransaction();
+
+			t.Commit();
+			s.Close();
+
+			data.Cleanup();
+		}
+
+		[Test]
+		public void InsertWithMismatchedTypes()
+		{
+			var data = new TestData(this);
+			data.Prepare();
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Assert.Throws<QueryException>(
+			  () => s.CreateQuery("insert into Pickup (Owner, Vin, id) select id, Vin, Owner from Car").ExecuteUpdate(),
+				"mismatched types did not error");
+
+			t.Commit();
+			t = s.BeginTransaction();
+
+			s.CreateQuery("delete Vehicle").ExecuteUpdate();
+
+			t.Commit();
+			s.Close();
+
+			data.Cleanup();
+		}
+
+		[Test]
+		public void InsertIntoSuperclassPropertiesFails()
+		{
+			var data = new TestData(this);
+			data.Prepare();
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			Assert.Throws<QueryException>(
+				() => s.CreateQuery("insert into Human (id, bodyWeight) select id, bodyWeight from Lizard").ExecuteUpdate(),
+				"superclass prop insertion did not error");
+
+			t.Commit();
+			t = s.BeginTransaction();
+
+			s.CreateQuery("delete Animal where mother is not null").ExecuteUpdate();
+			s.CreateQuery("delete Animal where father is not null").ExecuteUpdate();
+			s.CreateQuery("delete Animal").ExecuteUpdate();
+
+			t.Commit();
+			s.Close();
+
+			data.Cleanup();
+		}
+
+		[Test]
+		public void InsertAcrossMappedJoinFails()
+		{
+			var data = new TestData(this);
+			data.Prepare();
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			Assert.Throws<QueryException>(
+				() => s.CreateQuery("insert into Joiner (name, joinedName) select vin, owner from Car").ExecuteUpdate(),
+				"mapped-join insertion did not error");
+
+			t.Commit();
+			t = s.BeginTransaction();
+
+			s.CreateQuery("delete Joiner").ExecuteUpdate();
+			s.CreateQuery("delete Vehicle").ExecuteUpdate();
+
+			t.Commit();
+			s.Close();
+
+			data.Cleanup();
+		}
+
+		public void InsertWithGeneratedId()
+		{
+			// Make sure the env supports bulk inserts with generated ids...
+			IEntityPersister persister = sessions.GetEntityPersister(typeof (PettingZoo).FullName);
+			IIdentifierGenerator generator = persister.IdentifierGenerator;
+			if (!HqlSqlWalker.SupportsIdGenWithBulkInsertion(generator))
+			{
+				return;
+			}
+
+			// create a Zoo
+			var zoo = new Zoo {Name = "zoo"};
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			s.Save(zoo);
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			int count = s.CreateQuery("insert into PettingZoo (name) select name from Zoo").ExecuteUpdate();
+			t.Commit();
+			s.Close();
+			Assert.That(count, Is.EqualTo(1), "unexpected insertion count");
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			var pz = (PettingZoo) s.CreateQuery("from PettingZoo").UniqueResult();
+			t.Commit();
+			s.Close();
+
+			Assert.That(zoo.Name, Is.EqualTo(pz.Name));
+			Assert.That(zoo.Id != pz.Id);
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			s.CreateQuery("delete Zoo").ExecuteUpdate();
+			t.Commit();
+			s.Close();
+		}
+
+		[Test]
+		public void InsertWithGeneratedVersionAndId()
+		{
+			// Make sure the env supports bulk inserts with generated ids...
+			IEntityPersister persister = sessions.GetEntityPersister(typeof (IntegerVersioned).FullName);
+			IIdentifierGenerator generator = persister.IdentifierGenerator;
+			if (!HqlSqlWalker.SupportsIdGenWithBulkInsertion(generator))
+			{
+				return;
+			}
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			var entity = new IntegerVersioned {Name = "int-vers"};
+			s.Save(entity);
+			s.CreateQuery("select id, name, version from IntegerVersioned").List();
+			t.Commit();
+			s.Close();
+
+			long initialId = entity.Id;
+			int initialVersion = entity.Version;
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			int count = s.CreateQuery("insert into IntegerVersioned ( name ) select name from IntegerVersioned").ExecuteUpdate();
+			t.Commit();
+			s.Close();
+
+			Assert.That(count, Is.EqualTo(1), "unexpected insertion count");
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			var created =
+				(IntegerVersioned)
+				s.CreateQuery("from IntegerVersioned where id <> :initialId").SetInt64("initialId", initialId).UniqueResult();
+			t.Commit();
+			s.Close();
+
+			Assert.That(created.Version, Is.EqualTo(initialVersion), "version was not seeded");
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			s.CreateQuery("delete IntegerVersioned").ExecuteUpdate();
+			t.Commit();
+			s.Close();
+		}
+
+		[Test]
+		public void InsertWithGeneratedTimestampVersion()
+		{
+			// Make sure the env supports bulk inserts with generated ids...
+			IEntityPersister persister = sessions.GetEntityPersister(typeof (TimestampVersioned).FullName);
+			IIdentifierGenerator generator = persister.IdentifierGenerator;
+			if (!HqlSqlWalker.SupportsIdGenWithBulkInsertion(generator))
+			{
+				return;
+			}
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			var entity = new TimestampVersioned {Name = "int-vers"};
+			s.Save(entity);
+			s.CreateQuery("select id, name, version from TimestampVersioned").List();
+			t.Commit();
+			s.Close();
+
+			long initialId = entity.Id;
+			//Date initialVersion = entity.getVersion();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			int count =
+				s.CreateQuery("insert into TimestampVersioned ( name ) select name from TimestampVersioned").ExecuteUpdate();
+			t.Commit();
+			s.Close();
+
+			Assert.That(count, Is.EqualTo(1), "unexpected insertion count");
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			var created =
+				(TimestampVersioned)
+				s.CreateQuery("from TimestampVersioned where id <> :initialId").SetInt64("initialId", initialId).UniqueResult();
+			t.Commit();
+			s.Close();
+
+			Assert.That(created.Version, Is.GreaterThan(DateTime.Today));
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			s.CreateQuery("delete TimestampVersioned").ExecuteUpdate();
+			t.Commit();
+			s.Close();
+		}
+
+		[Test]
+		public void InsertWithSelectListUsingJoins()
+		{
+			// this is just checking parsing and syntax...
+			ISession s = OpenSession();
+			s.BeginTransaction();
+			s.CreateQuery(
+				"insert into Animal (description, bodyWeight) select h.description, h.bodyWeight from Human h where h.mother.mother is not null")
+				.ExecuteUpdate();
+			s.CreateQuery("delete from Animal").ExecuteUpdate();
+			s.Transaction.Commit();
+			s.Close();
 		}
 
 		#endregion
