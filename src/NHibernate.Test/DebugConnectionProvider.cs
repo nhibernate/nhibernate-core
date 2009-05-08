@@ -16,9 +16,17 @@ namespace NHibernate.Test
 
 		public override IDbConnection GetConnection()
 		{
-			IDbConnection connection = base.GetConnection();
-			connections.Add(connection);
-			return connection;
+		    try
+		    {
+		        IDbConnection connection = base.GetConnection();
+                connections.Add(connection);
+                return connection;
+            }
+		    catch (Exception e)
+		    {
+		        throw new HibernateException("Could not open connection to: " + ConnectionString, e);
+		    }
+		    
 		}
 
 		public override void CloseConnection(IDbConnection conn)
