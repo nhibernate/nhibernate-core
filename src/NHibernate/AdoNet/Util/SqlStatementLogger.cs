@@ -60,6 +60,11 @@ namespace NHibernate.AdoNet.Util
 			}
 		}
 
+        public virtual void LogBatchCommand(string batchCommand)
+        {
+            log.Debug(batchCommand);
+        }
+
 		/// <summary> Log a IDbCommand. </summary>
 		/// <param name="command">The SQL statement. </param>
 		/// <param name="style">The requested formatting style. </param>
@@ -104,16 +109,32 @@ namespace NHibernate.AdoNet.Util
 		{
 			if(parameter.Value == null || DBNull.Value.Equals(parameter.Value))
 			{
-				return "null";
+				return "NULL";
 			}
-			else if (IsStringType(parameter.DbType))
-			{
-				return string.Concat("'", parameter.Value.ToString(), "'");
-			}
-			return parameter.Value.ToString();
+		    if (IsStringType(parameter.DbType))
+		    {
+		        return string.Concat("'", parameter.Value.ToString(), "'");
+		    }
+		    var buffer = parameter.Value as byte[];
+		    if(buffer != null)
+		    {
+		        return GetBufferAsHexString(buffer);
+		    }
+		    return parameter.Value.ToString();
 		}
 
-		private static bool IsStringType(DbType dbType)
+	    private static string GetBufferAsHexString(byte[] buffer)
+	    {
+	        var sb = new StringBuilder(buffer.Length*2 + 2);
+	        sb.Append("0x");
+	        foreach (var b in buffer)
+	        {
+	            sb.Append(b.ToString("X2"));
+	        }
+	        return sb.ToString();
+	    }
+
+	    private static bool IsStringType(DbType dbType)
 		{
 			return DbType.String.Equals(dbType) || DbType.AnsiString.Equals(dbType)
 			       || DbType.AnsiStringFixedLength.Equals(dbType) || DbType.StringFixedLength.Equals(dbType);

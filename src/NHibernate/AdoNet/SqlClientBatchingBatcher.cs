@@ -66,7 +66,10 @@ namespace NHibernate.AdoNet
 			Prepare(currentBatch.BatchCommand);
 			if (log.IsDebugEnabled)
 			{
-				log.Debug(currentBatchCommandsLog.ToString());
+                if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+                    Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
+                else
+                    log.Debug(currentBatchCommandsLog.ToString());
 				currentBatchCommandsLog = new StringBuilder();
 			}
 			int rowsAffected = currentBatch.ExecuteNonQuery();
