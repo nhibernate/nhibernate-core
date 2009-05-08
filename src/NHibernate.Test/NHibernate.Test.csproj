@@ -330,6 +330,8 @@
     <Compile Include="NHSpecificTest\DtcFailures\Person.cs" />
     <Compile Include="NHSpecificTest\Futures\FallbackFixture.cs" />
     <Compile Include="NHSpecificTest\Futures\FutureFixture.cs" />
+    <Compile Include="NHSpecificTest\Logs\LogsFixture.cs" />
+    <Compile Include="NHSpecificTest\Logs\Person.cs" />
     <Compile Include="NHSpecificTest\NH1635\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1635\ForumMessage.cs" />
     <Compile Include="NHSpecificTest\NH1635\ForumThread.cs" />
@@ -1755,6 +1757,7 @@
     <EmbeddedResource Include="HQL\Ast\Animal.hbm.xml" />
     <EmbeddedResource Include="HQL\Ast\BooleanLiteralEntity.hbm.xml" />
     <EmbeddedResource Include="HQL\Ast\EntityWithCrazyCompositeKey.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\Logs\Mappings.hbm.xml" />
     <EmbeddedResource Include="HQL\Ast\KeyManyToOneEntity.hbm.xml" />
     <EmbeddedResource Include="HQL\Ast\Multi.hbm.xml" />
     <EmbeddedResource Include="HQL\Ast\SimpleEntityWithAssociation.hbm.xml" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Impl;
 
 namespace NHibernate.Transaction
 {
@@ -27,10 +28,11 @@ namespace NHibernate.Transaction
 		/// <param name="session">The <see cref="ISessionImplementor"/> the Transaction is for.</param>
 		public AdoTransaction(ISessionImplementor session)
 		{
-			this.session = session;
+		    this.session = session;
+		    sessionId = this.session.SessionId;
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Enlist the <see cref="IDbCommand"/> in the current <see cref="ITransaction"/>.
 		/// </summary>
 		/// <param name="command">The <see cref="IDbCommand"/> to enlist in this Transaction.</param>
@@ -102,58 +104,64 @@ namespace NHibernate.Transaction
 		/// </exception>
 		public void Begin(IsolationLevel isolationLevel)
 		{
-			if (begun)
-			{
-				return;
-			}
+            using (new SessionIdLoggingContext(sessionId))
+            {
+                if (begun)
+                {
+                    return;
+                }
 
-			if (commitFailed)
-			{
-				throw new TransactionException("Cannot restart transaction after failed commit");
-			}
+                if (commitFailed)
+                {
+                    throw new TransactionException("Cannot restart transaction after failed commit");
+                }
 
-			log.Debug(string.Format("Begin ({0})", isolationLevel));
+                log.Debug(string.Format("Begin ({0})", isolationLevel));
 
-			try
-			{
-				if (isolationLevel == IsolationLevel.Unspecified)
-				{
-					isolationLevel = session.Factory.Settings.IsolationLevel;
-				}
+                try
+                {
+                    if (isolationLevel == IsolationLevel.Unspecified)
+                    {
+                        isolationLevel = session.Factory.Settings.IsolationLevel;
+                    }
 
-				if (isolationLevel == IsolationLevel.Unspecified)
-				{
-					trans = session.Connection.BeginTransaction();
-				}
-				else
-				{
-					trans = session.Connection.BeginTransaction(isolationLevel);
-				}
-			}
-			catch (HibernateException)
-			{
-				// Don't wrap HibernateExceptions
-				throw;
-			}
-			catch (Exception e)
-			{
-				log.Error("Begin transaction failed", e);
-				throw new TransactionException("Begin failed with SQL exception", e);
-			}
+                    if (isolationLevel == IsolationLevel.Unspecified)
+                    {
+                        trans = session.Connection.BeginTransaction();
+                    }
+                    else
+                    {
+                        trans = session.Connection.BeginTransaction(isolationLevel);
+                    }
+                }
+                catch (HibernateException)
+                {
+                    // Don't wrap HibernateExceptions
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    log.Error("Begin transaction failed", e);
+                    throw new TransactionException("Begin failed with SQL exception", e);
+                }
 
-			begun = true;
-			committed = false;
-			rolledBack = false;
+                begun = true;
+                committed = false;
+                rolledBack = false;
 
-			session.AfterTransactionBegin(this);
+                session.AfterTransactionBegin(this);
+            }
 		}
 
 		private void AfterTransactionCompletion(bool successful)
 		{
-			session.AfterTransactionCompletion(successful, this);
-			NotifyLocalSynchsAfterTransactionCompletion(successful);
-			session = null;
-			begun = false;
+            using (new SessionIdLoggingContext(sessionId))
+            {
+                session.AfterTransactionCompletion(successful, this);
+                NotifyLocalSynchsAfterTransactionCompletion(successful);
+                session = null;
+                begun = false;
+            }
 		}
 
 		/// <summary>
@@ -166,48 +174,51 @@ namespace NHibernate.Transaction
 		/// </exception>
 		public void Commit()
 		{
-			CheckNotDisposed();
-			CheckBegun();
-		    CheckNotZombied();
+            using (new SessionIdLoggingContext(sessionId))
+            {
+                CheckNotDisposed();
+                CheckBegun();
+                CheckNotZombied();
 
-			log.Debug("Start Commit");
+                log.Debug("Start Commit");
 
-			if (session.FlushMode != FlushMode.Never)
-			{
-				session.Flush();
-			}
-            
-			NotifyLocalSynchsBeforeTransactionCompletion();
-			session.BeforeTransactionCompletion(this);
-			
-			try
-			{
-				trans.Commit();
-				log.Debug("IDbTransaction Committed");
+                if (session.FlushMode != FlushMode.Never)
+                {
+                    session.Flush();
+                }
 
-				committed = true;
-				AfterTransactionCompletion(true);
-				Dispose();
-			}
-			catch (HibernateException e)
-			{
-				log.Error("Commit failed", e);
-				AfterTransactionCompletion(false);
-				commitFailed = true;
-				// Don't wrap HibernateExceptions
-				throw;
-			}
-			catch (Exception e)
-			{
-				log.Error("Commit failed", e);
-				AfterTransactionCompletion(false);
-				commitFailed = true;
-				throw new TransactionException("Commit failed with SQL exception", e);
-			}
-			finally
-			{
-				CloseIfRequired();
-			}
+                NotifyLocalSynchsBeforeTransactionCompletion();
+                session.BeforeTransactionCompletion(this);
+
+                try
+                {
+                    trans.Commit();
+                    log.Debug("IDbTransaction Committed");
+
+                    committed = true;
+                    AfterTransactionCompletion(true);
+                    Dispose();
+                }
+                catch (HibernateException e)
+                {
+                    log.Error("Commit failed", e);
+                    AfterTransactionCompletion(false);
+                    commitFailed = true;
+                    // Don't wrap HibernateExceptions
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    log.Error("Commit failed", e);
+                    AfterTransactionCompletion(false);
+                    commitFailed = true;
+                    throw new TransactionException("Commit failed with SQL exception", e);
+                }
+                finally
+                {
+                    CloseIfRequired();
+                }
+            }
 		}
 
 		/// <summary>
@@ -220,38 +231,41 @@ namespace NHibernate.Transaction
 		/// </exception>
 		public void Rollback()
 		{
-			CheckNotDisposed();
-			CheckBegun();
-            CheckNotZombied();
+            using (new SessionIdLoggingContext(sessionId))
+            {
+                CheckNotDisposed();
+                CheckBegun();
+                CheckNotZombied();
 
-			log.Debug("Rollback");
+                log.Debug("Rollback");
 
-			if (!commitFailed)
-			{
-				try
-				{
-					trans.Rollback();
-					log.Debug("IDbTransaction RolledBack");
-					rolledBack = true;
-					Dispose();
-				}
-				catch (HibernateException e)
-				{
-					log.Error("Rollback failed", e);
-					// Don't wrap HibernateExceptions
-					throw;
-				}
-				catch (Exception e)
-				{
-					log.Error("Rollback failed", e);
-					throw new TransactionException("Rollback failed with SQL Exception", e);
-				}
-				finally
-				{
-					AfterTransactionCompletion(false);
-					CloseIfRequired();
-				}
-			}
+                if (!commitFailed)
+                {
+                    try
+                    {
+                        trans.Rollback();
+                        log.Debug("IDbTransaction RolledBack");
+                        rolledBack = true;
+                        Dispose();
+                    }
+                    catch (HibernateException e)
+                    {
+                        log.Error("Rollback failed", e);
+                        // Don't wrap HibernateExceptions
+                        throw;
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error("Rollback failed", e);
+                        throw new TransactionException("Rollback failed with SQL Exception", e);
+                    }
+                    finally
+                    {
+                        AfterTransactionCompletion(false);
+                        CloseIfRequired();
+                    }
+                }
+            }
 		}
 
 		/// <summary>
@@ -304,7 +318,9 @@ namespace NHibernate.Transaction
 		/// </summary>
 		private bool _isAlreadyDisposed;
 
-		/// <summary>
+	    private Guid sessionId;
+
+	    /// <summary>
 		/// Finalizer that ensures the object is correctly disposed of.
 		/// </summary>
 		~AdoTransaction()
@@ -332,34 +348,37 @@ namespace NHibernate.Transaction
 		/// </remarks>
 		protected virtual void Dispose(bool isDisposing)
 		{
-			if (_isAlreadyDisposed)
-			{
-				// don't dispose of multiple times.
-				return;
-			}
+            using (new SessionIdLoggingContext(sessionId))
+            {
+                if (_isAlreadyDisposed)
+                {
+                    // don't dispose of multiple times.
+                    return;
+                }
 
-			// free managed resources that are being managed by the AdoTransaction if we
-			// know this call came through Dispose()
-			if (isDisposing)
-			{
-				if (trans != null)
-				{
-					trans.Dispose();
-					log.Debug("IDbTransaction disposed.");
-				}
+                // free managed resources that are being managed by the AdoTransaction if we
+                // know this call came through Dispose()
+                if (isDisposing)
+                {
+                    if (trans != null)
+                    {
+                        trans.Dispose();
+                        log.Debug("IDbTransaction disposed.");
+                    }
 
-				if (IsActive && session != null)
-				{
-					// Assume we are rolled back
-					AfterTransactionCompletion(false);
-				}
-			}
+                    if (IsActive && session != null)
+                    {
+                        // Assume we are rolled back
+                        AfterTransactionCompletion(false);
+                    }
+                }
 
-			// free unmanaged resources here
+                // free unmanaged resources here
 
-			_isAlreadyDisposed = true;
-			// nothing for Finalizer to do - so tell the GC to ignore it
-			GC.SuppressFinalize(this);
+                _isAlreadyDisposed = true;
+                // nothing for Finalizer to do - so tell the GC to ignore it
+                GC.SuppressFinalize(this);
+            }
 		}
 
 		#endregion

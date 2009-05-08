@@ -65,30 +65,33 @@ namespace NHibernate.Impl
 
 		public IList List()
 		{
-			bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
+            using (new SessionIdLoggingContext(session.SessionId))
+            {
+                bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
 
-			CreateCriteriaLoaders();
-			CombineCriteriaQueries();
+                CreateCriteriaLoaders();
+                CombineCriteriaQueries();
 
-			if (log.IsDebugEnabled)
-			{
-				log.DebugFormat("Multi criteria with {0} criteria queries.", criteriaQueries.Count);
-				for (int i = 0; i < criteriaQueries.Count; i++)
-				{
-					log.DebugFormat("Query #{0}: {1}", i, criteriaQueries[i]);
-				}
-			}
+                if (log.IsDebugEnabled)
+                {
+                    log.DebugFormat("Multi criteria with {0} criteria queries.", criteriaQueries.Count);
+                    for (int i = 0; i < criteriaQueries.Count; i++)
+                    {
+                        log.DebugFormat("Query #{0}: {1}", i, criteriaQueries[i]);
+                    }
+                }
 
-			if (cacheable)
-			{
-				criteriaResults = ListUsingQueryCache();
-			}
-			else
-			{
-				criteriaResults = ListIgnoreQueryCache();
-			}
+                if (cacheable)
+                {
+                    criteriaResults = ListUsingQueryCache();
+                }
+                else
+                {
+                    criteriaResults = ListIgnoreQueryCache();
+                }
 
-			return criteriaResults;
+                return criteriaResults;
+            }
 		}
 
 

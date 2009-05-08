@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -287,5 +288,7 @@ namespace NHibernate.Engine
         FutureCriteriaBatch FutureCriteriaBatch { get; }
 
         FutureQueryBatch FutureQueryBatch { get; }
+
+        Guid SessionId { get; }
 	}
 }

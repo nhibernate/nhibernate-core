@@ -378,27 +378,30 @@ namespace NHibernate.Impl
 		/// </summary>
 		public IList List()
 		{
-			bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
-			combinedParameters = CreateCombinedQueryParameters();
+            using (new SessionIdLoggingContext(session.SessionId))
+            {
+                bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
+                combinedParameters = CreateCombinedQueryParameters();
 
-			if (log.IsDebugEnabled)
-			{
-				log.DebugFormat("Multi query with {0} queries.", queries.Count);
-				for (int i = 0; i < queries.Count; i++)
-				{
-					log.DebugFormat("Query #{0}: {1}", i, queries[i]);
-				}
-			}
+                if (log.IsDebugEnabled)
+                {
+                    log.DebugFormat("Multi query with {0} queries.", queries.Count);
+                    for (int i = 0; i < queries.Count; i++)
+                    {
+                        log.DebugFormat("Query #{0}: {1}", i, queries[i]);
+                    }
+                }
 
-			try
-			{
-				Before();
-				return cacheable ? ListUsingQueryCache() : ListIgnoreQueryCache();
-			}
-			finally
-			{
-				After();
-			}
+                try
+                {
+                    Before();
+                    return cacheable ? ListUsingQueryCache() : ListIgnoreQueryCache();
+                }
+                finally
+                {
+                    After();
+                }
+            }
 		}
 
 		public IMultiQuery SetFlushMode(FlushMode mode)

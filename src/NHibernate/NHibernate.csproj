@@ -502,6 +502,7 @@
     <Compile Include="Hql\Ast\ANTLR\Tree\AssignmentSpecification.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\InsertStatement.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\UpdateStatement.cs" />
+    <Compile Include="Impl\SessionIdLoggingContext.cs" />
     <Compile Include="Param\AbstractExplicitParameterSpecification.cs" />
     <Compile Include="Param\AggregatedIndexCollectionSelectorParameterSpecifications.cs" />
     <Compile Include="Param\CollectionFilterKeyParameterSpecification.cs" />
