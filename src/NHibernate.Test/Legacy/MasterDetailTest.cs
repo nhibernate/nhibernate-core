@@ -366,11 +366,11 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			string path = IsClassicParser ? "m.Details.elements" : "elements(m.Details)";
+			string path = IsClassicParser ? "m.Details.elements" : "m.Details";
 
 			if (Dialect.SupportsSubSelects)
 			{
-				s.CreateQuery("FROM m IN CLASS Master WHERE NOT EXISTS ( FROM d in " + path + " WHERE NOT d.I=5 )").Enumerable();
+				s.CreateQuery("FROM m IN CLASS Master WHERE NOT EXISTS ( FROM " + path + " d WHERE NOT d.I=5 )").Enumerable();
 				s.CreateQuery("FROM m IN CLASS Master WHERE NOT 5 IN ( SELECT d.I FROM d IN  " + path + " )").Enumerable();
 			}
 
