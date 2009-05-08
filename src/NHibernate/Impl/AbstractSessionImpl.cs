@@ -26,18 +26,18 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private ISessionFactoryImplementor factory;
 
-	    protected readonly Guid sessionId = Guid.NewGuid();
+		protected readonly Guid sessionId = Guid.NewGuid();
 		private bool closed;
 		private System.Transactions.Transaction ambientTransation;
 		private bool isAlreadyDisposed;
 		protected bool shouldCloseSessionOnDtcTransactionCompleted;
 
-		private static readonly ILog logger = LogManager.GetLogger(typeof (AbstractSessionImpl));
+		private static readonly ILog logger = LogManager.GetLogger(typeof(AbstractSessionImpl));
 
-	    public Guid SessionId
-	    {
-	        get { return sessionId; }
-	    }
+		public Guid SessionId
+		{
+			get { return sessionId; }
+		}
 
 		protected bool TakingPartInDtcTransaction
 		{
@@ -58,10 +58,10 @@ namespace NHibernate.Impl
 
 		public void Initialize()
 		{
-            using(new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+			}
 		}
 
 		public abstract void InitializeCollection(IPersistentCollection collection, bool writing);
@@ -108,20 +108,20 @@ namespace NHibernate.Impl
 
 		public virtual IQuery GetNamedSQLQuery(string name)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                NamedSQLQueryDefinition nsqlqd = factory.GetNamedSQLQuery(name);
-                if (nsqlqd == null)
-                {
-                    throw new MappingException("Named SQL query not known: " + name);
-                }
-                IQuery query = new SqlQueryImpl(nsqlqd, this,
-                                                factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString));
-                query.SetComment("named native SQL query " + name);
-                InitQuery(query, nsqlqd);
-                return query;
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				NamedSQLQueryDefinition nsqlqd = factory.GetNamedSQLQuery(name);
+				if (nsqlqd == null)
+				{
+					throw new MappingException("Named SQL query not known: " + name);
+				}
+				IQuery query = new SqlQueryImpl(nsqlqd, this,
+												factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString));
+				query.SetComment("named native SQL query " + name);
+				InitQuery(query, nsqlqd);
+				return query;
+			}
 		}
 
 		public abstract IQueryTranslator[] GetQueries(string query, bool scalar);
@@ -147,33 +147,33 @@ namespace NHibernate.Impl
 
 		public virtual IQuery GetNamedQuery(string queryName)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                NamedQueryDefinition nqd = factory.GetNamedQuery(queryName);
-                IQuery query;
-                if (nqd != null)
-                {
-                    string queryString = nqd.QueryString;
-                    query = new QueryImpl(queryString, nqd.FlushMode, this,
-                                          GetHQLQueryPlan(queryString, false).ParameterMetadata);
-                    query.SetComment("named HQL query " + queryName);
-                }
-                else
-                {
-                    NamedSQLQueryDefinition nsqlqd = factory.GetNamedSQLQuery(queryName);
-                    if (nsqlqd == null)
-                    {
-                        throw new MappingException("Named query not known: " + queryName);
-                    }
-                    query = new SqlQueryImpl(nsqlqd, this,
-                                             factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString));
-                    query.SetComment("named native SQL query " + queryName);
-                    nqd = nsqlqd;
-                }
-                InitQuery(query, nqd);
-                return query;
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				NamedQueryDefinition nqd = factory.GetNamedQuery(queryName);
+				IQuery query;
+				if (nqd != null)
+				{
+					string queryString = nqd.QueryString;
+					query = new QueryImpl(queryString, nqd.FlushMode, this,
+										  GetHQLQueryPlan(queryString, false).ParameterMetadata);
+					query.SetComment("named HQL query " + queryName);
+				}
+				else
+				{
+					NamedSQLQueryDefinition nsqlqd = factory.GetNamedSQLQuery(queryName);
+					if (nsqlqd == null)
+					{
+						throw new MappingException("Named query not known: " + queryName);
+					}
+					query = new SqlQueryImpl(nsqlqd, this,
+											 factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString));
+					query.SetComment("named native SQL query " + queryName);
+					nqd = nsqlqd;
+				}
+				InitQuery(query, nqd);
+				return query;
+			}
 		}
 
 		public bool IsClosed
@@ -183,11 +183,11 @@ namespace NHibernate.Impl
 
 		protected internal virtual void CheckAndUpdateSessionStatus()
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                ErrorIfClosed();
-                EnlistInAmbientTransactionIfNeeded();
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				ErrorIfClosed();
+				EnlistInAmbientTransactionIfNeeded();
+			}
 		}
 
 		protected internal virtual void ErrorIfClosed()
@@ -212,186 +212,186 @@ namespace NHibernate.Impl
 
 		protected internal void SetClosed()
 		{
-		    try
-		    {
-                if (ambientTransation != null)
-                    ambientTransation.Dispose();
-		    }
-		    catch (Exception)
-		    {
-                //ignore
-		    }
+			try
+			{
+				if (ambientTransation != null)
+					ambientTransation.Dispose();
+			}
+			catch (Exception)
+			{
+				//ignore
+			}
 			closed = true;
 		}
 
 		private void InitQuery(IQuery query, NamedQueryDefinition nqd)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                query.SetCacheable(nqd.IsCacheable);
-                query.SetCacheRegion(nqd.CacheRegion);
-                if (nqd.Timeout != -1)
-                {
-                    query.SetTimeout(nqd.Timeout);
-                }
-                if (nqd.FetchSize != -1)
-                {
-                    query.SetFetchSize(nqd.FetchSize);
-                }
-                if (nqd.CacheMode.HasValue)
-                    query.SetCacheMode(nqd.CacheMode.Value);
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				query.SetCacheable(nqd.IsCacheable);
+				query.SetCacheRegion(nqd.CacheRegion);
+				if (nqd.Timeout != -1)
+				{
+					query.SetTimeout(nqd.Timeout);
+				}
+				if (nqd.FetchSize != -1)
+				{
+					query.SetFetchSize(nqd.FetchSize);
+				}
+				if (nqd.CacheMode.HasValue)
+					query.SetCacheMode(nqd.CacheMode.Value);
 
-                query.SetReadOnly(nqd.IsReadOnly);
-                if (nqd.Comment != null)
-                {
-                    query.SetComment(nqd.Comment);
-                }
-                query.SetFlushMode(nqd.FlushMode);
-            }
+				query.SetReadOnly(nqd.IsReadOnly);
+				if (nqd.Comment != null)
+				{
+					query.SetComment(nqd.Comment);
+				}
+				query.SetFlushMode(nqd.FlushMode);
+			}
 		}
 
 		public virtual IQuery CreateQuery(string queryString)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                QueryImpl query = new QueryImpl(queryString, this, GetHQLQueryPlan(queryString, false).ParameterMetadata);
-                query.SetComment(queryString);
-                return query;
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				QueryImpl query = new QueryImpl(queryString, this, GetHQLQueryPlan(queryString, false).ParameterMetadata);
+				query.SetComment(queryString);
+				return query;
+			}
 		}
 
 		public virtual ISQLQuery CreateSQLQuery(string sql)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                SqlQueryImpl query = new SqlQueryImpl(sql, this, factory.QueryPlanCache.GetSQLParameterMetadata(sql));
-                query.SetComment("dynamic native SQL query");
-                return query;
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				SqlQueryImpl query = new SqlQueryImpl(sql, this, factory.QueryPlanCache.GetSQLParameterMetadata(sql));
+				query.SetComment("dynamic native SQL query");
+				return query;
+			}
 		}
 
 		protected internal virtual HQLQueryPlan GetHQLQueryPlan(string query, bool shallow)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                return factory.QueryPlanCache.GetHQLQueryPlan(query, shallow, EnabledFilters);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				return factory.QueryPlanCache.GetHQLQueryPlan(query, shallow, EnabledFilters);
+			}
 		}
 
 		protected internal virtual NativeSQLQueryPlan GetNativeSQLQueryPlan(NativeSQLQuerySpecification spec)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                return factory.QueryPlanCache.GetNativeSQLQueryPlan(spec);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				return factory.QueryPlanCache.GetNativeSQLQueryPlan(spec);
+			}
 		}
 
 		protected ADOException Convert(Exception sqlException, string message)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                return ADOExceptionHelper.Convert(factory.SQLExceptionConverter, sqlException, message);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				return ADOExceptionHelper.Convert(factory.SQLExceptionConverter, sqlException, message);
+			}
 		}
 
 		protected void AfterOperation(bool success)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                if (!ConnectionManager.IsInActiveTransaction)
-                {
-                    ConnectionManager.AfterNonTransactionalQuery(success);
-                }
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				if (!ConnectionManager.IsInActiveTransaction)
+				{
+					ConnectionManager.AfterNonTransactionalQuery(success);
+				}
+			}
 		}
 
 		#region IEnlistmentNotification Members
 
 		void IEnlistmentNotification.Prepare(PreparingEnlistment preparingEnlistment)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                try
-                {
-                    using (var tx = new TransactionScope(ambientTransation))
-                    {
-                        BeforeTransactionCompletion(null);
-                        if (FlushMode != FlushMode.Never)
-                        {
-                            using (ConnectionManager.FlushingFromDtcTransaction)
-                                Flush();
-                        }
-                        logger.Debug("prepared for DTC transaction");
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				try
+				{
+					using (var tx = new TransactionScope(ambientTransation))
+					{
+						BeforeTransactionCompletion(null);
+						if (FlushMode != FlushMode.Never)
+						{
+							using (ConnectionManager.FlushingFromDtcTransaction)
+								Flush();
+						}
+						logger.Debug("prepared for DTC transaction");
 
-                        tx.Complete();
-                    }
-                    preparingEnlistment.Prepared();
-                }
-                catch (Exception exception)
-                {
-                    logger.Error("DTC transaction prepre phase failed", exception);
-                    preparingEnlistment.ForceRollback(exception);
+						tx.Complete();
+					}
+					preparingEnlistment.Prepared();
+				}
+				catch (Exception exception)
+				{
+					logger.Error("DTC transaction prepre phase failed", exception);
+					preparingEnlistment.ForceRollback(exception);
 
-                }
-            }
+				}
+			}
 		}
 
 		void IEnlistmentNotification.Commit(Enlistment enlistment)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                logger.Debug("committing DTC transaction");
-                // we have nothing to do here, since it is the actual 
-                // DB connection that will commit the transaction
-                enlistment.Done();
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				logger.Debug("committing DTC transaction");
+				// we have nothing to do here, since it is the actual 
+				// DB connection that will commit the transaction
+				enlistment.Done();
+			}
 		}
 
 		void IEnlistmentNotification.Rollback(Enlistment enlistment)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                AfterTransactionCompletion(false, null);
-                logger.Debug("rolled back DTC transaction");
-                enlistment.Done();
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				AfterTransactionCompletion(false, null);
+				logger.Debug("rolled back DTC transaction");
+				enlistment.Done();
+			}
 		}
 
 		void IEnlistmentNotification.InDoubt(Enlistment enlistment)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                AfterTransactionCompletion(false, null);
-                logger.Debug("DTC transaction is in doubt");
-                enlistment.Done();
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				AfterTransactionCompletion(false, null);
+				logger.Debug("DTC transaction is in doubt");
+				enlistment.Done();
+			}
 		}
 
-        protected void EnlistInAmbientTransactionIfNeeded()
-        {
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                if (ambientTransation != null)
-                    return;
-                if (System.Transactions.Transaction.Current == null)
-                    return;
-                ambientTransation = System.Transactions.Transaction.Current.Clone();
-                logger.DebugFormat("enlisted into DTC transaction: {0}", ambientTransation.IsolationLevel);
-                AfterTransactionBegin(null);
-                ambientTransation.TransactionCompleted += delegate(object sender, TransactionEventArgs e)
-                {
-                    bool wasSuccessful = e.Transaction.TransactionInformation.Status == TransactionStatus.Committed;
-                    AfterTransactionCompletion(wasSuccessful, null);
-                    if (shouldCloseSessionOnDtcTransactionCompleted)
-                        Dispose(true);
-                };
-                ambientTransation.EnlistVolatile(this, EnlistmentOptions.EnlistDuringPrepareRequired);
-            }
-        }
+		protected void EnlistInAmbientTransactionIfNeeded()
+		{
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				if (ambientTransation != null)
+					return;
+				if (System.Transactions.Transaction.Current == null)
+					return;
+				ambientTransation = System.Transactions.Transaction.Current.Clone();
+				logger.DebugFormat("enlisted into DTC transaction: {0}", ambientTransation.IsolationLevel);
+				AfterTransactionBegin(null);
+				ambientTransation.TransactionCompleted += delegate(object sender, TransactionEventArgs e)
+				{
+					bool wasSuccessful = e.Transaction.TransactionInformation.Status == TransactionStatus.Committed;
+					AfterTransactionCompletion(wasSuccessful, null);
+					if (shouldCloseSessionOnDtcTransactionCompleted)
+						Dispose(true);
+				};
+				ambientTransation.EnlistVolatile(this, EnlistmentOptions.EnlistDuringPrepareRequired);
+			}
+		}
 
-	    protected abstract void Dispose(bool disposing);
+		protected abstract void Dispose(bool disposing);
 
 		#endregion
 	}

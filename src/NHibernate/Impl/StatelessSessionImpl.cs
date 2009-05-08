@@ -31,44 +31,44 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly StatefulPersistenceContext temporaryPersistenceContext;
 
-        internal StatelessSessionImpl(IDbConnection connection, SessionFactoryImpl factory)
-            : base(factory)
-        {
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                temporaryPersistenceContext = new StatefulPersistenceContext(this);
-                connectionManager = new ConnectionManager(this, connection, ConnectionReleaseMode.AfterTransaction,
-                                                          new EmptyInterceptor());
-                CheckAndUpdateSessionStatus();
-            }
-        }
+		internal StatelessSessionImpl(IDbConnection connection, SessionFactoryImpl factory)
+			: base(factory)
+		{
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				temporaryPersistenceContext = new StatefulPersistenceContext(this);
+				connectionManager = new ConnectionManager(this, connection, ConnectionReleaseMode.AfterTransaction,
+														  new EmptyInterceptor());
+				CheckAndUpdateSessionStatus();
+			}
+		}
 
-	    public override void InitializeCollection(IPersistentCollection collection, bool writing)
+		public override void InitializeCollection(IPersistentCollection collection, bool writing)
 		{
 			throw new SessionException("collections cannot be fetched by a stateless session");
 		}
 
-        public override object InternalLoad(string entityName, object id, bool eager, bool isNullable)
-        {
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                IEntityPersister persister = Factory.GetEntityPersister(entityName);
-                object loaded = temporaryPersistenceContext.GetEntity(new EntityKey(id, persister, EntityMode.Poco));
-                if (loaded != null)
-                {
-                    return loaded;
-                }
-                if (!eager && persister.HasProxy)
-                {
-                    return persister.CreateProxy(id, this);
-                }
-                //TODO: if not loaded, throw an exception
-                return Get(entityName, id);
-            }
-        }
+		public override object InternalLoad(string entityName, object id, bool eager, bool isNullable)
+		{
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				IEntityPersister persister = Factory.GetEntityPersister(entityName);
+				object loaded = temporaryPersistenceContext.GetEntity(new EntityKey(id, persister, EntityMode.Poco));
+				if (loaded != null)
+				{
+					return loaded;
+				}
+				if (!eager && persister.HasProxy)
+				{
+					return persister.CreateProxy(id, this);
+				}
+				//TODO: if not loaded, throw an exception
+				return Get(entityName, id);
+			}
+		}
 
-	    public override object ImmediateLoad(string entityName, object id)
+		public override object ImmediateLoad(string entityName, object id)
 		{
 			throw new SessionException("proxies cannot be fetched by a stateless session");
 		}
@@ -89,131 +89,131 @@ namespace NHibernate.Impl
 
 		public override IList List(string query, QueryParameters parameters)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                // TODO pull up
-                IList results = new ArrayList();
-                List(query, parameters, results);
-                return results;
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				// TODO pull up
+				IList results = new ArrayList();
+				List(query, parameters, results);
+				return results;
+			}
 		}
 
-        public override void List(string query, QueryParameters queryParameters, IList results)
-        {
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                queryParameters.ValidateParameters();
-                HQLQueryPlan plan = GetHQLQueryPlan(query, false);
-                bool success = false;
-                try
-                {
-                    plan.PerformList(queryParameters, this, results);
-                    success = true;
-                }
-                catch (HibernateException)
-                {
-                    // Do not call Convert on HibernateExceptions
-                    throw;
-                }
-                catch (Exception e)
-                {
-                    throw Convert(e, "Could not execute query");
-                }
-                finally
-                {
-                    AfterOperation(success);
-                }
-                temporaryPersistenceContext.Clear();
-            }
-        }
-
-	    public override IList<T> List<T>(string query, QueryParameters queryParameters)
+		public override void List(string query, QueryParameters queryParameters, IList results)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                // TODO pull up
-                List<T> results = new List<T>();
-                List(query, queryParameters, results);
-                return results;
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				queryParameters.ValidateParameters();
+				HQLQueryPlan plan = GetHQLQueryPlan(query, false);
+				bool success = false;
+				try
+				{
+					plan.PerformList(queryParameters, this, results);
+					success = true;
+				}
+				catch (HibernateException)
+				{
+					// Do not call Convert on HibernateExceptions
+					throw;
+				}
+				catch (Exception e)
+				{
+					throw Convert(e, "Could not execute query");
+				}
+				finally
+				{
+					AfterOperation(success);
+				}
+				temporaryPersistenceContext.Clear();
+			}
 		}
 
-        public override IList<T> List<T>(CriteriaImpl criteria)
-        {
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                // TODO pull up
-                List<T> results = new List<T>();
-                List(criteria, results);
-                return results;
-            }
-        }
-
-        public override void List(CriteriaImpl criteria, IList results)
-        {
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
-                int size = implementors.Length;
-
-                CriteriaLoader[] loaders = new CriteriaLoader[size];
-                for (int i = 0; i < size; i++)
-                {
-                    loaders[i] = new CriteriaLoader(GetOuterJoinLoadable(implementors[i]), Factory,
-                                                    criteria, implementors[i], EnabledFilters);
-                }
-
-                bool success = false;
-                try
-                {
-                    for (int i = size - 1; i >= 0; i--)
-                    {
-                        ArrayHelper.AddAll(results, loaders[i].List(this));
-                    }
-                    success = true;
-                }
-                catch (HibernateException)
-                {
-                    // Do not call Convert on HibernateExceptions
-                    throw;
-                }
-                catch (Exception sqle)
-                {
-                    throw Convert(sqle, "Unable to perform find");
-                }
-                finally
-                {
-                    AfterOperation(success);
-                }
-                temporaryPersistenceContext.Clear();
-            }
-        }
-
-	    private IOuterJoinLoadable GetOuterJoinLoadable(string entityName)
+		public override IList<T> List<T>(string query, QueryParameters queryParameters)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                // TODO pull up
-                IEntityPersister persister = Factory.GetEntityPersister(entityName);
-                if (!(persister is IOuterJoinLoadable))
-                {
-                    throw new MappingException("class persister is not IOuterJoinLoadable: " + entityName);
-                }
-                return (IOuterJoinLoadable) persister;
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				// TODO pull up
+				List<T> results = new List<T>();
+				List(query, queryParameters, results);
+				return results;
+			}
+		}
+
+		public override IList<T> List<T>(CriteriaImpl criteria)
+		{
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				// TODO pull up
+				List<T> results = new List<T>();
+				List(criteria, results);
+				return results;
+			}
+		}
+
+		public override void List(CriteriaImpl criteria, IList results)
+		{
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
+				int size = implementors.Length;
+
+				CriteriaLoader[] loaders = new CriteriaLoader[size];
+				for (int i = 0; i < size; i++)
+				{
+					loaders[i] = new CriteriaLoader(GetOuterJoinLoadable(implementors[i]), Factory,
+													criteria, implementors[i], EnabledFilters);
+				}
+
+				bool success = false;
+				try
+				{
+					for (int i = size - 1; i >= 0; i--)
+					{
+						ArrayHelper.AddAll(results, loaders[i].List(this));
+					}
+					success = true;
+				}
+				catch (HibernateException)
+				{
+					// Do not call Convert on HibernateExceptions
+					throw;
+				}
+				catch (Exception sqle)
+				{
+					throw Convert(sqle, "Unable to perform find");
+				}
+				finally
+				{
+					AfterOperation(success);
+				}
+				temporaryPersistenceContext.Clear();
+			}
+		}
+
+		private IOuterJoinLoadable GetOuterJoinLoadable(string entityName)
+		{
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				// TODO pull up
+				IEntityPersister persister = Factory.GetEntityPersister(entityName);
+				if (!(persister is IOuterJoinLoadable))
+				{
+					throw new MappingException("class persister is not IOuterJoinLoadable: " + entityName);
+				}
+				return (IOuterJoinLoadable)persister;
+			}
 		}
 
 		public override IList List(CriteriaImpl criteria)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                // TODO pull up
-                ArrayList results = new ArrayList();
-                List(criteria, results);
-                return results;
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				// TODO pull up
+				ArrayList results = new ArrayList();
+				List(criteria, results);
+				return results;
+			}
 		}
 
 		public override IEnumerable Enumerable(string query, QueryParameters parameters)
@@ -256,10 +256,10 @@ namespace NHibernate.Impl
 
 		public override void AfterTransactionCompletion(bool successful, ITransaction tx)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                connectionManager.AfterTransaction();
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				connectionManager.AfterTransaction();
+			}
 		}
 
 		public override object GetContextEntityIdentifier(object obj)
@@ -270,83 +270,83 @@ namespace NHibernate.Impl
 
 		public override object Instantiate(string clazz, object id)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                return Factory.GetEntityPersister(clazz).Instantiate(id, EntityMode.Poco);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				return Factory.GetEntityPersister(clazz).Instantiate(id, EntityMode.Poco);
+			}
 		}
 
-        public override IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
-        {
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                // TODO pull up
-                ArrayList results = new ArrayList();
-                List(spec, queryParameters, results);
-                return results;
-            }
-        }
+		public override IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
+		{
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				// TODO pull up
+				ArrayList results = new ArrayList();
+				List(spec, queryParameters, results);
+				return results;
+			}
+		}
 
-        public override void List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results)
-        {
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                // TODO pull up
-                SQLCustomQuery query = new SQLCustomQuery(
-                    spec.SqlQueryReturns,
-                    spec.QueryString,
-                    spec.QuerySpaces,
-                    Factory);
-                ListCustomQuery(query, queryParameters, results);
-            }
-        }
+		public override void List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results)
+		{
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				// TODO pull up
+				SQLCustomQuery query = new SQLCustomQuery(
+					spec.SqlQueryReturns,
+					spec.QueryString,
+					spec.QuerySpaces,
+					Factory);
+				ListCustomQuery(query, queryParameters, results);
+			}
+		}
 
-        public override IList<T> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
-        {
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                // TODO pull up
-                List<T> results = new List<T>();
-                List(spec, queryParameters, results);
-                return results;
-            }
-        }
+		public override IList<T> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
+		{
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				// TODO pull up
+				List<T> results = new List<T>();
+				List(spec, queryParameters, results);
+				return results;
+			}
+		}
 
-        public override void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results)
-        {
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
+		public override void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results)
+		{
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
 
-                CustomLoader loader = new CustomLoader(customQuery, Factory);
+				CustomLoader loader = new CustomLoader(customQuery, Factory);
 
-                bool success = false;
-                try
-                {
-                    ArrayHelper.AddAll(results, loader.List(this, queryParameters));
-                    success = true;
-                }
-                finally
-                {
-                    AfterOperation(success);
-                }
-                temporaryPersistenceContext.Clear();
-            }
-        }
+				bool success = false;
+				try
+				{
+					ArrayHelper.AddAll(results, loader.List(this, queryParameters));
+					success = true;
+				}
+				finally
+				{
+					AfterOperation(success);
+				}
+				temporaryPersistenceContext.Clear();
+			}
+		}
 
-        public override IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters)
-        {
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                // TODO pull up
-                List<T> results = new List<T>();
-                ListCustomQuery(customQuery, queryParameters, results);
-                return results;
-            }
-        }
+		public override IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters)
+		{
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				// TODO pull up
+				List<T> results = new List<T>();
+				ListCustomQuery(customQuery, queryParameters, results);
+				return results;
+			}
+		}
 
-	    public override object GetFilterParameterValue(string filterParameterName)
+		public override object GetFilterParameterValue(string filterParameterName)
 		{
 			throw new NotSupportedException();
 		}
@@ -361,17 +361,17 @@ namespace NHibernate.Impl
 			get { return new CollectionHelper.EmptyMapClass<string, IFilter>(); }
 		}
 
-        public override IQueryTranslator[] GetQueries(string query, bool scalar)
-        {
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                // take the union of the query spaces (ie the queried tables)
-                HQLQueryPlan plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, EnabledFilters);
-                return plan.Translators;
-            }
-        }
+		public override IQueryTranslator[] GetQueries(string query, bool scalar)
+		{
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				// take the union of the query spaces (ie the queried tables)
+				HQLQueryPlan plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, EnabledFilters);
+				return plan.Translators;
+			}
+		}
 
-	    public override IInterceptor Interceptor
+		public override IInterceptor Interceptor
 		{
 			get { return new EmptyInterceptor(); }
 		}
@@ -423,20 +423,20 @@ namespace NHibernate.Impl
 			set { throw new NotSupportedException(); }
 		}
 
-        public override string BestGuessEntityName(object entity)
-        {
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                INHibernateProxy proxy = entity as INHibernateProxy;
-                if (proxy != null)
-                {
-                    entity = proxy.HibernateLazyInitializer.GetImplementation();
-                }
-                return GuessEntityName(entity);
-            }
-        }
+		public override string BestGuessEntityName(object entity)
+		{
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				INHibernateProxy proxy = entity as INHibernateProxy;
+				if (proxy != null)
+				{
+					entity = proxy.HibernateLazyInitializer.GetImplementation();
+				}
+				return GuessEntityName(entity);
+			}
+		}
 
-	    public override string GuessEntityName(object entity)
+		public override string GuessEntityName(object entity)
 		{
 			CheckAndUpdateSessionStatus();
 			return entity.GetType().FullName;
@@ -449,19 +449,19 @@ namespace NHibernate.Impl
 
 		public override void Flush()
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                ManagedFlush(); // NH Different behavior since ADOContext.Context is not implemented
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				ManagedFlush(); // NH Different behavior since ADOContext.Context is not implemented
+			}
 		}
 
 		public void ManagedFlush()
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                Batcher.ExecuteBatch();
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				Batcher.ExecuteBatch();
+			}
 		}
 
 		public override bool TransactionInProgress
@@ -497,23 +497,23 @@ namespace NHibernate.Impl
 		/// <summary> Close the stateless session and release the ADO.NET connection.</summary>
 		public void Close()
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                ManagedClose();
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				ManagedClose();
+			}
 		}
 
 		public void ManagedClose()
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                if (IsClosed)
-                {
-                    throw new SessionException("Session was already closed!");
-                }
-                ConnectionManager.Close();
-                SetClosed();
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				if (IsClosed)
+				{
+					throw new SessionException("Session was already closed!");
+				}
+				ConnectionManager.Close();
+				SetClosed();
+			}
 		}
 
 		/// <summary> Insert a entity.</summary>
@@ -521,95 +521,95 @@ namespace NHibernate.Impl
 		/// <returns> the identifier of the instance </returns>
 		public object Insert(object entity)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                return Insert(null, entity);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				return Insert(null, entity);
+			}
 		}
 
 		/// <summary> Insert a row. </summary>
 		/// <param name="entityName">The entityName for the entity to be inserted </param>
 		/// <param name="entity">a new transient instance </param>
 		/// <returns> the identifier of the instance </returns>
-        public object Insert(string entityName, object entity)
+		public object Insert(string entityName, object entity)
 		{
-		    using (new SessionIdLoggingContext(sessionId))
-		    {
-		        CheckAndUpdateSessionStatus();
-		        IEntityPersister persister = GetEntityPersister(entityName, entity);
-		        object id = persister.IdentifierGenerator.Generate(this, entity);
-		        object[] state = persister.GetPropertyValues(entity, EntityMode.Poco);
-		        if (persister.IsVersioned)
-		        {
-		            object versionValue = state[persister.VersionProperty];
-		            bool substitute = Versioning.SeedVersion(state, persister.VersionProperty, persister.VersionType,
-		                                                     persister.IsUnsavedVersion(versionValue), this);
-		            if (substitute)
-		            {
-		                persister.SetPropertyValues(entity, state, EntityMode.Poco);
-		            }
-		        }
-		        if (id == IdentifierGeneratorFactory.PostInsertIndicator)
-		        {
-		            id = persister.Insert(state, entity, this);
-		        }
-		        else
-		        {
-		            persister.Insert(id, state, entity, this);
-		        }
-		        persister.SetIdentifier(entity, id, EntityMode.Poco);
-		        return id;
-		    }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				IEntityPersister persister = GetEntityPersister(entityName, entity);
+				object id = persister.IdentifierGenerator.Generate(this, entity);
+				object[] state = persister.GetPropertyValues(entity, EntityMode.Poco);
+				if (persister.IsVersioned)
+				{
+					object versionValue = state[persister.VersionProperty];
+					bool substitute = Versioning.SeedVersion(state, persister.VersionProperty, persister.VersionType,
+															 persister.IsUnsavedVersion(versionValue), this);
+					if (substitute)
+					{
+						persister.SetPropertyValues(entity, state, EntityMode.Poco);
+					}
+				}
+				if (id == IdentifierGeneratorFactory.PostInsertIndicator)
+				{
+					id = persister.Insert(state, entity, this);
+				}
+				else
+				{
+					persister.Insert(id, state, entity, this);
+				}
+				persister.SetIdentifier(entity, id, EntityMode.Poco);
+				return id;
+			}
 		}
 
-	    /// <summary> Update a entity.</summary>
+		/// <summary> Update a entity.</summary>
 		/// <param name="entity">a detached entity instance </param>
 		public void Update(object entity)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                Update(null, entity);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				Update(null, entity);
+			}
 		}
 
 		/// <summary>Update a entity.</summary>
 		/// <param name="entityName">The entityName for the entity to be updated </param>
 		/// <param name="entity">a detached entity instance </param>
-        public void Update(string entityName, object entity)
+		public void Update(string entityName, object entity)
 		{
-		    using (new SessionIdLoggingContext(sessionId))
-		    {
-		        CheckAndUpdateSessionStatus();
-		        IEntityPersister persister = GetEntityPersister(entityName, entity);
-		        object id = persister.GetIdentifier(entity, EntityMode.Poco);
-		        object[] state = persister.GetPropertyValues(entity, EntityMode.Poco);
-		        object oldVersion;
-		        if (persister.IsVersioned)
-		        {
-		            oldVersion = persister.GetVersion(entity, EntityMode.Poco);
-		            object newVersion = Versioning.Increment(oldVersion, persister.VersionType, this);
-		            Versioning.SetVersion(state, newVersion, persister);
-		            persister.SetPropertyValues(entity, state, EntityMode.Poco);
-		        }
-		        else
-		        {
-		            oldVersion = null;
-		        }
-		        persister.Update(id, state, null, false, null, oldVersion, entity, null, this);
-		    }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				IEntityPersister persister = GetEntityPersister(entityName, entity);
+				object id = persister.GetIdentifier(entity, EntityMode.Poco);
+				object[] state = persister.GetPropertyValues(entity, EntityMode.Poco);
+				object oldVersion;
+				if (persister.IsVersioned)
+				{
+					oldVersion = persister.GetVersion(entity, EntityMode.Poco);
+					object newVersion = Versioning.Increment(oldVersion, persister.VersionType, this);
+					Versioning.SetVersion(state, newVersion, persister);
+					persister.SetPropertyValues(entity, state, EntityMode.Poco);
+				}
+				else
+				{
+					oldVersion = null;
+				}
+				persister.Update(id, state, null, false, null, oldVersion, entity, null, this);
+			}
 		}
 
-	    /// <summary> Delete a entity. </summary>
+		/// <summary> Delete a entity. </summary>
 		/// <param name="entity">a detached entity instance </param>
 		public void Delete(object entity)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                Delete(null, entity);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				Delete(null, entity);
+			}
 		}
 
 		/// <summary> Delete a entity. </summary>
@@ -617,24 +617,24 @@ namespace NHibernate.Impl
 		/// <param name="entity">a detached entity instance </param>
 		public void Delete(string entityName, object entity)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                IEntityPersister persister = GetEntityPersister(entityName, entity);
-                object id = persister.GetIdentifier(entity, EntityMode.Poco);
-                object version = persister.GetVersion(entity, EntityMode.Poco);
-                persister.Delete(id, version, entity, this);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				IEntityPersister persister = GetEntityPersister(entityName, entity);
+				object id = persister.GetIdentifier(entity, EntityMode.Poco);
+				object version = persister.GetVersion(entity, EntityMode.Poco);
+				persister.Delete(id, version, entity, this);
+			}
 		}
 
 		/// <summary> Retrieve a entity. </summary>
 		/// <returns> a detached entity instance </returns>
 		public object Get(string entityName, object id)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                return Get(entityName, id, LockMode.None);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				return Get(entityName, id, LockMode.None);
+			}
 		}
 
 		/// <summary> Retrieve a entity.
@@ -644,18 +644,18 @@ namespace NHibernate.Impl
 		/// </returns>
 		public T Get<T>(object id)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                return (T) Get(typeof (T), id);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				return (T)Get(typeof(T), id);
+			}
 		}
 
 		private object Get(System.Type persistentClass, object id)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                return Get(persistentClass.FullName, id);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				return Get(persistentClass.FullName, id);
+			}
 		}
 
 		/// <summary> 
@@ -664,13 +664,13 @@ namespace NHibernate.Impl
 		/// <returns> a detached entity instance </returns>
 		public object Get(string entityName, object id, LockMode lockMode)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                object result = Factory.GetEntityPersister(entityName).Load(id, null, lockMode, this);
-                temporaryPersistenceContext.Clear();
-                return result;
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				object result = Factory.GetEntityPersister(entityName).Load(id, null, lockMode, this);
+				temporaryPersistenceContext.Clear();
+				return result;
+			}
 		}
 
 		/// <summary> 
@@ -679,10 +679,10 @@ namespace NHibernate.Impl
 		/// <returns> a detached entity instance </returns>
 		public T Get<T>(object id, LockMode lockMode)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                return (T) Get(typeof (T).FullName, id, lockMode);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				return (T)Get(typeof(T).FullName, id, lockMode);
+			}
 		}
 
 		/// <summary> 
@@ -691,10 +691,10 @@ namespace NHibernate.Impl
 		/// <param name="entity">The entity to be refreshed. </param>
 		public void Refresh(object entity)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                Refresh(BestGuessEntityName(entity), entity, LockMode.None);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				Refresh(BestGuessEntityName(entity), entity, LockMode.None);
+			}
 		}
 
 		/// <summary> 
@@ -704,10 +704,10 @@ namespace NHibernate.Impl
 		/// <param name="entity">The entity to be refreshed.</param>
 		public void Refresh(string entityName, object entity)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                Refresh(entityName, entity, LockMode.None);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				Refresh(entityName, entity, LockMode.None);
+			}
 		}
 
 		/// <summary> 
@@ -717,10 +717,10 @@ namespace NHibernate.Impl
 		/// <param name="lockMode">The LockMode to be applied.</param>
 		public void Refresh(object entity, LockMode lockMode)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                Refresh(BestGuessEntityName(entity), entity, lockMode);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				Refresh(BestGuessEntityName(entity), entity, lockMode);
+			}
 		}
 
 		/// <summary> 
@@ -729,60 +729,60 @@ namespace NHibernate.Impl
 		/// <param name="entityName">The entityName for the entity to be refreshed. </param>
 		/// <param name="entity">The entity to be refreshed. </param>
 		/// <param name="lockMode">The LockMode to be applied. </param>
-        public void Refresh(string entityName, object entity, LockMode lockMode)
+		public void Refresh(string entityName, object entity, LockMode lockMode)
 		{
-		    using (new SessionIdLoggingContext(sessionId))
-		    {
-		        IEntityPersister persister = GetEntityPersister(entityName, entity);
-		        object id = persister.GetIdentifier(entity, EntityMode);
-		        if (log.IsDebugEnabled)
-		        {
-		            log.Debug("refreshing transient " + MessageHelper.InfoString(persister, id, Factory));
-		        }
-		        //from H3.2 TODO : can this ever happen???
-		        //		EntityKey key = new EntityKey( id, persister, source.getEntityMode() );
-		        //		if ( source.getPersistenceContext().getEntry( key ) != null ) {
-		        //			throw new PersistentObjectException(
-		        //					"attempted to refresh transient instance when persistent " +
-		        //					"instance was already associated with the Session: " +
-		        //					MessageHelper.infoString( persister, id, source.getFactory() )
-		        //			);
-		        //		}
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				IEntityPersister persister = GetEntityPersister(entityName, entity);
+				object id = persister.GetIdentifier(entity, EntityMode);
+				if (log.IsDebugEnabled)
+				{
+					log.Debug("refreshing transient " + MessageHelper.InfoString(persister, id, Factory));
+				}
+				//from H3.2 TODO : can this ever happen???
+				//		EntityKey key = new EntityKey( id, persister, source.getEntityMode() );
+				//		if ( source.getPersistenceContext().getEntry( key ) != null ) {
+				//			throw new PersistentObjectException(
+				//					"attempted to refresh transient instance when persistent " +
+				//					"instance was already associated with the Session: " +
+				//					MessageHelper.infoString( persister, id, source.getFactory() )
+				//			);
+				//		}
 
-		        if (persister.HasCache)
-		        {
-		            CacheKey ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, EntityMode, Factory);
-		            persister.Cache.Remove(ck);
-		        }
+				if (persister.HasCache)
+				{
+					CacheKey ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, EntityMode, Factory);
+					persister.Cache.Remove(ck);
+				}
 
-		        string previousFetchProfile = FetchProfile;
-		        object result;
-		        try
-		        {
-		            FetchProfile = "refresh";
-		            result = persister.Load(id, entity, lockMode, this);
-		        }
-		        finally
-		        {
-		            FetchProfile = previousFetchProfile;
-		        }
-		        UnresolvableObjectException.ThrowIfNull(result, id, persister.EntityName);
-		    }
+				string previousFetchProfile = FetchProfile;
+				object result;
+				try
+				{
+					FetchProfile = "refresh";
+					result = persister.Load(id, entity, lockMode, this);
+				}
+				finally
+				{
+					FetchProfile = previousFetchProfile;
+				}
+				UnresolvableObjectException.ThrowIfNull(result, id, persister.EntityName);
+			}
 		}
 
-	    /// <summary>
+		/// <summary>
 		/// Create a new <see cref="ICriteria"/> instance, for the given entity class,
 		/// or a superclass of an entity class. 
 		/// </summary>
 		/// <typeparam name="T">A class, which is persistent, or has persistent subclasses</typeparam>
 		/// <returns> The <see cref="ICriteria"/>. </returns>
 		/// <remarks>Entities returned by the query are detached.</remarks>
-		public ICriteria CreateCriteria<T>() where T: class
+		public ICriteria CreateCriteria<T>() where T : class
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                return CreateCriteria(typeof (T));
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				return CreateCriteria(typeof(T));
+			}
 		}
 
 		/// <summary>
@@ -795,28 +795,28 @@ namespace NHibernate.Impl
 		/// <remarks>Entities returned by the query are detached.</remarks>
 		public ICriteria CreateCriteria<T>(string alias) where T : class
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                return CreateCriteria(typeof (T), alias);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				return CreateCriteria(typeof(T), alias);
+			}
 		}
 
 		public ICriteria CreateCriteria(System.Type entityType)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                return new CriteriaImpl(entityType, this);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				return new CriteriaImpl(entityType, this);
+			}
 		}
 
 		public ICriteria CreateCriteria(System.Type entityType, string alias)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                return new CriteriaImpl(entityType, alias, this);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				return new CriteriaImpl(entityType, alias, this);
+			}
 		}
 
 		/// <summary> 
@@ -827,11 +827,11 @@ namespace NHibernate.Impl
 		/// <remarks>Entities returned by the query are detached.</remarks>
 		public ICriteria CreateCriteria(string entityName)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                return new CriteriaImpl(entityName, this);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				return new CriteriaImpl(entityName, this);
+			}
 		}
 
 		/// <summary> 
@@ -844,21 +844,21 @@ namespace NHibernate.Impl
 		/// <remarks>Entities returned by the query are detached.</remarks>
 		public ICriteria CreateCriteria(string entityName, string alias)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                return new CriteriaImpl(entityName, alias, this);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				return new CriteriaImpl(entityName, alias, this);
+			}
 		}
 
 		/// <summary> Begin a NHibernate transaction.</summary>
 		public ITransaction BeginTransaction()
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                return connectionManager.BeginTransaction();
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				return connectionManager.BeginTransaction();
+			}
 		}
 
 		#endregion
@@ -880,44 +880,44 @@ namespace NHibernate.Impl
 		///<filterpriority>2</filterpriority>
 		public void Dispose()
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                log.Debug("running IStatelessSession.Dispose()");
-                if (TakingPartInDtcTransaction)
-                {
-                    shouldCloseSessionOnDtcTransactionCompleted = true;
-                    return;
-                }
-                Dispose(true);
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				log.Debug("running IStatelessSession.Dispose()");
+				if (TakingPartInDtcTransaction)
+				{
+					shouldCloseSessionOnDtcTransactionCompleted = true;
+					return;
+				}
+				Dispose(true);
+			}
 		}
 
-        protected override void Dispose(bool isDisposing)
-        {
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                if (_isAlreadyDisposed)
-                {
-                    // don't dispose of multiple times.
-                    return;
-                }
+		protected override void Dispose(bool isDisposing)
+		{
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				if (_isAlreadyDisposed)
+				{
+					// don't dispose of multiple times.
+					return;
+				}
 
-                // free managed resources that are being managed by the session if we
-                // know this call came through Dispose()
-                if (isDisposing)
-                {
-                    Close();
-                }
+				// free managed resources that are being managed by the session if we
+				// know this call came through Dispose()
+				if (isDisposing)
+				{
+					Close();
+				}
 
-                // free unmanaged resources here
+				// free unmanaged resources here
 
-                _isAlreadyDisposed = true;
-                // nothing for Finalizer to do - so tell the GC to ignore it
-                GC.SuppressFinalize(this);
-            }
-        }
+				_isAlreadyDisposed = true;
+				// nothing for Finalizer to do - so tell the GC to ignore it
+				GC.SuppressFinalize(this);
+			}
+		}
 
-	    #endregion
+		#endregion
 
 		public override ISession GetSession()
 		{
@@ -927,78 +927,78 @@ namespace NHibernate.Impl
 
 		public override int ExecuteNativeUpdate(NativeSQLQuerySpecification nativeSQLQuerySpecification, QueryParameters queryParameters)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                queryParameters.ValidateParameters();
-                NativeSQLQueryPlan plan = GetNativeSQLQueryPlan(nativeSQLQuerySpecification);
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				queryParameters.ValidateParameters();
+				NativeSQLQueryPlan plan = GetNativeSQLQueryPlan(nativeSQLQuerySpecification);
 
-                bool success = false;
-                int result;
-                try
-                {
-                    result = plan.PerformExecuteUpdate(queryParameters, this);
-                    success = true;
-                }
-                finally
-                {
-                    AfterOperation(success);
-                }
-                temporaryPersistenceContext.Clear();
-                return result;
-            }
+				bool success = false;
+				int result;
+				try
+				{
+					result = plan.PerformExecuteUpdate(queryParameters, this);
+					success = true;
+				}
+				finally
+				{
+					AfterOperation(success);
+				}
+				temporaryPersistenceContext.Clear();
+				return result;
+			}
 		}
 
-        public override int ExecuteUpdate(string query, QueryParameters queryParameters)
-        {
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                queryParameters.ValidateParameters();
-                HQLQueryPlan plan = GetHQLQueryPlan(query, false);
-                bool success = false;
-                int result;
-                try
-                {
-                    result = plan.PerformExecuteUpdate(queryParameters, this);
-                    success = true;
-                }
-                finally
-                {
-                    AfterOperation(success);
-                }
-                temporaryPersistenceContext.Clear();
-                return result;
-            }
-        }
-
-	    public override FutureCriteriaBatch FutureCriteriaBatch
-	    {
-	        get { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
-	        internal set { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
-	    }
-
-	    public override FutureQueryBatch FutureQueryBatch
-	    {
-            get { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
-            internal set { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
-	    }
-
-	    public override IEntityPersister GetEntityPersister(string entityName, object obj)
+		public override int ExecuteUpdate(string query, QueryParameters queryParameters)
 		{
-            using (new SessionIdLoggingContext(sessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                if (entityName == null)
-                {
-                    return Factory.GetEntityPersister(GuessEntityName(obj));
-                }
-                else
-                {
-                    return Factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory,
-                                                                                             EntityMode.Poco);
-                }
-            }
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				queryParameters.ValidateParameters();
+				HQLQueryPlan plan = GetHQLQueryPlan(query, false);
+				bool success = false;
+				int result;
+				try
+				{
+					result = plan.PerformExecuteUpdate(queryParameters, this);
+					success = true;
+				}
+				finally
+				{
+					AfterOperation(success);
+				}
+				temporaryPersistenceContext.Clear();
+				return result;
+			}
+		}
+
+		public override FutureCriteriaBatch FutureCriteriaBatch
+		{
+			get { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
+			internal set { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
+		}
+
+		public override FutureQueryBatch FutureQueryBatch
+		{
+			get { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
+			internal set { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
+		}
+
+		public override IEntityPersister GetEntityPersister(string entityName, object obj)
+		{
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				if (entityName == null)
+				{
+					return Factory.GetEntityPersister(GuessEntityName(obj));
+				}
+				else
+				{
+					return Factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory,
+																							 EntityMode.Poco);
+				}
+			}
 		}
 	}
 }

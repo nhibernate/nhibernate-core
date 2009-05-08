@@ -209,13 +209,13 @@ namespace NHibernate.Engine
 		IInterceptor Interceptor { get; }
 
 		/// <summary> Retrieves the configured event listeners from this event source. </summary>
-		EventListeners Listeners { get;}
+		EventListeners Listeners { get; }
 
-		int DontFlushFromFind { get;}
+		int DontFlushFromFind { get; }
 
-		ConnectionManager ConnectionManager { get;}
+		ConnectionManager ConnectionManager { get; }
 
-		bool IsEventSource { get;}
+		bool IsEventSource { get; }
 
 		/// <summary> 
 		/// Get the entity instance associated with the given <tt>Key</tt>,
@@ -224,9 +224,9 @@ namespace NHibernate.Engine
 		object GetEntityUsingInterceptor(EntityKey key);
 
 		/// <summary> Get the persistence context for this session</summary>
-		IPersistenceContext PersistenceContext { get;}
+		IPersistenceContext PersistenceContext { get; }
 
-		CacheMode CacheMode { get;set;}
+		CacheMode CacheMode { get; set; }
 
 		/// <summary>
 		/// Is the <c>ISession</c> still open?
@@ -240,7 +240,7 @@ namespace NHibernate.Engine
 
 		FlushMode FlushMode { get; set; }
 
-		string FetchProfile { get;set;}
+		string FetchProfile { get; set; }
 
 		/// <summary> The best guess entity name for an entity not in an association</summary>
 		string BestGuessEntityName(object entity);
@@ -259,7 +259,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <returns> True if the session is closed; false otherwise.
 		/// </returns>
-		bool IsClosed { get;}
+		bool IsClosed { get; }
 
 		void Flush();
 
@@ -267,7 +267,7 @@ namespace NHibernate.Engine
 		/// Does this <tt>Session</tt> have an active Hibernate transaction
 		/// or is there a JTA transaction in progress?
 		/// </summary>
-		bool TransactionInProgress { get;}
+		bool TransactionInProgress { get; }
 
 		/// <summary>
 		/// Allow to get the ISession instance without having to 
@@ -277,7 +277,7 @@ namespace NHibernate.Engine
 		ISession GetSession();
 
 		/// <summary> Retrieve the entity mode in effect for this session. </summary>
-		EntityMode EntityMode { get;}
+		EntityMode EntityMode { get; }
 
 		/// <summary> Execute a native SQL update or delete query</summary>
 		int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
@@ -285,10 +285,10 @@ namespace NHibernate.Engine
 		/// <summary> Execute a HQL update or delete query</summary>
 		int ExecuteUpdate(string query, QueryParameters queryParameters);
 
-        FutureCriteriaBatch FutureCriteriaBatch { get; }
+		FutureCriteriaBatch FutureCriteriaBatch { get; }
 
-        FutureQueryBatch FutureQueryBatch { get; }
+		FutureQueryBatch FutureQueryBatch { get; }
 
-        Guid SessionId { get; }
+		Guid SessionId { get; }
 	}
 }

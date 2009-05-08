@@ -19,9 +19,9 @@ namespace NHibernate.Impl
 {
 	public class MultiCriteriaImpl : IMultiCriteria
 	{
-        private static readonly ILog log = LogManager.GetLogger(typeof(MultiCriteriaImpl));
-        private readonly IList<ICriteria> criteriaQueries = new List<ICriteria>();
-        private readonly IList<System.Type> resultCollectionGenericType = new List<System.Type>();
+		private static readonly ILog log = LogManager.GetLogger(typeof(MultiCriteriaImpl));
+		private readonly IList<ICriteria> criteriaQueries = new List<ICriteria>();
+		private readonly IList<System.Type> resultCollectionGenericType = new List<System.Type>();
 
 		private readonly SessionImpl session;
 		private readonly ISessionFactoryImplementor factory;
@@ -65,33 +65,33 @@ namespace NHibernate.Impl
 
 		public IList List()
 		{
-            using (new SessionIdLoggingContext(session.SessionId))
-            {
-                bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
+			using (new SessionIdLoggingContext(session.SessionId))
+			{
+				bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
 
-                CreateCriteriaLoaders();
-                CombineCriteriaQueries();
+				CreateCriteriaLoaders();
+				CombineCriteriaQueries();
 
-                if (log.IsDebugEnabled)
-                {
-                    log.DebugFormat("Multi criteria with {0} criteria queries.", criteriaQueries.Count);
-                    for (int i = 0; i < criteriaQueries.Count; i++)
-                    {
-                        log.DebugFormat("Query #{0}: {1}", i, criteriaQueries[i]);
-                    }
-                }
+				if (log.IsDebugEnabled)
+				{
+					log.DebugFormat("Multi criteria with {0} criteria queries.", criteriaQueries.Count);
+					for (int i = 0; i < criteriaQueries.Count; i++)
+					{
+						log.DebugFormat("Query #{0}: {1}", i, criteriaQueries[i]);
+					}
+				}
 
-                if (cacheable)
-                {
-                    criteriaResults = ListUsingQueryCache();
-                }
-                else
-                {
-                    criteriaResults = ListIgnoreQueryCache();
-                }
+				if (cacheable)
+				{
+					criteriaResults = ListUsingQueryCache();
+				}
+				else
+				{
+					criteriaResults = ListIgnoreQueryCache();
+				}
 
-                return criteriaResults;
-            }
+				return criteriaResults;
+			}
 		}
 
 
@@ -156,7 +156,7 @@ namespace NHibernate.Impl
 				for (int i = 0; i < results.Count; i++)
 				{
 					CriteriaImpl critImp = criteriaQueries[i] as CriteriaImpl;
-					if(critImp==null || critImp.ResultTransformer==null)
+					if (critImp == null || critImp.ResultTransformer == null)
 						continue;
 					results[i] = critImp.ResultTransformer.TransformList((IList)results[i]);
 				}
@@ -207,15 +207,15 @@ namespace NHibernate.Impl
 						hydratedObjects[i] = entitySpan == 0 ? null : new ArrayList(entitySpan);
 						EntityKey[] keys = new EntityKey[entitySpan];
 						QueryParameters queryParameters = parameters[i];
-					    IList tmpResults;
-                        if (resultCollectionGenericType[i] == typeof(object))
-                        {
-                            tmpResults = new ArrayList();
-                        }
-                        else
-                        {
-                            tmpResults = (IList) Activator.CreateInstance(typeof (List<>).MakeGenericType(resultCollectionGenericType[i]));
-                        }
+						IList tmpResults;
+						if (resultCollectionGenericType[i] == typeof(object))
+						{
+							tmpResults = new ArrayList();
+						}
+						else
+						{
+							tmpResults = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(resultCollectionGenericType[i]));
+						}
 
 						RowSelection selection = parameters[i].RowSelection;
 						createSubselects[i] = loader.IsSubselectLoadingEnabled;
@@ -341,7 +341,7 @@ namespace NHibernate.Impl
 			}
 			return colIndex;
 		}
-        
+
 		public IMultiCriteria Add(System.Type resultGenericListType, ICriteria criteria)
 		{
 			criteriaQueries.Add(criteria);
@@ -350,64 +350,64 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-        public IMultiCriteria Add(ICriteria criteria)
+		public IMultiCriteria Add(ICriteria criteria)
 		{
-            return Add<object>(criteria);
+			return Add<object>(criteria);
 		}
 
-        public IMultiCriteria Add(string key, ICriteria criteria)
+		public IMultiCriteria Add(string key, ICriteria criteria)
 		{
-            return Add<object>(key, criteria);
+			return Add<object>(key, criteria);
 		}
 
-        public IMultiCriteria Add(DetachedCriteria detachedCriteria)
-        {
-            return Add<object>(detachedCriteria);
-        }
+		public IMultiCriteria Add(DetachedCriteria detachedCriteria)
+		{
+			return Add<object>(detachedCriteria);
+		}
 
-        public IMultiCriteria Add(string key, DetachedCriteria detachedCriteria)
-        {
-            return Add<object>(key, detachedCriteria);
-        }
+		public IMultiCriteria Add(string key, DetachedCriteria detachedCriteria)
+		{
+			return Add<object>(key, detachedCriteria);
+		}
 
-	    public IMultiCriteria Add<T>(ICriteria criteria)
+		public IMultiCriteria Add<T>(ICriteria criteria)
 		{
 			criteriaQueries.Add(criteria);
-            resultCollectionGenericType.Add(typeof(T));
+			resultCollectionGenericType.Add(typeof(T));
 
 			return this;
 		}
 
-        public IMultiCriteria Add<T>(string key, ICriteria criteria)
+		public IMultiCriteria Add<T>(string key, ICriteria criteria)
 		{
 			ThrowIfKeyAlreadyExists(key);
 			criteriaQueries.Add(criteria);
 			criteriaResultPositions.Add(key, criteriaQueries.Count - 1);
-            resultCollectionGenericType.Add(typeof(T));
+			resultCollectionGenericType.Add(typeof(T));
 
 			return this;
 		}
 
-        public IMultiCriteria Add<T>(DetachedCriteria detachedCriteria)
+		public IMultiCriteria Add<T>(DetachedCriteria detachedCriteria)
 		{
 			criteriaQueries.Add(
 				detachedCriteria.GetExecutableCriteria(session)
 				);
-            resultCollectionGenericType.Add(typeof (T));
+			resultCollectionGenericType.Add(typeof(T));
 
 			return this;
 		}
-        
-        public IMultiCriteria Add<T>(string key, DetachedCriteria detachedCriteria)
-        {
-            ThrowIfKeyAlreadyExists(key);
-            criteriaQueries.Add(detachedCriteria.GetExecutableCriteria(session));
-            criteriaResultPositions.Add(key, criteriaQueries.Count - 1);
-            resultCollectionGenericType.Add(typeof(T));
 
-            return this;
-        }
-        
+		public IMultiCriteria Add<T>(string key, DetachedCriteria detachedCriteria)
+		{
+			ThrowIfKeyAlreadyExists(key);
+			criteriaQueries.Add(detachedCriteria.GetExecutableCriteria(session));
+			criteriaResultPositions.Add(key, criteriaQueries.Count - 1);
+			resultCollectionGenericType.Add(typeof(T));
+
+			return this;
+		}
+
 		public IMultiCriteria SetCacheable(bool cachable)
 		{
 			isCacheable = cachable;
