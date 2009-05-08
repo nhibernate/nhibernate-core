@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.HQL.Ast
 {
-	[TestFixture, Ignore("Not suported yet.")]
+	[TestFixture]
 	public class WithClauseFixture : BaseFixture
 	{
 		public ISession OpenNewSession()
@@ -21,8 +21,8 @@ namespace NHibernate.Test.HQL.Ast
 			ISession s = OpenSession();
 			ITransaction txn = s.BeginTransaction();
 
-			Assert.Throws<HibernateException>(
-				() =>
+			Assert.Throws<SemanticException>(
+			  () =>
 				s.CreateQuery("from Animal a inner join fetch a.offspring as o with o.bodyWeight = :someLimit").SetDouble(
 					"someLimit", 1).List(), "ad-hoc on clause allowed with fetched association");
 
