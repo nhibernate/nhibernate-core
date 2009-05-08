@@ -23,7 +23,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public override IToken GetToken(object treeNode)
 		{
-			throw new System.NotImplementedException();
+			return ((ASTNode) treeNode).Token;
 		}
 
 		public override IToken CreateToken(int tokenType, string text)
@@ -43,17 +43,22 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public override void SetParent(object t, object parent)
 		{
-			throw new System.NotImplementedException();
+			((ITree)t).Parent = (ITree)parent;
 		}
 
 		public override int GetChildIndex(object t)
 		{
-			throw new System.NotImplementedException();
+			return ((ITree)t).ChildIndex;
 		}
 
 		public override void SetChildIndex(object t, int index)
 		{
-			throw new System.NotImplementedException();
+			((ITree)t).ChildIndex = index;
+		}
+
+		public override int GetNodeType(object t)
+		{
+			return ((ITree) t).Type;
 		}
 
 		public override void ReplaceChildren(object parent, int startChildIndex, int stopChildIndex, object t)
