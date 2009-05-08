@@ -12,26 +12,81 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public HqlSqlWalkerTreeNodeStream(ITreeAdaptor adaptor, object tree, int initialBufferSize)
 			: base(adaptor, tree, initialBufferSize) {}
 
+		/// <summary>
+		/// Insert a new node into both the Tree and the Node Array.  Add DOWN & UP nodes if needed
+		/// </summary>
+		/// <param name="parent">The parent node</param>
+		/// <param name="child">The child node</param>
 		public void InsertChild(IASTNode parent, IASTNode child)
 		{
-			// Adding a child to the current node. If currently no children, then also need to insert Down & Up nodes
-			bool needUp = false;
-			int insertPoint = nodes.IndexOf(parent) + parent.ChildCount + 1;
-
-			if (parent.ChildCount == 0)
+			if (child.ChildCount > 0)
 			{
-				nodes.Insert(insertPoint, down);
-				needUp = true;
+				throw new InvalidOperationException("Currently do not support adding nodes with children");
 			}
-			insertPoint++; // We either just inserted a Down node, or one existed already which we need to count
+
+			int parentIndex = nodes.IndexOf(parent);
+			int numberOfChildNodes = NumberOfChildNodes(parentIndex);
+			int insertPoint;
+			
+			if (numberOfChildNodes == 0)
+			{
+				insertPoint = parentIndex + 1;  // We want to insert immediately after the parent
+				nodes.Insert(insertPoint, down);
+				insertPoint++;  // We've just added a new node
+			}
+			else
+			{
+				insertPoint = parentIndex + numberOfChildNodes;
+			}
 
 			parent.AddChild(child);
 			nodes.Insert(insertPoint, child);
 			insertPoint++;
 
-			if (needUp)
+			if (numberOfChildNodes == 0)
 			{
 				nodes.Insert(insertPoint, up);
+			}
+		}
+
+		/// <summary>
+		/// Count the number of child nodes (including DOWNs & UPs) of a parent node
+		/// </summary>
+		/// <param name="parentIndex">The index of the parent in the node array</param>
+		/// <returns>The number of child nodes</returns>
+		int NumberOfChildNodes(int parentIndex)
+		{
+			if (nodes.Count -1 == parentIndex)
+			{
+				// We are at the end
+				return 0;
+			}
+			else if (nodes[parentIndex + 1] != down)
+			{
+				// Next node is not a DOWN node, so we have no children
+				return 0;
+			}
+			else
+			{
+				// Count the DOWNs & UPs
+				int downCount = 0;
+				int index = 1;
+				do
+				{
+					if (nodes[parentIndex + index] == down)
+					{
+						downCount++;
+					}
+					else if (nodes[parentIndex + index] == up)
+					{
+						downCount--;
+					}
+
+					index++;
+					
+				} while (downCount > 0);
+
+				return index - 1;
 			}
 		}
 	}
