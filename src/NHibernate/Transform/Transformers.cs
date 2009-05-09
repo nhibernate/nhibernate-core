@@ -13,6 +13,9 @@ namespace NHibernate.Transform
 		/// </summary>
 		public static readonly IResultTransformer AliasToEntityMap = new AliasToEntityMapResultTransformer();
 
+		/// <summary> Each row of results is a <see cref="IList"/></summary>
+		public static readonly ToListResultTransformer ToList = new ToListResultTransformer();
+
 		/// <summary>
 		/// Creates a resulttransformer that will inject aliased values into instances
 		/// of <paramref name="target"/> via property methods or fields.

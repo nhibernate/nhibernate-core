@@ -234,11 +234,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 			//sqlResultTypes = selectClause.getSqlResultTypes();
 			_queryReturnTypes = selectClause.QueryReturnTypes;
 
-			_selectNewTransformer = HolderInstantiator.CreateSelectNewTransformer(selectClause.Constructor, selectClause.IsMap);
-
-			// TODO - Java implementation passes IsList into CreateSelectNewTransformer...,
-			//		selectClause.IsList);
-
+			_selectNewTransformer = HolderInstantiator.CreateSelectNewTransformer(selectClause.Constructor, selectClause.IsMap, selectClause.IsList);
 			_queryReturnAliases = selectClause.QueryReturnAliases;
 
 			IList<FromElement> collectionFromElements = selectClause.CollectionFromElements;
@@ -426,6 +422,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 
 		internal IEnumerable GetEnumerable(QueryParameters queryParameters, ISessionImplementor session)
 		{
+			CheckQuery(queryParameters);
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
 
 			var stopWath = new Stopwatch();

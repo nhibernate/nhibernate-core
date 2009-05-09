@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 using NHibernate.Transform;
 
@@ -8,8 +7,8 @@ namespace NHibernate.Hql
 	{
 		public static readonly HolderInstantiator NoopInstantiator = new HolderInstantiator(null, null);
 
-		private IResultTransformer transformer;
-		private string[] queryReturnAliases;
+		private readonly IResultTransformer transformer;
+		private readonly string[] queryReturnAliases;
 
 		public static HolderInstantiator GetHolderInstantiator(IResultTransformer selectNewTransformer,
 		                                                       IResultTransformer customTransformer,
@@ -25,7 +24,8 @@ namespace NHibernate.Hql
 			}
 		}
 
-		public static IResultTransformer CreateSelectNewTransformer(ConstructorInfo constructor, bool returnMaps)
+		public static IResultTransformer CreateSelectNewTransformer(ConstructorInfo constructor, bool returnMaps,
+		                                                            bool returnLists)
 		{
 			if (constructor != null)
 			{
@@ -34,6 +34,10 @@ namespace NHibernate.Hql
 			else if (returnMaps)
 			{
 				return Transformers.AliasToEntityMap;
+			}
+			else if (returnLists)
+			{
+				return Transformers.ToList;
 			}
 			else
 			{
@@ -54,10 +58,7 @@ namespace NHibernate.Hql
 			}
 		}
 
-		public HolderInstantiator(
-			IResultTransformer transformer,
-			string[] queryReturnAliases
-			)
+		public HolderInstantiator(IResultTransformer transformer, string[] queryReturnAliases)
 		{
 			this.transformer = transformer;
 			this.queryReturnAliases = queryReturnAliases;
