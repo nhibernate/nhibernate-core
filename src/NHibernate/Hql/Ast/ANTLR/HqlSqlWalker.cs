@@ -818,28 +818,27 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		protected IASTNode LookupProperty(IASTNode dot, bool root, bool inSelect)
 		{
-			DotNode dotNode = ( DotNode ) dot;
+			DotNode dotNode = (DotNode) dot;
 			FromReferenceNode lhs = dotNode.GetLhs();
 			IASTNode rhs = lhs.NextSibling;
-			switch ( rhs.Type ) {
+			switch (rhs.Type)
+			{
 				case ELEMENTS:
 				case INDICES:
-					if ( log.IsDebugEnabled ) 
+					if (log.IsDebugEnabled)
 					{
-						log.Debug( "lookupProperty() " + dotNode.Path + " => " + rhs.Text + "(" + lhs.Path + ")" );
+						log.Debug("lookupProperty() " + dotNode.Path + " => " + rhs.Text + "(" + lhs.Path + ")");
 					}
 
-					CollectionFunction f = ( CollectionFunction ) rhs;
+					CollectionFunction f = (CollectionFunction) rhs;
 					// Re-arrange the tree so that the collection function is the root and the lhs is the path.
 
-					f.ClearChildren();
-					f.AddChild(lhs);
+					f.SetFirstChild(lhs);
+					lhs.NextSibling = null;
+					dotNode.SetFirstChild(f);
 
-                    dotNode.ClearChildren();
-					dotNode.AddChild(f);
-
-                    Resolve( lhs );			// Don't forget to resolve the argument!
-					f.Resolve( inSelect );	// Resolve the collection function now.
+					Resolve(lhs); // Don't forget to resolve the argument!
+					f.Resolve(inSelect); // Resolve the collection function now.
 					return f;
 				default:
 					// Resolve everything up to this dot, but don't resolve the placeholders yet.
@@ -899,8 +898,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			syntheticAlias.FromElement = fromElement;
 			syntheticAlias.IsResolved = true;
 
-			dot.ClearChildren();
-			dot.AddChild(syntheticAlias);
+			dot.SetFirstChild(syntheticAlias);
 			dot.AddChild(property);
 
 			return dot;

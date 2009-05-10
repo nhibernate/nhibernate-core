@@ -143,11 +143,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public override void ResolveFirstChild()
 		{
-			FromReferenceNode lhs = (FromReferenceNode)GetChild(0);
-			SqlNode property = (SqlNode)GetChild(1);
+			var lhs = (FromReferenceNode)GetFirstChild();
+			var property = (SqlNode) GetChild(1);
 
 			// Set the attributes of the property reference expression.
-			String propName = property.Text;
+			string propName = property.Text;
 			_propertyName = propName;
 
 			// If the uresolved property path isn't set yet, just use the property name.
@@ -222,15 +222,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				DereferenceEntity( ( EntityType ) propertyType, implicitJoin, classAlias, generateJoin, parent );
 				InitText();
 			}
-			else if ( propertyType.IsCollectionType ) 
+			else if (propertyType.IsCollectionType)
 			{
 				// The property is a collection...
 				CheckLhsIsNotCollection();
-				DereferenceCollection( ( CollectionType ) propertyType, implicitJoin, false, classAlias, parent );
+				DereferenceCollection((CollectionType)propertyType, implicitJoin, false, classAlias, parent);
 			}
-			else {
+			else
+			{
 				// Otherwise, this is a primitive type.
-				if ( ! CollectionProperties.IsAnyCollectionProperty( _propertyName ) ) 
+				if (!CollectionProperties.IsAnyCollectionProperty(_propertyName))
 				{
 					CheckLhsIsNotCollection();
 				}
@@ -531,9 +532,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private void SetImpliedJoin(FromElement elem)
 		{
 			_impliedJoin = elem;
-			if (GetChild(0).Type == HqlSqlWalker.DOT)
+			if (GetFirstChild().Type == HqlSqlWalker.DOT)
 			{
-				DotNode dotLhs = (DotNode)GetChild(0);
+				DotNode dotLhs = (DotNode)GetFirstChild();
 				if (dotLhs.GetImpliedJoin() != null)
 				{
 					_impliedJoin = dotLhs.GetImpliedJoin();

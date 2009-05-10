@@ -303,14 +303,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			FromElement elem = CreateJoin(entityClass, tableAlias, joinSequence, type, false);
 			elem.Fetch = fetchFlag;
-			IEntityPersister entityPersister = elem.EntityPersister;
-			int numberOfTables = entityPersister.QuerySpaces.Length;
 
-			if (numberOfTables > 1 && _implied && !elem.UseFromFragment)
+			//if (numberOfTables > 1 && _implied && !elem.UseFromFragment)
+			// NH Different behavior: numberOfTables was removed because an
+			// implicit join is an implicit join even if it not come from a
+			// multi-table entity
+			if (_implied && !elem.UseFromFragment)
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("createEntityJoin() : Implied multi-table entity join");
+					log.Debug("createEntityJoin() : Implied entity join");
 				}
 				elem.UseFromFragment = true;
 			}
@@ -329,9 +331,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				//      1) 'elem' is the "root from-element" in correlated subqueries
 				//      2) The DotNode.useThetaStyleImplicitJoins has been set to true
 				//          and 'elem' represents an implicit join
-				if (elem.FromClause != elem.Origin.FromClause ||
-					//			        ( implied && DotNode.useThetaStyleImplicitJoins ) ) {
-								DotNode.UseThetaStyleImplicitJoins)
+				if (elem.FromClause != elem.Origin.FromClause || DotNode.UseThetaStyleImplicitJoins)
 				{
 					// the "root from-element" in correlated subqueries do need this piece
 					elem.Type = HqlSqlWalker.FROM_FRAGMENT;

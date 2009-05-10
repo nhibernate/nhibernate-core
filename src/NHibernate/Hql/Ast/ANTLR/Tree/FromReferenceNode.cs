@@ -76,7 +76,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public void RecursiveResolve(int level, bool impliedAtRoot, string classAlias, IASTNode parent)
 		{
-			IASTNode lhs = this.GetChild(0);
+			IASTNode lhs = GetFirstChild();
 			int nextLevel = level + 1;
 			if ( lhs != null ) 
 			{

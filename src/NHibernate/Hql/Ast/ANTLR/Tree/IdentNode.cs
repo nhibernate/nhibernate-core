@@ -126,7 +126,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				else if (parent != null && parent.Type == HqlSqlWalker.DOT)
 				{
 					DotNode dot = (DotNode)parent;
-					if (parent.GetChild(0) == this)
+					if (parent.GetFirstChild() == this)
 					{
 						if (ResolveAsNakedComponentPropertyRefLHS(dot))
 						{
