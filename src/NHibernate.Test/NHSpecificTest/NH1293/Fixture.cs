@@ -48,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1293
 					fltr.SetParameter("activeFlag", 1);
 
 				// with HQL, Category.IsActive=true filter applied, result count=2
-				IQuery hqlQuery = s.CreateQuery("from Customer c where c.Category.Name = ?");
+				IQuery hqlQuery = s.CreateQuery("from Customer c join c.Category cat where cat.Name = ?");
 				hqlQuery.SetParameter(0, "User"); // note using positional parameters because of NH-1490
 				IList<Customer> hqlResult = hqlQuery.List<Customer>();
 				Console.WriteLine(hqlResult.Count);
