@@ -326,7 +326,7 @@ namespace NHibernate.Cfg
 		private static IQueryTranslatorFactory CreateQueryTranslatorFactory(IDictionary<string, string> properties)
 		{
 			string className = PropertiesHelper.GetString(
-				Environment.QueryTranslator, properties, typeof(Hql.Classic.ClassicQueryTranslatorFactory).FullName);
+				Environment.QueryTranslator, properties, typeof(Hql.Ast.ANTLR.ASTQueryTranslatorFactory).FullName);
 			log.Info("Query translator: " + className);
 			try
 			{
