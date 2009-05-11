@@ -9,7 +9,7 @@ namespace NHibernate.SqlCommand
 	public class ANSIJoinFragment : JoinFragment
 	{
 		private SqlStringBuilder buffer = new SqlStringBuilder();
-		private SqlStringBuilder conditions = new SqlStringBuilder();
+		private readonly SqlStringBuilder conditions = new SqlStringBuilder();
 
 		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType)
 		{
@@ -86,12 +86,12 @@ namespace NHibernate.SqlCommand
 
 		public override bool AddCondition(string condition)
 		{
-			throw new NotSupportedException();
+			return AddCondition(conditions, condition);
 		}
 
 		public override bool AddCondition(SqlString condition)
 		{
-			throw new NotSupportedException();
+			return AddCondition(conditions, condition);
 		}
 
 		public override void AddFromFragmentString(SqlString fromFragmentString)

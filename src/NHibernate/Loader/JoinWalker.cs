@@ -564,10 +564,20 @@ namespace NHibernate.Loader
 			foreach (OuterJoinableAssociation oj in associations)
 			{
 				if (last != null && last.IsManyToManyWith(oj))
-					oj.AddManyToManyJoin(outerjoin, (IQueryableCollection)last.Joinable);
+				{
+					oj.AddManyToManyJoin(outerjoin, (IQueryableCollection) last.Joinable);
+				}
 				else
+				{
 					oj.AddJoins(outerjoin);
-
+					// NH Different behavior : NH1179 and NH1293
+					// Apply filters in Many-To-One association
+					if (enabledFilters.Count > 0)
+					{
+						var manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFilters);
+						outerjoin.AddCondition(manyToOneFilterFragment);
+					}
+				}
 				last = oj;
 			}
 

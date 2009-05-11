@@ -166,31 +166,33 @@ namespace NHibernate.Engine
 				string on = join.AssociationType.GetOnCondition(join.Alias, factory, enabledFilters);
 				string condition;
 				if (last != null &&
-				    IsManyToManyRoot(last) &&
-				    ((IQueryableCollection) last).ElementType == join.AssociationType)
+						IsManyToManyRoot(last) &&
+						((IQueryableCollection)last).ElementType == join.AssociationType)
 				{
 					// the current join represents the join between a many-to-many association table
 					// and its "target" table.  Here we need to apply any additional filters
 					// defined specifically on the many-to-many
-					string manyToManyFilter = ((IQueryableCollection) last)
+					string manyToManyFilter = ((IQueryableCollection)last)
 						.GetManyToManyFilterFragment(join.Alias, enabledFilters);
 					condition = "".Equals(manyToManyFilter)
-					            	? on
-					            	: "".Equals(on)
-					            	  	? manyToManyFilter
-					            	  	: on + " and " + manyToManyFilter;
+												? on
+												: "".Equals(on)
+														? manyToManyFilter
+														: on + " and " + manyToManyFilter;
 				}
 				else
 				{
-					condition = on;
+					// NH Different behavior : NH1179 and NH1293
+					// Apply filters in Many-To-One association
+					if (string.IsNullOrEmpty(on) && enabledFilters.Count > 0)
+					{
+						condition = join.Joinable.FilterFragment(join.Alias, enabledFilters);
+					}
+					else
+					{
+						condition = on;
+					}
 				}
-				//Start NH1179 ************
-				//if (string.IsNullOrEmpty(condition))
-				//{
-				//  string filterCondition = join.Joinable.FilterFragment(join.Alias, enabledFilters);
-				//  joinFragment.HasFilterCondition = joinFragment.AddCondition(filterCondition);
-				//}
-				//End   NH1179 ************
 
 				if (withClauseFragment != null)
 				{

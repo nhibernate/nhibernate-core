@@ -85,9 +85,10 @@ namespace NHibernate.SqlCommand
 		public override bool AddCondition(string condition)
 		{
 			//TODO: this seems hackish
+			var trimCondition = condition.Trim();
 			if (
-				afterFrom.ToSqlString().ToString().IndexOf(condition.Trim()) < 0 &&
-				afterWhere.ToSqlString().ToString().IndexOf(condition.Trim()) < 0)
+				afterFrom.ToSqlString().ToString().IndexOf(trimCondition) < 0 &&
+				afterWhere.ToSqlString().ToString().IndexOf(trimCondition) < 0)
 			{
 				if (!condition.StartsWith(" and "))
 				{
@@ -104,9 +105,10 @@ namespace NHibernate.SqlCommand
 		public override bool AddCondition(SqlString condition)
 		{
 			//TODO: this seems hackish
+			var trimCondition = condition.Trim().ToString();
 			if (
-				afterFrom.ToString().IndexOf(condition.Trim().ToString()) < 0 &&
-				afterWhere.ToString().IndexOf(condition.Trim().ToString()) < 0)
+				afterFrom.ToString().IndexOf(trimCondition) < 0 &&
+				afterWhere.ToString().IndexOf(trimCondition) < 0)
 			{
 				if (!condition.StartsWithCaseInsensitive(" and "))
 				{
