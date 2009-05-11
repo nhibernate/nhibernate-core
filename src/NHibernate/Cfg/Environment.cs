@@ -215,9 +215,12 @@ namespace NHibernate.Cfg
 
 			GlobalProperties[PropertyBytecodeProvider] = CfgXmlHelper.ByteCodeProviderToString(nhConfig.ByteCodeProviderType);
 			GlobalProperties[PropertyUseReflectionOptimizer] = nhConfig.UseReflectionOptimizer.ToString();
-			foreach (KeyValuePair<string, string> kvp in nhConfig.SessionFactory.Properties)
+			if (nhConfig.SessionFactory != null)
 			{
-				GlobalProperties[kvp.Key] = kvp.Value;
+				foreach (KeyValuePair<string, string> kvp in nhConfig.SessionFactory.Properties)
+				{
+					GlobalProperties[kvp.Key] = kvp.Value;
+				}
 			}
 		}
 
