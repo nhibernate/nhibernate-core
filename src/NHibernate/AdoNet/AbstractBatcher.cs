@@ -199,6 +199,7 @@ namespace NHibernate.AdoNet
 		    catch (Exception e)
 		    {
 		        e.Data["actual-sql-query"] = cmd.CommandText;
+		    	log.Warn("Could not execute command: " + cmd.CommandText, e);
 		        throw;
 		    }
 		}
@@ -216,6 +217,7 @@ namespace NHibernate.AdoNet
 		    catch (Exception e)
 		    {
 		        e.Data["actual-sql-query"] = cmd.CommandText;
+		    	log.Warn("Could not exeucte query: " + cmd.CommandText, e);
 		        throw;
 		    }
 

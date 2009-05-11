@@ -19,10 +19,7 @@ namespace NHibernate.AdoNet
 		{
 			batchSize = Factory.Settings.AdoBatchSize;
 			currentBatch = new SqlClientSqlCommandSet();
-			if(log.IsDebugEnabled)
-			{
-				currentBatchCommandsLog = new StringBuilder();
-			}
+			currentBatchCommandsLog = new StringBuilder();
 		}
 
 		public override int BatchSize
@@ -35,22 +32,15 @@ namespace NHibernate.AdoNet
 		{
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;
 			IDbCommand batchUpdate = CurrentCommand;
-			if (log.IsDebugEnabled)
+			string lineWithParameters = Factory.Settings.SqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
+			currentBatchCommandsLog.Append("Batch command: ").AppendLine(lineWithParameters);
+			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
 			{
-				string lineWithParameters = Factory.Settings.SqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
-				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
-				{
-					Factory.Settings.SqlStatementLogger.LogCommand("Adding to batch:", batchUpdate, FormatStyle.Basic);
-				}
-				else
-				{
-					log.Debug("Adding to batch:" + lineWithParameters);
-				}
-				currentBatchCommandsLog.Append("Batch command: ").AppendLine(lineWithParameters);
+				Factory.Settings.SqlStatementLogger.LogCommand("Adding to batch:", batchUpdate, FormatStyle.Basic);
 			}
-			else
+			else if (log.IsDebugEnabled)
 			{
-				Factory.Settings.SqlStatementLogger.LogCommand(batchUpdate, FormatStyle.Basic);
+				log.Debug("Adding to batch:" + lineWithParameters);
 			}
 			currentBatch.Append((System.Data.SqlClient.SqlCommand) batchUpdate);
 			if (currentBatch.CountOfCommands >= batchSize)
@@ -64,14 +54,11 @@ namespace NHibernate.AdoNet
 			log.Debug("Executing batch");
 			CheckReaders();
 			Prepare(currentBatch.BatchCommand);
-			if (log.IsDebugEnabled)
-			{
-                if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
-                    Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
-                else
-                    log.Debug(currentBatchCommandsLog.ToString());
-				currentBatchCommandsLog = new StringBuilder();
-			}
+			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+				Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
+			else if (log.IsDebugEnabled)
+				log.Debug(currentBatchCommandsLog.ToString());
+			currentBatchCommandsLog = new StringBuilder();
 			int rowsAffected = currentBatch.ExecuteNonQuery();
 
 			Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
