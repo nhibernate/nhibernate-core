@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.NH1391">
+
+	<class name="Animal" discriminator-value="0">
+		<id name="Id"	type="int">
+			<generator class="native"/>
+		</id>
+		<discriminator column="AnimalType" type="int"/>
+		<property name="Name"	type="string"/>
+		<many-to-one name="Owner" class="Person" column="OwnerId"/>
+		<subclass name="Cat" discriminator-value="1"/>
+		<subclass name="Dog" discriminator-value="2">
+			<property name="Country"/>
+			<subclass name="SivasKangal" discriminator-value="3">
+				<property name="HouseAddress"></property>
+			</subclass>
+		</subclass>
+	</class>
+	<class name="Person" discriminator-value="0">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		
+		<discriminator column="PersonType" type="int"/>
+		<property name="Name"/>
+		<bag name="AnimalsNonGeneric" lazy="true" inverse="true" cascade="save-update">
+			<key column="OwnerId" />
+			<one-to-many class="Animal"/>
+		</bag>
+		<bag name="AnimalsGeneric" lazy="true" inverse="true" cascade="save-update">
+			<key column="OwnerId" />
+			<one-to-many class="Animal"/>
+		</bag>
+		<subclass name="PersonWithAnimals" discriminator-value="1">
+
+		</subclass>
+		<subclass name="PersonWithCats" discriminator-value="2">
+			<bag name="CatsGeneric" lazy="true" inverse="true" cascade="save-update">
+				<key column="OwnerId" />
+				<one-to-many class="Cat"/>
+			</bag>
+			<bag name="CatsNonGeneric" lazy="true" inverse="true" cascade="save-update">
+				<key column="OwnerId" />
+				<one-to-many class="Cat"/>
+			</bag>
+		</subclass>
+		<subclass name="PersonWithDogs" discriminator-value="3">
+			<bag name="DogsGeneric" lazy="true" inverse="true" cascade="save-update">
+				<key column="OwnerId" />
+				<one-to-many class="Dog"/>
+			</bag>
+			<bag name="DogsNonGeneric" lazy="true" inverse="true">
+				<key column="OwnerId" />
+				<one-to-many class="Dog"/>
+			</bag>
+		</subclass>
+		<subclass name="PersonWithSivasKangals" discriminator-value="4">
+			<bag name="SivasKangalsGeneric" lazy="true" inverse="true" cascade="save-update">
+				<key column="OwnerId" />
+				<one-to-many class="SivasKangal"/>
+			</bag>
+			<bag name="SivasKangalsNonGeneric" lazy="true" inverse="true">
+				<key column="OwnerId" />
+				<one-to-many class="SivasKangal"/>
+			</bag>
+		</subclass>
+		<subclass name="PersonWithAllTypes" discriminator-value="5">
+			<bag name="DogsGeneric" lazy="true" inverse="true">
+				<key column="OwnerId" />
+				<one-to-many class="Dog"/>
+			</bag>
+			<bag name="DogsNonGeneric" lazy="true" inverse="true">
+				<key column="OwnerId" />
+				<one-to-many class="Dog"/>
+			</bag>
+			<bag name="CatsGeneric" lazy="true" inverse="true">
+				<key column="OwnerId" />
+				<one-to-many class="Cat"/>
+			</bag>
+			<bag name="CatsNonGeneric" lazy="true" inverse="true">
+				<key column="OwnerId" />
+				<one-to-many class="Cat"/>
+			</bag>
+			<bag name="SivasKangalsGeneric" lazy="true" inverse="true">
+				<key column="OwnerId" />
+				<one-to-many class="SivasKangal"/>
+			</bag>
+			<bag name="SivasKangalsNonGeneric" lazy="true" inverse="true">
+				<key column="OwnerId" />
+				<one-to-many class="SivasKangal"/>
+			</bag>
+		</subclass>
+	</class>
+</hibernate-mapping>
