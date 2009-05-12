@@ -48,8 +48,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			new ClassIdBinder(this).BindId(classSchema.Id, rootClass, table);
 			new ClassCompositeIdBinder(this).BindCompositeId(classSchema.CompositeId, rootClass);
 			new ClassDiscriminatorBinder(this).BindDiscriminator(classSchema.discriminator, rootClass, table);
-			BindTimestamp(classSchema.Timestamp, rootClass, table);
-			BindVersion(classSchema.Version, rootClass, table);
+			BindTimestamp(classSchema.Timestamp, rootClass, table, inheritedMetas);
+			BindVersion(classSchema.Version, rootClass, table, inheritedMetas);
 
 			rootClass.CreatePrimaryKey(dialect);
 
@@ -65,7 +65,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				return mappings.NamingStrategy.TableName(classSchema.table.Trim());
 		}
 
-		private void BindTimestamp(HbmTimestamp timestampSchema, PersistentClass rootClass, Table table)
+		private void BindTimestamp(HbmTimestamp timestampSchema, PersistentClass rootClass, Table table, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			if (timestampSchema == null)
 				return;
@@ -78,8 +78,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (!simpleValue.IsTypeSpecified)
 				simpleValue.TypeName = NHibernateUtil.Timestamp.Name;
 
-			Mapping.Property property = new Mapping.Property(simpleValue);
-			BindProperty(timestampSchema, property);
+			var property = new Property(simpleValue);
+			BindProperty(timestampSchema, property, inheritedMetas);
 
 			// for version properties marked as being generated, make sure they are "always"
 			// generated; "insert" is invalid. This is dis-allowed by the schema, but just to make
@@ -128,7 +128,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			column.SqlType = null;
 		}
 
-		private void BindProperty(HbmTimestamp timestampSchema, Mapping.Property property)
+		private void BindProperty(HbmTimestamp timestampSchema, Property property, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			property.Name = timestampSchema.name;
 
@@ -158,7 +158,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					property.IsUpdateable = false;
 			}
 
-			property.MetaAttributes = new Dictionary<string, MetaAttribute>();
+			property.MetaAttributes = GetMetas(timestampSchema, inheritedMetas);
 
 			LogMappedProperty(property);
 		}
@@ -178,7 +178,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		private void BindVersion(HbmVersion versionSchema, PersistentClass rootClass, Table table)
+		private void BindVersion(HbmVersion versionSchema, PersistentClass rootClass, Table table, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			if (versionSchema == null)
 				return;
@@ -190,8 +190,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (!simpleValue.IsTypeSpecified)
 				simpleValue.TypeName = NHibernateUtil.Int32.Name;
 
-			Mapping.Property property = new Mapping.Property(simpleValue);
-			BindProperty(versionSchema, property);
+			var property = new Property(simpleValue);
+			BindProperty(versionSchema, property, inheritedMetas);
 
 			// for version properties marked as being generated, make sure they are "always"
 			// generated; "insert" is invalid. This is dis-allowed by the schema, but just to make
@@ -249,7 +249,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		private void BindProperty(HbmVersion versionSchema, Mapping.Property property)
+		private void BindProperty(HbmVersion versionSchema, Property property, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			property.Name = versionSchema.name;
 
@@ -279,7 +279,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					property.IsUpdateable = false;
 			}
 
-			property.MetaAttributes = new Dictionary<string, MetaAttribute>();
+			property.MetaAttributes = GetMetas(versionSchema, inheritedMetas);
 
 			LogMappedProperty(property);
 		}

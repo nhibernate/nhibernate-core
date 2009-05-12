@@ -13,8 +13,8 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Retrieve the <see cref="MetaAttribute"/>
 		/// </summary>
-		/// <param name="name">The attribute name</param>
+		/// <param name="attributeName">The attribute name</param>
 		/// <returns>The <see cref="MetaAttribute"/> if exists; null otherwise</returns>
-		MetaAttribute GetMetaAttribute(string name);
+		MetaAttribute GetMetaAttribute(string attributeName);
 	}
 }

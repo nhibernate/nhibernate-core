@@ -7,6 +7,7 @@ namespace NHibernate.Test.MappingTest
 	{
 		public int Id { get; set; }
 		public int VersionProp { get; set; }
+		public MonetaryAmount Component { get; set; }
 		public ISet SortedEmployee { get; set; }
 		public IList AnotherSet { get; set; }
 	}

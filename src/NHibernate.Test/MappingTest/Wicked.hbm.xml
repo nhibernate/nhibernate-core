@@ -20,7 +20,7 @@
 			<generator class="assigned"/>
 		</id>
 		<version name="VersionProp"/>
-		<component name="component" class="MonetaryAmount">
+		<component name="Component" class="MonetaryAmount">
 			<meta attribute="componentonly" inherit="true"/>
 			<meta attribute="implements">AnotherInterface</meta>
 			<meta attribute="allcomponent"/>

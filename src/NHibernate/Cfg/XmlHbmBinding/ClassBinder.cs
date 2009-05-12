@@ -54,8 +54,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				CollectionBinder collectionBinder = new CollectionBinder(this);
 				if (collectionBinder.CanCreate(name))
 				{
-					Mapping.Collection collection = collectionBinder.Create(name, subnode, entityName,
-					                                                        propertyName, model, model.MappedClass);
+					Mapping.Collection collection = collectionBinder.Create(name, subnode, entityName, propertyName, model,
+					                                                        model.MappedClass, inheritedMetas);
 
 					mappings.AddCollection(collection);
 					value = collection;
@@ -86,13 +86,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					// NH: Modified from H2.1 to allow specifying the type explicitly using class attribute
 					System.Type reflectedClass = GetPropertyType(subnode, model.MappedClass, propertyName);
 					value = new Component(model);
-					BindComponent(subnode, (Component)value, reflectedClass, entityName, propertyName, subpath, true);
+					BindComponent(subnode, (Component) value, reflectedClass, entityName, propertyName, subpath, true, inheritedMetas);
 				}
 				else if ("join".Equals(name))
 				{
 					Join join = new Join();
 					join.PersistentClass = model;
-					BindJoin(subnode, join);
+					BindJoin(subnode, join, inheritedMetas);
 					model.AddJoin(join);
 				}
 				else if ("subclass".Equals(name))
@@ -125,7 +125,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				if (value != null)
 				{
-					Property property = CreateProperty(value, propertyName, model.ClassName, subnode);
+					Property property = CreateProperty(value, propertyName, model.ClassName, subnode, inheritedMetas);
 					if (!mutable)
 						property.IsUpdateable = false;
 					if (naturalId)
@@ -296,7 +296,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			return null;
 		}
 
-		private void BindJoin(XmlNode node, Join join)
+		private void BindJoin(XmlNode node, Join join, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			PersistentClass persistentClass = join.PersistentClass;
 			String path = persistentClass.EntityName;
@@ -351,8 +351,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				var collectionBinder = new CollectionBinder(this);
 				if (collectionBinder.CanCreate(name))
 				{
-					Mapping.Collection collection = collectionBinder.Create(name, subnode, persistentClass.EntityName,
-																																	propertyName, persistentClass, persistentClass.MappedClass);
+					Mapping.Collection collection = collectionBinder.Create(name, subnode, persistentClass.EntityName, propertyName,
+					                                                        persistentClass, persistentClass.MappedClass,
+					                                                        inheritedMetas);
 
 					mappings.AddCollection(collection);
 					value = collection;
@@ -378,13 +379,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 							string subpath = StringHelper.Qualify(path, propertyName);
 							value = new Component(join);
 							BindComponent(subnode, (Component) value, join.PersistentClass.MappedClass, join.PersistentClass.ClassName,
-							              propertyName, subpath, true);
+							              propertyName, subpath, true, inheritedMetas);
 							break;
 					}
 				}
 				if (value != null)
 				{
-					Mapping.Property prop = CreateProperty(value, propertyName, persistentClass.MappedClass.AssemblyQualifiedName, subnode);
+					var prop = CreateProperty(value, propertyName, persistentClass.MappedClass.AssemblyQualifiedName, subnode,
+					                          inheritedMetas);
 					prop.IsOptional = join.IsOptional;
 					join.AddProperty(prop);
 				}
@@ -543,11 +545,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		protected void BindComponent(XmlNode node, Component model, System.Type reflectedClass,
-			string className, string parentProperty, string path, bool isNullable)
+			string className, string parentProperty, string path, bool isNullable,
+			IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			bool isIdentifierMapper = false;
 
 			model.RoleName = path;
+
+			inheritedMetas = GetMetas(node.SelectNodes(HbmConstants.nsMeta, namespaceManager), inheritedMetas);
+			model.MetaAttributes = inheritedMetas;
 
 			XmlAttribute classNode = node.Attributes["class"];
 
@@ -595,8 +601,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				if (binder.CanCreate(name))
 				{
-					Mapping.Collection collection = binder.Create(name, subnode, className,
-						subpath, model.Owner, model.ComponentClass);
+					Mapping.Collection collection = binder.Create(name, subnode, className, subpath, model.Owner, model.ComponentClass,
+					                                              inheritedMetas);
 
 					mappings.AddCollection(collection);
 					value = collection;
@@ -629,14 +635,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 						:
 							GetPropertyType(subnode, model.ComponentClass, propertyName);
 					value = new Component(model);
-					BindComponent(subnode, (Component) value, subreflectedClass, className, propertyName, subpath, isNullable);
+					BindComponent(subnode, (Component) value, subreflectedClass, className, propertyName, subpath, isNullable, inheritedMetas);
 				}
 				else if ("parent".Equals(name))
 					model.ParentProperty = propertyName;
 
 				if (value != null)
 				{
-					Property property = CreateProperty(value, propertyName, model.ComponentClassName, subnode);
+					Property property = CreateProperty(value, propertyName, model.ComponentClassName, subnode, inheritedMetas);
 					if (isIdentifierMapper)
 					{
 						property.IsInsertable = false;
@@ -648,7 +654,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		protected Property CreateProperty(IValue value, string propertyName, string className,
-			XmlNode subnode)
+			XmlNode subnode, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			if (string.IsNullOrEmpty(propertyName))
 			{
@@ -668,14 +674,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 
 			value.CreateForeignKey();
-			Property prop = new Property();
-			prop.Value = value;
-			BindProperty(subnode, prop);
+			var prop = new Property {Value = value};
+			BindProperty(subnode, prop, inheritedMetas);
 
 			return prop;
 		}
 
-		protected void BindProperty(XmlNode node, Mapping.Property property)
+		protected void BindProperty(XmlNode node, Property property, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			string propName = XmlHelper.GetAttributeValue(node, "name");
 			property.Name = propName;
@@ -742,7 +747,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				log.Debug(msg);
 			}
 
-			property.MetaAttributes = GetMetas(node);
+			property.MetaAttributes = GetMetas(node.SelectNodes(HbmConstants.nsMeta, namespaceManager), inheritedMetas);
 		}
 
 		protected static PropertyGeneration ParsePropertyGeneration(string name)
@@ -944,25 +949,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			model.ReferencedEntityName = GetEntityName(node, mappings);
 			model.PropertyName = node.Attributes["name"].Value;
-		}
-
-		protected IDictionary<string, MetaAttribute> GetMetas(XmlNode node)
-		{
-			Dictionary<string, MetaAttribute> map = new Dictionary<string, MetaAttribute>();
-
-			foreach (XmlNode metaNode in node.SelectNodes(HbmConstants.nsMeta, namespaceManager))
-			{
-				string name = metaNode.Attributes["attribute"].Value;
-				MetaAttribute meta;
-				if (!map.TryGetValue(name, out meta))
-				{
-					meta = new MetaAttribute(name);
-					map[name] = meta;
-				}
-				meta.AddValue(metaNode.InnerText);
-			}
-
-			return map;
 		}
 
 		protected System.Type GetPropertyType(XmlNode definingNode, System.Type containingType, string propertyName)

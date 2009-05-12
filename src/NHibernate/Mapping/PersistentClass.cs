@@ -969,12 +969,12 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		public MetaAttribute GetMetaAttribute(string name)
+		public MetaAttribute GetMetaAttribute(string attributeName)
 		{
 			if (metaAttributes == null)
 				return null;
 			MetaAttribute result;
-			metaAttributes.TryGetValue(name, out result);
+			metaAttributes.TryGetValue(attributeName, out result);
 			return result;
 		}
 

@@ -204,9 +204,11 @@ namespace NHibernate.Mapping
 			set { metaAttributes = value; }
 		}
 
-		public MetaAttribute GetMetaAttribute(string name)
+		public MetaAttribute GetMetaAttribute(string attributeName)
 		{
-			return metaAttributes[name];
+			MetaAttribute result;
+			metaAttributes.TryGetValue(attributeName, out result);
+			return result;
 		}
 
 		public bool IsValid(IMapping mapping)

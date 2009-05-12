@@ -38,65 +38,65 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		public Mapping.Collection Create(string xmlTagName, XmlNode node, string className,
-			string path, PersistentClass owner, System.Type containingType)
+			string path, PersistentClass owner, System.Type containingType, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			CreateCollectionCommand command = createCollectionCommands[xmlTagName];
-			return command(node, className, path, owner, containingType);
+			return command(node, className, path, owner, containingType, inheritedMetas);
 		}
 
 		private Mapping.Collection CreateMap(XmlNode node, string prefix, string path,
-			PersistentClass owner, System.Type containingType)
+			PersistentClass owner, System.Type containingType, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			Map map = new Map(owner);
-			BindCollection(node, map, prefix, path, containingType);
+			BindCollection(node, map, prefix, path, containingType, inheritedMetas);
 			return map;
 		}
 
 		private Mapping.Collection CreateSet(XmlNode node, string prefix, string path,
-			PersistentClass owner, System.Type containingType)
+			PersistentClass owner, System.Type containingType, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			Set setCollection = new Set(owner);
-			BindCollection(node, setCollection, prefix, path, containingType);
+			BindCollection(node, setCollection, prefix, path, containingType, inheritedMetas);
 			return setCollection;
 		}
 
 		private Mapping.Collection CreateList(XmlNode node, string prefix, string path,
-			PersistentClass owner, System.Type containingType)
+			PersistentClass owner, System.Type containingType, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			List list = new List(owner);
-			BindCollection(node, list, prefix, path, containingType);
+			BindCollection(node, list, prefix, path, containingType, inheritedMetas);
 			return list;
 		}
 
 		private Mapping.Collection CreateBag(XmlNode node, string prefix, string path,
-			PersistentClass owner, System.Type containingType)
+			PersistentClass owner, System.Type containingType, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			Bag bag = new Bag(owner);
-			BindCollection(node, bag, prefix, path, containingType);
+			BindCollection(node, bag, prefix, path, containingType, inheritedMetas);
 			return bag;
 		}
 
 		private Mapping.Collection CreateIdentifierBag(XmlNode node, string prefix, string path,
-			PersistentClass owner, System.Type containingType)
+			PersistentClass owner, System.Type containingType, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			IdentifierBag bag = new IdentifierBag(owner);
-			BindCollection(node, bag, prefix, path, containingType);
+			BindCollection(node, bag, prefix, path, containingType, inheritedMetas);
 			return bag;
 		}
 
 		private Mapping.Collection CreateArray(XmlNode node, string prefix, string path,
-			PersistentClass owner, System.Type containingType)
+			PersistentClass owner, System.Type containingType, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			Array array = new Array(owner);
-			BindArray(node, array, prefix, path, containingType);
+			BindArray(node, array, prefix, path, containingType, inheritedMetas);
 			return array;
 		}
 
 		private Mapping.Collection CreatePrimitiveArray(XmlNode node, string prefix, string path,
-			PersistentClass owner, System.Type containingType)
+			PersistentClass owner, System.Type containingType, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			PrimitiveArray array = new PrimitiveArray(owner);
-			BindArray(node, array, prefix, path, containingType);
+			BindArray(node, array, prefix, path, containingType,inheritedMetas);
 			return array;
 		}
 
@@ -105,7 +105,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		/// was added in NH to allow for reflection related to generic types.
 		/// </remarks>
 		private void BindCollection(XmlNode node, Mapping.Collection model, string className,
-			string path, System.Type containingType)
+			string path, System.Type containingType, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			// ROLENAME
 			model.Role = StringHelper.Qualify(className, path);
@@ -253,19 +253,19 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			//set up second pass
 			if (model is List)
-				AddListSecondPass(node, (List)model);
+				AddListSecondPass(node, (List)model, inheritedMetas);
 
 			else if (model is Map)
-				AddMapSecondPass(node, (Map)model);
+				AddMapSecondPass(node, (Map)model, inheritedMetas);
 
 			else if (model is Set)
-				AddSetSecondPass(node, (Set)model);
+				AddSetSecondPass(node, (Set)model, inheritedMetas);
 
 			else if (model is IdentifierCollection)
-				AddIdentifierCollectionSecondPass(node, (IdentifierCollection)model);
+				AddIdentifierCollectionSecondPass(node, (IdentifierCollection)model, inheritedMetas);
 
 			else
-				AddCollectionSecondPass(node, model);
+				AddCollectionSecondPass(node, model, inheritedMetas);
 
 			foreach (XmlNode filter in node.SelectNodes(HbmConstants.nsFilter, namespaceManager))
 				ParseFilter(filter, model);
@@ -284,9 +284,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		/// Called for arrays and primitive arrays
 		/// </remarks>
 		private void BindArray(XmlNode node, Array model, string prefix, string path,
-			System.Type containingType)
+			System.Type containingType, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			BindCollection(node, model, prefix, path, containingType);
+			BindCollection(node, model, prefix, path, containingType, inheritedMetas);
 
 			XmlAttribute att = node.Attributes["element-class"];
 
@@ -327,52 +327,52 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 		}
 
-		private void AddListSecondPass(XmlNode node, List model)
+		private void AddListSecondPass(XmlNode node, List model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			mappings.AddSecondPass(delegate(IDictionary<string, PersistentClass> persistentClasses)
 				{
 					PreCollectionSecondPass(model);
-					BindListSecondPass(node, model, persistentClasses);
+					BindListSecondPass(node, model, persistentClasses, inheritedMetas);
 					PostCollectionSecondPass(model);
 				});
 		}
 
-		private void AddMapSecondPass(XmlNode node, Map model)
+		private void AddMapSecondPass(XmlNode node, Map model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			mappings.AddSecondPass(delegate(IDictionary<string, PersistentClass> persistentClasses)
 				{
 					PreCollectionSecondPass(model);
-					BindMapSecondPass(node, model, persistentClasses);
+					BindMapSecondPass(node, model, persistentClasses, inheritedMetas);
 					PostCollectionSecondPass(model);
 				});
 		}
 
-		private void AddSetSecondPass(XmlNode node, Set model)
+		private void AddSetSecondPass(XmlNode node, Set model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			mappings.AddSecondPass(delegate(IDictionary<string, PersistentClass> persistentClasses)
 				{
 					PreCollectionSecondPass(model);
-					BindSetSecondPass(node, model, persistentClasses);
+					BindSetSecondPass(node, model, persistentClasses, inheritedMetas);
 					PostCollectionSecondPass(model);
 				});
 		}
 
-		private void AddIdentifierCollectionSecondPass(XmlNode node, IdentifierCollection model)
+		private void AddIdentifierCollectionSecondPass(XmlNode node, IdentifierCollection model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			mappings.AddSecondPass(delegate(IDictionary<string, PersistentClass> persistentClasses)
 				{
 					PreCollectionSecondPass(model);
-					BindIdentifierCollectionSecondPass(node, model, persistentClasses);
+					BindIdentifierCollectionSecondPass(node, model, persistentClasses, inheritedMetas);
 					PostCollectionSecondPass(model);
 				});
 		}
 
-		private void AddCollectionSecondPass(XmlNode node, Mapping.Collection model)
+		private void AddCollectionSecondPass(XmlNode node, Mapping.Collection model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			mappings.AddSecondPass(delegate(IDictionary<string, PersistentClass> persistentClasses)
 				{
 					PreCollectionSecondPass(model);
-					BindCollectionSecondPass(node, model, persistentClasses);
+					BindCollectionSecondPass(node, model, persistentClasses, inheritedMetas);
 					PostCollectionSecondPass(model);
 				});
 		}
@@ -436,9 +436,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		private void BindListSecondPass(XmlNode node, List model,
-			IDictionary<string, PersistentClass> persistentClasses)
+			IDictionary<string, PersistentClass> persistentClasses, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			BindCollectionSecondPass(node, model, persistentClasses);
+			BindCollectionSecondPass(node, model, persistentClasses, inheritedMetas);
 
 			XmlNode subnode = node.SelectSingleNode(HbmConstants.nsListIndex, namespaceManager);
 			if (subnode == null) { subnode = node.SelectSingleNode(HbmConstants.nsIndex, namespaceManager); }
@@ -459,9 +459,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		private void BindIdentifierCollectionSecondPass(XmlNode node, IdentifierCollection model,
-			IDictionary<string, PersistentClass> persitentClasses)
+			IDictionary<string, PersistentClass> persitentClasses, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			BindCollectionSecondPass(node, model, persitentClasses);
+			BindCollectionSecondPass(node, model, persitentClasses, inheritedMetas);
 
 			XmlNode subnode = node.SelectSingleNode(HbmConstants.nsCollectionId, namespaceManager);
 			SimpleValue id = new SimpleValue(model.CollectionTable);
@@ -481,9 +481,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		private void BindSetSecondPass(XmlNode node, Set model,
-			IDictionary<string, PersistentClass> persistentClasses)
+			IDictionary<string, PersistentClass> persistentClasses, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			BindCollectionSecondPass(node, model, persistentClasses);
+			BindCollectionSecondPass(node, model, persistentClasses, inheritedMetas);
 
 			if (!model.IsOneToMany)
 				model.CreatePrimaryKey();
@@ -492,13 +492,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		/// <summary>
 		/// Called for Maps
 		/// </summary>
-		/// <param name="node"></param>
-		/// <param name="model"></param>
-		/// <param name="persistentClasses"></param>
 		private void BindMapSecondPass(XmlNode node, Map model,
-			IDictionary<string, PersistentClass> persistentClasses)
+			IDictionary<string, PersistentClass> persistentClasses, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			BindCollectionSecondPass(node, model, persistentClasses);
+			BindCollectionSecondPass(node, model, persistentClasses, inheritedMetas);
 
 			foreach (XmlNode subnode in node.ChildNodes)
 			{
@@ -525,7 +522,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				else if ("composite-index".Equals(name) || "composite-map-key".Equals(name))
 				{
 					Component component = new Component(model);
-					BindComponent(subnode, component, null, null, null, model.Role + ".index", model.IsOneToMany);
+					BindComponent(subnode, component, null, null, null, model.Role + ".index", model.IsOneToMany,inheritedMetas);
 					model.Index = component;
 				}
 				else if ("index-many-to-any".Equals(name))
@@ -541,7 +538,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		/// Called for all collections
 		/// </remarks>
 		private void BindCollectionSecondPass(XmlNode node, Mapping.Collection model,
-			IDictionary<string, PersistentClass> persistentClasses)
+			IDictionary<string, PersistentClass> persistentClasses, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			if (model.IsOneToMany)
 			{
@@ -614,7 +611,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				{
 					Component element = new Component(model);
 					model.Element = element;
-					BindComponent(subnode, element, null, null, null, model.Role+ ".element", true);
+					BindComponent(subnode, element, null, null, null, model.Role+ ".element", true, inheritedMetas);
 				}
 				else if ("many-to-any".Equals(name))
 				{
@@ -673,6 +670,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		private delegate Mapping.Collection CreateCollectionCommand(XmlNode node, string className,
-			string path, PersistentClass owner, System.Type containingType);
+			string path, PersistentClass owner, System.Type containingType, IDictionary<string, MetaAttribute> inheritedMetas);
 	}
 }

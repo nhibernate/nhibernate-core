@@ -196,5 +196,47 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 			return map;
 		}
+
+		public static IDictionary<string, MetaAttribute> GetMetas(XmlNodeList nodes, IDictionary<string, MetaAttribute> inheritedMeta)
+		{
+			return GetMetas(nodes, inheritedMeta, false);
+		}
+
+		public static IDictionary<string, MetaAttribute> GetMetas(XmlNodeList nodes, IDictionary<string, MetaAttribute> inheritedMeta, bool onlyInheritable)
+		{
+			var map = new Dictionary<string, MetaAttribute>(inheritedMeta);
+			foreach (XmlNode metaNode in nodes)
+			{
+				if(metaNode.Name != "meta")
+				{
+					continue;
+				}
+				var inheritableValue = GetAttributeValue(metaNode, "inherit");
+				bool inheritable = inheritableValue != null ? IsTrue(inheritableValue) : false;
+				if (onlyInheritable & !inheritable)
+				{
+					continue;
+				}
+				string name = GetAttributeValue(metaNode, "attribute");
+
+				MetaAttribute meta;
+				MetaAttribute inheritedAttribute;
+				map.TryGetValue(name, out meta);
+				inheritedMeta.TryGetValue(name, out inheritedAttribute);
+				if (meta == null)
+				{
+					meta = new MetaAttribute(name);
+					map[name] = meta;
+				}
+				else if (meta == inheritedAttribute)
+				{
+					meta = new MetaAttribute(name);
+					map[name] = meta;
+				}
+				meta.AddValue(metaNode.InnerText);
+			}
+			return map;
+		}
+
 	}
 }

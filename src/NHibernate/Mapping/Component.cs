@@ -318,5 +318,7 @@ namespace NHibernate.Mapping
 		{
 			return GetType().FullName + '(' + StringHelper.CollectionToString(properties) + ')';
 		}
+
+		public IDictionary<string, MetaAttribute> MetaAttributes { get; set; }
 	}
 }
