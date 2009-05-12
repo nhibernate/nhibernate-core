@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!-- Mapping document mainly used for testing non-reflective Binder + meta inheritance -->
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.MappingTest">
+	<meta attribute="global">global value</meta>
+	<meta attribute="globalnoinherit" inherit="false">only visible at top level</meta>
+	<meta attribute="globalmutated">top level</meta>
+
+	<class name="Wicked"
+           table="WICKED"
+           schema="HR">
+		<meta attribute="implements">IObserver</meta>
+		<meta attribute="implements">IObserver</meta>
+		<meta attribute="implements" inherit="false">Foo.BogusVisitor</meta>
+		<meta attribute="extends">AuditInfo</meta>
+		<meta attribute="globalmutated">wicked level</meta>
+		<id name="Id"
+            column="EMPLOYEE_ID">
+			<generator class="assigned"/>
+		</id>
+		<version name="VersionProp"/>
+		<component name="component" class="MonetaryAmount">
+			<meta attribute="componentonly" inherit="true"/>
+			<meta attribute="implements">AnotherInterface</meta>
+			<meta attribute="allcomponent"/>
+			<meta attribute="globalmutated">monetaryamount level</meta>
+			<property name="X">
+				<meta attribute="globalmutated">monetaryamount x level</meta>
+			</property>
+		</component>
+
+		<set name="SortedEmployee" sort="NonExistingComparator">
+			<meta attribute="globalmutated">sortedemployee level</meta>
+			<key column="attrb_id"/>
+			<many-to-many class="Employee" column="id"/>
+		</set>
+
+		<bag name="AnotherSet">
+			<key column="attrb2_id"/>
+			<composite-element class="Employee">
+				<meta attribute="globalmutated">monetaryamount anotherSet composite level</meta>
+				<property name="Emp" type="string">
+					<meta attribute="globalmutated">monetaryamount anotherSet composite property emp level</meta>
+				</property>
+				<many-to-one name="Empinone" class="Employee">
+					<meta attribute="globalmutated">monetaryamount anotherSet composite property empinone level</meta>
+				</many-to-one>
+			</composite-element>
+		</bag>
+
+	</class>
+
+	<class name="Employee">
+		<id name="Id">
+			<generator class="assigned"/>
+		</id>
+	</class>
+</hibernate-mapping>
+

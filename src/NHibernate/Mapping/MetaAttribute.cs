@@ -49,6 +49,11 @@ namespace NHibernate.Mapping
 			values.Add(value);
 		}
 
+		public void AddValues(IEnumerable<string> range)
+		{
+			values.AddRange(range);
+		}
+
 		public override string ToString()
 		{
 			return string.Format("[{0}={1}]", name, CollectionPrinter.ToString(values));

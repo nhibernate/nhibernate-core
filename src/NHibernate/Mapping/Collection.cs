@@ -150,9 +150,26 @@ namespace NHibernate.Mapping
 		// both IComparer and IComparer<T>.
 		public object Comparer
 		{
-			get { return comparer; }
+			get
+			{
+				if (comparer == null && !string.IsNullOrEmpty(ComparerClassName))
+				{
+					try
+					{
+						comparer = Activator.CreateInstance(ReflectHelper.ClassForName(ComparerClassName));
+					}
+					catch
+					{
+						throw new MappingException("Could not instantiate comparator class [" + ComparerClassName + "] for collection " + Role);
+					}
+				}
+				return comparer;
+			}
+
 			set { comparer = value; }
 		}
+
+		public string ComparerClassName { get; set; }
 
 		public bool IsLazy
 		{

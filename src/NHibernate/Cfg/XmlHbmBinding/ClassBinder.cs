@@ -16,26 +16,26 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		protected readonly Dialect.Dialect dialect;
 		protected readonly XmlNamespaceManager namespaceManager;
 
-		public ClassBinder(Binder parent, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
+		protected ClassBinder(Binder parent, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
 			: base(parent)
 		{
 			this.dialect = dialect;
 			this.namespaceManager = namespaceManager;
 		}
 
-		public ClassBinder(ClassBinder parent)
+		protected ClassBinder(ClassBinder parent)
 			: base(parent)
 		{
 			dialect = parent.dialect;
 			namespaceManager = parent.namespaceManager;
 		}
 
-		protected void PropertiesFromXML(XmlNode node, PersistentClass model)
+		protected void PropertiesFromXML(XmlNode node, PersistentClass model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			PropertiesFromXML(node, model, null, true, true, false);
+			PropertiesFromXML(node, model, inheritedMetas, null, true, true, false);
 		}
 
-		protected void PropertiesFromXML(XmlNode node, PersistentClass model, UniqueKey uniqueKey, bool mutable, bool nullable, bool naturalId)
+		protected void PropertiesFromXML(XmlNode node, PersistentClass model, IDictionary<string, MetaAttribute> inheritedMetas, UniqueKey uniqueKey, bool mutable, bool nullable, bool naturalId)
 		{
 			string entityName = model.EntityName;
 
@@ -119,7 +119,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 						mutableId = "true".Equals(subnode.Attributes["mutable"]);						
 					}
 
-					PropertiesFromXML(subnode, model, uk, mutableId, false, true);
+					PropertiesFromXML(subnode, model, inheritedMetas, uk, mutableId, false, true);
 					table.AddUniqueKey(uk);
 				}
 
@@ -137,7 +137,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		protected void BindClass(XmlNode node, PersistentClass model)
+		protected void BindClass(XmlNode node, IDecoratable classMapping, PersistentClass model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			// transfer an explicitly defined entity name
 			// handle the lazy attribute
@@ -160,10 +160,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			BindXmlRepresentation(node, model);
 			BindMapRepresentation(node, model);
 
-			BindPersistentClassCommonValues(node, model);
+			BindPersistentClassCommonValues(node, classMapping, model, inheritedMetas);
 		}
 
-		private void BindPersistentClassCommonValues(XmlNode node, PersistentClass model)
+		private void BindPersistentClassCommonValues(XmlNode node, IDecoratable classMapping, PersistentClass model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			// DISCRIMINATOR
 			XmlAttribute discriminatorNode = node.Attributes["discriminator-value"];
@@ -201,7 +201,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			model.OptimisticLockMode = GetOptimisticLockMode(olNode);
 
 			// META ATTRIBUTES
-			model.MetaAttributes = GetMetas(node);
+			model.MetaAttributes = GetMetas(classMapping, inheritedMetas);
 
 			// PERSISTER
 			XmlAttribute persisterNode = node.Attributes["persister"];

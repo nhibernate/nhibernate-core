@@ -26,7 +26,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			UnionSubclass unionSubclass = new UnionSubclass(model);
 
-			BindClass(subnode, unionSubclass);
+			BindClass(subnode, null, unionSubclass, EmptyMeta);
 
 			// union subclass
 			if (unionSubclass.EntityPersisterClass == null)
@@ -47,7 +47,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			log.InfoFormat("Mapping union-subclass: {0} -> {1}", unionSubclass.EntityName, unionSubclass.Table.Name);
 
 			// properties
-			PropertiesFromXML(subnode, unionSubclass);
+			PropertiesFromXML(subnode, unionSubclass, EmptyMeta);
 
 			model.AddSubclass(unionSubclass);
 			mappings.AddClass(unionSubclass);

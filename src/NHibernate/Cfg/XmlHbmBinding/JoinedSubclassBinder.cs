@@ -27,7 +27,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			JoinedSubclass subclass = new JoinedSubclass(model);
 
-			BindClass(subnode, subclass);
+			BindClass(subnode, null, subclass, EmptyMeta);
 
 			// joined subclass
 			if (subclass.EntityPersisterClass == null)
@@ -70,7 +70,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				mytable.AddCheckConstraint(chNode.Value);
 
 			// properties
-			PropertiesFromXML(subnode, subclass);
+			PropertiesFromXML(subnode, subclass, EmptyMeta);
 
 			model.AddSubclass(subclass);
 			mappings.AddClass(subclass);

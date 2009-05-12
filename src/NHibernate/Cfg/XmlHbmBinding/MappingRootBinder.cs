@@ -23,13 +23,16 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		public void Bind(XmlNode node)
 		{
-			HbmMapping mappingSchema = Deserialize<HbmMapping>(node);
+			IDictionary<string, MetaAttribute> inheritedMetas = EmptyMeta;
+			var mappingSchema = Deserialize<HbmMapping>(node);
+			// get meta's from <hibernate-mapping>
+			inheritedMetas = GetMetas(mappingSchema, inheritedMetas, true);
 
 			SetMappingsProperties(mappingSchema);
 			AddFilterDefinitions(mappingSchema);
 			AddTypeDefs(mappingSchema);
 
-			AddRootClasses(node);
+			AddRootClasses(node, inheritedMetas);
 			AddSubclasses(node);
 			AddJoinedSubclasses(node);
 			AddUnionSubclasses(node);
@@ -62,12 +65,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		private void AddRootClasses(XmlNode parentNode)
+		private void AddRootClasses(XmlNode parentNode, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			RootClassBinder binder = new RootClassBinder(this, namespaceManager, dialect);
 
 			foreach (XmlNode node in parentNode.SelectNodes(HbmConstants.nsClass, namespaceManager))
-				binder.Bind(node, Deserialize<HbmClass>(node));
+				binder.Bind(node, Deserialize<HbmClass>(node), inheritedMetas);
 		}
 
 		private void AddUnionSubclasses(XmlNode parentNode)

@@ -1,6 +1,8 @@
+using System;
+
 namespace NHibernate.Cfg.MappingSchema
 {
-	partial class HbmClass
+	partial class HbmClass: AbstractDecoratable
 	{
 		public HbmId Id
 		{
@@ -20,6 +22,11 @@ namespace NHibernate.Cfg.MappingSchema
 		public HbmTimestamp Timestamp
 		{
 			get { return Item1 as HbmTimestamp; }
+		}
+
+		protected override HbmMeta[] GetMetadataField()
+		{
+			return meta;
 		}
 	}
 }

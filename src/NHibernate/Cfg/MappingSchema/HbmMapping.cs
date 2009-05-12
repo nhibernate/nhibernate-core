@@ -1,6 +1,6 @@
 namespace NHibernate.Cfg.MappingSchema
 {
-	partial class HbmMapping : HbmBase
+	partial class HbmMapping : AbstractDecoratable
 	{
 		public HbmDatabaseObject[] ListDatabaseObjects()
 		{
@@ -10,6 +10,11 @@ namespace NHibernate.Cfg.MappingSchema
 		public HbmFilterDef[] ListFilterDefs()
 		{
 			return filterdef ?? new HbmFilterDef[0];
+		}
+
+		protected override HbmMeta[] GetMetadataField()
+		{
+			return meta;
 		}
 	}
 }

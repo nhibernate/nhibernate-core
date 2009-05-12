@@ -325,6 +325,8 @@
     <Compile Include="HQL\Ast\WithClauseFixture.cs" />
     <Compile Include="HQL\Ast\Zoo.cs" />
     <Compile Include="HQL\BaseFunctionFixture.cs" />
+    <Compile Include="MappingTest\NonReflectiveBinderFixture.cs" />
+    <Compile Include="MappingTest\Wicked.cs" />
     <Compile Include="NHSpecificTest\Dates\TimeFixture.cs" />
     <Compile Include="NHSpecificTest\DtcFailures\DtcFailuresFixture.cs" />
     <Compile Include="NHSpecificTest\DtcFailures\Person.cs" />
@@ -1766,6 +1768,7 @@
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <EmbeddedResource Include="BulkManipulation\SimpleClass.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="MappingTest\Wicked.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1393\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1391\Mappings.hbm.xml" />
     <EmbeddedResource Include="HQL\Ast\Animal.hbm.xml" />

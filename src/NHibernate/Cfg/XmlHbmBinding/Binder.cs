@@ -1,18 +1,24 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Serialization;
 
 using log4net;
-
+using NHibernate.Mapping;
 using NHibernate.Util;
+using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public abstract class Binder
 	{
 		protected static readonly ILog log = LogManager.GetLogger(typeof (Binder));
+
+		protected static readonly IDictionary<string, MetaAttribute> EmptyMeta =
+			new CollectionHelper.EmptyMapClass<string, MetaAttribute>();
+
 		protected readonly Mappings mappings;
 
 		protected Binder(Binder parent)
@@ -146,6 +152,49 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			XmlAttribute att = node.Attributes[attributeName];
 			return att != null ? att.Value : null;
+		}
+
+		public static IDictionary<string, MetaAttribute> GetMetas(IDecoratable decoratable, IDictionary<string, MetaAttribute> inheritedMeta)
+		{
+			return GetMetas(decoratable, inheritedMeta, false);
+		}
+
+		public static IDictionary<string, MetaAttribute> GetMetas(IDecoratable decoratable, IDictionary<string, MetaAttribute> inheritedMeta, bool onlyInheritable)
+		{
+			if(decoratable == null)
+			{
+				return EmptyMeta;
+			}
+			var map = new Dictionary<string, MetaAttribute>(inheritedMeta);
+
+			IDictionary<string, MetaAttribute> metaAttributes = onlyInheritable
+			                                                    	? decoratable.InheritableMetaData
+			                                                    	: decoratable.MappedMetaData;
+
+			foreach (var metaAttribute in metaAttributes)
+			{
+				string name = metaAttribute.Key;
+
+				MetaAttribute meta;
+				MetaAttribute inheritedAttribute;
+
+				map.TryGetValue(name, out meta);
+				inheritedMeta.TryGetValue(name, out inheritedAttribute);
+
+				if (meta == null)
+				{
+					meta = new MetaAttribute(name);
+					map[name] = meta;
+				}
+				else if (meta == inheritedAttribute)
+				{
+					// overriding inherited meta attribute.
+					meta = new MetaAttribute(name);
+					map[name] = meta;
+				}
+				meta.AddValues(metaAttribute.Value.Values);
+			}
+			return map;
 		}
 	}
 }

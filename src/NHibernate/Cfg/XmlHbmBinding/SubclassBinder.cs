@@ -27,7 +27,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			Subclass subclass = new SingleTableSubclass(model);
 
-			BindClass(subnode, subclass);
+			BindClass(subnode, null, subclass, EmptyMeta);
 
 			if (subclass.EntityPersisterClass == null)
 				subclass.RootClazz.EntityPersisterClass = typeof(SingleTableEntityPersister);
@@ -35,7 +35,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			log.InfoFormat("Mapping subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);
 
 			// properties
-			PropertiesFromXML(subnode, subclass);
+			PropertiesFromXML(subnode, subclass, EmptyMeta);
 
 			model.AddSubclass(subclass);
 			mappings.AddClass(subclass);

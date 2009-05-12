@@ -215,14 +215,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				if (!sortedAtt.Value.Equals("natural"))
 				{
 					string comparatorClassName = FullQualifiedClassName(sortedAtt.Value, mappings);
-					try
-					{
-						model.Comparer = Activator.CreateInstance(ReflectHelper.ClassForName(comparatorClassName));
-					}
-					catch
-					{
-						throw new MappingException("could not instantiate comparer class: " + comparatorClassName);
-					}
+					model.ComparerClassName = comparatorClassName;
 				}
 			}
 

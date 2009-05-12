@@ -13,10 +13,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public void Bind(XmlNode node, HbmClass classSchema)
+		public void Bind(XmlNode node, HbmClass classSchema, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			RootClass rootClass = new RootClass();
-			BindClass(node, rootClass);
+			BindClass(node, classSchema, rootClass, inheritedMetas);
+			inheritedMetas = GetMetas(classSchema, inheritedMetas, true); // get meta's from <class>
 
 			//TABLENAME
 			string schema = classSchema.schema ?? mappings.SchemaName;
@@ -51,7 +52,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			BindVersion(classSchema.Version, rootClass, table);
 
 			rootClass.CreatePrimaryKey(dialect);
-			PropertiesFromXML(node, rootClass);
+
+			PropertiesFromXML(node, rootClass, inheritedMetas);
 			mappings.AddClass(rootClass);
 		}
 
