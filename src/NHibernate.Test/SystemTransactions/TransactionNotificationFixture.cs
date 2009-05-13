@@ -14,23 +14,23 @@ namespace NHibernate.Test.SystemTransactions
 
 		public class RecordingInterceptor : EmptyInterceptor
 		{
-			public bool afterTransactionBeginCalled;
-			public bool afterTransactionCompletionCalled;
-			public bool beforeTransactionCompletionCalled;
+			public int afterTransactionBeginCalled;
+			public int afterTransactionCompletionCalled;
+			public int beforeTransactionCompletionCalled;
 
 			public override void AfterTransactionBegin(ITransaction tx)
 			{
-				afterTransactionBeginCalled = true;
+				afterTransactionBeginCalled++;
 			}
 
 			public override void AfterTransactionCompletion(ITransaction tx)
 			{
-				afterTransactionCompletionCalled = true;
+				afterTransactionCompletionCalled++;
 			}
 
 			public override void BeforeTransactionCompletion(ITransaction tx)
 			{
-				beforeTransactionCompletionCalled = true;
+				beforeTransactionCompletionCalled++;
 			}
 		}
 
@@ -40,9 +40,9 @@ namespace NHibernate.Test.SystemTransactions
 			RecordingInterceptor interceptor = new RecordingInterceptor();
 			using (sessions.OpenSession(interceptor))
 			{
-				Assert.IsFalse(interceptor.afterTransactionBeginCalled);
-				Assert.IsFalse(interceptor.beforeTransactionCompletionCalled);
-				Assert.IsFalse(interceptor.afterTransactionCompletionCalled);
+				Assert.AreEqual(0, interceptor.afterTransactionBeginCalled);
+				Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
+				Assert.AreEqual(0, interceptor.afterTransactionCompletionCalled);
 			}
 		}
 
@@ -53,9 +53,9 @@ namespace NHibernate.Test.SystemTransactions
 			using (new TransactionScope()) 
 			using (sessions.OpenSession(interceptor))
 			{
-				Assert.IsTrue(interceptor.afterTransactionBeginCalled);
-				Assert.IsFalse(interceptor.beforeTransactionCompletionCalled);
-				Assert.IsFalse(interceptor.afterTransactionCompletionCalled);
+				Assert.AreEqual(1, interceptor.afterTransactionBeginCalled);
+				Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
+				Assert.AreEqual(0, interceptor.afterTransactionCompletionCalled);
 			}
 		}
 
@@ -70,8 +70,8 @@ namespace NHibernate.Test.SystemTransactions
 				scope.Complete();
 			}
 			session.Dispose();
-			Assert.IsTrue(interceptor.beforeTransactionCompletionCalled);
-			Assert.IsTrue(interceptor.afterTransactionCompletionCalled);
+			Assert.AreEqual(1, interceptor.beforeTransactionCompletionCalled);
+			Assert.AreEqual(1, interceptor.afterTransactionCompletionCalled);
 			
 		}
 
@@ -83,9 +83,41 @@ namespace NHibernate.Test.SystemTransactions
 			using (sessions.OpenSession(interceptor))
 			{
 			}
-			Assert.IsFalse(interceptor.beforeTransactionCompletionCalled);
-			Assert.IsTrue(interceptor.afterTransactionCompletionCalled);
-		
+			Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
+			Assert.AreEqual(2, interceptor.afterTransactionCompletionCalled);
+		}
+
+		[Test]
+		public void TwoTransactionScopesInsideOneSession() {
+			var interceptor = new RecordingInterceptor();
+			using(var session = sessions.OpenSession(interceptor)) {
+				using(var scope = new TransactionScope()) {
+					session.CreateCriteria<object>().List();
+					scope.Complete();
+				}
+
+				using(var scope = new TransactionScope()) {
+					session.CreateCriteria<object>().List();
+					scope.Complete();
+				}
+			}
+			Assert.AreEqual(2, interceptor.afterTransactionBeginCalled);
+			Assert.AreEqual(2, interceptor.beforeTransactionCompletionCalled);
+			Assert.AreEqual(2, interceptor.afterTransactionCompletionCalled);
+		}
+
+		[Test]
+		public void OneTransactionScopesInsideOneSession() {
+			var interceptor = new RecordingInterceptor();
+			using(var session = sessions.OpenSession(interceptor)) {
+				using(var scope = new TransactionScope()) {
+					session.CreateCriteria<object>().List();
+					scope.Complete();
+				}
+			}
+			Assert.AreEqual(1, interceptor.afterTransactionBeginCalled);
+			Assert.AreEqual(1, interceptor.beforeTransactionCompletionCalled);
+			Assert.AreEqual(1, interceptor.afterTransactionCompletionCalled);
 		}
 	}
 }

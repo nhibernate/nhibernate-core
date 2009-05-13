@@ -381,12 +381,16 @@ namespace NHibernate.Impl
 				logger.DebugFormat("enlisted into DTC transaction: {0}", ambientTransation.IsolationLevel);
 				AfterTransactionBegin(null);
 				ambientTransation.TransactionCompleted += delegate(object sender, TransactionEventArgs e)
-				{
-					bool wasSuccessful = e.Transaction.TransactionInformation.Status == TransactionStatus.Committed;
-					AfterTransactionCompletion(wasSuccessful, null);
-					if (shouldCloseSessionOnDtcTransactionCompleted)
-						Dispose(true);
-				};
+				                                          	{
+				                                          		bool wasSuccessful = e.Transaction.TransactionInformation.Status
+				                                          		                     == TransactionStatus.Committed;
+				                                          		AfterTransactionCompletion(wasSuccessful, null);
+																											if (shouldCloseSessionOnDtcTransactionCompleted)
+																											{
+																												Dispose(true);
+																											}
+				                                          		ambientTransation = null;
+				                                          	};
 				ambientTransation.EnlistVolatile(this, EnlistmentOptions.EnlistDuringPrepareRequired);
 			}
 		}
