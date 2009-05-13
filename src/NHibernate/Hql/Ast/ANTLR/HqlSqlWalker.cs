@@ -682,29 +682,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		IASTNode CreateFromElement(string path, IASTNode pathNode, IASTNode alias, IASTNode propertyFetch)
 		{
-           // try
-            {
-                FromElement fromElement = _currentFromClause.AddFromElement(path, alias);
-                fromElement.SetAllPropertyFetch(propertyFetch != null);
-                return fromElement;
-            }
-			/*
-            catch (Exception e)
-            {
-                // Try resolving as if it were a join
-                // TODO - clean this up!
-                try
-                {
-                    pathNode = PreProcessPathForJoin(pathNode);
-
-                    CreateFromJoinElement(pathNode, alias, INNER, null, null, null);
-                    return null;
-                }
-                catch (Exception)
-                {
-                    throw e;
-                }
-            }*/
+            FromElement fromElement = _currentFromClause.AddFromElement(path, alias);
+            fromElement.SetAllPropertyFetch(propertyFetch != null);
+            return fromElement;
 		}
 
         private IASTNode PreProcessPathForJoin(IASTNode node)

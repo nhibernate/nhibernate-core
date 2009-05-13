@@ -25,7 +25,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private ConstructorNode _constructorNode;
 		private string[] _aliases;
 
-		public static bool VERSION2_SQL = false;
+		public static bool VERSION2_SQL;
 
 		public SelectClause(IToken token) : base(token)
 		{
@@ -179,7 +179,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					if ( fromElement.IsFetch ) 
 					{
 						FromElement origin;
-						if ( fromElement.RealOrigin == null ) 
+						if ( fromElement.RealOrigin == null )
 						{
 							// work around that crazy issue where the tree contains
 							// "empty" FromElements (no text); afaict, this is caused
@@ -188,10 +188,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 							{
 								throw new QueryException( "Unable to determine origin of join fetch [" + fromElement.GetDisplayText() + "]" );
 							}
-							else 
-							{
-								origin = fromElement.Origin;
-							}
+							
+							origin = fromElement.Origin;
 						}
 						else
 						{
@@ -223,6 +221,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 							}
 						}
 					}
+
+					k++;
 				}
 		
 				// generate id select fragment and then property select fragment for
@@ -341,7 +341,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				for (int i = 0; i < selectExpressions.Length; i++)
 				{
 					string alias = selectExpressions[i].Alias;
-					_aliases[i] = alias == null ? i.ToString() : alias;
+					_aliases[i] = alias ?? i.ToString();
 				}
 			}
 			else
@@ -466,7 +466,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					}
 					else
 					{
-						suffix = _collectionFromElements.Count.ToString() + "__";
+						suffix = _collectionFromElements.Count + "__";
 					}
 					_collectionFromElements.Add(fromElement);
 					fromElement.CollectionSuffix = suffix;

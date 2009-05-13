@@ -16,10 +16,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class FromClause : HqlSqlWalkerNode, IDisplayableNode
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(FromClause));
-		public static int ROOT_LEVEL = 1;
+		private static readonly ILog Log = LogManager.GetLogger(typeof(FromClause));
+		private const int RootLevel = 1;
 
-		private int _level = ROOT_LEVEL;
+		private int _level = RootLevel;
 
 		/// <summary>
 		/// Counts the from elements as they are added.
@@ -124,9 +124,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public void AddJoinByPathMap(string path, FromElement destination)
 		{
-			if (log.IsDebugEnabled)
+			if (Log.IsDebugEnabled)
 			{
-				log.Debug("addJoinByPathMap() : " + path + " -> " + destination);
+				Log.Debug("addJoinByPathMap() : " + path + " -> " + destination);
 			}
 
 			_fromElementsByPath.Add(path, destination);
@@ -134,9 +134,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public void AddCollectionJoinFromElementByPath(string path, FromElement destination)
 		{
-			if (log.IsDebugEnabled)
+			if (Log.IsDebugEnabled)
 			{
-				log.Debug("addCollectionJoinFromElementByPath() : " + path + " -> " + destination);
+				Log.Debug("addCollectionJoinFromElementByPath() : " + path + " -> " + destination);
 			}
 			_collectionJoinFromElementsByPath.Add(path, destination);	// Add the new node to the map so that we don't create it twice.
 		}

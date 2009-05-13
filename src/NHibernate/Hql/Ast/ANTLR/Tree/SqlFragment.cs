@@ -37,7 +37,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set { _fromElement = value; }
 		}
 
-		public override SqlString RenderText(NHibernate.Engine.ISessionFactoryImplementor sessionFactory)
+		public override SqlString RenderText(Engine.ISessionFactoryImplementor sessionFactory)
 		{
 			return SqlString.Parse(Text);
 		}

@@ -20,18 +20,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class DotNode : FromReferenceNode, ISelectExpression 
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(DotNode));
+		private static readonly ILog Log = LogManager.GetLogger(typeof(DotNode));
 
-		private const int DEREF_UNKNOWN = 0;
-		private const int DEREF_ENTITY = 1;
-		private const int DEREF_COMPONENT = 2;
-		private const int DEREF_COLLECTION = 3;
-		private const int DEREF_PRIMITIVE = 4;
-		private const int DEREF_IDENTIFIER = 5;
-		private const int DEREF_JAVA_CONSTANT = 6;
+		private const int DerefUnknown = 0;
+		private const int DerefEntity = 1;
+		private const int DerefComponent = 2;
+		private const int DerefCollection = 3;
+		private const int DerefPrimitive = 4;
+		private const int DerefIdentifier = 5;
+		private const int DerefJavaConstant = 6;
 
-		public static bool UseThetaStyleImplicitJoins = false;
-		public static bool REGRESSION_STYLE_JOIN_SUPPRESSION = false;
+		public static bool UseThetaStyleImplicitJoins;
+		public static bool REGRESSION_STYLE_JOIN_SUPPRESSION;
 
 		/// <summary>
 		/// The full path, to the root alias of this dot node.
@@ -41,7 +41,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <summary>
 		/// The type of dereference that hapened (DEREF_xxx).
 		/// </summary>
-		private int _dereferenceType = DEREF_UNKNOWN;
+		private int _dereferenceType = DerefUnknown;
 
 		/// <summary>
 		/// The identifier that is the name of the property.
@@ -109,7 +109,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					else
 					{
 						SqlNode rhs = (SqlNode) lhs.NextSibling;
-						_path = lhs.Path + "." + rhs.getOriginalText();
+						_path = lhs.Path + "." + rhs.OriginalText;
 					}
 				}
 				return _path;
@@ -138,7 +138,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			IType propertyType = PrepareLhs();			// Prepare the left hand side and get the data type.
 
-			DereferenceCollection( ( CollectionType ) propertyType, true, true, null, parent );
+			DereferenceCollection( ( CollectionType ) propertyType, true, true, null);
 		}
 
 		public override void ResolveFirstChild()
@@ -181,7 +181,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
             else
             {
                 ResolveFirstChild();
-                base.Resolve(generateJoin, implicitJoin);
+                Resolve(generateJoin, implicitJoin);
             }
         }
 
@@ -226,7 +226,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				// The property is a collection...
 				CheckLhsIsNotCollection();
-				DereferenceCollection((CollectionType)propertyType, implicitJoin, false, classAlias, parent);
+				DereferenceCollection((CollectionType)propertyType, implicitJoin, false, classAlias);
 			}
 			else
 			{
@@ -235,13 +235,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				{
 					CheckLhsIsNotCollection();
 				}
-				_dereferenceType = DEREF_PRIMITIVE;
+				_dereferenceType = DerefPrimitive;
 				InitText();
 			}
 
 			IsResolved = true;
 		}
 
+		
 		public FromReferenceNode GetLhs()
 		{
 			FromReferenceNode lhs = ((FromReferenceNode)GetChild(0));
@@ -252,7 +253,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return lhs;
 		}
 
-		public IType getDataType()
+		public IType GetDataType()
 		{
 			if (DataType == null)
 			{
@@ -265,20 +266,21 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 				// If the lhs is a collection, use CollectionPropertyMapping
 				IType propertyType = fromElement.GetPropertyType(_propertyName, _propertyPath);
-				if (log.IsDebugEnabled)
+				if (Log.IsDebugEnabled)
 				{
-					log.Debug("getDataType() : " + _propertyPath + " -> " + propertyType);
+					Log.Debug("getDataType() : " + _propertyPath + " -> " + propertyType);
 				}
 
 				DataType = propertyType;
 			}
+
 			return DataType;
 		}
 
 		public void SetResolvedConstant(string text)
 		{
 			_path = text;
-			_dereferenceType = DEREF_JAVA_CONSTANT;
+			_dereferenceType = DerefJavaConstant;
 			IsResolved = true; // Don't resolve the node again.
 		}
 
@@ -288,13 +290,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return new QueryException("illegal attempt to dereference collection [" + lhsPath + "] with element property reference [" + propertyName + "]");
 		}
 
-		private void DereferenceCollection(CollectionType collectionType, bool implicitJoin, bool indexed, string classAlias, IASTNode parent)
+		private void DereferenceCollection(CollectionType collectionType, bool implicitJoin, bool indexed, string classAlias)
 		{
-			_dereferenceType = DEREF_COLLECTION;
+			_dereferenceType = DerefCollection;
 			string role = collectionType.Role;
 
 			//foo.bars.size (also handles deprecated stuff like foo.bars.maxelement for backwardness)
-			IASTNode sibling = this.NextSibling;
+			IASTNode sibling = NextSibling;
 			bool isSizeProperty = sibling != null && CollectionProperties.IsAnyCollectionProperty( sibling.Text );
 
 			if (isSizeProperty)
@@ -330,9 +332,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			);
 			FromElement elem = factory.CreateCollection( queryableCollection, role, _joinType, _fetch, indexed );
 
-			if ( log.IsDebugEnabled ) 
+			if ( Log.IsDebugEnabled ) 
 			{
-				log.Debug( "dereferenceCollection() : Created new FROM element for " + propName + " : " + elem );
+				Log.Debug( "dereferenceCollection() : Created new FROM element for " + propName + " : " + elem );
 			}
 
 			SetImpliedJoin( elem );
@@ -422,9 +424,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			// special shortcut for id properties, skip the join!
 			// this must only occur at the _end_ of a path expression
-			if (log.IsDebugEnabled)
+			if (Log.IsDebugEnabled)
 			{
-				log.Debug("dereferenceShortcut() : property " +
+				Log.Debug("dereferenceShortcut() : property " +
 					propertyName + " in " + FromElement.ClassName +
 					" does not require a join.");
 			}
@@ -434,7 +436,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// Set the text for the parent.
 			if (dotParent != null)
 			{
-				dotParent._dereferenceType = DEREF_IDENTIFIER;
+				dotParent._dereferenceType = DerefIdentifier;
 				dotParent.Text = Text;
 				dotParent._columns = GetColumns();
 			}
@@ -442,10 +444,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private void DereferenceEntityJoin(string classAlias, EntityType propertyType, bool impliedJoin, IASTNode parent)
 		{
-			_dereferenceType = DEREF_ENTITY;
-			if ( log.IsDebugEnabled ) 
+			_dereferenceType = DerefEntity;
+			if ( Log.IsDebugEnabled ) 
 			{
-				log.Debug( "dereferenceEntityJoin() : generating join for " + _propertyName + " in "
+				Log.Debug( "dereferenceEntityJoin() : generating join for " + _propertyName + " in "
 						+ FromElement.ClassName + " "
 						+ ( ( classAlias == null ) ? "{no alias}" : "(" + classAlias + ")" )
 						+ " parent = " + ASTUtil.GetDebugstring( parent )
@@ -586,9 +588,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			if (IsCorrelatedSubselect)
 			{
-				if (log.IsDebugEnabled)
+				if (Log.IsDebugEnabled)
 				{
-					log.Debug(methodName + "() : correlated subquery");
+					Log.Debug(methodName + "() : correlated subquery");
 				}
 			}
 		}
@@ -612,12 +614,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			FromReferenceNode lhs = GetLhs();
 			lhs.PrepareForDot( _propertyName );
-			return getDataType();
+			return GetDataType();
 		}
 
 		private void DereferenceComponent(IASTNode parent)
 		{
-			_dereferenceType = DEREF_COMPONENT;
+			_dereferenceType = DerefComponent;
 			SetPropertyNameAndPath(parent);
 		}
 
@@ -631,16 +633,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				_propertyName = rhs.Text;
 				_propertyPath = _propertyPath + "." + _propertyName; // Append the new property name onto the unresolved path.
 				dotNode._propertyPath = _propertyPath;
-				if (log.IsDebugEnabled)
+				if (Log.IsDebugEnabled)
 				{
-					log.Debug("Unresolved property path is now '" + dotNode._propertyPath + "'");
+					Log.Debug("Unresolved property path is now '" + dotNode._propertyPath + "'");
 				}
 			}
 			else
 			{
-				if (log.IsDebugEnabled)
+				if (Log.IsDebugEnabled)
 				{
-					log.Debug("terminal propertyPath = [" + _propertyPath + "]");
+					Log.Debug("terminal propertyPath = [" + _propertyPath + "]");
 				}
 			}
 		}
@@ -693,7 +695,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			else
 			{
 				Resolve(true, false);
-				IType type = getDataType();
+				IType type = GetDataType();
 
 				if (type.IsEntityType)
 				{

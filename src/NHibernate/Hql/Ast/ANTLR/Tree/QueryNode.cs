@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class QueryNode : AbstractRestrictableStatement, ISelectExpression
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(QueryNode));
+		private static readonly ILog Log = LogManager.GetLogger(typeof(QueryNode));
 
 		private OrderByClause _orderByClause;
 
@@ -19,7 +19,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		protected override ILog GetLog()
 		{
-			return log;
+			return Log;
 		}
 
 		protected override int GetWhereClauseParentTokenType()
@@ -89,16 +89,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// if there is no order by, make one
 				if (_orderByClause == null)
 				{
-					log.Debug( "getOrderByClause() : Creating a new ORDER BY clause" );
+					Log.Debug( "getOrderByClause() : Creating a new ORDER BY clause" );
 					_orderByClause = (OrderByClause) Walker.ASTFactory.CreateNode(HqlSqlWalker.ORDER, "ORDER");
 
 					// Find the WHERE; if there is no WHERE, find the FROM...
-					IASTNode prevSibling = ASTUtil.FindTypeInChildren(this, HqlSqlWalker.WHERE);
-
-					if ( prevSibling == null ) 
-					{
-						prevSibling = ASTUtil.FindTypeInChildren(this, HqlSqlWalker.FROM);
-					}
+					IASTNode prevSibling = ASTUtil.FindTypeInChildren(this, HqlSqlWalker.WHERE) ??
+					                       ASTUtil.FindTypeInChildren(this, HqlSqlWalker.FROM);
 
 					// Now, inject the newly built ORDER BY into the tree
 					prevSibling.AddSibling(_orderByClause);

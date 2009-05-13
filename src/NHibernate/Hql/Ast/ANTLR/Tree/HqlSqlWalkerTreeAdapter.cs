@@ -170,10 +170,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 				return dupped;
 			}
-			else
-			{
-				throw new NotImplementedException();
-			}
+
+			throw new NotImplementedException();
 		}
 
 		private void Initialise(object node)

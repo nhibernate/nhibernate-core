@@ -14,10 +14,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class IdentNode : FromReferenceNode, ISelectExpression
 	{
-		private static int UNKNOWN = 0;
-		private static int PROPERTY_REF = 1;
-		private static int COMPONENT_REF = 2;
-		private bool _nakedPropertyRef = false;
+		private const int Unknown = 0;
+		private const int PropertyRef = 1;
+		private const int ComponentRef = 2;
+		private bool _nakedPropertyRef;
 
 		public IdentNode(IToken token) : base(token)
 		{
@@ -81,7 +81,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				throw new InvalidOperationException();
 			}
 
-			string propertyName = getOriginalText();
+			string propertyName = OriginalText;
 			if (!DataType.IsCollectionType) 
 			{
 				throw new SemanticException("Collection expected; [" + propertyName + "] does not refer to a collection property");
@@ -92,21 +92,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string role = type.Role;
 			IQueryableCollection queryableCollection = SessionFactoryHelper.RequireQueryableCollection(role);
 
-			string alias = null;  // DotNode uses null here...
 			string columnTableAlias = FromElement.TableAlias;
-			JoinType joinType = JoinType.InnerJoin;
-			bool fetch = false;
 
 			FromElementFactory factory = new FromElementFactory(
 				  	Walker.CurrentFromClause,
 					FromElement,
 					propertyName,
-					alias,
+					null,
 					FromElement.ToColumns(columnTableAlias, propertyName, false),
 					true
 			);
 
-			FromElement elem = factory.CreateCollection(queryableCollection, role, joinType, fetch, true);
+			FromElement elem = factory.CreateCollection(queryableCollection, role, JoinType.InnerJoin, false, true);
 			FromElement = elem;
 			Walker.AddQuerySpaces(queryableCollection.CollectionSpaces);	// Always add the collection's query spaces.
 		}
@@ -128,7 +125,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					DotNode dot = (DotNode)parent;
 					if (parent.GetFirstChild() == this)
 					{
-						if (ResolveAsNakedComponentPropertyRefLHS(dot))
+						if (ResolveAsNakedComponentPropertyRefLhs(dot))
 						{
 							// we are the LHS of the DOT representing a naked comp-prop-ref
 							IsResolved = true;
@@ -136,7 +133,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					}
 					else
 					{
-						if (ResolveAsNakedComponentPropertyRefRHS(dot))
+						if (ResolveAsNakedComponentPropertyRefRhs(dot))
 						{
 							// we are the RHS of the DOT representing a naked comp-prop-ref
 							IsResolved = true;
@@ -146,12 +143,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				else
 				{
 					int result = ResolveAsNakedPropertyRef();
-					if (result == PROPERTY_REF)
+					if (result == PropertyRef)
 					{
 						// we represent a naked (simple) prop-ref
 						IsResolved = true;
 					}
-					else if (result == COMPONENT_REF)
+					else if (result == ComponentRef)
 					{
 						// EARLY EXIT!!!  return so the resolve call explicitly coming from DotNode can
 						// resolve this...
@@ -184,25 +181,25 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if (fromElement == null)
 			{
-				return UNKNOWN;
+				return Unknown;
 			}
 
 			IQueryable persister = fromElement.Queryable;
 			if (persister == null)
 			{
-				return UNKNOWN;
+				return Unknown;
 			}
 
 			IType propertyType = GetNakedPropertyType(fromElement);
 			if (propertyType == null)
 			{
 				// assume this ident's text does *not* refer to a property on the given persister
-				return UNKNOWN;
+				return Unknown;
 			}
 
 			if ((propertyType.IsComponentType || propertyType.IsAssociationType))
 			{
-				return COMPONENT_REF;
+				return ComponentRef;
 			}
 
 			FromElement = fromElement;
@@ -220,10 +217,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			DataType = propertyType;
 			_nakedPropertyRef = true;
 
-			return PROPERTY_REF;
+			return PropertyRef;
 		}
 
-		private bool ResolveAsNakedComponentPropertyRefLHS(DotNode parent)
+		private bool ResolveAsNakedComponentPropertyRefLhs(DotNode parent)
 		{
 			FromElement fromElement = LocateSingleFromElement();
 			if (fromElement == null)
@@ -235,15 +232,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if (componentType == null)
 			{
-				throw new QueryException("Unable to resolve path [" + parent.Path + "], unexpected token [" + getOriginalText() + "]");
+				throw new QueryException("Unable to resolve path [" + parent.Path + "], unexpected token [" + OriginalText + "]");
 			}
 			if (!componentType.IsComponentType)
 			{
-				throw new QueryException("Property '" + getOriginalText() + "' is not a component.  Use an alias to reference associations or collections.");
+				throw new QueryException("Property '" + OriginalText + "' is not a component.  Use an alias to reference associations or collections.");
 			}
 
 			IType propertyType ;  // used to set the type of the parent dot node
-			string propertyPath = Text + "." + this.NextSibling.Text;
+			string propertyPath = Text + "." + NextSibling.Text;
 			try
 			{
 				// check to see if our "propPath" actually
@@ -263,7 +260,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return true;
 		}
 
-		private bool ResolveAsNakedComponentPropertyRefRHS(DotNode parent)
+		private bool ResolveAsNakedComponentPropertyRefRhs(DotNode parent)
 		{
 			FromElement fromElement = LocateSingleFromElement();
 			if (fromElement == null)
@@ -302,7 +299,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				return null;
 			}
 
-			string property = getOriginalText();
+			string property = OriginalText;
 			IType propertyType = null;
 
 			try

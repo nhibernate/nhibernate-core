@@ -8,9 +8,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public abstract class FromReferenceNode : AbstractSelectExpression, IResolvableNode, IDisplayableNode, IPathNode
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(FromReferenceNode));
+		private static readonly ILog Log = LogManager.GetLogger(typeof(FromReferenceNode));
 
-		public static int ROOT_LEVEL = 0;
+		public const int RootLevel = 0;
 		private FromElement _fromElement;
 		private bool _resolved;
 
@@ -35,9 +35,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set
 			{
 				_resolved = true;
-				if (log.IsDebugEnabled)
+				if (Log.IsDebugEnabled)
 				{
-					log.Debug("Resolved :  " + Path + " -> " + Text);
+					Log.Debug("Resolved :  " + Path + " -> " + Text);
 				}
 			}
 		}
@@ -71,7 +71,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public virtual string Path
 		{
-			get { return getOriginalText(); }
+			get { return OriginalText; }
 		}
 
 		public void RecursiveResolve(int level, bool impliedAtRoot, string classAlias, IASTNode parent)
@@ -87,7 +87,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			ResolveFirstChild();
 			bool impliedJoin = true;
 
-			if ( level == ROOT_LEVEL && !impliedAtRoot ) 
+			if ( level == RootLevel && !impliedAtRoot ) 
 			{
 				impliedJoin = false;
 			}

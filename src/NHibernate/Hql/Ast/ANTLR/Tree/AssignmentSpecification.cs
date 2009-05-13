@@ -17,11 +17,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class AssignmentSpecification
 	{
-		private readonly IASTNode eq;
-		private readonly ISessionFactoryImplementor factory;
-		private readonly ISet<string> tableNames;
-		private readonly IParameterSpecification[] hqlParameters;
-		private SqlString sqlAssignmentString;
+		private readonly IASTNode _eq;
+		private readonly ISessionFactoryImplementor _factory;
+		private readonly ISet<string> _tableNames;
+		private readonly IParameterSpecification[] _hqlParameters;
+		private SqlString _sqlAssignmentString;
 
 		public AssignmentSpecification(IASTNode eq, IQueryable persister)
 		{
@@ -30,8 +30,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				throw new QueryException("assignment in set-clause not associated with equals");
 			}
 
-			this.eq = eq;
-			factory = persister.Factory;
+			_eq = eq;
+			_factory = persister.Factory;
 
 			// Needed to bump this up to DotNode, because that is the only thing which currently
 			// knows about the property-ref path in the correct format; it is either this, or
@@ -63,30 +63,30 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				temp.Add(persister.GetSubclassTableName(persister.GetSubclassPropertyTableNumber(propertyPath)));
 			}
-			tableNames = new ImmutableSet<string>(temp);
+			_tableNames = new ImmutableSet<string>(temp);
 
 			if (rhs == null)
 			{
-				hqlParameters = new IParameterSpecification[0];
+				_hqlParameters = new IParameterSpecification[0];
 			}
 			else if (IsParam(rhs))
 			{
-				hqlParameters = new[] { ((ParameterNode)rhs).HqlParameterSpecification };
+				_hqlParameters = new[] { ((ParameterNode)rhs).HqlParameterSpecification };
 			}
 			else
 			{
 				var parameterList = ASTUtil.CollectChildren(rhs, IsParam);
-				hqlParameters = new IParameterSpecification[parameterList.Count];
+				_hqlParameters = new IParameterSpecification[parameterList.Count];
 				int i = 0;
 				foreach (ParameterNode parameterNode in parameterList)
 				{
-					hqlParameters[i++] = parameterNode.HqlParameterSpecification;
+					_hqlParameters[i++] = parameterNode.HqlParameterSpecification;
 				}
 			}
 		}
 		public bool AffectsTable(string tableName)
 		{
-			return tableNames.Contains(tableName);
+			return _tableNames.Contains(tableName);
 		}
 
 		private static bool IsParam(IASTNode node)
@@ -124,27 +124,27 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public IParameterSpecification[] Parameters
 		{
-			get{return hqlParameters;}
+			get{return _hqlParameters;}
 		}
 
 		public SqlString SqlAssignmentFragment
 		{
 			get
 			{
-				if (sqlAssignmentString == null)
+				if (_sqlAssignmentString == null)
 				{
 					try
 					{
-						var gen = new SqlGenerator(factory, new CommonTreeNodeStream(eq));
+						var gen = new SqlGenerator(_factory, new CommonTreeNodeStream(_eq));
 						gen.comparisonExpr(false); // false indicates to not generate parens around the assignment
-						sqlAssignmentString = gen.GetSQL();
+						_sqlAssignmentString = gen.GetSQL();
 					}
 					catch (Exception t)
 					{
 						throw new QueryException("cannot interpret set-clause assignment", t);
 					}
 				}
-				return sqlAssignmentString;
+				return _sqlAssignmentString;
 			}
 
 		}

@@ -7,8 +7,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class ImpliedFromElement : FromElement
 	{
-	    private bool _impliedInFromClause = false;
-        private bool _inProjectionList = false;
+	    private bool _impliedInFromClause;
+        private bool _inProjectionList;
 
 		public ImpliedFromElement(IToken token) : base(token)
 		{

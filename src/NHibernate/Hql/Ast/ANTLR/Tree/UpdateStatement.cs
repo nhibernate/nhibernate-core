@@ -12,7 +12,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class UpdateStatement : AbstractRestrictableStatement
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (UpdateStatement));
+		private static readonly ILog Log = LogManager.GetLogger(typeof (UpdateStatement));
 
 		public UpdateStatement(IToken token) : base(token) {}
 
@@ -33,7 +33,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		protected override ILog GetLog()
 		{
-			return log;
+			return Log;
 		}
 
 		protected override int GetWhereClauseParentTokenType()

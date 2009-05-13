@@ -19,11 +19,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class FromElementType
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(FromElementType));
+		private static readonly ILog Log = LogManager.GetLogger(typeof(FromElementType));
 
-		private FromElement _fromElement;
-		private IEntityPersister _persister;
-		private EntityType _entityType;
+		private readonly FromElement _fromElement;
+		private readonly IEntityPersister _persister;
+		private readonly EntityType _entityType;
 		private IQueryableCollection _queryableCollection;
 		private CollectionPropertyMapping _collectionPropertyMapping;
 		private JoinSequence _joinSequence;
@@ -170,7 +170,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public string RenderScalarIdentifierSelect(int i)
 		{
 			CheckInitialized();
-			string[] cols = GetPropertyMapping(NHibernate.Persister.Entity.EntityPersister.EntityID).ToColumns(TableAlias, NHibernate.Persister.Entity.EntityPersister.EntityID);
+			string[] cols = GetPropertyMapping(Persister.Entity.EntityPersister.EntityID).ToColumns(TableAlias, Persister.Entity.EntityPersister.EntityID);
 			StringBuilder buf = new StringBuilder();
 			// For property references generate <tablealias>.<columnname> as <projectionalias>
 			for (int j = 0; j < cols.Length; j++)
@@ -302,7 +302,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			if (_queryableCollection.ElementType.IsComponentType)
 			{
 				// Collection of components.
-				if (propertyName == NHibernate.Persister.Entity.EntityPersister.EntityID)
+				if (propertyName == Persister.Entity.EntityPersister.EntityID)
 				{
 					return (IPropertyMapping)_queryableCollection.OwnerEntityPersister;
 				}
@@ -394,11 +394,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 						enabledFilters,
 						propertyMapping.ToColumns(tableAlias, path)
 				);
-				if (log.IsDebugEnabled)
+				if (Log.IsDebugEnabled)
 				{
-					log.Debug("toColumns(" + tableAlias + "," + path + ") : subquery = " + subquery);
+					Log.Debug("toColumns(" + tableAlias + "," + path + ") : subquery = " + subquery);
 				}
-				return new string[] { "(" + subquery + ")" };
+				return new [] { "(" + subquery + ")" };
 			}
 			else
 			{
@@ -429,15 +429,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					//              B) otherwise, we need to use the persister's
 					//                  table name as the column qualification
 					//      2) otherwise (not correlated), use the given alias
-					if (isCorrelation())
+					if (IsCorrelation)
 					{
-						if (isMultiTable())
+						if (IsMultiTable)
 						{
 							return propertyMapping.ToColumns(tableAlias, path);
 						}
 						else
 						{
-							return propertyMapping.ToColumns(extractTableName(), path);
+							return propertyMapping.ToColumns(ExtractTableName(), path);
 						}
 					}
 					else
@@ -448,7 +448,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				else
 				{
 					string[] columns = propertyMapping.ToColumns(path);
-					log.Info("Using non-qualified column reference [" + path + " -> (" + ArrayHelper.ToString(columns) + ")]");
+					Log.Info("Using non-qualified column reference [" + path + " -> (" + ArrayHelper.ToString(columns) + ")]");
 					return columns;
 				}
 			}
@@ -470,21 +470,27 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_fromElement.CheckInitialized();
 		}
 
-		private bool isCorrelation()
+		private bool IsCorrelation
 		{
-			FromClause top = _fromElement.Walker.GetFinalFromClause();
-			return _fromElement.FromClause != _fromElement.Walker.CurrentFromClause &&
-				   _fromElement.FromClause == top;
+			get
+			{
+				FromClause top = _fromElement.Walker.GetFinalFromClause();
+				return _fromElement.FromClause != _fromElement.Walker.CurrentFromClause &&
+				       _fromElement.FromClause == top;
+			}
 		}
 
-		private bool isMultiTable()
+		private bool IsMultiTable
 		{
-			// should be safe to only ever expect EntityPersister references here
-			return _fromElement.Queryable != null &&
-				   _fromElement.Queryable.IsMultiTable;
+			get
+			{
+				// should be safe to only ever expect EntityPersister references here
+				return _fromElement.Queryable != null &&
+				       _fromElement.Queryable.IsMultiTable;
+			}
 		}
 
-		private string extractTableName()
+		private string ExtractTableName()
 		{
 			// should be safe to only ever expect EntityPersister references here
 			return _fromElement.Queryable.TableName;

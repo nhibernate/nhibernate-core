@@ -13,7 +13,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class FromElementFactory
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(FromElementFactory));
+		private static readonly ILog Log = LogManager.GetLogger(typeof(FromElementFactory));
 
 		private readonly FromClause _fromClause;
 		private readonly FromElement _origin;
@@ -107,9 +107,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				FromElement parentFromElement,
 				string classAlias)
 		{
-			if (log.IsDebugEnabled)
+			if (Log.IsDebugEnabled)
 			{
-				log.Debug("createFromElementInSubselect() : path = " + path);
+				Log.Debug("createFromElementInSubselect() : path = " + path);
 			}
 
 			// Create an DotNode AST for the path and resolve it.
@@ -119,23 +119,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// If the first identifier in the path referrs to the class alias (not the class name), then this
 			// is a correlated subselect.  If it's a correlated sub-select, use the existing table alias.  Otherwise
 			// generate a new one.
-			string tableAlias;
 			bool correlatedSubselect = pathAlias == parentFromElement.ClassAlias;
-			if (correlatedSubselect)
-			{
-				tableAlias = fromElement.TableAlias;
-			}
-			else
-			{
-				tableAlias = null;
-			}
+			
+			string tableAlias = correlatedSubselect ? fromElement.TableAlias : null;
 
 			// If the from element isn't in the same clause, create a new from element.
 			if (fromElement.FromClause != _fromClause)
 			{
-				if (log.IsDebugEnabled)
+				if (Log.IsDebugEnabled)
 				{
-					log.Debug("createFromElementInSubselect() : creating a new FROM element...");
+					Log.Debug("createFromElementInSubselect() : creating a new FROM element...");
 				}
 
 				fromElement = CreateFromElement(entityPersister);
@@ -148,9 +141,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 								tableAlias
 				);
 			}
-			if (log.IsDebugEnabled)
+			if (Log.IsDebugEnabled)
 			{
-				log.Debug("createFromElementInSubselect() : " + path + " -> " + fromElement);
+				Log.Debug("createFromElementInSubselect() : " + path + " -> " + fromElement);
 			}
 
 			return fromElement;
@@ -234,8 +227,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public FromElement CreateElementJoin(IQueryableCollection queryableCollection)
 		{
-			FromElement elem;
-
 			_implied = true; //TODO: always true for now, but not if we later decide to support elements() in the from clause
 			_inElementsFunction = true;
 
@@ -249,21 +240,19 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_queryableCollection = queryableCollection;
 
 			SessionFactoryHelperExtensions sfh = _fromClause.SessionFactoryHelper;
-			FromElement destination = null;
-			string tableAlias = null;
 			IEntityPersister entityPersister = queryableCollection.ElementPersister;
-			tableAlias = _fromClause.AliasGenerator.CreateName(entityPersister.EntityName);
+			string tableAlias = _fromClause.AliasGenerator.CreateName(entityPersister.EntityName);
 			string associatedEntityName = entityPersister.EntityName;
 			IEntityPersister targetEntityPersister = sfh.RequireClassPersister(associatedEntityName);
 
 			// Create the FROM element for the target (the elements of the collection).
-			destination = CreateAndAddFromElement(
-							associatedEntityName,
-							_classAlias,
-							targetEntityPersister,
-							(EntityType)queryableCollection.ElementType,
-							tableAlias
-					);
+			FromElement destination = CreateAndAddFromElement(
+				associatedEntityName,
+				_classAlias,
+				targetEntityPersister,
+				(EntityType)queryableCollection.ElementType,
+				tableAlias
+				);
 
 			// If the join is implied, then don't include sub-classes on the element.
 			if (_implied)
@@ -284,9 +273,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			IAssociationType elementAssociationType = sfh.GetElementAssociationType(type);
 
 			// Create the join element under the from element.
-			JoinType joinType = JoinType.InnerJoin;
-			JoinSequence joinSequence = sfh.CreateJoinSequence(_implied, elementAssociationType, tableAlias, joinType, targetColumns);
-			elem = InitializeJoin(_path, destination, joinSequence, targetColumns, _origin, false);
+			JoinSequence joinSequence = sfh.CreateJoinSequence(_implied, elementAssociationType, tableAlias, JoinType.InnerJoin, targetColumns);
+			FromElement elem = InitializeJoin(_path, destination, joinSequence, targetColumns, _origin, false);
 			elem.UseFromFragment = true;	// The associated entity is implied, but it must be included in the FROM.
 			elem.CollectionTableAlias = roleAlias;	// The collection alias is the role.
 			return elem;
@@ -310,9 +298,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// multi-table entity
 			if (_implied && !elem.UseFromFragment)
 			{
-				if (log.IsDebugEnabled)
+				if (Log.IsDebugEnabled)
 				{
-					log.Debug("createEntityJoin() : Implied entity join");
+					Log.Debug("createEntityJoin() : Implied entity join");
 				}
 				elem.UseFromFragment = true;
 			}
@@ -355,9 +343,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// Get the class name of the associated entity.
 			if (_queryableCollection.IsOneToMany)
 			{
-				if (log.IsDebugEnabled)
+				if (Log.IsDebugEnabled)
 				{
-					log.Debug("createEntityAssociation() : One to many - path = " + _path + " role = " + role + " associatedEntityName = " + associatedEntityName);
+					Log.Debug("createEntityAssociation() : One to many - path = " + _path + " role = " + role + " associatedEntityName = " + associatedEntityName);
 				}
 
 				JoinSequence joinSequence = CreateJoinSequence(roleAlias, joinType);
@@ -366,9 +354,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else
 			{
-				if (log.IsDebugEnabled)
+				if (Log.IsDebugEnabled)
 				{
-					log.Debug("createManyToMany() : path = " + _path + " role = " + role + " associatedEntityName = " + associatedEntityName);
+					Log.Debug("createManyToMany() : path = " + _path + " role = " + role + " associatedEntityName = " + associatedEntityName);
 				}
 
 				elem = CreateManyToMany(role, associatedEntityName,
@@ -491,7 +479,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			FromReferenceNode pathNode = (FromReferenceNode)PathHelper.ParsePath(path, _fromClause.ASTFactory);
 
-			pathNode.RecursiveResolve(FromReferenceNode.ROOT_LEVEL, // This is the root level node.
+			pathNode.RecursiveResolve(FromReferenceNode.RootLevel, // This is the root level node.
 							false, // Generate an explicit from clause at the root.
 							classAlias,
 							null

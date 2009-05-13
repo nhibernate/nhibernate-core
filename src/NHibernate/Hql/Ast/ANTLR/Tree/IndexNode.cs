@@ -19,7 +19,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class IndexNode : FromReferenceNode
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(IndexNode));
+		private static readonly ILog Log = LogManager.GetLogger(typeof(IndexNode));
 
 		public IndexNode(IToken token) : base(token)
 		{
@@ -49,7 +49,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			IType type = collectionNode.DataType;
 			if ( !type.IsCollectionType ) 
 			{
-				throw new SemanticException( "The [] operator cannot be applied to type " + type.ToString() );
+				throw new SemanticException( "The [] operator cannot be applied to type " + type);
 			}
 
 			string collectionRole = ( ( CollectionType ) type ).Role;
@@ -70,17 +70,17 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				FromElementFactory factory = new FromElementFactory( fromClause, fromElement, path );
 				elem = factory.CreateCollectionElementsJoin( queryableCollection, elementTable );
-				if ( log.IsDebugEnabled )
+				if ( Log.IsDebugEnabled )
 				{
-					log.Debug( "No FROM element found for the elements of collection join path " + path
+					Log.Debug( "No FROM element found for the elements of collection join path " + path
 							+ ", created " + elem );
 				}
 			}
 			else 
 			{
-				if ( log.IsDebugEnabled ) 
+				if ( Log.IsDebugEnabled ) 
 				{
-					log.Debug( "FROM element found for collection join path " + path );
+					Log.Debug( "FROM element found for collection join path " + path );
 				}
 			}
 
@@ -170,9 +170,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			    FromReferenceNode collectionNode = ( FromReferenceNode ) GetChild(0);
 			    String path = collectionNode.Path + "[]." + propertyName;
 
-			    if (log.IsDebugEnabled) 
+			    if (Log.IsDebugEnabled) 
                 {
-				    log.Debug( "Creating join for many-to-many elements for " + path );
+				    Log.Debug( "Creating join for many-to-many elements for " + path );
 			    }
 
 			    FromElementFactory factory = new FromElementFactory( fromElement.FromClause, fromElement, path );

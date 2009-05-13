@@ -12,7 +12,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class BooleanLiteralNode : LiteralNode, IExpectedTypeAwareNode 
 	{
-		private IType expectedType;
+		private IType _expectedType;
 
 		public BooleanLiteralNode(IToken token) : base(token)
 		{
@@ -22,7 +22,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			get
 			{
-				return expectedType ?? NHibernateUtil.Boolean;
+				return _expectedType ?? NHibernateUtil.Boolean;
 			}
 			set
 			{
@@ -46,8 +46,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		 */
 		public IType ExpectedType
 		{
-			get { return expectedType; }
-			set { expectedType = value; }
+			get { return _expectedType; }
+			set { _expectedType = value; }
 		}
 
 		public override SqlString RenderText(ISessionFactoryImplementor sessionFactory) 

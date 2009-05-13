@@ -16,9 +16,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 		}
 
-		public IASTNode getInList()
+		public IASTNode InList
 		{
-			return RightHandOperand;
+			get { return RightHandOperand; }
 		}
 
 		public override void Initialize()
@@ -29,7 +29,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				throw new SemanticException("left-hand operand of in operator was null");
 			}
 
-			IASTNode inList = getInList();
+			IASTNode inList = InList;
 			if (inList == null)
 			{
 				throw new SemanticException("right-hand operand of in operator was null");

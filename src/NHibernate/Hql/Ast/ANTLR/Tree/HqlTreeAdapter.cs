@@ -189,10 +189,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 				return dupped;
 			}
-			else
-			{
-				return base.DupNode(t);
-			}
+
+			return base.DupNode(t);
 		}
 
 		void Initialise(object node)

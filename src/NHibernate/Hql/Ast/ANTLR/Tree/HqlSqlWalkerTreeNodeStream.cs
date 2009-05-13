@@ -61,33 +61,32 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// We are at the end
 				return 0;
 			}
-			else if (nodes[parentIndex + 1] != down)
+			
+			if (nodes[parentIndex + 1] != down)
 			{
 				// Next node is not a DOWN node, so we have no children
 				return 0;
 			}
-			else
+
+			// Count the DOWNs & UPs
+			int downCount = 0;
+			int index = 1;
+			do
 			{
-				// Count the DOWNs & UPs
-				int downCount = 0;
-				int index = 1;
-				do
+				if (nodes[parentIndex + index] == down)
 				{
-					if (nodes[parentIndex + index] == down)
-					{
-						downCount++;
-					}
-					else if (nodes[parentIndex + index] == up)
-					{
-						downCount--;
-					}
+					downCount++;
+				}
+				else if (nodes[parentIndex + index] == up)
+				{
+					downCount--;
+				}
 
-					index++;
-					
-				} while (downCount > 0);
+				index++;
+				
+			} while (downCount > 0);
 
-				return index - 1;
-			}
+			return index - 1;
 		}
 	}
 }

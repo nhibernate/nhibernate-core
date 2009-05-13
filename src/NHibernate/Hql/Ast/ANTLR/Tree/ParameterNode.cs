@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 using Antlr.Runtime;
 using NHibernate.Engine;
 using NHibernate.Param;
@@ -49,7 +48,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public override SqlString RenderText(ISessionFactoryImplementor sessionFactory)
 		{
-			int count = 0;
+			int count;
 			if (ExpectedType != null && (count = ExpectedType.GetColumnSpan(sessionFactory)) > 1)
 			{
 				SqlStringBuilder buffer = new SqlStringBuilder();

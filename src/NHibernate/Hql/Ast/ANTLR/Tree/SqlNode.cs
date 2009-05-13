@@ -55,9 +55,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return new SqlString(Text);
 		}
 
-		public string getOriginalText()
+		public string OriginalText
 		{
-			return _originalText;
+			get { return _originalText; }
 		}
 
 		public virtual IType DataType

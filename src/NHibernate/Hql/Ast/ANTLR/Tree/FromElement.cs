@@ -16,7 +16,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class FromElement : HqlSqlWalkerNode, IDisplayableNode, IParameterContainer
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(FromElement));
+		private static readonly ILog Log = LogManager.GetLogger(typeof(FromElement));
 
 		private bool _isAllPropertyFetch;
 		private FromElementType _elementType;
@@ -27,17 +27,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private FromClause _fromClause;
 		private string[] _columns;
 		private FromElement _origin;
-		private bool _manyToMany;
 		private bool _useFromFragment;
 		private bool _useWhereFragment = true;
 		private bool _includeSubclasses = true;
-		private List<FromElement> _destinations = new List<FromElement>();
+		private readonly List<FromElement> _destinations = new List<FromElement>();
 		private bool _dereferencedBySubclassProperty;
 		private bool _dereferencedBySuperclassProperty;
 		private bool _collectionJoin;
 		private string _role;
-		private int sequence = -1;
-		private bool initialized = false;
+		private bool _initialized;
 		private string _withClauseFragment;
 		private string _withClauseJoinAlias;
 		private bool _filter;
@@ -98,7 +96,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public bool Filter
 		{
-			set { _filter = true; }
+			set { _filter = value; }
 		}
 
 		public bool IsFilter
@@ -307,7 +305,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return _elementType.RenderPropertySelect(size, k, IsAllPropertyFetch);
 		}
 
-		public override SqlString RenderText(NHibernate.Engine.ISessionFactoryImplementor sessionFactory)
+		public override SqlString RenderText(Engine.ISessionFactoryImplementor sessionFactory)
 		{
 			return SqlString.Parse(Text);
 		}
@@ -351,9 +349,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				if (IsDereferencedBySuperclassOrSubclassProperty)
 				{
-					if (!_includeSubclasses && log.IsInfoEnabled)
+					if (!_includeSubclasses && Log.IsInfoEnabled)
 					{
-						log.Info("attempt to disable subclass-inclusions", new Exception("stack-trace source"));
+						Log.Info("attempt to disable subclass-inclusions", new Exception("stack-trace source"));
 					}
 				}
 				_includeSubclasses = value;
@@ -485,9 +483,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				{
 					Declarer propertyDeclarer = persister.GetSubclassPropertyDeclarer(propertyName);
 
-					if (log.IsInfoEnabled)
+					if (Log.IsInfoEnabled)
 					{
-						log.Info("handling property dereference [" + persister.EntityName + " (" + ClassAlias + ") -> " + propertyName + " (" + propertyDeclarer + ")]");
+						Log.Info("handling property dereference [" + persister.EntityName + " (" + ClassAlias + ") -> " + propertyName + " (" + propertyDeclarer + ")]");
 					}
 					if (propertyDeclarer == Declarer.SubClass)
 					{
@@ -511,7 +509,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public void SetOrigin(FromElement origin, bool manyToMany)
 		{
 			_origin = origin;
-			_manyToMany = manyToMany;
 			origin.AddDestination(this);
 
 			if (origin.FromClause == FromClause)
@@ -551,9 +548,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			if (IsDereferencedBySuperclassOrSubclassProperty)
 			{
-				if (!includeSubclasses && log.IsInfoEnabled)
+				if (!includeSubclasses && Log.IsInfoEnabled)
 				{
-					log.Info("attempt to disable subclass-inclusions", new Exception("stack-trace source"));
+					Log.Info("attempt to disable subclass-inclusions", new Exception("stack-trace source"));
 				}
 			}
 			_includeSubclasses = includeSubclasses;
@@ -571,7 +568,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public void InitializeCollection(FromClause fromClause, string classAlias, string tableAlias)
 		{
 			DoInitialize(fromClause, tableAlias, null, classAlias, null, null);
-			initialized = true;
+			_initialized = true;
 		}
 
 		public void InitializeEntity(FromClause fromClause,
@@ -582,13 +579,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 									string tableAlias)
 		{
 			DoInitialize(fromClause, tableAlias, className, classAlias, persister, type);
-			this.sequence = fromClause.NextFromElementCounter();
-			initialized = true;
+			_initialized = true;
 		}
 
 		public void CheckInitialized()
 		{
-			if (!initialized)
+			if (!_initialized)
 			{
 				throw new InvalidOperationException("FromElement has not been initialized!");
 			}
@@ -632,7 +628,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private void DoInitialize(FromClause fromClause, string tableAlias, string className, string classAlias,
 								  IEntityPersister persister, EntityType type)
 		{
-			if (initialized)
+			if (_initialized)
 			{
 				throw new InvalidOperationException("Already initialized!!");
 			}
@@ -645,9 +641,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// Register the FromElement with the FROM clause, now that we have the names and aliases.
 			fromClause.RegisterFromElement(this);
 
-			if (log.IsDebugEnabled)
+			if (Log.IsDebugEnabled)
 			{
-				log.Debug(fromClause + " :  " + className + " ("
+				Log.Debug(fromClause + " :  " + className + " ("
 						+ (classAlias ?? "no alias") + ") -> " + tableAlias);
 			}
 		}
