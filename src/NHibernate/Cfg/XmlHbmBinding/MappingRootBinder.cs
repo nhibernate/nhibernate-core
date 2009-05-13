@@ -33,9 +33,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			AddTypeDefs(mappingSchema);
 
 			AddRootClasses(node, inheritedMetas);
-			AddSubclasses(node);
-			AddJoinedSubclasses(node);
-			AddUnionSubclasses(node);
+			AddSubclasses(node, inheritedMetas);
+			AddJoinedSubclasses(node, inheritedMetas);
+			AddUnionSubclasses(node, inheritedMetas);
 
 			AddQueries(mappingSchema);
 			AddSqlQueries(mappingSchema);
@@ -73,28 +73,28 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				binder.Bind(node, Deserialize<HbmClass>(node), inheritedMetas);
 		}
 
-		private void AddUnionSubclasses(XmlNode parentNode)
+		private void AddUnionSubclasses(XmlNode parentNode, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			UnionSubclassBinder binder = new UnionSubclassBinder(this, namespaceManager, dialect);
 
 			foreach (XmlNode node in parentNode.SelectNodes(HbmConstants.nsUnionSubclass, namespaceManager))
-				binder.Bind(node);
+				binder.Bind(node, inheritedMetas);
 		}
 
-		private void AddJoinedSubclasses(XmlNode parentNode)
+		private void AddJoinedSubclasses(XmlNode parentNode, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			JoinedSubclassBinder binder = new JoinedSubclassBinder(this, namespaceManager, dialect);
 
 			foreach (XmlNode node in parentNode.SelectNodes(HbmConstants.nsJoinedSubclass, namespaceManager))
-				binder.Bind(node);
+				binder.Bind(node, inheritedMetas);
 		}
 
-		private void AddSubclasses(XmlNode parentNode)
+		private void AddSubclasses(XmlNode parentNode, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			SubclassBinder binder = new SubclassBinder(this, namespaceManager, dialect);
 
 			foreach (XmlNode node in parentNode.SelectNodes(HbmConstants.nsSubclass, namespaceManager))
-				binder.Bind(node);
+				binder.Bind(node, inheritedMetas);
 		}
 
 		private void AddQueries(HbmMapping mappingSchema)

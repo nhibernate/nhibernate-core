@@ -11,7 +11,7 @@ namespace NHibernate.Mapping
 	/// etc.
 	/// </summary>
 	[Serializable]
-	public class Component : SimpleValue
+	public class Component : SimpleValue, IMetaAttributable
 	{
 		private readonly List<Property> properties = new List<Property>();
 		private System.Type componentClass;
@@ -320,5 +320,16 @@ namespace NHibernate.Mapping
 		}
 
 		public IDictionary<string, MetaAttribute> MetaAttributes { get; set; }
+
+		public MetaAttribute GetMetaAttribute(string attributeName)
+		{
+			if (MetaAttributes == null)
+			{
+				return null;
+			}
+			MetaAttribute result;
+			MetaAttributes.TryGetValue(attributeName, out result);
+			return result;
+		}
 	}
 }

@@ -96,13 +96,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					model.AddJoin(join);
 				}
 				else if ("subclass".Equals(name))
-					new SubclassBinder(this).HandleSubclass(model, subnode);
+					new SubclassBinder(this).HandleSubclass(model, subnode, inheritedMetas);
 
 				else if ("joined-subclass".Equals(name))
-					new JoinedSubclassBinder(this).HandleJoinedSubclass(model, subnode);
+					new JoinedSubclassBinder(this).HandleJoinedSubclass(model, subnode, inheritedMetas);
 
 				else if ("union-subclass".Equals(name))
-					new UnionSubclassBinder(this).HandleUnionSubclass(model, subnode);
+					new UnionSubclassBinder(this).HandleUnionSubclass(model, subnode, inheritedMetas);
 
 				else if ("filter".Equals(name))
 					ParseFilter(subnode, model);

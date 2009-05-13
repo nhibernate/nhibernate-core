@@ -76,6 +76,86 @@ namespace NHibernate.Test.MappingTest
 		}
 
 		[Test]
+		public void NonMutatedInheritance()
+		{
+			PersistentClass cm = cfg.GetClassMapping("NHibernate.Test.MappingTest.Wicked");
+			MetaAttribute metaAttribute = cm.GetMetaAttribute("globalmutated");
+
+			Assert.That(metaAttribute, Is.Not.Null);
+			/*assertEquals( metaAttribute.getValues().size(), 2 );		
+			assertEquals( "top level", metaAttribute.getValues().get(0) );*/
+			Assert.That(metaAttribute.Value, Is.EqualTo("wicked level"));
+
+			Property property = cm.GetProperty("Component");
+			MetaAttribute propertyAttribute = property.GetMetaAttribute("globalmutated");
+
+			Assert.That(propertyAttribute, Is.Not.Null);
+			/*assertEquals( propertyAttribute.getValues().size(), 3 );
+			assertEquals( "top level", propertyAttribute.getValues().get(0) );
+			assertEquals( "wicked level", propertyAttribute.getValues().get(1) );*/
+			Assert.That(propertyAttribute.Value, Is.EqualTo("monetaryamount level"));
+
+			var component = (Component)property.Value;
+			property = component.GetProperty("X");
+			propertyAttribute = property.GetMetaAttribute("globalmutated");
+
+			Assert.That(propertyAttribute, Is.Not.Null);
+			/*assertEquals( propertyAttribute.getValues().size(), 4 );
+			assertEquals( "top level", propertyAttribute.getValues().get(0) );
+			assertEquals( "wicked level", propertyAttribute.getValues().get(1) );
+			assertEquals( "monetaryamount level", propertyAttribute.getValues().get(2) );*/
+			Assert.That(propertyAttribute.Value, Is.EqualTo("monetaryamount x level"));
+
+			property = cm.GetProperty("SortedEmployee");
+			propertyAttribute = property.GetMetaAttribute("globalmutated");
+
+			Assert.That(propertyAttribute, Is.Not.Null);
+			/*assertEquals( propertyAttribute.getValues().size(), 3 );
+			assertEquals( "top level", propertyAttribute.getValues().get(0) );
+			assertEquals( "wicked level", propertyAttribute.getValues().get(1) );*/
+			Assert.That(propertyAttribute.Value, Is.EqualTo("sortedemployee level"));
+
+			property = cm.GetProperty("AnotherSet");
+			propertyAttribute = property.GetMetaAttribute("globalmutated");
+
+			Assert.That(propertyAttribute, Is.Not.Null);
+			/*assertEquals( propertyAttribute.getValues().size(), 2 );
+			assertEquals( "top level", propertyAttribute.getValues().get(0) );*/
+			Assert.That(propertyAttribute.Value, Is.EqualTo("wicked level"));
+
+			var bag = (Bag)property.Value;
+			component = (Component)bag.Element;
+
+			Assert.That(component.MetaAttributes.Count, Is.EqualTo(4));
+
+			metaAttribute = component.GetMetaAttribute("globalmutated");
+			/*assertEquals( metaAttribute.getValues().size(), 3 );
+			assertEquals( "top level", metaAttribute.getValues().get(0) );
+			assertEquals( "wicked level", metaAttribute.getValues().get(1) );*/
+			Assert.That(metaAttribute.Value, Is.EqualTo("monetaryamount anotherSet composite level"));
+
+			property = component.GetProperty("Emp");
+			propertyAttribute = property.GetMetaAttribute("globalmutated");
+
+			Assert.That(propertyAttribute, Is.Not.Null);
+			/*assertEquals( propertyAttribute.getValues().size(), 4 );
+			assertEquals( "top level", propertyAttribute.getValues().get(0) );
+			assertEquals( "wicked level", propertyAttribute.getValues().get(1) );
+			assertEquals( "monetaryamount anotherSet composite level", propertyAttribute.getValues().get(2) );*/
+			Assert.That(propertyAttribute.Value, Is.EqualTo("monetaryamount anotherSet composite property emp level"));
+
+			property = component.GetProperty("Empinone");
+			propertyAttribute = property.GetMetaAttribute("globalmutated");
+
+			Assert.That(propertyAttribute, Is.Not.Null);
+			/*assertEquals( propertyAttribute.getValues().size(), 4 );
+			assertEquals( "top level", propertyAttribute.getValues().get(0) );
+			assertEquals( "wicked level", propertyAttribute.getValues().get(1) );
+			assertEquals( "monetaryamount anotherSet composite level", propertyAttribute.getValues().get(2) );*/
+			Assert.That(propertyAttribute.Value, Is.EqualTo("monetaryamount anotherSet composite property empinone level"));
+		}
+
+		[Test]
 		public void Comparator()
 		{
 			PersistentClass cm = cfg.GetClassMapping("NHibernate.Test.MappingTest.Wicked");

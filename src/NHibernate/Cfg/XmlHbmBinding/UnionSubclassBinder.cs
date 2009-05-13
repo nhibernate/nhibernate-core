@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Xml;
 using NHibernate.Mapping;
 using NHibernate.Persister.Entity;
@@ -16,17 +17,18 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public void Bind(XmlNode node)
+		public void Bind(XmlNode node, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			PersistentClass superModel = GetSuperclass(node);
-			HandleUnionSubclass(superModel, node);
+			HandleUnionSubclass(superModel, node, inheritedMetas);
 		}
 
-		public void HandleUnionSubclass(PersistentClass model, XmlNode subnode)
+		public void HandleUnionSubclass(PersistentClass model, XmlNode subnode, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			UnionSubclass unionSubclass = new UnionSubclass(model);
+			var unionSubclass = new UnionSubclass(model);
 
-			BindClass(subnode, null, unionSubclass, EmptyMeta);
+			BindClass(subnode, null, unionSubclass, inheritedMetas);
+			inheritedMetas = GetMetas(subnode.SelectNodes(HbmConstants.nsMeta, namespaceManager), inheritedMetas, true); // get meta's from <union-subclass>
 
 			// union subclass
 			if (unionSubclass.EntityPersisterClass == null)
@@ -47,7 +49,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			log.InfoFormat("Mapping union-subclass: {0} -> {1}", unionSubclass.EntityName, unionSubclass.Table.Name);
 
 			// properties
-			PropertiesFromXML(subnode, unionSubclass, EmptyMeta);
+			PropertiesFromXML(subnode, unionSubclass, inheritedMetas);
 
 			model.AddSubclass(unionSubclass);
 			mappings.AddClass(unionSubclass);

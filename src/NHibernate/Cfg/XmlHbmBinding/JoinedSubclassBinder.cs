@@ -2,6 +2,7 @@ using System.Xml;
 
 using NHibernate.Mapping;
 using NHibernate.Persister.Entity;
+using System.Collections.Generic;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -17,18 +18,18 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public void Bind(XmlNode node)
+		public void Bind(XmlNode node, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			PersistentClass superModel = GetSuperclass(node);
-			HandleJoinedSubclass(superModel, node);
+			HandleJoinedSubclass(superModel, node, inheritedMetas);
 		}
 
-		public void HandleJoinedSubclass(PersistentClass model, XmlNode subnode)
+		public void HandleJoinedSubclass(PersistentClass model, XmlNode subnode, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			JoinedSubclass subclass = new JoinedSubclass(model);
 
-			BindClass(subnode, null, subclass, EmptyMeta);
-
+			BindClass(subnode, null, subclass, inheritedMetas);
+			inheritedMetas = GetMetas(subnode.SelectNodes(HbmConstants.nsMeta, namespaceManager), inheritedMetas, true); // get meta's from <joined-subclass>
 			// joined subclass
 			if (subclass.EntityPersisterClass == null)
 				subclass.RootClazz.EntityPersisterClass = typeof(JoinedSubclassEntityPersister);
@@ -70,7 +71,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				mytable.AddCheckConstraint(chNode.Value);
 
 			// properties
-			PropertiesFromXML(subnode, subclass, EmptyMeta);
+			PropertiesFromXML(subnode, subclass, inheritedMetas);
 
 			model.AddSubclass(subclass);
 			mappings.AddClass(subclass);
