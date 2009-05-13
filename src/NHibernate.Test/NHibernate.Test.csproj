@@ -74,6 +74,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Ado\BatcherFixture.cs" />
+    <Compile Include="Ado\VerySimple.cs" />
     <Compile Include="Any\Address.cs" />
     <Compile Include="Any\AnyTypeTest.cs" />
     <Compile Include="Any\ComplexPropertyValue.cs" />
@@ -1769,6 +1771,7 @@
     <EmbeddedResource Include="Cascade\JobBatch.hbm.xml" />
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <EmbeddedResource Include="BulkManipulation\SimpleClass.hbm.xml" />
+    <EmbeddedResource Include="Ado\VerySimple.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
     <EmbeddedResource Include="NHSpecificTest\NH1760\Mappings.hbm.xml" />
     <EmbeddedResource Include="MappingTest\Wicked.hbm.xml" />

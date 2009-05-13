@@ -19,7 +19,10 @@ namespace NHibernate.AdoNet
 		{
 			batchSize = Factory.Settings.AdoBatchSize;
 			currentBatch = new SqlClientSqlCommandSet();
-			currentBatchCommandsLog = new StringBuilder();
+			if (log.IsDebugEnabled)
+			{
+				currentBatchCommandsLog = new StringBuilder();
+			}
 		}
 
 		public override int BatchSize
@@ -32,19 +35,22 @@ namespace NHibernate.AdoNet
 		{
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;
 			IDbCommand batchUpdate = CurrentCommand;
-
-			if (log.IsDebugEnabled || Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+			if (log.IsDebugEnabled)
 			{
 				string lineWithParameters = Factory.Settings.SqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
-				currentBatchCommandsLog.Append("Batch command: ").AppendLine(lineWithParameters);
 				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
 				{
 					Factory.Settings.SqlStatementLogger.LogCommand("Adding to batch:", batchUpdate, FormatStyle.Basic);
 				}
-				else if (log.IsDebugEnabled)
+				else
 				{
 					log.Debug("Adding to batch:" + lineWithParameters);
 				}
+				currentBatchCommandsLog.Append("Batch command: ").AppendLine(lineWithParameters);
+			}
+			else
+			{
+				Factory.Settings.SqlStatementLogger.LogCommand(batchUpdate, FormatStyle.Basic);
 			}
 			currentBatch.Append((System.Data.SqlClient.SqlCommand)batchUpdate);
 			if (currentBatch.CountOfCommands >= batchSize)
@@ -58,12 +64,9 @@ namespace NHibernate.AdoNet
 			log.Debug("Executing batch");
 			CheckReaders();
 			Prepare(currentBatch.BatchCommand);
-			if (log.IsDebugEnabled || Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+			if (log.IsDebugEnabled)
 			{
-				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
-					Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
-				else if (log.IsDebugEnabled)
-					log.Debug(currentBatchCommandsLog.ToString());
+				log.Debug(currentBatchCommandsLog.ToString());
 				currentBatchCommandsLog = new StringBuilder();
 			}
 			int rowsAffected = currentBatch.ExecuteNonQuery();
