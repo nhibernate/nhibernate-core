@@ -37,6 +37,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set { _fromElement = value; }
 		}
 
+		public override SqlString RenderText(NHibernate.Engine.ISessionFactoryImplementor sessionFactory)
+		{
+			return SqlString.Parse(Text);
+		}
+
 		// ParameterContainer impl ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		private List<IParameterSpecification> _embeddedParameters;
 

@@ -3,6 +3,7 @@ using System.Text;
 using Antlr.Runtime;
 using NHibernate.Engine;
 using NHibernate.Param;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
@@ -46,23 +47,25 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
-		public override string RenderText(ISessionFactoryImplementor sessionFactory)
+		public override SqlString RenderText(ISessionFactoryImplementor sessionFactory)
 		{
 			int count = 0;
 			if (ExpectedType != null && (count = ExpectedType.GetColumnSpan(sessionFactory)) > 1)
 			{
-				StringBuilder buffer = new StringBuilder();
-				buffer.Append("(?");
+				SqlStringBuilder buffer = new SqlStringBuilder();
+				buffer.Add("(");
+				buffer.AddParameter();
 				for (int i = 1; i < count; i++)
 				{
-					buffer.Append(", ?");
+					buffer.Add(",");
+					buffer.AddParameter();
 				}
-				buffer.Append(")");
-				return buffer.ToString();
+				buffer.Add(")");
+				return buffer.ToSqlString();
 			}
 			else
 			{
-				return "?";
+				return new SqlString(Parameter.Placeholder);
 			}
 		}
 	}

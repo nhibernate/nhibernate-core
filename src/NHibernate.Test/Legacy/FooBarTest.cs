@@ -2203,7 +2203,7 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			baz = (Baz) s.Load(typeof(Baz), baz.Code);
 			Assert.AreEqual(1, baz.FooArray.Length);
-			Assert.AreEqual(1, s.CreateQuery("from Baz baz, baz.FooArray foo").List().Count);
+			Assert.AreEqual(1, s.CreateQuery("from Baz baz join baz.FooArray foo").List().Count);
 			Assert.AreEqual(2, s.CreateQuery("from Foo foo").List().Count);
 			Assert.AreEqual(1, s.CreateFilter(baz.FooArray, "").List().Count);
 
@@ -2521,10 +2521,10 @@ namespace NHibernate.Test.Legacy
 				if (!(Dialect is Oracle9Dialect) && !(Dialect is Oracle8iDialect))
 				{
 					s.CreateQuery(
-						"select count(*) from Bar as bar, bar.Component.Glarch.ProxyArray as g where cast(g.id as Int32) in indices(bar.Baz.FooArray)").
+						"select count(*) from Bar as bar join bar.Component.Glarch.ProxyArray as g where cast(g.id as Int32) in indices(bar.Baz.FooArray)").
 						List();
 					s.CreateQuery(
-						"select max( elements(bar.Baz.FooArray) ) from Bar as bar, bar.Component.Glarch.ProxyArray as g where cast(g.id as Int32) in indices(bar.Baz.FooArray)")
+						"select max( elements(bar.Baz.FooArray) ) from Bar as bar join bar.Component.Glarch.ProxyArray as g where cast(g.id as Int32) in indices(bar.Baz.FooArray)")
 						.List();
 					s.CreateQuery(
 						"select count(*) from Bar as bar left outer join bar.Component.Glarch.ProxyArray as pg where '1' in (from g in bar.Component.Glarch.ProxyArray)")
@@ -2547,8 +2547,8 @@ namespace NHibernate.Test.Legacy
 			s.CreateQuery(
 				"select baz.Name from Bar bar join bar.Baz baz left outer join baz.FooSet foo where baz.Name = bar.String").List();
 
-			s.CreateQuery("select baz.Name from Bar bar, bar.Baz baz, baz.FooSet foo where baz.Name = bar.String").List();
-			s.CreateQuery("SELECT baz.Name FROM Bar AS bar, bar.Baz AS baz, baz.FooSet AS foo WHERE baz.Name = bar.String").List();
+			s.CreateQuery("select baz.Name from Bar bar join bar.Baz baz join baz.FooSet foo where baz.Name = bar.String").List();
+			s.CreateQuery("SELECT baz.Name FROM Bar AS bar join bar.Baz AS baz join baz.FooSet AS foo WHERE baz.Name = bar.String").List();
 
 			s.CreateQuery(
 				"select baz.Name from Bar bar left join bar.Baz baz left join baz.FooSet foo where baz.Name = bar.String").List();
@@ -2565,10 +2565,10 @@ namespace NHibernate.Test.Legacy
 			s.CreateQuery("select foo from bar in class Bar inner join bar.Baz.FooSet as foo").List();
 
 			s.CreateQuery(
-				"select bar.String, foo.String from bar in class Bar, bar.Baz as baz, elements(baz.FooSet) as foo where baz.Name = 'name'")
+				"select bar.String, foo.String from bar in class Bar join bar.Baz as baz, elements(baz.FooSet) as foo where baz.Name = 'name'")
 				.List();
-			s.CreateQuery("select foo from bar in class Bar, bar.Baz as baz, baz.FooSet as foo").List();
-			s.CreateQuery("select foo from bar in class Bar, bar.Baz.FooSet as foo").List();
+			s.CreateQuery("select foo from bar in class Bar join bar.Baz as baz join baz.FooSet as foo").List();
+			s.CreateQuery("select foo from bar in class Bar join bar.Baz.FooSet as foo").List();
 
 			Assert.AreEqual(1, s.CreateQuery("from Bar bar join bar.Baz.FooArray foo").List().Count);
 

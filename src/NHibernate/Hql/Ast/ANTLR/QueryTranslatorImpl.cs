@@ -227,7 +227,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public SqlString SqlString
 		{
-			get { return SqlString.Parse(_generator.Sql.ToString()); }
+			get { return _generator.Sql; }
 		}
 
 		public string QueryIdentifier

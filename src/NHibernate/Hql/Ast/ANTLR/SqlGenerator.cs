@@ -356,7 +356,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private class FunctionArguments : ISqlWriter
 		{
-			private readonly List<object> args = new List<object>();
+			//private readonly List<object> args = new List<object>();
+			private readonly List<SqlString> args = new List<SqlString>();
 			private int argInd;
 
 			public IList Args
@@ -368,6 +369,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 			public void Clause(string clause)
 			{
+				Clause(SqlString.Parse(clause));
+				/*
 				if (argInd == args.Count)
 				{
 					args.Add(clause);
@@ -376,16 +379,25 @@ namespace NHibernate.Hql.Ast.ANTLR
 				{
 					args[argInd] = args[argInd] + clause;
 				}
+				 */
 			}
 
 			public void Clause(SqlString clause)
 			{
-				Clause(clause.ToString());
+				//Clause(clause.ToString());
+				if (argInd == args.Count)
+				{
+					args.Add(clause);
+				}
+				else
+				{
+					args[argInd] = args[argInd].Append(clause);
+				}
 			}
 
 			public void Parameter()
 			{
-				args.Add(SqlCommand.Parameter.Placeholder);
+				args.Add(new SqlString(SqlCommand.Parameter.Placeholder));
 			}
 
 			public void CommaBetweenParameters(string comma)

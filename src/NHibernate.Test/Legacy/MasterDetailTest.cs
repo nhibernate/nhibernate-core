@@ -374,9 +374,9 @@ namespace NHibernate.Test.Legacy
 				s.CreateQuery("FROM m IN CLASS Master WHERE NOT 5 IN ( SELECT d.I FROM d IN  " + path + " )").Enumerable();
 			}
 
-			s.CreateQuery("SELECT m FROM m in CLASS NHibernate.DomainModel.Master, d IN  " + path + "  WHERE d.I=5").Enumerable();
-			s.CreateQuery("SELECT m FROM m in CLASS NHibernate.DomainModel.Master, d IN  " + path + "  WHERE d.I=5").List();
-			s.CreateQuery("SELECT m.id FROM m IN CLASS NHibernate.DomainModel.Master, d IN  " + path + "  WHERE d.I=5").List();
+			s.CreateQuery("SELECT m FROM m in CLASS NHibernate.DomainModel.Master join m.Details d WHERE d.I=5").Enumerable();
+			s.CreateQuery("SELECT m FROM m in CLASS NHibernate.DomainModel.Master join m.Details d WHERE d.I=5").List();
+			s.CreateQuery("SELECT m.id FROM m IN CLASS NHibernate.DomainModel.Master join m.Details d WHERE d.I=5").List();
 			t.Commit();
 			s.Close();
 		}

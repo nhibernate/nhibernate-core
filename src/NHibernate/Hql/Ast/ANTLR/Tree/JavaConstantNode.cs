@@ -3,6 +3,7 @@ using System.Threading;
 using Antlr.Runtime;
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Util;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -38,12 +39,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set { _factory = value; }
 		}
 
-        public override string RenderText(ISessionFactoryImplementor sessionFactory)
+        public override SqlString RenderText(ISessionFactoryImplementor sessionFactory)
         {
             ProcessText();
 
 			IType type = _expectedType ?? _heuristicType;
-			return ResolveToLiteralString( type );
+			return new SqlString(ResolveToLiteralString( type ));
 		}
 
         private string ResolveToLiteralString(IType type)

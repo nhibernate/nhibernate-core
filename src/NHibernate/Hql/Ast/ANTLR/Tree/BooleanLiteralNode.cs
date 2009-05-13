@@ -1,6 +1,7 @@
 ﻿using System;
 using Antlr.Runtime;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
@@ -49,11 +50,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set { expectedType = value; }
 		}
 
-		public override string RenderText(ISessionFactoryImplementor sessionFactory) 
+		public override SqlString RenderText(ISessionFactoryImplementor sessionFactory) 
 		{
 			try
 			{
-				return GetTypeInternal().ObjectToSQLString( GetValue(), sessionFactory.Dialect );
+				return new SqlString(GetTypeInternal().ObjectToSQLString( GetValue(), sessionFactory.Dialect ));
 			}
 			catch( Exception t )
 			{

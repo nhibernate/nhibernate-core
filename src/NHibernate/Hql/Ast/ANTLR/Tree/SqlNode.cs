@@ -1,6 +1,7 @@
 ﻿using System;
 using Antlr.Runtime;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
@@ -48,13 +49,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// </summary>
 		/// <param name="sessionFactory">The session factory</param>
 		/// <returns>The text to use for rendering</returns>
-		public virtual String RenderText(ISessionFactoryImplementor sessionFactory)
+		public virtual SqlString RenderText(ISessionFactoryImplementor sessionFactory)
 		{
 			// The basic implementation is to simply use the node's text
-			return Text;
+			return new SqlString(Text);
 		}
 
-		public String getOriginalText()
+		public string getOriginalText()
 		{
 			return _originalText;
 		}

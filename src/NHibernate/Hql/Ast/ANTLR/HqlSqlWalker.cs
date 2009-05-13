@@ -682,12 +682,13 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		IASTNode CreateFromElement(string path, IASTNode pathNode, IASTNode alias, IASTNode propertyFetch)
 		{
-            try
+           // try
             {
                 FromElement fromElement = _currentFromClause.AddFromElement(path, alias);
                 fromElement.SetAllPropertyFetch(propertyFetch != null);
                 return fromElement;
             }
+			/*
             catch (Exception e)
             {
                 // Try resolving as if it were a join
@@ -703,7 +704,7 @@ namespace NHibernate.Hql.Ast.ANTLR
                 {
                     throw e;
                 }
-            }
+            }*/
 		}
 
         private IASTNode PreProcessPathForJoin(IASTNode node)
@@ -1111,7 +1112,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 				sql.whereExpr();
 
 				fromElement.SetWithClauseFragment(visitor.GetJoinAlias(), "(" + sql.GetSQL() + ")");
-
 			}
 			catch (SemanticException)
 			{

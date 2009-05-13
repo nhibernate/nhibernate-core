@@ -73,7 +73,7 @@ namespace NHibernate.Test.HQL.Ast
 			ITransaction txn = s.BeginTransaction();
 
 			// one-to-many
-			IList list =
+				IList list =
 				s.CreateQuery("from Human h inner join h.offspring as o with o.bodyWeight < :someLimit").SetDouble("someLimit", 1).
 					List();
 			Assert.That(list, Is.Empty, "ad-hoc on did not take effect");

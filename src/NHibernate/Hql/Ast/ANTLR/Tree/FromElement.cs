@@ -7,6 +7,7 @@ using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -51,7 +52,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_isAllPropertyFetch = fetch;
 		}
 
-		public void SetWithClauseFragment(String withClauseJoinAlias, String withClauseFragment)
+		public void SetWithClauseFragment(String withClauseJoinAlias, string withClauseFragment)
 		{
 			_withClauseJoinAlias = withClauseJoinAlias;
 			_withClauseFragment = withClauseFragment;
@@ -304,6 +305,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public string RenderPropertySelect(int size, int k)
 		{
 			return _elementType.RenderPropertySelect(size, k, IsAllPropertyFetch);
+		}
+
+		public override SqlString RenderText(NHibernate.Engine.ISessionFactoryImplementor sessionFactory)
+		{
+			return SqlString.Parse(Text);
 		}
 
 		public string RenderCollectionSelectFragment(int size, int k)
