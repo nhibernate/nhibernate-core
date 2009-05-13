@@ -262,6 +262,7 @@ namespace NHibernate.Test.FilterTest
 			testData.Release();
 		}
 
+        [Test]
 		public void ManyToManyFilterOnCriteria()
 		{
 			TestData testData = new TestData(this);
