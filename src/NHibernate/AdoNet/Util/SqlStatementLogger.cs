@@ -11,7 +11,7 @@ namespace NHibernate.AdoNet.Util
 		private static readonly ILog log = LogManager.GetLogger("NHibernate.SQL");
 
 		/// <summary> Constructs a new SqlStatementLogger instance.</summary>
-		public SqlStatementLogger() : this(false, false) {}
+		public SqlStatementLogger() : this(false, false) { }
 
 		/// <summary> Constructs a new SqlStatementLogger instance. </summary>
 		/// <param name="logToStdout">Should we log to STDOUT in addition to our internal logger. </param>
@@ -47,11 +47,11 @@ namespace NHibernate.AdoNet.Util
 			string logMessage;
 			if (string.IsNullOrEmpty(message))
 			{
-				logMessage= statement;
+				logMessage = statement;
 			}
 			else
 			{
-				 logMessage= message + statement;
+				logMessage = message + statement;
 			}
 			log.Debug(logMessage);
 			if (LogToStdout)
@@ -59,11 +59,6 @@ namespace NHibernate.AdoNet.Util
 				Console.Out.WriteLine("NHibernate: " + statement);
 			}
 		}
-
-        public virtual void LogBatchCommand(string batchCommand)
-        {
-            log.Debug(batchCommand);
-        }
 
 		/// <summary> Log a IDbCommand. </summary>
 		/// <param name="command">The SQL statement. </param>
@@ -84,7 +79,7 @@ namespace NHibernate.AdoNet.Util
 			else
 			{
 				var output = new StringBuilder(command.CommandText.Length + (command.Parameters.Count * 20));
-				output.Append(command.CommandText.TrimEnd(' ',';','\n'));
+				output.Append(command.CommandText.TrimEnd(' ', ';', '\n'));
 				output.Append(";");
 
 				IDataParameter p;
@@ -107,37 +102,37 @@ namespace NHibernate.AdoNet.Util
 
 		public string GetParameterLogableValue(IDataParameter parameter)
 		{
-			if(parameter.Value == null || DBNull.Value.Equals(parameter.Value))
+			if (parameter.Value == null || DBNull.Value.Equals(parameter.Value))
 			{
 				return "NULL";
 			}
-		    if (IsStringType(parameter.DbType))
-		    {
-		        return string.Concat("'", parameter.Value.ToString(), "'");
-		    }
-		    var buffer = parameter.Value as byte[];
-		    if(buffer != null)
-		    {
-		        return GetBufferAsHexString(buffer);
-		    }
-		    return parameter.Value.ToString();
+			if (IsStringType(parameter.DbType))
+			{
+				return string.Concat("'", parameter.Value.ToString(), "'");
+			}
+			var buffer = parameter.Value as byte[];
+			if (buffer != null)
+			{
+				return GetBufferAsHexString(buffer);
+			}
+			return parameter.Value.ToString();
 		}
 
-	    private static string GetBufferAsHexString(byte[] buffer)
-	    {
-	        var sb = new StringBuilder(buffer.Length*2 + 2);
-	        sb.Append("0x");
-	        foreach (var b in buffer)
-	        {
-	            sb.Append(b.ToString("X2"));
-	        }
-	        return sb.ToString();
-	    }
+		private static string GetBufferAsHexString(byte[] buffer)
+		{
+			var sb = new StringBuilder(buffer.Length * 2 + 2);
+			sb.Append("0x");
+			foreach (var b in buffer)
+			{
+				sb.Append(b.ToString("X2"));
+			}
+			return sb.ToString();
+		}
 
-	    private static bool IsStringType(DbType dbType)
+		private static bool IsStringType(DbType dbType)
 		{
 			return DbType.String.Equals(dbType) || DbType.AnsiString.Equals(dbType)
-			       || DbType.AnsiStringFixedLength.Equals(dbType) || DbType.StringFixedLength.Equals(dbType);
+						 || DbType.AnsiStringFixedLength.Equals(dbType) || DbType.StringFixedLength.Equals(dbType);
 		}
 
 		private FormatStyle DetermineActualStyle(FormatStyle style)
