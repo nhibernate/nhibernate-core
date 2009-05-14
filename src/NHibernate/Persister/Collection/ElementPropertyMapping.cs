@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -29,6 +30,20 @@ namespace NHibernate.Persister.Collection
 			else
 			{
 				throw new QueryException(string.Format("cannot dereference scalar collection element: {0}", propertyName));
+			}
+		}
+
+		public bool TryToType(string propertyName, out IType outType)
+		{
+			try
+			{
+				outType = ToType(propertyName);
+				return true;
+			}
+			catch (Exception)
+			{
+				outType = null;
+				return false;
 			}
 		}
 

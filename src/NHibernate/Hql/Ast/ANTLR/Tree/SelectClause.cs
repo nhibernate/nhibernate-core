@@ -136,6 +136,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					//sqlResultTypeList.addAll( constructorArgumentTypeList );
 					queryReturnTypeList.AddRange(constructorArgumentTypeList );
 					_scalarSelect = true;
+
+					for (int j = 1; j < _constructorNode.ChildCount; j++)
+					{
+						ISelectExpression se = _constructorNode.GetChild(j) as ISelectExpression;
+
+						if (se != null && IsReturnableEntity(se))
+						{
+							_fromElementsForLoad.Add(se.FromElement);
+						}
+					}
 				}
 				else 
 				{
@@ -227,7 +237,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		
 				// generate id select fragment and then property select fragment for
 				// each expression, just like generateSelectFragments().
-				RenderNonScalarSelects( CollectSelectExpressions(), fromClause );
+				RenderNonScalarSelects( CollectSelectExpressions(true), fromClause );
 			}
 
 			if ( _scalarSelect || Walker.IsShallowQuery ) 

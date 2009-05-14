@@ -43,6 +43,11 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
+		public bool TryToType(string propertyName, out IType type)
+		{
+			return typesByPropertyPath.TryGetValue(propertyName, out type);
+		}
+
 		public virtual string[] ToColumns(string alias, string propertyName)
 		{
 			//TODO: *two* hashmap lookups here is one too many...

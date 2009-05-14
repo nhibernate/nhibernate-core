@@ -1720,6 +1720,11 @@ namespace NHibernate.Persister.Entity
 			return propertyMapping.ToType(propertyName);
 		}
 
+		public bool TryToType(string propertyName, out IType type)
+		{
+			return propertyMapping.TryToType(propertyName, out type);
+		}
+
 		public string[] GetPropertyColumnNames(string propertyName)
 		{
 			return propertyMapping.GetColumnNames(propertyName);

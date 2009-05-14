@@ -847,15 +847,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if ( fromElements.Count == 1 ) 
 			{
 				FromElement fromElement = (FromElement) fromElements[0];
-				try 
-				{
-					log.Info( "attempting to resolve property [" + identText + "] as a non-qualified ref" );
-					return fromElement.GetPropertyMapping(identText).ToType(identText) != null;
-				}
-				catch( QueryException ) 
-				{
-					// Should mean that no such property was found
-				}
+
+				log.Info( "attempting to resolve property [" + identText + "] as a non-qualified ref" );
+
+				IType type;
+				return fromElement.GetPropertyMapping(identText).TryToType(identText, out type);
 			}
 
 			return false;

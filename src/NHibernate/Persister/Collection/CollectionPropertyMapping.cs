@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
@@ -39,6 +40,20 @@ namespace NHibernate.Persister.Collection
 					return memberPersister.ElementType;
 				default:
 					throw new QueryException("illegal syntax near collection: " + propertyName);
+			}
+		}
+
+		public bool TryToType(string propertyName, out IType type)
+		{
+			try
+			{
+				type = ToType(propertyName);
+				return true;
+			}
+			catch (Exception)
+			{
+				type = null;
+				return false;
 			}
 		}
 

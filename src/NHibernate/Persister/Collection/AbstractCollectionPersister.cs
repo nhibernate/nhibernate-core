@@ -1304,6 +1304,19 @@ namespace NHibernate.Persister.Collection
 			return elementPropertyMapping.ToType(propertyName);
 		}
 
+		public bool TryToType(string propertyName, out IType type)
+		{
+			if ("index".Equals(propertyName))
+			{
+				type = indexType;
+				return true;
+			}
+			else
+			{
+				return elementPropertyMapping.TryToType(propertyName, out type);
+			}
+		}
+
 		public string GetManyToManyFilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
 		{
 			StringBuilder buffer = new StringBuilder();

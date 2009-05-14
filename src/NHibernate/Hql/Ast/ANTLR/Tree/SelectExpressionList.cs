@@ -20,7 +20,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <summary>
 		/// Returns an array of SelectExpressions gathered from the children of the given parent AST node.
 		/// </summary>
-		public ISelectExpression[] CollectSelectExpressions() 
+		public ISelectExpression[] CollectSelectExpressions()
+		{
+			return CollectSelectExpressions(false);
+		}
+
+		/// <summary>
+		/// Returns an array of SelectExpressions gathered from the children of the given parent AST node.
+		/// </summary>
+		public ISelectExpression[] CollectSelectExpressions(bool recurse) 
 		{
 			// Get the first child to be considered.  Sub-classes may do this differently in order to skip nodes that
 			// are not select expressions (e.g. DISTINCT).
@@ -30,14 +38,47 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			for (IASTNode n = firstChild; n != null; n = n.NextSibling)
 			{
-				var se = n as ISelectExpression;
-				if (se != null)
+				if (recurse)
 				{
-					list.Add(se);
+					var ctor = n as ConstructorNode;
+
+					if (ctor != null)
+					{
+						for (IASTNode cn = ctor.GetChild(1); cn != null; cn = cn.NextSibling)
+						{
+							var se = cn as ISelectExpression;
+							if (se != null)
+							{
+								list.Add(se);
+							}
+						}
+					}
+					else
+					{
+						var se = n as ISelectExpression;
+						if (se != null)
+						{
+							list.Add(se);
+						}
+						else
+						{
+							throw new InvalidOperationException("Unexpected AST: " + n.GetType().FullName + " " +
+																new ASTPrinter().ShowAsString(n, ""));
+						}
+					}
 				}
 				else
 				{
-					throw new InvalidOperationException("Unexpected AST: " + n.GetType().FullName + " " + new ASTPrinter().ShowAsString(n, ""));
+					var se = n as ISelectExpression;
+					if (se != null)
+					{
+						list.Add(se);
+					}
+					else
+					{
+						throw new InvalidOperationException("Unexpected AST: " + n.GetType().FullName + " " +
+															new ASTPrinter().ShowAsString(n, ""));
+					}					
 				}
 			}
 
