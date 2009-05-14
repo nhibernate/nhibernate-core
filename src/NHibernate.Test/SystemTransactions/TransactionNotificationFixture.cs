@@ -88,15 +88,19 @@ namespace NHibernate.Test.SystemTransactions
 		}
 
 		[Test]
-		public void TwoTransactionScopesInsideOneSession() {
+		public void TwoTransactionScopesInsideOneSession()
+		{
 			var interceptor = new RecordingInterceptor();
-			using(var session = sessions.OpenSession(interceptor)) {
-				using(var scope = new TransactionScope()) {
+			using (var session = sessions.OpenSession(interceptor))
+			{
+				using (var scope = new TransactionScope())
+				{
 					session.CreateCriteria<object>().List();
 					scope.Complete();
 				}
 
-				using(var scope = new TransactionScope()) {
+				using (var scope = new TransactionScope())
+				{
 					session.CreateCriteria<object>().List();
 					scope.Complete();
 				}
@@ -107,10 +111,13 @@ namespace NHibernate.Test.SystemTransactions
 		}
 
 		[Test]
-		public void OneTransactionScopesInsideOneSession() {
+		public void OneTransactionScopesInsideOneSession()
+		{
 			var interceptor = new RecordingInterceptor();
-			using(var session = sessions.OpenSession(interceptor)) {
-				using(var scope = new TransactionScope()) {
+			using (var session = sessions.OpenSession(interceptor))
+			{
+				using (var scope = new TransactionScope())
+				{
 					session.CreateCriteria<object>().List();
 					scope.Complete();
 				}
