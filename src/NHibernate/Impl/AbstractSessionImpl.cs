@@ -318,10 +318,13 @@ namespace NHibernate.Impl
 					using (var tx = new TransactionScope(ambientTransation))
 					{
 						BeforeTransactionCompletion(null);
-						if (FlushMode != FlushMode.Never)
+						if (FlushMode != FlushMode.Never && ConnectionManager.IsConnected)
 						{
 							using (ConnectionManager.FlushingFromDtcTransaction)
+							{
+								logger.Debug(string.Format("[session-id={0}] Flushing from Dtc Transaction", sessionId));
 								Flush();
+							}
 						}
 						logger.Debug("prepared for DTC transaction");
 
@@ -333,7 +336,6 @@ namespace NHibernate.Impl
 				{
 					logger.Error("DTC transaction prepre phase failed", exception);
 					preparingEnlistment.ForceRollback(exception);
-
 				}
 			}
 		}
@@ -382,13 +384,21 @@ namespace NHibernate.Impl
 				AfterTransactionBegin(null);
 				ambientTransation.TransactionCompleted += delegate(object sender, TransactionEventArgs e)
 				                                          	{
-				                                          		bool wasSuccessful = e.Transaction.TransactionInformation.Status
-				                                          		                     == TransactionStatus.Committed;
-				                                          		AfterTransactionCompletion(wasSuccessful, null);
-																											if (shouldCloseSessionOnDtcTransactionCompleted)
+																											bool wasSuccessful = false;
+																											try
 																											{
-																												Dispose(true);
+																												wasSuccessful = e.Transaction.TransactionInformation.Status
+																																				== TransactionStatus.Committed;
 																											}
+																											catch (ObjectDisposedException ode)
+																											{
+																												logger.Warn("Completed transaction was disposed.", ode);
+																											}
+				                                          		AfterTransactionCompletion(wasSuccessful, null);
+				                                          		if (shouldCloseSessionOnDtcTransactionCompleted)
+				                                          		{
+				                                          			Dispose(true);
+				                                          		}
 				                                          		ambientTransation = null;
 				                                          	};
 				ambientTransation.EnlistVolatile(this, EnlistmentOptions.EnlistDuringPrepareRequired);
