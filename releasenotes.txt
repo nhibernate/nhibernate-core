@@ -25,7 +25,8 @@ Build 2.1.0
 		* see NH-1633 if you are using SQL native queries
 		* CriteriaUtil is gone. NHibernate.Transform.Transformers now returns predefined IResultTransformer.
 		* Now filters are working even with many-to-one association for Criteria and HQL (NH-1293, NH-1179)
-
+		* ISessionFactory.Settings is gone (moved to ISessionFactoryImplementor.Settings)
+		
 Build 2.1.0.Alpha2 (rev4167)
 ========================
 
