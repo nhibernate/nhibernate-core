@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH1773">
+  <import class="PersonResult" />
+  <class name="Person" table="Person">
+    <id name="Id" column="id" unsaved-value="0">
+      <generator class="assigned" />
+    </id>
+    <property name="Name" column="Name" />
+    <property name="Age" column="Age" />
+    <many-to-one name="Country" class="Country" column="CountryId" />
+  </class>
+
+  <class name="Country" table="Country">
+    <id name="Id" column="Id" unsaved-value="0">
+      <generator class="assigned" />
+    </id>
+    <property name="Name" column="Name" />
+  </class>
+</hibernate-mapping>
