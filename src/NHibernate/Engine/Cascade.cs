@@ -218,9 +218,11 @@ namespace NHibernate.Engine
 		private void CascadeCollectionElements(object child, CollectionType collectionType, CascadeStyle style, IType elemType, object anything, bool isCascadeDeleteEnabled)
 		{
 			// we can't cascade to non-embedded elements
-			bool embeddedElements = eventSource.EntityMode != EntityMode.Xml || ((EntityType)collectionType.GetElementType(eventSource.Factory)).IsEmbeddedInXML;
+			bool embeddedElements = eventSource.EntityMode != EntityMode.Xml
+			                        || ((EntityType) collectionType.GetElementType(eventSource.Factory)).IsEmbeddedInXML;
 
-			bool reallyDoCascade = style.ReallyDoCascade(action) && embeddedElements && child != CollectionType.UnfetchedCollection;
+			bool reallyDoCascade = style.ReallyDoCascade(action) && embeddedElements
+			                       && child != CollectionType.UnfetchedCollection;
 
 			if (reallyDoCascade)
 			{
@@ -232,8 +234,9 @@ namespace NHibernate.Engine
 				log.Info("done cascade " + action + " for collection: " + collectionType.Role);
 			}
 
-			bool deleteOrphans = style.HasOrphanDelete && action.DeleteOrphans &&
-				elemType.IsEntityType && child is IPersistentCollection; //a newly instantiated collection can't have orphans
+			var childAsPersColl = child as IPersistentCollection;
+			bool deleteOrphans = style.HasOrphanDelete && action.DeleteOrphans && elemType.IsEntityType
+			                     && childAsPersColl != null; //a newly instantiated collection can't have orphans
 
 			if (deleteOrphans)
 			{
@@ -244,7 +247,7 @@ namespace NHibernate.Engine
 				// 1. newly instantiated collections
 				// 2. arrays (we can't track orphans for detached arrays)
 				string entityName = collectionType.GetAssociatedEntityName(eventSource.Factory);
-				DeleteOrphans(entityName, (IPersistentCollection)child);
+				DeleteOrphans(entityName, childAsPersColl);
 
 				log.Info("done deleting orphans for collection: " + collectionType.Role);
 			}

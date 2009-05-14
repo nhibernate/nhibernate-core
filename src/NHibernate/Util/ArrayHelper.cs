@@ -156,23 +156,24 @@ namespace NHibernate.Util
 
 		public static string[][] To2DStringArray(ICollection coll)
 		{
-			string[][] result = new string[ coll.Count ][];
+			var result = new string[ coll.Count ][];
 			int i = 0;
 			foreach (object row in coll)
 			{
-				if (row is ICollection)
+				var rowAsCollection = row as ICollection;
+				if (rowAsCollection != null)
 				{
-					result[i] = new string[((ICollection)row).Count];
+					result[i] = new string[rowAsCollection.Count];
 					int j = 0;
-					foreach (object cell in (ICollection)row)
+					foreach (object cell in rowAsCollection)
 					{
-						result[i][j++] = cell == null ? null : (string)cell;
+						result[i][j++] = cell == null ? null : (string) cell;
 					}
 				}
 				else
 				{
 					result[i] = new string[1];
-					result[i][0] = row == null ? null : (string)row;
+					result[i][0] = row == null ? null : (string) row;
 				}
 				i++;
 			}

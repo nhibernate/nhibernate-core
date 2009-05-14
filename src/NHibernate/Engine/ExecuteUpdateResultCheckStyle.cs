@@ -1,6 +1,5 @@
 using System;
 using NHibernate.SqlCommand;
-using System.Runtime.Serialization;
 
 namespace NHibernate.Engine
 {
@@ -39,12 +38,14 @@ namespace NHibernate.Engine
 
 		public override bool Equals(object obj)
 		{
-			if (obj is ExecuteUpdateResultCheckStyle)
+			var castedObj = obj as ExecuteUpdateResultCheckStyle;
+			if (castedObj != null)
 			{
-				return this.name == ((ExecuteUpdateResultCheckStyle) obj).name;
+				return name == castedObj.name;
 			}
 			return false;
 		}
+
 		public override int GetHashCode()
 		{
 			return name.GetHashCode();

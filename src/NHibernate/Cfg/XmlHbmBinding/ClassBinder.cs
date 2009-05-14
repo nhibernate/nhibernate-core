@@ -665,9 +665,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				value.SetTypeUsingReflection(className, propertyName, PropertyAccess(subnode));
 
 			// This is done here 'cos we might only know the type here (ugly!)
-			if (value is ToOne)
+			var toOne = value as ToOne;
+			if (toOne != null)
 			{
-				ToOne toOne = (ToOne) value;
 				string propertyRef = toOne.ReferencedPropertyName;
 				if (propertyRef != null)
 					mappings.AddUniquePropertyReference(toOne.ReferencedEntityName, propertyRef);

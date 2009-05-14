@@ -11,7 +11,7 @@ namespace NHibernate.Engine
 		{
 		}
 
-		private static object[] NoParameters = new object[0];
+		private static readonly object[] NoParameters = new object[0];
 
 		private static object Instantiate(ConstructorInfo constructor)
 		{
@@ -45,46 +45,41 @@ namespace NHibernate.Engine
 					object defaultValue = identifierGetter.Get(Instantiate(constructor));
 					return new IdentifierValue(defaultValue);
 				}
-				else if (identifierGetter != null && (identifierType is PrimitiveType))
+				var idTypeAsPrimitiveType = identifierType as PrimitiveType;
+				if (identifierGetter != null && idTypeAsPrimitiveType != null)
 				{
-					object defaultValue = ((PrimitiveType) identifierType).DefaultValue;
+					object defaultValue = idTypeAsPrimitiveType.DefaultValue;
 					return new IdentifierValue(defaultValue);
 				}
-				else
-				{
-					return IdentifierValue.SaveNull;
-				}
+				return IdentifierValue.SaveNull;
 			}
-			else if ("null" == unsavedValue)
+			if ("null" == unsavedValue)
 			{
 				return IdentifierValue.SaveNull;
 			}
-			else if( "undefined" == unsavedValue )
+			if ("undefined" == unsavedValue)
 			{
 				return IdentifierValue.Undefined;
 			}
-			else if ("none" == unsavedValue)
+			if ("none" == unsavedValue)
 			{
 				return IdentifierValue.SaveNone;
 			}
-			else if ("any" == unsavedValue)
+			if ("any" == unsavedValue)
 			{
 				return IdentifierValue.SaveAny;
 			}
-			else
+			try
 			{
-				try
-				{
-					return new IdentifierValue(((IIdentifierType) identifierType).StringToObject(unsavedValue));
-				}
-				catch (InvalidCastException cce)
-				{
-					throw new MappingException("Bad identifier type: " + identifierType.Name, cce);
-				}
-				catch (Exception e)
-				{
-					throw new MappingException("Could not parse identifier unsaved-value: " + unsavedValue, e);
-				}
+				return new IdentifierValue(((IIdentifierType) identifierType).StringToObject(unsavedValue));
+			}
+			catch (InvalidCastException cce)
+			{
+				throw new MappingException("Bad identifier type: " + identifierType.Name, cce);
+			}
+			catch (Exception e)
+			{
+				throw new MappingException("Could not parse identifier unsaved-value: " + unsavedValue, e);
 			}
 		}
 

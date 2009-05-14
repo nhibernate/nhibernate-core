@@ -417,9 +417,9 @@ namespace NHibernate.Criterion
 			// parameter passed in.
 			if (value != null)
 			{
-				if (value is string)
+				var stringValue = value as string;
+				if (stringValue != null)
 				{
-					string stringValue = (string) value;
 					if (_isIgnoreCaseEnabled)
 					{
 						stringValue = stringValue.ToLower();
@@ -430,7 +430,8 @@ namespace NHibernate.Criterion
 					}
 					value = stringValue;
 				}
-				list.Add(new TypedValue(type, value, EntityMode.Poco)); // TODO NH Different behavior: In H3.2 EntityMode is nullable
+				list.Add(new TypedValue(type, value, EntityMode.Poco));
+					// TODO NH Different behavior: In H3.2 EntityMode is nullable
 			}
 		}
 

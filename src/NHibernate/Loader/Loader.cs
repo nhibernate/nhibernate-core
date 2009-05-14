@@ -565,8 +565,9 @@ namespace NHibernate.Loader
 			PostLoadEvent post;
 			if (session.IsEventSource)
 			{
-				pre = new PreLoadEvent((IEventSource) session);
-				post = new PostLoadEvent((IEventSource) session);
+				var eventSourceSession = (IEventSource) session;
+				pre = new PreLoadEvent(eventSourceSession);
+				post = new PostLoadEvent(eventSourceSession);
 			}
 			else
 			{

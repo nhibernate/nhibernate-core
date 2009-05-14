@@ -149,11 +149,12 @@ namespace NHibernate.Loader.Custom.Sql
 		private ISqlLoadable GetSQLLoadable(string entityName)
 		{
 			IEntityPersister persister = factory.GetEntityPersister(entityName);
-			if (!(persister is ISqlLoadable))
+			var persisterAsSqlLoadable = persister as ISqlLoadable;
+			if (persisterAsSqlLoadable == null)
 			{
 				throw new MappingException("class persister is not ISqlLoadable: " + entityName);
 			}
-			return (ISqlLoadable) persister;
+			return persisterAsSqlLoadable;
 		}
 
 		private string GenerateEntitySuffix()

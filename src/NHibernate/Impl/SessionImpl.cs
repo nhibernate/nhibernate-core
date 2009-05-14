@@ -423,9 +423,10 @@ namespace NHibernate.Impl
 				{
 					throw new ArgumentNullException("obj", "null object passed to GetCurrentLockMode");
 				}
-				if (obj is INHibernateProxy)
+				var proxy = obj as INHibernateProxy;
+				if (proxy != null)
 				{
-					obj = ((INHibernateProxy)obj).HibernateLazyInitializer.GetImplementation(this);
+					obj = proxy.HibernateLazyInitializer.GetImplementation(this);
 					if (obj == null)
 					{
 						return LockMode.None;
@@ -1288,14 +1289,14 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(sessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				INHibernateProxy proxy = obj as INHibernateProxy;
+				var proxy = obj as INHibernateProxy;
 				if (proxy != null)
 				{
 					if (!persistenceContext.ContainsProxy(proxy))
 					{
 						throw new TransientObjectException("proxy was not associated with the session");
 					}
-					ILazyInitializer li = ((INHibernateProxy)obj).HibernateLazyInitializer;
+					ILazyInitializer li = proxy.HibernateLazyInitializer;
 
 					obj = li.GetImplementation();
 				}
@@ -1513,25 +1514,23 @@ namespace NHibernate.Impl
 				// Actually the case for proxies will probably work even with
 				// the session closed, but do the check here anyway, so that
 				// the behavior is uniform.
-
-				if (obj is INHibernateProxy)
+				var proxy = obj as INHibernateProxy;
+				if (proxy != null)
 				{
-					ILazyInitializer li = ((INHibernateProxy)obj).HibernateLazyInitializer;
+					ILazyInitializer li = proxy.HibernateLazyInitializer;
 					if (li.Session != this)
 					{
 						throw new TransientObjectException("The proxy was not associated with this session");
 					}
 					return li.Identifier;
 				}
-				else
+
+				EntityEntry entry = persistenceContext.GetEntry(obj);
+				if (entry == null)
 				{
-					EntityEntry entry = persistenceContext.GetEntry(obj);
-					if (entry == null)
-					{
-						throw new TransientObjectException("the instance was not associated with this session");
-					}
-					return entry.Id;
+					throw new TransientObjectException("the instance was not associated with this session");
 				}
+				return entry.Id;
 			}
 		}
 
@@ -1940,12 +1939,12 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(sessionId))
 			{
-				IEntityPersister persister = Factory.GetEntityPersister(entityName);
-				if (!(persister is IOuterJoinLoadable))
+				var persister = Factory.GetEntityPersister(entityName) as IOuterJoinLoadable;
+				if (persister == null)
 				{
 					throw new MappingException("class persister is not OuterJoinLoadable: " + entityName);
 				}
-				return (IOuterJoinLoadable)persister;
+				return persister;
 			}
 		}
 
@@ -1954,13 +1953,13 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(sessionId))
 			{
 				CheckAndUpdateSessionStatus();
-
-				if (obj is INHibernateProxy)
+				var proxy = obj as INHibernateProxy;
+				if (proxy != null)
 				{
 					//do not use proxiesByKey, since not all
 					//proxies that point to this session's
 					//instances are in that collection!
-					ILazyInitializer li = ((INHibernateProxy)obj).HibernateLazyInitializer;
+					ILazyInitializer li = proxy.HibernateLazyInitializer;
 					if (li.IsUninitialized)
 					{
 						//if it is an uninitialized proxy, pointing

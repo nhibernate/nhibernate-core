@@ -236,25 +236,25 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			model.SqlType = null;
 		}
 
-		private Mapping.Property CreateProperty(ToOne value, string propertyName, System.Type parentClass,
+		private Property CreateProperty(ToOne value, string propertyName, System.Type parentClass,
 			HbmKeyManyToOne keyManyToOneSchema)
 		{
 			if (parentClass != null && value.IsSimpleValue)
-				value.SetTypeUsingReflection(parentClass.AssemblyQualifiedName, propertyName, keyManyToOneSchema.access ?? mappings.DefaultAccess);
+				value.SetTypeUsingReflection(parentClass.AssemblyQualifiedName, propertyName,
+				                             keyManyToOneSchema.access ?? mappings.DefaultAccess);
 
 			string propertyRef = value.ReferencedPropertyName;
 			if (propertyRef != null)
 				mappings.AddUniquePropertyReference(value.ReferencedEntityName, propertyRef);
 
 			value.CreateForeignKey();
-			Mapping.Property prop = new Mapping.Property();
-			prop.Value = value;
+			var prop = new Property {Value = value};
 			BindProperty(keyManyToOneSchema, prop);
 
 			return prop;
 		}
 
-		private void BindProperty(HbmKeyManyToOne keyManyToOneSchema, Mapping.Property property)
+		private void BindProperty(HbmKeyManyToOne keyManyToOneSchema, Property property)
 		{
 			property.Name = keyManyToOneSchema.name;
 
@@ -343,30 +343,30 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			model.SqlType = null;
 		}
 
-		private Mapping.Property CreateProperty(SimpleValue value, string propertyName, System.Type parentClass,
+		private Property CreateProperty(SimpleValue value, string propertyName, System.Type parentClass,
 			HbmKeyProperty keyPropertySchema)
 		{
 			if (parentClass != null && value.IsSimpleValue)
-				value.SetTypeUsingReflection(parentClass.AssemblyQualifiedName, propertyName, keyPropertySchema.access ?? mappings.DefaultAccess);
+				value.SetTypeUsingReflection(parentClass.AssemblyQualifiedName, propertyName,
+				                             keyPropertySchema.access ?? mappings.DefaultAccess);
 
 			// This is done here 'cos we might only know the type here (ugly!)
-			if (value is ToOne)
+			var toOne = value as ToOne;
+			if (toOne != null)
 			{
-				ToOne toOne = (ToOne) value;
 				string propertyRef = toOne.ReferencedPropertyName;
 				if (propertyRef != null)
 					mappings.AddUniquePropertyReference(toOne.ReferencedEntityName, propertyRef);
 			}
 
 			value.CreateForeignKey();
-			Mapping.Property prop = new Mapping.Property();
-			prop.Value = value;
+			var prop = new Property {Value = value};
 			BindProperty(keyPropertySchema, prop);
 
 			return prop;
 		}
 
-		private void BindProperty(HbmKeyProperty keyPropertySchema, Mapping.Property property)
+		private void BindProperty(HbmKeyProperty keyPropertySchema, Property property)
 		{
 			property.Name = keyPropertySchema.name;
 

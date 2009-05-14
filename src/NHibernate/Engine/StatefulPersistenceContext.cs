@@ -572,14 +572,13 @@ namespace NHibernate.Engine
 			//{
 			//  value = wrapper.Element;
 			//}
-
-			if (value is INHibernateProxy)
+			var proxy = value as INHibernateProxy;
+			if (proxy != null)
 			{
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("setting proxy identifier: " + id);
 				}
-				INHibernateProxy proxy = (INHibernateProxy)value;
 				ILazyInitializer li = proxy.HibernateLazyInitializer;
 				li.Identifier = id;
 				ReassociateProxy(li, proxy);
@@ -648,18 +647,14 @@ namespace NHibernate.Engine
 			//{
 			//  maybeProxy = wrapper.Element;
 			//}
-
-			if (maybeProxy is INHibernateProxy)
+			var proxy = maybeProxy as INHibernateProxy;
+			if (proxy != null)
 			{
-				INHibernateProxy proxy = (INHibernateProxy)maybeProxy;
 				ILazyInitializer li = proxy.HibernateLazyInitializer;
 				ReassociateProxy(li, proxy);
 				return li.GetImplementation(); //initialize + unwrap the object 
 			}
-			else
-			{
-				return maybeProxy;
-			}
+			return maybeProxy;
 		}
 
 		/// <summary> 

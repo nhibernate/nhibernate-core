@@ -34,9 +34,11 @@ namespace NHibernate.Cache
 
 		public override bool Equals(object other)
 		{
-			if (!(other is FilterKey))
+			var that = other as FilterKey;
+			if (that == null)
+			{
 				return false;
-			FilterKey that = (FilterKey) other;
+			}
 			if (!that.filterName.Equals(filterName))
 				return false;
 			if (!CollectionHelper.DictionaryEquals<string, TypedValue>(that.filterParameters, filterParameters))
