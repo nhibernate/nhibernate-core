@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				  namespace="NHibernate.Test.NHSpecificTest.NH1776"
+				  assembly="NHibernate.Test">
+	
+	<class name="Category">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Code"/>
+		<property name="Deleted"/>
+		<filter name="state" condition=":deleted = Deleted"/>
+	</class>
+	
+	<filter-def name="state" condition=":deleted = Deleted">
+		<filter-param name="deleted" type="Boolean"/>
+	</filter-def>
+
+</hibernate-mapping>
