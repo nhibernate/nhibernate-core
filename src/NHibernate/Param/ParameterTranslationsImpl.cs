@@ -77,7 +77,7 @@ namespace NHibernate.Param
 					{
 						if (entry.SqlLocations[index] >= existingParameterLocation)
 						{
-							entry.SqlLocations[index]++;
+							entry.IncrementLocation(index);
 						}
 					}
 				}
@@ -138,30 +138,36 @@ namespace NHibernate.Param
 		}
 	}
 
+	[Serializable]
 	public class ParameterInfo 
 	{
-		private readonly int[] _sqlLocations;
-		private readonly IType _expectedType;
+		private readonly int[] originalLocation;
+		private readonly int[] sqlLocations;
 
 		public ParameterInfo(int[] sqlPositions, IType expectedType) 
 		{
-			_sqlLocations = sqlPositions;
-			_expectedType = expectedType;
+			originalLocation = (int[])sqlPositions.Clone();
+			sqlLocations = sqlPositions;
+			ExpectedType = expectedType;
 		}
 
-		public ParameterInfo(int sqlPosition, IType expectedType) {
-			_sqlLocations = new int[] { sqlPosition };
-			_expectedType = expectedType;
+		public ParameterInfo(int sqlPosition, IType expectedType)
+		{
+			originalLocation = new[] { sqlPosition };
+			sqlLocations = new[] { sqlPosition };
+			ExpectedType = expectedType;
 		}
 
 		public int[] SqlLocations
 		{
-			get { return _sqlLocations; }
+			get { return sqlLocations; }
 		}
 
-		public IType ExpectedType 
+		public IType ExpectedType { get; private set; }
+
+		public void IncrementLocation(int index)
 		{
-			get { return _expectedType; }
+			sqlLocations[index] = originalLocation[index] + 1;
 		}
 	}
 }

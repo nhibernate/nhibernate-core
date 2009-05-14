@@ -10,10 +10,15 @@
 		<property name="Code"/>
 		<property name="Deleted"/>
 		<filter name="state" condition=":deleted = Deleted"/>
+		<filter name="CodeLike" condition="Code like :codepattern"/>
 	</class>
 	
 	<filter-def name="state" condition=":deleted = Deleted">
 		<filter-param name="deleted" type="Boolean"/>
+	</filter-def>
+	
+	<filter-def name="CodeLike">
+		<filter-param name="codepattern" type="string"/>
 	</filter-def>
 
 </hibernate-mapping>
