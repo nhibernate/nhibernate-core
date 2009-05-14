@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1574">
+
+  <class		name="SpecializedTeamStorage"
+				table="TeamStorage"
+				discriminator-value="-1963354017">
+    <id name="Id" type="Int32" column="TeamStorageID">
+      <generator class="hilo">
+        <param name="table">HiLoGenerator</param>
+        <param name="column">NextValue</param>
+        <param name="max_lo">100</param>
+      </generator>
+    </id>
+    <property name="Name" column="Name" type="String" length="450" />
+    <property name="EloRanking" column="EloRanking" type="Int32"  />
+    <property name="MaxElo" column="MaxElo" type="Int32"  />
+    <property name="MinElo" column="MinElo" type="Int32"  />
+    <property name="CreationDate" column="CreationDate" type="DateTime"  />
+    <property name="NumberPlayedBattles" column="NumberPlayedBattles" type="Int32"  />
+    <property name="LadderActive" column="LadderActive" type="Boolean"  />
+    <property name="LadderPosition" column="LadderPosition" type="Int32"  />
+    <property name="IsInBattle" column="IsInBattle" type="Int32"  />
+    <property name="RestUntil" column="RestUntil" type="Int32"  />
+    <property name="StoppedUntil" column="StoppedUntil" type="Int32"  />
+    <bag name="Principals" inverse="true" lazy="true">
+      <key column="TeamID" />
+      <one-to-many class="SpecializedPrincipal" />
+    </bag>
+  </class>
+
+  <class		name="SpecializedPrincipal"
+				table="Principal"
+				discriminator-value="-2035371692">
+    <id name="Id" type="Int32" column="PrincipalID">
+      <generator class="hilo">
+        <param name="table">HiLoGenerator</param>
+        <param name="column">NextValue</param>
+        <param name="max_lo">100</param>
+      </generator>
+    </id>
+    <property name="IsBot" column="IsBot" type="Boolean"  />
+    <property name="MyStatsId" column="MyStatsId" type="Int32"  />
+    <property name="EloRanking" column="EloRanking" type="Int32"  />
+    <property name="ReceiveMail" column="ReceiveMail" type="Boolean"  />
+    <property name="Credits" column="Credits" type="Int32"  />
+    <property name="LadderActive" column="LadderActive" type="Boolean"  />
+    <property name="LadderPosition" column="LadderPosition" type="Int32"  />
+    <property name="IsInBattle" column="IsInBattle" type="Int32"  />
+    <property name="RestUntil" column="RestUntil" type="Int32"  />
+    <property name="StoppedUntil" column="StoppedUntil" type="Int32"  />
+    <property name="AvailableVacationTicks" column="AvailableVacationTicks" type="Int32"  />
+    <property name="VacationStartTick" column="VacationStartTick" type="Int32"  />
+    <property name="VacationEndtick" column="VacationEndtick" type="Int32"  />
+    <property name="AutoStartVacations" column="AutoStartVacations" type="Boolean"  />
+
+    <many-to-one name="Team" column="TeamID" not-null="false" />
+    
+    <property name="Name" column="Name" type="String" length="200" />
+    <property name="Password" column="Password" type="String" length="50" />
+    <property name="Email" column="Email" type="String" length="200" />
+    <property name="Ip" column="Ip" type="String" length="15" />
+    <property name="RegistDate" column="RegistDate" type="DateTime"  />
+    <property name="LastLogin" column="LastLogin" type="DateTime"  />
+    <property name="Approved" column="Approved" type="Boolean"  />
+    <property name="IsOnline" column="IsOnline" type="Boolean"  />
+    <property name="Locked" column="Locked" type="Boolean"  />
+    <property name="Locale" column="Locale" type="String" length="6" />
+    <property name="ConfirmationCode" column="ConfirmationCode" type="String" length="100" />
+    <property name="RawRoles" column="RawRoles" type="String" length="250" />
+  </class>
+  
+</hibernate-mapping>
