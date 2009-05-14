@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1773
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
 			base.Configure(configuration);
-			//configuration.SetProperty(NHibernate.Cfg.Environment.QueryTranslator, typeof(NHibernate.Hql.Classic.ClassicQueryTranslatorFactory).AssemblyQualifiedName);
+			configuration.SetProperty(NHibernate.Cfg.Environment.QueryTranslator, typeof(NHibernate.Hql.Classic.ClassicQueryTranslatorFactory).AssemblyQualifiedName);
 		}
 
 		protected override string MappingsAssembly
