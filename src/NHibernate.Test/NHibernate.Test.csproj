@@ -1775,7 +1775,7 @@
     <EmbeddedResource Include="BulkManipulation\SimpleClass.hbm.xml" />
     <EmbeddedResource Include="Ado\VerySimple.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
-    <EmbeddedResource Include="NHSpecificTest\NH1773\Person.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1773\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1760\Mappings.hbm.xml" />
     <EmbeddedResource Include="MappingTest\Wicked.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1393\Mappings.hbm.xml" />
