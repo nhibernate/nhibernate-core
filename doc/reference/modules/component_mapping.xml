@@ -270,14 +270,14 @@
         </para>
 
         <para>
-            You may instead implement <literal>IInterceptor.IsUnsaved()</literal> if
+            You may instead implement <literal>IInterceptor.IsTransient()</literal> if
             you wish to use <literal>SaveOrUpdate()</literal> or cascading save / update.
             As an alternative, you may also set the <literal>unsaved-value</literal>
             attribute on a <literal>&lt;version&gt;</literal> (or
             <literal>&lt;timestamp&gt;</literal>) element to specify a
             value that indicates a new transient instance. In this case, the version
             of the entity is used instead of the (assigned) identifier and you don't have
-            to implement <literal>IInterceptor.IsUnsaved()</literal> yourself.
+            to implement <literal>IInterceptor.IsTransient()</literal> yourself.
         </para>
 
         <para>

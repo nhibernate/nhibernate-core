@@ -310,7 +310,7 @@ session.Flush();]]></programlisting>
 
          <para>
              There is one further possibility. There is a new <literal>IInterceptor</literal> method named
-             <literal>IsUnsaved()</literal> which lets the application implement its own strategy for distinguishing
+             <literal>IsTransient()</literal> which lets the application implement its own strategy for distinguishing
              newly instantiated objects. For example, you could define a base class for your persistent classes.
          </para>
 
@@ -338,11 +338,12 @@ session.Flush();]]></programlisting>
      
          <para>
              (The <literal>saved</literal> property is non-persistent.)
-             Now implement <literal>IsUnsaved()</literal>, along with <literal>OnLoad()</literal>
+             Now implement <literal>IsTransient()</literal>, along with <literal>OnLoad()</literal>
              and <literal>OnSave()</literal> as follows.
          </para>
 
-         <programlisting><![CDATA[public object IsUnsaved(object entity)
+         <programlisting>
+	<![CDATA[public object IsTransient(object entity)
 {
     if (entity is Persistent)
     {
