@@ -329,6 +329,7 @@
     <Compile Include="HQL\BaseFunctionFixture.cs" />
     <Compile Include="MappingTest\NonReflectiveBinderFixture.cs" />
     <Compile Include="MappingTest\Wicked.cs" />
+    <Compile Include="NHSpecificTest\ElementsEnums\AbstractIntEnumsBagFixture.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\IntEnumsBagFixture.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\Something.cs" />
     <Compile Include="NHSpecificTest\NH1264\Fixture.cs" />
