@@ -1,6 +1,7 @@
 using System;
-using System.Collections;
 using System.Data;
+using System.Collections.Generic;
+using NHibernate.Util;
 
 namespace NHibernate.SqlTypes
 {
@@ -8,18 +9,14 @@ namespace NHibernate.SqlTypes
 	/// SqlTypeFactory provides Singleton access to the SqlTypes.
 	/// </summary>
 	[Serializable]
-	public sealed class SqlTypeFactory
+	public static class SqlTypeFactory
 	{
 		// key = typeof(sqlType).Name : ie - BinarySqlType(l), BooleanSqlType, DecimalSqlType(p,s)
 		// value = SqlType
-		private static Hashtable sqlTypes = Hashtable.Synchronized(new Hashtable(41));
-
-		private SqlTypeFactory()
-		{
-		}
+		private static readonly IDictionary<string, SqlType> SqlTypes = 
+			new ThreadSafeDictionary<string, SqlType>(new Dictionary<string, SqlType>(128));
 
 		public static readonly SqlType Guid = new SqlType(DbType.Guid);
-
 		public static readonly SqlType Boolean = new SqlType(DbType.Boolean);
 		public static readonly SqlType Byte = new SqlType(DbType.Byte);
 		public static readonly SqlType Currency = new SqlType(DbType.Currency);
@@ -41,47 +38,38 @@ namespace NHibernate.SqlTypes
 
 		public static readonly SqlType[] NoTypes = new SqlType[0];
 
+		private delegate SqlType TypeWithLenCreateDelegate(int length); // Func<int, T>
+
+		private static T GetTypeWithLen<T>(int length, TypeWithLenCreateDelegate createDelegate) where T : SqlType
+		{
+			string key = GetKeyForLengthBased(typeof (T).Name, length);
+			SqlType result;
+			if (!SqlTypes.TryGetValue(key, out result))
+			{
+				result = createDelegate(length);
+				SqlTypes.Add(key, result);
+			}
+			return (T) result;
+		}
+
 		public static AnsiStringSqlType GetAnsiString(int length)
 		{
-			string key = GetKeyForLengthBased(typeof(AnsiStringSqlType).Name, length);
-			AnsiStringSqlType returnSqlType = (AnsiStringSqlType) sqlTypes[key];
-			if (returnSqlType == null)
-			{
-				returnSqlType = new AnsiStringSqlType(length);
-				sqlTypes.Add(key, returnSqlType);
-			}
-			return returnSqlType;
+			return GetTypeWithLen<AnsiStringSqlType>(length, l => new AnsiStringSqlType(l));
 		}
 
 		public static BinarySqlType GetBinary(int length)
 		{
-			string key = GetKeyForLengthBased(typeof(BinarySqlType).Name, length);
-			BinarySqlType returnSqlType = (BinarySqlType) sqlTypes[key];
-			if (returnSqlType == null)
-			{
-				returnSqlType = new BinarySqlType(length);
-				sqlTypes.Add(key, returnSqlType);
-			}
-			return returnSqlType;
+			return GetTypeWithLen<BinarySqlType>(length, l => new BinarySqlType(l));
+		}
+
+		public static StringSqlType GetString(int length)
+		{
+			return GetTypeWithLen<StringSqlType>(length, l => new StringSqlType(l));
 		}
 
 		public static SqlType GetDecimal(byte precision, byte scale)
 		{
 			return new SqlType(DbType.Decimal, precision, scale);
-		}
-
-		public static StringSqlType GetString(int length)
-		{
-			string key = GetKeyForLengthBased(typeof(StringSqlType).Name, length);
-
-			StringSqlType returnSqlType = (StringSqlType) sqlTypes[key];
-			if (returnSqlType == null)
-			{
-				returnSqlType = new StringSqlType(length);
-				sqlTypes.Add(key, returnSqlType);
-			}
-
-			return returnSqlType;
 		}
 
 		private static string GetKeyForLengthBased(string name, int length)
