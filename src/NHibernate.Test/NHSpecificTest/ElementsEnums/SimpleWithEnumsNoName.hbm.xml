@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.ElementsEnums">
+
+	<class name="SimpleWithEnums">
+		<id type="int">
+			<generator class="native"/>
+		</id>
+
+		<property name="Something"/>
+		<bag name="Things">
+			<key column="bid"/>
+			<element column="enumvalue"/>
+		</bag>
+	</class>
+</hibernate-mapping>

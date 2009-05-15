@@ -596,8 +596,22 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 				else if ("element".Equals(name))
 				{
-					SimpleValue elt = new SimpleValue(model.CollectionTable);
+					var elt = new SimpleValue(model.CollectionTable);
 					model.Element = elt;
+					if(model.IsGeneric)
+					{
+						switch (model.GenericArguments.Length)
+						{
+							case 1:
+								// a collection with a generic type parameter
+								elt.TypeName = model.GenericArguments[0].AssemblyQualifiedName;
+								break;
+							case 2:
+								// a map (IDictionary) with 2 parameters
+								elt.TypeName = model.GenericArguments[1].AssemblyQualifiedName; 
+								break;
+						}
+					}
 					BindSimpleValue(subnode, elt, true, Mapping.Collection.DefaultElementColumnName);
 				}
 				else if ("many-to-many".Equals(name))
