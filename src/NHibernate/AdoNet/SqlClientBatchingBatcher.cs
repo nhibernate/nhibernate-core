@@ -50,7 +50,7 @@ namespace NHibernate.AdoNet
 			}
 			else
 			{
-				Factory.Settings.SqlStatementLogger.LogCommand(batchUpdate, FormatStyle.Basic);
+				Factory.Settings.SqlStatementLogger.LogCommand("Adding to batch:", batchUpdate, FormatStyle.Basic);
 			}
 			currentBatch.Append((System.Data.SqlClient.SqlCommand)batchUpdate);
 			if (currentBatch.CountOfCommands >= batchSize)

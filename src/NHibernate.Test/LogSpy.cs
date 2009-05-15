@@ -48,7 +48,10 @@ namespace NHibernate.Test
 			var wholeMessage = new StringBuilder();
 			foreach (LoggingEvent loggingEvent in Appender.GetEvents())
 			{
-				wholeMessage.Append(loggingEvent.RenderedMessage);
+				wholeMessage
+					.Append(loggingEvent.LoggerName)
+					.Append(" ")
+					.Append(loggingEvent.RenderedMessage);
 			}
 			return wholeMessage.ToString();
 		}
