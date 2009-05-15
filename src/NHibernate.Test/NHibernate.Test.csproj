@@ -331,6 +331,10 @@
     <Compile Include="MappingTest\Wicked.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\IntEnumsBagFixture.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\Something.cs" />
+    <Compile Include="NHSpecificTest\NH1264\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1264\Name.cs" />
+    <Compile Include="NHSpecificTest\NH1264\Passenger.cs" />
+    <Compile Include="NHSpecificTest\NH1264\Reservation.cs" />
     <Compile Include="NHSpecificTest\NH1388\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1574\Principal.cs" />
     <Compile Include="NHSpecificTest\NH1574\SpecializedPrincipal.cs" />
@@ -1787,6 +1791,8 @@
     <EmbeddedResource Include="BulkManipulation\SimpleClass.hbm.xml" />
     <EmbeddedResource Include="Ado\VerySimple.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1264\Passenger.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1264\Reservation.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1775\Member.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1388\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\ElementsEnums\SimpleWithEnums.hbm.xml" />
