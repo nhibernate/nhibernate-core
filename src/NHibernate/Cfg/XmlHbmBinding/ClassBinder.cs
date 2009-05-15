@@ -833,7 +833,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				simpleValue.TypeParameters = parameters;
 
 			if (typeName != null)
+			{
+				if(NeedQualifiedClassName(typeName))
+				{
+					typeName = FullQualifiedClassName(typeName, mappings);
+				}
 				simpleValue.TypeName = typeName;
+			}
 		}
 
 		private void BindColumnsOrFormula(XmlNode node, SimpleValue simpleValue, string path, bool isNullable)

@@ -330,6 +330,7 @@
     <Compile Include="MappingTest\NonReflectiveBinderFixture.cs" />
     <Compile Include="MappingTest\Wicked.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\AbstractIntEnumsBagFixture.cs" />
+    <Compile Include="NHSpecificTest\ElementsEnums\IntEnumsBagPartialNameFixture.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\IntEnumsBagFixture.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\Something.cs" />
     <Compile Include="NHSpecificTest\NH1264\Fixture.cs" />
@@ -1795,6 +1796,7 @@
     <EmbeddedResource Include="BulkManipulation\SimpleClass.hbm.xml" />
     <EmbeddedResource Include="Ado\VerySimple.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\ElementsEnums\SimpleWithEnumsPartialName.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1343\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1264\Passenger.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1264\Reservation.hbm.xml" />

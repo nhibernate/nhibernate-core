@@ -7,6 +7,7 @@ using System.Xml.Serialization;
 
 using log4net;
 using NHibernate.Mapping;
+using NHibernate.Type;
 using NHibernate.Util;
 using NHibernate.Cfg.MappingSchema;
 
@@ -67,6 +68,24 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				return null;
 
 			return TypeNameParser.Parse(className, mappings.DefaultNamespace, mappings.DefaultAssembly).Type;
+		}
+
+		protected static bool NeedQualifiedClassName(string className)
+		{
+			if(string.IsNullOrEmpty(className))
+			{
+				return false;
+			}
+			if(className.IndexOf('.') > 0)
+			{
+				return false;
+			}
+			if(TypeFactory.Basic(className) != null)
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		/// <summary>
