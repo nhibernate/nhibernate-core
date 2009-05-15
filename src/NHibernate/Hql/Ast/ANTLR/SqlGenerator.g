@@ -283,6 +283,7 @@ constant
 	
 arithmeticExpr
 	: additiveExpr
+	| bitwiseExpr
 	| multiplicativeExpr
 //	| ^(CONCAT { Out("("); } expr ( { Out("||"); } expr )+ { Out(")"); } )
 	| ^(UNARY_MINUS { Out("-"); } expr)
@@ -294,6 +295,13 @@ additiveExpr
 	| ^(MINUS expr { Out("-"); } nestedExprAfterMinusDiv)
 	;
 
+bitwiseExpr
+	: ^(BAND expr { Out("&"); } nestedExpr)
+	| ^(BOR expr { Out("|"); } nestedExpr)
+	| ^(BXOR expr { Out("^"); } nestedExpr)
+	| ^(BNOT { Out("~"); } nestedExpr)	
+	;
+
 multiplicativeExpr
 	: ^(STAR nestedExpr { Out("*"); } nestedExpr)
 	| ^(DIV nestedExpr { Out("/"); } nestedExprAfterMinusDiv)
@@ -302,6 +310,7 @@ multiplicativeExpr
 nestedExpr
 	// Generate parens around nested additive expressions, use a syntactic predicate to avoid conflicts with 'expr'.
 	: (additiveExpr) => { Out("("); } additiveExpr { Out(")"); }
+	| (bitwiseExpr) => { Out("("); } bitwiseExpr { Out(")"); }
 	| expr
 	;
 	

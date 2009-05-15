@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 using Iesi.Collections.Generic;
 using log4net;
@@ -72,6 +73,22 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_collectionFilterRole = collectionRole;
 		}
 
+		public override void ReportError(RecognitionException e)
+		{
+			_parseErrorHandler.ReportError(e);
+		}
+
+		/*
+		protected override void Mismatch(IIntStream input, int ttype, BitSet follow)
+		{
+		   throw new MismatchedTokenException(ttype, input);
+		}
+
+		public override object RecoverFromMismatchedSet(IIntStream input, RecognitionException e, BitSet follow)
+		{
+			throw e;
+		}
+		*/
 		public IList<AssignmentSpecification> AssignmentSpecifications
 		{
 			get { return assignmentSpecifications; }

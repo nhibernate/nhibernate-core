@@ -398,8 +398,9 @@ aliasedExpression
 // which is a standard recursive definition for a parsing an expression.
 //
 // Operator precedence in HQL
-// lowest  --> ( 7)  OR
-//             ( 6)  AND, NOT
+// lowest  --> ( 8)  OR
+//             ( 7)  AND, NOT
+//             ( 6)  bitwise: |,  &	 
 //             ( 5)  equality: ==, <>, !=, is
 //             ( 4)  relational: <, <=, >, >=,
 //                   LIKE, NOT LIKE, BETWEEN, NOT BETWEEN, IN, NOT IN
@@ -423,12 +424,12 @@ expression
 	: logicalOrExpression
 	;
 
-// level 7 - OR
+// level 8 - OR
 logicalOrExpression
 	: logicalAndExpression ( OR^ logicalAndExpression )*
 	;
 
-// level 6 - AND, NOT
+// level 7 - AND, NOT
 logicalAndExpression
 	: negatedExpression ( AND^ negatedExpression )*
 	;
@@ -439,11 +440,29 @@ negatedExpression
 @init{ WeakKeywords(); } // Weak keywords can appear in an expression, so look ahead.
 	: NOT x=negatedExpression
 		-> ^({NegateNode($x.tree)})
-	| equalityExpression
-		-> ^(equalityExpression)
+	| bitwiseNotExpression
+		-> ^(bitwiseNotExpression)
 	;
 
 //## OP: EQ | LT | GT | LE | GE | NE | SQL_NE | LIKE;
+
+// level 6 - bitwise
+bitwiseNotExpression 
+	: (BNOT^ bitwiseOrExpression)
+	| bitwiseOrExpression
+	;
+
+bitwiseOrExpression 
+	: bitwiseXOrExpression (BOR^ bitwiseXOrExpression)*
+	;
+
+bitwiseXOrExpression 
+	: bitwiseAndExpression (BXOR^ bitwiseAndExpression)*
+	;
+
+bitwiseAndExpression 
+	: equalityExpression (BAND^ equalityExpression)*
+	;
 
 // level 5 - EQ, NE
 equalityExpression
@@ -745,6 +764,11 @@ SQL_NE: '<>';
 NE: '!=' | '^=';
 LE: '<=';
 GE: '>=';
+
+BOR	:	 '|';
+BXOR	:	'^';
+BAND	:	'&';
+BNOT	:	'!';
 
 COMMA: ',';
 

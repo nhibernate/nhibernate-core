@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH1775">
+	<import class="DTO" />
+	<class name="Member" table="Member">
+		<id name="Id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+		<property name="FirstName" column="FirstName" />
+		<property name="LastName" column="LastName" />
+		<property name="Roles" column="Roles" />
+	</class>
+
+</hibernate-mapping>

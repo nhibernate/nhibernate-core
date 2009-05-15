@@ -106,10 +106,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				case HqlSqlWalker.MINUS:
 				case HqlSqlWalker.STAR:
 				case HqlSqlWalker.DIV:
+				case HqlSqlWalker.BAND:
+				case HqlSqlWalker.BOR:
+				case HqlSqlWalker.BXOR:
 					ret = new BinaryArithmeticOperatorNode(payload);
 					break;
 				case HqlSqlWalker.UNARY_MINUS:
 				case HqlSqlWalker.UNARY_PLUS:
+				case HqlSqlWalker.BNOT:
 					ret = new UnaryArithmeticNode(payload);
 					break;
 				case HqlSqlWalker.CASE2:
@@ -156,6 +160,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			Initialise(ret);
 			return ret;
+		}
+
+		public override object ErrorNode(ITokenStream input, IToken start, IToken stop, RecognitionException e)
+		{
+			return new ASTErrorNode(input, start, stop, e);
 		}
 
 		public override object DupNode(object t)

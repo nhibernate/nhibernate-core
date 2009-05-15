@@ -85,6 +85,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
+		public override object ErrorNode(ITokenStream input, IToken start, IToken stop, RecognitionException e)
+		{
+			return new ASTErrorNode(input, start, stop, e);
+		}
+
 		public override int GetTokenStartIndex(object t)
 		{
 			throw new System.NotImplementedException();

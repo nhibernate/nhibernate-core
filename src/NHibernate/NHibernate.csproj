@@ -504,6 +504,7 @@
     <Compile Include="Hql\Ast\ANTLR\IParseErrorHandler.cs" />
     <Compile Include="Hql\Ast\ANTLR\Loader\QueryLoader.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\AssignmentSpecification.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\ASTErrorNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\InsertStatement.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\UpdateStatement.cs" />
     <Compile Include="Impl\SessionIdLoggingContext.cs" />

@@ -361,6 +361,10 @@ arithmeticExpr
 	| ^(MINUS expr expr)
 	| ^(DIV expr expr)
 	| ^(STAR expr expr)
+	| ^(BNOT expr)
+	| ^(BAND expr expr)
+	| ^(BOR expr expr)
+	| ^(BXOR expr expr)
 //	| ^(CONCAT expr (expr)+ )
 	| ^(UNARY_MINUS expr)
 	| c=caseExpr

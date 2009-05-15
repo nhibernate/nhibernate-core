@@ -1,4 +1,4 @@
-// $ANTLR 3.1.2 /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g 2009-05-08 17:01:01
+// $ANTLR 3.1.2 /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g 2009-05-14 21:14:52
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 168, 219
@@ -125,6 +125,10 @@ public partial class HqlSqlWalker : TreeParser
 		"EQ", 
 		"OPEN", 
 		"CLOSE", 
+		"BNOT", 
+		"BOR", 
+		"BXOR", 
+		"BAND", 
 		"NE", 
 		"SQL_NE", 
 		"LT", 
@@ -173,18 +177,19 @@ public partial class HqlSqlWalker : TreeParser
     public const int EXISTS = 19;
     public const int COMMA = 98;
     public const int FETCH = 21;
-    public const int MINUS = 110;
+    public const int MINUS = 114;
     public const int AS = 7;
     public const int END = 56;
     public const int INTO = 30;
-    public const int NAMED_PARAM = 142;
-    public const int FROM_FRAGMENT = 128;
+    public const int NAMED_PARAM = 146;
+    public const int FROM_FRAGMENT = 132;
     public const int FALSE = 20;
     public const int ELEMENTS = 17;
     public const int THEN = 58;
-    public const int FILTERS = 140;
+    public const int FILTERS = 144;
     public const int ALIAS = 70;
-    public const int ALIAS_REF = 134;
+    public const int ALIAS_REF = 138;
+    public const int BOR = 103;
     public const int ON = 60;
     public const int DOT = 15;
     public const int ORDER = 41;
@@ -193,54 +198,56 @@ public partial class HqlSqlWalker : TreeParser
     public const int UNARY_MINUS = 88;
     public const int METHOD_CALL = 79;
     public const int RIGHT = 44;
-    public const int CONCAT = 108;
+    public const int CONCAT = 112;
     public const int PROPERTIES = 43;
     public const int SELECT = 45;
-    public const int LE = 106;
-    public const int RIGHT_OUTER = 133;
+    public const int LE = 110;
+    public const int RIGHT_OUTER = 137;
     public const int BETWEEN = 10;
-    public const int SQL_TOKEN = 136;
+    public const int SQL_TOKEN = 140;
     public const int NUM_INT = 93;
-    public const int LEFT_OUTER = 132;
+    public const int LEFT_OUTER = 136;
     public const int BOTH = 62;
-    public const int METHOD_NAME = 141;
-    public const int PLUS = 109;
+    public const int METHOD_NAME = 145;
+    public const int PLUS = 113;
     public const int VERSIONED = 52;
     public const int MEMBER = 65;
     public const int UNION = 50;
     public const int DISTINCT = 16;
     public const int RANGE = 85;
     public const int FILTER_ENTITY = 74;
-    public const int IDENT = 118;
+    public const int IDENT = 122;
     public const int WHEN = 59;
     public const int DESCENDING = 14;
-    public const int WS = 122;
-    public const int NEW = 37;
+    public const int WS = 126;
     public const int EQ = 99;
-    public const int LT = 104;
-    public const int ESCqs = 121;
+    public const int NEW = 37;
+    public const int LT = 108;
+    public const int ESCqs = 125;
     public const int OF = 67;
+    public const int T__130 = 130;
     public const int UPDATE = 51;
     public const int SELECT_FROM = 87;
     public const int LITERAL_by = 54;
-    public const int FLOAT_SUFFIX = 124;
+    public const int FLOAT_SUFFIX = 128;
     public const int ANY = 5;
     public const int UNARY_PLUS = 89;
     public const int NUM_FLOAT = 95;
-    public const int GE = 107;
+    public const int GE = 111;
     public const int CASE = 55;
-    public const int OPEN_BRACKET = 113;
+    public const int OPEN_BRACKET = 117;
     public const int ELSE = 57;
     public const int OPEN = 100;
     public const int COUNT = 12;
     public const int NULL = 39;
-    public const int THETA_JOINS = 139;
-    public const int IMPLIED_FROM = 129;
-    public const int COLON = 115;
-    public const int DIV = 112;
+    public const int THETA_JOINS = 143;
+    public const int IMPLIED_FROM = 133;
+    public const int COLON = 119;
+    public const int DIV = 116;
     public const int HAVING = 25;
     public const int ALL = 4;
     public const int SET = 46;
+    public const int T__131 = 131;
     public const int INSERT = 29;
     public const int TRUE = 49;
     public const int CASE2 = 72;
@@ -248,31 +255,31 @@ public partial class HqlSqlWalker : TreeParser
     public const int WHERE = 53;
     public const int AGGREGATE = 69;
     public const int VECTOR_EXPR = 90;
+    public const int BNOT = 102;
     public const int LEADING = 64;
-    public const int CLOSE_BRACKET = 114;
+    public const int CLOSE_BRACKET = 118;
     public const int NUM_DOUBLE = 94;
-    public const int T__126 = 126;
     public const int INNER = 28;
     public const int QUERY = 84;
     public const int ORDER_ELEMENT = 83;
-    public const int SELECT_EXPR = 138;
+    public const int SELECT_EXPR = 142;
     public const int OR = 40;
-    public const int JOIN_FRAGMENT = 130;
+    public const int JOIN_FRAGMENT = 134;
     public const int FULL = 23;
     public const int INDICES = 27;
     public const int IS_NULL = 78;
     public const int GROUP = 24;
     public const int ESCAPE = 18;
-    public const int T__127 = 127;
-    public const int PARAM = 116;
-    public const int ID_LETTER = 120;
+    public const int PARAM = 120;
+    public const int ID_LETTER = 124;
     public const int INDEX_OP = 76;
-    public const int HEX_DIGIT = 125;
+    public const int HEX_DIGIT = 129;
     public const int LEFT = 33;
     public const int TRAILING = 68;
     public const int JOIN = 32;
     public const int NOT_BETWEEN = 80;
     public const int SUM = 48;
+    public const int BAND = 105;
     public const int ROW_STAR = 86;
     public const int OUTER = 42;
     public const int NOT_IN = 81;
@@ -282,32 +289,33 @@ public partial class HqlSqlWalker : TreeParser
     public const int MAX = 35;
     public const int NOT_LIKE = 82;
     public const int EMPTY = 63;
-    public const int QUOTED_String = 117;
+    public const int QUOTED_String = 121;
     public const int ASCENDING = 8;
     public const int NUM_LONG = 96;
     public const int IS = 31;
-    public const int SQL_NE = 103;
+    public const int SQL_NE = 107;
     public const int IN_LIST = 75;
     public const int WEIRD_IDENT = 91;
-    public const int NE = 102;
-    public const int GT = 105;
+    public const int NE = 106;
+    public const int GT = 109;
     public const int MIN = 36;
     public const int LIKE = 34;
     public const int WITH = 61;
     public const int IN = 26;
-    public const int PROPERTY_REF = 135;
+    public const int PROPERTY_REF = 139;
     public const int CONSTRUCTOR = 71;
     public const int SOME = 47;
     public const int CLASS = 11;
-    public const int SELECT_COLUMNS = 137;
-    public const int EXPONENT = 123;
-    public const int BOGUS = 143;
-    public const int ID_START_LETTER = 119;
+    public const int SELECT_COLUMNS = 141;
+    public const int EXPONENT = 127;
+    public const int BOGUS = 147;
+    public const int ID_START_LETTER = 123;
     public const int EOF = -1;
     public const int CLOSE = 101;
     public const int AVG = 9;
-    public const int SELECT_CLAUSE = 131;
-    public const int STAR = 111;
+    public const int SELECT_CLAUSE = 135;
+    public const int BXOR = 104;
+    public const int STAR = 115;
     public const int NOT = 38;
     public const int JAVA_CONSTANT = 97;
 
@@ -665,7 +673,7 @@ public partial class HqlSqlWalker : TreeParser
 
 
             	// AST REWRITE
-            	// elements:          u, f, w, s
+            	// elements:          f, u, w, s
             	// token labels:      u
             	// rule labels:       w, f, retval, s
             	// token list labels: 
@@ -1371,7 +1379,7 @@ public partial class HqlSqlWalker : TreeParser
             int alt7 = 2;
             int LA7_0 = input.LA(1);
 
-            if ( (LA7_0 == COUNT || LA7_0 == DOT || LA7_0 == FALSE || LA7_0 == NULL || LA7_0 == TRUE || LA7_0 == CASE || LA7_0 == AGGREGATE || LA7_0 == CASE2 || LA7_0 == INDEX_OP || LA7_0 == METHOD_CALL || LA7_0 == UNARY_MINUS || (LA7_0 >= VECTOR_EXPR && LA7_0 <= WEIRD_IDENT) || (LA7_0 >= NUM_INT && LA7_0 <= JAVA_CONSTANT) || (LA7_0 >= PLUS && LA7_0 <= DIV) || (LA7_0 >= COLON && LA7_0 <= IDENT)) )
+            if ( (LA7_0 == COUNT || LA7_0 == DOT || LA7_0 == FALSE || LA7_0 == NULL || LA7_0 == TRUE || LA7_0 == CASE || LA7_0 == AGGREGATE || LA7_0 == CASE2 || LA7_0 == INDEX_OP || LA7_0 == METHOD_CALL || LA7_0 == UNARY_MINUS || (LA7_0 >= VECTOR_EXPR && LA7_0 <= WEIRD_IDENT) || (LA7_0 >= NUM_INT && LA7_0 <= JAVA_CONSTANT) || (LA7_0 >= BNOT && LA7_0 <= BAND) || (LA7_0 >= PLUS && LA7_0 <= DIV) || (LA7_0 >= COLON && LA7_0 <= IDENT)) )
             {
                 alt7 = 1;
             }
@@ -1622,7 +1630,7 @@ public partial class HqlSqlWalker : TreeParser
 
 
             	// AST REWRITE
-            	// elements:          g, f, o, s, w
+            	// elements:          o, w, f, s, g
             	// token labels:      
             	// rule labels:       o, w, f, retval, g, s
             	// token list labels: 
@@ -1864,7 +1872,7 @@ public partial class HqlSqlWalker : TreeParser
             	int alt13 = 2;
             	int LA13_0 = input.LA(1);
 
-            	if ( (LA13_0 == COUNT || LA13_0 == DOT || LA13_0 == FALSE || LA13_0 == NULL || LA13_0 == TRUE || LA13_0 == CASE || LA13_0 == AGGREGATE || LA13_0 == CASE2 || LA13_0 == INDEX_OP || LA13_0 == METHOD_CALL || LA13_0 == UNARY_MINUS || (LA13_0 >= VECTOR_EXPR && LA13_0 <= WEIRD_IDENT) || (LA13_0 >= NUM_INT && LA13_0 <= JAVA_CONSTANT) || (LA13_0 >= PLUS && LA13_0 <= DIV) || (LA13_0 >= COLON && LA13_0 <= IDENT)) )
+            	if ( (LA13_0 == COUNT || LA13_0 == DOT || LA13_0 == FALSE || LA13_0 == NULL || LA13_0 == TRUE || LA13_0 == CASE || LA13_0 == AGGREGATE || LA13_0 == CASE2 || LA13_0 == INDEX_OP || LA13_0 == METHOD_CALL || LA13_0 == UNARY_MINUS || (LA13_0 >= VECTOR_EXPR && LA13_0 <= WEIRD_IDENT) || (LA13_0 >= NUM_INT && LA13_0 <= JAVA_CONSTANT) || (LA13_0 >= BNOT && LA13_0 <= BAND) || (LA13_0 >= PLUS && LA13_0 <= DIV) || (LA13_0 >= COLON && LA13_0 <= IDENT)) )
             	{
             	    alt13 = 1;
             	}
@@ -1963,7 +1971,7 @@ public partial class HqlSqlWalker : TreeParser
             	    int alt14 = 2;
             	    int LA14_0 = input.LA(1);
 
-            	    if ( (LA14_0 == COUNT || LA14_0 == DOT || LA14_0 == FALSE || LA14_0 == NULL || LA14_0 == TRUE || LA14_0 == CASE || LA14_0 == AGGREGATE || LA14_0 == CASE2 || LA14_0 == INDEX_OP || LA14_0 == METHOD_CALL || LA14_0 == UNARY_MINUS || (LA14_0 >= VECTOR_EXPR && LA14_0 <= WEIRD_IDENT) || (LA14_0 >= NUM_INT && LA14_0 <= JAVA_CONSTANT) || (LA14_0 >= PLUS && LA14_0 <= DIV) || (LA14_0 >= COLON && LA14_0 <= IDENT)) )
+            	    if ( (LA14_0 == COUNT || LA14_0 == DOT || LA14_0 == FALSE || LA14_0 == NULL || LA14_0 == TRUE || LA14_0 == CASE || LA14_0 == AGGREGATE || LA14_0 == CASE2 || LA14_0 == INDEX_OP || LA14_0 == METHOD_CALL || LA14_0 == UNARY_MINUS || (LA14_0 >= VECTOR_EXPR && LA14_0 <= WEIRD_IDENT) || (LA14_0 >= NUM_INT && LA14_0 <= JAVA_CONSTANT) || (LA14_0 >= BNOT && LA14_0 <= BAND) || (LA14_0 >= PLUS && LA14_0 <= DIV) || (LA14_0 >= COLON && LA14_0 <= IDENT)) )
             	    {
             	        alt14 = 1;
             	    }
@@ -2145,7 +2153,7 @@ public partial class HqlSqlWalker : TreeParser
 
 
             	// AST REWRITE
-            	// elements:          x, d
+            	// elements:          d, x
             	// token labels:      d
             	// rule labels:       retval, x
             	// token list labels: 
@@ -2242,7 +2250,7 @@ public partial class HqlSqlWalker : TreeParser
             	    int alt17 = 3;
             	    int LA17_0 = input.LA(1);
 
-            	    if ( (LA17_0 == ALL || LA17_0 == COUNT || LA17_0 == DOT || LA17_0 == ELEMENTS || LA17_0 == INDICES || LA17_0 == CASE || LA17_0 == OBJECT || LA17_0 == AGGREGATE || (LA17_0 >= CONSTRUCTOR && LA17_0 <= CASE2) || LA17_0 == METHOD_CALL || LA17_0 == QUERY || LA17_0 == UNARY_MINUS || LA17_0 == WEIRD_IDENT || (LA17_0 >= NUM_INT && LA17_0 <= NUM_LONG) || (LA17_0 >= PLUS && LA17_0 <= DIV) || (LA17_0 >= QUOTED_String && LA17_0 <= IDENT)) )
+            	    if ( (LA17_0 == ALL || LA17_0 == COUNT || LA17_0 == DOT || LA17_0 == ELEMENTS || LA17_0 == INDICES || LA17_0 == CASE || LA17_0 == OBJECT || LA17_0 == AGGREGATE || (LA17_0 >= CONSTRUCTOR && LA17_0 <= CASE2) || LA17_0 == METHOD_CALL || LA17_0 == QUERY || LA17_0 == UNARY_MINUS || LA17_0 == WEIRD_IDENT || (LA17_0 >= NUM_INT && LA17_0 <= NUM_LONG) || (LA17_0 >= BNOT && LA17_0 <= BAND) || (LA17_0 >= PLUS && LA17_0 <= DIV) || (LA17_0 >= QUOTED_String && LA17_0 <= IDENT)) )
             	    {
             	        alt17 = 1;
             	    }
@@ -2505,6 +2513,10 @@ public partial class HqlSqlWalker : TreeParser
             case CASE:
             case CASE2:
             case UNARY_MINUS:
+            case BNOT:
+            case BOR:
+            case BXOR:
+            case BAND:
             case PLUS:
             case MINUS:
             case STAR:
@@ -2815,7 +2827,7 @@ public partial class HqlSqlWalker : TreeParser
             	int alt20 = 2;
             	int LA20_0 = input.LA(1);
 
-            	if ( (LA20_0 == COUNT || LA20_0 == DOT || LA20_0 == ELEMENTS || LA20_0 == FALSE || LA20_0 == INDICES || LA20_0 == NULL || LA20_0 == TRUE || LA20_0 == CASE || LA20_0 == AGGREGATE || LA20_0 == CASE2 || LA20_0 == INDEX_OP || LA20_0 == METHOD_CALL || LA20_0 == UNARY_MINUS || (LA20_0 >= VECTOR_EXPR && LA20_0 <= WEIRD_IDENT) || (LA20_0 >= NUM_INT && LA20_0 <= JAVA_CONSTANT) || (LA20_0 >= PLUS && LA20_0 <= DIV) || (LA20_0 >= COLON && LA20_0 <= IDENT)) )
+            	if ( (LA20_0 == COUNT || LA20_0 == DOT || LA20_0 == ELEMENTS || LA20_0 == FALSE || LA20_0 == INDICES || LA20_0 == NULL || LA20_0 == TRUE || LA20_0 == CASE || LA20_0 == AGGREGATE || LA20_0 == CASE2 || LA20_0 == INDEX_OP || LA20_0 == METHOD_CALL || LA20_0 == UNARY_MINUS || (LA20_0 >= VECTOR_EXPR && LA20_0 <= WEIRD_IDENT) || (LA20_0 >= NUM_INT && LA20_0 <= JAVA_CONSTANT) || (LA20_0 >= BNOT && LA20_0 <= BAND) || (LA20_0 >= PLUS && LA20_0 <= DIV) || (LA20_0 >= COLON && LA20_0 <= IDENT)) )
             	{
             	    alt20 = 1;
             	}
@@ -2945,7 +2957,7 @@ public partial class HqlSqlWalker : TreeParser
             	    int alt21 = 3;
             	    int LA21_0 = input.LA(1);
 
-            	    if ( (LA21_0 == ALL || LA21_0 == COUNT || LA21_0 == DOT || LA21_0 == ELEMENTS || LA21_0 == INDICES || LA21_0 == CASE || LA21_0 == OBJECT || LA21_0 == AGGREGATE || (LA21_0 >= CONSTRUCTOR && LA21_0 <= CASE2) || LA21_0 == METHOD_CALL || LA21_0 == QUERY || LA21_0 == UNARY_MINUS || LA21_0 == WEIRD_IDENT || (LA21_0 >= NUM_INT && LA21_0 <= NUM_LONG) || (LA21_0 >= PLUS && LA21_0 <= DIV) || (LA21_0 >= QUOTED_String && LA21_0 <= IDENT)) )
+            	    if ( (LA21_0 == ALL || LA21_0 == COUNT || LA21_0 == DOT || LA21_0 == ELEMENTS || LA21_0 == INDICES || LA21_0 == CASE || LA21_0 == OBJECT || LA21_0 == AGGREGATE || (LA21_0 >= CONSTRUCTOR && LA21_0 <= CASE2) || LA21_0 == METHOD_CALL || LA21_0 == QUERY || LA21_0 == UNARY_MINUS || LA21_0 == WEIRD_IDENT || (LA21_0 >= NUM_INT && LA21_0 <= NUM_LONG) || (LA21_0 >= BNOT && LA21_0 <= BAND) || (LA21_0 >= PLUS && LA21_0 <= DIV) || (LA21_0 >= QUOTED_String && LA21_0 <= IDENT)) )
             	    {
             	        alt21 = 1;
             	    }
@@ -3046,7 +3058,7 @@ public partial class HqlSqlWalker : TreeParser
             int alt22 = 2;
             int LA22_0 = input.LA(1);
 
-            if ( (LA22_0 == COUNT || LA22_0 == DOT || LA22_0 == FALSE || LA22_0 == NULL || LA22_0 == TRUE || LA22_0 == CASE || LA22_0 == AGGREGATE || LA22_0 == CASE2 || LA22_0 == INDEX_OP || LA22_0 == METHOD_CALL || LA22_0 == UNARY_MINUS || (LA22_0 >= VECTOR_EXPR && LA22_0 <= WEIRD_IDENT) || (LA22_0 >= NUM_INT && LA22_0 <= JAVA_CONSTANT) || (LA22_0 >= PLUS && LA22_0 <= DIV) || (LA22_0 >= COLON && LA22_0 <= IDENT)) )
+            if ( (LA22_0 == COUNT || LA22_0 == DOT || LA22_0 == FALSE || LA22_0 == NULL || LA22_0 == TRUE || LA22_0 == CASE || LA22_0 == AGGREGATE || LA22_0 == CASE2 || LA22_0 == INDEX_OP || LA22_0 == METHOD_CALL || LA22_0 == UNARY_MINUS || (LA22_0 >= VECTOR_EXPR && LA22_0 <= WEIRD_IDENT) || (LA22_0 >= NUM_INT && LA22_0 <= JAVA_CONSTANT) || (LA22_0 >= BNOT && LA22_0 <= BAND) || (LA22_0 >= PLUS && LA22_0 <= DIV) || (LA22_0 >= COLON && LA22_0 <= IDENT)) )
             {
                 alt22 = 1;
             }
@@ -4312,7 +4324,7 @@ public partial class HqlSqlWalker : TreeParser
 
 
             	// AST REWRITE
-            	// elements:          b, w
+            	// elements:          w, b
             	// token labels:      w
             	// rule labels:       retval, b
             	// token list labels: 
@@ -5497,7 +5509,7 @@ public partial class HqlSqlWalker : TreeParser
             	        	int alt40 = 2;
             	        	int LA40_0 = input.LA(1);
 
-            	        	if ( (LA40_0 == COUNT || LA40_0 == DOT || LA40_0 == FALSE || LA40_0 == NULL || LA40_0 == TRUE || LA40_0 == CASE || LA40_0 == AGGREGATE || LA40_0 == CASE2 || LA40_0 == INDEX_OP || LA40_0 == METHOD_CALL || LA40_0 == UNARY_MINUS || (LA40_0 >= VECTOR_EXPR && LA40_0 <= WEIRD_IDENT) || (LA40_0 >= NUM_INT && LA40_0 <= JAVA_CONSTANT) || (LA40_0 >= PLUS && LA40_0 <= DIV) || (LA40_0 >= COLON && LA40_0 <= IDENT)) )
+            	        	if ( (LA40_0 == COUNT || LA40_0 == DOT || LA40_0 == FALSE || LA40_0 == NULL || LA40_0 == TRUE || LA40_0 == CASE || LA40_0 == AGGREGATE || LA40_0 == CASE2 || LA40_0 == INDEX_OP || LA40_0 == METHOD_CALL || LA40_0 == UNARY_MINUS || (LA40_0 >= VECTOR_EXPR && LA40_0 <= WEIRD_IDENT) || (LA40_0 >= NUM_INT && LA40_0 <= JAVA_CONSTANT) || (LA40_0 >= BNOT && LA40_0 <= BAND) || (LA40_0 >= PLUS && LA40_0 <= DIV) || (LA40_0 >= COLON && LA40_0 <= IDENT)) )
             	        	{
             	        	    alt40 = 1;
             	        	}
@@ -5634,7 +5646,7 @@ public partial class HqlSqlWalker : TreeParser
             	    {
             	        alt43 = 1;
             	    }
-            	    else if ( (LA43_0 == UP || LA43_0 == COUNT || LA43_0 == DOT || LA43_0 == FALSE || LA43_0 == NULL || LA43_0 == TRUE || LA43_0 == CASE || LA43_0 == AGGREGATE || LA43_0 == CASE2 || LA43_0 == INDEX_OP || LA43_0 == METHOD_CALL || LA43_0 == UNARY_MINUS || (LA43_0 >= VECTOR_EXPR && LA43_0 <= WEIRD_IDENT) || (LA43_0 >= NUM_INT && LA43_0 <= JAVA_CONSTANT) || (LA43_0 >= PLUS && LA43_0 <= DIV) || (LA43_0 >= COLON && LA43_0 <= IDENT)) )
+            	    else if ( (LA43_0 == UP || LA43_0 == COUNT || LA43_0 == DOT || LA43_0 == FALSE || LA43_0 == NULL || LA43_0 == TRUE || LA43_0 == CASE || LA43_0 == AGGREGATE || LA43_0 == CASE2 || LA43_0 == INDEX_OP || LA43_0 == METHOD_CALL || LA43_0 == UNARY_MINUS || (LA43_0 >= VECTOR_EXPR && LA43_0 <= WEIRD_IDENT) || (LA43_0 >= NUM_INT && LA43_0 <= JAVA_CONSTANT) || (LA43_0 >= BNOT && LA43_0 <= BAND) || (LA43_0 >= PLUS && LA43_0 <= DIV) || (LA43_0 >= COLON && LA43_0 <= IDENT)) )
             	    {
             	        alt43 = 2;
             	    }
@@ -5668,7 +5680,7 @@ public partial class HqlSqlWalker : TreeParser
             	            	    int alt42 = 2;
             	            	    int LA42_0 = input.LA(1);
 
-            	            	    if ( (LA42_0 == COUNT || LA42_0 == DOT || LA42_0 == FALSE || LA42_0 == NULL || LA42_0 == TRUE || LA42_0 == CASE || LA42_0 == AGGREGATE || LA42_0 == CASE2 || LA42_0 == INDEX_OP || LA42_0 == METHOD_CALL || LA42_0 == UNARY_MINUS || (LA42_0 >= VECTOR_EXPR && LA42_0 <= WEIRD_IDENT) || (LA42_0 >= NUM_INT && LA42_0 <= JAVA_CONSTANT) || (LA42_0 >= PLUS && LA42_0 <= DIV) || (LA42_0 >= COLON && LA42_0 <= IDENT)) )
+            	            	    if ( (LA42_0 == COUNT || LA42_0 == DOT || LA42_0 == FALSE || LA42_0 == NULL || LA42_0 == TRUE || LA42_0 == CASE || LA42_0 == AGGREGATE || LA42_0 == CASE2 || LA42_0 == INDEX_OP || LA42_0 == METHOD_CALL || LA42_0 == UNARY_MINUS || (LA42_0 >= VECTOR_EXPR && LA42_0 <= WEIRD_IDENT) || (LA42_0 >= NUM_INT && LA42_0 <= JAVA_CONSTANT) || (LA42_0 >= BNOT && LA42_0 <= BAND) || (LA42_0 >= PLUS && LA42_0 <= DIV) || (LA42_0 >= COLON && LA42_0 <= IDENT)) )
             	            	    {
             	            	        alt42 = 1;
             	            	    }
@@ -5790,6 +5802,10 @@ public partial class HqlSqlWalker : TreeParser
             case NUM_FLOAT:
             case NUM_LONG:
             case JAVA_CONSTANT:
+            case BNOT:
+            case BOR:
+            case BXOR:
+            case BAND:
             case PLUS:
             case MINUS:
             case STAR:
@@ -6140,6 +6156,10 @@ public partial class HqlSqlWalker : TreeParser
             case CASE:
             case CASE2:
             case UNARY_MINUS:
+            case BNOT:
+            case BOR:
+            case BXOR:
+            case BAND:
             case PLUS:
             case MINUS:
             case STAR:
@@ -6215,7 +6235,7 @@ public partial class HqlSqlWalker : TreeParser
                     	        int alt46 = 2;
                     	        int LA46_0 = input.LA(1);
 
-                    	        if ( (LA46_0 == COUNT || LA46_0 == DOT || LA46_0 == FALSE || LA46_0 == NULL || LA46_0 == TRUE || LA46_0 == CASE || LA46_0 == AGGREGATE || LA46_0 == CASE2 || LA46_0 == INDEX_OP || LA46_0 == METHOD_CALL || LA46_0 == UNARY_MINUS || (LA46_0 >= VECTOR_EXPR && LA46_0 <= WEIRD_IDENT) || (LA46_0 >= NUM_INT && LA46_0 <= JAVA_CONSTANT) || (LA46_0 >= PLUS && LA46_0 <= DIV) || (LA46_0 >= COLON && LA46_0 <= IDENT)) )
+                    	        if ( (LA46_0 == COUNT || LA46_0 == DOT || LA46_0 == FALSE || LA46_0 == NULL || LA46_0 == TRUE || LA46_0 == CASE || LA46_0 == AGGREGATE || LA46_0 == CASE2 || LA46_0 == INDEX_OP || LA46_0 == METHOD_CALL || LA46_0 == UNARY_MINUS || (LA46_0 >= VECTOR_EXPR && LA46_0 <= WEIRD_IDENT) || (LA46_0 >= NUM_INT && LA46_0 <= JAVA_CONSTANT) || (LA46_0 >= BNOT && LA46_0 <= BAND) || (LA46_0 >= PLUS && LA46_0 <= DIV) || (LA46_0 >= COLON && LA46_0 <= IDENT)) )
                     	        {
                     	            alt46 = 1;
                     	        }
@@ -6350,7 +6370,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "arithmeticExpr"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:353:1: arithmeticExpr : ( ^( PLUS expr expr ) | ^( MINUS expr expr ) | ^( DIV expr expr ) | ^( STAR expr expr ) | ^( UNARY_MINUS expr ) | c= caseExpr );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:353:1: arithmeticExpr : ( ^( PLUS expr expr ) | ^( MINUS expr expr ) | ^( DIV expr expr ) | ^( STAR expr expr ) | ^( BNOT expr ) | ^( BAND expr expr ) | ^( BOR expr expr ) | ^( BXOR expr expr ) | ^( UNARY_MINUS expr ) | c= caseExpr );
     public HqlSqlWalker.arithmeticExpr_return arithmeticExpr() // throws RecognitionException [1]
     {   
         HqlSqlWalker.arithmeticExpr_return retval = new HqlSqlWalker.arithmeticExpr_return();
@@ -6365,7 +6385,11 @@ public partial class HqlSqlWalker : TreeParser
         IASTNode MINUS144 = null;
         IASTNode DIV147 = null;
         IASTNode STAR150 = null;
-        IASTNode UNARY_MINUS153 = null;
+        IASTNode BNOT153 = null;
+        IASTNode BAND155 = null;
+        IASTNode BOR158 = null;
+        IASTNode BXOR161 = null;
+        IASTNode UNARY_MINUS164 = null;
         HqlSqlWalker.caseExpr_return c = default(HqlSqlWalker.caseExpr_return);
 
         HqlSqlWalker.expr_return expr142 = default(HqlSqlWalker.expr_return);
@@ -6386,17 +6410,35 @@ public partial class HqlSqlWalker : TreeParser
 
         HqlSqlWalker.expr_return expr154 = default(HqlSqlWalker.expr_return);
 
+        HqlSqlWalker.expr_return expr156 = default(HqlSqlWalker.expr_return);
+
+        HqlSqlWalker.expr_return expr157 = default(HqlSqlWalker.expr_return);
+
+        HqlSqlWalker.expr_return expr159 = default(HqlSqlWalker.expr_return);
+
+        HqlSqlWalker.expr_return expr160 = default(HqlSqlWalker.expr_return);
+
+        HqlSqlWalker.expr_return expr162 = default(HqlSqlWalker.expr_return);
+
+        HqlSqlWalker.expr_return expr163 = default(HqlSqlWalker.expr_return);
+
+        HqlSqlWalker.expr_return expr165 = default(HqlSqlWalker.expr_return);
+
 
         IASTNode PLUS141_tree=null;
         IASTNode MINUS144_tree=null;
         IASTNode DIV147_tree=null;
         IASTNode STAR150_tree=null;
-        IASTNode UNARY_MINUS153_tree=null;
+        IASTNode BNOT153_tree=null;
+        IASTNode BAND155_tree=null;
+        IASTNode BOR158_tree=null;
+        IASTNode BXOR161_tree=null;
+        IASTNode UNARY_MINUS164_tree=null;
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:360:2: ( ^( PLUS expr expr ) | ^( MINUS expr expr ) | ^( DIV expr expr ) | ^( STAR expr expr ) | ^( UNARY_MINUS expr ) | c= caseExpr )
-            int alt48 = 6;
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:360:2: ( ^( PLUS expr expr ) | ^( MINUS expr expr ) | ^( DIV expr expr ) | ^( STAR expr expr ) | ^( BNOT expr ) | ^( BAND expr expr ) | ^( BOR expr expr ) | ^( BXOR expr expr ) | ^( UNARY_MINUS expr ) | c= caseExpr )
+            int alt48 = 10;
             switch ( input.LA(1) ) 
             {
             case PLUS:
@@ -6419,15 +6461,35 @@ public partial class HqlSqlWalker : TreeParser
                 alt48 = 4;
                 }
                 break;
-            case UNARY_MINUS:
+            case BNOT:
             	{
                 alt48 = 5;
+                }
+                break;
+            case BAND:
+            	{
+                alt48 = 6;
+                }
+                break;
+            case BOR:
+            	{
+                alt48 = 7;
+                }
+                break;
+            case BXOR:
+            	{
+                alt48 = 8;
+                }
+                break;
+            case UNARY_MINUS:
+            	{
+                alt48 = 9;
                 }
                 break;
             case CASE:
             case CASE2:
             	{
-                alt48 = 6;
+                alt48 = 10;
                 }
                 break;
             	default:
@@ -6588,7 +6650,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 5 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:365:4: ^( UNARY_MINUS expr )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:364:4: ^( BNOT expr )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6597,16 +6659,16 @@ public partial class HqlSqlWalker : TreeParser
                     	IASTNode _save_last_1 = _last;
                     	IASTNode _first_1 = null;
                     	IASTNode root_1 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
-                    	UNARY_MINUS153=(IASTNode)Match(input,UNARY_MINUS,FOLLOW_UNARY_MINUS_in_arithmeticExpr1842); 
-                    		UNARY_MINUS153_tree = (IASTNode)adaptor.DupNode(UNARY_MINUS153);
+                    	BNOT153=(IASTNode)Match(input,BNOT,FOLLOW_BNOT_in_arithmeticExpr1841); 
+                    		BNOT153_tree = (IASTNode)adaptor.DupNode(BNOT153);
 
-                    		root_1 = (IASTNode)adaptor.BecomeRoot(UNARY_MINUS153_tree, root_1);
+                    		root_1 = (IASTNode)adaptor.BecomeRoot(BNOT153_tree, root_1);
 
 
 
                     	Match(input, Token.DOWN, null); 
                     	_last = (IASTNode)input.LT(1);
-                    	PushFollow(FOLLOW_expr_in_arithmeticExpr1844);
+                    	PushFollow(FOLLOW_expr_in_arithmeticExpr1843);
                     	expr154 = expr();
                     	state.followingStackPointer--;
 
@@ -6619,12 +6681,154 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 6 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:366:4: c= caseExpr
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:365:4: ^( BAND expr expr )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
                     	_last = (IASTNode)input.LT(1);
-                    	PushFollow(FOLLOW_caseExpr_in_arithmeticExpr1852);
+                    	{
+                    	IASTNode _save_last_1 = _last;
+                    	IASTNode _first_1 = null;
+                    	IASTNode root_1 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
+                    	BAND155=(IASTNode)Match(input,BAND,FOLLOW_BAND_in_arithmeticExpr1850); 
+                    		BAND155_tree = (IASTNode)adaptor.DupNode(BAND155);
+
+                    		root_1 = (IASTNode)adaptor.BecomeRoot(BAND155_tree, root_1);
+
+
+
+                    	Match(input, Token.DOWN, null); 
+                    	_last = (IASTNode)input.LT(1);
+                    	PushFollow(FOLLOW_expr_in_arithmeticExpr1852);
+                    	expr156 = expr();
+                    	state.followingStackPointer--;
+
+                    	adaptor.AddChild(root_1, expr156.Tree);
+                    	_last = (IASTNode)input.LT(1);
+                    	PushFollow(FOLLOW_expr_in_arithmeticExpr1854);
+                    	expr157 = expr();
+                    	state.followingStackPointer--;
+
+                    	adaptor.AddChild(root_1, expr157.Tree);
+
+                    	Match(input, Token.UP, null); adaptor.AddChild(root_0, root_1);_last = _save_last_1;
+                    	}
+
+
+                    }
+                    break;
+                case 7 :
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:366:4: ^( BOR expr expr )
+                    {
+                    	root_0 = (IASTNode)adaptor.GetNilNode();
+
+                    	_last = (IASTNode)input.LT(1);
+                    	{
+                    	IASTNode _save_last_1 = _last;
+                    	IASTNode _first_1 = null;
+                    	IASTNode root_1 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
+                    	BOR158=(IASTNode)Match(input,BOR,FOLLOW_BOR_in_arithmeticExpr1861); 
+                    		BOR158_tree = (IASTNode)adaptor.DupNode(BOR158);
+
+                    		root_1 = (IASTNode)adaptor.BecomeRoot(BOR158_tree, root_1);
+
+
+
+                    	Match(input, Token.DOWN, null); 
+                    	_last = (IASTNode)input.LT(1);
+                    	PushFollow(FOLLOW_expr_in_arithmeticExpr1863);
+                    	expr159 = expr();
+                    	state.followingStackPointer--;
+
+                    	adaptor.AddChild(root_1, expr159.Tree);
+                    	_last = (IASTNode)input.LT(1);
+                    	PushFollow(FOLLOW_expr_in_arithmeticExpr1865);
+                    	expr160 = expr();
+                    	state.followingStackPointer--;
+
+                    	adaptor.AddChild(root_1, expr160.Tree);
+
+                    	Match(input, Token.UP, null); adaptor.AddChild(root_0, root_1);_last = _save_last_1;
+                    	}
+
+
+                    }
+                    break;
+                case 8 :
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:367:4: ^( BXOR expr expr )
+                    {
+                    	root_0 = (IASTNode)adaptor.GetNilNode();
+
+                    	_last = (IASTNode)input.LT(1);
+                    	{
+                    	IASTNode _save_last_1 = _last;
+                    	IASTNode _first_1 = null;
+                    	IASTNode root_1 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
+                    	BXOR161=(IASTNode)Match(input,BXOR,FOLLOW_BXOR_in_arithmeticExpr1872); 
+                    		BXOR161_tree = (IASTNode)adaptor.DupNode(BXOR161);
+
+                    		root_1 = (IASTNode)adaptor.BecomeRoot(BXOR161_tree, root_1);
+
+
+
+                    	Match(input, Token.DOWN, null); 
+                    	_last = (IASTNode)input.LT(1);
+                    	PushFollow(FOLLOW_expr_in_arithmeticExpr1874);
+                    	expr162 = expr();
+                    	state.followingStackPointer--;
+
+                    	adaptor.AddChild(root_1, expr162.Tree);
+                    	_last = (IASTNode)input.LT(1);
+                    	PushFollow(FOLLOW_expr_in_arithmeticExpr1876);
+                    	expr163 = expr();
+                    	state.followingStackPointer--;
+
+                    	adaptor.AddChild(root_1, expr163.Tree);
+
+                    	Match(input, Token.UP, null); adaptor.AddChild(root_0, root_1);_last = _save_last_1;
+                    	}
+
+
+                    }
+                    break;
+                case 9 :
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:369:4: ^( UNARY_MINUS expr )
+                    {
+                    	root_0 = (IASTNode)adaptor.GetNilNode();
+
+                    	_last = (IASTNode)input.LT(1);
+                    	{
+                    	IASTNode _save_last_1 = _last;
+                    	IASTNode _first_1 = null;
+                    	IASTNode root_1 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
+                    	UNARY_MINUS164=(IASTNode)Match(input,UNARY_MINUS,FOLLOW_UNARY_MINUS_in_arithmeticExpr1884); 
+                    		UNARY_MINUS164_tree = (IASTNode)adaptor.DupNode(UNARY_MINUS164);
+
+                    		root_1 = (IASTNode)adaptor.BecomeRoot(UNARY_MINUS164_tree, root_1);
+
+
+
+                    	Match(input, Token.DOWN, null); 
+                    	_last = (IASTNode)input.LT(1);
+                    	PushFollow(FOLLOW_expr_in_arithmeticExpr1886);
+                    	expr165 = expr();
+                    	state.followingStackPointer--;
+
+                    	adaptor.AddChild(root_1, expr165.Tree);
+
+                    	Match(input, Token.UP, null); adaptor.AddChild(root_0, root_1);_last = _save_last_1;
+                    	}
+
+
+                    }
+                    break;
+                case 10 :
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:370:4: c= caseExpr
+                    {
+                    	root_0 = (IASTNode)adaptor.GetNilNode();
+
+                    	_last = (IASTNode)input.LT(1);
+                    	PushFollow(FOLLOW_caseExpr_in_arithmeticExpr1894);
                     	c = caseExpr();
                     	state.followingStackPointer--;
 
@@ -6666,7 +6870,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "caseExpr"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:369:1: caseExpr : ( ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:373:1: caseExpr : ( ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) );
     public HqlSqlWalker.caseExpr_return caseExpr() // throws RecognitionException [1]
     {   
         HqlSqlWalker.caseExpr_return retval = new HqlSqlWalker.caseExpr_return();
@@ -6677,37 +6881,37 @@ public partial class HqlSqlWalker : TreeParser
         IASTNode _first_0 = null;
         IASTNode _last = null;
 
-        IASTNode CASE155 = null;
-        IASTNode WHEN156 = null;
-        IASTNode ELSE159 = null;
-        IASTNode CASE2161 = null;
-        IASTNode WHEN163 = null;
-        IASTNode ELSE166 = null;
-        HqlSqlWalker.logicalExpr_return logicalExpr157 = default(HqlSqlWalker.logicalExpr_return);
+        IASTNode CASE166 = null;
+        IASTNode WHEN167 = null;
+        IASTNode ELSE170 = null;
+        IASTNode CASE2172 = null;
+        IASTNode WHEN174 = null;
+        IASTNode ELSE177 = null;
+        HqlSqlWalker.logicalExpr_return logicalExpr168 = default(HqlSqlWalker.logicalExpr_return);
 
-        HqlSqlWalker.expr_return expr158 = default(HqlSqlWalker.expr_return);
+        HqlSqlWalker.expr_return expr169 = default(HqlSqlWalker.expr_return);
 
-        HqlSqlWalker.expr_return expr160 = default(HqlSqlWalker.expr_return);
+        HqlSqlWalker.expr_return expr171 = default(HqlSqlWalker.expr_return);
 
-        HqlSqlWalker.expr_return expr162 = default(HqlSqlWalker.expr_return);
+        HqlSqlWalker.expr_return expr173 = default(HqlSqlWalker.expr_return);
 
-        HqlSqlWalker.expr_return expr164 = default(HqlSqlWalker.expr_return);
+        HqlSqlWalker.expr_return expr175 = default(HqlSqlWalker.expr_return);
 
-        HqlSqlWalker.expr_return expr165 = default(HqlSqlWalker.expr_return);
+        HqlSqlWalker.expr_return expr176 = default(HqlSqlWalker.expr_return);
 
-        HqlSqlWalker.expr_return expr167 = default(HqlSqlWalker.expr_return);
+        HqlSqlWalker.expr_return expr178 = default(HqlSqlWalker.expr_return);
 
 
-        IASTNode CASE155_tree=null;
-        IASTNode WHEN156_tree=null;
-        IASTNode ELSE159_tree=null;
-        IASTNode CASE2161_tree=null;
-        IASTNode WHEN163_tree=null;
-        IASTNode ELSE166_tree=null;
+        IASTNode CASE166_tree=null;
+        IASTNode WHEN167_tree=null;
+        IASTNode ELSE170_tree=null;
+        IASTNode CASE2172_tree=null;
+        IASTNode WHEN174_tree=null;
+        IASTNode ELSE177_tree=null;
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:370:2: ( ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:374:2: ( ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) )
             int alt53 = 2;
             int LA53_0 = input.LA(1);
 
@@ -6729,7 +6933,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt53) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:370:4: ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:374:4: ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6738,16 +6942,16 @@ public partial class HqlSqlWalker : TreeParser
                     	IASTNode _save_last_1 = _last;
                     	IASTNode _first_1 = null;
                     	IASTNode root_1 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
-                    	CASE155=(IASTNode)Match(input,CASE,FOLLOW_CASE_in_caseExpr1864); 
-                    		CASE155_tree = (IASTNode)adaptor.DupNode(CASE155);
+                    	CASE166=(IASTNode)Match(input,CASE,FOLLOW_CASE_in_caseExpr1906); 
+                    		CASE166_tree = (IASTNode)adaptor.DupNode(CASE166);
 
-                    		root_1 = (IASTNode)adaptor.BecomeRoot(CASE155_tree, root_1);
+                    		root_1 = (IASTNode)adaptor.BecomeRoot(CASE166_tree, root_1);
 
 
                     	 _inCase = true; 
 
                     	Match(input, Token.DOWN, null); 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:370:31: ( ^( WHEN logicalExpr expr ) )+
+                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:374:31: ( ^( WHEN logicalExpr expr ) )+
                     	int cnt49 = 0;
                     	do 
                     	{
@@ -6763,33 +6967,33 @@ public partial class HqlSqlWalker : TreeParser
                     	    switch (alt49) 
                     		{
                     			case 1 :
-                    			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:370:32: ^( WHEN logicalExpr expr )
+                    			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:374:32: ^( WHEN logicalExpr expr )
                     			    {
                     			    	_last = (IASTNode)input.LT(1);
                     			    	{
                     			    	IASTNode _save_last_2 = _last;
                     			    	IASTNode _first_2 = null;
                     			    	IASTNode root_2 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
-                    			    	WHEN156=(IASTNode)Match(input,WHEN,FOLLOW_WHEN_in_caseExpr1870); 
-                    			    		WHEN156_tree = (IASTNode)adaptor.DupNode(WHEN156);
+                    			    	WHEN167=(IASTNode)Match(input,WHEN,FOLLOW_WHEN_in_caseExpr1912); 
+                    			    		WHEN167_tree = (IASTNode)adaptor.DupNode(WHEN167);
 
-                    			    		root_2 = (IASTNode)adaptor.BecomeRoot(WHEN156_tree, root_2);
+                    			    		root_2 = (IASTNode)adaptor.BecomeRoot(WHEN167_tree, root_2);
 
 
 
                     			    	Match(input, Token.DOWN, null); 
                     			    	_last = (IASTNode)input.LT(1);
-                    			    	PushFollow(FOLLOW_logicalExpr_in_caseExpr1872);
-                    			    	logicalExpr157 = logicalExpr();
+                    			    	PushFollow(FOLLOW_logicalExpr_in_caseExpr1914);
+                    			    	logicalExpr168 = logicalExpr();
                     			    	state.followingStackPointer--;
 
-                    			    	adaptor.AddChild(root_2, logicalExpr157.Tree);
+                    			    	adaptor.AddChild(root_2, logicalExpr168.Tree);
                     			    	_last = (IASTNode)input.LT(1);
-                    			    	PushFollow(FOLLOW_expr_in_caseExpr1874);
-                    			    	expr158 = expr();
+                    			    	PushFollow(FOLLOW_expr_in_caseExpr1916);
+                    			    	expr169 = expr();
                     			    	state.followingStackPointer--;
 
-                    			    	adaptor.AddChild(root_2, expr158.Tree);
+                    			    	adaptor.AddChild(root_2, expr169.Tree);
 
                     			    	Match(input, Token.UP, null); adaptor.AddChild(root_1, root_2);_last = _save_last_2;
                     			    	}
@@ -6810,7 +7014,7 @@ public partial class HqlSqlWalker : TreeParser
                     	loop49:
                     		;	// Stops C# compiler whinging that label 'loop49' has no statements
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:370:59: ( ^( ELSE expr ) )?
+                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:374:59: ( ^( ELSE expr ) )?
                     	int alt50 = 2;
                     	int LA50_0 = input.LA(1);
 
@@ -6821,27 +7025,27 @@ public partial class HqlSqlWalker : TreeParser
                     	switch (alt50) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:370:60: ^( ELSE expr )
+                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:374:60: ^( ELSE expr )
                     	        {
                     	        	_last = (IASTNode)input.LT(1);
                     	        	{
                     	        	IASTNode _save_last_2 = _last;
                     	        	IASTNode _first_2 = null;
                     	        	IASTNode root_2 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
-                    	        	ELSE159=(IASTNode)Match(input,ELSE,FOLLOW_ELSE_in_caseExpr1881); 
-                    	        		ELSE159_tree = (IASTNode)adaptor.DupNode(ELSE159);
+                    	        	ELSE170=(IASTNode)Match(input,ELSE,FOLLOW_ELSE_in_caseExpr1923); 
+                    	        		ELSE170_tree = (IASTNode)adaptor.DupNode(ELSE170);
 
-                    	        		root_2 = (IASTNode)adaptor.BecomeRoot(ELSE159_tree, root_2);
+                    	        		root_2 = (IASTNode)adaptor.BecomeRoot(ELSE170_tree, root_2);
 
 
 
                     	        	Match(input, Token.DOWN, null); 
                     	        	_last = (IASTNode)input.LT(1);
-                    	        	PushFollow(FOLLOW_expr_in_caseExpr1883);
-                    	        	expr160 = expr();
+                    	        	PushFollow(FOLLOW_expr_in_caseExpr1925);
+                    	        	expr171 = expr();
                     	        	state.followingStackPointer--;
 
-                    	        	adaptor.AddChild(root_2, expr160.Tree);
+                    	        	adaptor.AddChild(root_2, expr171.Tree);
 
                     	        	Match(input, Token.UP, null); adaptor.AddChild(root_1, root_2);_last = _save_last_2;
                     	        	}
@@ -6861,7 +7065,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:371:4: ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:375:4: ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -6870,22 +7074,22 @@ public partial class HqlSqlWalker : TreeParser
                     	IASTNode _save_last_1 = _last;
                     	IASTNode _first_1 = null;
                     	IASTNode root_1 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
-                    	CASE2161=(IASTNode)Match(input,CASE2,FOLLOW_CASE2_in_caseExpr1895); 
-                    		CASE2161_tree = (IASTNode)adaptor.DupNode(CASE2161);
+                    	CASE2172=(IASTNode)Match(input,CASE2,FOLLOW_CASE2_in_caseExpr1937); 
+                    		CASE2172_tree = (IASTNode)adaptor.DupNode(CASE2172);
 
-                    		root_1 = (IASTNode)adaptor.BecomeRoot(CASE2161_tree, root_1);
+                    		root_1 = (IASTNode)adaptor.BecomeRoot(CASE2172_tree, root_1);
 
 
                     	 _inCase = true; 
 
                     	Match(input, Token.DOWN, null); 
                     	_last = (IASTNode)input.LT(1);
-                    	PushFollow(FOLLOW_expr_in_caseExpr1899);
-                    	expr162 = expr();
+                    	PushFollow(FOLLOW_expr_in_caseExpr1941);
+                    	expr173 = expr();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_1, expr162.Tree);
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:371:37: ( ^( WHEN expr expr ) )+
+                    	adaptor.AddChild(root_1, expr173.Tree);
+                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:375:37: ( ^( WHEN expr expr ) )+
                     	int cnt51 = 0;
                     	do 
                     	{
@@ -6901,33 +7105,33 @@ public partial class HqlSqlWalker : TreeParser
                     	    switch (alt51) 
                     		{
                     			case 1 :
-                    			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:371:38: ^( WHEN expr expr )
+                    			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:375:38: ^( WHEN expr expr )
                     			    {
                     			    	_last = (IASTNode)input.LT(1);
                     			    	{
                     			    	IASTNode _save_last_2 = _last;
                     			    	IASTNode _first_2 = null;
                     			    	IASTNode root_2 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
-                    			    	WHEN163=(IASTNode)Match(input,WHEN,FOLLOW_WHEN_in_caseExpr1903); 
-                    			    		WHEN163_tree = (IASTNode)adaptor.DupNode(WHEN163);
+                    			    	WHEN174=(IASTNode)Match(input,WHEN,FOLLOW_WHEN_in_caseExpr1945); 
+                    			    		WHEN174_tree = (IASTNode)adaptor.DupNode(WHEN174);
 
-                    			    		root_2 = (IASTNode)adaptor.BecomeRoot(WHEN163_tree, root_2);
+                    			    		root_2 = (IASTNode)adaptor.BecomeRoot(WHEN174_tree, root_2);
 
 
 
                     			    	Match(input, Token.DOWN, null); 
                     			    	_last = (IASTNode)input.LT(1);
-                    			    	PushFollow(FOLLOW_expr_in_caseExpr1905);
-                    			    	expr164 = expr();
+                    			    	PushFollow(FOLLOW_expr_in_caseExpr1947);
+                    			    	expr175 = expr();
                     			    	state.followingStackPointer--;
 
-                    			    	adaptor.AddChild(root_2, expr164.Tree);
+                    			    	adaptor.AddChild(root_2, expr175.Tree);
                     			    	_last = (IASTNode)input.LT(1);
-                    			    	PushFollow(FOLLOW_expr_in_caseExpr1907);
-                    			    	expr165 = expr();
+                    			    	PushFollow(FOLLOW_expr_in_caseExpr1949);
+                    			    	expr176 = expr();
                     			    	state.followingStackPointer--;
 
-                    			    	adaptor.AddChild(root_2, expr165.Tree);
+                    			    	adaptor.AddChild(root_2, expr176.Tree);
 
                     			    	Match(input, Token.UP, null); adaptor.AddChild(root_1, root_2);_last = _save_last_2;
                     			    	}
@@ -6948,7 +7152,7 @@ public partial class HqlSqlWalker : TreeParser
                     	loop51:
                     		;	// Stops C# compiler whinging that label 'loop51' has no statements
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:371:58: ( ^( ELSE expr ) )?
+                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:375:58: ( ^( ELSE expr ) )?
                     	int alt52 = 2;
                     	int LA52_0 = input.LA(1);
 
@@ -6959,27 +7163,27 @@ public partial class HqlSqlWalker : TreeParser
                     	switch (alt52) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:371:59: ^( ELSE expr )
+                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:375:59: ^( ELSE expr )
                     	        {
                     	        	_last = (IASTNode)input.LT(1);
                     	        	{
                     	        	IASTNode _save_last_2 = _last;
                     	        	IASTNode _first_2 = null;
                     	        	IASTNode root_2 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
-                    	        	ELSE166=(IASTNode)Match(input,ELSE,FOLLOW_ELSE_in_caseExpr1914); 
-                    	        		ELSE166_tree = (IASTNode)adaptor.DupNode(ELSE166);
+                    	        	ELSE177=(IASTNode)Match(input,ELSE,FOLLOW_ELSE_in_caseExpr1956); 
+                    	        		ELSE177_tree = (IASTNode)adaptor.DupNode(ELSE177);
 
-                    	        		root_2 = (IASTNode)adaptor.BecomeRoot(ELSE166_tree, root_2);
+                    	        		root_2 = (IASTNode)adaptor.BecomeRoot(ELSE177_tree, root_2);
 
 
 
                     	        	Match(input, Token.DOWN, null); 
                     	        	_last = (IASTNode)input.LT(1);
-                    	        	PushFollow(FOLLOW_expr_in_caseExpr1916);
-                    	        	expr167 = expr();
+                    	        	PushFollow(FOLLOW_expr_in_caseExpr1958);
+                    	        	expr178 = expr();
                     	        	state.followingStackPointer--;
 
-                    	        	adaptor.AddChild(root_2, expr167.Tree);
+                    	        	adaptor.AddChild(root_2, expr178.Tree);
 
                     	        	Match(input, Token.UP, null); adaptor.AddChild(root_1, root_2);_last = _save_last_2;
                     	        	}
@@ -7026,7 +7230,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "collectionFunction"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:376:1: collectionFunction : ( ^(e= ELEMENTS p1= propertyRef ) | ^(i= INDICES p2= propertyRef ) );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:380:1: collectionFunction : ( ^(e= ELEMENTS p1= propertyRef ) | ^(i= INDICES p2= propertyRef ) );
     public HqlSqlWalker.collectionFunction_return collectionFunction() // throws RecognitionException [1]
     {   
         HqlSqlWalker.collectionFunction_return retval = new HqlSqlWalker.collectionFunction_return();
@@ -7049,7 +7253,7 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:377:2: ( ^(e= ELEMENTS p1= propertyRef ) | ^(i= INDICES p2= propertyRef ) )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:381:2: ( ^(e= ELEMENTS p1= propertyRef ) | ^(i= INDICES p2= propertyRef ) )
             int alt54 = 2;
             int LA54_0 = input.LA(1);
 
@@ -7071,7 +7275,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt54) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:377:4: ^(e= ELEMENTS p1= propertyRef )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:381:4: ^(e= ELEMENTS p1= propertyRef )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7080,7 +7284,7 @@ public partial class HqlSqlWalker : TreeParser
                     	IASTNode _save_last_1 = _last;
                     	IASTNode _first_1 = null;
                     	IASTNode root_1 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
-                    	e=(IASTNode)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_collectionFunction1938); 
+                    	e=(IASTNode)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_collectionFunction1980); 
                     		e_tree = (IASTNode)adaptor.DupNode(e);
 
                     		root_1 = (IASTNode)adaptor.BecomeRoot(e_tree, root_1);
@@ -7090,7 +7294,7 @@ public partial class HqlSqlWalker : TreeParser
 
                     	Match(input, Token.DOWN, null); 
                     	_last = (IASTNode)input.LT(1);
-                    	PushFollow(FOLLOW_propertyRef_in_collectionFunction1944);
+                    	PushFollow(FOLLOW_propertyRef_in_collectionFunction1986);
                     	p1 = propertyRef();
                     	state.followingStackPointer--;
 
@@ -7106,7 +7310,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:379:4: ^(i= INDICES p2= propertyRef )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:383:4: ^(i= INDICES p2= propertyRef )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7115,7 +7319,7 @@ public partial class HqlSqlWalker : TreeParser
                     	IASTNode _save_last_1 = _last;
                     	IASTNode _first_1 = null;
                     	IASTNode root_1 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
-                    	i=(IASTNode)Match(input,INDICES,FOLLOW_INDICES_in_collectionFunction1963); 
+                    	i=(IASTNode)Match(input,INDICES,FOLLOW_INDICES_in_collectionFunction2005); 
                     		i_tree = (IASTNode)adaptor.DupNode(i);
 
                     		root_1 = (IASTNode)adaptor.BecomeRoot(i_tree, root_1);
@@ -7125,7 +7329,7 @@ public partial class HqlSqlWalker : TreeParser
 
                     	Match(input, Token.DOWN, null); 
                     	_last = (IASTNode)input.LT(1);
-                    	PushFollow(FOLLOW_propertyRef_in_collectionFunction1969);
+                    	PushFollow(FOLLOW_propertyRef_in_collectionFunction2011);
                     	p2 = propertyRef();
                     	state.followingStackPointer--;
 
@@ -7168,7 +7372,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "functionCall"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:383:1: functionCall : ( ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | comparisonExpr )* ) )? ) | ^( AGGREGATE aggregateExpr ) );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:387:1: functionCall : ( ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | comparisonExpr )* ) )? ) | ^( AGGREGATE aggregateExpr ) );
     public HqlSqlWalker.functionCall_return functionCall() // throws RecognitionException [1]
     {   
         HqlSqlWalker.functionCall_return retval = new HqlSqlWalker.functionCall_return();
@@ -7180,24 +7384,24 @@ public partial class HqlSqlWalker : TreeParser
         IASTNode _last = null;
 
         IASTNode m = null;
-        IASTNode EXPR_LIST169 = null;
-        IASTNode AGGREGATE172 = null;
-        HqlSqlWalker.pathAsIdent_return pathAsIdent168 = default(HqlSqlWalker.pathAsIdent_return);
+        IASTNode EXPR_LIST180 = null;
+        IASTNode AGGREGATE183 = null;
+        HqlSqlWalker.pathAsIdent_return pathAsIdent179 = default(HqlSqlWalker.pathAsIdent_return);
 
-        HqlSqlWalker.expr_return expr170 = default(HqlSqlWalker.expr_return);
+        HqlSqlWalker.expr_return expr181 = default(HqlSqlWalker.expr_return);
 
-        HqlSqlWalker.comparisonExpr_return comparisonExpr171 = default(HqlSqlWalker.comparisonExpr_return);
+        HqlSqlWalker.comparisonExpr_return comparisonExpr182 = default(HqlSqlWalker.comparisonExpr_return);
 
-        HqlSqlWalker.aggregateExpr_return aggregateExpr173 = default(HqlSqlWalker.aggregateExpr_return);
+        HqlSqlWalker.aggregateExpr_return aggregateExpr184 = default(HqlSqlWalker.aggregateExpr_return);
 
 
         IASTNode m_tree=null;
-        IASTNode EXPR_LIST169_tree=null;
-        IASTNode AGGREGATE172_tree=null;
+        IASTNode EXPR_LIST180_tree=null;
+        IASTNode AGGREGATE183_tree=null;
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:384:2: ( ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | comparisonExpr )* ) )? ) | ^( AGGREGATE aggregateExpr ) )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:388:2: ( ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | comparisonExpr )* ) )? ) | ^( AGGREGATE aggregateExpr ) )
             int alt57 = 2;
             int LA57_0 = input.LA(1);
 
@@ -7219,7 +7423,7 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt57) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:384:4: ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | comparisonExpr )* ) )? )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:388:4: ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | comparisonExpr )* ) )? )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7228,7 +7432,7 @@ public partial class HqlSqlWalker : TreeParser
                     	IASTNode _save_last_1 = _last;
                     	IASTNode _first_1 = null;
                     	IASTNode root_1 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
-                    	m=(IASTNode)Match(input,METHOD_CALL,FOLLOW_METHOD_CALL_in_functionCall1994); 
+                    	m=(IASTNode)Match(input,METHOD_CALL,FOLLOW_METHOD_CALL_in_functionCall2036); 
                     		m_tree = (IASTNode)adaptor.DupNode(m);
 
                     		root_1 = (IASTNode)adaptor.BecomeRoot(m_tree, root_1);
@@ -7238,12 +7442,12 @@ public partial class HqlSqlWalker : TreeParser
 
                     	Match(input, Token.DOWN, null); 
                     	_last = (IASTNode)input.LT(1);
-                    	PushFollow(FOLLOW_pathAsIdent_in_functionCall1999);
-                    	pathAsIdent168 = pathAsIdent();
+                    	PushFollow(FOLLOW_pathAsIdent_in_functionCall2041);
+                    	pathAsIdent179 = pathAsIdent();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_1, pathAsIdent168.Tree);
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:384:57: ( ^( EXPR_LIST ( expr | comparisonExpr )* ) )?
+                    	adaptor.AddChild(root_1, pathAsIdent179.Tree);
+                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:388:57: ( ^( EXPR_LIST ( expr | comparisonExpr )* ) )?
                     	int alt56 = 2;
                     	int LA56_0 = input.LA(1);
 
@@ -7254,30 +7458,30 @@ public partial class HqlSqlWalker : TreeParser
                     	switch (alt56) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:384:59: ^( EXPR_LIST ( expr | comparisonExpr )* )
+                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:388:59: ^( EXPR_LIST ( expr | comparisonExpr )* )
                     	        {
                     	        	_last = (IASTNode)input.LT(1);
                     	        	{
                     	        	IASTNode _save_last_2 = _last;
                     	        	IASTNode _first_2 = null;
                     	        	IASTNode root_2 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
-                    	        	EXPR_LIST169=(IASTNode)Match(input,EXPR_LIST,FOLLOW_EXPR_LIST_in_functionCall2004); 
-                    	        		EXPR_LIST169_tree = (IASTNode)adaptor.DupNode(EXPR_LIST169);
+                    	        	EXPR_LIST180=(IASTNode)Match(input,EXPR_LIST,FOLLOW_EXPR_LIST_in_functionCall2046); 
+                    	        		EXPR_LIST180_tree = (IASTNode)adaptor.DupNode(EXPR_LIST180);
 
-                    	        		root_2 = (IASTNode)adaptor.BecomeRoot(EXPR_LIST169_tree, root_2);
+                    	        		root_2 = (IASTNode)adaptor.BecomeRoot(EXPR_LIST180_tree, root_2);
 
 
 
                     	        	if ( input.LA(1) == Token.DOWN )
                     	        	{
                     	        	    Match(input, Token.DOWN, null); 
-                    	        	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:384:71: ( expr | comparisonExpr )*
+                    	        	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:388:71: ( expr | comparisonExpr )*
                     	        	    do 
                     	        	    {
                     	        	        int alt55 = 3;
                     	        	        int LA55_0 = input.LA(1);
 
-                    	        	        if ( (LA55_0 == COUNT || LA55_0 == DOT || LA55_0 == FALSE || LA55_0 == NULL || LA55_0 == TRUE || LA55_0 == CASE || LA55_0 == AGGREGATE || LA55_0 == CASE2 || LA55_0 == INDEX_OP || LA55_0 == METHOD_CALL || LA55_0 == UNARY_MINUS || (LA55_0 >= VECTOR_EXPR && LA55_0 <= WEIRD_IDENT) || (LA55_0 >= NUM_INT && LA55_0 <= JAVA_CONSTANT) || (LA55_0 >= PLUS && LA55_0 <= DIV) || (LA55_0 >= COLON && LA55_0 <= IDENT)) )
+                    	        	        if ( (LA55_0 == COUNT || LA55_0 == DOT || LA55_0 == FALSE || LA55_0 == NULL || LA55_0 == TRUE || LA55_0 == CASE || LA55_0 == AGGREGATE || LA55_0 == CASE2 || LA55_0 == INDEX_OP || LA55_0 == METHOD_CALL || LA55_0 == UNARY_MINUS || (LA55_0 >= VECTOR_EXPR && LA55_0 <= WEIRD_IDENT) || (LA55_0 >= NUM_INT && LA55_0 <= JAVA_CONSTANT) || (LA55_0 >= BNOT && LA55_0 <= BAND) || (LA55_0 >= PLUS && LA55_0 <= DIV) || (LA55_0 >= COLON && LA55_0 <= IDENT)) )
                     	        	        {
                     	        	            alt55 = 1;
                     	        	        }
@@ -7290,26 +7494,26 @@ public partial class HqlSqlWalker : TreeParser
                     	        	        switch (alt55) 
                     	        	    	{
                     	        	    		case 1 :
-                    	        	    		    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:384:72: expr
+                    	        	    		    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:388:72: expr
                     	        	    		    {
                     	        	    		    	_last = (IASTNode)input.LT(1);
-                    	        	    		    	PushFollow(FOLLOW_expr_in_functionCall2007);
-                    	        	    		    	expr170 = expr();
+                    	        	    		    	PushFollow(FOLLOW_expr_in_functionCall2049);
+                    	        	    		    	expr181 = expr();
                     	        	    		    	state.followingStackPointer--;
 
-                    	        	    		    	adaptor.AddChild(root_2, expr170.Tree);
+                    	        	    		    	adaptor.AddChild(root_2, expr181.Tree);
 
                     	        	    		    }
                     	        	    		    break;
                     	        	    		case 2 :
-                    	        	    		    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:384:79: comparisonExpr
+                    	        	    		    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:388:79: comparisonExpr
                     	        	    		    {
                     	        	    		    	_last = (IASTNode)input.LT(1);
-                    	        	    		    	PushFollow(FOLLOW_comparisonExpr_in_functionCall2011);
-                    	        	    		    	comparisonExpr171 = comparisonExpr();
+                    	        	    		    	PushFollow(FOLLOW_comparisonExpr_in_functionCall2053);
+                    	        	    		    	comparisonExpr182 = comparisonExpr();
                     	        	    		    	state.followingStackPointer--;
 
-                    	        	    		    	adaptor.AddChild(root_2, comparisonExpr171.Tree);
+                    	        	    		    	adaptor.AddChild(root_2, comparisonExpr182.Tree);
 
                     	        	    		    }
                     	        	    		    break;
@@ -7342,7 +7546,7 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:386:4: ^( AGGREGATE aggregateExpr )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:390:4: ^( AGGREGATE aggregateExpr )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -7351,20 +7555,20 @@ public partial class HqlSqlWalker : TreeParser
                     	IASTNode _save_last_1 = _last;
                     	IASTNode _first_1 = null;
                     	IASTNode root_1 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
-                    	AGGREGATE172=(IASTNode)Match(input,AGGREGATE,FOLLOW_AGGREGATE_in_functionCall2030); 
-                    		AGGREGATE172_tree = (IASTNode)adaptor.DupNode(AGGREGATE172);
+                    	AGGREGATE183=(IASTNode)Match(input,AGGREGATE,FOLLOW_AGGREGATE_in_functionCall2072); 
+                    		AGGREGATE183_tree = (IASTNode)adaptor.DupNode(AGGREGATE183);
 
-                    		root_1 = (IASTNode)adaptor.BecomeRoot(AGGREGATE172_tree, root_1);
+                    		root_1 = (IASTNode)adaptor.BecomeRoot(AGGREGATE183_tree, root_1);
 
 
 
                     	Match(input, Token.DOWN, null); 
                     	_last = (IASTNode)input.LT(1);
-                    	PushFollow(FOLLOW_aggregateExpr_in_functionCall2032);
-                    	aggregateExpr173 = aggregateExpr();
+                    	PushFollow(FOLLOW_aggregateExpr_in_functionCall2074);
+                    	aggregateExpr184 = aggregateExpr();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_1, aggregateExpr173.Tree);
+                    	adaptor.AddChild(root_1, aggregateExpr184.Tree);
 
                     	Match(input, Token.UP, null); adaptor.AddChild(root_0, root_1);_last = _save_last_1;
                     	}
@@ -7400,7 +7604,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "constant"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:389:1: constant : ( literal | NULL | t= TRUE | f= FALSE | JAVA_CONSTANT );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:393:1: constant : ( literal | NULL | t= TRUE | f= FALSE | JAVA_CONSTANT );
     public HqlSqlWalker.constant_return constant() // throws RecognitionException [1]
     {   
         HqlSqlWalker.constant_return retval = new HqlSqlWalker.constant_return();
@@ -7413,19 +7617,19 @@ public partial class HqlSqlWalker : TreeParser
 
         IASTNode t = null;
         IASTNode f = null;
-        IASTNode NULL175 = null;
-        IASTNode JAVA_CONSTANT176 = null;
-        HqlSqlWalker.literal_return literal174 = default(HqlSqlWalker.literal_return);
+        IASTNode NULL186 = null;
+        IASTNode JAVA_CONSTANT187 = null;
+        HqlSqlWalker.literal_return literal185 = default(HqlSqlWalker.literal_return);
 
 
         IASTNode t_tree=null;
         IASTNode f_tree=null;
-        IASTNode NULL175_tree=null;
-        IASTNode JAVA_CONSTANT176_tree=null;
+        IASTNode NULL186_tree=null;
+        IASTNode JAVA_CONSTANT187_tree=null;
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:390:2: ( literal | NULL | t= TRUE | f= FALSE | JAVA_CONSTANT )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:394:2: ( literal | NULL | t= TRUE | f= FALSE | JAVA_CONSTANT )
             int alt58 = 5;
             switch ( input.LA(1) ) 
             {
@@ -7468,40 +7672,40 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt58) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:390:4: literal
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:394:4: literal
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
                     	_last = (IASTNode)input.LT(1);
-                    	PushFollow(FOLLOW_literal_in_constant2045);
-                    	literal174 = literal();
+                    	PushFollow(FOLLOW_literal_in_constant2087);
+                    	literal185 = literal();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, literal174.Tree);
+                    	adaptor.AddChild(root_0, literal185.Tree);
 
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:391:4: NULL
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:395:4: NULL
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
                     	_last = (IASTNode)input.LT(1);
-                    	NULL175=(IASTNode)Match(input,NULL,FOLLOW_NULL_in_constant2050); 
-                    		NULL175_tree = (IASTNode)adaptor.DupNode(NULL175);
+                    	NULL186=(IASTNode)Match(input,NULL,FOLLOW_NULL_in_constant2092); 
+                    		NULL186_tree = (IASTNode)adaptor.DupNode(NULL186);
 
-                    		adaptor.AddChild(root_0, NULL175_tree);
+                    		adaptor.AddChild(root_0, NULL186_tree);
 
 
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:392:4: t= TRUE
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:396:4: t= TRUE
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
                     	_last = (IASTNode)input.LT(1);
-                    	t=(IASTNode)Match(input,TRUE,FOLLOW_TRUE_in_constant2057); 
+                    	t=(IASTNode)Match(input,TRUE,FOLLOW_TRUE_in_constant2099); 
                     		t_tree = (IASTNode)adaptor.DupNode(t);
 
                     		adaptor.AddChild(root_0, t_tree);
@@ -7511,12 +7715,12 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:393:4: f= FALSE
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:397:4: f= FALSE
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
                     	_last = (IASTNode)input.LT(1);
-                    	f=(IASTNode)Match(input,FALSE,FOLLOW_FALSE_in_constant2067); 
+                    	f=(IASTNode)Match(input,FALSE,FOLLOW_FALSE_in_constant2109); 
                     		f_tree = (IASTNode)adaptor.DupNode(f);
 
                     		adaptor.AddChild(root_0, f_tree);
@@ -7526,15 +7730,15 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 5 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:394:4: JAVA_CONSTANT
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:398:4: JAVA_CONSTANT
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
                     	_last = (IASTNode)input.LT(1);
-                    	JAVA_CONSTANT176=(IASTNode)Match(input,JAVA_CONSTANT,FOLLOW_JAVA_CONSTANT_in_constant2074); 
-                    		JAVA_CONSTANT176_tree = (IASTNode)adaptor.DupNode(JAVA_CONSTANT176);
+                    	JAVA_CONSTANT187=(IASTNode)Match(input,JAVA_CONSTANT,FOLLOW_JAVA_CONSTANT_in_constant2116); 
+                    		JAVA_CONSTANT187_tree = (IASTNode)adaptor.DupNode(JAVA_CONSTANT187);
 
-                    		adaptor.AddChild(root_0, JAVA_CONSTANT176_tree);
+                    		adaptor.AddChild(root_0, JAVA_CONSTANT187_tree);
 
 
                     }
@@ -7567,7 +7771,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "literal"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:397:1: literal : ( numericLiteral | stringLiteral );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:401:1: literal : ( numericLiteral | stringLiteral );
     public HqlSqlWalker.literal_return literal() // throws RecognitionException [1]
     {   
         HqlSqlWalker.literal_return retval = new HqlSqlWalker.literal_return();
@@ -7578,15 +7782,15 @@ public partial class HqlSqlWalker : TreeParser
         IASTNode _first_0 = null;
         IASTNode _last = null;
 
-        HqlSqlWalker.numericLiteral_return numericLiteral177 = default(HqlSqlWalker.numericLiteral_return);
+        HqlSqlWalker.numericLiteral_return numericLiteral188 = default(HqlSqlWalker.numericLiteral_return);
 
-        HqlSqlWalker.stringLiteral_return stringLiteral178 = default(HqlSqlWalker.stringLiteral_return);
+        HqlSqlWalker.stringLiteral_return stringLiteral189 = default(HqlSqlWalker.stringLiteral_return);
 
 
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:398:2: ( numericLiteral | stringLiteral )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:402:2: ( numericLiteral | stringLiteral )
             int alt59 = 2;
             int LA59_0 = input.LA(1);
 
@@ -7608,30 +7812,30 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt59) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:398:4: numericLiteral
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:402:4: numericLiteral
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
                     	_last = (IASTNode)input.LT(1);
-                    	PushFollow(FOLLOW_numericLiteral_in_literal2085);
-                    	numericLiteral177 = numericLiteral();
+                    	PushFollow(FOLLOW_numericLiteral_in_literal2127);
+                    	numericLiteral188 = numericLiteral();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, numericLiteral177.Tree);
+                    	adaptor.AddChild(root_0, numericLiteral188.Tree);
 
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:399:4: stringLiteral
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:403:4: stringLiteral
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
                     	_last = (IASTNode)input.LT(1);
-                    	PushFollow(FOLLOW_stringLiteral_in_literal2090);
-                    	stringLiteral178 = stringLiteral();
+                    	PushFollow(FOLLOW_stringLiteral_in_literal2132);
+                    	stringLiteral189 = stringLiteral();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, stringLiteral178.Tree);
+                    	adaptor.AddChild(root_0, stringLiteral189.Tree);
 
                     }
                     break;
@@ -7663,7 +7867,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "numericLiteral"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:402:1: numericLiteral : ( NUM_INT | NUM_LONG | NUM_FLOAT | NUM_DOUBLE );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:406:1: numericLiteral : ( NUM_INT | NUM_LONG | NUM_FLOAT | NUM_DOUBLE );
     public HqlSqlWalker.numericLiteral_return numericLiteral() // throws RecognitionException [1]
     {   
         HqlSqlWalker.numericLiteral_return retval = new HqlSqlWalker.numericLiteral_return();
@@ -7674,26 +7878,26 @@ public partial class HqlSqlWalker : TreeParser
         IASTNode _first_0 = null;
         IASTNode _last = null;
 
-        IASTNode set179 = null;
+        IASTNode set190 = null;
 
-        IASTNode set179_tree=null;
+        IASTNode set190_tree=null;
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:407:2: ( NUM_INT | NUM_LONG | NUM_FLOAT | NUM_DOUBLE )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:411:2: ( NUM_INT | NUM_LONG | NUM_FLOAT | NUM_DOUBLE )
             // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
             	_last = (IASTNode)input.LT(1);
-            	set179 = (IASTNode)input.LT(1);
+            	set190 = (IASTNode)input.LT(1);
             	if ( (input.LA(1) >= NUM_INT && input.LA(1) <= NUM_LONG) ) 
             	{
             	    input.Consume();
 
-            	    set179_tree = (IASTNode)adaptor.DupNode(set179);
+            	    set190_tree = (IASTNode)adaptor.DupNode(set190);
 
-            	    adaptor.AddChild(root_0, set179_tree);
+            	    adaptor.AddChild(root_0, set190_tree);
 
             	    state.errorRecovery = false;
             	}
@@ -7736,7 +7940,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "stringLiteral"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:413:1: stringLiteral : QUOTED_String ;
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:417:1: stringLiteral : QUOTED_String ;
     public HqlSqlWalker.stringLiteral_return stringLiteral() // throws RecognitionException [1]
     {   
         HqlSqlWalker.stringLiteral_return retval = new HqlSqlWalker.stringLiteral_return();
@@ -7747,22 +7951,22 @@ public partial class HqlSqlWalker : TreeParser
         IASTNode _first_0 = null;
         IASTNode _last = null;
 
-        IASTNode QUOTED_String180 = null;
+        IASTNode QUOTED_String191 = null;
 
-        IASTNode QUOTED_String180_tree=null;
+        IASTNode QUOTED_String191_tree=null;
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:414:2: ( QUOTED_String )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:414:4: QUOTED_String
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:418:2: ( QUOTED_String )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:418:4: QUOTED_String
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
             	_last = (IASTNode)input.LT(1);
-            	QUOTED_String180=(IASTNode)Match(input,QUOTED_String,FOLLOW_QUOTED_String_in_stringLiteral2132); 
-            		QUOTED_String180_tree = (IASTNode)adaptor.DupNode(QUOTED_String180);
+            	QUOTED_String191=(IASTNode)Match(input,QUOTED_String,FOLLOW_QUOTED_String_in_stringLiteral2174); 
+            		QUOTED_String191_tree = (IASTNode)adaptor.DupNode(QUOTED_String191);
 
-            		adaptor.AddChild(root_0, QUOTED_String180_tree);
+            		adaptor.AddChild(root_0, QUOTED_String191_tree);
 
 
             }
@@ -7793,7 +7997,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "identifier"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:417:1: identifier : ( IDENT | WEIRD_IDENT ) ;
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:421:1: identifier : ( IDENT | WEIRD_IDENT ) ;
     public HqlSqlWalker.identifier_return identifier() // throws RecognitionException [1]
     {   
         HqlSqlWalker.identifier_return retval = new HqlSqlWalker.identifier_return();
@@ -7804,26 +8008,26 @@ public partial class HqlSqlWalker : TreeParser
         IASTNode _first_0 = null;
         IASTNode _last = null;
 
-        IASTNode set181 = null;
+        IASTNode set192 = null;
 
-        IASTNode set181_tree=null;
+        IASTNode set192_tree=null;
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:418:2: ( ( IDENT | WEIRD_IDENT ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:418:4: ( IDENT | WEIRD_IDENT )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:422:2: ( ( IDENT | WEIRD_IDENT ) )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:422:4: ( IDENT | WEIRD_IDENT )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
             	_last = (IASTNode)input.LT(1);
-            	set181 = (IASTNode)input.LT(1);
+            	set192 = (IASTNode)input.LT(1);
             	if ( input.LA(1) == WEIRD_IDENT || input.LA(1) == IDENT ) 
             	{
             	    input.Consume();
 
-            	    set181_tree = (IASTNode)adaptor.DupNode(set181);
+            	    set192_tree = (IASTNode)adaptor.DupNode(set192);
 
-            	    adaptor.AddChild(root_0, set181_tree);
+            	    adaptor.AddChild(root_0, set192_tree);
 
             	    state.errorRecovery = false;
             	}
@@ -7862,7 +8066,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "addrExpr"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:421:1: addrExpr[ bool root ] : ( addrExprDot[root] | addrExprIndex[root] | addrExprIdent[root] );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:425:1: addrExpr[ bool root ] : ( addrExprDot[root] | addrExprIndex[root] | addrExprIdent[root] );
     public HqlSqlWalker.addrExpr_return addrExpr(bool root) // throws RecognitionException [1]
     {   
         HqlSqlWalker.addrExpr_return retval = new HqlSqlWalker.addrExpr_return();
@@ -7873,17 +8077,17 @@ public partial class HqlSqlWalker : TreeParser
         IASTNode _first_0 = null;
         IASTNode _last = null;
 
-        HqlSqlWalker.addrExprDot_return addrExprDot182 = default(HqlSqlWalker.addrExprDot_return);
+        HqlSqlWalker.addrExprDot_return addrExprDot193 = default(HqlSqlWalker.addrExprDot_return);
 
-        HqlSqlWalker.addrExprIndex_return addrExprIndex183 = default(HqlSqlWalker.addrExprIndex_return);
+        HqlSqlWalker.addrExprIndex_return addrExprIndex194 = default(HqlSqlWalker.addrExprIndex_return);
 
-        HqlSqlWalker.addrExprIdent_return addrExprIdent184 = default(HqlSqlWalker.addrExprIdent_return);
+        HqlSqlWalker.addrExprIdent_return addrExprIdent195 = default(HqlSqlWalker.addrExprIdent_return);
 
 
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:422:2: ( addrExprDot[root] | addrExprIndex[root] | addrExprIdent[root] )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:426:2: ( addrExprDot[root] | addrExprIndex[root] | addrExprIdent[root] )
             int alt60 = 3;
             switch ( input.LA(1) ) 
             {
@@ -7913,44 +8117,44 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt60) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:422:4: addrExprDot[root]
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:426:4: addrExprDot[root]
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
                     	_last = (IASTNode)input.LT(1);
-                    	PushFollow(FOLLOW_addrExprDot_in_addrExpr2162);
-                    	addrExprDot182 = addrExprDot(root);
+                    	PushFollow(FOLLOW_addrExprDot_in_addrExpr2204);
+                    	addrExprDot193 = addrExprDot(root);
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, addrExprDot182.Tree);
+                    	adaptor.AddChild(root_0, addrExprDot193.Tree);
 
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:423:4: addrExprIndex[root]
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:427:4: addrExprIndex[root]
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
                     	_last = (IASTNode)input.LT(1);
-                    	PushFollow(FOLLOW_addrExprIndex_in_addrExpr2169);
-                    	addrExprIndex183 = addrExprIndex(root);
+                    	PushFollow(FOLLOW_addrExprIndex_in_addrExpr2211);
+                    	addrExprIndex194 = addrExprIndex(root);
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, addrExprIndex183.Tree);
+                    	adaptor.AddChild(root_0, addrExprIndex194.Tree);
 
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:424:4: addrExprIdent[root]
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:428:4: addrExprIdent[root]
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
                     	_last = (IASTNode)input.LT(1);
-                    	PushFollow(FOLLOW_addrExprIdent_in_addrExpr2176);
-                    	addrExprIdent184 = addrExprIdent(root);
+                    	PushFollow(FOLLOW_addrExprIdent_in_addrExpr2218);
+                    	addrExprIdent195 = addrExprIdent(root);
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, addrExprIdent184.Tree);
+                    	adaptor.AddChild(root_0, addrExprIdent195.Tree);
 
                     }
                     break;
@@ -7982,7 +8186,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "addrExprDot"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:427:1: addrExprDot[ bool root ] : ^(d= DOT lhs= addrExprLhs rhs= propertyName ) -> ^( $d $lhs $rhs) ;
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:431:1: addrExprDot[ bool root ] : ^(d= DOT lhs= addrExprLhs rhs= propertyName ) -> ^( $d $lhs $rhs) ;
     public HqlSqlWalker.addrExprDot_return addrExprDot(bool root) // throws RecognitionException [1]
     {   
         HqlSqlWalker.addrExprDot_return retval = new HqlSqlWalker.addrExprDot_return();
@@ -8005,28 +8209,28 @@ public partial class HqlSqlWalker : TreeParser
         RewriteRuleSubtreeStream stream_addrExprLhs = new RewriteRuleSubtreeStream(adaptor,"rule addrExprLhs");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:432:2: ( ^(d= DOT lhs= addrExprLhs rhs= propertyName ) -> ^( $d $lhs $rhs) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:432:4: ^(d= DOT lhs= addrExprLhs rhs= propertyName )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:436:2: ( ^(d= DOT lhs= addrExprLhs rhs= propertyName ) -> ^( $d $lhs $rhs) )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:436:4: ^(d= DOT lhs= addrExprLhs rhs= propertyName )
             {
             	_last = (IASTNode)input.LT(1);
             	{
             	IASTNode _save_last_1 = _last;
             	IASTNode _first_1 = null;
             	IASTNode root_1 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
-            	d=(IASTNode)Match(input,DOT,FOLLOW_DOT_in_addrExprDot2200);  
+            	d=(IASTNode)Match(input,DOT,FOLLOW_DOT_in_addrExprDot2242);  
             	stream_DOT.Add(d);
 
 
 
             	Match(input, Token.DOWN, null); 
             	_last = (IASTNode)input.LT(1);
-            	PushFollow(FOLLOW_addrExprLhs_in_addrExprDot2204);
+            	PushFollow(FOLLOW_addrExprLhs_in_addrExprDot2246);
             	lhs = addrExprLhs();
             	state.followingStackPointer--;
 
             	stream_addrExprLhs.Add(lhs.Tree);
             	_last = (IASTNode)input.LT(1);
-            	PushFollow(FOLLOW_propertyName_in_addrExprDot2208);
+            	PushFollow(FOLLOW_propertyName_in_addrExprDot2250);
             	rhs = propertyName();
             	state.followingStackPointer--;
 
@@ -8038,7 +8242,7 @@ public partial class HqlSqlWalker : TreeParser
 
 
             	// AST REWRITE
-            	// elements:          lhs, d, rhs
+            	// elements:          rhs, lhs, d
             	// token labels:      d
             	// rule labels:       lhs, retval, rhs
             	// token list labels: 
@@ -8051,9 +8255,9 @@ public partial class HqlSqlWalker : TreeParser
             	RewriteRuleSubtreeStream stream_rhs = new RewriteRuleSubtreeStream(adaptor, "rule rhs", rhs!=null ? rhs.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 433:3: -> ^( $d $lhs $rhs)
+            	// 437:3: -> ^( $d $lhs $rhs)
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:433:6: ^( $d $lhs $rhs)
+            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:437:6: ^( $d $lhs $rhs)
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_d.NextNode(), root_1);
@@ -8098,7 +8302,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "addrExprIndex"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:436:1: addrExprIndex[ bool root ] : ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr ) -> ^( $i $lhs2 $rhs2) ;
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:440:1: addrExprIndex[ bool root ] : ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr ) -> ^( $i $lhs2 $rhs2) ;
     public HqlSqlWalker.addrExprIndex_return addrExprIndex(bool root) // throws RecognitionException [1]
     {   
         HqlSqlWalker.addrExprIndex_return retval = new HqlSqlWalker.addrExprIndex_return();
@@ -8121,28 +8325,28 @@ public partial class HqlSqlWalker : TreeParser
         RewriteRuleSubtreeStream stream_addrExprLhs = new RewriteRuleSubtreeStream(adaptor,"rule addrExprLhs");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:442:2: ( ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr ) -> ^( $i $lhs2 $rhs2) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:442:4: ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:446:2: ( ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr ) -> ^( $i $lhs2 $rhs2) )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:446:4: ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr )
             {
             	_last = (IASTNode)input.LT(1);
             	{
             	IASTNode _save_last_1 = _last;
             	IASTNode _first_1 = null;
             	IASTNode root_1 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
-            	i=(IASTNode)Match(input,INDEX_OP,FOLLOW_INDEX_OP_in_addrExprIndex2247);  
+            	i=(IASTNode)Match(input,INDEX_OP,FOLLOW_INDEX_OP_in_addrExprIndex2289);  
             	stream_INDEX_OP.Add(i);
 
 
 
             	Match(input, Token.DOWN, null); 
             	_last = (IASTNode)input.LT(1);
-            	PushFollow(FOLLOW_addrExprLhs_in_addrExprIndex2251);
+            	PushFollow(FOLLOW_addrExprLhs_in_addrExprIndex2293);
             	lhs2 = addrExprLhs();
             	state.followingStackPointer--;
 
             	stream_addrExprLhs.Add(lhs2.Tree);
             	_last = (IASTNode)input.LT(1);
-            	PushFollow(FOLLOW_expr_in_addrExprIndex2255);
+            	PushFollow(FOLLOW_expr_in_addrExprIndex2297);
             	rhs2 = expr();
             	state.followingStackPointer--;
 
@@ -8154,7 +8358,7 @@ public partial class HqlSqlWalker : TreeParser
 
 
             	// AST REWRITE
-            	// elements:          lhs2, rhs2, i
+            	// elements:          rhs2, lhs2, i
             	// token labels:      i
             	// rule labels:       rhs2, retval, lhs2
             	// token list labels: 
@@ -8167,9 +8371,9 @@ public partial class HqlSqlWalker : TreeParser
             	RewriteRuleSubtreeStream stream_lhs2 = new RewriteRuleSubtreeStream(adaptor, "rule lhs2", lhs2!=null ? lhs2.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 443:3: -> ^( $i $lhs2 $rhs2)
+            	// 447:3: -> ^( $i $lhs2 $rhs2)
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:443:6: ^( $i $lhs2 $rhs2)
+            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:447:6: ^( $i $lhs2 $rhs2)
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_i.NextNode(), root_1);
@@ -8214,7 +8418,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "addrExprIdent"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:446:1: addrExprIdent[ bool root ] : p= identifier -> {IsNonQualifiedPropertyRef($p.tree)}? ^() -> ^() ;
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:450:1: addrExprIdent[ bool root ] : p= identifier -> {IsNonQualifiedPropertyRef($p.tree)}? ^() -> ^() ;
     public HqlSqlWalker.addrExprIdent_return addrExprIdent(bool root) // throws RecognitionException [1]
     {   
         HqlSqlWalker.addrExprIdent_return retval = new HqlSqlWalker.addrExprIdent_return();
@@ -8231,11 +8435,11 @@ public partial class HqlSqlWalker : TreeParser
         RewriteRuleSubtreeStream stream_identifier = new RewriteRuleSubtreeStream(adaptor,"rule identifier");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:447:2: (p= identifier -> {IsNonQualifiedPropertyRef($p.tree)}? ^() -> ^() )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:447:4: p= identifier
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:451:2: (p= identifier -> {IsNonQualifiedPropertyRef($p.tree)}? ^() -> ^() )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:451:4: p= identifier
             {
             	_last = (IASTNode)input.LT(1);
-            	PushFollow(FOLLOW_identifier_in_addrExprIdent2287);
+            	PushFollow(FOLLOW_identifier_in_addrExprIdent2329);
             	p = identifier();
             	state.followingStackPointer--;
 
@@ -8253,10 +8457,10 @@ public partial class HqlSqlWalker : TreeParser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 448:2: -> {IsNonQualifiedPropertyRef($p.tree)}? ^()
+            	// 452:2: -> {IsNonQualifiedPropertyRef($p.tree)}? ^()
             	if (IsNonQualifiedPropertyRef(((p != null) ? ((IASTNode)p.Tree) : null)))
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:448:43: ^()
+            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:452:43: ^()
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot(LookupNonQualifiedProperty(((p != null) ? ((IASTNode)p.Tree) : null)), root_1);
@@ -8265,9 +8469,9 @@ public partial class HqlSqlWalker : TreeParser
             	    }
 
             	}
-            	else // 449:2: -> ^()
+            	else // 453:2: -> ^()
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:449:5: ^()
+            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:453:5: ^()
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot(Resolve(((p != null) ? ((IASTNode)p.Tree) : null)), root_1);
@@ -8306,7 +8510,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "addrExprLhs"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:452:1: addrExprLhs : addrExpr[ false ] ;
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:456:1: addrExprLhs : addrExpr[ false ] ;
     public HqlSqlWalker.addrExprLhs_return addrExprLhs() // throws RecognitionException [1]
     {   
         HqlSqlWalker.addrExprLhs_return retval = new HqlSqlWalker.addrExprLhs_return();
@@ -8317,23 +8521,23 @@ public partial class HqlSqlWalker : TreeParser
         IASTNode _first_0 = null;
         IASTNode _last = null;
 
-        HqlSqlWalker.addrExpr_return addrExpr185 = default(HqlSqlWalker.addrExpr_return);
+        HqlSqlWalker.addrExpr_return addrExpr196 = default(HqlSqlWalker.addrExpr_return);
 
 
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:453:2: ( addrExpr[ false ] )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:453:4: addrExpr[ false ]
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:457:2: ( addrExpr[ false ] )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:457:4: addrExpr[ false ]
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
             	_last = (IASTNode)input.LT(1);
-            	PushFollow(FOLLOW_addrExpr_in_addrExprLhs2315);
-            	addrExpr185 = addrExpr(false);
+            	PushFollow(FOLLOW_addrExpr_in_addrExprLhs2357);
+            	addrExpr196 = addrExpr(false);
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, addrExpr185.Tree);
+            	adaptor.AddChild(root_0, addrExpr196.Tree);
 
             }
 
@@ -8363,7 +8567,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "propertyName"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:456:1: propertyName : ( identifier | CLASS | ELEMENTS | INDICES );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:460:1: propertyName : ( identifier | CLASS | ELEMENTS | INDICES );
     public HqlSqlWalker.propertyName_return propertyName() // throws RecognitionException [1]
     {   
         HqlSqlWalker.propertyName_return retval = new HqlSqlWalker.propertyName_return();
@@ -8374,19 +8578,19 @@ public partial class HqlSqlWalker : TreeParser
         IASTNode _first_0 = null;
         IASTNode _last = null;
 
-        IASTNode CLASS187 = null;
-        IASTNode ELEMENTS188 = null;
-        IASTNode INDICES189 = null;
-        HqlSqlWalker.identifier_return identifier186 = default(HqlSqlWalker.identifier_return);
+        IASTNode CLASS198 = null;
+        IASTNode ELEMENTS199 = null;
+        IASTNode INDICES200 = null;
+        HqlSqlWalker.identifier_return identifier197 = default(HqlSqlWalker.identifier_return);
 
 
-        IASTNode CLASS187_tree=null;
-        IASTNode ELEMENTS188_tree=null;
-        IASTNode INDICES189_tree=null;
+        IASTNode CLASS198_tree=null;
+        IASTNode ELEMENTS199_tree=null;
+        IASTNode INDICES200_tree=null;
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:457:2: ( identifier | CLASS | ELEMENTS | INDICES )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:461:2: ( identifier | CLASS | ELEMENTS | INDICES )
             int alt61 = 4;
             switch ( input.LA(1) ) 
             {
@@ -8421,57 +8625,57 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt61) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:457:4: identifier
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:461:4: identifier
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
                     	_last = (IASTNode)input.LT(1);
-                    	PushFollow(FOLLOW_identifier_in_propertyName2328);
-                    	identifier186 = identifier();
+                    	PushFollow(FOLLOW_identifier_in_propertyName2370);
+                    	identifier197 = identifier();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, identifier186.Tree);
+                    	adaptor.AddChild(root_0, identifier197.Tree);
 
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:458:4: CLASS
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:462:4: CLASS
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
                     	_last = (IASTNode)input.LT(1);
-                    	CLASS187=(IASTNode)Match(input,CLASS,FOLLOW_CLASS_in_propertyName2333); 
-                    		CLASS187_tree = (IASTNode)adaptor.DupNode(CLASS187);
+                    	CLASS198=(IASTNode)Match(input,CLASS,FOLLOW_CLASS_in_propertyName2375); 
+                    		CLASS198_tree = (IASTNode)adaptor.DupNode(CLASS198);
 
-                    		adaptor.AddChild(root_0, CLASS187_tree);
+                    		adaptor.AddChild(root_0, CLASS198_tree);
 
 
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:459:4: ELEMENTS
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:463:4: ELEMENTS
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
                     	_last = (IASTNode)input.LT(1);
-                    	ELEMENTS188=(IASTNode)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_propertyName2338); 
-                    		ELEMENTS188_tree = (IASTNode)adaptor.DupNode(ELEMENTS188);
+                    	ELEMENTS199=(IASTNode)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_propertyName2380); 
+                    		ELEMENTS199_tree = (IASTNode)adaptor.DupNode(ELEMENTS199);
 
-                    		adaptor.AddChild(root_0, ELEMENTS188_tree);
+                    		adaptor.AddChild(root_0, ELEMENTS199_tree);
 
 
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:460:4: INDICES
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:464:4: INDICES
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
                     	_last = (IASTNode)input.LT(1);
-                    	INDICES189=(IASTNode)Match(input,INDICES,FOLLOW_INDICES_in_propertyName2343); 
-                    		INDICES189_tree = (IASTNode)adaptor.DupNode(INDICES189);
+                    	INDICES200=(IASTNode)Match(input,INDICES,FOLLOW_INDICES_in_propertyName2385); 
+                    		INDICES200_tree = (IASTNode)adaptor.DupNode(INDICES200);
 
-                    		adaptor.AddChild(root_0, INDICES189_tree);
+                    		adaptor.AddChild(root_0, INDICES200_tree);
 
 
                     }
@@ -8504,7 +8708,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "propertyRef"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:463:1: propertyRef : ( propertyRefPath | propertyRefIdent );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:467:1: propertyRef : ( propertyRefPath | propertyRefIdent );
     public HqlSqlWalker.propertyRef_return propertyRef() // throws RecognitionException [1]
     {   
         HqlSqlWalker.propertyRef_return retval = new HqlSqlWalker.propertyRef_return();
@@ -8515,15 +8719,15 @@ public partial class HqlSqlWalker : TreeParser
         IASTNode _first_0 = null;
         IASTNode _last = null;
 
-        HqlSqlWalker.propertyRefPath_return propertyRefPath190 = default(HqlSqlWalker.propertyRefPath_return);
+        HqlSqlWalker.propertyRefPath_return propertyRefPath201 = default(HqlSqlWalker.propertyRefPath_return);
 
-        HqlSqlWalker.propertyRefIdent_return propertyRefIdent191 = default(HqlSqlWalker.propertyRefIdent_return);
+        HqlSqlWalker.propertyRefIdent_return propertyRefIdent202 = default(HqlSqlWalker.propertyRefIdent_return);
 
 
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:464:2: ( propertyRefPath | propertyRefIdent )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:468:2: ( propertyRefPath | propertyRefIdent )
             int alt62 = 2;
             int LA62_0 = input.LA(1);
 
@@ -8545,30 +8749,30 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt62) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:464:4: propertyRefPath
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:468:4: propertyRefPath
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
                     	_last = (IASTNode)input.LT(1);
-                    	PushFollow(FOLLOW_propertyRefPath_in_propertyRef2355);
-                    	propertyRefPath190 = propertyRefPath();
+                    	PushFollow(FOLLOW_propertyRefPath_in_propertyRef2397);
+                    	propertyRefPath201 = propertyRefPath();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, propertyRefPath190.Tree);
+                    	adaptor.AddChild(root_0, propertyRefPath201.Tree);
 
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:465:4: propertyRefIdent
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:469:4: propertyRefIdent
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
                     	_last = (IASTNode)input.LT(1);
-                    	PushFollow(FOLLOW_propertyRefIdent_in_propertyRef2360);
-                    	propertyRefIdent191 = propertyRefIdent();
+                    	PushFollow(FOLLOW_propertyRefIdent_in_propertyRef2402);
+                    	propertyRefIdent202 = propertyRefIdent();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, propertyRefIdent191.Tree);
+                    	adaptor.AddChild(root_0, propertyRefIdent202.Tree);
 
                     }
                     break;
@@ -8600,7 +8804,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "propertyRefPath"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:468:1: propertyRefPath : ^(d= DOT lhs= propertyRefLhs rhs= propertyName ) -> ^( $d $lhs $rhs) ;
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:472:1: propertyRefPath : ^(d= DOT lhs= propertyRefLhs rhs= propertyName ) -> ^( $d $lhs $rhs) ;
     public HqlSqlWalker.propertyRefPath_return propertyRefPath() // throws RecognitionException [1]
     {   
         HqlSqlWalker.propertyRefPath_return retval = new HqlSqlWalker.propertyRefPath_return();
@@ -8623,28 +8827,28 @@ public partial class HqlSqlWalker : TreeParser
         RewriteRuleSubtreeStream stream_propertyRefLhs = new RewriteRuleSubtreeStream(adaptor,"rule propertyRefLhs");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:473:2: ( ^(d= DOT lhs= propertyRefLhs rhs= propertyName ) -> ^( $d $lhs $rhs) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:473:4: ^(d= DOT lhs= propertyRefLhs rhs= propertyName )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:477:2: ( ^(d= DOT lhs= propertyRefLhs rhs= propertyName ) -> ^( $d $lhs $rhs) )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:477:4: ^(d= DOT lhs= propertyRefLhs rhs= propertyName )
             {
             	_last = (IASTNode)input.LT(1);
             	{
             	IASTNode _save_last_1 = _last;
             	IASTNode _first_1 = null;
             	IASTNode root_1 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
-            	d=(IASTNode)Match(input,DOT,FOLLOW_DOT_in_propertyRefPath2380);  
+            	d=(IASTNode)Match(input,DOT,FOLLOW_DOT_in_propertyRefPath2422);  
             	stream_DOT.Add(d);
 
 
 
             	Match(input, Token.DOWN, null); 
             	_last = (IASTNode)input.LT(1);
-            	PushFollow(FOLLOW_propertyRefLhs_in_propertyRefPath2384);
+            	PushFollow(FOLLOW_propertyRefLhs_in_propertyRefPath2426);
             	lhs = propertyRefLhs();
             	state.followingStackPointer--;
 
             	stream_propertyRefLhs.Add(lhs.Tree);
             	_last = (IASTNode)input.LT(1);
-            	PushFollow(FOLLOW_propertyName_in_propertyRefPath2388);
+            	PushFollow(FOLLOW_propertyName_in_propertyRefPath2430);
             	rhs = propertyName();
             	state.followingStackPointer--;
 
@@ -8656,7 +8860,7 @@ public partial class HqlSqlWalker : TreeParser
 
 
             	// AST REWRITE
-            	// elements:          rhs, lhs, d
+            	// elements:          d, lhs, rhs
             	// token labels:      d
             	// rule labels:       lhs, retval, rhs
             	// token list labels: 
@@ -8669,9 +8873,9 @@ public partial class HqlSqlWalker : TreeParser
             	RewriteRuleSubtreeStream stream_rhs = new RewriteRuleSubtreeStream(adaptor, "rule rhs", rhs!=null ? rhs.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 474:3: -> ^( $d $lhs $rhs)
+            	// 478:3: -> ^( $d $lhs $rhs)
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:474:6: ^( $d $lhs $rhs)
+            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:478:6: ^( $d $lhs $rhs)
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_d.NextNode(), root_1);
@@ -8717,7 +8921,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "propertyRefIdent"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:477:1: propertyRefIdent : p= identifier ;
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:481:1: propertyRefIdent : p= identifier ;
     public HqlSqlWalker.propertyRefIdent_return propertyRefIdent() // throws RecognitionException [1]
     {   
         HqlSqlWalker.propertyRefIdent_return retval = new HqlSqlWalker.propertyRefIdent_return();
@@ -8734,13 +8938,13 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:491:2: (p= identifier )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:491:4: p= identifier
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:495:2: (p= identifier )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:495:4: p= identifier
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
             	_last = (IASTNode)input.LT(1);
-            	PushFollow(FOLLOW_identifier_in_propertyRefIdent2425);
+            	PushFollow(FOLLOW_identifier_in_propertyRefIdent2467);
             	p = identifier();
             	state.followingStackPointer--;
 
@@ -8787,7 +8991,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "propertyRefLhs"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:494:1: propertyRefLhs : propertyRef ;
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:498:1: propertyRefLhs : propertyRef ;
     public HqlSqlWalker.propertyRefLhs_return propertyRefLhs() // throws RecognitionException [1]
     {   
         HqlSqlWalker.propertyRefLhs_return retval = new HqlSqlWalker.propertyRefLhs_return();
@@ -8798,23 +9002,23 @@ public partial class HqlSqlWalker : TreeParser
         IASTNode _first_0 = null;
         IASTNode _last = null;
 
-        HqlSqlWalker.propertyRef_return propertyRef192 = default(HqlSqlWalker.propertyRef_return);
+        HqlSqlWalker.propertyRef_return propertyRef203 = default(HqlSqlWalker.propertyRef_return);
 
 
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:495:2: ( propertyRef )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:495:4: propertyRef
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:499:2: ( propertyRef )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:499:4: propertyRef
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
             	_last = (IASTNode)input.LT(1);
-            	PushFollow(FOLLOW_propertyRef_in_propertyRefLhs2437);
-            	propertyRef192 = propertyRef();
+            	PushFollow(FOLLOW_propertyRef_in_propertyRefLhs2479);
+            	propertyRef203 = propertyRef();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, propertyRef192.Tree);
+            	adaptor.AddChild(root_0, propertyRef203.Tree);
 
             }
 
@@ -8844,7 +9048,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "aliasRef"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:498:1: aliasRef : i= identifier ;
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:502:1: aliasRef : i= identifier ;
     public HqlSqlWalker.aliasRef_return aliasRef() // throws RecognitionException [1]
     {   
         HqlSqlWalker.aliasRef_return retval = new HqlSqlWalker.aliasRef_return();
@@ -8861,13 +9065,13 @@ public partial class HqlSqlWalker : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:503:2: (i= identifier )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:503:4: i= identifier
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:507:2: (i= identifier )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:507:4: i= identifier
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
             	_last = (IASTNode)input.LT(1);
-            	PushFollow(FOLLOW_identifier_in_aliasRef2458);
+            	PushFollow(FOLLOW_identifier_in_aliasRef2500);
             	i = identifier();
             	state.followingStackPointer--;
 
@@ -8904,7 +9108,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "parameter"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:507:1: parameter : ( ^(c= COLON a= identifier ) -> ^() | ^(p= PARAM (n= NUM_INT )? ) -> {n != null}? ^() -> ^() );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:511:1: parameter : ( ^(c= COLON a= identifier ) -> ^() | ^(p= PARAM (n= NUM_INT )? ) -> {n != null}? ^() -> ^() );
     public HqlSqlWalker.parameter_return parameter() // throws RecognitionException [1]
     {   
         HqlSqlWalker.parameter_return retval = new HqlSqlWalker.parameter_return();
@@ -8930,7 +9134,7 @@ public partial class HqlSqlWalker : TreeParser
         RewriteRuleSubtreeStream stream_identifier = new RewriteRuleSubtreeStream(adaptor,"rule identifier");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:508:2: ( ^(c= COLON a= identifier ) -> ^() | ^(p= PARAM (n= NUM_INT )? ) -> {n != null}? ^() -> ^() )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:512:2: ( ^(c= COLON a= identifier ) -> ^() | ^(p= PARAM (n= NUM_INT )? ) -> {n != null}? ^() -> ^() )
             int alt64 = 2;
             int LA64_0 = input.LA(1);
 
@@ -8952,21 +9156,21 @@ public partial class HqlSqlWalker : TreeParser
             switch (alt64) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:508:4: ^(c= COLON a= identifier )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:512:4: ^(c= COLON a= identifier )
                     {
                     	_last = (IASTNode)input.LT(1);
                     	{
                     	IASTNode _save_last_1 = _last;
                     	IASTNode _first_1 = null;
                     	IASTNode root_1 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
-                    	c=(IASTNode)Match(input,COLON,FOLLOW_COLON_in_parameter2476);  
+                    	c=(IASTNode)Match(input,COLON,FOLLOW_COLON_in_parameter2518);  
                     	stream_COLON.Add(c);
 
 
 
                     	Match(input, Token.DOWN, null); 
                     	_last = (IASTNode)input.LT(1);
-                    	PushFollow(FOLLOW_identifier_in_parameter2480);
+                    	PushFollow(FOLLOW_identifier_in_parameter2522);
                     	a = identifier();
                     	state.followingStackPointer--;
 
@@ -8988,9 +9192,9 @@ public partial class HqlSqlWalker : TreeParser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 510:3: -> ^()
+                    	// 514:3: -> ^()
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:510:6: ^()
+                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:514:6: ^()
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(GenerateNamedParameter( c, ((a != null) ? ((IASTNode)a.Tree) : null) ), root_1);
@@ -9004,14 +9208,14 @@ public partial class HqlSqlWalker : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:511:4: ^(p= PARAM (n= NUM_INT )? )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:515:4: ^(p= PARAM (n= NUM_INT )? )
                     {
                     	_last = (IASTNode)input.LT(1);
                     	{
                     	IASTNode _save_last_1 = _last;
                     	IASTNode _first_1 = null;
                     	IASTNode root_1 = (IASTNode)adaptor.GetNilNode();_last = (IASTNode)input.LT(1);
-                    	p=(IASTNode)Match(input,PARAM,FOLLOW_PARAM_in_parameter2501);  
+                    	p=(IASTNode)Match(input,PARAM,FOLLOW_PARAM_in_parameter2543);  
                     	stream_PARAM.Add(p);
 
 
@@ -9019,7 +9223,7 @@ public partial class HqlSqlWalker : TreeParser
                     	if ( input.LA(1) == Token.DOWN )
                     	{
                     	    Match(input, Token.DOWN, null); 
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:511:14: (n= NUM_INT )?
+                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:515:14: (n= NUM_INT )?
                     	    int alt63 = 2;
                     	    int LA63_0 = input.LA(1);
 
@@ -9030,10 +9234,10 @@ public partial class HqlSqlWalker : TreeParser
                     	    switch (alt63) 
                     	    {
                     	        case 1 :
-                    	            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:511:15: n= NUM_INT
+                    	            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:515:15: n= NUM_INT
                     	            {
                     	            	_last = (IASTNode)input.LT(1);
-                    	            	n=(IASTNode)Match(input,NUM_INT,FOLLOW_NUM_INT_in_parameter2506);  
+                    	            	n=(IASTNode)Match(input,NUM_INT,FOLLOW_NUM_INT_in_parameter2548);  
                     	            	stream_NUM_INT.Add(n);
 
 
@@ -9060,10 +9264,10 @@ public partial class HqlSqlWalker : TreeParser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 512:3: -> {n != null}? ^()
+                    	// 516:3: -> {n != null}? ^()
                     	if (n != null)
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:512:19: ^()
+                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:516:19: ^()
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(GenerateNamedParameter( p, n ), root_1);
@@ -9072,9 +9276,9 @@ public partial class HqlSqlWalker : TreeParser
                     	    }
 
                     	}
-                    	else // 513:3: -> ^()
+                    	else // 517:3: -> ^()
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:513:6: ^()
+                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:517:6: ^()
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(GeneratePositionalParameter( p ), root_1);
@@ -9115,7 +9319,7 @@ public partial class HqlSqlWalker : TreeParser
     };
 
     // $ANTLR start "numericInteger"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:516:1: numericInteger : NUM_INT ;
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:520:1: numericInteger : NUM_INT ;
     public HqlSqlWalker.numericInteger_return numericInteger() // throws RecognitionException [1]
     {   
         HqlSqlWalker.numericInteger_return retval = new HqlSqlWalker.numericInteger_return();
@@ -9126,22 +9330,22 @@ public partial class HqlSqlWalker : TreeParser
         IASTNode _first_0 = null;
         IASTNode _last = null;
 
-        IASTNode NUM_INT193 = null;
+        IASTNode NUM_INT204 = null;
 
-        IASTNode NUM_INT193_tree=null;
+        IASTNode NUM_INT204_tree=null;
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:517:2: ( NUM_INT )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:517:4: NUM_INT
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:521:2: ( NUM_INT )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/HqlSqlWalker.g:521:4: NUM_INT
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
             	_last = (IASTNode)input.LT(1);
-            	NUM_INT193=(IASTNode)Match(input,NUM_INT,FOLLOW_NUM_INT_in_numericInteger2539); 
-            		NUM_INT193_tree = (IASTNode)adaptor.DupNode(NUM_INT193);
+            	NUM_INT204=(IASTNode)Match(input,NUM_INT,FOLLOW_NUM_INT_in_numericInteger2581); 
+            		NUM_INT204_tree = (IASTNode)adaptor.DupNode(NUM_INT204);
 
-            		adaptor.AddChild(root_0, NUM_INT193_tree);
+            		adaptor.AddChild(root_0, NUM_INT204_tree);
 
 
             }
@@ -9190,11 +9394,11 @@ public partial class HqlSqlWalker : TreeParser
     public static readonly BitSet FOLLOW_path_in_intoClause354 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000000000200000UL});
     public static readonly BitSet FOLLOW_insertablePropertySpec_in_intoClause359 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_RANGE_in_insertablePropertySpec375 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_IDENT_in_insertablePropertySpec378 = new BitSet(new ulong[]{0x0000000000000008UL,0x0040000000000000UL});
+    public static readonly BitSet FOLLOW_IDENT_in_insertablePropertySpec378 = new BitSet(new ulong[]{0x0000000000000008UL,0x0400000000000000UL});
     public static readonly BitSet FOLLOW_SET_in_setClause395 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_assignment_in_setClause400 = new BitSet(new ulong[]{0x0000000000000008UL,0x0000000800000000UL});
     public static readonly BitSet FOLLOW_EQ_in_assignment427 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_propertyRef_in_assignment432 = new BitSet(new ulong[]{0x0082008000109000UL,0x0079E003ED109120UL});
+    public static readonly BitSet FOLLOW_propertyRef_in_assignment432 = new BitSet(new ulong[]{0x0082008000109000UL,0x079E03C3ED109120UL});
     public static readonly BitSet FOLLOW_newValue_in_assignment438 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_expr_in_newValue454 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_query_in_newValue458 = new BitSet(new ulong[]{0x0000000000000002UL});
@@ -9207,20 +9411,20 @@ public partial class HqlSqlWalker : TreeParser
     public static readonly BitSet FOLLOW_orderClause_in_query544 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_ORDER_in_orderClause589 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_orderExprs_in_orderClause593 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_expr_in_orderExprs605 = new BitSet(new ulong[]{0x008200800010D102UL,0x0079E003ED009120UL});
-    public static readonly BitSet FOLLOW_set_in_orderExprs607 = new BitSet(new ulong[]{0x0082008000109002UL,0x0079E003ED009120UL});
+    public static readonly BitSet FOLLOW_expr_in_orderExprs605 = new BitSet(new ulong[]{0x008200800010D102UL,0x079E03C3ED009120UL});
+    public static readonly BitSet FOLLOW_set_in_orderExprs607 = new BitSet(new ulong[]{0x0082008000109002UL,0x079E03C3ED009120UL});
     public static readonly BitSet FOLLOW_orderExprs_in_orderExprs619 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_GROUP_in_groupClause633 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_groupClause638 = new BitSet(new ulong[]{0x0082008002109008UL,0x0079E003ED009120UL});
+    public static readonly BitSet FOLLOW_expr_in_groupClause638 = new BitSet(new ulong[]{0x0082008002109008UL,0x079E03C3ED009120UL});
     public static readonly BitSet FOLLOW_HAVING_in_groupClause645 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_logicalExpr_in_groupClause647 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_SELECT_in_selectClause666 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_DISTINCT_in_selectClause673 = new BitSet(new ulong[]{0x0082008008129090UL,0x0079E003ED1091A4UL});
+    public static readonly BitSet FOLLOW_DISTINCT_in_selectClause673 = new BitSet(new ulong[]{0x0082008008129090UL,0x079E03C3ED1091A4UL});
     public static readonly BitSet FOLLOW_selectExprList_in_selectClause679 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_selectExpr_in_selectExprList714 = new BitSet(new ulong[]{0x0082008008129092UL,0x0079E003ED1091A4UL});
-    public static readonly BitSet FOLLOW_aliasedSelectExpr_in_selectExprList718 = new BitSet(new ulong[]{0x0082008008129092UL,0x0079E003ED1091A4UL});
+    public static readonly BitSet FOLLOW_selectExpr_in_selectExprList714 = new BitSet(new ulong[]{0x0082008008129092UL,0x079E03C3ED1091A4UL});
+    public static readonly BitSet FOLLOW_aliasedSelectExpr_in_selectExprList718 = new BitSet(new ulong[]{0x0082008008129092UL,0x079E03C3ED1091A4UL});
     public static readonly BitSet FOLLOW_AS_in_aliasedSelectExpr742 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_selectExpr_in_aliasedSelectExpr746 = new BitSet(new ulong[]{0x0000000000008000UL,0x0040000008001000UL});
+    public static readonly BitSet FOLLOW_selectExpr_in_aliasedSelectExpr746 = new BitSet(new ulong[]{0x0000000000008000UL,0x0400000008001000UL});
     public static readonly BitSet FOLLOW_identifier_in_aliasedSelectExpr750 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_propertyRef_in_selectExpr765 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_ALL_in_selectExpr777 = new BitSet(new ulong[]{0x0000000000000004UL});
@@ -9235,13 +9439,13 @@ public partial class HqlSqlWalker : TreeParser
     public static readonly BitSet FOLLOW_arithmeticExpr_in_selectExpr842 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_query_in_selectExpr847 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_COUNT_in_count859 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_set_in_count861 = new BitSet(new ulong[]{0x0082008008129000UL,0x0079E003ED409120UL});
+    public static readonly BitSet FOLLOW_set_in_count861 = new BitSet(new ulong[]{0x0082008008129000UL,0x079E03C3ED409120UL});
     public static readonly BitSet FOLLOW_aggregateExpr_in_count874 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_ROW_STAR_in_count878 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_CONSTRUCTOR_in_constructor894 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_path_in_constructor896 = new BitSet(new ulong[]{0x0082008008129098UL,0x0079E003ED1091A4UL});
-    public static readonly BitSet FOLLOW_selectExpr_in_constructor900 = new BitSet(new ulong[]{0x0082008008129098UL,0x0079E003ED1091A4UL});
-    public static readonly BitSet FOLLOW_aliasedSelectExpr_in_constructor904 = new BitSet(new ulong[]{0x0082008008129098UL,0x0079E003ED1091A4UL});
+    public static readonly BitSet FOLLOW_path_in_constructor896 = new BitSet(new ulong[]{0x0082008008129098UL,0x079E03C3ED1091A4UL});
+    public static readonly BitSet FOLLOW_selectExpr_in_constructor900 = new BitSet(new ulong[]{0x0082008008129098UL,0x079E03C3ED1091A4UL});
+    public static readonly BitSet FOLLOW_aliasedSelectExpr_in_constructor904 = new BitSet(new ulong[]{0x0082008008129098UL,0x079E03C3ED1091A4UL});
     public static readonly BitSet FOLLOW_expr_in_aggregateExpr920 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_collectionFunction_in_aggregateExpr926 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_FROM_in_fromClause946 = new BitSet(new ulong[]{0x0000000000000004UL});
@@ -9255,8 +9459,8 @@ public partial class HqlSqlWalker : TreeParser
     public static readonly BitSet FOLLOW_FILTER_ENTITY_in_fromElement1051 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000000000000040UL});
     public static readonly BitSet FOLLOW_ALIAS_in_fromElement1055 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_JOIN_in_joinElement1084 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_joinType_in_joinElement1089 = new BitSet(new ulong[]{0x0000000000208000UL,0x0040000008001000UL});
-    public static readonly BitSet FOLLOW_FETCH_in_joinElement1099 = new BitSet(new ulong[]{0x0000000000008000UL,0x0040000008001000UL});
+    public static readonly BitSet FOLLOW_joinType_in_joinElement1089 = new BitSet(new ulong[]{0x0000000000208000UL,0x0400000008001000UL});
+    public static readonly BitSet FOLLOW_FETCH_in_joinElement1099 = new BitSet(new ulong[]{0x0000000000008000UL,0x0400000008001000UL});
     public static readonly BitSet FOLLOW_propertyRef_in_joinElement1105 = new BitSet(new ulong[]{0x2000000000200008UL,0x0000000000000040UL});
     public static readonly BitSet FOLLOW_ALIAS_in_joinElement1110 = new BitSet(new ulong[]{0x2000000000200008UL});
     public static readonly BitSet FOLLOW_FETCH_in_joinElement1117 = new BitSet(new ulong[]{0x2000000000000008UL});
@@ -9268,7 +9472,7 @@ public partial class HqlSqlWalker : TreeParser
     public static readonly BitSet FOLLOW_INNER_in_joinType1200 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_identifier_in_path1222 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_DOT_in_path1230 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_path_in_path1234 = new BitSet(new ulong[]{0x0000000000008000UL,0x0040000008001000UL});
+    public static readonly BitSet FOLLOW_path_in_path1234 = new BitSet(new ulong[]{0x0000000000008000UL,0x0400000008001000UL});
     public static readonly BitSet FOLLOW_identifier_in_path1238 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_path_in_pathAsIdent1257 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_WITH_in_withClause1298 = new BitSet(new ulong[]{0x0000000000000004UL});
@@ -9276,49 +9480,49 @@ public partial class HqlSqlWalker : TreeParser
     public static readonly BitSet FOLLOW_WHERE_in_whereClause1332 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_logicalExpr_in_whereClause1338 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_AND_in_logicalExpr1364 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_logicalExpr_in_logicalExpr1366 = new BitSet(new ulong[]{0x0000014404080440UL,0x00000F4800076000UL});
+    public static readonly BitSet FOLLOW_logicalExpr_in_logicalExpr1366 = new BitSet(new ulong[]{0x0000014404080440UL,0x0000F40800076000UL});
     public static readonly BitSet FOLLOW_logicalExpr_in_logicalExpr1368 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_OR_in_logicalExpr1375 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_logicalExpr_in_logicalExpr1377 = new BitSet(new ulong[]{0x0000014404080440UL,0x00000F4800076000UL});
+    public static readonly BitSet FOLLOW_logicalExpr_in_logicalExpr1377 = new BitSet(new ulong[]{0x0000014404080440UL,0x0000F40800076000UL});
     public static readonly BitSet FOLLOW_logicalExpr_in_logicalExpr1379 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_NOT_in_logicalExpr1386 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_logicalExpr_in_logicalExpr1388 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_comparisonExpr_in_logicalExpr1394 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_EQ_in_comparisonExpr1416 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1418 = new BitSet(new ulong[]{0x0082808000109030UL,0x0079E003ED109120UL});
+    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1418 = new BitSet(new ulong[]{0x0082808000109030UL,0x079E03C3ED109120UL});
     public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1420 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_NE_in_comparisonExpr1427 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1429 = new BitSet(new ulong[]{0x0082808000109030UL,0x0079E003ED109120UL});
+    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1429 = new BitSet(new ulong[]{0x0082808000109030UL,0x079E03C3ED109120UL});
     public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1431 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_LT_in_comparisonExpr1438 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1440 = new BitSet(new ulong[]{0x0082808000109030UL,0x0079E003ED109120UL});
+    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1440 = new BitSet(new ulong[]{0x0082808000109030UL,0x079E03C3ED109120UL});
     public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1442 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_GT_in_comparisonExpr1449 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1451 = new BitSet(new ulong[]{0x0082808000109030UL,0x0079E003ED109120UL});
+    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1451 = new BitSet(new ulong[]{0x0082808000109030UL,0x079E03C3ED109120UL});
     public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1453 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_LE_in_comparisonExpr1460 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1462 = new BitSet(new ulong[]{0x0082808000109030UL,0x0079E003ED109120UL});
+    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1462 = new BitSet(new ulong[]{0x0082808000109030UL,0x079E03C3ED109120UL});
     public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1464 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_GE_in_comparisonExpr1471 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1473 = new BitSet(new ulong[]{0x0082808000109030UL,0x0079E003ED109120UL});
+    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1473 = new BitSet(new ulong[]{0x0082808000109030UL,0x079E03C3ED109120UL});
     public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1475 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_LIKE_in_comparisonExpr1482 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1484 = new BitSet(new ulong[]{0x0082008000109000UL,0x0079E003ED009120UL});
+    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1484 = new BitSet(new ulong[]{0x0082008000109000UL,0x079E03C3ED009120UL});
     public static readonly BitSet FOLLOW_expr_in_comparisonExpr1486 = new BitSet(new ulong[]{0x0000000000040008UL});
     public static readonly BitSet FOLLOW_ESCAPE_in_comparisonExpr1491 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_expr_in_comparisonExpr1493 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_NOT_LIKE_in_comparisonExpr1505 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1507 = new BitSet(new ulong[]{0x0082008000109000UL,0x0079E003ED009120UL});
+    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1507 = new BitSet(new ulong[]{0x0082008000109000UL,0x079E03C3ED009120UL});
     public static readonly BitSet FOLLOW_expr_in_comparisonExpr1509 = new BitSet(new ulong[]{0x0000000000040008UL});
     public static readonly BitSet FOLLOW_ESCAPE_in_comparisonExpr1514 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_expr_in_comparisonExpr1516 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_BETWEEN_in_comparisonExpr1528 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1530 = new BitSet(new ulong[]{0x0082808000109030UL,0x0079E003ED109120UL});
-    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1532 = new BitSet(new ulong[]{0x0082808000109030UL,0x0079E003ED109120UL});
+    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1530 = new BitSet(new ulong[]{0x0082808000109030UL,0x079E03C3ED109120UL});
+    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1532 = new BitSet(new ulong[]{0x0082808000109030UL,0x079E03C3ED109120UL});
     public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1534 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_NOT_BETWEEN_in_comparisonExpr1541 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1543 = new BitSet(new ulong[]{0x0082808000109030UL,0x0079E003ED109120UL});
-    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1545 = new BitSet(new ulong[]{0x0082808000109030UL,0x0079E003ED109120UL});
+    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1543 = new BitSet(new ulong[]{0x0082808000109030UL,0x079E03C3ED109120UL});
+    public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1545 = new BitSet(new ulong[]{0x0082808000109030UL,0x079E03C3ED109120UL});
     public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1547 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_IN_in_comparisonExpr1554 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_exprOrSubquery_in_comparisonExpr1556 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000000000000800UL});
@@ -9335,7 +9539,7 @@ public partial class HqlSqlWalker : TreeParser
     public static readonly BitSet FOLLOW_collectionFunctionOrSubselect_in_comparisonExpr1606 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_IN_LIST_in_inRhs1631 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_collectionFunctionOrSubselect_in_inRhs1635 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_expr_in_inRhs1639 = new BitSet(new ulong[]{0x0082008000109008UL,0x0079E003ED009120UL});
+    public static readonly BitSet FOLLOW_expr_in_inRhs1639 = new BitSet(new ulong[]{0x0082008000109008UL,0x079E03C3ED009120UL});
     public static readonly BitSet FOLLOW_expr_in_exprOrSubquery1655 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_query_in_exprOrSubquery1660 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_ANY_in_exprOrSubquery1666 = new BitSet(new ulong[]{0x0000000000000004UL});
@@ -9348,89 +9552,100 @@ public partial class HqlSqlWalker : TreeParser
     public static readonly BitSet FOLLOW_query_in_collectionFunctionOrSubselect1704 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_addrExpr_in_expr1718 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_VECTOR_EXPR_in_expr1730 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_expr1733 = new BitSet(new ulong[]{0x0082008000109008UL,0x0079E003ED009120UL});
+    public static readonly BitSet FOLLOW_expr_in_expr1733 = new BitSet(new ulong[]{0x0082008000109008UL,0x079E03C3ED009120UL});
     public static readonly BitSet FOLLOW_constant_in_expr1742 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_arithmeticExpr_in_expr1747 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_functionCall_in_expr1752 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_parameter_in_expr1764 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_count_in_expr1769 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_PLUS_in_arithmeticExpr1797 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1799 = new BitSet(new ulong[]{0x0082008000109000UL,0x0079E003ED009120UL});
+    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1799 = new BitSet(new ulong[]{0x0082008000109000UL,0x079E03C3ED009120UL});
     public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1801 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_MINUS_in_arithmeticExpr1808 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1810 = new BitSet(new ulong[]{0x0082008000109000UL,0x0079E003ED009120UL});
+    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1810 = new BitSet(new ulong[]{0x0082008000109000UL,0x079E03C3ED009120UL});
     public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1812 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_DIV_in_arithmeticExpr1819 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1821 = new BitSet(new ulong[]{0x0082008000109000UL,0x0079E003ED009120UL});
+    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1821 = new BitSet(new ulong[]{0x0082008000109000UL,0x079E03C3ED009120UL});
     public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1823 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_STAR_in_arithmeticExpr1830 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1832 = new BitSet(new ulong[]{0x0082008000109000UL,0x0079E003ED009120UL});
+    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1832 = new BitSet(new ulong[]{0x0082008000109000UL,0x079E03C3ED009120UL});
     public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1834 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_UNARY_MINUS_in_arithmeticExpr1842 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1844 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_caseExpr_in_arithmeticExpr1852 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_CASE_in_caseExpr1864 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_WHEN_in_caseExpr1870 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_logicalExpr_in_caseExpr1872 = new BitSet(new ulong[]{0x0082008000109000UL,0x0079E003ED009120UL});
-    public static readonly BitSet FOLLOW_expr_in_caseExpr1874 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_ELSE_in_caseExpr1881 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_caseExpr1883 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_CASE2_in_caseExpr1895 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_caseExpr1899 = new BitSet(new ulong[]{0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_WHEN_in_caseExpr1903 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_caseExpr1905 = new BitSet(new ulong[]{0x0082008000109000UL,0x0079E003ED009120UL});
-    public static readonly BitSet FOLLOW_expr_in_caseExpr1907 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_ELSE_in_caseExpr1914 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_BNOT_in_arithmeticExpr1841 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1843 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_BAND_in_arithmeticExpr1850 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1852 = new BitSet(new ulong[]{0x0082008000109000UL,0x079E03C3ED009120UL});
+    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1854 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_BOR_in_arithmeticExpr1861 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1863 = new BitSet(new ulong[]{0x0082008000109000UL,0x079E03C3ED009120UL});
+    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1865 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_BXOR_in_arithmeticExpr1872 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1874 = new BitSet(new ulong[]{0x0082008000109000UL,0x079E03C3ED009120UL});
+    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1876 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_UNARY_MINUS_in_arithmeticExpr1884 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1886 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_caseExpr_in_arithmeticExpr1894 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_CASE_in_caseExpr1906 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_WHEN_in_caseExpr1912 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_logicalExpr_in_caseExpr1914 = new BitSet(new ulong[]{0x0082008000109000UL,0x079E03C3ED009120UL});
     public static readonly BitSet FOLLOW_expr_in_caseExpr1916 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_ELEMENTS_in_collectionFunction1938 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_propertyRef_in_collectionFunction1944 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_INDICES_in_collectionFunction1963 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_propertyRef_in_collectionFunction1969 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_METHOD_CALL_in_functionCall1994 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_pathAsIdent_in_functionCall1999 = new BitSet(new ulong[]{0x0000000000000008UL,0x0000000000000200UL});
-    public static readonly BitSet FOLLOW_EXPR_LIST_in_functionCall2004 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_functionCall2007 = new BitSet(new ulong[]{0x008201C404189448UL,0x0079EF4BED07F120UL});
-    public static readonly BitSet FOLLOW_comparisonExpr_in_functionCall2011 = new BitSet(new ulong[]{0x008201C404189448UL,0x0079EF4BED07F120UL});
-    public static readonly BitSet FOLLOW_AGGREGATE_in_functionCall2030 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_aggregateExpr_in_functionCall2032 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_literal_in_constant2045 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_NULL_in_constant2050 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_TRUE_in_constant2057 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_FALSE_in_constant2067 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_JAVA_CONSTANT_in_constant2074 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_numericLiteral_in_literal2085 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_stringLiteral_in_literal2090 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_ELSE_in_caseExpr1923 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_caseExpr1925 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_CASE2_in_caseExpr1937 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_caseExpr1941 = new BitSet(new ulong[]{0x0800000000000000UL});
+    public static readonly BitSet FOLLOW_WHEN_in_caseExpr1945 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_caseExpr1947 = new BitSet(new ulong[]{0x0082008000109000UL,0x079E03C3ED009120UL});
+    public static readonly BitSet FOLLOW_expr_in_caseExpr1949 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_ELSE_in_caseExpr1956 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_caseExpr1958 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_ELEMENTS_in_collectionFunction1980 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_propertyRef_in_collectionFunction1986 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_INDICES_in_collectionFunction2005 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_propertyRef_in_collectionFunction2011 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_METHOD_CALL_in_functionCall2036 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_pathAsIdent_in_functionCall2041 = new BitSet(new ulong[]{0x0000000000000008UL,0x0000000000000200UL});
+    public static readonly BitSet FOLLOW_EXPR_LIST_in_functionCall2046 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_functionCall2049 = new BitSet(new ulong[]{0x008201C404189448UL,0x079EF7CBED07F120UL});
+    public static readonly BitSet FOLLOW_comparisonExpr_in_functionCall2053 = new BitSet(new ulong[]{0x008201C404189448UL,0x079EF7CBED07F120UL});
+    public static readonly BitSet FOLLOW_AGGREGATE_in_functionCall2072 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_aggregateExpr_in_functionCall2074 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_literal_in_constant2087 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_NULL_in_constant2092 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_TRUE_in_constant2099 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_FALSE_in_constant2109 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_JAVA_CONSTANT_in_constant2116 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_numericLiteral_in_literal2127 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_stringLiteral_in_literal2132 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_set_in_numericLiteral0 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_QUOTED_String_in_stringLiteral2132 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_set_in_identifier2143 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_addrExprDot_in_addrExpr2162 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_addrExprIndex_in_addrExpr2169 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_addrExprIdent_in_addrExpr2176 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_DOT_in_addrExprDot2200 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_addrExprLhs_in_addrExprDot2204 = new BitSet(new ulong[]{0x0000000008028800UL,0x0040000008001000UL});
-    public static readonly BitSet FOLLOW_propertyName_in_addrExprDot2208 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_INDEX_OP_in_addrExprIndex2247 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_addrExprLhs_in_addrExprIndex2251 = new BitSet(new ulong[]{0x0082008000109000UL,0x0079E003ED009120UL});
-    public static readonly BitSet FOLLOW_expr_in_addrExprIndex2255 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_identifier_in_addrExprIdent2287 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_addrExpr_in_addrExprLhs2315 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_identifier_in_propertyName2328 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_CLASS_in_propertyName2333 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_ELEMENTS_in_propertyName2338 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_INDICES_in_propertyName2343 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_propertyRefPath_in_propertyRef2355 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_propertyRefIdent_in_propertyRef2360 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_DOT_in_propertyRefPath2380 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_propertyRefLhs_in_propertyRefPath2384 = new BitSet(new ulong[]{0x0000000008028800UL,0x0040000008001000UL});
-    public static readonly BitSet FOLLOW_propertyName_in_propertyRefPath2388 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_identifier_in_propertyRefIdent2425 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_propertyRef_in_propertyRefLhs2437 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_identifier_in_aliasRef2458 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_COLON_in_parameter2476 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_identifier_in_parameter2480 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_PARAM_in_parameter2501 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_NUM_INT_in_parameter2506 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_NUM_INT_in_numericInteger2539 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_QUOTED_String_in_stringLiteral2174 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_set_in_identifier2185 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_addrExprDot_in_addrExpr2204 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_addrExprIndex_in_addrExpr2211 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_addrExprIdent_in_addrExpr2218 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_DOT_in_addrExprDot2242 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_addrExprLhs_in_addrExprDot2246 = new BitSet(new ulong[]{0x0000000008028800UL,0x0400000008001000UL});
+    public static readonly BitSet FOLLOW_propertyName_in_addrExprDot2250 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_INDEX_OP_in_addrExprIndex2289 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_addrExprLhs_in_addrExprIndex2293 = new BitSet(new ulong[]{0x0082008000109000UL,0x079E03C3ED009120UL});
+    public static readonly BitSet FOLLOW_expr_in_addrExprIndex2297 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_identifier_in_addrExprIdent2329 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_addrExpr_in_addrExprLhs2357 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_identifier_in_propertyName2370 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_CLASS_in_propertyName2375 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_ELEMENTS_in_propertyName2380 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_INDICES_in_propertyName2385 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_propertyRefPath_in_propertyRef2397 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_propertyRefIdent_in_propertyRef2402 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_DOT_in_propertyRefPath2422 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_propertyRefLhs_in_propertyRefPath2426 = new BitSet(new ulong[]{0x0000000008028800UL,0x0400000008001000UL});
+    public static readonly BitSet FOLLOW_propertyName_in_propertyRefPath2430 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_identifier_in_propertyRefIdent2467 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_propertyRef_in_propertyRefLhs2479 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_identifier_in_aliasRef2500 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_COLON_in_parameter2518 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_identifier_in_parameter2522 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_PARAM_in_parameter2543 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_NUM_INT_in_parameter2548 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_NUM_INT_in_numericInteger2581 = new BitSet(new ulong[]{0x0000000000000002UL});
 
 }
 }
