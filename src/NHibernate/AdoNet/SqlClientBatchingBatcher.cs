@@ -19,10 +19,11 @@ namespace NHibernate.AdoNet
 		{
 			batchSize = Factory.Settings.AdoBatchSize;
 			currentBatch = new SqlClientSqlCommandSet();
-			if (log.IsDebugEnabled)
-			{
-				currentBatchCommandsLog = new StringBuilder();
-			}
+			//we always create this, because we need to deal with a scenario in which
+			//the user change the logging configuration at runtime. Trying to put this
+			//behind an if(log.IsDebugEnabled) will cause a null reference exception 
+			//at that point.
+			currentBatchCommandsLog = new StringBuilder();
 		}
 
 		public override int BatchSize
