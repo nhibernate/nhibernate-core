@@ -160,6 +160,24 @@ namespace NHibernate.Test.Ado
 		}
 
 		[Test]
+		public void SqlLogShouldGetBatchCommandNotification()
+		{
+			using (new LogSpy(typeof(AbstractBatcher)))
+			{
+				using (var sl = new SqlLogSpy())
+				{
+					sessions.Statistics.Clear();
+					FillDb();
+					string logs = sl.GetWholeLog();
+					Assert.That(logs, Text.Contains("Batch command:").IgnoreCase);
+				}
+			}
+
+			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			Cleanup();
+		}
+
+		[Test]
 		[Description(@"Activating the AbstractBatcher's log the log stream:
 -should contain well formatted SQL log info")]
 		public void AbstractBatcherLogFormattedSql()

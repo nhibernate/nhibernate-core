@@ -65,7 +65,12 @@ namespace NHibernate.AdoNet
 			log.Debug("Executing batch");
 			CheckReaders();
 			Prepare(currentBatch.BatchCommand);
-			if (log.IsDebugEnabled)
+			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+			{
+				Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
+				currentBatchCommandsLog = new StringBuilder();
+			}
+			else if (log.IsDebugEnabled)
 			{
 				log.Debug(currentBatchCommandsLog.ToString());
 				currentBatchCommandsLog = new StringBuilder();

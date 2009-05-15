@@ -139,5 +139,14 @@ namespace NHibernate.AdoNet.Util
 		{
 			return FormatSql ? style : FormatStyle.None;
 		}
+
+		public void LogBatchCommand(string batchCommand)
+		{
+			log.Debug(batchCommand);
+			if(LogToStdout)
+			{
+				Console.Out.WriteLine("NHibernate: " + batchCommand);
+			}
+		}
 	}
 }
