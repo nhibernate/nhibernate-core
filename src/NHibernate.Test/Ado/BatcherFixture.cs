@@ -120,7 +120,7 @@ namespace NHibernate.Test.Ado
 					sessions.Statistics.Clear();
 					FillDb();
 					string logs = sl.GetWholeLog();
-					Assert.That(logs, Text.DoesNotContain("batcher").IgnoreCase);
+					Assert.That(logs, Text.DoesNotContain("Batch command").IgnoreCase);
 					Assert.That(logs, Text.Contains("INSERT").IgnoreCase);
 				}
 			}
