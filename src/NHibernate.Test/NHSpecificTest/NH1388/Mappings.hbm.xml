@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	default-lazy="true"
+	default-cascade="save-update"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH1388">
+
+	<class name="Student" table="STUDENT" lazy="false">
+
+		<id name="Id" column="STUDENT_ID" type="int" access="nosetter.camelcase-underscore">
+			<generator class="native" >
+				<param name="sequence">STUDENT_ID_SEQUENCE</param>
+			</generator>
+		</id>
+
+		<map name="Majors"
+			 cascade="all"
+			 inverse="false"
+			 access="field.camelcase-underscore"
+			 fetch="select"
+			 lazy="true"
+			 batch-size="100"
+			 table="MAJOR">
+			<key column="STUDENT_ID" foreign-key="STUDENT_ID" />
+			<index-many-to-many column="SUBJECT_ID" class="Subject" />
+			<composite-element class="Major">
+				<property name="Note" column="NOTE" />
+			</composite-element>
+		</map>
+
+	</class>
+
+	<class name="Subject" table="SUBJECT" lazy="false">
+
+		<id name="Id" column="SUBJECT_ID" type="int">
+			<generator class="assigned" />
+		</id>
+
+		<property name="Title" column="TITLE" />
+	</class>
+
+</hibernate-mapping>
