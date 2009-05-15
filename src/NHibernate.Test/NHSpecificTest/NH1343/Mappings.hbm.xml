@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   assembly="NHibernate.Test" 
+				   namespace="NHibernate.Test.NHSpecificTest.NH1343">
+
+	<class name="OrderLine">
+		<id name ="Id">
+			<generator class="native" />
+		</id>
+		
+		<many-to-one name="Product" class="Product" column="ProductID" />
+
+		<property name="Description"/>
+	</class>
+	
+	<class name="Product">
+		<id name ="Id">
+			<generator class="native" />
+		</id>
+		<property name="Description"/>
+	</class>
+	
+	<query name="GetLinesForProduct">
+		from OrderLine ol 
+		where Product = :product
+	</query>
+
+	<query name="GetLinesForProductWithAlias">
+		from OrderLine ol
+		where ol.Product = :product
+	</query>
+</hibernate-mapping>
