@@ -294,32 +294,33 @@
         </member>
         <member name="T:Castle.DynamicProxy.IProxyGenerationHook">
             <summary>
-            Used during the target type inspection process.
-            Implementors have a chance to interfere in the
-            proxy generation process
+            Used during the target type inspection process. Implementors have a chance to customize the
+            proxy generation process.
             </summary>
         </member>
         <member name="M:Castle.DynamicProxy.IProxyGenerationHook.ShouldInterceptMethod(System.Type,System.Reflection.MethodInfo)">
             <summary>
-            Invoked by the generation process to know if
-            the specified member should be proxied
+            Invoked by the generation process to determine if the specified method should be proxied.
             </summary>
-            <param name="type"></param>
-            <param name="memberInfo"></param>
-            <returns></returns>
+            <param name="type">The type which declares the given method.</param>
+            <param name="methodInfo">The method to inspect.</param>
+            <returns>True if the given method should be proxied; false otherwise.</returns>
         </member>
         <member name="M:Castle.DynamicProxy.IProxyGenerationHook.NonVirtualMemberNotification(System.Type,System.Reflection.MemberInfo)">
             <summary>
-            Invoked by the generation process to notify that a
-            member wasn't marked as virtual.
+            Invoked by the generation process to notify that a member was not marked as virtual.
             </summary>
-            <param name="type"></param>
-            <param name="memberInfo"></param>
+            <param name="type">The type which declares the non-virtual member.</param>
+            <param name="memberInfo">The non-virtual member.</param>
+            <remarks>
+            Non-virtual members cannot be proxied. This method gives an opportunity to inspect
+            any non-virtual member of a type that has been requested to be proxied, and if
+            appropriate - throw an exception to notify the caller.
+            </remarks>
         </member>
         <member name="M:Castle.DynamicProxy.IProxyGenerationHook.MethodsInspected">
             <summary>
-            Invoked by the generation process to notify 
-            that the whole process is completed.
+            Invoked by the generation process to notify that the whole process has completed.
             </summary>
         </member>
         <member name="T:Castle.DynamicProxy.CacheMappingsAttribute">
@@ -439,6 +440,33 @@
             Initializes a new instance of the <see cref="T:Castle.DynamicProxy.DefaultProxyBuilder"/> class.
             </summary>
             <param name="scope">The module scope for generated proxy types.</param>
+        </member>
+        <member name="T:Castle.DynamicProxy.IInterceptorSelector">
+            <summary>
+            Provides an extension point that allows proxies to choose specific interceptors on
+            a per method basis.
+            </summary>
+        </member>
+        <member name="M:Castle.DynamicProxy.IInterceptorSelector.SelectInterceptors(System.Type,System.Reflection.MethodInfo,Castle.Core.Interceptor.IInterceptor[])">
+            <summary>
+            Selects the interceptors that should intercept calls to the given <paramref name="method"/>.
+            </summary>
+            <param name="type">The type declaring the method to intercept.</param>
+            <param name="method">The method that will be intercepted.</param>
+            <param name="interceptors">All interceptors registered with the proxy.</param>
+            <returns>An array of interceptors to invoke upon calling the <paramref name="method"/>.</returns>
+            <remarks>
+            This method is called only once per proxy instance, upon the first call to the
+            <paramref name="method"/>. Either an empty array or null are valid return values to indicate
+            that no interceptor should intercept calls to the method. Although it is not advised, it is
+            legal to return other <see cref="T:Castle.Core.Interceptor.IInterceptor"/> implementations than these provided in
+            <paramref name="interceptors"/>. A better way to do this, is by passing all the required
+            interceptors to the appropriate method of <see cref="T:Castle.DynamicProxy.ProxyGenerator"/>. You can use this
+            method to influence the order in which interceptors will be called, by reordering the array.
+            Returning an array containing null references (Nothing in Visual Basic) is not legal,
+            and will result in a runtime exception.
+            </remarks>
+            <seealso cref="T:Castle.DynamicProxy.ProxyGenerationOptions"/>
         </member>
         <member name="M:Castle.DynamicProxy.InternalsHelper.IsInternalToDynamicProxy(System.Reflection.Assembly)">
             <summary>

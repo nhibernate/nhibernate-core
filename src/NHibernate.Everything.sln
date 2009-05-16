@@ -78,7 +78,7 @@ EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "NHibernate.Example.Web", "NHibernate.Example.Web\", "{C5D6EE68-1760-4F97-AD31-42343593D8C1}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFramework = "2.0"
-		ProjectReferences = "{5909BFE7-93CF-4E5F-BE22-6293368AF01D}|NHibernate.dll;"
+		ProjectReferences = "{5909BFE7-93CF-4E5F-BE22-6293368AF01D}|NHibernate.dll;{8289D6AD-9714-42D3-A94D-D4D9814D1281}|NHibernate.ByteCode.LinFu.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/NHibernate.Example.Web"
 		Debug.AspNetCompiler.PhysicalPath = "NHibernate.Example.Web\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\NHibernate.Example.Web\"

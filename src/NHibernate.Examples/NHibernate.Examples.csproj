@@ -167,6 +167,10 @@
     <EmbeddedResource Include="QuickStart\User.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NHibernate.ByteCode.LinFu\NHibernate.ByteCode.LinFu.csproj">
+      <Project>{8289D6AD-9714-42D3-A94D-D4D9814D1281}</Project>
+      <Name>NHibernate.ByteCode.LinFu</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NHibernate\NHibernate.csproj">
       <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
       <Name>NHibernate</Name>
