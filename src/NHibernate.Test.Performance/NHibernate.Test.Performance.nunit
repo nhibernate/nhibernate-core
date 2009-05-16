@@ -1,9 +1,0 @@
-<NUnitProject>
-  <Settings activeconfig="Debug" />
-  <Config name="Debug" appbase="bin\Debug" configfile="NHibernate.Test.Performance.dll.config" binpathtype="Auto">
-    <assembly path="NHibernate.Test.Performance.dll" />
-  </Config>
-  <Config name="Release" appbase="bin\Release" configfile="NHibernate.Test.Performance.dll.config" binpathtype="Auto">
-    <assembly path="NHibernate.Test.Performance.dll" />
-  </Config>
-</NUnitProject>

@@ -12,9 +12,6 @@
 	<!-- Pass -D:skip.tests=true to NAnt to skip running tests when building -->
 	<property name="skip.tests" value="false" overwrite="false" />
 
-	<!-- Disable performance tests by default. They take too much time. -->
-	<property name="run.performance.tests" value="false" overwrite="false" />
-
 	<!--
 		Supported versions of .NET Framework, separated by spaces.
 		Used by *-all-frameworks targets.
@@ -34,8 +31,6 @@
 		<include name="NHibernate.ByteCode.Spring.Tests/ByteCode.Test.build" />
 		<include name="NHibernate.DomainModel/NHibernate.DomainModel.build" />
 		<include name="NHibernate.Test/NHibernate.Test.build" />
-		<include name="NHibernate.Test.Performance/NHibernate.Test.Performance.build" />
-		<include name="NHibernate.Examples/NHibernate.Examples.build" />
 		<include name="NHibernate.Tool.HbmXsd/NHibernate.Tool.HbmXsd.build" />
 	</fileset>
 
@@ -45,8 +40,6 @@
 		<include name="NHibernate.ByteCode.Castle.Tests/ByteCode.Test.build" />
 		<include name="NHibernate.ByteCode.Spring.Tests/ByteCode.Test.build" />
 		<include name="NHibernate.Test/NHibernate.Test.build" />
-		<include name="NHibernate.Test.Performance/NHibernate.Test.Performance.build"
-			if="${run.performance.tests}" />
 	</fileset>
 
 	<target name="init" depends="common.init"
