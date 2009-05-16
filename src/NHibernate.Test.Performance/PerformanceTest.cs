@@ -62,7 +62,7 @@ namespace NHibernate.Test.Performance
 
 			driver = (DriverBase) Activator.CreateInstance(System.Type.GetType(driverClass));
 
-			string prepare = (string) cfg.Properties[Environment.PrepareSql] as string;
+			string prepare = cfg.GetProperty(Environment.PrepareSql);
 			if (prepare == "true")
 			{
 				prepareSql = true;

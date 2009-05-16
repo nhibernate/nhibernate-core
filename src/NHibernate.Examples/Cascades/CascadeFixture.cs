@@ -19,7 +19,7 @@ namespace NHibernate.Examples.Cascades
 		[SetUp]
 		public void SetUp()
 		{
-			cfg = new Configuration();
+			cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			cfg.AddAssembly("NHibernate.Examples");
 			new SchemaExport(cfg).Create(true, true);
 

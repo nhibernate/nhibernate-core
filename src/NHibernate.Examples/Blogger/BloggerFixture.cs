@@ -39,7 +39,7 @@ namespace NHibernate.Examples.Blogger
 
 			// reload the blog to verify the db has the correct values
 			ISession s = _sessions.OpenSession();
-			blog = (Blog) s.Find("from Blog as b where b.Name=:name", "GregBlog", NHibernateUtil.String)[0];
+			blog = s.CreateQuery("from Blog as b where b.Name=:name").SetString("name","GregBlog").List<Blog>()[0];
 			Assert.IsNotNull(blog);
 			Assert.AreEqual(2, blog.Items.Count);
 
@@ -98,7 +98,7 @@ namespace NHibernate.Examples.Blogger
 
 		public void Configure()
 		{
-			Configuration cfg = new Configuration();
+			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			cfg.AddClass(typeof(Blog));
 			cfg.AddClass(typeof(BlogItem));
 			_sessions = cfg.BuildSessionFactory();
@@ -106,7 +106,7 @@ namespace NHibernate.Examples.Blogger
 
 		public void ExportTables()
 		{
-			Configuration cfg = new Configuration();
+			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			cfg.AddClass(typeof(Blog));
 			cfg.AddClass(typeof(BlogItem));
 			new SchemaExport(cfg).Create(true, true);

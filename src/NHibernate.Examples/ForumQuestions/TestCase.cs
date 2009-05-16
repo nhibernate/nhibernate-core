@@ -27,7 +27,7 @@ namespace NHibernate.Examples.ForumQuestions
 
 		public void ExportSchema(string[] files, bool exportSchema)
 		{
-			cfg = new Configuration();
+			cfg = TestConfigurationHelper.GetDefaultConfiguration();
 
 			for (int i = 0; i < files.Length; i++)
 			{

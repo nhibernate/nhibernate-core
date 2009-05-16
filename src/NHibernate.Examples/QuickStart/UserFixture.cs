@@ -16,7 +16,7 @@ namespace NHibernate.Examples.QuickStart
 		[Test]
 		public void ValidateQuickStart()
 		{
-			Configuration cfg = new Configuration();
+			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			cfg.AddAssembly("NHibernate.Examples");
 
 			ISessionFactory factory = cfg.BuildSessionFactory();

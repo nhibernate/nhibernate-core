@@ -19,7 +19,7 @@ namespace NHibernate.Examples.ForumQuestions.T1078029
 		[Test]
 		public void ValidateQuickStart()
 		{
-			Configuration cfg = new Configuration();
+			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			cfg.AddResource("NHibernate.Examples.ForumQuestions.T1078029.Member.hbm.xml", Assembly.Load("NHibernate.Examples"));
 
 			ISessionFactory factory = cfg.BuildSessionFactory();

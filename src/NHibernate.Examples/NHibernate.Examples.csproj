@@ -154,7 +154,7 @@
     <Compile Include="QuickStart\UserFixture.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Content Include="hibernate.cfg.xml" />
+    <Compile Include="TestConfigurationHelper.cs" />
     <EmbeddedResource Include="Blogger\Blog.hbm.xml" />
     <EmbeddedResource Include="Blogger\BlogItem.hbm.xml" />
     <EmbeddedResource Include="Cascades\Alias.hbm.xml" />
@@ -181,9 +181,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>copy /y "$(ProjectDir)App.config" "$(TargetPath).config"
-copy /y "$(ProjectDir)hibernate.cfg.xml" "hibernate.cfg.xml"</PreBuildEvent>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>copy "$(ProjectDir)App.config" "$(TargetPath).config"
+if exist hibernate.cfg.xml (del hibernate.cfg.xml)
+if exist "$(ProjectDir)hibernate.cfg.xml" (copy "$(ProjectDir)hibernate.cfg.xml" "hibernate.cfg.xml")</PostBuildEvent>
   </PropertyGroup>
 </Project>
