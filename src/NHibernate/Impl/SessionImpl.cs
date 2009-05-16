@@ -226,7 +226,7 @@ namespace NHibernate.Impl
 
 				if (log.IsDebugEnabled)
 				{
-					log.Debug(string.Format("[session-id={0}]opened session at timestamp:{1}", sessionId, timestamp));
+					log.Debug(string.Format("[session-id={0}] opened session at timestamp:{1}", sessionId, timestamp));
 				}
 
 				CheckAndUpdateSessionStatus();
@@ -1654,7 +1654,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(sessionId))
 			{
-				log.Debug(string.Format("[session-id={0}]running ISession.Dispose()",sessionId));
+				log.Debug(string.Format("[session-id={0}] running ISession.Dispose()",sessionId));
 				if (TakingPartInDtcTransaction)
 				{
 					shouldCloseSessionOnDtcTransactionCompleted = true;
@@ -1683,7 +1683,7 @@ namespace NHibernate.Impl
 					return;
 				}
 
-				log.Debug(string.Format("[session-id={0}]executing real Dispose({1})", sessionId, isDisposing));
+				log.Debug(string.Format("[session-id={0}] executing real Dispose({1})", sessionId, isDisposing));
 
 				// free managed resources that are being managed by the session if we
 				// know this call came through Dispose()
