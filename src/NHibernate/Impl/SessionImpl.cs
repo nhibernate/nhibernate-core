@@ -2332,10 +2332,15 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(sessionId))
 			{
-				if (this.entityMode.Equals(entityMode))
-				{
-					return this;
-				}
+				// This is explicitly removed to allow support
+				// for child sessions that want to flush during
+				// the parent session lifecycle. See NH-1714, 
+				// and the suggested audit examples.
+				//
+				//if (this.entityMode.Equals(entityMode))
+				//{
+				//    return this;
+				//}
 
 				if (rootSession != null)
 				{
