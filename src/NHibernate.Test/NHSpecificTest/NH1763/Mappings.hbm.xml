@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1763"
+                   default-lazy="false">
+
+   <class name="Customer">
+      <id name="Id">
+         <generator class="native" />
+      </id>
+		 <property name="Name" type="NHibernate.Test.NHSpecificTest.NH1763.EmptyStringUserType, NHibernate.Test">
+			 <column name="Name"/>
+		 </property>
+		 <property name="Name2" type="NHibernate.Test.NHSpecificTest.NH1763.EmptyStringUserType, NHibernate.Test">
+			 <column name="Name2"/>
+		 </property>
+   </class>
+
+</hibernate-mapping>

@@ -74,7 +74,7 @@ namespace NHibernate.Criterion
 			{
 				for (int i = 0; i < trueTypes.Length; i++)
 				{
-					if(trueTypes[i] != falseTypes[i])
+					if(trueTypes[i].Equals(falseTypes[i]) == false)
 					{
 						areEqual = false;
 						break;

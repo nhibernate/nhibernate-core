@@ -399,6 +399,9 @@
     <Compile Include="NHSpecificTest\NH1742\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1760\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH1760\SampleTest.cs" />
+    <Compile Include="NHSpecificTest\NH1763\DomainClass.cs" />
+    <Compile Include="NHSpecificTest\NH1763\EmptyStringUserType.cs" />
+    <Compile Include="NHSpecificTest\NH1763\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH1773\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1773\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1775\Domain.cs" />
@@ -1797,6 +1800,7 @@
     <EmbeddedResource Include="BulkManipulation\SimpleClass.hbm.xml" />
     <EmbeddedResource Include="Ado\VerySimple.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1763\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\ElementsEnums\SimpleWithEnumsNoName.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\ElementsEnums\SimpleWithEnumsPartialName.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1343\Mappings.hbm.xml" />
