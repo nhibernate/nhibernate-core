@@ -407,6 +407,8 @@
     <Compile Include="NHSpecificTest\NH1741\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1742\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH1742\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1747\Classes.cs" />
+    <Compile Include="NHSpecificTest\NH1747\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1760\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH1760\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH1763\DomainClass.cs" />
@@ -1810,6 +1812,7 @@
     <EmbeddedResource Include="BulkManipulation\SimpleClass.hbm.xml" />
     <EmbeddedResource Include="Ado\VerySimple.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1747\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1159\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1093\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1714\Mappings.hbm.xml" />
