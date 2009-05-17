@@ -14,7 +14,7 @@ namespace NHibernate.Test
 		private readonly Logger logger;
 		private readonly Level prevLogLevel;
 
-		public LogSpy(ILog log, bool disable)
+		public LogSpy(ILog log, Level level)
 		{
 			logger = log.Logger as Logger;
 			if (logger == null)
@@ -24,11 +24,16 @@ namespace NHibernate.Test
 
 			// Change the log level to DEBUG and temporarily save the previous log level
 			prevLogLevel = logger.Level;
-			logger.Level = disable ? Level.Off : Level.Debug;
+			logger.Level = level;
 
 			// Add a new MemoryAppender to the logger.
 			appender = new MemoryAppender();
 			logger.AddAppender(appender);
+		}
+
+		public LogSpy(ILog log, bool disable)
+			: this(log, disable ? Level.Off : Level.Debug)
+		{
 		}
 
 		public LogSpy(ILog log) : this(log, false) { }

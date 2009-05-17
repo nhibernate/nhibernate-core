@@ -41,6 +41,10 @@ namespace NHibernate.Util
 		{
 			string value;
 			properties.TryGetValue(property, out value);
+			if(value == string.Empty)
+			{
+				value = null;
+			}
 			return value ?? defaultValue;
 		}
 

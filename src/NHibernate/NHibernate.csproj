@@ -454,6 +454,7 @@
     <Compile Include="Bytecode\HibernateByteCodeException.cs" />
     <Compile Include="Bytecode\ProxyFactoryFactoryNotConfiguredException.cs" />
     <Compile Include="Bytecode\UnableToLoadProxyFactoryFactoryException.cs" />
+    <Compile Include="Cache\FakeCache.cs" />
     <Compile Include="Cfg\MappingSchema\AbstractDecoratable.cs" />
     <Compile Include="Cfg\MappingSchema\HbmTimestamp.cs" />
     <Compile Include="Cfg\MappingSchema\HbmVersion.cs" />
@@ -641,7 +642,6 @@
     <Compile Include="Cache\FilterKey.cs" />
     <Compile Include="Cache\IOptimisticCacheSource.cs" />
     <Compile Include="Cache\NoCacheProvider.cs" />
-    <Compile Include="Cache\NoCachingEnabledException.cs" />
     <Compile Include="Cfg\ClassExtractor.cs" />
     <Compile Include="Cfg\ConfigurationSchema\CfgXmlHelper.cs" />
     <Compile Include="Cfg\ConfigurationSchema\ClassCacheConfiguration.cs" />
