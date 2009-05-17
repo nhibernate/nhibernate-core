@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH1159">
+	<class name="Contact" table="Contact">
+		<id name="Id" column="id" type="Int64" unsaved-value="0">
+			<generator class="assigned"/>
+		</id>
+		<property column="forename" type="String" name="Forename" not-null="true" length="50" />
+		<property column="surname" type="String" name="Surname" not-null="true" length="50" />
+		<property column="preferredName" type="String" name="PreferredName" length="50" />
+	</class>
+</hibernate-mapping>
