@@ -7,7 +7,7 @@
 		<id name="Id"	type="int">
 			<generator class="native"/>
 		</id>
-		<discriminator column="AnimalType" type="int"/>
+		<discriminator column="AnimalType" type="int" force="true"/>
 		<property name="Name"	type="string"/>
 		<many-to-one name="Owner" class="Person" column="OwnerId"/>
 		<subclass name="Cat" discriminator-value="1"/>

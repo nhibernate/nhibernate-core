@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1391
 {
-	[TestFixture,Ignore]
+	[TestFixture]
 	public class Fixture2:BugTestCase
 	{
 		protected override void OnSetUp()
