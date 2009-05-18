@@ -34,7 +34,7 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void TS()
 		{
-			if (Dialect is Oracle9Dialect)
+			if (Dialect is Oracle8iDialect)
 			{
 				return;
 			}
@@ -57,7 +57,7 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void TSNamed()
 		{
-			if (Dialect is Oracle9Dialect)
+			if (Dialect is Oracle8iDialect)
 			{
 				return;
 			}

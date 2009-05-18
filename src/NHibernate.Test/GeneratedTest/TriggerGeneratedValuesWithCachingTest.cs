@@ -17,7 +17,7 @@ namespace NHibernate.Test.GeneratedTest
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return dialect is MsSql2000Dialect || dialect is Oracle9Dialect || dialect is Oracle8iDialect;
+			return dialect is MsSql2000Dialect || dialect is Oracle8iDialect;
 		}
 	}
 }

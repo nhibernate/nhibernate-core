@@ -20,11 +20,11 @@ namespace NHibernate.Test.Hql
 			notSupportedStandardFunction.Add("locate",
 				new[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect) ,typeof(FirebirdDialect), typeof(PostgreSQLDialect) });
 			notSupportedStandardFunction.Add("bit_length",
-								new[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect), typeof(Oracle9Dialect), typeof(OracleDialect), typeof(Oracle8iDialect), typeof(Oracle9iDialect), typeof(Oracle10gDialect) });
+								new[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect), typeof(Oracle8iDialect), typeof(Oracle9iDialect), typeof(Oracle10gDialect) });
 			notSupportedStandardFunction.Add("extract",
                 new[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect) });
 			notSupportedStandardFunction.Add("nullif",
-								new[] { typeof(OracleDialect), typeof(Oracle8iDialect)});
+								new[] { typeof(Oracle8iDialect)});
 		}
 
 		private bool IsOracleDialect()

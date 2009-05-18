@@ -59,7 +59,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(1,
 			                s.CreateQuery("select count(*) from s in class Simple").List().Count);
 
-			if (Dialect is Oracle9Dialect)
+			if (Dialect is Oracle8iDialect)
 			{
 				// Check Oracle Dialect mix of dialect functions - no args (no parenthesis and single arg functions
 				IList rset = s.CreateQuery("select s.Name, sysdate, trunc(s.Pay), round(s.Pay) from s in class Simple").List();
@@ -129,8 +129,8 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void Broken()
 		{
-			if (Dialect is Oracle9Dialect)
-				return;
+			if (Dialect is Oracle8iDialect)
+				Assert.Ignore("Does not apply to " + typeof(Oracle8iDialect).FullName);
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();

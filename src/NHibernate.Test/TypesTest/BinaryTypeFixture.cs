@@ -77,7 +77,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void InsertZeroLength()
 		{
-			if (Dialect is Oracle9Dialect || Dialect is Oracle8iDialect)
+			if (Dialect is Oracle8iDialect)
 			{
 				Assert.Ignore("Certain drivers (ie - Oralce) don't handle writing and reading byte[0]");
 			}

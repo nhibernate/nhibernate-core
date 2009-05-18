@@ -11,11 +11,12 @@ Build 2.1.0
 		* the syntax foo.bar.baz.elements or foo.bar.baz.indices is not longer supported.  Use the alternative syntax of elements(foo.bar.baz) or indices(foo.bar.baz) instead
 			Note: in some case, where a sub-select is needed, the collection is enough example: FROM m IN CLASS Master WHERE NOT EXISTS( FROM m.Details d WHERE NOT d.I=5 )
 
-	##### Possible Breaking Changes for external frameworks #####
+	##### Possible Breaking Changes #####
 		* ISession interface has additional methods
 		* IStatelessSession interface has additional methods
 		* DefaultProxyFactoryFactory removed
 		* IProxyFactoryFactory now provide the IProxyValidator implementation
+		* Now filters are working even with many-to-one association for Criteria and HQL (NH-1293, NH-1179)
 
 	##### Initialization time #####
 		* The ProxyValidator check for "internal virtual" (to be intercepted by proxy need "protected internal virtual")
@@ -24,8 +25,8 @@ Build 2.1.0
 	##### Breaking Changes #####
 		* see NH-1633 if you are using SQL native queries
 		* CriteriaUtil is gone. NHibernate.Transform.Transformers now returns predefined IResultTransformer.
-		* Now filters are working even with many-to-one association for Criteria and HQL (NH-1293, NH-1179)
 		* ISessionFactory.Settings is gone (moved to ISessionFactoryImplementor.Settings)
+		* Obsolete ORACLE dialects was removed (new implementations are available)
 		
 Build 2.1.0.Alpha2 (rev4167)
 ========================

@@ -2518,7 +2518,7 @@ namespace NHibernate.Test.Legacy
 
 				// TODO: figure out why this is throwing an ORA-1722 error
 				// probably the conversion ProxyArray.id (to_number ensuring a not null value)
-				if (!(Dialect is Oracle9Dialect) && !(Dialect is Oracle8iDialect))
+				if (!(Dialect is Oracle8iDialect))
 				{
 					s.CreateQuery(
 						"select count(*) from Bar as bar join bar.Component.Glarch.ProxyArray as g where cast(g.id as Int32) in indices(bar.Baz.FooArray)").

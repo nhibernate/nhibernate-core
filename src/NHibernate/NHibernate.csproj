@@ -111,8 +111,6 @@
     <Compile Include="Dialect\MsSql2000Dialect.cs" />
     <Compile Include="Dialect\MsSql7Dialect.cs" />
     <Compile Include="Dialect\MySQLDialect.cs" />
-    <Compile Include="Dialect\Oracle9Dialect.cs" />
-    <Compile Include="Dialect\OracleDialect.cs" />
     <Compile Include="Dialect\PostgreSQLDialect.cs" />
     <Compile Include="Dialect\SQLiteDialect.cs" />
     <Compile Include="Dialect\SybaseDialect.cs" />
