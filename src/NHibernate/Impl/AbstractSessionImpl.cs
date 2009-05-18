@@ -26,7 +26,7 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private ISessionFactoryImplementor factory;
 
-		protected readonly Guid sessionId = Guid.NewGuid();
+		private readonly Guid sessionId = Guid.NewGuid();
 		private bool closed;
 		private System.Transactions.Transaction ambientTransation;
 		private bool isAlreadyDisposed;
@@ -58,7 +58,7 @@ namespace NHibernate.Impl
 
 		public void Initialize()
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 			}
@@ -108,7 +108,7 @@ namespace NHibernate.Impl
 
 		public virtual IQuery GetNamedSQLQuery(string name)
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				NamedSQLQueryDefinition nsqlqd = factory.GetNamedSQLQuery(name);
@@ -147,7 +147,7 @@ namespace NHibernate.Impl
 
 		public virtual IQuery GetNamedQuery(string queryName)
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				NamedQueryDefinition nqd = factory.GetNamedQuery(queryName);
@@ -183,7 +183,7 @@ namespace NHibernate.Impl
 
 		protected internal virtual void CheckAndUpdateSessionStatus()
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (new SessionIdLoggingContext(SessionId))
 			{
 				ErrorIfClosed();
 				EnlistInAmbientTransactionIfNeeded();
@@ -226,7 +226,7 @@ namespace NHibernate.Impl
 
 		private void InitQuery(IQuery query, NamedQueryDefinition nqd)
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (new SessionIdLoggingContext(SessionId))
 			{
 				query.SetCacheable(nqd.IsCacheable);
 				query.SetCacheRegion(nqd.CacheRegion);
@@ -252,7 +252,7 @@ namespace NHibernate.Impl
 
 		public virtual IQuery CreateQuery(string queryString)
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				QueryImpl query = new QueryImpl(queryString, this, GetHQLQueryPlan(queryString, false).ParameterMetadata);
@@ -263,7 +263,7 @@ namespace NHibernate.Impl
 
 		public virtual ISQLQuery CreateSQLQuery(string sql)
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				SqlQueryImpl query = new SqlQueryImpl(sql, this, factory.QueryPlanCache.GetSQLParameterMetadata(sql));
@@ -274,7 +274,7 @@ namespace NHibernate.Impl
 
 		protected internal virtual HQLQueryPlan GetHQLQueryPlan(string query, bool shallow)
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (new SessionIdLoggingContext(SessionId))
 			{
 				return factory.QueryPlanCache.GetHQLQueryPlan(query, shallow, EnabledFilters);
 			}
@@ -282,7 +282,7 @@ namespace NHibernate.Impl
 
 		protected internal virtual NativeSQLQueryPlan GetNativeSQLQueryPlan(NativeSQLQuerySpecification spec)
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (new SessionIdLoggingContext(SessionId))
 			{
 				return factory.QueryPlanCache.GetNativeSQLQueryPlan(spec);
 			}
@@ -290,7 +290,7 @@ namespace NHibernate.Impl
 
 		protected ADOException Convert(Exception sqlException, string message)
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (new SessionIdLoggingContext(SessionId))
 			{
 				return ADOExceptionHelper.Convert(factory.SQLExceptionConverter, sqlException, message);
 			}
@@ -298,7 +298,7 @@ namespace NHibernate.Impl
 
 		protected void AfterOperation(bool success)
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (new SessionIdLoggingContext(SessionId))
 			{
 				if (!ConnectionManager.IsInActiveTransaction)
 				{
@@ -311,7 +311,7 @@ namespace NHibernate.Impl
 
 		void IEnlistmentNotification.Prepare(PreparingEnlistment preparingEnlistment)
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (new SessionIdLoggingContext(SessionId))
 			{
 				try
 				{
@@ -342,7 +342,7 @@ namespace NHibernate.Impl
 
 		void IEnlistmentNotification.Commit(Enlistment enlistment)
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (new SessionIdLoggingContext(SessionId))
 			{
 				logger.Debug("committing DTC transaction");
 				// we have nothing to do here, since it is the actual 
@@ -353,7 +353,7 @@ namespace NHibernate.Impl
 
 		void IEnlistmentNotification.Rollback(Enlistment enlistment)
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (new SessionIdLoggingContext(SessionId))
 			{
 				AfterTransactionCompletion(false, null);
 				logger.Debug("rolled back DTC transaction");
@@ -363,7 +363,7 @@ namespace NHibernate.Impl
 
 		void IEnlistmentNotification.InDoubt(Enlistment enlistment)
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (new SessionIdLoggingContext(SessionId))
 			{
 				AfterTransactionCompletion(false, null);
 				logger.Debug("DTC transaction is in doubt");
@@ -373,7 +373,7 @@ namespace NHibernate.Impl
 
 		protected void EnlistInAmbientTransactionIfNeeded()
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (new SessionIdLoggingContext(SessionId))
 			{
 				if (ambientTransation != null)
 					return;
