@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   assembly="NHibernate.Test" 
+				   namespace="NHibernate.Test.LazyOneToOne">
+
+	<class name="Person">
+		<id name="Name"/>
+		<one-to-one name="Employee" lazy="no-proxy" cascade="persist,delete"/>
+	</class>
+	
+	<class name="Employee">
+		<id name="PersonName"/>
+		<one-to-one name="Person" lazy="no-proxy"/>
+		<bag name="Employments" inverse="true" fetch="join" lazy="false" 
+			 where="EndDate is null" 
+			 cascade="persist,delete">
+			<key column="PersonName"/>
+			<one-to-many class="Employment"/>
+		</bag>
+	</class>
+	
+	<class name="Employment">
+		<composite-id>
+			<key-property name="PersonName"/>
+			<key-property name="OrganizationName"/>
+		</composite-id>
+		<property name="StartDate" update="false"/>
+		<property name="EndDate"/>
+	</class>
+	
+</hibernate-mapping>

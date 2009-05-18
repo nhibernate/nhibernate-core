@@ -327,6 +327,10 @@
     <Compile Include="HQL\Ast\WithClauseFixture.cs" />
     <Compile Include="HQL\Ast\Zoo.cs" />
     <Compile Include="HQL\BaseFunctionFixture.cs" />
+    <Compile Include="LazyOneToOne\Employee.cs" />
+    <Compile Include="LazyOneToOne\Employment.cs" />
+    <Compile Include="LazyOneToOne\LazyOneToOneTest.cs" />
+    <Compile Include="LazyOneToOne\Person.cs" />
     <Compile Include="MappingTest\NonReflectiveBinderFixture.cs" />
     <Compile Include="MappingTest\Wicked.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\AbstractIntEnumsBagFixture.cs" />
@@ -1812,6 +1816,7 @@
     <EmbeddedResource Include="BulkManipulation\SimpleClass.hbm.xml" />
     <EmbeddedResource Include="Ado\VerySimple.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="LazyOneToOne\Person.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1747\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1159\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1093\Mappings.hbm.xml" />
