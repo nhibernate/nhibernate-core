@@ -13,7 +13,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			: base(adaptor, tree, initialBufferSize) {}
 
 		/// <summary>
-		/// Insert a new node into both the Tree and the Node Array.  Add DOWN & UP nodes if needed
+		/// Insert a new node into both the Tree and the Node Array. Add DOWN and UP nodes if needed.
 		/// </summary>
 		/// <param name="parent">The parent node</param>
 		/// <param name="child">The child node</param>
