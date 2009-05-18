@@ -88,6 +88,7 @@
     <Compile Include="BulkManipulation\BaseFixture.cs" />
     <Compile Include="BulkManipulation\HQLBulkOperations.cs" />
     <Compile Include="BulkManipulation\SimpleClass.cs" />
+    <Compile Include="Bytecode\ActivatorObjectFactoryFixture.cs" />
     <Compile Include="Bytecode\Lightweight\BytecodeProviderFixture.cs" />
     <Compile Include="Bytecode\WrongProxyFactoryFactory.cs" />
     <Compile Include="CacheTest\CacheFixture.cs" />
