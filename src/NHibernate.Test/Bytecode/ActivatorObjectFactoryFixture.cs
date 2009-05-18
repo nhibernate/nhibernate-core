@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Bytecode
 {
-	[TestFixture, Ignore("Not implemented yet.")]
+	[TestFixture]
 	public class ActivatorObjectFactoryFixture
 	{
 		public class WithOutPublicParameterLessCtor
@@ -27,21 +27,28 @@ namespace NHibernate.Test.Bytecode
 			public string Something { get; set; }
 		}
 
+		protected virtual IObjectsFactory GetObjectsFactory()
+		{
+			return new ActivatorObjectsFactory();
+		}
+
 		[Test]
 		public void CreateInstanceDefCtor()
 		{
-			var of = new ActivatorObjectsFactory();
+			IObjectsFactory of = GetObjectsFactory();
 			Assert.Throws<ArgumentNullException>(() => of.CreateInstance(null));
-			Assert.Throws<ArgumentNullException>(() => of.CreateInstance(typeof(WithOutPublicParameterLessCtor)));
+			Assert.Throws<MissingMethodException>(() => of.CreateInstance(typeof(WithOutPublicParameterLessCtor)));
 			var instance = of.CreateInstance(typeof(PublicParameterLessCtor));
 			Assert.That(instance, Is.Not.Null);
 			Assert.That(instance, Is.InstanceOf<PublicParameterLessCtor>());
 		}
 
+
+
 		[Test]
 		public void CreateInstanceWithNoPublicCtor()
 		{
-			var of = new ActivatorObjectsFactory();
+			IObjectsFactory of = GetObjectsFactory();
 			Assert.Throws<ArgumentNullException>(() => of.CreateInstance(null, false));
 			var instance = of.CreateInstance(typeof(WithOutPublicParameterLessCtor), true);
 			Assert.That(instance, Is.Not.Null);
@@ -51,7 +58,7 @@ namespace NHibernate.Test.Bytecode
 		[Test]
 		public void CreateInstanceOfValueType()
 		{
-			var of = new ActivatorObjectsFactory();
+			IObjectsFactory of = GetObjectsFactory();
 			var instance = of.CreateInstance(typeof(ValueType), true);
 			Assert.That(instance, Is.Not.Null);
 			Assert.That(instance, Is.InstanceOf<ValueType>());
@@ -60,7 +67,7 @@ namespace NHibernate.Test.Bytecode
 		[Test]
 		public void CreateInstanceWithArguments()
 		{
-			var of = new ActivatorObjectsFactory();
+			IObjectsFactory of = GetObjectsFactory();
 			Assert.Throws<ArgumentNullException>(() => of.CreateInstance(null, new[] {1}));
 			var value = "a value";
 			var instance = of.CreateInstance(typeof(WithOutPublicParameterLessCtor), new[]{value});

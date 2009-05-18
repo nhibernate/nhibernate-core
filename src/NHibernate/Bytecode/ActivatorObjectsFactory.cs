@@ -6,17 +6,17 @@ namespace NHibernate.Bytecode
 	{
 		public object CreateInstance(System.Type type)
 		{
-			throw new NotImplementedException();
+			return Activator.CreateInstance(type);
 		}
 
 		public object CreateInstance(System.Type type, bool nonPublic)
 		{
-			throw new NotImplementedException();
+			return Activator.CreateInstance(type, nonPublic);
 		}
 
 		public object CreateInstance(System.Type type, params object[] ctorArgs)
 		{
-			throw new NotImplementedException();
+			return Activator.CreateInstance(type, ctorArgs);
 		}
 	}
 }
