@@ -1,7 +1,9 @@
-﻿using Antlr.Runtime;
+﻿using System;
+using Antlr.Runtime;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
+	[CLSCompliant(false)]
 	public class ASTErrorNode : ASTNode
 	{
 		public ASTErrorNode(ITokenStream input, IToken start, IToken stop, RecognitionException e) : base(start)
