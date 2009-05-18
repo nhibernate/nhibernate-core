@@ -49,15 +49,16 @@ namespace NHibernate.Type
 
 		public override void Set(IDbCommand st, object value, int index)
 		{
-			IDataParameter parm = st.Parameters[index] as IDataParameter;
-			if ((DateTime)value < BaseDateValue)
+			var parm = st.Parameters[index] as IDataParameter;
+			var dateTime = (DateTime)value;
+			if (dateTime < BaseDateValue)
 			{
 				parm.Value = DBNull.Value;
 			}
 			else
 			{
 				parm.DbType = DbType.Date;
-				parm.Value = value;
+				parm.Value = dateTime.Date;
 			}
 		}
 

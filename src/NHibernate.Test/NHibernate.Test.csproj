@@ -424,6 +424,8 @@
     <Compile Include="NHSpecificTest\NH1775\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1776\Category.cs" />
     <Compile Include="NHSpecificTest\NH1776\FilterQueryTwiceFixture.cs" />
+    <Compile Include="NHSpecificTest\NH1783\DomainClass.cs" />
+    <Compile Include="NHSpecificTest\NH1783\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH645\HQLFunctionFixture.cs" />
     <Compile Include="HQL\HQLFunctions.cs" />
     <Compile Include="HQL\Human.cs" />
@@ -1816,6 +1818,7 @@
     <EmbeddedResource Include="BulkManipulation\SimpleClass.hbm.xml" />
     <EmbeddedResource Include="Ado\VerySimple.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1783\Mappings.hbm.xml" />
     <EmbeddedResource Include="LazyOneToOne\Person.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1747\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1159\Mappings.hbm.xml" />
