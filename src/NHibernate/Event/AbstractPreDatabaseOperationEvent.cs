@@ -30,7 +30,7 @@ namespace NHibernate.Event
 		public object Id { get; private set; }
 
 		/// <summary> 
-		/// The persister for the <see cref="Entity">. 
+		/// The persister for the <see cref="Entity"/>. 
 		/// </summary>
 		public IEntityPersister Persister { get; private set; }
 

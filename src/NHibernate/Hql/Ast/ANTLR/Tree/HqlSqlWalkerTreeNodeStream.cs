@@ -50,7 +50,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		}
 
 		/// <summary>
-		/// Count the number of child nodes (including DOWNs & UPs) of a parent node
+		/// Count the number of child nodes (including DOWNs and UPs) of a parent node
 		/// </summary>
 		/// <param name="parentIndex">The index of the parent in the node array</param>
 		/// <returns>The number of child nodes</returns>
