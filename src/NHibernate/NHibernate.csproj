@@ -449,6 +449,7 @@
     <Compile Include="AdoNet\Util\FormatStyle.cs" />
     <Compile Include="AdoNet\Util\IFormatter.cs" />
     <Compile Include="AdoNet\Util\SqlStatementLogger.cs" />
+    <Compile Include="Bytecode\AbstractBytecodeProvider.cs" />
     <Compile Include="Bytecode\ActivatorObjectsFactory.cs" />
     <Compile Include="Bytecode\HibernateByteCodeException.cs" />
     <Compile Include="Bytecode\IObjectsFactory.cs" />

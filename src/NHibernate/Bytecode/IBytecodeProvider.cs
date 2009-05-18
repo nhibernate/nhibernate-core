@@ -20,6 +20,8 @@ namespace NHibernate.Bytecode
 		/// <returns>The reflection optimization delegate.</returns>
 		IReflectionOptimizer GetReflectionOptimizer(System.Type clazz, IGetter[] getters, ISetter[] setters);
 
+		IObjectsFactory ObjectsFactory { get; }
+
 		// <summary> Generate a ClassTransformer capable of performing bytecode manipulation. </summary>
 		// <param name="classFilter">
 		// filter used to limit which classes are to be instrumented via this ClassTransformer.
@@ -31,6 +33,5 @@ namespace NHibernate.Bytecode
 		// <returns> The appropriate ClassTransformer. </returns>
 		// Not ported
 		//ClassTransformer getTransformer(ClassFilter classFilter, FieldFilter fieldFilter);
-
 	}
 }
