@@ -332,6 +332,8 @@
     <Compile Include="LazyOneToOne\Employment.cs" />
     <Compile Include="LazyOneToOne\LazyOneToOneTest.cs" />
     <Compile Include="LazyOneToOne\Person.cs" />
+    <Compile Include="LazyProperty\Book.cs" />
+    <Compile Include="LazyProperty\LazyPropertyFixture.cs" />
     <Compile Include="MappingTest\NonReflectiveBinderFixture.cs" />
     <Compile Include="MappingTest\Wicked.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\AbstractIntEnumsBagFixture.cs" />
@@ -1819,6 +1821,7 @@
     <EmbeddedResource Include="BulkManipulation\SimpleClass.hbm.xml" />
     <EmbeddedResource Include="Ado\VerySimple.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="LazyProperty\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1783\Mappings.hbm.xml" />
     <EmbeddedResource Include="LazyOneToOne\Person.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1747\Mappings.hbm.xml" />
