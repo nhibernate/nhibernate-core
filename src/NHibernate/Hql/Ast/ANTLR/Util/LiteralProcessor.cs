@@ -99,7 +99,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			}
 		}
 
-		public bool IsAlias(string alias)
+		private bool IsAlias(string alias)
 		{
 			FromClause from = _walker.CurrentFromClause;
 			while (from.IsSubQuery)
@@ -159,7 +159,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			}
 		}
 
-		public string DetermineDecimalRepresentation(string text, int type)
+		private static string DetermineDecimalRepresentation(string text, int type)
 		{
 			string literalValue = text;
 			if (type == HqlSqlWalker.NUM_FLOAT)

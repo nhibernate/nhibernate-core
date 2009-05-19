@@ -331,40 +331,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
-        public void HandleDotIdent2()
-        {
-            int i = 1;
-
-            while (true)
-            {
-                HqlToken t = input.LT(i) as HqlToken;
-
-                if (t != null)
-                {
-                    if ((t.Type == IDENT || t.PossibleId) &&
-                        (input.LA(i + 1) == DOT || (i > 1 && input.LA(i - 1) == DOT)))
-                    {
-                        if ((t.Type == ELEMENTS || t.Type == INDICES) && input.LA(i + 1) != DOT)
-                        {
-                            // Don't change the type of ELEMENTS or INDICES if it's at the end of the path
-                            break;
-                        }
-
-                        t.Type = IDENT;
-                        i += 2;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    break;
-                }
-            }
-        }
-
 		private IASTNode CreateIsNullParent(IASTNode node, bool negated)
 		{
 			int type = negated ? IS_NOT_NULL : IS_NULL;

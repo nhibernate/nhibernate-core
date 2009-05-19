@@ -35,11 +35,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 
 		#endregion
 
-		public IList<IASTNode> GetCollectedNodes()
-		{
-			return collectedNodes;
-		}
-
 		public IList<IASTNode> Collect(IASTNode root)
 		{
 			var traverser = new NodeTraverser(this);

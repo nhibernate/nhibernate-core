@@ -8,12 +8,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 	/// Copied from http://www.antlr.org/wiki/pages/viewpage.action?pageId=1782
 	///</summary>
 	[CLSCompliant(false)]
-	public class CaseInsensitiveStringStream : ANTLRStringStream
+	internal class CaseInsensitiveStringStream : ANTLRStringStream
 	{
-		public CaseInsensitiveStringStream(char[] data, int numberOfActualCharsInArray) : base(data, numberOfActualCharsInArray) { }
-
-		public CaseInsensitiveStringStream() { }
-
 		public CaseInsensitiveStringStream(string input) : base(input) { }
 
 		// Only the lookahead is converted to lowercase. The original case is preserved in the stream.

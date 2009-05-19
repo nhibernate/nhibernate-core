@@ -48,7 +48,7 @@ namespace NHibernate.Hql.Ast.ANTLR
         /// <summary>
         /// Returns the previous token type.
         /// </summary>
-        public int PreviousType
+        private int PreviousType
         {
             get { return _previousTokenType; }
         }

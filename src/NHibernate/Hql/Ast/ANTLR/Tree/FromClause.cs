@@ -233,7 +233,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return elem;
 		}
 
-		public int Level
+		int Level
 		{
 		   get { return _level; }	
 		}
@@ -268,7 +268,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
-		public bool ProjectionListPredicate(IASTNode node)
+		private static bool ProjectionListPredicate(IASTNode node)
 		{
 			FromElement fromElement = node as FromElement;
 
@@ -280,7 +280,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return false;
 		}
 
-		public bool FromElementPredicate(IASTNode node) 
+		private static bool FromElementPredicate(IASTNode node) 
 		{
 			FromElement fromElement = node as FromElement;
 
@@ -292,7 +292,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return false;
 		}
 
-		public bool ExplicitFromPredicate(IASTNode node)
+		static bool ExplicitFromPredicate(IASTNode node)
 		{
 			FromElement fromElement = node as FromElement;
 
@@ -304,7 +304,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return false;
 		}
 
-		public bool CollectionFetchPredicate(IASTNode node)
+		private static bool CollectionFetchPredicate(IASTNode node)
 		{
 			FromElement fromElement = node as FromElement;
 
@@ -327,11 +327,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 			}
 			return null;
-		}
-
-		public int NextFromElementCounter()
-		{
-			return _fromElementCounter++;
 		}
 
 		public void RegisterFromElement(FromElement element)

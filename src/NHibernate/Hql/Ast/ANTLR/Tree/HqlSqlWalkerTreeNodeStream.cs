@@ -7,10 +7,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	public class HqlSqlWalkerTreeNodeStream : CommonTreeNodeStream
 	{
 		public HqlSqlWalkerTreeNodeStream(object tree) : base(tree) {}
-		public HqlSqlWalkerTreeNodeStream(ITreeAdaptor adaptor, object tree) : base(adaptor, tree) {}
-
-		public HqlSqlWalkerTreeNodeStream(ITreeAdaptor adaptor, object tree, int initialBufferSize)
-			: base(adaptor, tree, initialBufferSize) {}
 
 		/// <summary>
 		/// Insert a new node into both the Tree and the Node Array. Add DOWN and UP nodes if needed.

@@ -55,7 +55,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			Text = "into " + TableName + " ( " + _columnSpec + " )";
 		}
 
-		public string TableName
+		private string TableName
 		{
 			get { return _persister.GetSubclassTableName(0); }
 		}
@@ -65,14 +65,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			get { return _persister; }
 		}
 
-		public string EntityName
+		private string EntityName
 		{
 			get { return _persister.EntityName; }
-		}
-
-		public IType[] InsertionTypes
-		{
-			get { return _types; }
 		}
 
 		public bool IsDiscriminated

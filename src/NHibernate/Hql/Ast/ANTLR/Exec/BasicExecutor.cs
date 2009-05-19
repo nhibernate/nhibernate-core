@@ -40,7 +40,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 		}
 
-		protected IList<IParameterSpecification> Parameters{get;private set;}
+		private IList<IParameterSpecification> Parameters { get; set; }
 
 		public override SqlString[] SqlStatements
 		{

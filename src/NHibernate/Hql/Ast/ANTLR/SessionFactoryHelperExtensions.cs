@@ -14,7 +14,7 @@ using IASTNode=NHibernate.Hql.Ast.ANTLR.Tree.IASTNode;
 namespace NHibernate.Hql.Ast.ANTLR
 {
 	[CLSCompliant(false)]
-	public class SessionFactoryHelperExtensions
+	internal class SessionFactoryHelperExtensions
 	{
 		private readonly ISessionFactoryImplementor _sfi;
 		private readonly NullableDictionary<string, IPropertyMapping> _collectionPropertyMappingByRole;
@@ -250,25 +250,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// <param name="sfi">The session factory implementor.</param>
 		/// <param name="className">The (potentially unqualified) class name.</param>
 		/// <returns>The defined persister for this class, or null if none found.</returns>
-		public static IQueryable FindQueryableUsingImports(ISessionFactoryImplementor sfi, string className) 
+		private static IQueryable FindQueryableUsingImports(ISessionFactoryImplementor sfi, string className) 
 		{
 			return SessionFactoryHelper.FindQueryableUsingImports(sfi, className);
-		}
-
-		private static string GetEntityName(string assemblyQualifiedName)
-		{
-			/* *********************************************************************************************************
-			 * TODO NH Different impl.: we need to resolve the matter between FullName-AssemblyQualifiedName-EntityName-Name
-			 * GetImportedClassName in h3.2.5 return the entityName that, in many cases but not all, should be the
-			 * MappesClass.FullName. The value returned by GetImportedClassName, in this case, is used to find the persister.
-			 * A possible solution would be to use the same behavior of H3.2.5 but we start to have some problems (performance)
-			 * when we try to use the result of GetImportedClassName to create an instance and we completely lost a way
-			 * to link an entityName with its AssemblyQualifiedName (strongly typed).
-			 * I would like to maitain <imports> like the holder of the association of an entityName (or a class Name) and
-			 * its Type (in the future: Dictionary<string, System.Type> imports;)
-			 * *********************************************************************************************************
-			 */
-			return TypeNameParser.Parse(assemblyQualifiedName).Type;
 		}
 
 		/// <summary>

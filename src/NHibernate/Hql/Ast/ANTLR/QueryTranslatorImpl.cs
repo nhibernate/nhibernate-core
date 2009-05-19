@@ -37,28 +37,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private HqlParseEngine _parser;
 		private HqlSqlGenerator _generator;
 
-        /// <summary>
-        /// Creates a new AST-based query translator.
-        /// </summary>
-        /// <param name="queryIdentifier">The query-identifier (used in stats collection)</param>
-        /// <param name="query">The hql query to translate</param>
-        /// <param name="enabledFilters">Currently enabled filters</param>
-        /// <param name="factory">The session factory constructing this translator instance.</param>
-        public QueryTranslatorImpl(
-                string queryIdentifier,
-                IASTNode query,
-                IDictionary<string, IFilter> enabledFilters,
-                ISessionFactoryImplementor factory)
-        {
-            _queryIdentifier = queryIdentifier;
-            _hql = query.ToStringTree();
-            _compiled = false;
-            _shallowQuery = false;
-            _enabledFilters = enabledFilters;
-            _factory = factory;
-            _parser = new HqlParseEngine(query, factory);
-        }
-
 		/// <summary>
 		/// Creates a new AST-based query translator.
 		/// </summary>
@@ -472,7 +450,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	}
 
 	[CLSCompliant(false)]
-	public class HqlParseEngine
+	internal class HqlParseEngine
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(HqlParseEngine));
 
@@ -493,11 +471,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			_sfi = sfi;
 			_ast = ast;
-		}
-
-		public string Hql
-		{
-			get { return _hql; }
 		}
 
 		public IASTNode Ast
@@ -588,7 +561,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	}
 
 	[CLSCompliant(false)]
-	public class HqlSqlTranslator
+	internal class HqlSqlTranslator
 	{
 		private readonly IASTNode _inputAst;
 		private readonly CommonTokenStream _tokens;
@@ -606,11 +579,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_sfi = sfi;
 			_tokenReplacements = tokenReplacements;
 			_collectionRole = collectionRole;
-		}
-
-		public IASTNode HqlAst
-		{
-			get { return _inputAst; }
 		}
 
 		public IStatement SqlStatement
@@ -646,7 +614,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	}
 
 	[CLSCompliant(false)]
-	public class HqlSqlGenerator
+	internal class HqlSqlGenerator
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(HqlSqlGenerator));
 

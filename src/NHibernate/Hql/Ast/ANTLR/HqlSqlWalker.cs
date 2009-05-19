@@ -120,7 +120,7 @@ namespace NHibernate.Hql.Ast.ANTLR
             get { return _namedParameters; }
 	    }
 
-		public SessionFactoryHelperExtensions SessionFactoryHelper
+		internal SessionFactoryHelperExtensions SessionFactoryHelper
 		{
 			get { return _sessionFactoryHelper; }
 		}
@@ -703,42 +703,6 @@ namespace NHibernate.Hql.Ast.ANTLR
             fromElement.SetAllPropertyFetch(propertyFetch != null);
             return fromElement;
 		}
-
-        private IASTNode PreProcessPathForJoin(IASTNode node)
-        {
-            if (node is IdentNode)
-            {
-                return PreProcessPathForJoinIdent(node);
-            }
-            else if (node is DotNode)
-            {
-                node.SetChild(0, PreProcessPathForJoin(node.GetChild(0)));
-                node.SetChild(1, PreProcessPathForJoin(node.GetChild(1)));
-
-                return PreProcessPathForJoinPath(node);
-            }
-            else
-            {
-                throw new InvalidOperationException();
-            }
-        }
-
-	    private IASTNode PreProcessPathForJoinIdent(IASTNode node)
-	    {
-	        if (IsNonQualifiedPropertyRef(node))
-            {
-                return LookupNonQualifiedProperty(node);
-            }
-            else
-            {
-                return Resolve(node);
-            }
-	    }
-
-        private IASTNode PreProcessPathForJoinPath(IASTNode node)
-	    {
-            return LookupProperty(node, false, true);
-	    }
 
 	    IASTNode CreateFromFilterElement(IASTNode filterEntity, IASTNode alias)
 		{

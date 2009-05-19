@@ -46,17 +46,17 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set { base.DataType = value; }
 		}
 
-		public IASTNode GetFixtureOperand()
+		private IASTNode GetFixtureOperand()
 		{
 			return GetChild(0);
 		}
 
-		public IASTNode GetLowOperand()
+		private IASTNode GetLowOperand()
 		{
 			return GetChild(1);
 		}
 
-		public IASTNode GetHighOperand()
+		private IASTNode GetHighOperand()
 		{
 			return GetChild(2);
 		}

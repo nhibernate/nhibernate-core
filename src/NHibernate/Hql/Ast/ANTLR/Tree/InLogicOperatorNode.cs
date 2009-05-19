@@ -16,7 +16,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 		}
 
-		public IASTNode InList
+		private IASTNode InList
 		{
 			get { return RightHandOperand; }
 		}

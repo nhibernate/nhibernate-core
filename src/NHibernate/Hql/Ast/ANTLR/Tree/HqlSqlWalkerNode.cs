@@ -31,7 +31,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			get { return _walker; }
 		}
 
-		public SessionFactoryHelperExtensions SessionFactoryHelper
+		internal SessionFactoryHelperExtensions SessionFactoryHelper
 		{
 			get { return _walker.SessionFactoryHelper; }
 		}

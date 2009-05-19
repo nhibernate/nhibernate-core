@@ -253,7 +253,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return lhs;
 		}
 
-		public IType GetDataType()
+		private IType GetDataType()
 		{
 			if (DataType == null)
 			{
@@ -284,7 +284,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			IsResolved = true; // Don't resolve the node again.
 		}
 
-		public QueryException BuildIllegalCollectionDereferenceException(string propertyName, FromReferenceNode lhs)
+		private static QueryException BuildIllegalCollectionDereferenceException(string propertyName, IASTNode lhs)
 		{
 			string lhsPath = ASTUtil.GetPathText(lhs);
 			return new QueryException("illegal attempt to dereference collection [" + lhsPath + "] with element property reference [" + propertyName + "]");
@@ -566,22 +566,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// only the identifier property field name can be a reference to the associated entity's PK...
 				return propertyName == persister.IdentifierPropertyName && owningType.IsReferenceToPrimaryKey;
 			}
-			else
+			
+			// here, we have two possibilities:
+			// 		1) the property-name matches the explicitly identifier property name
+			//		2) the property-name matches the implicit 'id' property name
+			if (EntityPersister.EntityID == propertyName)
 			{
-				// here, we have two possibilities:
-				// 		1) the property-name matches the explicitly identifier property name
-				//		2) the property-name matches the implicit 'id' property name
-				if (EntityPersister.EntityID == propertyName)
-				{
-					// the referenced node text is the special 'id'
-					return owningType.IsReferenceToPrimaryKey;
-				}
-				else
-				{
-					string keyPropertyName = SessionFactoryHelper.GetIdentifierOrUniqueKeyPropertyName(owningType);
-					return keyPropertyName != null && keyPropertyName == propertyName && owningType.IsReferenceToPrimaryKey;
-				}
+				// the referenced node text is the special 'id'
+				return owningType.IsReferenceToPrimaryKey;
 			}
+			
+			string keyPropertyName = SessionFactoryHelper.GetIdentifierOrUniqueKeyPropertyName(owningType);
+			return keyPropertyName != null && keyPropertyName == propertyName && owningType.IsReferenceToPrimaryKey;
 		}
 
 		private void CheckForCorrelatedSubquery(string methodName)
