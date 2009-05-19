@@ -551,7 +551,6 @@
     <Compile Include="Hql\Ast\ANTLR\Tree\HqlSqlWalkerNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\HqlSqlWalkerTreeAdapter.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\HqlSqlWalkerTreeNodeStream.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Tree\HqlTreeAdapter.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\IASTFactory.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\IASTNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\IBinaryOperatorNode.cs" />
