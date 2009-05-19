@@ -34,7 +34,7 @@ namespace NHibernate.Type
 
 			try
 			{
-				userType = (IUserType) Activator.CreateInstance(userTypeClass);
+				userType = (IUserType) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(userTypeClass);
 			}
 			catch (ArgumentNullException ane)
 			{

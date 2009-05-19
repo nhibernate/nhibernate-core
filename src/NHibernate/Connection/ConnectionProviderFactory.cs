@@ -28,7 +28,9 @@ namespace NHibernate.Connection
 				try
 				{
 					log.Info("Initializing connection provider: " + providerClass);
-					connections = (IConnectionProvider) Activator.CreateInstance(ReflectHelper.ClassForName(providerClass));
+					connections =
+						(IConnectionProvider)
+						Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(providerClass));
 				}
 				catch (Exception e)
 				{

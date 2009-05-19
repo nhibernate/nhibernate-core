@@ -1,4 +1,3 @@
-using System;
 using System.Data;
 using NHibernate.Util;
 
@@ -6,8 +5,8 @@ namespace NHibernate.Driver
 {
 	public abstract class ReflectionBasedDriver : DriverBase
 	{
-		private System.Type connectionType;
-		private System.Type commandType;
+		private readonly System.Type connectionType;
+		private readonly System.Type commandType;
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="ReflectionBasedDriver" /> with
@@ -16,7 +15,7 @@ namespace NHibernate.Driver
 		/// <param name="driverAssemblyName">Assembly to load the types from.</param>
 		/// <param name="connectionTypeName">Connection type name.</param>
 		/// <param name="commandTypeName">Command type name.</param>
-		public ReflectionBasedDriver(string driverAssemblyName, string connectionTypeName, string commandTypeName)
+		protected ReflectionBasedDriver(string driverAssemblyName, string connectionTypeName, string commandTypeName)
 		{
 			// Try to get the types from an already loaded assembly
 			connectionType = ReflectHelper.TypeFromAssembly(connectionTypeName, driverAssemblyName, false);
@@ -36,12 +35,12 @@ namespace NHibernate.Driver
 
 		public override IDbConnection CreateConnection()
 		{
-			return (IDbConnection) Activator.CreateInstance(connectionType);
+			return (IDbConnection) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(connectionType);
 		}
 
 		public override IDbCommand CreateCommand()
 		{
-			return (IDbCommand) Activator.CreateInstance(commandType);
+			return (IDbCommand) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(commandType);
 		}
 	}
 }

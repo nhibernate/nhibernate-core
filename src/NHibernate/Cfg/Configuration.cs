@@ -1717,7 +1717,7 @@ namespace NHibernate.Cfg
 				{
 					try
 					{
-						listeners[i] = Activator.CreateInstance(ReflectHelper.ClassForName(listenerClasses[i]));
+						listeners[i] = Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(listenerClasses[i]));
 					}
 					catch (Exception e)
 					{

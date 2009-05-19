@@ -104,7 +104,8 @@ namespace NHibernate.Connection
 			{
 				try
 				{
-					driver = (IDriver) Activator.CreateInstance(ReflectHelper.ClassForName(driverClass));
+					driver =
+						(IDriver) Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(driverClass));
 					driver.Configure(settings);
 				}
 				catch (Exception e)

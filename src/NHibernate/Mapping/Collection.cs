@@ -156,7 +156,7 @@ namespace NHibernate.Mapping
 				{
 					try
 					{
-						comparer = Activator.CreateInstance(ReflectHelper.ClassForName(ComparerClassName));
+						comparer = Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(ComparerClassName));
 					}
 					catch
 					{

@@ -19,7 +19,7 @@ namespace NHibernate.Bytecode
 				{
 					try
 					{
-						return (IProxyFactoryFactory)Activator.CreateInstance(proxyFactoryFactory);
+						return (IProxyFactoryFactory) ObjectsFactory.CreateInstance(proxyFactoryFactory);
 					}
 					catch (Exception e)
 					{

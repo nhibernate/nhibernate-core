@@ -79,7 +79,9 @@ namespace NHibernate.Transform
 				}
 				
 				// if resultClass is not a class but a value type, we need to use Activator.CreateInstance
-				result = resultClass.IsClass ? constructor.Invoke(null) : Activator.CreateInstance(resultClass, true);
+				result = resultClass.IsClass
+				         	? constructor.Invoke(null)
+				         	: Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(resultClass, true);
 
 				for (int i = 0; i < aliases.Length; i++)
 				{

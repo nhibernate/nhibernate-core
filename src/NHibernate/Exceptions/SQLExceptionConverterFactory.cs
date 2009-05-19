@@ -106,7 +106,7 @@ namespace NHibernate.Exceptions
 				}
 
 				// Otherwise, try to use the no-arg constructor
-				return (ISQLExceptionConverter)Activator.CreateInstance(converterClass);
+				return (ISQLExceptionConverter) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(converterClass);
 			}
 			catch (Exception t)
 			{

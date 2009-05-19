@@ -184,7 +184,7 @@ namespace NHibernate.Dialect
 		{
 			try
 			{
-				return (Dialect) Activator.CreateInstance(ReflectHelper.ClassForName(dialectName));
+				return (Dialect) Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(dialectName));
 			}
 			catch (Exception e)
 			{

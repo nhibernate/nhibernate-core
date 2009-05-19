@@ -201,7 +201,7 @@ namespace NHibernate.Id
 			try
 			{
 				System.Type clazz = GetIdentifierGeneratorClass(strategy, dialect);
-				var idgen = (IIdentifierGenerator) Activator.CreateInstance(clazz);
+				var idgen = (IIdentifierGenerator) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(clazz);
 				var conf = idgen as IConfigurable;
 				if (conf != null)
 				{

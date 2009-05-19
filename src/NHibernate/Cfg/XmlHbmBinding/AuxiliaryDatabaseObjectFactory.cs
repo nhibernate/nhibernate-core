@@ -41,7 +41,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					TypeNameParser.Parse(customTypeName, mappings.DefaultNamespace, mappings.DefaultAssembly).ToString();
 				System.Type customType = ReflectHelper.ClassForName(className);
 
-				IAuxiliaryDatabaseObject customObject = (IAuxiliaryDatabaseObject)Activator.CreateInstance(customType);
+				IAuxiliaryDatabaseObject customObject =
+					(IAuxiliaryDatabaseObject) Environment.BytecodeProvider.ObjectsFactory.CreateInstance(customType);
 
 				foreach (string dialectName in databaseObjectSchema.FindDialectScopeNames())
 				{

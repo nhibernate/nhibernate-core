@@ -399,7 +399,7 @@ namespace NHibernate.Type
 					{
 						try
 						{
-							type = (IType)Activator.CreateInstance(typeClass);
+							type = (IType) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(typeClass);
 						}
 						catch (Exception e)
 						{
@@ -811,9 +811,10 @@ namespace NHibernate.Type
 			string propertyRef,
 			params System.Type[] typeArguments)
 		{
-			return (CollectionType)Activator.CreateInstance(
-																genericCollectionType.MakeGenericType(typeArguments),
-																role, propertyRef);
+			return
+				(CollectionType)
+				Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(
+					genericCollectionType.MakeGenericType(typeArguments), role, propertyRef);
 		}
 
 		private static CollectionType CreateSortedCollectionType(
@@ -823,9 +824,10 @@ namespace NHibernate.Type
 			object comparer,
 			params System.Type[] typeArguments)
 		{
-			return (CollectionType)Activator.CreateInstance(
-																genericCollectionType.MakeGenericType(typeArguments),
-																role, propertyRef, comparer);
+			return
+				(CollectionType)
+				Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(
+					genericCollectionType.MakeGenericType(typeArguments), role, propertyRef, comparer);
 		}
 
 		private static CollectionType CreateOrderedCollectionType(System.Type genericCollectionType,
@@ -834,7 +836,9 @@ namespace NHibernate.Type
 			params System.Type[] typeArguments)
 		{
 			return
-				(CollectionType)Activator.CreateInstance(genericCollectionType.MakeGenericType(typeArguments), role, propertyRef);
+				(CollectionType)
+				Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(
+					genericCollectionType.MakeGenericType(typeArguments), role, propertyRef);
 		}
 
 		/// <summary>

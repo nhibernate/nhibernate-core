@@ -185,7 +185,8 @@ namespace NHibernate.Cfg
 				try
 				{
 					settings.QueryCacheFactory =
-						(IQueryCacheFactory) Activator.CreateInstance(ReflectHelper.ClassForName(queryCacheFactoryClassName));
+						(IQueryCacheFactory)
+						Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(queryCacheFactoryClassName));
 				}
 				catch (Exception cnfe)
 				{
@@ -275,7 +276,7 @@ namespace NHibernate.Cfg
 			log.Info("Batcher factory: " + tBatcher.AssemblyQualifiedName);
 			try
 			{
-				return (IBatcherFactory) Activator.CreateInstance(tBatcher);
+				return (IBatcherFactory) Environment.BytecodeProvider.ObjectsFactory.CreateInstance(tBatcher);
 			}
 			catch (Exception cnfe)
 			{
@@ -294,7 +295,9 @@ namespace NHibernate.Cfg
 			log.Info("cache provider: " + cacheClassName);
 			try
 			{
-				return (ICacheProvider) Activator.CreateInstance(ReflectHelper.ClassForName(cacheClassName));
+				return
+					(ICacheProvider)
+					Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(cacheClassName));
 			}
 			catch (Exception e)
 			{
@@ -330,7 +333,9 @@ namespace NHibernate.Cfg
 			log.Info("Query translator: " + className);
 			try
 			{
-				return (IQueryTranslatorFactory) Activator.CreateInstance(ReflectHelper.ClassForName(className));
+				return
+					(IQueryTranslatorFactory)
+					Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
 			}
 			catch (Exception cnfe)
 			{
@@ -346,7 +351,9 @@ namespace NHibernate.Cfg
 
 			try
 			{
-				return (ITransactionFactory)Activator.CreateInstance(ReflectHelper.ClassForName(className));
+				return
+					(ITransactionFactory)
+					Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
 			}
 			catch (Exception cnfe)
 			{

@@ -87,7 +87,7 @@ namespace NHibernate.Tuple
 			}
 			else if (mappedClass.IsValueType)
 			{
-				return Activator.CreateInstance(mappedClass, true);
+				return Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(mappedClass, true);
 			}
 			else if (constructor == null)
 			{
