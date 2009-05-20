@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 namespace="NHibernate.Test.NHSpecificTest.NH1756"
+									 assembly="NHibernate.Test">
+
+	<class name="Book" table="book">
+
+		<id name="Id" column="id">
+			<generator class="identity"/>
+		</id>
+
+		<discriminator column="subclass" />
+
+		<version	name="Version"	column="version_column" type="Timestamp" generated="always" />
+		<property name="Name"			column="name_column"																				/>
+
+		<bag name="Pages">
+			<key column="book_id" />
+			<one-to-many class="Page"/>
+		</bag>
+
+	</class>
+
+	<class name="Page">
+
+		<id name="Id">
+			<generator class="identity"/>
+		</id>
+
+	</class>
+
+	<class name="BookNotGenerated">
+
+		<id name="Id" column="id">
+			<generator class="identity"/>
+		</id>
+
+		<discriminator column="subclass" />
+
+		<version	name="Version"	column="version_column" type="Timestamp" generated="never"	/>
+		<property name="Name"			column="name_column"																				/>
+
+		<bag name="Pages">
+			<key column="book_id" />
+			<one-to-many class="Page"/>
+		</bag>
+
+	</class>
+
+	<database-object>
+		<create>
+			<![CDATA[
+CREATE TRIGGER t_book ON book
+INSTEAD OF INSERT
+AS
+BEGIN
+	SET NOCOUNT ON
+
+	INSERT INTO book (
+		[subclass],
+		[version_column],
+		[name_column])
+	SELECT
+		[subclass],
+		GetDate(),
+		[name_column]
+	FROM inserted
+
+	SELECT scope_identity();
+END
+]]>
+		</create>
+		<drop>
+	<![CDATA[
+IF  EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[t_sack]'))
+DROP TRIGGER [dbo].[t_sack]
+]]>
+		</drop>
+		<dialect-scope name="NHibernate.Dialect.MsSql2005Dialect"/>
+		<dialect-scope name="NHibernate.Dialect.MsSql2008Dialect"/>
+	</database-object>
+
+</hibernate-mapping>

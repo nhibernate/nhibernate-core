@@ -345,8 +345,12 @@ namespace NHibernate.Event.Default
 
 		private bool IsVersionIncrementRequired(FlushEntityEvent @event, EntityEntry entry, IEntityPersister persister, int[] dirtyProperties)
 		{
-			bool isVersionIncrementRequired = 
-				entry.Status != Status.Deleted && 
+			// NH different behavior: because NH-1756 when PostInsertId is used with a generated version
+			// the version is read inmediately after save and does not need to be incremented.
+			// BTW, in general, a generated version does not need to be incremented by NH.
+
+			bool isVersionIncrementRequired =
+				entry.Status != Status.Deleted && !persister.IsVersionPropertyGenerated &&
 				(dirtyProperties == null || 
 					Versioning.IsVersionIncrementRequired(dirtyProperties, @event.HasDirtyCollection, persister.PropertyVersionability));
 			return isVersionIncrementRequired;
