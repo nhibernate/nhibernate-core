@@ -23,7 +23,7 @@ namespace NHibernate.AdoNet
 			//the user change the logging configuration at runtime. Trying to put this
 			//behind an if(log.IsDebugEnabled) will cause a null reference exception 
 			//at that point.
-			currentBatchCommandsLog = new StringBuilder();
+			currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
 		}
 
 		public override int BatchSize
@@ -38,10 +38,16 @@ namespace NHibernate.AdoNet
 			IDbCommand batchUpdate = CurrentCommand;
 
 			string lineWithParameters = null;
-			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+			var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
+			if (sqlStatementLogger.IsDebugEnabled)
 			{
-				lineWithParameters = Factory.Settings.SqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
-				currentBatchCommandsLog.Append("Batch command: ").AppendLine(lineWithParameters);
+				lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
+				var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
+				lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
+				currentBatchCommandsLog.Append("command ")
+					.Append(currentBatch.CountOfCommands)
+					.Append(":")
+					.AppendLine(lineWithParameters);
 			}
 			if (log.IsDebugEnabled)
 			{
@@ -63,7 +69,7 @@ namespace NHibernate.AdoNet
 			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
 			{
 				Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
-				currentBatchCommandsLog = new StringBuilder();
+				currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
 			}
 			
 			int rowsAffected = currentBatch.ExecuteNonQuery();

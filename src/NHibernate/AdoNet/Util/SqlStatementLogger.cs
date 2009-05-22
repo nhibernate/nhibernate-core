@@ -135,7 +135,7 @@ namespace NHibernate.AdoNet.Util
 						 || DbType.AnsiStringFixedLength.Equals(dbType) || DbType.StringFixedLength.Equals(dbType);
 		}
 
-		private FormatStyle DetermineActualStyle(FormatStyle style)
+		public FormatStyle DetermineActualStyle(FormatStyle style)
 		{
 			return FormatSql ? style : FormatStyle.None;
 		}

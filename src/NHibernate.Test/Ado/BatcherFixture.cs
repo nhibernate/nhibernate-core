@@ -1,7 +1,6 @@
 using System.Collections;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
-using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Ado
@@ -125,6 +124,40 @@ namespace NHibernate.Test.Ado
 			Cleanup();
 		}
 
+		[Test]
+		[Description("SqlClient: The batcher log output should be formatted")]
+		public void BatchedoutputShouldBeFormatted()
+		{
+			if (sessions.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
+				Assert.Ignore("This test is for SqlClientBatchingBatcher only");
+
+			FillDb();
+
+			using (var sqlLog = new SqlLogSpy())
+			using (ISession s = sessions.OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				s.Save(new VerySimple
+				{
+					Name = "test441",
+					Weight = 894
+				});
+
+				s.Save(new AlmostSimple
+				{
+					Name = "test441",
+					Weight = 894
+				});
+
+				tx.Commit();
+
+				var log = sqlLog.GetWholeLog();
+				Assert.IsTrue(log.Contains("INSERT \n    INTO"));
+			}
+
+			Cleanup();
+		}
+
 
 		[Test]
 		[Description("The batcher should run all DELETE queries in only one roundtrip.")]
@@ -211,7 +244,7 @@ namespace NHibernate.Test.Ado
 					sessions.Statistics.Clear();
 					FillDb();
 					string logs = sl.GetWholeLog();
-					Assert.That(logs, Text.Contains("Batch command:").IgnoreCase);
+					Assert.That(logs, Text.Contains("Batch commands:").IgnoreCase);
 				}
 			}
 
