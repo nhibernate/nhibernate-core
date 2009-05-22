@@ -3416,6 +3416,7 @@ namespace NHibernate.Persister.Entity
 			if (IsVersioned)
 			{
 				propsToUpdate[VersionProperty] =
+					PropertyUpdateability[VersionProperty] && 
 					Versioning.IsVersionIncrementRequired(dirtyProperties, hasDirtyCollection, PropertyVersionability);
 			}
 
