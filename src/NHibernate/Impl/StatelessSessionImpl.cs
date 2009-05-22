@@ -87,6 +87,11 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public override void CloseSessionFromDistributedTransaction()
+		{
+			Dispose(true);
+		}
+
 		public override IList List(string query, QueryParameters parameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -883,16 +888,16 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				log.Debug("running IStatelessSession.Dispose()");
-				if (TakingPartInDtcTransaction)
+				if (TransactionContext != null)
 				{
-					shouldCloseSessionOnDtcTransactionCompleted = true;
+					TransactionContext .ShouldCloseSessionOnDistributedTransactionCompleted = true;
 					return;
 				}
 				Dispose(true);
 			}
 		}
 
-		protected override void Dispose(bool isDisposing)
+		protected void Dispose(bool isDisposing)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{

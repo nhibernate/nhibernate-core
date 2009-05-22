@@ -1,5 +1,4 @@
 using System.Collections;
-using NHibernate.AdoNet;
 using NHibernate.Engine;
 
 namespace NHibernate.Transaction
@@ -11,19 +10,18 @@ namespace NHibernate.Transaction
 			return new AdoTransaction(session);
 		}
 
+		public void EnlistInDistributedTransactionIfNeeded(ISessionImplementor session)
+		{
+			// nothing need to do here, we only support local transactions with this factory
+		}
+
+		public bool IsInDistributedActiveTransaction(ISessionImplementor session)
+		{
+			return false;
+		}
+
 		public void Configure(IDictionary props)
 		{
-		}
-
-		public ConnectionReleaseMode DefaultReleaseMode
-		{
-			get { throw new System.NotImplementedException(); }
-		}
-
-		public bool IsTransactionInProgress(AdoNetContext adoNetContext, ITransactionContext transactionContext,
-		                                    ITransaction transaction)
-		{
-			throw new System.NotImplementedException();
 		}
 	}
 }

@@ -66,9 +66,9 @@ namespace NHibernate.AdoNet
 		{
 			get
 			{
-				if (System.Transactions.Transaction.Current != null)
+				if (transaction != null && transaction.IsActive)
 					return true;
-				return transaction != null && transaction.IsActive;
+				return session.Factory.TransactionFactory.IsInDistributedActiveTransaction(session);
 			}
 		}
 

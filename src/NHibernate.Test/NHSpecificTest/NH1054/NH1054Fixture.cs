@@ -22,12 +22,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1054
 		}
 
 		[Test]
-		public void AdoNetTransactionFactoryIsDefaultTransactionFactory()
+		public void AdoNetWithDistributedTransactionFactoryIsDefaultTransactionFactory()
 		{
 			Configuration configuration = new Configuration();
 			ISessionFactoryImplementor sessionFactory = (ISessionFactoryImplementor)configuration.BuildSessionFactory();
 
-			Assert.IsInstanceOfType(typeof(NHibernate.Transaction.AdoNetTransactionFactory), 
+			Assert.IsInstanceOfType(typeof(NHibernate.Transaction.AdoNetWithDistrubtedTransactionFactory), 
 				sessionFactory.Settings.TransactionFactory);
 		}
 	}

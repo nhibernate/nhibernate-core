@@ -13,6 +13,7 @@ using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Loader.Custom;
 using NHibernate.Persister.Entity;
+using NHibernate.Transaction;
 using NHibernate.Type;
 
 namespace NHibernate.Impl
@@ -21,30 +22,26 @@ namespace NHibernate.Impl
 
 	/// <summary> Functionality common to stateless and stateful sessions </summary>
 	[Serializable]
-	public abstract class AbstractSessionImpl : ISessionImplementor, IEnlistmentNotification
+	public abstract class AbstractSessionImpl : ISessionImplementor
 	{
 		[NonSerialized]
 		private ISessionFactoryImplementor factory;
 
 		private readonly Guid sessionId = Guid.NewGuid();
 		private bool closed;
-		private System.Transactions.Transaction ambientTransation;
+
+		public ITransactionContext TransactionContext
+		{
+			get; set;
+		}
+
 		private bool isAlreadyDisposed;
-		protected bool shouldCloseSessionOnDtcTransactionCompleted;
 
 		private static readonly ILog logger = LogManager.GetLogger(typeof(AbstractSessionImpl));
 
 		public Guid SessionId
 		{
 			get { return sessionId; }
-		}
-
-		protected bool TakingPartInDtcTransaction
-		{
-			get
-			{
-				return ambientTransation != null;
-			}
 		}
 
 		internal AbstractSessionImpl() { }
@@ -77,7 +74,7 @@ namespace NHibernate.Impl
 		public abstract EntityMode EntityMode { get; }
 
 		public abstract IBatcher Batcher { get; }
-
+		public abstract void CloseSessionFromDistributedTransaction();
 		public abstract IList List(string query, QueryParameters parameters);
 		public abstract void List(string query, QueryParameters parameters, IList results);
 		public abstract IList<T> List<T>(string query, QueryParameters queryParameters);
@@ -214,8 +211,8 @@ namespace NHibernate.Impl
 		{
 			try
 			{
-				if (ambientTransation != null)
-					ambientTransation.Dispose();
+				if (TransactionContext != null)
+					TransactionContext.Dispose();
 			}
 			catch (Exception)
 			{
@@ -307,106 +304,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		#region IEnlistmentNotification Members
-
-		void IEnlistmentNotification.Prepare(PreparingEnlistment preparingEnlistment)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				try
-				{
-					using (var tx = new TransactionScope(ambientTransation))
-					{
-						BeforeTransactionCompletion(null);
-						if (FlushMode != FlushMode.Never && ConnectionManager.IsConnected)
-						{
-							using (ConnectionManager.FlushingFromDtcTransaction)
-							{
-								logger.Debug(string.Format("[session-id={0}] Flushing from Dtc Transaction", sessionId));
-								Flush();
-							}
-						}
-						logger.Debug("prepared for DTC transaction");
-
-						tx.Complete();
-					}
-					preparingEnlistment.Prepared();
-				}
-				catch (Exception exception)
-				{
-					logger.Error("DTC transaction prepre phase failed", exception);
-					preparingEnlistment.ForceRollback(exception);
-				}
-			}
-		}
-
-		void IEnlistmentNotification.Commit(Enlistment enlistment)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				logger.Debug("committing DTC transaction");
-				// we have nothing to do here, since it is the actual 
-				// DB connection that will commit the transaction
-				enlistment.Done();
-			}
-		}
-
-		void IEnlistmentNotification.Rollback(Enlistment enlistment)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				AfterTransactionCompletion(false, null);
-				logger.Debug("rolled back DTC transaction");
-				enlistment.Done();
-			}
-		}
-
-		void IEnlistmentNotification.InDoubt(Enlistment enlistment)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				AfterTransactionCompletion(false, null);
-				logger.Debug("DTC transaction is in doubt");
-				enlistment.Done();
-			}
-		}
-
 		protected void EnlistInAmbientTransactionIfNeeded()
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				if (ambientTransation != null)
-					return;
-				if (System.Transactions.Transaction.Current == null)
-					return;
-				ambientTransation = System.Transactions.Transaction.Current.Clone();
-				logger.DebugFormat("enlisted into DTC transaction: {0}", ambientTransation.IsolationLevel);
-				AfterTransactionBegin(null);
-				ambientTransation.TransactionCompleted += delegate(object sender, TransactionEventArgs e)
-				                                          	{
-																											bool wasSuccessful = false;
-																											try
-																											{
-																												wasSuccessful = e.Transaction.TransactionInformation.Status
-																																				== TransactionStatus.Committed;
-																											}
-																											catch (ObjectDisposedException ode)
-																											{
-																												logger.Warn("Completed transaction was disposed.", ode);
-																											}
-				                                          		AfterTransactionCompletion(wasSuccessful, null);
-				                                          		if (shouldCloseSessionOnDtcTransactionCompleted)
-				                                          		{
-				                                          			Dispose(true);
-				                                          		}
-				                                          		ambientTransation = null;
-				                                          	};
-				ambientTransation.EnlistVolatile(this, EnlistmentOptions.EnlistDuringPrepareRequired);
+				factory.TransactionFactory.EnlistInDistributedTransactionIfNeeded(this);
 			}
 		}
-
-		protected abstract void Dispose(bool disposing);
-
-		#endregion
 	}
 }

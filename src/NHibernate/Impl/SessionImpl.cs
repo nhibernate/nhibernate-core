@@ -579,6 +579,11 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public override void CloseSessionFromDistributedTransaction()
+		{
+			Dispose(true);
+		}
+
 		public override IList List(string query, QueryParameters parameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -1655,9 +1660,9 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				log.Debug(string.Format("[session-id={0}] running ISession.Dispose()", SessionId));
-				if (TakingPartInDtcTransaction)
+				if (TransactionContext!=null)
 				{
-					shouldCloseSessionOnDtcTransactionCompleted = true;
+					TransactionContext.ShouldCloseSessionOnDistributedTransactionCompleted = true;
 					return;
 				}
 				Dispose(true);
@@ -1673,7 +1678,7 @@ namespace NHibernate.Impl
 		/// If this Session is being Finalized (<c>isDisposing==false</c>) then make sure not
 		/// to call any methods that could potentially bring this Session back to life.
 		/// </remarks>
-		protected override void Dispose(bool isDisposing)
+		protected void Dispose(bool isDisposing)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -1689,7 +1694,7 @@ namespace NHibernate.Impl
 				// know this call came through Dispose()
 				if (isDisposing && !IsClosed)
 				{
-					Close();
+					 Close();
 				}
 
 				// free unmanaged resources here

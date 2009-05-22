@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Transactions;
 using NHibernate;
 using NHibernate.AdoNet;
 using NHibernate.Engine;
@@ -26,25 +27,8 @@ namespace NHibernate.Transaction
 		/// </summary>
 		ITransaction CreateTransaction(ISessionImplementor session);
 
-		/// <summary>
-		/// Get the default connection release mode
-		/// </summary>
-		ConnectionReleaseMode DefaultReleaseMode { get; }
+		void EnlistInDistributedTransactionIfNeeded(ISessionImplementor session);
 
-		//TODO: do we need this?
-		//bool IsTransactionManagerRequired { get; }
-
-		//TODO: do we need this?
-		//bool AreCallbacksLocalToHibernateTransactions { get; }
-
-		/// <summary>
-		/// Determine whether an underlying transaction is in progress.
-		///
-		/// Mainly this is used in determining whether to register a
-		/// synchronization as well as whether or not to circumvent
-		/// auto flushing outside transactions. 
-		/// </summary>
-		/// <returns>true if an underlying transaction is know to be in effect.</returns>
-		bool IsTransactionInProgress(AdoNetContext adoNetContext, ITransactionContext transactionContext, ITransaction transaction);
+		bool IsInDistributedActiveTransaction(ISessionImplementor session);
 	}
 }

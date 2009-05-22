@@ -10,6 +10,7 @@ using NHibernate.Hql;
 using NHibernate.Impl;
 using NHibernate.Loader.Custom;
 using NHibernate.Persister.Entity;
+using NHibernate.Transaction;
 using NHibernate.Type;
 
 namespace NHibernate.Engine
@@ -290,5 +291,9 @@ namespace NHibernate.Engine
 		FutureQueryBatch FutureQueryBatch { get; }
 
 		Guid SessionId { get; }
+
+		ITransactionContext TransactionContext { get; set; }
+
+		void CloseSessionFromDistributedTransaction();
 	}
 }

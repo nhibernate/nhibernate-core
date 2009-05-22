@@ -1,30 +1,30 @@
 using System;
+using System.Collections;
 using NHibernate.AdoNet;
+using NHibernate.Engine;
 using NHibernate.Transaction;
 
 namespace NHibernate.Test.NHSpecificTest.NH1054
 {
-	public class DummyTransactionFactory : NHibernate.Transaction.ITransactionFactory
+	public class DummyTransactionFactory : ITransactionFactory
 	{
-		void NHibernate.Transaction.ITransactionFactory.Configure(System.Collections.IDictionary props)
+		public void Configure(IDictionary props)
 		{
-			
 		}
 
-		ITransaction NHibernate.Transaction.ITransactionFactory.CreateTransaction(NHibernate.Engine.ISessionImplementor session)
-		{
-			return null;
-		}
-
-		public ConnectionReleaseMode DefaultReleaseMode
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public bool IsTransactionInProgress(AdoNetContext adoNetContext, ITransactionContext transactionContext,
-		                                    ITransaction transaction)
+		public ITransaction CreateTransaction(ISessionImplementor session)
 		{
 			throw new NotImplementedException();
+		}
+
+		public void EnlistInDistributedTransactionIfNeeded(ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool IsInDistributedActiveTransaction(ISessionImplementor session)
+		{
+			return false;
 		}
 	}
 }
