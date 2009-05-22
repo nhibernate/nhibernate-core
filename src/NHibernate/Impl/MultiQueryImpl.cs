@@ -22,7 +22,10 @@ namespace NHibernate.Impl
 		private static readonly ILog log = LogManager.GetLogger(typeof(MultiQueryImpl));
 
 		private readonly List<IQuery> queries = new List<IQuery>();
-		private readonly List<IQueryTranslator> translators = new List<IQueryTranslator>(); private readonly IList<System.Type> resultCollectionGenericType = new List<System.Type>(); private readonly List<QueryParameters> parameters = new List<QueryParameters>(); private IList queryResults;
+		private readonly List<IQueryTranslator> translators = new List<IQueryTranslator>(); 
+		private readonly IList<System.Type> resultCollectionGenericType = new List<System.Type>(); 
+		private readonly List<QueryParameters> parameters = new List<QueryParameters>(); 
+		private IList queryResults;
 		private readonly Dictionary<string, int> criteriaResultPositions = new Dictionary<string, int>();
 		private string cacheRegion;
 		private int commandTimeout = RowSelection.NoValue;
