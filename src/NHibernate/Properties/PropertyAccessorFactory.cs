@@ -40,6 +40,7 @@ namespace NHibernate.Properties
 			accessors["nosetter.pascalcase-m"] = new NoSetterAccessor(new PascalCaseMStrategy());
 			accessors["embedded"] = new EmbeddedPropertyAccessor();
 			accessors["noop"] = new NoopAccessor();
+			accessors["none"] = new NoopAccessor();
 		}
 
 		private PropertyAccessorFactory()
