@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+					   assembly="NHibernate.Test"
+					   namespace="NHibernate.Test.Ado">
+	
+	<class name="AlmostSimple">
+		<id name="Id"/>
+		<property name="Name"/>
+		<property name="Weight"/>
+	</class>
+	
+</hibernate-mapping>

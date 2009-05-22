@@ -1,6 +1,7 @@
 using System.Collections;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Ado
@@ -15,7 +16,7 @@ namespace NHibernate.Test.Ado
 
 		protected override IList Mappings
 		{
-			get { return new[] { "Ado.VerySimple.hbm.xml" }; }
+			get { return new[] { "Ado.VerySimple.hbm.xml", "Ado.AlmostSimple.hbm.xml" }; }
 		}
 
 		protected override void Configure(Configuration configuration)
@@ -47,6 +48,7 @@ namespace NHibernate.Test.Ado
 			using (s.BeginTransaction())
 			{
 				s.CreateQuery("delete from VerySimple").ExecuteUpdate();
+				s.CreateQuery("delete from AlmostSimple").ExecuteUpdate();
 				s.Transaction.Commit();
 			}
 		}
@@ -74,7 +76,7 @@ namespace NHibernate.Test.Ado
 				var vs1 = s.Get<VerySimple>(1);
 				var vs2 = s.Get<VerySimple>(2);
 				vs1.Weight -= 10;
-				vs1.Weight -= 1;
+				vs2.Weight -= 1;
 				sessions.Statistics.Clear();
 				s.Update(vs1);
 				s.Update(vs2);
@@ -84,6 +86,45 @@ namespace NHibernate.Test.Ado
 			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			Cleanup();
 		}
+
+		[Test]
+		[Description("SqlClient: The batcher should run all different INSERT queries in only one roundtrip.")]
+		public void SqlClientOneRoundTripForUpdateAndInsert()
+		{
+			if (sessions.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
+				Assert.Ignore("This test is for SqlClientBatchingBatcher only");
+
+			FillDb();
+
+			using(var sqlLog = new SqlLogSpy())
+			using (ISession s = sessions.OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				s.Save(new VerySimple
+				{
+					Name = "test441",
+					Weight = 894
+				});
+
+				s.Save(new AlmostSimple
+				{
+					Name = "test441",
+					Weight = 894
+				});
+
+				tx.Commit();
+
+				var log = sqlLog.GetWholeLog();
+				//log should only contain NHibernate.SQL once, because that means 
+				//that we ony generated a single batch (NHibernate.SQL log will output
+				//once per batch)
+				Assert.AreEqual(0, log.IndexOf("NHibernate.SQL"), "log should start with NHibernate.SQL");
+				Assert.AreEqual(-1, log.IndexOf("NHibernate.SQL", "NHibernate.SQL".Length), "NHibernate.SQL should only appear once in the log");
+			}
+
+			Cleanup();
+		}
+
 
 		[Test]
 		[Description("The batcher should run all DELETE queries in only one roundtrip.")]

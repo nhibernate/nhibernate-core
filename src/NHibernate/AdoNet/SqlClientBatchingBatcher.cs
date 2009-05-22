@@ -74,5 +74,12 @@ namespace NHibernate.AdoNet
 			totalExpectedRowsAffected = 0;
 			currentBatch = new SqlClientSqlCommandSet();
 		}
+
+		protected override void OnPreparedCommand()
+		{
+			// SQL Server batching can handle several different commands, and
+			// that gives us a nice perf boost when mixing different queries for 
+			// batching
+		}
 	}
 }

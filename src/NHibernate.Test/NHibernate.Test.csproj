@@ -74,6 +74,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Ado\AlmostSimple.cs" />
     <Compile Include="Ado\BatcherFixture.cs" />
     <Compile Include="Ado\VerySimple.cs" />
     <Compile Include="Any\Address.cs" />
@@ -1822,6 +1823,7 @@
     <EmbeddedResource Include="Deletetransient\Person.hbm.xml" />
     <EmbeddedResource Include="BulkManipulation\SimpleClass.hbm.xml" />
     <EmbeddedResource Include="Ado\VerySimple.hbm.xml" />
+    <EmbeddedResource Include="Ado\AlmostSimple.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
     <EmbeddedResource Include="NHSpecificTest\NH1756\Mappings.hbm.xml" />
     <EmbeddedResource Include="LazyProperty\Mappings.hbm.xml" />

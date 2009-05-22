@@ -148,15 +148,20 @@ namespace NHibernate.AdoNet
 
 		public IDbCommand PrepareCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
 		{
-			// a new IDbCommand is being prepared and a new (potential) batch
-			// started - so execute the current batch of commands.
-			ExecuteBatch();
+			OnPreparedCommand();
 
 			// do not actually prepare the Command here - instead just generate it because
 			// if the command is associated with an ADO.NET Transaction/Connection while
 			// another open one Command is doing something then an exception will be 
 			// thrown.
 			return Generate(type, sql, parameterTypes);
+		}
+
+		protected virtual void OnPreparedCommand()
+		{
+			// a new IDbCommand is being prepared and a new (potential) batch
+			// started - so execute the current batch of commands.
+			ExecuteBatch();
 		}
 
 		public IDbCommand PrepareQueryCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
