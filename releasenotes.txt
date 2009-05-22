@@ -1,6 +1,6 @@
 Build 2.1.0
 ========================
-** Know BREAKING CHANGES from NH2.0.xGA to NH2.1.0
+** Known BREAKING CHANGES from NH2.0.xGA to NH2.1.0
 	##### Run time #####
 		* If you want work using lazy loading with LinFu.DynamicProxy now you must deploy NHibernate.ByteCode.LinFu.dll
 		* If you want work using lazy loading with Castle.DynamicProxy2 now you must deploy NHibernate.ByteCode.Castle.dll
@@ -13,6 +13,8 @@ Build 2.1.0
 
 	##### Possible Breaking Changes #####
 		* ISession interface has additional methods
+		* ICriteria.SetProjection now takes a params array of projections, instead of a single projection
+			Only a breaking change if you are implementing ICriteria, there is full source code compatability
 		* IStatelessSession interface has additional methods
 		* DefaultProxyFactoryFactory removed
 		* IProxyFactoryFactory now provide the IProxyValidator implementation
