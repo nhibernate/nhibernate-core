@@ -36,24 +36,19 @@ namespace NHibernate.AdoNet
 		{
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;
 			IDbCommand batchUpdate = CurrentCommand;
-			if (log.IsDebugEnabled)
+
+			string lineWithParameters = null;
+			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
 			{
-				string lineWithParameters = Factory.Settings.SqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
-				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
-				{
-					Factory.Settings.SqlStatementLogger.LogCommand("Adding to batch:", batchUpdate, FormatStyle.Basic);
-				}
-				else
-				{
-					log.Debug("Adding to batch:" + lineWithParameters);
-				}
+				lineWithParameters = Factory.Settings.SqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
 				currentBatchCommandsLog.Append("Batch command: ").AppendLine(lineWithParameters);
 			}
-			else
+			if (log.IsDebugEnabled)
 			{
-				Factory.Settings.SqlStatementLogger.LogCommand("Adding to batch:", batchUpdate, FormatStyle.Basic);
+				log.Debug("Adding to batch:" + lineWithParameters);
 			}
-			currentBatch.Append((System.Data.SqlClient.SqlCommand)batchUpdate);
+			currentBatch.Append((System.Data.SqlClient.SqlCommand) batchUpdate);
+
 			if (currentBatch.CountOfCommands >= batchSize)
 			{
 				DoExecuteBatch(batchUpdate);
@@ -70,11 +65,7 @@ namespace NHibernate.AdoNet
 				Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
 				currentBatchCommandsLog = new StringBuilder();
 			}
-			else if (log.IsDebugEnabled)
-			{
-				log.Debug(currentBatchCommandsLog.ToString());
-				currentBatchCommandsLog = new StringBuilder();
-			}
+			
 			int rowsAffected = currentBatch.ExecuteNonQuery();
 
 			Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);

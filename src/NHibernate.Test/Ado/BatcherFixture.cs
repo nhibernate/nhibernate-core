@@ -108,8 +108,8 @@ namespace NHibernate.Test.Ado
 
 		[Test]
 		[Description(@"Activating the SQL and turning off the batcher's log the log stream:
--should not contains any batch info 
--should contain SQL's log info
+-should not contains adding to batch
+-should contain batch command
 -the batcher should work.")]
 		public void SqlLog()
 		{
@@ -120,7 +120,8 @@ namespace NHibernate.Test.Ado
 					sessions.Statistics.Clear();
 					FillDb();
 					string logs = sl.GetWholeLog();
-					Assert.That(logs, Text.DoesNotContain("Batch command").IgnoreCase);
+					Assert.That(logs, Text.DoesNotContain("Addin to batch").IgnoreCase);
+					Assert.That(logs, Text.Contains("Batch command").IgnoreCase);
 					Assert.That(logs, Text.Contains("INSERT").IgnoreCase);
 				}
 			}
