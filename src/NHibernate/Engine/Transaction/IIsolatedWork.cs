@@ -14,8 +14,5 @@ namespace NHibernate.Engine.Transaction
 		/// </summary>
 		/// <param name="connection">The ADP connection to use.</param>
 		void DoWork(IDbConnection connection, IDbTransaction transaction);
-
-		// 2009-05-04 Another time we need a TransactionManager to manage isolated
-		// work for a given connection.
 	}
 }
