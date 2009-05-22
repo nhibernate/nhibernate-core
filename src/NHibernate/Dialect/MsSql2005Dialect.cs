@@ -67,7 +67,10 @@ namespace NHibernate.Dialect
 			int orderIndex = querySqlString.LastIndexOfCaseInsensitive(" order by ");
 			SqlString from;
 			SqlString[] sortExpressions;
-			if (orderIndex > 0)
+
+			//don't use the order index if it is contained within a larger statement(assuming 
+			//a statement with non matching parenthesis is part of a larger block)
+			if (orderIndex > 0 && HasMatchingParens(querySqlString.Substring(orderIndex).ToString()))
 			{
 				from = querySqlString.Substring(fromIndex, orderIndex - fromIndex).Trim();
 				SqlString orderBy = querySqlString.Substring(orderIndex).Trim();
@@ -211,6 +214,34 @@ namespace NHibernate.Dialect
 				columnsOrAliases.Add(new SqlString(alias));
 				aliasToColumn[SqlString.Parse(alias)] = SqlString.Parse(token);
 			}
+		}
+
+		/// <summary>
+		/// Indicates whether the string fragment contains matching parenthesis
+		/// </summary>
+		/// <param name="statement"> the statement to evaluate</param>
+		/// <returns>true if the statment contains no parenthesis or an equal number of
+		///  opening and closing parenthesis;otherwise false </returns>
+		private static bool HasMatchingParens(IEnumerable<char> statement)
+		{
+			//unmatched paren count
+			int unmatchedParen = 0;
+
+			//increment the counts based in the opening and closing parens in the statement
+			foreach (char item in statement)
+			{
+				switch (item)
+				{
+					case '(':
+						unmatchedParen++;
+						break;
+					case ')':
+						unmatchedParen--;
+						break;
+				}
+			}
+
+			return unmatchedParen == 0;
 		}
 
 		/// <summary>
