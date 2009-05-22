@@ -323,7 +323,13 @@ namespace NHibernate.Impl
 			get { return IsAutoCloseSessionEnabled && !IsClosed; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Close the session and release all resources
+		/// <remarks>
+		/// Do not call this method inside a transaction scope, use <c>Dispose</c> instead, since
+		/// Close() is not aware of distributed transactions
+		/// </remarks>
+		/// </summary>
 		public IDbConnection Close()
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -1653,7 +1659,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Just in case the user forgot to Commit() or Close()
+		/// Perform a soft (distributed transaction aware) close of the session
 		/// </summary>
 		public void Dispose()
 		{
