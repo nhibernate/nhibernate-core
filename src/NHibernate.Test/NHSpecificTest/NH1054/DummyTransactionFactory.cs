@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using NHibernate.AdoNet;
 using NHibernate.Engine;
+using NHibernate.Engine.Transaction;
 using NHibernate.Transaction;
 
 namespace NHibernate.Test.NHSpecificTest.NH1054
@@ -25,6 +26,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1054
 		public bool IsInDistributedActiveTransaction(ISessionImplementor session)
 		{
 			return false;
+		}
+
+		public void ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work, bool transacted)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

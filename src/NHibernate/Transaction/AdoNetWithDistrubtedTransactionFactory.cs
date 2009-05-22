@@ -3,6 +3,7 @@ using System.Collections;
 using System.Transactions;
 using log4net;
 using NHibernate.Engine;
+using NHibernate.Engine.Transaction;
 using NHibernate.Impl;
 
 namespace NHibernate.Transaction
@@ -10,6 +11,8 @@ namespace NHibernate.Transaction
 	public class AdoNetWithDistrubtedTransactionFactory : ITransactionFactory
 	{
 		private static readonly ILog logger = LogManager.GetLogger(typeof (AbstractSessionImpl));
+		private readonly AdoNetTransactionFactory adoNetTransactionFactory = new AdoNetTransactionFactory();
+			
 
 		public void Configure(IDictionary props)
 		{
@@ -58,6 +61,17 @@ namespace NHibernate.Transaction
 			var distributedTransactionContext = ((DistributedTransactionContext) session.TransactionContext);
 			return distributedTransactionContext != null &&
 				   distributedTransactionContext.IsInActiveTransaction;
+		}
+
+		public void ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work, bool transacted)
+		{
+			using(var tx = new TransactionScope(TransactionScopeOption.Suppress))
+			{
+				// instead of duplicating the logic, we suppress the DTC transaction and create
+				// our own transaction instead
+				adoNetTransactionFactory.ExecuteWorkInIsolation(session, work, transacted);
+				tx.Complete();
+			}
 		}
 
 		public class DistributedTransactionContext : ITransactionContext, IEnlistmentNotification

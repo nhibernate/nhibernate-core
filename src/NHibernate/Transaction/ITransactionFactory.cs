@@ -3,6 +3,7 @@ using System.Transactions;
 using NHibernate;
 using NHibernate.AdoNet;
 using NHibernate.Engine;
+using NHibernate.Engine.Transaction;
 
 namespace NHibernate.Transaction
 {
@@ -30,5 +31,7 @@ namespace NHibernate.Transaction
 		void EnlistInDistributedTransactionIfNeeded(ISessionImplementor session);
 
 		bool IsInDistributedActiveTransaction(ISessionImplementor session);
+
+        void ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work, bool transacted);
 	}
 }

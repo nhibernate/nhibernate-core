@@ -137,7 +137,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 			else
 			{
-				work.DoWork(session.ConnectionManager.GetConnection());
+				work.DoWork(session.ConnectionManager.GetConnection(), null);
 				session.ConnectionManager.AfterStatement();
 			}
 		}
@@ -149,10 +149,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			{
 				return dialectVote.Value;
 			}
-			else
-			{
-				return Factory.Settings.IsDataDefinitionImplicitCommit;
-			}
+			return Factory.Settings.IsDataDefinitionImplicitCommit;
 		}
 
 		protected virtual void DropTemporaryTableIfNecessary(IQueryable persister, ISessionImplementor session)
@@ -174,7 +171,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				}
 				else
 				{
-					work.DoWork(session.ConnectionManager.GetConnection());
+					work.DoWork(session.ConnectionManager.GetConnection(), null);
 					session.ConnectionManager.AfterStatement();
 				}
 			}
@@ -222,7 +219,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				this.session = session;
 			}
 
-			public void DoWork(IDbConnection connection)
+			public void DoWork(IDbConnection connection, IDbTransaction transaction)
 			{
 				IDbCommand stmnt = null;
 				try
@@ -266,7 +263,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			private readonly ILog log;
 			private readonly ISessionImplementor session;
 
-			public void DoWork(IDbConnection connection)
+			public void DoWork(IDbConnection connection, IDbTransaction transaction)
 			{
 				IDbCommand stmnt = null;
 				try

@@ -99,7 +99,7 @@ namespace NHibernate.Id.Enhanced
 
 		#region Overrides of TransactionHelper
 
-		public override object DoWorkInCurrentTransaction(IDbConnection conn, string sql)
+		public override object DoWorkInCurrentTransaction(ISessionImplementor session, IDbConnection conn, IDbTransaction transaction)
 		{
 			long result;
 			int rows;
@@ -136,7 +136,7 @@ namespace NHibernate.Id.Enhanced
 				}
 
 				query = update.ToString();
-				SqlLog.Debug(sql);
+				
 				IDbCommand ups = conn.CreateCommand();
 				ups.CommandType = CommandType.Text;
 				ups.CommandText = query;

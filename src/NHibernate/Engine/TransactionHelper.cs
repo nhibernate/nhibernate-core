@@ -25,11 +25,11 @@ namespace NHibernate.Engine
 
 			#region Implementation of IIsolatedWork
 
-			public void DoWork(IDbConnection connection)
+			public void DoWork(IDbConnection connection, IDbTransaction transaction)
 			{
 				try
 				{
-					generatedValue = owner.DoWorkInCurrentTransaction(connection, null);
+					generatedValue = owner.DoWorkInCurrentTransaction(session, connection, transaction);
 				}
 				catch (DbException sqle)
 				{
@@ -41,7 +41,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> The work to be done</summary>
-		public abstract object DoWorkInCurrentTransaction(IDbConnection conn, string sql);
+		public abstract object DoWorkInCurrentTransaction(ISessionImplementor session, IDbConnection conn, IDbTransaction transaction);
 
 		/// <summary> Suspend the current transaction and perform work in a new transaction</summary>
 		public virtual object DoWorkInNewTransaction(ISessionImplementor session)

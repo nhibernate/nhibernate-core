@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using log4net;
 using NHibernate.Dialect;
 using NHibernate.Engine;
+using NHibernate.Engine.Transaction;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -35,7 +36,7 @@ namespace NHibernate.Id
 	/// The mapping parameters <c>table</c> and <c>column</c> are required.
 	/// </p>
 	/// </remarks>
-	public class TableGenerator : IPersistentIdentifierGenerator, IConfigurable
+	public class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(TableGenerator));
 		/// <summary>
@@ -155,117 +156,7 @@ namespace NHibernate.Id
 			// This has to be done using a different connection to the containing
 			// transaction becase the new hi value must remain valid even if the
 			// containing transaction rolls back.
-			//
-			// We make an exception for SQLite and use the session's connection,
-			// since SQLite only allows one connection to the database.
-
-			bool isSQLite = session.Factory.Dialect is SQLiteDialect;
-			IDbConnection conn;
-			TransactionScope dtcTrans = null;
-			if (isSQLite)
-			{
-				conn = session.Connection;
-			}
-			else
-			{
-				// existing dtc transaction, creating a new one
-				// to override the ambient one
-				if (Transaction.Current != null)
-					dtcTrans = new TransactionScope(TransactionScopeOption.RequiresNew);
-				conn = session.Factory.ConnectionProvider.GetConnection();
-			}
-
-			IDbTransaction trans = null;
-			try
-			{
-				if (!isSQLite)
-				{
-					if(dtcTrans==null)
-						trans = conn.BeginTransaction();
-				}
-
-				long result;
-				int rows;
-				do
-				{
-					//the loop ensure atomicitiy of the 
-					//select + uspdate even for no transaction
-					//or read committed isolation level (needed for .net?)
-
-					IDbCommand qps = conn.CreateCommand();
-					IDataReader rs = null;
-					qps.CommandText = query;
-					qps.CommandType = CommandType.Text;
-					qps.Transaction = trans;
-					PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Reading high value:", qps, FormatStyle.Basic);
-					try
-					{
-						rs = qps.ExecuteReader();
-						if (!rs.Read())
-						{
-							string err = "could not read a hi value - you need to populate the table: " + tableName;
-							log.Error(err);
-							throw new IdentifierGenerationException(err);
-						}
-						result = Convert.ToInt64(columnType.Get(rs, 0));
-					} 
-						// TODO: change to SqlException
-					catch (Exception e)
-					{
-						log.Error("could not read a hi value", e);
-						throw;
-					}
-					finally
-					{
-						if (rs != null) rs.Close();
-						qps.Dispose();
-					}
-
-					IDbCommand ups =
-						session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateSql, parameterTypes);
-					ups.Connection = conn;
-					ups.Transaction = trans;
-					PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Updating high value:", ups, FormatStyle.Basic);
-
-					try
-					{
-						columnType.Set(ups, result + 1, 0);
-						columnType.Set(ups, result, 1);
-
-						rows = ups.ExecuteNonQuery();
-					} 
-					// TODO: change to SqlException
-					catch (Exception e)
-					{
-						log.Error("could not update hi value in: " + tableName, e);
-						throw;
-					}
-					finally
-					{
-						ups.Dispose();
-					}
-				} while (rows == 0);
-
-				if (!isSQLite)
-				{
-					if (dtcTrans != null)
-						dtcTrans.Complete();
-					else
-						trans.Commit();
-				}
-
-				return result;
-			}
-				// TODO: Shouldn't we have a Catch with a rollback here?
-			finally
-			{
-				if (!isSQLite)
-				{
-					if(dtcTrans!=null)
-						dtcTrans.Dispose();
-					session.Factory.ConnectionProvider.CloseConnection(conn);
-				}
-			}
+			return DoWorkInNewTransaction(session);
 		}
 
 		#endregion
@@ -317,5 +208,70 @@ namespace NHibernate.Id
 		}
 
 		#endregion
+
+		public override object DoWorkInCurrentTransaction(ISessionImplementor session, IDbConnection conn, IDbTransaction transaction)
+		{
+			long result;
+			int rows;
+			do
+			{
+				//the loop ensure atomicitiy of the 
+				//select + uspdate even for no transaction
+				//or read committed isolation level (needed for .net?)
+
+				IDbCommand qps = conn.CreateCommand();
+				IDataReader rs = null;
+				qps.CommandText = query;
+				qps.CommandType = CommandType.Text;
+				qps.Transaction = transaction;
+				PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Reading high value:", qps, FormatStyle.Basic);
+				try
+				{
+					rs = qps.ExecuteReader();
+					if (!rs.Read())
+					{
+						string err = "could not read a hi value - you need to populate the table: " + tableName;
+						log.Error(err);
+						throw new IdentifierGenerationException(err);
+					}
+					result = Convert.ToInt64(columnType.Get(rs, 0));
+				}
+				catch (Exception e)
+				{
+					log.Error("could not read a hi value", e);
+					throw;
+				}
+				finally
+				{
+					if (rs != null) rs.Close();
+					qps.Dispose();
+				}
+
+				IDbCommand ups =
+					session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateSql, parameterTypes);
+				ups.Connection = conn;
+				ups.Transaction = transaction;
+				PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Updating high value:", ups, FormatStyle.Basic);
+
+				try
+				{
+					columnType.Set(ups, result + 1, 0);
+					columnType.Set(ups, result, 1);
+
+					rows = ups.ExecuteNonQuery();
+				}
+				catch (Exception e)
+				{
+					log.Error("could not update hi value in: " + tableName, e);
+					throw;
+				}
+				finally
+				{
+					ups.Dispose();
+				}
+			} while (rows == 0);
+
+			return result;
+		}
 	}
 }
