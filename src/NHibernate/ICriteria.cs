@@ -72,7 +72,7 @@ namespace NHibernate
 		/// determines the overall "shape" of the query result.
 		/// </para>
 		/// </remarks>
-		ICriteria SetProjection(IProjection projection);
+		ICriteria SetProjection(params IProjection[] projection);
 
 		/// <summary>
 		/// Add an Expression to constrain the results to be retrieved.

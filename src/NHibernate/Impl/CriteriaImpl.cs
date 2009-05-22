@@ -439,9 +439,27 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public ICriteria SetProjection(IProjection projection)
+		public ICriteria SetProjection(params IProjection[] projections)
 		{
-			this.projection = projection;
+			if(projections==null)
+				throw new ArgumentNullException("projections");
+			if(projections.Length ==0)
+				throw new ArgumentException("projections must contain a least one projection");
+
+			if(projections.Length==1)
+			{
+				projection = projections[0];
+			}
+			else
+			{
+				var projectionList = new ProjectionList();
+				foreach (var childProjection in projections)
+				{
+					projectionList.Add(childProjection);
+				}
+				projection = projectionList;
+			}
+
 			projectionCriteria = this;
 			SetResultTransformer(CriteriaSpecification.Projection);
 			return this;
@@ -810,9 +828,9 @@ namespace NHibernate.Impl
 				return this;
 			}
 
-			public ICriteria SetProjection(IProjection projection)
+			public ICriteria SetProjection(params IProjection[] projections)
 			{
-				root.SetProjection(projection);
+				root.SetProjection(projections);
 				return this;
 			}
 
