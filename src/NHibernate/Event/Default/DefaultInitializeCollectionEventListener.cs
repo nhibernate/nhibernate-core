@@ -88,13 +88,20 @@ namespace NHibernate.Event.Default
 					if (ce == null)
 					{
 						factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
-						log.DebugFormat("Collection cache miss: {0}", ck);
 					}
 					else
 					{
 						factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
-						log.DebugFormat("Collection cache hit: {0}", ck);
 					}
+				}
+
+				if (ce == null)
+				{
+					log.DebugFormat("Collection cache miss: {0}", ck);
+				}
+				else
+				{
+					log.DebugFormat("Collection cache hit: {0}", ck);
 				}
 
 				if (ce == null)
