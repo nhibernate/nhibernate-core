@@ -161,7 +161,7 @@ namespace NHibernate.Test.Ado
 					sessions.Statistics.Clear();
 					FillDb();
 					string logs = sl.GetWholeLog();
-					Assert.That(logs, Text.DoesNotContain("Addin to batch").IgnoreCase);
+					Assert.That(logs, Text.DoesNotContain("Adding to batch").IgnoreCase);
 					Assert.That(logs, Text.Contains("Batch command").IgnoreCase);
 					Assert.That(logs, Text.Contains("INSERT").IgnoreCase);
 				}
