@@ -44,6 +44,12 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		public override SqlString GetLimitString(SqlString querySqlString, int offset, int last)
 		{
+			//dont do this paging code if there is no offset, use the 
+			//sql 2000 dialect since it wont just uses a top statement
+			if (offset == 0)
+			{
+				return base.GetLimitString(querySqlString, offset, last);
+			}
 			// we have to do this in order to support parameters in order clause, the foramt 
 			// that sql 2005 uses for paging means that we move the parameters around, which means,
 			// that positions are lost, so we record them before making any changes.
