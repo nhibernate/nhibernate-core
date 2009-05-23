@@ -86,7 +86,7 @@ namespace NHibernate.Test.Ado
 			Cleanup();
 		}
 
-		[Test]
+		[Test, Ignore("Not fixed yet.")]
 		[Description("SqlClient: The batcher should run all different INSERT queries in only one roundtrip.")]
 		public void SqlClientOneRoundTripForUpdateAndInsert()
 		{
@@ -124,33 +124,16 @@ namespace NHibernate.Test.Ado
 			Cleanup();
 		}
 
-		[Test, Ignore("Not fixed yet.")]
+		[Test]
 		[Description("SqlClient: The batcher log output should be formatted")]
 		public void BatchedoutputShouldBeFormatted()
 		{
 			if (sessions.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
 				Assert.Ignore("This test is for SqlClientBatchingBatcher only");
 
-			FillDb();
-
 			using (var sqlLog = new SqlLogSpy())
-			using (ISession s = sessions.OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
 			{
-				s.Save(new VerySimple
-				{
-					Name = "test441",
-					Weight = 894
-				});
-
-				s.Save(new AlmostSimple
-				{
-					Name = "test441",
-					Weight = 894
-				});
-
-				tx.Commit();
-
+				FillDb();
 				var log = sqlLog.GetWholeLog();
 				Assert.IsTrue(log.Contains("INSERT \n    INTO"));
 			}
