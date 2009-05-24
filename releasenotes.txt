@@ -31,6 +31,62 @@ Build 2.1.0
 		* Obsolete ORACLE dialects was removed (new implementations are available)
 		* ISQLExceptionConverter was changed in order to have more flexibility about information available for the conversion and followed management.
 		* ADOException now use string instead SqlString
+
+Build 2.1.0.Alpha3 (rev4378)
+=============================
+
+** Bug
+    * [NH-1098] - Problem in filters with parameters and associated logging information
+    * [NH-1179] - Filter not applied in explicit join
+    * [NH-1264] - Eager fetching with Criteria/DetachedCriteria does not seem to be working properly
+    * [NH-1307] - Parameter Postion incorrect in the sql query .
+    * [NH-1343] - In HQL, when having only one Class for query it fails to work if we forget the Alias.
+    * [NH-1388] - Map does not delete keys if value of the key is null
+    * [NH-1574] - Stateless Session isn't ignoring untouched proxy properties on update
+    * [NH-1725] - When using SELECT NEW <Entity>(iif(a=0, 2, 1)) From .... Returns error '(' expected after HQL function in SELECT
+    * [NH-1727] - Hql parameter problems (Sql2005dialect)
+    * [NH-1736] - NHibernate.Util.TypeNameParser doesn't parse correctly generic types
+    * [NH-1741] - DetachedNamedQuery is ignoring mapped properties
+    * [NH-1742] - Wrong parameters order in IQuery with SetParameterList and Filter. SQL Server 2005 and SQL Server 2000
+    * [NH-1744] - Open/Close a session inside a TransactionScope fails.
+    * [NH-1751] - DistinctRootEntityResultTransformer assumes source ILists are always ArrayLists
+    * [NH-1754] - cast HQLFunction don't cast the result
+    * [NH-1756] - Updating newly saved entity with generated version causes StaleObjectStateException (explicit flush before commit)
+    * [NH-1764] - TableHiLoGenerator fail in a TransactionScope with MySQL database
+    * [NH-1767] - Multiple TransactionScopes inside one Session do not work properly
+    * [NH-1770] - Not posible to have system properties in web.config and session-factory properties in external hibernate.cfg.xml
+    * [NH-1773] - HQL Queries with projection and join fetching fail with AST query translator
+    * [NH-1775] - AST Parser & Bitwise queries
+    * [NH-1776] - Query executed twice on session with enabled Filter will cause NullReferenceException
+    * [NH-1780] - Section 18.4 - Incorrect method name IsUnsaved() 
+    * [NH-1788] - Dynamic Update & generated timestamp cause NH to try to update the readonly timestamp column
+    * [NH-1792] - Invalid Sql for Paging when Subquery contains Order By clause using MsSql2005Dialect
+
+** Improvement
+    * [NH-514] - Allow expansion of the "on" clause in joins.
+    * [NH-1051] - Port AST-based HQL parser / QueryTranslator from H3
+    * [NH-1093] - Invalid caching probably shouldn't throw exceptions, but should log warnings.
+    * [NH-1516] - HQL doesn't support "update" statements
+    * [NH-1553] - SQL Server 2005: Support for wrapping snapshot isolation update conflict SQLException into a NHibernate StaleObjectStateException.
+    * [NH-1670] - MutiCriteria and MultiQuery results may be loaded directly into a generic List<T> instead of an ArrayList
+    * [NH-1745] - SQL formatters for DLL and all others SQLs
+    * [NH-1750] - Mark  NHibernate.Util.WeakHashtable  [Serializable]
+    * [NH-1765] - Add ISessionImplementor property to PreDeleteEvent
+    * [NH-1791] - Allow passing params of projections to ICriteria.SetProjectios
+    * [NH-1794] - Allow query only properties and associations
+    * [NH-1797] - MsSql2005Dialect uses paging query when no offset specified
+
+** New Feature
+    * [NH-322] - case when...then...else...end  in select clause
+    * [NH-917] - Allow NHibernate to enlist in arbitrary IDbTransaction
+    * [NH-1701] - format_sql property of hibernate
+    * [NH-1786] - IObjectFactory (implementation responsibility by ByteCode provider) to concentrate all Activator.CreateInstance.
+
+** Patch
+    * [NH-1726] - ISessionFactory.Settings gone - breaking change
+    * [NH-1769] - Transaction completion on rollback with TransactionScope can cause ObjectDisposedException
+    * [NH-1777] - Removed some duplicated casts
+    * [NH-1783] - DateType should store only the date part of a System.DateTime to a column
 		
 Build 2.1.0.Alpha2 (rev4167)
 ========================
