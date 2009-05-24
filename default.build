@@ -123,26 +123,9 @@
 	</target>
 
 	<target name="test" depends="init build" description="Runs all NHibernate tests for the current framework" unless="${skip.tests}">
-		<!--
 		<nant target="test">
 			<buildfiles refid="buildfiles.tests" />
 		</nant>
-		-->
-		<!-- -->
-		<foreach item="File" property="buildfile">
-			<in>
-				<items refid="buildfiles.tests" />
-			</in>
-			<do>
-				<exec program="nant.exe">
-					<arg value="-f:${buildfile}" />
-					<arg value="-t:${nant.settings.currentframework}" />
-					<arg value="-D:project.config=${project.config}" />
-					<arg value="test" />
-				</exec>
-			</do>
-		</foreach>
-		<!-- -->
 	</target>
 	
 	<target name="coverage-report" description="Builds the test coverage reports"

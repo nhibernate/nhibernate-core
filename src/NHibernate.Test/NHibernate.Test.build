@@ -34,5 +34,5 @@
 		<copy file="TestEnbeddedConfig.cfg.xml" tofile="${bin.dir}/TestEnbeddedConfig.cfg.xml" />
 		<copy file="${root.dir}/src/NHibernate.DomainModel/ABC.hbm.xml" tofile="${bin.dir}/ABC.hbm.xml" />
 	</target>
-	<target name="test" depends="init build common.run-tests" />
+	<target name="test" depends="init build common.run-database-tests" />
 </project>

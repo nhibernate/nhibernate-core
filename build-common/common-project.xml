@@ -222,8 +222,11 @@
 
 	<target name="common.run-tests"
 		description="Run NUnit tests">
+		<exec program="${root.dir}/Tools/nunit/nunit-console-x86.exe">
+			<arg line="${bin.dir}/${project::get-name()}.dll /xml=${bin.dir}/${project::get-name()}.dll.result.xml" />
+		</exec>
 
-		<nunit2>
+		<!--<nunit2>
 			<formatter 
 				type="Xml" 
 				usefile="true" 
@@ -233,7 +236,7 @@
 			<test
 				assemblyname="${bin.dir}/${project::get-name()}.dll"
 				appconfig="${bin.dir}/${project::get-name()}.dll.config" />
-		</nunit2>
+		</nunit2>-->
 
 	</target>
 
@@ -250,21 +253,28 @@
 		<!-- 
 			Tell nhibernate how to connect to the test database.
 		-->
-		<xmlpoke
-			file="${app.config}"
-			xpath="/configuration/nhibernate/add[@key='hibernate.dialect']/@value"
-			value="${nhibernate.dialect}" 
-		/>
-		<xmlpoke
-			file="${app.config}"
-			xpath="/configuration/nhibernate/add[@key='hibernate.connection.driver_class']/@value"
-			value="${nhibernate.connection.driver_class}" 
-		/>
-		<xmlpoke
-			file="${app.config}"
-			xpath="/configuration/nhibernate/add[@key='hibernate.connection.connection_string']/@value"
-			value="${nhibernate.connection.connection_string}" 
-		/>
+		<xmlpoke file="${app.config}"
+			xpath="//*/hbm:property[@name='dialect']"
+			value="${nhibernate.dialect}">
+			<namespaces>
+				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
+			</namespaces>
+		</xmlpoke>
+
+		<xmlpoke file="${app.config}"
+			xpath="//*/hbm:property[@name='connection.driver_class']"
+			value="${nhibernate.connection.driver_class}">
+			<namespaces>
+				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
+			</namespaces>
+		</xmlpoke>
+		<xmlpoke file="${app.config}"
+			xpath="//*/hbm:property[@name='connection.connection_string']"
+			value="${nhibernate.connection.connection_string}">
+			<namespaces>
+				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
+			</namespaces>
+		</xmlpoke>
 	</target>
 
 	<target name="common.remove-connection-settings-from-app-config">
