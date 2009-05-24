@@ -2,31 +2,6 @@ using System;
 
 namespace NHibernate.Exceptions
 {
-	/// <summary>
-	/// Collect data of an <see cref="ADOException"/> to be converted.
-	/// </summary>
-	public class AdoExceptionContextInfo
-	{
-		// This class was introduced, in NH, to allow less intrusive possible extensions 
-		// of information given to the ISQLExceptionConverter 
-		// (extensions of a class instead succesive changes of a method)
-
-		/// <summary>
-		/// The <see cref="System.Data.Common.DbException"/> to be converted.
-		/// </summary>
-		public Exception SqlException { get; set; }
-
-		/// <summary>
-		/// An optional error message.
-		/// </summary>
-		public string Message { get; set; }
-
-		/// <summary>
-		/// The SQL that generate the exception
-		/// </summary>
-		public string Sql { get; set; }
-	}
-
 	/// <summary> 
 	/// Defines a contract for implementations that know how to convert a <see cref="System.Data.Common.DbException"/>
 	/// into NHibernate's <see cref="ADOException"/> hierarchy. 

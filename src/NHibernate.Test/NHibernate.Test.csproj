@@ -356,6 +356,9 @@
     <Compile Include="NHSpecificTest\NH1343\Product.cs" />
     <Compile Include="NHSpecificTest\NH1343\ProductFixture.cs" />
     <Compile Include="NHSpecificTest\NH1388\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1553\MsSQL\Person.cs" />
+    <Compile Include="NHSpecificTest\NH1553\MsSQL\SnapshotIsolationUpdateConflictTest.cs" />
+    <Compile Include="NHSpecificTest\NH1553\MsSQL\SQLUpdateConflictToStaleStateExceptionConverter.cs" />
     <Compile Include="NHSpecificTest\NH1574\Principal.cs" />
     <Compile Include="NHSpecificTest\NH1574\SpecializedPrincipal.cs" />
     <Compile Include="NHSpecificTest\NH1574\SpecializedTeaml.cs" />
@@ -1831,6 +1834,7 @@
     <EmbeddedResource Include="Ado\VerySimple.hbm.xml" />
     <EmbeddedResource Include="Ado\AlmostSimple.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1553\MsSQL\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1788\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1794\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1792\Mappings.hbm.xml" />

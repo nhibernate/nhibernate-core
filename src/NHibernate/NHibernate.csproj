@@ -478,6 +478,7 @@
     <Compile Include="EntityModeEqualityComparer.cs" />
     <Compile Include="Event\AbstractPreDatabaseOperationEvent.cs" />
     <Compile Include="Event\IDestructible.cs" />
+    <Compile Include="Exceptions\AdoExceptionContextInfo.cs" />
     <Compile Include="Exceptions\ReflectionBasedSqlStateExtracter.cs" />
     <Compile Include="Exceptions\SqlStateExtracter.cs" />
     <Compile Include="Exceptions\TemplatedViolatedConstraintNameExtracter.cs" />

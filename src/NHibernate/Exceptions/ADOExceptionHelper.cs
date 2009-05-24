@@ -12,8 +12,20 @@ namespace NHibernate.Exceptions
 	{
 		public const string SQLNotAvailable = "SQL not available";
 
+		public static Exception Convert(ISQLExceptionConverter converter, AdoExceptionContextInfo exceptionContextInfo)
+		{
+			if(exceptionContextInfo == null)
+			{
+				throw new AssertionFailure("The argument exceptionContextInfo is null.");
+			}
+			var sql = TryGetActualSqlQuery(exceptionContextInfo.SqlException, exceptionContextInfo.Sql);
+			ADOExceptionReporter.LogExceptions(exceptionContextInfo.SqlException,
+			                                   ExtendMessage(exceptionContextInfo.Message, sql, null, null));
+			return converter.Convert(exceptionContextInfo);
+		}
+
 		/// <summary> 
-		/// Converts the given SQLException into NHibernate's ADOException hierarchy, as well as performing
+		/// Converts the given SQLException into Exception hierarchy, as well as performing
 		/// appropriate logging. 
 		/// </summary>
 		/// <param name="converter">The converter to use.</param>
@@ -24,14 +36,11 @@ namespace NHibernate.Exceptions
 		public static Exception Convert(ISQLExceptionConverter converter, Exception sqlException, string message,
 		                                   SqlString sql)
 		{
-			sql = TryGetActualSqlQuery(sqlException, sql);
-			ADOExceptionReporter.LogExceptions(sqlException, ExtendMessage(message, sql, null, null));
-			return
-				converter.Convert(new AdoExceptionContextInfo {SqlException = sqlException, Message = message, Sql = sql.ToString()});
+			return Convert(converter, new AdoExceptionContextInfo {SqlException = sqlException, Message = message, Sql = sql.ToString()});
 		}
 
 		/// <summary> 
-		/// Converts the given SQLException into NHibernate's ADOException hierarchy, as well as performing
+		/// Converts the given SQLException into Exception hierarchy, as well as performing
 		/// appropriate logging. 
 		/// </summary>
 		/// <param name="converter">The converter to use.</param>
@@ -40,16 +49,15 @@ namespace NHibernate.Exceptions
 		/// <returns> The converted <see cref="ADOException"/>.</returns>
 		public static Exception Convert(ISQLExceptionConverter converter, Exception sqlException, string message)
 		{
-			var sql = new SqlString(SQLNotAvailable);
-			sql = TryGetActualSqlQuery(sqlException, sql);
-			return Convert(converter, sqlException, message, sql);
+			var sql = TryGetActualSqlQuery(sqlException, SQLNotAvailable);
+			return Convert(converter, new AdoExceptionContextInfo {SqlException = sqlException, Message = message, Sql = sql});
 		}
 
 		public static ADOException Convert(ISQLExceptionConverter converter, Exception sqle, string message, SqlString sql,
 		                                   object[] parameterValues, IDictionary<string, TypedValue> namedParameters)
 		{
 			sql = TryGetActualSqlQuery(sqle, sql);
-			string extendMessage = ExtendMessage(message, sql, parameterValues, namedParameters);
+			string extendMessage = ExtendMessage(message, sql.ToString(), parameterValues, namedParameters);
 			ADOExceptionReporter.LogExceptions(sqle, extendMessage);
 			return new ADOException(extendMessage, sqle, sql.ToString());
 		}
@@ -69,7 +77,7 @@ namespace NHibernate.Exceptions
 			return result;
 		}
 
-		public static string ExtendMessage(string message, SqlString sql, object[] parameterValues,
+		public static string ExtendMessage(string message, string sql, object[] parameterValues,
 		                                   IDictionary<string, TypedValue> namedParameters)
 		{
 			var sb = new StringBuilder();
@@ -104,6 +112,12 @@ namespace NHibernate.Exceptions
 				sql = new SqlString(query);
 			}
 			return sql;
+		}
+
+		public static string TryGetActualSqlQuery(Exception sqle, string sql)
+		{
+			var query = (string)sqle.Data["actual-sql-query"];
+			return query ?? sql;
 		}
 	}
 }

@@ -2727,7 +2727,15 @@ namespace NHibernate.Persister.Entity
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not update: " + MessageHelper.InfoString(this, id, Factory), sql.Text);
+				var exceptionContext = new AdoExceptionContextInfo
+				                       	{
+				                       		SqlException = sqle,
+				                       		Message = "could not update: " + MessageHelper.InfoString(this, id, Factory),
+				                       		Sql = sql.Text.ToString(),
+																	EntityName = EntityName,
+																	EntityId = id
+				                       	};
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
 		}
 
