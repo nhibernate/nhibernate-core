@@ -79,7 +79,7 @@ namespace NHibernate.Test.ExceptionsTest
 			catch (Exception sqle)
 			{
 				ADOExceptionReporter.LogExceptions(sqle, "Just output!!!!");
-				ADOException adoException = converter.Convert(sqle, null, null);
+				Exception adoException = converter.Convert(new AdoExceptionContextInfo{SqlException  = sqle});
 				Assert.AreEqual(typeof(ConstraintViolationException), adoException.GetType(),
 												"Bad conversion [" + sqle.Message + "]");
 				ConstraintViolationException ex = (ConstraintViolationException)adoException;
@@ -126,7 +126,9 @@ namespace NHibernate.Test.ExceptionsTest
 			}
 			catch (Exception sqle)
 			{
-				Assert.AreEqual(typeof(SQLGrammarException), converter.Convert(sqle, null, null).GetType(), "Bad conversion [" + sqle.Message + "]");
+				Assert.AreEqual(typeof (SQLGrammarException),
+				                converter.Convert(new AdoExceptionContextInfo {SqlException = sqle}).GetType(),
+				                "Bad conversion [" + sqle.Message + "]");
 			}
 			finally
 			{

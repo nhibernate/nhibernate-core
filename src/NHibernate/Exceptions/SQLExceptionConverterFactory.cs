@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using log4net;
-using NHibernate.SqlCommand;
 using NHibernate.Util;
 
 namespace NHibernate.Exceptions
@@ -16,9 +15,9 @@ namespace NHibernate.Exceptions
 		{
 			#region ISQLExceptionConverter Members
 
-			public ADOException Convert(Exception sqlException, string message, SqlString sql)
+			public Exception Convert(AdoExceptionContextInfo exceptionContextInfo)
 			{
-				throw new GenericADOException(message, sqlException, sql);
+				throw new GenericADOException(exceptionContextInfo.Message, exceptionContextInfo.SqlException, exceptionContextInfo.Sql);
 			}
 
 			#endregion

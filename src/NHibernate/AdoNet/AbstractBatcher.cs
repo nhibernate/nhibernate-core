@@ -501,7 +501,7 @@ namespace NHibernate.AdoNet
 			get { return commandsToClose.Count > 0 || readersToClose.Count > 0; }
 		}
 
-		protected ADOException Convert(Exception sqlException, string message)
+		protected Exception Convert(Exception sqlException, string message)
 		{
 			return ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqlException, message);
 		}

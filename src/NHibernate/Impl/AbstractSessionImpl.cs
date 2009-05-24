@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Transactions;
 using NHibernate.AdoNet;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -285,7 +284,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		protected ADOException Convert(Exception sqlException, string message)
+		protected Exception Convert(Exception sqlException, string message)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{

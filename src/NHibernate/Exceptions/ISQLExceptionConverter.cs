@@ -1,8 +1,32 @@
 using System;
-using NHibernate.SqlCommand;
 
 namespace NHibernate.Exceptions
 {
+	/// <summary>
+	/// Collect data of an <see cref="ADOException"/> to be converted.
+	/// </summary>
+	public class AdoExceptionContextInfo
+	{
+		// This class was introduced, in NH, to allow less intrusive possible extensions 
+		// of information given to the ISQLExceptionConverter 
+		// (extensions of a class instead succesive changes of a method)
+
+		/// <summary>
+		/// The <see cref="System.Data.Common.DbException"/> to be converted.
+		/// </summary>
+		public Exception SqlException { get; set; }
+
+		/// <summary>
+		/// An optional error message.
+		/// </summary>
+		public string Message { get; set; }
+
+		/// <summary>
+		/// The SQL that generate the exception
+		/// </summary>
+		public string Sql { get; set; }
+	}
+
 	/// <summary> 
 	/// Defines a contract for implementations that know how to convert a <see cref="System.Data.Common.DbException"/>
 	/// into NHibernate's <see cref="ADOException"/> hierarchy. 
@@ -20,12 +44,10 @@ namespace NHibernate.Exceptions
 	public interface ISQLExceptionConverter
 	{
 		/// <summary> 
-		/// Convert the given <see cref="System.Data.Common.DbException"/> into NHibernate's ADOException hierarchy. 
+		/// Convert the given <see cref="System.Data.Common.DbException"/> into custom Exception. 
 		/// </summary>
-		/// <param name="sqlException">The <see cref="System.Data.Common.DbException"/> to be converted. </param>
-		/// <param name="message"> An optional error message. </param>
-		/// <param name="sql">The SQL that generate the exception</param>
-		/// <returns> The resulting ADOException. </returns>
-		ADOException Convert(Exception sqlException, string message, SqlString sql);
+		/// <param name="adoExceptionContextInfo">Available information during exception throw.</param>
+		/// <returns> The resulting Exception to throw. </returns>
+		Exception Convert(AdoExceptionContextInfo adoExceptionContextInfo);
 	}
 }

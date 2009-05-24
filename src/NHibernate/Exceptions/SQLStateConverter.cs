@@ -1,5 +1,4 @@
 using System;
-using NHibernate.SqlCommand;
 
 namespace NHibernate.Exceptions
 {
@@ -19,7 +18,7 @@ namespace NHibernate.Exceptions
 
 		#region ISQLExceptionConverter Members
 
-		public ADOException Convert(Exception sqlException, string message, SqlString sql)
+		public Exception Convert(AdoExceptionContextInfo exceptionInfo)
 		{
 			/*
 			 * So far I know we don't have something similar to "X/Open-compliant SQLState" in .NET
@@ -27,7 +26,7 @@ namespace NHibernate.Exceptions
 			 * and its own IViolatedConstraintNameExtracter if needed.
 			 * The System.Data.Common.DbException, of .NET2.0, don't give us something applicable to all dialects.
 			 */
-			return HandledNonSpecificException(sqlException, message, sql);
+			return HandledNonSpecificException(exceptionInfo.SqlException, exceptionInfo.Message, exceptionInfo.Sql);
 		}
 
 		#endregion
@@ -37,7 +36,7 @@ namespace NHibernate.Exceptions
 		/// <param name="message">An optional message </param>
 		/// <param name="sql">Optionally, the sql being performed when the exception occurred. </param>
 		/// <returns> The converted exception; should <b>never</b> be null. </returns>
-		public static ADOException HandledNonSpecificException(Exception sqlException, string message, SqlString sql)
+		public static ADOException HandledNonSpecificException(Exception sqlException, string message, string sql)
 		{
 			return new GenericADOException(message, sqlException, sql);
 		}

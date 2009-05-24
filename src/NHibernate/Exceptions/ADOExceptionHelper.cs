@@ -21,12 +21,13 @@ namespace NHibernate.Exceptions
 		/// <param name="message">An optional error message.</param>
 		/// <param name="sql">The SQL executed.</param>
 		/// <returns> The converted <see cref="ADOException"/>.</returns>
-		public static ADOException Convert(ISQLExceptionConverter converter, Exception sqlException, string message,
+		public static Exception Convert(ISQLExceptionConverter converter, Exception sqlException, string message,
 		                                   SqlString sql)
 		{
 			sql = TryGetActualSqlQuery(sqlException, sql);
 			ADOExceptionReporter.LogExceptions(sqlException, ExtendMessage(message, sql, null, null));
-			return converter.Convert(sqlException, message, sql);
+			return
+				converter.Convert(new AdoExceptionContextInfo {SqlException = sqlException, Message = message, Sql = sql.ToString()});
 		}
 
 		/// <summary> 
@@ -37,7 +38,7 @@ namespace NHibernate.Exceptions
 		/// <param name="sqlException">The exception to convert.</param>
 		/// <param name="message">An optional error message.</param>
 		/// <returns> The converted <see cref="ADOException"/>.</returns>
-		public static ADOException Convert(ISQLExceptionConverter converter, Exception sqlException, string message)
+		public static Exception Convert(ISQLExceptionConverter converter, Exception sqlException, string message)
 		{
 			var sql = new SqlString(SQLNotAvailable);
 			sql = TryGetActualSqlQuery(sqlException, sql);
@@ -50,7 +51,7 @@ namespace NHibernate.Exceptions
 			sql = TryGetActualSqlQuery(sqle, sql);
 			string extendMessage = ExtendMessage(message, sql, parameterValues, namedParameters);
 			ADOExceptionReporter.LogExceptions(sqle, extendMessage);
-			return new ADOException(extendMessage, sqle, sql);
+			return new ADOException(extendMessage, sqle, sql.ToString());
 		}
 
 		/// <summary> For the given <see cref="Exception"/>, locates the <see cref="System.Data.Common.DbException"/>. </summary>

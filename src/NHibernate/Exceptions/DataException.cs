@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.Serialization;
-using NHibernate.SqlCommand;
 
 namespace NHibernate.Exceptions
 {
@@ -13,7 +12,7 @@ namespace NHibernate.Exceptions
 	public class DataException : ADOException
 	{
 		public DataException(SerializationInfo info, StreamingContext context) : base(info, context) {}
-		public DataException(string message, Exception innerException, SqlString sql) : base(message, innerException, sql) {}
+		public DataException(string message, Exception innerException, string sql) : base(message, innerException, sql) {}
 		public DataException(string message, Exception innerException) : base(message, innerException) {}
 	}
 }

@@ -1,30 +1,28 @@
 ﻿using System;
 using System.Data.Common;
-using NHibernate;
 using NHibernate.Exceptions;
-using NHibernate.SqlCommand;
 
 public class PostgresExceptionConverterExample : ISQLExceptionConverter
 {
 	#region ISQLExceptionConverter Members
 
-	public ADOException Convert(Exception sqlException, string message, SqlString sql)
+	public Exception Convert(AdoExceptionContextInfo exInfo)
 	{
-		var sqle = ADOExceptionHelper.ExtractDbException(sqlException) as DbException;
+		var sqle = ADOExceptionHelper.ExtractDbException(exInfo.SqlException) as DbException;
 		if (sqle != null)
 		{
 			string code = (string) sqle.GetType().GetProperty("Code").GetValue(sqle, null);
 
 			if (code == "23503")
 			{
-				return new ConstraintViolationException(message, sqle.InnerException, sql, null);
+				return new ConstraintViolationException(exInfo.Message, sqle.InnerException, exInfo.Sql, null);
 			}
 			if (code == "42P01")
 			{
-				return new SQLGrammarException(message, sqle.InnerException, sql);
+				return new SQLGrammarException(exInfo.Message, sqle.InnerException, exInfo.Sql);
 			}
 		}
-		return SQLStateConverter.HandledNonSpecificException(sqlException, message, sql);
+		return SQLStateConverter.HandledNonSpecificException(exInfo.SqlException, exInfo.Message, exInfo.Sql);
 	}
 
 	#endregion

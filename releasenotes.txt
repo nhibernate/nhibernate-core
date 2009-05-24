@@ -29,6 +29,8 @@ Build 2.1.0
 		* CriteriaUtil is gone. NHibernate.Transform.Transformers now returns predefined IResultTransformer.
 		* ISessionFactory.Settings is gone (moved to ISessionFactoryImplementor.Settings)
 		* Obsolete ORACLE dialects was removed (new implementations are available)
+		* ISQLExceptionConverter was changed in order to have more flexibility about information available for the conversion and followed management.
+		* ADOException now use string instead SqlString
 		
 Build 2.1.0.Alpha2 (rev4167)
 ========================

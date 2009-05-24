@@ -1,7 +1,6 @@
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using NHibernate.SqlCommand;
 
 namespace NHibernate
 {
@@ -16,7 +15,7 @@ namespace NHibernate
 	[Serializable]
 	public class ADOException : HibernateException
 	{
-		private readonly SqlString sql;
+		private readonly string sql;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ADOException"/> class.
@@ -31,7 +30,7 @@ namespace NHibernate
 		{
 		}
 
-		public ADOException(string message, Exception innerException, SqlString sql)
+		public ADOException(string message, Exception innerException, string sql)
 			: base(message + "[SQL: " + sql + "]", innerException)
 		{
 			this.sql = sql;
@@ -49,7 +48,7 @@ namespace NHibernate
 		/// </param>
 		protected ADOException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
-			this.sql = (SqlString) info.GetValue("sql", typeof(SqlString));
+			this.sql = (string) info.GetValue("sql", typeof(string));
 		}
 
 		[SecurityPermission(SecurityAction.LinkDemand,
@@ -60,7 +59,7 @@ namespace NHibernate
 			info.AddValue("sql", sql);
 		}
 
-		public SqlString SqlString
+		public string SqlString
 		{
 			get { return sql; }
 		}

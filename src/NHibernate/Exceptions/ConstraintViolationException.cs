@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.Serialization;
-using NHibernate.SqlCommand;
 
 namespace NHibernate.Exceptions
 {
@@ -15,7 +14,7 @@ namespace NHibernate.Exceptions
 		public ConstraintViolationException(SerializationInfo info, StreamingContext context)
 			: base(info, context) {}
 
-		public ConstraintViolationException(string message, Exception innerException, SqlString sql, string constraintName)
+		public ConstraintViolationException(string message, Exception innerException, string sql, string constraintName)
 			: base(message, innerException, sql)
 		{
 			this.constraintName = constraintName;
