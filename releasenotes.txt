@@ -69,7 +69,7 @@ Build 2.1.0.Alpha3 (rev4378)
     * [NH-1516] - HQL doesn't support "update" statements
     * [NH-1553] - SQL Server 2005: Support for wrapping snapshot isolation update conflict SQLException into a NHibernate StaleObjectStateException.
     * [NH-1670] - MutiCriteria and MultiQuery results may be loaded directly into a generic List<T> instead of an ArrayList
-    * [NH-1745] - SQL formatters for DLL and all others SQLs
+    * [NH-1745] - SQL formatters for DDL and all others SQLs
     * [NH-1750] - Mark  NHibernate.Util.WeakHashtable  [Serializable]
     * [NH-1765] - Add ISessionImplementor property to PreDeleteEvent
     * [NH-1791] - Allow passing params of projections to ICriteria.SetProjectios
