@@ -42,6 +42,6 @@
 
 	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
 	<target name="build" depends="init generate-assemblyinfo common.compile-tests" />
-	<target name="test" depends="init build common.run-tests" />
+	<target name="test" depends="init build common.run-database-tests" />
 
 </project>

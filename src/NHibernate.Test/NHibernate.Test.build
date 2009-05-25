@@ -28,6 +28,8 @@
 	</target>
 	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
 	<target name="build" depends="init generate-assemblyinfo common.compile-tests">
+
+
 		<if test="${file::exists(config.FileName)}">
 			<copy file="hibernate.cfg.xml" tofile="${bin.dir}/hibernate.cfg.xml" />
 		</if>
