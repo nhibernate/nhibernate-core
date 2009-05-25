@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
+		<bytecode-provider type="lcg"/>
+		<reflection-optimizer use="true"/>
+		<session-factory name="NHibernate.Test">
+			<property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>
+			<property name="cache.provider_class">NHibernate.Cache.HashtableCacheProvider, NHibernate</property>
+			<property name="cache.use_query_cache">true</property>
+			<property name="query.startup_check">false</property>
+			<!-- 
+				The valid strings for Isolation can be found in the documentation for the System.Data.IsolationLevel
+				Enumeration documentation.
+				Use the member names - not the values.
+			-->
+			<property name="adonet.batch_size">10</property>
+			<property name="connection.isolation">ReadCommitted</property>
+			<property name="format_sql">true</property>
+
+			<!-- This is the System.Data.dll provider for MSSQL Server -->
+			<property name="connection.driver_class">NHibernate.Driver.SqlClientDriver</property>
+			<property name="dialect">NHibernate.Dialect.MsSql2005Dialect</property>
+			<property name="connection.connection_string">Server=.\SQLExpress;initial catalog=nhibernate;Integrated Security=SSPI</property>
+			<property name="show_sql">false</property>
+			<property name="use_outer_join">true</property>
+			<property name="command_timeout">444</property>
+			<property name="query.substitutions">true 1, false 0, yes 'Y', no 'N'</property>
+			<property name="adonet.wrap_result_sets">false</property>
+
+			<property name="proxyfactory.factory_class">NHibernate.ByteCode.LinFu.ProxyFactoryFactory, NHibernate.ByteCode.LinFu</property>
+		</session-factory>
+	</hibernate-configuration>
