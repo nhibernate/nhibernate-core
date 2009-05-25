@@ -14,6 +14,7 @@
 	</target>
 	<target name="copy-teamcity-configuration">
 		<copy file="${teamcity.dotnet.nunitaddin}-2.5.0.dll" todir="${root.dir}/Tools/nunit/addins" />
+		<copy file="${teamcity.dotnet.nunitaddin}-2.5.0.pdb" todir="${root.dir}/Tools/nunit/addins" />
 		<copy file="build-common/teamcity-hibernate.cfg.xml" tofile="${bin.dir}/hibernate.cfg.xml"  />
 	</target>
 </project>
