@@ -63,7 +63,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractProxyFactory.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="LazyInitializer.cs" />
     <Compile Include="ProxyFactory.cs" />

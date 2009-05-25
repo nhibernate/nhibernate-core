@@ -1,77 +1,19 @@
 using System;
-using System.Reflection;
 using Castle.DynamicProxy;
-using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Proxy;
-using NHibernate.Type;
 
 namespace NHibernate.ByteCode.Castle
 {
-	public class ProxyFactory : IProxyFactory
+	public class ProxyFactory : AbstractProxyFactory
 	{
 		protected static readonly ILog log = LogManager.GetLogger(typeof (ProxyFactory));
-		private static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator();
-
-		private System.Type _persistentClass;
-		private System.Type[] _interfaces;
-		private MethodInfo _getIdentifierMethod;
-		private MethodInfo _setIdentifierMethod;
-		private string _entityName;
-		private IAbstractComponentType _componentIdType;
-
-		public virtual void PostInstantiate(string entityName, System.Type persistentClass, ISet<System.Type> interfaces,
-		                                    MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod,
-		                                    IAbstractComponentType componentIdType)
-		{
-			_entityName = entityName;
-			_persistentClass = persistentClass;
-			_interfaces = new System.Type[interfaces.Count];
-			interfaces.CopyTo(_interfaces, 0);
-			_getIdentifierMethod = getIdentifierMethod;
-			_setIdentifierMethod = setIdentifierMethod;
-			_componentIdType = componentIdType;
-		}
+		private static readonly ProxyGenerator ProxyGenerator = new ProxyGenerator();
 
 		protected static ProxyGenerator DefaultProxyGenerator
 		{
-			get { return _proxyGenerator; }
-		}
-
-		protected System.Type PersistentClass
-		{
-			get { return _persistentClass; }
-		}
-
-		protected System.Type[] Interfaces
-		{
-			get { return _interfaces; }
-		}
-
-		protected MethodInfo GetIdentifierMethod
-		{
-			get { return _getIdentifierMethod; }
-		}
-
-		protected MethodInfo SetIdentifierMethod
-		{
-			get { return _setIdentifierMethod; }
-		}
-
-		protected bool IsClassProxy
-		{
-			get { return _interfaces.Length == 1; }
-		}
-
-		public string EntityName
-		{
-			get { return _entityName; }
-		}
-
-		public IAbstractComponentType ComponentIdType
-		{
-			get { return _componentIdType; }
+			get { return ProxyGenerator; }
 		}
 
 		/// <summary>
@@ -80,16 +22,16 @@ namespace NHibernate.ByteCode.Castle
 		/// <param name="id">The value for the Id.</param>
 		/// <param name="session">The Session the proxy is in.</param>
 		/// <returns>A fully built <c>INHibernateProxy</c>.</returns>
-		public virtual INHibernateProxy GetProxy(object id, ISessionImplementor session)
+		public override INHibernateProxy GetProxy(object id, ISessionImplementor session)
 		{
 			try
 			{
-				var initializer = new LazyInitializer(EntityName, _persistentClass, id, _getIdentifierMethod,
-				                                            _setIdentifierMethod, ComponentIdType, session);
+				var initializer = new LazyInitializer(EntityName, PersistentClass, id, GetIdentifierMethod,
+				                                            SetIdentifierMethod, ComponentIdType, session);
 
 				object generatedProxy = IsClassProxy
-				                        	? _proxyGenerator.CreateClassProxy(_persistentClass, _interfaces, initializer)
-				                        	: _proxyGenerator.CreateInterfaceProxyWithoutTarget(_interfaces[0], _interfaces,
+				                        	? ProxyGenerator.CreateClassProxy(PersistentClass, Interfaces, initializer)
+				                        	: ProxyGenerator.CreateInterfaceProxyWithoutTarget(Interfaces[0], Interfaces,
 				                        	                                                    initializer);
 
 				initializer._constructed = true;

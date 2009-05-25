@@ -598,6 +598,7 @@
     <Compile Include="Hql\Ast\ANTLR\Util\LiteralProcessor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Util\NodeTraverser.cs" />
     <Compile Include="Param\VersionTypeSeedParameterSpecification.cs" />
+    <Compile Include="Proxy\AbstractProxyFactory.cs" />
     <Compile Include="SqlCommand\InsertSelect.cs" />
     <Compile Include="Transaction\AdoNetWithDistrubtedTransactionFactory.cs" />
     <Compile Include="Transform\ToListResultTransformer.cs" />
