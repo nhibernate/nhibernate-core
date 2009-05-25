@@ -223,7 +223,7 @@
 	<target name="common.run-tests"
 		description="Run NUnit tests">
 		<exec program="${root.dir}/Tools/nunit/nunit-console-x86.exe">
-			<arg line="${bin.dir}/${project::get-name()}.dll /xml=${bin.dir}/${project::get-name()}.dll.result.xml" />
+			<arg line="${bin.dir}/${project::get-name()}.dll" />
 		</exec>
 
 		<!--<nunit2>
