@@ -56,5 +56,28 @@
 			<generator class="assigned"/>
 		</id>
 	</class>
+
+	<class name="Animal" abstract="true">
+		<id type="int">
+			<generator class="hilo"/>
+		</id>
+		<discriminator column="ObjectType"/>
+		<property name="Description"/>
+		<subclass name="Reptile">
+			<property name="BodyTemperature"/>
+			<subclass name="Lizard"/>
+		</subclass>
+		<subclass name="Mammal">
+			<property name="Pregnant"/>
+			<property name="Birthdate" type="Date"/>
+			<subclass name="DomesticAnimal">
+				<meta attribute="Auditable"/>
+				<property name="Name"/>
+				<many-to-one name="Owner"/>
+				<subclass name="Cat"/>
+				<subclass name="Dog"/>
+			</subclass>
+		</subclass>
+	</class>
 </hibernate-mapping>
 
