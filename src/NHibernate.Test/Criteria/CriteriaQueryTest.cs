@@ -286,6 +286,44 @@ namespace NHibernate.Test.Criteria
 		}
 
 		[Test]
+		public void SimplePagination()
+		{
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
+			{
+				session.Save(new Student {Name = "Mengano", StudentNumber = 232});
+				session.Save(new Student {Name = "Ayende", StudentNumber = 999});
+				session.Save(new Student {Name = "Fabio", StudentNumber = 123});
+				session.Save(new Student {Name = "Merlo", StudentNumber = 456});
+				session.Save(new Student {Name = "Fulano", StudentNumber = 0});
+
+				t.Commit();
+			}
+
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
+			{
+				var result = session.CreateCriteria<Student>()
+					.Add(Restrictions.Gt("StudentNumber", 0L))
+					.AddOrder(Order.Asc("StudentNumber"))
+					.SetFirstResult(1).SetMaxResults(2)
+					.List<Student>();
+				Assert.That(result.Count, Is.EqualTo(2));
+				Assert.That(result[0].StudentNumber, Is.EqualTo(232));
+				Assert.That(result[1].StudentNumber, Is.EqualTo(456));
+
+				t.Commit();
+			}
+
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
+			{
+				session.CreateQuery("delete from Student").ExecuteUpdate();
+				t.Commit();
+			}
+		}
+
+		[Test]
 		public void CloningDetachedCriteriaTest()
 		{
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
