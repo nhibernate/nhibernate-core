@@ -79,6 +79,7 @@
 								<xs:enumeration value="cache.use_second_level_cache" />
 								<xs:enumeration value="cache.region_prefix" />
 								<xs:enumeration value="cache.use_minimal_puts" />
+								<xs:enumeration value="cache.default_expiration" />
 								<xs:enumeration value="query.substitutions" />
 								<xs:enumeration value="query.factory_class" />
 								<xs:enumeration value="query.imports" />

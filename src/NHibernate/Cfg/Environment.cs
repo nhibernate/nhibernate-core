@@ -120,6 +120,7 @@ namespace NHibernate.Cfg
 		public const string UseSecondLevelCache = "cache.use_second_level_cache";
 		public const string CacheRegionPrefix = "cache.region_prefix";
 		public const string UseMinimalPuts = "cache.use_minimal_puts";
+		public const string CacheDefaultExpiration = "cache.default_expiration";
 		public const string QuerySubstitutions = "query.substitutions";
 
 		/// <summary> Should named queries be checked during startup (the default is enabled). </summary>
