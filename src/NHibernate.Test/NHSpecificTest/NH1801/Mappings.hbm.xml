@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1801"
+				   assembly="NHibernate.Test">
+
+	<class name="A">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+
+		<property name="Name" />
+	</class>
+
+  <class name="B">
+    <id name="Id">
+      <generator class="assigned" />
+    </id>
+
+    <property name="Name" />
+
+    <many-to-one name="A"/>
+  </class>
+
+  <class name="C">
+    <id name="Id">
+		<generator class="foreign">
+			<param name="property">A</param>
+		</generator>
+	</id>
+    <property name="Name" />
+
+    <one-to-one name="A" class="A" constrained="true"/>
+
+    <!--using a many-to-one assosciation instead makes the test succeed -->
+
+    <!--<many-to-one name="A"></many-to-one>-->
+  </class>
+</hibernate-mapping>

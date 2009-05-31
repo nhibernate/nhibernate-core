@@ -70,33 +70,43 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			MutateRowValueConstructorSyntaxesIfNecessary( lhsType, rhsType );
 		}
 
-		protected void MutateRowValueConstructorSyntaxesIfNecessary(IType lhsType, IType rhsType) 
+		protected void MutateRowValueConstructorSyntaxesIfNecessary(IType lhsType, IType rhsType)
 		{
 			// TODO : this really needs to be delayed unitl after we definitively know all node types
 			// where this is currently a problem is parameters for which where we cannot unequivocally
 			// resolve an expected type
 			ISessionFactoryImplementor sessionFactory = SessionFactoryHelper.Factory;
 
-			if ( lhsType != null && rhsType != null ) 
+			if (lhsType != null && rhsType != null)
 			{
-				int lhsColumnSpan = lhsType.GetColumnSpan( sessionFactory );
-				if ( lhsColumnSpan != rhsType.GetColumnSpan( sessionFactory ) ) 
+				int lhsColumnSpan = lhsType.GetColumnSpan(sessionFactory);
+				var rhsColumnSpan = rhsType.GetColumnSpan(sessionFactory);
+				// NH different behavior NH-1801
+				if (lhsColumnSpan != rhsColumnSpan && !AreCompatibleEntityTypes(lhsType, rhsType))
 				{
-					throw new TypeMismatchException(
-							"left and right hand sides of a binary logic operator were incompatibile [" +
-							lhsType.Name + " : "+ rhsType.Name + "]"
-					);
+					throw new TypeMismatchException("left and right hand sides of a binary logic operator were incompatibile ["
+					                                + lhsType.Name + " : " + rhsType.Name + "]");
 				}
-				if ( lhsColumnSpan > 1 ) 
+				if (lhsColumnSpan > 1)
 				{
 					// for dialects which are known to not support ANSI-SQL row-value-constructor syntax,
 					// we should mutate the tree.
-					if ( !sessionFactory.Dialect.SupportsRowValueConstructorSyntax) 
+					if (!sessionFactory.Dialect.SupportsRowValueConstructorSyntax)
 					{
-						MutateRowValueConstructorSyntax( lhsColumnSpan );
+						MutateRowValueConstructorSyntax(lhsColumnSpan);
 					}
 				}
 			}
+		}
+
+		private static bool AreCompatibleEntityTypes(IType lhsType, IType rhsType)
+		{
+			if(lhsType.IsEntityType && rhsType.IsEntityType)
+			{
+				return lhsType.ReturnedClass.IsAssignableFrom(rhsType.ReturnedClass) ||
+					rhsType.ReturnedClass.IsAssignableFrom(lhsType.ReturnedClass);
+			}
+			return false;
 		}
 
 		/**
