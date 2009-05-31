@@ -165,11 +165,19 @@ namespace NHibernate.Test.MappingTest
 			Assert.That(col.ComparerClassName, Text.StartsWith("NHibernate.Test.MappingTest.NonExistingComparator"));
 		}
 
-		[Test, Ignore("Not fixed yet.")]
+		[Test]
 		public void ReadSubClasses()
 		{
 			PersistentClass cm = cfg.GetClassMapping("NHibernate.Test.MappingTest.DomesticAnimal");
 			MetaAttribute metaAttribute = cm.GetMetaAttribute("Auditable");
+			Assert.That(metaAttribute, Is.Not.Null);
+			
+			cm = cfg.GetClassMapping("NHibernate.Test.MappingTest.Cat");
+			metaAttribute = cm.GetMetaAttribute("Auditable");
+			Assert.That(metaAttribute, Is.Not.Null);
+			
+			cm = cfg.GetClassMapping("NHibernate.Test.MappingTest.Dog");
+			metaAttribute = cm.GetMetaAttribute("Auditable");
 			Assert.That(metaAttribute, Is.Not.Null);
 		}
 	}

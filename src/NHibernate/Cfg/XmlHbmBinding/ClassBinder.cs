@@ -201,7 +201,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			model.OptimisticLockMode = GetOptimisticLockMode(olNode);
 
 			// META ATTRIBUTES
-			model.MetaAttributes = GetMetas(classMapping, inheritedMetas);
+			model.MetaAttributes = classMapping != null
+			                       	? GetMetas(classMapping, inheritedMetas)
+			                       	: GetMetas(node.SelectNodes(HbmConstants.nsMeta, namespaceManager), inheritedMetas);
 
 			// PERSISTER
 			XmlAttribute persisterNode = node.Attributes["persister"];
