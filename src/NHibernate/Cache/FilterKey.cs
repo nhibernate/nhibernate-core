@@ -48,7 +48,7 @@ namespace NHibernate.Cache
 
 		public override string ToString()
 		{
-			return "FilterKey[" + filterName + filterParameters + ']';
+			return string.Format("FilterKey[{0}{1}]", filterName, CollectionPrinter.ToString(filterParameters));
 		}
 
 		public static ISet CreateFilterKeys(IDictionary<string, IFilter> enabledFilters, EntityMode entityMode)

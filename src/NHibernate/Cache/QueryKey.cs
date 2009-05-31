@@ -122,12 +122,12 @@ namespace NHibernate.Cache
 				}
 			}
 
-			if (!CollectionHelper.DictionaryEquals(namedParameters, that.namedParameters))
+			if (!CollectionHelper.SetEquals(filters, that.filters))
 			{
 				return false;
 			}
 
-			if (!CollectionHelper.SetEquals(filters, that.filters))
+			if (!CollectionHelper.DictionaryEquals(namedParameters, that.namedParameters))
 			{
 				return false;
 			}
@@ -216,6 +216,10 @@ namespace NHibernate.Cache
 				buf
 					.Append("; named parameters: ")
 					.Append(print.ToString(namedParameters));
+			}
+			if (filters != null)
+			{
+				buf.Append("; filters: ").Append(CollectionPrinter.ToString(filters));
 			}
 			if (firstRow != RowSelection.NoValue)
 			{

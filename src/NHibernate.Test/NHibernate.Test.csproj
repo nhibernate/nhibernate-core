@@ -93,7 +93,10 @@
     <Compile Include="Bytecode\Lightweight\BytecodeProviderFixture.cs" />
     <Compile Include="Bytecode\WrongProxyFactoryFactory.cs" />
     <Compile Include="CacheTest\CacheFixture.cs" />
+    <Compile Include="CacheTest\EntityWithFilters.cs" />
+    <Compile Include="CacheTest\FilterKeyFixture.cs" />
     <Compile Include="CacheTest\QueryCacheFixture.cs" />
+    <Compile Include="CacheTest\QueryKeyFixture.cs" />
     <Compile Include="CacheTest\TimestamperFixture.cs" />
     <Compile Include="Cascade\Job.cs" />
     <Compile Include="Cascade\JobBatch.cs" />
@@ -1833,6 +1836,7 @@
     <EmbeddedResource Include="BulkManipulation\SimpleClass.hbm.xml" />
     <EmbeddedResource Include="Ado\VerySimple.hbm.xml" />
     <EmbeddedResource Include="Ado\AlmostSimple.hbm.xml" />
+    <EmbeddedResource Include="CacheTest\EntityWithFilters.xml" />
     <Content Include="DynamicEntity\package.html" />
     <EmbeddedResource Include="NHSpecificTest\NH1553\MsSQL\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1788\Mappings.hbm.xml" />

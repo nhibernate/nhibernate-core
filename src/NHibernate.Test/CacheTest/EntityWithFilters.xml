@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.CacheTest">
+	<class name="EntityWithFilters">
+		<id type="int"/>
+		<property name="Description"/>
+		<property name="Value"/>
+		
+		<filter name="DescriptionLike" />
+		<filter name="DescriptionEqualAndValueGT" />
+	</class>
+	<query name="EntityWithFilters.All" cache-region="aRegion" cacheable="true">
+		from EntityWithFilters
+	</query>
+	<filter-def name="DescriptionLike" condition="Description like :pLike">
+		<filter-param name="pLike" type="string"/>
+	</filter-def>
+	<filter-def name="DescriptionEqualAndValueGT" condition="Description = :pDesc and Value > :pValue">
+		<filter-param name="pDesc" type="string"/>
+		<filter-param name="pValue" type="int"/>
+	</filter-def> 
+</hibernate-mapping>
