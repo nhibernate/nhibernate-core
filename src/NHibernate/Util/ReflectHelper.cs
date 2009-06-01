@@ -87,9 +87,6 @@ namespace NHibernate.Util
 				.GetGetter(theClass, propertyName);
 		}
 
-		//TODO: add a method in here ReflectedPropertyClass and replace most calls to GetGetter
-		// with calls to it
-
 		/// <summary>
 		/// Get the NHibernate <see cref="IType" /> for the named property of the <see cref="System.Type"/>.
 		/// </summary>
