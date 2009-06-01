@@ -39,7 +39,9 @@ namespace NHibernate.Util
 		{
 			try
 			{
-				MethodInfo method = clazz.GetMethod(methodName, parametersTypes);
+				MethodInfo method = !clazz.IsInterface
+				                    	? clazz.GetMethod(methodName, parametersTypes)
+				                    	: GetMethodFromInterface(clazz, methodName, parametersTypes);
 				if (method == null)
 				{
 					return false;
@@ -59,6 +61,29 @@ namespace NHibernate.Util
 			}
 		}
 
+		private static MethodInfo GetMethodFromInterface(System.Type type, string methodName, System.Type[] parametersTypes)
+		{
+			const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
+			if(type == null)
+			{
+				return null;
+			}
+			MethodInfo method = type.GetMethod(methodName, flags, null, parametersTypes, null);
+			if (method == null)
+			{
+				System.Type[] interfaces = type.GetInterfaces();
+				foreach (var @interface in interfaces)
+				{
+					method = GetMethodFromInterface(@interface, methodName, parametersTypes);
+					if(method != null)
+					{
+						return method;
+					}
+				}
+			}
+			return method;
+		}
+
 		/// <summary>
 		/// Determine if the specified <see cref="System.Type"/> overrides the
 		/// implementation of GetHashCode from <see cref="Object"/>
@@ -67,7 +92,7 @@ namespace NHibernate.Util
 		/// <returns><see langword="true" /> if any type in the hierarchy overrides GetHashCode().</returns>
 		public static bool OverridesGetHashCode(System.Type clazz)
 		{
-			return OverrideMethod(clazz, "Equals", System.Type.EmptyTypes);
+			return OverrideMethod(clazz, "GetHashCode", System.Type.EmptyTypes);
 		}
 
 		/// <summary>

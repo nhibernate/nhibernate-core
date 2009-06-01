@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1789">
+  <class name="ICat">
+    <id name="ID">
+      <generator class="assigned" />
+    </id>
+
+    <discriminator column="Type"></discriminator>
+    
+    <property name="Name" />
+
+    <subclass name="Cat" discriminator-value="cat"></subclass>
+    
+  </class>
+</hibernate-mapping>

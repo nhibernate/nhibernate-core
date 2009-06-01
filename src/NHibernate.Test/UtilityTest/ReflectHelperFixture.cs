@@ -19,6 +19,26 @@ namespace NHibernate.Test.UtilityTest
 			Assert.AreEqual(1, (int) result, "Should have found value of 1");
 		}
 
+		public interface IMyBaseWithEqual
+		{
+			bool Equals(object that);
+			int GetHashCode();
+		}
+
+		public interface IMyInheritedWithEqual : IMyBaseWithEqual
+		{
+		}
+
+		public interface IEmpty
+		{
+
+		}
+
+		public interface IComplex: IEmpty, IMyInheritedWithEqual
+		{
+			
+		}
+
 		[Test]
 		public void OverridesEquals()
 		{
@@ -26,8 +46,34 @@ namespace NHibernate.Test.UtilityTest
 			Assert.IsTrue(ReflectHelper.OverridesEquals(typeof(string)), "String does override equals");
 			Assert.IsFalse(ReflectHelper.OverridesEquals(typeof(IDisposable)), "IDisposable does not override equals");
 			Assert.IsTrue(ReflectHelper.OverridesEquals(typeof(BRhf)), "Base class overrides equals");
+			Assert.That(!ReflectHelper.OverridesEquals(typeof (object)), "System.Object does not override.");
 		}
 
+		[Test]
+		public void InheritedInterfaceOverridesEquals()
+		{
+			Assert.That(ReflectHelper.OverridesEquals(typeof(IMyBaseWithEqual)), "does override.");
+			Assert.That(ReflectHelper.OverridesEquals(typeof(IMyInheritedWithEqual)), "does override.");
+			Assert.That(ReflectHelper.OverridesEquals(typeof(IComplex)), "does override.");
+		}
+
+		[Test]
+		public void OverridesGetHashCode()
+		{
+			Assert.IsFalse(ReflectHelper.OverridesGetHashCode(this.GetType()), "ReflectHelperFixture does not override GetHashCode");
+			Assert.IsTrue(ReflectHelper.OverridesGetHashCode(typeof(string)), "String does override equals");
+			Assert.IsFalse(ReflectHelper.OverridesGetHashCode(typeof(IDisposable)), "IDisposable does not override GetHashCode");
+			Assert.IsTrue(ReflectHelper.OverridesGetHashCode(typeof(BRhf)), "Base class overrides GetHashCode");
+			Assert.That(!ReflectHelper.OverridesGetHashCode(typeof(object)), "System.Object does not override.");
+		}
+
+		[Test]
+		public void InheritedInterfaceOverridesGetHashCode()
+		{
+			Assert.That(ReflectHelper.OverridesGetHashCode(typeof(IMyBaseWithEqual)), "does override.");
+			Assert.That(ReflectHelper.OverridesGetHashCode(typeof(IMyInheritedWithEqual)), "does override.");
+			Assert.That(ReflectHelper.OverridesGetHashCode(typeof(IComplex)), "does override.");
+		}
 		[Test]
 		public void NoTypeFoundReturnsNull()
 		{
