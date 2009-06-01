@@ -28,5 +28,14 @@ namespace NHibernate.Test.TypesTest
 			TicksType type = (TicksType) NHibernateUtil.Ticks;
 			Assert.IsTrue(type.Seed(null) is DateTime, "seed should be DateTime");
 		}
+
+		[Test]
+		public void Comparer()
+		{
+			var type = (IVersionType)NHibernateUtil.Ticks;
+			object v1 = type.Seed(null);
+			var v2 = v1;
+			Assert.DoesNotThrow(() => type.Comparator.Compare(v1, v2));
+		}
 	}
 }

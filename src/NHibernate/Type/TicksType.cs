@@ -96,7 +96,7 @@ namespace NHibernate.Type
 
 		public IComparer Comparator
 		{
-			get { return Comparer<Int64>.Default; }
+			get { return Comparer<DateTime>.Default; }
 		}
 
 		#endregion
