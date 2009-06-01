@@ -211,6 +211,9 @@
     <Compile Include="Events\Collections\IParentWithCollection.cs" />
     <Compile Include="Events\Collections\Values\ParentWithCollectionOfValues.cs" />
     <Compile Include="Events\Collections\Values\ValuesBagCollectionEventFixture.cs" />
+    <Compile Include="Events\PostEvents\AssertOldStatePostListener.cs" />
+    <Compile Include="Events\PostEvents\PostUpdateFixture.cs" />
+    <Compile Include="Events\PostEvents\SimpleEntity.cs" />
     <Compile Include="ExceptionsTest\PostgresExceptionConverterExample.cs" />
     <Compile Include="ExceptionsTest\Group.cs" />
     <Compile Include="ExceptionsTest\MSSQLExceptionConverterExample.cs" />
@@ -1847,6 +1850,7 @@
     <EmbeddedResource Include="Ado\AlmostSimple.hbm.xml" />
     <EmbeddedResource Include="CacheTest\EntityWithFilters.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="Events\PostEvents\SimpleEntity.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1789\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1801\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1796\Mappings.hbm.xml" />
