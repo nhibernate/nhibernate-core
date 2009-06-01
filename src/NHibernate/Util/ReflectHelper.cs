@@ -32,10 +32,15 @@ namespace NHibernate.Util
 		/// <returns><see langword="true" /> if any type in the hierarchy overrides Equals(object).</returns>
 		public static bool OverridesEquals(System.Type clazz)
 		{
+			return OverrideMethod(clazz, "Equals", new[] { typeof(object) });
+		}
+
+		private static bool OverrideMethod(System.Type clazz, string methodName, System.Type[] parametersTypes)
+		{
 			try
 			{
-				MethodInfo equals = clazz.GetMethod("Equals", new[] { typeof(object) });
-				if (equals == null)
+				MethodInfo method = clazz.GetMethod(methodName, parametersTypes);
+				if (method == null)
 				{
 					return false;
 				}
@@ -43,7 +48,7 @@ namespace NHibernate.Util
 				{
 					// make sure that the DeclaringType is not System.Object - if that is the
 					// declaring type then there is no override.
-					return !equals.DeclaringType.Equals(typeof(object));
+					return !method.DeclaringType.Equals(typeof(object));
 				}
 			}
 			catch (AmbiguousMatchException)
@@ -62,26 +67,7 @@ namespace NHibernate.Util
 		/// <returns><see langword="true" /> if any type in the hierarchy overrides GetHashCode().</returns>
 		public static bool OverridesGetHashCode(System.Type clazz)
 		{
-			try
-			{
-				MethodInfo getHashCode = clazz.GetMethod("GetHashCode", new System.Type[0]);
-				if (getHashCode == null)
-				{
-					return false;
-				}
-				else
-				{
-					// make sure that the DeclaringType is not System.Object - if that is the
-					// declaring type then there is no override.
-					return !getHashCode.DeclaringType.Equals(typeof(object));
-				}
-			}
-			catch (AmbiguousMatchException)
-			{
-				// an ambiguous match means that there is an override and it
-				// can't determine which one to use.
-				return true;
-			}
+			return OverrideMethod(clazz, "Equals", System.Type.EmptyTypes);
 		}
 
 		/// <summary>
