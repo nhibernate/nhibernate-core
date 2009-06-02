@@ -110,6 +110,8 @@
     <Compile Include="CfgTest\LocatedInTestAssembly.cs" />
     <Compile Include="CfgTest\MappingDocumentAggregatorTests.cs" />
     <Compile Include="CfgTest\MappingDocumentParserTests.cs" />
+    <Compile Include="Classic\EntityWithLifecycle.cs" />
+    <Compile Include="Classic\LifecycleFixture.cs" />
     <Compile Include="Classic\ValidatableFixture.cs" />
     <Compile Include="Classic\Video.cs" />
     <Compile Include="CollectionTest\A.cs" />
@@ -1851,6 +1853,7 @@
     <EmbeddedResource Include="Ado\VerySimple.hbm.xml" />
     <EmbeddedResource Include="Ado\AlmostSimple.hbm.xml" />
     <EmbeddedResource Include="CacheTest\EntityWithFilters.xml" />
+    <EmbeddedResource Include="Classic\EntityWithLifecycle.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
     <EmbeddedResource Include="NHSpecificTest\NH1757\Mappings.hbm.xml" />
     <EmbeddedResource Include="Events\PostEvents\SimpleEntity.hbm.xml" />

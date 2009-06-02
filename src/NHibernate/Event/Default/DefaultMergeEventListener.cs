@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using log4net;
+using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
@@ -230,6 +231,12 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
+				// NH different behavior : NH-1517
+				if (InvokeUpdateLifecycle(entity, persister, source))
+				{
+					return;
+				}
+
 				copyCache[entity] = result; //before cascade!
 
 				object target = source.PersistenceContext.Unproxy(result);
@@ -261,6 +268,20 @@ namespace NHibernate.Event.Default
 
 				@event.Result = result;
 			}
+		}
+
+		protected virtual bool InvokeUpdateLifecycle(object entity, IEntityPersister persister, IEventSource source)
+		{
+			if (persister.ImplementsLifecycle(source.EntityMode))
+			{
+				log.Debug("calling onUpdate()");
+				if (((ILifecycle)entity).OnUpdate(source) == LifecycleVeto.Veto)
+				{
+					log.Debug("update vetoed by onUpdate()");
+					return true;
+				}
+			}
+			return false;
 		}
 
 		private void MarkInterceptorDirty(object entity, object target)

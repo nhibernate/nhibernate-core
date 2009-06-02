@@ -1,0 +1,134 @@
+using System.Collections;
+using NHibernate.Cfg;
+using NUnit.Framework;
+
+namespace NHibernate.Test.Classic
+{
+	[TestFixture]
+	public class LifecycleFixture : TestCase
+	{
+		protected override string MappingsAssembly
+		{
+			get { return "NHibernate.Test"; }
+		}
+
+		protected override IList Mappings
+		{
+			get { return new[] { "Classic.EntityWithLifecycle.hbm.xml" }; }
+		}
+
+		protected override void Configure(Configuration configuration)
+		{
+			configuration.SetProperty(Environment.GenerateStatistics, "true");
+		}
+
+		[Test]
+		public void Save()
+		{
+			sessions.Statistics.Clear();
+			using (ISession s = OpenSession())
+			{
+				s.Save(new EntityWithLifecycle());
+				s.Flush();
+			}
+			Assert.That(sessions.Statistics.EntityInsertCount, Is.EqualTo(0));
+
+			var v = new EntityWithLifecycle("Shinobi", 10, 10);
+			using (ISession s = OpenSession())
+			{
+				s.Save(v);
+				s.Delete(v);
+				s.Flush();
+			}
+		}
+
+		[Test]
+		public void Update()
+		{
+			var v = new EntityWithLifecycle("Shinobi", 10, 10);
+			using (ISession s = OpenSession())
+			{
+				s.Save(v);
+				s.Flush();
+			}
+
+			// update detached
+			sessions.Statistics.Clear();
+			v.Heigth = 0;
+			using (ISession s = OpenSession())
+			{
+				s.Update(v);
+				s.Flush();
+			}
+			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(0));
+
+			// cleanup
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				s.CreateQuery("delete from EntityWithLifecycle").ExecuteUpdate();
+				tx.Commit();
+			}
+		}
+
+		[Test]
+		public void SaveOrUpdateCopy()
+		{
+			var v = new EntityWithLifecycle("Shinobi", 10, 10);
+			using (ISession s = OpenSession())
+			{
+				s.Save(v);
+				s.Flush();
+			}
+			v.Heigth = 0;
+			sessions.Statistics.Clear();
+			using (ISession s = OpenSession())
+			{
+				s.SaveOrUpdateCopy(v);
+				s.Flush();
+			}
+			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(0));
+
+			var v1 = new EntityWithLifecycle("Shinobi", 0, 10);
+			using (ISession s = OpenSession())
+			{
+				s.SaveOrUpdateCopy(v1);
+				s.Flush();
+			}
+			Assert.That(sessions.Statistics.EntityInsertCount, Is.EqualTo(0));
+			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(0));
+
+
+			// cleanup
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				s.CreateQuery("delete from EntityWithLifecycle").ExecuteUpdate();
+				tx.Commit();
+			}
+		}
+
+		[Test]
+		public void Delete()
+		{
+			var v = new EntityWithLifecycle("Shinobi", 10, 10);
+			using (ISession s = OpenSession())
+			{
+				s.Save(v);
+				s.Flush();
+				sessions.Statistics.Clear();
+				v.Heigth = 0;
+				s.Delete(v);
+				s.Flush();
+				Assert.That(sessions.Statistics.EntityDeleteCount, Is.EqualTo(0));
+			}
+
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				s.CreateQuery("delete from EntityWithLifecycle").ExecuteUpdate();
+				tx.Commit();
+			}
+		}
+	}
+}
