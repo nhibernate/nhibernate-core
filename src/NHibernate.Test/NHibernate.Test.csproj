@@ -364,6 +364,8 @@
     <Compile Include="NHSpecificTest\NH1343\Product.cs" />
     <Compile Include="NHSpecificTest\NH1343\ProductFixture.cs" />
     <Compile Include="NHSpecificTest\NH1388\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1531\DomainClass.cs" />
+    <Compile Include="NHSpecificTest\NH1531\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH1553\MsSQL\Person.cs" />
     <Compile Include="NHSpecificTest\NH1553\MsSQL\SnapshotIsolationUpdateConflictTest.cs" />
     <Compile Include="NHSpecificTest\NH1553\MsSQL\SQLUpdateConflictToStaleStateExceptionConverter.cs" />
@@ -1855,6 +1857,7 @@
     <EmbeddedResource Include="CacheTest\EntityWithFilters.xml" />
     <EmbeddedResource Include="Classic\EntityWithLifecycle.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1531\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1757\Mappings.hbm.xml" />
     <EmbeddedResource Include="Events\PostEvents\SimpleEntity.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1789\Mappings.hbm.xml" />
