@@ -364,6 +364,7 @@
     <Compile Include="NHSpecificTest\NH1343\Product.cs" />
     <Compile Include="NHSpecificTest\NH1343\ProductFixture.cs" />
     <Compile Include="NHSpecificTest\NH1388\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1487\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1531\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH1531\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH1553\MsSQL\Person.cs" />

@@ -1108,9 +1108,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			if (indexAttribute != null && table != null)
 			{
-				StringTokenizer tokens = new StringTokenizer(indexAttribute.Value, ", ");
+				var tokens = new StringTokenizer(indexAttribute.Value, ",", false);
 				foreach (string token in tokens)
-					table.GetOrCreateIndex(token).AddColumn(column);
+					table.GetOrCreateIndex(token.Trim()).AddColumn(column);
 			}
 		}
 
@@ -1118,9 +1118,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			if (uniqueKeyAttribute != null && table != null)
 			{
-				StringTokenizer tokens = new StringTokenizer(uniqueKeyAttribute.Value, ", ");
+				var tokens = new StringTokenizer(uniqueKeyAttribute.Value, ",", false);
 				foreach (string token in tokens)
-					table.GetOrCreateUniqueKey(token).AddColumn(column);
+					table.GetOrCreateUniqueKey(token.Trim()).AddColumn(column);
 			}
 		}
 
@@ -1287,9 +1287,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			if (indexAttribute != null && table != null)
 			{
-				StringTokenizer tokens = new StringTokenizer(indexAttribute, ", ");
+				var tokens = new StringTokenizer(indexAttribute, ",", false);
 				foreach (string token in tokens)
-					table.GetOrCreateIndex(token).AddColumn(column);
+					table.GetOrCreateIndex(token.Trim()).AddColumn(column);
 			}
 		}
 
@@ -1297,9 +1297,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			if (uniqueKeyAttribute != null && table != null)
 			{
-				StringTokenizer tokens = new StringTokenizer(uniqueKeyAttribute, ", ");
+				var tokens = new StringTokenizer(uniqueKeyAttribute, ",", false);
 				foreach (string token in tokens)
-					table.GetOrCreateUniqueKey(token).AddColumn(column);
+					table.GetOrCreateUniqueKey(token.Trim()).AddColumn(column);
 			}
 		}
 

@@ -152,16 +152,16 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				if (columnSchema.index != null && id.Table != null)
 				{
-					StringTokenizer tokens = new StringTokenizer(columnSchema.index, ", ");
+					var tokens = new StringTokenizer(columnSchema.index, ",", false);
 					foreach (string token in tokens)
-						id.Table.GetOrCreateIndex(token).AddColumn(column);
+						id.Table.GetOrCreateIndex(token.Trim()).AddColumn(column);
 				}
 
 				if (columnSchema.uniquekey != null && id.Table != null)
 				{
-					StringTokenizer tokens = new StringTokenizer(columnSchema.uniquekey, ", ");
+					var tokens = new StringTokenizer(columnSchema.uniquekey, ",", false);
 					foreach (string token in tokens)
-						id.Table.GetOrCreateUniqueKey(token).AddColumn(column);
+						id.Table.GetOrCreateUniqueKey(token.Trim()).AddColumn(column);
 				}
 			}
 		}
