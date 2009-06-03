@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping 
+  xmlns="urn:nhibernate-mapping-2.2"
+  assembly="NHibernate.Test"
+  namespace="NHibernate.Test.NHSpecificTest.NH1427">
+
+  <class name="Person" table="Person1">
+
+    <id name="PersonId" column="PersonId" type="Int32">
+      <generator class="assigned" />
+    </id>
+
+    <property name="Name" column="Name" type="String" length="25" not-null="true" />
+    
+    <join table="Person2">
+      <!-- Comment: causes test to fail -->
+      <key column="PersonId" />
+      <property name="LogonId" column="LogonId" type="String" length="16" not-null="true" />
+      <property name="LastLogon" column="LastLogon" type="DateTime" not-null="false" />
+    </join>
+    
+  </class>
+
+</hibernate-mapping>

@@ -345,10 +345,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			//PropertiesFromXML(node, persistentClass, mappings);
 			foreach (XmlNode subnode in node.ChildNodes)
 			{
+				//I am only concerned with elements that are from the nhibernate namespace
+				if (subnode.NamespaceURI != Configuration.MappingSchemaXMLNS)
+					continue;
+
 				string name = subnode.Name;
 				XmlAttribute nameAttribute = subnode.Attributes["name"];
 				string propertyName = nameAttribute == null ? null : nameAttribute.Value;
-
 				IValue value = null;
 				var collectionBinder = new CollectionBinder(this);
 				if (collectionBinder.CanCreate(name))
