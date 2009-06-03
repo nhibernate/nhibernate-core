@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1044"
+				   assembly="NHibernate.Test">
+	
+	<class name="Person">
+		<id name="Id">
+			<generator class="hilo"/>
+		</id>
+		<property name="Name"/>
+		<component name="Delivery">
+			<idbag name="Adresses" cascade="all">
+				<collection-id type="int" column="poid">
+					<generator class="hilo"/>
+				</collection-id>
+				<key column="owner"/>
+				<element column="street"/>
+			</idbag>
+		</component>
+	</class>
+</hibernate-mapping>

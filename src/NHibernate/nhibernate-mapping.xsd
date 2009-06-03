@@ -266,6 +266,7 @@
 					<xs:element ref="set" />
 					<xs:element ref="list" />
 					<xs:element ref="bag" />
+					<xs:element ref="idbag" />
 					<xs:element ref="array" />
 					<xs:element ref="primitive-array" />
 				</xs:choice>

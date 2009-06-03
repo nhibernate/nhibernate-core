@@ -350,6 +350,8 @@
     <Compile Include="NHSpecificTest\ElementsEnums\IntEnumsBagPartialNameFixture.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\IntEnumsBagFixture.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\Something.cs" />
+    <Compile Include="NHSpecificTest\NH1044\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH1044\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1093\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1093\SimpleCached.cs" />
     <Compile Include="NHSpecificTest\NH1159\Contact.cs" />
@@ -1860,6 +1862,7 @@
     <EmbeddedResource Include="CacheTest\EntityWithFilters.xml" />
     <EmbeddedResource Include="Classic\EntityWithLifecycle.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1044\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1427\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1531\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1757\Mappings.hbm.xml" />
