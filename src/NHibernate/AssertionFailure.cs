@@ -10,13 +10,14 @@ namespace NHibernate
 	[Serializable]
 	public class AssertionFailure : ApplicationException
 	{
+		private const string DefaultMessage = "An AssertionFailure occurred - this may indicate a bug in NHibernate or in your custom types.";
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssertionFailure"/> class.
 		/// </summary>
 		public AssertionFailure() : base(String.Empty)
 		{
-			LogManager.GetLogger(typeof(AssertionFailure)).Error(
-				"An AssertionFailure occurred - this may indicate a bug in NHibernate");
+			LogManager.GetLogger(typeof(AssertionFailure)).Error(DefaultMessage);
 		}
 
 		/// <summary>
@@ -25,8 +26,7 @@ namespace NHibernate
 		/// <param name="message">The message that describes the error. </param>
 		public AssertionFailure(string message) : base(message)
 		{
-			LogManager.GetLogger(typeof(AssertionFailure)).Error(
-				"An AssertionFailure occurred - this may indicate a bug in NHibernate", this);
+			LogManager.GetLogger(typeof(AssertionFailure)).Error(DefaultMessage, this);
 		}
 
 		/// <summary>
@@ -40,8 +40,7 @@ namespace NHibernate
 		/// </param>
 		public AssertionFailure(string message, Exception innerException) : base(message, innerException)
 		{
-			LogManager.GetLogger(typeof(AssertionFailure)).Error(
-				"An AssertionFailure occurred - this may indicate a bug in NHibernate", innerException);
+			LogManager.GetLogger(typeof(AssertionFailure)).Error(DefaultMessage, innerException);
 		}
 
 		/// <summary>
