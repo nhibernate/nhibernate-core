@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1507">
+	
+  <class name="Employee">
+    <id column="EmployeeId" name="Id" access="field.camelcase-underscore">
+      <generator class="identity" />
+    </id>
+    <property name="LastName" length="20" not-null="true" />
+    <property name="FirstName" length="10" not-null="true" />
+    <property name="Title" length="30" />
+    <property name="TitleOfCourtesy" length="25"/>
+    <property name="BirthDate"/>
+    <property name="HireDate"/>
+    <property name="Address" length="60"/>
+    <property name="City" length="15"/>
+    <property name="Region" length="15"/>
+    <property name="PostalCode" length="10"/>
+    <property name="Country" length="15"/>
+    <property name="HomePhone" length="24"/>
+    <property name="Extension" length="4"/>
+    <property name="Photo" type="BinaryBlob"/>
+    <property name="Notes" />
+    <property name="ReportsTo"/>
+    <property name="PhotoPath" length="255"/>
+    <bag name="orders" inverse="true" cascade="all">
+      <key column="EmployeeId" />
+      <one-to-many class="Order" />
+    </bag>
+  </class>
+
+  <class name="Order" table="Orders">
+    <id column="OrderID" name="Id" access="field.camelcase-underscore">
+      <generator class="identity" />
+    </id>
+    <many-to-one name="Employee" lazy="false" column="EmployeeId"/>
+    <property name="CustomerId"/>
+    <property name="OrderDate"/>
+    <property name="RequiredDate"/>
+    <property name="ShippedDate"/>
+    <property name="ShipVia"/>
+    <property name="Freight"/>
+    <property name="ShipName" length="40" />
+    <property name="ShipAddress" length="60" />
+    <property name="ShipCity" length="15" />
+    <property name="ShipRegion" length="15" />
+    <property name="ShipPostalCode" length="10" />
+    <property name="ShipCountry" length="15" />
+  </class>
+</hibernate-mapping>
