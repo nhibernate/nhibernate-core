@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="NHibernate.Test.NHSpecificTest.NH1810" assembly="NHibernate.Test">
+
+	<class name="NHibernate.Test.NHSpecificTest.NH1810.Disease, NHibernate.Test" table="Disease" lazy="true">
+		<cache usage="read-write" />
+		<id name="Id" access="nosetter.camelcase" column="Id" type="Int32" unsaved-value="0">
+			<generator class="native">
+			</generator>
+		</id>
+		<property name="Name" access="property" type="String">
+			<column name="Name"/>
+		</property>
+		<property name="Duration" access="property" type="Int32">
+			<column name="Duration"/>
+		</property>
+		<many-to-one name="MedicalRecord" class="NHibernate.Test.NHSpecificTest.NH1810.MedicalRecord, NHibernate.Test" column="MedicalRecordId" lazy="proxy" cascade="none" />
+	</class>
+
+	<class name="NHibernate.Test.NHSpecificTest.NH1810.MedicalRecord, NHibernate.Test" table="MedicalRecord" lazy="true">
+		<cache usage="read-write" />
+		<id name="Id" access="nosetter.camelcase" column="Id" type="Int32" unsaved-value="0">
+			<generator class="native">
+			</generator>
+		</id>
+		<property name="Reference" access="property" type="String">
+			<column name="Reference"/>
+		</property>
+		<set name="Diseases" access="nosetter.camelcase" table="Disease" lazy="true" inverse="true" cascade="all-delete-orphan">
+			<key column="MedicalRecordId" />
+			<one-to-many class="NHibernate.Test.NHSpecificTest.NH1810.Disease, NHibernate.Test" />
+		</set>
+	</class>
+	
+	<class name="NHibernate.Test.NHSpecificTest.NH1810.Doctor, NHibernate.Test" table="Doctor" lazy="true">
+		<cache usage="read-write" />
+		<id name="Id" access="nosetter.camelcase" column="Id" type="Int32" unsaved-value="0">
+			<generator class="native">
+			</generator>
+		</id>
+		<property name="DoctorNumber" access="property" type="Int32">
+			<column name="DoctorNumber"/>
+		</property>
+		<many-to-one name="MedicalRecord" class="NHibernate.Test.NHSpecificTest.NH1810.MedicalRecord, NHibernate.Test" column="MedicalRecordId" lazy="proxy" cascade="none" />
+	</class>
+
+	<class name="NHibernate.Test.NHSpecificTest.NH1810.Child, NHibernate.Test" table="Child" lazy="true">
+		<cache usage="read-write" />
+		<id name="Id" access="nosetter.camelcase" column="Id" type="Int32" unsaved-value="0">
+			<generator class="native">
+			</generator>
+		</id>
+		<property name="Age" access="property" type="Int32">
+			<column name="Age"/>
+		</property>
+		<many-to-one name="Parent" class="NHibernate.Test.NHSpecificTest.NH1810.Parent, NHibernate.Test" column="ParentId" lazy="proxy" cascade="none" />
+	</class>
+
+	<class name="NHibernate.Test.NHSpecificTest.NH1810.Parent, NHibernate.Test" table="Parent" lazy="true">
+		<cache usage="read-write" />
+		<id name="Id" access="nosetter.camelcase" column="Id" type="Int32" unsaved-value="0">
+			<generator class="native">
+			</generator>
+		</id>
+		<property name="Address" access="property" type="String">
+			<column name="Address"/>
+		</property>
+		<property name="Visits" access="property" type="Int32">
+			<column name="Visits"/>
+		</property>
+		<set name="Children" access="nosetter.camelcase" table="Child" lazy="true" inverse="true" cascade="all-delete-orphan" collection-type="NHibernate.Test.NHSpecificTest.NH1810.Factory, NHibernate.Test">
+			<key column="ParentId" />
+			<one-to-many class="NHibernate.Test.NHSpecificTest.NH1810.Child, NHibernate.Test" />
+		</set>
+		<many-to-one name="MedicalRecord" access="nosetter.camelcase" class="NHibernate.Test.NHSpecificTest.NH1810.MedicalRecord, NHibernate.Test" column="MedicalRecordId" lazy="proxy" cascade="all-delete-orphan" />
+	</class>
+</hibernate-mapping>

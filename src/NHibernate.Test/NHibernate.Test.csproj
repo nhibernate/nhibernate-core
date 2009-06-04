@@ -472,6 +472,13 @@
     <Compile Include="NHSpecificTest\NH1796\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1801\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1801\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1810\Child.cs" />
+    <Compile Include="NHSpecificTest\NH1810\Children.cs" />
+    <Compile Include="NHSpecificTest\NH1810\Disease.cs" />
+    <Compile Include="NHSpecificTest\NH1810\Doctor.cs" />
+    <Compile Include="NHSpecificTest\NH1810\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1810\MedicalRecord.cs" />
+    <Compile Include="NHSpecificTest\NH1810\Parent.cs" />
     <Compile Include="NHSpecificTest\NH645\HQLFunctionFixture.cs" />
     <Compile Include="HQL\HQLFunctions.cs" />
     <Compile Include="HQL\Human.cs" />
@@ -1867,6 +1874,7 @@
     <EmbeddedResource Include="CacheTest\EntityWithFilters.xml" />
     <EmbeddedResource Include="Classic\EntityWithLifecycle.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1810\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1092\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1507\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1044\Mappings.hbm.xml" />
