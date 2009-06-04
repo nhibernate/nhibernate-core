@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1092"
+				   assembly="NHibernate.Test">
+	
+	<class name="SubscriberAbstract" abstract="true">
+		<id type="int">
+			<generator class="hilo"/>
+		</id>
+		<discriminator column="ObjType"/>
+		<property name="Username"/>
+		<subclass name="Subscriber1"/>
+		<subclass name="Subscriber2"/>
+	</class>
+</hibernate-mapping>
