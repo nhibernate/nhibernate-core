@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Threading;
+using NHibernate.Hql.Ast.ANTLR;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Stateless
@@ -88,7 +89,7 @@ namespace NHibernate.Test.Stateless
 			}
 		}
 
-		[Test, Ignore("Not supported yet")]
+		[Test]
 		public void HqlBulk()
 		{
 			IStatelessSession ss = sessions.OpenStatelessSession();
@@ -101,10 +102,10 @@ namespace NHibernate.Test.Stateless
 
 			tx = ss.BeginTransaction();
 			int count =
-				ss.CreateQuery("update Document set name = :newName where name = :oldName").SetString("newName", "Foos").SetString(
+				ss.CreateQuery("update Document set Name = :newName where Name = :oldName").SetString("newName", "Foos").SetString(
 					"oldName", "Blahs").ExecuteUpdate();
 			Assert.AreEqual(1, count, "hql-delete on stateless session");
-			count = ss.CreateQuery("update Paper set color = :newColor").SetString("newColor", "Goldenrod").ExecuteUpdate();
+			count = ss.CreateQuery("update Paper set Color = :newColor").SetString("newColor", "Goldenrod").ExecuteUpdate();
 			Assert.AreEqual(1, count, "hql-delete on stateless session");
 			tx.Commit();
 
@@ -117,6 +118,27 @@ namespace NHibernate.Test.Stateless
 			ss.Close();
 		}
 
+		[Test]
+		public void HqlBulkWithErrorInPropertyName()
+		{
+			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			{
+				ITransaction tx = ss.BeginTransaction();
+				var doc = new Document("blah blah blah", "Blahs");
+				ss.Insert(doc);
+				var paper = new Paper {Color = "White"};
+				ss.Insert(paper);
+				tx.Commit();
+
+				Assert.Throws<QuerySyntaxException>(()=>
+						ss.CreateQuery("update Document set name = :newName where name = :oldName").SetString("newName", "Foos").SetString
+							("oldName", "Blahs").ExecuteUpdate());
+				tx = ss.BeginTransaction();
+				ss.CreateQuery("delete Document").ExecuteUpdate();
+				ss.CreateQuery("delete Paper").ExecuteUpdate();
+				tx.Commit();
+			}
+		}
 		[Test]
 		public void InitId()
 		{

@@ -39,8 +39,10 @@ namespace NHibernate.Param
 			return typedValue.Type.GetColumnSpan( session.Factory );
 		}
 
-		public override string RenderDisplayInfo() {
-			return "name=" + _name + ", expectedType=" + ExpectedType;
+		public override string RenderDisplayInfo()
+		{
+			const string format = "name={0}, expectedType={1}";
+			return ExpectedType != null ? string.Format(format, _name, ExpectedType) : string.Format(format, _name, "Unknow");
 		}
 
 		/// <summary>

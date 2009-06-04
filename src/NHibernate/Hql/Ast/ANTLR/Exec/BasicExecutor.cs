@@ -61,6 +61,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					var parameterTypes = new List<SqlType>(Parameters.Count);
 					foreach (var parameterSpecification in Parameters)
 					{
+						if (parameterSpecification.ExpectedType == null)
+						{
+							throw new QuerySyntaxException("Can't determine SqlType of parameter " + parameterSpecification.RenderDisplayInfo()+"\n Possible cause: wrong case-sensitive property-name.");
+						}
 						parameterTypes.AddRange(parameterSpecification.ExpectedType.SqlTypes(Factory));
 					}
 					st = session.Batcher.PrepareCommand(CommandType.Text, sql, parameterTypes.ToArray());
