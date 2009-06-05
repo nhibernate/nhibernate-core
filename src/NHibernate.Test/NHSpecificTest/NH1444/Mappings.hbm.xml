@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test" 
+				   namespace="NHibernate.Test.NHSpecificTest.NH1444" 
+				   default-cascade="save-update">
+	<class name="xparent" table="xparent">
+		<id name="Id" column="Id" type="Int64">
+			<generator class="identity"/>
+		</id>
+		<property name="A" type="Int64"/>
+		<set name="Children" inverse="true">
+			<key column="ParentId"/>
+			<one-to-many class="xchild"/>
+		</set>
+	</class>
+	<class name="xchild" table="xchild">
+		<id name="Id" column="Id" type="Int64">
+			<generator class="identity"/>
+		</id>
+		<property name="B" type="Int64"/>
+		<many-to-one name="Parent" column="ParentId"/>
+	</class>
+</hibernate-mapping>
