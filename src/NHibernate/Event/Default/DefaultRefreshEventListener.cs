@@ -93,6 +93,12 @@ namespace NHibernate.Event.Default
 
 			EvictCachedCollections(persister, id, source.Factory);
 
+			// NH Different behavior : NH-1601
+			// At this point the entity need the real refresh, all elementes of collections are Refreshed,
+			// the collection state was evicted, but the PersistentCollection (in the entity state)
+			// is associated with a possible previous session.
+			new WrapVisitor(source).Process(obj, persister);
+
 			string previousFetchProfile = source.FetchProfile;
 			source.FetchProfile = "refresh";
 			object result = persister.Load(id, obj, @event.LockMode, source);

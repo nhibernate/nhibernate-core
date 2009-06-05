@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH1601"
+	default-lazy="false">
+
+  <class name="Project" table="Project" lazy="false">
+    <id name="Name" type="string">
+      <column name="id"/>
+      <generator class="assigned" />
+    </id>
+
+     <!--First mapped list fails on refresh when setter accesses list--> 
+    <list name="ScenarioList1" cascade="all" lazy="false">
+      <key column="ScenarioList1ID"/>
+      <index column ="ScenarioList1Index"/>
+      <one-to-many class="Scenario"/>
+    </list>
+     <!--Subsequent mapped lists succeed on refresh when setter accesses list--> 
+    <list name="ScenarioList2" cascade="all" lazy="false">
+      <key column="ScenarioList2ID"/>
+      <index column ="ScenarioList2Index"/>
+      <one-to-many class="Scenario"/>
+    </list>
+    <list name="ScenarioList3" cascade="all" lazy="false">
+      <key column="ScenarioList3ID"/>
+      <index column ="ScenarioList3Index"/>
+      <one-to-many class="Scenario"/>
+    </list>
+  </class>
+
+  <class name="ProjectWithOneList" table="ProjectWithOneList" lazy="false">
+    <id name="Name" type="string">
+      <column name="id"/>
+      <generator class="assigned" />
+    </id>
+
+    <!-- First mapped list fails on refresh when setter accesses list -->
+    <list name="ScenarioList1" cascade="all" lazy="false">
+      <key column="ScenarioListPWOLID"/>
+      <index column ="ScenarioListPWOLIndex"/>
+      <one-to-many class="Scenario"/>
+    </list>
+
+  </class>
+
+  <class name="Scenario" table="Scenario" lazy="false">
+    <id type="Int32" name="id">
+      <column name="ScenarioID"/>
+      <generator class="increment" />
+    </id>
+  </class>
+  
+</hibernate-mapping>

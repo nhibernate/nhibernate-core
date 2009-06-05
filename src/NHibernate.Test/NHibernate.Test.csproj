@@ -405,6 +405,10 @@
     <Compile Include="NHSpecificTest\NH1391\SivasKangal.cs" />
     <Compile Include="NHSpecificTest\NH1393\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1393\Person.cs" />
+    <Compile Include="NHSpecificTest\NH1601\Fixture1.cs" />
+    <Compile Include="NHSpecificTest\NH1601\Fixture2.cs" />
+    <Compile Include="NHSpecificTest\NH1601\Project.cs" />
+    <Compile Include="NHSpecificTest\NH1601\Scenario.cs" />
     <Compile Include="NHSpecificTest\NH1617\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1617\Order.cs" />
     <Compile Include="NHSpecificTest\NH1617\User.cs" />
@@ -1877,6 +1881,7 @@
     <EmbeddedResource Include="CacheTest\EntityWithFilters.xml" />
     <EmbeddedResource Include="Classic\EntityWithLifecycle.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1601\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1617\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1810\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1092\Mappings.hbm.xml" />
