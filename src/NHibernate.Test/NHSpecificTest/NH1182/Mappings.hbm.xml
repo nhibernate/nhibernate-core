@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				  namespace="NHibernate.Test.NHSpecificTest.NH1182"
+				  assembly="NHibernate.Test">
+
+	<class name="ObjectA">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<timestamp name="Version"/>
+		<bag name="Bs" cascade="all">
+			<key column="AId"/>
+			<one-to-many class="ObjectB"/>
+		</bag>
+	</class>
+
+	<class name="ObjectB">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<timestamp name="Version"/>
+	</class>
+
+</hibernate-mapping>

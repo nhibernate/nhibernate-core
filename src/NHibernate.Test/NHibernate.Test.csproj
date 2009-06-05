@@ -363,6 +363,8 @@
     <Compile Include="NHSpecificTest\NH1159\HibernateInterceptor.cs" />
     <Compile Include="NHSpecificTest\NH1171\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1171\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1182\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH1182\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1264\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1264\Name.cs" />
     <Compile Include="NHSpecificTest\NH1264\Passenger.cs" />
@@ -1892,6 +1894,7 @@
     <EmbeddedResource Include="CacheTest\EntityWithFilters.xml" />
     <EmbeddedResource Include="Classic\EntityWithLifecycle.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1182\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1171\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1400\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1444\Mappings.hbm.xml" />
