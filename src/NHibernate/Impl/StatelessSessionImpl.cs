@@ -924,12 +924,6 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		public override ISession GetSession()
-		{
-			// TODO: Verify the use of this method in NH.Search and remove it
-			throw new NotSupportedException();
-		}
-
 		public override int ExecuteNativeUpdate(NativeSQLQuerySpecification nativeSQLQuerySpecification, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))

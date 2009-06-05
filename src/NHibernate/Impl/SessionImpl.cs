@@ -2334,11 +2334,6 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public override ISession GetSession()
-		{
-			return this;
-		}
-
 		public ISession GetSession(EntityMode entityMode)
 		{
 			using (new SessionIdLoggingContext(SessionId))

@@ -270,13 +270,6 @@ namespace NHibernate.Engine
 		/// </summary>
 		bool TransactionInProgress { get; }
 
-		/// <summary>
-		/// Allow to get the ISession instance without having to 
-		/// down cast
-		/// </summary>
-		/// <returns></returns>
-		ISession GetSession();
-
 		/// <summary> Retrieve the entity mode in effect for this session. </summary>
 		EntityMode EntityMode { get; }
 

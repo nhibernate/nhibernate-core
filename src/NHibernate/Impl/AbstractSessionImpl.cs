@@ -99,7 +99,6 @@ namespace NHibernate.Impl
 		public abstract IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters);
 		public abstract object GetFilterParameterValue(string filterParameterName);
 		public abstract IType GetFilterParameterType(string filterParameterName);
-		public abstract ISession GetSession();
 		public abstract IDictionary<string, IFilter> EnabledFilters { get; }
 
 		public virtual IQuery GetNamedSQLQuery(string name)
