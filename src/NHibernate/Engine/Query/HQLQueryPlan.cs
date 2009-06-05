@@ -158,7 +158,7 @@ namespace NHibernate.Engine.Query
 		private static ParameterMetadata BuildParameterMetadata(IParameterTranslations parameterTranslations, string hql)
 		{
 			long start = DateTime.Now.Ticks;
-			ParamLocationRecognizer recognizer = ParamLocationRecognizer.parseLocations(hql);
+			ParamLocationRecognizer recognizer = ParamLocationRecognizer.ParseLocations(hql);
 			long end = DateTime.Now.Ticks;
 			if (log.IsDebugEnabled)
 			{

@@ -12,6 +12,8 @@ namespace NHibernate.Engine.Query
 	/// </summary>
 	public class ParameterParser
 	{
+		private static readonly int NewLineLength = Environment.NewLine.Length;
+
 		public interface IRecognizer
 		{
 			void OutParameter(int position);
@@ -47,8 +49,30 @@ namespace NHibernate.Engine.Query
 
 			int stringLength = sqlString.Length;
 			bool inQuote = false;
+			bool afterNewLine = false;
 			for (int indx = 0; indx < stringLength; indx++)
 			{
+				// check comments
+				if (indx + 1 < stringLength && sqlString.Substring(indx,2) == "/*")
+				{
+					var closeCommentIdx = sqlString.IndexOf("*/");
+					indx = closeCommentIdx + 1;
+					continue;
+				}
+				if (afterNewLine && (indx + 1 < stringLength) && sqlString.Substring(indx, 2) == "--")
+				{
+					var closeCommentIdx = sqlString.IndexOf(Environment.NewLine, indx + 2);
+					indx = closeCommentIdx + NewLineLength - 1;
+					continue;
+				}
+				if (indx + NewLineLength -1 < stringLength && sqlString.Substring(indx, NewLineLength) == Environment.NewLine)
+				{
+					afterNewLine = true;
+					indx += NewLineLength - 1;
+					continue;
+				}
+				afterNewLine = false;
+
 				char c = sqlString[indx];
 				if (inQuote)
 				{

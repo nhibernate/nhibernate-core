@@ -125,7 +125,7 @@ namespace NHibernate.Engine.Query
 
 		private ParameterMetadata BuildNativeSQLParameterMetadata(string sqlString)
 		{
-			ParamLocationRecognizer recognizer = ParamLocationRecognizer.parseLocations(sqlString);
+			ParamLocationRecognizer recognizer = ParamLocationRecognizer.ParseLocations(sqlString);
 
 			OrdinalParameterDescriptor[] ordinalDescriptors = new OrdinalParameterDescriptor[recognizer.OrdinalParameterLocationList.Count];
 			for (int i = 0; i < recognizer.OrdinalParameterLocationList.Count; i++)

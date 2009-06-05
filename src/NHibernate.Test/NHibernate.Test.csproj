@@ -177,6 +177,7 @@
     <Compile Include="DynamicEntity\Tuplizer\MyEntityTuplizer.cs" />
     <Compile Include="DynamicEntity\Tuplizer\TuplizerDynamicEntity.cs" />
     <Compile Include="EngineTest\NativeSqlQueryReturnTest.cs" />
+    <Compile Include="EngineTest\ParameterParserFixture.cs" />
     <Compile Include="EngineTest\TypedValueFixture.cs" />
     <Compile Include="EntityModeTest\Map\Basic\DynamicClassFixture.cs" />
     <Compile Include="EntityModeTest\Multi\MultiRepresentationFixture.cs" />
@@ -360,6 +361,8 @@
     <Compile Include="NHSpecificTest\NH1159\ContactTitle.cs" />
     <Compile Include="NHSpecificTest\NH1159\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1159\HibernateInterceptor.cs" />
+    <Compile Include="NHSpecificTest\NH1171\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH1171\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1264\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1264\Name.cs" />
     <Compile Include="NHSpecificTest\NH1264\Passenger.cs" />
@@ -1889,6 +1892,7 @@
     <EmbeddedResource Include="CacheTest\EntityWithFilters.xml" />
     <EmbeddedResource Include="Classic\EntityWithLifecycle.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1171\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1400\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1444\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1813\Mappings.hbm.xml" />

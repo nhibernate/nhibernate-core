@@ -19,9 +19,9 @@ namespace NHibernate.Engine.Query
 		/// </summary>
 		/// <param name="query">The query to be parsed for parameter locations. </param>
 		/// <returns> The generated recognizer, with journaled location info. </returns>
-		public static ParamLocationRecognizer parseLocations(string query)
+		public static ParamLocationRecognizer ParseLocations(string query)
 		{
-			ParamLocationRecognizer recognizer = new ParamLocationRecognizer();
+			var recognizer = new ParamLocationRecognizer();
 			ParameterParser.Parse(query, recognizer);
 			return recognizer;
 		}
