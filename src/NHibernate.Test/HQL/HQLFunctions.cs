@@ -203,6 +203,15 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test]
+		public void AggregatesAndMathNH959()
+		{
+			using (ISession s = OpenSession())
+			{
+				Assert.DoesNotThrow(() => s.CreateQuery("select a.Id, sum(BodyWeight)/avg(BodyWeight) from Animal a group by a.Id having sum(BodyWeight)>0").List());
+			}			
+		}
+
+		[Test]
 		public void SubString()
 		{
 			IgnoreIfNotSupported("substring");
