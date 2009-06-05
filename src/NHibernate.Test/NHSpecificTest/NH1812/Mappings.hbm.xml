@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   namespace="NHibernate.Test.NHSpecificTest.NH1812" 
+	assembly="NHibernate.Test" >
+		
+	<class name="Person">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<bag name="PeriodCollection">
+			<key column="fk" />
+			<one-to-many class="Period"/>
+		</bag>
+	</class>
+
+	<class name="Period">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<property name="Start" />
+	</class>
+</hibernate-mapping>
