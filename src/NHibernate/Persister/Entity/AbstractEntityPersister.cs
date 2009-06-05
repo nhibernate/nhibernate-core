@@ -2632,7 +2632,7 @@ namespace NHibernate.Persister.Entity
 				var exceptionContext = new AdoExceptionContextInfo
 				                       	{
 				                       		SqlException = sqle,
-				                       		Message = "could not insert: " + MessageHelper.InfoString(this),
+				                       		Message = "could not insert: " + MessageHelper.InfoString(this, id),
 				                       		Sql = sql.ToString(),
 				                       		EntityName = EntityName,
 				                       		EntityId = id

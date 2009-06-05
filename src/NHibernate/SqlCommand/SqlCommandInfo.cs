@@ -29,5 +29,10 @@ namespace NHibernate.SqlCommand
 		{
 			get { return parameterTypes; }
 		}
+
+		public override string ToString()
+		{
+			return Text != null ? Text.ToString().Trim(): GetType().FullName;
+		}
 	}
 }

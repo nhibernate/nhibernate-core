@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1813"
+				   	assembly="NHibernate.Test"
+				   default-lazy="false">
+	<class name="EntityWithUnique">
+		<id name="Id"/>
+		<property name="Description" unique-key="ewu_description"/>
+	</class>
+</hibernate-mapping>
