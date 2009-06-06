@@ -1,13 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1747
 {
 	[TestFixture,Ignore]
 	public class JoinTraversalTest : BugTestCase
 	{
+		[Test]
+		public void PaymentTableNotContainsFk()
+		{
+			var cm = cfg.GetClassMapping(typeof (Payment));
+			bool containsFK= false;
+			foreach (var column in cm.Table.ColumnIterator)
+			{
+				if (column.Name.Equals("PaymentBatchFK_ID"))
+					containsFK = true;
+			}
+			Assert.That(containsFK, Is.False);
+		}
 
 		protected override void OnSetUp()
 		{
