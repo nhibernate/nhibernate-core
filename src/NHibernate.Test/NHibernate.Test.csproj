@@ -110,6 +110,7 @@
     <Compile Include="CfgTest\LocatedInTestAssembly.cs" />
     <Compile Include="CfgTest\MappingDocumentAggregatorTests.cs" />
     <Compile Include="CfgTest\MappingDocumentParserTests.cs" />
+    <Compile Include="CfgTest\SettingsFactoryFixture.cs" />
     <Compile Include="Classic\EntityWithLifecycle.cs" />
     <Compile Include="Classic\LifecycleFixture.cs" />
     <Compile Include="Classic\ValidatableFixture.cs" />
@@ -1157,6 +1158,8 @@
     <Compile Include="Stateless\StatelessWithRelationsFixture.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaExportTests\WithColumnTag.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaExportTests\WithColumnTagFixture.cs" />
+    <Compile Include="Tools\hbm2ddl\SchemaMetadataUpdaterTest\HeavyEntity.cs" />
+    <Compile Include="Tools\hbm2ddl\SchemaMetadataUpdaterTest\SchemaMetadataUpdaterFixture.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaUpdate\MigrationFixture.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaUpdate\Version.cs" />
     <Compile Include="SecondLevelCacheTest\AnotherItem.cs" />
@@ -1894,6 +1897,7 @@
     <EmbeddedResource Include="CacheTest\EntityWithFilters.xml" />
     <EmbeddedResource Include="Classic\EntityWithLifecycle.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="Tools\hbm2ddl\SchemaMetadataUpdaterTest\HeavyEntity.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1182\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1171\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1400\Mappings.hbm.xml" />

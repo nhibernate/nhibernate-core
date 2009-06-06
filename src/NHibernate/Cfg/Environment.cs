@@ -135,9 +135,9 @@ namespace NHibernate.Cfg
 		// The classname of the HQL query parser factory
 		public const string QueryTranslator = "query.factory_class";
 
-		// Unused, not implemented
 		public const string QueryImports = "query.imports";
 		public const string Hbm2ddlAuto = "hbm2ddl.auto";
+		public const string Hbm2ddlKeyWords = "hbm2ddl.keywords";
 
 		// Unused, not implemented
 		public const string SqlExceptionConverter = "sql_exception_converter";

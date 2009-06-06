@@ -1,4 +1,5 @@
 using System.Data;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Dialect.Schema
 {
@@ -115,5 +116,11 @@ namespace NHibernate.Dialect.Schema
 		/// <param name="table">A table name</param>
 		/// <returns>A description of the foreign keys available</returns>
 		DataTable GetForeignKeys(string catalog, string schema, string table);
+
+		/// <summary>
+		/// Get all reserved words
+		/// </summary>
+		/// <returns>A set of reserved words</returns>
+		ISet<string> GetReservedWords();
 	}
 }

@@ -84,6 +84,7 @@
 								<xs:enumeration value="query.factory_class" />
 								<xs:enumeration value="query.imports" />
 								<xs:enumeration value="hbm2ddl.auto" />
+								<xs:enumeration value="hbm2ddl.keywords" />
 								<xs:enumeration value="sql_exception_converter" />
 								<xs:enumeration value="adonet.wrap_result_sets" />
 								<xs:enumeration value="prepare_sql" />

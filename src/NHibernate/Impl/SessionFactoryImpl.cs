@@ -162,6 +162,22 @@ namespace NHibernate.Impl
 				log.Debug("instantiating session factory with properties: " + CollectionPrinter.ToString(properties));
 			}
 
+			try
+			{
+				if (settings.IsKeywordsImportEnabled)
+				{
+					SchemaMetadataUpdater.Update(this);
+				}
+				if (settings.IsAutoQuoteEnabled)
+				{
+					SchemaMetadataUpdater.QuoteTableAndColumns(cfg);
+				}
+			}
+			catch (NotSupportedException)
+			{
+				// Ignore if the Dialect does not provide DataBaseSchema 
+			}
+
 			#region Caches
 			settings.CacheProvider.Start(properties);
 			#endregion

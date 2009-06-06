@@ -140,6 +140,7 @@ namespace NHibernate.Cfg
 				log.Info("Query language substitutions: " + CollectionPrinter.ToString((IDictionary) querySubstitutions));
 			}
 
+			#region Hbm2DDL
 			string autoSchemaExport = PropertiesHelper.GetString(Environment.Hbm2ddlAuto, properties, null);
 			if ("update" == autoSchemaExport)
 			{
@@ -158,6 +159,29 @@ namespace NHibernate.Cfg
 			{
 				settings.IsAutoValidateSchema = true;
 			}
+
+			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, properties, "not-defined");
+			switch (autoKeyWordsImport.ToLowerInvariant())
+			{
+				case "none":
+					settings.IsKeywordsImportEnabled = false;
+					settings.IsAutoQuoteEnabled = false;
+					break;
+				case "keywords":
+					settings.IsKeywordsImportEnabled = true;
+					break;
+				case "auto-quote":
+					settings.IsKeywordsImportEnabled = true;
+					settings.IsAutoQuoteEnabled = true;
+					break;
+				case "not-defined":
+					settings.IsKeywordsImportEnabled = true;
+					settings.IsAutoQuoteEnabled = false;
+					break;
+			}
+
+			#endregion
+
 			bool useSecondLevelCache = PropertiesHelper.GetBoolean(Environment.UseSecondLevelCache, properties, true);
 			bool useQueryCache = PropertiesHelper.GetBoolean(Environment.UseQueryCache, properties);
 
@@ -303,11 +327,6 @@ namespace NHibernate.Cfg
 			{
 				throw new HibernateException("could not instantiate CacheProvider: " + cacheClassName, e);
 			}
-		}
-
-		internal SettingsFactory()
-		{
-			//should not be publically creatable
 		}
 
 		private static ConnectionReleaseMode ParseConnectionReleaseMode(string name)

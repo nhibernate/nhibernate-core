@@ -59,6 +59,10 @@ namespace NHibernate.Cfg
 
 		public bool IsAutoValidateSchema { get; internal set; }
 
+		public bool IsAutoQuoteEnabled { get; internal set; }
+
+		public bool IsKeywordsImportEnabled { get; internal set; }
+
 		public bool IsQueryCacheEnabled { get; internal set; }
 
 		public bool IsStructuredCacheEntriesEnabled { get; internal set; }

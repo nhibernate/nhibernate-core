@@ -600,6 +600,7 @@
     <Compile Include="Param\VersionTypeSeedParameterSpecification.cs" />
     <Compile Include="Proxy\AbstractProxyFactory.cs" />
     <Compile Include="SqlCommand\InsertSelect.cs" />
+    <Compile Include="Tool\hbm2ddl\SchemaMetadataUpdater.cs" />
     <Compile Include="Transaction\AdoNetWithDistrubtedTransactionFactory.cs" />
     <Compile Include="Transform\ToListResultTransformer.cs" />
     <Compile Include="Util\NullableDictionary.cs" />

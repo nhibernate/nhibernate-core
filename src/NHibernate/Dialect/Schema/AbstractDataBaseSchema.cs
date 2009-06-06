@@ -1,5 +1,6 @@
 using System.Data;
 using System.Data.Common;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Dialect.Schema
 {
@@ -88,6 +89,17 @@ namespace NHibernate.Dialect.Schema
 		{
 			var restrictions = new[] {catalog, schema, table, null};
 			return connection.GetSchema(ForeignKeysSchemaName, restrictions);
+		}
+
+		public virtual ISet<string> GetReservedWords()
+		{
+			var result = new HashedSet<string>();
+			DataTable dtReservedWords = connection.GetSchema(DbMetaDataCollectionNames.ReservedWords);
+			foreach (DataRow row in dtReservedWords.Rows)
+			{
+				result.Add(row["ReservedWord"].ToString());
+			}
+			return result;
 		}
 
 		protected virtual string ForeignKeysSchemaName
