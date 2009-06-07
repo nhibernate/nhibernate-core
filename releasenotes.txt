@@ -32,6 +32,38 @@ Build 2.1.0
 		* ISQLExceptionConverter was changed in order to have more flexibility about information available for the conversion and followed management.
 		* ADOException now use string instead SqlString
 
+Build 2.1.0.Beta1 (rev4424)
+=============================
+** Bug
+    * [NH-959] - HQL queries with math operators and aggregates fail
+    * [NH-1092] - An Aggregate Count(*) on on an Abstract Base Class (Polymorphic) with UniqueResults returns 1 result per subclass when using the table per subclass approach
+    * [NH-1171] - Named parameters in SQL query are not substituted when query contains comments with apostrophes
+    * [NH-1182] - Calling session.delete() causes unnecessary update to timestamp before sql:delete
+    * [NH-1400] - HQL string literals with dots in are tried loaded as types (classes) and fails
+    * [NH-1427] - XML Comments inside <join> tag cause exception
+    * [NH-1444] - broken implicit join
+    * [NH-1487] - schema generation of unique-key with column involved in multiple unique constraints
+    * [NH-1507] - NHibernate misplaces JOIN conditions when WHERE references their columns and others altoghether
+    * [NH-1517] - SaveOrUpdateCopy does not call "public LifecycleVeto OnUpdate(ISession s)"
+    * [NH-1601] - Problems when accessing lists through property
+    * [NH-1617] - Formulas containing a data type incorrectly have that data type aliased with the outer entity alias
+    * [NH-1735] - TicksType used as entity version causes exceptions on cache put operation.
+    * [NH-1789] - A proxy sometimes doesn't call the overriden Equals() method (mapping interface instead class)
+    * [NH-1801] - Cross join with a where clause where lhs and rhs are different types of associations breaks with the new AST Query Translator
+    * [NH-1802] - Query Cache does not include filters in QueryKey.ToString
+    * [NH-1805] - Does ignore <meta> on <subclass>
+    * [NH-1813] - Not understandable exception message
+
+** Improvement
+    * [NH-1814] - Autoregister ReservedWords from MetaData
+
+** New Feature
+    * [NH-188] - Should Table/Column names be quoted automatically?
+
+** Patch
+    * [NH-1044] - IdBag for component not in XSD
+    * [NH-1804] - Expiration property of session factory not handled when configured via XML
+
 Build 2.1.0.Alpha3 (rev4378)
 =============================
 
