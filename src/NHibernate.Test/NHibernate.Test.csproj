@@ -1234,6 +1234,8 @@
     <Compile Include="TransformTests\AliasToBeanResultTransformerFixture.cs" />
     <Compile Include="TransformTests\Simple.cs" />
     <Compile Include="TypeParameters\DefaultValueIntegerType.cs" />
+    <Compile Include="TypeParameters\DefinedTypeForIdFixture.cs" />
+    <Compile Include="TypeParameters\EntityCustomId.cs" />
     <Compile Include="TypeParameters\TypeParameterTest.cs" />
     <Compile Include="TypeParameters\Widget.cs" />
     <Compile Include="TypesTest\BinaryBlobClass.cs" />
@@ -1897,6 +1899,7 @@
     <EmbeddedResource Include="CacheTest\EntityWithFilters.xml" />
     <EmbeddedResource Include="Classic\EntityWithLifecycle.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="TypeParameters\EntityCustomId.hbm.xml" />
     <EmbeddedResource Include="Tools\hbm2ddl\SchemaMetadataUpdaterTest\HeavyEntity.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1182\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1171\Mappings.hbm.xml" />

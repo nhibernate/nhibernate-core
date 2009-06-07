@@ -98,8 +98,22 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				if (idSchema.generator.@class == null)
 					throw new MappingException("no class given for generator");
 
-				id.IdentifierGeneratorStrategy = idSchema.generator.@class;
-				id.IdentifierGeneratorProperties = GetGeneratorProperties(idSchema, id);
+				// NH Differen behavior : specific feature NH-1817
+				TypeDef typeDef = mappings.GetTypeDef(idSchema.generator.@class);
+				if (typeDef != null)
+				{
+					id.IdentifierGeneratorStrategy = typeDef.TypeClass;
+					// parameters on the property mapping should override parameters in the typedef
+					var allParameters = new Dictionary<string, string>(typeDef.Parameters);
+					ArrayHelper.AddAll(allParameters, GetGeneratorProperties(idSchema, id));
+
+					id.IdentifierGeneratorProperties = allParameters;
+				}
+				else
+				{
+					id.IdentifierGeneratorStrategy = idSchema.generator.@class;
+					id.IdentifierGeneratorProperties = GetGeneratorProperties(idSchema, id);
+				}
 			}
 		}
 
