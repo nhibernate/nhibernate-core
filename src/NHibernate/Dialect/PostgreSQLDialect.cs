@@ -175,5 +175,30 @@ namespace NHibernate.Dialect
 			//i.e. 'null::decimal(19, 2)', even if 'null::decimal' would be enough
 			return "null::" + GetTypeName(sqlType);
 		}
+
+		public override bool SupportsTemporaryTables
+		{
+			get { return true; }
+		}
+
+		/*public override bool DropTemporaryTableAfterUse()
+		{
+			//we have to, because postgres sets current tx
+			//to rollback only after a failed create table
+			return true;
+		}*/
+
+		public override string CreateTemporaryTableString
+		{
+			get { return "create temporary table"; }
+		}
+
+		public override string CreateTemporaryTablePostfix
+		{
+			get
+			{
+				return "on commit drop";
+			}
+		}
 	}
 }
