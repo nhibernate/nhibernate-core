@@ -231,5 +231,15 @@ namespace NHibernate.Dialect
 		{
 			return " drop index " + constraintName;
 		}
+
+		public override bool SupportsTemporaryTables
+		{
+			get { return true; }
+		}
+
+		public override string CreateTemporaryTableString
+		{
+			get { return "create temporary table if not exists"; }
+		}
 	}
 }
