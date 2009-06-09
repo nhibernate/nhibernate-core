@@ -362,12 +362,13 @@ namespace NHibernate.Test.QueryTest
 				IQuery q = dq.GetExecutableQuery(s);
 				IList<Foo> l = q.List<Foo>();
 				Assert.AreEqual(2, l.Count);
-				Assert.AreEqual("N2", l[0].Name);
-				Assert.AreEqual("N3", l[1].Name);
+
+				Assert.True(l.Contains(new Foo("N2", "D2")));
+				Assert.True(l.Contains(new Foo("N3", "D3")));
 			}
 
 			// Pagination
-			dq = new DetachedQuery("from Foo");
+			dq = new DetachedQuery("from Foo f order by f.IntValue");
 			dq.SetFirstResult(0).SetMaxResults(2);
 			using (ISession s = OpenSession())
 			{
