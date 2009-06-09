@@ -27,23 +27,25 @@ namespace NHibernate.Test.QueryTest
 
 		protected override void OnSetUp()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using(var tx = s.BeginTransaction())
 			{
 				for (int i = 0; i < totalFoo; i++)
 				{
 					Foo f = new Foo("N" + i, "D" + i, i);
 					s.Save(f);
 				}
-				s.Flush();
+				tx.Commit();
 			}
 		}
 
 		protected override void OnTearDown()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using(var tx = s.BeginTransaction())
 			{
 				s.Delete("from Foo");
-				s.Flush();
+				tx.Commit();
 			}
 		}
 
