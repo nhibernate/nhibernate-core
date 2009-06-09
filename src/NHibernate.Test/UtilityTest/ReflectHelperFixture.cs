@@ -3,6 +3,7 @@ using System.Reflection;
 using NHibernate.DomainModel;
 using NHibernate.Util;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.UtilityTest
 {
@@ -140,6 +141,24 @@ namespace NHibernate.Test.UtilityTest
 			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mddg), Is.Not.Null);
 			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mdds), Is.Null);
 		}
+
+		[Test]
+		public void GetGenericMethodFrom()
+		{
+			var signature = new[] {typeof (string), typeof (string), typeof (bool)};
+			Assert.That(ReflectHelper.GetGenericMethodFrom<ISomething>("List", new[] {typeof (BRhf)}, signature), Is.Not.Null);
+			Assert.That(ReflectHelper.GetGenericMethodFrom<ISomething>("List", new[] { typeof(int), typeof(string) }, signature), Is.Not.Null);
+			Assert.That(ReflectHelper.GetGenericMethodFrom<ISomething>("List", new[] { typeof(int), typeof(string) }
+				, new[] { typeof(string), typeof(string), typeof(bool), typeof(IComparer<>).MakeGenericType(typeof(int)) }), Is.Not.Null);
+		}
+	}
+
+	public interface ISomething
+	{
+		int List(string role, string propertyRef, bool embedded);
+		int List<T>(string role, string propertyRef, bool embedded);
+		int List<TK, TV>(string role, string propertyRef, bool embedded);
+		int List<TK, TV>(string role, string propertyRef, bool embedded, IComparer<TK> comparer);
 	}
 
 	public class ARhf

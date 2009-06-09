@@ -563,5 +563,36 @@ namespace NHibernate.Util
 
 			return null;
 		}
+
+		public static MethodInfo GetGenericMethodFrom<T>(string methodName, System.Type[] genericArgs, System.Type[] signature)
+		{
+			MethodInfo result = null;
+			MethodInfo[] methods = typeof (T).GetMethods();
+			foreach (var method in methods)
+			{
+				if (method.Name.Equals(methodName) && method.IsGenericMethod 
+						&& signature.Length == method.GetParameters().Length
+				    && method.GetGenericArguments().Length == genericArgs.Length)
+				{
+					bool foundCandidate = true;
+					result = method.MakeGenericMethod(genericArgs);
+
+					ParameterInfo[] ms = result.GetParameters();
+					for (int i = 0; i < signature.Length; i++)
+					{
+						if (ms[i].ParameterType != signature[i])
+						{
+							foundCandidate = false;
+						}
+					}
+
+					if (foundCandidate)
+					{
+						return result;
+					}
+				}
+			}
+			return result;
+		}
 	}
 }

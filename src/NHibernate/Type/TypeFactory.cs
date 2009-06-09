@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.Intercept;
@@ -35,6 +36,9 @@ namespace NHibernate.Type
 
 		private static readonly char[] precisionScaleSplit = new char[] { '(', ')', ',' };
 		private static readonly char[] lengthSplit = new char[] { '(', ')' };
+
+		private static readonly ICollectionTypeFactory collectionTypeFactory;
+		private static readonly System.Type[] GenericCollectionSimpleSignature = new[] { typeof(string), typeof(string), typeof(bool) };
 
 		/*
 		 * Maps the string representation of the type to the IType.  The string 
@@ -92,6 +96,10 @@ namespace NHibernate.Type
 		/// <summary></summary>
 		static TypeFactory()
 		{
+			collectionTypeFactory =
+				(ICollectionTypeFactory)
+				Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(typeof (CollectionTypeFactory));
+			
 			//basicTypes.Add(NHibernate.Blob.Name, NHibernate.Blob);
 			//basicTypes.Add(NHibernate.Clob.Name, NHibernate.Clob);
 
@@ -646,346 +654,134 @@ namespace NHibernate.Type
 			return new ManyToOneType(persistentClass, uniqueKeyPropertyName, lazy, unwrapProxy, isEmbeddedInXML, ignoreNotFound);
 		}
 
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="System.Array"/>.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="elementClass">The <see cref="System.Type"/> to use to create the array.</param>
-		/// <param name="embedded"></param>
-		/// <returns>
-		/// An <see cref="ArrayType"/> for the specified role.
-		/// </returns>
 		public static CollectionType Array(string role, string propertyRef, bool embedded, System.Type elementClass)
 		{
-			return new ArrayType(role, propertyRef, elementClass, embedded);
+			return collectionTypeFactory.Array(role, propertyRef, embedded, elementClass);
 		}
 
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="IList"/>.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="embedded"></param>
-		/// <returns>
-		/// A <see cref="ListType"/> for the specified role.
-		/// </returns>
 		public static CollectionType List(string role, string propertyRef, bool embedded)
 		{
-			return new ListType(role, propertyRef, embedded);
+			return collectionTypeFactory.List(role, propertyRef, embedded);
 		}
 
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="IList"/>
-		/// with bag semantics.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="embedded"></param>
-		/// <returns>
-		/// A <see cref="BagType"/> for the specified role.
-		/// </returns>
 		public static CollectionType Bag(string role, string propertyRef, bool embedded)
 		{
-			return new BagType(role, propertyRef, embedded);
+			return collectionTypeFactory.Bag(role, propertyRef, embedded);
 		}
 
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="IList"/>
-		/// with id-bag semantics.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="embedded"></param>
-		/// <returns>
-		/// A <see cref="IdentifierBagType"/> for the specified role.
-		/// </returns>
 		public static CollectionType IdBag(string role, string propertyRef, bool embedded)
 		{
-			return new IdentifierBagType(role, propertyRef, embedded);
+			return collectionTypeFactory.IdBag(role, propertyRef, embedded);
 		}
 
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="IDictionary"/>.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="embedded"></param>
-		/// <returns>
-		/// A <see cref="MapType"/> for the specified role.
-		/// </returns>
 		public static CollectionType Map(string role, string propertyRef, bool embedded)
 		{
-			return new MapType(role, propertyRef, embedded);
+			return collectionTypeFactory.Map(role, propertyRef, embedded);
 		}
 
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="Iesi.Collections.ISet"/>.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="embedded"></param>
-		/// <returns>
-		/// A <see cref="SetType"/> for the specified role.
-		/// </returns>
 		public static CollectionType Set(string role, string propertyRef, bool embedded)
 		{
-			return new SetType(role, propertyRef, embedded);
+			return collectionTypeFactory.Set(role, propertyRef, embedded);
 		}
 
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="IDictionary"/>
-		/// that is sorted by an <see cref="IComparer"/>.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="comparer">The <see cref="IComparer"/> that does the sorting.</param>
-		/// <param name="embedded"></param>
-		/// <returns>
-		/// A <see cref="SortedMapType"/> for the specified role.
-		/// </returns>
 		public static CollectionType SortedMap(string role, string propertyRef, bool embedded, IComparer comparer)
 		{
-			return new SortedMapType(role, propertyRef, comparer, embedded);
+			return collectionTypeFactory.SortedMap(role, propertyRef, embedded, comparer);
 		}
 
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="IDictionary"/>
-		/// that maintains insertion order of elements.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="embedded"></param>
-		/// <returns>
-		/// A <see cref="OrderedMapType"/> for the specified role.
-		/// </returns>
 		public static CollectionType OrderedMap(string role, string propertyRef, bool embedded)
 		{
-			return new OrderedMapType(role, propertyRef, embedded);
+			return collectionTypeFactory.OrderedMap(role, propertyRef, embedded);
 		}
 
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="Iesi.Collections.ISet"/>
-		/// that is sorted by an <see cref="IComparer"/>.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="comparer">The <see cref="IComparer"/> that does the sorting.</param>
-		/// <param name="embedded"></param>
-		/// <returns>
-		/// A <see cref="SortedSetType"/> for the specified role.
-		/// </returns>
 		public static CollectionType SortedSet(string role, string propertyRef, bool embedded, IComparer comparer)
 		{
-			return new SortedSetType(role, propertyRef, comparer, embedded);
+			return collectionTypeFactory.SortedSet(role, propertyRef, embedded, comparer);
 		}
 
 		public static CollectionType OrderedSet(string role, string propertyRef, bool embedded)
 		{
-			return new OrderedSetType(role, propertyRef, embedded);
+			return collectionTypeFactory.OrderedSet(role, propertyRef, embedded);
 		}
 
-
-
-		private static CollectionType CreateCollectionType(
-			System.Type genericCollectionType,
-			string role,
-			string propertyRef,
-			params System.Type[] typeArguments)
-		{
-			return
-				(CollectionType)
-				Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(
-					genericCollectionType.MakeGenericType(typeArguments), role, propertyRef);
-		}
-
-		private static CollectionType CreateSortedCollectionType(
-			System.Type genericCollectionType,
-			string role,
-			string propertyRef,
-			object comparer,
-			params System.Type[] typeArguments)
-		{
-			return
-				(CollectionType)
-				Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(
-					genericCollectionType.MakeGenericType(typeArguments), role, propertyRef, comparer);
-		}
-
-		private static CollectionType CreateOrderedCollectionType(System.Type genericCollectionType,
-			string role,
-			string propertyRef,
-			params System.Type[] typeArguments)
-		{
-			return
-				(CollectionType)
-				Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(
-					genericCollectionType.MakeGenericType(typeArguments), role, propertyRef);
-		}
-
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an 
-		/// <see cref="System.Collections.Generic.IList{T}"/> with bag semantics.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="elementClass">
-		/// The <see cref="System.Type"/> to use to create the 
-		/// <see cref="System.Collections.Generic.IList{T}"/> with.
-		/// </param>
-		/// <returns>
-		/// A <see cref="GenericBagType{T}"/> for the specified role.
-		/// </returns>
 		public static CollectionType GenericBag(string role, string propertyRef, System.Type elementClass)
 		{
-			return CreateCollectionType(typeof(GenericBagType<>), role, propertyRef, elementClass);
+			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("Bag", new[] {elementClass},
+			                                                                             GenericCollectionSimpleSignature);
+
+			return (CollectionType) mi.Invoke(collectionTypeFactory, new object[] { role, propertyRef, false });
 		}
 
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an 
-		/// <see cref="System.Collections.Generic.IList{T}"/> with identifier
-		/// bag semantics.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="elementClass">
-		/// The <see cref="System.Type"/> to use to create the 
-		/// <see cref="System.Collections.Generic.IList{T}"/> with.
-		/// </param>
-		/// <returns>
-		/// A <see cref="GenericIdentifierBagType{T}"/> for the specified role.
-		/// </returns>
 		public static CollectionType GenericIdBag(string role, string propertyRef, System.Type elementClass)
 		{
-			return CreateCollectionType(typeof(GenericIdentifierBagType<>), role, propertyRef, elementClass);
+			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("IdBag", new[] { elementClass },
+																																									 GenericCollectionSimpleSignature);
+
+			return (CollectionType)mi.Invoke(collectionTypeFactory, new object[] { role, propertyRef, false });
 		}
 
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an 
-		/// <see cref="System.Collections.Generic.IList&lt;T&gt;"/> with list 
-		/// semantics.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="elementClass">
-		/// The <see cref="System.Type"/> to use to create the 
-		/// <see cref="System.Collections.Generic.IList&lt;T&gt;"/> with.
-		/// </param>
-		/// <returns>
-		/// A <see cref="ListType"/> for the specified role.
-		/// </returns>
 		public static CollectionType GenericList(string role, string propertyRef, System.Type elementClass)
 		{
-			return CreateCollectionType(typeof(GenericListType<>), role, propertyRef, elementClass);
+			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("List", new[] { elementClass },
+																																									 GenericCollectionSimpleSignature);
+
+			return (CollectionType)mi.Invoke(collectionTypeFactory, new object[] { role, propertyRef, false });
 		}
 
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an 
-		/// <see cref="System.Collections.Generic.IDictionary&lt;TKey,TValue&gt;"/>.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="indexClass">
-		/// The <see cref="System.Type"/> to use as the <c>TKey</c> to create the
-		/// <see cref="System.Collections.Generic.IDictionary&lt;TKey,TValue&gt;"/> with.
-		/// </param>
-		/// <param name="elementClass">
-		/// The <see cref="System.Type"/> to use as the <c>TValue</c> to create the 
-		///  <see cref="System.Collections.Generic.IDictionary&lt;TKey,TValue&gt;"/> with.
-		/// </param>
-		/// <returns>
-		/// A <see cref="MapType"/> for the specified role.
-		/// </returns>
 		public static CollectionType GenericMap(string role, string propertyRef, System.Type indexClass,
 																						System.Type elementClass)
 		{
-			return CreateCollectionType(typeof(GenericMapType<,>), role, propertyRef, indexClass, elementClass);
+			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("Map", new[] {indexClass, elementClass },
+																																									 GenericCollectionSimpleSignature);
+
+			return (CollectionType)mi.Invoke(collectionTypeFactory, new object[] { role, propertyRef, false });
 		}
 
 		public static CollectionType GenericSortedList(string role, string propertyRef, object comparer,
 																									 System.Type indexClass, System.Type elementClass)
 		{
-			return
-				CreateSortedCollectionType(typeof(GenericSortedListType<,>), role, propertyRef, comparer, indexClass, elementClass);
+			var signature = new[] { typeof(string), typeof(string), typeof(bool), typeof(IComparer<>).MakeGenericType(indexClass) };
+			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("SortedList", new[] { indexClass, elementClass },
+																																									 signature);
+
+			return (CollectionType)mi.Invoke(collectionTypeFactory, new[] { role, propertyRef, false, comparer });
 		}
 
 		public static CollectionType GenericSortedDictionary(string role, string propertyRef, object comparer,
 																												 System.Type indexClass, System.Type elementClass)
 		{
-			return
-				CreateSortedCollectionType(typeof(GenericSortedDictionaryType<,>), role, propertyRef, comparer, indexClass,
-																	 elementClass);
+			var signature = new[] { typeof(string), typeof(string), typeof(bool), typeof(IComparer<>).MakeGenericType(indexClass) };
+			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("SortedDictionary", new[] { indexClass, elementClass },
+																																						 signature);
+
+			return (CollectionType)mi.Invoke(collectionTypeFactory, new[] { role, propertyRef, false, comparer });
 		}
 
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="Iesi.Collections.Generic.ISet{T}" />.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="elementClass">The type of the set elements.</param>
-		/// <returns>A <see cref="GenericSetType{T}" /> for the specified role.</returns>
 		public static CollectionType GenericSet(string role, string propertyRef, System.Type elementClass)
 		{
-			return CreateCollectionType(typeof(GenericSetType<>), role, propertyRef, elementClass);
+			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("Set", new[] { elementClass },
+																																									 GenericCollectionSimpleSignature);
+
+			return (CollectionType)mi.Invoke(collectionTypeFactory, new object[] { role, propertyRef, false });
 		}
 
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for a sorted <see cref="Iesi.Collections.Generic.ISet{T}" />.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="comparer">The <see cref="System.Collections.Generic.IComparer{T}" /> to use for the set.</param>
-		/// <param name="elementType">The type of the elements in the set.</param>
-		/// <returns>A <see cref="GenericSetType{T}" /> for the specified role.</returns>
 		public static CollectionType GenericSortedSet(string role, string propertyRef, object comparer,
-																									System.Type elementType)
+																									System.Type elementClass)
 		{
-			return CreateSortedCollectionType(typeof(GenericSortedSetType<>), role, propertyRef, comparer, elementType);
+			var signature = new[] { typeof(string), typeof(string), typeof(bool), typeof(IComparer<>).MakeGenericType(elementClass) };
+			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("SortedSet", new[] { elementClass },
+																																									 signature);
+
+			return (CollectionType)mi.Invoke(collectionTypeFactory, new[] { role, propertyRef, false, comparer });
 		}
 
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an ordered <see cref="Iesi.Collections.Generic.ISet{T}" />.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="elementType">The type of the elements in the set.</param>
-		/// <returns>A <see cref="GenericSetType{T}" /> for the specified role.</returns>
 		public static CollectionType GenericOrderedSet(string role, string propertyRef,
-																									System.Type elementType)
+																									System.Type elementClass)
 		{
-			return CreateOrderedCollectionType(typeof(GenericOrderedSetType<>), role, propertyRef, elementType);
+			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("OrderedSet", new[] { elementClass },
+																																									 GenericCollectionSimpleSignature);
+
+			return (CollectionType)mi.Invoke(collectionTypeFactory, new object[] { role, propertyRef, false });
 		}
 
 		/// <summary> Deep copy a series of values from one array to another... </summary>
