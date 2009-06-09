@@ -2,28 +2,31 @@
 using System.Data.Common;
 using NHibernate.Exceptions;
 
-public class PostgresExceptionConverterExample : ISQLExceptionConverter
+namespace NHibernate.Test.ExceptionsTest
 {
-	#region ISQLExceptionConverter Members
-
-	public Exception Convert(AdoExceptionContextInfo exInfo)
+	public class PostgresExceptionConverterExample : ISQLExceptionConverter
 	{
-		var sqle = ADOExceptionHelper.ExtractDbException(exInfo.SqlException) as DbException;
-		if (sqle != null)
+		#region ISQLExceptionConverter Members
+
+		public Exception Convert(AdoExceptionContextInfo exInfo)
 		{
-			string code = (string) sqle.GetType().GetProperty("Code").GetValue(sqle, null);
+			var sqle = ADOExceptionHelper.ExtractDbException(exInfo.SqlException) as DbException;
+			if (sqle != null)
+			{
+				string code = (string)sqle.GetType().GetProperty("Code").GetValue(sqle, null);
 
-			if (code == "23503")
-			{
-				return new ConstraintViolationException(exInfo.Message, sqle.InnerException, exInfo.Sql, null);
+				if (code == "23503")
+				{
+					return new ConstraintViolationException(exInfo.Message, sqle.InnerException, exInfo.Sql, null);
+				}
+				if (code == "42P01")
+				{
+					return new SQLGrammarException(exInfo.Message, sqle.InnerException, exInfo.Sql);
+				}
 			}
-			if (code == "42P01")
-			{
-				return new SQLGrammarException(exInfo.Message, sqle.InnerException, exInfo.Sql);
-			}
+			return SQLStateConverter.HandledNonSpecificException(exInfo.SqlException, exInfo.Message, exInfo.Sql);
 		}
-		return SQLStateConverter.HandledNonSpecificException(exInfo.SqlException, exInfo.Message, exInfo.Sql);
-	}
 
-	#endregion
+		#endregion
+	}
 }
