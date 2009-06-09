@@ -52,10 +52,11 @@ namespace NHibernate.Test.MultipleCollectionFetchTest
 
 		protected virtual void RunLinearJoinFetchTest(Person parent)
 		{
-			using (ISession s = OpenSession())
+            using (ISession s = OpenSession())
+			using(ITransaction tx = s.BeginTransaction())
 			{
 				s.Save(parent);
-				s.Flush();
+				tx.Commit();
 			}
 			using (ISession s = OpenSession())
 			{
