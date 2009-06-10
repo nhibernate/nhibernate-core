@@ -251,5 +251,19 @@ namespace NHibernate.Test.UtilityTest
 			var a = TypeNameParser.Parse(typeName);
 			Assert.AreEqual(typeName, a.ToString());
 		}
+
+		[Test]
+		[Description("Parse with new lines")]
+		public void NH1822()
+		{
+			var typeName =
+				@"OldMutual.SalesGear.Data.ReferenceType`2[ 
+                [OldMutual.SalesGear.Reference.Core.Channel, OldMutual.SalesGear.Reference.Core], 
+                [OldMutual.SalesGear.Reference.Core.Channels, OldMutual.SalesGear.Reference.Core] 
+              ], OldMutual.SalesGear.Data";
+			var expected = "OldMutual.SalesGear.Data.ReferenceType`2[[OldMutual.SalesGear.Reference.Core.Channel, OldMutual.SalesGear.Reference.Core],[OldMutual.SalesGear.Reference.Core.Channels, OldMutual.SalesGear.Reference.Core]], OldMutual.SalesGear.Data";
+			var a = TypeNameParser.Parse(typeName);
+			Assert.That(a.ToString(), Is.EqualTo(expected));
+		}
 	}
 }

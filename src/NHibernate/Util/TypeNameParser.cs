@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace NHibernate.Util
 {
@@ -14,6 +15,8 @@ namespace NHibernate.Util
 	{
 		private readonly string defaultNamespace;
 		private readonly string defaultAssembly;
+		private static readonly Regex WhiteSpaces = new Regex(@"[\t\r\n]", RegexOptions.Compiled);
+		private static readonly Regex MultipleSpaces = new Regex(@"[ ]+", RegexOptions.Compiled);
 
 		public TypeNameParser(string defaultNamespace, string defaultAssembly)
 		{
@@ -31,17 +34,18 @@ namespace NHibernate.Util
 			return new TypeNameParser(defaultNamespace, defaultAssembly).ParseTypeName(type);
 		}
 
-		public AssemblyQualifiedTypeName ParseTypeName(string type)
+		public AssemblyQualifiedTypeName ParseTypeName(string typeName)
 		{
-			if (type == null)
+			if (typeName == null)
 			{
-				throw new ArgumentNullException("type");
+				throw new ArgumentNullException("typeName");
 			}
-			if (type.Trim('[',']','\\', ',') == string.Empty)
+			var type = WhiteSpaces.Replace(typeName, " ");
+			type = MultipleSpaces.Replace(type, " ").Replace(", [", ",[").Replace("[ [", "[[").Replace("] ]", "]]");
+			if (type.Trim(' ','[', ']', '\\', ',') == string.Empty)
 			{
-				throw new ArgumentException(string.Format("The type to parse is not a type name:{0}", type), "type");
+				throw new ArgumentException(string.Format("The type to parse is not a type name:{0}", typeName), "typeName");
 			}
-
 			int genericTypeArgsStartIdx = type.IndexOf('[');
 			int genericTypeArgsEndIdx = type.LastIndexOf(']');
 			int genericTypeCardinalityIdx = -1;
