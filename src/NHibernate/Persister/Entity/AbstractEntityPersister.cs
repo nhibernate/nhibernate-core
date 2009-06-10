@@ -2336,16 +2336,16 @@ namespace NHibernate.Persister.Entity
 			return insert.ToSqlCommandInfo();
 		}
 
-		protected SqlCommandInfo GenerateDeleteString(int j)
+		protected virtual SqlCommandInfo GenerateDeleteString(int j)
 		{
-			SqlDeleteBuilder deleteBuilder = new SqlDeleteBuilder(Factory.Dialect, Factory);
+			var deleteBuilder = new SqlDeleteBuilder(Factory.Dialect, Factory);
 			deleteBuilder
 				.SetTableName(GetTableName(j))
 				.SetIdentityColumn(GetKeyColumns(j), IdentifierType);
 
 			if (j == 0 && IsVersioned)
 			{
-				deleteBuilder.SetVersionColumn(new string[] { VersionColumnName }, VersionType);
+				deleteBuilder.SetVersionColumn(new[] { VersionColumnName }, VersionType);
 			}
 
 			if (Factory.Settings.IsCommentsEnabled)
