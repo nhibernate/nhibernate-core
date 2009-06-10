@@ -596,7 +596,13 @@ namespace NHibernate.Test.Hql
 				hql = "select cast(7+123-5*a.BodyWeight as Double) from Animal a";
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(7 + 123 - 5 * 1.3d, l[0]);
+				
+				if(Dialect is PostgreSQLDialect)
+					Assert.AreEqual(123.500000238419d, l[0]);
+				else
+				{
+					Assert.AreEqual(7 + 123 - 5 * 1.3d, l[0]);
+				}
 
 				// Rendered in SELECT using a property and nested functions
 				if (!(Dialect is Oracle8iDialect))
@@ -647,7 +653,13 @@ namespace NHibernate.Test.Hql
 				hql = "select cast(7+123-5*a.BodyWeight as Double) from Animal a group by cast(7+123-5*a.BodyWeight as Double)";
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(7 + 123 - 5 * 1.3d, l[0]);
+				
+				if (Dialect is PostgreSQLDialect)
+					Assert.AreEqual(123.500000238419d, l[0]);
+				else
+				{
+					Assert.AreEqual(7 + 123 - 5 * 1.3d, l[0]);
+				}
 
 				// Rendered in GROUP BY using a property and nested functions
 				if (!(Dialect is Oracle8iDialect))
