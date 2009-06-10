@@ -11,9 +11,16 @@ namespace NHibernate.Test.NHSpecificTest.NH645
 	[TestFixture]
 	public class HQLFunctionFixture : TestCase
 	{
+		private bool appliesToThisDialect = true;
+
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return appliesToThisDialect;
 		}
 
 		protected override IList Mappings
@@ -23,7 +30,10 @@ namespace NHibernate.Test.NHSpecificTest.NH645
 
 		protected override void Configure(Configuration configuration)
 		{
-			configuration.SetProperty(Environment.Dialect, typeof (CustomDialect).AssemblyQualifiedName);
+			if (Dialect is MsSql2005Dialect)
+				configuration.SetProperty(Environment.Dialect, typeof (CustomDialect).AssemblyQualifiedName);
+			else
+				appliesToThisDialect = false;
 		}
 
 		/// <summary>
