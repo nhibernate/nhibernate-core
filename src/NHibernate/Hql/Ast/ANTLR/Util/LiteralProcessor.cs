@@ -117,7 +117,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 		{
 			// TODO: something much better - look at the type of the other expression!
 			// TODO: Have comparisonExpression and/or arithmeticExpression rules complete the resolution of boolean nodes.
-			String replacement = _walker.TokenReplacements[constant.Text];
+			string replacement;
+			_walker.TokenReplacements.TryGetValue(constant.Text, out replacement);
 			if ( replacement != null ) 
 			{
 				constant.Text = replacement;
