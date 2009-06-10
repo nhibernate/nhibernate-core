@@ -743,7 +743,11 @@ namespace NHibernate.Test.Hql
 				string hql = "select cast(a.BodyWeight As Double) from Animal a";
 				IList l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(1.3f, l[0]);
+
+				if(Dialect is PostgreSQLDialect)
+					Assert.AreEqual(1.29999995231628d, l[0]);
+				else
+					Assert.AreEqual(1.3f, l[0]);
 			}
 		}
 
