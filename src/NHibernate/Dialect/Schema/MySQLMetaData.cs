@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Dialect.Schema
 {
@@ -18,6 +19,17 @@ namespace NHibernate.Dialect.Schema
 		protected override string ForeignKeysSchemaName
 		{
 			get { return "Foreign Keys"; }
+		}
+
+		public override ISet<string> GetReservedWords()
+		{
+			var result = new HashedSet<string>();
+			DataTable dtReservedWords = Connection.GetSchema(DbMetaDataCollectionNames.ReservedWords);
+			foreach (DataRow row in dtReservedWords.Rows)
+			{
+				result.Add(row["Reserved Word"].ToString());
+			}
+			return result;
 		}
 	}
 
