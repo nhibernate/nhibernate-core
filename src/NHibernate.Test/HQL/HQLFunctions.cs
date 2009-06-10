@@ -567,6 +567,8 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Cast()
 		{
+			const double magicResult = 7 + 123 - 5*1.3d;
+
 			IgnoreIfNotSupported("cast");
 			// The cast is used to test various cases of a function render
 			// Cast was selected because represent a special case for:
@@ -596,13 +598,7 @@ namespace NHibernate.Test.Hql
 				hql = "select cast(7+123-5*a.BodyWeight as Double) from Animal a";
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
-				
-				if(Dialect is PostgreSQLDialect)
-					Assert.AreEqual(123.500000238419d, l[0]);
-				else
-				{
-					Assert.AreEqual(7 + 123 - 5 * 1.3d, l[0]);
-				}
+				Assert.AreEqual(magicResult, (double)l[0], 0.00001);
 
 				// Rendered in SELECT using a property and nested functions
 				if (!(Dialect is Oracle8iDialect))
@@ -653,13 +649,7 @@ namespace NHibernate.Test.Hql
 				hql = "select cast(7+123-5*a.BodyWeight as Double) from Animal a group by cast(7+123-5*a.BodyWeight as Double)";
 				l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
-				
-				if (Dialect is PostgreSQLDialect)
-					Assert.AreEqual(123.500000238419d, l[0]);
-				else
-				{
-					Assert.AreEqual(7 + 123 - 5 * 1.3d, l[0]);
-				}
+				Assert.AreEqual(magicResult, (double)l[0], 0.00001);
 
 				// Rendered in GROUP BY using a property and nested functions
 				if (!(Dialect is Oracle8iDialect))
@@ -743,11 +733,7 @@ namespace NHibernate.Test.Hql
 				string hql = "select cast(a.BodyWeight As Double) from Animal a";
 				IList l = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, l.Count);
-
-				if(Dialect is PostgreSQLDialect)
-					Assert.AreEqual(1.29999995231628d, l[0]);
-				else
-					Assert.AreEqual(1.3f, l[0]);
+				Assert.AreEqual(1.3f, (double)l[0], 0.00001);
 			}
 		}
 
