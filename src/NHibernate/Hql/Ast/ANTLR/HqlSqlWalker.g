@@ -385,7 +385,7 @@ collectionFunction
 	;
 
 functionCall
-	: ^(m=METHOD_CALL  {_inFunctionCall=true;} pathAsIdent ( ^(EXPR_LIST (expr | comparisonExpr)* ) )? )
+	: ^(m=METHOD_CALL  {_inFunctionCall=true;} pathAsIdent ( ^(EXPR_LIST (expr | query | comparisonExpr)* ) )? )
 		{ ProcessFunction($m.tree,_inSelect); _inFunctionCall=false; }
 	| ^(AGGREGATE aggregateExpr )
 	;
