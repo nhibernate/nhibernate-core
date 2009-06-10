@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1556
@@ -7,6 +8,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1556
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return Dialect is MsSql2005Dialect;
+		}
+
 		// This test not fail but something very strange happen in various others tests
 		// probably the problem is the implementation of QuotedAndParenthesisStringTokenizer in MsSql2005Dialect
 		// but i'm not sure
