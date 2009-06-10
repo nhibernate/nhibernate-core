@@ -44,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1812
 		}
 	}
 
-	[TestFixture, Ignore("To fix for AST parser; there are problems with subquery in various places.")]
+	[TestFixture]
 	public class AstBug : AstBugBase
 	{
 
