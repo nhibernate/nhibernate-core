@@ -501,6 +501,8 @@
     <Compile Include="NHSpecificTest\NH1812\Model.cs" />
     <Compile Include="NHSpecificTest\NH1813\EntityWithUnique.cs" />
     <Compile Include="NHSpecificTest\NH1813\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1821\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH1821\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH645\HQLFunctionFixture.cs" />
     <Compile Include="HQL\HQLFunctions.cs" />
     <Compile Include="HQL\Human.cs" />
@@ -1900,6 +1902,7 @@
     <EmbeddedResource Include="CacheTest\EntityWithFilters.xml" />
     <EmbeddedResource Include="Classic\EntityWithLifecycle.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1821\Mappings.hbm.xml" />
     <EmbeddedResource Include="TypeParameters\EntityCustomId.hbm.xml" />
     <EmbeddedResource Include="Tools\hbm2ddl\SchemaMetadataUpdaterTest\HeavyEntity.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1182\Mappings.hbm.xml" />

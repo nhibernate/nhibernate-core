@@ -26,7 +26,7 @@ namespace NHibernate.Loader.Custom.Sql
 
 		private readonly Dictionary<string, object> namedParameters = new Dictionary<string, object>();
 
-		private long aliasesFound = 0;
+		private long aliasesFound;
 
 		public SQLQueryParser(string sqlQuery, IParserContext context)
 		{
@@ -281,6 +281,11 @@ namespace NHibernate.Loader.Custom.Sql
 			public void Other(char character)
 			{
 				result.Add(character.ToString());
+			}
+
+			public void Other(string sqlPart)
+			{
+				result.Add(sqlPart);
 			}
 
 			private void AddNamedParameter(string name)

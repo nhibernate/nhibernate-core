@@ -21,6 +21,7 @@ namespace NHibernate.Engine.Query
 			void NamedParameter(string name, int position);
 			void JpaPositionalParameter(string name, int position);
 			void Other(char character);
+			void Other(string sqlPart);
 		}
 
 		// Disallow instantiation
@@ -56,12 +57,14 @@ namespace NHibernate.Engine.Query
 				if (indx + 1 < stringLength && sqlString.Substring(indx,2) == "/*")
 				{
 					var closeCommentIdx = sqlString.IndexOf("*/");
+					recognizer.Other(sqlString.Substring(indx, (closeCommentIdx- indx)+2));
 					indx = closeCommentIdx + 1;
 					continue;
 				}
 				if (afterNewLine && (indx + 1 < stringLength) && sqlString.Substring(indx, 2) == "--")
 				{
 					var closeCommentIdx = sqlString.IndexOf(Environment.NewLine, indx + 2);
+					recognizer.Other(sqlString.Substring(indx, closeCommentIdx - indx));
 					indx = closeCommentIdx + NewLineLength - 1;
 					continue;
 				}
@@ -69,6 +72,7 @@ namespace NHibernate.Engine.Query
 				{
 					afterNewLine = true;
 					indx += NewLineLength - 1;
+					recognizer.Other(Environment.NewLine);
 					continue;
 				}
 				afterNewLine = false;

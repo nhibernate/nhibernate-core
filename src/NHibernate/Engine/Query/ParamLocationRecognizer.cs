@@ -74,6 +74,11 @@ namespace NHibernate.Engine.Query
 			// don't care...
 		}
 
+		public void Other(string sqlPart)
+		{
+			// don't care...
+		}
+
 		private NamedParameterDescription GetOrBuildNamedParameterDescription(string name, bool jpa)
 		{
 			NamedParameterDescription desc;
