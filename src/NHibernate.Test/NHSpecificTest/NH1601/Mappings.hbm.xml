@@ -47,7 +47,7 @@
   <class name="Scenario" table="Scenario" lazy="false">
     <id type="Int32" name="id">
       <column name="ScenarioID"/>
-      <generator class="increment" />
+      <generator class="native" />
     </id>
   </class>
   
