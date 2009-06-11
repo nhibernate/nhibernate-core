@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
+using NHibernate.Bytecode;
 using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.Intercept;
@@ -95,10 +96,7 @@ namespace NHibernate.Type
 		/// <summary></summary>
 		static TypeFactory()
 		{
-			Instance =
-				new TypeFactory(
-					(ICollectionTypeFactory)
-					Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(typeof (CollectionTypeFactory)));
+			Instance = new TypeFactory();
 			
 			//basicTypes.Add(NHibernate.Blob.Name, NHibernate.Blob);
 			//basicTypes.Add(NHibernate.Clob.Name, NHibernate.Clob);
@@ -184,11 +182,16 @@ namespace NHibernate.Type
 			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Decimal.Name, GetDecimalType);
 		}
 
-		public ICollectionTypeFactory CollectionTypeFactory { get; private set; }
-
-		private TypeFactory(ICollectionTypeFactory collectionTypeFactory)
+		public ICollectionTypeFactory CollectionTypeFactory
 		{
-			CollectionTypeFactory = collectionTypeFactory;
+			get
+			{
+				return Cfg.Environment.BytecodeProvider.CollectionTypeFactory;
+			}
+		}
+
+		private TypeFactory()
+		{
 		}
 
 		/// <summary>

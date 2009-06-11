@@ -8,6 +8,7 @@ namespace NHibernate.Bytecode
 	{
 		private readonly IObjectsFactory objectsFactory = new ActivatorObjectsFactory();
 		protected System.Type proxyFactoryFactory;
+		private ICollectionTypeFactory collectionTypeFactory;
 
 		#region IBytecodeProvider Members
 
@@ -36,6 +37,34 @@ namespace NHibernate.Bytecode
 		public virtual IObjectsFactory ObjectsFactory
 		{
 			get { return objectsFactory; }
+		}
+
+		public ICollectionTypeFactory CollectionTypeFactory
+		{
+			get
+			{
+				if (collectionTypeFactory == null)
+				{
+					try
+					{
+						collectionTypeFactory =
+							(ICollectionTypeFactory) ObjectsFactory.CreateInstance(typeof (Type.DefaultCollectionTypeFactory));
+					}
+					catch (Exception e)
+					{
+						throw new HibernateByteCodeException("Failed to create an instance of CollectionTypeFactory!", e);
+					}
+				}
+				return collectionTypeFactory;
+			}
+			protected set
+			{
+				if(value == null)
+				{
+					throw new InvalidOperationException("The CollectionTypeFactory can't be null.");
+				}
+				collectionTypeFactory = value;
+			}
 		}
 
 		#endregion

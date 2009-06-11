@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using NHibernate.Bytecode;
 
 namespace NHibernate.Type
 {
-	public class CollectionTypeFactory : ICollectionTypeFactory
+	public class DefaultCollectionTypeFactory : ICollectionTypeFactory
 	{
 		public virtual CollectionType Array(string role, string propertyRef, bool embedded, System.Type elementClass)
 		{

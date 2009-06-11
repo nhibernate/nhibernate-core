@@ -20,7 +20,18 @@ namespace NHibernate.Bytecode
 		/// <returns>The reflection optimization delegate.</returns>
 		IReflectionOptimizer GetReflectionOptimizer(System.Type clazz, IGetter[] getters, ISetter[] setters);
 
+		/// <summary>
+		/// NHibernate's object instaciator.
+		/// </summary>
+		/// <remarks>
+		/// For entities <see cref="IReflectionOptimizer"/> and its implementations.
+		/// </remarks>
 		IObjectsFactory ObjectsFactory { get; }
+
+		/// <summary>
+		/// Instanciator of NHibernate's collections default types.
+		/// </summary>
+		ICollectionTypeFactory CollectionTypeFactory { get; }
 
 		// <summary> Generate a ClassTransformer capable of performing bytecode manipulation. </summary>
 		// <param name="classFilter">

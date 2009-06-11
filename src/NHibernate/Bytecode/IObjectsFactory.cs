@@ -1,5 +1,8 @@
 namespace NHibernate.Bytecode
 {
+	/// <summary>
+	/// Interface for instanciate all NHibernate objects.
+	/// </summary>
 	public interface IObjectsFactory
 	{
 		/// <summary>

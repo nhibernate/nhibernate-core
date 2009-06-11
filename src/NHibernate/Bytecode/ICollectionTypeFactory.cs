@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-namespace NHibernate.Type
+using NHibernate.Type;
+
+namespace NHibernate.Bytecode
 {
 	/// <summary>
 	/// Type factory for collections types.
