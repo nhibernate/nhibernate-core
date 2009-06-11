@@ -587,7 +587,6 @@ namespace NHibernate.Test.Hql
 				string hql;
 				IList l;
 				Animal result;
-				double expectedBodyWeight = 1.3;
 				// Rendered in SELECT using a property 
 				hql = "select cast(a.BodyWeight as Double) from Animal a";
 				l = s.CreateQuery(hql).List();
