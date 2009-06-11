@@ -8,5 +8,7 @@
 			<generator class="native" />
 		</id>
 		<property name="Description"/>
+		<property name="LongValue"/>
+		<property name="IntValue"/>
 	</class>
 </hibernate-mapping>

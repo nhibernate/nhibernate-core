@@ -193,25 +193,33 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 
 		private string DetermineIntegerRepresentation(string text, int type)
 		{
+			// prevent the fisrt-exception as possible
+			var literalValue = text;
+			bool hasLongSpec = literalValue.EndsWith("l") || literalValue.EndsWith("L");
+			if (hasLongSpec)
+			{
+				literalValue = literalValue.Substring(0, literalValue.Length - 1);
+			}
 			try
 			{
-				if (type == HqlSqlWalker.NUM_INT)
+				if (type == HqlSqlWalker.NUM_INT && literalValue.Length <= 10 || hasLongSpec)
 				{
 					try
 					{
-						return int.Parse(text).ToString();
+						return int.Parse(literalValue).ToString();
 					}
 					catch (FormatException)
 					{
-						log.Info("could not format incoming text [" + text + "] as a NUM_INT; assuming numeric overflow and attempting as NUM_LONG");
+						log.Info("could not format incoming text [" + text
+						         + "] as a NUM_INT; assuming numeric overflow and attempting as NUM_LONG");
+					}
+					catch (OverflowException)
+					{
+						log.Info("could not format incoming text [" + text
+						         + "] as a NUM_INT; assuming numeric overflow and attempting as NUM_LONG");
 					}
 				}
 
-				String literalValue = text;
-				if (literalValue.EndsWith("l") || literalValue.EndsWith("L"))
-				{
-					literalValue = literalValue.Substring(0, literalValue.Length - 1);
-				}
 				return long.Parse(literalValue).ToString();
 			}
 			catch (Exception t)

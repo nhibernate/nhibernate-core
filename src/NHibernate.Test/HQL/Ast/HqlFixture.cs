@@ -117,5 +117,19 @@ namespace NHibernate.Test.HQL.Ast
 				s.Transaction.Commit();
 			}
 		}
+
+		[Test]
+		public void CanParseMaxLong()
+		{
+			// NH-1833
+			using (ISession s = OpenSession())
+			{
+				s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = {0}", long.MaxValue)).List();
+				s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = {0}L", long.MaxValue)).List();
+				s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = 123L")).List();
+				s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = 123")).List();
+				s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = {0}", int.MaxValue + 1L)).List();
+			}
+		}
 	}
 }
