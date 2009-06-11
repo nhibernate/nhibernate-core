@@ -147,7 +147,7 @@
     <Compile Include="Criteria\MaterialResource.cs" />
     <Compile Include="Criteria\ProjectionsTest.cs" />
     <Compile Include="Criteria\Reptile.cs" />
-    <Compile Include="Criteria\RestrictionsFixture.cs" />
+    <Compile Include="ExpressionTest\RestrictionsFixture.cs" />
     <Compile Include="Criteria\Student.cs" />
     <Compile Include="Criteria\StudentDTO.cs" />
     <Compile Include="DebugConnectionProvider.cs" />

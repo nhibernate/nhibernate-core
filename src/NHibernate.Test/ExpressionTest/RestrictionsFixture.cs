@@ -1,7 +1,7 @@
 using NHibernate.Criterion;
 using NUnit.Framework;
 
-namespace NHibernate.Test.Criteria
+namespace NHibernate.Test.ExpressionTest
 {
 	[TestFixture]
 	public class RestrictionsFixture
