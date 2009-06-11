@@ -13,6 +13,109 @@ using NHibernate.Util;
 
 namespace NHibernate.Collection
 {
+	internal interface ISetSnapshot<T>: ICollection<T>, ICollection
+	{
+		T this[T element]{ get;}
+	}
+
+	[Serializable]
+	internal class SetSnapShot<T> : ISetSnapshot<T>
+	{
+		private readonly List<T> elements;
+		public SetSnapShot()
+		{
+			elements = new List<T>();
+		}
+
+		public SetSnapShot(int capacity)
+		{
+			elements = new List<T>(capacity);			
+		}
+
+		public SetSnapShot(IEnumerable<T> collection)
+		{
+			elements = new List<T>(collection);
+		}
+
+		public IEnumerator<T> GetEnumerator()
+		{
+			return elements.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+
+		public void Add(T item)
+		{
+			elements.Add(item);
+		}
+
+		public void Clear()
+		{
+			throw new InvalidOperationException();
+		}
+
+		public bool Contains(T item)
+		{
+			return elements.Contains(item);
+		}
+
+		public void CopyTo(T[] array, int arrayIndex)
+		{
+			elements.CopyTo(array, arrayIndex);
+		}
+
+		public bool Remove(T item)
+		{
+			throw new InvalidOperationException();
+		}
+
+		public void CopyTo(Array array, int index)
+		{
+			((ICollection)elements).CopyTo(array, index);
+		}
+
+		int ICollection.Count
+		{
+			get { return elements.Count; }
+		}
+
+		public object SyncRoot
+		{
+			get { return ((ICollection)elements).SyncRoot; }
+		}
+
+		public bool IsSynchronized
+		{
+			get { return ((ICollection)elements).IsSynchronized; }
+		}
+
+		int ICollection<T>.Count
+		{
+			get { return elements.Count; }
+		}
+
+		public bool IsReadOnly
+		{
+			get { return ((ICollection<T>)elements).IsReadOnly; }
+		}
+
+		public T this[T element]
+		{
+			get
+			{
+				var idx = elements.IndexOf(element);
+				if(idx >=0)
+				{
+					return elements[idx];
+				}
+				return default(T);
+			}
+		}
+	}
+
 	/// <summary>
 	/// .NET has no design equivalent for Java's Set so we are going to use the
 	/// Iesi.Collections library. This class is internal to NHibernate and shouldn't
@@ -78,28 +181,30 @@ namespace NHibernate.Collection
 		{
 			EntityMode entityMode = Session.EntityMode;
 
-			//if (set==null) return new Set(session);
-			Hashtable clonedSet = new Hashtable(set.Count);
+			// NH Different behavior : for NH-1810 and the way is working the possible underlining collection
+			// the Snapshot is represented using a List<T> 
+			// (perhaps it has less performance then IDictionary but it is working)
+			// TODO : should use ever underlining collection type or something to have same performace and same order
+			var clonedSet = new SetSnapShot<object>(set.Count);
 			foreach (object current in set)
 			{
 				object copied = persister.ElementType.DeepCopy(current, entityMode, persister.Factory);
-				clonedSet[copied] = copied;
+				clonedSet.Add(copied);
 			}
 			return clonedSet;
 		}
 
 		public override ICollection GetOrphans(object snapshot, string entityName)
 		{
-			IDictionary sn = (IDictionary) snapshot;
-			// NH Different implementation : sn.Keys return a new collection we don't need "re-new"
-			return GetOrphans(sn.Keys, set, entityName, Session);
+			var sn = new SetSnapShot<object>((IEnumerable<object>)snapshot);
+			return GetOrphans(sn, set, entityName, Session);
 		}
 
 		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
 			IType elementType = persister.ElementType;
-			IDictionary snapshot = (IDictionary) GetSnapshot();
-			if (snapshot.Count != set.Count)
+			var snapshot = (ISetSnapshot<object>)GetSnapshot();
+			if (((ICollection)snapshot).Count != set.Count)
 			{
 				return false;
 			}
@@ -118,7 +223,7 @@ namespace NHibernate.Collection
 
 		public override bool IsSnapshotEmpty(object snapshot)
 		{
-			return ((IDictionary) snapshot).Count == 0;
+			return ((ICollection)snapshot).Count == 0;
 		}
 
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
@@ -212,9 +317,9 @@ namespace NHibernate.Collection
 		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
 			IType elementType = persister.ElementType;
-			IDictionary sn = (IDictionary) GetSnapshot();
-			List<object> deletes = new List<object>(sn.Count);
-			foreach (object obj in sn.Keys)
+			var sn = (ISetSnapshot<object>)GetSnapshot();
+			var deletes = new List<object>(((ICollection)sn).Count);
+			foreach (object obj in sn)
 			{
 				if (!set.Contains(obj))
 				{
@@ -237,7 +342,7 @@ namespace NHibernate.Collection
 
 		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
-			IDictionary sn = (IDictionary) GetSnapshot();
+			var sn = (ISetSnapshot<object>) GetSnapshot();
 			object oldKey = sn[entry];
 			// note that it might be better to iterate the snapshot but this is safe,
 			// assuming the user implements equals() properly, as required by the PersistentSet

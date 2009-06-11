@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1810
 {
-	[TestFixture, Ignore("To investigate.")]
+	[TestFixture]
 	public class Fixture : BugTestCase
 	{
 		// The problem is the same using a default sort="natural" collection for Children
