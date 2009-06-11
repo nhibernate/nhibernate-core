@@ -71,7 +71,7 @@ namespace NHibernate.Criterion
 
 		public static AbstractCriterion Like(string propertyName, string value, MatchMode matchMode, char? escapeChar)
 		{
-			return new LikeExpression(propertyName, value, escapeChar, false);
+			return new LikeExpression(propertyName, value, matchMode, escapeChar, false);
 		}
 
 		/// <summary>
