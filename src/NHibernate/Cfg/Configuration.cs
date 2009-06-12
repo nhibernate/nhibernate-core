@@ -55,6 +55,7 @@ namespace NHibernate.Cfg
 		public const string DefaultHibernateCfgFileName = "hibernate.cfg.xml";
 
 		private string currentDocumentName;
+		private bool preMappingBuildProcessed;
 
 		protected IDictionary<string, PersistentClass> classes; // entityName, PersistentClass
 		protected IDictionary<string, NHibernate.Mapping.Collection> collections;
@@ -523,10 +524,36 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public Mappings CreateMappings(Dialect.Dialect dialect)
 		{
+			ProcessPreMappingBuildProperties();
 			return new Mappings(classes, collections, tables, NamedQueries, NamedSQLQueries, SqlResultSetMappings, Imports,
 			                    secondPasses, propertyReferences, namingStrategy, typeDefs, FilterDefinitions, extendsQueue,
 			                    auxiliaryDatabaseObjects, tableNameBinding, columnNameBindingPerTable, defaultAssembly,
 			                    defaultNamespace, dialect);
+		}
+
+		private void ProcessPreMappingBuildProperties()
+		{
+			if(preMappingBuildProcessed)
+			{
+				return;
+			}
+			ConfigureCollectionTypeFactory();
+			preMappingBuildProcessed = true;
+		}
+
+		private void ConfigureCollectionTypeFactory()
+		{
+			var ctfc = GetProperty(Environment.CollectionTypeFactoryClass);
+			if(string.IsNullOrEmpty(ctfc))
+			{
+				return;
+			}
+			var ictfc = Environment.BytecodeProvider as IInjectableCollectionTypeFactoryClass;
+			if(ictfc == null)
+			{
+				return;
+			}
+			ictfc.SetCollectionTypeFactoryClass(ctfc);
 		}
 
 		/// <summary>

@@ -451,6 +451,7 @@
     <Compile Include="Bytecode\AbstractBytecodeProvider.cs" />
     <Compile Include="Bytecode\ActivatorObjectsFactory.cs" />
     <Compile Include="Bytecode\HibernateByteCodeException.cs" />
+    <Compile Include="Bytecode\IInjectableCollectionTypeFactoryClass.cs" />
     <Compile Include="Bytecode\IObjectsFactory.cs" />
     <Compile Include="Bytecode\ProxyFactoryFactoryNotConfiguredException.cs" />
     <Compile Include="Bytecode\UnableToLoadProxyFactoryFactoryException.cs" />

@@ -4,11 +4,12 @@ using NHibernate.Util;
 
 namespace NHibernate.Bytecode
 {
-	public abstract class AbstractBytecodeProvider : IBytecodeProvider, IInjectableProxyFactoryFactory
+	public abstract class AbstractBytecodeProvider : IBytecodeProvider, IInjectableProxyFactoryFactory, IInjectableCollectionTypeFactoryClass
 	{
 		private readonly IObjectsFactory objectsFactory = new ActivatorObjectsFactory();
 		protected System.Type proxyFactoryFactory;
 		private ICollectionTypeFactory collectionTypeFactory;
+		private System.Type collectionTypeFactoryClass = typeof(Type.DefaultCollectionTypeFactory);
 
 		#region IBytecodeProvider Members
 
@@ -39,7 +40,7 @@ namespace NHibernate.Bytecode
 			get { return objectsFactory; }
 		}
 
-		public ICollectionTypeFactory CollectionTypeFactory
+		public virtual ICollectionTypeFactory CollectionTypeFactory
 		{
 			get
 			{
@@ -48,7 +49,7 @@ namespace NHibernate.Bytecode
 					try
 					{
 						collectionTypeFactory =
-							(ICollectionTypeFactory) ObjectsFactory.CreateInstance(typeof (Type.DefaultCollectionTypeFactory));
+							(ICollectionTypeFactory) ObjectsFactory.CreateInstance(collectionTypeFactoryClass);
 					}
 					catch (Exception e)
 					{
@@ -56,14 +57,6 @@ namespace NHibernate.Bytecode
 					}
 				}
 				return collectionTypeFactory;
-			}
-			protected set
-			{
-				if(value == null)
-				{
-					throw new InvalidOperationException("The CollectionTypeFactory can't be null.");
-				}
-				collectionTypeFactory = value;
 			}
 		}
 
@@ -89,6 +82,37 @@ namespace NHibernate.Bytecode
 				throw he;
 			}
 			proxyFactoryFactory = pffc;
+		}
+
+		#endregion
+
+		#region Implementation of IInjectableCollectionTypeFactoryClass
+
+		public void SetCollectionTypeFactoryClass(string typeAssemblyQualifiedName)
+		{
+			if (string.IsNullOrEmpty(typeAssemblyQualifiedName))
+			{
+				throw new ArgumentNullException("typeAssemblyQualifiedName");
+			}
+			System.Type ctf= ReflectHelper.ClassForName(typeAssemblyQualifiedName);
+			SetCollectionTypeFactoryClass(ctf);
+		}
+
+		public void SetCollectionTypeFactoryClass(System.Type type)
+		{
+			if (type == null)
+			{
+				throw new ArgumentNullException("type");
+			}
+			if (typeof(ICollectionTypeFactory).IsAssignableFrom(type) == false)
+			{
+				throw new HibernateByteCodeException(type.FullName + " does not implement " + typeof(ICollectionTypeFactory).FullName);
+			}
+			if (collectionTypeFactory != null)
+			{
+				throw new InvalidOperationException("CollectionTypeFactory in use, can't change it.");
+			}
+			collectionTypeFactoryClass = type;
 		}
 
 		#endregion

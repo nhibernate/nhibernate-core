@@ -1901,6 +1901,7 @@
     <EmbeddedResource Include="Ado\AlmostSimple.hbm.xml" />
     <EmbeddedResource Include="CacheTest\EntityWithFilters.xml" />
     <EmbeddedResource Include="Classic\EntityWithLifecycle.hbm.xml" />
+    <EmbeddedResource Include="Bytecode\Lightweight\ProductLine.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
     <EmbeddedResource Include="NHSpecificTest\NH1821\Mappings.hbm.xml" />
     <EmbeddedResource Include="TypeParameters\EntityCustomId.hbm.xml" />

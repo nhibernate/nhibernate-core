@@ -1,6 +1,8 @@
+using System;
 using NHibernate.Bytecode;
 using NHibernate.Bytecode.Lightweight;
 using NUnit.Framework;
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.Bytecode.Lightweight
 {
@@ -70,6 +72,86 @@ namespace NHibernate.Test.Bytecode.Lightweight
 			{
 				Assert.That(e.Message,Text.StartsWith("Failed to create an instance of"));
 			}
+		}
+
+		[Test]
+		public void NotConfiguredCollectionTypeFactory()
+		{
+			// our BytecodeProvider should ever have a CollectionTypeFactory
+			var bcp = new BytecodeProviderImpl();
+			Assert.That(bcp.CollectionTypeFactory, Is.Not.Null);
+		}
+
+		[Test]
+		public void SetCollectionTypeFactoryClassByName()
+		{
+			string nullName = null;
+			var bcp = new BytecodeProviderImpl();
+
+			Assert.Throws<ArgumentNullException>(() => bcp.SetCollectionTypeFactoryClass(nullName));
+			Assert.Throws<ArgumentNullException>(() => bcp.SetCollectionTypeFactoryClass(string.Empty));
+			Assert.Throws<TypeLoadException>(() => bcp.SetCollectionTypeFactoryClass("whatever"));
+		}
+
+		[Test]
+		public void SetCollectionTypeFactoryClassByType()
+		{
+			System.Type nullType = null;
+			var bcp = new BytecodeProviderImpl();
+			Assert.Throws<ArgumentNullException>(() => bcp.SetCollectionTypeFactoryClass(nullType));
+			Assert.Throws<HibernateByteCodeException>(() => bcp.SetCollectionTypeFactoryClass(GetType()), "should allow only ICollectionTypeFactory type");
+		}
+
+		private class NoDefaultCtor: Type.DefaultCollectionTypeFactory
+		{
+			public NoDefaultCtor(int something) {}
+		}
+
+		[Test]
+		public void InvalidCollectionTypeFactoryCtor()
+		{
+			ICollectionTypeFactory ctf;
+			var bcp = new BytecodeProviderImpl();
+			bcp.SetCollectionTypeFactoryClass(typeof (NoDefaultCtor));
+			Assert.Throws<HibernateByteCodeException>(() => ctf = bcp.CollectionTypeFactory);
+		}
+
+		[Test]
+		public void CollectionTypeFactoryCantChangeAfterUsage()
+		{
+			ICollectionTypeFactory ctf;
+			var bcp = new BytecodeProviderImpl();
+			ctf = bcp.CollectionTypeFactory; // initialize the instance
+			// try to set it
+			Assert.Throws<InvalidOperationException>(() => bcp.SetCollectionTypeFactoryClass(typeof(Type.DefaultCollectionTypeFactory)));
+		}
+
+		private class CustomCollectionTypeFactory : Type.DefaultCollectionTypeFactory
+		{
+		}
+
+		[Test]
+		[Explicit("The BytecodeProvider is static and can't be different in the same application.")]
+		public void AllowCustomCollectionTypeFactoryBeforeBuildFirstMapping()
+		{
+			// Allow set of CustomCollectionTypeFactory class after configure BUT before add the first mapping.
+			// for real we need CustomCollectionTypeFactory before BuildSessionFactory but for possible future
+			// "mapping-sources" is better to limitate the moment of injectability.
+			var cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			cfg.SetProperty(Environment.CollectionTypeFactoryClass, typeof(CustomCollectionTypeFactory).AssemblyQualifiedName);
+			Dialect.Dialect dialect = Dialect.Dialect.GetDialect(cfg.Properties);
+			cfg.CreateMappings(dialect);
+			Assert.That(Environment.BytecodeProvider.CollectionTypeFactory, Is.TypeOf<CustomCollectionTypeFactory>());
+		}
+
+		[Test]
+		[Explicit("The BytecodeProvider is static and can't be different in the same application.")]
+		public void WorkAddingMappings()
+		{
+			var cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			cfg.SetProperty(Environment.CollectionTypeFactoryClass, typeof(CustomCollectionTypeFactory).AssemblyQualifiedName);
+			cfg.AddResource("NHibernate.Test.Bytecode.Lightweight.ProductLine.hbm.xml", GetType().Assembly);
+			Assert.That(Environment.BytecodeProvider.CollectionTypeFactory, Is.TypeOf<CustomCollectionTypeFactory>());
 		}
 	}
 }
