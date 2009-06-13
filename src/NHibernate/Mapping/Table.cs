@@ -551,7 +551,7 @@ namespace NHibernate.Mapping
 		public Column GetColumn(int n)
 		{
 			IEnumerator<Column> iter = columns.Values.GetEnumerator();
-			for (int i = 0; i < n; i++)
+			for (int i = 0; i <= n; i++)
 			{
 				iter.MoveNext();
 			}
