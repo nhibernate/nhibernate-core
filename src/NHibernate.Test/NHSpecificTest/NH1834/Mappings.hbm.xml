@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1834"
+                   default-lazy="false">
+
+  
+
+  <class name="A">
+    <id name="Id" type="Int32">
+      <generator class="assigned" />
+    </id>
+  </class>
+
+  <class name="B">
+    <id name="Id" type="Int32">
+      <generator class="assigned" />
+    </id>
+    
+    <!--formula attrib should work like formula node-->
+    <many-to-one name="A" class="A" insert="false" update="false">
+      <formula><![CDATA[(select max(A.Id) from A)]]></formula>
+    </many-to-one>
+
+    <many-to-one name="A2" class="A" insert="false" update="false" formula="(select max(A.Id) from A)"/>
+  
+  </class>
+</hibernate-mapping>

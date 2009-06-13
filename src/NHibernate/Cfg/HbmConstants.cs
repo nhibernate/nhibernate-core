@@ -8,6 +8,7 @@ namespace NHibernate.Cfg
 		public const string nsPrefix = "hbm";
 		public const string nsKey = nsPrefix + ":key";
 		public const string nsColumn = nsPrefix + ":column";
+		public const string nsFormula = nsPrefix + ":formula";
 		public const string nsOneToMany = nsPrefix + ":one-to-many";
 		public const string nsParam = nsPrefix + ":param";
 		public const string nsIndex = nsPrefix + ":index";

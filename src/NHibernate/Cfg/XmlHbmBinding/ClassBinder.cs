@@ -849,15 +849,28 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void BindColumnsOrFormula(XmlNode node, SimpleValue simpleValue, string path, bool isNullable)
 		{
-			XmlAttribute formulaNode = node.Attributes["formula"];
-			if (formulaNode != null)
+			var formula = GetFormula(node);
+			if (formula != null)
 			{
-				Formula f = new Formula();
-				f.FormulaString = formulaNode.InnerText;
+				var f = new Formula { FormulaString = formula };
 				simpleValue.AddFormula(f);
 			}
 			else
 				BindColumns(node, simpleValue, isNullable, true, path);
+		}
+
+		protected string GetFormula(XmlNode node)
+		{
+			XmlAttribute attribute = node.Attributes["formula"];
+			if (attribute != null)
+			{
+				return attribute.InnerText;
+			}
+			else
+			{
+				var fcn = node.SelectSingleNode(HbmConstants.nsFormula, namespaceManager);
+				return fcn != null && !string.IsNullOrEmpty(fcn.InnerText) ? fcn.InnerText : null;
+			}
 		}
 
 		private void AddManyToOneSecondPass(ManyToOne manyToOne)

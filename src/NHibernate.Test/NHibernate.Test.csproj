@@ -503,6 +503,8 @@
     <Compile Include="NHSpecificTest\NH1813\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1821\Entity.cs" />
     <Compile Include="NHSpecificTest\NH1821\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1834\A.cs" />
+    <Compile Include="NHSpecificTest\NH1834\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH645\HQLFunctionFixture.cs" />
     <Compile Include="HQL\HQLFunctions.cs" />
     <Compile Include="HQL\Human.cs" />
@@ -1903,6 +1905,7 @@
     <EmbeddedResource Include="Classic\EntityWithLifecycle.hbm.xml" />
     <EmbeddedResource Include="Bytecode\Lightweight\ProductLine.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1834\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1821\Mappings.hbm.xml" />
     <EmbeddedResource Include="TypeParameters\EntityCustomId.hbm.xml" />
     <EmbeddedResource Include="Tools\hbm2ddl\SchemaMetadataUpdaterTest\HeavyEntity.hbm.xml" />
