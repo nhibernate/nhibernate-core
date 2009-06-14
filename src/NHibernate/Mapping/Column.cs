@@ -389,20 +389,20 @@ namespace NHibernate.Mapping
 
 		public SqlType GetSqlTypeCode(IMapping mapping)
 		{
-			IType _type = Value.Type;
+			IType type = Value.Type;
 			try
 			{
-				SqlType _sqlTypeCode = _type.SqlTypes(mapping)[TypeIndex];
-				if (SqlTypeCode != null && SqlTypeCode != _sqlTypeCode)
+				SqlType sqltc = type.SqlTypes(mapping)[TypeIndex];
+				if (SqlTypeCode != null && SqlTypeCode != sqltc)
 				{
-					throw new MappingException(string.Format("SQLType code's does not match. mapped as {0} but is {1}", sqlTypeCode, SqlTypeCode));
+					throw new MappingException(string.Format("SQLType code's does not match. mapped as {0} but is {1}", sqltc, SqlTypeCode));
 				}
-				return _sqlTypeCode;
+				return sqltc;
 			}
 			catch (Exception e)
 			{
 				throw new MappingException(string.Format("Could not determine type for column {0} of type {1}: {2}", 
-					name, _type.GetType().FullName, e.GetType().FullName), e);
+					name, type.GetType().FullName, e.GetType().FullName), e);
 			}
 		}
 

@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using NHibernate.Util;
 
 namespace NHibernate.SqlTypes
@@ -84,6 +85,7 @@ namespace NHibernate.SqlTypes
 			return GetTypeWithLen<StringSqlType>(length, l => new StringSqlType(l));
 		}
 
+		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static SqlType GetSqlType(DbType dbType, byte precision, byte scale)
 		{
 			return GetTypeWithPrecision(dbType, precision, scale);
