@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	namespace="NHibernate.Test.TypesTest"
+	assembly="NHibernate.Test">
+
+	<class name="MultiTypeEntity">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<property name="StringProp" type="String(100)"/>
+		<property name="AnsiStringProp" type="String(101)"/>
+		<property name="Decimal" type="Decimal(5,2)"/>
+		<property name="Currency" type="Currency(10,3)"/>
+		<property name="Double" type="Double(11,4)"/>
+		<property name="Float" type="Single(6,3)"/>
+		<property name="BinaryBlob" type="BinaryBlob(1000)"/>
+		<property name="Binary" type="Byte[](1001)"/>
+		<property name="StringClob" type="StringClob(1002)"/>
+	</class>
+</hibernate-mapping>

@@ -175,11 +175,16 @@ namespace NHibernate.Type
 
 
 			getTypeDelegatesWithLength.Add(NHibernateUtil.Binary.Name, GetBinaryType);
+			getTypeDelegatesWithLength.Add(NHibernateUtil.BinaryBlob.Name, GetBinaryType);
 			getTypeDelegatesWithLength.Add(NHibernateUtil.Serializable.Name, GetSerializableType);
 			getTypeDelegatesWithLength.Add(NHibernateUtil.String.Name, GetStringType);
+			getTypeDelegatesWithLength.Add(NHibernateUtil.StringClob.Name, GetStringType);
 			getTypeDelegatesWithLength.Add(NHibernateUtil.Class.Name, GetTypeType);
 
 			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Decimal.Name, GetDecimalType);
+			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Currency.Name, GetDecimalType);
+			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Double.Name, GetDecimalType);
+			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Single.Name, GetDecimalType);
 		}
 
 		public ICollectionTypeFactory CollectionTypeFactory

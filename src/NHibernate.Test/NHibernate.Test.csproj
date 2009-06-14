@@ -1290,6 +1290,7 @@
     <Compile Include="TypesTest\TimestampTypeFixture.cs" />
     <Compile Include="TypesTest\TypeFactoryFixture.cs" />
     <Compile Include="TypesTest\TypeFixtureBase.cs" />
+    <Compile Include="TypesTest\TypeSqlTypeFixture.cs" />
     <Compile Include="Unconstrained\Employee.cs" />
     <Compile Include="Unconstrained\Person.cs" />
     <Compile Include="Unconstrained\SimplyA.cs" />
@@ -1907,6 +1908,11 @@
     <EmbeddedResource Include="Classic\EntityWithLifecycle.hbm.xml" />
     <EmbeddedResource Include="Bytecode\Lightweight\ProductLine.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="TypesTest\MultiTypeEntity_WithSqlType.hbm.xml" />
+    <EmbeddedResource Include="TypesTest\MultiTypeEntity_WithColumnNode.hbm.xml" />
+    <EmbeddedResource Include="TypesTest\MultiTypeEntity_InLine.hbm.xml" />
+    <EmbeddedResource Include="TypesTest\MultiTypeEntity_Heuristic.hbm.xml" />
+    <EmbeddedResource Include="TypesTest\MultiTypeEntity_Defined.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1835\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1834\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1821\Mappings.hbm.xml" />

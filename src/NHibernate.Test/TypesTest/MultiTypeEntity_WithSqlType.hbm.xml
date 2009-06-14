@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	namespace="NHibernate.Test.TypesTest"
+	assembly="NHibernate.Test">
+
+	<class name="MultiTypeEntity">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<property name="StringProp" >
+			<column name="StringProp" sql-type="varchar(100)"/>
+		</property>
+		<property name="AnsiStringProp">
+			<column name="AnsiStringProp" sql-type="char(101)"/>
+		</property>
+		<property name="Decimal">
+			<column name="Decimal" sql-type="decimal(5,2)"/>
+		</property>
+		<property name="Currency" >
+			<column name="Currency" sql-type="decimal(10,3)"/>
+		</property>
+		<property name="Double" >
+			<column name="Double" sql-type="float(11,4)"/>
+		</property>
+		<property name="Float" type="Single" >
+			<column name="Float" sql-type="float(6,3)"/>
+		</property>
+		<property name="BinaryBlob" type="BinaryBlob" >
+			<column name="BinaryBlob" sql-type="varbinary(1000)"/>
+		</property>
+		<property name="Binary" type="Byte[]" >
+			<column name="Binary" sql-type="varbinary(1001)"/>
+		</property>
+		<property name="StringClob" type="StringClob">
+			<column name="StringClob" sql-type="varchar(1002)"/>
+		</property>
+	</class>
+</hibernate-mapping>
