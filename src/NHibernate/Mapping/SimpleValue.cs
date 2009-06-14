@@ -351,6 +351,7 @@ namespace NHibernate.Mapping
 
 			column.Value = this;
 			column.TypeIndex = columns.Count - 1;
+			type = null; // invalidate type
 		}
 
 		public virtual void AddFormula(Formula formula)
