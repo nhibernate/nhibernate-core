@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Globalization;
 using System.Reflection;
 using NHibernate.Bytecode;
@@ -73,6 +72,8 @@ namespace NHibernate.Type
 		private delegate NullableType GetNullableTypeWithLength(int length);
 
 		private delegate NullableType GetNullableTypeWithPrecision(byte precision, byte scale);
+
+		private delegate NullableType NullableTypeCreatorDelegate(SqlType sqlType);
 
 		private static void RegisterType(System.Type systemType, IType nhibernateType, string additionalName)
 		{
@@ -182,10 +183,14 @@ namespace NHibernate.Type
 			getTypeDelegatesWithLength.Add(NHibernateUtil.StringClob.Name, GetStringType);
 			getTypeDelegatesWithLength.Add(NHibernateUtil.Class.Name, GetTypeType);
 
-			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Decimal.Name, GetDecimalType);
-			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Currency.Name, GetDecimalType);
-			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Double.Name, GetDecimalType);
-			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Single.Name, GetDecimalType);
+			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Decimal.Name,
+			                                  (p, s) => GetType(NHibernateUtil.Decimal, p, s, st => new DecimalType(st)));
+			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Currency.Name,
+			                                  (p, s) => GetType(NHibernateUtil.Currency, p, s, st => new CurrencyType(st)));
+			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Double.Name,
+			                                  (p, s) => GetType(NHibernateUtil.Double, p, s, st => new DoubleType(st)));
+			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Single.Name,
+			                                  (p, s) => GetType(NHibernateUtil.Single, p, s, st => new SingleType(st)));
 		}
 
 		public ICollectionTypeFactory CollectionTypeFactory
@@ -516,14 +521,13 @@ namespace NHibernate.Type
 			return (NullableType)returnType;
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
-		public static NullableType GetDecimalType(byte precision, byte scale)
+		private static NullableType GetType(NullableType defaultUnqualifiedType, byte precision, byte scale, NullableTypeCreatorDelegate ctor)
 		{
-			string key = GetKeyForPrecisionScaleBased(NHibernateUtil.Decimal.Name, precision, scale);
+			string key = GetKeyForPrecisionScaleBased(defaultUnqualifiedType.Name, precision, scale);
 			IType returnType;
 			if (!typeByTypeOfName.TryGetValue(key, out returnType))
 			{
-				returnType = new DecimalType(SqlTypeFactory.GetSqlType(DbType.Decimal, precision, scale));
+				returnType = ctor(SqlTypeFactory.GetSqlType(defaultUnqualifiedType.SqlType.DbType, precision, scale));
 				AddToTypeOfNameWithPrecision(key, returnType);
 			}
 

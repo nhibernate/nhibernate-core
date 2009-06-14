@@ -111,5 +111,32 @@ namespace NHibernate.Test.TypesTest
 			log.DebugFormat("{0} calls", totalCall);
 		}
 
+		[Test]
+		public void HoldQualifiedTypes()
+		{
+			var decimalType = TypeFactory.Basic("Decimal(10,5)");
+			var doubleType = TypeFactory.Basic("Double(10,5)");
+			var singleType = TypeFactory.Basic("Single(10,5)");
+			var currencyType = TypeFactory.Basic("Currency(10,5)");
+
+			Assert.That(decimalType, Is.SameAs(TypeFactory.Basic("Decimal(10,5)")));
+			Assert.That(decimalType, Is.Not.SameAs(doubleType));
+			Assert.That(decimalType, Is.Not.SameAs(singleType));
+			Assert.That(decimalType, Is.Not.SameAs(currencyType));
+			Assert.That(decimalType, Is.Not.SameAs(TypeFactory.Basic("Decimal(11,5)")));
+
+			Assert.That(doubleType, Is.SameAs(TypeFactory.Basic("Double(10,5)")));
+			Assert.That(doubleType, Is.Not.SameAs(TypeFactory.Basic("Double(11,5)")));
+			Assert.That(doubleType, Is.Not.SameAs(singleType));
+			Assert.That(doubleType, Is.Not.SameAs(currencyType));
+
+			Assert.That(singleType, Is.Not.SameAs(currencyType));
+
+			Assert.That(currencyType, Is.SameAs(TypeFactory.Basic("Currency(10,5)")));
+			Assert.That(currencyType, Is.Not.SameAs(TypeFactory.Basic("Currency(11,5)")));
+
+			Assert.That(singleType, Is.SameAs(TypeFactory.Basic("Single(10,5)")));
+			Assert.That(singleType, Is.Not.SameAs(TypeFactory.Basic("Single(11,5)")));
+		}
 	}
 }

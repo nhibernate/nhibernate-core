@@ -16,6 +16,8 @@ namespace NHibernate.Type
 		{
 		}
 
+		internal DoubleType(SqlType sqlType) : base(sqlType) {}
+
 		/// <summary>
 		/// 
 		/// </summary>
