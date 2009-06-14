@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Reflection;
 using NHibernate.Bytecode;
@@ -522,7 +523,7 @@ namespace NHibernate.Type
 			IType returnType;
 			if (!typeByTypeOfName.TryGetValue(key, out returnType))
 			{
-				returnType = new DecimalType(SqlTypeFactory.GetDecimal(precision, scale));
+				returnType = new DecimalType(SqlTypeFactory.GetSqlType(DbType.Decimal, precision, scale));
 				AddToTypeOfNameWithPrecision(key, returnType);
 			}
 

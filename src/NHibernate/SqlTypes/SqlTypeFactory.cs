@@ -52,6 +52,18 @@ namespace NHibernate.SqlTypes
 			return (T) result;
 		}
 
+		private static SqlType GetTypeWithPrecision(DbType dbType, byte precision, byte scale)
+		{
+			string key = GetKeyForPrecisionScaleBased(dbType.ToString(), precision, scale);
+			SqlType result;
+			if (!SqlTypes.TryGetValue(key, out result))
+			{
+				result = new SqlType(dbType, precision, scale);
+				SqlTypes.Add(key, result);
+			}
+			return result;
+		}
+
 		public static AnsiStringSqlType GetAnsiString(int length)
 		{
 			return GetTypeWithLen<AnsiStringSqlType>(length, l => new AnsiStringSqlType(l));
@@ -62,14 +74,19 @@ namespace NHibernate.SqlTypes
 			return GetTypeWithLen<BinarySqlType>(length, l => new BinarySqlType(l));
 		}
 
+		public static BinaryBlobSqlType GetBinaryBlob(int length)
+		{
+			return GetTypeWithLen<BinaryBlobSqlType>(length, l => new BinaryBlobSqlType(l));
+		}
+
 		public static StringSqlType GetString(int length)
 		{
 			return GetTypeWithLen<StringSqlType>(length, l => new StringSqlType(l));
 		}
 
-		public static SqlType GetDecimal(byte precision, byte scale)
+		public static SqlType GetSqlType(DbType dbType, byte precision, byte scale)
 		{
-			return new SqlType(DbType.Decimal, precision, scale);
+			return GetTypeWithPrecision(dbType, precision, scale);
 		}
 
 		private static string GetKeyForLengthBased(string name, int length)
