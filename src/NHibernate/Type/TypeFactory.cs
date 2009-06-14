@@ -363,7 +363,6 @@ namespace NHibernate.Type
 			return name + "(" + precision + ", " + scale + ")";
 		}
 
-
 		/// <summary>
 		/// Uses heuristics to deduce a NHibernate type given a string naming the 
 		/// type. 
@@ -390,7 +389,7 @@ namespace NHibernate.Type
 		/// <param name="typeName">the type name</param>
 		/// <param name="parameters">parameters for the type</param>
 		/// <returns>An instance of <c>NHibernate.Type.IType</c></returns>
-		public static IType HeuristicType(string typeName, IDictionary parameters)
+		public static IType HeuristicType(string typeName, IDictionary<string, string> parameters)
 		{
 			IType type = Basic(typeName);
 
@@ -1089,16 +1088,16 @@ namespace NHibernate.Type
 			CustomCollectionType result = new CustomCollectionType(typeClass, role, propertyRef, embedded);
 			if (typeParameters != null)
 			{
-				InjectParameters(result.UserType, (IDictionary)typeParameters);
+				InjectParameters(result.UserType, typeParameters);
 			}
 			return result;
 		}
 
-		public static void InjectParameters(Object type, IDictionary parameters)
+		public static void InjectParameters(Object type, IDictionary<string, string> parameters)
 		{
 			if (type is IParameterizedType)
 			{
-				((IParameterizedType)type).SetParameterValues(parameters);
+				((IParameterizedType) type).SetParameterValues(parameters);
 			}
 			else if (parameters != null && !(parameters.Count == 0))
 			{

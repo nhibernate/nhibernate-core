@@ -7,6 +7,7 @@ using log4net;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
+using System.Collections.Generic;
 
 namespace NHibernate.Type
 {
@@ -19,7 +20,7 @@ namespace NHibernate.Type
 		private readonly ICompositeUserType userType;
 		private readonly string name;
 
-		public CompositeCustomType(System.Type userTypeClass, IDictionary parameters)
+		public CompositeCustomType(System.Type userTypeClass, IDictionary<string, string> parameters)
 		{
 			name = userTypeClass.FullName;
 

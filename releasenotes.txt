@@ -31,6 +31,7 @@ Build 2.1.0
 		* Obsolete ORACLE dialects was removed (new implementations are available)
 		* ISQLExceptionConverter was changed in order to have more flexibility about information available for the conversion and followed management.
 		* ADOException now use string instead SqlString
+		* IParameterizedType is using IDictionary<string, string>
 
 Build 2.1.0.Beta1 (rev4424)
 =============================

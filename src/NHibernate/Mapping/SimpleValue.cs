@@ -228,7 +228,7 @@ namespace NHibernate.Mapping
 					{
 						throw new MappingException("No type name specified");
 					}
-					type = TypeFactory.HeuristicType(typeName, (IDictionary)typeParameters);
+					type = TypeFactory.HeuristicType(typeName, typeParameters);
 					if (type == null)
 					{
 						string msg = "Could not determine type for: " + typeName;

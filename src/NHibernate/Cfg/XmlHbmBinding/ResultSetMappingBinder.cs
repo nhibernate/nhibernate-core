@@ -88,7 +88,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				typeName = returnScalarSchema.type;
 			}
 
-			IType type = TypeFactory.HeuristicType(typeName, (IDictionary) parameters);
+			IType type = TypeFactory.HeuristicType(typeName, parameters);
 
 			if (type == null)
 				throw new MappingException("could not interpret type: " + returnScalarSchema.type);

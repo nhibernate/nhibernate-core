@@ -8,6 +8,7 @@ using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 using NHibernate.Util;
+using System.Collections.Generic;
 
 namespace NHibernate.Type
 {
@@ -28,7 +29,7 @@ namespace NHibernate.Type
 			get { return userType; }
 		}
 
-		public CustomType(System.Type userTypeClass, IDictionary parameters)
+		public CustomType(System.Type userTypeClass, IDictionary<string, string> parameters)
 		{
 			name = userTypeClass.Name;
 

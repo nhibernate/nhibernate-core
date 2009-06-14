@@ -1231,7 +1231,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			IType type;
 
-			IDictionary parameters = null;
+			IDictionary<string, string> parameters = null;
 
 			XmlAttribute typeAttribute = node.Attributes["type"];
 			if (typeAttribute == null)
@@ -1246,7 +1246,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					return null;
 				XmlAttribute nameAttribute = typeNode.Attributes["name"]; //we know it exists because the schema validate it
 				typeName = nameAttribute.Value;
-				parameters = new Hashtable();
+				parameters = new Dictionary<string, string>();
 				foreach (XmlNode childNode in typeNode.ChildNodes)
 					parameters.Add(childNode.Attributes["name"].Value,
 						childNode.InnerText.Trim());

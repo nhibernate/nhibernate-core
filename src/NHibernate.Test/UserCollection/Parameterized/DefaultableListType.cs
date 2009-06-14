@@ -4,6 +4,7 @@ using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.UserTypes;
 using System;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.UserCollection.Parameterized
 {
@@ -68,9 +69,9 @@ namespace NHibernate.Test.UserCollection.Parameterized
 
 		#region Implementation of IParameterizedType
 
-		public void SetParameterValues(IDictionary parameters)
+		public void SetParameterValues(IDictionary<string, string> parameters)
 		{
-			defaultValue = parameters["default"] as string;
+			defaultValue = parameters["default"];
 		}
 
 		#endregion

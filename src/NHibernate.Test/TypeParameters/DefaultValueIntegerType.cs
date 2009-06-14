@@ -1,9 +1,9 @@
 using System;
-using System.Collections;
 using System.Data;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.UserTypes;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.TypeParameters
 {
@@ -12,9 +12,9 @@ namespace NHibernate.Test.TypeParameters
 		private int defaultValue;
 		private static NullableType _int32Type = NHibernateUtil.Int32;
 
-		public void SetParameterValues(IDictionary parameters)
+		public void SetParameterValues(IDictionary<string, string> parameters)
 		{
-			defaultValue = int.Parse((string) parameters["default"]);
+			defaultValue = int.Parse(parameters["default"]);
 		}
 
 		#region IUserType Members
