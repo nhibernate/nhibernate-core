@@ -751,7 +751,7 @@ namespace NHibernate.Impl
 				}
 				else
 				{
-					return (T) UniqueResult();
+					return (T) result;
 				}
 			}
 
