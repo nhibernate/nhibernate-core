@@ -507,6 +507,9 @@
     <Compile Include="NHSpecificTest\NH1834\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1835\Document.cs" />
     <Compile Include="NHSpecificTest\NH1835\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1837\Customer.cs" />
+    <Compile Include="NHSpecificTest\NH1837\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1837\Order.cs" />
     <Compile Include="NHSpecificTest\NH645\HQLFunctionFixture.cs" />
     <Compile Include="HQL\HQLFunctions.cs" />
     <Compile Include="HQL\Human.cs" />
@@ -1909,6 +1912,7 @@
     <EmbeddedResource Include="Classic\EntityWithLifecycle.hbm.xml" />
     <EmbeddedResource Include="Bytecode\Lightweight\ProductLine.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1837\Mappings.hbm.xml" />
     <EmbeddedResource Include="TypesTest\MultiTypeEntity_WithSqlType.hbm.xml" />
     <EmbeddedResource Include="TypesTest\MultiTypeEntity_WithColumnNode.hbm.xml" />
     <EmbeddedResource Include="TypesTest\MultiTypeEntity_InLine.hbm.xml" />

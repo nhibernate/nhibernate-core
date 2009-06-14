@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1837"
+                   default-lazy="false">
+
+	<class name="Customer">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Name"/>
+		<bag name="Orders" lazy="true">
+			<key column="CustomerId" />
+			<one-to-many class="Order" />
+		</bag>
+	</class>
+	<class name="Order" table="`Order`">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Date"/>
+		<many-to-one name="Customer" class="Customer" column="CustomerId"/>
+	</class>
+</hibernate-mapping>
