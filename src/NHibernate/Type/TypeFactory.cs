@@ -69,7 +69,7 @@ namespace NHibernate.Type
 		private static readonly IDictionary<string, GetNullableTypeWithPrecision> getTypeDelegatesWithPrecision =
 			new ThreadSafeDictionary<string, GetNullableTypeWithPrecision>(new Dictionary<string, GetNullableTypeWithPrecision>());
 
-		private delegate NullableType GetNullableTypeWithLength(int length);
+		private delegate NullableType GetNullableTypeWithLength(int length); // Func<int, NullableType>
 
 		private delegate NullableType GetNullableTypeWithPrecision(byte precision, byte scale);
 
@@ -176,8 +176,12 @@ namespace NHibernate.Type
 			typeByTypeOfName["yes_no"] = NHibernateUtil.YesNo;
 
 
-			getTypeDelegatesWithLength.Add(NHibernateUtil.Binary.Name, GetBinaryType);
-			getTypeDelegatesWithLength.Add(NHibernateUtil.BinaryBlob.Name, GetBinaryType);
+			getTypeDelegatesWithLength.Add(NHibernateUtil.Binary.Name,
+			                               l =>
+			                               GetType(NHibernateUtil.Binary, l, len => new BinaryType(SqlTypeFactory.GetBinary(len))));
+			getTypeDelegatesWithLength.Add(NHibernateUtil.BinaryBlob.Name,
+			                               l =>
+																		 GetType(NHibernateUtil.BinaryBlob, l, len => new BinaryBlobType(SqlTypeFactory.GetBinaryBlob(len))));
 			getTypeDelegatesWithLength.Add(NHibernateUtil.Serializable.Name, GetSerializableType);
 			getTypeDelegatesWithLength.Add(NHibernateUtil.String.Name, GetStringType);
 			getTypeDelegatesWithLength.Add(NHibernateUtil.StringClob.Name, GetStringType);
@@ -514,6 +518,19 @@ namespace NHibernate.Type
 			if (!typeByTypeOfName.TryGetValue(key, out returnType))
 			{
 				returnType = new BinaryType(SqlTypeFactory.GetBinary(length));
+				AddToTypeOfNameWithLength(key, returnType);
+			}
+
+			return (NullableType)returnType;
+		}
+
+		private static NullableType GetType(NullableType defaultUnqualifiedType, int length, GetNullableTypeWithLength ctorDelegate)
+		{
+			string key = GetKeyForLengthBased(defaultUnqualifiedType.Name, length);
+			IType returnType;
+			if (!typeByTypeOfName.TryGetValue(key, out returnType))
+			{
+				returnType = ctorDelegate(length);
 				AddToTypeOfNameWithLength(key, returnType);
 			}
 

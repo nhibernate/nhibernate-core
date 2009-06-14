@@ -15,6 +15,7 @@ namespace NHibernate.Type
 	public class BinaryBlobType : BinaryType
 	{
 		internal BinaryBlobType(): base(new BinaryBlobSqlType()) {}
+		internal BinaryBlobType(BinarySqlType sqlType) : base(sqlType) {}
 
 		/// <summary></summary>
 		public override string Name

@@ -7,8 +7,6 @@
 		<id name="Id">
 			<generator class="guid.comb" />
 		</id>
-		<property name="Contents">
-			<column name="Contents" sql-type="varbinary(3000)"/>
-		</property>
+		<property name="Contents" type="BinaryBlob(3000)"/>
 	</class>
 </hibernate-mapping>
