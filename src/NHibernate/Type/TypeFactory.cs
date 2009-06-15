@@ -34,6 +34,7 @@ namespace NHibernate.Type
 			Length,
 			PrecisionScale
 		}
+		private static readonly string[] EmptyAliases= new string[0];
 
 		private static readonly char[] PrecisionScaleSplit = new[] { '(', ')', ',' };
 		private static readonly char[] LengthSplit = new[] { '(', ')' };
@@ -77,37 +78,28 @@ namespace NHibernate.Type
 
 		private static void RegisterType(System.Type systemType, IType nhibernateType, IEnumerable<string> aliases)
 		{
-			typeByTypeOfName[systemType.FullName] = nhibernateType;
-			typeByTypeOfName[systemType.AssemblyQualifiedName] = nhibernateType;
-			typeByTypeOfName[nhibernateType.Name] = nhibernateType;
-
-			if (aliases != null)
-			{
-				foreach (var alias in aliases)
-				{
-					typeByTypeOfName[alias] = nhibernateType;
-				}
-			}
-
+			var typeAliases = new List<string>(aliases)
+			                  	{
+			                  		systemType.FullName, 
+														systemType.AssemblyQualifiedName,
+			                  	};
 			if (systemType.IsValueType)
 			{
 				// Also register Nullable<systemType> for ValueTypes
 				System.Type nullableType = typeof(Nullable<>).MakeGenericType(systemType);
-				typeByTypeOfName[nullableType.FullName] = nhibernateType;
-				typeByTypeOfName[nullableType.AssemblyQualifiedName] = nhibernateType;
+				typeAliases.Add(nullableType.FullName);
+				typeAliases.Add(nullableType.AssemblyQualifiedName);
 			}
+
+			RegisterType(nhibernateType, typeAliases);
 		}
 
 		private static void RegisterType(IType nhibernateType, IEnumerable<string> aliases)
 		{
-			typeByTypeOfName[nhibernateType.Name] = nhibernateType;
-
-			if (aliases != null)
+			var typeAliases = new List<string>(aliases) { nhibernateType.Name };
+			foreach (var alias in typeAliases)
 			{
-				foreach (var alias in aliases)
-				{
-					typeByTypeOfName[alias] = nhibernateType;
-				}
+				typeByTypeOfName[alias] = nhibernateType;
 			}
 		}
 
@@ -149,7 +141,7 @@ namespace NHibernate.Type
 			RegisterType(typeof (Int16), NHibernateUtil.Int16, new[]{ "short"});
 			RegisterType(typeof (Int32), NHibernateUtil.Int32, new[] {"integer", "int"});
 			RegisterType(typeof (Int64), NHibernateUtil.Int64, new[]{ "long"});
-			RegisterType(typeof (SByte), NHibernateUtil.SByte, null);
+			RegisterType(typeof(SByte), NHibernateUtil.SByte, EmptyAliases);
 			RegisterType(typeof (Single), NHibernateUtil.Single, new[] {"float", "single"});
 			RegisterType(typeof (String), NHibernateUtil.String, new[]{ "string"});
 			RegisterType(typeof (TimeSpan), NHibernateUtil.TimeSpan, new[] {"timespan"});
@@ -171,17 +163,17 @@ namespace NHibernate.Type
 		/// </remarks>
 		private static void RegisterBuiltInTypes()
 		{
-			RegisterType(NHibernateUtil.AnsiString, null);
-			RegisterType(NHibernateUtil.AnsiChar, null);
-			RegisterType(NHibernateUtil.BinaryBlob, null);
-			RegisterType(NHibernateUtil.StringClob, null);
+			RegisterType(NHibernateUtil.AnsiString, EmptyAliases);
+			RegisterType(NHibernateUtil.AnsiChar, EmptyAliases);
+			RegisterType(NHibernateUtil.BinaryBlob, EmptyAliases);
+			RegisterType(NHibernateUtil.StringClob, EmptyAliases);
 			RegisterType(NHibernateUtil.Date, new[] { "date" });
 			RegisterType(NHibernateUtil.Timestamp, new[] { "timestamp" });
 			RegisterType(NHibernateUtil.Time, new[] { "time" });
 			RegisterType(NHibernateUtil.TrueFalse, new[] { "true_false" });
 			RegisterType(NHibernateUtil.YesNo, new[] { "yes_no" });
-			RegisterType(NHibernateUtil.Ticks, null);
-			RegisterType(NHibernateUtil.TimeAsTimeSpan, null);
+			RegisterType(NHibernateUtil.Ticks, new[] { "ticks" });
+			RegisterType(NHibernateUtil.TimeAsTimeSpan, EmptyAliases);
 			RegisterType(NHibernateUtil.Currency, new[] { "currency" });
 			RegisterType(NHibernateUtil.DateTime2, new[] { "datetime2" });
 			RegisterType(NHibernateUtil.Serializable, new[] { "Serializable", "serializable" });
