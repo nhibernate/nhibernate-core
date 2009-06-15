@@ -92,7 +92,7 @@ namespace NHibernate.Test.TypesTest
 		}
 	}
 
-	[TestFixture, Ignore("Not fixed yet.")]
+	[TestFixture]
 	public class FixtureWithExplicitDefinedType : TypeSqlTypeFixture
 	{
 		protected override string GetResourceName()
@@ -101,7 +101,7 @@ namespace NHibernate.Test.TypesTest
 		}
 	}
 
-	[TestFixture, Ignore("Not fixed yet.")]
+	[TestFixture]
 	public class FixtureWithHeuristicDefinedType : TypeSqlTypeFixture
 	{
 		protected override string GetResourceName()
@@ -119,7 +119,7 @@ namespace NHibernate.Test.TypesTest
 		}
 	}
 
-	[TestFixture, Ignore("Not fixed yet.")]
+	[TestFixture]
 	public class FixtureWithColumnNode : TypeSqlTypeFixture
 	{
 		protected override string GetResourceName()
