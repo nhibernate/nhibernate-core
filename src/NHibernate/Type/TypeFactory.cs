@@ -122,41 +122,9 @@ namespace NHibernate.Type
 			// add the mappings of the NHibernate specific names that are used in type=""
 			RegisterBuiltInTypes();
 
-			getTypeDelegatesWithLength.Add(NHibernateUtil.Binary.Name,
-			                               l =>
-			                               GetType(NHibernateUtil.Binary, l, len => new BinaryType(SqlTypeFactory.GetBinary(len))));
-			getTypeDelegatesWithLength.Add(NHibernateUtil.BinaryBlob.Name,
-			                               l =>
-																		 GetType(NHibernateUtil.BinaryBlob, l, len => new BinaryBlobType(SqlTypeFactory.GetBinaryBlob(len))));
-			getTypeDelegatesWithLength.Add(NHibernateUtil.Serializable.Name,
-			                               l =>
-			                               GetType(NHibernateUtil.Serializable, l,
-			                                       len => new SerializableType(typeof (object), SqlTypeFactory.GetBinary(len))));
-			getTypeDelegatesWithLength.Add(NHibernateUtil.String.Name,
-			                               l =>
-																		 GetType(NHibernateUtil.String, l, len => new StringType(SqlTypeFactory.GetString(len))));
+			RegisterTypeWithVariableLength();
 
-			getTypeDelegatesWithLength.Add(NHibernateUtil.StringClob.Name,
-			                               l =>
-			                               GetType(NHibernateUtil.StringClob, l,
-			                                       len => new StringClobType(SqlTypeFactory.GetStringClob(len))));
-
-			getTypeDelegatesWithLength.Add(NHibernateUtil.Class.Name,
-			                               l =>
-			                               GetType(NHibernateUtil.Class, l, len => new TypeType(SqlTypeFactory.GetString(len))));
-			getTypeDelegatesWithLength.Add(NHibernateUtil.AnsiString.Name,
-			                               l =>
-																		 GetType(NHibernateUtil.AnsiString, l, len => new AnsiStringType(SqlTypeFactory.GetAnsiString(len))));
-
-
-			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Decimal.Name,
-			                                  (p, s) => GetType(NHibernateUtil.Decimal, p, s, st => new DecimalType(st)));
-			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Currency.Name,
-			                                  (p, s) => GetType(NHibernateUtil.Currency, p, s, st => new CurrencyType(st)));
-			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Double.Name,
-			                                  (p, s) => GetType(NHibernateUtil.Double, p, s, st => new DoubleType(st)));
-			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Single.Name,
-			                                  (p, s) => GetType(NHibernateUtil.Single, p, s, st => new SingleType(st)));
+			RegisterTypesWithVariablePrecision();
 		}
 
 		/// <summary>
@@ -217,6 +185,49 @@ namespace NHibernate.Type
 			RegisterType(NHibernateUtil.Currency, new[] { "currency" });
 			RegisterType(NHibernateUtil.DateTime2, new[] { "datetime2" });
 			RegisterType(NHibernateUtil.Serializable, new[] { "Serializable", "serializable" });
+		}
+
+		private static void RegisterTypesWithVariablePrecision()
+		{
+			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Decimal.Name,
+																				(p, s) => GetType(NHibernateUtil.Decimal, p, s, st => new DecimalType(st)));
+			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Currency.Name,
+																				(p, s) => GetType(NHibernateUtil.Currency, p, s, st => new CurrencyType(st)));
+			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Double.Name,
+																				(p, s) => GetType(NHibernateUtil.Double, p, s, st => new DoubleType(st)));
+			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Single.Name,
+																				(p, s) => GetType(NHibernateUtil.Single, p, s, st => new SingleType(st)));
+		}
+
+		private static void RegisterTypeWithVariableLength()
+		{
+			getTypeDelegatesWithLength.Add(NHibernateUtil.Binary.Name,
+																		 l =>
+																		 GetType(NHibernateUtil.Binary, l, len => new BinaryType(SqlTypeFactory.GetBinary(len))));
+			getTypeDelegatesWithLength.Add(NHibernateUtil.BinaryBlob.Name,
+																		 l =>
+																		 GetType(NHibernateUtil.BinaryBlob, l,
+																						 len => new BinaryBlobType(SqlTypeFactory.GetBinaryBlob(len))));
+			getTypeDelegatesWithLength.Add(NHibernateUtil.Serializable.Name,
+																		 l =>
+																		 GetType(NHibernateUtil.Serializable, l,
+																						 len => new SerializableType(typeof(object), SqlTypeFactory.GetBinary(len))));
+			getTypeDelegatesWithLength.Add(NHibernateUtil.String.Name,
+																		 l =>
+																		 GetType(NHibernateUtil.String, l, len => new StringType(SqlTypeFactory.GetString(len))));
+
+			getTypeDelegatesWithLength.Add(NHibernateUtil.StringClob.Name,
+																		 l =>
+																		 GetType(NHibernateUtil.StringClob, l,
+																						 len => new StringClobType(SqlTypeFactory.GetStringClob(len))));
+
+			getTypeDelegatesWithLength.Add(NHibernateUtil.Class.Name,
+																		 l =>
+																		 GetType(NHibernateUtil.Class, l, len => new TypeType(SqlTypeFactory.GetString(len))));
+			getTypeDelegatesWithLength.Add(NHibernateUtil.AnsiString.Name,
+																		 l =>
+																		 GetType(NHibernateUtil.AnsiString, l,
+																						 len => new AnsiStringType(SqlTypeFactory.GetAnsiString(len))));
 		}
 
 		public ICollectionTypeFactory CollectionTypeFactory
