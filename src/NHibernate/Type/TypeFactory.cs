@@ -35,8 +35,8 @@ namespace NHibernate.Type
 			PrecisionScale
 		}
 
-		private static readonly char[] precisionScaleSplit = new char[] { '(', ')', ',' };
-		private static readonly char[] lengthSplit = new char[] { '(', ')' };
+		private static readonly char[] PrecisionScaleSplit = new[] { '(', ')', ',' };
+		private static readonly char[] LengthSplit = new[] { '(', ')' };
 		private static readonly TypeFactory Instance;
 		private static readonly System.Type[] GenericCollectionSimpleSignature = new[] { typeof(string), typeof(string), typeof(bool) };
 
@@ -75,15 +75,18 @@ namespace NHibernate.Type
 
 		private delegate NullableType NullableTypeCreatorDelegate(SqlType sqlType);
 
-		private static void RegisterType(System.Type systemType, IType nhibernateType, string additionalName)
+		private static void RegisterType(System.Type systemType, IType nhibernateType, IEnumerable<string> aliases)
 		{
 			typeByTypeOfName[systemType.FullName] = nhibernateType;
 			typeByTypeOfName[systemType.AssemblyQualifiedName] = nhibernateType;
 			typeByTypeOfName[nhibernateType.Name] = nhibernateType;
 
-			if (additionalName != null)
+			if (aliases != null)
 			{
-				typeByTypeOfName[additionalName] = nhibernateType;
+				foreach (var alias in aliases)
+				{
+					typeByTypeOfName[alias] = nhibernateType;
+				}
 			}
 
 			if (systemType.IsValueType)
@@ -95,86 +98,29 @@ namespace NHibernate.Type
 			}
 		}
 
+		private static void RegisterType(IType nhibernateType, IEnumerable<string> aliases)
+		{
+			typeByTypeOfName[nhibernateType.Name] = nhibernateType;
+
+			if (aliases != null)
+			{
+				foreach (var alias in aliases)
+				{
+					typeByTypeOfName[alias] = nhibernateType;
+				}
+			}
+		}
+
 		/// <summary></summary>
 		static TypeFactory()
 		{
 			Instance = new TypeFactory();
 			
-			//basicTypes.Add(NHibernate.Blob.Name, NHibernate.Blob);
-			//basicTypes.Add(NHibernate.Clob.Name, NHibernate.Clob);
-
-			// the Timezone class .NET is not even close to the java.util.Timezone class - in
-			// .NET all you can do is get the local Timezone - there is no "factory" method to
-			// get a Timezone by name...
-			//basicTypes.Add(NHibernate.Timezone.Name, NHibernate.Timezone);
-
 			// set up the mappings of .NET Classes/Structs to their NHibernate types.
-			RegisterType(typeof(Byte[]), NHibernateUtil.Binary, "binary");
-			RegisterType(typeof(Boolean), NHibernateUtil.Boolean, "boolean");
-			RegisterType(typeof(Byte), NHibernateUtil.Byte, "byte");
-			RegisterType(typeof(Char), NHibernateUtil.Character, "character");
-			RegisterType(typeof(CultureInfo), NHibernateUtil.CultureInfo, "locale");
-			/*registering "datetime" after of "datetime2", 
-			NH will choose "datetime" when no type is specified in the mapping*/
-			RegisterType(typeof(DateTime), NHibernateUtil.DateTime2, "datetime2");
-			RegisterType(typeof(DateTime), NHibernateUtil.DateTime, "datetime");
-			RegisterType(typeof(DateTimeOffset), NHibernateUtil.DateTimeOffset, "datetimeoffset");
-			RegisterType(typeof(Decimal), NHibernateUtil.Decimal, "big_decimal");
-			RegisterType(typeof(Double), NHibernateUtil.Double, "double");
-			RegisterType(typeof(Guid), NHibernateUtil.Guid, "guid");
-			RegisterType(typeof(Int16), NHibernateUtil.Int16, "short");
-			RegisterType(typeof(Int32), NHibernateUtil.Int32, "integer");
-			RegisterType(typeof(Int64), NHibernateUtil.Int64, "long");
-			RegisterType(typeof(SByte), NHibernateUtil.SByte, null);
-			RegisterType(typeof(Single), NHibernateUtil.Single, "float");
-			RegisterType(typeof(String), NHibernateUtil.String, "string");
-			RegisterType(typeof(TimeSpan), NHibernateUtil.TimeAsTimeSpan, "TimeAsTimeSpan");
-			RegisterType(typeof(TimeSpan), NHibernateUtil.TimeSpan,null);
-			RegisterType(typeof(System.Type), NHibernateUtil.Class, "class");
-
-			RegisterType(typeof(UInt16), NHibernateUtil.UInt16, null);
-			RegisterType(typeof(UInt32), NHibernateUtil.UInt32, null);
-			RegisterType(typeof(UInt64), NHibernateUtil.UInt64, null);
+			RegisterDefaultNetTypes();
 
 			// add the mappings of the NHibernate specific names that are used in type=""
-			typeByTypeOfName[NHibernateUtil.AnsiString.Name] = NHibernateUtil.AnsiString;
-			getTypeDelegatesWithLength.Add(NHibernateUtil.AnsiString.Name, GetAnsiStringType);
-
-			typeByTypeOfName[NHibernateUtil.AnsiChar.Name] = NHibernateUtil.AnsiChar;
-			typeByTypeOfName[NHibernateUtil.BinaryBlob.Name] = NHibernateUtil.BinaryBlob;
-			typeByTypeOfName[NHibernateUtil.StringClob.Name] = NHibernateUtil.StringClob;
-			typeByTypeOfName[NHibernateUtil.Date.Name] = NHibernateUtil.Date;
-			typeByTypeOfName[NHibernateUtil.Timestamp.Name] = NHibernateUtil.Timestamp;
-			typeByTypeOfName[NHibernateUtil.Time.Name] = NHibernateUtil.Time;
-			typeByTypeOfName[NHibernateUtil.TrueFalse.Name] = NHibernateUtil.TrueFalse;
-			typeByTypeOfName[NHibernateUtil.YesNo.Name] = NHibernateUtil.YesNo;
-			typeByTypeOfName[NHibernateUtil.Ticks.Name] = NHibernateUtil.Ticks;
-			typeByTypeOfName[NHibernateUtil.TimeSpan.Name] = NHibernateUtil.TimeSpan;
-			typeByTypeOfName[NHibernateUtil.TimeAsTimeSpan.Name] = NHibernateUtil.TimeAsTimeSpan;
-			typeByTypeOfName[NHibernateUtil.Currency.Name] = NHibernateUtil.Currency;
-
-			// need to do add the key "Serializable" because the hbm files will have a 
-			// type="Serializable", but the SerializableType returns the Name as 
-			// "serializable - System.Object for the default SerializableType.
-			typeByTypeOfName["Serializable"] = NHibernateUtil.Serializable;
-			typeByTypeOfName[NHibernateUtil.Serializable.Name] = NHibernateUtil.Serializable;
-
-			// object needs to have both class and serializable setup before it can
-			// be created.
-			RegisterType(typeof(Object), NHibernateUtil.Object, "object");
-
-			// These are in here because needed to NO override default CLR types and be available in mappings
-			typeByTypeOfName["int"] = NHibernateUtil.Int32;
-			typeByTypeOfName["date"] = NHibernateUtil.Date;
-			typeByTypeOfName["time"] = NHibernateUtil.Time;
-			typeByTypeOfName["timestamp"] = NHibernateUtil.Timestamp;
-			typeByTypeOfName["decimal"] = NHibernateUtil.Decimal;
-			typeByTypeOfName["currency"] = NHibernateUtil.Currency;
-
-			typeByTypeOfName["serializable"] = NHibernateUtil.Serializable;
-			typeByTypeOfName["true_false"] = NHibernateUtil.TrueFalse;
-			typeByTypeOfName["yes_no"] = NHibernateUtil.YesNo;
-
+			RegisterBuiltInTypes();
 
 			getTypeDelegatesWithLength.Add(NHibernateUtil.Binary.Name,
 			                               l =>
@@ -198,6 +144,9 @@ namespace NHibernate.Type
 			getTypeDelegatesWithLength.Add(NHibernateUtil.Class.Name,
 			                               l =>
 			                               GetType(NHibernateUtil.Class, l, len => new TypeType(SqlTypeFactory.GetString(len))));
+			getTypeDelegatesWithLength.Add(NHibernateUtil.AnsiString.Name,
+			                               l =>
+																		 GetType(NHibernateUtil.AnsiString, l, len => new AnsiStringType(SqlTypeFactory.GetAnsiString(len))));
 
 
 			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Decimal.Name,
@@ -208,6 +157,66 @@ namespace NHibernate.Type
 			                                  (p, s) => GetType(NHibernateUtil.Double, p, s, st => new DoubleType(st)));
 			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Single.Name,
 			                                  (p, s) => GetType(NHibernateUtil.Single, p, s, st => new SingleType(st)));
+		}
+
+		/// <summary>
+		/// Register other Default .NET type
+		/// </summary>
+		/// <remarks>
+		/// These type will be used, as default, even when the "type" attribute was NOT specified in the mapping
+		/// </remarks>
+		private static void RegisterDefaultNetTypes()
+		{
+			// NOTE : each .NET type mut appear only one time
+			RegisterType(typeof (Byte[]), NHibernateUtil.Binary, new[] {"binary"});
+			RegisterType(typeof(Boolean), NHibernateUtil.Boolean, new[] { "boolean", "bool" });
+			RegisterType(typeof (Byte), NHibernateUtil.Byte, new[]{ "byte"});
+			RegisterType(typeof (Char), NHibernateUtil.Character, new[] {"character", "char"});
+			RegisterType(typeof (CultureInfo), NHibernateUtil.CultureInfo, new[]{ "locale"});
+			RegisterType(typeof (DateTime), NHibernateUtil.DateTime, new[]{ "datetime"} );
+			RegisterType(typeof (DateTimeOffset), NHibernateUtil.DateTimeOffset, new[]{ "datetimeoffset"});
+			RegisterType(typeof (Decimal), NHibernateUtil.Decimal, new[] {"big_decimal", "decimal"});
+			RegisterType(typeof (Double), NHibernateUtil.Double, new[]{ "double"});
+			RegisterType(typeof (Guid), NHibernateUtil.Guid, new[]{ "guid"});
+			RegisterType(typeof (Int16), NHibernateUtil.Int16, new[]{ "short"});
+			RegisterType(typeof (Int32), NHibernateUtil.Int32, new[] {"integer", "int"});
+			RegisterType(typeof (Int64), NHibernateUtil.Int64, new[]{ "long"});
+			RegisterType(typeof (SByte), NHibernateUtil.SByte, null);
+			RegisterType(typeof (Single), NHibernateUtil.Single, new[] {"float", "single"});
+			RegisterType(typeof (String), NHibernateUtil.String, new[]{ "string"});
+			RegisterType(typeof (TimeSpan), NHibernateUtil.TimeSpan, new[] {"timespan"});
+			RegisterType(typeof (System.Type), NHibernateUtil.Class, new[] {"class"});
+			RegisterType(typeof (UInt16), NHibernateUtil.UInt16, new[] {"ushort"});
+			RegisterType(typeof (UInt32), NHibernateUtil.UInt32, new[] {"uint"});
+			RegisterType(typeof (UInt64), NHibernateUtil.UInt64, new[] {"ulong"});
+			// object needs to have both class and serializable setup before it can
+			// be created.
+			RegisterType(typeof (Object), NHibernateUtil.Object, new[] {"object"});
+		}
+
+		/// <summary>
+		/// Register other NO Default .NET type
+		/// </summary>
+		/// <remarks>
+		/// These type will be used only when the "type" attribute was is specified in the mapping.
+		/// These are in here because needed to NO override default CLR types and be available in mappings
+		/// </remarks>
+		private static void RegisterBuiltInTypes()
+		{
+			RegisterType(NHibernateUtil.AnsiString, null);
+			RegisterType(NHibernateUtil.AnsiChar, null);
+			RegisterType(NHibernateUtil.BinaryBlob, null);
+			RegisterType(NHibernateUtil.StringClob, null);
+			RegisterType(NHibernateUtil.Date, new[] { "date" });
+			RegisterType(NHibernateUtil.Timestamp, new[] { "timestamp" });
+			RegisterType(NHibernateUtil.Time, new[] { "time" });
+			RegisterType(NHibernateUtil.TrueFalse, new[] { "true_false" });
+			RegisterType(NHibernateUtil.YesNo, new[] { "yes_no" });
+			RegisterType(NHibernateUtil.Ticks, null);
+			RegisterType(NHibernateUtil.TimeAsTimeSpan, null);
+			RegisterType(NHibernateUtil.Currency, new[] { "currency" });
+			RegisterType(NHibernateUtil.DateTime2, new[] { "datetime2" });
+			RegisterType(NHibernateUtil.Serializable, new[] { "Serializable", "serializable" });
 		}
 
 		public ICollectionTypeFactory CollectionTypeFactory
@@ -302,7 +311,7 @@ namespace NHibernate.Type
 			{
 				//precision/scale based
 
-				string[] parsedName = name.Split(precisionScaleSplit);
+				string[] parsedName = name.Split(PrecisionScaleSplit);
 				if (parsedName.Length < 4)
 				{
 					throw new ArgumentOutOfRangeException("TypeClassification.PrecisionScale", name,
@@ -313,19 +322,13 @@ namespace NHibernate.Type
 				byte precision = Byte.Parse(parsedName[1].Trim());
 				byte scale = Byte.Parse(parsedName[2].Trim());
 
-				GetNullableTypeWithPrecision precisionDelegate;
-				if (!getTypeDelegatesWithPrecision.TryGetValue(typeName, out precisionDelegate))
-				{
-					return null;
-				}
-
-				return precisionDelegate(precision, scale);
+				return BuiltInType(typeName, precision, scale);
 			}
 			else if (typeClassification == TypeClassification.Length)
 			{
 				//length based
 
-				string[] parsedName = name.Split(lengthSplit);
+				string[] parsedName = name.Split(LengthSplit);
 				if (parsedName.Length < 3)
 				{
 					throw new ArgumentOutOfRangeException("TypeClassification.Length", name, "It is not a valid Length name");
@@ -334,14 +337,7 @@ namespace NHibernate.Type
 				typeName = parsedName[0].Trim();
 				int length = Int32.Parse(parsedName[1].Trim());
 
-				GetNullableTypeWithLength lengthDelegate;
-
-				if (!getTypeDelegatesWithLength.TryGetValue(typeName, out lengthDelegate))
-				{
-					// we were not able to find a delegate to get the Type
-					return null;
-				}
-				return lengthDelegate(length);
+				return BuiltInType(typeName, length);
 			}
 
 			else
@@ -352,6 +348,21 @@ namespace NHibernate.Type
 				// doesn't have built into it.
 				return null;
 			}
+		}
+
+		internal static IType BuiltInType(string typeName, int length)
+		{
+			GetNullableTypeWithLength lengthDelegate;
+
+			return !getTypeDelegatesWithLength.TryGetValue(typeName, out lengthDelegate) ? null : lengthDelegate(length);
+		}
+
+		internal static IType BuiltInType(string typeName, byte precision, byte scale)
+		{
+			GetNullableTypeWithPrecision precisionDelegate;
+			return !getTypeDelegatesWithPrecision.TryGetValue(typeName, out precisionDelegate)
+			       	? null
+			       	: precisionDelegate(precision, scale);
 		}
 
 		private static void AddToTypeOfName(string key, IType type)
@@ -416,10 +427,10 @@ namespace NHibernate.Type
 				TypeClassification typeClassification = GetTypeClassification(typeName);
 				if (typeClassification == TypeClassification.Length)
 				{
-					parsedTypeName = typeName.Split(lengthSplit);
+					parsedTypeName = typeName.Split(LengthSplit);
 				}
 				else
-					parsedTypeName = typeClassification == TypeClassification.PrecisionScale ? typeName.Split(precisionScaleSplit) : new string[] { typeName };
+					parsedTypeName = typeClassification == TypeClassification.PrecisionScale ? typeName.Split(PrecisionScaleSplit) : new[] { typeName };
 
 
 				System.Type typeClass;
