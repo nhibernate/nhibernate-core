@@ -85,6 +85,11 @@ namespace NHibernate.SqlTypes
 			return GetTypeWithLen<StringSqlType>(length, l => new StringSqlType(l));
 		}
 
+		public static StringClobSqlType GetStringClob(int length)
+		{
+			return GetTypeWithLen<StringClobSqlType>(length, l => new StringClobSqlType(l));
+		}
+
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static SqlType GetSqlType(DbType dbType, byte precision, byte scale)
 		{

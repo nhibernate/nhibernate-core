@@ -182,10 +182,23 @@ namespace NHibernate.Type
 			getTypeDelegatesWithLength.Add(NHibernateUtil.BinaryBlob.Name,
 			                               l =>
 																		 GetType(NHibernateUtil.BinaryBlob, l, len => new BinaryBlobType(SqlTypeFactory.GetBinaryBlob(len))));
-			getTypeDelegatesWithLength.Add(NHibernateUtil.Serializable.Name, GetSerializableType);
-			getTypeDelegatesWithLength.Add(NHibernateUtil.String.Name, GetStringType);
-			getTypeDelegatesWithLength.Add(NHibernateUtil.StringClob.Name, GetStringType);
-			getTypeDelegatesWithLength.Add(NHibernateUtil.Class.Name, GetTypeType);
+			getTypeDelegatesWithLength.Add(NHibernateUtil.Serializable.Name,
+			                               l =>
+			                               GetType(NHibernateUtil.Serializable, l,
+			                                       len => new SerializableType(typeof (object), SqlTypeFactory.GetBinary(len))));
+			getTypeDelegatesWithLength.Add(NHibernateUtil.String.Name,
+			                               l =>
+																		 GetType(NHibernateUtil.String, l, len => new StringType(SqlTypeFactory.GetString(len))));
+
+			getTypeDelegatesWithLength.Add(NHibernateUtil.StringClob.Name,
+			                               l =>
+			                               GetType(NHibernateUtil.StringClob, l,
+			                                       len => new StringClobType(SqlTypeFactory.GetStringClob(len))));
+
+			getTypeDelegatesWithLength.Add(NHibernateUtil.Class.Name,
+			                               l =>
+			                               GetType(NHibernateUtil.Class, l, len => new TypeType(SqlTypeFactory.GetString(len))));
+
 
 			getTypeDelegatesWithPrecision.Add(NHibernateUtil.Decimal.Name,
 			                                  (p, s) => GetType(NHibernateUtil.Decimal, p, s, st => new DecimalType(st)));
