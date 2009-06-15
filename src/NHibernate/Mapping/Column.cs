@@ -412,14 +412,19 @@ namespace NHibernate.Mapping
 			return quoted ? '`' + name + '`' : name;
 		}
 
-		private bool IsCaracteristicsDefined()
+		public bool IsCaracteristicsDefined()
 		{
-			return length.HasValue || precision.HasValue || scale.HasValue;
+			return IsLengthDefined() || IsPrecisionDefined();
 		}
 
-		private bool IsPrecisionDefined()
+		public bool IsPrecisionDefined()
 		{
 			return precision.HasValue || scale.HasValue;
+		}
+
+		public bool IsLengthDefined()
+		{
+			return length.HasValue;
 		}
 
 		#region ICloneable Members
