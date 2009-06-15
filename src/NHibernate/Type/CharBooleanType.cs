@@ -22,7 +22,7 @@ namespace NHibernate.Type
 		/// 
 		/// </summary>
 		/// <param name="sqlType"></param>
-		internal CharBooleanType(AnsiStringFixedLengthSqlType sqlType) : base(sqlType)
+		protected CharBooleanType(AnsiStringFixedLengthSqlType sqlType) : base(sqlType)
 		{
 		}
 
