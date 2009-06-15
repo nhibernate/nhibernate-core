@@ -93,6 +93,8 @@ namespace NHibernate.Driver
 		private const int MaxStringSize = MaxAnsiStringSize / 2;
 		private const int MaxBinaryBlobSize = int.MaxValue;
 		private const int MaxStringClobSize = MaxBinaryBlobSize / 2;
+		private const byte MaxPrecision = 28;
+		private const byte MaxScale = 5;
 
 		private static void SetDefaultParameterSize(IDbDataParameter dbParam, SqlType sqlType)
 		{
@@ -113,7 +115,10 @@ namespace NHibernate.Driver
 						dbParam.Size = MaxBinarySize;
 					}
 					break;
-
+				case DbType.Decimal:
+					dbParam.Precision = MaxPrecision;
+					dbParam.Scale = MaxScale;
+					break;
 				case DbType.String:
 				case DbType.StringFixedLength:
 					if (sqlType is StringClobSqlType)
