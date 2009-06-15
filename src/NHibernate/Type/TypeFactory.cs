@@ -114,7 +114,7 @@ namespace NHibernate.Type
 			// add the mappings of the NHibernate specific names that are used in type=""
 			RegisterBuiltInTypes();
 
-			RegisterTypeWithVariableLength();
+			RegisterTypesWithVariableLength();
 
 			RegisterTypesWithVariablePrecision();
 		}
@@ -191,7 +191,7 @@ namespace NHibernate.Type
 																				(p, s) => GetType(NHibernateUtil.Single, p, s, st => new SingleType(st)));
 		}
 
-		private static void RegisterTypeWithVariableLength()
+		private static void RegisterTypesWithVariableLength()
 		{
 			getTypeDelegatesWithLength.Add(NHibernateUtil.Binary.Name,
 																		 l =>
