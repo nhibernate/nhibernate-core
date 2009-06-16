@@ -77,7 +77,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Byte, "TINYINT UNSIGNED");
 			RegisterColumnType(DbType.Currency, "MONEY");
 			RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "NUMERIC(19, $l)");
+			RegisterColumnType(DbType.Decimal, 19, "NUMERIC($p, $s)");
 			RegisterColumnType(DbType.Double, "DOUBLE");
 			//The signed range is -32768 to 32767. The unsigned range is 0 to 65535. 
 			RegisterColumnType(DbType.Int16, "SMALLINT");
