@@ -251,12 +251,13 @@ namespace NHibernate.Id
 					session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateSql, parameterTypes);
 				ups.Connection = conn;
 				ups.Transaction = transaction;
-				PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Updating high value:", ups, FormatStyle.Basic);
-
+				
 				try
 				{
 					columnType.Set(ups, result + 1, 0);
 					columnType.Set(ups, result, 1);
+
+					PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Updating high value:", ups, FormatStyle.Basic);
 
 					rows = ups.ExecuteNonQuery();
 				}
