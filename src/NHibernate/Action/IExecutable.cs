@@ -10,7 +10,7 @@ namespace NHibernate.Action
 		/// <summary>
 		/// What spaces (tables) are affected by this action?
 		/// </summary>
-		object[] PropertySpaces { get;}
+		string[] PropertySpaces { get;}
 
 		/// <summary> Called before executing any actions</summary>
 		void BeforeExecutions();

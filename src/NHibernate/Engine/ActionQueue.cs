@@ -228,11 +228,11 @@ namespace NHibernate.Engine
 			get { return (insertions.Count > 0 || deletions.Count > 0); }
 		}
 
-		private static bool AreTablesToUpdated(IList executables, ISet<string> tablespaces)
+		private static bool AreTablesToUpdated(IList executables, ICollection<string> tablespaces)
 		{
 			foreach (IExecutable exec in executables)
 			{
-				object[] spaces = exec.PropertySpaces;
+				var spaces = exec.PropertySpaces;
 				foreach (string o in spaces)
 				{
 					if(tablespaces.Contains(o))

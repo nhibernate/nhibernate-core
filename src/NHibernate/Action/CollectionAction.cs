@@ -79,7 +79,7 @@ namespace NHibernate.Action
 		/// <summary>
 		/// What spaces (tables) are affected by this action?
 		/// </summary>
-		public object[] PropertySpaces
+		public string[] PropertySpaces
 		{
 			get { return Persister.CollectionSpaces; }
 		}

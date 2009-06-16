@@ -90,7 +90,7 @@ namespace NHibernate.Action
 
 		#region IExecutable Members
 
-		public object[] PropertySpaces
+		public string[] PropertySpaces
 		{
 			get { return persister.PropertySpaces; }
 		}
