@@ -148,6 +148,7 @@
     <Compile Include="Criteria\ProjectionsTest.cs" />
     <Compile Include="Criteria\Reptile.cs" />
     <Compile Include="DriverTest\SqlClientDriverFixture.cs" />
+    <Compile Include="EngineTest\QueryPlanCacheFixture.cs" />
     <Compile Include="ExpressionTest\RestrictionsFixture.cs" />
     <Compile Include="Criteria\Student.cs" />
     <Compile Include="Criteria\StudentDTO.cs" />
