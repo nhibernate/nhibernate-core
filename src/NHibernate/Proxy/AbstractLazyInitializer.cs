@@ -55,15 +55,15 @@ namespace NHibernate.Proxy
 			{
 				if (_session == null)
 				{
-					throw new LazyInitializationException("Could not initialize proxy - no Session.");
+					throw new LazyInitializationException(_entityName, _id, "Could not initialize proxy - no Session.");
 				}
 				else if (!_session.IsOpen)
 				{
-					throw new LazyInitializationException("Could not initialize proxy - the owning Session was closed.");
+					throw new LazyInitializationException(_entityName, _id, "Could not initialize proxy - the owning Session was closed.");
 				}
 				else if (!_session.IsConnected)
 				{
-					throw new LazyInitializationException("Could not initialize proxy - the owning Session is disconnected.");
+					throw new LazyInitializationException(_entityName, _id, "Could not initialize proxy - the owning Session is disconnected.");
 				}
 				else
 				{
@@ -120,7 +120,7 @@ namespace NHibernate.Proxy
 					if (value != null && IsConnectedToSession)
 					{
 						//TODO: perhaps this should be some other RuntimeException...
-						throw new LazyInitializationException("Illegally attempted to associate a proxy with two open Sessions");
+						throw new LazyInitializationException(_entityName, _id, "Illegally attempted to associate a proxy with two open Sessions");
 					}
 					else
 					{

@@ -478,7 +478,8 @@ namespace NHibernate.Collection
 
 		private void ThrowLazyInitializationException(string message)
 		{
-			throw new LazyInitializationException("failed to lazily initialize a collection"
+			var ownerEntityName = role == null ? "Unavailable" : StringHelper.Qualifier(role);
+			throw new LazyInitializationException(ownerEntityName, key, "failed to lazily initialize a collection"
 			                                      + (role == null ? "" : " of role: " + role) + ", " + message);
 		}
 

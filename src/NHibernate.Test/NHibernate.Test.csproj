@@ -356,6 +356,8 @@
     <Compile Include="NHSpecificTest\ElementsEnums\Something.cs" />
     <Compile Include="NHSpecificTest\NH1044\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1044\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1069\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH1069\ImproveLazyExceptionFixture.cs" />
     <Compile Include="NHSpecificTest\NH1092\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1092\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1093\Fixture.cs" />
@@ -1914,6 +1916,7 @@
     <EmbeddedResource Include="Bytecode\Lightweight\ProductLine.hbm.xml" />
     <EmbeddedResource Include="DriverTest\MultiTypeEntity.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1069\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1837\Mappings.hbm.xml" />
     <EmbeddedResource Include="TypesTest\MultiTypeEntity_WithSqlType.hbm.xml" />
     <EmbeddedResource Include="TypesTest\MultiTypeEntity_WithColumnNode.hbm.xml" />

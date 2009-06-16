@@ -14,8 +14,25 @@ namespace NHibernate
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LazyInitializationException"/> class.
 		/// </summary>
+		/// <param name="entityName">The name of the entity where the exception was thrown</param>
+		/// <param name="entityId">The id of the entity where the exception was thrown</param>
 		/// <param name="message">The message that describes the error. </param>
-		public LazyInitializationException(string message) : this(message, null)
+		public LazyInitializationException(string entityName, object entityId, string message)
+			: this(string.Format("Initializing[{0}#{1}]-{2}", entityName, entityId, message))
+		{
+			EntityName = entityName;
+			EntityId = entityId;
+		}
+
+		public string EntityName { get; private set; }
+		public object EntityId { get; private set; }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="LazyInitializationException"/> class.
+		/// </summary>
+		/// <param name="message">The message that describes the error. </param>
+		public LazyInitializationException(string message)
+			: this(message, null)
 		{
 		}
 
