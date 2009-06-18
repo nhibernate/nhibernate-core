@@ -43,5 +43,12 @@ namespace NHibernate.Test.HQL.Ast
 			qt.Compile(null, false);
 			return qt.SQLString;
 		}
+
+		public string GetSqlWithClassicParser(string query)
+		{
+			var qt = new NHibernate.Hql.Classic.QueryTranslator(null, query, emptyfilters, sessions);
+			qt.Compile(new Dictionary<string, string>(), false);
+			return qt.SQLString;
+		}
 	}
 }

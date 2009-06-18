@@ -12,5 +12,25 @@ namespace NHibernate.Test.HQL.Ast
 
 			Assert.That(GetSql(query), Text.StartsWith("select 123.5"));
 		}
+
+		[Test, Ignore("Not fixed yet.")]
+		public void CaseClauseWithMath()
+		{
+			const string query = "from SimpleClass s where (case when s.IntValue > 0 then (cast(s.IntValue as long) * :pAValue) else 1 end) > 0";
+			Assert.DoesNotThrow(() => GetSql(query));
+
+			// This query fail because parenthesis on the math operation and does not fail in the old parser
+			const string queryWithoutParen = "from SimpleClass s where (case when s.IntValue > 0 then cast(s.IntValue as long) * :pAValue else 1 end) > 0";
+			Assert.DoesNotThrow(() => GetSqlWithClassicParser(queryWithoutParen));
+			Assert.DoesNotThrow(() => GetSql(queryWithoutParen));
+		}
+
+		[Test, Ignore("Not fixed yet.")]
+		public void Union()
+		{
+			const string query = "from SimpleClass s where s.id in ((select s1.id from SimpleClass s1) union (select s2.id from SimpleClass s2))";
+			Assert.DoesNotThrow(() => GetSqlWithClassicParser(query));
+			Assert.DoesNotThrow(() => GetSql(query));
+		}
 	}
 }
