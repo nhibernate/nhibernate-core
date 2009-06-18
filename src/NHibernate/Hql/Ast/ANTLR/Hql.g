@@ -208,7 +208,7 @@ insertablePropertySpec
 	;
 
 union
-	: queryRule (UNION queryRule)*
+	: UNION queryRule
 	;
 
 //## query:
@@ -219,6 +219,7 @@ queryRule
 		(whereClause)?
 		(groupByClause)?
 		(orderByClause)?
+		(union)?
 		;
 
 /*
@@ -682,8 +683,8 @@ exprList
 	  )?
 	;
 subQuery
-	: union
-	-> ^(QUERY["query"] union)
+	: queryRule
+	-> ^(QUERY["query"] queryRule)
 	;
 
 

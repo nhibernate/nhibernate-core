@@ -1,4 +1,4 @@
-// $ANTLR 3.1.2 /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g 2009-05-15 10:57:47
+// $ANTLR 3.1.2 C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g 2009-06-18 19:12:16
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 168, 219
@@ -158,135 +158,135 @@ public partial class HqlParser : Parser
 		"'descending'"
     };
 
-    public const int COMMA = 98;
-    public const int EXISTS = 19;
-    public const int EXPR_LIST = 73;
-    public const int FETCH = 21;
-    public const int MINUS = 114;
-    public const int AS = 7;
-    public const int END = 56;
-    public const int INTO = 30;
-    public const int FALSE = 20;
-    public const int ELEMENTS = 17;
-    public const int THEN = 58;
-    public const int ALIAS = 70;
-    public const int BOR = 103;
-    public const int ON = 60;
-    public const int DOT = 15;
-    public const int ORDER = 41;
-    public const int AND = 6;
-    public const int CONSTANT = 92;
-    public const int RIGHT = 44;
-    public const int METHOD_CALL = 79;
-    public const int UNARY_MINUS = 88;
-    public const int CONCAT = 112;
-    public const int PROPERTIES = 43;
-    public const int SELECT = 45;
-    public const int LE = 110;
-    public const int BETWEEN = 10;
-    public const int NUM_INT = 93;
-    public const int BOTH = 62;
-    public const int PLUS = 113;
-    public const int VERSIONED = 52;
-    public const int MEMBER = 65;
-    public const int UNION = 50;
-    public const int DISTINCT = 16;
-    public const int RANGE = 85;
-    public const int FILTER_ENTITY = 74;
-    public const int IDENT = 122;
-    public const int WHEN = 59;
-    public const int DESCENDING = 14;
-    public const int WS = 126;
-    public const int EQ = 99;
-    public const int NEW = 37;
+    public const int EXPONENT = 127;
     public const int LT = 108;
-    public const int ESCqs = 125;
-    public const int OF = 67;
-    public const int T__130 = 130;
-    public const int UPDATE = 51;
-    public const int SELECT_FROM = 87;
-    public const int LITERAL_by = 54;
     public const int FLOAT_SUFFIX = 128;
-    public const int ANY = 5;
-    public const int UNARY_PLUS = 89;
-    public const int NUM_FLOAT = 95;
-    public const int GE = 111;
+    public const int STAR = 115;
+    public const int LITERAL_by = 54;
     public const int CASE = 55;
-    public const int OPEN_BRACKET = 117;
-    public const int ELSE = 57;
-    public const int OPEN = 100;
-    public const int COUNT = 12;
-    public const int NULL = 39;
-    public const int COLON = 119;
-    public const int DIV = 116;
-    public const int HAVING = 25;
-    public const int ALL = 4;
-    public const int SET = 46;
-    public const int T__131 = 131;
-    public const int INSERT = 29;
-    public const int TRUE = 49;
-    public const int CASE2 = 72;
-    public const int IS_NOT_NULL = 77;
-    public const int WHERE = 53;
-    public const int AGGREGATE = 69;
-    public const int VECTOR_EXPR = 90;
-    public const int BNOT = 102;
-    public const int LEADING = 64;
-    public const int CLOSE_BRACKET = 118;
-    public const int NUM_DOUBLE = 94;
-    public const int INNER = 28;
-    public const int QUERY = 84;
-    public const int ORDER_ELEMENT = 83;
-    public const int OR = 40;
-    public const int FULL = 23;
-    public const int INDICES = 27;
-    public const int IS_NULL = 78;
-    public const int GROUP = 24;
-    public const int ESCAPE = 18;
+    public const int NEW = 37;
+    public const int FILTER_ENTITY = 74;
     public const int PARAM = 120;
-    public const int ID_LETTER = 124;
-    public const int INDEX_OP = 76;
-    public const int HEX_DIGIT = 129;
-    public const int LEFT = 33;
-    public const int TRAILING = 68;
-    public const int JOIN = 32;
-    public const int NOT_BETWEEN = 80;
-    public const int BAND = 105;
-    public const int SUM = 48;
-    public const int ROW_STAR = 86;
-    public const int OUTER = 42;
-    public const int FROM = 22;
-    public const int NOT_IN = 81;
-    public const int DELETE = 13;
-    public const int OBJECT = 66;
-    public const int MAX = 35;
+    public const int COUNT = 12;
+    public const int NOT = 38;
+    public const int EOF = -1;
+    public const int UNARY_PLUS = 89;
     public const int QUOTED_String = 121;
-    public const int EMPTY = 63;
-    public const int NOT_LIKE = 82;
-    public const int ASCENDING = 8;
-    public const int NUM_LONG = 96;
-    public const int IS = 31;
-    public const int SQL_NE = 107;
-    public const int IN_LIST = 75;
+    public const int ESCqs = 125;
     public const int WEIRD_IDENT = 91;
-    public const int GT = 109;
+    public const int OPEN_BRACKET = 117;
+    public const int FULL = 23;
+    public const int ORDER_ELEMENT = 83;
+    public const int INSERT = 29;
+    public const int ESCAPE = 18;
+    public const int IS_NULL = 78;
+    public const int BOTH = 62;
+    public const int EQ = 99;
+    public const int VERSIONED = 52;
+    public const int SELECT = 45;
+    public const int INTO = 30;
     public const int NE = 106;
-    public const int MIN = 36;
+    public const int GE = 111;
+    public const int ID_LETTER = 124;
+    public const int CONCAT = 112;
+    public const int NULL = 39;
+    public const int ELSE = 57;
+    public const int SELECT_FROM = 87;
+    public const int NUM_LONG = 96;
+    public const int ON = 60;
+    public const int TRAILING = 68;
+    public const int NUM_DOUBLE = 94;
+    public const int UNARY_MINUS = 88;
+    public const int DELETE = 13;
+    public const int INDICES = 27;
+    public const int OF = 67;
+    public const int METHOD_CALL = 79;
+    public const int LEADING = 64;
+    public const int EMPTY = 63;
+    public const int GROUP = 24;
+    public const int WS = 126;
+    public const int FETCH = 21;
+    public const int VECTOR_EXPR = 90;
+    public const int NOT_IN = 81;
+    public const int NUM_INT = 93;
+    public const int OR = 40;
+    public const int ALIAS = 70;
+    public const int JAVA_CONSTANT = 97;
+    public const int CONSTANT = 92;
+    public const int GT = 109;
+    public const int QUERY = 84;
+    public const int BNOT = 102;
+    public const int INDEX_OP = 76;
+    public const int NUM_FLOAT = 95;
+    public const int FROM = 22;
+    public const int END = 56;
+    public const int FALSE = 20;
+    public const int T__130 = 130;
+    public const int DISTINCT = 16;
+    public const int T__131 = 131;
+    public const int CONSTRUCTOR = 71;
+    public const int CLOSE_BRACKET = 118;
+    public const int WHERE = 53;
+    public const int CLASS = 11;
+    public const int MEMBER = 65;
+    public const int INNER = 28;
+    public const int PROPERTIES = 43;
+    public const int ORDER = 41;
+    public const int MAX = 35;
+    public const int UPDATE = 51;
+    public const int SQL_NE = 107;
+    public const int AND = 6;
+    public const int SUM = 48;
+    public const int ASCENDING = 8;
+    public const int EXPR_LIST = 73;
+    public const int AS = 7;
+    public const int IN = 26;
+    public const int THEN = 58;
+    public const int OBJECT = 66;
+    public const int COMMA = 98;
+    public const int IS = 31;
+    public const int LEFT = 33;
+    public const int AVG = 9;
+    public const int SOME = 47;
+    public const int BOR = 103;
+    public const int ALL = 4;
+    public const int IDENT = 122;
+    public const int PLUS = 113;
+    public const int BXOR = 104;
+    public const int CASE2 = 72;
+    public const int EXISTS = 19;
+    public const int DOT = 15;
     public const int LIKE = 34;
     public const int WITH = 61;
-    public const int IN = 26;
-    public const int CONSTRUCTOR = 71;
-    public const int CLASS = 11;
-    public const int SOME = 47;
-    public const int EXPONENT = 127;
+    public const int OUTER = 42;
     public const int ID_START_LETTER = 123;
-    public const int EOF = -1;
+    public const int ROW_STAR = 86;
+    public const int NOT_LIKE = 82;
+    public const int HEX_DIGIT = 129;
+    public const int NOT_BETWEEN = 80;
+    public const int RANGE = 85;
+    public const int RIGHT = 44;
+    public const int SET = 46;
+    public const int HAVING = 25;
+    public const int MIN = 36;
+    public const int MINUS = 114;
+    public const int IS_NOT_NULL = 77;
+    public const int BAND = 105;
+    public const int ELEMENTS = 17;
+    public const int TRUE = 49;
+    public const int JOIN = 32;
+    public const int UNION = 50;
+    public const int IN_LIST = 75;
+    public const int COLON = 119;
+    public const int OPEN = 100;
+    public const int ANY = 5;
     public const int CLOSE = 101;
-    public const int AVG = 9;
-    public const int STAR = 115;
-    public const int BXOR = 104;
-    public const int NOT = 38;
-    public const int JAVA_CONSTANT = 97;
+    public const int WHEN = 59;
+    public const int DIV = 116;
+    public const int DESCENDING = 14;
+    public const int BETWEEN = 10;
+    public const int AGGREGATE = 69;
+    public const int LE = 110;
 
     // delegates
     // delegators
@@ -319,7 +319,7 @@ public partial class HqlParser : Parser
     }
 
     override public string GrammarFileName {
-		get { return "/Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g"; }
+		get { return "C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g"; }
     }
 
 
@@ -334,7 +334,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "statement"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:141:1: statement : ( updateStatement | deleteStatement | selectStatement | insertStatement ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:141:1: statement : ( updateStatement | deleteStatement | selectStatement | insertStatement ) ;
     public HqlParser.statement_return statement() // throws RecognitionException [1]
     {   
         HqlParser.statement_return retval = new HqlParser.statement_return();
@@ -354,12 +354,12 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:142:2: ( ( updateStatement | deleteStatement | selectStatement | insertStatement ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:142:4: ( updateStatement | deleteStatement | selectStatement | insertStatement )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:142:2: ( ( updateStatement | deleteStatement | selectStatement | insertStatement ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:142:4: ( updateStatement | deleteStatement | selectStatement | insertStatement )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:142:4: ( updateStatement | deleteStatement | selectStatement | insertStatement )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:142:4: ( updateStatement | deleteStatement | selectStatement | insertStatement )
             	int alt1 = 4;
             	switch ( input.LA(1) ) 
             	{
@@ -400,7 +400,7 @@ public partial class HqlParser : Parser
             	switch (alt1) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:142:6: updateStatement
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:142:6: updateStatement
             	        {
             	        	PushFollow(FOLLOW_updateStatement_in_statement597);
             	        	updateStatement1 = updateStatement();
@@ -411,7 +411,7 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 2 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:142:24: deleteStatement
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:142:24: deleteStatement
             	        {
             	        	PushFollow(FOLLOW_deleteStatement_in_statement601);
             	        	deleteStatement2 = deleteStatement();
@@ -422,7 +422,7 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 3 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:142:42: selectStatement
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:142:42: selectStatement
             	        {
             	        	PushFollow(FOLLOW_selectStatement_in_statement605);
             	        	selectStatement3 = selectStatement();
@@ -433,7 +433,7 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 4 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:142:60: insertStatement
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:142:60: insertStatement
             	        {
             	        	PushFollow(FOLLOW_insertStatement_in_statement609);
             	        	insertStatement4 = insertStatement();
@@ -480,7 +480,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "updateStatement"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:145:1: updateStatement : UPDATE ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )? ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:145:1: updateStatement : UPDATE ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )? ;
     public HqlParser.updateStatement_return updateStatement() // throws RecognitionException [1]
     {   
         HqlParser.updateStatement_return retval = new HqlParser.updateStatement_return();
@@ -502,8 +502,8 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:146:2: ( UPDATE ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )? )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:146:4: UPDATE ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:146:2: ( UPDATE ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:146:4: UPDATE ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -511,7 +511,7 @@ public partial class HqlParser : Parser
             		UPDATE5_tree = (IASTNode)adaptor.Create(UPDATE5);
             		root_0 = (IASTNode)adaptor.BecomeRoot(UPDATE5_tree, root_0);
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:146:12: ( VERSIONED )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:146:12: ( VERSIONED )?
             	int alt2 = 2;
             	int LA2_0 = input.LA(1);
 
@@ -522,7 +522,7 @@ public partial class HqlParser : Parser
             	switch (alt2) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:146:13: VERSIONED
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:146:13: VERSIONED
             	        {
             	        	VERSIONED6=(IToken)Match(input,VERSIONED,FOLLOW_VERSIONED_in_updateStatement626); 
             	        		VERSIONED6_tree = (IASTNode)adaptor.Create(VERSIONED6);
@@ -544,7 +544,7 @@ public partial class HqlParser : Parser
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, setClause8.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:149:3: ( whereClause )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:149:3: ( whereClause )?
             	int alt3 = 2;
             	int LA3_0 = input.LA(1);
 
@@ -555,7 +555,7 @@ public partial class HqlParser : Parser
             	switch (alt3) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:149:4: whereClause
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:149:4: whereClause
             	        {
             	        	PushFollow(FOLLOW_whereClause_in_updateStatement641);
             	        	whereClause9 = whereClause();
@@ -602,7 +602,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "setClause"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:152:1: setClause : ( SET assignment ( COMMA assignment )* ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:152:1: setClause : ( SET assignment ( COMMA assignment )* ) ;
     public HqlParser.setClause_return setClause() // throws RecognitionException [1]
     {   
         HqlParser.setClause_return retval = new HqlParser.setClause_return();
@@ -622,13 +622,13 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:153:2: ( ( SET assignment ( COMMA assignment )* ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:153:4: ( SET assignment ( COMMA assignment )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:153:2: ( ( SET assignment ( COMMA assignment )* ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:153:4: ( SET assignment ( COMMA assignment )* )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:153:4: ( SET assignment ( COMMA assignment )* )
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:153:5: SET assignment ( COMMA assignment )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:153:4: ( SET assignment ( COMMA assignment )* )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:153:5: SET assignment ( COMMA assignment )*
             	{
             		SET10=(IToken)Match(input,SET,FOLLOW_SET_in_setClause655); 
             			SET10_tree = (IASTNode)adaptor.Create(SET10);
@@ -639,7 +639,7 @@ public partial class HqlParser : Parser
             		state.followingStackPointer--;
 
             		adaptor.AddChild(root_0, assignment11.Tree);
-            		// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:153:21: ( COMMA assignment )*
+            		// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:153:21: ( COMMA assignment )*
             		do 
             		{
             		    int alt4 = 2;
@@ -654,7 +654,7 @@ public partial class HqlParser : Parser
             		    switch (alt4) 
             			{
             				case 1 :
-            				    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:153:22: COMMA assignment
+            				    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:153:22: COMMA assignment
             				    {
             				    	COMMA12=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_setClause661); 
             				    	PushFollow(FOLLOW_assignment_in_setClause664);
@@ -711,7 +711,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "assignment"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:156:1: assignment : stateField EQ newValue ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:156:1: assignment : stateField EQ newValue ;
     public HqlParser.assignment_return assignment() // throws RecognitionException [1]
     {   
         HqlParser.assignment_return retval = new HqlParser.assignment_return();
@@ -729,8 +729,8 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:157:2: ( stateField EQ newValue )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:157:4: stateField EQ newValue
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:157:2: ( stateField EQ newValue )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:157:4: stateField EQ newValue
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -782,7 +782,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "stateField"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:162:1: stateField : path ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:162:1: stateField : path ;
     public HqlParser.stateField_return stateField() // throws RecognitionException [1]
     {   
         HqlParser.stateField_return retval = new HqlParser.stateField_return();
@@ -796,8 +796,8 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:163:2: ( path )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:163:4: path
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:163:2: ( path )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:163:4: path
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -840,7 +840,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "newValue"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:168:1: newValue : concatenation ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:168:1: newValue : concatenation ;
     public HqlParser.newValue_return newValue() // throws RecognitionException [1]
     {   
         HqlParser.newValue_return retval = new HqlParser.newValue_return();
@@ -854,8 +854,8 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:169:2: ( concatenation )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:169:4: concatenation
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:169:2: ( concatenation )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:169:4: concatenation
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -898,7 +898,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "deleteStatement"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:172:1: deleteStatement : DELETE ( optionalFromTokenFromClause ) ( whereClause )? ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:172:1: deleteStatement : DELETE ( optionalFromTokenFromClause ) ( whereClause )? ;
     public HqlParser.deleteStatement_return deleteStatement() // throws RecognitionException [1]
     {   
         HqlParser.deleteStatement_return retval = new HqlParser.deleteStatement_return();
@@ -916,8 +916,8 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:173:2: ( DELETE ( optionalFromTokenFromClause ) ( whereClause )? )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:173:4: DELETE ( optionalFromTokenFromClause ) ( whereClause )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:173:2: ( DELETE ( optionalFromTokenFromClause ) ( whereClause )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:173:4: DELETE ( optionalFromTokenFromClause ) ( whereClause )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -925,8 +925,8 @@ public partial class HqlParser : Parser
             		DELETE19_tree = (IASTNode)adaptor.Create(DELETE19);
             		root_0 = (IASTNode)adaptor.BecomeRoot(DELETE19_tree, root_0);
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:174:3: ( optionalFromTokenFromClause )
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:174:4: optionalFromTokenFromClause
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:174:3: ( optionalFromTokenFromClause )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:174:4: optionalFromTokenFromClause
             	{
             		PushFollow(FOLLOW_optionalFromTokenFromClause_in_deleteStatement726);
             		optionalFromTokenFromClause20 = optionalFromTokenFromClause();
@@ -936,7 +936,7 @@ public partial class HqlParser : Parser
 
             	}
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:175:3: ( whereClause )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:175:3: ( whereClause )?
             	int alt5 = 2;
             	int LA5_0 = input.LA(1);
 
@@ -947,7 +947,7 @@ public partial class HqlParser : Parser
             	switch (alt5) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:175:4: whereClause
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:175:4: whereClause
             	        {
             	        	PushFollow(FOLLOW_whereClause_in_deleteStatement732);
             	        	whereClause21 = whereClause();
@@ -994,7 +994,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "optionalFromTokenFromClause"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:180:1: optionalFromTokenFromClause : optionalFromTokenFromClause2 path ( asAlias )? -> ^( FROM ^( RANGE path ( asAlias )? ) ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:180:1: optionalFromTokenFromClause : optionalFromTokenFromClause2 path ( asAlias )? -> ^( FROM ^( RANGE path ( asAlias )? ) ) ;
     public HqlParser.optionalFromTokenFromClause_return optionalFromTokenFromClause() // throws RecognitionException [1]
     {   
         HqlParser.optionalFromTokenFromClause_return retval = new HqlParser.optionalFromTokenFromClause_return();
@@ -1009,13 +1009,13 @@ public partial class HqlParser : Parser
         HqlParser.asAlias_return asAlias24 = default(HqlParser.asAlias_return);
 
 
+        RewriteRuleSubtreeStream stream_optionalFromTokenFromClause2 = new RewriteRuleSubtreeStream(adaptor,"rule optionalFromTokenFromClause2");
         RewriteRuleSubtreeStream stream_path = new RewriteRuleSubtreeStream(adaptor,"rule path");
         RewriteRuleSubtreeStream stream_asAlias = new RewriteRuleSubtreeStream(adaptor,"rule asAlias");
-        RewriteRuleSubtreeStream stream_optionalFromTokenFromClause2 = new RewriteRuleSubtreeStream(adaptor,"rule optionalFromTokenFromClause2");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:181:2: ( optionalFromTokenFromClause2 path ( asAlias )? -> ^( FROM ^( RANGE path ( asAlias )? ) ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:181:4: optionalFromTokenFromClause2 path ( asAlias )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:181:2: ( optionalFromTokenFromClause2 path ( asAlias )? -> ^( FROM ^( RANGE path ( asAlias )? ) ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:181:4: optionalFromTokenFromClause2 path ( asAlias )?
             {
             	PushFollow(FOLLOW_optionalFromTokenFromClause2_in_optionalFromTokenFromClause747);
             	optionalFromTokenFromClause222 = optionalFromTokenFromClause2();
@@ -1027,7 +1027,7 @@ public partial class HqlParser : Parser
             	state.followingStackPointer--;
 
             	stream_path.Add(path23.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:181:38: ( asAlias )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:181:38: ( asAlias )?
             	int alt6 = 2;
             	int LA6_0 = input.LA(1);
 
@@ -1038,7 +1038,7 @@ public partial class HqlParser : Parser
             	switch (alt6) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:181:39: asAlias
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:181:39: asAlias
             	        {
             	        	PushFollow(FOLLOW_asAlias_in_optionalFromTokenFromClause752);
             	        	asAlias24 = asAlias();
@@ -1054,7 +1054,7 @@ public partial class HqlParser : Parser
 
 
             	// AST REWRITE
-            	// elements:          path, asAlias
+            	// elements:          asAlias, path
             	// token labels:      
             	// rule labels:       retval
             	// token list labels: 
@@ -1066,18 +1066,18 @@ public partial class HqlParser : Parser
             	root_0 = (IASTNode)adaptor.GetNilNode();
             	// 182:3: -> ^( FROM ^( RANGE path ( asAlias )? ) )
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:182:6: ^( FROM ^( RANGE path ( asAlias )? ) )
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:182:6: ^( FROM ^( RANGE path ( asAlias )? ) )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(FROM, "FROM"), root_1);
 
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:182:13: ^( RANGE path ( asAlias )? )
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:182:13: ^( RANGE path ( asAlias )? )
             	    {
             	    IASTNode root_2 = (IASTNode)adaptor.GetNilNode();
             	    root_2 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(RANGE, "RANGE"), root_2);
 
             	    adaptor.AddChild(root_2, stream_path.NextTree());
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:182:26: ( asAlias )?
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:182:26: ( asAlias )?
             	    if ( stream_asAlias.HasNext() )
             	    {
             	        adaptor.AddChild(root_2, stream_asAlias.NextTree());
@@ -1127,7 +1127,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "optionalFromTokenFromClause2"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:185:1: optionalFromTokenFromClause2 : ( FROM )? ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:185:1: optionalFromTokenFromClause2 : ( FROM )? ;
     public HqlParser.optionalFromTokenFromClause2_return optionalFromTokenFromClause2() // throws RecognitionException [1]
     {   
         HqlParser.optionalFromTokenFromClause2_return retval = new HqlParser.optionalFromTokenFromClause2_return();
@@ -1141,12 +1141,12 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:186:2: ( ( FROM )? )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:186:4: ( FROM )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:186:2: ( ( FROM )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:186:4: ( FROM )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:186:4: ( FROM )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:186:4: ( FROM )?
             	int alt7 = 2;
             	int LA7_0 = input.LA(1);
 
@@ -1157,7 +1157,7 @@ public partial class HqlParser : Parser
             	switch (alt7) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:186:4: FROM
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:186:4: FROM
             	        {
             	        	FROM25=(IToken)Match(input,FROM,FOLLOW_FROM_in_optionalFromTokenFromClause2783); 
             	        		FROM25_tree = (IASTNode)adaptor.Create(FROM25);
@@ -1203,7 +1203,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "selectStatement"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:189:1: selectStatement : q= queryRule -> ^( QUERY[\"query\"] $q) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:189:1: selectStatement : q= queryRule -> ^( QUERY[\"query\"] $q) ;
     public HqlParser.selectStatement_return selectStatement() // throws RecognitionException [1]
     {   
         HqlParser.selectStatement_return retval = new HqlParser.selectStatement_return();
@@ -1217,8 +1217,8 @@ public partial class HqlParser : Parser
         RewriteRuleSubtreeStream stream_queryRule = new RewriteRuleSubtreeStream(adaptor,"rule queryRule");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:190:2: (q= queryRule -> ^( QUERY[\"query\"] $q) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:190:4: q= queryRule
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:190:2: (q= queryRule -> ^( QUERY[\"query\"] $q) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:190:4: q= queryRule
             {
             	PushFollow(FOLLOW_queryRule_in_selectStatement797);
             	q = queryRule();
@@ -1241,7 +1241,7 @@ public partial class HqlParser : Parser
             	root_0 = (IASTNode)adaptor.GetNilNode();
             	// 191:2: -> ^( QUERY[\"query\"] $q)
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:191:5: ^( QUERY[\"query\"] $q)
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:191:5: ^( QUERY[\"query\"] $q)
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(QUERY, "query"), root_1);
@@ -1287,7 +1287,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "insertStatement"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:194:1: insertStatement : INSERT intoClause selectStatement ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:194:1: insertStatement : INSERT intoClause selectStatement ;
     public HqlParser.insertStatement_return insertStatement() // throws RecognitionException [1]
     {   
         HqlParser.insertStatement_return retval = new HqlParser.insertStatement_return();
@@ -1305,8 +1305,8 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:198:2: ( INSERT intoClause selectStatement )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:198:4: INSERT intoClause selectStatement
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:198:2: ( INSERT intoClause selectStatement )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:198:4: INSERT intoClause selectStatement
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -1358,7 +1358,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "intoClause"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:201:1: intoClause : INTO path insertablePropertySpec ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:201:1: intoClause : INTO path insertablePropertySpec ;
     public HqlParser.intoClause_return intoClause() // throws RecognitionException [1]
     {   
         HqlParser.intoClause_return retval = new HqlParser.intoClause_return();
@@ -1376,8 +1376,8 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:202:2: ( INTO path insertablePropertySpec )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:202:4: INTO path insertablePropertySpec
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:202:2: ( INTO path insertablePropertySpec )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:202:4: INTO path insertablePropertySpec
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -1430,7 +1430,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "insertablePropertySpec"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:205:1: insertablePropertySpec : OPEN primaryExpression ( COMMA primaryExpression )* CLOSE -> ^( RANGE[\"column-spec\"] ( primaryExpression )* ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:205:1: insertablePropertySpec : OPEN primaryExpression ( COMMA primaryExpression )* CLOSE -> ^( RANGE[\"column-spec\"] ( primaryExpression )* ) ;
     public HqlParser.insertablePropertySpec_return insertablePropertySpec() // throws RecognitionException [1]
     {   
         HqlParser.insertablePropertySpec_return retval = new HqlParser.insertablePropertySpec_return();
@@ -1449,14 +1449,14 @@ public partial class HqlParser : Parser
         IASTNode OPEN32_tree=null;
         IASTNode COMMA34_tree=null;
         IASTNode CLOSE36_tree=null;
-        RewriteRuleTokenStream stream_COMMA = new RewriteRuleTokenStream(adaptor,"token COMMA");
-        RewriteRuleTokenStream stream_CLOSE = new RewriteRuleTokenStream(adaptor,"token CLOSE");
         RewriteRuleTokenStream stream_OPEN = new RewriteRuleTokenStream(adaptor,"token OPEN");
+        RewriteRuleTokenStream stream_CLOSE = new RewriteRuleTokenStream(adaptor,"token CLOSE");
+        RewriteRuleTokenStream stream_COMMA = new RewriteRuleTokenStream(adaptor,"token COMMA");
         RewriteRuleSubtreeStream stream_primaryExpression = new RewriteRuleSubtreeStream(adaptor,"rule primaryExpression");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:206:2: ( OPEN primaryExpression ( COMMA primaryExpression )* CLOSE -> ^( RANGE[\"column-spec\"] ( primaryExpression )* ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:206:4: OPEN primaryExpression ( COMMA primaryExpression )* CLOSE
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:206:2: ( OPEN primaryExpression ( COMMA primaryExpression )* CLOSE -> ^( RANGE[\"column-spec\"] ( primaryExpression )* ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:206:4: OPEN primaryExpression ( COMMA primaryExpression )* CLOSE
             {
             	OPEN32=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_insertablePropertySpec860);  
             	stream_OPEN.Add(OPEN32);
@@ -1466,7 +1466,7 @@ public partial class HqlParser : Parser
             	state.followingStackPointer--;
 
             	stream_primaryExpression.Add(primaryExpression33.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:206:27: ( COMMA primaryExpression )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:206:27: ( COMMA primaryExpression )*
             	do 
             	{
             	    int alt8 = 2;
@@ -1481,7 +1481,7 @@ public partial class HqlParser : Parser
             	    switch (alt8) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:206:29: COMMA primaryExpression
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:206:29: COMMA primaryExpression
             			    {
             			    	COMMA34=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_insertablePropertySpec866);  
             			    	stream_COMMA.Add(COMMA34);
@@ -1521,12 +1521,12 @@ public partial class HqlParser : Parser
             	root_0 = (IASTNode)adaptor.GetNilNode();
             	// 207:3: -> ^( RANGE[\"column-spec\"] ( primaryExpression )* )
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:207:6: ^( RANGE[\"column-spec\"] ( primaryExpression )* )
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:207:6: ^( RANGE[\"column-spec\"] ( primaryExpression )* )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(RANGE, "column-spec"), root_1);
 
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:207:29: ( primaryExpression )*
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:207:29: ( primaryExpression )*
             	    while ( stream_primaryExpression.HasNext() )
             	    {
             	        adaptor.AddChild(root_1, stream_primaryExpression.NextTree());
@@ -1573,7 +1573,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "union"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:210:1: union : queryRule ( UNION queryRule )* ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:210:1: union : UNION queryRule ;
     public HqlParser.union_return union() // throws RecognitionException [1]
     {   
         HqlParser.union_return retval = new HqlParser.union_return();
@@ -1581,64 +1581,28 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken UNION38 = null;
-        HqlParser.queryRule_return queryRule37 = default(HqlParser.queryRule_return);
-
-        HqlParser.queryRule_return queryRule39 = default(HqlParser.queryRule_return);
+        IToken UNION37 = null;
+        HqlParser.queryRule_return queryRule38 = default(HqlParser.queryRule_return);
 
 
-        IASTNode UNION38_tree=null;
+        IASTNode UNION37_tree=null;
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:211:2: ( queryRule ( UNION queryRule )* )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:211:4: queryRule ( UNION queryRule )*
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:211:2: ( UNION queryRule )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:211:4: UNION queryRule
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_queryRule_in_union896);
-            	queryRule37 = queryRule();
+            	UNION37=(IToken)Match(input,UNION,FOLLOW_UNION_in_union896); 
+            		UNION37_tree = (IASTNode)adaptor.Create(UNION37);
+            		adaptor.AddChild(root_0, UNION37_tree);
+
+            	PushFollow(FOLLOW_queryRule_in_union898);
+            	queryRule38 = queryRule();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, queryRule37.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:211:14: ( UNION queryRule )*
-            	do 
-            	{
-            	    int alt9 = 2;
-            	    int LA9_0 = input.LA(1);
-
-            	    if ( (LA9_0 == UNION) )
-            	    {
-            	        alt9 = 1;
-            	    }
-
-
-            	    switch (alt9) 
-            		{
-            			case 1 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:211:15: UNION queryRule
-            			    {
-            			    	UNION38=(IToken)Match(input,UNION,FOLLOW_UNION_in_union899); 
-            			    		UNION38_tree = (IASTNode)adaptor.Create(UNION38);
-            			    		adaptor.AddChild(root_0, UNION38_tree);
-
-            			    	PushFollow(FOLLOW_queryRule_in_union901);
-            			    	queryRule39 = queryRule();
-            			    	state.followingStackPointer--;
-
-            			    	adaptor.AddChild(root_0, queryRule39.Tree);
-
-            			    }
-            			    break;
-
-            			default:
-            			    goto loop9;
-            	    }
-            	} while (true);
-
-            	loop9:
-            		;	// Stops C# compiler whining that label 'loop9' has no statements
-
+            	adaptor.AddChild(root_0, queryRule38.Tree);
 
             }
 
@@ -1673,7 +1637,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "queryRule"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:217:1: queryRule : selectFrom ( whereClause )? ( groupByClause )? ( orderByClause )? ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:217:1: queryRule : selectFrom ( whereClause )? ( groupByClause )? ( orderByClause )? ( union )? ;
     public HqlParser.queryRule_return queryRule() // throws RecognitionException [1]
     {   
         HqlParser.queryRule_return retval = new HqlParser.queryRule_return();
@@ -1681,94 +1645,120 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        HqlParser.selectFrom_return selectFrom40 = default(HqlParser.selectFrom_return);
+        HqlParser.selectFrom_return selectFrom39 = default(HqlParser.selectFrom_return);
 
-        HqlParser.whereClause_return whereClause41 = default(HqlParser.whereClause_return);
+        HqlParser.whereClause_return whereClause40 = default(HqlParser.whereClause_return);
 
-        HqlParser.groupByClause_return groupByClause42 = default(HqlParser.groupByClause_return);
+        HqlParser.groupByClause_return groupByClause41 = default(HqlParser.groupByClause_return);
 
-        HqlParser.orderByClause_return orderByClause43 = default(HqlParser.orderByClause_return);
+        HqlParser.orderByClause_return orderByClause42 = default(HqlParser.orderByClause_return);
+
+        HqlParser.union_return union43 = default(HqlParser.union_return);
 
 
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:218:2: ( selectFrom ( whereClause )? ( groupByClause )? ( orderByClause )? )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:218:4: selectFrom ( whereClause )? ( groupByClause )? ( orderByClause )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:218:2: ( selectFrom ( whereClause )? ( groupByClause )? ( orderByClause )? ( union )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:218:4: selectFrom ( whereClause )? ( groupByClause )? ( orderByClause )? ( union )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_selectFrom_in_queryRule917);
-            	selectFrom40 = selectFrom();
+            	PushFollow(FOLLOW_selectFrom_in_queryRule912);
+            	selectFrom39 = selectFrom();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, selectFrom40.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:219:3: ( whereClause )?
+            	adaptor.AddChild(root_0, selectFrom39.Tree);
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:219:3: ( whereClause )?
+            	int alt9 = 2;
+            	int LA9_0 = input.LA(1);
+
+            	if ( (LA9_0 == WHERE) )
+            	{
+            	    alt9 = 1;
+            	}
+            	switch (alt9) 
+            	{
+            	    case 1 :
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:219:4: whereClause
+            	        {
+            	        	PushFollow(FOLLOW_whereClause_in_queryRule917);
+            	        	whereClause40 = whereClause();
+            	        	state.followingStackPointer--;
+
+            	        	adaptor.AddChild(root_0, whereClause40.Tree);
+
+            	        }
+            	        break;
+
+            	}
+
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:220:3: ( groupByClause )?
             	int alt10 = 2;
             	int LA10_0 = input.LA(1);
 
-            	if ( (LA10_0 == WHERE) )
+            	if ( (LA10_0 == GROUP) )
             	{
             	    alt10 = 1;
             	}
             	switch (alt10) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:219:4: whereClause
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:220:4: groupByClause
             	        {
-            	        	PushFollow(FOLLOW_whereClause_in_queryRule922);
-            	        	whereClause41 = whereClause();
+            	        	PushFollow(FOLLOW_groupByClause_in_queryRule924);
+            	        	groupByClause41 = groupByClause();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, whereClause41.Tree);
+            	        	adaptor.AddChild(root_0, groupByClause41.Tree);
 
             	        }
             	        break;
 
             	}
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:220:3: ( groupByClause )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:221:3: ( orderByClause )?
             	int alt11 = 2;
             	int LA11_0 = input.LA(1);
 
-            	if ( (LA11_0 == GROUP) )
+            	if ( (LA11_0 == ORDER) )
             	{
             	    alt11 = 1;
             	}
             	switch (alt11) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:220:4: groupByClause
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:221:4: orderByClause
             	        {
-            	        	PushFollow(FOLLOW_groupByClause_in_queryRule929);
-            	        	groupByClause42 = groupByClause();
+            	        	PushFollow(FOLLOW_orderByClause_in_queryRule931);
+            	        	orderByClause42 = orderByClause();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, groupByClause42.Tree);
+            	        	adaptor.AddChild(root_0, orderByClause42.Tree);
 
             	        }
             	        break;
 
             	}
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:221:3: ( orderByClause )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:222:3: ( union )?
             	int alt12 = 2;
             	int LA12_0 = input.LA(1);
 
-            	if ( (LA12_0 == ORDER) )
+            	if ( (LA12_0 == UNION) )
             	{
             	    alt12 = 1;
             	}
             	switch (alt12) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:221:4: orderByClause
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:222:4: union
             	        {
-            	        	PushFollow(FOLLOW_orderByClause_in_queryRule936);
-            	        	orderByClause43 = orderByClause();
+            	        	PushFollow(FOLLOW_union_in_queryRule938);
+            	        	union43 = union();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, orderByClause43.Tree);
+            	        	adaptor.AddChild(root_0, union43.Tree);
 
             	        }
             	        break;
@@ -1809,7 +1799,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "selectFrom"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:246:1: selectFrom : (s= selectClause )? (f= fromClause )? -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? ) -> ^( SELECT_FROM ( fromClause )? ( selectClause )? ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:247:1: selectFrom : (s= selectClause )? (f= fromClause )? -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? ) -> ^( SELECT_FROM ( fromClause )? ( selectClause )? ) ;
     public HqlParser.selectFrom_return selectFrom() // throws RecognitionException [1]
     {   
         HqlParser.selectFrom_return retval = new HqlParser.selectFrom_return();
@@ -1826,10 +1816,10 @@ public partial class HqlParser : Parser
         RewriteRuleSubtreeStream stream_fromClause = new RewriteRuleSubtreeStream(adaptor,"rule fromClause");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:247:2: ( (s= selectClause )? (f= fromClause )? -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? ) -> ^( SELECT_FROM ( fromClause )? ( selectClause )? ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:247:5: (s= selectClause )? (f= fromClause )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:248:2: ( (s= selectClause )? (f= fromClause )? -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? ) -> ^( SELECT_FROM ( fromClause )? ( selectClause )? ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:248:5: (s= selectClause )? (f= fromClause )?
             {
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:247:5: (s= selectClause )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:248:5: (s= selectClause )?
             	int alt13 = 2;
             	int LA13_0 = input.LA(1);
 
@@ -1840,9 +1830,9 @@ public partial class HqlParser : Parser
             	switch (alt13) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:247:6: s= selectClause
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:248:6: s= selectClause
             	        {
-            	        	PushFollow(FOLLOW_selectClause_in_selectFrom957);
+            	        	PushFollow(FOLLOW_selectClause_in_selectFrom959);
             	        	s = selectClause();
             	        	state.followingStackPointer--;
 
@@ -1853,7 +1843,7 @@ public partial class HqlParser : Parser
 
             	}
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:247:23: (f= fromClause )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:248:23: (f= fromClause )?
             	int alt14 = 2;
             	int LA14_0 = input.LA(1);
 
@@ -1864,9 +1854,9 @@ public partial class HqlParser : Parser
             	switch (alt14) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:247:24: f= fromClause
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:248:24: f= fromClause
             	        {
-            	        	PushFollow(FOLLOW_fromClause_in_selectFrom964);
+            	        	PushFollow(FOLLOW_fromClause_in_selectFrom966);
             	        	f = fromClause();
             	        	state.followingStackPointer--;
 
@@ -1894,16 +1884,16 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 252:3: -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? )
+            	// 253:3: -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? )
             	if (((f != null) ? ((IASTNode)f.Tree) : null) == null && filter)
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:252:35: ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? )
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:253:35: ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(SELECT_FROM, "SELECT_FROM"), root_1);
 
             	    adaptor.AddChild(root_1, (IASTNode)adaptor.Create(FROM, "{filter-implied FROM}"));
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:252:79: ( selectClause )?
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:253:79: ( selectClause )?
             	    if ( stream_selectClause.HasNext() )
             	    {
             	        adaptor.AddChild(root_1, stream_selectClause.NextTree());
@@ -1915,21 +1905,21 @@ public partial class HqlParser : Parser
             	    }
 
             	}
-            	else // 253:3: -> ^( SELECT_FROM ( fromClause )? ( selectClause )? )
+            	else // 254:3: -> ^( SELECT_FROM ( fromClause )? ( selectClause )? )
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:253:6: ^( SELECT_FROM ( fromClause )? ( selectClause )? )
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:254:6: ^( SELECT_FROM ( fromClause )? ( selectClause )? )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(SELECT_FROM, "SELECT_FROM"), root_1);
 
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:253:20: ( fromClause )?
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:254:20: ( fromClause )?
             	    if ( stream_fromClause.HasNext() )
             	    {
             	        adaptor.AddChild(root_1, stream_fromClause.NextTree());
 
             	    }
             	    stream_fromClause.Reset();
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:253:32: ( selectClause )?
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:254:32: ( selectClause )?
             	    if ( stream_selectClause.HasNext() )
             	    {
             	        adaptor.AddChild(root_1, stream_selectClause.NextTree());
@@ -1976,7 +1966,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "selectClause"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:261:1: selectClause : SELECT ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:262:1: selectClause : SELECT ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject ) ;
     public HqlParser.selectClause_return selectClause() // throws RecognitionException [1]
     {   
         HqlParser.selectClause_return retval = new HqlParser.selectClause_return();
@@ -1998,17 +1988,17 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:262:2: ( SELECT ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:262:4: SELECT ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:263:2: ( SELECT ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:263:4: SELECT ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	SELECT44=(IToken)Match(input,SELECT,FOLLOW_SELECT_in_selectClause1017); 
+            	SELECT44=(IToken)Match(input,SELECT,FOLLOW_SELECT_in_selectClause1019); 
             		SELECT44_tree = (IASTNode)adaptor.Create(SELECT44);
             		root_0 = (IASTNode)adaptor.BecomeRoot(SELECT44_tree, root_0);
 
             	 WeakKeywords(); 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:264:3: ( DISTINCT )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:265:3: ( DISTINCT )?
             	int alt15 = 2;
             	int LA15_0 = input.LA(1);
 
@@ -2019,9 +2009,9 @@ public partial class HqlParser : Parser
             	switch (alt15) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:264:4: DISTINCT
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:265:4: DISTINCT
             	        {
-            	        	DISTINCT45=(IToken)Match(input,DISTINCT,FOLLOW_DISTINCT_in_selectClause1029); 
+            	        	DISTINCT45=(IToken)Match(input,DISTINCT,FOLLOW_DISTINCT_in_selectClause1031); 
             	        		DISTINCT45_tree = (IASTNode)adaptor.Create(DISTINCT45);
             	        		adaptor.AddChild(root_0, DISTINCT45_tree);
 
@@ -2031,7 +2021,7 @@ public partial class HqlParser : Parser
 
             	}
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:264:15: ( selectedPropertiesList | newExpression | selectObject )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:265:15: ( selectedPropertiesList | newExpression | selectObject )
             	int alt16 = 3;
             	switch ( input.LA(1) ) 
             	{
@@ -2088,9 +2078,9 @@ public partial class HqlParser : Parser
             	switch (alt16) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:264:17: selectedPropertiesList
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:265:17: selectedPropertiesList
             	        {
-            	        	PushFollow(FOLLOW_selectedPropertiesList_in_selectClause1035);
+            	        	PushFollow(FOLLOW_selectedPropertiesList_in_selectClause1037);
             	        	selectedPropertiesList46 = selectedPropertiesList();
             	        	state.followingStackPointer--;
 
@@ -2099,9 +2089,9 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 2 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:264:42: newExpression
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:265:42: newExpression
             	        {
-            	        	PushFollow(FOLLOW_newExpression_in_selectClause1039);
+            	        	PushFollow(FOLLOW_newExpression_in_selectClause1041);
             	        	newExpression47 = newExpression();
             	        	state.followingStackPointer--;
 
@@ -2110,9 +2100,9 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 3 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:264:58: selectObject
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:265:58: selectObject
             	        {
-            	        	PushFollow(FOLLOW_selectObject_in_selectClause1043);
+            	        	PushFollow(FOLLOW_selectObject_in_selectClause1045);
             	        	selectObject48 = selectObject();
             	        	state.followingStackPointer--;
 
@@ -2157,7 +2147,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "newExpression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:267:1: newExpression : ( NEW path ) op= OPEN selectedPropertiesList CLOSE -> ^( CONSTRUCTOR[$op] path selectedPropertiesList ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:268:1: newExpression : ( NEW path ) op= OPEN selectedPropertiesList CLOSE -> ^( CONSTRUCTOR[$op] path selectedPropertiesList ) ;
     public HqlParser.newExpression_return newExpression() // throws RecognitionException [1]
     {   
         HqlParser.newExpression_return retval = new HqlParser.newExpression_return();
@@ -2176,23 +2166,23 @@ public partial class HqlParser : Parser
         IASTNode op_tree=null;
         IASTNode NEW49_tree=null;
         IASTNode CLOSE52_tree=null;
-        RewriteRuleTokenStream stream_CLOSE = new RewriteRuleTokenStream(adaptor,"token CLOSE");
-        RewriteRuleTokenStream stream_OPEN = new RewriteRuleTokenStream(adaptor,"token OPEN");
         RewriteRuleTokenStream stream_NEW = new RewriteRuleTokenStream(adaptor,"token NEW");
-        RewriteRuleSubtreeStream stream_selectedPropertiesList = new RewriteRuleSubtreeStream(adaptor,"rule selectedPropertiesList");
+        RewriteRuleTokenStream stream_OPEN = new RewriteRuleTokenStream(adaptor,"token OPEN");
+        RewriteRuleTokenStream stream_CLOSE = new RewriteRuleTokenStream(adaptor,"token CLOSE");
         RewriteRuleSubtreeStream stream_path = new RewriteRuleSubtreeStream(adaptor,"rule path");
+        RewriteRuleSubtreeStream stream_selectedPropertiesList = new RewriteRuleSubtreeStream(adaptor,"rule selectedPropertiesList");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:268:2: ( ( NEW path ) op= OPEN selectedPropertiesList CLOSE -> ^( CONSTRUCTOR[$op] path selectedPropertiesList ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:268:4: ( NEW path ) op= OPEN selectedPropertiesList CLOSE
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:269:2: ( ( NEW path ) op= OPEN selectedPropertiesList CLOSE -> ^( CONSTRUCTOR[$op] path selectedPropertiesList ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:269:4: ( NEW path ) op= OPEN selectedPropertiesList CLOSE
             {
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:268:4: ( NEW path )
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:268:5: NEW path
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:269:4: ( NEW path )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:269:5: NEW path
             	{
-            		NEW49=(IToken)Match(input,NEW,FOLLOW_NEW_in_newExpression1057);  
+            		NEW49=(IToken)Match(input,NEW,FOLLOW_NEW_in_newExpression1059);  
             		stream_NEW.Add(NEW49);
 
-            		PushFollow(FOLLOW_path_in_newExpression1059);
+            		PushFollow(FOLLOW_path_in_newExpression1061);
             		path50 = path();
             		state.followingStackPointer--;
 
@@ -2200,21 +2190,21 @@ public partial class HqlParser : Parser
 
             	}
 
-            	op=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_newExpression1064);  
+            	op=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_newExpression1066);  
             	stream_OPEN.Add(op);
 
-            	PushFollow(FOLLOW_selectedPropertiesList_in_newExpression1066);
+            	PushFollow(FOLLOW_selectedPropertiesList_in_newExpression1068);
             	selectedPropertiesList51 = selectedPropertiesList();
             	state.followingStackPointer--;
 
             	stream_selectedPropertiesList.Add(selectedPropertiesList51.Tree);
-            	CLOSE52=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_newExpression1068);  
+            	CLOSE52=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_newExpression1070);  
             	stream_CLOSE.Add(CLOSE52);
 
 
 
             	// AST REWRITE
-            	// elements:          path, selectedPropertiesList
+            	// elements:          selectedPropertiesList, path
             	// token labels:      
             	// rule labels:       retval
             	// token list labels: 
@@ -2224,9 +2214,9 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 269:3: -> ^( CONSTRUCTOR[$op] path selectedPropertiesList )
+            	// 270:3: -> ^( CONSTRUCTOR[$op] path selectedPropertiesList )
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:269:6: ^( CONSTRUCTOR[$op] path selectedPropertiesList )
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:270:6: ^( CONSTRUCTOR[$op] path selectedPropertiesList )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(CONSTRUCTOR, op), root_1);
@@ -2273,7 +2263,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "selectObject"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:272:1: selectObject : OBJECT OPEN identifier CLOSE ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:273:1: selectObject : OBJECT OPEN identifier CLOSE ;
     public HqlParser.selectObject_return selectObject() // throws RecognitionException [1]
     {   
         HqlParser.selectObject_return retval = new HqlParser.selectObject_return();
@@ -2293,22 +2283,22 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:273:4: ( OBJECT OPEN identifier CLOSE )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:273:6: OBJECT OPEN identifier CLOSE
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:274:4: ( OBJECT OPEN identifier CLOSE )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:274:6: OBJECT OPEN identifier CLOSE
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	OBJECT53=(IToken)Match(input,OBJECT,FOLLOW_OBJECT_in_selectObject1094); 
+            	OBJECT53=(IToken)Match(input,OBJECT,FOLLOW_OBJECT_in_selectObject1096); 
             		OBJECT53_tree = (IASTNode)adaptor.Create(OBJECT53);
             		root_0 = (IASTNode)adaptor.BecomeRoot(OBJECT53_tree, root_0);
 
-            	OPEN54=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_selectObject1097); 
-            	PushFollow(FOLLOW_identifier_in_selectObject1100);
+            	OPEN54=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_selectObject1099); 
+            	PushFollow(FOLLOW_identifier_in_selectObject1102);
             	identifier55 = identifier();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, identifier55.Tree);
-            	CLOSE56=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_selectObject1102); 
+            	CLOSE56=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_selectObject1104); 
 
             }
 
@@ -2343,7 +2333,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "fromClause"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:283:1: fromClause : FROM fromRange ( fromJoin | COMMA fromRange )* ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:284:1: fromClause : FROM fromRange ( fromJoin | COMMA fromRange )* ;
     public HqlParser.fromClause_return fromClause() // throws RecognitionException [1]
     {   
         HqlParser.fromClause_return retval = new HqlParser.fromClause_return();
@@ -2365,22 +2355,22 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:284:2: ( FROM fromRange ( fromJoin | COMMA fromRange )* )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:284:4: FROM fromRange ( fromJoin | COMMA fromRange )*
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:285:2: ( FROM fromRange ( fromJoin | COMMA fromRange )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:285:4: FROM fromRange ( fromJoin | COMMA fromRange )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	FROM57=(IToken)Match(input,FROM,FOLLOW_FROM_in_fromClause1123); 
+            	FROM57=(IToken)Match(input,FROM,FOLLOW_FROM_in_fromClause1125); 
             		FROM57_tree = (IASTNode)adaptor.Create(FROM57);
             		root_0 = (IASTNode)adaptor.BecomeRoot(FROM57_tree, root_0);
 
             	 WeakKeywords(); 
-            	PushFollow(FOLLOW_fromRange_in_fromClause1128);
+            	PushFollow(FOLLOW_fromRange_in_fromClause1130);
             	fromRange58 = fromRange();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, fromRange58.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:284:40: ( fromJoin | COMMA fromRange )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:285:40: ( fromJoin | COMMA fromRange )*
             	do 
             	{
             	    int alt17 = 3;
@@ -2399,9 +2389,9 @@ public partial class HqlParser : Parser
             	    switch (alt17) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:284:42: fromJoin
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:285:42: fromJoin
             			    {
-            			    	PushFollow(FOLLOW_fromJoin_in_fromClause1132);
+            			    	PushFollow(FOLLOW_fromJoin_in_fromClause1134);
             			    	fromJoin59 = fromJoin();
             			    	state.followingStackPointer--;
 
@@ -2410,11 +2400,11 @@ public partial class HqlParser : Parser
             			    }
             			    break;
             			case 2 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:284:53: COMMA fromRange
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:285:53: COMMA fromRange
             			    {
-            			    	COMMA60=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_fromClause1136); 
+            			    	COMMA60=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_fromClause1138); 
             			    	 WeakKeywords(); 
-            			    	PushFollow(FOLLOW_fromRange_in_fromClause1141);
+            			    	PushFollow(FOLLOW_fromRange_in_fromClause1143);
             			    	fromRange61 = fromRange();
             			    	state.followingStackPointer--;
 
@@ -2465,7 +2455,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "fromJoin"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:290:1: fromJoin : ( ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )? | ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? ELEMENTS OPEN path CLOSE ( asAlias )? ( propertyFetch )? ( withClause )? );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:291:1: fromJoin : ( ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )? | ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? ELEMENTS OPEN path CLOSE ( asAlias )? ( propertyFetch )? ( withClause )? );
     public HqlParser.fromJoin_return fromJoin() // throws RecognitionException [1]
     {   
         HqlParser.fromJoin_return retval = new HqlParser.fromJoin_return();
@@ -2523,7 +2513,7 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:291:2: ( ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )? | ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? ELEMENTS OPEN path CLOSE ( asAlias )? ( propertyFetch )? ( withClause )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:292:2: ( ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )? | ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? ELEMENTS OPEN path CLOSE ( asAlias )? ( propertyFetch )? ( withClause )? )
             int alt30 = 2;
             switch ( input.LA(1) ) 
             {
@@ -2544,13 +2534,13 @@ public partial class HqlParser : Parser
                         	{
                             int LA30_6 = input.LA(5);
 
-                            if ( (LA30_6 == IDENT) )
-                            {
-                                alt30 = 1;
-                            }
-                            else if ( (LA30_6 == ELEMENTS) )
+                            if ( (LA30_6 == ELEMENTS) )
                             {
                                 alt30 = 2;
+                            }
+                            else if ( (LA30_6 == IDENT) )
+                            {
+                                alt30 = 1;
                             }
                             else 
                             {
@@ -2561,14 +2551,14 @@ public partial class HqlParser : Parser
                             }
                             }
                             break;
-                        case IDENT:
-                        	{
-                            alt30 = 1;
-                            }
-                            break;
                         case ELEMENTS:
                         	{
                             alt30 = 2;
+                            }
+                            break;
+                        case IDENT:
+                        	{
+                            alt30 = 1;
                             }
                             break;
                         	default:
@@ -2595,13 +2585,13 @@ public partial class HqlParser : Parser
                     	{
                         int LA30_6 = input.LA(4);
 
-                        if ( (LA30_6 == IDENT) )
-                        {
-                            alt30 = 1;
-                        }
-                        else if ( (LA30_6 == ELEMENTS) )
+                        if ( (LA30_6 == ELEMENTS) )
                         {
                             alt30 = 2;
+                        }
+                        else if ( (LA30_6 == IDENT) )
+                        {
+                            alt30 = 1;
                         }
                         else 
                         {
@@ -2612,14 +2602,14 @@ public partial class HqlParser : Parser
                         }
                         }
                         break;
-                    case IDENT:
-                    	{
-                        alt30 = 1;
-                        }
-                        break;
                     case ELEMENTS:
                     	{
                         alt30 = 2;
+                        }
+                        break;
+                    case IDENT:
+                    	{
+                        alt30 = 1;
                         }
                         break;
                     	default:
@@ -2651,13 +2641,13 @@ public partial class HqlParser : Parser
                     	{
                         int LA30_6 = input.LA(4);
 
-                        if ( (LA30_6 == IDENT) )
-                        {
-                            alt30 = 1;
-                        }
-                        else if ( (LA30_6 == ELEMENTS) )
+                        if ( (LA30_6 == ELEMENTS) )
                         {
                             alt30 = 2;
+                        }
+                        else if ( (LA30_6 == IDENT) )
+                        {
+                            alt30 = 1;
                         }
                         else 
                         {
@@ -2668,14 +2658,14 @@ public partial class HqlParser : Parser
                         }
                         }
                         break;
-                    case IDENT:
-                    	{
-                        alt30 = 1;
-                        }
-                        break;
                     case ELEMENTS:
                     	{
                         alt30 = 2;
+                        }
+                        break;
+                    case IDENT:
+                    	{
+                        alt30 = 1;
                         }
                         break;
                     	default:
@@ -2707,13 +2697,13 @@ public partial class HqlParser : Parser
                     	{
                         int LA30_6 = input.LA(4);
 
-                        if ( (LA30_6 == IDENT) )
-                        {
-                            alt30 = 1;
-                        }
-                        else if ( (LA30_6 == ELEMENTS) )
+                        if ( (LA30_6 == ELEMENTS) )
                         {
                             alt30 = 2;
+                        }
+                        else if ( (LA30_6 == IDENT) )
+                        {
+                            alt30 = 1;
                         }
                         else 
                         {
@@ -2724,14 +2714,14 @@ public partial class HqlParser : Parser
                         }
                         }
                         break;
-                    case IDENT:
-                    	{
-                        alt30 = 1;
-                        }
-                        break;
                     case ELEMENTS:
                     	{
                         alt30 = 2;
+                        }
+                        break;
+                    case IDENT:
+                    	{
+                        alt30 = 1;
                         }
                         break;
                     	default:
@@ -2759,13 +2749,13 @@ public partial class HqlParser : Parser
                 	{
                     int LA30_6 = input.LA(3);
 
-                    if ( (LA30_6 == IDENT) )
-                    {
-                        alt30 = 1;
-                    }
-                    else if ( (LA30_6 == ELEMENTS) )
+                    if ( (LA30_6 == ELEMENTS) )
                     {
                         alt30 = 2;
+                    }
+                    else if ( (LA30_6 == IDENT) )
+                    {
+                        alt30 = 1;
                     }
                     else 
                     {
@@ -2776,14 +2766,14 @@ public partial class HqlParser : Parser
                     }
                     }
                     break;
-                case IDENT:
-                	{
-                    alt30 = 1;
-                    }
-                    break;
                 case ELEMENTS:
                 	{
                     alt30 = 2;
+                    }
+                    break;
+                case IDENT:
+                	{
+                    alt30 = 1;
                     }
                     break;
                 	default:
@@ -2805,11 +2795,11 @@ public partial class HqlParser : Parser
             switch (alt30) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:291:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )?
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:292:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )?
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:291:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:292:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )?
                     	int alt19 = 4;
                     	switch ( input.LA(1) ) 
                     	{
@@ -2834,10 +2824,10 @@ public partial class HqlParser : Parser
                     	switch (alt19) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:291:6: ( ( LEFT | RIGHT ) ( OUTER )? )
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:292:6: ( ( LEFT | RIGHT ) ( OUTER )? )
                     	        {
-                    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:291:6: ( ( LEFT | RIGHT ) ( OUTER )? )
-                    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:291:8: ( LEFT | RIGHT ) ( OUTER )?
+                    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:292:6: ( ( LEFT | RIGHT ) ( OUTER )? )
+                    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:292:8: ( LEFT | RIGHT ) ( OUTER )?
                     	        	{
                     	        		set62 = (IToken)input.LT(1);
                     	        		if ( input.LA(1) == LEFT || input.LA(1) == RIGHT ) 
@@ -2852,7 +2842,7 @@ public partial class HqlParser : Parser
                     	        		    throw mse;
                     	        		}
 
-                    	        		// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:291:25: ( OUTER )?
+                    	        		// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:292:25: ( OUTER )?
                     	        		int alt18 = 2;
                     	        		int LA18_0 = input.LA(1);
 
@@ -2863,9 +2853,9 @@ public partial class HqlParser : Parser
                     	        		switch (alt18) 
                     	        		{
                     	        		    case 1 :
-                    	        		        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:291:26: OUTER
+                    	        		        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:292:26: OUTER
                     	        		        {
-                    	        		        	OUTER63=(IToken)Match(input,OUTER,FOLLOW_OUTER_in_fromJoin1173); 
+                    	        		        	OUTER63=(IToken)Match(input,OUTER,FOLLOW_OUTER_in_fromJoin1175); 
                     	        		        		OUTER63_tree = (IASTNode)adaptor.Create(OUTER63);
                     	        		        		adaptor.AddChild(root_0, OUTER63_tree);
 
@@ -2882,9 +2872,9 @@ public partial class HqlParser : Parser
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:291:38: FULL
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:292:38: FULL
                     	        {
-                    	        	FULL64=(IToken)Match(input,FULL,FOLLOW_FULL_in_fromJoin1181); 
+                    	        	FULL64=(IToken)Match(input,FULL,FOLLOW_FULL_in_fromJoin1183); 
                     	        		FULL64_tree = (IASTNode)adaptor.Create(FULL64);
                     	        		adaptor.AddChild(root_0, FULL64_tree);
 
@@ -2892,9 +2882,9 @@ public partial class HqlParser : Parser
                     	        }
                     	        break;
                     	    case 3 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:291:45: INNER
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:292:45: INNER
                     	        {
-                    	        	INNER65=(IToken)Match(input,INNER,FOLLOW_INNER_in_fromJoin1185); 
+                    	        	INNER65=(IToken)Match(input,INNER,FOLLOW_INNER_in_fromJoin1187); 
                     	        		INNER65_tree = (IASTNode)adaptor.Create(INNER65);
                     	        		adaptor.AddChild(root_0, INNER65_tree);
 
@@ -2904,11 +2894,11 @@ public partial class HqlParser : Parser
 
                     	}
 
-                    	JOIN66=(IToken)Match(input,JOIN,FOLLOW_JOIN_in_fromJoin1190); 
+                    	JOIN66=(IToken)Match(input,JOIN,FOLLOW_JOIN_in_fromJoin1192); 
                     		JOIN66_tree = (IASTNode)adaptor.Create(JOIN66);
                     		root_0 = (IASTNode)adaptor.BecomeRoot(JOIN66_tree, root_0);
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:291:60: ( FETCH )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:292:60: ( FETCH )?
                     	int alt20 = 2;
                     	int LA20_0 = input.LA(1);
 
@@ -2919,9 +2909,9 @@ public partial class HqlParser : Parser
                     	switch (alt20) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:291:61: FETCH
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:292:61: FETCH
                     	        {
-                    	        	FETCH67=(IToken)Match(input,FETCH,FOLLOW_FETCH_in_fromJoin1194); 
+                    	        	FETCH67=(IToken)Match(input,FETCH,FOLLOW_FETCH_in_fromJoin1196); 
                     	        		FETCH67_tree = (IASTNode)adaptor.Create(FETCH67);
                     	        		adaptor.AddChild(root_0, FETCH67_tree);
 
@@ -2931,12 +2921,12 @@ public partial class HqlParser : Parser
 
                     	}
 
-                    	PushFollow(FOLLOW_path_in_fromJoin1198);
+                    	PushFollow(FOLLOW_path_in_fromJoin1200);
                     	path68 = path();
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, path68.Tree);
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:291:74: ( asAlias )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:292:74: ( asAlias )?
                     	int alt21 = 2;
                     	int LA21_0 = input.LA(1);
 
@@ -2947,9 +2937,9 @@ public partial class HqlParser : Parser
                     	switch (alt21) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:291:75: asAlias
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:292:75: asAlias
                     	        {
-                    	        	PushFollow(FOLLOW_asAlias_in_fromJoin1201);
+                    	        	PushFollow(FOLLOW_asAlias_in_fromJoin1203);
                     	        	asAlias69 = asAlias();
                     	        	state.followingStackPointer--;
 
@@ -2960,7 +2950,7 @@ public partial class HqlParser : Parser
 
                     	}
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:291:85: ( propertyFetch )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:292:85: ( propertyFetch )?
                     	int alt22 = 2;
                     	int LA22_0 = input.LA(1);
 
@@ -2971,9 +2961,9 @@ public partial class HqlParser : Parser
                     	switch (alt22) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:291:86: propertyFetch
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:292:86: propertyFetch
                     	        {
-                    	        	PushFollow(FOLLOW_propertyFetch_in_fromJoin1206);
+                    	        	PushFollow(FOLLOW_propertyFetch_in_fromJoin1208);
                     	        	propertyFetch70 = propertyFetch();
                     	        	state.followingStackPointer--;
 
@@ -2984,7 +2974,7 @@ public partial class HqlParser : Parser
 
                     	}
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:291:102: ( withClause )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:292:102: ( withClause )?
                     	int alt23 = 2;
                     	int LA23_0 = input.LA(1);
 
@@ -2995,9 +2985,9 @@ public partial class HqlParser : Parser
                     	switch (alt23) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:291:103: withClause
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:292:103: withClause
                     	        {
-                    	        	PushFollow(FOLLOW_withClause_in_fromJoin1211);
+                    	        	PushFollow(FOLLOW_withClause_in_fromJoin1213);
                     	        	withClause71 = withClause();
                     	        	state.followingStackPointer--;
 
@@ -3012,11 +3002,11 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:292:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? ELEMENTS OPEN path CLOSE ( asAlias )? ( propertyFetch )? ( withClause )?
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:293:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? ELEMENTS OPEN path CLOSE ( asAlias )? ( propertyFetch )? ( withClause )?
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:292:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:293:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )?
                     	int alt25 = 4;
                     	switch ( input.LA(1) ) 
                     	{
@@ -3041,10 +3031,10 @@ public partial class HqlParser : Parser
                     	switch (alt25) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:292:6: ( ( LEFT | RIGHT ) ( OUTER )? )
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:293:6: ( ( LEFT | RIGHT ) ( OUTER )? )
                     	        {
-                    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:292:6: ( ( LEFT | RIGHT ) ( OUTER )? )
-                    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:292:8: ( LEFT | RIGHT ) ( OUTER )?
+                    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:293:6: ( ( LEFT | RIGHT ) ( OUTER )? )
+                    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:293:8: ( LEFT | RIGHT ) ( OUTER )?
                     	        	{
                     	        		set72 = (IToken)input.LT(1);
                     	        		if ( input.LA(1) == LEFT || input.LA(1) == RIGHT ) 
@@ -3059,7 +3049,7 @@ public partial class HqlParser : Parser
                     	        		    throw mse;
                     	        		}
 
-                    	        		// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:292:25: ( OUTER )?
+                    	        		// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:293:25: ( OUTER )?
                     	        		int alt24 = 2;
                     	        		int LA24_0 = input.LA(1);
 
@@ -3070,9 +3060,9 @@ public partial class HqlParser : Parser
                     	        		switch (alt24) 
                     	        		{
                     	        		    case 1 :
-                    	        		        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:292:26: OUTER
+                    	        		        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:293:26: OUTER
                     	        		        {
-                    	        		        	OUTER73=(IToken)Match(input,OUTER,FOLLOW_OUTER_in_fromJoin1233); 
+                    	        		        	OUTER73=(IToken)Match(input,OUTER,FOLLOW_OUTER_in_fromJoin1235); 
                     	        		        		OUTER73_tree = (IASTNode)adaptor.Create(OUTER73);
                     	        		        		adaptor.AddChild(root_0, OUTER73_tree);
 
@@ -3089,9 +3079,9 @@ public partial class HqlParser : Parser
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:292:38: FULL
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:293:38: FULL
                     	        {
-                    	        	FULL74=(IToken)Match(input,FULL,FOLLOW_FULL_in_fromJoin1241); 
+                    	        	FULL74=(IToken)Match(input,FULL,FOLLOW_FULL_in_fromJoin1243); 
                     	        		FULL74_tree = (IASTNode)adaptor.Create(FULL74);
                     	        		adaptor.AddChild(root_0, FULL74_tree);
 
@@ -3099,9 +3089,9 @@ public partial class HqlParser : Parser
                     	        }
                     	        break;
                     	    case 3 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:292:45: INNER
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:293:45: INNER
                     	        {
-                    	        	INNER75=(IToken)Match(input,INNER,FOLLOW_INNER_in_fromJoin1245); 
+                    	        	INNER75=(IToken)Match(input,INNER,FOLLOW_INNER_in_fromJoin1247); 
                     	        		INNER75_tree = (IASTNode)adaptor.Create(INNER75);
                     	        		adaptor.AddChild(root_0, INNER75_tree);
 
@@ -3111,11 +3101,11 @@ public partial class HqlParser : Parser
 
                     	}
 
-                    	JOIN76=(IToken)Match(input,JOIN,FOLLOW_JOIN_in_fromJoin1250); 
+                    	JOIN76=(IToken)Match(input,JOIN,FOLLOW_JOIN_in_fromJoin1252); 
                     		JOIN76_tree = (IASTNode)adaptor.Create(JOIN76);
                     		root_0 = (IASTNode)adaptor.BecomeRoot(JOIN76_tree, root_0);
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:292:60: ( FETCH )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:293:60: ( FETCH )?
                     	int alt26 = 2;
                     	int LA26_0 = input.LA(1);
 
@@ -3126,9 +3116,9 @@ public partial class HqlParser : Parser
                     	switch (alt26) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:292:61: FETCH
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:293:61: FETCH
                     	        {
-                    	        	FETCH77=(IToken)Match(input,FETCH,FOLLOW_FETCH_in_fromJoin1254); 
+                    	        	FETCH77=(IToken)Match(input,FETCH,FOLLOW_FETCH_in_fromJoin1256); 
                     	        		FETCH77_tree = (IASTNode)adaptor.Create(FETCH77);
                     	        		adaptor.AddChild(root_0, FETCH77_tree);
 
@@ -3138,15 +3128,15 @@ public partial class HqlParser : Parser
 
                     	}
 
-                    	ELEMENTS78=(IToken)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_fromJoin1258); 
-                    	OPEN79=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_fromJoin1261); 
-                    	PushFollow(FOLLOW_path_in_fromJoin1264);
+                    	ELEMENTS78=(IToken)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_fromJoin1260); 
+                    	OPEN79=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_fromJoin1263); 
+                    	PushFollow(FOLLOW_path_in_fromJoin1266);
                     	path80 = path();
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, path80.Tree);
-                    	CLOSE81=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_fromJoin1266); 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:292:97: ( asAlias )?
+                    	CLOSE81=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_fromJoin1268); 
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:293:97: ( asAlias )?
                     	int alt27 = 2;
                     	int LA27_0 = input.LA(1);
 
@@ -3157,9 +3147,9 @@ public partial class HqlParser : Parser
                     	switch (alt27) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:292:98: asAlias
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:293:98: asAlias
                     	        {
-                    	        	PushFollow(FOLLOW_asAlias_in_fromJoin1270);
+                    	        	PushFollow(FOLLOW_asAlias_in_fromJoin1272);
                     	        	asAlias82 = asAlias();
                     	        	state.followingStackPointer--;
 
@@ -3170,7 +3160,7 @@ public partial class HqlParser : Parser
 
                     	}
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:292:108: ( propertyFetch )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:293:108: ( propertyFetch )?
                     	int alt28 = 2;
                     	int LA28_0 = input.LA(1);
 
@@ -3181,9 +3171,9 @@ public partial class HqlParser : Parser
                     	switch (alt28) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:292:109: propertyFetch
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:293:109: propertyFetch
                     	        {
-                    	        	PushFollow(FOLLOW_propertyFetch_in_fromJoin1275);
+                    	        	PushFollow(FOLLOW_propertyFetch_in_fromJoin1277);
                     	        	propertyFetch83 = propertyFetch();
                     	        	state.followingStackPointer--;
 
@@ -3194,7 +3184,7 @@ public partial class HqlParser : Parser
 
                     	}
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:292:125: ( withClause )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:293:125: ( withClause )?
                     	int alt29 = 2;
                     	int LA29_0 = input.LA(1);
 
@@ -3205,9 +3195,9 @@ public partial class HqlParser : Parser
                     	switch (alt29) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:292:126: withClause
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:293:126: withClause
                     	        {
-                    	        	PushFollow(FOLLOW_withClause_in_fromJoin1280);
+                    	        	PushFollow(FOLLOW_withClause_in_fromJoin1282);
                     	        	withClause84 = withClause();
                     	        	state.followingStackPointer--;
 
@@ -3254,7 +3244,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "withClause"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:295:1: withClause : WITH logicalExpression ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:296:1: withClause : WITH logicalExpression ;
     public HqlParser.withClause_return withClause() // throws RecognitionException [1]
     {   
         HqlParser.withClause_return retval = new HqlParser.withClause_return();
@@ -3270,16 +3260,16 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:296:2: ( WITH logicalExpression )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:296:4: WITH logicalExpression
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:297:2: ( WITH logicalExpression )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:297:4: WITH logicalExpression
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	WITH85=(IToken)Match(input,WITH,FOLLOW_WITH_in_withClause1293); 
+            	WITH85=(IToken)Match(input,WITH,FOLLOW_WITH_in_withClause1295); 
             		WITH85_tree = (IASTNode)adaptor.Create(WITH85);
             		root_0 = (IASTNode)adaptor.BecomeRoot(WITH85_tree, root_0);
 
-            	PushFollow(FOLLOW_logicalExpression_in_withClause1296);
+            	PushFollow(FOLLOW_logicalExpression_in_withClause1298);
             	logicalExpression86 = logicalExpression();
             	state.followingStackPointer--;
 
@@ -3318,7 +3308,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "fromRange"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:299:1: fromRange : ( fromClassOrOuterQueryPath | inClassDeclaration | inCollectionDeclaration | inCollectionElementsDeclaration );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:300:1: fromRange : ( fromClassOrOuterQueryPath | inClassDeclaration | inCollectionDeclaration | inCollectionElementsDeclaration );
     public HqlParser.fromRange_return fromRange() // throws RecognitionException [1]
     {   
         HqlParser.fromRange_return retval = new HqlParser.fromRange_return();
@@ -3338,7 +3328,7 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:300:2: ( fromClassOrOuterQueryPath | inClassDeclaration | inCollectionDeclaration | inCollectionElementsDeclaration )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:301:2: ( fromClassOrOuterQueryPath | inClassDeclaration | inCollectionDeclaration | inCollectionElementsDeclaration )
             int alt31 = 4;
             switch ( input.LA(1) ) 
             {
@@ -3346,29 +3336,29 @@ public partial class HqlParser : Parser
             	{
                 int LA31_1 = input.LA(2);
 
-                if ( (LA31_1 == IN) )
+                if ( (LA31_1 == EOF || LA31_1 == AS || LA31_1 == DOT || LA31_1 == FETCH || (LA31_1 >= FULL && LA31_1 <= GROUP) || LA31_1 == INNER || (LA31_1 >= JOIN && LA31_1 <= LEFT) || LA31_1 == ORDER || LA31_1 == RIGHT || LA31_1 == UNION || LA31_1 == WHERE || LA31_1 == COMMA || LA31_1 == CLOSE || LA31_1 == IDENT) )
                 {
-                    int LA31_4 = input.LA(3);
+                    alt31 = 1;
+                }
+                else if ( (LA31_1 == IN) )
+                {
+                    int LA31_5 = input.LA(3);
 
-                    if ( (LA31_4 == ELEMENTS) )
+                    if ( (LA31_5 == ELEMENTS) )
                     {
                         alt31 = 4;
                     }
-                    else if ( (LA31_4 == CLASS || LA31_4 == IDENT) )
+                    else if ( (LA31_5 == CLASS || LA31_5 == IDENT) )
                     {
                         alt31 = 2;
                     }
                     else 
                     {
-                        NoViableAltException nvae_d31s4 =
-                            new NoViableAltException("", 31, 4, input);
+                        NoViableAltException nvae_d31s5 =
+                            new NoViableAltException("", 31, 5, input);
 
-                        throw nvae_d31s4;
+                        throw nvae_d31s5;
                     }
-                }
-                else if ( (LA31_1 == EOF || LA31_1 == AS || LA31_1 == DOT || LA31_1 == FETCH || (LA31_1 >= FULL && LA31_1 <= GROUP) || LA31_1 == INNER || (LA31_1 >= JOIN && LA31_1 <= LEFT) || LA31_1 == ORDER || LA31_1 == RIGHT || LA31_1 == UNION || LA31_1 == WHERE || LA31_1 == COMMA || LA31_1 == CLOSE || LA31_1 == IDENT) )
-                {
-                    alt31 = 1;
                 }
                 else 
                 {
@@ -3399,11 +3389,11 @@ public partial class HqlParser : Parser
             switch (alt31) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:300:4: fromClassOrOuterQueryPath
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:301:4: fromClassOrOuterQueryPath
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_fromClassOrOuterQueryPath_in_fromRange1307);
+                    	PushFollow(FOLLOW_fromClassOrOuterQueryPath_in_fromRange1309);
                     	fromClassOrOuterQueryPath87 = fromClassOrOuterQueryPath();
                     	state.followingStackPointer--;
 
@@ -3412,11 +3402,11 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:301:4: inClassDeclaration
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:302:4: inClassDeclaration
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_inClassDeclaration_in_fromRange1312);
+                    	PushFollow(FOLLOW_inClassDeclaration_in_fromRange1314);
                     	inClassDeclaration88 = inClassDeclaration();
                     	state.followingStackPointer--;
 
@@ -3425,11 +3415,11 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:302:4: inCollectionDeclaration
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:303:4: inCollectionDeclaration
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_inCollectionDeclaration_in_fromRange1317);
+                    	PushFollow(FOLLOW_inCollectionDeclaration_in_fromRange1319);
                     	inCollectionDeclaration89 = inCollectionDeclaration();
                     	state.followingStackPointer--;
 
@@ -3438,11 +3428,11 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:303:4: inCollectionElementsDeclaration
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:304:4: inCollectionElementsDeclaration
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_inCollectionElementsDeclaration_in_fromRange1322);
+                    	PushFollow(FOLLOW_inCollectionElementsDeclaration_in_fromRange1324);
                     	inCollectionElementsDeclaration90 = inCollectionElementsDeclaration();
                     	state.followingStackPointer--;
 
@@ -3483,7 +3473,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "fromClassOrOuterQueryPath"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:306:1: fromClassOrOuterQueryPath : path ( asAlias )? ( propertyFetch )? -> ^( RANGE path ( asAlias )? ( propertyFetch )? ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:307:1: fromClassOrOuterQueryPath : path ( asAlias )? ( propertyFetch )? -> ^( RANGE path ( asAlias )? ( propertyFetch )? ) ;
     public HqlParser.fromClassOrOuterQueryPath_return fromClassOrOuterQueryPath() // throws RecognitionException [1]
     {   
         HqlParser.fromClassOrOuterQueryPath_return retval = new HqlParser.fromClassOrOuterQueryPath_return();
@@ -3498,21 +3488,21 @@ public partial class HqlParser : Parser
         HqlParser.propertyFetch_return propertyFetch93 = default(HqlParser.propertyFetch_return);
 
 
-        RewriteRuleSubtreeStream stream_path = new RewriteRuleSubtreeStream(adaptor,"rule path");
         RewriteRuleSubtreeStream stream_propertyFetch = new RewriteRuleSubtreeStream(adaptor,"rule propertyFetch");
+        RewriteRuleSubtreeStream stream_path = new RewriteRuleSubtreeStream(adaptor,"rule path");
         RewriteRuleSubtreeStream stream_asAlias = new RewriteRuleSubtreeStream(adaptor,"rule asAlias");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:307:2: ( path ( asAlias )? ( propertyFetch )? -> ^( RANGE path ( asAlias )? ( propertyFetch )? ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:307:4: path ( asAlias )? ( propertyFetch )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:308:2: ( path ( asAlias )? ( propertyFetch )? -> ^( RANGE path ( asAlias )? ( propertyFetch )? ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:308:4: path ( asAlias )? ( propertyFetch )?
             {
-            	PushFollow(FOLLOW_path_in_fromClassOrOuterQueryPath1334);
+            	PushFollow(FOLLOW_path_in_fromClassOrOuterQueryPath1336);
             	path91 = path();
             	state.followingStackPointer--;
 
             	stream_path.Add(path91.Tree);
             	 WeakKeywords(); 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:307:29: ( asAlias )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:308:29: ( asAlias )?
             	int alt32 = 2;
             	int LA32_0 = input.LA(1);
 
@@ -3523,9 +3513,9 @@ public partial class HqlParser : Parser
             	switch (alt32) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:307:30: asAlias
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:308:30: asAlias
             	        {
-            	        	PushFollow(FOLLOW_asAlias_in_fromClassOrOuterQueryPath1339);
+            	        	PushFollow(FOLLOW_asAlias_in_fromClassOrOuterQueryPath1341);
             	        	asAlias92 = asAlias();
             	        	state.followingStackPointer--;
 
@@ -3536,7 +3526,7 @@ public partial class HqlParser : Parser
 
             	}
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:307:40: ( propertyFetch )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:308:40: ( propertyFetch )?
             	int alt33 = 2;
             	int LA33_0 = input.LA(1);
 
@@ -3547,9 +3537,9 @@ public partial class HqlParser : Parser
             	switch (alt33) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:307:41: propertyFetch
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:308:41: propertyFetch
             	        {
-            	        	PushFollow(FOLLOW_propertyFetch_in_fromClassOrOuterQueryPath1344);
+            	        	PushFollow(FOLLOW_propertyFetch_in_fromClassOrOuterQueryPath1346);
             	        	propertyFetch93 = propertyFetch();
             	        	state.followingStackPointer--;
 
@@ -3573,22 +3563,22 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 308:3: -> ^( RANGE path ( asAlias )? ( propertyFetch )? )
+            	// 309:3: -> ^( RANGE path ( asAlias )? ( propertyFetch )? )
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:308:6: ^( RANGE path ( asAlias )? ( propertyFetch )? )
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:309:6: ^( RANGE path ( asAlias )? ( propertyFetch )? )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(RANGE, "RANGE"), root_1);
 
             	    adaptor.AddChild(root_1, stream_path.NextTree());
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:308:19: ( asAlias )?
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:309:19: ( asAlias )?
             	    if ( stream_asAlias.HasNext() )
             	    {
             	        adaptor.AddChild(root_1, stream_asAlias.NextTree());
 
             	    }
             	    stream_asAlias.Reset();
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:308:28: ( propertyFetch )?
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:309:28: ( propertyFetch )?
             	    if ( stream_propertyFetch.HasNext() )
             	    {
             	        adaptor.AddChild(root_1, stream_propertyFetch.NextTree());
@@ -3635,7 +3625,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "inClassDeclaration"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:311:1: inClassDeclaration : alias IN ( CLASS )? path -> ^( RANGE path alias ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:312:1: inClassDeclaration : alias IN ( CLASS )? path -> ^( RANGE path alias ) ;
     public HqlParser.inClassDeclaration_return inClassDeclaration() // throws RecognitionException [1]
     {   
         HqlParser.inClassDeclaration_return retval = new HqlParser.inClassDeclaration_return();
@@ -3654,22 +3644,22 @@ public partial class HqlParser : Parser
         IASTNode CLASS96_tree=null;
         RewriteRuleTokenStream stream_CLASS = new RewriteRuleTokenStream(adaptor,"token CLASS");
         RewriteRuleTokenStream stream_IN = new RewriteRuleTokenStream(adaptor,"token IN");
-        RewriteRuleSubtreeStream stream_path = new RewriteRuleSubtreeStream(adaptor,"rule path");
         RewriteRuleSubtreeStream stream_alias = new RewriteRuleSubtreeStream(adaptor,"rule alias");
+        RewriteRuleSubtreeStream stream_path = new RewriteRuleSubtreeStream(adaptor,"rule path");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:312:2: ( alias IN ( CLASS )? path -> ^( RANGE path alias ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:312:4: alias IN ( CLASS )? path
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:313:2: ( alias IN ( CLASS )? path -> ^( RANGE path alias ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:313:4: alias IN ( CLASS )? path
             {
-            	PushFollow(FOLLOW_alias_in_inClassDeclaration1374);
+            	PushFollow(FOLLOW_alias_in_inClassDeclaration1376);
             	alias94 = alias();
             	state.followingStackPointer--;
 
             	stream_alias.Add(alias94.Tree);
-            	IN95=(IToken)Match(input,IN,FOLLOW_IN_in_inClassDeclaration1376);  
+            	IN95=(IToken)Match(input,IN,FOLLOW_IN_in_inClassDeclaration1378);  
             	stream_IN.Add(IN95);
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:312:13: ( CLASS )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:313:13: ( CLASS )?
             	int alt34 = 2;
             	int LA34_0 = input.LA(1);
 
@@ -3680,9 +3670,9 @@ public partial class HqlParser : Parser
             	switch (alt34) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:312:13: CLASS
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:313:13: CLASS
             	        {
-            	        	CLASS96=(IToken)Match(input,CLASS,FOLLOW_CLASS_in_inClassDeclaration1378);  
+            	        	CLASS96=(IToken)Match(input,CLASS,FOLLOW_CLASS_in_inClassDeclaration1380);  
             	        	stream_CLASS.Add(CLASS96);
 
 
@@ -3691,7 +3681,7 @@ public partial class HqlParser : Parser
 
             	}
 
-            	PushFollow(FOLLOW_path_in_inClassDeclaration1381);
+            	PushFollow(FOLLOW_path_in_inClassDeclaration1383);
             	path97 = path();
             	state.followingStackPointer--;
 
@@ -3709,9 +3699,9 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 313:3: -> ^( RANGE path alias )
+            	// 314:3: -> ^( RANGE path alias )
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:313:6: ^( RANGE path alias )
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:314:6: ^( RANGE path alias )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(RANGE, "RANGE"), root_1);
@@ -3758,7 +3748,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "inCollectionDeclaration"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:316:1: inCollectionDeclaration : IN OPEN path CLOSE alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:317:1: inCollectionDeclaration : IN OPEN path CLOSE alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) ;
     public HqlParser.inCollectionDeclaration_return inCollectionDeclaration() // throws RecognitionException [1]
     {   
         HqlParser.inCollectionDeclaration_return retval = new HqlParser.inCollectionDeclaration_return();
@@ -3777,31 +3767,31 @@ public partial class HqlParser : Parser
         IASTNode IN98_tree=null;
         IASTNode OPEN99_tree=null;
         IASTNode CLOSE101_tree=null;
-        RewriteRuleTokenStream stream_CLOSE = new RewriteRuleTokenStream(adaptor,"token CLOSE");
         RewriteRuleTokenStream stream_OPEN = new RewriteRuleTokenStream(adaptor,"token OPEN");
         RewriteRuleTokenStream stream_IN = new RewriteRuleTokenStream(adaptor,"token IN");
-        RewriteRuleSubtreeStream stream_path = new RewriteRuleSubtreeStream(adaptor,"rule path");
+        RewriteRuleTokenStream stream_CLOSE = new RewriteRuleTokenStream(adaptor,"token CLOSE");
         RewriteRuleSubtreeStream stream_alias = new RewriteRuleSubtreeStream(adaptor,"rule alias");
+        RewriteRuleSubtreeStream stream_path = new RewriteRuleSubtreeStream(adaptor,"rule path");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:317:5: ( IN OPEN path CLOSE alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:317:7: IN OPEN path CLOSE alias
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:318:5: ( IN OPEN path CLOSE alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:318:7: IN OPEN path CLOSE alias
             {
-            	IN98=(IToken)Match(input,IN,FOLLOW_IN_in_inCollectionDeclaration1409);  
+            	IN98=(IToken)Match(input,IN,FOLLOW_IN_in_inCollectionDeclaration1411);  
             	stream_IN.Add(IN98);
 
-            	OPEN99=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_inCollectionDeclaration1411);  
+            	OPEN99=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_inCollectionDeclaration1413);  
             	stream_OPEN.Add(OPEN99);
 
-            	PushFollow(FOLLOW_path_in_inCollectionDeclaration1413);
+            	PushFollow(FOLLOW_path_in_inCollectionDeclaration1415);
             	path100 = path();
             	state.followingStackPointer--;
 
             	stream_path.Add(path100.Tree);
-            	CLOSE101=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_inCollectionDeclaration1415);  
+            	CLOSE101=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_inCollectionDeclaration1417);  
             	stream_CLOSE.Add(CLOSE101);
 
-            	PushFollow(FOLLOW_alias_in_inCollectionDeclaration1417);
+            	PushFollow(FOLLOW_alias_in_inCollectionDeclaration1419);
             	alias102 = alias();
             	state.followingStackPointer--;
 
@@ -3819,9 +3809,9 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 318:6: -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
+            	// 319:6: -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:318:9: ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:319:9: ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(JOIN, "join"), root_1);
@@ -3869,7 +3859,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "inCollectionElementsDeclaration"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:321:1: inCollectionElementsDeclaration : ( alias IN ELEMENTS OPEN path CLOSE -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) | ELEMENTS OPEN path CLOSE AS alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:322:1: inCollectionElementsDeclaration : ( alias IN ELEMENTS OPEN path CLOSE -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) | ELEMENTS OPEN path CLOSE AS alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) );
     public HqlParser.inCollectionElementsDeclaration_return inCollectionElementsDeclaration() // throws RecognitionException [1]
     {   
         HqlParser.inCollectionElementsDeclaration_return retval = new HqlParser.inCollectionElementsDeclaration_return();
@@ -3902,16 +3892,16 @@ public partial class HqlParser : Parser
         IASTNode OPEN110_tree=null;
         IASTNode CLOSE112_tree=null;
         IASTNode AS113_tree=null;
+        RewriteRuleTokenStream stream_OPEN = new RewriteRuleTokenStream(adaptor,"token OPEN");
+        RewriteRuleTokenStream stream_AS = new RewriteRuleTokenStream(adaptor,"token AS");
+        RewriteRuleTokenStream stream_IN = new RewriteRuleTokenStream(adaptor,"token IN");
         RewriteRuleTokenStream stream_CLOSE = new RewriteRuleTokenStream(adaptor,"token CLOSE");
         RewriteRuleTokenStream stream_ELEMENTS = new RewriteRuleTokenStream(adaptor,"token ELEMENTS");
-        RewriteRuleTokenStream stream_AS = new RewriteRuleTokenStream(adaptor,"token AS");
-        RewriteRuleTokenStream stream_OPEN = new RewriteRuleTokenStream(adaptor,"token OPEN");
-        RewriteRuleTokenStream stream_IN = new RewriteRuleTokenStream(adaptor,"token IN");
-        RewriteRuleSubtreeStream stream_path = new RewriteRuleSubtreeStream(adaptor,"rule path");
         RewriteRuleSubtreeStream stream_alias = new RewriteRuleSubtreeStream(adaptor,"rule alias");
+        RewriteRuleSubtreeStream stream_path = new RewriteRuleSubtreeStream(adaptor,"rule path");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:322:2: ( alias IN ELEMENTS OPEN path CLOSE -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) | ELEMENTS OPEN path CLOSE AS alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:323:2: ( alias IN ELEMENTS OPEN path CLOSE -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) | ELEMENTS OPEN path CLOSE AS alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) )
             int alt35 = 2;
             int LA35_0 = input.LA(1);
 
@@ -3933,28 +3923,28 @@ public partial class HqlParser : Parser
             switch (alt35) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:322:4: alias IN ELEMENTS OPEN path CLOSE
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:323:4: alias IN ELEMENTS OPEN path CLOSE
                     {
-                    	PushFollow(FOLLOW_alias_in_inCollectionElementsDeclaration1451);
+                    	PushFollow(FOLLOW_alias_in_inCollectionElementsDeclaration1453);
                     	alias103 = alias();
                     	state.followingStackPointer--;
 
                     	stream_alias.Add(alias103.Tree);
-                    	IN104=(IToken)Match(input,IN,FOLLOW_IN_in_inCollectionElementsDeclaration1453);  
+                    	IN104=(IToken)Match(input,IN,FOLLOW_IN_in_inCollectionElementsDeclaration1455);  
                     	stream_IN.Add(IN104);
 
-                    	ELEMENTS105=(IToken)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_inCollectionElementsDeclaration1455);  
+                    	ELEMENTS105=(IToken)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_inCollectionElementsDeclaration1457);  
                     	stream_ELEMENTS.Add(ELEMENTS105);
 
-                    	OPEN106=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_inCollectionElementsDeclaration1457);  
+                    	OPEN106=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_inCollectionElementsDeclaration1459);  
                     	stream_OPEN.Add(OPEN106);
 
-                    	PushFollow(FOLLOW_path_in_inCollectionElementsDeclaration1459);
+                    	PushFollow(FOLLOW_path_in_inCollectionElementsDeclaration1461);
                     	path107 = path();
                     	state.followingStackPointer--;
 
                     	stream_path.Add(path107.Tree);
-                    	CLOSE108=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_inCollectionElementsDeclaration1461);  
+                    	CLOSE108=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_inCollectionElementsDeclaration1463);  
                     	stream_CLOSE.Add(CLOSE108);
 
 
@@ -3970,9 +3960,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 323:3: -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
+                    	// 324:3: -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:323:6: ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:324:6: ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(JOIN, "join"), root_1);
@@ -3990,26 +3980,26 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:324:4: ELEMENTS OPEN path CLOSE AS alias
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:325:4: ELEMENTS OPEN path CLOSE AS alias
                     {
-                    	ELEMENTS109=(IToken)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_inCollectionElementsDeclaration1483);  
+                    	ELEMENTS109=(IToken)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_inCollectionElementsDeclaration1485);  
                     	stream_ELEMENTS.Add(ELEMENTS109);
 
-                    	OPEN110=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_inCollectionElementsDeclaration1485);  
+                    	OPEN110=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_inCollectionElementsDeclaration1487);  
                     	stream_OPEN.Add(OPEN110);
 
-                    	PushFollow(FOLLOW_path_in_inCollectionElementsDeclaration1487);
+                    	PushFollow(FOLLOW_path_in_inCollectionElementsDeclaration1489);
                     	path111 = path();
                     	state.followingStackPointer--;
 
                     	stream_path.Add(path111.Tree);
-                    	CLOSE112=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_inCollectionElementsDeclaration1489);  
+                    	CLOSE112=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_inCollectionElementsDeclaration1491);  
                     	stream_CLOSE.Add(CLOSE112);
 
-                    	AS113=(IToken)Match(input,AS,FOLLOW_AS_in_inCollectionElementsDeclaration1491);  
+                    	AS113=(IToken)Match(input,AS,FOLLOW_AS_in_inCollectionElementsDeclaration1493);  
                     	stream_AS.Add(AS113);
 
-                    	PushFollow(FOLLOW_alias_in_inCollectionElementsDeclaration1493);
+                    	PushFollow(FOLLOW_alias_in_inCollectionElementsDeclaration1495);
                     	alias114 = alias();
                     	state.followingStackPointer--;
 
@@ -4017,7 +4007,7 @@ public partial class HqlParser : Parser
 
 
                     	// AST REWRITE
-                    	// elements:          alias, path
+                    	// elements:          path, alias
                     	// token labels:      
                     	// rule labels:       retval
                     	// token list labels: 
@@ -4027,9 +4017,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 325:3: -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
+                    	// 326:3: -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:325:6: ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:326:6: ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(JOIN, "join"), root_1);
@@ -4079,7 +4069,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "asAlias"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:329:1: asAlias : ( AS )? alias ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:330:1: asAlias : ( AS )? alias ;
     public HqlParser.asAlias_return asAlias() // throws RecognitionException [1]
     {   
         HqlParser.asAlias_return retval = new HqlParser.asAlias_return();
@@ -4095,12 +4085,12 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:330:2: ( ( AS )? alias )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:330:4: ( AS )? alias
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:331:2: ( ( AS )? alias )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:331:4: ( AS )? alias
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:330:4: ( AS )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:331:4: ( AS )?
             	int alt36 = 2;
             	int LA36_0 = input.LA(1);
 
@@ -4111,16 +4101,16 @@ public partial class HqlParser : Parser
             	switch (alt36) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:330:5: AS
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:331:5: AS
             	        {
-            	        	AS115=(IToken)Match(input,AS,FOLLOW_AS_in_asAlias1525); 
+            	        	AS115=(IToken)Match(input,AS,FOLLOW_AS_in_asAlias1527); 
 
             	        }
             	        break;
 
             	}
 
-            	PushFollow(FOLLOW_alias_in_asAlias1530);
+            	PushFollow(FOLLOW_alias_in_asAlias1532);
             	alias116 = alias();
             	state.followingStackPointer--;
 
@@ -4159,7 +4149,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "alias"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:332:1: alias : i= identifier -> ^( ALIAS[$i.start] ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:333:1: alias : i= identifier -> ^( ALIAS[$i.start] ) ;
     public HqlParser.alias_return alias() // throws RecognitionException [1]
     {   
         HqlParser.alias_return retval = new HqlParser.alias_return();
@@ -4173,10 +4163,10 @@ public partial class HqlParser : Parser
         RewriteRuleSubtreeStream stream_identifier = new RewriteRuleSubtreeStream(adaptor,"rule identifier");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:333:2: (i= identifier -> ^( ALIAS[$i.start] ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:333:4: i= identifier
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:334:2: (i= identifier -> ^( ALIAS[$i.start] ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:334:4: i= identifier
             {
-            	PushFollow(FOLLOW_identifier_in_alias1542);
+            	PushFollow(FOLLOW_identifier_in_alias1544);
             	i = identifier();
             	state.followingStackPointer--;
 
@@ -4194,9 +4184,9 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 334:2: -> ^( ALIAS[$i.start] )
+            	// 335:2: -> ^( ALIAS[$i.start] )
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:334:5: ^( ALIAS[$i.start] )
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:335:5: ^( ALIAS[$i.start] )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(ALIAS, ((i != null) ? ((IToken)i.Start) : null)), root_1);
@@ -4240,7 +4230,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "propertyFetch"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:337:1: propertyFetch : FETCH ALL PROPERTIES ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:338:1: propertyFetch : FETCH ALL PROPERTIES ;
     public HqlParser.propertyFetch_return propertyFetch() // throws RecognitionException [1]
     {   
         HqlParser.propertyFetch_return retval = new HqlParser.propertyFetch_return();
@@ -4258,17 +4248,17 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:338:2: ( FETCH ALL PROPERTIES )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:338:4: FETCH ALL PROPERTIES
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:339:2: ( FETCH ALL PROPERTIES )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:339:4: FETCH ALL PROPERTIES
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	FETCH117=(IToken)Match(input,FETCH,FOLLOW_FETCH_in_propertyFetch1561); 
+            	FETCH117=(IToken)Match(input,FETCH,FOLLOW_FETCH_in_propertyFetch1563); 
             		FETCH117_tree = (IASTNode)adaptor.Create(FETCH117);
             		adaptor.AddChild(root_0, FETCH117_tree);
 
-            	ALL118=(IToken)Match(input,ALL,FOLLOW_ALL_in_propertyFetch1563); 
-            	PROPERTIES119=(IToken)Match(input,PROPERTIES,FOLLOW_PROPERTIES_in_propertyFetch1566); 
+            	ALL118=(IToken)Match(input,ALL,FOLLOW_ALL_in_propertyFetch1565); 
+            	PROPERTIES119=(IToken)Match(input,PROPERTIES,FOLLOW_PROPERTIES_in_propertyFetch1568); 
 
             }
 
@@ -4303,7 +4293,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "groupByClause"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:344:1: groupByClause : GROUP 'by' expression ( COMMA expression )* ( havingClause )? ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:345:1: groupByClause : GROUP 'by' expression ( COMMA expression )* ( havingClause )? ;
     public HqlParser.groupByClause_return groupByClause() // throws RecognitionException [1]
     {   
         HqlParser.groupByClause_return retval = new HqlParser.groupByClause_return();
@@ -4327,22 +4317,22 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:345:2: ( GROUP 'by' expression ( COMMA expression )* ( havingClause )? )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:345:4: GROUP 'by' expression ( COMMA expression )* ( havingClause )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:346:2: ( GROUP 'by' expression ( COMMA expression )* ( havingClause )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:346:4: GROUP 'by' expression ( COMMA expression )* ( havingClause )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	GROUP120=(IToken)Match(input,GROUP,FOLLOW_GROUP_in_groupByClause1581); 
+            	GROUP120=(IToken)Match(input,GROUP,FOLLOW_GROUP_in_groupByClause1583); 
             		GROUP120_tree = (IASTNode)adaptor.Create(GROUP120);
             		root_0 = (IASTNode)adaptor.BecomeRoot(GROUP120_tree, root_0);
 
-            	string_literal121=(IToken)Match(input,LITERAL_by,FOLLOW_LITERAL_by_in_groupByClause1587); 
-            	PushFollow(FOLLOW_expression_in_groupByClause1590);
+            	string_literal121=(IToken)Match(input,LITERAL_by,FOLLOW_LITERAL_by_in_groupByClause1589); 
+            	PushFollow(FOLLOW_expression_in_groupByClause1592);
             	expression122 = expression();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, expression122.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:346:20: ( COMMA expression )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:347:20: ( COMMA expression )*
             	do 
             	{
             	    int alt37 = 2;
@@ -4357,10 +4347,10 @@ public partial class HqlParser : Parser
             	    switch (alt37) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:346:22: COMMA expression
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:347:22: COMMA expression
             			    {
-            			    	COMMA123=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_groupByClause1594); 
-            			    	PushFollow(FOLLOW_expression_in_groupByClause1597);
+            			    	COMMA123=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_groupByClause1596); 
+            			    	PushFollow(FOLLOW_expression_in_groupByClause1599);
             			    	expression124 = expression();
             			    	state.followingStackPointer--;
 
@@ -4377,7 +4367,7 @@ public partial class HqlParser : Parser
             	loop37:
             		;	// Stops C# compiler whining that label 'loop37' has no statements
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:347:3: ( havingClause )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:348:3: ( havingClause )?
             	int alt38 = 2;
             	int LA38_0 = input.LA(1);
 
@@ -4388,9 +4378,9 @@ public partial class HqlParser : Parser
             	switch (alt38) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:347:4: havingClause
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:348:4: havingClause
             	        {
-            	        	PushFollow(FOLLOW_havingClause_in_groupByClause1605);
+            	        	PushFollow(FOLLOW_havingClause_in_groupByClause1607);
             	        	havingClause125 = havingClause();
             	        	state.followingStackPointer--;
 
@@ -4435,7 +4425,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "orderByClause"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:353:1: orderByClause : ORDER 'by' orderElement ( COMMA orderElement )* ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:354:1: orderByClause : ORDER 'by' orderElement ( COMMA orderElement )* ;
     public HqlParser.orderByClause_return orderByClause() // throws RecognitionException [1]
     {   
         HqlParser.orderByClause_return retval = new HqlParser.orderByClause_return();
@@ -4457,22 +4447,22 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:354:2: ( ORDER 'by' orderElement ( COMMA orderElement )* )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:354:4: ORDER 'by' orderElement ( COMMA orderElement )*
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:355:2: ( ORDER 'by' orderElement ( COMMA orderElement )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:355:4: ORDER 'by' orderElement ( COMMA orderElement )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	ORDER126=(IToken)Match(input,ORDER,FOLLOW_ORDER_in_orderByClause1621); 
+            	ORDER126=(IToken)Match(input,ORDER,FOLLOW_ORDER_in_orderByClause1623); 
             		ORDER126_tree = (IASTNode)adaptor.Create(ORDER126);
             		root_0 = (IASTNode)adaptor.BecomeRoot(ORDER126_tree, root_0);
 
-            	string_literal127=(IToken)Match(input,LITERAL_by,FOLLOW_LITERAL_by_in_orderByClause1624); 
-            	PushFollow(FOLLOW_orderElement_in_orderByClause1627);
+            	string_literal127=(IToken)Match(input,LITERAL_by,FOLLOW_LITERAL_by_in_orderByClause1626); 
+            	PushFollow(FOLLOW_orderElement_in_orderByClause1629);
             	orderElement128 = orderElement();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, orderElement128.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:354:30: ( COMMA orderElement )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:355:30: ( COMMA orderElement )*
             	do 
             	{
             	    int alt39 = 2;
@@ -4487,10 +4477,10 @@ public partial class HqlParser : Parser
             	    switch (alt39) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:354:32: COMMA orderElement
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:355:32: COMMA orderElement
             			    {
-            			    	COMMA129=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_orderByClause1631); 
-            			    	PushFollow(FOLLOW_orderElement_in_orderByClause1634);
+            			    	COMMA129=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_orderByClause1633); 
+            			    	PushFollow(FOLLOW_orderElement_in_orderByClause1636);
             			    	orderElement130 = orderElement();
             			    	state.followingStackPointer--;
 
@@ -4541,7 +4531,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "orderElement"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:357:1: orderElement : expression ( ascendingOrDescending )? ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:358:1: orderElement : expression ( ascendingOrDescending )? ;
     public HqlParser.orderElement_return orderElement() // throws RecognitionException [1]
     {   
         HqlParser.orderElement_return retval = new HqlParser.orderElement_return();
@@ -4557,17 +4547,17 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:358:2: ( expression ( ascendingOrDescending )? )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:358:4: expression ( ascendingOrDescending )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:359:2: ( expression ( ascendingOrDescending )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:359:4: expression ( ascendingOrDescending )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_expression_in_orderElement1648);
+            	PushFollow(FOLLOW_expression_in_orderElement1650);
             	expression131 = expression();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, expression131.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:358:15: ( ascendingOrDescending )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:359:15: ( ascendingOrDescending )?
             	int alt40 = 2;
             	int LA40_0 = input.LA(1);
 
@@ -4578,9 +4568,9 @@ public partial class HqlParser : Parser
             	switch (alt40) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:358:17: ascendingOrDescending
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:359:17: ascendingOrDescending
             	        {
-            	        	PushFollow(FOLLOW_ascendingOrDescending_in_orderElement1652);
+            	        	PushFollow(FOLLOW_ascendingOrDescending_in_orderElement1654);
             	        	ascendingOrDescending132 = ascendingOrDescending();
             	        	state.followingStackPointer--;
 
@@ -4625,7 +4615,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "ascendingOrDescending"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:361:1: ascendingOrDescending : ( (a= 'asc' | a= 'ascending' ) -> ^( ASCENDING[$a.Text] ) | (d= 'desc' | d= 'descending' ) -> ^( DESCENDING[$d.Text] ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:362:1: ascendingOrDescending : ( (a= 'asc' | a= 'ascending' ) -> ^( ASCENDING[$a.Text] ) | (d= 'desc' | d= 'descending' ) -> ^( DESCENDING[$d.Text] ) );
     public HqlParser.ascendingOrDescending_return ascendingOrDescending() // throws RecognitionException [1]
     {   
         HqlParser.ascendingOrDescending_return retval = new HqlParser.ascendingOrDescending_return();
@@ -4638,14 +4628,14 @@ public partial class HqlParser : Parser
 
         IASTNode a_tree=null;
         IASTNode d_tree=null;
+        RewriteRuleTokenStream stream_DESCENDING = new RewriteRuleTokenStream(adaptor,"token DESCENDING");
+        RewriteRuleTokenStream stream_ASCENDING = new RewriteRuleTokenStream(adaptor,"token ASCENDING");
         RewriteRuleTokenStream stream_131 = new RewriteRuleTokenStream(adaptor,"token 131");
         RewriteRuleTokenStream stream_130 = new RewriteRuleTokenStream(adaptor,"token 130");
-        RewriteRuleTokenStream stream_ASCENDING = new RewriteRuleTokenStream(adaptor,"token ASCENDING");
-        RewriteRuleTokenStream stream_DESCENDING = new RewriteRuleTokenStream(adaptor,"token DESCENDING");
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:362:2: ( (a= 'asc' | a= 'ascending' ) -> ^( ASCENDING[$a.Text] ) | (d= 'desc' | d= 'descending' ) -> ^( DESCENDING[$d.Text] ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:363:2: ( (a= 'asc' | a= 'ascending' ) -> ^( ASCENDING[$a.Text] ) | (d= 'desc' | d= 'descending' ) -> ^( DESCENDING[$d.Text] ) )
             int alt43 = 2;
             int LA43_0 = input.LA(1);
 
@@ -4667,9 +4657,9 @@ public partial class HqlParser : Parser
             switch (alt43) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:362:4: (a= 'asc' | a= 'ascending' )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:363:4: (a= 'asc' | a= 'ascending' )
                     {
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:362:4: (a= 'asc' | a= 'ascending' )
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:363:4: (a= 'asc' | a= 'ascending' )
                     	int alt41 = 2;
                     	int LA41_0 = input.LA(1);
 
@@ -4691,18 +4681,18 @@ public partial class HqlParser : Parser
                     	switch (alt41) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:362:6: a= 'asc'
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:363:6: a= 'asc'
                     	        {
-                    	        	a=(IToken)Match(input,ASCENDING,FOLLOW_ASCENDING_in_ascendingOrDescending1670);  
+                    	        	a=(IToken)Match(input,ASCENDING,FOLLOW_ASCENDING_in_ascendingOrDescending1672);  
                     	        	stream_ASCENDING.Add(a);
 
 
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:362:16: a= 'ascending'
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:363:16: a= 'ascending'
                     	        {
-                    	        	a=(IToken)Match(input,130,FOLLOW_130_in_ascendingOrDescending1676);  
+                    	        	a=(IToken)Match(input,130,FOLLOW_130_in_ascendingOrDescending1678);  
                     	        	stream_130.Add(a);
 
 
@@ -4724,9 +4714,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 363:3: -> ^( ASCENDING[$a.Text] )
+                    	// 364:3: -> ^( ASCENDING[$a.Text] )
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:363:6: ^( ASCENDING[$a.Text] )
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:364:6: ^( ASCENDING[$a.Text] )
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(ASCENDING, a.Text), root_1);
@@ -4740,9 +4730,9 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:364:4: (d= 'desc' | d= 'descending' )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:365:4: (d= 'desc' | d= 'descending' )
                     {
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:364:4: (d= 'desc' | d= 'descending' )
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:365:4: (d= 'desc' | d= 'descending' )
                     	int alt42 = 2;
                     	int LA42_0 = input.LA(1);
 
@@ -4764,18 +4754,18 @@ public partial class HqlParser : Parser
                     	switch (alt42) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:364:6: d= 'desc'
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:365:6: d= 'desc'
                     	        {
-                    	        	d=(IToken)Match(input,DESCENDING,FOLLOW_DESCENDING_in_ascendingOrDescending1696);  
+                    	        	d=(IToken)Match(input,DESCENDING,FOLLOW_DESCENDING_in_ascendingOrDescending1698);  
                     	        	stream_DESCENDING.Add(d);
 
 
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:364:17: d= 'descending'
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:365:17: d= 'descending'
                     	        {
-                    	        	d=(IToken)Match(input,131,FOLLOW_131_in_ascendingOrDescending1702);  
+                    	        	d=(IToken)Match(input,131,FOLLOW_131_in_ascendingOrDescending1704);  
                     	        	stream_131.Add(d);
 
 
@@ -4797,9 +4787,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 365:3: -> ^( DESCENDING[$d.Text] )
+                    	// 366:3: -> ^( DESCENDING[$d.Text] )
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:365:6: ^( DESCENDING[$d.Text] )
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:366:6: ^( DESCENDING[$d.Text] )
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(DESCENDING, d.Text), root_1);
@@ -4845,7 +4835,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "havingClause"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:371:1: havingClause : HAVING logicalExpression ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:372:1: havingClause : HAVING logicalExpression ;
     public HqlParser.havingClause_return havingClause() // throws RecognitionException [1]
     {   
         HqlParser.havingClause_return retval = new HqlParser.havingClause_return();
@@ -4861,16 +4851,16 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:372:2: ( HAVING logicalExpression )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:372:4: HAVING logicalExpression
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:373:2: ( HAVING logicalExpression )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:373:4: HAVING logicalExpression
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	HAVING133=(IToken)Match(input,HAVING,FOLLOW_HAVING_in_havingClause1726); 
+            	HAVING133=(IToken)Match(input,HAVING,FOLLOW_HAVING_in_havingClause1728); 
             		HAVING133_tree = (IASTNode)adaptor.Create(HAVING133);
             		root_0 = (IASTNode)adaptor.BecomeRoot(HAVING133_tree, root_0);
 
-            	PushFollow(FOLLOW_logicalExpression_in_havingClause1729);
+            	PushFollow(FOLLOW_logicalExpression_in_havingClause1731);
             	logicalExpression134 = logicalExpression();
             	state.followingStackPointer--;
 
@@ -4909,7 +4899,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "whereClause"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:378:1: whereClause : WHERE logicalExpression ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:379:1: whereClause : WHERE logicalExpression ;
     public HqlParser.whereClause_return whereClause() // throws RecognitionException [1]
     {   
         HqlParser.whereClause_return retval = new HqlParser.whereClause_return();
@@ -4925,16 +4915,16 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:379:2: ( WHERE logicalExpression )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:379:4: WHERE logicalExpression
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:380:2: ( WHERE logicalExpression )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:380:4: WHERE logicalExpression
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	WHERE135=(IToken)Match(input,WHERE,FOLLOW_WHERE_in_whereClause1743); 
+            	WHERE135=(IToken)Match(input,WHERE,FOLLOW_WHERE_in_whereClause1745); 
             		WHERE135_tree = (IASTNode)adaptor.Create(WHERE135);
             		root_0 = (IASTNode)adaptor.BecomeRoot(WHERE135_tree, root_0);
 
-            	PushFollow(FOLLOW_logicalExpression_in_whereClause1746);
+            	PushFollow(FOLLOW_logicalExpression_in_whereClause1748);
             	logicalExpression136 = logicalExpression();
             	state.followingStackPointer--;
 
@@ -4973,7 +4963,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "selectedPropertiesList"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:385:1: selectedPropertiesList : aliasedExpression ( COMMA aliasedExpression )* ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:386:1: selectedPropertiesList : aliasedExpression ( COMMA aliasedExpression )* ;
     public HqlParser.selectedPropertiesList_return selectedPropertiesList() // throws RecognitionException [1]
     {   
         HqlParser.selectedPropertiesList_return retval = new HqlParser.selectedPropertiesList_return();
@@ -4991,17 +4981,17 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:386:2: ( aliasedExpression ( COMMA aliasedExpression )* )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:386:4: aliasedExpression ( COMMA aliasedExpression )*
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:387:2: ( aliasedExpression ( COMMA aliasedExpression )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:387:4: aliasedExpression ( COMMA aliasedExpression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_aliasedExpression_in_selectedPropertiesList1760);
+            	PushFollow(FOLLOW_aliasedExpression_in_selectedPropertiesList1762);
             	aliasedExpression137 = aliasedExpression();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, aliasedExpression137.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:386:22: ( COMMA aliasedExpression )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:387:22: ( COMMA aliasedExpression )*
             	do 
             	{
             	    int alt44 = 2;
@@ -5016,10 +5006,10 @@ public partial class HqlParser : Parser
             	    switch (alt44) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:386:24: COMMA aliasedExpression
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:387:24: COMMA aliasedExpression
             			    {
-            			    	COMMA138=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_selectedPropertiesList1764); 
-            			    	PushFollow(FOLLOW_aliasedExpression_in_selectedPropertiesList1767);
+            			    	COMMA138=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_selectedPropertiesList1766); 
+            			    	PushFollow(FOLLOW_aliasedExpression_in_selectedPropertiesList1769);
             			    	aliasedExpression139 = aliasedExpression();
             			    	state.followingStackPointer--;
 
@@ -5070,7 +5060,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "aliasedExpression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:389:1: aliasedExpression : expression ( AS identifier )? ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:390:1: aliasedExpression : expression ( AS identifier )? ;
     public HqlParser.aliasedExpression_return aliasedExpression() // throws RecognitionException [1]
     {   
         HqlParser.aliasedExpression_return retval = new HqlParser.aliasedExpression_return();
@@ -5088,17 +5078,17 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:390:2: ( expression ( AS identifier )? )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:390:4: expression ( AS identifier )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:391:2: ( expression ( AS identifier )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:391:4: expression ( AS identifier )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_expression_in_aliasedExpression1782);
+            	PushFollow(FOLLOW_expression_in_aliasedExpression1784);
             	expression140 = expression();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, expression140.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:390:15: ( AS identifier )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:391:15: ( AS identifier )?
             	int alt45 = 2;
             	int LA45_0 = input.LA(1);
 
@@ -5109,13 +5099,13 @@ public partial class HqlParser : Parser
             	switch (alt45) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:390:17: AS identifier
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:391:17: AS identifier
             	        {
-            	        	AS141=(IToken)Match(input,AS,FOLLOW_AS_in_aliasedExpression1786); 
+            	        	AS141=(IToken)Match(input,AS,FOLLOW_AS_in_aliasedExpression1788); 
             	        		AS141_tree = (IASTNode)adaptor.Create(AS141);
             	        		root_0 = (IASTNode)adaptor.BecomeRoot(AS141_tree, root_0);
 
-            	        	PushFollow(FOLLOW_identifier_in_aliasedExpression1789);
+            	        	PushFollow(FOLLOW_identifier_in_aliasedExpression1791);
             	        	identifier142 = identifier();
             	        	state.followingStackPointer--;
 
@@ -5160,7 +5150,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "logicalExpression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:418:1: logicalExpression : expression ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:419:1: logicalExpression : expression ;
     public HqlParser.logicalExpression_return logicalExpression() // throws RecognitionException [1]
     {   
         HqlParser.logicalExpression_return retval = new HqlParser.logicalExpression_return();
@@ -5174,12 +5164,12 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:419:2: ( expression )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:419:4: expression
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:420:2: ( expression )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:420:4: expression
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_expression_in_logicalExpression1828);
+            	PushFollow(FOLLOW_expression_in_logicalExpression1830);
             	expression143 = expression();
             	state.followingStackPointer--;
 
@@ -5218,7 +5208,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "expression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:423:1: expression : logicalOrExpression ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:424:1: expression : logicalOrExpression ;
     public HqlParser.expression_return expression() // throws RecognitionException [1]
     {   
         HqlParser.expression_return retval = new HqlParser.expression_return();
@@ -5232,12 +5222,12 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:424:2: ( logicalOrExpression )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:424:4: logicalOrExpression
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:425:2: ( logicalOrExpression )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:425:4: logicalOrExpression
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_logicalOrExpression_in_expression1840);
+            	PushFollow(FOLLOW_logicalOrExpression_in_expression1842);
             	logicalOrExpression144 = logicalOrExpression();
             	state.followingStackPointer--;
 
@@ -5276,7 +5266,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "logicalOrExpression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:428:1: logicalOrExpression : logicalAndExpression ( OR logicalAndExpression )* ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:429:1: logicalOrExpression : logicalAndExpression ( OR logicalAndExpression )* ;
     public HqlParser.logicalOrExpression_return logicalOrExpression() // throws RecognitionException [1]
     {   
         HqlParser.logicalOrExpression_return retval = new HqlParser.logicalOrExpression_return();
@@ -5294,17 +5284,17 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:429:2: ( logicalAndExpression ( OR logicalAndExpression )* )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:429:4: logicalAndExpression ( OR logicalAndExpression )*
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:430:2: ( logicalAndExpression ( OR logicalAndExpression )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:430:4: logicalAndExpression ( OR logicalAndExpression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_logicalAndExpression_in_logicalOrExpression1852);
+            	PushFollow(FOLLOW_logicalAndExpression_in_logicalOrExpression1854);
             	logicalAndExpression145 = logicalAndExpression();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, logicalAndExpression145.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:429:25: ( OR logicalAndExpression )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:430:25: ( OR logicalAndExpression )*
             	do 
             	{
             	    int alt46 = 2;
@@ -5319,13 +5309,13 @@ public partial class HqlParser : Parser
             	    switch (alt46) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:429:27: OR logicalAndExpression
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:430:27: OR logicalAndExpression
             			    {
-            			    	OR146=(IToken)Match(input,OR,FOLLOW_OR_in_logicalOrExpression1856); 
+            			    	OR146=(IToken)Match(input,OR,FOLLOW_OR_in_logicalOrExpression1858); 
             			    		OR146_tree = (IASTNode)adaptor.Create(OR146);
             			    		root_0 = (IASTNode)adaptor.BecomeRoot(OR146_tree, root_0);
 
-            			    	PushFollow(FOLLOW_logicalAndExpression_in_logicalOrExpression1859);
+            			    	PushFollow(FOLLOW_logicalAndExpression_in_logicalOrExpression1861);
             			    	logicalAndExpression147 = logicalAndExpression();
             			    	state.followingStackPointer--;
 
@@ -5376,7 +5366,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "logicalAndExpression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:433:1: logicalAndExpression : negatedExpression ( AND negatedExpression )* ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:434:1: logicalAndExpression : negatedExpression ( AND negatedExpression )* ;
     public HqlParser.logicalAndExpression_return logicalAndExpression() // throws RecognitionException [1]
     {   
         HqlParser.logicalAndExpression_return retval = new HqlParser.logicalAndExpression_return();
@@ -5394,17 +5384,17 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:434:2: ( negatedExpression ( AND negatedExpression )* )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:434:4: negatedExpression ( AND negatedExpression )*
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:435:2: ( negatedExpression ( AND negatedExpression )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:435:4: negatedExpression ( AND negatedExpression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_negatedExpression_in_logicalAndExpression1874);
+            	PushFollow(FOLLOW_negatedExpression_in_logicalAndExpression1876);
             	negatedExpression148 = negatedExpression();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, negatedExpression148.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:434:22: ( AND negatedExpression )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:435:22: ( AND negatedExpression )*
             	do 
             	{
             	    int alt47 = 2;
@@ -5419,13 +5409,13 @@ public partial class HqlParser : Parser
             	    switch (alt47) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:434:24: AND negatedExpression
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:435:24: AND negatedExpression
             			    {
-            			    	AND149=(IToken)Match(input,AND,FOLLOW_AND_in_logicalAndExpression1878); 
+            			    	AND149=(IToken)Match(input,AND,FOLLOW_AND_in_logicalAndExpression1880); 
             			    		AND149_tree = (IASTNode)adaptor.Create(AND149);
             			    		root_0 = (IASTNode)adaptor.BecomeRoot(AND149_tree, root_0);
 
-            			    	PushFollow(FOLLOW_negatedExpression_in_logicalAndExpression1881);
+            			    	PushFollow(FOLLOW_negatedExpression_in_logicalAndExpression1883);
             			    	negatedExpression150 = negatedExpression();
             			    	state.followingStackPointer--;
 
@@ -5476,7 +5466,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "negatedExpression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:439:1: negatedExpression : ( NOT x= negatedExpression -> ^() | bitwiseNotExpression -> ^( bitwiseNotExpression ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:440:1: negatedExpression : ( NOT x= negatedExpression -> ^() | bitwiseNotExpression -> ^( bitwiseNotExpression ) );
     public HqlParser.negatedExpression_return negatedExpression() // throws RecognitionException [1]
     {   
         HqlParser.negatedExpression_return retval = new HqlParser.negatedExpression_return();
@@ -5492,12 +5482,12 @@ public partial class HqlParser : Parser
 
         IASTNode NOT151_tree=null;
         RewriteRuleTokenStream stream_NOT = new RewriteRuleTokenStream(adaptor,"token NOT");
-        RewriteRuleSubtreeStream stream_negatedExpression = new RewriteRuleSubtreeStream(adaptor,"rule negatedExpression");
         RewriteRuleSubtreeStream stream_bitwiseNotExpression = new RewriteRuleSubtreeStream(adaptor,"rule bitwiseNotExpression");
+        RewriteRuleSubtreeStream stream_negatedExpression = new RewriteRuleSubtreeStream(adaptor,"rule negatedExpression");
          WeakKeywords(); 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:441:2: ( NOT x= negatedExpression -> ^() | bitwiseNotExpression -> ^( bitwiseNotExpression ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:442:2: ( NOT x= negatedExpression -> ^() | bitwiseNotExpression -> ^( bitwiseNotExpression ) )
             int alt48 = 2;
             int LA48_0 = input.LA(1);
 
@@ -5519,12 +5509,12 @@ public partial class HqlParser : Parser
             switch (alt48) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:441:4: NOT x= negatedExpression
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:442:4: NOT x= negatedExpression
                     {
-                    	NOT151=(IToken)Match(input,NOT,FOLLOW_NOT_in_negatedExpression1902);  
+                    	NOT151=(IToken)Match(input,NOT,FOLLOW_NOT_in_negatedExpression1904);  
                     	stream_NOT.Add(NOT151);
 
-                    	PushFollow(FOLLOW_negatedExpression_in_negatedExpression1906);
+                    	PushFollow(FOLLOW_negatedExpression_in_negatedExpression1908);
                     	x = negatedExpression();
                     	state.followingStackPointer--;
 
@@ -5542,9 +5532,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 442:3: -> ^()
+                    	// 443:3: -> ^()
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:442:6: ^()
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:443:6: ^()
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(NegateNode(((x != null) ? ((IASTNode)x.Tree) : null)), root_1);
@@ -5558,9 +5548,9 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:443:4: bitwiseNotExpression
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:444:4: bitwiseNotExpression
                     {
-                    	PushFollow(FOLLOW_bitwiseNotExpression_in_negatedExpression1919);
+                    	PushFollow(FOLLOW_bitwiseNotExpression_in_negatedExpression1921);
                     	bitwiseNotExpression152 = bitwiseNotExpression();
                     	state.followingStackPointer--;
 
@@ -5578,9 +5568,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 444:3: -> ^( bitwiseNotExpression )
+                    	// 445:3: -> ^( bitwiseNotExpression )
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:444:6: ^( bitwiseNotExpression )
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:445:6: ^( bitwiseNotExpression )
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_bitwiseNotExpression.NextNode(), root_1);
@@ -5626,7 +5616,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "bitwiseNotExpression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:450:1: bitwiseNotExpression : ( ( BNOT bitwiseOrExpression ) | bitwiseOrExpression );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:451:1: bitwiseNotExpression : ( ( BNOT bitwiseOrExpression ) | bitwiseOrExpression );
     public HqlParser.bitwiseNotExpression_return bitwiseNotExpression() // throws RecognitionException [1]
     {   
         HqlParser.bitwiseNotExpression_return retval = new HqlParser.bitwiseNotExpression_return();
@@ -5644,7 +5634,7 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:451:2: ( ( BNOT bitwiseOrExpression ) | bitwiseOrExpression )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:452:2: ( ( BNOT bitwiseOrExpression ) | bitwiseOrExpression )
             int alt49 = 2;
             int LA49_0 = input.LA(1);
 
@@ -5666,18 +5656,18 @@ public partial class HqlParser : Parser
             switch (alt49) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:451:4: ( BNOT bitwiseOrExpression )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:452:4: ( BNOT bitwiseOrExpression )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:451:4: ( BNOT bitwiseOrExpression )
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:451:5: BNOT bitwiseOrExpression
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:452:4: ( BNOT bitwiseOrExpression )
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:452:5: BNOT bitwiseOrExpression
                     	{
-                    		BNOT153=(IToken)Match(input,BNOT,FOLLOW_BNOT_in_bitwiseNotExpression1943); 
+                    		BNOT153=(IToken)Match(input,BNOT,FOLLOW_BNOT_in_bitwiseNotExpression1945); 
                     			BNOT153_tree = (IASTNode)adaptor.Create(BNOT153);
                     			root_0 = (IASTNode)adaptor.BecomeRoot(BNOT153_tree, root_0);
 
-                    		PushFollow(FOLLOW_bitwiseOrExpression_in_bitwiseNotExpression1946);
+                    		PushFollow(FOLLOW_bitwiseOrExpression_in_bitwiseNotExpression1948);
                     		bitwiseOrExpression154 = bitwiseOrExpression();
                     		state.followingStackPointer--;
 
@@ -5689,11 +5679,11 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:452:4: bitwiseOrExpression
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:453:4: bitwiseOrExpression
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_bitwiseOrExpression_in_bitwiseNotExpression1952);
+                    	PushFollow(FOLLOW_bitwiseOrExpression_in_bitwiseNotExpression1954);
                     	bitwiseOrExpression155 = bitwiseOrExpression();
                     	state.followingStackPointer--;
 
@@ -5734,7 +5724,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "bitwiseOrExpression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:455:1: bitwiseOrExpression : bitwiseXOrExpression ( BOR bitwiseXOrExpression )* ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:456:1: bitwiseOrExpression : bitwiseXOrExpression ( BOR bitwiseXOrExpression )* ;
     public HqlParser.bitwiseOrExpression_return bitwiseOrExpression() // throws RecognitionException [1]
     {   
         HqlParser.bitwiseOrExpression_return retval = new HqlParser.bitwiseOrExpression_return();
@@ -5752,17 +5742,17 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:456:2: ( bitwiseXOrExpression ( BOR bitwiseXOrExpression )* )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:456:4: bitwiseXOrExpression ( BOR bitwiseXOrExpression )*
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:457:2: ( bitwiseXOrExpression ( BOR bitwiseXOrExpression )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:457:4: bitwiseXOrExpression ( BOR bitwiseXOrExpression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_bitwiseXOrExpression_in_bitwiseOrExpression1964);
+            	PushFollow(FOLLOW_bitwiseXOrExpression_in_bitwiseOrExpression1966);
             	bitwiseXOrExpression156 = bitwiseXOrExpression();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, bitwiseXOrExpression156.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:456:25: ( BOR bitwiseXOrExpression )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:457:25: ( BOR bitwiseXOrExpression )*
             	do 
             	{
             	    int alt50 = 2;
@@ -5777,13 +5767,13 @@ public partial class HqlParser : Parser
             	    switch (alt50) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:456:26: BOR bitwiseXOrExpression
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:457:26: BOR bitwiseXOrExpression
             			    {
-            			    	BOR157=(IToken)Match(input,BOR,FOLLOW_BOR_in_bitwiseOrExpression1967); 
+            			    	BOR157=(IToken)Match(input,BOR,FOLLOW_BOR_in_bitwiseOrExpression1969); 
             			    		BOR157_tree = (IASTNode)adaptor.Create(BOR157);
             			    		root_0 = (IASTNode)adaptor.BecomeRoot(BOR157_tree, root_0);
 
-            			    	PushFollow(FOLLOW_bitwiseXOrExpression_in_bitwiseOrExpression1970);
+            			    	PushFollow(FOLLOW_bitwiseXOrExpression_in_bitwiseOrExpression1972);
             			    	bitwiseXOrExpression158 = bitwiseXOrExpression();
             			    	state.followingStackPointer--;
 
@@ -5834,7 +5824,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "bitwiseXOrExpression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:459:1: bitwiseXOrExpression : bitwiseAndExpression ( BXOR bitwiseAndExpression )* ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:460:1: bitwiseXOrExpression : bitwiseAndExpression ( BXOR bitwiseAndExpression )* ;
     public HqlParser.bitwiseXOrExpression_return bitwiseXOrExpression() // throws RecognitionException [1]
     {   
         HqlParser.bitwiseXOrExpression_return retval = new HqlParser.bitwiseXOrExpression_return();
@@ -5852,17 +5842,17 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:460:2: ( bitwiseAndExpression ( BXOR bitwiseAndExpression )* )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:460:4: bitwiseAndExpression ( BXOR bitwiseAndExpression )*
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:461:2: ( bitwiseAndExpression ( BXOR bitwiseAndExpression )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:461:4: bitwiseAndExpression ( BXOR bitwiseAndExpression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_bitwiseAndExpression_in_bitwiseXOrExpression1984);
+            	PushFollow(FOLLOW_bitwiseAndExpression_in_bitwiseXOrExpression1986);
             	bitwiseAndExpression159 = bitwiseAndExpression();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, bitwiseAndExpression159.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:460:25: ( BXOR bitwiseAndExpression )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:461:25: ( BXOR bitwiseAndExpression )*
             	do 
             	{
             	    int alt51 = 2;
@@ -5877,13 +5867,13 @@ public partial class HqlParser : Parser
             	    switch (alt51) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:460:26: BXOR bitwiseAndExpression
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:461:26: BXOR bitwiseAndExpression
             			    {
-            			    	BXOR160=(IToken)Match(input,BXOR,FOLLOW_BXOR_in_bitwiseXOrExpression1987); 
+            			    	BXOR160=(IToken)Match(input,BXOR,FOLLOW_BXOR_in_bitwiseXOrExpression1989); 
             			    		BXOR160_tree = (IASTNode)adaptor.Create(BXOR160);
             			    		root_0 = (IASTNode)adaptor.BecomeRoot(BXOR160_tree, root_0);
 
-            			    	PushFollow(FOLLOW_bitwiseAndExpression_in_bitwiseXOrExpression1990);
+            			    	PushFollow(FOLLOW_bitwiseAndExpression_in_bitwiseXOrExpression1992);
             			    	bitwiseAndExpression161 = bitwiseAndExpression();
             			    	state.followingStackPointer--;
 
@@ -5934,7 +5924,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "bitwiseAndExpression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:463:1: bitwiseAndExpression : equalityExpression ( BAND equalityExpression )* ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:464:1: bitwiseAndExpression : equalityExpression ( BAND equalityExpression )* ;
     public HqlParser.bitwiseAndExpression_return bitwiseAndExpression() // throws RecognitionException [1]
     {   
         HqlParser.bitwiseAndExpression_return retval = new HqlParser.bitwiseAndExpression_return();
@@ -5952,17 +5942,17 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:464:2: ( equalityExpression ( BAND equalityExpression )* )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:464:4: equalityExpression ( BAND equalityExpression )*
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:465:2: ( equalityExpression ( BAND equalityExpression )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:465:4: equalityExpression ( BAND equalityExpression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_equalityExpression_in_bitwiseAndExpression2004);
+            	PushFollow(FOLLOW_equalityExpression_in_bitwiseAndExpression2006);
             	equalityExpression162 = equalityExpression();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, equalityExpression162.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:464:23: ( BAND equalityExpression )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:465:23: ( BAND equalityExpression )*
             	do 
             	{
             	    int alt52 = 2;
@@ -5977,13 +5967,13 @@ public partial class HqlParser : Parser
             	    switch (alt52) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:464:24: BAND equalityExpression
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:465:24: BAND equalityExpression
             			    {
-            			    	BAND163=(IToken)Match(input,BAND,FOLLOW_BAND_in_bitwiseAndExpression2007); 
+            			    	BAND163=(IToken)Match(input,BAND,FOLLOW_BAND_in_bitwiseAndExpression2009); 
             			    		BAND163_tree = (IASTNode)adaptor.Create(BAND163);
             			    		root_0 = (IASTNode)adaptor.BecomeRoot(BAND163_tree, root_0);
 
-            			    	PushFollow(FOLLOW_equalityExpression_in_bitwiseAndExpression2010);
+            			    	PushFollow(FOLLOW_equalityExpression_in_bitwiseAndExpression2012);
             			    	equalityExpression164 = equalityExpression();
             			    	state.followingStackPointer--;
 
@@ -6034,7 +6024,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "equalityExpression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:468:1: equalityExpression : x= relationalExpression ( ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression )* ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:469:1: equalityExpression : x= relationalExpression ( ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression )* ;
     public HqlParser.equalityExpression_return equalityExpression() // throws RecognitionException [1]
     {   
         HqlParser.equalityExpression_return retval = new HqlParser.equalityExpression_return();
@@ -6060,17 +6050,17 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:473:2: (x= relationalExpression ( ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression )* )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:473:4: x= relationalExpression ( ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression )*
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:474:2: (x= relationalExpression ( ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:474:4: x= relationalExpression ( ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_relationalExpression_in_equalityExpression2032);
+            	PushFollow(FOLLOW_relationalExpression_in_equalityExpression2034);
             	x = relationalExpression();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, x.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:473:27: ( ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:474:27: ( ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression )*
             	do 
             	{
             	    int alt55 = 2;
@@ -6085,9 +6075,9 @@ public partial class HqlParser : Parser
             	    switch (alt55) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:474:3: ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:475:3: ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression
             			    {
-            			    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:474:3: ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE )
+            			    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:475:3: ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE )
             			    	int alt54 = 4;
             			    	switch ( input.LA(1) ) 
             			    	{
@@ -6121,9 +6111,9 @@ public partial class HqlParser : Parser
             			    	switch (alt54) 
             			    	{
             			    	    case 1 :
-            			    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:474:5: EQ
+            			    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:475:5: EQ
             			    	        {
-            			    	        	EQ165=(IToken)Match(input,EQ,FOLLOW_EQ_in_equalityExpression2040); 
+            			    	        	EQ165=(IToken)Match(input,EQ,FOLLOW_EQ_in_equalityExpression2042); 
             			    	        		EQ165_tree = (IASTNode)adaptor.Create(EQ165);
             			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(EQ165_tree, root_0);
 
@@ -6131,14 +6121,14 @@ public partial class HqlParser : Parser
             			    	        }
             			    	        break;
             			    	    case 2 :
-            			    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:475:5: isx= IS ( NOT )?
+            			    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:476:5: isx= IS ( NOT )?
             			    	        {
-            			    	        	isx=(IToken)Match(input,IS,FOLLOW_IS_in_equalityExpression2049); 
+            			    	        	isx=(IToken)Match(input,IS,FOLLOW_IS_in_equalityExpression2051); 
             			    	        		isx_tree = (IASTNode)adaptor.Create(isx);
             			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(isx_tree, root_0);
 
             			    	        	 isx.Type = EQ; 
-            			    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:475:33: ( NOT )?
+            			    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:476:33: ( NOT )?
             			    	        	int alt53 = 2;
             			    	        	int LA53_0 = input.LA(1);
 
@@ -6149,9 +6139,9 @@ public partial class HqlParser : Parser
             			    	        	switch (alt53) 
             			    	        	{
             			    	        	    case 1 :
-            			    	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:475:34: NOT
+            			    	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:476:34: NOT
             			    	        	        {
-            			    	        	        	NOT166=(IToken)Match(input,NOT,FOLLOW_NOT_in_equalityExpression2055); 
+            			    	        	        	NOT166=(IToken)Match(input,NOT,FOLLOW_NOT_in_equalityExpression2057); 
             			    	        	        	 isx.Type =NE; 
 
             			    	        	        }
@@ -6163,9 +6153,9 @@ public partial class HqlParser : Parser
             			    	        }
             			    	        break;
             			    	    case 3 :
-            			    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:476:5: NE
+            			    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:477:5: NE
             			    	        {
-            			    	        	NE167=(IToken)Match(input,NE,FOLLOW_NE_in_equalityExpression2067); 
+            			    	        	NE167=(IToken)Match(input,NE,FOLLOW_NE_in_equalityExpression2069); 
             			    	        		NE167_tree = (IASTNode)adaptor.Create(NE167);
             			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(NE167_tree, root_0);
 
@@ -6173,9 +6163,9 @@ public partial class HqlParser : Parser
             			    	        }
             			    	        break;
             			    	    case 4 :
-            			    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:477:5: ne= SQL_NE
+            			    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:478:5: ne= SQL_NE
             			    	        {
-            			    	        	ne=(IToken)Match(input,SQL_NE,FOLLOW_SQL_NE_in_equalityExpression2076); 
+            			    	        	ne=(IToken)Match(input,SQL_NE,FOLLOW_SQL_NE_in_equalityExpression2078); 
             			    	        		ne_tree = (IASTNode)adaptor.Create(ne);
             			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(ne_tree, root_0);
 
@@ -6186,7 +6176,7 @@ public partial class HqlParser : Parser
 
             			    	}
 
-            			    	PushFollow(FOLLOW_relationalExpression_in_equalityExpression2087);
+            			    	PushFollow(FOLLOW_relationalExpression_in_equalityExpression2089);
             			    	y = relationalExpression();
             			    	state.followingStackPointer--;
 
@@ -6241,7 +6231,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "relationalExpression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:485:1: relationalExpression : concatenation ( ( ( ( LT | GT | LE | GE ) additiveExpression )* ) | (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) ) ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:486:1: relationalExpression : concatenation ( ( ( ( LT | GT | LE | GE ) additiveExpression )* ) | (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) ) ) ;
     public HqlParser.relationalExpression_return relationalExpression() // throws RecognitionException [1]
     {   
         HqlParser.relationalExpression_return retval = new HqlParser.relationalExpression_return();
@@ -6287,17 +6277,17 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:486:2: ( concatenation ( ( ( ( LT | GT | LE | GE ) additiveExpression )* ) | (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) ) ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:486:4: concatenation ( ( ( ( LT | GT | LE | GE ) additiveExpression )* ) | (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:487:2: ( concatenation ( ( ( ( LT | GT | LE | GE ) additiveExpression )* ) | (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) ) ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:487:4: concatenation ( ( ( ( LT | GT | LE | GE ) additiveExpression )* ) | (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) ) )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_concatenation_in_relationalExpression2104);
+            	PushFollow(FOLLOW_concatenation_in_relationalExpression2106);
             	concatenation168 = concatenation();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, concatenation168.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:486:18: ( ( ( ( LT | GT | LE | GE ) additiveExpression )* ) | (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) ) )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:487:18: ( ( ( ( LT | GT | LE | GE ) additiveExpression )* ) | (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) ) )
             	int alt61 = 2;
             	int LA61_0 = input.LA(1);
 
@@ -6319,12 +6309,12 @@ public partial class HqlParser : Parser
             	switch (alt61) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:487:3: ( ( ( LT | GT | LE | GE ) additiveExpression )* )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:488:3: ( ( ( LT | GT | LE | GE ) additiveExpression )* )
             	        {
-            	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:487:3: ( ( ( LT | GT | LE | GE ) additiveExpression )* )
-            	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:487:5: ( ( LT | GT | LE | GE ) additiveExpression )*
+            	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:488:3: ( ( ( LT | GT | LE | GE ) additiveExpression )* )
+            	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:488:5: ( ( LT | GT | LE | GE ) additiveExpression )*
             	        	{
-            	        		// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:487:5: ( ( LT | GT | LE | GE ) additiveExpression )*
+            	        		// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:488:5: ( ( LT | GT | LE | GE ) additiveExpression )*
             	        		do 
             	        		{
             	        		    int alt57 = 2;
@@ -6339,9 +6329,9 @@ public partial class HqlParser : Parser
             	        		    switch (alt57) 
             	        			{
             	        				case 1 :
-            	        				    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:487:7: ( LT | GT | LE | GE ) additiveExpression
+            	        				    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:488:7: ( LT | GT | LE | GE ) additiveExpression
             	        				    {
-            	        				    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:487:7: ( LT | GT | LE | GE )
+            	        				    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:488:7: ( LT | GT | LE | GE )
             	        				    	int alt56 = 4;
             	        				    	switch ( input.LA(1) ) 
             	        				    	{
@@ -6375,9 +6365,9 @@ public partial class HqlParser : Parser
             	        				    	switch (alt56) 
             	        				    	{
             	        				    	    case 1 :
-            	        				    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:487:9: LT
+            	        				    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:488:9: LT
             	        				    	        {
-            	        				    	        	LT169=(IToken)Match(input,LT,FOLLOW_LT_in_relationalExpression2116); 
+            	        				    	        	LT169=(IToken)Match(input,LT,FOLLOW_LT_in_relationalExpression2118); 
             	        				    	        		LT169_tree = (IASTNode)adaptor.Create(LT169);
             	        				    	        		root_0 = (IASTNode)adaptor.BecomeRoot(LT169_tree, root_0);
 
@@ -6385,9 +6375,9 @@ public partial class HqlParser : Parser
             	        				    	        }
             	        				    	        break;
             	        				    	    case 2 :
-            	        				    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:487:15: GT
+            	        				    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:488:15: GT
             	        				    	        {
-            	        				    	        	GT170=(IToken)Match(input,GT,FOLLOW_GT_in_relationalExpression2121); 
+            	        				    	        	GT170=(IToken)Match(input,GT,FOLLOW_GT_in_relationalExpression2123); 
             	        				    	        		GT170_tree = (IASTNode)adaptor.Create(GT170);
             	        				    	        		root_0 = (IASTNode)adaptor.BecomeRoot(GT170_tree, root_0);
 
@@ -6395,9 +6385,9 @@ public partial class HqlParser : Parser
             	        				    	        }
             	        				    	        break;
             	        				    	    case 3 :
-            	        				    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:487:21: LE
+            	        				    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:488:21: LE
             	        				    	        {
-            	        				    	        	LE171=(IToken)Match(input,LE,FOLLOW_LE_in_relationalExpression2126); 
+            	        				    	        	LE171=(IToken)Match(input,LE,FOLLOW_LE_in_relationalExpression2128); 
             	        				    	        		LE171_tree = (IASTNode)adaptor.Create(LE171);
             	        				    	        		root_0 = (IASTNode)adaptor.BecomeRoot(LE171_tree, root_0);
 
@@ -6405,9 +6395,9 @@ public partial class HqlParser : Parser
             	        				    	        }
             	        				    	        break;
             	        				    	    case 4 :
-            	        				    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:487:27: GE
+            	        				    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:488:27: GE
             	        				    	        {
-            	        				    	        	GE172=(IToken)Match(input,GE,FOLLOW_GE_in_relationalExpression2131); 
+            	        				    	        	GE172=(IToken)Match(input,GE,FOLLOW_GE_in_relationalExpression2133); 
             	        				    	        		GE172_tree = (IASTNode)adaptor.Create(GE172);
             	        				    	        		root_0 = (IASTNode)adaptor.BecomeRoot(GE172_tree, root_0);
 
@@ -6417,7 +6407,7 @@ public partial class HqlParser : Parser
 
             	        				    	}
 
-            	        				    	PushFollow(FOLLOW_additiveExpression_in_relationalExpression2136);
+            	        				    	PushFollow(FOLLOW_additiveExpression_in_relationalExpression2138);
             	        				    	additiveExpression173 = additiveExpression();
             	        				    	state.followingStackPointer--;
 
@@ -6441,9 +6431,9 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 2 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:489:5: (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:490:5: (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) )
             	        {
-            	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:489:5: (n= NOT )?
+            	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:490:5: (n= NOT )?
             	        	int alt58 = 2;
             	        	int LA58_0 = input.LA(1);
 
@@ -6454,16 +6444,16 @@ public partial class HqlParser : Parser
             	        	switch (alt58) 
             	        	{
             	        	    case 1 :
-            	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:489:6: n= NOT
+            	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:490:6: n= NOT
             	        	        {
-            	        	        	n=(IToken)Match(input,NOT,FOLLOW_NOT_in_relationalExpression2153); 
+            	        	        	n=(IToken)Match(input,NOT,FOLLOW_NOT_in_relationalExpression2155); 
 
             	        	        }
             	        	        break;
 
             	        	}
 
-            	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:489:15: ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) )
+            	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:490:15: ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) )
             	        	int alt60 = 4;
             	        	switch ( input.LA(1) ) 
             	        	{
@@ -6497,12 +6487,12 @@ public partial class HqlParser : Parser
             	        	switch (alt60) 
             	        	{
             	        	    case 1 :
-            	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:492:4: (i= IN inList )
+            	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:493:4: (i= IN inList )
             	        	        {
-            	        	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:492:4: (i= IN inList )
-            	        	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:492:5: i= IN inList
+            	        	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:493:4: (i= IN inList )
+            	        	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:493:5: i= IN inList
             	        	        	{
-            	        	        		i=(IToken)Match(input,IN,FOLLOW_IN_in_relationalExpression2174); 
+            	        	        		i=(IToken)Match(input,IN,FOLLOW_IN_in_relationalExpression2176); 
             	        	        			i_tree = (IASTNode)adaptor.Create(i);
             	        	        			root_0 = (IASTNode)adaptor.BecomeRoot(i_tree, root_0);
 
@@ -6510,7 +6500,7 @@ public partial class HqlParser : Parser
             	        	        							i.Type = (n == null) ? IN : NOT_IN;
             	        	        							i.Text = (n == null) ? "in" : "not in";
             	        	        						
-            	        	        		PushFollow(FOLLOW_inList_in_relationalExpression2183);
+            	        	        		PushFollow(FOLLOW_inList_in_relationalExpression2185);
             	        	        		inList174 = inList();
             	        	        		state.followingStackPointer--;
 
@@ -6522,12 +6512,12 @@ public partial class HqlParser : Parser
             	        	        }
             	        	        break;
             	        	    case 2 :
-            	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:497:6: (b= BETWEEN betweenList )
+            	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:498:6: (b= BETWEEN betweenList )
             	        	        {
-            	        	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:497:6: (b= BETWEEN betweenList )
-            	        	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:497:7: b= BETWEEN betweenList
+            	        	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:498:6: (b= BETWEEN betweenList )
+            	        	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:498:7: b= BETWEEN betweenList
             	        	        	{
-            	        	        		b=(IToken)Match(input,BETWEEN,FOLLOW_BETWEEN_in_relationalExpression2194); 
+            	        	        		b=(IToken)Match(input,BETWEEN,FOLLOW_BETWEEN_in_relationalExpression2196); 
             	        	        			b_tree = (IASTNode)adaptor.Create(b);
             	        	        			root_0 = (IASTNode)adaptor.BecomeRoot(b_tree, root_0);
 
@@ -6535,7 +6525,7 @@ public partial class HqlParser : Parser
             	        	        							b.Type = (n == null) ? BETWEEN : NOT_BETWEEN;
             	        	        							b.Text = (n == null) ? "between" : "not between";
             	        	        						
-            	        	        		PushFollow(FOLLOW_betweenList_in_relationalExpression2203);
+            	        	        		PushFollow(FOLLOW_betweenList_in_relationalExpression2205);
             	        	        		betweenList175 = betweenList();
             	        	        		state.followingStackPointer--;
 
@@ -6547,12 +6537,12 @@ public partial class HqlParser : Parser
             	        	        }
             	        	        break;
             	        	    case 3 :
-            	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:502:6: (l= LIKE concatenation likeEscape )
+            	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:503:6: (l= LIKE concatenation likeEscape )
             	        	        {
-            	        	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:502:6: (l= LIKE concatenation likeEscape )
-            	        	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:502:7: l= LIKE concatenation likeEscape
+            	        	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:503:6: (l= LIKE concatenation likeEscape )
+            	        	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:503:7: l= LIKE concatenation likeEscape
             	        	        	{
-            	        	        		l=(IToken)Match(input,LIKE,FOLLOW_LIKE_in_relationalExpression2215); 
+            	        	        		l=(IToken)Match(input,LIKE,FOLLOW_LIKE_in_relationalExpression2217); 
             	        	        			l_tree = (IASTNode)adaptor.Create(l);
             	        	        			root_0 = (IASTNode)adaptor.BecomeRoot(l_tree, root_0);
 
@@ -6560,12 +6550,12 @@ public partial class HqlParser : Parser
             	        	        							l.Type = (n == null) ? LIKE : NOT_LIKE;
             	        	        							l.Text = (n == null) ? "like" : "not like";
             	        	        						
-            	        	        		PushFollow(FOLLOW_concatenation_in_relationalExpression2224);
+            	        	        		PushFollow(FOLLOW_concatenation_in_relationalExpression2226);
             	        	        		concatenation176 = concatenation();
             	        	        		state.followingStackPointer--;
 
             	        	        		adaptor.AddChild(root_0, concatenation176.Tree);
-            	        	        		PushFollow(FOLLOW_likeEscape_in_relationalExpression2226);
+            	        	        		PushFollow(FOLLOW_likeEscape_in_relationalExpression2228);
             	        	        		likeEscape177 = likeEscape();
             	        	        		state.followingStackPointer--;
 
@@ -6577,13 +6567,13 @@ public partial class HqlParser : Parser
             	        	        }
             	        	        break;
             	        	    case 4 :
-            	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:507:6: ( MEMBER ( OF )? p= path )
+            	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:508:6: ( MEMBER ( OF )? p= path )
             	        	        {
-            	        	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:507:6: ( MEMBER ( OF )? p= path )
-            	        	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:507:7: MEMBER ( OF )? p= path
+            	        	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:508:6: ( MEMBER ( OF )? p= path )
+            	        	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:508:7: MEMBER ( OF )? p= path
             	        	        	{
-            	        	        		MEMBER178=(IToken)Match(input,MEMBER,FOLLOW_MEMBER_in_relationalExpression2235); 
-            	        	        		// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:507:15: ( OF )?
+            	        	        		MEMBER178=(IToken)Match(input,MEMBER,FOLLOW_MEMBER_in_relationalExpression2237); 
+            	        	        		// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:508:15: ( OF )?
             	        	        		int alt59 = 2;
             	        	        		int LA59_0 = input.LA(1);
 
@@ -6594,16 +6584,16 @@ public partial class HqlParser : Parser
             	        	        		switch (alt59) 
             	        	        		{
             	        	        		    case 1 :
-            	        	        		        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:507:16: OF
+            	        	        		        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:508:16: OF
             	        	        		        {
-            	        	        		        	OF179=(IToken)Match(input,OF,FOLLOW_OF_in_relationalExpression2239); 
+            	        	        		        	OF179=(IToken)Match(input,OF,FOLLOW_OF_in_relationalExpression2241); 
 
             	        	        		        }
             	        	        		        break;
 
             	        	        		}
 
-            	        	        		PushFollow(FOLLOW_path_in_relationalExpression2246);
+            	        	        		PushFollow(FOLLOW_path_in_relationalExpression2248);
             	        	        		p = path();
             	        	        		state.followingStackPointer--;
 
@@ -6659,7 +6649,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "likeEscape"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:514:1: likeEscape : ( ESCAPE concatenation )? ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:515:1: likeEscape : ( ESCAPE concatenation )? ;
     public HqlParser.likeEscape_return likeEscape() // throws RecognitionException [1]
     {   
         HqlParser.likeEscape_return retval = new HqlParser.likeEscape_return();
@@ -6675,12 +6665,12 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:515:2: ( ( ESCAPE concatenation )? )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:515:4: ( ESCAPE concatenation )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:516:2: ( ( ESCAPE concatenation )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:516:4: ( ESCAPE concatenation )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:515:4: ( ESCAPE concatenation )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:516:4: ( ESCAPE concatenation )?
             	int alt62 = 2;
             	int LA62_0 = input.LA(1);
 
@@ -6691,13 +6681,13 @@ public partial class HqlParser : Parser
             	switch (alt62) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:515:5: ESCAPE concatenation
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:516:5: ESCAPE concatenation
             	        {
-            	        	ESCAPE180=(IToken)Match(input,ESCAPE,FOLLOW_ESCAPE_in_likeEscape2273); 
+            	        	ESCAPE180=(IToken)Match(input,ESCAPE,FOLLOW_ESCAPE_in_likeEscape2275); 
             	        		ESCAPE180_tree = (IASTNode)adaptor.Create(ESCAPE180);
             	        		root_0 = (IASTNode)adaptor.BecomeRoot(ESCAPE180_tree, root_0);
 
-            	        	PushFollow(FOLLOW_concatenation_in_likeEscape2276);
+            	        	PushFollow(FOLLOW_concatenation_in_likeEscape2278);
             	        	concatenation181 = concatenation();
             	        	state.followingStackPointer--;
 
@@ -6742,7 +6732,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "inList"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:518:1: inList : compoundExpr -> ^( IN_LIST[\"inList\"] compoundExpr ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:519:1: inList : compoundExpr -> ^( IN_LIST[\"inList\"] compoundExpr ) ;
     public HqlParser.inList_return inList() // throws RecognitionException [1]
     {   
         HqlParser.inList_return retval = new HqlParser.inList_return();
@@ -6756,10 +6746,10 @@ public partial class HqlParser : Parser
         RewriteRuleSubtreeStream stream_compoundExpr = new RewriteRuleSubtreeStream(adaptor,"rule compoundExpr");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:519:2: ( compoundExpr -> ^( IN_LIST[\"inList\"] compoundExpr ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:519:4: compoundExpr
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:520:2: ( compoundExpr -> ^( IN_LIST[\"inList\"] compoundExpr ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:520:4: compoundExpr
             {
-            	PushFollow(FOLLOW_compoundExpr_in_inList2289);
+            	PushFollow(FOLLOW_compoundExpr_in_inList2291);
             	compoundExpr182 = compoundExpr();
             	state.followingStackPointer--;
 
@@ -6777,9 +6767,9 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 520:2: -> ^( IN_LIST[\"inList\"] compoundExpr )
+            	// 521:2: -> ^( IN_LIST[\"inList\"] compoundExpr )
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:520:5: ^( IN_LIST[\"inList\"] compoundExpr )
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:521:5: ^( IN_LIST[\"inList\"] compoundExpr )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(IN_LIST, "inList"), root_1);
@@ -6825,7 +6815,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "betweenList"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:523:1: betweenList : concatenation AND concatenation ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:524:1: betweenList : concatenation AND concatenation ;
     public HqlParser.betweenList_return betweenList() // throws RecognitionException [1]
     {   
         HqlParser.betweenList_return retval = new HqlParser.betweenList_return();
@@ -6843,18 +6833,18 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:524:2: ( concatenation AND concatenation )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:524:4: concatenation AND concatenation
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:525:2: ( concatenation AND concatenation )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:525:4: concatenation AND concatenation
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_concatenation_in_betweenList2310);
+            	PushFollow(FOLLOW_concatenation_in_betweenList2312);
             	concatenation183 = concatenation();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, concatenation183.Tree);
-            	AND184=(IToken)Match(input,AND,FOLLOW_AND_in_betweenList2312); 
-            	PushFollow(FOLLOW_concatenation_in_betweenList2315);
+            	AND184=(IToken)Match(input,AND,FOLLOW_AND_in_betweenList2314); 
+            	PushFollow(FOLLOW_concatenation_in_betweenList2317);
             	concatenation185 = concatenation();
             	state.followingStackPointer--;
 
@@ -6893,7 +6883,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "concatenation"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:528:1: concatenation : a= additiveExpression (c= CONCAT additiveExpression ( CONCAT additiveExpression )* )? ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:529:1: concatenation : a= additiveExpression (c= CONCAT additiveExpression ( CONCAT additiveExpression )* )? ;
     public HqlParser.concatenation_return concatenation() // throws RecognitionException [1]
     {   
         HqlParser.concatenation_return retval = new HqlParser.concatenation_return();
@@ -6915,17 +6905,17 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:539:2: (a= additiveExpression (c= CONCAT additiveExpression ( CONCAT additiveExpression )* )? )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:539:4: a= additiveExpression (c= CONCAT additiveExpression ( CONCAT additiveExpression )* )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:540:2: (a= additiveExpression (c= CONCAT additiveExpression ( CONCAT additiveExpression )* )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:540:4: a= additiveExpression (c= CONCAT additiveExpression ( CONCAT additiveExpression )* )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_additiveExpression_in_concatenation2334);
+            	PushFollow(FOLLOW_additiveExpression_in_concatenation2336);
             	a = additiveExpression();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, a.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:540:2: (c= CONCAT additiveExpression ( CONCAT additiveExpression )* )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:541:2: (c= CONCAT additiveExpression ( CONCAT additiveExpression )* )?
             	int alt64 = 2;
             	int LA64_0 = input.LA(1);
 
@@ -6936,19 +6926,19 @@ public partial class HqlParser : Parser
             	switch (alt64) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:540:4: c= CONCAT additiveExpression ( CONCAT additiveExpression )*
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:541:4: c= CONCAT additiveExpression ( CONCAT additiveExpression )*
             	        {
-            	        	c=(IToken)Match(input,CONCAT,FOLLOW_CONCAT_in_concatenation2342); 
+            	        	c=(IToken)Match(input,CONCAT,FOLLOW_CONCAT_in_concatenation2344); 
             	        		c_tree = (IASTNode)adaptor.Create(c);
             	        		root_0 = (IASTNode)adaptor.BecomeRoot(c_tree, root_0);
 
             	        	 c.Type = EXPR_LIST; c.Text = "concatList"; 
-            	        	PushFollow(FOLLOW_additiveExpression_in_concatenation2351);
+            	        	PushFollow(FOLLOW_additiveExpression_in_concatenation2353);
             	        	additiveExpression186 = additiveExpression();
             	        	state.followingStackPointer--;
 
             	        	adaptor.AddChild(root_0, additiveExpression186.Tree);
-            	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:542:4: ( CONCAT additiveExpression )*
+            	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:543:4: ( CONCAT additiveExpression )*
             	        	do 
             	        	{
             	        	    int alt63 = 2;
@@ -6963,10 +6953,10 @@ public partial class HqlParser : Parser
             	        	    switch (alt63) 
             	        		{
             	        			case 1 :
-            	        			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:542:6: CONCAT additiveExpression
+            	        			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:543:6: CONCAT additiveExpression
             	        			    {
-            	        			    	CONCAT187=(IToken)Match(input,CONCAT,FOLLOW_CONCAT_in_concatenation2358); 
-            	        			    	PushFollow(FOLLOW_additiveExpression_in_concatenation2361);
+            	        			    	CONCAT187=(IToken)Match(input,CONCAT,FOLLOW_CONCAT_in_concatenation2360); 
+            	        			    	PushFollow(FOLLOW_additiveExpression_in_concatenation2363);
             	        			    	additiveExpression188 = additiveExpression();
             	        			    	state.followingStackPointer--;
 
@@ -7033,7 +7023,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "additiveExpression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:547:1: additiveExpression : multiplyExpression ( ( PLUS | MINUS ) multiplyExpression )* ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:548:1: additiveExpression : multiplyExpression ( ( PLUS | MINUS ) multiplyExpression )* ;
     public HqlParser.additiveExpression_return additiveExpression() // throws RecognitionException [1]
     {   
         HqlParser.additiveExpression_return retval = new HqlParser.additiveExpression_return();
@@ -7053,17 +7043,17 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:548:2: ( multiplyExpression ( ( PLUS | MINUS ) multiplyExpression )* )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:548:4: multiplyExpression ( ( PLUS | MINUS ) multiplyExpression )*
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:549:2: ( multiplyExpression ( ( PLUS | MINUS ) multiplyExpression )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:549:4: multiplyExpression ( ( PLUS | MINUS ) multiplyExpression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_multiplyExpression_in_additiveExpression2383);
+            	PushFollow(FOLLOW_multiplyExpression_in_additiveExpression2385);
             	multiplyExpression189 = multiplyExpression();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, multiplyExpression189.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:548:23: ( ( PLUS | MINUS ) multiplyExpression )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:549:23: ( ( PLUS | MINUS ) multiplyExpression )*
             	do 
             	{
             	    int alt66 = 2;
@@ -7078,9 +7068,9 @@ public partial class HqlParser : Parser
             	    switch (alt66) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:548:25: ( PLUS | MINUS ) multiplyExpression
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:549:25: ( PLUS | MINUS ) multiplyExpression
             			    {
-            			    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:548:25: ( PLUS | MINUS )
+            			    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:549:25: ( PLUS | MINUS )
             			    	int alt65 = 2;
             			    	int LA65_0 = input.LA(1);
 
@@ -7102,9 +7092,9 @@ public partial class HqlParser : Parser
             			    	switch (alt65) 
             			    	{
             			    	    case 1 :
-            			    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:548:27: PLUS
+            			    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:549:27: PLUS
             			    	        {
-            			    	        	PLUS190=(IToken)Match(input,PLUS,FOLLOW_PLUS_in_additiveExpression2389); 
+            			    	        	PLUS190=(IToken)Match(input,PLUS,FOLLOW_PLUS_in_additiveExpression2391); 
             			    	        		PLUS190_tree = (IASTNode)adaptor.Create(PLUS190);
             			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(PLUS190_tree, root_0);
 
@@ -7112,9 +7102,9 @@ public partial class HqlParser : Parser
             			    	        }
             			    	        break;
             			    	    case 2 :
-            			    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:548:35: MINUS
+            			    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:549:35: MINUS
             			    	        {
-            			    	        	MINUS191=(IToken)Match(input,MINUS,FOLLOW_MINUS_in_additiveExpression2394); 
+            			    	        	MINUS191=(IToken)Match(input,MINUS,FOLLOW_MINUS_in_additiveExpression2396); 
             			    	        		MINUS191_tree = (IASTNode)adaptor.Create(MINUS191);
             			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(MINUS191_tree, root_0);
 
@@ -7124,7 +7114,7 @@ public partial class HqlParser : Parser
 
             			    	}
 
-            			    	PushFollow(FOLLOW_multiplyExpression_in_additiveExpression2399);
+            			    	PushFollow(FOLLOW_multiplyExpression_in_additiveExpression2401);
             			    	multiplyExpression192 = multiplyExpression();
             			    	state.followingStackPointer--;
 
@@ -7175,7 +7165,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "multiplyExpression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:552:1: multiplyExpression : unaryExpression ( ( STAR | DIV ) unaryExpression )* ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:553:1: multiplyExpression : unaryExpression ( ( STAR | DIV ) unaryExpression )* ;
     public HqlParser.multiplyExpression_return multiplyExpression() // throws RecognitionException [1]
     {   
         HqlParser.multiplyExpression_return retval = new HqlParser.multiplyExpression_return();
@@ -7195,17 +7185,17 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:553:2: ( unaryExpression ( ( STAR | DIV ) unaryExpression )* )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:553:4: unaryExpression ( ( STAR | DIV ) unaryExpression )*
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:554:2: ( unaryExpression ( ( STAR | DIV ) unaryExpression )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:554:4: unaryExpression ( ( STAR | DIV ) unaryExpression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_unaryExpression_in_multiplyExpression2414);
+            	PushFollow(FOLLOW_unaryExpression_in_multiplyExpression2416);
             	unaryExpression193 = unaryExpression();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, unaryExpression193.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:553:20: ( ( STAR | DIV ) unaryExpression )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:554:20: ( ( STAR | DIV ) unaryExpression )*
             	do 
             	{
             	    int alt68 = 2;
@@ -7220,9 +7210,9 @@ public partial class HqlParser : Parser
             	    switch (alt68) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:553:22: ( STAR | DIV ) unaryExpression
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:554:22: ( STAR | DIV ) unaryExpression
             			    {
-            			    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:553:22: ( STAR | DIV )
+            			    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:554:22: ( STAR | DIV )
             			    	int alt67 = 2;
             			    	int LA67_0 = input.LA(1);
 
@@ -7244,9 +7234,9 @@ public partial class HqlParser : Parser
             			    	switch (alt67) 
             			    	{
             			    	    case 1 :
-            			    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:553:24: STAR
+            			    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:554:24: STAR
             			    	        {
-            			    	        	STAR194=(IToken)Match(input,STAR,FOLLOW_STAR_in_multiplyExpression2420); 
+            			    	        	STAR194=(IToken)Match(input,STAR,FOLLOW_STAR_in_multiplyExpression2422); 
             			    	        		STAR194_tree = (IASTNode)adaptor.Create(STAR194);
             			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(STAR194_tree, root_0);
 
@@ -7254,9 +7244,9 @@ public partial class HqlParser : Parser
             			    	        }
             			    	        break;
             			    	    case 2 :
-            			    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:553:32: DIV
+            			    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:554:32: DIV
             			    	        {
-            			    	        	DIV195=(IToken)Match(input,DIV,FOLLOW_DIV_in_multiplyExpression2425); 
+            			    	        	DIV195=(IToken)Match(input,DIV,FOLLOW_DIV_in_multiplyExpression2427); 
             			    	        		DIV195_tree = (IASTNode)adaptor.Create(DIV195);
             			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(DIV195_tree, root_0);
 
@@ -7266,7 +7256,7 @@ public partial class HqlParser : Parser
 
             			    	}
 
-            			    	PushFollow(FOLLOW_unaryExpression_in_multiplyExpression2430);
+            			    	PushFollow(FOLLOW_unaryExpression_in_multiplyExpression2432);
             			    	unaryExpression196 = unaryExpression();
             			    	state.followingStackPointer--;
 
@@ -7317,7 +7307,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "unaryExpression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:557:1: unaryExpression : (m= MINUS mu= unaryExpression -> ^( UNARY_MINUS[$m] $mu) | p= PLUS pu= unaryExpression -> ^( UNARY_PLUS[$p] $pu) | c= caseExpression -> ^( $c) | q= quantifiedExpression -> ^( $q) | a= atom -> ^( $a) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:558:1: unaryExpression : (m= MINUS mu= unaryExpression -> ^( UNARY_MINUS[$m] $mu) | p= PLUS pu= unaryExpression -> ^( UNARY_PLUS[$p] $pu) | c= caseExpression -> ^( $c) | q= quantifiedExpression -> ^( $q) | a= atom -> ^( $a) );
     public HqlParser.unaryExpression_return unaryExpression() // throws RecognitionException [1]
     {   
         HqlParser.unaryExpression_return retval = new HqlParser.unaryExpression_return();
@@ -7340,15 +7330,15 @@ public partial class HqlParser : Parser
 
         IASTNode m_tree=null;
         IASTNode p_tree=null;
-        RewriteRuleTokenStream stream_MINUS = new RewriteRuleTokenStream(adaptor,"token MINUS");
         RewriteRuleTokenStream stream_PLUS = new RewriteRuleTokenStream(adaptor,"token PLUS");
-        RewriteRuleSubtreeStream stream_unaryExpression = new RewriteRuleSubtreeStream(adaptor,"rule unaryExpression");
+        RewriteRuleTokenStream stream_MINUS = new RewriteRuleTokenStream(adaptor,"token MINUS");
         RewriteRuleSubtreeStream stream_atom = new RewriteRuleSubtreeStream(adaptor,"rule atom");
-        RewriteRuleSubtreeStream stream_quantifiedExpression = new RewriteRuleSubtreeStream(adaptor,"rule quantifiedExpression");
         RewriteRuleSubtreeStream stream_caseExpression = new RewriteRuleSubtreeStream(adaptor,"rule caseExpression");
+        RewriteRuleSubtreeStream stream_quantifiedExpression = new RewriteRuleSubtreeStream(adaptor,"rule quantifiedExpression");
+        RewriteRuleSubtreeStream stream_unaryExpression = new RewriteRuleSubtreeStream(adaptor,"rule unaryExpression");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:558:2: (m= MINUS mu= unaryExpression -> ^( UNARY_MINUS[$m] $mu) | p= PLUS pu= unaryExpression -> ^( UNARY_PLUS[$p] $pu) | c= caseExpression -> ^( $c) | q= quantifiedExpression -> ^( $q) | a= atom -> ^( $a) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:559:2: (m= MINUS mu= unaryExpression -> ^( UNARY_MINUS[$m] $mu) | p= PLUS pu= unaryExpression -> ^( UNARY_PLUS[$p] $pu) | c= caseExpression -> ^( $c) | q= quantifiedExpression -> ^( $q) | a= atom -> ^( $a) )
             int alt69 = 5;
             switch ( input.LA(1) ) 
             {
@@ -7409,12 +7399,12 @@ public partial class HqlParser : Parser
             switch (alt69) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:558:4: m= MINUS mu= unaryExpression
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:559:4: m= MINUS mu= unaryExpression
                     {
-                    	m=(IToken)Match(input,MINUS,FOLLOW_MINUS_in_unaryExpression2448);  
+                    	m=(IToken)Match(input,MINUS,FOLLOW_MINUS_in_unaryExpression2450);  
                     	stream_MINUS.Add(m);
 
-                    	PushFollow(FOLLOW_unaryExpression_in_unaryExpression2452);
+                    	PushFollow(FOLLOW_unaryExpression_in_unaryExpression2454);
                     	mu = unaryExpression();
                     	state.followingStackPointer--;
 
@@ -7424,18 +7414,18 @@ public partial class HqlParser : Parser
                     	// AST REWRITE
                     	// elements:          mu
                     	// token labels:      
-                    	// rule labels:       mu, retval
+                    	// rule labels:       retval, mu
                     	// token list labels: 
                     	// rule list labels:  
                     	// wildcard labels: 
                     	retval.Tree = root_0;
-                    	RewriteRuleSubtreeStream stream_mu = new RewriteRuleSubtreeStream(adaptor, "rule mu", mu!=null ? mu.Tree : null);
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
+                    	RewriteRuleSubtreeStream stream_mu = new RewriteRuleSubtreeStream(adaptor, "rule mu", mu!=null ? mu.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 558:31: -> ^( UNARY_MINUS[$m] $mu)
+                    	// 559:31: -> ^( UNARY_MINUS[$m] $mu)
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:558:34: ^( UNARY_MINUS[$m] $mu)
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:559:34: ^( UNARY_MINUS[$m] $mu)
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(UNARY_MINUS, m), root_1);
@@ -7451,12 +7441,12 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:559:4: p= PLUS pu= unaryExpression
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:560:4: p= PLUS pu= unaryExpression
                     {
-                    	p=(IToken)Match(input,PLUS,FOLLOW_PLUS_in_unaryExpression2469);  
+                    	p=(IToken)Match(input,PLUS,FOLLOW_PLUS_in_unaryExpression2471);  
                     	stream_PLUS.Add(p);
 
-                    	PushFollow(FOLLOW_unaryExpression_in_unaryExpression2473);
+                    	PushFollow(FOLLOW_unaryExpression_in_unaryExpression2475);
                     	pu = unaryExpression();
                     	state.followingStackPointer--;
 
@@ -7466,18 +7456,18 @@ public partial class HqlParser : Parser
                     	// AST REWRITE
                     	// elements:          pu
                     	// token labels:      
-                    	// rule labels:       pu, retval
+                    	// rule labels:       retval, pu
                     	// token list labels: 
                     	// rule list labels:  
                     	// wildcard labels: 
                     	retval.Tree = root_0;
-                    	RewriteRuleSubtreeStream stream_pu = new RewriteRuleSubtreeStream(adaptor, "rule pu", pu!=null ? pu.Tree : null);
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
+                    	RewriteRuleSubtreeStream stream_pu = new RewriteRuleSubtreeStream(adaptor, "rule pu", pu!=null ? pu.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 559:30: -> ^( UNARY_PLUS[$p] $pu)
+                    	// 560:30: -> ^( UNARY_PLUS[$p] $pu)
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:559:33: ^( UNARY_PLUS[$p] $pu)
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:560:33: ^( UNARY_PLUS[$p] $pu)
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(UNARY_PLUS, p), root_1);
@@ -7493,9 +7483,9 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:560:4: c= caseExpression
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:561:4: c= caseExpression
                     {
-                    	PushFollow(FOLLOW_caseExpression_in_unaryExpression2490);
+                    	PushFollow(FOLLOW_caseExpression_in_unaryExpression2492);
                     	c = caseExpression();
                     	state.followingStackPointer--;
 
@@ -7505,18 +7495,18 @@ public partial class HqlParser : Parser
                     	// AST REWRITE
                     	// elements:          c
                     	// token labels:      
-                    	// rule labels:       c, retval
+                    	// rule labels:       retval, c
                     	// token list labels: 
                     	// rule list labels:  
                     	// wildcard labels: 
                     	retval.Tree = root_0;
-                    	RewriteRuleSubtreeStream stream_c = new RewriteRuleSubtreeStream(adaptor, "rule c", c!=null ? c.Tree : null);
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
+                    	RewriteRuleSubtreeStream stream_c = new RewriteRuleSubtreeStream(adaptor, "rule c", c!=null ? c.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 560:21: -> ^( $c)
+                    	// 561:21: -> ^( $c)
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:560:24: ^( $c)
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:561:24: ^( $c)
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_c.NextNode(), root_1);
@@ -7530,9 +7520,9 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:561:4: q= quantifiedExpression
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:562:4: q= quantifiedExpression
                     {
-                    	PushFollow(FOLLOW_quantifiedExpression_in_unaryExpression2504);
+                    	PushFollow(FOLLOW_quantifiedExpression_in_unaryExpression2506);
                     	q = quantifiedExpression();
                     	state.followingStackPointer--;
 
@@ -7551,9 +7541,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_q = new RewriteRuleSubtreeStream(adaptor, "rule q", q!=null ? q.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 561:27: -> ^( $q)
+                    	// 562:27: -> ^( $q)
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:561:30: ^( $q)
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:562:30: ^( $q)
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_q.NextNode(), root_1);
@@ -7567,9 +7557,9 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 5 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:562:4: a= atom
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:563:4: a= atom
                     {
-                    	PushFollow(FOLLOW_atom_in_unaryExpression2519);
+                    	PushFollow(FOLLOW_atom_in_unaryExpression2521);
                     	a = atom();
                     	state.followingStackPointer--;
 
@@ -7579,18 +7569,18 @@ public partial class HqlParser : Parser
                     	// AST REWRITE
                     	// elements:          a
                     	// token labels:      
-                    	// rule labels:       a, retval
+                    	// rule labels:       retval, a
                     	// token list labels: 
                     	// rule list labels:  
                     	// wildcard labels: 
                     	retval.Tree = root_0;
-                    	RewriteRuleSubtreeStream stream_a = new RewriteRuleSubtreeStream(adaptor, "rule a", a!=null ? a.Tree : null);
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
+                    	RewriteRuleSubtreeStream stream_a = new RewriteRuleSubtreeStream(adaptor, "rule a", a!=null ? a.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 562:11: -> ^( $a)
+                    	// 563:11: -> ^( $a)
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:562:14: ^( $a)
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:563:14: ^( $a)
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_a.NextNode(), root_1);
@@ -7636,7 +7626,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "caseExpression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:565:1: caseExpression : ( CASE ( whenClause )+ ( elseClause )? END -> ^( CASE whenClause ( elseClause )? ) | CASE unaryExpression ( altWhenClause )+ ( elseClause )? END -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:566:1: caseExpression : ( CASE ( whenClause )+ ( elseClause )? END -> ^( CASE whenClause ( elseClause )? ) | CASE unaryExpression ( altWhenClause )+ ( elseClause )? END -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? ) );
     public HqlParser.caseExpression_return caseExpression() // throws RecognitionException [1]
     {   
         HqlParser.caseExpression_return retval = new HqlParser.caseExpression_return();
@@ -7663,15 +7653,15 @@ public partial class HqlParser : Parser
         IASTNode END200_tree=null;
         IASTNode CASE201_tree=null;
         IASTNode END205_tree=null;
-        RewriteRuleTokenStream stream_CASE = new RewriteRuleTokenStream(adaptor,"token CASE");
         RewriteRuleTokenStream stream_END = new RewriteRuleTokenStream(adaptor,"token END");
-        RewriteRuleSubtreeStream stream_unaryExpression = new RewriteRuleSubtreeStream(adaptor,"rule unaryExpression");
+        RewriteRuleTokenStream stream_CASE = new RewriteRuleTokenStream(adaptor,"token CASE");
         RewriteRuleSubtreeStream stream_whenClause = new RewriteRuleSubtreeStream(adaptor,"rule whenClause");
-        RewriteRuleSubtreeStream stream_elseClause = new RewriteRuleSubtreeStream(adaptor,"rule elseClause");
+        RewriteRuleSubtreeStream stream_unaryExpression = new RewriteRuleSubtreeStream(adaptor,"rule unaryExpression");
         RewriteRuleSubtreeStream stream_altWhenClause = new RewriteRuleSubtreeStream(adaptor,"rule altWhenClause");
+        RewriteRuleSubtreeStream stream_elseClause = new RewriteRuleSubtreeStream(adaptor,"rule elseClause");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:566:2: ( CASE ( whenClause )+ ( elseClause )? END -> ^( CASE whenClause ( elseClause )? ) | CASE unaryExpression ( altWhenClause )+ ( elseClause )? END -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:567:2: ( CASE ( whenClause )+ ( elseClause )? END -> ^( CASE whenClause ( elseClause )? ) | CASE unaryExpression ( altWhenClause )+ ( elseClause )? END -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? ) )
             int alt74 = 2;
             int LA74_0 = input.LA(1);
 
@@ -7679,13 +7669,13 @@ public partial class HqlParser : Parser
             {
                 int LA74_1 = input.LA(2);
 
-                if ( ((LA74_1 >= ALL && LA74_1 <= ANY) || LA74_1 == AVG || LA74_1 == COUNT || LA74_1 == ELEMENTS || (LA74_1 >= EXISTS && LA74_1 <= FALSE) || LA74_1 == INDICES || (LA74_1 >= MAX && LA74_1 <= MIN) || LA74_1 == NULL || (LA74_1 >= SOME && LA74_1 <= TRUE) || LA74_1 == CASE || LA74_1 == EMPTY || (LA74_1 >= NUM_INT && LA74_1 <= NUM_LONG) || LA74_1 == OPEN || (LA74_1 >= PLUS && LA74_1 <= MINUS) || (LA74_1 >= COLON && LA74_1 <= IDENT)) )
-                {
-                    alt74 = 2;
-                }
-                else if ( (LA74_1 == WHEN) )
+                if ( (LA74_1 == WHEN) )
                 {
                     alt74 = 1;
+                }
+                else if ( ((LA74_1 >= ALL && LA74_1 <= ANY) || LA74_1 == AVG || LA74_1 == COUNT || LA74_1 == ELEMENTS || (LA74_1 >= EXISTS && LA74_1 <= FALSE) || LA74_1 == INDICES || (LA74_1 >= MAX && LA74_1 <= MIN) || LA74_1 == NULL || (LA74_1 >= SOME && LA74_1 <= TRUE) || LA74_1 == CASE || LA74_1 == EMPTY || (LA74_1 >= NUM_INT && LA74_1 <= NUM_LONG) || LA74_1 == OPEN || (LA74_1 >= PLUS && LA74_1 <= MINUS) || (LA74_1 >= COLON && LA74_1 <= IDENT)) )
+                {
+                    alt74 = 2;
                 }
                 else 
                 {
@@ -7705,12 +7695,12 @@ public partial class HqlParser : Parser
             switch (alt74) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:566:4: CASE ( whenClause )+ ( elseClause )? END
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:567:4: CASE ( whenClause )+ ( elseClause )? END
                     {
-                    	CASE197=(IToken)Match(input,CASE,FOLLOW_CASE_in_caseExpression2538);  
+                    	CASE197=(IToken)Match(input,CASE,FOLLOW_CASE_in_caseExpression2540);  
                     	stream_CASE.Add(CASE197);
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:566:9: ( whenClause )+
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:567:9: ( whenClause )+
                     	int cnt70 = 0;
                     	do 
                     	{
@@ -7726,9 +7716,9 @@ public partial class HqlParser : Parser
                     	    switch (alt70) 
                     		{
                     			case 1 :
-                    			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:566:10: whenClause
+                    			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:567:10: whenClause
                     			    {
-                    			    	PushFollow(FOLLOW_whenClause_in_caseExpression2541);
+                    			    	PushFollow(FOLLOW_whenClause_in_caseExpression2543);
                     			    	whenClause198 = whenClause();
                     			    	state.followingStackPointer--;
 
@@ -7749,7 +7739,7 @@ public partial class HqlParser : Parser
                     	loop70:
                     		;	// Stops C# compiler whinging that label 'loop70' has no statements
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:566:23: ( elseClause )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:567:23: ( elseClause )?
                     	int alt71 = 2;
                     	int LA71_0 = input.LA(1);
 
@@ -7760,9 +7750,9 @@ public partial class HqlParser : Parser
                     	switch (alt71) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:566:24: elseClause
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:567:24: elseClause
                     	        {
-                    	        	PushFollow(FOLLOW_elseClause_in_caseExpression2546);
+                    	        	PushFollow(FOLLOW_elseClause_in_caseExpression2548);
                     	        	elseClause199 = elseClause();
                     	        	state.followingStackPointer--;
 
@@ -7773,13 +7763,13 @@ public partial class HqlParser : Parser
 
                     	}
 
-                    	END200=(IToken)Match(input,END,FOLLOW_END_in_caseExpression2550);  
+                    	END200=(IToken)Match(input,END,FOLLOW_END_in_caseExpression2552);  
                     	stream_END.Add(END200);
 
 
 
                     	// AST REWRITE
-                    	// elements:          elseClause, whenClause, CASE
+                    	// elements:          whenClause, elseClause, CASE
                     	// token labels:      
                     	// rule labels:       retval
                     	// token list labels: 
@@ -7789,15 +7779,15 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 567:3: -> ^( CASE whenClause ( elseClause )? )
+                    	// 568:3: -> ^( CASE whenClause ( elseClause )? )
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:567:6: ^( CASE whenClause ( elseClause )? )
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:568:6: ^( CASE whenClause ( elseClause )? )
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_CASE.NextNode(), root_1);
 
                     	    adaptor.AddChild(root_1, stream_whenClause.NextTree());
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:567:24: ( elseClause )?
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:568:24: ( elseClause )?
                     	    if ( stream_elseClause.HasNext() )
                     	    {
                     	        adaptor.AddChild(root_1, stream_elseClause.NextTree());
@@ -7814,17 +7804,17 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:568:4: CASE unaryExpression ( altWhenClause )+ ( elseClause )? END
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:569:4: CASE unaryExpression ( altWhenClause )+ ( elseClause )? END
                     {
-                    	CASE201=(IToken)Match(input,CASE,FOLLOW_CASE_in_caseExpression2569);  
+                    	CASE201=(IToken)Match(input,CASE,FOLLOW_CASE_in_caseExpression2571);  
                     	stream_CASE.Add(CASE201);
 
-                    	PushFollow(FOLLOW_unaryExpression_in_caseExpression2571);
+                    	PushFollow(FOLLOW_unaryExpression_in_caseExpression2573);
                     	unaryExpression202 = unaryExpression();
                     	state.followingStackPointer--;
 
                     	stream_unaryExpression.Add(unaryExpression202.Tree);
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:568:25: ( altWhenClause )+
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:569:25: ( altWhenClause )+
                     	int cnt72 = 0;
                     	do 
                     	{
@@ -7840,9 +7830,9 @@ public partial class HqlParser : Parser
                     	    switch (alt72) 
                     		{
                     			case 1 :
-                    			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:568:26: altWhenClause
+                    			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:569:26: altWhenClause
                     			    {
-                    			    	PushFollow(FOLLOW_altWhenClause_in_caseExpression2574);
+                    			    	PushFollow(FOLLOW_altWhenClause_in_caseExpression2576);
                     			    	altWhenClause203 = altWhenClause();
                     			    	state.followingStackPointer--;
 
@@ -7863,7 +7853,7 @@ public partial class HqlParser : Parser
                     	loop72:
                     		;	// Stops C# compiler whinging that label 'loop72' has no statements
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:568:42: ( elseClause )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:569:42: ( elseClause )?
                     	int alt73 = 2;
                     	int LA73_0 = input.LA(1);
 
@@ -7874,9 +7864,9 @@ public partial class HqlParser : Parser
                     	switch (alt73) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:568:43: elseClause
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:569:43: elseClause
                     	        {
-                    	        	PushFollow(FOLLOW_elseClause_in_caseExpression2579);
+                    	        	PushFollow(FOLLOW_elseClause_in_caseExpression2581);
                     	        	elseClause204 = elseClause();
                     	        	state.followingStackPointer--;
 
@@ -7887,7 +7877,7 @@ public partial class HqlParser : Parser
 
                     	}
 
-                    	END205=(IToken)Match(input,END,FOLLOW_END_in_caseExpression2583);  
+                    	END205=(IToken)Match(input,END,FOLLOW_END_in_caseExpression2585);  
                     	stream_END.Add(END205);
 
 
@@ -7903,9 +7893,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 569:3: -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? )
+                    	// 570:3: -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? )
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:569:6: ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? )
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:570:6: ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? )
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(CASE2, "CASE2"), root_1);
@@ -7920,7 +7910,7 @@ public partial class HqlParser : Parser
 
                     	    }
                     	    stream_altWhenClause.Reset();
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:569:45: ( elseClause )?
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:570:45: ( elseClause )?
                     	    if ( stream_elseClause.HasNext() )
                     	    {
                     	        adaptor.AddChild(root_1, stream_elseClause.NextTree());
@@ -7969,7 +7959,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "whenClause"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:572:1: whenClause : ( WHEN logicalExpression THEN unaryExpression ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:573:1: whenClause : ( WHEN logicalExpression THEN unaryExpression ) ;
     public HqlParser.whenClause_return whenClause() // throws RecognitionException [1]
     {   
         HqlParser.whenClause_return retval = new HqlParser.whenClause_return();
@@ -7989,25 +7979,25 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:573:2: ( ( WHEN logicalExpression THEN unaryExpression ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:573:4: ( WHEN logicalExpression THEN unaryExpression )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:574:2: ( ( WHEN logicalExpression THEN unaryExpression ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:574:4: ( WHEN logicalExpression THEN unaryExpression )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:573:4: ( WHEN logicalExpression THEN unaryExpression )
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:573:5: WHEN logicalExpression THEN unaryExpression
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:574:4: ( WHEN logicalExpression THEN unaryExpression )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:574:5: WHEN logicalExpression THEN unaryExpression
             	{
-            		WHEN206=(IToken)Match(input,WHEN,FOLLOW_WHEN_in_whenClause2612); 
+            		WHEN206=(IToken)Match(input,WHEN,FOLLOW_WHEN_in_whenClause2614); 
             			WHEN206_tree = (IASTNode)adaptor.Create(WHEN206);
             			root_0 = (IASTNode)adaptor.BecomeRoot(WHEN206_tree, root_0);
 
-            		PushFollow(FOLLOW_logicalExpression_in_whenClause2615);
+            		PushFollow(FOLLOW_logicalExpression_in_whenClause2617);
             		logicalExpression207 = logicalExpression();
             		state.followingStackPointer--;
 
             		adaptor.AddChild(root_0, logicalExpression207.Tree);
-            		THEN208=(IToken)Match(input,THEN,FOLLOW_THEN_in_whenClause2617); 
-            		PushFollow(FOLLOW_unaryExpression_in_whenClause2620);
+            		THEN208=(IToken)Match(input,THEN,FOLLOW_THEN_in_whenClause2619); 
+            		PushFollow(FOLLOW_unaryExpression_in_whenClause2622);
             		unaryExpression209 = unaryExpression();
             		state.followingStackPointer--;
 
@@ -8049,7 +8039,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "altWhenClause"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:576:1: altWhenClause : ( WHEN unaryExpression THEN unaryExpression ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:577:1: altWhenClause : ( WHEN unaryExpression THEN unaryExpression ) ;
     public HqlParser.altWhenClause_return altWhenClause() // throws RecognitionException [1]
     {   
         HqlParser.altWhenClause_return retval = new HqlParser.altWhenClause_return();
@@ -8069,25 +8059,25 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:577:2: ( ( WHEN unaryExpression THEN unaryExpression ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:577:4: ( WHEN unaryExpression THEN unaryExpression )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:578:2: ( ( WHEN unaryExpression THEN unaryExpression ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:578:4: ( WHEN unaryExpression THEN unaryExpression )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:577:4: ( WHEN unaryExpression THEN unaryExpression )
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:577:5: WHEN unaryExpression THEN unaryExpression
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:578:4: ( WHEN unaryExpression THEN unaryExpression )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:578:5: WHEN unaryExpression THEN unaryExpression
             	{
-            		WHEN210=(IToken)Match(input,WHEN,FOLLOW_WHEN_in_altWhenClause2634); 
+            		WHEN210=(IToken)Match(input,WHEN,FOLLOW_WHEN_in_altWhenClause2636); 
             			WHEN210_tree = (IASTNode)adaptor.Create(WHEN210);
             			root_0 = (IASTNode)adaptor.BecomeRoot(WHEN210_tree, root_0);
 
-            		PushFollow(FOLLOW_unaryExpression_in_altWhenClause2637);
+            		PushFollow(FOLLOW_unaryExpression_in_altWhenClause2639);
             		unaryExpression211 = unaryExpression();
             		state.followingStackPointer--;
 
             		adaptor.AddChild(root_0, unaryExpression211.Tree);
-            		THEN212=(IToken)Match(input,THEN,FOLLOW_THEN_in_altWhenClause2639); 
-            		PushFollow(FOLLOW_unaryExpression_in_altWhenClause2642);
+            		THEN212=(IToken)Match(input,THEN,FOLLOW_THEN_in_altWhenClause2641); 
+            		PushFollow(FOLLOW_unaryExpression_in_altWhenClause2644);
             		unaryExpression213 = unaryExpression();
             		state.followingStackPointer--;
 
@@ -8129,7 +8119,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "elseClause"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:580:1: elseClause : ( ELSE unaryExpression ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:581:1: elseClause : ( ELSE unaryExpression ) ;
     public HqlParser.elseClause_return elseClause() // throws RecognitionException [1]
     {   
         HqlParser.elseClause_return retval = new HqlParser.elseClause_return();
@@ -8145,19 +8135,19 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:581:2: ( ( ELSE unaryExpression ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:581:4: ( ELSE unaryExpression )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:582:2: ( ( ELSE unaryExpression ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:582:4: ( ELSE unaryExpression )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:581:4: ( ELSE unaryExpression )
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:581:5: ELSE unaryExpression
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:582:4: ( ELSE unaryExpression )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:582:5: ELSE unaryExpression
             	{
-            		ELSE214=(IToken)Match(input,ELSE,FOLLOW_ELSE_in_elseClause2656); 
+            		ELSE214=(IToken)Match(input,ELSE,FOLLOW_ELSE_in_elseClause2658); 
             			ELSE214_tree = (IASTNode)adaptor.Create(ELSE214);
             			root_0 = (IASTNode)adaptor.BecomeRoot(ELSE214_tree, root_0);
 
-            		PushFollow(FOLLOW_unaryExpression_in_elseClause2659);
+            		PushFollow(FOLLOW_unaryExpression_in_elseClause2661);
             		unaryExpression215 = unaryExpression();
             		state.followingStackPointer--;
 
@@ -8199,7 +8189,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "quantifiedExpression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:584:1: quantifiedExpression : ( SOME | EXISTS | ALL | ANY ) ( identifier | collectionExpr | ( OPEN ( subQuery ) CLOSE ) ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:585:1: quantifiedExpression : ( SOME | EXISTS | ALL | ANY ) ( identifier | collectionExpr | ( OPEN ( subQuery ) CLOSE ) ) ;
     public HqlParser.quantifiedExpression_return quantifiedExpression() // throws RecognitionException [1]
     {   
         HqlParser.quantifiedExpression_return retval = new HqlParser.quantifiedExpression_return();
@@ -8229,12 +8219,12 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:585:2: ( ( SOME | EXISTS | ALL | ANY ) ( identifier | collectionExpr | ( OPEN ( subQuery ) CLOSE ) ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:585:4: ( SOME | EXISTS | ALL | ANY ) ( identifier | collectionExpr | ( OPEN ( subQuery ) CLOSE ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:586:2: ( ( SOME | EXISTS | ALL | ANY ) ( identifier | collectionExpr | ( OPEN ( subQuery ) CLOSE ) ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:586:4: ( SOME | EXISTS | ALL | ANY ) ( identifier | collectionExpr | ( OPEN ( subQuery ) CLOSE ) )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:585:4: ( SOME | EXISTS | ALL | ANY )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:586:4: ( SOME | EXISTS | ALL | ANY )
             	int alt75 = 4;
             	switch ( input.LA(1) ) 
             	{
@@ -8268,9 +8258,9 @@ public partial class HqlParser : Parser
             	switch (alt75) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:585:6: SOME
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:586:6: SOME
             	        {
-            	        	SOME216=(IToken)Match(input,SOME,FOLLOW_SOME_in_quantifiedExpression2674); 
+            	        	SOME216=(IToken)Match(input,SOME,FOLLOW_SOME_in_quantifiedExpression2676); 
             	        		SOME216_tree = (IASTNode)adaptor.Create(SOME216);
             	        		root_0 = (IASTNode)adaptor.BecomeRoot(SOME216_tree, root_0);
 
@@ -8278,9 +8268,9 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 2 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:585:14: EXISTS
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:586:14: EXISTS
             	        {
-            	        	EXISTS217=(IToken)Match(input,EXISTS,FOLLOW_EXISTS_in_quantifiedExpression2679); 
+            	        	EXISTS217=(IToken)Match(input,EXISTS,FOLLOW_EXISTS_in_quantifiedExpression2681); 
             	        		EXISTS217_tree = (IASTNode)adaptor.Create(EXISTS217);
             	        		root_0 = (IASTNode)adaptor.BecomeRoot(EXISTS217_tree, root_0);
 
@@ -8288,9 +8278,9 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 3 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:585:24: ALL
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:586:24: ALL
             	        {
-            	        	ALL218=(IToken)Match(input,ALL,FOLLOW_ALL_in_quantifiedExpression2684); 
+            	        	ALL218=(IToken)Match(input,ALL,FOLLOW_ALL_in_quantifiedExpression2686); 
             	        		ALL218_tree = (IASTNode)adaptor.Create(ALL218);
             	        		root_0 = (IASTNode)adaptor.BecomeRoot(ALL218_tree, root_0);
 
@@ -8298,9 +8288,9 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 4 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:585:31: ANY
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:586:31: ANY
             	        {
-            	        	ANY219=(IToken)Match(input,ANY,FOLLOW_ANY_in_quantifiedExpression2689); 
+            	        	ANY219=(IToken)Match(input,ANY,FOLLOW_ANY_in_quantifiedExpression2691); 
             	        		ANY219_tree = (IASTNode)adaptor.Create(ANY219);
             	        		root_0 = (IASTNode)adaptor.BecomeRoot(ANY219_tree, root_0);
 
@@ -8310,7 +8300,7 @@ public partial class HqlParser : Parser
 
             	}
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:586:2: ( identifier | collectionExpr | ( OPEN ( subQuery ) CLOSE ) )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:587:2: ( identifier | collectionExpr | ( OPEN ( subQuery ) CLOSE ) )
             	int alt76 = 3;
             	switch ( input.LA(1) ) 
             	{
@@ -8340,9 +8330,9 @@ public partial class HqlParser : Parser
             	switch (alt76) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:586:4: identifier
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:587:4: identifier
             	        {
-            	        	PushFollow(FOLLOW_identifier_in_quantifiedExpression2698);
+            	        	PushFollow(FOLLOW_identifier_in_quantifiedExpression2700);
             	        	identifier220 = identifier();
             	        	state.followingStackPointer--;
 
@@ -8351,9 +8341,9 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 2 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:586:17: collectionExpr
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:587:17: collectionExpr
             	        {
-            	        	PushFollow(FOLLOW_collectionExpr_in_quantifiedExpression2702);
+            	        	PushFollow(FOLLOW_collectionExpr_in_quantifiedExpression2704);
             	        	collectionExpr221 = collectionExpr();
             	        	state.followingStackPointer--;
 
@@ -8362,16 +8352,16 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 3 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:586:34: ( OPEN ( subQuery ) CLOSE )
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:587:34: ( OPEN ( subQuery ) CLOSE )
             	        {
-            	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:586:34: ( OPEN ( subQuery ) CLOSE )
-            	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:586:35: OPEN ( subQuery ) CLOSE
+            	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:587:34: ( OPEN ( subQuery ) CLOSE )
+            	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:587:35: OPEN ( subQuery ) CLOSE
             	        	{
-            	        		OPEN222=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_quantifiedExpression2707); 
-            	        		// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:586:41: ( subQuery )
-            	        		// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:586:43: subQuery
+            	        		OPEN222=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_quantifiedExpression2709); 
+            	        		// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:587:41: ( subQuery )
+            	        		// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:587:43: subQuery
             	        		{
-            	        			PushFollow(FOLLOW_subQuery_in_quantifiedExpression2712);
+            	        			PushFollow(FOLLOW_subQuery_in_quantifiedExpression2714);
             	        			subQuery223 = subQuery();
             	        			state.followingStackPointer--;
 
@@ -8379,7 +8369,7 @@ public partial class HqlParser : Parser
 
             	        		}
 
-            	        		CLOSE224=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_quantifiedExpression2716); 
+            	        		CLOSE224=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_quantifiedExpression2718); 
 
             	        	}
 
@@ -8423,7 +8413,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "atom"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:592:1: atom : primaryExpression ( DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )? | lb= OPEN_BRACKET expression CLOSE_BRACKET )* ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:593:1: atom : primaryExpression ( DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )? | lb= OPEN_BRACKET expression CLOSE_BRACKET )* ;
     public HqlParser.atom_return atom() // throws RecognitionException [1]
     {   
         HqlParser.atom_return retval = new HqlParser.atom_return();
@@ -8453,17 +8443,17 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:593:3: ( primaryExpression ( DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )? | lb= OPEN_BRACKET expression CLOSE_BRACKET )* )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:593:5: primaryExpression ( DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )? | lb= OPEN_BRACKET expression CLOSE_BRACKET )*
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:594:3: ( primaryExpression ( DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )? | lb= OPEN_BRACKET expression CLOSE_BRACKET )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:594:5: primaryExpression ( DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )? | lb= OPEN_BRACKET expression CLOSE_BRACKET )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_primaryExpression_in_atom2735);
+            	PushFollow(FOLLOW_primaryExpression_in_atom2737);
             	primaryExpression225 = primaryExpression();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, primaryExpression225.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:594:3: ( DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )? | lb= OPEN_BRACKET expression CLOSE_BRACKET )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:595:3: ( DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )? | lb= OPEN_BRACKET expression CLOSE_BRACKET )*
             	do 
             	{
             	    int alt78 = 3;
@@ -8482,18 +8472,18 @@ public partial class HqlParser : Parser
             	    switch (alt78) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:595:4: DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )?
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:596:4: DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )?
             			    {
-            			    	DOT226=(IToken)Match(input,DOT,FOLLOW_DOT_in_atom2744); 
+            			    	DOT226=(IToken)Match(input,DOT,FOLLOW_DOT_in_atom2746); 
             			    		DOT226_tree = (IASTNode)adaptor.Create(DOT226);
             			    		root_0 = (IASTNode)adaptor.BecomeRoot(DOT226_tree, root_0);
 
-            			    	PushFollow(FOLLOW_identifier_in_atom2747);
+            			    	PushFollow(FOLLOW_identifier_in_atom2749);
             			    	identifier227 = identifier();
             			    	state.followingStackPointer--;
 
             			    	adaptor.AddChild(root_0, identifier227.Tree);
-            			    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:596:5: ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )?
+            			    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:597:5: ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )?
             			    	int alt77 = 2;
             			    	int LA77_0 = input.LA(1);
 
@@ -8504,22 +8494,22 @@ public partial class HqlParser : Parser
             			    	switch (alt77) 
             			    	{
             			    	    case 1 :
-            			    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:597:6: (op= OPEN exprList CLOSE )
+            			    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:598:6: (op= OPEN exprList CLOSE )
             			    	        {
-            			    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:597:6: (op= OPEN exprList CLOSE )
-            			    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:597:8: op= OPEN exprList CLOSE
+            			    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:598:6: (op= OPEN exprList CLOSE )
+            			    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:598:8: op= OPEN exprList CLOSE
             			    	        	{
-            			    	        		op=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_atom2775); 
+            			    	        		op=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_atom2777); 
             			    	        			op_tree = (IASTNode)adaptor.Create(op);
             			    	        			root_0 = (IASTNode)adaptor.BecomeRoot(op_tree, root_0);
 
             			    	        		op.Type = METHOD_CALL; 
-            			    	        		PushFollow(FOLLOW_exprList_in_atom2780);
+            			    	        		PushFollow(FOLLOW_exprList_in_atom2782);
             			    	        		exprList228 = exprList();
             			    	        		state.followingStackPointer--;
 
             			    	        		adaptor.AddChild(root_0, exprList228.Tree);
-            			    	        		CLOSE229=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_atom2782); 
+            			    	        		CLOSE229=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_atom2784); 
 
             			    	        	}
 
@@ -8533,19 +8523,19 @@ public partial class HqlParser : Parser
             			    }
             			    break;
             			case 2 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:598:5: lb= OPEN_BRACKET expression CLOSE_BRACKET
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:599:5: lb= OPEN_BRACKET expression CLOSE_BRACKET
             			    {
-            			    	lb=(IToken)Match(input,OPEN_BRACKET,FOLLOW_OPEN_BRACKET_in_atom2796); 
+            			    	lb=(IToken)Match(input,OPEN_BRACKET,FOLLOW_OPEN_BRACKET_in_atom2798); 
             			    		lb_tree = (IASTNode)adaptor.Create(lb);
             			    		root_0 = (IASTNode)adaptor.BecomeRoot(lb_tree, root_0);
 
             			    	lb.Type = INDEX_OP; 
-            			    	PushFollow(FOLLOW_expression_in_atom2801);
+            			    	PushFollow(FOLLOW_expression_in_atom2803);
             			    	expression230 = expression();
             			    	state.followingStackPointer--;
 
             			    	adaptor.AddChild(root_0, expression230.Tree);
-            			    	CLOSE_BRACKET231=(IToken)Match(input,CLOSE_BRACKET,FOLLOW_CLOSE_BRACKET_in_atom2803); 
+            			    	CLOSE_BRACKET231=(IToken)Match(input,CLOSE_BRACKET,FOLLOW_CLOSE_BRACKET_in_atom2805); 
 
             			    }
             			    break;
@@ -8592,7 +8582,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "primaryExpression"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:603:1: primaryExpression : ( identPrimary ( options {greedy=true; } : DOT 'class' )? | constant | COLON identifier | OPEN ( expressionOrVector | subQuery ) CLOSE | PARAM ( NUM_INT )? );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:604:1: primaryExpression : ( identPrimary ( options {greedy=true; } : DOT 'class' )? | constant | COLON identifier | OPEN ( expressionOrVector | subQuery ) CLOSE | PARAM ( NUM_INT )? );
     public HqlParser.primaryExpression_return primaryExpression() // throws RecognitionException [1]
     {   
         HqlParser.primaryExpression_return retval = new HqlParser.primaryExpression_return();
@@ -8628,7 +8618,7 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:604:2: ( identPrimary ( options {greedy=true; } : DOT 'class' )? | constant | COLON identifier | OPEN ( expressionOrVector | subQuery ) CLOSE | PARAM ( NUM_INT )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:605:2: ( identPrimary ( options {greedy=true; } : DOT 'class' )? | constant | COLON identifier | OPEN ( expressionOrVector | subQuery ) CLOSE | PARAM ( NUM_INT )? )
             int alt82 = 5;
             switch ( input.LA(1) ) 
             {
@@ -8682,16 +8672,16 @@ public partial class HqlParser : Parser
             switch (alt82) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:604:6: identPrimary ( options {greedy=true; } : DOT 'class' )?
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:605:6: identPrimary ( options {greedy=true; } : DOT 'class' )?
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_identPrimary_in_primaryExpression2823);
+                    	PushFollow(FOLLOW_identPrimary_in_primaryExpression2825);
                     	identPrimary232 = identPrimary();
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, identPrimary232.Tree);
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:604:19: ( options {greedy=true; } : DOT 'class' )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:605:19: ( options {greedy=true; } : DOT 'class' )?
                     	int alt79 = 2;
                     	int LA79_0 = input.LA(1);
 
@@ -8707,13 +8697,13 @@ public partial class HqlParser : Parser
                     	switch (alt79) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:604:46: DOT 'class'
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:605:46: DOT 'class'
                     	        {
-                    	        	DOT233=(IToken)Match(input,DOT,FOLLOW_DOT_in_primaryExpression2836); 
+                    	        	DOT233=(IToken)Match(input,DOT,FOLLOW_DOT_in_primaryExpression2838); 
                     	        		DOT233_tree = (IASTNode)adaptor.Create(DOT233);
                     	        		root_0 = (IASTNode)adaptor.BecomeRoot(DOT233_tree, root_0);
 
-                    	        	string_literal234=(IToken)Match(input,CLASS,FOLLOW_CLASS_in_primaryExpression2839); 
+                    	        	string_literal234=(IToken)Match(input,CLASS,FOLLOW_CLASS_in_primaryExpression2841); 
                     	        		string_literal234_tree = (IASTNode)adaptor.Create(string_literal234);
                     	        		adaptor.AddChild(root_0, string_literal234_tree);
 
@@ -8727,11 +8717,11 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:605:6: constant
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:606:6: constant
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_constant_in_primaryExpression2849);
+                    	PushFollow(FOLLOW_constant_in_primaryExpression2851);
                     	constant235 = constant();
                     	state.followingStackPointer--;
 
@@ -8740,15 +8730,15 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:606:6: COLON identifier
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:607:6: COLON identifier
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	COLON236=(IToken)Match(input,COLON,FOLLOW_COLON_in_primaryExpression2856); 
+                    	COLON236=(IToken)Match(input,COLON,FOLLOW_COLON_in_primaryExpression2858); 
                     		COLON236_tree = (IASTNode)adaptor.Create(COLON236);
                     		root_0 = (IASTNode)adaptor.BecomeRoot(COLON236_tree, root_0);
 
-                    	PushFollow(FOLLOW_identifier_in_primaryExpression2859);
+                    	PushFollow(FOLLOW_identifier_in_primaryExpression2861);
                     	identifier237 = identifier();
                     	state.followingStackPointer--;
 
@@ -8757,12 +8747,12 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:608:6: OPEN ( expressionOrVector | subQuery ) CLOSE
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:609:6: OPEN ( expressionOrVector | subQuery ) CLOSE
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	OPEN238=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_primaryExpression2868); 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:608:12: ( expressionOrVector | subQuery )
+                    	OPEN238=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_primaryExpression2870); 
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:609:12: ( expressionOrVector | subQuery )
                     	int alt80 = 2;
                     	int LA80_0 = input.LA(1);
 
@@ -8784,9 +8774,9 @@ public partial class HqlParser : Parser
                     	switch (alt80) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:608:13: expressionOrVector
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:609:13: expressionOrVector
                     	        {
-                    	        	PushFollow(FOLLOW_expressionOrVector_in_primaryExpression2872);
+                    	        	PushFollow(FOLLOW_expressionOrVector_in_primaryExpression2874);
                     	        	expressionOrVector239 = expressionOrVector();
                     	        	state.followingStackPointer--;
 
@@ -8795,9 +8785,9 @@ public partial class HqlParser : Parser
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:608:34: subQuery
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:609:34: subQuery
                     	        {
-                    	        	PushFollow(FOLLOW_subQuery_in_primaryExpression2876);
+                    	        	PushFollow(FOLLOW_subQuery_in_primaryExpression2878);
                     	        	subQuery240 = subQuery();
                     	        	state.followingStackPointer--;
 
@@ -8808,20 +8798,20 @@ public partial class HqlParser : Parser
 
                     	}
 
-                    	CLOSE241=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_primaryExpression2879); 
+                    	CLOSE241=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_primaryExpression2881); 
 
                     }
                     break;
                 case 5 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:609:6: PARAM ( NUM_INT )?
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:610:6: PARAM ( NUM_INT )?
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PARAM242=(IToken)Match(input,PARAM,FOLLOW_PARAM_in_primaryExpression2887); 
+                    	PARAM242=(IToken)Match(input,PARAM,FOLLOW_PARAM_in_primaryExpression2889); 
                     		PARAM242_tree = (IASTNode)adaptor.Create(PARAM242);
                     		root_0 = (IASTNode)adaptor.BecomeRoot(PARAM242_tree, root_0);
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:609:13: ( NUM_INT )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:610:13: ( NUM_INT )?
                     	int alt81 = 2;
                     	int LA81_0 = input.LA(1);
 
@@ -8832,9 +8822,9 @@ public partial class HqlParser : Parser
                     	switch (alt81) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:609:14: NUM_INT
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:610:14: NUM_INT
                     	        {
-                    	        	NUM_INT243=(IToken)Match(input,NUM_INT,FOLLOW_NUM_INT_in_primaryExpression2891); 
+                    	        	NUM_INT243=(IToken)Match(input,NUM_INT,FOLLOW_NUM_INT_in_primaryExpression2893); 
                     	        		NUM_INT243_tree = (IASTNode)adaptor.Create(NUM_INT243);
                     	        		adaptor.AddChild(root_0, NUM_INT243_tree);
 
@@ -8880,7 +8870,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "expressionOrVector"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:614:1: expressionOrVector : e= expression (v= vectorExpr )? -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v) -> ^( $e) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:615:1: expressionOrVector : e= expression (v= vectorExpr )? -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v) -> ^( $e) ;
     public HqlParser.expressionOrVector_return expressionOrVector() // throws RecognitionException [1]
     {   
         HqlParser.expressionOrVector_return retval = new HqlParser.expressionOrVector_return();
@@ -8893,19 +8883,19 @@ public partial class HqlParser : Parser
         HqlParser.vectorExpr_return v = default(HqlParser.vectorExpr_return);
 
 
-        RewriteRuleSubtreeStream stream_vectorExpr = new RewriteRuleSubtreeStream(adaptor,"rule vectorExpr");
         RewriteRuleSubtreeStream stream_expression = new RewriteRuleSubtreeStream(adaptor,"rule expression");
+        RewriteRuleSubtreeStream stream_vectorExpr = new RewriteRuleSubtreeStream(adaptor,"rule vectorExpr");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:615:2: (e= expression (v= vectorExpr )? -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v) -> ^( $e) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:615:4: e= expression (v= vectorExpr )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:616:2: (e= expression (v= vectorExpr )? -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v) -> ^( $e) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:616:4: e= expression (v= vectorExpr )?
             {
-            	PushFollow(FOLLOW_expression_in_expressionOrVector2909);
+            	PushFollow(FOLLOW_expression_in_expressionOrVector2911);
             	e = expression();
             	state.followingStackPointer--;
 
             	stream_expression.Add(e.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:615:17: (v= vectorExpr )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:616:17: (v= vectorExpr )?
             	int alt83 = 2;
             	int LA83_0 = input.LA(1);
 
@@ -8916,9 +8906,9 @@ public partial class HqlParser : Parser
             	switch (alt83) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:615:19: v= vectorExpr
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:616:19: v= vectorExpr
             	        {
-            	        	PushFollow(FOLLOW_vectorExpr_in_expressionOrVector2915);
+            	        	PushFollow(FOLLOW_vectorExpr_in_expressionOrVector2917);
             	        	v = vectorExpr();
             	        	state.followingStackPointer--;
 
@@ -8934,20 +8924,20 @@ public partial class HqlParser : Parser
             	// AST REWRITE
             	// elements:          e, e, v
             	// token labels:      
-            	// rule labels:       retval, v, e
+            	// rule labels:       v, retval, e
             	// token list labels: 
             	// rule list labels:  
             	// wildcard labels: 
             	retval.Tree = root_0;
-            	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
             	RewriteRuleSubtreeStream stream_v = new RewriteRuleSubtreeStream(adaptor, "rule v", v!=null ? v.Tree : null);
+            	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
             	RewriteRuleSubtreeStream stream_e = new RewriteRuleSubtreeStream(adaptor, "rule e", e!=null ? e.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 616:2: -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v)
+            	// 617:2: -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v)
             	if (v != null)
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:616:18: ^( VECTOR_EXPR[\"{vector}\"] $e $v)
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:617:18: ^( VECTOR_EXPR[\"{vector}\"] $e $v)
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(VECTOR_EXPR, "{vector}"), root_1);
@@ -8959,9 +8949,9 @@ public partial class HqlParser : Parser
             	    }
 
             	}
-            	else // 617:2: -> ^( $e)
+            	else // 618:2: -> ^( $e)
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:617:5: ^( $e)
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:618:5: ^( $e)
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_e.NextNode(), root_1);
@@ -9005,7 +8995,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "vectorExpr"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:620:1: vectorExpr : COMMA expression ( COMMA expression )* ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:621:1: vectorExpr : COMMA expression ( COMMA expression )* ;
     public HqlParser.vectorExpr_return vectorExpr() // throws RecognitionException [1]
     {   
         HqlParser.vectorExpr_return retval = new HqlParser.vectorExpr_return();
@@ -9025,18 +9015,18 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:621:2: ( COMMA expression ( COMMA expression )* )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:621:4: COMMA expression ( COMMA expression )*
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:622:2: ( COMMA expression ( COMMA expression )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:622:4: COMMA expression ( COMMA expression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	COMMA244=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_vectorExpr2954); 
-            	PushFollow(FOLLOW_expression_in_vectorExpr2957);
+            	COMMA244=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_vectorExpr2956); 
+            	PushFollow(FOLLOW_expression_in_vectorExpr2959);
             	expression245 = expression();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, expression245.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:621:22: ( COMMA expression )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:622:22: ( COMMA expression )*
             	do 
             	{
             	    int alt84 = 2;
@@ -9051,10 +9041,10 @@ public partial class HqlParser : Parser
             	    switch (alt84) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:621:23: COMMA expression
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:622:23: COMMA expression
             			    {
-            			    	COMMA246=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_vectorExpr2960); 
-            			    	PushFollow(FOLLOW_expression_in_vectorExpr2963);
+            			    	COMMA246=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_vectorExpr2962); 
+            			    	PushFollow(FOLLOW_expression_in_vectorExpr2965);
             			    	expression247 = expression();
             			    	state.followingStackPointer--;
 
@@ -9105,7 +9095,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "identPrimary"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:627:1: identPrimary : ( identifier ( options {greedy=true; } : DOT ( identifier | o= OBJECT ) )* ( (op= OPEN exprList CLOSE ) )? | aggregate );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:628:1: identPrimary : ( identifier ( options {greedy=true; } : DOT ( identifier | o= OBJECT ) )* ( (op= OPEN exprList CLOSE ) )? | aggregate );
     public HqlParser.identPrimary_return identPrimary() // throws RecognitionException [1]
     {   
         HqlParser.identPrimary_return retval = new HqlParser.identPrimary_return();
@@ -9133,7 +9123,7 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:628:2: ( identifier ( options {greedy=true; } : DOT ( identifier | o= OBJECT ) )* ( (op= OPEN exprList CLOSE ) )? | aggregate )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:629:2: ( identifier ( options {greedy=true; } : DOT ( identifier | o= OBJECT ) )* ( (op= OPEN exprList CLOSE ) )? | aggregate )
             int alt88 = 2;
             int LA88_0 = input.LA(1);
 
@@ -9155,17 +9145,17 @@ public partial class HqlParser : Parser
             switch (alt88) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:628:4: identifier ( options {greedy=true; } : DOT ( identifier | o= OBJECT ) )* ( (op= OPEN exprList CLOSE ) )?
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:629:4: identifier ( options {greedy=true; } : DOT ( identifier | o= OBJECT ) )* ( (op= OPEN exprList CLOSE ) )?
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_identifier_in_identPrimary2979);
+                    	PushFollow(FOLLOW_identifier_in_identPrimary2981);
                     	identifier248 = identifier();
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, identifier248.Tree);
                     	 HandleDotIdent(); 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:629:4: ( options {greedy=true; } : DOT ( identifier | o= OBJECT ) )*
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:630:4: ( options {greedy=true; } : DOT ( identifier | o= OBJECT ) )*
                     	do 
                     	{
                     	    int alt86 = 2;
@@ -9187,13 +9177,13 @@ public partial class HqlParser : Parser
                     	    switch (alt86) 
                     		{
                     			case 1 :
-                    			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:629:31: DOT ( identifier | o= OBJECT )
+                    			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:630:31: DOT ( identifier | o= OBJECT )
                     			    {
-                    			    	DOT249=(IToken)Match(input,DOT,FOLLOW_DOT_in_identPrimary2997); 
+                    			    	DOT249=(IToken)Match(input,DOT,FOLLOW_DOT_in_identPrimary2999); 
                     			    		DOT249_tree = (IASTNode)adaptor.Create(DOT249);
                     			    		root_0 = (IASTNode)adaptor.BecomeRoot(DOT249_tree, root_0);
 
-                    			    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:629:36: ( identifier | o= OBJECT )
+                    			    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:630:36: ( identifier | o= OBJECT )
                     			    	int alt85 = 2;
                     			    	int LA85_0 = input.LA(1);
 
@@ -9215,9 +9205,9 @@ public partial class HqlParser : Parser
                     			    	switch (alt85) 
                     			    	{
                     			    	    case 1 :
-                    			    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:629:38: identifier
+                    			    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:630:38: identifier
                     			    	        {
-                    			    	        	PushFollow(FOLLOW_identifier_in_identPrimary3002);
+                    			    	        	PushFollow(FOLLOW_identifier_in_identPrimary3004);
                     			    	        	identifier250 = identifier();
                     			    	        	state.followingStackPointer--;
 
@@ -9226,9 +9216,9 @@ public partial class HqlParser : Parser
                     			    	        }
                     			    	        break;
                     			    	    case 2 :
-                    			    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:629:51: o= OBJECT
+                    			    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:630:51: o= OBJECT
                     			    	        {
-                    			    	        	o=(IToken)Match(input,OBJECT,FOLLOW_OBJECT_in_identPrimary3008); 
+                    			    	        	o=(IToken)Match(input,OBJECT,FOLLOW_OBJECT_in_identPrimary3010); 
                     			    	        		o_tree = (IASTNode)adaptor.Create(o);
                     			    	        		adaptor.AddChild(root_0, o_tree);
 
@@ -9251,7 +9241,7 @@ public partial class HqlParser : Parser
                     	loop86:
                     		;	// Stops C# compiler whining that label 'loop86' has no statements
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:630:4: ( (op= OPEN exprList CLOSE ) )?
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:631:4: ( (op= OPEN exprList CLOSE ) )?
                     	int alt87 = 2;
                     	int LA87_0 = input.LA(1);
 
@@ -9262,22 +9252,22 @@ public partial class HqlParser : Parser
                     	switch (alt87) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:630:6: (op= OPEN exprList CLOSE )
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:631:6: (op= OPEN exprList CLOSE )
                     	        {
-                    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:630:6: (op= OPEN exprList CLOSE )
-                    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:630:8: op= OPEN exprList CLOSE
+                    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:631:6: (op= OPEN exprList CLOSE )
+                    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:631:8: op= OPEN exprList CLOSE
                     	        	{
-                    	        		op=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_identPrimary3026); 
+                    	        		op=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_identPrimary3028); 
                     	        			op_tree = (IASTNode)adaptor.Create(op);
                     	        			root_0 = (IASTNode)adaptor.BecomeRoot(op_tree, root_0);
 
                     	        		 op.Type = METHOD_CALL;
-                    	        		PushFollow(FOLLOW_exprList_in_identPrimary3031);
+                    	        		PushFollow(FOLLOW_exprList_in_identPrimary3033);
                     	        		exprList251 = exprList();
                     	        		state.followingStackPointer--;
 
                     	        		adaptor.AddChild(root_0, exprList251.Tree);
-                    	        		CLOSE252=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_identPrimary3033); 
+                    	        		CLOSE252=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_identPrimary3035); 
 
                     	        	}
 
@@ -9291,11 +9281,11 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:633:4: aggregate
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:634:4: aggregate
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_aggregate_in_identPrimary3049);
+                    	PushFollow(FOLLOW_aggregate_in_identPrimary3051);
                     	aggregate253 = aggregate();
                     	state.followingStackPointer--;
 
@@ -9336,7 +9326,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "aggregate"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:641:1: aggregate : ( (op= SUM | op= AVG | op= MAX | op= MIN ) OPEN additiveExpression CLOSE -> ^( AGGREGATE[$op] additiveExpression ) | COUNT OPEN (s= STAR | p= aggregateDistinctAll ) CLOSE -> {s == null}? ^( COUNT $p) -> ^( COUNT ^( ROW_STAR[\"*\"] ) ) | collectionExpr );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:642:1: aggregate : ( (op= SUM | op= AVG | op= MAX | op= MIN ) OPEN additiveExpression CLOSE -> ^( AGGREGATE[$op] additiveExpression ) | COUNT OPEN (s= STAR | p= aggregateDistinctAll ) CLOSE -> {s == null}? ^( COUNT $p) -> ^( COUNT ^( ROW_STAR[\"*\"] ) ) | collectionExpr );
     public HqlParser.aggregate_return aggregate() // throws RecognitionException [1]
     {   
         HqlParser.aggregate_return retval = new HqlParser.aggregate_return();
@@ -9365,19 +9355,19 @@ public partial class HqlParser : Parser
         IASTNode COUNT257_tree=null;
         IASTNode OPEN258_tree=null;
         IASTNode CLOSE259_tree=null;
-        RewriteRuleTokenStream stream_CLOSE = new RewriteRuleTokenStream(adaptor,"token CLOSE");
-        RewriteRuleTokenStream stream_AVG = new RewriteRuleTokenStream(adaptor,"token AVG");
-        RewriteRuleTokenStream stream_MAX = new RewriteRuleTokenStream(adaptor,"token MAX");
-        RewriteRuleTokenStream stream_MIN = new RewriteRuleTokenStream(adaptor,"token MIN");
-        RewriteRuleTokenStream stream_STAR = new RewriteRuleTokenStream(adaptor,"token STAR");
-        RewriteRuleTokenStream stream_SUM = new RewriteRuleTokenStream(adaptor,"token SUM");
         RewriteRuleTokenStream stream_OPEN = new RewriteRuleTokenStream(adaptor,"token OPEN");
+        RewriteRuleTokenStream stream_MAX = new RewriteRuleTokenStream(adaptor,"token MAX");
         RewriteRuleTokenStream stream_COUNT = new RewriteRuleTokenStream(adaptor,"token COUNT");
+        RewriteRuleTokenStream stream_STAR = new RewriteRuleTokenStream(adaptor,"token STAR");
+        RewriteRuleTokenStream stream_MIN = new RewriteRuleTokenStream(adaptor,"token MIN");
+        RewriteRuleTokenStream stream_CLOSE = new RewriteRuleTokenStream(adaptor,"token CLOSE");
+        RewriteRuleTokenStream stream_SUM = new RewriteRuleTokenStream(adaptor,"token SUM");
+        RewriteRuleTokenStream stream_AVG = new RewriteRuleTokenStream(adaptor,"token AVG");
         RewriteRuleSubtreeStream stream_aggregateDistinctAll = new RewriteRuleSubtreeStream(adaptor,"rule aggregateDistinctAll");
         RewriteRuleSubtreeStream stream_additiveExpression = new RewriteRuleSubtreeStream(adaptor,"rule additiveExpression");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:642:2: ( (op= SUM | op= AVG | op= MAX | op= MIN ) OPEN additiveExpression CLOSE -> ^( AGGREGATE[$op] additiveExpression ) | COUNT OPEN (s= STAR | p= aggregateDistinctAll ) CLOSE -> {s == null}? ^( COUNT $p) -> ^( COUNT ^( ROW_STAR[\"*\"] ) ) | collectionExpr )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:643:2: ( (op= SUM | op= AVG | op= MAX | op= MIN ) OPEN additiveExpression CLOSE -> ^( AGGREGATE[$op] additiveExpression ) | COUNT OPEN (s= STAR | p= aggregateDistinctAll ) CLOSE -> {s == null}? ^( COUNT $p) -> ^( COUNT ^( ROW_STAR[\"*\"] ) ) | collectionExpr )
             int alt91 = 3;
             switch ( input.LA(1) ) 
             {
@@ -9410,9 +9400,9 @@ public partial class HqlParser : Parser
             switch (alt91) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:642:4: (op= SUM | op= AVG | op= MAX | op= MIN ) OPEN additiveExpression CLOSE
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:643:4: (op= SUM | op= AVG | op= MAX | op= MIN ) OPEN additiveExpression CLOSE
                     {
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:642:4: (op= SUM | op= AVG | op= MAX | op= MIN )
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:643:4: (op= SUM | op= AVG | op= MAX | op= MIN )
                     	int alt89 = 4;
                     	switch ( input.LA(1) ) 
                     	{
@@ -9446,36 +9436,36 @@ public partial class HqlParser : Parser
                     	switch (alt89) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:642:6: op= SUM
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:643:6: op= SUM
                     	        {
-                    	        	op=(IToken)Match(input,SUM,FOLLOW_SUM_in_aggregate3070);  
+                    	        	op=(IToken)Match(input,SUM,FOLLOW_SUM_in_aggregate3072);  
                     	        	stream_SUM.Add(op);
 
 
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:642:15: op= AVG
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:643:15: op= AVG
                     	        {
-                    	        	op=(IToken)Match(input,AVG,FOLLOW_AVG_in_aggregate3076);  
+                    	        	op=(IToken)Match(input,AVG,FOLLOW_AVG_in_aggregate3078);  
                     	        	stream_AVG.Add(op);
 
 
                     	        }
                     	        break;
                     	    case 3 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:642:24: op= MAX
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:643:24: op= MAX
                     	        {
-                    	        	op=(IToken)Match(input,MAX,FOLLOW_MAX_in_aggregate3082);  
+                    	        	op=(IToken)Match(input,MAX,FOLLOW_MAX_in_aggregate3084);  
                     	        	stream_MAX.Add(op);
 
 
                     	        }
                     	        break;
                     	    case 4 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:642:33: op= MIN
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:643:33: op= MIN
                     	        {
-                    	        	op=(IToken)Match(input,MIN,FOLLOW_MIN_in_aggregate3088);  
+                    	        	op=(IToken)Match(input,MIN,FOLLOW_MIN_in_aggregate3090);  
                     	        	stream_MIN.Add(op);
 
 
@@ -9484,15 +9474,15 @@ public partial class HqlParser : Parser
 
                     	}
 
-                    	OPEN254=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_aggregate3092);  
+                    	OPEN254=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_aggregate3094);  
                     	stream_OPEN.Add(OPEN254);
 
-                    	PushFollow(FOLLOW_additiveExpression_in_aggregate3094);
+                    	PushFollow(FOLLOW_additiveExpression_in_aggregate3096);
                     	additiveExpression255 = additiveExpression();
                     	state.followingStackPointer--;
 
                     	stream_additiveExpression.Add(additiveExpression255.Tree);
-                    	CLOSE256=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_aggregate3096);  
+                    	CLOSE256=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_aggregate3098);  
                     	stream_CLOSE.Add(CLOSE256);
 
 
@@ -9508,9 +9498,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 643:3: -> ^( AGGREGATE[$op] additiveExpression )
+                    	// 644:3: -> ^( AGGREGATE[$op] additiveExpression )
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:643:6: ^( AGGREGATE[$op] additiveExpression )
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:644:6: ^( AGGREGATE[$op] additiveExpression )
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(AGGREGATE, op), root_1);
@@ -9526,15 +9516,15 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:645:5: COUNT OPEN (s= STAR | p= aggregateDistinctAll ) CLOSE
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:646:5: COUNT OPEN (s= STAR | p= aggregateDistinctAll ) CLOSE
                     {
-                    	COUNT257=(IToken)Match(input,COUNT,FOLLOW_COUNT_in_aggregate3115);  
+                    	COUNT257=(IToken)Match(input,COUNT,FOLLOW_COUNT_in_aggregate3117);  
                     	stream_COUNT.Add(COUNT257);
 
-                    	OPEN258=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_aggregate3117);  
+                    	OPEN258=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_aggregate3119);  
                     	stream_OPEN.Add(OPEN258);
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:645:16: (s= STAR | p= aggregateDistinctAll )
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:646:16: (s= STAR | p= aggregateDistinctAll )
                     	int alt90 = 2;
                     	int LA90_0 = input.LA(1);
 
@@ -9556,18 +9546,18 @@ public partial class HqlParser : Parser
                     	switch (alt90) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:645:18: s= STAR
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:646:18: s= STAR
                     	        {
-                    	        	s=(IToken)Match(input,STAR,FOLLOW_STAR_in_aggregate3123);  
+                    	        	s=(IToken)Match(input,STAR,FOLLOW_STAR_in_aggregate3125);  
                     	        	stream_STAR.Add(s);
 
 
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:645:27: p= aggregateDistinctAll
+                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:646:27: p= aggregateDistinctAll
                     	        {
-                    	        	PushFollow(FOLLOW_aggregateDistinctAll_in_aggregate3129);
+                    	        	PushFollow(FOLLOW_aggregateDistinctAll_in_aggregate3131);
                     	        	p = aggregateDistinctAll();
                     	        	state.followingStackPointer--;
 
@@ -9578,7 +9568,7 @@ public partial class HqlParser : Parser
 
                     	}
 
-                    	CLOSE259=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_aggregate3133);  
+                    	CLOSE259=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_aggregate3135);  
                     	stream_CLOSE.Add(CLOSE259);
 
 
@@ -9586,19 +9576,19 @@ public partial class HqlParser : Parser
                     	// AST REWRITE
                     	// elements:          COUNT, p, COUNT
                     	// token labels:      
-                    	// rule labels:       p, retval
+                    	// rule labels:       retval, p
                     	// token list labels: 
                     	// rule list labels:  
                     	// wildcard labels: 
                     	retval.Tree = root_0;
-                    	RewriteRuleSubtreeStream stream_p = new RewriteRuleSubtreeStream(adaptor, "rule p", p!=null ? p.Tree : null);
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
+                    	RewriteRuleSubtreeStream stream_p = new RewriteRuleSubtreeStream(adaptor, "rule p", p!=null ? p.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 646:3: -> {s == null}? ^( COUNT $p)
+                    	// 647:3: -> {s == null}? ^( COUNT $p)
                     	if (s == null)
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:646:19: ^( COUNT $p)
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:647:19: ^( COUNT $p)
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_COUNT.NextNode(), root_1);
@@ -9609,14 +9599,14 @@ public partial class HqlParser : Parser
                     	    }
 
                     	}
-                    	else // 647:3: -> ^( COUNT ^( ROW_STAR[\"*\"] ) )
+                    	else // 648:3: -> ^( COUNT ^( ROW_STAR[\"*\"] ) )
                     	{
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:647:6: ^( COUNT ^( ROW_STAR[\"*\"] ) )
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:648:6: ^( COUNT ^( ROW_STAR[\"*\"] ) )
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_COUNT.NextNode(), root_1);
 
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:647:14: ^( ROW_STAR[\"*\"] )
+                    	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:648:14: ^( ROW_STAR[\"*\"] )
                     	    {
                     	    IASTNode root_2 = (IASTNode)adaptor.GetNilNode();
                     	    root_2 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(ROW_STAR, "*"), root_2);
@@ -9633,11 +9623,11 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:648:5: collectionExpr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:649:5: collectionExpr
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_collectionExpr_in_aggregate3165);
+                    	PushFollow(FOLLOW_collectionExpr_in_aggregate3167);
                     	collectionExpr260 = collectionExpr();
                     	state.followingStackPointer--;
 
@@ -9678,7 +9668,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "aggregateDistinctAll"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:651:1: aggregateDistinctAll : ( ( DISTINCT | ALL )? ( path | collectionExpr ) ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:652:1: aggregateDistinctAll : ( ( DISTINCT | ALL )? ( path | collectionExpr ) ) ;
     public HqlParser.aggregateDistinctAll_return aggregateDistinctAll() // throws RecognitionException [1]
     {   
         HqlParser.aggregateDistinctAll_return retval = new HqlParser.aggregateDistinctAll_return();
@@ -9696,15 +9686,15 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:652:2: ( ( ( DISTINCT | ALL )? ( path | collectionExpr ) ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:652:4: ( ( DISTINCT | ALL )? ( path | collectionExpr ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:653:2: ( ( ( DISTINCT | ALL )? ( path | collectionExpr ) ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:653:4: ( ( DISTINCT | ALL )? ( path | collectionExpr ) )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:652:4: ( ( DISTINCT | ALL )? ( path | collectionExpr ) )
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:652:6: ( DISTINCT | ALL )? ( path | collectionExpr )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:653:4: ( ( DISTINCT | ALL )? ( path | collectionExpr ) )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:653:6: ( DISTINCT | ALL )? ( path | collectionExpr )
             	{
-            		// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:652:6: ( DISTINCT | ALL )?
+            		// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:653:6: ( DISTINCT | ALL )?
             		int alt92 = 2;
             		int LA92_0 = input.LA(1);
 
@@ -9715,7 +9705,7 @@ public partial class HqlParser : Parser
             		switch (alt92) 
             		{
             		    case 1 :
-            		        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:
+            		        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:
             		        {
             		        	set261 = (IToken)input.LT(1);
             		        	if ( input.LA(1) == ALL || input.LA(1) == DISTINCT ) 
@@ -9736,7 +9726,7 @@ public partial class HqlParser : Parser
 
             		}
 
-            		// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:652:26: ( path | collectionExpr )
+            		// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:653:26: ( path | collectionExpr )
             		int alt93 = 2;
             		int LA93_0 = input.LA(1);
 
@@ -9758,9 +9748,9 @@ public partial class HqlParser : Parser
             		switch (alt93) 
             		{
             		    case 1 :
-            		        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:652:28: path
+            		        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:653:28: path
             		        {
-            		        	PushFollow(FOLLOW_path_in_aggregateDistinctAll3191);
+            		        	PushFollow(FOLLOW_path_in_aggregateDistinctAll3193);
             		        	path262 = path();
             		        	state.followingStackPointer--;
 
@@ -9769,9 +9759,9 @@ public partial class HqlParser : Parser
             		        }
             		        break;
             		    case 2 :
-            		        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:652:35: collectionExpr
+            		        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:653:35: collectionExpr
             		        {
-            		        	PushFollow(FOLLOW_collectionExpr_in_aggregateDistinctAll3195);
+            		        	PushFollow(FOLLOW_collectionExpr_in_aggregateDistinctAll3197);
             		        	collectionExpr263 = collectionExpr();
             		        	state.followingStackPointer--;
 
@@ -9819,7 +9809,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "collectionExpr"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:657:1: collectionExpr : ( ELEMENTS | INDICES ) OPEN path CLOSE ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:658:1: collectionExpr : ( ELEMENTS | INDICES ) OPEN path CLOSE ;
     public HqlParser.collectionExpr_return collectionExpr() // throws RecognitionException [1]
     {   
         HqlParser.collectionExpr_return retval = new HqlParser.collectionExpr_return();
@@ -9841,12 +9831,12 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:658:2: ( ( ELEMENTS | INDICES ) OPEN path CLOSE )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:658:4: ( ELEMENTS | INDICES ) OPEN path CLOSE
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:659:2: ( ( ELEMENTS | INDICES ) OPEN path CLOSE )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:659:4: ( ELEMENTS | INDICES ) OPEN path CLOSE
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:658:4: ( ELEMENTS | INDICES )
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:659:4: ( ELEMENTS | INDICES )
             	int alt94 = 2;
             	int LA94_0 = input.LA(1);
 
@@ -9868,9 +9858,9 @@ public partial class HqlParser : Parser
             	switch (alt94) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:658:5: ELEMENTS
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:659:5: ELEMENTS
             	        {
-            	        	ELEMENTS264=(IToken)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_collectionExpr3214); 
+            	        	ELEMENTS264=(IToken)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_collectionExpr3216); 
             	        		ELEMENTS264_tree = (IASTNode)adaptor.Create(ELEMENTS264);
             	        		root_0 = (IASTNode)adaptor.BecomeRoot(ELEMENTS264_tree, root_0);
 
@@ -9878,9 +9868,9 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 2 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:658:17: INDICES
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:659:17: INDICES
             	        {
-            	        	INDICES265=(IToken)Match(input,INDICES,FOLLOW_INDICES_in_collectionExpr3219); 
+            	        	INDICES265=(IToken)Match(input,INDICES,FOLLOW_INDICES_in_collectionExpr3221); 
             	        		INDICES265_tree = (IASTNode)adaptor.Create(INDICES265);
             	        		root_0 = (IASTNode)adaptor.BecomeRoot(INDICES265_tree, root_0);
 
@@ -9890,13 +9880,13 @@ public partial class HqlParser : Parser
 
             	}
 
-            	OPEN266=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_collectionExpr3223); 
-            	PushFollow(FOLLOW_path_in_collectionExpr3226);
+            	OPEN266=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_collectionExpr3225); 
+            	PushFollow(FOLLOW_path_in_collectionExpr3228);
             	path267 = path();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, path267.Tree);
-            	CLOSE268=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_collectionExpr3228); 
+            	CLOSE268=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_collectionExpr3230); 
 
             }
 
@@ -9931,7 +9921,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "compoundExpr"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:661:1: compoundExpr : ( collectionExpr | path | ( OPEN ( ( expression ( COMMA expression )* ) | subQuery ) CLOSE ) );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:662:1: compoundExpr : ( collectionExpr | path | ( OPEN ( ( expression ( COMMA expression )* ) | subQuery ) CLOSE ) );
     public HqlParser.compoundExpr_return compoundExpr() // throws RecognitionException [1]
     {   
         HqlParser.compoundExpr_return retval = new HqlParser.compoundExpr_return();
@@ -9959,7 +9949,7 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:662:2: ( collectionExpr | path | ( OPEN ( ( expression ( COMMA expression )* ) | subQuery ) CLOSE ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:663:2: ( collectionExpr | path | ( OPEN ( ( expression ( COMMA expression )* ) | subQuery ) CLOSE ) )
             int alt97 = 3;
             switch ( input.LA(1) ) 
             {
@@ -9989,11 +9979,11 @@ public partial class HqlParser : Parser
             switch (alt97) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:662:4: collectionExpr
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:663:4: collectionExpr
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_collectionExpr_in_compoundExpr3283);
+                    	PushFollow(FOLLOW_collectionExpr_in_compoundExpr3285);
                     	collectionExpr269 = collectionExpr();
                     	state.followingStackPointer--;
 
@@ -10002,11 +9992,11 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:663:4: path
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:664:4: path
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_path_in_compoundExpr3288);
+                    	PushFollow(FOLLOW_path_in_compoundExpr3290);
                     	path270 = path();
                     	state.followingStackPointer--;
 
@@ -10015,15 +10005,15 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:664:4: ( OPEN ( ( expression ( COMMA expression )* ) | subQuery ) CLOSE )
+                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:665:4: ( OPEN ( ( expression ( COMMA expression )* ) | subQuery ) CLOSE )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:664:4: ( OPEN ( ( expression ( COMMA expression )* ) | subQuery ) CLOSE )
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:664:5: OPEN ( ( expression ( COMMA expression )* ) | subQuery ) CLOSE
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:665:4: ( OPEN ( ( expression ( COMMA expression )* ) | subQuery ) CLOSE )
+                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:665:5: OPEN ( ( expression ( COMMA expression )* ) | subQuery ) CLOSE
                     	{
-                    		OPEN271=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_compoundExpr3294); 
-                    		// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:664:11: ( ( expression ( COMMA expression )* ) | subQuery )
+                    		OPEN271=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_compoundExpr3296); 
+                    		// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:665:11: ( ( expression ( COMMA expression )* ) | subQuery )
                     		int alt96 = 2;
                     		int LA96_0 = input.LA(1);
 
@@ -10045,17 +10035,17 @@ public partial class HqlParser : Parser
                     		switch (alt96) 
                     		{
                     		    case 1 :
-                    		        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:664:13: ( expression ( COMMA expression )* )
+                    		        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:665:13: ( expression ( COMMA expression )* )
                     		        {
-                    		        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:664:13: ( expression ( COMMA expression )* )
-                    		        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:664:14: expression ( COMMA expression )*
+                    		        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:665:13: ( expression ( COMMA expression )* )
+                    		        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:665:14: expression ( COMMA expression )*
                     		        	{
-                    		        		PushFollow(FOLLOW_expression_in_compoundExpr3300);
+                    		        		PushFollow(FOLLOW_expression_in_compoundExpr3302);
                     		        		expression272 = expression();
                     		        		state.followingStackPointer--;
 
                     		        		adaptor.AddChild(root_0, expression272.Tree);
-                    		        		// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:664:25: ( COMMA expression )*
+                    		        		// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:665:25: ( COMMA expression )*
                     		        		do 
                     		        		{
                     		        		    int alt95 = 2;
@@ -10070,10 +10060,10 @@ public partial class HqlParser : Parser
                     		        		    switch (alt95) 
                     		        			{
                     		        				case 1 :
-                    		        				    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:664:26: COMMA expression
+                    		        				    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:665:26: COMMA expression
                     		        				    {
-                    		        				    	COMMA273=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_compoundExpr3303); 
-                    		        				    	PushFollow(FOLLOW_expression_in_compoundExpr3306);
+                    		        				    	COMMA273=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_compoundExpr3305); 
+                    		        				    	PushFollow(FOLLOW_expression_in_compoundExpr3308);
                     		        				    	expression274 = expression();
                     		        				    	state.followingStackPointer--;
 
@@ -10097,9 +10087,9 @@ public partial class HqlParser : Parser
                     		        }
                     		        break;
                     		    case 2 :
-                    		        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:664:49: subQuery
+                    		        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:665:49: subQuery
                     		        {
-                    		        	PushFollow(FOLLOW_subQuery_in_compoundExpr3313);
+                    		        	PushFollow(FOLLOW_subQuery_in_compoundExpr3315);
                     		        	subQuery275 = subQuery();
                     		        	state.followingStackPointer--;
 
@@ -10110,7 +10100,7 @@ public partial class HqlParser : Parser
 
                     		}
 
-                    		CLOSE276=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_compoundExpr3317); 
+                    		CLOSE276=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_compoundExpr3319); 
 
                     	}
 
@@ -10150,7 +10140,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "exprList"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:667:1: exprList : ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )? | f2= FROM expression )? ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:668:1: exprList : ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )? | f2= FROM expression )? ;
     public HqlParser.exprList_return exprList() // throws RecognitionException [1]
     {   
         HqlParser.exprList_return retval = new HqlParser.exprList_return();
@@ -10186,12 +10176,12 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:673:2: ( ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )? | f2= FROM expression )? )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:673:4: ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )? | f2= FROM expression )?
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:674:2: ( ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )? | f2= FROM expression )? )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:674:4: ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )? | f2= FROM expression )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:673:4: ( TRAILING | LEADING | BOTH )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:674:4: ( TRAILING | LEADING | BOTH )?
             	int alt98 = 4;
             	switch ( input.LA(1) ) 
             	{
@@ -10215,9 +10205,9 @@ public partial class HqlParser : Parser
             	switch (alt98) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:673:5: TRAILING
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:674:5: TRAILING
             	        {
-            	        	TRAILING277=(IToken)Match(input,TRAILING,FOLLOW_TRAILING_in_exprList3336); 
+            	        	TRAILING277=(IToken)Match(input,TRAILING,FOLLOW_TRAILING_in_exprList3338); 
             	        		TRAILING277_tree = (IASTNode)adaptor.Create(TRAILING277);
             	        		adaptor.AddChild(root_0, TRAILING277_tree);
 
@@ -10226,9 +10216,9 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 2 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:674:10: LEADING
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:675:10: LEADING
             	        {
-            	        	LEADING278=(IToken)Match(input,LEADING,FOLLOW_LEADING_in_exprList3349); 
+            	        	LEADING278=(IToken)Match(input,LEADING,FOLLOW_LEADING_in_exprList3351); 
             	        		LEADING278_tree = (IASTNode)adaptor.Create(LEADING278);
             	        		adaptor.AddChild(root_0, LEADING278_tree);
 
@@ -10237,9 +10227,9 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 3 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:675:10: BOTH
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:676:10: BOTH
             	        {
-            	        	BOTH279=(IToken)Match(input,BOTH,FOLLOW_BOTH_in_exprList3362); 
+            	        	BOTH279=(IToken)Match(input,BOTH,FOLLOW_BOTH_in_exprList3364); 
             	        		BOTH279_tree = (IASTNode)adaptor.Create(BOTH279);
             	        		adaptor.AddChild(root_0, BOTH279_tree);
 
@@ -10250,7 +10240,7 @@ public partial class HqlParser : Parser
 
             	}
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:677:4: ( expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )? | f2= FROM expression )?
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:678:4: ( expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )? | f2= FROM expression )?
             	int alt101 = 3;
             	int LA101_0 = input.LA(1);
 
@@ -10265,14 +10255,14 @@ public partial class HqlParser : Parser
             	switch (alt101) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:678:5: expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )?
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:679:5: expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )?
             	        {
-            	        	PushFollow(FOLLOW_expression_in_exprList3386);
+            	        	PushFollow(FOLLOW_expression_in_exprList3388);
             	        	expression280 = expression();
             	        	state.followingStackPointer--;
 
             	        	adaptor.AddChild(root_0, expression280.Tree);
-            	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:678:16: ( ( COMMA expression )+ | f= FROM expression | AS identifier )?
+            	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:679:16: ( ( COMMA expression )+ | f= FROM expression | AS identifier )?
             	        	int alt100 = 4;
             	        	switch ( input.LA(1) ) 
             	        	{
@@ -10296,9 +10286,9 @@ public partial class HqlParser : Parser
             	        	switch (alt100) 
             	        	{
             	        	    case 1 :
-            	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:678:18: ( COMMA expression )+
+            	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:679:18: ( COMMA expression )+
             	        	        {
-            	        	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:678:18: ( COMMA expression )+
+            	        	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:679:18: ( COMMA expression )+
             	        	        	int cnt99 = 0;
             	        	        	do 
             	        	        	{
@@ -10314,10 +10304,10 @@ public partial class HqlParser : Parser
             	        	        	    switch (alt99) 
             	        	        		{
             	        	        			case 1 :
-            	        	        			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:678:19: COMMA expression
+            	        	        			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:679:19: COMMA expression
             	        	        			    {
-            	        	        			    	COMMA281=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_exprList3391); 
-            	        	        			    	PushFollow(FOLLOW_expression_in_exprList3394);
+            	        	        			    	COMMA281=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_exprList3393); 
+            	        	        			    	PushFollow(FOLLOW_expression_in_exprList3396);
             	        	        			    	expression282 = expression();
             	        	        			    	state.followingStackPointer--;
 
@@ -10342,13 +10332,13 @@ public partial class HqlParser : Parser
             	        	        }
             	        	        break;
             	        	    case 2 :
-            	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:679:9: f= FROM expression
+            	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:680:9: f= FROM expression
             	        	        {
-            	        	        	f=(IToken)Match(input,FROM,FOLLOW_FROM_in_exprList3409); 
+            	        	        	f=(IToken)Match(input,FROM,FOLLOW_FROM_in_exprList3411); 
             	        	        		f_tree = (IASTNode)adaptor.Create(f);
             	        	        		adaptor.AddChild(root_0, f_tree);
 
-            	        	        	PushFollow(FOLLOW_expression_in_exprList3411);
+            	        	        	PushFollow(FOLLOW_expression_in_exprList3413);
             	        	        	expression283 = expression();
             	        	        	state.followingStackPointer--;
 
@@ -10358,10 +10348,10 @@ public partial class HqlParser : Parser
             	        	        }
             	        	        break;
             	        	    case 3 :
-            	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:680:9: AS identifier
+            	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:681:9: AS identifier
             	        	        {
-            	        	        	AS284=(IToken)Match(input,AS,FOLLOW_AS_in_exprList3423); 
-            	        	        	PushFollow(FOLLOW_identifier_in_exprList3426);
+            	        	        	AS284=(IToken)Match(input,AS,FOLLOW_AS_in_exprList3425); 
+            	        	        	PushFollow(FOLLOW_identifier_in_exprList3428);
             	        	        	identifier285 = identifier();
             	        	        	state.followingStackPointer--;
 
@@ -10376,13 +10366,13 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 2 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:681:7: f2= FROM expression
+            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:682:7: f2= FROM expression
             	        {
-            	        	f2=(IToken)Match(input,FROM,FOLLOW_FROM_in_exprList3440); 
+            	        	f2=(IToken)Match(input,FROM,FOLLOW_FROM_in_exprList3442); 
             	        		f2_tree = (IASTNode)adaptor.Create(f2);
             	        		adaptor.AddChild(root_0, f2_tree);
 
-            	        	PushFollow(FOLLOW_expression_in_exprList3442);
+            	        	PushFollow(FOLLOW_expression_in_exprList3444);
             	        	expression286 = expression();
             	        	state.followingStackPointer--;
 
@@ -10433,7 +10423,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "subQuery"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:684:1: subQuery : union -> ^( QUERY[\"query\"] union ) ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:685:1: subQuery : queryRule -> ^( QUERY[\"query\"] queryRule ) ;
     public HqlParser.subQuery_return subQuery() // throws RecognitionException [1]
     {   
         HqlParser.subQuery_return retval = new HqlParser.subQuery_return();
@@ -10441,24 +10431,24 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        HqlParser.union_return union287 = default(HqlParser.union_return);
+        HqlParser.queryRule_return queryRule287 = default(HqlParser.queryRule_return);
 
 
-        RewriteRuleSubtreeStream stream_union = new RewriteRuleSubtreeStream(adaptor,"rule union");
+        RewriteRuleSubtreeStream stream_queryRule = new RewriteRuleSubtreeStream(adaptor,"rule queryRule");
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:685:2: ( union -> ^( QUERY[\"query\"] union ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:685:4: union
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:686:2: ( queryRule -> ^( QUERY[\"query\"] queryRule ) )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:686:4: queryRule
             {
-            	PushFollow(FOLLOW_union_in_subQuery3460);
-            	union287 = union();
+            	PushFollow(FOLLOW_queryRule_in_subQuery3462);
+            	queryRule287 = queryRule();
             	state.followingStackPointer--;
 
-            	stream_union.Add(union287.Tree);
+            	stream_queryRule.Add(queryRule287.Tree);
 
 
             	// AST REWRITE
-            	// elements:          union
+            	// elements:          queryRule
             	// token labels:      
             	// rule labels:       retval
             	// token list labels: 
@@ -10468,14 +10458,14 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 686:2: -> ^( QUERY[\"query\"] union )
+            	// 687:2: -> ^( QUERY[\"query\"] queryRule )
             	{
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:686:5: ^( QUERY[\"query\"] union )
+            	    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:687:5: ^( QUERY[\"query\"] queryRule )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(QUERY, "query"), root_1);
 
-            	    adaptor.AddChild(root_1, stream_union.NextTree());
+            	    adaptor.AddChild(root_1, stream_queryRule.NextTree());
 
             	    adaptor.AddChild(root_0, root_1);
             	    }
@@ -10516,7 +10506,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "constant"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:690:1: constant : ( NUM_INT | NUM_FLOAT | NUM_LONG | NUM_DOUBLE | QUOTED_String | NULL | TRUE | FALSE | EMPTY );
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:691:1: constant : ( NUM_INT | NUM_FLOAT | NUM_LONG | NUM_DOUBLE | QUOTED_String | NULL | TRUE | FALSE | EMPTY );
     public HqlParser.constant_return constant() // throws RecognitionException [1]
     {   
         HqlParser.constant_return retval = new HqlParser.constant_return();
@@ -10530,8 +10520,8 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:691:2: ( NUM_INT | NUM_FLOAT | NUM_LONG | NUM_DOUBLE | QUOTED_String | NULL | TRUE | FALSE | EMPTY )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:692:2: ( NUM_INT | NUM_FLOAT | NUM_LONG | NUM_DOUBLE | QUOTED_String | NULL | TRUE | FALSE | EMPTY )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
@@ -10582,7 +10572,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "path"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:708:1: path : identifier ( DOT identifier )* ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:709:1: path : identifier ( DOT identifier )* ;
     public HqlParser.path_return path() // throws RecognitionException [1]
     {   
         HqlParser.path_return retval = new HqlParser.path_return();
@@ -10604,17 +10594,17 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:713:2: ( identifier ( DOT identifier )* )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:713:4: identifier ( DOT identifier )*
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:714:2: ( identifier ( DOT identifier )* )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:714:4: identifier ( DOT identifier )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_identifier_in_path3544);
+            	PushFollow(FOLLOW_identifier_in_path3546);
             	identifier289 = identifier();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, identifier289.Tree);
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:713:15: ( DOT identifier )*
+            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:714:15: ( DOT identifier )*
             	do 
             	{
             	    int alt102 = 2;
@@ -10629,14 +10619,14 @@ public partial class HqlParser : Parser
             	    switch (alt102) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:713:17: DOT identifier
+            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:714:17: DOT identifier
             			    {
-            			    	DOT290=(IToken)Match(input,DOT,FOLLOW_DOT_in_path3548); 
+            			    	DOT290=(IToken)Match(input,DOT,FOLLOW_DOT_in_path3550); 
             			    		DOT290_tree = (IASTNode)adaptor.Create(DOT290);
             			    		root_0 = (IASTNode)adaptor.BecomeRoot(DOT290_tree, root_0);
 
             			    	 WeakKeywords(); 
-            			    	PushFollow(FOLLOW_identifier_in_path3553);
+            			    	PushFollow(FOLLOW_identifier_in_path3555);
             			    	identifier291 = identifier();
             			    	state.followingStackPointer--;
 
@@ -10687,7 +10677,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "identifier"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:718:1: identifier : IDENT ;
+    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:719:1: identifier : IDENT ;
     public HqlParser.identifier_return identifier() // throws RecognitionException [1]
     {   
         HqlParser.identifier_return retval = new HqlParser.identifier_return();
@@ -10701,12 +10691,12 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:719:2: ( IDENT )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:719:4: IDENT
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:720:2: ( IDENT )
+            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:720:4: IDENT
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	IDENT292=(IToken)Match(input,IDENT,FOLLOW_IDENT_in_identifier3569); 
+            	IDENT292=(IToken)Match(input,IDENT,FOLLOW_IDENT_in_identifier3571); 
             		IDENT292_tree = (IASTNode)adaptor.Create(IDENT292);
             		adaptor.AddChild(root_0, IDENT292_tree);
 
@@ -10767,7 +10757,7 @@ public partial class HqlParser : Parser
     public static readonly BitSet FOLLOW_FROM_in_optionalFromTokenFromClause2783 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_queryRule_in_selectStatement797 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_INSERT_in_insertStatement826 = new BitSet(new ulong[]{0x0000000040000000UL});
-    public static readonly BitSet FOLLOW_intoClause_in_insertStatement829 = new BitSet(new ulong[]{0x0020220001400000UL});
+    public static readonly BitSet FOLLOW_intoClause_in_insertStatement829 = new BitSet(new ulong[]{0x0024220001400000UL});
     public static readonly BitSet FOLLOW_selectStatement_in_insertStatement831 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_INTO_in_intoClause842 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
     public static readonly BitSet FOLLOW_path_in_intoClause845 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
@@ -10777,303 +10767,303 @@ public partial class HqlParser : Parser
     public static readonly BitSet FOLLOW_COMMA_in_insertablePropertySpec866 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
     public static readonly BitSet FOLLOW_primaryExpression_in_insertablePropertySpec868 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002400000000UL});
     public static readonly BitSet FOLLOW_CLOSE_in_insertablePropertySpec873 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_queryRule_in_union896 = new BitSet(new ulong[]{0x0004000000000002UL});
-    public static readonly BitSet FOLLOW_UNION_in_union899 = new BitSet(new ulong[]{0x0020220001400000UL});
-    public static readonly BitSet FOLLOW_queryRule_in_union901 = new BitSet(new ulong[]{0x0004000000000002UL});
-    public static readonly BitSet FOLLOW_selectFrom_in_queryRule917 = new BitSet(new ulong[]{0x0020020001000002UL});
-    public static readonly BitSet FOLLOW_whereClause_in_queryRule922 = new BitSet(new ulong[]{0x0000020001000002UL});
-    public static readonly BitSet FOLLOW_groupByClause_in_queryRule929 = new BitSet(new ulong[]{0x0000020000000002UL});
-    public static readonly BitSet FOLLOW_orderByClause_in_queryRule936 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_selectClause_in_selectFrom957 = new BitSet(new ulong[]{0x0000000000400002UL});
-    public static readonly BitSet FOLLOW_fromClause_in_selectFrom964 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_SELECT_in_selectClause1017 = new BitSet(new ulong[]{0x809380F8085B1230UL,0x07860051E0000004UL});
-    public static readonly BitSet FOLLOW_DISTINCT_in_selectClause1029 = new BitSet(new ulong[]{0x809380F8085B1230UL,0x07860051E0000004UL});
-    public static readonly BitSet FOLLOW_selectedPropertiesList_in_selectClause1035 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_newExpression_in_selectClause1039 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_selectObject_in_selectClause1043 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_NEW_in_newExpression1057 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_newExpression1059 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_newExpression1064 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_selectedPropertiesList_in_newExpression1066 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_newExpression1068 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_OBJECT_in_selectObject1094 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_selectObject1097 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_identifier_in_selectObject1100 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_selectObject1102 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_FROM_in_fromClause1123 = new BitSet(new ulong[]{0x0010000004420080UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_fromRange_in_fromClause1128 = new BitSet(new ulong[]{0x0000100310800002UL,0x0000000400000000UL});
-    public static readonly BitSet FOLLOW_fromJoin_in_fromClause1132 = new BitSet(new ulong[]{0x0000100310800002UL,0x0000000400000000UL});
-    public static readonly BitSet FOLLOW_COMMA_in_fromClause1136 = new BitSet(new ulong[]{0x0010000004420080UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_fromRange_in_fromClause1141 = new BitSet(new ulong[]{0x0000100310800002UL,0x0000000400000000UL});
-    public static readonly BitSet FOLLOW_set_in_fromJoin1162 = new BitSet(new ulong[]{0x0000040100000000UL});
-    public static readonly BitSet FOLLOW_OUTER_in_fromJoin1173 = new BitSet(new ulong[]{0x0000000100000000UL});
-    public static readonly BitSet FOLLOW_FULL_in_fromJoin1181 = new BitSet(new ulong[]{0x0000000100000000UL});
-    public static readonly BitSet FOLLOW_INNER_in_fromJoin1185 = new BitSet(new ulong[]{0x0000000100000000UL});
-    public static readonly BitSet FOLLOW_JOIN_in_fromJoin1190 = new BitSet(new ulong[]{0x0010000000600000UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_FETCH_in_fromJoin1194 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_fromJoin1198 = new BitSet(new ulong[]{0x2010000000600082UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_asAlias_in_fromJoin1201 = new BitSet(new ulong[]{0x2000000000200002UL});
-    public static readonly BitSet FOLLOW_propertyFetch_in_fromJoin1206 = new BitSet(new ulong[]{0x2000000000000002UL});
-    public static readonly BitSet FOLLOW_withClause_in_fromJoin1211 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_set_in_fromJoin1222 = new BitSet(new ulong[]{0x0000040100000000UL});
-    public static readonly BitSet FOLLOW_OUTER_in_fromJoin1233 = new BitSet(new ulong[]{0x0000000100000000UL});
-    public static readonly BitSet FOLLOW_FULL_in_fromJoin1241 = new BitSet(new ulong[]{0x0000000100000000UL});
-    public static readonly BitSet FOLLOW_INNER_in_fromJoin1245 = new BitSet(new ulong[]{0x0000000100000000UL});
-    public static readonly BitSet FOLLOW_JOIN_in_fromJoin1250 = new BitSet(new ulong[]{0x0000000000220000UL});
-    public static readonly BitSet FOLLOW_FETCH_in_fromJoin1254 = new BitSet(new ulong[]{0x0000000000020000UL});
-    public static readonly BitSet FOLLOW_ELEMENTS_in_fromJoin1258 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_fromJoin1261 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_fromJoin1264 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_fromJoin1266 = new BitSet(new ulong[]{0x2010000000600082UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_asAlias_in_fromJoin1270 = new BitSet(new ulong[]{0x2000000000200002UL});
-    public static readonly BitSet FOLLOW_propertyFetch_in_fromJoin1275 = new BitSet(new ulong[]{0x2000000000000002UL});
-    public static readonly BitSet FOLLOW_withClause_in_fromJoin1280 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_WITH_in_withClause1293 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_logicalExpression_in_withClause1296 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_fromClassOrOuterQueryPath_in_fromRange1307 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_inClassDeclaration_in_fromRange1312 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_inCollectionDeclaration_in_fromRange1317 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_inCollectionElementsDeclaration_in_fromRange1322 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_path_in_fromClassOrOuterQueryPath1334 = new BitSet(new ulong[]{0x0010000000600082UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_asAlias_in_fromClassOrOuterQueryPath1339 = new BitSet(new ulong[]{0x0000000000200002UL});
-    public static readonly BitSet FOLLOW_propertyFetch_in_fromClassOrOuterQueryPath1344 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_alias_in_inClassDeclaration1374 = new BitSet(new ulong[]{0x0000000004000000UL});
-    public static readonly BitSet FOLLOW_IN_in_inClassDeclaration1376 = new BitSet(new ulong[]{0x0010000000400800UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_CLASS_in_inClassDeclaration1378 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_inClassDeclaration1381 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_IN_in_inCollectionDeclaration1409 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_inCollectionDeclaration1411 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_inCollectionDeclaration1413 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_inCollectionDeclaration1415 = new BitSet(new ulong[]{0x0010000000400080UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_alias_in_inCollectionDeclaration1417 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_alias_in_inCollectionElementsDeclaration1451 = new BitSet(new ulong[]{0x0000000004000000UL});
-    public static readonly BitSet FOLLOW_IN_in_inCollectionElementsDeclaration1453 = new BitSet(new ulong[]{0x0000000000020000UL});
-    public static readonly BitSet FOLLOW_ELEMENTS_in_inCollectionElementsDeclaration1455 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_inCollectionElementsDeclaration1457 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_inCollectionElementsDeclaration1459 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_inCollectionElementsDeclaration1461 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_ELEMENTS_in_inCollectionElementsDeclaration1483 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_inCollectionElementsDeclaration1485 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_inCollectionElementsDeclaration1487 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_inCollectionElementsDeclaration1489 = new BitSet(new ulong[]{0x0000000000000080UL});
-    public static readonly BitSet FOLLOW_AS_in_inCollectionElementsDeclaration1491 = new BitSet(new ulong[]{0x0010000000400080UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_alias_in_inCollectionElementsDeclaration1493 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_AS_in_asAlias1525 = new BitSet(new ulong[]{0x0010000000400080UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_alias_in_asAlias1530 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_identifier_in_alias1542 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_FETCH_in_propertyFetch1561 = new BitSet(new ulong[]{0x0000000000000010UL});
-    public static readonly BitSet FOLLOW_ALL_in_propertyFetch1563 = new BitSet(new ulong[]{0x0000080000000000UL});
-    public static readonly BitSet FOLLOW_PROPERTIES_in_propertyFetch1566 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_GROUP_in_groupByClause1581 = new BitSet(new ulong[]{0x0040000000000000UL});
-    public static readonly BitSet FOLLOW_LITERAL_by_in_groupByClause1587 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_groupByClause1590 = new BitSet(new ulong[]{0x0000000002000002UL,0x0000000400000000UL});
-    public static readonly BitSet FOLLOW_COMMA_in_groupByClause1594 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_groupByClause1597 = new BitSet(new ulong[]{0x0000000002000002UL,0x0000000400000000UL});
-    public static readonly BitSet FOLLOW_havingClause_in_groupByClause1605 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_ORDER_in_orderByClause1621 = new BitSet(new ulong[]{0x0040000000000000UL});
-    public static readonly BitSet FOLLOW_LITERAL_by_in_orderByClause1624 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_orderElement_in_orderByClause1627 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000400000000UL});
-    public static readonly BitSet FOLLOW_COMMA_in_orderByClause1631 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_orderElement_in_orderByClause1634 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000400000000UL});
-    public static readonly BitSet FOLLOW_expression_in_orderElement1648 = new BitSet(new ulong[]{0x0000000000004102UL,0x0000000000000000UL,0x000000000000000CUL});
-    public static readonly BitSet FOLLOW_ascendingOrDescending_in_orderElement1652 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_ASCENDING_in_ascendingOrDescending1670 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_130_in_ascendingOrDescending1676 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_DESCENDING_in_ascendingOrDescending1696 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_131_in_ascendingOrDescending1702 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_HAVING_in_havingClause1726 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_logicalExpression_in_havingClause1729 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_WHERE_in_whereClause1743 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_logicalExpression_in_whereClause1746 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_aliasedExpression_in_selectedPropertiesList1760 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000400000000UL});
-    public static readonly BitSet FOLLOW_COMMA_in_selectedPropertiesList1764 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_aliasedExpression_in_selectedPropertiesList1767 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000400000000UL});
-    public static readonly BitSet FOLLOW_expression_in_aliasedExpression1782 = new BitSet(new ulong[]{0x0000000000000082UL});
-    public static readonly BitSet FOLLOW_AS_in_aliasedExpression1786 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_identifier_in_aliasedExpression1789 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_expression_in_logicalExpression1828 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_logicalOrExpression_in_expression1840 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_logicalAndExpression_in_logicalOrExpression1852 = new BitSet(new ulong[]{0x0000010000000002UL});
-    public static readonly BitSet FOLLOW_OR_in_logicalOrExpression1856 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_logicalAndExpression_in_logicalOrExpression1859 = new BitSet(new ulong[]{0x0000010000000002UL});
-    public static readonly BitSet FOLLOW_negatedExpression_in_logicalAndExpression1874 = new BitSet(new ulong[]{0x0000000000000042UL});
-    public static readonly BitSet FOLLOW_AND_in_logicalAndExpression1878 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_negatedExpression_in_logicalAndExpression1881 = new BitSet(new ulong[]{0x0000000000000042UL});
-    public static readonly BitSet FOLLOW_NOT_in_negatedExpression1902 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_negatedExpression_in_negatedExpression1906 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_bitwiseNotExpression_in_negatedExpression1919 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_BNOT_in_bitwiseNotExpression1943 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_bitwiseOrExpression_in_bitwiseNotExpression1946 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_bitwiseOrExpression_in_bitwiseNotExpression1952 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_bitwiseXOrExpression_in_bitwiseOrExpression1964 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000008000000000UL});
-    public static readonly BitSet FOLLOW_BOR_in_bitwiseOrExpression1967 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_bitwiseXOrExpression_in_bitwiseOrExpression1970 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000008000000000UL});
-    public static readonly BitSet FOLLOW_bitwiseAndExpression_in_bitwiseXOrExpression1984 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000010000000000UL});
-    public static readonly BitSet FOLLOW_BXOR_in_bitwiseXOrExpression1987 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_bitwiseAndExpression_in_bitwiseXOrExpression1990 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000010000000000UL});
-    public static readonly BitSet FOLLOW_equalityExpression_in_bitwiseAndExpression2004 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000020000000000UL});
-    public static readonly BitSet FOLLOW_BAND_in_bitwiseAndExpression2007 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_equalityExpression_in_bitwiseAndExpression2010 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000020000000000UL});
-    public static readonly BitSet FOLLOW_relationalExpression_in_equalityExpression2032 = new BitSet(new ulong[]{0x0000000080000002UL,0x00000C0800000000UL});
-    public static readonly BitSet FOLLOW_EQ_in_equalityExpression2040 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_IS_in_equalityExpression2049 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_NOT_in_equalityExpression2055 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_NE_in_equalityExpression2067 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_SQL_NE_in_equalityExpression2076 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_relationalExpression_in_equalityExpression2087 = new BitSet(new ulong[]{0x0000000080000002UL,0x00000C0800000000UL});
-    public static readonly BitSet FOLLOW_concatenation_in_relationalExpression2104 = new BitSet(new ulong[]{0x0000004404000402UL,0x0000F00000000002UL});
-    public static readonly BitSet FOLLOW_LT_in_relationalExpression2116 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_GT_in_relationalExpression2121 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_LE_in_relationalExpression2126 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_GE_in_relationalExpression2131 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_additiveExpression_in_relationalExpression2136 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000F00000000000UL});
-    public static readonly BitSet FOLLOW_NOT_in_relationalExpression2153 = new BitSet(new ulong[]{0x0000000404000400UL,0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_IN_in_relationalExpression2174 = new BitSet(new ulong[]{0x0011001808421200UL,0x0400001000000000UL});
-    public static readonly BitSet FOLLOW_inList_in_relationalExpression2183 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_BETWEEN_in_relationalExpression2194 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_betweenList_in_relationalExpression2203 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_LIKE_in_relationalExpression2215 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_concatenation_in_relationalExpression2224 = new BitSet(new ulong[]{0x0000000000040000UL});
-    public static readonly BitSet FOLLOW_likeEscape_in_relationalExpression2226 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_MEMBER_in_relationalExpression2235 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000008UL});
-    public static readonly BitSet FOLLOW_OF_in_relationalExpression2239 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_relationalExpression2246 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_ESCAPE_in_likeEscape2273 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_concatenation_in_likeEscape2276 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_compoundExpr_in_inList2289 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_concatenation_in_betweenList2310 = new BitSet(new ulong[]{0x0000000000000040UL});
-    public static readonly BitSet FOLLOW_AND_in_betweenList2312 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_concatenation_in_betweenList2315 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_additiveExpression_in_concatenation2334 = new BitSet(new ulong[]{0x0000000000000002UL,0x0001000000000000UL});
-    public static readonly BitSet FOLLOW_CONCAT_in_concatenation2342 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_additiveExpression_in_concatenation2351 = new BitSet(new ulong[]{0x0000000000000002UL,0x0001000000000000UL});
-    public static readonly BitSet FOLLOW_CONCAT_in_concatenation2358 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_additiveExpression_in_concatenation2361 = new BitSet(new ulong[]{0x0000000000000002UL,0x0001000000000000UL});
-    public static readonly BitSet FOLLOW_multiplyExpression_in_additiveExpression2383 = new BitSet(new ulong[]{0x0000000000000002UL,0x0006000000000000UL});
-    public static readonly BitSet FOLLOW_PLUS_in_additiveExpression2389 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_MINUS_in_additiveExpression2394 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_multiplyExpression_in_additiveExpression2399 = new BitSet(new ulong[]{0x0000000000000002UL,0x0006000000000000UL});
-    public static readonly BitSet FOLLOW_unaryExpression_in_multiplyExpression2414 = new BitSet(new ulong[]{0x0000000000000002UL,0x0018000000000000UL});
-    public static readonly BitSet FOLLOW_STAR_in_multiplyExpression2420 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_DIV_in_multiplyExpression2425 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_unaryExpression_in_multiplyExpression2430 = new BitSet(new ulong[]{0x0000000000000002UL,0x0018000000000000UL});
-    public static readonly BitSet FOLLOW_MINUS_in_unaryExpression2448 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_unaryExpression_in_unaryExpression2452 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_PLUS_in_unaryExpression2469 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_unaryExpression_in_unaryExpression2473 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_caseExpression_in_unaryExpression2490 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_quantifiedExpression_in_unaryExpression2504 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_atom_in_unaryExpression2519 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_CASE_in_caseExpression2538 = new BitSet(new ulong[]{0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_whenClause_in_caseExpression2541 = new BitSet(new ulong[]{0x0B00000000000000UL});
-    public static readonly BitSet FOLLOW_elseClause_in_caseExpression2546 = new BitSet(new ulong[]{0x0100000000000000UL});
-    public static readonly BitSet FOLLOW_END_in_caseExpression2550 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_CASE_in_caseExpression2569 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_unaryExpression_in_caseExpression2571 = new BitSet(new ulong[]{0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_altWhenClause_in_caseExpression2574 = new BitSet(new ulong[]{0x0B00000000000000UL});
-    public static readonly BitSet FOLLOW_elseClause_in_caseExpression2579 = new BitSet(new ulong[]{0x0100000000000000UL});
-    public static readonly BitSet FOLLOW_END_in_caseExpression2583 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_WHEN_in_whenClause2612 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_logicalExpression_in_whenClause2615 = new BitSet(new ulong[]{0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_THEN_in_whenClause2617 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_unaryExpression_in_whenClause2620 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_WHEN_in_altWhenClause2634 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_unaryExpression_in_altWhenClause2637 = new BitSet(new ulong[]{0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_THEN_in_altWhenClause2639 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_unaryExpression_in_altWhenClause2642 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_ELSE_in_elseClause2656 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_unaryExpression_in_elseClause2659 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_SOME_in_quantifiedExpression2674 = new BitSet(new ulong[]{0x0011001808421200UL,0x0400001000000000UL});
-    public static readonly BitSet FOLLOW_EXISTS_in_quantifiedExpression2679 = new BitSet(new ulong[]{0x0011001808421200UL,0x0400001000000000UL});
-    public static readonly BitSet FOLLOW_ALL_in_quantifiedExpression2684 = new BitSet(new ulong[]{0x0011001808421200UL,0x0400001000000000UL});
-    public static readonly BitSet FOLLOW_ANY_in_quantifiedExpression2689 = new BitSet(new ulong[]{0x0011001808421200UL,0x0400001000000000UL});
-    public static readonly BitSet FOLLOW_identifier_in_quantifiedExpression2698 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_collectionExpr_in_quantifiedExpression2702 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_OPEN_in_quantifiedExpression2707 = new BitSet(new ulong[]{0x0020220001400000UL});
-    public static readonly BitSet FOLLOW_subQuery_in_quantifiedExpression2712 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_quantifiedExpression2716 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_primaryExpression_in_atom2735 = new BitSet(new ulong[]{0x0000000000008002UL,0x0020000000000000UL});
-    public static readonly BitSet FOLLOW_DOT_in_atom2744 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_identifier_in_atom2747 = new BitSet(new ulong[]{0x0000000000008002UL,0x0020001000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_atom2775 = new BitSet(new ulong[]{0xC09380D8085A1230UL,0x07860071E0000011UL});
-    public static readonly BitSet FOLLOW_exprList_in_atom2780 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_atom2782 = new BitSet(new ulong[]{0x0000000000008002UL,0x0020000000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_BRACKET_in_atom2796 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_atom2801 = new BitSet(new ulong[]{0x0000000000000000UL,0x0040000000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_BRACKET_in_atom2803 = new BitSet(new ulong[]{0x0000000000008002UL,0x0020000000000000UL});
-    public static readonly BitSet FOLLOW_identPrimary_in_primaryExpression2823 = new BitSet(new ulong[]{0x0000000000008002UL});
-    public static readonly BitSet FOLLOW_DOT_in_primaryExpression2836 = new BitSet(new ulong[]{0x0000000000000800UL});
-    public static readonly BitSet FOLLOW_CLASS_in_primaryExpression2839 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_constant_in_primaryExpression2849 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_COLON_in_primaryExpression2856 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_identifier_in_primaryExpression2859 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_OPEN_in_primaryExpression2868 = new BitSet(new ulong[]{0x80B3A2D8095A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_expressionOrVector_in_primaryExpression2872 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_subQuery_in_primaryExpression2876 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_primaryExpression2879 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_PARAM_in_primaryExpression2887 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000020000000UL});
-    public static readonly BitSet FOLLOW_NUM_INT_in_primaryExpression2891 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_expression_in_expressionOrVector2909 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000400000000UL});
-    public static readonly BitSet FOLLOW_vectorExpr_in_expressionOrVector2915 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_COMMA_in_vectorExpr2954 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_vectorExpr2957 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000400000000UL});
-    public static readonly BitSet FOLLOW_COMMA_in_vectorExpr2960 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_vectorExpr2963 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000400000000UL});
-    public static readonly BitSet FOLLOW_identifier_in_identPrimary2979 = new BitSet(new ulong[]{0x0000000000008002UL,0x0000001000000000UL});
-    public static readonly BitSet FOLLOW_DOT_in_identPrimary2997 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000004UL});
-    public static readonly BitSet FOLLOW_identifier_in_identPrimary3002 = new BitSet(new ulong[]{0x0000000000008002UL,0x0000001000000000UL});
-    public static readonly BitSet FOLLOW_OBJECT_in_identPrimary3008 = new BitSet(new ulong[]{0x0000000000008002UL,0x0000001000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_identPrimary3026 = new BitSet(new ulong[]{0xC09380D8085A1230UL,0x07860071E0000011UL});
-    public static readonly BitSet FOLLOW_exprList_in_identPrimary3031 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_identPrimary3033 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_aggregate_in_identPrimary3049 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_SUM_in_aggregate3070 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
-    public static readonly BitSet FOLLOW_AVG_in_aggregate3076 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
-    public static readonly BitSet FOLLOW_MAX_in_aggregate3082 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
-    public static readonly BitSet FOLLOW_MIN_in_aggregate3088 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_aggregate3092 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
-    public static readonly BitSet FOLLOW_additiveExpression_in_aggregate3094 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_aggregate3096 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_COUNT_in_aggregate3115 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_aggregate3117 = new BitSet(new ulong[]{0x0011001808431210UL,0x0408000000000000UL});
-    public static readonly BitSet FOLLOW_STAR_in_aggregate3123 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_aggregateDistinctAll_in_aggregate3129 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_aggregate3133 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_collectionExpr_in_aggregate3165 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_set_in_aggregateDistinctAll3178 = new BitSet(new ulong[]{0x0011001808421200UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_aggregateDistinctAll3191 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_collectionExpr_in_aggregateDistinctAll3195 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_ELEMENTS_in_collectionExpr3214 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
-    public static readonly BitSet FOLLOW_INDICES_in_collectionExpr3219 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_collectionExpr3223 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_collectionExpr3226 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_collectionExpr3228 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_collectionExpr_in_compoundExpr3283 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_path_in_compoundExpr3288 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_OPEN_in_compoundExpr3294 = new BitSet(new ulong[]{0x80B3A2D8095A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_compoundExpr3300 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002400000000UL});
-    public static readonly BitSet FOLLOW_COMMA_in_compoundExpr3303 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_compoundExpr3306 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002400000000UL});
-    public static readonly BitSet FOLLOW_subQuery_in_compoundExpr3313 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_compoundExpr3317 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_TRAILING_in_exprList3336 = new BitSet(new ulong[]{0x809380D8085A1232UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_LEADING_in_exprList3349 = new BitSet(new ulong[]{0x809380D8085A1232UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_BOTH_in_exprList3362 = new BitSet(new ulong[]{0x809380D8085A1232UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_exprList3386 = new BitSet(new ulong[]{0x0000000000400082UL,0x0000000400000000UL});
-    public static readonly BitSet FOLLOW_COMMA_in_exprList3391 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_exprList3394 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000400000000UL});
-    public static readonly BitSet FOLLOW_FROM_in_exprList3409 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_exprList3411 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_AS_in_exprList3423 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_identifier_in_exprList3426 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_FROM_in_exprList3440 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_exprList3442 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_union_in_subQuery3460 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_UNION_in_union896 = new BitSet(new ulong[]{0x0024220001400000UL});
+    public static readonly BitSet FOLLOW_queryRule_in_union898 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_selectFrom_in_queryRule912 = new BitSet(new ulong[]{0x0024020001000002UL});
+    public static readonly BitSet FOLLOW_whereClause_in_queryRule917 = new BitSet(new ulong[]{0x0004020001000002UL});
+    public static readonly BitSet FOLLOW_groupByClause_in_queryRule924 = new BitSet(new ulong[]{0x0004020000000002UL});
+    public static readonly BitSet FOLLOW_orderByClause_in_queryRule931 = new BitSet(new ulong[]{0x0004000000000002UL});
+    public static readonly BitSet FOLLOW_union_in_queryRule938 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_selectClause_in_selectFrom959 = new BitSet(new ulong[]{0x0000000000400002UL});
+    public static readonly BitSet FOLLOW_fromClause_in_selectFrom966 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_SELECT_in_selectClause1019 = new BitSet(new ulong[]{0x809380F8085B1230UL,0x07860051E0000004UL});
+    public static readonly BitSet FOLLOW_DISTINCT_in_selectClause1031 = new BitSet(new ulong[]{0x809380F8085B1230UL,0x07860051E0000004UL});
+    public static readonly BitSet FOLLOW_selectedPropertiesList_in_selectClause1037 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_newExpression_in_selectClause1041 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_selectObject_in_selectClause1045 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_NEW_in_newExpression1059 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_newExpression1061 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_newExpression1066 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_selectedPropertiesList_in_newExpression1068 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_newExpression1070 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_OBJECT_in_selectObject1096 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_selectObject1099 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_identifier_in_selectObject1102 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_selectObject1104 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_FROM_in_fromClause1125 = new BitSet(new ulong[]{0x0010000004420080UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_fromRange_in_fromClause1130 = new BitSet(new ulong[]{0x0000100310800002UL,0x0000000400000000UL});
+    public static readonly BitSet FOLLOW_fromJoin_in_fromClause1134 = new BitSet(new ulong[]{0x0000100310800002UL,0x0000000400000000UL});
+    public static readonly BitSet FOLLOW_COMMA_in_fromClause1138 = new BitSet(new ulong[]{0x0010000004420080UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_fromRange_in_fromClause1143 = new BitSet(new ulong[]{0x0000100310800002UL,0x0000000400000000UL});
+    public static readonly BitSet FOLLOW_set_in_fromJoin1164 = new BitSet(new ulong[]{0x0000040100000000UL});
+    public static readonly BitSet FOLLOW_OUTER_in_fromJoin1175 = new BitSet(new ulong[]{0x0000000100000000UL});
+    public static readonly BitSet FOLLOW_FULL_in_fromJoin1183 = new BitSet(new ulong[]{0x0000000100000000UL});
+    public static readonly BitSet FOLLOW_INNER_in_fromJoin1187 = new BitSet(new ulong[]{0x0000000100000000UL});
+    public static readonly BitSet FOLLOW_JOIN_in_fromJoin1192 = new BitSet(new ulong[]{0x0010000000600000UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_FETCH_in_fromJoin1196 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_fromJoin1200 = new BitSet(new ulong[]{0x2010000000600082UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_asAlias_in_fromJoin1203 = new BitSet(new ulong[]{0x2000000000200002UL});
+    public static readonly BitSet FOLLOW_propertyFetch_in_fromJoin1208 = new BitSet(new ulong[]{0x2000000000000002UL});
+    public static readonly BitSet FOLLOW_withClause_in_fromJoin1213 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_set_in_fromJoin1224 = new BitSet(new ulong[]{0x0000040100000000UL});
+    public static readonly BitSet FOLLOW_OUTER_in_fromJoin1235 = new BitSet(new ulong[]{0x0000000100000000UL});
+    public static readonly BitSet FOLLOW_FULL_in_fromJoin1243 = new BitSet(new ulong[]{0x0000000100000000UL});
+    public static readonly BitSet FOLLOW_INNER_in_fromJoin1247 = new BitSet(new ulong[]{0x0000000100000000UL});
+    public static readonly BitSet FOLLOW_JOIN_in_fromJoin1252 = new BitSet(new ulong[]{0x0000000000220000UL});
+    public static readonly BitSet FOLLOW_FETCH_in_fromJoin1256 = new BitSet(new ulong[]{0x0000000000020000UL});
+    public static readonly BitSet FOLLOW_ELEMENTS_in_fromJoin1260 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_fromJoin1263 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_fromJoin1266 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_fromJoin1268 = new BitSet(new ulong[]{0x2010000000600082UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_asAlias_in_fromJoin1272 = new BitSet(new ulong[]{0x2000000000200002UL});
+    public static readonly BitSet FOLLOW_propertyFetch_in_fromJoin1277 = new BitSet(new ulong[]{0x2000000000000002UL});
+    public static readonly BitSet FOLLOW_withClause_in_fromJoin1282 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_WITH_in_withClause1295 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_logicalExpression_in_withClause1298 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_fromClassOrOuterQueryPath_in_fromRange1309 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_inClassDeclaration_in_fromRange1314 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_inCollectionDeclaration_in_fromRange1319 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_inCollectionElementsDeclaration_in_fromRange1324 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_path_in_fromClassOrOuterQueryPath1336 = new BitSet(new ulong[]{0x0010000000600082UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_asAlias_in_fromClassOrOuterQueryPath1341 = new BitSet(new ulong[]{0x0000000000200002UL});
+    public static readonly BitSet FOLLOW_propertyFetch_in_fromClassOrOuterQueryPath1346 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_alias_in_inClassDeclaration1376 = new BitSet(new ulong[]{0x0000000004000000UL});
+    public static readonly BitSet FOLLOW_IN_in_inClassDeclaration1378 = new BitSet(new ulong[]{0x0010000000400800UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_CLASS_in_inClassDeclaration1380 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_inClassDeclaration1383 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_IN_in_inCollectionDeclaration1411 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_inCollectionDeclaration1413 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_inCollectionDeclaration1415 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_inCollectionDeclaration1417 = new BitSet(new ulong[]{0x0010000000400080UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_alias_in_inCollectionDeclaration1419 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_alias_in_inCollectionElementsDeclaration1453 = new BitSet(new ulong[]{0x0000000004000000UL});
+    public static readonly BitSet FOLLOW_IN_in_inCollectionElementsDeclaration1455 = new BitSet(new ulong[]{0x0000000000020000UL});
+    public static readonly BitSet FOLLOW_ELEMENTS_in_inCollectionElementsDeclaration1457 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_inCollectionElementsDeclaration1459 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_inCollectionElementsDeclaration1461 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_inCollectionElementsDeclaration1463 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_ELEMENTS_in_inCollectionElementsDeclaration1485 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_inCollectionElementsDeclaration1487 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_inCollectionElementsDeclaration1489 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_inCollectionElementsDeclaration1491 = new BitSet(new ulong[]{0x0000000000000080UL});
+    public static readonly BitSet FOLLOW_AS_in_inCollectionElementsDeclaration1493 = new BitSet(new ulong[]{0x0010000000400080UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_alias_in_inCollectionElementsDeclaration1495 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_AS_in_asAlias1527 = new BitSet(new ulong[]{0x0010000000400080UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_alias_in_asAlias1532 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_identifier_in_alias1544 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_FETCH_in_propertyFetch1563 = new BitSet(new ulong[]{0x0000000000000010UL});
+    public static readonly BitSet FOLLOW_ALL_in_propertyFetch1565 = new BitSet(new ulong[]{0x0000080000000000UL});
+    public static readonly BitSet FOLLOW_PROPERTIES_in_propertyFetch1568 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_GROUP_in_groupByClause1583 = new BitSet(new ulong[]{0x0040000000000000UL});
+    public static readonly BitSet FOLLOW_LITERAL_by_in_groupByClause1589 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_expression_in_groupByClause1592 = new BitSet(new ulong[]{0x0000000002000002UL,0x0000000400000000UL});
+    public static readonly BitSet FOLLOW_COMMA_in_groupByClause1596 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_expression_in_groupByClause1599 = new BitSet(new ulong[]{0x0000000002000002UL,0x0000000400000000UL});
+    public static readonly BitSet FOLLOW_havingClause_in_groupByClause1607 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_ORDER_in_orderByClause1623 = new BitSet(new ulong[]{0x0040000000000000UL});
+    public static readonly BitSet FOLLOW_LITERAL_by_in_orderByClause1626 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_orderElement_in_orderByClause1629 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000400000000UL});
+    public static readonly BitSet FOLLOW_COMMA_in_orderByClause1633 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_orderElement_in_orderByClause1636 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000400000000UL});
+    public static readonly BitSet FOLLOW_expression_in_orderElement1650 = new BitSet(new ulong[]{0x0000000000004102UL,0x0000000000000000UL,0x000000000000000CUL});
+    public static readonly BitSet FOLLOW_ascendingOrDescending_in_orderElement1654 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_ASCENDING_in_ascendingOrDescending1672 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_130_in_ascendingOrDescending1678 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_DESCENDING_in_ascendingOrDescending1698 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_131_in_ascendingOrDescending1704 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_HAVING_in_havingClause1728 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_logicalExpression_in_havingClause1731 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_WHERE_in_whereClause1745 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_logicalExpression_in_whereClause1748 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_aliasedExpression_in_selectedPropertiesList1762 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000400000000UL});
+    public static readonly BitSet FOLLOW_COMMA_in_selectedPropertiesList1766 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_aliasedExpression_in_selectedPropertiesList1769 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000400000000UL});
+    public static readonly BitSet FOLLOW_expression_in_aliasedExpression1784 = new BitSet(new ulong[]{0x0000000000000082UL});
+    public static readonly BitSet FOLLOW_AS_in_aliasedExpression1788 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_identifier_in_aliasedExpression1791 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_expression_in_logicalExpression1830 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_logicalOrExpression_in_expression1842 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_logicalAndExpression_in_logicalOrExpression1854 = new BitSet(new ulong[]{0x0000010000000002UL});
+    public static readonly BitSet FOLLOW_OR_in_logicalOrExpression1858 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_logicalAndExpression_in_logicalOrExpression1861 = new BitSet(new ulong[]{0x0000010000000002UL});
+    public static readonly BitSet FOLLOW_negatedExpression_in_logicalAndExpression1876 = new BitSet(new ulong[]{0x0000000000000042UL});
+    public static readonly BitSet FOLLOW_AND_in_logicalAndExpression1880 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_negatedExpression_in_logicalAndExpression1883 = new BitSet(new ulong[]{0x0000000000000042UL});
+    public static readonly BitSet FOLLOW_NOT_in_negatedExpression1904 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_negatedExpression_in_negatedExpression1908 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_bitwiseNotExpression_in_negatedExpression1921 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_BNOT_in_bitwiseNotExpression1945 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_bitwiseOrExpression_in_bitwiseNotExpression1948 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_bitwiseOrExpression_in_bitwiseNotExpression1954 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_bitwiseXOrExpression_in_bitwiseOrExpression1966 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_BOR_in_bitwiseOrExpression1969 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_bitwiseXOrExpression_in_bitwiseOrExpression1972 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_bitwiseAndExpression_in_bitwiseXOrExpression1986 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000010000000000UL});
+    public static readonly BitSet FOLLOW_BXOR_in_bitwiseXOrExpression1989 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_bitwiseAndExpression_in_bitwiseXOrExpression1992 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000010000000000UL});
+    public static readonly BitSet FOLLOW_equalityExpression_in_bitwiseAndExpression2006 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000020000000000UL});
+    public static readonly BitSet FOLLOW_BAND_in_bitwiseAndExpression2009 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_equalityExpression_in_bitwiseAndExpression2012 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000020000000000UL});
+    public static readonly BitSet FOLLOW_relationalExpression_in_equalityExpression2034 = new BitSet(new ulong[]{0x0000000080000002UL,0x00000C0800000000UL});
+    public static readonly BitSet FOLLOW_EQ_in_equalityExpression2042 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_IS_in_equalityExpression2051 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_NOT_in_equalityExpression2057 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_NE_in_equalityExpression2069 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_SQL_NE_in_equalityExpression2078 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_relationalExpression_in_equalityExpression2089 = new BitSet(new ulong[]{0x0000000080000002UL,0x00000C0800000000UL});
+    public static readonly BitSet FOLLOW_concatenation_in_relationalExpression2106 = new BitSet(new ulong[]{0x0000004404000402UL,0x0000F00000000002UL});
+    public static readonly BitSet FOLLOW_LT_in_relationalExpression2118 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_GT_in_relationalExpression2123 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_LE_in_relationalExpression2128 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_GE_in_relationalExpression2133 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_additiveExpression_in_relationalExpression2138 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000F00000000000UL});
+    public static readonly BitSet FOLLOW_NOT_in_relationalExpression2155 = new BitSet(new ulong[]{0x0000000404000400UL,0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_IN_in_relationalExpression2176 = new BitSet(new ulong[]{0x0011001808421200UL,0x0400001000000000UL});
+    public static readonly BitSet FOLLOW_inList_in_relationalExpression2185 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_BETWEEN_in_relationalExpression2196 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_betweenList_in_relationalExpression2205 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_LIKE_in_relationalExpression2217 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_concatenation_in_relationalExpression2226 = new BitSet(new ulong[]{0x0000000000040000UL});
+    public static readonly BitSet FOLLOW_likeEscape_in_relationalExpression2228 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_MEMBER_in_relationalExpression2237 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000008UL});
+    public static readonly BitSet FOLLOW_OF_in_relationalExpression2241 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_relationalExpression2248 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_ESCAPE_in_likeEscape2275 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_concatenation_in_likeEscape2278 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_compoundExpr_in_inList2291 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_concatenation_in_betweenList2312 = new BitSet(new ulong[]{0x0000000000000040UL});
+    public static readonly BitSet FOLLOW_AND_in_betweenList2314 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_concatenation_in_betweenList2317 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_additiveExpression_in_concatenation2336 = new BitSet(new ulong[]{0x0000000000000002UL,0x0001000000000000UL});
+    public static readonly BitSet FOLLOW_CONCAT_in_concatenation2344 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_additiveExpression_in_concatenation2353 = new BitSet(new ulong[]{0x0000000000000002UL,0x0001000000000000UL});
+    public static readonly BitSet FOLLOW_CONCAT_in_concatenation2360 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_additiveExpression_in_concatenation2363 = new BitSet(new ulong[]{0x0000000000000002UL,0x0001000000000000UL});
+    public static readonly BitSet FOLLOW_multiplyExpression_in_additiveExpression2385 = new BitSet(new ulong[]{0x0000000000000002UL,0x0006000000000000UL});
+    public static readonly BitSet FOLLOW_PLUS_in_additiveExpression2391 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_MINUS_in_additiveExpression2396 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_multiplyExpression_in_additiveExpression2401 = new BitSet(new ulong[]{0x0000000000000002UL,0x0006000000000000UL});
+    public static readonly BitSet FOLLOW_unaryExpression_in_multiplyExpression2416 = new BitSet(new ulong[]{0x0000000000000002UL,0x0018000000000000UL});
+    public static readonly BitSet FOLLOW_STAR_in_multiplyExpression2422 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_DIV_in_multiplyExpression2427 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_unaryExpression_in_multiplyExpression2432 = new BitSet(new ulong[]{0x0000000000000002UL,0x0018000000000000UL});
+    public static readonly BitSet FOLLOW_MINUS_in_unaryExpression2450 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_unaryExpression_in_unaryExpression2454 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_PLUS_in_unaryExpression2471 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_unaryExpression_in_unaryExpression2475 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_caseExpression_in_unaryExpression2492 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_quantifiedExpression_in_unaryExpression2506 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_atom_in_unaryExpression2521 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_CASE_in_caseExpression2540 = new BitSet(new ulong[]{0x0800000000000000UL});
+    public static readonly BitSet FOLLOW_whenClause_in_caseExpression2543 = new BitSet(new ulong[]{0x0B00000000000000UL});
+    public static readonly BitSet FOLLOW_elseClause_in_caseExpression2548 = new BitSet(new ulong[]{0x0100000000000000UL});
+    public static readonly BitSet FOLLOW_END_in_caseExpression2552 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_CASE_in_caseExpression2571 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_unaryExpression_in_caseExpression2573 = new BitSet(new ulong[]{0x0800000000000000UL});
+    public static readonly BitSet FOLLOW_altWhenClause_in_caseExpression2576 = new BitSet(new ulong[]{0x0B00000000000000UL});
+    public static readonly BitSet FOLLOW_elseClause_in_caseExpression2581 = new BitSet(new ulong[]{0x0100000000000000UL});
+    public static readonly BitSet FOLLOW_END_in_caseExpression2585 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_WHEN_in_whenClause2614 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_logicalExpression_in_whenClause2617 = new BitSet(new ulong[]{0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_THEN_in_whenClause2619 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_unaryExpression_in_whenClause2622 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_WHEN_in_altWhenClause2636 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_unaryExpression_in_altWhenClause2639 = new BitSet(new ulong[]{0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_THEN_in_altWhenClause2641 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_unaryExpression_in_altWhenClause2644 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_ELSE_in_elseClause2658 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_unaryExpression_in_elseClause2661 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_SOME_in_quantifiedExpression2676 = new BitSet(new ulong[]{0x0011001808421200UL,0x0400001000000000UL});
+    public static readonly BitSet FOLLOW_EXISTS_in_quantifiedExpression2681 = new BitSet(new ulong[]{0x0011001808421200UL,0x0400001000000000UL});
+    public static readonly BitSet FOLLOW_ALL_in_quantifiedExpression2686 = new BitSet(new ulong[]{0x0011001808421200UL,0x0400001000000000UL});
+    public static readonly BitSet FOLLOW_ANY_in_quantifiedExpression2691 = new BitSet(new ulong[]{0x0011001808421200UL,0x0400001000000000UL});
+    public static readonly BitSet FOLLOW_identifier_in_quantifiedExpression2700 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_collectionExpr_in_quantifiedExpression2704 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_OPEN_in_quantifiedExpression2709 = new BitSet(new ulong[]{0x0024220001400000UL});
+    public static readonly BitSet FOLLOW_subQuery_in_quantifiedExpression2714 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_quantifiedExpression2718 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_primaryExpression_in_atom2737 = new BitSet(new ulong[]{0x0000000000008002UL,0x0020000000000000UL});
+    public static readonly BitSet FOLLOW_DOT_in_atom2746 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_identifier_in_atom2749 = new BitSet(new ulong[]{0x0000000000008002UL,0x0020001000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_atom2777 = new BitSet(new ulong[]{0xC09380D8085A1230UL,0x07860071E0000011UL});
+    public static readonly BitSet FOLLOW_exprList_in_atom2782 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_atom2784 = new BitSet(new ulong[]{0x0000000000008002UL,0x0020000000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_BRACKET_in_atom2798 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_expression_in_atom2803 = new BitSet(new ulong[]{0x0000000000000000UL,0x0040000000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_BRACKET_in_atom2805 = new BitSet(new ulong[]{0x0000000000008002UL,0x0020000000000000UL});
+    public static readonly BitSet FOLLOW_identPrimary_in_primaryExpression2825 = new BitSet(new ulong[]{0x0000000000008002UL});
+    public static readonly BitSet FOLLOW_DOT_in_primaryExpression2838 = new BitSet(new ulong[]{0x0000000000000800UL});
+    public static readonly BitSet FOLLOW_CLASS_in_primaryExpression2841 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_constant_in_primaryExpression2851 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_COLON_in_primaryExpression2858 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_identifier_in_primaryExpression2861 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_OPEN_in_primaryExpression2870 = new BitSet(new ulong[]{0x80B7A2D8095A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_expressionOrVector_in_primaryExpression2874 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_subQuery_in_primaryExpression2878 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_primaryExpression2881 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_PARAM_in_primaryExpression2889 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000020000000UL});
+    public static readonly BitSet FOLLOW_NUM_INT_in_primaryExpression2893 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_expression_in_expressionOrVector2911 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000400000000UL});
+    public static readonly BitSet FOLLOW_vectorExpr_in_expressionOrVector2917 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_COMMA_in_vectorExpr2956 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_expression_in_vectorExpr2959 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000400000000UL});
+    public static readonly BitSet FOLLOW_COMMA_in_vectorExpr2962 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_expression_in_vectorExpr2965 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000400000000UL});
+    public static readonly BitSet FOLLOW_identifier_in_identPrimary2981 = new BitSet(new ulong[]{0x0000000000008002UL,0x0000001000000000UL});
+    public static readonly BitSet FOLLOW_DOT_in_identPrimary2999 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000004UL});
+    public static readonly BitSet FOLLOW_identifier_in_identPrimary3004 = new BitSet(new ulong[]{0x0000000000008002UL,0x0000001000000000UL});
+    public static readonly BitSet FOLLOW_OBJECT_in_identPrimary3010 = new BitSet(new ulong[]{0x0000000000008002UL,0x0000001000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_identPrimary3028 = new BitSet(new ulong[]{0xC09380D8085A1230UL,0x07860071E0000011UL});
+    public static readonly BitSet FOLLOW_exprList_in_identPrimary3033 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_identPrimary3035 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_aggregate_in_identPrimary3051 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_SUM_in_aggregate3072 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
+    public static readonly BitSet FOLLOW_AVG_in_aggregate3078 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
+    public static readonly BitSet FOLLOW_MAX_in_aggregate3084 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
+    public static readonly BitSet FOLLOW_MIN_in_aggregate3090 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_aggregate3094 = new BitSet(new ulong[]{0x80938098085A1230UL,0x07860011E0000000UL});
+    public static readonly BitSet FOLLOW_additiveExpression_in_aggregate3096 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_aggregate3098 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_COUNT_in_aggregate3117 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_aggregate3119 = new BitSet(new ulong[]{0x0011001808431210UL,0x0408000000000000UL});
+    public static readonly BitSet FOLLOW_STAR_in_aggregate3125 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_aggregateDistinctAll_in_aggregate3131 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_aggregate3135 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_collectionExpr_in_aggregate3167 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_set_in_aggregateDistinctAll3180 = new BitSet(new ulong[]{0x0011001808421200UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_aggregateDistinctAll3193 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_collectionExpr_in_aggregateDistinctAll3197 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_ELEMENTS_in_collectionExpr3216 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
+    public static readonly BitSet FOLLOW_INDICES_in_collectionExpr3221 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_collectionExpr3225 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_collectionExpr3228 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_collectionExpr3230 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_collectionExpr_in_compoundExpr3285 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_path_in_compoundExpr3290 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_OPEN_in_compoundExpr3296 = new BitSet(new ulong[]{0x80B7A2D8095A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_expression_in_compoundExpr3302 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002400000000UL});
+    public static readonly BitSet FOLLOW_COMMA_in_compoundExpr3305 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_expression_in_compoundExpr3308 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002400000000UL});
+    public static readonly BitSet FOLLOW_subQuery_in_compoundExpr3315 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_compoundExpr3319 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_TRAILING_in_exprList3338 = new BitSet(new ulong[]{0x809380D8085A1232UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_LEADING_in_exprList3351 = new BitSet(new ulong[]{0x809380D8085A1232UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_BOTH_in_exprList3364 = new BitSet(new ulong[]{0x809380D8085A1232UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_expression_in_exprList3388 = new BitSet(new ulong[]{0x0000000000400082UL,0x0000000400000000UL});
+    public static readonly BitSet FOLLOW_COMMA_in_exprList3393 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_expression_in_exprList3396 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000400000000UL});
+    public static readonly BitSet FOLLOW_FROM_in_exprList3411 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_expression_in_exprList3413 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_AS_in_exprList3425 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_identifier_in_exprList3428 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_FROM_in_exprList3442 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x07860051E0000000UL});
+    public static readonly BitSet FOLLOW_expression_in_exprList3444 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_queryRule_in_subQuery3462 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_set_in_constant0 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_identifier_in_path3544 = new BitSet(new ulong[]{0x0000000000008002UL});
-    public static readonly BitSet FOLLOW_DOT_in_path3548 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_identifier_in_path3553 = new BitSet(new ulong[]{0x0000000000008002UL});
-    public static readonly BitSet FOLLOW_IDENT_in_identifier3569 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_identifier_in_path3546 = new BitSet(new ulong[]{0x0000000000008002UL});
+    public static readonly BitSet FOLLOW_DOT_in_path3550 = new BitSet(new ulong[]{0x0010000000400000UL,0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_identifier_in_path3555 = new BitSet(new ulong[]{0x0000000000008002UL});
+    public static readonly BitSet FOLLOW_IDENT_in_identifier3571 = new BitSet(new ulong[]{0x0000000000000002UL});
 
 }
 }
