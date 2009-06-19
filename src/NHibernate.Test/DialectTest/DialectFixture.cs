@@ -1,7 +1,13 @@
+using System;
 using System.Collections.Generic;
-using NHibernate.Cfg;
+using System.Data;
 using NHibernate.Dialect;
+using NHibernate.Driver;
+using NHibernate.Engine;
+using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 using NUnit.Framework;
+using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.DialectTest
 {
@@ -131,6 +137,32 @@ namespace NHibernate.Test.DialectTest
 
 			Dialect.Dialect dialect = Dialect.Dialect.GetDialect(props);
 			Assert.IsTrue(dialect is MsSql2000Dialect);
+		}
+
+		[Test]
+		public void CurrentTimestampSelection()
+		{
+			var conf = TestConfigurationHelper.GetDefaultConfiguration();
+			Dialect.Dialect dialect = Dialect.Dialect.GetDialect(conf.Properties);
+			if (!dialect.SupportsCurrentTimestampSelection)
+			{
+				Assert.Ignore("This test does not apply to " + dialect.GetType().FullName);
+			}
+			var sessions = (ISessionFactoryImplementor) conf.BuildSessionFactory();
+			sessions.ConnectionProvider.Configure(conf.Properties);
+			IDriver driver = sessions.ConnectionProvider.Driver;
+
+			using (IDbConnection connection = sessions.ConnectionProvider.GetConnection())
+			{
+				IDbCommand statement = driver.GenerateCommand(CommandType.Text, new SqlString(dialect.CurrentTimestampSelectString),
+				                                              new SqlType[0]);
+				statement.Connection = connection;
+				using(IDataReader reader = statement.ExecuteReader())
+				{
+					Assert.That(reader.Read(), "should return one record");
+					Assert.That(reader[0], Is.InstanceOf<DateTime>());
+				}
+			}
 		}
 	}
 }
