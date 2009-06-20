@@ -362,6 +362,8 @@
     <Compile Include="NHSpecificTest\NH1092\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1093\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1093\SimpleCached.cs" />
+    <Compile Include="NHSpecificTest\NH1097\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1097\Person.cs" />
     <Compile Include="NHSpecificTest\NH1159\Contact.cs" />
     <Compile Include="NHSpecificTest\NH1159\ContactTitle.cs" />
     <Compile Include="NHSpecificTest\NH1159\Fixture.cs" />
@@ -1925,6 +1927,7 @@
     <EmbeddedResource Include="Bytecode\Lightweight\ProductLine.hbm.xml" />
     <EmbeddedResource Include="DriverTest\MultiTypeEntity.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1097\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH473\Mappings.hbm.xml" />
     <EmbeddedResource Include="VersionTest\Db\User.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1831\Mappings.hbm.xml" />
