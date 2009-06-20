@@ -506,6 +506,8 @@
     <Compile Include="NHSpecificTest\NH1813\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1821\Entity.cs" />
     <Compile Include="NHSpecificTest\NH1821\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1831\Entities.cs" />
+    <Compile Include="NHSpecificTest\NH1831\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1834\A.cs" />
     <Compile Include="NHSpecificTest\NH1834\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1835\Document.cs" />
@@ -1916,6 +1918,7 @@
     <EmbeddedResource Include="Bytecode\Lightweight\ProductLine.hbm.xml" />
     <EmbeddedResource Include="DriverTest\MultiTypeEntity.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1831\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1069\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1837\Mappings.hbm.xml" />
     <EmbeddedResource Include="TypesTest\MultiTypeEntity_WithSqlType.hbm.xml" />
