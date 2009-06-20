@@ -224,6 +224,8 @@ namespace NHibernate
 		/// NHibernate Timestamp type
 		/// </summary>
 		public static readonly NullableType Timestamp = new TimestampType();
+		
+		public static readonly NullableType DbTimestamp = new DbTimestampType();
 
 		/// <summary>
 		/// NHibernate TrueFalse type

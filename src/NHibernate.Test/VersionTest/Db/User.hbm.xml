@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    Demonstrates how to control the optimistic locking behavior
+    of a collection (do changes to the collection result in
+    a version increment on the owning instance)
+ -->
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+		namespace="NHibernate.Test.VersionTest.Db"
+		assembly="NHibernate.Test">
+	
+	<class name="User" table="db_vers_user">
+		<id name="Id" column="user_id" type="long">
+			<generator class="native"/>
+		</id>
+		<timestamp name="Timestamp" column="ts" source="db"/>
+		<property name="Username" column="user_name" type="string" unique="true"/>
+		<set name="Groups" table="db_vers_user_group" batch-size="9" inverse="true" optimistic-lock="true" lazy="true" cascade="none" >
+			<key column="user_id"/>
+			<many-to-many column="group_id" class="Group" lazy="false" fetch="join" />
+		</set>
+		<set name="Permissions" table="db_vers_user_perm" batch-size="9" inverse="false" optimistic-lock="false" lazy="true" cascade="none">
+			<key column="user_id"/>
+			<many-to-many column="perm_id" class="Permission" lazy="false" fetch="join"/>
+		</set>
+	</class>
+
+	<class name="Group" table="db_vers_group">
+		<id name="Id" column="group_id" type="long">
+			<generator class="native"/>
+		</id>
+		<timestamp name="Timestamp" column="ts" source="db"/>
+		<property name="Name" column="name" type="string" unique="true"/>
+		<set name="Users" table="db_vers_user_group" batch-size="9" inverse="false" lazy="true" cascade="none" >
+			<key column="group_id"/>
+			<many-to-many column="user_id" class="User" lazy="false" fetch="join" />
+		</set>
+	</class>
+
+	<class name="Permission" table="db_vers_permission">
+		<id name="Id" column="perm_id" type="long">
+			<generator class="native"/>
+		</id>
+		<timestamp name="Timestamp" column="ts" source="db"/>
+		<property name="Name" column="name" type="string" unique="true"/>
+		<property name="Context" column="ctx" type="string"/>
+		<property name="Access" column="priv" type="string"/>
+	</class>
+</hibernate-mapping>

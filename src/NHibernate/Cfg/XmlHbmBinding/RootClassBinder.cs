@@ -76,7 +76,20 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			BindColumns(timestampSchema, simpleValue, propertyName);
 
 			if (!simpleValue.IsTypeSpecified)
-				simpleValue.TypeName = NHibernateUtil.Timestamp.Name;
+			{
+				switch (timestampSchema.source)
+				{
+					case HbmTimestampSource.Vm:
+						simpleValue.TypeName = NHibernateUtil.Timestamp.Name; 
+						break;
+					case HbmTimestampSource.Db:
+						simpleValue.TypeName = NHibernateUtil.DbTimestamp.Name; 
+						break;
+					default:
+						simpleValue.TypeName = NHibernateUtil.Timestamp.Name;
+						break;
+				}
+			}
 
 			var property = new Property(simpleValue);
 			BindProperty(timestampSchema, property, inheritedMetas);

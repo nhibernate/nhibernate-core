@@ -604,6 +604,7 @@
     <Compile Include="Tool\hbm2ddl\SchemaMetadataUpdater.cs" />
     <Compile Include="Transaction\AdoNetWithDistrubtedTransactionFactory.cs" />
     <Compile Include="Transform\ToListResultTransformer.cs" />
+    <Compile Include="Type\DbTimestampType.cs" />
     <Compile Include="Type\DefaultCollectionTypeFactory.cs" />
     <Compile Include="Bytecode\ICollectionTypeFactory.cs" />
     <Compile Include="Util\NullableDictionary.cs" />

@@ -232,6 +232,7 @@ namespace NHibernate.Type
 			
 			RegisterType(NHibernateUtil.Date, new[] { "date" });
 			RegisterType(NHibernateUtil.Timestamp, new[] { "timestamp" });
+			RegisterType(NHibernateUtil.DbTimestamp, new[] { "dbtimestamp" });
 			RegisterType(NHibernateUtil.Time, new[] { "time" });
 			RegisterType(NHibernateUtil.TrueFalse, new[] { "true_false" });
 			RegisterType(NHibernateUtil.YesNo, new[] { "yes_no" });
