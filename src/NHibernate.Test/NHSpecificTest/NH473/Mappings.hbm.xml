@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH473">
+
+	<class name="Parent">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+
+		<bag name="Children" lazy="true" order-by="Name" cascade="all-delete-orphan">
+			<key column="ParentId" />
+			<one-to-many class="Child" />
+		</bag>
+	</class>
+
+	<class name="Child">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<property name="Name"/>
+	</class>
+</hibernate-mapping>
