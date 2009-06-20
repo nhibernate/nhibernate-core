@@ -253,8 +253,10 @@ quantified
 	;
 	
 parenSelect
-	: { Out("("); } selectStatement { Out(")"); }
+	: { Out("("); } selectStatement { Out(")"); } 
+	| ^(UNION { Out("("); } selectStatement { Out(") union "); } parenSelect )
 	;
+
 	
 simpleExpr
 	: c=constant { Out($c.start); }

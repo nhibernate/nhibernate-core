@@ -1,4 +1,4 @@
-// $ANTLR 3.1.2 /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g 2009-05-15 09:35:07
+// $ANTLR 3.1.2 /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g 2009-06-20 02:19:15
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 168, 219
@@ -133,10 +133,6 @@ public partial class SqlGenerator : TreeParser
 		"EQ", 
 		"OPEN", 
 		"CLOSE", 
-		"BNOT", 
-		"BOR", 
-		"BXOR", 
-		"BAND", 
 		"NE", 
 		"SQL_NE", 
 		"LT", 
@@ -144,6 +140,10 @@ public partial class SqlGenerator : TreeParser
 		"LE", 
 		"GE", 
 		"CONCAT", 
+		"BNOT", 
+		"BOR", 
+		"BXOR", 
+		"BAND", 
 		"PLUS", 
 		"MINUS", 
 		"STAR", 
@@ -196,7 +196,7 @@ public partial class SqlGenerator : TreeParser
     public const int THEN = 58;
     public const int FILTERS = 144;
     public const int ALIAS = 70;
-    public const int BOR = 103;
+    public const int BOR = 110;
     public const int ALIAS_REF = 138;
     public const int ON = 60;
     public const int DOT = 15;
@@ -206,10 +206,10 @@ public partial class SqlGenerator : TreeParser
     public const int RIGHT = 44;
     public const int METHOD_CALL = 79;
     public const int UNARY_MINUS = 88;
-    public const int CONCAT = 112;
+    public const int CONCAT = 108;
     public const int PROPERTIES = 43;
     public const int SELECT = 45;
-    public const int LE = 110;
+    public const int LE = 106;
     public const int RIGHT_OUTER = 137;
     public const int BETWEEN = 10;
     public const int NUM_INT = 93;
@@ -230,7 +230,7 @@ public partial class SqlGenerator : TreeParser
     public const int WS = 126;
     public const int EQ = 99;
     public const int NEW = 37;
-    public const int LT = 108;
+    public const int LT = 104;
     public const int ESCqs = 125;
     public const int OF = 67;
     public const int T__130 = 130;
@@ -241,7 +241,7 @@ public partial class SqlGenerator : TreeParser
     public const int ANY = 5;
     public const int UNARY_PLUS = 89;
     public const int NUM_FLOAT = 95;
-    public const int GE = 111;
+    public const int GE = 107;
     public const int CASE = 55;
     public const int OPEN_BRACKET = 117;
     public const int ELSE = 57;
@@ -263,7 +263,7 @@ public partial class SqlGenerator : TreeParser
     public const int WHERE = 53;
     public const int AGGREGATE = 69;
     public const int VECTOR_EXPR = 90;
-    public const int BNOT = 102;
+    public const int BNOT = 109;
     public const int LEADING = 64;
     public const int CLOSE_BRACKET = 118;
     public const int NUM_DOUBLE = 94;
@@ -286,7 +286,7 @@ public partial class SqlGenerator : TreeParser
     public const int TRAILING = 68;
     public const int JOIN = 32;
     public const int NOT_BETWEEN = 80;
-    public const int BAND = 105;
+    public const int BAND = 112;
     public const int SUM = 48;
     public const int ROW_STAR = 86;
     public const int OUTER = 42;
@@ -301,11 +301,11 @@ public partial class SqlGenerator : TreeParser
     public const int ASCENDING = 8;
     public const int NUM_LONG = 96;
     public const int IS = 31;
-    public const int SQL_NE = 107;
+    public const int SQL_NE = 103;
     public const int IN_LIST = 75;
     public const int WEIRD_IDENT = 91;
-    public const int GT = 109;
-    public const int NE = 106;
+    public const int GT = 105;
+    public const int NE = 102;
     public const int MIN = 36;
     public const int LIKE = 34;
     public const int WITH = 61;
@@ -323,7 +323,7 @@ public partial class SqlGenerator : TreeParser
     public const int AVG = 9;
     public const int SELECT_CLAUSE = 135;
     public const int STAR = 115;
-    public const int BXOR = 104;
+    public const int BXOR = 111;
     public const int NOT = 38;
     public const int JAVA_CONSTANT = 97;
 
@@ -1101,7 +1101,7 @@ public partial class SqlGenerator : TreeParser
             	int alt12 = 2;
             	int LA12_0 = input.LA(1);
 
-            	if ( ((LA12_0 >= ALL && LA12_0 <= ANY) || LA12_0 == COUNT || LA12_0 == DOT || LA12_0 == FALSE || LA12_0 == NULL || LA12_0 == SELECT || LA12_0 == SOME || LA12_0 == TRUE || LA12_0 == CASE || LA12_0 == AGGREGATE || LA12_0 == CASE2 || LA12_0 == INDEX_OP || LA12_0 == METHOD_CALL || LA12_0 == UNARY_MINUS || LA12_0 == VECTOR_EXPR || (LA12_0 >= CONSTANT && LA12_0 <= JAVA_CONSTANT) || (LA12_0 >= BNOT && LA12_0 <= BAND) || (LA12_0 >= PLUS && LA12_0 <= DIV) || (LA12_0 >= PARAM && LA12_0 <= IDENT) || LA12_0 == ALIAS_REF || LA12_0 == SQL_TOKEN || LA12_0 == NAMED_PARAM) )
+            	if ( ((LA12_0 >= ALL && LA12_0 <= ANY) || LA12_0 == COUNT || LA12_0 == DOT || LA12_0 == FALSE || LA12_0 == NULL || LA12_0 == SELECT || LA12_0 == SOME || (LA12_0 >= TRUE && LA12_0 <= UNION) || LA12_0 == CASE || LA12_0 == AGGREGATE || LA12_0 == CASE2 || LA12_0 == INDEX_OP || LA12_0 == METHOD_CALL || LA12_0 == UNARY_MINUS || LA12_0 == VECTOR_EXPR || (LA12_0 >= CONSTANT && LA12_0 <= JAVA_CONSTANT) || (LA12_0 >= BNOT && LA12_0 <= DIV) || (LA12_0 >= PARAM && LA12_0 <= IDENT) || LA12_0 == ALIAS_REF || LA12_0 == SQL_TOKEN || LA12_0 == NAMED_PARAM) )
             	{
             	    alt12 = 1;
             	}
@@ -1158,7 +1158,7 @@ public partial class SqlGenerator : TreeParser
             	int alt13 = 2;
             	int LA13_0 = input.LA(1);
 
-            	if ( ((LA13_0 >= ALL && LA13_0 <= ANY) || LA13_0 == COUNT || LA13_0 == DOT || LA13_0 == FALSE || LA13_0 == NULL || LA13_0 == SELECT || LA13_0 == SOME || LA13_0 == TRUE || LA13_0 == CASE || LA13_0 == AGGREGATE || LA13_0 == CASE2 || LA13_0 == INDEX_OP || LA13_0 == METHOD_CALL || LA13_0 == UNARY_MINUS || LA13_0 == VECTOR_EXPR || (LA13_0 >= CONSTANT && LA13_0 <= JAVA_CONSTANT) || (LA13_0 >= BNOT && LA13_0 <= BAND) || (LA13_0 >= PLUS && LA13_0 <= DIV) || (LA13_0 >= PARAM && LA13_0 <= IDENT) || LA13_0 == ALIAS_REF || LA13_0 == SQL_TOKEN || LA13_0 == NAMED_PARAM) )
+            	if ( ((LA13_0 >= ALL && LA13_0 <= ANY) || LA13_0 == COUNT || LA13_0 == DOT || LA13_0 == FALSE || LA13_0 == NULL || LA13_0 == SELECT || LA13_0 == SOME || (LA13_0 >= TRUE && LA13_0 <= UNION) || LA13_0 == CASE || LA13_0 == AGGREGATE || LA13_0 == CASE2 || LA13_0 == INDEX_OP || LA13_0 == METHOD_CALL || LA13_0 == UNARY_MINUS || LA13_0 == VECTOR_EXPR || (LA13_0 >= CONSTANT && LA13_0 <= JAVA_CONSTANT) || (LA13_0 >= BNOT && LA13_0 <= DIV) || (LA13_0 >= PARAM && LA13_0 <= IDENT) || LA13_0 == ALIAS_REF || LA13_0 == SQL_TOKEN || LA13_0 == NAMED_PARAM) )
             	{
             	    alt13 = 1;
             	}
@@ -1591,7 +1591,7 @@ public partial class SqlGenerator : TreeParser
             	    int alt20 = 2;
             	    int LA20_0 = input.LA(1);
 
-            	    if ( (LA20_0 == COUNT || LA20_0 == DOT || LA20_0 == FALSE || LA20_0 == SELECT || LA20_0 == TRUE || LA20_0 == CASE || LA20_0 == AGGREGATE || (LA20_0 >= CONSTRUCTOR && LA20_0 <= CASE2) || LA20_0 == METHOD_CALL || LA20_0 == UNARY_MINUS || (LA20_0 >= CONSTANT && LA20_0 <= JAVA_CONSTANT) || (LA20_0 >= BNOT && LA20_0 <= BAND) || (LA20_0 >= PLUS && LA20_0 <= DIV) || (LA20_0 >= PARAM && LA20_0 <= IDENT) || LA20_0 == ALIAS_REF || LA20_0 == SQL_TOKEN || LA20_0 == SELECT_EXPR) )
+            	    if ( (LA20_0 == COUNT || LA20_0 == DOT || LA20_0 == FALSE || LA20_0 == SELECT || LA20_0 == TRUE || LA20_0 == CASE || LA20_0 == AGGREGATE || (LA20_0 >= CONSTRUCTOR && LA20_0 <= CASE2) || LA20_0 == METHOD_CALL || LA20_0 == UNARY_MINUS || (LA20_0 >= CONSTANT && LA20_0 <= JAVA_CONSTANT) || (LA20_0 >= BNOT && LA20_0 <= DIV) || (LA20_0 >= PARAM && LA20_0 <= IDENT) || LA20_0 == ALIAS_REF || LA20_0 == SQL_TOKEN || LA20_0 == SELECT_EXPR) )
             	    {
             	        alt20 = 1;
             	    }
@@ -1852,7 +1852,7 @@ public partial class SqlGenerator : TreeParser
                     	    int alt22 = 2;
                     	    int LA22_0 = input.LA(1);
 
-                    	    if ( (LA22_0 == COUNT || LA22_0 == DOT || LA22_0 == FALSE || LA22_0 == SELECT || LA22_0 == TRUE || LA22_0 == CASE || LA22_0 == AGGREGATE || (LA22_0 >= CONSTRUCTOR && LA22_0 <= CASE2) || LA22_0 == METHOD_CALL || LA22_0 == UNARY_MINUS || (LA22_0 >= CONSTANT && LA22_0 <= JAVA_CONSTANT) || (LA22_0 >= BNOT && LA22_0 <= BAND) || (LA22_0 >= PLUS && LA22_0 <= DIV) || (LA22_0 >= PARAM && LA22_0 <= IDENT) || LA22_0 == ALIAS_REF || LA22_0 == SQL_TOKEN || LA22_0 == SELECT_EXPR) )
+                    	    if ( (LA22_0 == COUNT || LA22_0 == DOT || LA22_0 == FALSE || LA22_0 == SELECT || LA22_0 == TRUE || LA22_0 == CASE || LA22_0 == AGGREGATE || (LA22_0 >= CONSTRUCTOR && LA22_0 <= CASE2) || LA22_0 == METHOD_CALL || LA22_0 == UNARY_MINUS || (LA22_0 >= CONSTANT && LA22_0 <= JAVA_CONSTANT) || (LA22_0 >= BNOT && LA22_0 <= DIV) || (LA22_0 >= PARAM && LA22_0 <= IDENT) || LA22_0 == ALIAS_REF || LA22_0 == SQL_TOKEN || LA22_0 == SELECT_EXPR) )
                     	    {
                     	        alt22 = 1;
                     	    }
@@ -2166,7 +2166,7 @@ public partial class SqlGenerator : TreeParser
             {
                 alt27 = 1;
             }
-            else if ( (LA27_0 == COUNT || LA27_0 == DOT || LA27_0 == FALSE || LA27_0 == NULL || LA27_0 == TRUE || LA27_0 == CASE || LA27_0 == AGGREGATE || LA27_0 == CASE2 || LA27_0 == INDEX_OP || LA27_0 == METHOD_CALL || LA27_0 == UNARY_MINUS || (LA27_0 >= CONSTANT && LA27_0 <= JAVA_CONSTANT) || (LA27_0 >= BNOT && LA27_0 <= BAND) || (LA27_0 >= PLUS && LA27_0 <= DIV) || (LA27_0 >= PARAM && LA27_0 <= IDENT) || LA27_0 == ALIAS_REF || LA27_0 == SQL_TOKEN || LA27_0 == NAMED_PARAM) )
+            else if ( (LA27_0 == COUNT || LA27_0 == DOT || LA27_0 == FALSE || LA27_0 == NULL || LA27_0 == TRUE || LA27_0 == CASE || LA27_0 == AGGREGATE || LA27_0 == CASE2 || LA27_0 == INDEX_OP || LA27_0 == METHOD_CALL || LA27_0 == UNARY_MINUS || (LA27_0 >= CONSTANT && LA27_0 <= JAVA_CONSTANT) || (LA27_0 >= BNOT && LA27_0 <= DIV) || (LA27_0 >= PARAM && LA27_0 <= IDENT) || LA27_0 == ALIAS_REF || LA27_0 == SQL_TOKEN || LA27_0 == NAMED_PARAM) )
             {
                 alt27 = 2;
             }
@@ -3741,11 +3741,11 @@ public partial class SqlGenerator : TreeParser
             	    int alt46 = 2;
             	    int LA46_0 = input.LA(1);
 
-            	    if ( (LA46_0 == SELECT) )
+            	    if ( (LA46_0 == SELECT || LA46_0 == UNION) )
             	    {
             	        alt46 = 1;
             	    }
-            	    else if ( (LA46_0 == UP || LA46_0 == COUNT || LA46_0 == DOT || LA46_0 == FALSE || LA46_0 == NULL || LA46_0 == TRUE || LA46_0 == CASE || LA46_0 == AGGREGATE || LA46_0 == CASE2 || LA46_0 == INDEX_OP || LA46_0 == METHOD_CALL || LA46_0 == UNARY_MINUS || (LA46_0 >= CONSTANT && LA46_0 <= JAVA_CONSTANT) || (LA46_0 >= BNOT && LA46_0 <= BAND) || (LA46_0 >= PLUS && LA46_0 <= DIV) || (LA46_0 >= PARAM && LA46_0 <= IDENT) || LA46_0 == ALIAS_REF || LA46_0 == SQL_TOKEN || LA46_0 == NAMED_PARAM) )
+            	    else if ( (LA46_0 == UP || LA46_0 == COUNT || LA46_0 == DOT || LA46_0 == FALSE || LA46_0 == NULL || LA46_0 == TRUE || LA46_0 == CASE || LA46_0 == AGGREGATE || LA46_0 == CASE2 || LA46_0 == INDEX_OP || LA46_0 == METHOD_CALL || LA46_0 == UNARY_MINUS || (LA46_0 >= CONSTANT && LA46_0 <= JAVA_CONSTANT) || (LA46_0 >= BNOT && LA46_0 <= DIV) || (LA46_0 >= PARAM && LA46_0 <= IDENT) || LA46_0 == ALIAS_REF || LA46_0 == SQL_TOKEN || LA46_0 == NAMED_PARAM) )
             	    {
             	        alt46 = 2;
             	    }
@@ -3824,7 +3824,7 @@ public partial class SqlGenerator : TreeParser
             	    int alt47 = 2;
             	    int LA47_0 = input.LA(1);
 
-            	    if ( (LA47_0 == COUNT || LA47_0 == DOT || LA47_0 == FALSE || LA47_0 == NULL || LA47_0 == TRUE || LA47_0 == CASE || LA47_0 == AGGREGATE || LA47_0 == CASE2 || LA47_0 == INDEX_OP || LA47_0 == METHOD_CALL || LA47_0 == UNARY_MINUS || (LA47_0 >= CONSTANT && LA47_0 <= JAVA_CONSTANT) || (LA47_0 >= BNOT && LA47_0 <= BAND) || (LA47_0 >= PLUS && LA47_0 <= DIV) || (LA47_0 >= PARAM && LA47_0 <= IDENT) || LA47_0 == ALIAS_REF || LA47_0 == SQL_TOKEN || LA47_0 == NAMED_PARAM) )
+            	    if ( (LA47_0 == COUNT || LA47_0 == DOT || LA47_0 == FALSE || LA47_0 == NULL || LA47_0 == TRUE || LA47_0 == CASE || LA47_0 == AGGREGATE || LA47_0 == CASE2 || LA47_0 == INDEX_OP || LA47_0 == METHOD_CALL || LA47_0 == UNARY_MINUS || (LA47_0 >= CONSTANT && LA47_0 <= JAVA_CONSTANT) || (LA47_0 >= BNOT && LA47_0 <= DIV) || (LA47_0 >= PARAM && LA47_0 <= IDENT) || LA47_0 == ALIAS_REF || LA47_0 == SQL_TOKEN || LA47_0 == NAMED_PARAM) )
             	    {
             	        alt47 = 1;
             	    }
@@ -3936,6 +3936,7 @@ public partial class SqlGenerator : TreeParser
                 }
                 break;
             case SELECT:
+            case UNION:
             	{
                 alt49 = 3;
                 }
@@ -3994,7 +3995,7 @@ public partial class SqlGenerator : TreeParser
                     	        int alt48 = 2;
                     	        int LA48_0 = input.LA(1);
 
-                    	        if ( ((LA48_0 >= ALL && LA48_0 <= ANY) || LA48_0 == COUNT || LA48_0 == DOT || LA48_0 == FALSE || LA48_0 == NULL || LA48_0 == SELECT || LA48_0 == SOME || LA48_0 == TRUE || LA48_0 == CASE || LA48_0 == AGGREGATE || LA48_0 == CASE2 || LA48_0 == INDEX_OP || LA48_0 == METHOD_CALL || LA48_0 == UNARY_MINUS || LA48_0 == VECTOR_EXPR || (LA48_0 >= CONSTANT && LA48_0 <= JAVA_CONSTANT) || (LA48_0 >= BNOT && LA48_0 <= BAND) || (LA48_0 >= PLUS && LA48_0 <= DIV) || (LA48_0 >= PARAM && LA48_0 <= IDENT) || LA48_0 == ALIAS_REF || LA48_0 == SQL_TOKEN || LA48_0 == NAMED_PARAM) )
+                    	        if ( ((LA48_0 >= ALL && LA48_0 <= ANY) || LA48_0 == COUNT || LA48_0 == DOT || LA48_0 == FALSE || LA48_0 == NULL || LA48_0 == SELECT || LA48_0 == SOME || (LA48_0 >= TRUE && LA48_0 <= UNION) || LA48_0 == CASE || LA48_0 == AGGREGATE || LA48_0 == CASE2 || LA48_0 == INDEX_OP || LA48_0 == METHOD_CALL || LA48_0 == UNARY_MINUS || LA48_0 == VECTOR_EXPR || (LA48_0 >= CONSTANT && LA48_0 <= JAVA_CONSTANT) || (LA48_0 >= BNOT && LA48_0 <= DIV) || (LA48_0 >= PARAM && LA48_0 <= IDENT) || LA48_0 == ALIAS_REF || LA48_0 == SQL_TOKEN || LA48_0 == NAMED_PARAM) )
                     	        {
                     	            alt48 = 1;
                     	        }
@@ -4201,29 +4202,81 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "parenSelect"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:255:1: parenSelect : selectStatement ;
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:255:1: parenSelect : ( selectStatement | ^( UNION selectStatement parenSelect ) );
     public void parenSelect() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:256:2: ( selectStatement )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:256:4: selectStatement
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:256:2: ( selectStatement | ^( UNION selectStatement parenSelect ) )
+            int alt51 = 2;
+            int LA51_0 = input.LA(1);
+
+            if ( (LA51_0 == SELECT) )
             {
-            	if ( (state.backtracking==0) )
-            	{
-            	   Out("("); 
-            	}
-            	PushFollow(FOLLOW_selectStatement_in_parenSelect1436);
-            	selectStatement();
-            	state.followingStackPointer--;
-            	if (state.failed) return ;
-            	if ( (state.backtracking==0) )
-            	{
-            	   Out(")"); 
-            	}
+                alt51 = 1;
+            }
+            else if ( (LA51_0 == UNION) )
+            {
+                alt51 = 2;
+            }
+            else 
+            {
+                if ( state.backtracking > 0 ) {state.failed = true; return ;}
+                NoViableAltException nvae_d51s0 =
+                    new NoViableAltException("", 51, 0, input);
+
+                throw nvae_d51s0;
+            }
+            switch (alt51) 
+            {
+                case 1 :
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:256:4: selectStatement
+                    {
+                    	if ( (state.backtracking==0) )
+                    	{
+                    	   Out("("); 
+                    	}
+                    	PushFollow(FOLLOW_selectStatement_in_parenSelect1436);
+                    	selectStatement();
+                    	state.followingStackPointer--;
+                    	if (state.failed) return ;
+                    	if ( (state.backtracking==0) )
+                    	{
+                    	   Out(")"); 
+                    	}
+
+                    }
+                    break;
+                case 2 :
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:257:4: ^( UNION selectStatement parenSelect )
+                    {
+                    	Match(input,UNION,FOLLOW_UNION_in_parenSelect1445); if (state.failed) return ;
+
+                    	if ( (state.backtracking==0) )
+                    	{
+                    	   Out("("); 
+                    	}
+
+                    	Match(input, Token.DOWN, null); if (state.failed) return ;
+                    	PushFollow(FOLLOW_selectStatement_in_parenSelect1449);
+                    	selectStatement();
+                    	state.followingStackPointer--;
+                    	if (state.failed) return ;
+                    	if ( (state.backtracking==0) )
+                    	{
+                    	   Out(") union "); 
+                    	}
+                    	PushFollow(FOLLOW_parenSelect_in_parenSelect1453);
+                    	parenSelect();
+                    	state.followingStackPointer--;
+                    	if (state.failed) return ;
+
+                    	Match(input, Token.UP, null); if (state.failed) return ;
+
+                    }
+                    break;
 
             }
-
         }
         catch (RecognitionException re) 
     	{
@@ -4242,7 +4295,7 @@ public partial class SqlGenerator : TreeParser
     };
 
     // $ANTLR start "simpleExpr"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:259:1: simpleExpr : (c= constant | NULL | addrExpr | sqlToken | aggregate | methodCall | count | parameter | arithmeticExpr );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:261:1: simpleExpr : (c= constant | NULL | addrExpr | sqlToken | aggregate | methodCall | count | parameter | arithmeticExpr );
     public SqlGenerator.simpleExpr_return simpleExpr() // throws RecognitionException [1]
     {   
         SqlGenerator.simpleExpr_return retval = new SqlGenerator.simpleExpr_return();
@@ -4253,8 +4306,8 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:260:2: (c= constant | NULL | addrExpr | sqlToken | aggregate | methodCall | count | parameter | arithmeticExpr )
-            int alt51 = 9;
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:262:2: (c= constant | NULL | addrExpr | sqlToken | aggregate | methodCall | count | parameter | arithmeticExpr )
+            int alt52 = 9;
             switch ( input.LA(1) ) 
             {
             case FALSE:
@@ -4268,45 +4321,45 @@ public partial class SqlGenerator : TreeParser
             case QUOTED_String:
             case IDENT:
             	{
-                alt51 = 1;
+                alt52 = 1;
                 }
                 break;
             case NULL:
             	{
-                alt51 = 2;
+                alt52 = 2;
                 }
                 break;
             case DOT:
             case INDEX_OP:
             case ALIAS_REF:
             	{
-                alt51 = 3;
+                alt52 = 3;
                 }
                 break;
             case SQL_TOKEN:
             	{
-                alt51 = 4;
+                alt52 = 4;
                 }
                 break;
             case AGGREGATE:
             	{
-                alt51 = 5;
+                alt52 = 5;
                 }
                 break;
             case METHOD_CALL:
             	{
-                alt51 = 6;
+                alt52 = 6;
                 }
                 break;
             case COUNT:
             	{
-                alt51 = 7;
+                alt52 = 7;
                 }
                 break;
             case PARAM:
             case NAMED_PARAM:
             	{
-                alt51 = 8;
+                alt52 = 8;
                 }
                 break;
             case CASE:
@@ -4321,23 +4374,23 @@ public partial class SqlGenerator : TreeParser
             case STAR:
             case DIV:
             	{
-                alt51 = 9;
+                alt52 = 9;
                 }
                 break;
             	default:
             	    if ( state.backtracking > 0 ) {state.failed = true; return retval;}
-            	    NoViableAltException nvae_d51s0 =
-            	        new NoViableAltException("", 51, 0, input);
+            	    NoViableAltException nvae_d52s0 =
+            	        new NoViableAltException("", 52, 0, input);
 
-            	    throw nvae_d51s0;
+            	    throw nvae_d52s0;
             }
 
-            switch (alt51) 
+            switch (alt52) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:260:4: c= constant
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:262:4: c= constant
                     {
-                    	PushFollow(FOLLOW_constant_in_simpleExpr1452);
+                    	PushFollow(FOLLOW_constant_in_simpleExpr1470);
                     	c = constant();
                     	state.followingStackPointer--;
                     	if (state.failed) return retval;
@@ -4349,9 +4402,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:261:4: NULL
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:263:4: NULL
                     {
-                    	Match(input,NULL,FOLLOW_NULL_in_simpleExpr1459); if (state.failed) return retval;
+                    	Match(input,NULL,FOLLOW_NULL_in_simpleExpr1477); if (state.failed) return retval;
                     	if ( (state.backtracking==0) )
                     	{
                     	   Out("null"); 
@@ -4360,9 +4413,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:262:4: addrExpr
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:264:4: addrExpr
                     {
-                    	PushFollow(FOLLOW_addrExpr_in_simpleExpr1466);
+                    	PushFollow(FOLLOW_addrExpr_in_simpleExpr1484);
                     	addrExpr();
                     	state.followingStackPointer--;
                     	if (state.failed) return retval;
@@ -4370,9 +4423,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:263:4: sqlToken
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:265:4: sqlToken
                     {
-                    	PushFollow(FOLLOW_sqlToken_in_simpleExpr1471);
+                    	PushFollow(FOLLOW_sqlToken_in_simpleExpr1489);
                     	sqlToken();
                     	state.followingStackPointer--;
                     	if (state.failed) return retval;
@@ -4380,9 +4433,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 5 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:264:4: aggregate
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:266:4: aggregate
                     {
-                    	PushFollow(FOLLOW_aggregate_in_simpleExpr1476);
+                    	PushFollow(FOLLOW_aggregate_in_simpleExpr1494);
                     	aggregate();
                     	state.followingStackPointer--;
                     	if (state.failed) return retval;
@@ -4390,9 +4443,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 6 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:265:4: methodCall
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:267:4: methodCall
                     {
-                    	PushFollow(FOLLOW_methodCall_in_simpleExpr1481);
+                    	PushFollow(FOLLOW_methodCall_in_simpleExpr1499);
                     	methodCall();
                     	state.followingStackPointer--;
                     	if (state.failed) return retval;
@@ -4400,9 +4453,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 7 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:266:4: count
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:268:4: count
                     {
-                    	PushFollow(FOLLOW_count_in_simpleExpr1486);
+                    	PushFollow(FOLLOW_count_in_simpleExpr1504);
                     	count();
                     	state.followingStackPointer--;
                     	if (state.failed) return retval;
@@ -4410,9 +4463,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 8 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:267:4: parameter
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:269:4: parameter
                     {
-                    	PushFollow(FOLLOW_parameter_in_simpleExpr1491);
+                    	PushFollow(FOLLOW_parameter_in_simpleExpr1509);
                     	parameter();
                     	state.followingStackPointer--;
                     	if (state.failed) return retval;
@@ -4420,9 +4473,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 9 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:268:4: arithmeticExpr
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:270:4: arithmeticExpr
                     {
-                    	PushFollow(FOLLOW_arithmeticExpr_in_simpleExpr1496);
+                    	PushFollow(FOLLOW_arithmeticExpr_in_simpleExpr1514);
                     	arithmeticExpr();
                     	state.followingStackPointer--;
                     	if (state.failed) return retval;
@@ -4449,7 +4502,7 @@ public partial class SqlGenerator : TreeParser
     };
 
     // $ANTLR start "constant"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:271:1: constant : ( NUM_DOUBLE | NUM_FLOAT | NUM_INT | NUM_LONG | QUOTED_String | CONSTANT | JAVA_CONSTANT | TRUE | FALSE | IDENT );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:273:1: constant : ( NUM_DOUBLE | NUM_FLOAT | NUM_INT | NUM_LONG | QUOTED_String | CONSTANT | JAVA_CONSTANT | TRUE | FALSE | IDENT );
     public SqlGenerator.constant_return constant() // throws RecognitionException [1]
     {   
         SqlGenerator.constant_return retval = new SqlGenerator.constant_return();
@@ -4457,7 +4510,7 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:272:2: ( NUM_DOUBLE | NUM_FLOAT | NUM_INT | NUM_LONG | QUOTED_String | CONSTANT | JAVA_CONSTANT | TRUE | FALSE | IDENT )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:274:2: ( NUM_DOUBLE | NUM_FLOAT | NUM_INT | NUM_LONG | QUOTED_String | CONSTANT | JAVA_CONSTANT | TRUE | FALSE | IDENT )
             // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:
             {
             	if ( input.LA(1) == FALSE || input.LA(1) == TRUE || (input.LA(1) >= CONSTANT && input.LA(1) <= JAVA_CONSTANT) || (input.LA(1) >= QUOTED_String && input.LA(1) <= IDENT) ) 
@@ -4490,19 +4543,19 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "arithmeticExpr"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:284:1: arithmeticExpr : ( additiveExpr | bitwiseExpr | multiplicativeExpr | ^( UNARY_MINUS expr ) | caseExpr );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:286:1: arithmeticExpr : ( additiveExpr | bitwiseExpr | multiplicativeExpr | ^( UNARY_MINUS expr ) | caseExpr );
     public void arithmeticExpr() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:285:2: ( additiveExpr | bitwiseExpr | multiplicativeExpr | ^( UNARY_MINUS expr ) | caseExpr )
-            int alt52 = 5;
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:287:2: ( additiveExpr | bitwiseExpr | multiplicativeExpr | ^( UNARY_MINUS expr ) | caseExpr )
+            int alt53 = 5;
             switch ( input.LA(1) ) 
             {
             case PLUS:
             case MINUS:
             	{
-                alt52 = 1;
+                alt53 = 1;
                 }
                 break;
             case BNOT:
@@ -4510,40 +4563,40 @@ public partial class SqlGenerator : TreeParser
             case BXOR:
             case BAND:
             	{
-                alt52 = 2;
+                alt53 = 2;
                 }
                 break;
             case STAR:
             case DIV:
             	{
-                alt52 = 3;
+                alt53 = 3;
                 }
                 break;
             case UNARY_MINUS:
             	{
-                alt52 = 4;
+                alt53 = 4;
                 }
                 break;
             case CASE:
             case CASE2:
             	{
-                alt52 = 5;
+                alt53 = 5;
                 }
                 break;
             	default:
             	    if ( state.backtracking > 0 ) {state.failed = true; return ;}
-            	    NoViableAltException nvae_d52s0 =
-            	        new NoViableAltException("", 52, 0, input);
+            	    NoViableAltException nvae_d53s0 =
+            	        new NoViableAltException("", 53, 0, input);
 
-            	    throw nvae_d52s0;
+            	    throw nvae_d53s0;
             }
 
-            switch (alt52) 
+            switch (alt53) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:285:4: additiveExpr
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:287:4: additiveExpr
                     {
-                    	PushFollow(FOLLOW_additiveExpr_in_arithmeticExpr1565);
+                    	PushFollow(FOLLOW_additiveExpr_in_arithmeticExpr1583);
                     	additiveExpr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4551,9 +4604,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:286:4: bitwiseExpr
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:288:4: bitwiseExpr
                     {
-                    	PushFollow(FOLLOW_bitwiseExpr_in_arithmeticExpr1570);
+                    	PushFollow(FOLLOW_bitwiseExpr_in_arithmeticExpr1588);
                     	bitwiseExpr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4561,9 +4614,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:287:4: multiplicativeExpr
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:289:4: multiplicativeExpr
                     {
-                    	PushFollow(FOLLOW_multiplicativeExpr_in_arithmeticExpr1575);
+                    	PushFollow(FOLLOW_multiplicativeExpr_in_arithmeticExpr1593);
                     	multiplicativeExpr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4571,9 +4624,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:289:4: ^( UNARY_MINUS expr )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:291:4: ^( UNARY_MINUS expr )
                     {
-                    	Match(input,UNARY_MINUS,FOLLOW_UNARY_MINUS_in_arithmeticExpr1582); if (state.failed) return ;
+                    	Match(input,UNARY_MINUS,FOLLOW_UNARY_MINUS_in_arithmeticExpr1600); if (state.failed) return ;
 
                     	if ( (state.backtracking==0) )
                     	{
@@ -4581,7 +4634,7 @@ public partial class SqlGenerator : TreeParser
                     	}
 
                     	Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	PushFollow(FOLLOW_expr_in_arithmeticExpr1586);
+                    	PushFollow(FOLLOW_expr_in_arithmeticExpr1604);
                     	expr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4591,9 +4644,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 5 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:290:4: caseExpr
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:292:4: caseExpr
                     {
-                    	PushFollow(FOLLOW_caseExpr_in_arithmeticExpr1592);
+                    	PushFollow(FOLLOW_caseExpr_in_arithmeticExpr1610);
                     	caseExpr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4617,40 +4670,40 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "additiveExpr"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:293:1: additiveExpr : ( ^( PLUS expr expr ) | ^( MINUS expr nestedExprAfterMinusDiv ) );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:295:1: additiveExpr : ( ^( PLUS expr expr ) | ^( MINUS expr nestedExprAfterMinusDiv ) );
     public void additiveExpr() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:294:2: ( ^( PLUS expr expr ) | ^( MINUS expr nestedExprAfterMinusDiv ) )
-            int alt53 = 2;
-            int LA53_0 = input.LA(1);
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:296:2: ( ^( PLUS expr expr ) | ^( MINUS expr nestedExprAfterMinusDiv ) )
+            int alt54 = 2;
+            int LA54_0 = input.LA(1);
 
-            if ( (LA53_0 == PLUS) )
+            if ( (LA54_0 == PLUS) )
             {
-                alt53 = 1;
+                alt54 = 1;
             }
-            else if ( (LA53_0 == MINUS) )
+            else if ( (LA54_0 == MINUS) )
             {
-                alt53 = 2;
+                alt54 = 2;
             }
             else 
             {
                 if ( state.backtracking > 0 ) {state.failed = true; return ;}
-                NoViableAltException nvae_d53s0 =
-                    new NoViableAltException("", 53, 0, input);
+                NoViableAltException nvae_d54s0 =
+                    new NoViableAltException("", 54, 0, input);
 
-                throw nvae_d53s0;
+                throw nvae_d54s0;
             }
-            switch (alt53) 
+            switch (alt54) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:294:4: ^( PLUS expr expr )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:296:4: ^( PLUS expr expr )
                     {
-                    	Match(input,PLUS,FOLLOW_PLUS_in_additiveExpr1604); if (state.failed) return ;
+                    	Match(input,PLUS,FOLLOW_PLUS_in_additiveExpr1622); if (state.failed) return ;
 
                     	Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	PushFollow(FOLLOW_expr_in_additiveExpr1606);
+                    	PushFollow(FOLLOW_expr_in_additiveExpr1624);
                     	expr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4658,7 +4711,7 @@ public partial class SqlGenerator : TreeParser
                     	{
                     	   Out("+"); 
                     	}
-                    	PushFollow(FOLLOW_expr_in_additiveExpr1610);
+                    	PushFollow(FOLLOW_expr_in_additiveExpr1628);
                     	expr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4668,12 +4721,12 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:295:4: ^( MINUS expr nestedExprAfterMinusDiv )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:297:4: ^( MINUS expr nestedExprAfterMinusDiv )
                     {
-                    	Match(input,MINUS,FOLLOW_MINUS_in_additiveExpr1617); if (state.failed) return ;
+                    	Match(input,MINUS,FOLLOW_MINUS_in_additiveExpr1635); if (state.failed) return ;
 
                     	Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	PushFollow(FOLLOW_expr_in_additiveExpr1619);
+                    	PushFollow(FOLLOW_expr_in_additiveExpr1637);
                     	expr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4681,7 +4734,7 @@ public partial class SqlGenerator : TreeParser
                     	{
                     	   Out("-"); 
                     	}
-                    	PushFollow(FOLLOW_nestedExprAfterMinusDiv_in_additiveExpr1623);
+                    	PushFollow(FOLLOW_nestedExprAfterMinusDiv_in_additiveExpr1641);
                     	nestedExprAfterMinusDiv();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4707,52 +4760,52 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "bitwiseExpr"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:298:1: bitwiseExpr : ( ^( BAND expr nestedExpr ) | ^( BOR expr nestedExpr ) | ^( BXOR expr nestedExpr ) | ^( BNOT nestedExpr ) );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:300:1: bitwiseExpr : ( ^( BAND expr nestedExpr ) | ^( BOR expr nestedExpr ) | ^( BXOR expr nestedExpr ) | ^( BNOT nestedExpr ) );
     public void bitwiseExpr() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:299:2: ( ^( BAND expr nestedExpr ) | ^( BOR expr nestedExpr ) | ^( BXOR expr nestedExpr ) | ^( BNOT nestedExpr ) )
-            int alt54 = 4;
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:301:2: ( ^( BAND expr nestedExpr ) | ^( BOR expr nestedExpr ) | ^( BXOR expr nestedExpr ) | ^( BNOT nestedExpr ) )
+            int alt55 = 4;
             switch ( input.LA(1) ) 
             {
             case BAND:
             	{
-                alt54 = 1;
+                alt55 = 1;
                 }
                 break;
             case BOR:
             	{
-                alt54 = 2;
+                alt55 = 2;
                 }
                 break;
             case BXOR:
             	{
-                alt54 = 3;
+                alt55 = 3;
                 }
                 break;
             case BNOT:
             	{
-                alt54 = 4;
+                alt55 = 4;
                 }
                 break;
             	default:
             	    if ( state.backtracking > 0 ) {state.failed = true; return ;}
-            	    NoViableAltException nvae_d54s0 =
-            	        new NoViableAltException("", 54, 0, input);
+            	    NoViableAltException nvae_d55s0 =
+            	        new NoViableAltException("", 55, 0, input);
 
-            	    throw nvae_d54s0;
+            	    throw nvae_d55s0;
             }
 
-            switch (alt54) 
+            switch (alt55) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:299:4: ^( BAND expr nestedExpr )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:301:4: ^( BAND expr nestedExpr )
                     {
-                    	Match(input,BAND,FOLLOW_BAND_in_bitwiseExpr1636); if (state.failed) return ;
+                    	Match(input,BAND,FOLLOW_BAND_in_bitwiseExpr1654); if (state.failed) return ;
 
                     	Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	PushFollow(FOLLOW_expr_in_bitwiseExpr1638);
+                    	PushFollow(FOLLOW_expr_in_bitwiseExpr1656);
                     	expr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4760,7 +4813,7 @@ public partial class SqlGenerator : TreeParser
                     	{
                     	   Out("&"); 
                     	}
-                    	PushFollow(FOLLOW_nestedExpr_in_bitwiseExpr1642);
+                    	PushFollow(FOLLOW_nestedExpr_in_bitwiseExpr1660);
                     	nestedExpr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4770,12 +4823,12 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:300:4: ^( BOR expr nestedExpr )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:302:4: ^( BOR expr nestedExpr )
                     {
-                    	Match(input,BOR,FOLLOW_BOR_in_bitwiseExpr1649); if (state.failed) return ;
+                    	Match(input,BOR,FOLLOW_BOR_in_bitwiseExpr1667); if (state.failed) return ;
 
                     	Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	PushFollow(FOLLOW_expr_in_bitwiseExpr1651);
+                    	PushFollow(FOLLOW_expr_in_bitwiseExpr1669);
                     	expr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4783,7 +4836,7 @@ public partial class SqlGenerator : TreeParser
                     	{
                     	   Out("|"); 
                     	}
-                    	PushFollow(FOLLOW_nestedExpr_in_bitwiseExpr1655);
+                    	PushFollow(FOLLOW_nestedExpr_in_bitwiseExpr1673);
                     	nestedExpr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4793,12 +4846,12 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:301:4: ^( BXOR expr nestedExpr )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:303:4: ^( BXOR expr nestedExpr )
                     {
-                    	Match(input,BXOR,FOLLOW_BXOR_in_bitwiseExpr1662); if (state.failed) return ;
+                    	Match(input,BXOR,FOLLOW_BXOR_in_bitwiseExpr1680); if (state.failed) return ;
 
                     	Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	PushFollow(FOLLOW_expr_in_bitwiseExpr1664);
+                    	PushFollow(FOLLOW_expr_in_bitwiseExpr1682);
                     	expr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4806,7 +4859,7 @@ public partial class SqlGenerator : TreeParser
                     	{
                     	   Out("^"); 
                     	}
-                    	PushFollow(FOLLOW_nestedExpr_in_bitwiseExpr1668);
+                    	PushFollow(FOLLOW_nestedExpr_in_bitwiseExpr1686);
                     	nestedExpr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4816,9 +4869,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 4 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:302:4: ^( BNOT nestedExpr )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:304:4: ^( BNOT nestedExpr )
                     {
-                    	Match(input,BNOT,FOLLOW_BNOT_in_bitwiseExpr1675); if (state.failed) return ;
+                    	Match(input,BNOT,FOLLOW_BNOT_in_bitwiseExpr1693); if (state.failed) return ;
 
                     	if ( (state.backtracking==0) )
                     	{
@@ -4826,7 +4879,7 @@ public partial class SqlGenerator : TreeParser
                     	}
 
                     	Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	PushFollow(FOLLOW_nestedExpr_in_bitwiseExpr1679);
+                    	PushFollow(FOLLOW_nestedExpr_in_bitwiseExpr1697);
                     	nestedExpr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4852,40 +4905,40 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "multiplicativeExpr"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:305:1: multiplicativeExpr : ( ^( STAR nestedExpr nestedExpr ) | ^( DIV nestedExpr nestedExprAfterMinusDiv ) );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:307:1: multiplicativeExpr : ( ^( STAR nestedExpr nestedExpr ) | ^( DIV nestedExpr nestedExprAfterMinusDiv ) );
     public void multiplicativeExpr() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:306:2: ( ^( STAR nestedExpr nestedExpr ) | ^( DIV nestedExpr nestedExprAfterMinusDiv ) )
-            int alt55 = 2;
-            int LA55_0 = input.LA(1);
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:308:2: ( ^( STAR nestedExpr nestedExpr ) | ^( DIV nestedExpr nestedExprAfterMinusDiv ) )
+            int alt56 = 2;
+            int LA56_0 = input.LA(1);
 
-            if ( (LA55_0 == STAR) )
+            if ( (LA56_0 == STAR) )
             {
-                alt55 = 1;
+                alt56 = 1;
             }
-            else if ( (LA55_0 == DIV) )
+            else if ( (LA56_0 == DIV) )
             {
-                alt55 = 2;
+                alt56 = 2;
             }
             else 
             {
                 if ( state.backtracking > 0 ) {state.failed = true; return ;}
-                NoViableAltException nvae_d55s0 =
-                    new NoViableAltException("", 55, 0, input);
+                NoViableAltException nvae_d56s0 =
+                    new NoViableAltException("", 56, 0, input);
 
-                throw nvae_d55s0;
+                throw nvae_d56s0;
             }
-            switch (alt55) 
+            switch (alt56) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:306:4: ^( STAR nestedExpr nestedExpr )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:308:4: ^( STAR nestedExpr nestedExpr )
                     {
-                    	Match(input,STAR,FOLLOW_STAR_in_multiplicativeExpr1693); if (state.failed) return ;
+                    	Match(input,STAR,FOLLOW_STAR_in_multiplicativeExpr1711); if (state.failed) return ;
 
                     	Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	PushFollow(FOLLOW_nestedExpr_in_multiplicativeExpr1695);
+                    	PushFollow(FOLLOW_nestedExpr_in_multiplicativeExpr1713);
                     	nestedExpr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4893,7 +4946,7 @@ public partial class SqlGenerator : TreeParser
                     	{
                     	   Out("*"); 
                     	}
-                    	PushFollow(FOLLOW_nestedExpr_in_multiplicativeExpr1699);
+                    	PushFollow(FOLLOW_nestedExpr_in_multiplicativeExpr1717);
                     	nestedExpr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4903,12 +4956,12 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:307:4: ^( DIV nestedExpr nestedExprAfterMinusDiv )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:309:4: ^( DIV nestedExpr nestedExprAfterMinusDiv )
                     {
-                    	Match(input,DIV,FOLLOW_DIV_in_multiplicativeExpr1706); if (state.failed) return ;
+                    	Match(input,DIV,FOLLOW_DIV_in_multiplicativeExpr1724); if (state.failed) return ;
 
                     	Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	PushFollow(FOLLOW_nestedExpr_in_multiplicativeExpr1708);
+                    	PushFollow(FOLLOW_nestedExpr_in_multiplicativeExpr1726);
                     	nestedExpr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4916,7 +4969,7 @@ public partial class SqlGenerator : TreeParser
                     	{
                     	   Out("/"); 
                     	}
-                    	PushFollow(FOLLOW_nestedExprAfterMinusDiv_in_multiplicativeExpr1712);
+                    	PushFollow(FOLLOW_nestedExprAfterMinusDiv_in_multiplicativeExpr1730);
                     	nestedExprAfterMinusDiv();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4942,24 +4995,24 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "nestedExpr"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:310:1: nestedExpr : ( ( additiveExpr )=> additiveExpr | ( bitwiseExpr )=> bitwiseExpr | expr );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:312:1: nestedExpr : ( ( additiveExpr )=> additiveExpr | ( bitwiseExpr )=> bitwiseExpr | expr );
     public void nestedExpr() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:312:2: ( ( additiveExpr )=> additiveExpr | ( bitwiseExpr )=> bitwiseExpr | expr )
-            int alt56 = 3;
-            alt56 = dfa56.Predict(input);
-            switch (alt56) 
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:314:2: ( ( additiveExpr )=> additiveExpr | ( bitwiseExpr )=> bitwiseExpr | expr )
+            int alt57 = 3;
+            alt57 = dfa57.Predict(input);
+            switch (alt57) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:312:4: ( additiveExpr )=> additiveExpr
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:314:4: ( additiveExpr )=> additiveExpr
                     {
                     	if ( (state.backtracking==0) )
                     	{
                     	   Out("("); 
                     	}
-                    	PushFollow(FOLLOW_additiveExpr_in_nestedExpr1734);
+                    	PushFollow(FOLLOW_additiveExpr_in_nestedExpr1752);
                     	additiveExpr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4971,13 +5024,13 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:313:4: ( bitwiseExpr )=> bitwiseExpr
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:315:4: ( bitwiseExpr )=> bitwiseExpr
                     {
                     	if ( (state.backtracking==0) )
                     	{
                     	   Out("("); 
                     	}
-                    	PushFollow(FOLLOW_bitwiseExpr_in_nestedExpr1749);
+                    	PushFollow(FOLLOW_bitwiseExpr_in_nestedExpr1767);
                     	bitwiseExpr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -4989,9 +5042,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:314:4: expr
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:316:4: expr
                     {
-                    	PushFollow(FOLLOW_expr_in_nestedExpr1756);
+                    	PushFollow(FOLLOW_expr_in_nestedExpr1774);
                     	expr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -5015,24 +5068,24 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "nestedExprAfterMinusDiv"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:317:1: nestedExprAfterMinusDiv : ( ( arithmeticExpr )=> arithmeticExpr | expr );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:319:1: nestedExprAfterMinusDiv : ( ( arithmeticExpr )=> arithmeticExpr | expr );
     public void nestedExprAfterMinusDiv() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:319:2: ( ( arithmeticExpr )=> arithmeticExpr | expr )
-            int alt57 = 2;
-            alt57 = dfa57.Predict(input);
-            switch (alt57) 
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:321:2: ( ( arithmeticExpr )=> arithmeticExpr | expr )
+            int alt58 = 2;
+            alt58 = dfa58.Predict(input);
+            switch (alt58) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:319:4: ( arithmeticExpr )=> arithmeticExpr
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:321:4: ( arithmeticExpr )=> arithmeticExpr
                     {
                     	if ( (state.backtracking==0) )
                     	{
                     	   Out("("); 
                     	}
-                    	PushFollow(FOLLOW_arithmeticExpr_in_nestedExprAfterMinusDiv1778);
+                    	PushFollow(FOLLOW_arithmeticExpr_in_nestedExprAfterMinusDiv1796);
                     	arithmeticExpr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -5044,9 +5097,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:320:4: expr
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:322:4: expr
                     {
-                    	PushFollow(FOLLOW_expr_in_nestedExprAfterMinusDiv1785);
+                    	PushFollow(FOLLOW_expr_in_nestedExprAfterMinusDiv1803);
                     	expr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
@@ -5070,37 +5123,37 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "caseExpr"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:323:1: caseExpr : ( ^( CASE ( ^( WHEN booleanExpr[false] expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:325:1: caseExpr : ( ^( CASE ( ^( WHEN booleanExpr[false] expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) );
     public void caseExpr() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:324:2: ( ^( CASE ( ^( WHEN booleanExpr[false] expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) )
-            int alt62 = 2;
-            int LA62_0 = input.LA(1);
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:326:2: ( ^( CASE ( ^( WHEN booleanExpr[false] expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) )
+            int alt63 = 2;
+            int LA63_0 = input.LA(1);
 
-            if ( (LA62_0 == CASE) )
+            if ( (LA63_0 == CASE) )
             {
-                alt62 = 1;
+                alt63 = 1;
             }
-            else if ( (LA62_0 == CASE2) )
+            else if ( (LA63_0 == CASE2) )
             {
-                alt62 = 2;
+                alt63 = 2;
             }
             else 
             {
                 if ( state.backtracking > 0 ) {state.failed = true; return ;}
-                NoViableAltException nvae_d62s0 =
-                    new NoViableAltException("", 62, 0, input);
+                NoViableAltException nvae_d63s0 =
+                    new NoViableAltException("", 63, 0, input);
 
-                throw nvae_d62s0;
+                throw nvae_d63s0;
             }
-            switch (alt62) 
+            switch (alt63) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:324:4: ^( CASE ( ^( WHEN booleanExpr[false] expr ) )+ ( ^( ELSE expr ) )? )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:326:4: ^( CASE ( ^( WHEN booleanExpr[false] expr ) )+ ( ^( ELSE expr ) )? )
                     {
-                    	Match(input,CASE,FOLLOW_CASE_in_caseExpr1797); if (state.failed) return ;
+                    	Match(input,CASE,FOLLOW_CASE_in_caseExpr1815); if (state.failed) return ;
 
                     	if ( (state.backtracking==0) )
                     	{
@@ -5108,25 +5161,25 @@ public partial class SqlGenerator : TreeParser
                     	}
 
                     	Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:325:3: ( ^( WHEN booleanExpr[false] expr ) )+
-                    	int cnt58 = 0;
+                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:327:3: ( ^( WHEN booleanExpr[false] expr ) )+
+                    	int cnt59 = 0;
                     	do 
                     	{
-                    	    int alt58 = 2;
-                    	    int LA58_0 = input.LA(1);
+                    	    int alt59 = 2;
+                    	    int LA59_0 = input.LA(1);
 
-                    	    if ( (LA58_0 == WHEN) )
+                    	    if ( (LA59_0 == WHEN) )
                     	    {
-                    	        alt58 = 1;
+                    	        alt59 = 1;
                     	    }
 
 
-                    	    switch (alt58) 
+                    	    switch (alt59) 
                     		{
                     			case 1 :
-                    			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:325:5: ^( WHEN booleanExpr[false] expr )
+                    			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:327:5: ^( WHEN booleanExpr[false] expr )
                     			    {
-                    			    	Match(input,WHEN,FOLLOW_WHEN_in_caseExpr1807); if (state.failed) return ;
+                    			    	Match(input,WHEN,FOLLOW_WHEN_in_caseExpr1825); if (state.failed) return ;
 
                     			    	if ( (state.backtracking==0) )
                     			    	{
@@ -5134,7 +5187,7 @@ public partial class SqlGenerator : TreeParser
                     			    	}
 
                     			    	Match(input, Token.DOWN, null); if (state.failed) return ;
-                    			    	PushFollow(FOLLOW_booleanExpr_in_caseExpr1811);
+                    			    	PushFollow(FOLLOW_booleanExpr_in_caseExpr1829);
                     			    	booleanExpr(false);
                     			    	state.followingStackPointer--;
                     			    	if (state.failed) return ;
@@ -5142,7 +5195,7 @@ public partial class SqlGenerator : TreeParser
                     			    	{
                     			    	   Out(" then "); 
                     			    	}
-                    			    	PushFollow(FOLLOW_expr_in_caseExpr1816);
+                    			    	PushFollow(FOLLOW_expr_in_caseExpr1834);
                     			    	expr();
                     			    	state.followingStackPointer--;
                     			    	if (state.failed) return ;
@@ -5153,32 +5206,32 @@ public partial class SqlGenerator : TreeParser
                     			    break;
 
                     			default:
-                    			    if ( cnt58 >= 1 ) goto loop58;
+                    			    if ( cnt59 >= 1 ) goto loop59;
                     			    if ( state.backtracking > 0 ) {state.failed = true; return ;}
-                    		            EarlyExitException eee58 =
-                    		                new EarlyExitException(58, input);
-                    		            throw eee58;
+                    		            EarlyExitException eee59 =
+                    		                new EarlyExitException(59, input);
+                    		            throw eee59;
                     	    }
-                    	    cnt58++;
+                    	    cnt59++;
                     	} while (true);
 
-                    	loop58:
-                    		;	// Stops C# compiler whinging that label 'loop58' has no statements
+                    	loop59:
+                    		;	// Stops C# compiler whinging that label 'loop59' has no statements
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:326:3: ( ^( ELSE expr ) )?
-                    	int alt59 = 2;
-                    	int LA59_0 = input.LA(1);
+                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:328:3: ( ^( ELSE expr ) )?
+                    	int alt60 = 2;
+                    	int LA60_0 = input.LA(1);
 
-                    	if ( (LA59_0 == ELSE) )
+                    	if ( (LA60_0 == ELSE) )
                     	{
-                    	    alt59 = 1;
+                    	    alt60 = 1;
                     	}
-                    	switch (alt59) 
+                    	switch (alt60) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:326:5: ^( ELSE expr )
+                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:328:5: ^( ELSE expr )
                     	        {
-                    	        	Match(input,ELSE,FOLLOW_ELSE_in_caseExpr1828); if (state.failed) return ;
+                    	        	Match(input,ELSE,FOLLOW_ELSE_in_caseExpr1846); if (state.failed) return ;
 
                     	        	if ( (state.backtracking==0) )
                     	        	{
@@ -5186,7 +5239,7 @@ public partial class SqlGenerator : TreeParser
                     	        	}
 
                     	        	Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	        	PushFollow(FOLLOW_expr_in_caseExpr1832);
+                    	        	PushFollow(FOLLOW_expr_in_caseExpr1850);
                     	        	expr();
                     	        	state.followingStackPointer--;
                     	        	if (state.failed) return ;
@@ -5208,9 +5261,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:328:4: ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:330:4: ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? )
                     {
-                    	Match(input,CASE2,FOLLOW_CASE2_in_caseExpr1848); if (state.failed) return ;
+                    	Match(input,CASE2,FOLLOW_CASE2_in_caseExpr1866); if (state.failed) return ;
 
                     	if ( (state.backtracking==0) )
                     	{
@@ -5218,29 +5271,29 @@ public partial class SqlGenerator : TreeParser
                     	}
 
                     	Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	PushFollow(FOLLOW_expr_in_caseExpr1852);
+                    	PushFollow(FOLLOW_expr_in_caseExpr1870);
                     	expr();
                     	state.followingStackPointer--;
                     	if (state.failed) return ;
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:329:3: ( ^( WHEN expr expr ) )+
-                    	int cnt60 = 0;
+                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:331:3: ( ^( WHEN expr expr ) )+
+                    	int cnt61 = 0;
                     	do 
                     	{
-                    	    int alt60 = 2;
-                    	    int LA60_0 = input.LA(1);
+                    	    int alt61 = 2;
+                    	    int LA61_0 = input.LA(1);
 
-                    	    if ( (LA60_0 == WHEN) )
+                    	    if ( (LA61_0 == WHEN) )
                     	    {
-                    	        alt60 = 1;
+                    	        alt61 = 1;
                     	    }
 
 
-                    	    switch (alt60) 
+                    	    switch (alt61) 
                     		{
                     			case 1 :
-                    			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:329:5: ^( WHEN expr expr )
+                    			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:331:5: ^( WHEN expr expr )
                     			    {
-                    			    	Match(input,WHEN,FOLLOW_WHEN_in_caseExpr1859); if (state.failed) return ;
+                    			    	Match(input,WHEN,FOLLOW_WHEN_in_caseExpr1877); if (state.failed) return ;
 
                     			    	if ( (state.backtracking==0) )
                     			    	{
@@ -5248,7 +5301,7 @@ public partial class SqlGenerator : TreeParser
                     			    	}
 
                     			    	Match(input, Token.DOWN, null); if (state.failed) return ;
-                    			    	PushFollow(FOLLOW_expr_in_caseExpr1863);
+                    			    	PushFollow(FOLLOW_expr_in_caseExpr1881);
                     			    	expr();
                     			    	state.followingStackPointer--;
                     			    	if (state.failed) return ;
@@ -5256,7 +5309,7 @@ public partial class SqlGenerator : TreeParser
                     			    	{
                     			    	   Out(" then "); 
                     			    	}
-                    			    	PushFollow(FOLLOW_expr_in_caseExpr1867);
+                    			    	PushFollow(FOLLOW_expr_in_caseExpr1885);
                     			    	expr();
                     			    	state.followingStackPointer--;
                     			    	if (state.failed) return ;
@@ -5267,32 +5320,32 @@ public partial class SqlGenerator : TreeParser
                     			    break;
 
                     			default:
-                    			    if ( cnt60 >= 1 ) goto loop60;
+                    			    if ( cnt61 >= 1 ) goto loop61;
                     			    if ( state.backtracking > 0 ) {state.failed = true; return ;}
-                    		            EarlyExitException eee60 =
-                    		                new EarlyExitException(60, input);
-                    		            throw eee60;
+                    		            EarlyExitException eee61 =
+                    		                new EarlyExitException(61, input);
+                    		            throw eee61;
                     	    }
-                    	    cnt60++;
+                    	    cnt61++;
                     	} while (true);
 
-                    	loop60:
-                    		;	// Stops C# compiler whinging that label 'loop60' has no statements
+                    	loop61:
+                    		;	// Stops C# compiler whinging that label 'loop61' has no statements
 
-                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:330:3: ( ^( ELSE expr ) )?
-                    	int alt61 = 2;
-                    	int LA61_0 = input.LA(1);
+                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:332:3: ( ^( ELSE expr ) )?
+                    	int alt62 = 2;
+                    	int LA62_0 = input.LA(1);
 
-                    	if ( (LA61_0 == ELSE) )
+                    	if ( (LA62_0 == ELSE) )
                     	{
-                    	    alt61 = 1;
+                    	    alt62 = 1;
                     	}
-                    	switch (alt61) 
+                    	switch (alt62) 
                     	{
                     	    case 1 :
-                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:330:5: ^( ELSE expr )
+                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:332:5: ^( ELSE expr )
                     	        {
-                    	        	Match(input,ELSE,FOLLOW_ELSE_in_caseExpr1879); if (state.failed) return ;
+                    	        	Match(input,ELSE,FOLLOW_ELSE_in_caseExpr1897); if (state.failed) return ;
 
                     	        	if ( (state.backtracking==0) )
                     	        	{
@@ -5300,7 +5353,7 @@ public partial class SqlGenerator : TreeParser
                     	        	}
 
                     	        	Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	        	PushFollow(FOLLOW_expr_in_caseExpr1883);
+                    	        	PushFollow(FOLLOW_expr_in_caseExpr1901);
                     	        	expr();
                     	        	state.followingStackPointer--;
                     	        	if (state.failed) return ;
@@ -5338,17 +5391,17 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "aggregate"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:334:1: aggregate : ^(a= AGGREGATE expr ) ;
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:336:1: aggregate : ^(a= AGGREGATE expr ) ;
     public void aggregate() // throws RecognitionException [1]
     {   
         IASTNode a = null;
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:335:2: ( ^(a= AGGREGATE expr ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:335:4: ^(a= AGGREGATE expr )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:337:2: ( ^(a= AGGREGATE expr ) )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:337:4: ^(a= AGGREGATE expr )
             {
-            	a=(IASTNode)Match(input,AGGREGATE,FOLLOW_AGGREGATE_in_aggregate1907); if (state.failed) return ;
+            	a=(IASTNode)Match(input,AGGREGATE,FOLLOW_AGGREGATE_in_aggregate1925); if (state.failed) return ;
 
             	if ( (state.backtracking==0) )
             	{
@@ -5356,7 +5409,7 @@ public partial class SqlGenerator : TreeParser
             	}
 
             	Match(input, Token.DOWN, null); if (state.failed) return ;
-            	PushFollow(FOLLOW_expr_in_aggregate1912);
+            	PushFollow(FOLLOW_expr_in_aggregate1930);
             	expr();
             	state.followingStackPointer--;
             	if (state.failed) return ;
@@ -5384,7 +5437,7 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "methodCall"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:339:1: methodCall : ^(m= METHOD_CALL i= METHOD_NAME ( ^( EXPR_LIST ( arguments )? ) )? ) ;
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:341:1: methodCall : ^(m= METHOD_CALL i= METHOD_NAME ( ^( EXPR_LIST ( arguments )? ) )? ) ;
     public void methodCall() // throws RecognitionException [1]
     {   
         IASTNode m = null;
@@ -5392,49 +5445,49 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:340:2: ( ^(m= METHOD_CALL i= METHOD_NAME ( ^( EXPR_LIST ( arguments )? ) )? ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:340:4: ^(m= METHOD_CALL i= METHOD_NAME ( ^( EXPR_LIST ( arguments )? ) )? )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:342:2: ( ^(m= METHOD_CALL i= METHOD_NAME ( ^( EXPR_LIST ( arguments )? ) )? ) )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:342:4: ^(m= METHOD_CALL i= METHOD_NAME ( ^( EXPR_LIST ( arguments )? ) )? )
             {
-            	m=(IASTNode)Match(input,METHOD_CALL,FOLLOW_METHOD_CALL_in_methodCall1931); if (state.failed) return ;
+            	m=(IASTNode)Match(input,METHOD_CALL,FOLLOW_METHOD_CALL_in_methodCall1949); if (state.failed) return ;
 
             	Match(input, Token.DOWN, null); if (state.failed) return ;
-            	i=(IASTNode)Match(input,METHOD_NAME,FOLLOW_METHOD_NAME_in_methodCall1935); if (state.failed) return ;
+            	i=(IASTNode)Match(input,METHOD_NAME,FOLLOW_METHOD_NAME_in_methodCall1953); if (state.failed) return ;
             	if ( (state.backtracking==0) )
             	{
             	   BeginFunctionTemplate(m,i); 
             	}
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:341:3: ( ^( EXPR_LIST ( arguments )? ) )?
-            	int alt64 = 2;
-            	int LA64_0 = input.LA(1);
+            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:343:3: ( ^( EXPR_LIST ( arguments )? ) )?
+            	int alt65 = 2;
+            	int LA65_0 = input.LA(1);
 
-            	if ( (LA64_0 == EXPR_LIST) )
+            	if ( (LA65_0 == EXPR_LIST) )
             	{
-            	    alt64 = 1;
+            	    alt65 = 1;
             	}
-            	switch (alt64) 
+            	switch (alt65) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:341:5: ^( EXPR_LIST ( arguments )? )
+            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:343:5: ^( EXPR_LIST ( arguments )? )
             	        {
-            	        	Match(input,EXPR_LIST,FOLLOW_EXPR_LIST_in_methodCall1944); if (state.failed) return ;
+            	        	Match(input,EXPR_LIST,FOLLOW_EXPR_LIST_in_methodCall1962); if (state.failed) return ;
 
             	        	if ( input.LA(1) == Token.DOWN )
             	        	{
             	        	    Match(input, Token.DOWN, null); if (state.failed) return ;
-            	        	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:341:17: ( arguments )?
-            	        	    int alt63 = 2;
-            	        	    int LA63_0 = input.LA(1);
+            	        	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:343:17: ( arguments )?
+            	        	    int alt64 = 2;
+            	        	    int LA64_0 = input.LA(1);
 
-            	        	    if ( ((LA63_0 >= ALL && LA63_0 <= ANY) || LA63_0 == BETWEEN || LA63_0 == COUNT || LA63_0 == DOT || (LA63_0 >= EXISTS && LA63_0 <= FALSE) || LA63_0 == IN || LA63_0 == LIKE || LA63_0 == NULL || LA63_0 == SELECT || LA63_0 == SOME || LA63_0 == TRUE || LA63_0 == CASE || LA63_0 == AGGREGATE || LA63_0 == CASE2 || (LA63_0 >= INDEX_OP && LA63_0 <= NOT_LIKE) || LA63_0 == UNARY_MINUS || LA63_0 == VECTOR_EXPR || (LA63_0 >= CONSTANT && LA63_0 <= JAVA_CONSTANT) || LA63_0 == EQ || (LA63_0 >= BNOT && LA63_0 <= NE) || (LA63_0 >= LT && LA63_0 <= GE) || (LA63_0 >= PLUS && LA63_0 <= DIV) || (LA63_0 >= PARAM && LA63_0 <= IDENT) || LA63_0 == ALIAS_REF || LA63_0 == SQL_TOKEN || LA63_0 == NAMED_PARAM) )
+            	        	    if ( ((LA64_0 >= ALL && LA64_0 <= ANY) || LA64_0 == BETWEEN || LA64_0 == COUNT || LA64_0 == DOT || (LA64_0 >= EXISTS && LA64_0 <= FALSE) || LA64_0 == IN || LA64_0 == LIKE || LA64_0 == NULL || LA64_0 == SELECT || LA64_0 == SOME || (LA64_0 >= TRUE && LA64_0 <= UNION) || LA64_0 == CASE || LA64_0 == AGGREGATE || LA64_0 == CASE2 || (LA64_0 >= INDEX_OP && LA64_0 <= NOT_LIKE) || LA64_0 == UNARY_MINUS || LA64_0 == VECTOR_EXPR || (LA64_0 >= CONSTANT && LA64_0 <= JAVA_CONSTANT) || LA64_0 == EQ || LA64_0 == NE || (LA64_0 >= LT && LA64_0 <= GE) || (LA64_0 >= BNOT && LA64_0 <= DIV) || (LA64_0 >= PARAM && LA64_0 <= IDENT) || LA64_0 == ALIAS_REF || LA64_0 == SQL_TOKEN || LA64_0 == NAMED_PARAM) )
             	        	    {
-            	        	        alt63 = 1;
+            	        	        alt64 = 1;
             	        	    }
-            	        	    switch (alt63) 
+            	        	    switch (alt64) 
             	        	    {
             	        	        case 1 :
-            	        	            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:341:18: arguments
+            	        	            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:343:18: arguments
             	        	            {
-            	        	            	PushFollow(FOLLOW_arguments_in_methodCall1947);
+            	        	            	PushFollow(FOLLOW_arguments_in_methodCall1965);
             	        	            	arguments();
             	        	            	state.followingStackPointer--;
             	        	            	if (state.failed) return ;
@@ -5477,40 +5530,40 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "arguments"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:345:1: arguments : ( expr | comparisonExpr[true] ) ( ( expr | comparisonExpr[true] ) )* ;
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:347:1: arguments : ( expr | comparisonExpr[true] ) ( ( expr | comparisonExpr[true] ) )* ;
     public void arguments() // throws RecognitionException [1]
     {   
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:346:2: ( ( expr | comparisonExpr[true] ) ( ( expr | comparisonExpr[true] ) )* )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:346:4: ( expr | comparisonExpr[true] ) ( ( expr | comparisonExpr[true] ) )*
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:348:2: ( ( expr | comparisonExpr[true] ) ( ( expr | comparisonExpr[true] ) )* )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:348:4: ( expr | comparisonExpr[true] ) ( ( expr | comparisonExpr[true] ) )*
             {
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:346:4: ( expr | comparisonExpr[true] )
-            	int alt65 = 2;
-            	int LA65_0 = input.LA(1);
+            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:348:4: ( expr | comparisonExpr[true] )
+            	int alt66 = 2;
+            	int LA66_0 = input.LA(1);
 
-            	if ( ((LA65_0 >= ALL && LA65_0 <= ANY) || LA65_0 == COUNT || LA65_0 == DOT || LA65_0 == FALSE || LA65_0 == NULL || LA65_0 == SELECT || LA65_0 == SOME || LA65_0 == TRUE || LA65_0 == CASE || LA65_0 == AGGREGATE || LA65_0 == CASE2 || LA65_0 == INDEX_OP || LA65_0 == METHOD_CALL || LA65_0 == UNARY_MINUS || LA65_0 == VECTOR_EXPR || (LA65_0 >= CONSTANT && LA65_0 <= JAVA_CONSTANT) || (LA65_0 >= BNOT && LA65_0 <= BAND) || (LA65_0 >= PLUS && LA65_0 <= DIV) || (LA65_0 >= PARAM && LA65_0 <= IDENT) || LA65_0 == ALIAS_REF || LA65_0 == SQL_TOKEN || LA65_0 == NAMED_PARAM) )
+            	if ( ((LA66_0 >= ALL && LA66_0 <= ANY) || LA66_0 == COUNT || LA66_0 == DOT || LA66_0 == FALSE || LA66_0 == NULL || LA66_0 == SELECT || LA66_0 == SOME || (LA66_0 >= TRUE && LA66_0 <= UNION) || LA66_0 == CASE || LA66_0 == AGGREGATE || LA66_0 == CASE2 || LA66_0 == INDEX_OP || LA66_0 == METHOD_CALL || LA66_0 == UNARY_MINUS || LA66_0 == VECTOR_EXPR || (LA66_0 >= CONSTANT && LA66_0 <= JAVA_CONSTANT) || (LA66_0 >= BNOT && LA66_0 <= DIV) || (LA66_0 >= PARAM && LA66_0 <= IDENT) || LA66_0 == ALIAS_REF || LA66_0 == SQL_TOKEN || LA66_0 == NAMED_PARAM) )
             	{
-            	    alt65 = 1;
+            	    alt66 = 1;
             	}
-            	else if ( (LA65_0 == BETWEEN || LA65_0 == EXISTS || LA65_0 == IN || LA65_0 == LIKE || (LA65_0 >= IS_NOT_NULL && LA65_0 <= IS_NULL) || (LA65_0 >= NOT_BETWEEN && LA65_0 <= NOT_LIKE) || LA65_0 == EQ || LA65_0 == NE || (LA65_0 >= LT && LA65_0 <= GE)) )
+            	else if ( (LA66_0 == BETWEEN || LA66_0 == EXISTS || LA66_0 == IN || LA66_0 == LIKE || (LA66_0 >= IS_NOT_NULL && LA66_0 <= IS_NULL) || (LA66_0 >= NOT_BETWEEN && LA66_0 <= NOT_LIKE) || LA66_0 == EQ || LA66_0 == NE || (LA66_0 >= LT && LA66_0 <= GE)) )
             	{
-            	    alt65 = 2;
+            	    alt66 = 2;
             	}
             	else 
             	{
             	    if ( state.backtracking > 0 ) {state.failed = true; return ;}
-            	    NoViableAltException nvae_d65s0 =
-            	        new NoViableAltException("", 65, 0, input);
+            	    NoViableAltException nvae_d66s0 =
+            	        new NoViableAltException("", 66, 0, input);
 
-            	    throw nvae_d65s0;
+            	    throw nvae_d66s0;
             	}
-            	switch (alt65) 
+            	switch (alt66) 
             	{
             	    case 1 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:346:5: expr
+            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:348:5: expr
             	        {
-            	        	PushFollow(FOLLOW_expr_in_arguments1972);
+            	        	PushFollow(FOLLOW_expr_in_arguments1990);
             	        	expr();
             	        	state.followingStackPointer--;
             	        	if (state.failed) return ;
@@ -5518,9 +5571,9 @@ public partial class SqlGenerator : TreeParser
             	        }
             	        break;
             	    case 2 :
-            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:346:12: comparisonExpr[true]
+            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:348:12: comparisonExpr[true]
             	        {
-            	        	PushFollow(FOLLOW_comparisonExpr_in_arguments1976);
+            	        	PushFollow(FOLLOW_comparisonExpr_in_arguments1994);
             	        	comparisonExpr(true);
             	        	state.followingStackPointer--;
             	        	if (state.failed) return ;
@@ -5530,53 +5583,53 @@ public partial class SqlGenerator : TreeParser
 
             	}
 
-            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:346:34: ( ( expr | comparisonExpr[true] ) )*
+            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:348:34: ( ( expr | comparisonExpr[true] ) )*
             	do 
             	{
-            	    int alt67 = 2;
-            	    int LA67_0 = input.LA(1);
+            	    int alt68 = 2;
+            	    int LA68_0 = input.LA(1);
 
-            	    if ( ((LA67_0 >= ALL && LA67_0 <= ANY) || LA67_0 == BETWEEN || LA67_0 == COUNT || LA67_0 == DOT || (LA67_0 >= EXISTS && LA67_0 <= FALSE) || LA67_0 == IN || LA67_0 == LIKE || LA67_0 == NULL || LA67_0 == SELECT || LA67_0 == SOME || LA67_0 == TRUE || LA67_0 == CASE || LA67_0 == AGGREGATE || LA67_0 == CASE2 || (LA67_0 >= INDEX_OP && LA67_0 <= NOT_LIKE) || LA67_0 == UNARY_MINUS || LA67_0 == VECTOR_EXPR || (LA67_0 >= CONSTANT && LA67_0 <= JAVA_CONSTANT) || LA67_0 == EQ || (LA67_0 >= BNOT && LA67_0 <= NE) || (LA67_0 >= LT && LA67_0 <= GE) || (LA67_0 >= PLUS && LA67_0 <= DIV) || (LA67_0 >= PARAM && LA67_0 <= IDENT) || LA67_0 == ALIAS_REF || LA67_0 == SQL_TOKEN || LA67_0 == NAMED_PARAM) )
+            	    if ( ((LA68_0 >= ALL && LA68_0 <= ANY) || LA68_0 == BETWEEN || LA68_0 == COUNT || LA68_0 == DOT || (LA68_0 >= EXISTS && LA68_0 <= FALSE) || LA68_0 == IN || LA68_0 == LIKE || LA68_0 == NULL || LA68_0 == SELECT || LA68_0 == SOME || (LA68_0 >= TRUE && LA68_0 <= UNION) || LA68_0 == CASE || LA68_0 == AGGREGATE || LA68_0 == CASE2 || (LA68_0 >= INDEX_OP && LA68_0 <= NOT_LIKE) || LA68_0 == UNARY_MINUS || LA68_0 == VECTOR_EXPR || (LA68_0 >= CONSTANT && LA68_0 <= JAVA_CONSTANT) || LA68_0 == EQ || LA68_0 == NE || (LA68_0 >= LT && LA68_0 <= GE) || (LA68_0 >= BNOT && LA68_0 <= DIV) || (LA68_0 >= PARAM && LA68_0 <= IDENT) || LA68_0 == ALIAS_REF || LA68_0 == SQL_TOKEN || LA68_0 == NAMED_PARAM) )
             	    {
-            	        alt67 = 1;
+            	        alt68 = 1;
             	    }
 
 
-            	    switch (alt67) 
+            	    switch (alt68) 
             		{
             			case 1 :
-            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:346:36: ( expr | comparisonExpr[true] )
+            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:348:36: ( expr | comparisonExpr[true] )
             			    {
             			    	if ( (state.backtracking==0) )
             			    	{
             			    	   CommaBetweenParameters(", "); 
             			    	}
-            			    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:346:70: ( expr | comparisonExpr[true] )
-            			    	int alt66 = 2;
-            			    	int LA66_0 = input.LA(1);
+            			    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:348:70: ( expr | comparisonExpr[true] )
+            			    	int alt67 = 2;
+            			    	int LA67_0 = input.LA(1);
 
-            			    	if ( ((LA66_0 >= ALL && LA66_0 <= ANY) || LA66_0 == COUNT || LA66_0 == DOT || LA66_0 == FALSE || LA66_0 == NULL || LA66_0 == SELECT || LA66_0 == SOME || LA66_0 == TRUE || LA66_0 == CASE || LA66_0 == AGGREGATE || LA66_0 == CASE2 || LA66_0 == INDEX_OP || LA66_0 == METHOD_CALL || LA66_0 == UNARY_MINUS || LA66_0 == VECTOR_EXPR || (LA66_0 >= CONSTANT && LA66_0 <= JAVA_CONSTANT) || (LA66_0 >= BNOT && LA66_0 <= BAND) || (LA66_0 >= PLUS && LA66_0 <= DIV) || (LA66_0 >= PARAM && LA66_0 <= IDENT) || LA66_0 == ALIAS_REF || LA66_0 == SQL_TOKEN || LA66_0 == NAMED_PARAM) )
+            			    	if ( ((LA67_0 >= ALL && LA67_0 <= ANY) || LA67_0 == COUNT || LA67_0 == DOT || LA67_0 == FALSE || LA67_0 == NULL || LA67_0 == SELECT || LA67_0 == SOME || (LA67_0 >= TRUE && LA67_0 <= UNION) || LA67_0 == CASE || LA67_0 == AGGREGATE || LA67_0 == CASE2 || LA67_0 == INDEX_OP || LA67_0 == METHOD_CALL || LA67_0 == UNARY_MINUS || LA67_0 == VECTOR_EXPR || (LA67_0 >= CONSTANT && LA67_0 <= JAVA_CONSTANT) || (LA67_0 >= BNOT && LA67_0 <= DIV) || (LA67_0 >= PARAM && LA67_0 <= IDENT) || LA67_0 == ALIAS_REF || LA67_0 == SQL_TOKEN || LA67_0 == NAMED_PARAM) )
             			    	{
-            			    	    alt66 = 1;
+            			    	    alt67 = 1;
             			    	}
-            			    	else if ( (LA66_0 == BETWEEN || LA66_0 == EXISTS || LA66_0 == IN || LA66_0 == LIKE || (LA66_0 >= IS_NOT_NULL && LA66_0 <= IS_NULL) || (LA66_0 >= NOT_BETWEEN && LA66_0 <= NOT_LIKE) || LA66_0 == EQ || LA66_0 == NE || (LA66_0 >= LT && LA66_0 <= GE)) )
+            			    	else if ( (LA67_0 == BETWEEN || LA67_0 == EXISTS || LA67_0 == IN || LA67_0 == LIKE || (LA67_0 >= IS_NOT_NULL && LA67_0 <= IS_NULL) || (LA67_0 >= NOT_BETWEEN && LA67_0 <= NOT_LIKE) || LA67_0 == EQ || LA67_0 == NE || (LA67_0 >= LT && LA67_0 <= GE)) )
             			    	{
-            			    	    alt66 = 2;
+            			    	    alt67 = 2;
             			    	}
             			    	else 
             			    	{
             			    	    if ( state.backtracking > 0 ) {state.failed = true; return ;}
-            			    	    NoViableAltException nvae_d66s0 =
-            			    	        new NoViableAltException("", 66, 0, input);
+            			    	    NoViableAltException nvae_d67s0 =
+            			    	        new NoViableAltException("", 67, 0, input);
 
-            			    	    throw nvae_d66s0;
+            			    	    throw nvae_d67s0;
             			    	}
-            			    	switch (alt66) 
+            			    	switch (alt67) 
             			    	{
             			    	    case 1 :
-            			    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:346:71: expr
+            			    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:348:71: expr
             			    	        {
-            			    	        	PushFollow(FOLLOW_expr_in_arguments1985);
+            			    	        	PushFollow(FOLLOW_expr_in_arguments2003);
             			    	        	expr();
             			    	        	state.followingStackPointer--;
             			    	        	if (state.failed) return ;
@@ -5584,9 +5637,9 @@ public partial class SqlGenerator : TreeParser
             			    	        }
             			    	        break;
             			    	    case 2 :
-            			    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:346:78: comparisonExpr[true]
+            			    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:348:78: comparisonExpr[true]
             			    	        {
-            			    	        	PushFollow(FOLLOW_comparisonExpr_in_arguments1989);
+            			    	        	PushFollow(FOLLOW_comparisonExpr_in_arguments2007);
             			    	        	comparisonExpr(true);
             			    	        	state.followingStackPointer--;
             			    	        	if (state.failed) return ;
@@ -5601,12 +5654,12 @@ public partial class SqlGenerator : TreeParser
             			    break;
 
             			default:
-            			    goto loop67;
+            			    goto loop68;
             	    }
             	} while (true);
 
-            	loop67:
-            		;	// Stops C# compiler whining that label 'loop67' has no statements
+            	loop68:
+            		;	// Stops C# compiler whining that label 'loop68' has no statements
 
 
             }
@@ -5626,7 +5679,7 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "parameter"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:349:1: parameter : (n= NAMED_PARAM | p= PARAM );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:351:1: parameter : (n= NAMED_PARAM | p= PARAM );
     public void parameter() // throws RecognitionException [1]
     {   
         IASTNode n = null;
@@ -5634,32 +5687,32 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:350:2: (n= NAMED_PARAM | p= PARAM )
-            int alt68 = 2;
-            int LA68_0 = input.LA(1);
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:352:2: (n= NAMED_PARAM | p= PARAM )
+            int alt69 = 2;
+            int LA69_0 = input.LA(1);
 
-            if ( (LA68_0 == NAMED_PARAM) )
+            if ( (LA69_0 == NAMED_PARAM) )
             {
-                alt68 = 1;
+                alt69 = 1;
             }
-            else if ( (LA68_0 == PARAM) )
+            else if ( (LA69_0 == PARAM) )
             {
-                alt68 = 2;
+                alt69 = 2;
             }
             else 
             {
                 if ( state.backtracking > 0 ) {state.failed = true; return ;}
-                NoViableAltException nvae_d68s0 =
-                    new NoViableAltException("", 68, 0, input);
+                NoViableAltException nvae_d69s0 =
+                    new NoViableAltException("", 69, 0, input);
 
-                throw nvae_d68s0;
+                throw nvae_d69s0;
             }
-            switch (alt68) 
+            switch (alt69) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:350:4: n= NAMED_PARAM
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:352:4: n= NAMED_PARAM
                     {
-                    	n=(IASTNode)Match(input,NAMED_PARAM,FOLLOW_NAMED_PARAM_in_parameter2007); if (state.failed) return ;
+                    	n=(IASTNode)Match(input,NAMED_PARAM,FOLLOW_NAMED_PARAM_in_parameter2025); if (state.failed) return ;
                     	if ( (state.backtracking==0) )
                     	{
                     	   Out(n); 
@@ -5668,9 +5721,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:351:4: p= PARAM
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:353:4: p= PARAM
                     {
-                    	p=(IASTNode)Match(input,PARAM,FOLLOW_PARAM_in_parameter2016); if (state.failed) return ;
+                    	p=(IASTNode)Match(input,PARAM,FOLLOW_PARAM_in_parameter2034); if (state.failed) return ;
                     	if ( (state.backtracking==0) )
                     	{
                     	   Out(p); 
@@ -5695,7 +5748,7 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "addrExpr"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:354:1: addrExpr : ( ^(r= DOT . . ) | i= ALIAS_REF | ^(j= INDEX_OP ( . )* ) );
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:356:1: addrExpr : ( ^(r= DOT . . ) | i= ALIAS_REF | ^(j= INDEX_OP ( . )* ) );
     public void addrExpr() // throws RecognitionException [1]
     {   
         IASTNode r = null;
@@ -5704,39 +5757,39 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:355:2: ( ^(r= DOT . . ) | i= ALIAS_REF | ^(j= INDEX_OP ( . )* ) )
-            int alt70 = 3;
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:357:2: ( ^(r= DOT . . ) | i= ALIAS_REF | ^(j= INDEX_OP ( . )* ) )
+            int alt71 = 3;
             switch ( input.LA(1) ) 
             {
             case DOT:
             	{
-                alt70 = 1;
+                alt71 = 1;
                 }
                 break;
             case ALIAS_REF:
             	{
-                alt70 = 2;
+                alt71 = 2;
                 }
                 break;
             case INDEX_OP:
             	{
-                alt70 = 3;
+                alt71 = 3;
                 }
                 break;
             	default:
             	    if ( state.backtracking > 0 ) {state.failed = true; return ;}
-            	    NoViableAltException nvae_d70s0 =
-            	        new NoViableAltException("", 70, 0, input);
+            	    NoViableAltException nvae_d71s0 =
+            	        new NoViableAltException("", 71, 0, input);
 
-            	    throw nvae_d70s0;
+            	    throw nvae_d71s0;
             }
 
-            switch (alt70) 
+            switch (alt71) 
             {
                 case 1 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:355:4: ^(r= DOT . . )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:357:4: ^(r= DOT . . )
                     {
-                    	r=(IASTNode)Match(input,DOT,FOLLOW_DOT_in_addrExpr2032); if (state.failed) return ;
+                    	r=(IASTNode)Match(input,DOT,FOLLOW_DOT_in_addrExpr2050); if (state.failed) return ;
 
                     	Match(input, Token.DOWN, null); if (state.failed) return ;
                     	MatchAny(input); if (state.failed) return ;
@@ -5751,9 +5804,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:356:4: i= ALIAS_REF
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:358:4: i= ALIAS_REF
                     {
-                    	i=(IASTNode)Match(input,ALIAS_REF,FOLLOW_ALIAS_REF_in_addrExpr2046); if (state.failed) return ;
+                    	i=(IASTNode)Match(input,ALIAS_REF,FOLLOW_ALIAS_REF_in_addrExpr2064); if (state.failed) return ;
                     	if ( (state.backtracking==0) )
                     	{
                     	   Out(i); 
@@ -5762,33 +5815,33 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 3 :
-                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:357:4: ^(j= INDEX_OP ( . )* )
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:359:4: ^(j= INDEX_OP ( . )* )
                     {
-                    	j=(IASTNode)Match(input,INDEX_OP,FOLLOW_INDEX_OP_in_addrExpr2056); if (state.failed) return ;
+                    	j=(IASTNode)Match(input,INDEX_OP,FOLLOW_INDEX_OP_in_addrExpr2074); if (state.failed) return ;
 
                     	if ( input.LA(1) == Token.DOWN )
                     	{
                     	    Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:357:17: ( . )*
+                    	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:359:17: ( . )*
                     	    do 
                     	    {
-                    	        int alt69 = 2;
-                    	        int LA69_0 = input.LA(1);
+                    	        int alt70 = 2;
+                    	        int LA70_0 = input.LA(1);
 
-                    	        if ( ((LA69_0 >= ALL && LA69_0 <= BOGUS)) )
+                    	        if ( ((LA70_0 >= ALL && LA70_0 <= BOGUS)) )
                     	        {
-                    	            alt69 = 1;
+                    	            alt70 = 1;
                     	        }
-                    	        else if ( (LA69_0 == UP) )
+                    	        else if ( (LA70_0 == UP) )
                     	        {
-                    	            alt69 = 2;
+                    	            alt70 = 2;
                     	        }
 
 
-                    	        switch (alt69) 
+                    	        switch (alt70) 
                     	    	{
                     	    		case 1 :
-                    	    		    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:357:17: .
+                    	    		    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:359:17: .
                     	    		    {
                     	    		    	MatchAny(input); if (state.failed) return ;
 
@@ -5796,12 +5849,12 @@ public partial class SqlGenerator : TreeParser
                     	    		    break;
 
                     	    		default:
-                    	    		    goto loop69;
+                    	    		    goto loop70;
                     	        }
                     	    } while (true);
 
-                    	    loop69:
-                    	    	;	// Stops C# compiler whining that label 'loop69' has no statements
+                    	    loop70:
+                    	    	;	// Stops C# compiler whining that label 'loop70' has no statements
 
 
                     	    Match(input, Token.UP, null); if (state.failed) return ;
@@ -5830,17 +5883,17 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "sqlToken"
-    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:360:1: sqlToken : ^(t= SQL_TOKEN ( . )* ) ;
+    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:362:1: sqlToken : ^(t= SQL_TOKEN ( . )* ) ;
     public void sqlToken() // throws RecognitionException [1]
     {   
         IASTNode t = null;
 
         try 
     	{
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:361:2: ( ^(t= SQL_TOKEN ( . )* ) )
-            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:361:4: ^(t= SQL_TOKEN ( . )* )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:363:2: ( ^(t= SQL_TOKEN ( . )* ) )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:363:4: ^(t= SQL_TOKEN ( . )* )
             {
-            	t=(IASTNode)Match(input,SQL_TOKEN,FOLLOW_SQL_TOKEN_in_sqlToken2076); if (state.failed) return ;
+            	t=(IASTNode)Match(input,SQL_TOKEN,FOLLOW_SQL_TOKEN_in_sqlToken2094); if (state.failed) return ;
 
             	if ( (state.backtracking==0) )
             	{
@@ -5850,26 +5903,26 @@ public partial class SqlGenerator : TreeParser
             	if ( input.LA(1) == Token.DOWN )
             	{
             	    Match(input, Token.DOWN, null); if (state.failed) return ;
-            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:361:30: ( . )*
+            	    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:363:30: ( . )*
             	    do 
             	    {
-            	        int alt71 = 2;
-            	        int LA71_0 = input.LA(1);
+            	        int alt72 = 2;
+            	        int LA72_0 = input.LA(1);
 
-            	        if ( ((LA71_0 >= ALL && LA71_0 <= BOGUS)) )
+            	        if ( ((LA72_0 >= ALL && LA72_0 <= BOGUS)) )
             	        {
-            	            alt71 = 1;
+            	            alt72 = 1;
             	        }
-            	        else if ( (LA71_0 == UP) )
+            	        else if ( (LA72_0 == UP) )
             	        {
-            	            alt71 = 2;
+            	            alt72 = 2;
             	        }
 
 
-            	        switch (alt71) 
+            	        switch (alt72) 
             	    	{
             	    		case 1 :
-            	    		    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:361:30: .
+            	    		    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:363:30: .
             	    		    {
             	    		    	MatchAny(input); if (state.failed) return ;
 
@@ -5877,12 +5930,12 @@ public partial class SqlGenerator : TreeParser
             	    		    break;
 
             	    		default:
-            	    		    goto loop71;
+            	    		    goto loop72;
             	        }
             	    } while (true);
 
-            	    loop71:
-            	    	;	// Stops C# compiler whining that label 'loop71' has no statements
+            	    loop72:
+            	    	;	// Stops C# compiler whining that label 'loop72' has no statements
 
 
             	    Match(input, Token.UP, null); if (state.failed) return ;
@@ -5916,10 +5969,10 @@ public partial class SqlGenerator : TreeParser
 
     // $ANTLR start "synpred2_SqlGenerator"
     public void synpred2_SqlGenerator_fragment() {
-        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:312:4: ( additiveExpr )
-        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:312:5: additiveExpr
+        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:314:4: ( additiveExpr )
+        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:314:5: additiveExpr
         {
-        	PushFollow(FOLLOW_additiveExpr_in_synpred2_SqlGenerator1727);
+        	PushFollow(FOLLOW_additiveExpr_in_synpred2_SqlGenerator1745);
         	additiveExpr();
         	state.followingStackPointer--;
         	if (state.failed) return ;
@@ -5930,10 +5983,10 @@ public partial class SqlGenerator : TreeParser
 
     // $ANTLR start "synpred3_SqlGenerator"
     public void synpred3_SqlGenerator_fragment() {
-        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:313:4: ( bitwiseExpr )
-        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:313:5: bitwiseExpr
+        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:315:4: ( bitwiseExpr )
+        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:315:5: bitwiseExpr
         {
-        	PushFollow(FOLLOW_bitwiseExpr_in_synpred3_SqlGenerator1742);
+        	PushFollow(FOLLOW_bitwiseExpr_in_synpred3_SqlGenerator1760);
         	bitwiseExpr();
         	state.followingStackPointer--;
         	if (state.failed) return ;
@@ -5944,10 +5997,10 @@ public partial class SqlGenerator : TreeParser
 
     // $ANTLR start "synpred4_SqlGenerator"
     public void synpred4_SqlGenerator_fragment() {
-        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:319:4: ( arithmeticExpr )
-        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:319:5: arithmeticExpr
+        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:321:4: ( arithmeticExpr )
+        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/SqlGenerator.g:321:5: arithmeticExpr
         {
-        	PushFollow(FOLLOW_arithmeticExpr_in_synpred4_SqlGenerator1771);
+        	PushFollow(FOLLOW_arithmeticExpr_in_synpred4_SqlGenerator1789);
         	arithmeticExpr();
         	state.followingStackPointer--;
         	if (state.failed) return ;
@@ -6032,36 +6085,36 @@ public partial class SqlGenerator : TreeParser
    	}
 
 
-   	protected DFA56 dfa56;
    	protected DFA57 dfa57;
+   	protected DFA58 dfa58;
 	private void InitializeCyclicDFAs()
 	{
-    	this.dfa56 = new DFA56(this);
     	this.dfa57 = new DFA57(this);
-	    this.dfa56.specialStateTransitionHandler = new DFA.SpecialStateTransitionHandler(DFA56_SpecialStateTransition);
+    	this.dfa58 = new DFA58(this);
 	    this.dfa57.specialStateTransitionHandler = new DFA.SpecialStateTransitionHandler(DFA57_SpecialStateTransition);
+	    this.dfa58.specialStateTransitionHandler = new DFA.SpecialStateTransitionHandler(DFA58_SpecialStateTransition);
 	}
 
-    const string DFA56_eotS =
-        "\x1e\uffff";
-    const string DFA56_eofS =
-        "\x1e\uffff";
-    const string DFA56_minS =
-        "\x01\x04\x06\x00\x17\uffff";
-    const string DFA56_maxS =
-        "\x01\u0092\x06\x00\x17\uffff";
-    const string DFA56_acceptS =
-        "\x07\uffff\x01\x03\x14\uffff\x01\x01\x01\x02";
-    const string DFA56_specialS =
-        "\x01\uffff\x01\x00\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x17\uffff}>";
-    static readonly string[] DFA56_transitionS = {
+    const string DFA57_eotS =
+        "\x1f\uffff";
+    const string DFA57_eofS =
+        "\x1f\uffff";
+    const string DFA57_minS =
+        "\x01\x04\x06\x00\x18\uffff";
+    const string DFA57_maxS =
+        "\x01\u0092\x06\x00\x18\uffff";
+    const string DFA57_acceptS =
+        "\x07\uffff\x01\x03\x15\uffff\x01\x01\x01\x02";
+    const string DFA57_specialS =
+        "\x01\uffff\x01\x00\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x18\uffff}>";
+    static readonly string[] DFA57_transitionS = {
             "\x02\x07\x06\uffff\x01\x07\x02\uffff\x01\x07\x04\uffff\x01\x07"+
             "\x12\uffff\x01\x07\x05\uffff\x01\x07\x01\uffff\x01\x07\x01\uffff"+
-            "\x01\x07\x05\uffff\x01\x07\x0d\uffff\x01\x07\x02\uffff\x01\x07"+
+            "\x02\x07\x04\uffff\x01\x07\x0d\uffff\x01\x07\x02\uffff\x01\x07"+
             "\x03\uffff\x01\x07\x02\uffff\x01\x07\x08\uffff\x01\x07\x01\uffff"+
-            "\x01\x07\x01\uffff\x06\x07\x04\uffff\x01\x06\x01\x04\x01\x05"+
-            "\x01\x03\x07\uffff\x01\x01\x01\x02\x02\x07\x03\uffff\x03\x07"+
-            "\x0f\uffff\x01\x07\x01\uffff\x01\x07\x05\uffff\x01\x07",
+            "\x01\x07\x01\uffff\x06\x07\x0b\uffff\x01\x06\x01\x04\x01\x05"+
+            "\x01\x03\x01\x01\x01\x02\x02\x07\x03\uffff\x03\x07\x0f\uffff"+
+            "\x01\x07\x01\uffff\x01\x07\x05\uffff\x01\x07",
             "\x01\uffff",
             "\x01\uffff",
             "\x01\uffff",
@@ -6075,191 +6128,6 @@ public partial class SqlGenerator : TreeParser
             "",
             "",
             "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            ""
-    };
-
-    static readonly short[] DFA56_eot = DFA.UnpackEncodedString(DFA56_eotS);
-    static readonly short[] DFA56_eof = DFA.UnpackEncodedString(DFA56_eofS);
-    static readonly char[] DFA56_min = DFA.UnpackEncodedStringToUnsignedChars(DFA56_minS);
-    static readonly char[] DFA56_max = DFA.UnpackEncodedStringToUnsignedChars(DFA56_maxS);
-    static readonly short[] DFA56_accept = DFA.UnpackEncodedString(DFA56_acceptS);
-    static readonly short[] DFA56_special = DFA.UnpackEncodedString(DFA56_specialS);
-    static readonly short[][] DFA56_transition = DFA.UnpackEncodedStringArray(DFA56_transitionS);
-
-    protected class DFA56 : DFA
-    {
-        public DFA56(BaseRecognizer recognizer)
-        {
-            this.recognizer = recognizer;
-            this.decisionNumber = 56;
-            this.eot = DFA56_eot;
-            this.eof = DFA56_eof;
-            this.min = DFA56_min;
-            this.max = DFA56_max;
-            this.accept = DFA56_accept;
-            this.special = DFA56_special;
-            this.transition = DFA56_transition;
-
-        }
-
-        override public string Description
-        {
-            get { return "310:1: nestedExpr : ( ( additiveExpr )=> additiveExpr | ( bitwiseExpr )=> bitwiseExpr | expr );"; }
-        }
-
-    }
-
-
-    protected internal int DFA56_SpecialStateTransition(DFA dfa, int s, IIntStream _input) //throws NoViableAltException
-    {
-            ITreeNodeStream input = (ITreeNodeStream)_input;
-    	int _s = s;
-        switch ( s )
-        {
-               	case 0 : 
-                   	int LA56_1 = input.LA(1);
-
-                   	 
-                   	int index56_1 = input.Index();
-                   	input.Rewind();
-                   	s = -1;
-                   	if ( (synpred2_SqlGenerator()) ) { s = 28; }
-
-                   	else if ( (true) ) { s = 7; }
-
-                   	 
-                   	input.Seek(index56_1);
-                   	if ( s >= 0 ) return s;
-                   	break;
-               	case 1 : 
-                   	int LA56_2 = input.LA(1);
-
-                   	 
-                   	int index56_2 = input.Index();
-                   	input.Rewind();
-                   	s = -1;
-                   	if ( (synpred2_SqlGenerator()) ) { s = 28; }
-
-                   	else if ( (true) ) { s = 7; }
-
-                   	 
-                   	input.Seek(index56_2);
-                   	if ( s >= 0 ) return s;
-                   	break;
-               	case 2 : 
-                   	int LA56_3 = input.LA(1);
-
-                   	 
-                   	int index56_3 = input.Index();
-                   	input.Rewind();
-                   	s = -1;
-                   	if ( (synpred3_SqlGenerator()) ) { s = 29; }
-
-                   	else if ( (true) ) { s = 7; }
-
-                   	 
-                   	input.Seek(index56_3);
-                   	if ( s >= 0 ) return s;
-                   	break;
-               	case 3 : 
-                   	int LA56_4 = input.LA(1);
-
-                   	 
-                   	int index56_4 = input.Index();
-                   	input.Rewind();
-                   	s = -1;
-                   	if ( (synpred3_SqlGenerator()) ) { s = 29; }
-
-                   	else if ( (true) ) { s = 7; }
-
-                   	 
-                   	input.Seek(index56_4);
-                   	if ( s >= 0 ) return s;
-                   	break;
-               	case 4 : 
-                   	int LA56_5 = input.LA(1);
-
-                   	 
-                   	int index56_5 = input.Index();
-                   	input.Rewind();
-                   	s = -1;
-                   	if ( (synpred3_SqlGenerator()) ) { s = 29; }
-
-                   	else if ( (true) ) { s = 7; }
-
-                   	 
-                   	input.Seek(index56_5);
-                   	if ( s >= 0 ) return s;
-                   	break;
-               	case 5 : 
-                   	int LA56_6 = input.LA(1);
-
-                   	 
-                   	int index56_6 = input.Index();
-                   	input.Rewind();
-                   	s = -1;
-                   	if ( (synpred3_SqlGenerator()) ) { s = 29; }
-
-                   	else if ( (true) ) { s = 7; }
-
-                   	 
-                   	input.Seek(index56_6);
-                   	if ( s >= 0 ) return s;
-                   	break;
-        }
-        if (state.backtracking > 0) {state.failed = true; return -1;}
-        NoViableAltException nvae56 =
-            new NoViableAltException(dfa.Description, 56, _s, input);
-        dfa.Error(nvae56);
-        throw nvae56;
-    }
-    const string DFA57_eotS =
-        "\x1d\uffff";
-    const string DFA57_eofS =
-        "\x1d\uffff";
-    const string DFA57_minS =
-        "\x01\x04\x0b\x00\x11\uffff";
-    const string DFA57_maxS =
-        "\x01\u0092\x0b\x00\x11\uffff";
-    const string DFA57_acceptS =
-        "\x0c\uffff\x01\x02\x0f\uffff\x01\x01";
-    const string DFA57_specialS =
-        "\x01\uffff\x01\x00\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06"+
-        "\x01\x07\x01\x08\x01\x09\x01\x0a\x11\uffff}>";
-    static readonly string[] DFA57_transitionS = {
-            "\x02\x0c\x06\uffff\x01\x0c\x02\uffff\x01\x0c\x04\uffff\x01\x0c"+
-            "\x12\uffff\x01\x0c\x05\uffff\x01\x0c\x01\uffff\x01\x0c\x01\uffff"+
-            "\x01\x0c\x05\uffff\x01\x0a\x0d\uffff\x01\x0c\x02\uffff\x01\x0b"+
-            "\x03\uffff\x01\x0c\x02\uffff\x01\x0c\x08\uffff\x01\x09\x01\uffff"+
-            "\x01\x0c\x01\uffff\x06\x0c\x04\uffff\x01\x06\x01\x04\x01\x05"+
-            "\x01\x03\x07\uffff\x01\x01\x01\x02\x01\x07\x01\x08\x03\uffff"+
-            "\x03\x0c\x0f\uffff\x01\x0c\x01\uffff\x01\x0c\x05\uffff\x01\x0c",
-            "\x01\uffff",
-            "\x01\uffff",
-            "\x01\uffff",
-            "\x01\uffff",
-            "\x01\uffff",
-            "\x01\uffff",
-            "\x01\uffff",
-            "\x01\uffff",
-            "\x01\uffff",
-            "\x01\uffff",
-            "\x01\uffff",
             "",
             "",
             "",
@@ -6305,7 +6173,7 @@ public partial class SqlGenerator : TreeParser
 
         override public string Description
         {
-            get { return "317:1: nestedExprAfterMinusDiv : ( ( arithmeticExpr )=> arithmeticExpr | expr );"; }
+            get { return "312:1: nestedExpr : ( ( additiveExpr )=> additiveExpr | ( bitwiseExpr )=> bitwiseExpr | expr );"; }
         }
 
     }
@@ -6324,9 +6192,9 @@ public partial class SqlGenerator : TreeParser
                    	int index57_1 = input.Index();
                    	input.Rewind();
                    	s = -1;
-                   	if ( (synpred4_SqlGenerator()) ) { s = 28; }
+                   	if ( (synpred2_SqlGenerator()) ) { s = 29; }
 
-                   	else if ( (true) ) { s = 12; }
+                   	else if ( (true) ) { s = 7; }
 
                    	 
                    	input.Seek(index57_1);
@@ -6339,9 +6207,9 @@ public partial class SqlGenerator : TreeParser
                    	int index57_2 = input.Index();
                    	input.Rewind();
                    	s = -1;
-                   	if ( (synpred4_SqlGenerator()) ) { s = 28; }
+                   	if ( (synpred2_SqlGenerator()) ) { s = 29; }
 
-                   	else if ( (true) ) { s = 12; }
+                   	else if ( (true) ) { s = 7; }
 
                    	 
                    	input.Seek(index57_2);
@@ -6354,9 +6222,9 @@ public partial class SqlGenerator : TreeParser
                    	int index57_3 = input.Index();
                    	input.Rewind();
                    	s = -1;
-                   	if ( (synpred4_SqlGenerator()) ) { s = 28; }
+                   	if ( (synpred3_SqlGenerator()) ) { s = 30; }
 
-                   	else if ( (true) ) { s = 12; }
+                   	else if ( (true) ) { s = 7; }
 
                    	 
                    	input.Seek(index57_3);
@@ -6369,9 +6237,9 @@ public partial class SqlGenerator : TreeParser
                    	int index57_4 = input.Index();
                    	input.Rewind();
                    	s = -1;
-                   	if ( (synpred4_SqlGenerator()) ) { s = 28; }
+                   	if ( (synpred3_SqlGenerator()) ) { s = 30; }
 
-                   	else if ( (true) ) { s = 12; }
+                   	else if ( (true) ) { s = 7; }
 
                    	 
                    	input.Seek(index57_4);
@@ -6384,9 +6252,9 @@ public partial class SqlGenerator : TreeParser
                    	int index57_5 = input.Index();
                    	input.Rewind();
                    	s = -1;
-                   	if ( (synpred4_SqlGenerator()) ) { s = 28; }
+                   	if ( (synpred3_SqlGenerator()) ) { s = 30; }
 
-                   	else if ( (true) ) { s = 12; }
+                   	else if ( (true) ) { s = 7; }
 
                    	 
                    	input.Seek(index57_5);
@@ -6399,87 +6267,12 @@ public partial class SqlGenerator : TreeParser
                    	int index57_6 = input.Index();
                    	input.Rewind();
                    	s = -1;
-                   	if ( (synpred4_SqlGenerator()) ) { s = 28; }
+                   	if ( (synpred3_SqlGenerator()) ) { s = 30; }
 
-                   	else if ( (true) ) { s = 12; }
+                   	else if ( (true) ) { s = 7; }
 
                    	 
                    	input.Seek(index57_6);
-                   	if ( s >= 0 ) return s;
-                   	break;
-               	case 6 : 
-                   	int LA57_7 = input.LA(1);
-
-                   	 
-                   	int index57_7 = input.Index();
-                   	input.Rewind();
-                   	s = -1;
-                   	if ( (synpred4_SqlGenerator()) ) { s = 28; }
-
-                   	else if ( (true) ) { s = 12; }
-
-                   	 
-                   	input.Seek(index57_7);
-                   	if ( s >= 0 ) return s;
-                   	break;
-               	case 7 : 
-                   	int LA57_8 = input.LA(1);
-
-                   	 
-                   	int index57_8 = input.Index();
-                   	input.Rewind();
-                   	s = -1;
-                   	if ( (synpred4_SqlGenerator()) ) { s = 28; }
-
-                   	else if ( (true) ) { s = 12; }
-
-                   	 
-                   	input.Seek(index57_8);
-                   	if ( s >= 0 ) return s;
-                   	break;
-               	case 8 : 
-                   	int LA57_9 = input.LA(1);
-
-                   	 
-                   	int index57_9 = input.Index();
-                   	input.Rewind();
-                   	s = -1;
-                   	if ( (synpred4_SqlGenerator()) ) { s = 28; }
-
-                   	else if ( (true) ) { s = 12; }
-
-                   	 
-                   	input.Seek(index57_9);
-                   	if ( s >= 0 ) return s;
-                   	break;
-               	case 9 : 
-                   	int LA57_10 = input.LA(1);
-
-                   	 
-                   	int index57_10 = input.Index();
-                   	input.Rewind();
-                   	s = -1;
-                   	if ( (synpred4_SqlGenerator()) ) { s = 28; }
-
-                   	else if ( (true) ) { s = 12; }
-
-                   	 
-                   	input.Seek(index57_10);
-                   	if ( s >= 0 ) return s;
-                   	break;
-               	case 10 : 
-                   	int LA57_11 = input.LA(1);
-
-                   	 
-                   	int index57_11 = input.Index();
-                   	input.Rewind();
-                   	s = -1;
-                   	if ( (synpred4_SqlGenerator()) ) { s = 28; }
-
-                   	else if ( (true) ) { s = 12; }
-
-                   	 
-                   	input.Seek(index57_11);
                    	if ( s >= 0 ) return s;
                    	break;
         }
@@ -6488,6 +6281,268 @@ public partial class SqlGenerator : TreeParser
             new NoViableAltException(dfa.Description, 57, _s, input);
         dfa.Error(nvae57);
         throw nvae57;
+    }
+    const string DFA58_eotS =
+        "\x1e\uffff";
+    const string DFA58_eofS =
+        "\x1e\uffff";
+    const string DFA58_minS =
+        "\x01\x04\x0b\x00\x12\uffff";
+    const string DFA58_maxS =
+        "\x01\u0092\x0b\x00\x12\uffff";
+    const string DFA58_acceptS =
+        "\x0c\uffff\x01\x02\x10\uffff\x01\x01";
+    const string DFA58_specialS =
+        "\x01\uffff\x01\x00\x01\x01\x01\x02\x01\x03\x01\x04\x01\x05\x01\x06"+
+        "\x01\x07\x01\x08\x01\x09\x01\x0a\x12\uffff}>";
+    static readonly string[] DFA58_transitionS = {
+            "\x02\x0c\x06\uffff\x01\x0c\x02\uffff\x01\x0c\x04\uffff\x01\x0c"+
+            "\x12\uffff\x01\x0c\x05\uffff\x01\x0c\x01\uffff\x01\x0c\x01\uffff"+
+            "\x02\x0c\x04\uffff\x01\x0a\x0d\uffff\x01\x0c\x02\uffff\x01\x0b"+
+            "\x03\uffff\x01\x0c\x02\uffff\x01\x0c\x08\uffff\x01\x09\x01\uffff"+
+            "\x01\x0c\x01\uffff\x06\x0c\x0b\uffff\x01\x06\x01\x04\x01\x05"+
+            "\x01\x03\x01\x01\x01\x02\x01\x07\x01\x08\x03\uffff\x03\x0c\x0f"+
+            "\uffff\x01\x0c\x01\uffff\x01\x0c\x05\uffff\x01\x0c",
+            "\x01\uffff",
+            "\x01\uffff",
+            "\x01\uffff",
+            "\x01\uffff",
+            "\x01\uffff",
+            "\x01\uffff",
+            "\x01\uffff",
+            "\x01\uffff",
+            "\x01\uffff",
+            "\x01\uffff",
+            "\x01\uffff",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+    };
+
+    static readonly short[] DFA58_eot = DFA.UnpackEncodedString(DFA58_eotS);
+    static readonly short[] DFA58_eof = DFA.UnpackEncodedString(DFA58_eofS);
+    static readonly char[] DFA58_min = DFA.UnpackEncodedStringToUnsignedChars(DFA58_minS);
+    static readonly char[] DFA58_max = DFA.UnpackEncodedStringToUnsignedChars(DFA58_maxS);
+    static readonly short[] DFA58_accept = DFA.UnpackEncodedString(DFA58_acceptS);
+    static readonly short[] DFA58_special = DFA.UnpackEncodedString(DFA58_specialS);
+    static readonly short[][] DFA58_transition = DFA.UnpackEncodedStringArray(DFA58_transitionS);
+
+    protected class DFA58 : DFA
+    {
+        public DFA58(BaseRecognizer recognizer)
+        {
+            this.recognizer = recognizer;
+            this.decisionNumber = 58;
+            this.eot = DFA58_eot;
+            this.eof = DFA58_eof;
+            this.min = DFA58_min;
+            this.max = DFA58_max;
+            this.accept = DFA58_accept;
+            this.special = DFA58_special;
+            this.transition = DFA58_transition;
+
+        }
+
+        override public string Description
+        {
+            get { return "319:1: nestedExprAfterMinusDiv : ( ( arithmeticExpr )=> arithmeticExpr | expr );"; }
+        }
+
+    }
+
+
+    protected internal int DFA58_SpecialStateTransition(DFA dfa, int s, IIntStream _input) //throws NoViableAltException
+    {
+            ITreeNodeStream input = (ITreeNodeStream)_input;
+    	int _s = s;
+        switch ( s )
+        {
+               	case 0 : 
+                   	int LA58_1 = input.LA(1);
+
+                   	 
+                   	int index58_1 = input.Index();
+                   	input.Rewind();
+                   	s = -1;
+                   	if ( (synpred4_SqlGenerator()) ) { s = 29; }
+
+                   	else if ( (true) ) { s = 12; }
+
+                   	 
+                   	input.Seek(index58_1);
+                   	if ( s >= 0 ) return s;
+                   	break;
+               	case 1 : 
+                   	int LA58_2 = input.LA(1);
+
+                   	 
+                   	int index58_2 = input.Index();
+                   	input.Rewind();
+                   	s = -1;
+                   	if ( (synpred4_SqlGenerator()) ) { s = 29; }
+
+                   	else if ( (true) ) { s = 12; }
+
+                   	 
+                   	input.Seek(index58_2);
+                   	if ( s >= 0 ) return s;
+                   	break;
+               	case 2 : 
+                   	int LA58_3 = input.LA(1);
+
+                   	 
+                   	int index58_3 = input.Index();
+                   	input.Rewind();
+                   	s = -1;
+                   	if ( (synpred4_SqlGenerator()) ) { s = 29; }
+
+                   	else if ( (true) ) { s = 12; }
+
+                   	 
+                   	input.Seek(index58_3);
+                   	if ( s >= 0 ) return s;
+                   	break;
+               	case 3 : 
+                   	int LA58_4 = input.LA(1);
+
+                   	 
+                   	int index58_4 = input.Index();
+                   	input.Rewind();
+                   	s = -1;
+                   	if ( (synpred4_SqlGenerator()) ) { s = 29; }
+
+                   	else if ( (true) ) { s = 12; }
+
+                   	 
+                   	input.Seek(index58_4);
+                   	if ( s >= 0 ) return s;
+                   	break;
+               	case 4 : 
+                   	int LA58_5 = input.LA(1);
+
+                   	 
+                   	int index58_5 = input.Index();
+                   	input.Rewind();
+                   	s = -1;
+                   	if ( (synpred4_SqlGenerator()) ) { s = 29; }
+
+                   	else if ( (true) ) { s = 12; }
+
+                   	 
+                   	input.Seek(index58_5);
+                   	if ( s >= 0 ) return s;
+                   	break;
+               	case 5 : 
+                   	int LA58_6 = input.LA(1);
+
+                   	 
+                   	int index58_6 = input.Index();
+                   	input.Rewind();
+                   	s = -1;
+                   	if ( (synpred4_SqlGenerator()) ) { s = 29; }
+
+                   	else if ( (true) ) { s = 12; }
+
+                   	 
+                   	input.Seek(index58_6);
+                   	if ( s >= 0 ) return s;
+                   	break;
+               	case 6 : 
+                   	int LA58_7 = input.LA(1);
+
+                   	 
+                   	int index58_7 = input.Index();
+                   	input.Rewind();
+                   	s = -1;
+                   	if ( (synpred4_SqlGenerator()) ) { s = 29; }
+
+                   	else if ( (true) ) { s = 12; }
+
+                   	 
+                   	input.Seek(index58_7);
+                   	if ( s >= 0 ) return s;
+                   	break;
+               	case 7 : 
+                   	int LA58_8 = input.LA(1);
+
+                   	 
+                   	int index58_8 = input.Index();
+                   	input.Rewind();
+                   	s = -1;
+                   	if ( (synpred4_SqlGenerator()) ) { s = 29; }
+
+                   	else if ( (true) ) { s = 12; }
+
+                   	 
+                   	input.Seek(index58_8);
+                   	if ( s >= 0 ) return s;
+                   	break;
+               	case 8 : 
+                   	int LA58_9 = input.LA(1);
+
+                   	 
+                   	int index58_9 = input.Index();
+                   	input.Rewind();
+                   	s = -1;
+                   	if ( (synpred4_SqlGenerator()) ) { s = 29; }
+
+                   	else if ( (true) ) { s = 12; }
+
+                   	 
+                   	input.Seek(index58_9);
+                   	if ( s >= 0 ) return s;
+                   	break;
+               	case 9 : 
+                   	int LA58_10 = input.LA(1);
+
+                   	 
+                   	int index58_10 = input.Index();
+                   	input.Rewind();
+                   	s = -1;
+                   	if ( (synpred4_SqlGenerator()) ) { s = 29; }
+
+                   	else if ( (true) ) { s = 12; }
+
+                   	 
+                   	input.Seek(index58_10);
+                   	if ( s >= 0 ) return s;
+                   	break;
+               	case 10 : 
+                   	int LA58_11 = input.LA(1);
+
+                   	 
+                   	int index58_11 = input.Index();
+                   	input.Rewind();
+                   	s = -1;
+                   	if ( (synpred4_SqlGenerator()) ) { s = 29; }
+
+                   	else if ( (true) ) { s = 12; }
+
+                   	 
+                   	input.Seek(index58_11);
+                   	if ( s >= 0 ) return s;
+                   	break;
+        }
+        if (state.backtracking > 0) {state.failed = true; return -1;}
+        NoViableAltException nvae58 =
+            new NoViableAltException(dfa.Description, 58, _s, input);
+        dfa.Error(nvae58);
+        throw nvae58;
     }
  
 
@@ -6518,22 +6573,22 @@ public partial class SqlGenerator : TreeParser
     public static readonly BitSet FOLLOW_INTO_in_insertStatement251 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_selectStatement_in_insertStatement261 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_SET_in_setClause281 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_comparisonExpr_in_setClause285 = new BitSet(new ulong[]{0x0000000404080408UL,0x0000F40800076000UL});
-    public static readonly BitSet FOLLOW_comparisonExpr_in_setClause292 = new BitSet(new ulong[]{0x0000000404080408UL,0x0000F40800076000UL});
+    public static readonly BitSet FOLLOW_comparisonExpr_in_setClause285 = new BitSet(new ulong[]{0x0000000404080408UL,0x00000F4800076000UL});
+    public static readonly BitSet FOLLOW_comparisonExpr_in_setClause292 = new BitSet(new ulong[]{0x0000000404080408UL,0x00000F4800076000UL});
     public static readonly BitSet FOLLOW_WHERE_in_whereClause310 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_whereClauseExpr_in_whereClause314 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_conditionList_in_whereClauseExpr333 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_booleanExpr_in_whereClauseExpr338 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_expr_in_orderExprs354 = new BitSet(new ulong[]{0x0082A0800010D132UL,0x071E03C3F5009120UL,0x0000000000041400UL});
-    public static readonly BitSet FOLLOW_orderDirection_in_orderExprs361 = new BitSet(new ulong[]{0x0082A08000109032UL,0x071E03C3F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_orderExprs354 = new BitSet(new ulong[]{0x0086A0800010D132UL,0x071FE003F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_orderDirection_in_orderExprs361 = new BitSet(new ulong[]{0x0086A08000109032UL,0x071FE003F5009120UL,0x0000000000041400UL});
     public static readonly BitSet FOLLOW_orderExprs_in_orderExprs371 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_expr_in_groupExprs386 = new BitSet(new ulong[]{0x0082A08000109032UL,0x071E03C3F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_groupExprs386 = new BitSet(new ulong[]{0x0086A08000109032UL,0x071FE003F5009120UL,0x0000000000041400UL});
     public static readonly BitSet FOLLOW_groupExprs_in_groupExprs392 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_set_in_orderDirection0 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_filters_in_whereExpr427 = new BitSet(new ulong[]{0x0000014404080442UL,0x0000F40800076000UL,0x0000000000009000UL});
-    public static readonly BitSet FOLLOW_thetaJoins_in_whereExpr435 = new BitSet(new ulong[]{0x0000014404080442UL,0x0000F40800076000UL,0x0000000000001000UL});
+    public static readonly BitSet FOLLOW_filters_in_whereExpr427 = new BitSet(new ulong[]{0x0000014404080442UL,0x00000F4800076000UL,0x0000000000009000UL});
+    public static readonly BitSet FOLLOW_thetaJoins_in_whereExpr435 = new BitSet(new ulong[]{0x0000014404080442UL,0x00000F4800076000UL,0x0000000000001000UL});
     public static readonly BitSet FOLLOW_booleanExpr_in_whereExpr446 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_thetaJoins_in_whereExpr456 = new BitSet(new ulong[]{0x0000014404080442UL,0x0000F40800076000UL,0x0000000000001000UL});
+    public static readonly BitSet FOLLOW_thetaJoins_in_whereExpr456 = new BitSet(new ulong[]{0x0000014404080442UL,0x00000F4800076000UL,0x0000000000001000UL});
     public static readonly BitSet FOLLOW_booleanExpr_in_whereExpr464 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_booleanExpr_in_whereExpr475 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_FILTERS_in_filters488 = new BitSet(new ulong[]{0x0000000000000004UL});
@@ -6543,15 +6598,15 @@ public partial class SqlGenerator : TreeParser
     public static readonly BitSet FOLLOW_sqlToken_in_conditionList519 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000000000000UL,0x0000000000001000UL});
     public static readonly BitSet FOLLOW_conditionList_in_conditionList525 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_SELECT_CLAUSE_in_selectClause540 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_distinctOrAll_in_selectClause543 = new BitSet(new ulong[]{0x0082208000109000UL,0x071E03C3F10091A0UL,0x0000000000045400UL});
-    public static readonly BitSet FOLLOW_selectColumn_in_selectClause549 = new BitSet(new ulong[]{0x0082208000109008UL,0x071E03C3F10091A0UL,0x0000000000045400UL});
+    public static readonly BitSet FOLLOW_distinctOrAll_in_selectClause543 = new BitSet(new ulong[]{0x0082208000109000UL,0x071FE003F10091A0UL,0x0000000000045400UL});
+    public static readonly BitSet FOLLOW_selectColumn_in_selectClause549 = new BitSet(new ulong[]{0x0082208000109008UL,0x071FE003F10091A0UL,0x0000000000045400UL});
     public static readonly BitSet FOLLOW_selectExpr_in_selectColumn567 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000000000000UL,0x0000000000002000UL});
     public static readonly BitSet FOLLOW_SELECT_COLUMNS_in_selectColumn572 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_selectAtom_in_selectExpr592 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_count_in_selectExpr599 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_CONSTRUCTOR_in_selectExpr605 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_set_in_selectExpr607 = new BitSet(new ulong[]{0x0082208000109000UL,0x071E03C3F10091A0UL,0x0000000000045400UL});
-    public static readonly BitSet FOLLOW_selectColumn_in_selectExpr617 = new BitSet(new ulong[]{0x0082208000109008UL,0x071E03C3F10091A0UL,0x0000000000045400UL});
+    public static readonly BitSet FOLLOW_set_in_selectExpr607 = new BitSet(new ulong[]{0x0082208000109000UL,0x071FE003F10091A0UL,0x0000000000045400UL});
+    public static readonly BitSet FOLLOW_selectColumn_in_selectExpr617 = new BitSet(new ulong[]{0x0082208000109008UL,0x071FE003F10091A0UL,0x0000000000045400UL});
     public static readonly BitSet FOLLOW_methodCall_in_selectExpr627 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_aggregate_in_selectExpr632 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_constant_in_selectExpr639 = new BitSet(new ulong[]{0x0000000000000002UL});
@@ -6559,7 +6614,7 @@ public partial class SqlGenerator : TreeParser
     public static readonly BitSet FOLLOW_PARAM_in_selectExpr653 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_selectStatement_in_selectExpr663 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_COUNT_in_count677 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_distinctOrAll_in_count684 = new BitSet(new ulong[]{0x0082008000109000UL,0x071E03C3F1409120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_distinctOrAll_in_count684 = new BitSet(new ulong[]{0x0082008000109000UL,0x071FE003F1409120UL,0x0000000000041400UL});
     public static readonly BitSet FOLLOW_countExpr_in_count690 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_DISTINCT_in_distinctOrAll705 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_ALL_in_distinctOrAll713 = new BitSet(new ulong[]{0x0000000000000004UL});
@@ -6580,10 +6635,10 @@ public partial class SqlGenerator : TreeParser
     public static readonly BitSet FOLLOW_FROM_FRAGMENT_in_tableJoin908 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_tableJoin_in_tableJoin913 = new BitSet(new ulong[]{0x0000000000000008UL,0x0000000000000000UL,0x0000000000000050UL});
     public static readonly BitSet FOLLOW_AND_in_booleanOp933 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_booleanExpr_in_booleanOp935 = new BitSet(new ulong[]{0x0000014404080440UL,0x0000F40800076000UL,0x0000000000001000UL});
+    public static readonly BitSet FOLLOW_booleanExpr_in_booleanOp935 = new BitSet(new ulong[]{0x0000014404080440UL,0x00000F4800076000UL,0x0000000000001000UL});
     public static readonly BitSet FOLLOW_booleanExpr_in_booleanOp940 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_OR_in_booleanOp948 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_booleanExpr_in_booleanOp952 = new BitSet(new ulong[]{0x0000014404080440UL,0x0000F40800076000UL,0x0000000000001000UL});
+    public static readonly BitSet FOLLOW_booleanExpr_in_booleanOp952 = new BitSet(new ulong[]{0x0000014404080440UL,0x00000F4800076000UL,0x0000000000001000UL});
     public static readonly BitSet FOLLOW_booleanExpr_in_booleanOp957 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_NOT_in_booleanOp967 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_booleanExpr_in_booleanOp971 = new BitSet(new ulong[]{0x0000000000000008UL});
@@ -6593,38 +6648,38 @@ public partial class SqlGenerator : TreeParser
     public static readonly BitSet FOLLOW_binaryComparisonExpression_in_comparisonExpr1020 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_exoticComparisonExpression_in_comparisonExpr1027 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_EQ_in_binaryComparisonExpression1042 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1044 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1044 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
     public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1048 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_NE_in_binaryComparisonExpression1055 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1057 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1057 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
     public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1061 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_GT_in_binaryComparisonExpression1068 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1070 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1070 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
     public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1074 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_GE_in_binaryComparisonExpression1081 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1083 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1083 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
     public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1087 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_LT_in_binaryComparisonExpression1094 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1096 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1096 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
     public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1100 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_LE_in_binaryComparisonExpression1107 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1109 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1109 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
     public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1113 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_LIKE_in_exoticComparisonExpression1127 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1129 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1129 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
     public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1133 = new BitSet(new ulong[]{0x0000000000040008UL});
     public static readonly BitSet FOLLOW_likeEscape_in_exoticComparisonExpression1135 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_NOT_LIKE_in_exoticComparisonExpression1143 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1145 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1145 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
     public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1149 = new BitSet(new ulong[]{0x0000000000040008UL});
     public static readonly BitSet FOLLOW_likeEscape_in_exoticComparisonExpression1151 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_BETWEEN_in_exoticComparisonExpression1158 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1160 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
-    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1164 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1160 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1164 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
     public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1168 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_NOT_BETWEEN_in_exoticComparisonExpression1175 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1177 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
-    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1181 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1177 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1181 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
     public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1185 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_IN_in_exoticComparisonExpression1192 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1194 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000000000000800UL});
@@ -6643,10 +6698,10 @@ public partial class SqlGenerator : TreeParser
     public static readonly BitSet FOLLOW_IN_LIST_in_inList1282 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_parenSelect_in_inList1288 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_simpleExprList_in_inList1292 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_simpleExpr_in_simpleExprList1313 = new BitSet(new ulong[]{0x0082008000109002UL,0x071E03C3F1009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_simpleExpr_in_simpleExprList1313 = new BitSet(new ulong[]{0x0082008000109002UL,0x071FE003F1009120UL,0x0000000000041400UL});
     public static readonly BitSet FOLLOW_simpleExpr_in_expr1332 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_VECTOR_EXPR_in_expr1339 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_expr1346 = new BitSet(new ulong[]{0x0082A08000109038UL,0x071E03C3F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_expr1346 = new BitSet(new ulong[]{0x0086A08000109038UL,0x071FE003F5009120UL,0x0000000000041400UL});
     public static readonly BitSet FOLLOW_parenSelect_in_expr1361 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_ANY_in_expr1367 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_quantified_in_expr1371 = new BitSet(new ulong[]{0x0000000000000008UL});
@@ -6657,83 +6712,86 @@ public partial class SqlGenerator : TreeParser
     public static readonly BitSet FOLLOW_sqlToken_in_quantified1413 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_selectStatement_in_quantified1417 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_selectStatement_in_parenSelect1436 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_constant_in_simpleExpr1452 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_NULL_in_simpleExpr1459 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_addrExpr_in_simpleExpr1466 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_sqlToken_in_simpleExpr1471 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_aggregate_in_simpleExpr1476 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_methodCall_in_simpleExpr1481 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_count_in_simpleExpr1486 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_parameter_in_simpleExpr1491 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_arithmeticExpr_in_simpleExpr1496 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_UNION_in_parenSelect1445 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_selectStatement_in_parenSelect1449 = new BitSet(new ulong[]{0x0004200000000000UL});
+    public static readonly BitSet FOLLOW_parenSelect_in_parenSelect1453 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_constant_in_simpleExpr1470 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_NULL_in_simpleExpr1477 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_addrExpr_in_simpleExpr1484 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_sqlToken_in_simpleExpr1489 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_aggregate_in_simpleExpr1494 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_methodCall_in_simpleExpr1499 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_count_in_simpleExpr1504 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_parameter_in_simpleExpr1509 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_arithmeticExpr_in_simpleExpr1514 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_set_in_constant0 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_additiveExpr_in_arithmeticExpr1565 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_bitwiseExpr_in_arithmeticExpr1570 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_multiplicativeExpr_in_arithmeticExpr1575 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_UNARY_MINUS_in_arithmeticExpr1582 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1586 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_caseExpr_in_arithmeticExpr1592 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_PLUS_in_additiveExpr1604 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_additiveExpr1606 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
-    public static readonly BitSet FOLLOW_expr_in_additiveExpr1610 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_MINUS_in_additiveExpr1617 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_additiveExpr1619 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
-    public static readonly BitSet FOLLOW_nestedExprAfterMinusDiv_in_additiveExpr1623 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_BAND_in_bitwiseExpr1636 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_bitwiseExpr1638 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
-    public static readonly BitSet FOLLOW_nestedExpr_in_bitwiseExpr1642 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_BOR_in_bitwiseExpr1649 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_bitwiseExpr1651 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
-    public static readonly BitSet FOLLOW_nestedExpr_in_bitwiseExpr1655 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_BXOR_in_bitwiseExpr1662 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_bitwiseExpr1664 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
-    public static readonly BitSet FOLLOW_nestedExpr_in_bitwiseExpr1668 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_BNOT_in_bitwiseExpr1675 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_nestedExpr_in_bitwiseExpr1679 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_STAR_in_multiplicativeExpr1693 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_nestedExpr_in_multiplicativeExpr1695 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
-    public static readonly BitSet FOLLOW_nestedExpr_in_multiplicativeExpr1699 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_DIV_in_multiplicativeExpr1706 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_nestedExpr_in_multiplicativeExpr1708 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
-    public static readonly BitSet FOLLOW_nestedExprAfterMinusDiv_in_multiplicativeExpr1712 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_additiveExpr_in_nestedExpr1734 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_bitwiseExpr_in_nestedExpr1749 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_expr_in_nestedExpr1756 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_arithmeticExpr_in_nestedExprAfterMinusDiv1778 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_expr_in_nestedExprAfterMinusDiv1785 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_CASE_in_caseExpr1797 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_WHEN_in_caseExpr1807 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_booleanExpr_in_caseExpr1811 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
-    public static readonly BitSet FOLLOW_expr_in_caseExpr1816 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_ELSE_in_caseExpr1828 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_caseExpr1832 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_CASE2_in_caseExpr1848 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_caseExpr1852 = new BitSet(new ulong[]{0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_WHEN_in_caseExpr1859 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_caseExpr1863 = new BitSet(new ulong[]{0x0082A08000109030UL,0x071E03C3F5009120UL,0x0000000000041400UL});
-    public static readonly BitSet FOLLOW_expr_in_caseExpr1867 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_ELSE_in_caseExpr1879 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_caseExpr1883 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_AGGREGATE_in_aggregate1907 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_aggregate1912 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_METHOD_CALL_in_methodCall1931 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_METHOD_NAME_in_methodCall1935 = new BitSet(new ulong[]{0x0000000000000008UL,0x0000000000000200UL});
-    public static readonly BitSet FOLLOW_EXPR_LIST_in_methodCall1944 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_arguments_in_methodCall1947 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_expr_in_arguments1972 = new BitSet(new ulong[]{0x0082A08404189432UL,0x071EF7CBF507F120UL,0x0000000000041400UL});
-    public static readonly BitSet FOLLOW_comparisonExpr_in_arguments1976 = new BitSet(new ulong[]{0x0082A08404189432UL,0x071EF7CBF507F120UL,0x0000000000041400UL});
-    public static readonly BitSet FOLLOW_expr_in_arguments1985 = new BitSet(new ulong[]{0x0082A08404189432UL,0x071EF7CBF507F120UL,0x0000000000041400UL});
-    public static readonly BitSet FOLLOW_comparisonExpr_in_arguments1989 = new BitSet(new ulong[]{0x0082A08404189432UL,0x071EF7CBF507F120UL,0x0000000000041400UL});
-    public static readonly BitSet FOLLOW_NAMED_PARAM_in_parameter2007 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_PARAM_in_parameter2016 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_DOT_in_addrExpr2032 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_ALIAS_REF_in_addrExpr2046 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_INDEX_OP_in_addrExpr2056 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_SQL_TOKEN_in_sqlToken2076 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_additiveExpr_in_arithmeticExpr1583 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_bitwiseExpr_in_arithmeticExpr1588 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_multiplicativeExpr_in_arithmeticExpr1593 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_UNARY_MINUS_in_arithmeticExpr1600 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1604 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_caseExpr_in_arithmeticExpr1610 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_PLUS_in_additiveExpr1622 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_additiveExpr1624 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_additiveExpr1628 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_MINUS_in_additiveExpr1635 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_additiveExpr1637 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_nestedExprAfterMinusDiv_in_additiveExpr1641 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_BAND_in_bitwiseExpr1654 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_bitwiseExpr1656 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_nestedExpr_in_bitwiseExpr1660 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_BOR_in_bitwiseExpr1667 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_bitwiseExpr1669 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_nestedExpr_in_bitwiseExpr1673 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_BXOR_in_bitwiseExpr1680 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_bitwiseExpr1682 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_nestedExpr_in_bitwiseExpr1686 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_BNOT_in_bitwiseExpr1693 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_nestedExpr_in_bitwiseExpr1697 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_STAR_in_multiplicativeExpr1711 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_nestedExpr_in_multiplicativeExpr1713 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_nestedExpr_in_multiplicativeExpr1717 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_DIV_in_multiplicativeExpr1724 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_nestedExpr_in_multiplicativeExpr1726 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_nestedExprAfterMinusDiv_in_multiplicativeExpr1730 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_additiveExpr_in_nestedExpr1752 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_bitwiseExpr_in_nestedExpr1767 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_expr_in_nestedExpr1774 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_arithmeticExpr_in_nestedExprAfterMinusDiv1796 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_expr_in_nestedExprAfterMinusDiv1803 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_CASE_in_caseExpr1815 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_WHEN_in_caseExpr1825 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_booleanExpr_in_caseExpr1829 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_caseExpr1834 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_ELSE_in_caseExpr1846 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_caseExpr1850 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_CASE2_in_caseExpr1866 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_caseExpr1870 = new BitSet(new ulong[]{0x0800000000000000UL});
+    public static readonly BitSet FOLLOW_WHEN_in_caseExpr1877 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_caseExpr1881 = new BitSet(new ulong[]{0x0086A08000109030UL,0x071FE003F5009120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_caseExpr1885 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_ELSE_in_caseExpr1897 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_caseExpr1901 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_AGGREGATE_in_aggregate1925 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_expr_in_aggregate1930 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_METHOD_CALL_in_methodCall1949 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_METHOD_NAME_in_methodCall1953 = new BitSet(new ulong[]{0x0000000000000008UL,0x0000000000000200UL});
+    public static readonly BitSet FOLLOW_EXPR_LIST_in_methodCall1962 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_arguments_in_methodCall1965 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_expr_in_arguments1990 = new BitSet(new ulong[]{0x0086A08404189432UL,0x071FEF4BF507F120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_comparisonExpr_in_arguments1994 = new BitSet(new ulong[]{0x0086A08404189432UL,0x071FEF4BF507F120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_expr_in_arguments2003 = new BitSet(new ulong[]{0x0086A08404189432UL,0x071FEF4BF507F120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_comparisonExpr_in_arguments2007 = new BitSet(new ulong[]{0x0086A08404189432UL,0x071FEF4BF507F120UL,0x0000000000041400UL});
+    public static readonly BitSet FOLLOW_NAMED_PARAM_in_parameter2025 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_PARAM_in_parameter2034 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_DOT_in_addrExpr2050 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_ALIAS_REF_in_addrExpr2064 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_INDEX_OP_in_addrExpr2074 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_SQL_TOKEN_in_sqlToken2094 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_SQL_TOKEN_in_synpred1_SqlGenerator328 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_additiveExpr_in_synpred2_SqlGenerator1727 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_bitwiseExpr_in_synpred3_SqlGenerator1742 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_arithmeticExpr_in_synpred4_SqlGenerator1771 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_additiveExpr_in_synpred2_SqlGenerator1745 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_bitwiseExpr_in_synpred3_SqlGenerator1760 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_arithmeticExpr_in_synpred4_SqlGenerator1789 = new BitSet(new ulong[]{0x0000000000000002UL});
 
 }
 }

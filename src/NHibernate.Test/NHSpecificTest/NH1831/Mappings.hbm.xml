@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1831"
+                   default-lazy="false">
+
+   <class name="DocumentType" table="documents_documenttype" batch-size="10">
+      <id name="oid" type="System.Guid" unsaved-value="00000000-0000-0000-0000-000000000000" access="field.camelcase">
+         <generator class="guid.comb" />
+      </id>
+      <property name="SystemAction" access="field.camelcase"/>
+   </class>
+
+</hibernate-mapping>

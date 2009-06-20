@@ -123,21 +123,6 @@ tokens
 using NHibernate.Hql.Ast.ANTLR.Tree;
 }
 
-/*
-@header
-{
-//   $Id: hql.g 10163 2006-07-26 15:07:50Z steve.ebersole@jboss.com $
-
-package org.hibernate.hql.antlr;
-
-import org.hibernate.hql.ast.*;
-import org.hibernate.hql.ast.util.*;
-}
-
-@members
-{
-}
-*/
 statement
 	: ( updateStatement | deleteStatement | selectStatement | insertStatement )
 	;
@@ -207,10 +192,6 @@ insertablePropertySpec
 		-> ^(RANGE["column-spec"] primaryExpression*)
 	;
 
-union
-	: UNION queryRule
-	;
-
 //## query:
 //##     [selectClause] fromClause [whereClause] [groupByClause] [havingClause] [orderByClause];
 
@@ -219,30 +200,7 @@ queryRule
 		(whereClause)?
 		(groupByClause)?
 		(orderByClause)?
-		(union)?
 		;
-
-/*
-TODO - check
-selectFrom!
-	:  (s=selectClause)? (f=fromClause)? {
-		// If there was no FROM clause and this is a filter query, create a from clause.  Otherwise, throw
-		// an exception because non-filter queries must have a FROM clause.
-		if (#f == null) {
-			if (filter) {
-				#f = #([FROM,"{filter-implied FROM}"]);
-			}
-			else
-				throw new SemanticException("FROM expected (non-filter queries must contain a FROM clause)");
-		}
-			
-		// Create an artificial token so the 'FROM' can be placed
-		// before the SELECT in the tree to make tree processing
-		// simpler.
-		#selectFrom = #([SELECT_FROM,"SELECT_FROM"],f,s);
-	}
-	;
-*/
 
 selectFrom
 	:  (s=selectClause)? (f=fromClause)? 
@@ -254,10 +212,6 @@ selectFrom
 		-> ^(SELECT_FROM fromClause? selectClause?)
 	;
 
-
-
-//## selectClause:
-//##     SELECT DISTINCT? selectedPropertiesList | ( NEW className OPEN selectedPropertiesList CLOSE );
 
 selectClause
 	: SELECT^	// NOTE: The '^' after a token causes the corresponding AST node to be the root of the sub-tree.
@@ -274,9 +228,6 @@ selectObject
    : OBJECT^ OPEN! identifier CLOSE!
    ;
 
-//## fromClause:
-//##    FROM className AS? identifier (  ( COMMA className AS? identifier ) | ( joinType path AS? identifier ) )*;
-
 // NOTE: This *must* begin with the "FROM" token, otherwise the sub-query rule will be ambiguous
 // with the expression rule.
 // Also note: after a comma weak keywords are allowed and should be treated as identifiers.
@@ -284,9 +235,6 @@ selectObject
 fromClause
 	: FROM^ { WeakKeywords(); } fromRange ( fromJoin | COMMA! { WeakKeywords(); } fromRange )*
 	;
-
-//## joinType:
-//##     ( ( 'left'|'right' 'outer'? ) | 'full' | 'inner' )? JOIN FETCH?;
 
 fromJoin
 	: ( ( ( LEFT | RIGHT ) (OUTER)? ) | FULL | INNER )? JOIN^ (FETCH)? path (asAlias)? (propertyFetch)? (withClause)?
@@ -339,17 +287,11 @@ propertyFetch
 	: FETCH ALL! PROPERTIES!
 	;
 
-//## groupByClause:
-//##     GROUP_BY path ( COMMA path )*;
-
 groupByClause
 	: GROUP^ 
 		'by'! expression ( COMMA! expression )*
 		(havingClause)?
 	;
-
-//## orderByClause:
-//##     ORDER_BY selectedPropertiesList;
 
 orderByClause
 	: ORDER^ 'by'! orderElement ( COMMA! orderElement )*
@@ -366,22 +308,13 @@ ascendingOrDescending
 		-> ^(DESCENDING[$d.Text])
 	;
 
-//## havingClause:
-//##     HAVING logicalExpression;
-
 havingClause
 	: HAVING^ logicalExpression
 	;
 
-//## whereClause:
-//##     WHERE logicalExpression;
-
 whereClause
 	: WHERE^ logicalExpression
 	;
-
-//## selectedPropertiesList:
-//##     ( path | aggregate ) ( COMMA path | aggregate )*;
 
 selectedPropertiesList
 	: aliasedExpression ( COMMA! aliasedExpression )*
@@ -401,10 +334,10 @@ aliasedExpression
 // Operator precedence in HQL
 // lowest  --> ( 8)  OR
 //             ( 7)  AND, NOT
-//             ( 6)  bitwise: |,  &	 
-//             ( 5)  equality: ==, <>, !=, is
-//             ( 4)  relational: <, <=, >, >=,
+//             ( 6)  equality: ==, <>, !=, is
+//             ( 5)  relational: <, <=, >, >=,
 //                   LIKE, NOT LIKE, BETWEEN, NOT BETWEEN, IN, NOT IN
+//             ( 4)  bitwise: |,  &	 
 //             ( 3)  addition and subtraction: +(binary) -(binary)
 //             ( 2)  multiplication: * / %, concatenate: ||
 // highest --> ( 1)  +(unary) -(unary)
@@ -441,31 +374,13 @@ negatedExpression
 @init{ WeakKeywords(); } // Weak keywords can appear in an expression, so look ahead.
 	: NOT x=negatedExpression
 		-> ^({NegateNode($x.tree)})
-	| bitwiseNotExpression
-		-> ^(bitwiseNotExpression)
+	| equalityExpression
+		-> ^(equalityExpression)
 	;
 
 //## OP: EQ | LT | GT | LE | GE | NE | SQL_NE | LIKE;
 
-// level 6 - bitwise
-bitwiseNotExpression 
-	: (BNOT^ bitwiseOrExpression)
-	| bitwiseOrExpression
-	;
-
-bitwiseOrExpression 
-	: bitwiseXOrExpression (BOR^ bitwiseXOrExpression)*
-	;
-
-bitwiseXOrExpression 
-	: bitwiseAndExpression (BXOR^ bitwiseAndExpression)*
-	;
-
-bitwiseAndExpression 
-	: equalityExpression (BAND^ equalityExpression)*
-	;
-
-// level 5 - EQ, NE
+// level 6 - EQ, NE
 equalityExpression
 		@after{
 			// Post process the equality expression to clean up 'is null', etc.
@@ -479,13 +394,13 @@ equalityExpression
 		) y=relationalExpression)*
 	;
 
-// level 4 - LT, GT, LE, GE, LIKE, NOT LIKE, BETWEEN, NOT BETWEEN
+// level 5 - LT, GT, LE, GE, LIKE, NOT LIKE, BETWEEN, NOT BETWEEN
 // NOTE: The NOT prefix for LIKE and BETWEEN will be represented in the
 // token type.  When traversing the AST, use the token type, and not the
 // token text to interpret the semantics of these nodes.
 relationalExpression
 	: concatenation (
-		( ( ( LT^ | GT^ | LE^ | GE^ ) additiveExpression )* )
+		( ( ( LT^ | GT^ | LE^ | GE^ ) bitwiseNotExpression )* )
 		// Disable node production for the optional 'not'.
 		| (n=NOT!)? (
 			// Represent the optional NOT prefix using the token type by
@@ -525,7 +440,7 @@ betweenList
 	: concatenation AND! concatenation
 	;
 
-//level 4 - string concatenation
+//level 5 - string concatenation
 concatenation
 @after {
    if (c != null)
@@ -537,11 +452,29 @@ concatenation
       retval.Tree = mc;
    }
 }
-	: a=additiveExpression 
+	: a=bitwiseNotExpression 
 	( c=CONCAT^ { $c.Type = EXPR_LIST; $c.Text = "concatList"; } 
-	  additiveExpression
-	  ( CONCAT! additiveExpression )* 
+	  bitwiseNotExpression
+	  ( CONCAT! bitwiseNotExpression )* 
 	  )?
+	;
+
+// level 4 - bitwise
+bitwiseNotExpression 
+	: (BNOT^ bitwiseOrExpression)
+	| bitwiseOrExpression
+	;
+
+bitwiseOrExpression 
+	: bitwiseXOrExpression (BOR^ bitwiseXOrExpression)*
+	;
+
+bitwiseXOrExpression 
+	: bitwiseAndExpression (BXOR^ bitwiseAndExpression)*
+	;
+
+bitwiseAndExpression 
+	: additiveExpression (BAND^ additiveExpression)*
 	;
 
 // level 3 - binary plus and minus
@@ -571,15 +504,15 @@ caseExpression
 	;
 	
 whenClause
-	: (WHEN^ logicalExpression THEN! unaryExpression)
+	: (WHEN^ logicalExpression THEN! expression)
 	;
 	
 altWhenClause
-	: (WHEN^ unaryExpression THEN! unaryExpression)
+	: (WHEN^ unaryExpression THEN! expression)
 	;
 	
 elseClause
-	: (ELSE^ unaryExpression)
+	: (ELSE^ expression)
 	;
 	
 quantifiedExpression
@@ -662,7 +595,7 @@ collectionExpr
 compoundExpr
 	: collectionExpr
 	| path
-	| (OPEN! ( (expression (COMMA! expression)*) | subQuery ) CLOSE!)
+	| (OPEN! ( subQuery | (expression (COMMA! expression)*) ) CLOSE!)
 	;
 
 exprList
@@ -682,11 +615,15 @@ exprList
 	  	| f2=FROM expression {$f2.Type = IDENT;}
 	  )?
 	;
+	
 subQuery
+	: innerSubQuery (UNION^ innerSubQuery)*
+	;
+	
+innerSubQuery
 	: queryRule
 	-> ^(QUERY["query"] queryRule)
 	;
-
 
 constant
 	: NUM_INT
@@ -728,31 +665,6 @@ identifier
 
 // **** LEXER ******************************************************************
 
-/**
- * Hibernate Query Language Lexer
- * <br>
- * This lexer provides the HQL parser with tokens.
- * @author Joshua Davis (pgmjsd@sourceforge.net)
- */
-/*class HqlBaseLexer extends Lexer;
-*/
-/*
-options {
-	exportVocab=Hql;      // call the vocabulary "Hql"
-	testLiterals = false;
-	k=2; // needed for newline, and to distinguish '>' from '>='.
-	// HHH-241 : Quoted strings don't allow unicode chars - This should fix it.
-	charVocabulary='\u0000'..'\uFFFE';	// Allow any char but \uFFFF (16 bit -1, ANTLR's EOF character)
-	caseSensitive = false;
-	caseSensitiveLiterals = false;
-}
-
-// -- Declarations --
-@members{
-	// NOTE: The real implementations are in the subclass.
-	protected void setPossibleID(boolean possibleID) {}
-}
-*/
 // -- Keywords --
 
 EQ: '=';

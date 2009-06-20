@@ -1,4 +1,4 @@
-// $ANTLR 3.1.2 C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g 2009-06-18 19:12:17
+// $ANTLR 3.1.2 /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g 2009-06-20 02:19:06
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 168, 219
@@ -17,135 +17,135 @@ using IDictionary	= System.Collections.IDictionary;
 using Hashtable 	= System.Collections.Hashtable;
 
 public partial class HqlLexer : Lexer {
-    public const int LT = 108;
-    public const int EXPONENT = 127;
-    public const int STAR = 115;
-    public const int FLOAT_SUFFIX = 128;
-    public const int LITERAL_by = 54;
-    public const int CASE = 55;
-    public const int NEW = 37;
-    public const int FILTER_ENTITY = 74;
-    public const int PARAM = 120;
-    public const int COUNT = 12;
-    public const int NOT = 38;
-    public const int EOF = -1;
-    public const int UNARY_PLUS = 89;
-    public const int QUOTED_String = 121;
-    public const int ESCqs = 125;
-    public const int WEIRD_IDENT = 91;
-    public const int OPEN_BRACKET = 117;
-    public const int FULL = 23;
-    public const int ORDER_ELEMENT = 83;
-    public const int IS_NULL = 78;
-    public const int ESCAPE = 18;
-    public const int INSERT = 29;
-    public const int BOTH = 62;
-    public const int VERSIONED = 52;
-    public const int EQ = 99;
-    public const int SELECT = 45;
-    public const int INTO = 30;
-    public const int NE = 106;
-    public const int GE = 111;
-    public const int CONCAT = 112;
-    public const int ID_LETTER = 124;
-    public const int NULL = 39;
-    public const int ELSE = 57;
-    public const int SELECT_FROM = 87;
-    public const int TRAILING = 68;
-    public const int ON = 60;
-    public const int NUM_LONG = 96;
-    public const int NUM_DOUBLE = 94;
-    public const int UNARY_MINUS = 88;
-    public const int DELETE = 13;
-    public const int INDICES = 27;
-    public const int OF = 67;
-    public const int METHOD_CALL = 79;
-    public const int LEADING = 64;
-    public const int EMPTY = 63;
-    public const int GROUP = 24;
-    public const int WS = 126;
-    public const int FETCH = 21;
-    public const int VECTOR_EXPR = 90;
-    public const int NOT_IN = 81;
-    public const int NUM_INT = 93;
-    public const int OR = 40;
-    public const int ALIAS = 70;
-    public const int JAVA_CONSTANT = 97;
-    public const int CONSTANT = 92;
-    public const int GT = 109;
-    public const int QUERY = 84;
-    public const int BNOT = 102;
-    public const int INDEX_OP = 76;
-    public const int NUM_FLOAT = 95;
-    public const int FROM = 22;
-    public const int END = 56;
-    public const int FALSE = 20;
-    public const int T__130 = 130;
-    public const int DISTINCT = 16;
-    public const int T__131 = 131;
-    public const int CONSTRUCTOR = 71;
-    public const int CLOSE_BRACKET = 118;
-    public const int WHERE = 53;
-    public const int CLASS = 11;
-    public const int MEMBER = 65;
-    public const int INNER = 28;
-    public const int PROPERTIES = 43;
-    public const int ORDER = 41;
-    public const int MAX = 35;
-    public const int UPDATE = 51;
-    public const int SQL_NE = 107;
-    public const int AND = 6;
-    public const int SUM = 48;
-    public const int ASCENDING = 8;
     public const int EXPR_LIST = 73;
-    public const int AS = 7;
-    public const int IN = 26;
-    public const int THEN = 58;
-    public const int OBJECT = 66;
-    public const int COMMA = 98;
-    public const int IS = 31;
-    public const int LEFT = 33;
-    public const int AVG = 9;
-    public const int SOME = 47;
-    public const int ALL = 4;
-    public const int BOR = 103;
-    public const int IDENT = 122;
-    public const int CASE2 = 72;
-    public const int BXOR = 104;
-    public const int PLUS = 113;
     public const int EXISTS = 19;
-    public const int DOT = 15;
-    public const int WITH = 61;
-    public const int LIKE = 34;
-    public const int OUTER = 42;
-    public const int ID_START_LETTER = 123;
-    public const int ROW_STAR = 86;
-    public const int NOT_LIKE = 82;
-    public const int RANGE = 85;
-    public const int NOT_BETWEEN = 80;
-    public const int HEX_DIGIT = 129;
-    public const int SET = 46;
-    public const int RIGHT = 44;
-    public const int HAVING = 25;
-    public const int MIN = 36;
-    public const int IS_NOT_NULL = 77;
+    public const int COMMA = 98;
+    public const int FETCH = 21;
     public const int MINUS = 114;
+    public const int AS = 7;
+    public const int END = 56;
+    public const int INTO = 30;
+    public const int FALSE = 20;
     public const int ELEMENTS = 17;
-    public const int BAND = 105;
-    public const int TRUE = 49;
-    public const int JOIN = 32;
-    public const int IN_LIST = 75;
-    public const int UNION = 50;
-    public const int OPEN = 100;
-    public const int COLON = 119;
-    public const int ANY = 5;
-    public const int CLOSE = 101;
-    public const int WHEN = 59;
-    public const int DIV = 116;
-    public const int DESCENDING = 14;
-    public const int AGGREGATE = 69;
+    public const int THEN = 58;
+    public const int ALIAS = 70;
+    public const int BOR = 110;
+    public const int ON = 60;
+    public const int DOT = 15;
+    public const int ORDER = 41;
+    public const int AND = 6;
+    public const int CONSTANT = 92;
+    public const int UNARY_MINUS = 88;
+    public const int METHOD_CALL = 79;
+    public const int RIGHT = 44;
+    public const int CONCAT = 108;
+    public const int PROPERTIES = 43;
+    public const int SELECT = 45;
+    public const int LE = 106;
     public const int BETWEEN = 10;
-    public const int LE = 110;
+    public const int NUM_INT = 93;
+    public const int BOTH = 62;
+    public const int PLUS = 113;
+    public const int VERSIONED = 52;
+    public const int MEMBER = 65;
+    public const int UNION = 50;
+    public const int DISTINCT = 16;
+    public const int RANGE = 85;
+    public const int FILTER_ENTITY = 74;
+    public const int IDENT = 122;
+    public const int WHEN = 59;
+    public const int DESCENDING = 14;
+    public const int WS = 126;
+    public const int EQ = 99;
+    public const int NEW = 37;
+    public const int LT = 104;
+    public const int ESCqs = 125;
+    public const int OF = 67;
+    public const int T__130 = 130;
+    public const int UPDATE = 51;
+    public const int SELECT_FROM = 87;
+    public const int LITERAL_by = 54;
+    public const int FLOAT_SUFFIX = 128;
+    public const int ANY = 5;
+    public const int UNARY_PLUS = 89;
+    public const int NUM_FLOAT = 95;
+    public const int GE = 107;
+    public const int CASE = 55;
+    public const int OPEN_BRACKET = 117;
+    public const int ELSE = 57;
+    public const int OPEN = 100;
+    public const int COUNT = 12;
+    public const int NULL = 39;
+    public const int COLON = 119;
+    public const int DIV = 116;
+    public const int HAVING = 25;
+    public const int ALL = 4;
+    public const int SET = 46;
+    public const int T__131 = 131;
+    public const int INSERT = 29;
+    public const int TRUE = 49;
+    public const int CASE2 = 72;
+    public const int IS_NOT_NULL = 77;
+    public const int WHERE = 53;
+    public const int AGGREGATE = 69;
+    public const int VECTOR_EXPR = 90;
+    public const int BNOT = 109;
+    public const int LEADING = 64;
+    public const int CLOSE_BRACKET = 118;
+    public const int NUM_DOUBLE = 94;
+    public const int INNER = 28;
+    public const int QUERY = 84;
+    public const int ORDER_ELEMENT = 83;
+    public const int OR = 40;
+    public const int FULL = 23;
+    public const int INDICES = 27;
+    public const int IS_NULL = 78;
+    public const int GROUP = 24;
+    public const int ESCAPE = 18;
+    public const int PARAM = 120;
+    public const int ID_LETTER = 124;
+    public const int INDEX_OP = 76;
+    public const int HEX_DIGIT = 129;
+    public const int LEFT = 33;
+    public const int TRAILING = 68;
+    public const int JOIN = 32;
+    public const int NOT_BETWEEN = 80;
+    public const int SUM = 48;
+    public const int BAND = 112;
+    public const int ROW_STAR = 86;
+    public const int OUTER = 42;
+    public const int NOT_IN = 81;
+    public const int FROM = 22;
+    public const int DELETE = 13;
+    public const int OBJECT = 66;
+    public const int MAX = 35;
+    public const int NOT_LIKE = 82;
+    public const int EMPTY = 63;
+    public const int QUOTED_String = 121;
+    public const int ASCENDING = 8;
+    public const int NUM_LONG = 96;
+    public const int IS = 31;
+    public const int SQL_NE = 103;
+    public const int IN_LIST = 75;
+    public const int WEIRD_IDENT = 91;
+    public const int NE = 102;
+    public const int GT = 105;
+    public const int MIN = 36;
+    public const int LIKE = 34;
+    public const int WITH = 61;
+    public const int IN = 26;
+    public const int CONSTRUCTOR = 71;
+    public const int SOME = 47;
+    public const int CLASS = 11;
+    public const int EXPONENT = 127;
+    public const int ID_START_LETTER = 123;
+    public const int EOF = -1;
+    public const int CLOSE = 101;
+    public const int AVG = 9;
+    public const int BXOR = 111;
+    public const int STAR = 115;
+    public const int NOT = 38;
+    public const int JAVA_CONSTANT = 97;
 
     // delegates
     // delegators
@@ -165,7 +165,7 @@ public partial class HqlLexer : Lexer {
     
     override public string GrammarFileName
     {
-    	get { return "C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g";} 
+    	get { return "/Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g";} 
     }
 
     // $ANTLR start "ALL"
@@ -175,8 +175,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = ALL;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:9:5: ( 'all' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:9:7: 'all'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:9:5: ( 'all' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:9:7: 'all'
             {
             	Match("all"); if (state.failed) return ;
 
@@ -199,8 +199,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = ANY;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:10:5: ( 'any' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:10:7: 'any'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:10:5: ( 'any' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:10:7: 'any'
             {
             	Match("any"); if (state.failed) return ;
 
@@ -223,8 +223,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = AND;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:11:5: ( 'and' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:11:7: 'and'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:11:5: ( 'and' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:11:7: 'and'
             {
             	Match("and"); if (state.failed) return ;
 
@@ -247,8 +247,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = AS;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:12:4: ( 'as' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:12:6: 'as'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:12:4: ( 'as' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:12:6: 'as'
             {
             	Match("as"); if (state.failed) return ;
 
@@ -271,8 +271,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = ASCENDING;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:13:11: ( 'asc' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:13:13: 'asc'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:13:11: ( 'asc' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:13:13: 'asc'
             {
             	Match("asc"); if (state.failed) return ;
 
@@ -295,8 +295,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = AVG;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:14:5: ( 'avg' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:14:7: 'avg'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:14:5: ( 'avg' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:14:7: 'avg'
             {
             	Match("avg"); if (state.failed) return ;
 
@@ -319,8 +319,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = BETWEEN;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:15:9: ( 'between' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:15:11: 'between'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:15:9: ( 'between' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:15:11: 'between'
             {
             	Match("between"); if (state.failed) return ;
 
@@ -343,8 +343,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = CLASS;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:16:7: ( 'class' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:16:9: 'class'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:16:7: ( 'class' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:16:9: 'class'
             {
             	Match("class"); if (state.failed) return ;
 
@@ -367,8 +367,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = COUNT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:17:7: ( 'count' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:17:9: 'count'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:17:7: ( 'count' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:17:9: 'count'
             {
             	Match("count"); if (state.failed) return ;
 
@@ -391,8 +391,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = DELETE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:18:8: ( 'delete' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:18:10: 'delete'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:18:8: ( 'delete' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:18:10: 'delete'
             {
             	Match("delete"); if (state.failed) return ;
 
@@ -415,8 +415,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = DESCENDING;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:19:12: ( 'desc' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:19:14: 'desc'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:19:12: ( 'desc' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:19:14: 'desc'
             {
             	Match("desc"); if (state.failed) return ;
 
@@ -439,8 +439,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = DISTINCT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:20:10: ( 'distinct' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:20:12: 'distinct'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:20:10: ( 'distinct' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:20:12: 'distinct'
             {
             	Match("distinct"); if (state.failed) return ;
 
@@ -463,8 +463,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = ELEMENTS;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:21:10: ( 'elements' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:21:12: 'elements'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:21:10: ( 'elements' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:21:12: 'elements'
             {
             	Match("elements"); if (state.failed) return ;
 
@@ -487,8 +487,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = ESCAPE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:22:8: ( 'escape' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:22:10: 'escape'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:22:8: ( 'escape' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:22:10: 'escape'
             {
             	Match("escape"); if (state.failed) return ;
 
@@ -511,8 +511,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = EXISTS;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:23:8: ( 'exists' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:23:10: 'exists'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:23:8: ( 'exists' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:23:10: 'exists'
             {
             	Match("exists"); if (state.failed) return ;
 
@@ -535,8 +535,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = FALSE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:24:7: ( 'false' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:24:9: 'false'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:24:7: ( 'false' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:24:9: 'false'
             {
             	Match("false"); if (state.failed) return ;
 
@@ -559,8 +559,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = FETCH;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:25:7: ( 'fetch' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:25:9: 'fetch'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:25:7: ( 'fetch' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:25:9: 'fetch'
             {
             	Match("fetch"); if (state.failed) return ;
 
@@ -583,8 +583,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = FROM;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:26:6: ( 'from' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:26:8: 'from'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:26:6: ( 'from' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:26:8: 'from'
             {
             	Match("from"); if (state.failed) return ;
 
@@ -607,8 +607,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = FULL;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:27:6: ( 'full' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:27:8: 'full'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:27:6: ( 'full' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:27:8: 'full'
             {
             	Match("full"); if (state.failed) return ;
 
@@ -631,8 +631,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = GROUP;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:28:7: ( 'group' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:28:9: 'group'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:28:7: ( 'group' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:28:9: 'group'
             {
             	Match("group"); if (state.failed) return ;
 
@@ -655,8 +655,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = HAVING;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:29:8: ( 'having' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:29:10: 'having'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:29:8: ( 'having' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:29:10: 'having'
             {
             	Match("having"); if (state.failed) return ;
 
@@ -679,8 +679,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = IN;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:30:4: ( 'in' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:30:6: 'in'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:30:4: ( 'in' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:30:6: 'in'
             {
             	Match("in"); if (state.failed) return ;
 
@@ -703,8 +703,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = INDICES;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:31:9: ( 'indices' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:31:11: 'indices'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:31:9: ( 'indices' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:31:11: 'indices'
             {
             	Match("indices"); if (state.failed) return ;
 
@@ -727,8 +727,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = INNER;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:32:7: ( 'inner' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:32:9: 'inner'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:32:7: ( 'inner' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:32:9: 'inner'
             {
             	Match("inner"); if (state.failed) return ;
 
@@ -751,8 +751,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = INSERT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:33:8: ( 'insert' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:33:10: 'insert'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:33:8: ( 'insert' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:33:10: 'insert'
             {
             	Match("insert"); if (state.failed) return ;
 
@@ -775,8 +775,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = INTO;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:34:6: ( 'into' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:34:8: 'into'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:34:6: ( 'into' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:34:8: 'into'
             {
             	Match("into"); if (state.failed) return ;
 
@@ -799,8 +799,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = IS;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:35:4: ( 'is' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:35:6: 'is'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:35:4: ( 'is' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:35:6: 'is'
             {
             	Match("is"); if (state.failed) return ;
 
@@ -823,8 +823,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = JOIN;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:36:6: ( 'join' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:36:8: 'join'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:36:6: ( 'join' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:36:8: 'join'
             {
             	Match("join"); if (state.failed) return ;
 
@@ -847,8 +847,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = LEFT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:37:6: ( 'left' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:37:8: 'left'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:37:6: ( 'left' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:37:8: 'left'
             {
             	Match("left"); if (state.failed) return ;
 
@@ -871,8 +871,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = LIKE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:38:6: ( 'like' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:38:8: 'like'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:38:6: ( 'like' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:38:8: 'like'
             {
             	Match("like"); if (state.failed) return ;
 
@@ -895,8 +895,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = MAX;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:39:5: ( 'max' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:39:7: 'max'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:39:5: ( 'max' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:39:7: 'max'
             {
             	Match("max"); if (state.failed) return ;
 
@@ -919,8 +919,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = MIN;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:40:5: ( 'min' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:40:7: 'min'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:40:5: ( 'min' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:40:7: 'min'
             {
             	Match("min"); if (state.failed) return ;
 
@@ -943,8 +943,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = NEW;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:41:5: ( 'new' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:41:7: 'new'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:41:5: ( 'new' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:41:7: 'new'
             {
             	Match("new"); if (state.failed) return ;
 
@@ -967,8 +967,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = NOT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:42:5: ( 'not' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:42:7: 'not'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:42:5: ( 'not' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:42:7: 'not'
             {
             	Match("not"); if (state.failed) return ;
 
@@ -991,8 +991,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = NULL;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:43:6: ( 'null' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:43:8: 'null'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:43:6: ( 'null' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:43:8: 'null'
             {
             	Match("null"); if (state.failed) return ;
 
@@ -1015,8 +1015,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = OR;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:44:4: ( 'or' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:44:6: 'or'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:44:4: ( 'or' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:44:6: 'or'
             {
             	Match("or"); if (state.failed) return ;
 
@@ -1039,8 +1039,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = ORDER;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:45:7: ( 'order' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:45:9: 'order'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:45:7: ( 'order' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:45:9: 'order'
             {
             	Match("order"); if (state.failed) return ;
 
@@ -1063,8 +1063,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = OUTER;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:46:7: ( 'outer' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:46:9: 'outer'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:46:7: ( 'outer' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:46:9: 'outer'
             {
             	Match("outer"); if (state.failed) return ;
 
@@ -1087,8 +1087,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = PROPERTIES;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:47:12: ( 'properties' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:47:14: 'properties'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:47:12: ( 'properties' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:47:14: 'properties'
             {
             	Match("properties"); if (state.failed) return ;
 
@@ -1111,8 +1111,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = RIGHT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:48:7: ( 'right' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:48:9: 'right'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:48:7: ( 'right' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:48:9: 'right'
             {
             	Match("right"); if (state.failed) return ;
 
@@ -1135,8 +1135,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = SELECT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:49:8: ( 'select' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:49:10: 'select'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:49:8: ( 'select' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:49:10: 'select'
             {
             	Match("select"); if (state.failed) return ;
 
@@ -1159,8 +1159,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = SET;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:50:5: ( 'set' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:50:7: 'set'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:50:5: ( 'set' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:50:7: 'set'
             {
             	Match("set"); if (state.failed) return ;
 
@@ -1183,8 +1183,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = SOME;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:51:6: ( 'some' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:51:8: 'some'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:51:6: ( 'some' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:51:8: 'some'
             {
             	Match("some"); if (state.failed) return ;
 
@@ -1207,8 +1207,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = SUM;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:52:5: ( 'sum' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:52:7: 'sum'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:52:5: ( 'sum' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:52:7: 'sum'
             {
             	Match("sum"); if (state.failed) return ;
 
@@ -1231,8 +1231,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = TRUE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:53:6: ( 'true' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:53:8: 'true'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:53:6: ( 'true' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:53:8: 'true'
             {
             	Match("true"); if (state.failed) return ;
 
@@ -1255,8 +1255,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = UNION;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:54:7: ( 'union' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:54:9: 'union'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:54:7: ( 'union' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:54:9: 'union'
             {
             	Match("union"); if (state.failed) return ;
 
@@ -1279,8 +1279,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = UPDATE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:55:8: ( 'update' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:55:10: 'update'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:55:8: ( 'update' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:55:10: 'update'
             {
             	Match("update"); if (state.failed) return ;
 
@@ -1303,8 +1303,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = VERSIONED;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:56:11: ( 'versioned' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:56:13: 'versioned'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:56:11: ( 'versioned' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:56:13: 'versioned'
             {
             	Match("versioned"); if (state.failed) return ;
 
@@ -1327,8 +1327,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = WHERE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:57:7: ( 'where' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:57:9: 'where'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:57:7: ( 'where' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:57:9: 'where'
             {
             	Match("where"); if (state.failed) return ;
 
@@ -1351,8 +1351,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = LITERAL_by;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:58:12: ( 'by' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:58:14: 'by'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:58:12: ( 'by' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:58:14: 'by'
             {
             	Match("by"); if (state.failed) return ;
 
@@ -1375,8 +1375,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = CASE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:59:6: ( 'case' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:59:8: 'case'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:59:6: ( 'case' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:59:8: 'case'
             {
             	Match("case"); if (state.failed) return ;
 
@@ -1399,8 +1399,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = END;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:60:5: ( 'end' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:60:7: 'end'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:60:5: ( 'end' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:60:7: 'end'
             {
             	Match("end"); if (state.failed) return ;
 
@@ -1423,8 +1423,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = ELSE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:61:6: ( 'else' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:61:8: 'else'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:61:6: ( 'else' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:61:8: 'else'
             {
             	Match("else"); if (state.failed) return ;
 
@@ -1447,8 +1447,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = THEN;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:62:6: ( 'then' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:62:8: 'then'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:62:6: ( 'then' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:62:8: 'then'
             {
             	Match("then"); if (state.failed) return ;
 
@@ -1471,8 +1471,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = WHEN;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:63:6: ( 'when' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:63:8: 'when'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:63:6: ( 'when' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:63:8: 'when'
             {
             	Match("when"); if (state.failed) return ;
 
@@ -1495,8 +1495,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = ON;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:64:4: ( 'on' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:64:6: 'on'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:64:4: ( 'on' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:64:6: 'on'
             {
             	Match("on"); if (state.failed) return ;
 
@@ -1519,8 +1519,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = WITH;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:65:6: ( 'with' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:65:8: 'with'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:65:6: ( 'with' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:65:8: 'with'
             {
             	Match("with"); if (state.failed) return ;
 
@@ -1543,8 +1543,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = BOTH;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:66:6: ( 'both' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:66:8: 'both'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:66:6: ( 'both' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:66:8: 'both'
             {
             	Match("both"); if (state.failed) return ;
 
@@ -1567,8 +1567,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = EMPTY;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:67:7: ( 'empty' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:67:9: 'empty'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:67:7: ( 'empty' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:67:9: 'empty'
             {
             	Match("empty"); if (state.failed) return ;
 
@@ -1591,8 +1591,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = LEADING;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:68:9: ( 'leading' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:68:11: 'leading'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:68:9: ( 'leading' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:68:11: 'leading'
             {
             	Match("leading"); if (state.failed) return ;
 
@@ -1615,8 +1615,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = MEMBER;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:69:8: ( 'member' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:69:10: 'member'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:69:8: ( 'member' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:69:10: 'member'
             {
             	Match("member"); if (state.failed) return ;
 
@@ -1639,8 +1639,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = OBJECT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:70:8: ( 'object' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:70:10: 'object'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:70:8: ( 'object' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:70:10: 'object'
             {
             	Match("object"); if (state.failed) return ;
 
@@ -1663,8 +1663,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = OF;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:71:4: ( 'of' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:71:6: 'of'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:71:4: ( 'of' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:71:6: 'of'
             {
             	Match("of"); if (state.failed) return ;
 
@@ -1687,8 +1687,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = TRAILING;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:72:10: ( 'trailing' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:72:12: 'trailing'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:72:10: ( 'trailing' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:72:12: 'trailing'
             {
             	Match("trailing"); if (state.failed) return ;
 
@@ -1711,8 +1711,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = T__130;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:73:8: ( 'ascending' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:73:10: 'ascending'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:73:8: ( 'ascending' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:73:10: 'ascending'
             {
             	Match("ascending"); if (state.failed) return ;
 
@@ -1735,8 +1735,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = T__131;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:74:8: ( 'descending' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:74:10: 'descending'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:74:8: ( 'descending' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:74:10: 'descending'
             {
             	Match("descending"); if (state.failed) return ;
 
@@ -1759,8 +1759,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = EQ;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:758:3: ( '=' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:758:5: '='
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:670:3: ( '=' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:670:5: '='
             {
             	Match('='); if (state.failed) return ;
 
@@ -1782,8 +1782,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = LT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:759:3: ( '<' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:759:5: '<'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:671:3: ( '<' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:671:5: '<'
             {
             	Match('<'); if (state.failed) return ;
 
@@ -1805,8 +1805,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = GT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:760:3: ( '>' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:760:5: '>'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:672:3: ( '>' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:672:5: '>'
             {
             	Match('>'); if (state.failed) return ;
 
@@ -1828,8 +1828,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = SQL_NE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:761:7: ( '<>' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:761:9: '<>'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:673:7: ( '<>' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:673:9: '<>'
             {
             	Match("<>"); if (state.failed) return ;
 
@@ -1852,7 +1852,7 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = NE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:762:3: ( '!=' | '^=' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:674:3: ( '!=' | '^=' )
             int alt1 = 2;
             int LA1_0 = input.LA(1);
 
@@ -1875,7 +1875,7 @@ public partial class HqlLexer : Lexer {
             switch (alt1) 
             {
                 case 1 :
-                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:762:5: '!='
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:674:5: '!='
                     {
                     	Match("!="); if (state.failed) return ;
 
@@ -1883,7 +1883,7 @@ public partial class HqlLexer : Lexer {
                     }
                     break;
                 case 2 :
-                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:762:12: '^='
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:674:12: '^='
                     {
                     	Match("^="); if (state.failed) return ;
 
@@ -1908,8 +1908,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = LE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:763:3: ( '<=' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:763:5: '<='
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:675:3: ( '<=' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:675:5: '<='
             {
             	Match("<="); if (state.failed) return ;
 
@@ -1932,8 +1932,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = GE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:764:3: ( '>=' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:764:5: '>='
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:676:3: ( '>=' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:676:5: '>='
             {
             	Match(">="); if (state.failed) return ;
 
@@ -1956,8 +1956,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = BOR;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:766:5: ( '|' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:766:8: '|'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:678:5: ( '|' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:678:8: '|'
             {
             	Match('|'); if (state.failed) return ;
 
@@ -1979,8 +1979,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = BXOR;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:767:6: ( '^' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:767:8: '^'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:679:6: ( '^' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:679:8: '^'
             {
             	Match('^'); if (state.failed) return ;
 
@@ -2002,8 +2002,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = BAND;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:768:6: ( '&' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:768:8: '&'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:680:6: ( '&' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:680:8: '&'
             {
             	Match('&'); if (state.failed) return ;
 
@@ -2025,8 +2025,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = BNOT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:769:6: ( '!' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:769:8: '!'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:681:6: ( '!' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:681:8: '!'
             {
             	Match('!'); if (state.failed) return ;
 
@@ -2048,8 +2048,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = COMMA;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:771:6: ( ',' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:771:8: ','
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:683:6: ( ',' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:683:8: ','
             {
             	Match(','); if (state.failed) return ;
 
@@ -2071,8 +2071,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = OPEN;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:773:5: ( '(' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:773:7: '('
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:685:5: ( '(' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:685:7: '('
             {
             	Match('('); if (state.failed) return ;
 
@@ -2094,8 +2094,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = CLOSE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:774:6: ( ')' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:774:8: ')'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:686:6: ( ')' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:686:8: ')'
             {
             	Match(')'); if (state.failed) return ;
 
@@ -2117,8 +2117,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = OPEN_BRACKET;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:775:13: ( '[' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:775:15: '['
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:687:13: ( '[' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:687:15: '['
             {
             	Match('['); if (state.failed) return ;
 
@@ -2140,8 +2140,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = CLOSE_BRACKET;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:776:14: ( ']' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:776:16: ']'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:688:14: ( ']' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:688:16: ']'
             {
             	Match(']'); if (state.failed) return ;
 
@@ -2163,8 +2163,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = CONCAT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:778:7: ( '||' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:778:9: '||'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:690:7: ( '||' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:690:9: '||'
             {
             	Match("||"); if (state.failed) return ;
 
@@ -2187,8 +2187,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = PLUS;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:779:5: ( '+' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:779:7: '+'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:691:5: ( '+' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:691:7: '+'
             {
             	Match('+'); if (state.failed) return ;
 
@@ -2210,8 +2210,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = MINUS;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:780:6: ( '-' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:780:8: '-'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:692:6: ( '-' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:692:8: '-'
             {
             	Match('-'); if (state.failed) return ;
 
@@ -2233,8 +2233,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = STAR;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:781:5: ( '*' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:781:7: '*'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:693:5: ( '*' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:693:7: '*'
             {
             	Match('*'); if (state.failed) return ;
 
@@ -2256,8 +2256,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = DIV;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:782:4: ( '/' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:782:6: '/'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:694:4: ( '/' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:694:6: '/'
             {
             	Match('/'); if (state.failed) return ;
 
@@ -2279,8 +2279,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = COLON;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:783:6: ( ':' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:783:8: ':'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:695:6: ( ':' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:695:8: ':'
             {
             	Match(':'); if (state.failed) return ;
 
@@ -2302,8 +2302,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = PARAM;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:784:6: ( '?' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:784:8: '?'
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:696:6: ( '?' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:696:8: '?'
             {
             	Match('?'); if (state.failed) return ;
 
@@ -2325,11 +2325,11 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = IDENT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:787:2: ( ID_START_LETTER ( ID_LETTER )* )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:787:4: ID_START_LETTER ( ID_LETTER )*
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:699:2: ( ID_START_LETTER ( ID_LETTER )* )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:699:4: ID_START_LETTER ( ID_LETTER )*
             {
             	mID_START_LETTER(); if (state.failed) return ;
-            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:787:20: ( ID_LETTER )*
+            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:699:20: ( ID_LETTER )*
             	do 
             	{
             	    int alt2 = 2;
@@ -2344,7 +2344,7 @@ public partial class HqlLexer : Lexer {
             	    switch (alt2) 
             		{
             			case 1 :
-            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:787:22: ID_LETTER
+            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:699:22: ID_LETTER
             			    {
             			    	mID_LETTER(); if (state.failed) return ;
 
@@ -2376,8 +2376,8 @@ public partial class HqlLexer : Lexer {
     {
     		try
     		{
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:792:5: ( '_' | '$' | 'a' .. 'z' | 'A' .. 'Z' | '\\u0080' .. '\\ufffe' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:704:5: ( '_' | '$' | 'a' .. 'z' | 'A' .. 'Z' | '\\u0080' .. '\\ufffe' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:
             {
             	if ( input.LA(1) == '$' || (input.LA(1) >= 'A' && input.LA(1) <= 'Z') || input.LA(1) == '_' || (input.LA(1) >= 'a' && input.LA(1) <= 'z') || (input.LA(1) >= '\u0080' && input.LA(1) <= '\uFFFE') ) 
             	{
@@ -2406,8 +2406,8 @@ public partial class HqlLexer : Lexer {
     {
     		try
     		{
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:801:5: ( ID_START_LETTER | '0' .. '9' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:713:5: ( ID_START_LETTER | '0' .. '9' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:
             {
             	if ( input.LA(1) == '$' || (input.LA(1) >= '0' && input.LA(1) <= '9') || (input.LA(1) >= 'A' && input.LA(1) <= 'Z') || input.LA(1) == '_' || (input.LA(1) >= 'a' && input.LA(1) <= 'z') || (input.LA(1) >= '\u0080' && input.LA(1) <= '\uFFFE') ) 
             	{
@@ -2438,11 +2438,11 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = QUOTED_String;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:806:4: ( '\\'' ( ( ESCqs )=> ESCqs | ~ '\\'' )* '\\'' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:806:6: '\\'' ( ( ESCqs )=> ESCqs | ~ '\\'' )* '\\''
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:718:4: ( '\\'' ( ( ESCqs )=> ESCqs | ~ '\\'' )* '\\'' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:718:6: '\\'' ( ( ESCqs )=> ESCqs | ~ '\\'' )* '\\''
             {
             	Match('\''); if (state.failed) return ;
-            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:806:11: ( ( ESCqs )=> ESCqs | ~ '\\'' )*
+            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:718:11: ( ( ESCqs )=> ESCqs | ~ '\\'' )*
             	do 
             	{
             	    int alt3 = 3;
@@ -2468,14 +2468,14 @@ public partial class HqlLexer : Lexer {
             	    switch (alt3) 
             		{
             			case 1 :
-            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:806:13: ( ESCqs )=> ESCqs
+            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:718:13: ( ESCqs )=> ESCqs
             			    {
             			    	mESCqs(); if (state.failed) return ;
 
             			    }
             			    break;
             			case 2 :
-            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:806:31: ~ '\\''
+            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:718:31: ~ '\\''
             			    {
             			    	if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '&') || (input.LA(1) >= '(' && input.LA(1) <= '\uFFFF') ) 
             			    	{
@@ -2519,8 +2519,8 @@ public partial class HqlLexer : Lexer {
     {
     		try
     		{
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:811:2: ( '\\'' '\\'' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:812:3: '\\'' '\\''
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:723:2: ( '\\'' '\\'' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:724:3: '\\'' '\\''
             {
             	Match('\''); if (state.failed) return ;
             	Match('\''); if (state.failed) return ;
@@ -2541,10 +2541,10 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = WS;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:815:5: ( ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' ) )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:815:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:727:5: ( ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' ) )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:727:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
             {
-            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:815:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
+            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:727:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
             	int alt4 = 5;
             	switch ( input.LA(1) ) 
             	{
@@ -2587,21 +2587,21 @@ public partial class HqlLexer : Lexer {
             	switch (alt4) 
             	{
             	    case 1 :
-            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:815:13: ' '
+            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:727:13: ' '
             	        {
             	        	Match(' '); if (state.failed) return ;
 
             	        }
             	        break;
             	    case 2 :
-            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:816:7: '\\t'
+            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:728:7: '\\t'
             	        {
             	        	Match('\t'); if (state.failed) return ;
 
             	        }
             	        break;
             	    case 3 :
-            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:817:7: '\\r' '\\n'
+            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:729:7: '\\r' '\\n'
             	        {
             	        	Match('\r'); if (state.failed) return ;
             	        	Match('\n'); if (state.failed) return ;
@@ -2609,14 +2609,14 @@ public partial class HqlLexer : Lexer {
             	        }
             	        break;
             	    case 4 :
-            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:818:7: '\\n'
+            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:730:7: '\\n'
             	        {
             	        	Match('\n'); if (state.failed) return ;
 
             	        }
             	        break;
             	    case 5 :
-            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:819:7: '\\r'
+            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:731:7: '\\r'
             	        {
             	        	Match('\r'); if (state.failed) return ;
 
@@ -2654,7 +2654,7 @@ public partial class HqlLexer : Lexer {
             IToken f4 = null;
 
             bool isDecimal=false; IToken t=null;
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:828:2: ( '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )? | ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )? )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:740:2: ( '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )? | ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )? )
             int alt20 = 2;
             int LA20_0 = input.LA(1);
 
@@ -2677,14 +2677,14 @@ public partial class HqlLexer : Lexer {
             switch (alt20) 
             {
                 case 1 :
-                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:828:6: '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:740:6: '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
                     {
                     	Match('.'); if (state.failed) return ;
                     	if ( (state.backtracking==0) )
                     	{
                     	  _type = DOT;
                     	}
-                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:829:4: ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
+                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:741:4: ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
                     	int alt8 = 2;
                     	int LA8_0 = input.LA(1);
 
@@ -2695,9 +2695,9 @@ public partial class HqlLexer : Lexer {
                     	switch (alt8) 
                     	{
                     	    case 1 :
-                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:829:6: ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )?
+                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:741:6: ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )?
                     	        {
-                    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:829:6: ( '0' .. '9' )+
+                    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:741:6: ( '0' .. '9' )+
                     	        	int cnt5 = 0;
                     	        	do 
                     	        	{
@@ -2713,7 +2713,7 @@ public partial class HqlLexer : Lexer {
                     	        	    switch (alt5) 
                     	        		{
                     	        			case 1 :
-                    	        			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:829:7: '0' .. '9'
+                    	        			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:741:7: '0' .. '9'
                     	        			    {
                     	        			    	MatchRange('0','9'); if (state.failed) return ;
 
@@ -2733,7 +2733,7 @@ public partial class HqlLexer : Lexer {
                     	        	loop5:
                     	        		;	// Stops C# compiler whinging that label 'loop5' has no statements
 
-                    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:829:18: ( EXPONENT )?
+                    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:741:18: ( EXPONENT )?
                     	        	int alt6 = 2;
                     	        	int LA6_0 = input.LA(1);
 
@@ -2744,7 +2744,7 @@ public partial class HqlLexer : Lexer {
                     	        	switch (alt6) 
                     	        	{
                     	        	    case 1 :
-                    	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:829:19: EXPONENT
+                    	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:741:19: EXPONENT
                     	        	        {
                     	        	        	mEXPONENT(); if (state.failed) return ;
 
@@ -2753,7 +2753,7 @@ public partial class HqlLexer : Lexer {
 
                     	        	}
 
-                    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:829:30: (f1= FLOAT_SUFFIX )?
+                    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:741:30: (f1= FLOAT_SUFFIX )?
                     	        	int alt7 = 2;
                     	        	int LA7_0 = input.LA(1);
 
@@ -2764,11 +2764,11 @@ public partial class HqlLexer : Lexer {
                     	        	switch (alt7) 
                     	        	{
                     	        	    case 1 :
-                    	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:829:31: f1= FLOAT_SUFFIX
+                    	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:741:31: f1= FLOAT_SUFFIX
                     	        	        {
-                    	        	        	int f1Start1026 = CharIndex;
+                    	        	        	int f1Start1018 = CharIndex;
                     	        	        	mFLOAT_SUFFIX(); if (state.failed) return ;
-                    	        	        	f1 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f1Start1026, CharIndex-1);
+                    	        	        	f1 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f1Start1018, CharIndex-1);
                     	        	        	if ( (state.backtracking==0) )
                     	        	        	{
                     	        	        	  t=f1;
@@ -2802,9 +2802,9 @@ public partial class HqlLexer : Lexer {
                     }
                     break;
                 case 2 :
-                    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:841:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )?
+                    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:753:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )?
                     {
-                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:841:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* )
+                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:753:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* )
                     	int alt13 = 2;
                     	int LA13_0 = input.LA(1);
 
@@ -2827,14 +2827,14 @@ public partial class HqlLexer : Lexer {
                     	switch (alt13) 
                     	{
                     	    case 1 :
-                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:841:6: '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
+                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:753:6: '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
                     	        {
                     	        	Match('0'); if (state.failed) return ;
                     	        	if ( (state.backtracking==0) )
                     	        	{
                     	        	  isDecimal = true;
                     	        	}
-                    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:842:4: ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
+                    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:754:4: ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
                     	        	int alt11 = 3;
                     	        	int LA11_0 = input.LA(1);
 
@@ -2849,16 +2849,16 @@ public partial class HqlLexer : Lexer {
                     	        	switch (alt11) 
                     	        	{
                     	        	    case 1 :
-                    	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:842:6: ( 'x' ) ( HEX_DIGIT )+
+                    	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:754:6: ( 'x' ) ( HEX_DIGIT )+
                     	        	        {
-                    	        	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:842:6: ( 'x' )
-                    	        	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:842:7: 'x'
+                    	        	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:754:6: ( 'x' )
+                    	        	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:754:7: 'x'
                     	        	        	{
                     	        	        		Match('x'); if (state.failed) return ;
 
                     	        	        	}
 
-                    	        	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:843:5: ( HEX_DIGIT )+
+                    	        	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:755:5: ( HEX_DIGIT )+
                     	        	        	int cnt9 = 0;
                     	        	        	do 
                     	        	        	{
@@ -2924,7 +2924,7 @@ public partial class HqlLexer : Lexer {
                     	        	        	    switch (alt9) 
                     	        	        		{
                     	        	        			case 1 :
-                    	        	        			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:850:7: HEX_DIGIT
+                    	        	        			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:762:7: HEX_DIGIT
                     	        	        			    {
                     	        	        			    	mHEX_DIGIT(); if (state.failed) return ;
 
@@ -2948,9 +2948,9 @@ public partial class HqlLexer : Lexer {
                     	        	        }
                     	        	        break;
                     	        	    case 2 :
-                    	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:852:6: ( '0' .. '7' )+
+                    	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:764:6: ( '0' .. '7' )+
                     	        	        {
-                    	        	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:852:6: ( '0' .. '7' )+
+                    	        	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:764:6: ( '0' .. '7' )+
                     	        	        	int cnt10 = 0;
                     	        	        	do 
                     	        	        	{
@@ -2966,7 +2966,7 @@ public partial class HqlLexer : Lexer {
                     	        	        	    switch (alt10) 
                     	        	        		{
                     	        	        			case 1 :
-                    	        	        			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:852:7: '0' .. '7'
+                    	        	        			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:764:7: '0' .. '7'
                     	        	        			    {
                     	        	        			    	MatchRange('0','7'); if (state.failed) return ;
 
@@ -2996,16 +2996,16 @@ public partial class HqlLexer : Lexer {
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:854:5: ( '1' .. '9' ) ( '0' .. '9' )*
+                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:766:5: ( '1' .. '9' ) ( '0' .. '9' )*
                     	        {
-                    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:854:5: ( '1' .. '9' )
-                    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:854:6: '1' .. '9'
+                    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:766:5: ( '1' .. '9' )
+                    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:766:6: '1' .. '9'
                     	        	{
                     	        		MatchRange('1','9'); if (state.failed) return ;
 
                     	        	}
 
-                    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:854:16: ( '0' .. '9' )*
+                    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:766:16: ( '0' .. '9' )*
                     	        	do 
                     	        	{
                     	        	    int alt12 = 2;
@@ -3020,7 +3020,7 @@ public partial class HqlLexer : Lexer {
                     	        	    switch (alt12) 
                     	        		{
                     	        			case 1 :
-                    	        			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:854:17: '0' .. '9'
+                    	        			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:766:17: '0' .. '9'
                     	        			    {
                     	        			    	MatchRange('0','9'); if (state.failed) return ;
 
@@ -3045,7 +3045,7 @@ public partial class HqlLexer : Lexer {
 
                     	}
 
-                    	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:856:3: ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )?
+                    	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:768:3: ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )?
                     	int alt19 = 3;
                     	int LA19_0 = input.LA(1);
 
@@ -3060,10 +3060,10 @@ public partial class HqlLexer : Lexer {
                     	switch (alt19) 
                     	{
                     	    case 1 :
-                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:856:5: ( 'l' )
+                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:768:5: ( 'l' )
                     	        {
-                    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:856:5: ( 'l' )
-                    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:856:6: 'l'
+                    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:768:5: ( 'l' )
+                    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:768:6: 'l'
                     	        	{
                     	        		Match('l'); if (state.failed) return ;
 
@@ -3077,14 +3077,14 @@ public partial class HqlLexer : Lexer {
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:859:5: {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX )
+                    	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:771:5: {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX )
                     	        {
                     	        	if ( !((isDecimal)) ) 
                     	        	{
                     	        	    if ( state.backtracking > 0 ) {state.failed = true; return ;}
                     	        	    throw new FailedPredicateException(input, "NUM_INT", "isDecimal");
                     	        	}
-                    	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:860:4: ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX )
+                    	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:772:4: ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX )
                     	        	int alt18 = 3;
                     	        	switch ( input.LA(1) ) 
                     	        	{
@@ -3115,10 +3115,10 @@ public partial class HqlLexer : Lexer {
                     	        	switch (alt18) 
                     	        	{
                     	        	    case 1 :
-                    	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:860:8: '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )?
+                    	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:772:8: '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )?
                     	        	        {
                     	        	        	Match('.'); if (state.failed) return ;
-                    	        	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:860:12: ( '0' .. '9' )*
+                    	        	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:772:12: ( '0' .. '9' )*
                     	        	        	do 
                     	        	        	{
                     	        	        	    int alt14 = 2;
@@ -3133,7 +3133,7 @@ public partial class HqlLexer : Lexer {
                     	        	        	    switch (alt14) 
                     	        	        		{
                     	        	        			case 1 :
-                    	        	        			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:860:13: '0' .. '9'
+                    	        	        			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:772:13: '0' .. '9'
                     	        	        			    {
                     	        	        			    	MatchRange('0','9'); if (state.failed) return ;
 
@@ -3148,7 +3148,7 @@ public partial class HqlLexer : Lexer {
                     	        	        	loop14:
                     	        	        		;	// Stops C# compiler whining that label 'loop14' has no statements
 
-                    	        	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:860:24: ( EXPONENT )?
+                    	        	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:772:24: ( EXPONENT )?
                     	        	        	int alt15 = 2;
                     	        	        	int LA15_0 = input.LA(1);
 
@@ -3159,7 +3159,7 @@ public partial class HqlLexer : Lexer {
                     	        	        	switch (alt15) 
                     	        	        	{
                     	        	        	    case 1 :
-                    	        	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:860:25: EXPONENT
+                    	        	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:772:25: EXPONENT
                     	        	        	        {
                     	        	        	        	mEXPONENT(); if (state.failed) return ;
 
@@ -3168,7 +3168,7 @@ public partial class HqlLexer : Lexer {
 
                     	        	        	}
 
-                    	        	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:860:36: (f2= FLOAT_SUFFIX )?
+                    	        	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:772:36: (f2= FLOAT_SUFFIX )?
                     	        	        	int alt16 = 2;
                     	        	        	int LA16_0 = input.LA(1);
 
@@ -3179,11 +3179,11 @@ public partial class HqlLexer : Lexer {
                     	        	        	switch (alt16) 
                     	        	        	{
                     	        	        	    case 1 :
-                    	        	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:860:37: f2= FLOAT_SUFFIX
+                    	        	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:772:37: f2= FLOAT_SUFFIX
                     	        	        	        {
-                    	        	        	        	int f2Start1228 = CharIndex;
+                    	        	        	        	int f2Start1220 = CharIndex;
                     	        	        	        	mFLOAT_SUFFIX(); if (state.failed) return ;
-                    	        	        	        	f2 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f2Start1228, CharIndex-1);
+                    	        	        	        	f2 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f2Start1220, CharIndex-1);
                     	        	        	        	if ( (state.backtracking==0) )
                     	        	        	        	{
                     	        	        	        	  t=f2;
@@ -3198,10 +3198,10 @@ public partial class HqlLexer : Lexer {
                     	        	        }
                     	        	        break;
                     	        	    case 2 :
-                    	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:861:8: EXPONENT (f3= FLOAT_SUFFIX )?
+                    	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:773:8: EXPONENT (f3= FLOAT_SUFFIX )?
                     	        	        {
                     	        	        	mEXPONENT(); if (state.failed) return ;
-                    	        	        	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:861:17: (f3= FLOAT_SUFFIX )?
+                    	        	        	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:773:17: (f3= FLOAT_SUFFIX )?
                     	        	        	int alt17 = 2;
                     	        	        	int LA17_0 = input.LA(1);
 
@@ -3212,11 +3212,11 @@ public partial class HqlLexer : Lexer {
                     	        	        	switch (alt17) 
                     	        	        	{
                     	        	        	    case 1 :
-                    	        	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:861:18: f3= FLOAT_SUFFIX
+                    	        	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:773:18: f3= FLOAT_SUFFIX
                     	        	        	        {
-                    	        	        	        	int f3Start1246 = CharIndex;
+                    	        	        	        	int f3Start1238 = CharIndex;
                     	        	        	        	mFLOAT_SUFFIX(); if (state.failed) return ;
-                    	        	        	        	f3 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f3Start1246, CharIndex-1);
+                    	        	        	        	f3 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f3Start1238, CharIndex-1);
                     	        	        	        	if ( (state.backtracking==0) )
                     	        	        	        	{
                     	        	        	        	  t=f3;
@@ -3231,11 +3231,11 @@ public partial class HqlLexer : Lexer {
                     	        	        }
                     	        	        break;
                     	        	    case 3 :
-                    	        	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:862:8: f4= FLOAT_SUFFIX
+                    	        	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:774:8: f4= FLOAT_SUFFIX
                     	        	        {
-                    	        	        	int f4Start1261 = CharIndex;
+                    	        	        	int f4Start1253 = CharIndex;
                     	        	        	mFLOAT_SUFFIX(); if (state.failed) return ;
-                    	        	        	f4 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f4Start1261, CharIndex-1);
+                    	        	        	f4 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f4Start1253, CharIndex-1);
                     	        	        	if ( (state.backtracking==0) )
                     	        	        	{
                     	        	        	  t=f4;
@@ -3284,8 +3284,8 @@ public partial class HqlLexer : Lexer {
     {
     		try
     		{
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:880:2: ( ( '0' .. '9' | 'a' .. 'f' ) )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:880:4: ( '0' .. '9' | 'a' .. 'f' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:792:2: ( ( '0' .. '9' | 'a' .. 'f' ) )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:792:4: ( '0' .. '9' | 'a' .. 'f' )
             {
             	if ( (input.LA(1) >= '0' && input.LA(1) <= '9') || (input.LA(1) >= 'a' && input.LA(1) <= 'f') ) 
             	{
@@ -3314,17 +3314,17 @@ public partial class HqlLexer : Lexer {
     {
     		try
     		{
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:886:2: ( ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+ )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:886:4: ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:798:2: ( ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+ )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:798:4: ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+
             {
-            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:886:4: ( 'e' )
-            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:886:5: 'e'
+            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:798:4: ( 'e' )
+            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:798:5: 'e'
             	{
             		Match('e'); if (state.failed) return ;
 
             	}
 
-            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:886:10: ( '+' | '-' )?
+            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:798:10: ( '+' | '-' )?
             	int alt21 = 2;
             	int LA21_0 = input.LA(1);
 
@@ -3335,7 +3335,7 @@ public partial class HqlLexer : Lexer {
             	switch (alt21) 
             	{
             	    case 1 :
-            	        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:
+            	        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:
             	        {
             	        	if ( input.LA(1) == '+' || input.LA(1) == '-' ) 
             	        	{
@@ -3355,7 +3355,7 @@ public partial class HqlLexer : Lexer {
 
             	}
 
-            	// C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:886:21: ( '0' .. '9' )+
+            	// /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:798:21: ( '0' .. '9' )+
             	int cnt22 = 0;
             	do 
             	{
@@ -3371,7 +3371,7 @@ public partial class HqlLexer : Lexer {
             	    switch (alt22) 
             		{
             			case 1 :
-            			    // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:886:22: '0' .. '9'
+            			    // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:798:22: '0' .. '9'
             			    {
             			    	MatchRange('0','9'); if (state.failed) return ;
 
@@ -3406,8 +3406,8 @@ public partial class HqlLexer : Lexer {
     {
     		try
     		{
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:891:2: ( 'f' | 'd' )
-            // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:803:2: ( 'f' | 'd' )
+            // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:
             {
             	if ( input.LA(1) == 'd' || input.LA(1) == 'f' ) 
             	{
@@ -3433,657 +3433,657 @@ public partial class HqlLexer : Lexer {
 
     override public void mTokens() // throws RecognitionException 
     {
-        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:8: ( ALL | ANY | AND | AS | ASCENDING | AVG | BETWEEN | CLASS | COUNT | DELETE | DESCENDING | DISTINCT | ELEMENTS | ESCAPE | EXISTS | FALSE | FETCH | FROM | FULL | GROUP | HAVING | IN | INDICES | INNER | INSERT | INTO | IS | JOIN | LEFT | LIKE | MAX | MIN | NEW | NOT | NULL | OR | ORDER | OUTER | PROPERTIES | RIGHT | SELECT | SET | SOME | SUM | TRUE | UNION | UPDATE | VERSIONED | WHERE | LITERAL_by | CASE | END | ELSE | THEN | WHEN | ON | WITH | BOTH | EMPTY | LEADING | MEMBER | OBJECT | OF | TRAILING | T__130 | T__131 | EQ | LT | GT | SQL_NE | NE | LE | GE | BOR | BXOR | BAND | BNOT | COMMA | OPEN | CLOSE | OPEN_BRACKET | CLOSE_BRACKET | CONCAT | PLUS | MINUS | STAR | DIV | COLON | PARAM | IDENT | QUOTED_String | WS | NUM_INT )
+        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:8: ( ALL | ANY | AND | AS | ASCENDING | AVG | BETWEEN | CLASS | COUNT | DELETE | DESCENDING | DISTINCT | ELEMENTS | ESCAPE | EXISTS | FALSE | FETCH | FROM | FULL | GROUP | HAVING | IN | INDICES | INNER | INSERT | INTO | IS | JOIN | LEFT | LIKE | MAX | MIN | NEW | NOT | NULL | OR | ORDER | OUTER | PROPERTIES | RIGHT | SELECT | SET | SOME | SUM | TRUE | UNION | UPDATE | VERSIONED | WHERE | LITERAL_by | CASE | END | ELSE | THEN | WHEN | ON | WITH | BOTH | EMPTY | LEADING | MEMBER | OBJECT | OF | TRAILING | T__130 | T__131 | EQ | LT | GT | SQL_NE | NE | LE | GE | BOR | BXOR | BAND | BNOT | COMMA | OPEN | CLOSE | OPEN_BRACKET | CLOSE_BRACKET | CONCAT | PLUS | MINUS | STAR | DIV | COLON | PARAM | IDENT | QUOTED_String | WS | NUM_INT )
         int alt23 = 93;
         alt23 = dfa23.Predict(input);
         switch (alt23) 
         {
             case 1 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:10: ALL
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:10: ALL
                 {
                 	mALL(); if (state.failed) return ;
 
                 }
                 break;
             case 2 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:14: ANY
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:14: ANY
                 {
                 	mANY(); if (state.failed) return ;
 
                 }
                 break;
             case 3 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:18: AND
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:18: AND
                 {
                 	mAND(); if (state.failed) return ;
 
                 }
                 break;
             case 4 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:22: AS
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:22: AS
                 {
                 	mAS(); if (state.failed) return ;
 
                 }
                 break;
             case 5 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:25: ASCENDING
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:25: ASCENDING
                 {
                 	mASCENDING(); if (state.failed) return ;
 
                 }
                 break;
             case 6 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:35: AVG
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:35: AVG
                 {
                 	mAVG(); if (state.failed) return ;
 
                 }
                 break;
             case 7 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:39: BETWEEN
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:39: BETWEEN
                 {
                 	mBETWEEN(); if (state.failed) return ;
 
                 }
                 break;
             case 8 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:47: CLASS
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:47: CLASS
                 {
                 	mCLASS(); if (state.failed) return ;
 
                 }
                 break;
             case 9 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:53: COUNT
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:53: COUNT
                 {
                 	mCOUNT(); if (state.failed) return ;
 
                 }
                 break;
             case 10 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:59: DELETE
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:59: DELETE
                 {
                 	mDELETE(); if (state.failed) return ;
 
                 }
                 break;
             case 11 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:66: DESCENDING
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:66: DESCENDING
                 {
                 	mDESCENDING(); if (state.failed) return ;
 
                 }
                 break;
             case 12 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:77: DISTINCT
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:77: DISTINCT
                 {
                 	mDISTINCT(); if (state.failed) return ;
 
                 }
                 break;
             case 13 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:86: ELEMENTS
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:86: ELEMENTS
                 {
                 	mELEMENTS(); if (state.failed) return ;
 
                 }
                 break;
             case 14 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:95: ESCAPE
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:95: ESCAPE
                 {
                 	mESCAPE(); if (state.failed) return ;
 
                 }
                 break;
             case 15 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:102: EXISTS
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:102: EXISTS
                 {
                 	mEXISTS(); if (state.failed) return ;
 
                 }
                 break;
             case 16 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:109: FALSE
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:109: FALSE
                 {
                 	mFALSE(); if (state.failed) return ;
 
                 }
                 break;
             case 17 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:115: FETCH
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:115: FETCH
                 {
                 	mFETCH(); if (state.failed) return ;
 
                 }
                 break;
             case 18 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:121: FROM
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:121: FROM
                 {
                 	mFROM(); if (state.failed) return ;
 
                 }
                 break;
             case 19 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:126: FULL
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:126: FULL
                 {
                 	mFULL(); if (state.failed) return ;
 
                 }
                 break;
             case 20 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:131: GROUP
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:131: GROUP
                 {
                 	mGROUP(); if (state.failed) return ;
 
                 }
                 break;
             case 21 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:137: HAVING
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:137: HAVING
                 {
                 	mHAVING(); if (state.failed) return ;
 
                 }
                 break;
             case 22 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:144: IN
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:144: IN
                 {
                 	mIN(); if (state.failed) return ;
 
                 }
                 break;
             case 23 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:147: INDICES
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:147: INDICES
                 {
                 	mINDICES(); if (state.failed) return ;
 
                 }
                 break;
             case 24 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:155: INNER
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:155: INNER
                 {
                 	mINNER(); if (state.failed) return ;
 
                 }
                 break;
             case 25 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:161: INSERT
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:161: INSERT
                 {
                 	mINSERT(); if (state.failed) return ;
 
                 }
                 break;
             case 26 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:168: INTO
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:168: INTO
                 {
                 	mINTO(); if (state.failed) return ;
 
                 }
                 break;
             case 27 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:173: IS
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:173: IS
                 {
                 	mIS(); if (state.failed) return ;
 
                 }
                 break;
             case 28 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:176: JOIN
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:176: JOIN
                 {
                 	mJOIN(); if (state.failed) return ;
 
                 }
                 break;
             case 29 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:181: LEFT
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:181: LEFT
                 {
                 	mLEFT(); if (state.failed) return ;
 
                 }
                 break;
             case 30 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:186: LIKE
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:186: LIKE
                 {
                 	mLIKE(); if (state.failed) return ;
 
                 }
                 break;
             case 31 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:191: MAX
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:191: MAX
                 {
                 	mMAX(); if (state.failed) return ;
 
                 }
                 break;
             case 32 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:195: MIN
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:195: MIN
                 {
                 	mMIN(); if (state.failed) return ;
 
                 }
                 break;
             case 33 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:199: NEW
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:199: NEW
                 {
                 	mNEW(); if (state.failed) return ;
 
                 }
                 break;
             case 34 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:203: NOT
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:203: NOT
                 {
                 	mNOT(); if (state.failed) return ;
 
                 }
                 break;
             case 35 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:207: NULL
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:207: NULL
                 {
                 	mNULL(); if (state.failed) return ;
 
                 }
                 break;
             case 36 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:212: OR
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:212: OR
                 {
                 	mOR(); if (state.failed) return ;
 
                 }
                 break;
             case 37 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:215: ORDER
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:215: ORDER
                 {
                 	mORDER(); if (state.failed) return ;
 
                 }
                 break;
             case 38 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:221: OUTER
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:221: OUTER
                 {
                 	mOUTER(); if (state.failed) return ;
 
                 }
                 break;
             case 39 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:227: PROPERTIES
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:227: PROPERTIES
                 {
                 	mPROPERTIES(); if (state.failed) return ;
 
                 }
                 break;
             case 40 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:238: RIGHT
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:238: RIGHT
                 {
                 	mRIGHT(); if (state.failed) return ;
 
                 }
                 break;
             case 41 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:244: SELECT
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:244: SELECT
                 {
                 	mSELECT(); if (state.failed) return ;
 
                 }
                 break;
             case 42 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:251: SET
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:251: SET
                 {
                 	mSET(); if (state.failed) return ;
 
                 }
                 break;
             case 43 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:255: SOME
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:255: SOME
                 {
                 	mSOME(); if (state.failed) return ;
 
                 }
                 break;
             case 44 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:260: SUM
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:260: SUM
                 {
                 	mSUM(); if (state.failed) return ;
 
                 }
                 break;
             case 45 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:264: TRUE
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:264: TRUE
                 {
                 	mTRUE(); if (state.failed) return ;
 
                 }
                 break;
             case 46 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:269: UNION
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:269: UNION
                 {
                 	mUNION(); if (state.failed) return ;
 
                 }
                 break;
             case 47 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:275: UPDATE
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:275: UPDATE
                 {
                 	mUPDATE(); if (state.failed) return ;
 
                 }
                 break;
             case 48 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:282: VERSIONED
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:282: VERSIONED
                 {
                 	mVERSIONED(); if (state.failed) return ;
 
                 }
                 break;
             case 49 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:292: WHERE
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:292: WHERE
                 {
                 	mWHERE(); if (state.failed) return ;
 
                 }
                 break;
             case 50 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:298: LITERAL_by
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:298: LITERAL_by
                 {
                 	mLITERAL_by(); if (state.failed) return ;
 
                 }
                 break;
             case 51 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:309: CASE
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:309: CASE
                 {
                 	mCASE(); if (state.failed) return ;
 
                 }
                 break;
             case 52 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:314: END
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:314: END
                 {
                 	mEND(); if (state.failed) return ;
 
                 }
                 break;
             case 53 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:318: ELSE
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:318: ELSE
                 {
                 	mELSE(); if (state.failed) return ;
 
                 }
                 break;
             case 54 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:323: THEN
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:323: THEN
                 {
                 	mTHEN(); if (state.failed) return ;
 
                 }
                 break;
             case 55 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:328: WHEN
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:328: WHEN
                 {
                 	mWHEN(); if (state.failed) return ;
 
                 }
                 break;
             case 56 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:333: ON
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:333: ON
                 {
                 	mON(); if (state.failed) return ;
 
                 }
                 break;
             case 57 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:336: WITH
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:336: WITH
                 {
                 	mWITH(); if (state.failed) return ;
 
                 }
                 break;
             case 58 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:341: BOTH
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:341: BOTH
                 {
                 	mBOTH(); if (state.failed) return ;
 
                 }
                 break;
             case 59 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:346: EMPTY
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:346: EMPTY
                 {
                 	mEMPTY(); if (state.failed) return ;
 
                 }
                 break;
             case 60 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:352: LEADING
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:352: LEADING
                 {
                 	mLEADING(); if (state.failed) return ;
 
                 }
                 break;
             case 61 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:360: MEMBER
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:360: MEMBER
                 {
                 	mMEMBER(); if (state.failed) return ;
 
                 }
                 break;
             case 62 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:367: OBJECT
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:367: OBJECT
                 {
                 	mOBJECT(); if (state.failed) return ;
 
                 }
                 break;
             case 63 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:374: OF
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:374: OF
                 {
                 	mOF(); if (state.failed) return ;
 
                 }
                 break;
             case 64 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:377: TRAILING
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:377: TRAILING
                 {
                 	mTRAILING(); if (state.failed) return ;
 
                 }
                 break;
             case 65 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:386: T__130
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:386: T__130
                 {
                 	mT__130(); if (state.failed) return ;
 
                 }
                 break;
             case 66 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:393: T__131
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:393: T__131
                 {
                 	mT__131(); if (state.failed) return ;
 
                 }
                 break;
             case 67 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:400: EQ
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:400: EQ
                 {
                 	mEQ(); if (state.failed) return ;
 
                 }
                 break;
             case 68 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:403: LT
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:403: LT
                 {
                 	mLT(); if (state.failed) return ;
 
                 }
                 break;
             case 69 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:406: GT
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:406: GT
                 {
                 	mGT(); if (state.failed) return ;
 
                 }
                 break;
             case 70 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:409: SQL_NE
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:409: SQL_NE
                 {
                 	mSQL_NE(); if (state.failed) return ;
 
                 }
                 break;
             case 71 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:416: NE
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:416: NE
                 {
                 	mNE(); if (state.failed) return ;
 
                 }
                 break;
             case 72 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:419: LE
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:419: LE
                 {
                 	mLE(); if (state.failed) return ;
 
                 }
                 break;
             case 73 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:422: GE
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:422: GE
                 {
                 	mGE(); if (state.failed) return ;
 
                 }
                 break;
             case 74 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:425: BOR
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:425: BOR
                 {
                 	mBOR(); if (state.failed) return ;
 
                 }
                 break;
             case 75 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:429: BXOR
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:429: BXOR
                 {
                 	mBXOR(); if (state.failed) return ;
 
                 }
                 break;
             case 76 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:434: BAND
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:434: BAND
                 {
                 	mBAND(); if (state.failed) return ;
 
                 }
                 break;
             case 77 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:439: BNOT
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:439: BNOT
                 {
                 	mBNOT(); if (state.failed) return ;
 
                 }
                 break;
             case 78 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:444: COMMA
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:444: COMMA
                 {
                 	mCOMMA(); if (state.failed) return ;
 
                 }
                 break;
             case 79 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:450: OPEN
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:450: OPEN
                 {
                 	mOPEN(); if (state.failed) return ;
 
                 }
                 break;
             case 80 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:455: CLOSE
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:455: CLOSE
                 {
                 	mCLOSE(); if (state.failed) return ;
 
                 }
                 break;
             case 81 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:461: OPEN_BRACKET
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:461: OPEN_BRACKET
                 {
                 	mOPEN_BRACKET(); if (state.failed) return ;
 
                 }
                 break;
             case 82 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:474: CLOSE_BRACKET
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:474: CLOSE_BRACKET
                 {
                 	mCLOSE_BRACKET(); if (state.failed) return ;
 
                 }
                 break;
             case 83 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:488: CONCAT
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:488: CONCAT
                 {
                 	mCONCAT(); if (state.failed) return ;
 
                 }
                 break;
             case 84 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:495: PLUS
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:495: PLUS
                 {
                 	mPLUS(); if (state.failed) return ;
 
                 }
                 break;
             case 85 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:500: MINUS
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:500: MINUS
                 {
                 	mMINUS(); if (state.failed) return ;
 
                 }
                 break;
             case 86 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:506: STAR
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:506: STAR
                 {
                 	mSTAR(); if (state.failed) return ;
 
                 }
                 break;
             case 87 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:511: DIV
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:511: DIV
                 {
                 	mDIV(); if (state.failed) return ;
 
                 }
                 break;
             case 88 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:515: COLON
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:515: COLON
                 {
                 	mCOLON(); if (state.failed) return ;
 
                 }
                 break;
             case 89 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:521: PARAM
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:521: PARAM
                 {
                 	mPARAM(); if (state.failed) return ;
 
                 }
                 break;
             case 90 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:527: IDENT
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:527: IDENT
                 {
                 	mIDENT(); if (state.failed) return ;
 
                 }
                 break;
             case 91 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:533: QUOTED_String
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:533: QUOTED_String
                 {
                 	mQUOTED_String(); if (state.failed) return ;
 
                 }
                 break;
             case 92 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:547: WS
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:547: WS
                 {
                 	mWS(); if (state.failed) return ;
 
                 }
                 break;
             case 93 :
-                // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:1:550: NUM_INT
+                // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:1:550: NUM_INT
                 {
                 	mNUM_INT(); if (state.failed) return ;
 
@@ -4096,8 +4096,8 @@ public partial class HqlLexer : Lexer {
 
     // $ANTLR start "synpred1_Hql"
     public void synpred1_Hql_fragment() {
-        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:806:13: ( ESCqs )
-        // C:\\CSharp\\NH\\nhibernate\\src\\NHibernate\\Hql\\Ast\\ANTLR\\Hql.g:806:14: ESCqs
+        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:718:13: ( ESCqs )
+        // /Users/Steve/Projects/NHibernate/Trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Hql.g:718:14: ESCqs
         {
         	mESCqs(); if (state.failed) return ;
 
@@ -4197,42 +4197,42 @@ public partial class HqlLexer : Lexer {
         "\x01\x6e\x02\x24\x02\uffff\x01\x65\x01\x24\x01\x64\x01\x24\x01\x67"+
         "\x02\uffff\x01\x73\x01\uffff\x01\x24\x01\uffff\x02\x24\x03\uffff";
     const string DFA23_maxS =
-        "\x01\ufffe\x01\x76\x01\x79\x01\x6f\x01\x69\x01\x78\x01\x75\x01"+
-        "\x72\x01\x61\x01\x73\x01\x6f\x02\x69\x02\x75\x01\x72\x01\x69\x01"+
-        "\x75\x01\x72\x01\x70\x01\x65\x01\x69\x01\uffff\x01\x3e\x03\x3d\x01"+
-        "\x7c\x10\uffff\x01\x6c\x01\x79\x01\ufffe\x01\x67\x01\x74\x01\ufffe"+
-        "\x01\x74\x01\x61\x01\x75\x04\x73\x01\x63\x01\x69\x01\x64\x01\x70"+
-        "\x01\x6c\x01\x74\x01\x6f\x01\x6c\x01\x6f\x01\x76\x02\ufffe\x01\x69"+
-        "\x01\x66\x01\x6b\x01\x78\x01\x6e\x01\x6d\x01\x77\x01\x74\x01\x6c"+
-        "\x01\ufffe\x01\x74\x01\ufffe\x01\x6a\x01\ufffe\x01\x6f\x01\x67\x01"+
-        "\x74\x02\x6d\x01\x75\x01\x65\x01\x69\x01\x64\x01\x72\x01\x65\x01"+
-        "\x74\x0a\uffff\x04\ufffe\x01\uffff\x01\ufffe\x01\x77\x01\uffff\x01"+
-        "\x68\x01\x73\x01\x6e\x02\x65\x01\x63\x01\x74\x01\x6d\x01\x65\x01"+
-        "\x61\x01\x73\x01\ufffe\x01\x74\x01\x73\x01\x63\x01\x6d\x01\x6c\x01"+
-        "\x75\x02\x69\x02\x65\x01\x6f\x02\uffff\x01\x6e\x01\x74\x01\x64\x01"+
-        "\x65\x02\ufffe\x01\x62\x02\ufffe\x01\x6c\x01\x65\x01\uffff\x01\x65"+
-        "\x01\uffff\x01\x65\x01\uffff\x01\x70\x01\x68\x01\x65\x01\ufffe\x01"+
-        "\x65\x01\ufffe\x01\x65\x01\x69\x01\x6e\x01\x6f\x01\x61\x01\x73\x01"+
-        "\x72\x01\x68\x03\uffff\x01\x6e\x02\uffff\x01\x65\x01\ufffe\x01\x73"+
-        "\x01\x74\x01\ufffe\x01\x74\x01\ufffe\x01\x69\x01\x65\x01\ufffe\x01"+
-        "\x70\x01\x74\x01\uffff\x01\x79\x01\x65\x01\x68\x02\ufffe\x01\x70"+
-        "\x01\x6e\x01\x63\x02\x72\x03\ufffe\x01\x69\x01\ufffe\x02\uffff\x01"+
-        "\x65\x02\uffff\x01\ufffe\x02\x72\x01\x63\x01\x65\x01\x74\x01\x63"+
-        "\x01\uffff\x01\ufffe\x01\uffff\x01\ufffe\x01\x6c\x01\ufffe\x01\x6e"+
-        "\x01\x74\x01\x69\x01\x65\x02\ufffe\x01\x64\x01\x65\x01\uffff\x02"+
-        "\ufffe\x01\uffff\x01\x65\x01\x6e\x01\uffff\x02\x6e\x01\uffff\x01"+
-        "\x65\x01\x73\x03\ufffe\x02\uffff\x01\ufffe\x01\x67\x01\x65\x01\ufffe"+
-        "\x01\x74\x03\uffff\x01\x6e\x01\uffff\x01\x72\x01\uffff\x02\ufffe"+
-        "\x01\x74\x01\x72\x01\ufffe\x01\x74\x02\uffff\x01\x69\x01\uffff\x01"+
-        "\ufffe\x01\x65\x01\x6f\x01\ufffe\x02\uffff\x01\x69\x01\x6e\x02\uffff"+
-        "\x01\ufffe\x01\x64\x01\x63\x01\x74\x02\ufffe\x04\uffff\x01\ufffe"+
-        "\x01\x73\x01\uffff\x01\ufffe\x01\x67\x01\ufffe\x02\uffff\x01\ufffe"+
-        "\x01\x74\x01\uffff\x01\ufffe\x01\x6e\x01\uffff\x01\ufffe\x01\x6e"+
-        "\x01\uffff\x01\x6e\x01\ufffe\x01\uffff\x01\x69\x01\x74\x01\x73\x03"+
-        "\uffff\x01\ufffe\x01\uffff\x01\ufffe\x02\uffff\x01\x69\x01\uffff"+
-        "\x01\x67\x01\uffff\x01\x65\x01\x67\x01\uffff\x01\x6e\x02\ufffe\x02"+
-        "\uffff\x01\x65\x01\ufffe\x01\x64\x01\ufffe\x01\x67\x02\uffff\x01"+
-        "\x73\x01\uffff\x01\ufffe\x01\uffff\x02\ufffe\x03\uffff";
+        "\x01\ufffe\x01\x76\x01\x79\x01\x6f\x01\x69\x01\x78\x01\x75\x01\x72"+
+        "\x01\x61\x01\x73\x01\x6f\x02\x69\x02\x75\x01\x72\x01\x69\x01\x75"+
+        "\x01\x72\x01\x70\x01\x65\x01\x69\x01\uffff\x01\x3e\x03\x3d\x01\x7c"+
+        "\x10\uffff\x01\x6c\x01\x79\x01\ufffe\x01\x67\x01\x74\x01\ufffe\x01"+
+        "\x74\x01\x61\x01\x75\x04\x73\x01\x63\x01\x69\x01\x64\x01\x70\x01"+
+        "\x6c\x01\x74\x01\x6f\x01\x6c\x01\x6f\x01\x76\x02\ufffe\x01\x69\x01"+
+        "\x66\x01\x6b\x01\x78\x01\x6e\x01\x6d\x01\x77\x01\x74\x01\x6c\x01"+
+        "\ufffe\x01\x74\x01\ufffe\x01\x6a\x01\ufffe\x01\x6f\x01\x67\x01\x74"+
+        "\x02\x6d\x01\x75\x01\x65\x01\x69\x01\x64\x01\x72\x01\x65\x01\x74"+
+        "\x0a\uffff\x04\ufffe\x01\uffff\x01\ufffe\x01\x77\x01\uffff\x01\x68"+
+        "\x01\x73\x01\x6e\x02\x65\x01\x63\x01\x74\x01\x6d\x01\x65\x01\x61"+
+        "\x01\x73\x01\ufffe\x01\x74\x01\x73\x01\x63\x01\x6d\x01\x6c\x01\x75"+
+        "\x02\x69\x02\x65\x01\x6f\x02\uffff\x01\x6e\x01\x74\x01\x64\x01\x65"+
+        "\x02\ufffe\x01\x62\x02\ufffe\x01\x6c\x01\x65\x01\uffff\x01\x65\x01"+
+        "\uffff\x01\x65\x01\uffff\x01\x70\x01\x68\x01\x65\x01\ufffe\x01\x65"+
+        "\x01\ufffe\x01\x65\x01\x69\x01\x6e\x01\x6f\x01\x61\x01\x73\x01\x72"+
+        "\x01\x68\x03\uffff\x01\x6e\x02\uffff\x01\x65\x01\ufffe\x01\x73\x01"+
+        "\x74\x01\ufffe\x01\x74\x01\ufffe\x01\x69\x01\x65\x01\ufffe\x01\x70"+
+        "\x01\x74\x01\uffff\x01\x79\x01\x65\x01\x68\x02\ufffe\x01\x70\x01"+
+        "\x6e\x01\x63\x02\x72\x03\ufffe\x01\x69\x01\ufffe\x02\uffff\x01\x65"+
+        "\x02\uffff\x01\ufffe\x02\x72\x01\x63\x01\x65\x01\x74\x01\x63\x01"+
+        "\uffff\x01\ufffe\x01\uffff\x01\ufffe\x01\x6c\x01\ufffe\x01\x6e\x01"+
+        "\x74\x01\x69\x01\x65\x02\ufffe\x01\x64\x01\x65\x01\uffff\x02\ufffe"+
+        "\x01\uffff\x01\x65\x01\x6e\x01\uffff\x02\x6e\x01\uffff\x01\x65\x01"+
+        "\x73\x03\ufffe\x02\uffff\x01\ufffe\x01\x67\x01\x65\x01\ufffe\x01"+
+        "\x74\x03\uffff\x01\x6e\x01\uffff\x01\x72\x01\uffff\x02\ufffe\x01"+
+        "\x74\x01\x72\x01\ufffe\x01\x74\x02\uffff\x01\x69\x01\uffff\x01\ufffe"+
+        "\x01\x65\x01\x6f\x01\ufffe\x02\uffff\x01\x69\x01\x6e\x02\uffff\x01"+
+        "\ufffe\x01\x64\x01\x63\x01\x74\x02\ufffe\x04\uffff\x01\ufffe\x01"+
+        "\x73\x01\uffff\x01\ufffe\x01\x67\x01\ufffe\x02\uffff\x01\ufffe\x01"+
+        "\x74\x01\uffff\x01\ufffe\x01\x6e\x01\uffff\x01\ufffe\x01\x6e\x01"+
+        "\uffff\x01\x6e\x01\ufffe\x01\uffff\x01\x69\x01\x74\x01\x73\x03\uffff"+
+        "\x01\ufffe\x01\uffff\x01\ufffe\x02\uffff\x01\x69\x01\uffff\x01\x67"+
+        "\x01\uffff\x01\x65\x01\x67\x01\uffff\x01\x6e\x02\ufffe\x02\uffff"+
+        "\x01\x65\x01\ufffe\x01\x64\x01\ufffe\x01\x67\x02\uffff\x01\x73\x01"+
+        "\uffff\x01\ufffe\x01\uffff\x02\ufffe\x03\uffff";
     const string DFA23_acceptS =
         "\x16\uffff\x01\x43\x05\uffff\x01\x4c\x01\x4e\x01\x4f\x01\x50\x01"+
         "\x51\x01\x52\x01\x54\x01\x55\x01\x56\x01\x57\x01\x58\x01\x59\x01"+

@@ -109,13 +109,18 @@ newValue
 	: expr | query
 	;
 
+query
+	: unionedQuery 
+	| ^(UNION unionedQuery query)
+	;
+
 // The query / subquery rule. Pops the current 'from node' context 
 // (list of aliases).
-query!
+unionedQuery!
 	@after {
 		// Antlr note: #x_in refers to the input AST, #x refers to the output AST
 		BeforeStatementCompletion( "select" );
-		ProcessQuery( $s.tree, $query.tree );
+		ProcessQuery( $s.tree, $unionedQuery.tree );
 		AfterStatementCompletion( "select" );
 	}
 	: ^( QUERY { BeforeStatement( "select", SELECT ); }
