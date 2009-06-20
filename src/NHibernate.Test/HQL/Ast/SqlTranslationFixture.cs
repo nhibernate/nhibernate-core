@@ -19,7 +19,6 @@ namespace NHibernate.Test.HQL.Ast
 			const string query = "from SimpleClass s where (case when s.IntValue > 0 then (cast(s.IntValue as long) * :pAValue) else 1 end) > 0";
 			Assert.DoesNotThrow(() => GetSql(query));
 
-			// This query fail because parenthesis on the math operation and does not fail in the old parser
 			const string queryWithoutParen = "from SimpleClass s where (case when s.IntValue > 0 then cast(s.IntValue as long) * :pAValue else 1 end) > 0";
 			Assert.DoesNotThrow(() => GetSqlWithClassicParser(queryWithoutParen));
 			Assert.DoesNotThrow(() => GetSql(queryWithoutParen));
@@ -28,11 +27,11 @@ namespace NHibernate.Test.HQL.Ast
 		[Test]
 		public void Union()
 		{
-			string query = "from SimpleClass s where s.id in ((select s1.id from SimpleClass s1) union (select s2.id from SimpleClass s2))";
+			const string query = "from SimpleClass s where s.id in ((select s1.id from SimpleClass s1) union (select s2.id from SimpleClass s2))";
 			Assert.DoesNotThrow(() => GetSqlWithClassicParser(query));
 
-         query = "from SimpleClass s where s.id in (select s1.id from SimpleClass s1 union select s2.id from SimpleClass s2)"; 
-         Assert.DoesNotThrow(() => GetSql(query));
+			const string queryForAntlr = "from SimpleClass s where s.id in (select s1.id from SimpleClass s1 union select s2.id from SimpleClass s2)";
+			Assert.DoesNotThrow(() => GetSql(queryForAntlr));
 		}
 	}
 }
