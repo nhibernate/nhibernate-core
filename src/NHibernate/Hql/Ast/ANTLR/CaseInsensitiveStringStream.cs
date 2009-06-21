@@ -7,7 +7,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 	/// Look ahead for tokenizing is all lowercase, whereas the original case of an input stream is preserved.
 	/// Copied from http://www.antlr.org/wiki/pages/viewpage.action?pageId=1782
 	///</summary>
-	[CLSCompliant(false)]
 	internal class CaseInsensitiveStringStream : ANTLRStringStream
 	{
 		public CaseInsensitiveStringStream(string input) : base(input) { }

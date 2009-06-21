@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
@@ -14,7 +13,7 @@ using IASTNode=NHibernate.Hql.Ast.ANTLR.Tree.IASTNode;
 namespace NHibernate.Hql.Ast.ANTLR
 {
 	[CLSCompliant(false)]
-	internal class SessionFactoryHelperExtensions
+	public class SessionFactoryHelperExtensions
 	{
 		private readonly ISessionFactoryImplementor _sfi;
 		private readonly NullableDictionary<string, IPropertyMapping> _collectionPropertyMappingByRole;

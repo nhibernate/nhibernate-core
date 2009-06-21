@@ -449,7 +449,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 	    }
 	}
 
-	[CLSCompliant(false)]
 	internal class HqlParseEngine
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(HqlParseEngine));
@@ -560,7 +559,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 		}
 	}
 
-	[CLSCompliant(false)]
 	internal class HqlSqlTranslator
 	{
 		private readonly IASTNode _inputAst;
@@ -613,7 +611,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 		}
 	}
 
-	[CLSCompliant(false)]
 	internal class HqlSqlGenerator
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(HqlSqlGenerator));

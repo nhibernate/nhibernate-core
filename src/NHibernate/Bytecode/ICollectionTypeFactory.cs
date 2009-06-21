@@ -235,8 +235,8 @@ namespace NHibernate.Bytecode
 		/// <param name="role">The role the collection is in.</param>
 		/// <param name="propertyRef">The name of the property in the
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.<
-		/// /param>
+		/// the primary key.
+		/// </param>
 		/// <param name="embedded">Is embedded in XML (not supported yet)</param>
 		/// <returns>
 		/// A <see cref="MapType"/> for the specified role.

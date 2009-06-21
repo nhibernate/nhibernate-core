@@ -1684,7 +1684,7 @@ namespace NHibernate.Impl
 		/// If this Session is being Finalized (<c>isDisposing==false</c>) then make sure not
 		/// to call any methods that could potentially bring this Session back to life.
 		/// </remarks>
-		protected void Dispose(bool isDisposing)
+		private void Dispose(bool isDisposing)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{

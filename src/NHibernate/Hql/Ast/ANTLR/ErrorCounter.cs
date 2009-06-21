@@ -9,7 +9,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 	/// <summary>
 	/// An error handler that counts parsing errors and warnings.
 	/// </summary>
-	[CLSCompliant(false)]
 	internal class ErrorCounter : IParseErrorHandler 
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ErrorCounter));
