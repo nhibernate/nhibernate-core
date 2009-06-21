@@ -49,11 +49,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\3.5\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Spring.Aop, Version=1.2.0.20001, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Spring.Aop, Version=0.0.0.20110, Culture=neutral, PublicKeyToken=65e474d141e25e07, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\3.5\Spring.Aop.dll</HintPath>
     </Reference>
-    <Reference Include="Spring.Core, Version=1.2.0.20001, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Spring.Core, Version=0.0.0.20110, Culture=neutral, PublicKeyToken=65e474d141e25e07, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\3.5\Spring.Core.dll</HintPath>
     </Reference>

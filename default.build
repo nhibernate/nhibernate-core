@@ -16,7 +16,7 @@
 		Supported versions of .NET Framework, separated by spaces.
 		Used by *-all-frameworks targets.
 	-->
-	<property name="supported.frameworks" value="net-2.0" />
+	<property name="supported.frameworks" value="net-3.5" />
 
 	<fileset id="buildfiles.all" basedir="src">
 		<!-- Files have to be in dependency order -->
@@ -110,7 +110,7 @@
 	
 	<target name="check-framework-version">
 			<echo>Running with ${framework::get-target-framework()}</echo>
-			<fail message="ERROR: NHibernate requires .Net 3.5 to compile (but can run on .Net 2.0), please use the -t:net-3.5 parameter when starting nant" if="${framework::get-target-framework()!='net-3.5'}"/>
+			<fail message="ERROR: NHibernate requires .Net 3.5." if="${framework::get-target-framework()!='net-3.5'}"/>
 	</target>
 
 	<target name="test-report" if="${nunit2report.installed}">
