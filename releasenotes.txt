@@ -33,6 +33,46 @@ Build 2.1.0
 		* ADOException now use string instead SqlString
 		* IParameterizedType is using IDictionary<string, string>
 
+Build 2.1.0.Beta2 (rev4499)
+=============================
+** Sub-task
+    * [NH-1827] - SchemaUpdate exception 
+    * [NH-1843] - Precision and scale for MySQL is not working, too
+
+** Bug
+    * [NH-1734] - NHibernate aggregate function sum() to return Int64 instead of floating point value
+    * [NH-1810] - Use of custom sorted set leads to "collection not processed by flush" exception
+    * [NH-1812] - Aggregates + IsNull bug (AST parser)
+    * [NH-1821] - Wrong SQL executed when the SQL contains new lines
+    * [NH-1822] - CLONE -NHibernate.Util.TypeNameParser doesn't parse correctly generic types
+    * [NH-1830] - Missing MatchMode Parameter 
+    * [NH-1831] - AST Parser & Bitwise queries
+    * [NH-1834] - Formula node in Many-To-One is ignored
+    * [NH-1835] - prepare_sql = true (creating prepared queries) makes NHibernate set up wrong size for byte arrays larger than 8000
+    * [NH-1837] - UniqueResult<T>() executes sql query twice.
+
+** Improvement
+    * [NH-473] - order-by in <bag> is ignored if FetchMode is Join
+    * [NH-1069] - Add context information to LazyInitializationException.
+    * [NH-1097] - Should not parse column names, and consider them as failing HQL queries
+    * [NH-1192] - Support bitwise operations
+    * [NH-1266] - ISQLExceptionConverter for various Dialects
+    * [NH-1672] - Unnecessary calls to planCache.Put
+    * [NH-1820] - PostgreSQL: support for Temporary Tables
+    * [NH-1824] - MySQL: support for Temporary Tables
+    * [NH-1826] - PostgreSQL: support iff() function
+    * [NH-1833] - OverflowException instead of expected FormatException when trying to parse a "long" literal 
+    * [NH-1846] - DbTimestampType (from H3.3.1)
+
+** New Feature
+    * [NH-1623] - Configuration of UserCollection for any collection type
+    * [NH-1817] - Allow <typedef> for Id generator class
+
+** Patch
+    * [NH-1829] - AbstractEntityPersister.Delete is not virtual
+    * [NH-1842] - Type.CharBooleanType.ctor(SqlType) is internal for no reason. Making it protected supports better extensibility.
+
+
 Build 2.1.0.Beta1 (rev4424)
 =============================
 ** Bug
