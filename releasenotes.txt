@@ -33,7 +33,7 @@ Build 2.1.0
 		* ADOException now use string instead SqlString
 		* IParameterizedType is using IDictionary<string, string>
 
-Build 2.1.0.Beta2 (rev4499)
+Build 2.1.0.Beta2 (rev4501)
 =============================
 ** Sub-task
     * [NH-1827] - SchemaUpdate exception 
