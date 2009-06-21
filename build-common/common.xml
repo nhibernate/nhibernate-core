@@ -76,7 +76,7 @@
 		effectively SP0).
 	-->
 
-	<property name="project.version" value="2.1.0.Beta2" overwrite="false" />
+	<property name="project.version" value="3.0.0.Alpha1" overwrite="false" />
 
 	<!-- Compute short project version (major.minor) using a regex -->
 	<regex input="${project.version}" pattern="^(?'shortversion'\d+\.\d+)" />
