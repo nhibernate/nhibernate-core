@@ -3,9 +3,15 @@ using log4net;
 
 namespace NHibernate.Impl
 {
+	using System.Web;
+
 	public class SessionIdLoggingContext : IDisposable
 	{
-		private readonly object oldSessonId;
+		[ThreadStatic] private static Guid? CurrentSessionId;
+
+		private const string CurrentSessionIdKey = "NHibernate.Impl.SessionIdLoggingContext.CurrentSessionId";
+
+		private readonly Guid? oldSessonId;
 
 		public SessionIdLoggingContext(Guid id)
 		{
@@ -18,28 +24,20 @@ namespace NHibernate.Impl
 		/// this is usally the case if we are called from the finalizer, since this is something
 		/// that we do only for logging, we ignore the error.
 		/// </summary>
-		private static object SessionId
+		public static Guid? SessionId
 		{
 			get
 			{
-				try
-				{
-					return ThreadContext.Properties["sessionId"];
-				}
-				catch (Exception)
-				{
-					return null;
-				}
+				if (HttpContext.Current != null)
+					return (Guid?)HttpContext.Current.Items[CurrentSessionIdKey];
+				return CurrentSessionId;
 			}
 			set
 			{
-				try
-				{
-					ThreadContext.Properties["sessionId"] = value;
-				}
-				catch (Exception)
-				{
-				}
+				if (HttpContext.Current != null)
+					HttpContext.Current.Items[CurrentSessionIdKey] = value;
+				else
+					CurrentSessionId = value;
 			}
 		}
 
