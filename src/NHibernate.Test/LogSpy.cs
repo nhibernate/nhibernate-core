@@ -19,7 +19,7 @@ namespace NHibernate.Test
 			logger = log.Logger as Logger;
 			if (logger == null)
 			{
-				throw new Exception("Unable to get the SQL logger");
+				throw new Exception("Unable to get the logger");
 			}
 
 			// Change the log level to DEBUG and temporarily save the previous log level
