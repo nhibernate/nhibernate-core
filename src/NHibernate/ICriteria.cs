@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
@@ -9,7 +10,7 @@ namespace NHibernate
 {
 	/// <summary>
 	/// Criteria is a simplified API for retrieving entities by composing
-	/// <see cref="Expression" /> objects.
+	/// <see cref="Criterion.Expression" /> objects.
 	/// </summary>
 	/// <remarks>
 	/// <para>
@@ -18,7 +19,7 @@ namespace NHibernate
 	/// </para>
 	/// <para>
 	/// The Session is a factory for ICriteria. Expression instances are usually obtained via 
-	/// the factory methods on <see cref="Expression" />. eg:
+	/// the factory methods on <see cref="Criterion.Expression" />. eg:
 	/// </para>
 	/// <code>
 	/// IList cats = session.CreateCriteria(typeof(Cat)) 
@@ -80,6 +81,14 @@ namespace NHibernate
 		/// <param name="expression"></param>
 		/// <returns></returns>
 		ICriteria Add(ICriterion expression);
+
+		/// <summary>
+		/// Add criterion expressed as a lambda expression
+		/// </summary>
+		/// <typeparam name="T">Type (same as criteria type)</typeparam>
+		/// <param name="expression">Lambda expression</param>
+		/// <returns>criteria instance</returns>
+		ICriteria Add<T>(Expression<Func<T, bool>> expression);
 
 		/// <summary>
 		/// An an Order to the result set 
