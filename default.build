@@ -52,6 +52,7 @@
 
 	<target name="copy-referenced-assemblies">
 		<!-- Copy framework-neutral libraries -->
+		
 		<copy todir="${bin.dir}" >
 			<fileset basedir="${lib.dir}">
 				<include name="*.dll" />
