@@ -10,8 +10,6 @@ using NHibernate.Impl;
 
 using NUnit.Framework;
 
-using Rhino.Mocks;
-
 namespace NHibernate.Test.Criteria.Lambda
 {
 
@@ -21,33 +19,9 @@ namespace NHibernate.Test.Criteria.Lambda
 		private Hashtable _visitedObjects = new Hashtable();
 		private Stack<string> _fieldPath = new Stack<string>();
 
-		private ICriteria CreateCriteriaStub(System.Type persistentType)
-		{
-			return new CriteriaImpl(persistentType, null);
-		}
-
-		private ICriteria CreateCriteriaStub(System.Type persistentType, string alias)
-		{
-			return new CriteriaImpl(persistentType, alias, null);
-		}
-
 		protected ISession CreateSession()
 		{
-			MockRepository mocks = new MockRepository();
-			ISession session = mocks.Stub<ISession>();
-
-			Expect
-				.Call(session.CreateCriteria(typeof(object)))
-				.IgnoreArguments().Repeat.Any()
-				.Do((Func<System.Type, ICriteria>)CreateCriteriaStub);
-
-			Expect
-				.Call(session.CreateCriteria(typeof(object), ""))
-				.IgnoreArguments().Repeat.Any()
-				.Do((Func<System.Type, string, ICriteria>)CreateCriteriaStub);
-
-			mocks.ReplayAll();
-			return session;
+			return new SessionStub();
 		}
 
 		private void AssertDictionariesAreEqual(IDictionary expected, IDictionary actual)
