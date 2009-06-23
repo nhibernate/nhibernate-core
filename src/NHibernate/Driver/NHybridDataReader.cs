@@ -27,6 +27,8 @@ namespace NHibernate.Driver
 		private IDataReader _reader;
 		private bool _isMidstream = false;
 
+		public IDataReader Target { get { return _reader; } }
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NHybridDataReader"/> class.
 		/// </summary>
