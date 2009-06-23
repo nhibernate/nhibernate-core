@@ -19,9 +19,14 @@ namespace NHibernate.Test.Criteria.Lambda
 		private Hashtable _visitedObjects = new Hashtable();
 		private Stack<string> _fieldPath = new Stack<string>();
 
-		protected ISession CreateSession()
+		protected ICriteria CreateTestCriteria(System.Type persistentClass)
 		{
-			return new SessionStub();
+			return new CriteriaImpl(persistentClass, null);
+		}
+
+		protected ICriteria CreateTestCriteria(System.Type persistentClass, string alias)
+		{
+			return new CriteriaImpl(persistentClass, alias, null);
 		}
 
 		private void AssertDictionariesAreEqual(IDictionary expected, IDictionary actual)

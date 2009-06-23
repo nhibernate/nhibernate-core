@@ -18,12 +18,12 @@ namespace NHibernate.Test.Criteria.Lambda
 		[Test]
 		public void Equality()
 		{
-			ICriteria expected = CreateSession()
-				.CreateCriteria(typeof(Person))
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
 					.Add(Restrictions.Eq("Name", "test name"));
 
-			ICriteria actual = CreateSession()
-				.CreateCriteria(typeof(Person))
+			ICriteria actual =
+				CreateTestCriteria(typeof(Person))
 					.Add<Person>(p => p.Name == "test name");
 
 			AssertCriteriaAreEqual(expected, actual);

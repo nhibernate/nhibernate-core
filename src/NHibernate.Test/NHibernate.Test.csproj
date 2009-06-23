@@ -146,7 +146,6 @@
     <Compile Include="Criteria\Lambda\CriteriaFixture.cs" />
     <Compile Include="Criteria\Lambda\LambdaFixtureBase.cs" />
     <Compile Include="Criteria\Lambda\Model.cs" />
-    <Compile Include="Criteria\Lambda\SessionStub.cs" />
     <Compile Include="Criteria\MaterialResource.cs" />
     <Compile Include="Criteria\ProjectionsTest.cs" />
     <Compile Include="Criteria\Reptile.cs" />
