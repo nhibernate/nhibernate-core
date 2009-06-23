@@ -10,5 +10,9 @@ namespace NHibernate.Test.Criteria.Lambda
 		public string Name { get; set; }
 	}
 
+	public class Child
+	{
+	}
+
 }
 

@@ -143,6 +143,7 @@
     <Compile Include="Criteria\CriteriaQueryTest.cs" />
     <Compile Include="Criteria\DetachedCriteriaSerializable.cs" />
     <Compile Include="Criteria\Enrolment.cs" />
+    <Compile Include="Criteria\Lambda\CriteriaAssertFixture.cs" />
     <Compile Include="Criteria\Lambda\CriteriaFixture.cs" />
     <Compile Include="Criteria\Lambda\LambdaFixtureBase.cs" />
     <Compile Include="Criteria\Lambda\Model.cs" />
