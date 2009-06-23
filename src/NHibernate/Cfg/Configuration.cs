@@ -1229,9 +1229,9 @@ namespace NHibernate.Cfg
 			return PropertiesHelper.GetString(name, properties, null);
 		}
 
-		private void AddProperties(IHibernateConfiguration hc)
+		private void AddProperties(ISessionFactoryConfiguration factoryConfiguration)
 		{
-			foreach (var kvp in hc.SessionFactory.Properties)
+			foreach (var kvp in factoryConfiguration.Properties)
 			{
 				if (log.IsDebugEnabled)
 				{
@@ -1262,7 +1262,7 @@ namespace NHibernate.Cfg
 			var hc = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName) as IHibernateConfiguration;
 			if (hc != null && hc.SessionFactory != null)
 			{
-				return DoConfigure(hc);
+				return DoConfigure(hc.SessionFactory);
 			}
 			else
 			{
@@ -1368,7 +1368,7 @@ namespace NHibernate.Cfg
 			try
 			{
 				IHibernateConfiguration hc = new HibernateConfiguration(textReader);
-				return DoConfigure(hc);
+				return DoConfigure(hc.SessionFactory);
 			}
 			catch (Exception e)
 			{
@@ -1379,17 +1379,17 @@ namespace NHibernate.Cfg
 
 		// Not ported - configure(org.w3c.dom.Document)
 
-		protected Configuration DoConfigure(IHibernateConfiguration hc)
+		protected Configuration DoConfigure(ISessionFactoryConfiguration factoryConfiguration)
 		{
-			if (!string.IsNullOrEmpty(hc.SessionFactory.Name))
+			if (!string.IsNullOrEmpty(factoryConfiguration.Name))
 			{
-				properties[Environment.SessionFactoryName] = hc.SessionFactory.Name;
+				properties[Environment.SessionFactoryName] = factoryConfiguration.Name;
 			}
 
-			AddProperties(hc);
+			AddProperties(factoryConfiguration);
 
 			// Load mappings
-			foreach (var mc in hc.SessionFactory.Mappings)
+			foreach (var mc in factoryConfiguration.Mappings)
 			{
 				if (mc.IsEmpty())
 				{
@@ -1397,23 +1397,23 @@ namespace NHibernate.Cfg
 				}
 				if (!string.IsNullOrEmpty(mc.Resource) && !string.IsNullOrEmpty(mc.Assembly))
 				{
-					log.Debug(hc.SessionFactory.Name + "<-" + mc.Resource + " in " + mc.Assembly);
+					log.Debug(factoryConfiguration.Name + "<-" + mc.Resource + " in " + mc.Assembly);
 					AddResource(mc.Resource, Assembly.Load(mc.Assembly));
 				}
 				else if (!string.IsNullOrEmpty(mc.Assembly))
 				{
-					log.Debug(hc.SessionFactory.Name + "<-" + mc.Assembly);
+					log.Debug(factoryConfiguration.Name + "<-" + mc.Assembly);
 					AddAssembly(mc.Assembly);
 				}
 				else if (!string.IsNullOrEmpty(mc.File))
 				{
-					log.Debug(hc.SessionFactory.Name + "<-" + mc.File);
+					log.Debug(factoryConfiguration.Name + "<-" + mc.File);
 					AddFile(mc.File);
 				}
 			}
 
 			// Load class-cache
-			foreach (var ccc in hc.SessionFactory.ClassesCache)
+			foreach (var ccc in factoryConfiguration.ClassesCache)
 			{
 				string region = string.IsNullOrEmpty(ccc.Region) ? ccc.Class : ccc.Region;
 				bool includeLazy = (ccc.Include != ClassCacheInclude.NonLazy);
@@ -1421,7 +1421,7 @@ namespace NHibernate.Cfg
 			}
 
 			// Load collection-cache
-			foreach (var ccc in hc.SessionFactory.CollectionsCache)
+			foreach (var ccc in factoryConfiguration.CollectionsCache)
 			{
 				string role = ccc.Collection;
 				NHibernate.Mapping.Collection collection = GetCollectionMapping(role);
@@ -1436,7 +1436,7 @@ namespace NHibernate.Cfg
 			}
 
 			// Events
-			foreach (var ec in hc.SessionFactory.Events)
+			foreach (var ec in factoryConfiguration.Events)
 			{
 				var listenerClasses = new string[ec.Listeners.Count];
 				for (int i = 0; i < ec.Listeners.Count; i++)
@@ -1447,15 +1447,15 @@ namespace NHibernate.Cfg
 				SetListeners(ec.Type, listenerClasses);
 			}
 			// Listeners
-			foreach (var lc in hc.SessionFactory.Listeners)
+			foreach (var lc in factoryConfiguration.Listeners)
 			{
 				log.Debug("Event listener: " + lc.Type + "=" + lc.Class);
 				SetListeners(lc.Type, new[] {lc.Class});
 			}
 
-			if (!string.IsNullOrEmpty(hc.SessionFactory.Name))
+			if (!string.IsNullOrEmpty(factoryConfiguration.Name))
 			{
-				log.Info("Configured SessionFactory: " + hc.SessionFactory.Name);
+				log.Info("Configured SessionFactory: " + factoryConfiguration.Name);
 			}
 			log.Debug("properties: " + properties);
 
