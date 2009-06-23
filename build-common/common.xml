@@ -48,15 +48,23 @@
 	<if test="${clover.enabled}">
 		<loadtasks assembly="${clover.home}/${clover.assembly}" />
 	</if>
-
+	<property name="nant-version.current" value="${assemblyname::get-version(assembly::get-name(nant::get-assembly()))}" />
+	<property name="nant-version.required" value="0.85.2478.0" /> <!-- Nant 0.85 release version -->
+	<property name="nant-version.beta1_086" value="0.86.2898.0" /> <!-- Nant 0.86 Beta 1 -->
 	<!-- 
 		Path to the folder that contain the external assemblies.  For net-2.0 the values will
 		be lib, lib/net, and lib/net/2.0 respectively.
 	-->
 	<property name="lib.dir" value="lib" dynamic="true" />
 	<property name="lib.family.dir" value="${path::combine(lib.dir, framework::get-family(framework::get-target-framework()))}" dynamic="true" />
-	<property name="lib.framework.dir" value="${path::combine(lib.family.dir, version::to-string(framework::get-version(framework::get-target-framework())))}" dynamic="true" />
-
+	<if test="${nant-version.current != nant-version.beta1_086 or framework::get-target-framework() != 'net-3.5'}">
+		<property name="lib.framework.dir" value="${path::combine(lib.family.dir, version::to-string(framework::get-version(framework::get-target-framework())))}" dynamic="true" />
+	</if>
+	<if test="${nant-version.current == nant-version.beta1_086 and framework::get-target-framework() == 'net-3.5'}">
+		<echo>Detected NAnt 0.86 Beta 1, consider upgrading to a newer version (a nightly build) when building for .NET 3.5</echo>
+		<echo>The latest NAnt nightly can be downloaded from http://nant.sourceforge.net/nightly/latest/nant-bin.zip</echo>
+		<property name="lib.framework.dir" value="${path::combine(lib.family.dir, string::substring(framework::get-target-framework(), 4, 3))}" dynamic="true" />
+	</if>
 	<!-- 
 		These are used to set the correct attributes in AssemblyInfo.cs.  
 	-->
