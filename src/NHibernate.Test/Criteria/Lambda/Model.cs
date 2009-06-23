@@ -7,11 +7,13 @@ namespace NHibernate.Test.Criteria.Lambda
 
 	public class Person
 	{
-		public string Name { get; set; }
+		public virtual int		Id		{ get; set; }
+		public virtual string	Name	{ get; set; }
 	}
 
 	public class Child
 	{
+		public virtual int		Id		{ get; set; }
 	}
 
 }
