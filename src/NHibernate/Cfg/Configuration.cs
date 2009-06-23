@@ -83,80 +83,74 @@ namespace NHibernate.Cfg
 		#region ISerializable Members
 		public Configuration(SerializationInfo info, StreamingContext context)
 		{
-			this.Reset();
+			Reset();
 
-			this.EntityNotFoundDelegate = GetSerialedObject<IEntityNotFoundDelegate>(info, "entityNotFoundDelegate");
+			EntityNotFoundDelegate = GetSerialedObject<IEntityNotFoundDelegate>(info, "entityNotFoundDelegate");
 
+			auxiliaryDatabaseObjects = GetSerialedObject<IList<IAuxiliaryDatabaseObject>>(info, "auxiliaryDatabaseObjects");
+			classes = GetSerialedObject<IDictionary<string, PersistentClass>>(info, "classes");
+			collections = GetSerialedObject<IDictionary<string, NHibernate.Mapping.Collection>>(info, "collections");
 
-			this.auxiliaryDatabaseObjects = GetSerialedObject<IList<IAuxiliaryDatabaseObject>>(info, "auxiliaryDatabaseObjects");
-			this.classes = GetSerialedObject<IDictionary<string, PersistentClass>>(info, "classes");
-			this.collections = GetSerialedObject<IDictionary<string, NHibernate.Mapping.Collection>>(info, "collections");
-			
-			this.columnNameBindingPerTable = GetSerialedObject<IDictionary<Table, Mappings.ColumnNames>>(info,
-																										 "columnNameBindingPerTable");
-			this.defaultAssembly = GetSerialedObject<string>(info, "defaultAssembly");
-			this.defaultNamespace = GetSerialedObject<string>(info, "defaultNamespace");
-			this.eventListeners = GetSerialedObject<EventListeners>(info, "eventListeners");
+			columnNameBindingPerTable = GetSerialedObject<IDictionary<Table, Mappings.ColumnNames>>(info,
+			                                                                                        "columnNameBindingPerTable");
+			defaultAssembly = GetSerialedObject<string>(info, "defaultAssembly");
+			defaultNamespace = GetSerialedObject<string>(info, "defaultNamespace");
+			eventListeners = GetSerialedObject<EventListeners>(info, "eventListeners");
 			//this.extendsQueue = GetSerialedObject<ISet<ExtendsQueueEntry>>(info, "extendsQueue");
-			this.FilterDefinitions = GetSerialedObject<IDictionary<string, FilterDefinition>>(info, "filterDefinitions");
-			this.Imports = GetSerialedObject<IDictionary<string, string>>(info, "imports");
-			this.interceptor = GetSerialedObject<IInterceptor>(info, "interceptor");
-			this.mapping = GetSerialedObject<IMapping>(info, "mapping");
-			this.NamedQueries = GetSerialedObject<IDictionary<string, NamedQueryDefinition>>(info, "namedQueries");
-			this.NamedSQLQueries = GetSerialedObject<IDictionary<string, NamedSQLQueryDefinition>>(info, "namedSqlQueries");
-			this.namingStrategy = GetSerialedObject<INamingStrategy>(info, "namingStrategy");
-			this.properties = GetSerialedObject<IDictionary<string, string>>(info, "properties");
-			this.propertyReferences = GetSerialedObject<IList<Mappings.PropertyReference>>(info, "propertyReferences");
-			this.settingsFactory = GetSerialedObject<SettingsFactory>(info, "settingsFactory");
-			this.SqlFunctions = GetSerialedObject<IDictionary<string, ISQLFunction>>(info, "sqlFunctions");
-			this.SqlResultSetMappings = GetSerialedObject<IDictionary<string, ResultSetMappingDefinition>>(info, "sqlResultSetMappings");
-			this.tableNameBinding = GetSerialedObject<IDictionary<string, Mappings.TableDescription>>(info, "tableNameBinding");
-			this.tables = GetSerialedObject<IDictionary<string, Table>>(info, "tables");
-			this.typeDefs = GetSerialedObject<IDictionary<string, TypeDef>>(info, "typeDefs");
-			
-
-			
-
-			
-			
+			FilterDefinitions = GetSerialedObject<IDictionary<string, FilterDefinition>>(info, "filterDefinitions");
+			Imports = GetSerialedObject<IDictionary<string, string>>(info, "imports");
+			interceptor = GetSerialedObject<IInterceptor>(info, "interceptor");
+			mapping = GetSerialedObject<IMapping>(info, "mapping");
+			NamedQueries = GetSerialedObject<IDictionary<string, NamedQueryDefinition>>(info, "namedQueries");
+			NamedSQLQueries = GetSerialedObject<IDictionary<string, NamedSQLQueryDefinition>>(info, "namedSqlQueries");
+			namingStrategy = GetSerialedObject<INamingStrategy>(info, "namingStrategy");
+			properties = GetSerialedObject<IDictionary<string, string>>(info, "properties");
+			propertyReferences = GetSerialedObject<IList<Mappings.PropertyReference>>(info, "propertyReferences");
+			settingsFactory = GetSerialedObject<SettingsFactory>(info, "settingsFactory");
+			SqlFunctions = GetSerialedObject<IDictionary<string, ISQLFunction>>(info, "sqlFunctions");
+			SqlResultSetMappings = GetSerialedObject<IDictionary<string, ResultSetMappingDefinition>>(info,
+			                                                                                          "sqlResultSetMappings");
+			tableNameBinding = GetSerialedObject<IDictionary<string, Mappings.TableDescription>>(info, "tableNameBinding");
+			tables = GetSerialedObject<IDictionary<string, Table>>(info, "tables");
+			typeDefs = GetSerialedObject<IDictionary<string, TypeDef>>(info, "typeDefs");
 		}
+
 		private T GetSerialedObject<T>(SerializationInfo info, string name)
 		{
 			return (T)info.GetValue(name, typeof(T));
 		}
+
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			ConfigureProxyFactoryFactory();
 			SecondPassCompile();
 			Validate();
-			
-			
-			info.AddValue("entityNotFoundDelegate", this.EntityNotFoundDelegate);
 
+			info.AddValue("entityNotFoundDelegate", EntityNotFoundDelegate);
 
-			info.AddValue("auxiliaryDatabaseObjects", this.auxiliaryDatabaseObjects);
-			info.AddValue("classes", this.classes);
-			info.AddValue("collections", this.collections);
-			info.AddValue("columnNameBindingPerTable", this.columnNameBindingPerTable);
-			info.AddValue("defaultAssembly", this.defaultAssembly);
-			info.AddValue("defaultNamespace", this.defaultNamespace);
-			info.AddValue("eventListeners", this.eventListeners);
+			info.AddValue("auxiliaryDatabaseObjects", auxiliaryDatabaseObjects);
+			info.AddValue("classes", classes);
+			info.AddValue("collections", collections);
+			info.AddValue("columnNameBindingPerTable", columnNameBindingPerTable);
+			info.AddValue("defaultAssembly", defaultAssembly);
+			info.AddValue("defaultNamespace", defaultNamespace);
+			info.AddValue("eventListeners", eventListeners);
 			//info.AddValue("extendsQueue", this.extendsQueue);
-			info.AddValue("filterDefinitions", this.FilterDefinitions);
-			info.AddValue("imports", this.Imports);
-			info.AddValue("interceptor", this.interceptor);
-			info.AddValue("mapping", this.mapping);
-			info.AddValue("namedQueries", this.NamedQueries);
-			info.AddValue("namedSqlQueries", this.NamedSQLQueries);
-			info.AddValue("namingStrategy", this.namingStrategy);
-			info.AddValue("properties", this.properties);
-			info.AddValue("propertyReferences", this.propertyReferences);
-			info.AddValue("settingsFactory", this.settingsFactory);
-			info.AddValue("sqlFunctions", this.SqlFunctions);
-			info.AddValue("sqlResultSetMappings", this.SqlResultSetMappings);
-			info.AddValue("tableNameBinding", this.tableNameBinding);
-			info.AddValue("tables", this.tables);
-			info.AddValue("typeDefs", this.typeDefs);
+			info.AddValue("filterDefinitions", FilterDefinitions);
+			info.AddValue("imports", Imports);
+			info.AddValue("interceptor", interceptor);
+			info.AddValue("mapping", mapping);
+			info.AddValue("namedQueries", NamedQueries);
+			info.AddValue("namedSqlQueries", NamedSQLQueries);
+			info.AddValue("namingStrategy", namingStrategy);
+			info.AddValue("properties", properties);
+			info.AddValue("propertyReferences", propertyReferences);
+			info.AddValue("settingsFactory", settingsFactory);
+			info.AddValue("sqlFunctions", SqlFunctions);
+			info.AddValue("sqlResultSetMappings", SqlResultSetMappings);
+			info.AddValue("tableNameBinding", tableNameBinding);
+			info.AddValue("tables", tables);
+			info.AddValue("typeDefs", typeDefs);
 		}
 		#endregion
 
