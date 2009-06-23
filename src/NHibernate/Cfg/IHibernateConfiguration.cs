@@ -1,5 +1,4 @@
-﻿using System;
-using NHibernate.Cfg.ConfigurationSchema;
+﻿using NHibernate.Cfg.ConfigurationSchema;
 
 namespace NHibernate.Cfg
 {
@@ -7,6 +6,6 @@ namespace NHibernate.Cfg
 	{
 		BytecodeProviderType ByteCodeProviderType { get; }
 		bool UseReflectionOptimizer { get; }
-		SessionFactoryConfiguration SessionFactory { get; }
+		ISessionFactoryConfiguration SessionFactory { get; }
 	}
 }

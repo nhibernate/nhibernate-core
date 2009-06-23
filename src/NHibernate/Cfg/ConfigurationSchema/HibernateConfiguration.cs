@@ -153,7 +153,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		/// The <see cref="SessionFactoryConfiguration"/> if the session-factory exists in hibernate-configuration;
 		/// Otherwise null.
 		/// </summary>
-		public SessionFactoryConfiguration SessionFactory
+		public ISessionFactoryConfiguration SessionFactory
 		{
 			get { return sessionFactory; }
 		}

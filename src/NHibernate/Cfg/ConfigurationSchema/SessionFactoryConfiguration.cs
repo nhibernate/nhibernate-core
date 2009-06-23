@@ -7,7 +7,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 	/// <summary>
 	/// Configuration parsed values for a session-factory XML node.
 	/// </summary>
-	public class SessionFactoryConfiguration
+	public class SessionFactoryConfiguration : ISessionFactoryConfiguration
 	{
 		//private static readonly ILog log = LogManager.GetLogger(typeof(SessionFactoryConfiguration));
 
