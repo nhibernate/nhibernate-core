@@ -527,6 +527,8 @@
     <Compile Include="NHSpecificTest\NH1837\Customer.cs" />
     <Compile Include="NHSpecificTest\NH1837\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1837\Order.cs" />
+    <Compile Include="NHSpecificTest\NH1850\Customer.cs" />
+    <Compile Include="NHSpecificTest\NH1850\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH473\Child.cs" />
     <Compile Include="NHSpecificTest\NH473\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH473\Parent.cs" />
@@ -1937,6 +1939,7 @@
     <EmbeddedResource Include="Bytecode\Lightweight\ProductLine.hbm.xml" />
     <EmbeddedResource Include="DriverTest\MultiTypeEntity.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1850\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1192\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1734\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1097\Mappings.hbm.xml" />

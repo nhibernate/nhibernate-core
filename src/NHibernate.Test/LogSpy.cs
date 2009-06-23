@@ -56,7 +56,8 @@ namespace NHibernate.Test
 				wholeMessage
 					.Append(loggingEvent.LoggerName)
 					.Append(" ")
-					.Append(loggingEvent.RenderedMessage);
+					.Append(loggingEvent.RenderedMessage)
+					.AppendLine();
 			}
 			return wholeMessage.ToString();
 		}

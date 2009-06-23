@@ -1297,7 +1297,12 @@ namespace NHibernate.Loader
 				log.Info(st.CommandText);
 				// TODO NH: Callable
 				rs = session.Batcher.ExecuteReader(st);
-				rs = WrapResultSetIfEnabled(rs, session);
+
+				//NH: this is checked outside the WrapResultSet because we
+				// want to avoid the syncronization overhead in the vast majority
+				// of cases where IsWrapResultSetsEnabled is set to false
+				if (session.Factory.Settings.IsWrapResultSetsEnabled)
+					rs = WrapResultSet(rs);
 
 				Dialect.Dialect dialect = session.Factory.Dialect;
 				if (!dialect.SupportsLimitOffset || !UseLimit(selection, dialect))
@@ -1325,25 +1330,18 @@ namespace NHibernate.Loader
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		private IDataReader WrapResultSetIfEnabled(IDataReader rs, ISessionImplementor session)
+		private IDataReader WrapResultSet(IDataReader rs)
 		{
 			// synchronized to avoid multi-thread access issues; defined as method synch to avoid
 			// potential deadlock issues due to nature of code.
-			if (session.Factory.Settings.IsWrapResultSetsEnabled)
+			try
 			{
-				try
-				{
-					log.Debug("Wrapping result set [" + rs + "]");
-					return new ResultSetWrapper(rs, RetreiveColumnNameToIndexCache(rs));
-				}
-				catch (Exception e)
-				{
-					log.Info("Error wrapping result set", e);
-					return rs;
-				}
+				log.Debug("Wrapping result set [" + rs + "]");
+				return new ResultSetWrapper(rs, RetreiveColumnNameToIndexCache(rs));
 			}
-			else
+			catch (Exception e)
 			{
+				log.Info("Error wrapping result set", e);
 				return rs;
 			}
 		}
