@@ -459,6 +459,7 @@
     <Compile Include="Bytecode\ProxyFactoryFactoryNotConfiguredException.cs" />
     <Compile Include="Bytecode\UnableToLoadProxyFactoryFactoryException.cs" />
     <Compile Include="Cache\FakeCache.cs" />
+    <Compile Include="Cfg\SessionFactoryConfigurationBase.cs" />
     <Compile Include="Cfg\ISessionFactoryConfiguration.cs" />
     <Compile Include="Cfg\MappingSchema\AbstractDecoratable.cs" />
     <Compile Include="Cfg\MappingSchema\HbmTimestamp.cs" />
