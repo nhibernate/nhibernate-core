@@ -29,6 +29,26 @@ namespace NHibernate.Test.Criteria.Lambda
 			return new CriteriaImpl(persistentClass, alias, null);
 		}
 
+		protected ICriteria<T> CreateTestCriteria<T>()
+		{
+			return new CriteriaImpl<T>(new CriteriaImpl(typeof(T), null));
+		}
+
+		protected void AssertCriteriaAreEqual(ICriteria expected, ICriteria actual)
+		{
+			AssertObjectsAreEqual(expected, actual);
+		}
+
+		protected void AssertCriteriaAreEqual(DetachedCriteria expected, DetachedCriteria actual)
+		{
+			AssertObjectsAreEqual(expected, actual);
+		}
+
+		protected void AssertCriteriaAreEqual<T>(ICriteria expected, ICriteria<T> actual)
+		{
+			AssertObjectsAreEqual(expected, ((CriteriaImpl<T>)actual).UnderlyingCriteria);
+		}
+
 		private void AssertDictionariesAreEqual(IDictionary expected, IDictionary actual)
 		{
 			Assert.AreEqual(expected.Keys.Count, actual.Keys.Count, _fieldPath.Peek() + ".Count");
@@ -125,16 +145,6 @@ namespace NHibernate.Test.Criteria.Lambda
 			_visitedObjects.Clear();
 			_fieldPath.Clear();
 			AssertObjectsAreEqual(expected, actual, expected.GetType().Name);
-		}
-
-		protected void AssertCriteriaAreEqual(ICriteria expected, ICriteria actual)
-		{
-			AssertObjectsAreEqual(expected, actual);
-		}
-
-		protected void AssertCriteriaAreEqual(DetachedCriteria expected, DetachedCriteria actual)
-		{
-			AssertObjectsAreEqual(expected, actual);
 		}
 
 	}

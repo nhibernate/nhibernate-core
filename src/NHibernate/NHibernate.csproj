@@ -515,6 +515,8 @@
     <Compile Include="Hql\Ast\ANTLR\Tree\ASTErrorNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\InsertStatement.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\UpdateStatement.cs" />
+    <Compile Include="ICriteriaOfT.cs" />
+    <Compile Include="Impl\CriteriaOfTImpl.cs" />
     <Compile Include="Impl\ExpressionProcessor.cs" />
     <Compile Include="Impl\SessionIdLoggingContext.cs" />
     <Compile Include="Param\AbstractExplicitParameterSpecification.cs" />
