@@ -24,7 +24,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			ICriteria<Person> actual =
 				CreateTestCriteria<Person>()
-					.Add(p => p.Name == "test name");
+					.And(p => p.Name == "test name");
 
 			AssertCriteriaAreEqual(expected, actual);
 		}

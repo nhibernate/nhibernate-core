@@ -26,7 +26,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="expression">Lambda expression</param>
 		/// <returns>criteria instance</returns>
-		ICriteria<T> Add(Expression<Func<T, bool>> expression);
+		ICriteria<T> And(Expression<Func<T, bool>> expression);
 
 		/// <summary>
 		/// Get the results of the root type and fill the <see cref="IList&lt;T&gt;"/>

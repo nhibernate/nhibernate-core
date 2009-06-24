@@ -25,7 +25,7 @@ namespace NHibernate.Impl
 			get { return _criteria; }
 		}
 
-		ICriteria<T> ICriteria<T>.Add(Expression<Func<T, bool>> expression)
+		ICriteria<T> ICriteria<T>.And(Expression<Func<T, bool>> expression)
 		{
 			_criteria.Add(expression);
 			return this;

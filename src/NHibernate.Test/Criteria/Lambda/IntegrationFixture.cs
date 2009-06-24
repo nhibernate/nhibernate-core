@@ -83,7 +83,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				IList<Person> actual =
 					s.QueryOver<Person>()
-						.Add(p => p.Name == "test person 2")
+						.And(p => p.Name == "test person 2")
 						.List();
 
 				Assert.That(actual.Count, Is.EqualTo(1));
