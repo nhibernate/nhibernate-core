@@ -31,6 +31,12 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		ICriteria<T> ICriteria<T>.Where(Expression<Func<T, bool>> expression)
+		{
+			_criteria.Add(expression);
+			return this;
+		}
+
 		IList<T> ICriteria<T>.List()
 		{
 			return _criteria.List<T>();

@@ -8,6 +8,7 @@
 			<generator class="native"/>
 		</id>
 		<property name="Name" />
+		<property name="Age" />
 	</class>
 
 	<class name="Child">

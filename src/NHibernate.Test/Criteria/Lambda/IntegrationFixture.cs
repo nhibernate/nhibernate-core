@@ -72,9 +72,9 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				s.Save(new Person() { Name = "test person 1" });
-				s.Save(new Person() { Name = "test person 2" });
-				s.Save(new Person() { Name = "test person 3" });
+				s.Save(new Person() { Name = "test person 1", Age = 20 });
+				s.Save(new Person() { Name = "test person 2", Age = 30 });
+				s.Save(new Person() { Name = "test person 3", Age = 40 });
 
 				t.Commit();
 			}
@@ -83,7 +83,8 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				IList<Person> actual =
 					s.QueryOver<Person>()
-						.And(p => p.Name == "test person 2")
+						.Where(p => p.Name == "test person 2")
+						.And(p => p.Age == 30)
 						.List();
 
 				Assert.That(actual.Count, Is.EqualTo(1));
