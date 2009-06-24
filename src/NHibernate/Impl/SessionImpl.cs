@@ -1871,6 +1871,14 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public ICriteria<T> QueryOver<T>() where T : class
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return new CriteriaImpl<T>(CreateCriteria(typeof(T)));
+			}
+		}
+
 		public override IList List(CriteriaImpl criteria)
 		{
 			using (new SessionIdLoggingContext(SessionId))

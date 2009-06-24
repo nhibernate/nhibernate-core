@@ -783,6 +783,13 @@ namespace NHibernate
 		ICriteria CreateCriteria(string entityName, string alias);
 
 		/// <summary>
+		/// Creates a new <c>ICriteria&lt;T&gt;</c> for the entity class.
+		/// </summary>
+		/// <typeparam name="T">The entity class</typeparam>
+		/// <returns>An ICriteria&lt;T&gt; object</returns>
+		ICriteria<T> QueryOver<T>() where T : class;
+
+		/// <summary>
 		/// Create a new instance of <c>Query</c> for the given query string
 		/// </summary>
 		/// <param name="queryString">A hibernate query string</param>

@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace NHibernate.Impl
@@ -28,6 +29,11 @@ namespace NHibernate.Impl
 		{
 			_criteria.Add(expression);
 			return this;
+		}
+
+		IList<T> ICriteria<T>.List()
+		{
+			return _criteria.List<T>();
 		}
 
 	}

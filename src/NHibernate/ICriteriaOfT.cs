@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace NHibernate
@@ -26,6 +27,12 @@ namespace NHibernate
 		/// <param name="expression">Lambda expression</param>
 		/// <returns>criteria instance</returns>
 		ICriteria<T> Add(Expression<Func<T, bool>> expression);
+
+		/// <summary>
+		/// Get the results of the root type and fill the <see cref="IList&lt;T&gt;"/>
+		/// </summary>
+		/// <param name="results">The list filled with the results.</param>
+		IList<T> List();
 
 	}
 
