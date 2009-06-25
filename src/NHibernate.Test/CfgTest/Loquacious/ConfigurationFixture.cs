@@ -33,7 +33,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 						.Using("The connection string but it has some overload")
 					.CreateCommands
 						.AutoCommentingSql()
-						.ConvertingExpetionsTrough<SQLStateConverter>()
+						.ConvertingExceptionsTrough<SQLStateConverter>()
 						.Preparing()
 						.WithTimeout(10)
 						.WithMaximumDepthOfOuterJoinFetching(10)
