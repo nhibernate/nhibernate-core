@@ -9,18 +9,20 @@
 		<property name="clover.instrument" value="false" />
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
 			<include name="System.dll" />
+			<include name="System.Core.dll" />
 			<include name="System.Transactions.dll" />
 			<include name="System.Configuration.dll" />
 			<include name="System.Xml.dll" />
 			<include name="System.Data.dll" />
+			<include name="System.Data.OracleClient.dll" />
 			<include name="Iesi.Collections.dll" />
 			<include name="log4net.dll" />
+			<include name="NHibernate.ByteCode.LinFu.dll"/>
 			<include name="NHibernate.DomainModel.dll" />
 			<include name="NHibernate.dll" />
 			<include name="LinFu.DynamicProxy.dll" />
 			<include name="nunit.framework.dll" />
 			<include name="Antlr3.Runtime.dll" />
-			<include name="Rhino.Mocks.dll" />
 		</assemblyfileset>
 		<resourcefileset id="project.resources" prefix="NHibernate.Test" dynamicprefix="true">
 			<include name="**/*.xml" />
