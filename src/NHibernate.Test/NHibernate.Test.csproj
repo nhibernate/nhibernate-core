@@ -107,6 +107,7 @@
     <Compile Include="CfgTest\HbmBinderFixture.cs" />
     <Compile Include="CfgTest\HbmOrderingFixture.cs" />
     <Compile Include="CfgTest\LocatedInTestAssembly.cs" />
+    <Compile Include="CfgTest\Loquacious\ConfigurationFixture.cs" />
     <Compile Include="CfgTest\MappingDocumentAggregatorTests.cs" />
     <Compile Include="CfgTest\MappingDocumentParserTests.cs" />
     <Compile Include="CfgTest\SettingsFactoryFixture.cs" />
