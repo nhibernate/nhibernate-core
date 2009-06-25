@@ -1,4 +1,6 @@
 using System.Data;
+using System.Data.Common;
+using System.Data.SqlClient;
 using NHibernate.AdoNet;
 using NHibernate.ByteCode.LinFu;
 using NHibernate.Cache;
@@ -68,7 +70,15 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			IFluentSessionFactoryConfiguration sfc = null;
 			sfc
 				.Proxy.Trough<ProxyFactoryFactory>()
-				.Integrate.Using<MsSql2005Dialect>();
+				.Integrate
+					.Using<MsSql2005Dialect>()
+					.Connected
+						.Using(new SqlConnectionStringBuilder
+						       	{
+						       		DataSource = "(local)", 
+											InitialCatalog = "nhibernate", 
+											IntegratedSecurity = true
+						       	});
 		}
 	}
 }
