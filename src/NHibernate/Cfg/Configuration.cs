@@ -643,7 +643,24 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		// Not ported - addResource(String path) - not applicable
+		/// <summary>
+		/// Adds the mappings from ebedded resources of the assembly.
+		/// </summary>
+		/// <param name="paths">Paths to the resource files in the assembly.</param>
+		/// <param name="assembly">The assembly that contains the resource files.</param>
+		/// <returns>This configuration object.</returns>
+		public Configuration AddResources(IEnumerable<string> paths, Assembly assembly)
+		{
+			if (paths == null)
+			{
+				throw new ArgumentNullException("paths");
+			}
+			foreach (var path in paths)
+			{
+				AddResource(path, assembly);
+			}
+			return this;
+		}
 
 		/// <summary>
 		/// Read a mapping from an embedded resource, using a convention.
