@@ -29,6 +29,13 @@ namespace NHibernate
 		ICriteria<T> And(Expression<Func<T, bool>> expression);
 
 		/// <summary>
+		/// Add criterion expressed as a lambda expression
+		/// </summary>
+		/// <param name="expression">Lambda expression</param>
+		/// <returns>criteria instance</returns>
+		ICriteria<T> And(Expression<Func<bool>> expression);
+
+		/// <summary>
 		/// Identical semantics to Add() to allow more readable queries
 		/// </summary>
 		/// <param name="expression">Lambda expression</param>
@@ -36,7 +43,7 @@ namespace NHibernate
 		ICriteria<T> Where(Expression<Func<T, bool>> expression);
 
 		/// <summary>
-		/// Add criterion expressed as a lambda expression
+		/// Identical semantics to Add() to allow more readable queries
 		/// </summary>
 		/// <param name="expression">Lambda expression</param>
 		/// <returns>criteria instance</returns>

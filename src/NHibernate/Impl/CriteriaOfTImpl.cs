@@ -27,25 +27,39 @@ namespace NHibernate.Impl
 
 		ICriteria<T> ICriteria<T>.And(Expression<Func<T, bool>> expression)
 		{
-			_criteria.Add(expression);
-			return this;
+			return Add(expression);
+		}
+
+		ICriteria<T> ICriteria<T>.And(Expression<Func<bool>> expression)
+		{
+			return Add(expression);
 		}
 
 		ICriteria<T> ICriteria<T>.Where(Expression<Func<T, bool>> expression)
 		{
-			_criteria.Add(expression);
-			return this;
+			return Add(expression);
 		}
 
 		ICriteria<T> ICriteria<T>.Where(Expression<Func<bool>> expression)
 		{
-			_criteria.Add(ExpressionProcessor.ProcessExpression(expression));
-			return this;
+			return Add(expression);
 		}
 
 		IList<T> ICriteria<T>.List()
 		{
 			return _criteria.List<T>();
+		}
+
+		private CriteriaImpl<T> Add(Expression<Func<T, bool>> expression)
+		{
+			_criteria.Add(ExpressionProcessor.ProcessExpression<T>(expression));
+			return this;
+		}
+
+		private CriteriaImpl<T> Add(Expression<Func<bool>> expression)
+		{
+			_criteria.Add(ExpressionProcessor.ProcessExpression(expression));
+			return this;
 		}
 
 	}
