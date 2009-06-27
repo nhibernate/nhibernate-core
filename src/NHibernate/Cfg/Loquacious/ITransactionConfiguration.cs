@@ -3,6 +3,6 @@ namespace NHibernate.Cfg.Loquacious
 {
 	public interface ITransactionConfiguration
 	{
-		IDbIntegrationConfiguration Trough<TFactory>() where TFactory : ITransactionFactory;
+		IDbIntegrationConfiguration Through<TFactory>() where TFactory : ITransactionFactory;
 	}
 }

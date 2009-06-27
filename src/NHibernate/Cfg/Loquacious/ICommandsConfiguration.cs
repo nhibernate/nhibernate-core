@@ -5,7 +5,7 @@ namespace NHibernate.Cfg.Loquacious
 	{
 		ICommandsConfiguration Preparing();
 		ICommandsConfiguration WithTimeout(int seconds);
-		ICommandsConfiguration ConvertingExceptionsTrough<TExceptionConverter>() where TExceptionConverter : ISQLExceptionConverter;
+		ICommandsConfiguration ConvertingExceptionsThrough<TExceptionConverter>() where TExceptionConverter : ISQLExceptionConverter;
 		ICommandsConfiguration AutoCommentingSql();
 		IDbIntegrationConfiguration WithHqlToSqlSubstitutions(string csvQuerySubstitutions);
 		IDbIntegrationConfiguration WithDefaultHqlToSqlSubstitutions();

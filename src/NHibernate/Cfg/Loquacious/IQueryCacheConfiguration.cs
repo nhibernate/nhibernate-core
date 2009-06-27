@@ -4,6 +4,6 @@ namespace NHibernate.Cfg.Loquacious
 {
 	public interface IQueryCacheConfiguration
 	{
-		ICacheConfiguration Trough<TFactory>() where TFactory : IQueryCache;
+		ICacheConfiguration Through<TFactory>() where TFactory : IQueryCache;
 	}
 }

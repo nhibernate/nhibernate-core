@@ -1,5 +1,4 @@
 using System.Data;
-using System.Data.Common;
 using System.Data.SqlClient;
 using NHibernate.AdoNet;
 using NHibernate.ByteCode.LinFu;
@@ -21,21 +20,37 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			// Using the Configuration class the user can add mappings and configure listeners
 			IFluentSessionFactoryConfiguration sfc= null;
 			sfc.Named("SomeName")
+				.Caching
+					.Through<HashtableCacheProvider>()
+					.PrefixingRegionsWith("xyz")
+					.Queries
+						.Through<StandardQueryCache>()
+					.UsingMinimalPuts()
+					.WithDefaultExpiration(15)
+				.GeneratingCollections
+					.Through<DefaultCollectionTypeFactory>()
+				.Proxy
+					.DisableValidation()
+					.Through<ProxyFactoryFactory>()
+				.ParsingHqlThrough<ClassicQueryTranslatorFactory>()
+				.Mapping
+					.UsingDefaultCatalog("MyCatalog")
+					.UsingDefaultSchema("MySche")
 				.Integrate
 					.Using<MsSql2000Dialect>()
 					.AutoQuoteKeywords()
 					.BatchingQueries
-						.Trough<SqlClientBatchingBatcherFactory>()
+						.Through<SqlClientBatchingBatcherFactory>()
 						.Each(10)
 					.Connected
-						.Trough<DebugConnectionProvider>()
-						.Through<SqlClientDriver>()
+						.Through<DebugConnectionProvider>()
+						.By<SqlClientDriver>()
 						.Releasing(ConnectionReleaseMode.AfterTransaction)
 						.With(IsolationLevel.ReadCommitted)
 						.Using("The connection string but it has some overload")
 					.CreateCommands
 						.AutoCommentingSql()
-						.ConvertingExceptionsTrough<SQLStateConverter>()
+						.ConvertingExceptionsThrough<SQLStateConverter>()
 						.Preparing()
 						.WithTimeout(10)
 						.WithMaximumDepthOfOuterJoinFetching(10)
@@ -43,23 +58,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 					.Schema
 						.Validating()
 			;
-			sfc.Caching
-					.Trough<HashtableCacheProvider>()
-					.PrefixingRegionsWith("xyz")
-					.Queries
-						.Trough<StandardQueryCache>()
-					.UsingMinimalPuts()
-					.WithDefaultExpiration(15)
-				.GeneratingCollections
-					.Trough<DefaultCollectionTypeFactory>()
-				.Proxy
-					.DisableValidation()
-					.Trough<ProxyFactoryFactory>()
-				.ParsingHqlThrough<ClassicQueryTranslatorFactory>()
-				.Mapping
-					.UsingDefaultCatalog("MyCatalog")
-					.UsingDefaultSchema("MySche")
-			;
+
 		}
 
 		public void ProofOfConceptMinimalConfiguration()
@@ -69,7 +68,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			// The place where put default properties values is the Dialect itself.
 			IFluentSessionFactoryConfiguration sfc = null;
 			sfc
-				.Proxy.Trough<ProxyFactoryFactory>()
+				.Proxy.Through<ProxyFactoryFactory>()
 				.Integrate
 					.Using<MsSql2005Dialect>()
 					.Connected
