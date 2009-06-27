@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq.Expressions;
 using System.Reflection;
 
 using NHibernate.Criterion; 
@@ -29,9 +30,15 @@ namespace NHibernate.Test.Criteria.Lambda
 			return new CriteriaImpl(persistentClass, alias, null);
 		}
 
-		protected ICriteria<T> CreateTestCriteria<T>()
+		protected ICriteria<T> CreateTestQueryOver<T>()
 		{
 			return new CriteriaImpl<T>(new CriteriaImpl(typeof(T), null));
+		}
+
+		protected ICriteria<T> CreateTestQueryOver<T>(Expression<Func<object>> alias)
+		{
+			string aliasContainer = ExpressionProcessor.FindMemberExpression(alias.Body);
+			return new CriteriaImpl<T>(new CriteriaImpl(typeof(T), aliasContainer, null));
 		}
 
 		protected void AssertCriteriaAreEqual(ICriteria expected, ICriteria actual)
