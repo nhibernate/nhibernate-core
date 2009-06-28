@@ -4,10 +4,12 @@ using NHibernate.AdoNet.Util;
 
 namespace NHibernate.AdoNet
 {
+	using System;
+
 	/// <summary>
 	/// Summary description for SqlClientBatchingBatcher.
 	/// </summary>
-	internal class SqlClientBatchingBatcher : AbstractBatcher
+	public class SqlClientBatchingBatcher : AbstractBatcher
 	{
 		private int batchSize;
 		private int totalExpectedRowsAffected;
@@ -32,6 +34,11 @@ namespace NHibernate.AdoNet
 			set { batchSize = value; }
 		}
 
+		protected override int CountOfStatementsInCurrentBatch
+		{
+			get { return currentBatch.CountOfCommands; }
+		}
+
 		public override void AddToBatch(IExpectation expectation)
 		{
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;
@@ -39,7 +46,7 @@ namespace NHibernate.AdoNet
 
 			string lineWithParameters = null;
 			var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
-			if (sqlStatementLogger.IsDebugEnabled)
+			if (sqlStatementLogger.IsDebugEnabled || log.IsDebugEnabled)
 			{
 				lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
 				var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
@@ -57,13 +64,13 @@ namespace NHibernate.AdoNet
 
 			if (currentBatch.CountOfCommands >= batchSize)
 			{
-				DoExecuteBatch(batchUpdate);
+				ExecuteBatchWithTiming(batchUpdate);
 			}
 		}
 
 		protected override void DoExecuteBatch(IDbCommand ps)
 		{
-			log.Debug("Executing batch");
+			log.DebugFormat("Executing batch");
 			CheckReaders();
 			Prepare(currentBatch.BatchCommand);
 			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
