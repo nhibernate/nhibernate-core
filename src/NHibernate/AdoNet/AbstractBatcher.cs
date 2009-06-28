@@ -397,7 +397,7 @@ namespace NHibernate.AdoNet
 				InvalidateBatchCommand();
 				try
 				{
-					DoExecuteBatch(ps);
+					ExecuteBatchWithTiming(ps);
 				}
 				finally
 				{
@@ -406,11 +406,26 @@ namespace NHibernate.AdoNet
 			}
 		}
 
+		protected void ExecuteBatchWithTiming(IDbCommand ps)
+		{
+			Stopwatch duration = null;
+			if (log.IsDebugEnabled)
+				duration = Stopwatch.StartNew();
+			var countBeforeExecutingBatch = CountOfStatementsInCurrentBatch;
+			DoExecuteBatch(ps);
+			if (log.IsDebugEnabled && duration != null)
+				log.DebugFormat("ExecuteBatch for {0} statements took {1} ms",
+					countBeforeExecutingBatch,
+					duration.ElapsedMilliseconds);
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="ps"></param>
 		protected abstract void DoExecuteBatch(IDbCommand ps);
+
+		protected abstract int CountOfStatementsInCurrentBatch { get; }
 
 		/// <summary>
 		/// Gets or sets the size of the batch, this can change dynamically by

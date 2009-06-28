@@ -72,7 +72,7 @@ namespace NHibernate.AdoNet
 
 			if (countOfCommands >= batchSize)
 			{
-				DoExecuteBatch(currentBatch);
+				ExecuteBatchWithTiming(currentBatch);
 			}
 		}
 
@@ -106,6 +106,11 @@ namespace NHibernate.AdoNet
 				currentBatch = null;
 				parameterValueListHashTable = null; 
 			}
+		}
+
+		protected override int CountOfStatementsInCurrentBatch
+		{
+			get { return countOfCommands; }
 		}
 
 		private void SetObjectParam(Object obj, string paramName, object paramValue)

@@ -9,7 +9,7 @@ namespace NHibernate.AdoNet
 	/// An implementation of the <see cref="IBatcher" /> 
 	/// interface that does no batching.
 	/// </summary>
-	internal class NonBatchingBatcher : AbstractBatcher
+	public class NonBatchingBatcher : AbstractBatcher
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NonBatchingBatcher"/> class.
@@ -48,6 +48,11 @@ namespace NHibernate.AdoNet
 		/// <param name="ps"></param>
 		protected override void DoExecuteBatch(IDbCommand ps)
 		{
+		}
+
+		protected override int CountOfStatementsInCurrentBatch
+		{
+			get { return 1; }
 		}
 
 
