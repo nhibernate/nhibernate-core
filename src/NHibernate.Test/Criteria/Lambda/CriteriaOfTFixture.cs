@@ -61,6 +61,38 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertCriteriaAreEqual(expected, actual);
 		}
 
+		[Test]
+		public void SubCriteria_Join_ToOne()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.CreateCriteria("Father")
+						.Add(Expression.Eq("Name", "test name"));
+
+			ICriteria<Person> actual =
+				CreateTestQueryOver<Person>()
+					.Join(p => p.Father) // sub-criteria
+						.Where(f => f.Name == "test name");
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void SubCriteria_Join_ToMany()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.CreateCriteria("Children")
+						.Add(Expression.Eq("Nickname", "test name"));
+
+			ICriteria<Child> actual =
+				CreateTestQueryOver<Person>()
+					.Join<Child>(p => p.Children) // sub-criteria
+						.Where(c => c.Nickname == "test name");
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
 	}
 
 }

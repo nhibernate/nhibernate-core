@@ -45,6 +45,20 @@ namespace NHibernate.Impl
 			return Add(expression);
 		}
 
+		ICriteria<U> ICriteria<T>.Join<U>(Expression<Func<T, U>> expression)
+		{
+			return new CriteriaImpl<U>(
+				_criteria.CreateCriteria(
+					ExpressionProcessor.FindMemberExpression(expression.Body)));
+		}
+
+		ICriteria<U> ICriteria<T>.Join<U>(Expression<Func<T, IEnumerable<U>>> expression)
+		{
+			return new CriteriaImpl<U>(
+				_criteria.CreateCriteria(
+					ExpressionProcessor.FindMemberExpression(expression.Body)));
+		}
+
 		IList<T> ICriteria<T>.List()
 		{
 			return _criteria.List<T>();
