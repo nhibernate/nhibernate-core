@@ -40,6 +40,30 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void PropertyCriterion_NoAlias()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.Add(Restrictions.EqProperty("Age", "Height"))
+					.Add(Restrictions.NotEqProperty("Age", "Height"))
+					.Add(Restrictions.GtProperty("Age", "Height"))
+					.Add(Restrictions.GeProperty("Age", "Height"))
+					.Add(Restrictions.LtProperty("Age", "Height"))
+					.Add(Restrictions.LeProperty("Age", "Height"));
+
+			ICriteria<Person> actual =
+				CreateTestQueryOver<Person>()
+					.And(p => p.Age == p.Height)
+					.And(p => p.Age != p.Height)
+					.And(p => p.Age > p.Height)
+					.And(p => p.Age >= p.Height)
+					.And(p => p.Age < p.Height)
+					.And(p => p.Age <= p.Height);
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
 		public void Where_BehavesTheSameAs_And()
 		{
 			Person personAlias = null;
