@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Impl
 {
@@ -45,23 +46,37 @@ namespace NHibernate.Impl
 			return Add(expression);
 		}
 
-		ICriteria<U> ICriteria<T>.Join<U>(Expression<Func<T, U>> expression)
+		ICriteria<U> ICriteria<T>.JoinWalk<U>(Expression<Func<T, U>> path)
 		{
 			return new CriteriaImpl<U>(
 				_criteria.CreateCriteria(
-					ExpressionProcessor.FindMemberExpression(expression.Body)));
+					ExpressionProcessor.FindMemberExpression(path.Body)));
 		}
 
-		ICriteria<U> ICriteria<T>.Join<U>(Expression<Func<T, IEnumerable<U>>> expression)
+		ICriteria<U> ICriteria<T>.JoinWalk<U>(Expression<Func<T, IEnumerable<U>>> path)
 		{
 			return new CriteriaImpl<U>(
 				_criteria.CreateCriteria(
-					ExpressionProcessor.FindMemberExpression(expression.Body)));
+					ExpressionProcessor.FindMemberExpression(path.Body)));
+		}
+
+		ICriteria<T> ICriteria<T>.Join(Expression<Func<T, object>> path, Expression<Func<object>> alias)
+		{
+			return AddAlias(
+				ExpressionProcessor.FindMemberExpression(path.Body),
+				ExpressionProcessor.FindMemberExpression(alias.Body),
+				JoinType.InnerJoin);
 		}
 
 		IList<T> ICriteria<T>.List()
 		{
 			return _criteria.List<T>();
+		}
+
+		private CriteriaImpl<T> AddAlias(string path, string alias, JoinType joinType)
+		{
+			_criteria.CreateAlias(path, alias, joinType);
+			return this;
 		}
 
 		private CriteriaImpl<T> Add(Expression<Func<T, bool>> expression)

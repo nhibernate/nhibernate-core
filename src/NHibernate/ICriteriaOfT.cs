@@ -53,23 +53,31 @@ namespace NHibernate
 		/// Creates a new NHibernate.ICriteria&lt;T&gt;, "rooted" at the associated entity
 		/// </summary>
 		/// <typeparam name="U">Type of sub-criteria</typeparam>
-		/// <param name="expression">Lambda expression returning association path</param>
+		/// <param name="path">Lambda expression returning association path</param>
 		/// <returns>The created "sub criteria"</returns>
-		ICriteria<U> Join<U>(Expression<Func<T, U>> expression);
+		ICriteria<U> JoinWalk<U>(Expression<Func<T, U>> path);
 
 		/// <summary>
 		/// Creates a new NHibernate.ICriteria&lt;T&gt;, "rooted" at the associated entity
 		/// specifying a collection for the join.
 		/// </summary>
 		/// <typeparam name="U">Type of sub-criteria (type of the collection)</typeparam>
-		/// <param name="expression">Lambda expression returning association path</param>
+		/// <param name="path">Lambda expression returning association path</param>
 		/// <returns>The created "sub criteria"</returns>
-		ICriteria<U> Join<U>(Expression<Func<T, IEnumerable<U>>> expression);
+		ICriteria<U> JoinWalk<U>(Expression<Func<T, IEnumerable<U>>> path);
+
+		/// <summary>
+		/// Join an association, assigning an alias to the joined entity
+		/// </summary>
+		/// <param name="path">Lambda expression returning association path</param>
+		/// <param name="alias">Lambda expression returning alias reference</param>
+		/// <returns>criteria instance</returns>
+		ICriteria<T> Join(Expression<Func<T, object>> path, Expression<Func<object>> alias);
 
 		/// <summary>
 		/// Get the results of the root type and fill the <see cref="IList&lt;T&gt;"/>
 		/// </summary>
-		/// <param name="results">The list filled with the results.</param>
+		/// <returns>The list filled with the results.</returns>
 		IList<T> List();
 
 	}
