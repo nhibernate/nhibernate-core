@@ -20,11 +20,21 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
-					.Add(Restrictions.Eq("Name", "test name"));
+					.Add(Restrictions.Eq("Name", "test name"))
+					.Add(Restrictions.Not(Restrictions.Eq("Name", "not test name")))
+					.Add(Restrictions.Gt("Age", 10))
+					.Add(Restrictions.Ge("Age", 11))
+					.Add(Restrictions.Lt("Age", 50))
+					.Add(Restrictions.Le("Age", 49));
 
 			ICriteria<Person> actual =
 				CreateTestQueryOver<Person>()
-					.And(p => p.Name == "test name");
+					.And(p => p.Name == "test name")
+					.And(p => p.Name != "not test name")
+					.And(p => p.Age > 10)
+					.And(p => p.Age >= 11)
+					.And(p => p.Age < 50)
+					.And(p => p.Age <= 49);
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
