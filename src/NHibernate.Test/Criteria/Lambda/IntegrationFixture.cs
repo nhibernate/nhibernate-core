@@ -67,6 +67,30 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
+		[Test]
+		public void DetachedCriteriaOfT_SimpleCriterion()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new Person() { Name = "test person 1", Age = 20 });
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var personQuery =
+					DetachedCriteria.QueryOver<Person>()
+						.Where(p => p.Name == "test person 1");
+
+				IList<Person> actual =
+					personQuery.GetExecutableCriteria(s)
+						.List();
+
+				Assert.That(actual[0].Age, Is.EqualTo(20));
+			}
+		}
+
 	}
 
 }

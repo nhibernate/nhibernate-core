@@ -27,6 +27,14 @@ namespace NHibernate.Criterion
 			_criteria = detachedCriteria;
 		}
 
+		/// <summary>
+		/// Get an executable instance of <c>Criteria&lt;T&gt;</c>,
+		/// to actually run the query.</summary>
+		public ICriteria<T> GetExecutableCriteria(ISession session)
+		{
+			return new CriteriaImpl<T>(_criteria.GetExecutableCriteria(session));
+		}
+
 		public DetachedCriteria<T> And(Expression<Func<T, bool>> expression)
 		{
 			return Add(expression);
