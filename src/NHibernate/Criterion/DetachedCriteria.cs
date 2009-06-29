@@ -95,6 +95,11 @@ namespace NHibernate.Criterion
 			return new DetachedCriteria(entityName, alias);
 		}
 
+		public static DetachedCriteria<T> QueryOver<T>()
+		{
+			return new DetachedCriteria<T>(new DetachedCriteria(typeof(T)));
+		}
+
 		public DetachedCriteria Add(ICriterion criterion)
 		{
 			criteria.Add(criterion);

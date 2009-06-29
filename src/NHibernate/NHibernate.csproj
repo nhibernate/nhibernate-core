@@ -477,6 +477,7 @@
     <Compile Include="Cfg\MappingSchema\HbmTimestamp.cs" />
     <Compile Include="Cfg\MappingSchema\HbmVersion.cs" />
     <Compile Include="Cfg\MappingSchema\IDecoratable.cs" />
+    <Compile Include="Criterion\DetachedCriteriaOfT.cs" />
     <Compile Include="Criterion\IPropertyProjection.cs" />
     <Compile Include="Dialect\MsSql2008Dialect.cs" />
     <Compile Include="Dialect\InformixDialect0940.cs" />
