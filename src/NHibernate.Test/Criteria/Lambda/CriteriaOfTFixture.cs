@@ -64,6 +64,24 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void MultipleCriterionExpression()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.Add(Restrictions.And(
+						Restrictions.Eq("Name", "test name"),
+						Restrictions.Or(
+							Restrictions.Gt("Age", 21),
+							Restrictions.Eq("HasCar", true))));
+
+			ICriteria<Person> actual =
+				CreateTestQueryOver<Person>()
+					.Where(p => p.Name == "test name" && (p.Age > 21 || p.HasCar));
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
 		public void Where_BehavesTheSameAs_And()
 		{
 			Person personAlias = null;

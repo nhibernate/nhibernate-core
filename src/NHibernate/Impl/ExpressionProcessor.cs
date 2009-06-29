@@ -278,12 +278,46 @@ namespace NHibernate.Impl
 			return criterion;
 		}
 
+		private static ICriterion ProcessAndExpression(BinaryExpression expression)
+		{
+			return
+				NHibernate.Criterion.Restrictions.And(
+					ProcessExpression(expression.Left),
+					ProcessExpression(expression.Right));
+		}
+
+		private static ICriterion ProcessOrExpression(BinaryExpression expression)
+		{
+			return
+				NHibernate.Criterion.Restrictions.Or(
+					ProcessExpression(expression.Left),
+					ProcessExpression(expression.Right));
+		}
+
 		private static ICriterion ProcessBinaryExpression(BinaryExpression expression)
 		{
-			if (IsMemberExpression(expression.Right))
-				return ProcessMemberExpression(expression);
-			else
-				return ProcessSimpleExpression(expression);
+			switch (expression.NodeType)
+			{
+				case ExpressionType.AndAlso:
+					return ProcessAndExpression(expression);
+
+				case ExpressionType.OrElse:
+					return ProcessOrExpression(expression);
+
+				case ExpressionType.Equal:
+				case ExpressionType.NotEqual:
+				case ExpressionType.GreaterThan:
+				case ExpressionType.GreaterThanOrEqual:
+				case ExpressionType.LessThan:
+				case ExpressionType.LessThanOrEqual:
+					if (IsMemberExpression(expression.Right))
+						return ProcessMemberExpression(expression);
+					else
+						return ProcessSimpleExpression(expression);
+
+				default:
+					throw new Exception("Unhandled binary expression: " + expression.NodeType + ", " + expression.ToString());
+			}
 		}
 
 		private static ICriterion ProcessBooleanExpression(Expression expression)
@@ -306,14 +340,17 @@ namespace NHibernate.Impl
 			throw new Exception("Could not determine member type from " + expression.ToString());
 		}
 
+		private static ICriterion ProcessExpression(Expression expression)
+		{
+			if (expression is BinaryExpression)
+				return ProcessBinaryExpression((BinaryExpression)expression);
+			else
+				return ProcessBooleanExpression((Expression)expression);
+		}
+
 		private static ICriterion ProcessLambdaExpression(LambdaExpression expression)
 		{
-			var body = expression.Body;
-
-			if (body is BinaryExpression)
-				return ProcessBinaryExpression((BinaryExpression)body);
-			else
-				return ProcessBooleanExpression((Expression)body);
+			return ProcessExpression(expression.Body);
 		}
 
 		/// <summary>
