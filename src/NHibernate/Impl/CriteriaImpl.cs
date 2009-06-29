@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Text;
 using NHibernate.Criterion;
 using NHibernate.Engine;
@@ -230,11 +229,6 @@ namespace NHibernate.Impl
 		{
 			Add(this, expression);
 			return this;
-		}
-
-		public ICriteria Add<T>(Expression<Func<T, bool>> expression)
-		{
-			return Add(ExpressionProcessor.ProcessExpression<T>(expression));
 		}
 
 		public IList List()
@@ -671,11 +665,6 @@ namespace NHibernate.Impl
 			{
 				root.Add(this, expression);
 				return this;
-			}
-
-			public ICriteria Add<T>(Expression<Func<T, bool>> expression)
-			{
-				return Add(ExpressionProcessor.ProcessExpression<T>(expression));
 			}
 
 			public ICriteria AddOrder(Order order)

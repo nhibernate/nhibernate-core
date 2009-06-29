@@ -43,30 +43,6 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void ICriteria_SimpleCriterion()
-		{
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
-			{
-				s.Save(new Person() { Name = "test person 1" });
-				s.Save(new Person() { Name = "test person 2" });
-				s.Save(new Person() { Name = "test person 3" });
-
-				t.Commit();
-			}
-
-			using (ISession s = OpenSession())
-			{
-				IList<Person> actual =
-					s.CreateCriteria(typeof(Person))
-						.Add<Person>(p => p.Name == "test person 2")
-						.List<Person>();
-
-				Assert.That(actual.Count, Is.EqualTo(1));
-			}
-		}
-
-		[Test]
 		public void ICriteriaOfT_SimpleCriterion()
 		{
 			using (ISession s = OpenSession())
