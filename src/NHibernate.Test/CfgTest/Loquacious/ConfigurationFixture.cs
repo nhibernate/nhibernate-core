@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 using NHibernate.AdoNet;
 using NHibernate.ByteCode.LinFu;
 using NHibernate.Cache;
+using NHibernate.Cfg;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Dialect;
 using NHibernate.Driver;
@@ -18,8 +19,8 @@ namespace NHibernate.Test.CfgTest.Loquacious
 		{
 			// Here I'm configuring near all properties outside the scope of Configuration class
 			// Using the Configuration class the user can add mappings and configure listeners
-			IFluentSessionFactoryConfiguration sfc= null;
-			sfc.Named("SomeName")
+			var cfg = new Configuration();
+			cfg.SessionFactory().Named("SomeName")
 				.Caching
 					.Through<HashtableCacheProvider>()
 					.PrefixingRegionsWith("xyz")
@@ -66,8 +67,8 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			// This is a possible minimal configuration
 			// in this case we must define best default properties for each dialect
 			// The place where put default properties values is the Dialect itself.
-			IFluentSessionFactoryConfiguration sfc = null;
-			sfc
+			var cfg = new Configuration();
+			cfg.SessionFactory()
 				.Proxy.Through<ProxyFactoryFactory>()
 				.Integrate
 					.Using<MsSql2005Dialect>()
