@@ -222,8 +222,9 @@
 
 	<target name="common.run-tests"
 		description="Run NUnit tests">
-		<exec program="${root.dir}/Tools/nunit/nunit-console-x86.exe">
-			<arg line="${bin.dir}/${project::get-name()}.dll" />
+		<call target="common.find-nunit" unless="${property::exists('nunit.found')}" />
+		<exec program="${nunit-console}">
+			<arg line="${bin.dir}/${project::get-name()}.dll /xml:${testresults.dir}/${project::get-name()}.dll-results.xml " />
 		</exec>
 
 		<!--<nunit2>

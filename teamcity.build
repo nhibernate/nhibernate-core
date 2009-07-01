@@ -2,10 +2,9 @@
 <project name="NHibernate TeamCity Build" xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd" default="clean-configure-test">
 	<property name="root.dir" value="." />
 	<include buildfile="${root.dir}/default.build" />
-	<!--
 	<if test="${not property::exists('CCNetLabel') and not property::exists('build.number')}">
 		<fail>This build file is for use with CruiseControl.NET or TeamCity</fail>
-	</if>-->
+	</if>
 	
 	<property name="build.number" value="${CCNetLabel}" if="${property::exists('CCNetLabel')}" />
 
@@ -13,8 +12,6 @@
 
 	</target>
 	<target name="copy-teamcity-configuration">
-		<copy file="${teamcity.dotnet.nunitaddin}-2.5.0.dll" todir="${root.dir}/Tools/nunit/addins" />
-		<copy file="${teamcity.dotnet.nunitaddin}-2.5.0.pdb" todir="${root.dir}/Tools/nunit/addins" />
 		<copy file="build-common/teamcity-hibernate.cfg.xml" tofile="${bin.dir}/hibernate.cfg.xml"  />
 	</target>
 </project>

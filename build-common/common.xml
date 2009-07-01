@@ -174,7 +174,11 @@
 		<property name="build.root.dir" value="${root.dir}/build/${build.name}" />
 		<property name="build.dir" value="${build.root.dir}" />
 		<property name="bin.dir" value="${build.dir}/bin/${nant.settings.currentframework}" dynamic="true" />
+		<property name="testresults.dir" 	value="${bin.dir}/test-results" />
+		<property name="tools.dir" value="${root.dir}/Tools"/>
 	</target>
+	
+
 
 	<target name="set-framework-configuration">
 		<if test="${not(target::exists('set-'+framework::get-target-framework()+'-framework-configuration'))}">
@@ -241,6 +245,10 @@
 			<include name="**/*.cs" />
 		</fileset>
 		<resourcefileset id="project.resources" />
+	</target>
+	
+	<target name="common.find-nunit">
+		<property name="nunit-console" value="${tools.dir}/NUnit/nunit-console-x86.exe" />
 	</target>
 
 </project>

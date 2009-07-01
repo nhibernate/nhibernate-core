@@ -47,6 +47,7 @@
 
 	<target name="prepare-build-directory" depends="init">
 		<mkdir dir="${bin.dir}" />
+		<mkdir dir="${testresults.dir}" />
 		<call target="copy-referenced-assemblies" />
 	</target>
 
