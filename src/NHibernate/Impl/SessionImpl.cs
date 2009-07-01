@@ -8,6 +8,7 @@ using Iesi.Collections;
 using log4net;
 using NHibernate.AdoNet;
 using NHibernate.Collection;
+using NHibernate.Criterion;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
@@ -1875,7 +1876,8 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return new CriteriaImpl<T>(CreateCriteria(typeof(T)));
+				CheckAndUpdateSessionStatus();
+				return new QueryOver<T>(new CriteriaImpl(typeof(T), this));
 			}
 		}
 

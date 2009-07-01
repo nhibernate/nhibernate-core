@@ -85,7 +85,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		public void Where_BehavesTheSameAs_And()
 		{
 			Person personAlias = null;
-			Impl.CriteriaImpl<Person> expected = (Impl.CriteriaImpl<Person>)
+			QueryOver<Person> expected = (QueryOver<Person>)
 				CreateTestQueryOver<Person>(() => personAlias)
 					.And(() => personAlias.Name == "test name")
 					.And(p => p.Name == "test name");

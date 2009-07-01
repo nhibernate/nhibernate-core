@@ -479,7 +479,6 @@
     <Compile Include="Cfg\MappingSchema\HbmTimestamp.cs" />
     <Compile Include="Cfg\MappingSchema\HbmVersion.cs" />
     <Compile Include="Cfg\MappingSchema\IDecoratable.cs" />
-    <Compile Include="Criterion\DetachedCriteriaOfT.cs" />
     <Compile Include="Criterion\IPropertyProjection.cs" />
     <Compile Include="Dialect\MsSql2008Dialect.cs" />
     <Compile Include="Dialect\InformixDialect0940.cs" />
@@ -531,7 +530,7 @@
     <Compile Include="Hql\Ast\ANTLR\Tree\InsertStatement.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\UpdateStatement.cs" />
     <Compile Include="ICriteriaOfT.cs" />
-    <Compile Include="Impl\CriteriaOfTImpl.cs" />
+    <Compile Include="Criterion\QueryOver.cs" />
     <Compile Include="Impl\ExpressionProcessor.cs" />
     <Compile Include="Impl\SessionIdLoggingContext.cs" />
     <Compile Include="Param\AbstractExplicitParameterSpecification.cs" />

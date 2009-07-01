@@ -68,7 +68,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void DetachedCriteriaOfT_SimpleCriterion()
+		public void DetachedQuery_SimpleCriterion()
 		{
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
@@ -80,11 +80,11 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (ISession s = OpenSession())
 			{
 				var personQuery =
-					DetachedCriteria.QueryOver<Person>()
+					new QueryOver<Person>()
 						.Where(p => p.Name == "test person 1");
 
 				IList<Person> actual =
-					personQuery.GetExecutableCriteria(s)
+					personQuery.GetExecutableQueryOver(s)
 						.List();
 
 				Assert.That(actual[0].Age, Is.EqualTo(20));

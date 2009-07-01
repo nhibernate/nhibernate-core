@@ -146,7 +146,6 @@
     <Compile Include="Criteria\Enrolment.cs" />
     <Compile Include="Criteria\Lambda\CriteriaAssertFixture.cs" />
     <Compile Include="Criteria\Lambda\CriteriaOfTFixture.cs" />
-    <Compile Include="Criteria\Lambda\DetachedCriteriaOfTFixture.cs" />
     <Compile Include="Criteria\Lambda\IntegrationFixture.cs" />
     <Compile Include="Criteria\Lambda\LambdaFixtureBase.cs" />
     <Compile Include="Criteria\Lambda\Model.cs" />

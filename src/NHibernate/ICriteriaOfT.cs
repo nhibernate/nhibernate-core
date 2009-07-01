@@ -80,6 +80,11 @@ namespace NHibernate
 		/// <returns>The list filled with the results.</returns>
 		IList<T> List();
 
+		/// <summary>
+		/// Get an executable instance of <c>Criteria&lt;T&gt;</c>,
+		/// to actually run the query.</summary>
+		ICriteria<T> GetExecutableQueryOver(ISession session);
+
 	}
 
 }

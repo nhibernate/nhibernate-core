@@ -32,13 +32,13 @@ namespace NHibernate.Test.Criteria.Lambda
 
 		protected ICriteria<T> CreateTestQueryOver<T>()
 		{
-			return new CriteriaImpl<T>(new CriteriaImpl(typeof(T), null));
+			return new QueryOver<T>(new CriteriaImpl(typeof(T), null));
 		}
 
 		protected ICriteria<T> CreateTestQueryOver<T>(Expression<Func<object>> alias)
 		{
 			string aliasContainer = ExpressionProcessor.FindMemberExpression(alias.Body);
-			return new CriteriaImpl<T>(new CriteriaImpl(typeof(T), aliasContainer, null));
+			return new QueryOver<T>(new CriteriaImpl(typeof(T), aliasContainer, null));
 		}
 
 		protected void AssertCriteriaAreEqual(ICriteria expected, ICriteria actual)
@@ -53,7 +53,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 		protected void AssertCriteriaAreEqual<T>(ICriteria expected, ICriteria<T> actual)
 		{
-			AssertObjectsAreEqual(expected, ((CriteriaImpl<T>)actual).UnderlyingCriteria);
+			AssertObjectsAreEqual(expected, ((QueryOver<T>)actual).UnderlyingCriteria);
 		}
 
 		private void AssertDictionariesAreEqual(IDictionary expected, IDictionary actual)
