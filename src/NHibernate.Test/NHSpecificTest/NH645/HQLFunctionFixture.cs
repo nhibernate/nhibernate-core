@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH645
 		}
 	}
 
-	public class HQLFunctionFixtureBase : TestCase
+	public abstract class HQLFunctionFixtureBase : TestCase
 	{
 		private bool appliesToThisDialect = true;
 
