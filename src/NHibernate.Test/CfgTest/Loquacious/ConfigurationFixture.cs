@@ -10,12 +10,15 @@ using NHibernate.Driver;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Classic;
 using NHibernate.Type;
+using NUnit.Framework;
 
 namespace NHibernate.Test.CfgTest.Loquacious
 {
+	[TestFixture]
 	public class ConfigurationFixture
 	{
-		public void ProofOfConcept()
+		[Test]
+		public void CompleteConfiguration()
 		{
 			// Here I'm configuring near all properties outside the scope of Configuration class
 			// Using the Configuration class the user can add mappings and configure listeners
@@ -42,27 +45,67 @@ namespace NHibernate.Test.CfgTest.Loquacious
 					.AutoQuoteKeywords()
 					.BatchingQueries
 						.Through<SqlClientBatchingBatcherFactory>()
-						.Each(10)
+						.Each(15)
 					.Connected
 						.Through<DebugConnectionProvider>()
 						.By<SqlClientDriver>()
 						.Releasing(ConnectionReleaseMode.AfterTransaction)
 						.With(IsolationLevel.ReadCommitted)
-						.Using("The connection string but it has some overload")
+						.Using("The connection string")
 					.CreateCommands
 						.AutoCommentingSql()
 						.ConvertingExceptionsThrough<SQLStateConverter>()
 						.Preparing()
 						.WithTimeout(10)
-						.WithMaximumDepthOfOuterJoinFetching(10)
+						.WithMaximumDepthOfOuterJoinFetching(11)
 						.WithHqlToSqlSubstitutions("true 1, false 0, yes 'Y', no 'N'")
 					.Schema
 						.Validating()
 			;
 
+			Assert.That(cfg.Properties[Environment.SessionFactoryName], Is.EqualTo("SomeName"));
+			Assert.That(cfg.Properties[Environment.CacheProvider],
+									Is.EqualTo(typeof(HashtableCacheProvider).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.CacheRegionPrefix], Is.EqualTo("xyz"));
+			Assert.That(cfg.Properties[Environment.QueryCacheFactory],
+									Is.EqualTo(typeof(StandardQueryCache).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.UseMinimalPuts], Is.EqualTo("true"));
+			Assert.That(cfg.Properties[Environment.CacheDefaultExpiration], Is.EqualTo("15"));
+			Assert.That(cfg.Properties[Environment.CollectionTypeFactoryClass],
+									Is.EqualTo(typeof(DefaultCollectionTypeFactory).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.UseProxyValidator], Is.EqualTo("false"));
+			Assert.That(cfg.Properties[Environment.ProxyFactoryFactoryClass],
+						Is.EqualTo(typeof(ProxyFactoryFactory).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.QueryTranslator],
+						Is.EqualTo(typeof(ClassicQueryTranslatorFactory).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.DefaultCatalog], Is.EqualTo("MyCatalog"));
+			Assert.That(cfg.Properties[Environment.DefaultSchema], Is.EqualTo("MySche"));
+			Assert.That(cfg.Properties[Environment.Dialect],
+						Is.EqualTo(typeof(MsSql2000Dialect).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.Hbm2ddlKeyWords], Is.EqualTo("auto-quote"));
+			Assert.That(cfg.Properties[Environment.BatchStrategy],
+						Is.EqualTo(typeof(SqlClientBatchingBatcherFactory).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.BatchSize], Is.EqualTo("15"));
+			Assert.That(cfg.Properties[Environment.ConnectionProvider],
+						Is.EqualTo(typeof(DebugConnectionProvider).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.ConnectionDriver],
+						Is.EqualTo(typeof(SqlClientDriver).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.ReleaseConnections],
+			            Is.EqualTo(ConnectionReleaseModeParser.ToString(ConnectionReleaseMode.AfterTransaction)));
+			Assert.That(cfg.Properties[Environment.Isolation], Is.EqualTo("ReadCommitted"));
+			Assert.That(cfg.Properties[Environment.ConnectionString], Is.EqualTo("The connection string"));
+			Assert.That(cfg.Properties[Environment.UseSqlComments], Is.EqualTo("true"));
+			Assert.That(cfg.Properties[Environment.SqlExceptionConverter],
+									Is.EqualTo(typeof(SQLStateConverter).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.PrepareSql], Is.EqualTo("true"));
+			Assert.That(cfg.Properties[Environment.CommandTimeout], Is.EqualTo("10"));
+			Assert.That(cfg.Properties[Environment.MaxFetchDepth], Is.EqualTo("11"));
+			Assert.That(cfg.Properties[Environment.QuerySubstitutions], Is.EqualTo("true 1, false 0, yes 'Y', no 'N'"));
+			Assert.That(cfg.Properties[Environment.Hbm2ddlAuto], Is.EqualTo("validate"));
 		}
 
-		public void ProofOfConceptMinimalConfiguration()
+		[Test]
+		public void UseDbConfigurationStringBuilder()
 		{
 			// This is a possible minimal configuration
 			// in this case we must define best default properties for each dialect
@@ -79,6 +122,13 @@ namespace NHibernate.Test.CfgTest.Loquacious
 											InitialCatalog = "nhibernate", 
 											IntegratedSecurity = true
 						       	});
+
+			Assert.That(cfg.Properties[Environment.ProxyFactoryFactoryClass],
+			            Is.EqualTo(typeof (ProxyFactoryFactory).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.Dialect],
+									Is.EqualTo(typeof(MsSql2005Dialect).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.ConnectionString],
+									Is.EqualTo("Data Source=(local);Initial Catalog=nhibernate;Integrated Security=True"));
 		}
 	}
 }

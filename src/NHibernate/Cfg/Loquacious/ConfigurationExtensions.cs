@@ -4,7 +4,7 @@ namespace NHibernate.Cfg.Loquacious
 	{
 		public static IFluentSessionFactoryConfiguration SessionFactory(this Configuration configuration)
 		{
-			return null;
+			return new FluentSessionFactoryConfiguration(configuration);
 		}
 	}
 }

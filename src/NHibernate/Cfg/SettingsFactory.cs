@@ -95,7 +95,7 @@ namespace NHibernate.Cfg
 			}
 			else
 			{
-				releaseMode = ParseConnectionReleaseMode(releaseModeName);
+				releaseMode = ConnectionReleaseModeParser.Convert(releaseModeName);
 			}
 			settings.ConnectionReleaseMode = releaseMode;
 
@@ -326,21 +326,6 @@ namespace NHibernate.Cfg
 			catch (Exception e)
 			{
 				throw new HibernateException("could not instantiate CacheProvider: " + cacheClassName, e);
-			}
-		}
-
-		private static ConnectionReleaseMode ParseConnectionReleaseMode(string name)
-		{
-			switch (name)
-			{
-				case "after_statement":
-					throw new HibernateException("aggressive connection release (after_statement) not supported by NHibernate");
-				case "after_transaction":
-					return ConnectionReleaseMode.AfterTransaction;
-				case "on_close":
-					return ConnectionReleaseMode.OnClose;
-				default:
-					throw new HibernateException("could not determine appropriate connection release mode [" + name + "]");
 			}
 		}
 

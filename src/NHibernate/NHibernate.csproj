@@ -460,6 +460,7 @@
     <Compile Include="Bytecode\UnableToLoadProxyFactoryFactoryException.cs" />
     <Compile Include="Cache\FakeCache.cs" />
     <Compile Include="Cfg\Loquacious\ConfigurationExtensions.cs" />
+    <Compile Include="Cfg\Loquacious\FluentSessionFactoryConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\IBatcherConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\ICacheConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\ICollectionFactoryConfiguration.cs" />
