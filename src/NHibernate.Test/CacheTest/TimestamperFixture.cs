@@ -10,7 +10,7 @@ namespace NHibernate.Test.CacheTest
 	[TestFixture]
 	public class TimestamperFixture
 	{
-		[Test]
+		[Test,Explicit]
 		public void VerifyIncrease()
 		{
 			long currentTicks = 0;
