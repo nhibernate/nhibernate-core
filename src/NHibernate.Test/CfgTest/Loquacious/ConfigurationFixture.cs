@@ -130,5 +130,18 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Assert.That(cfg.Properties[Environment.ConnectionString],
 									Is.EqualTo("Data Source=(local);Initial Catalog=nhibernate;Integrated Security=True"));
 		}
+
+
+		[Test]
+		public void UseConnectionStringName()
+		{
+			var cfg = new Configuration();
+			cfg.SessionFactory()
+				.Integrate
+					.Connected
+						.ByAppConfing("MyName");
+
+			Assert.That(cfg.Properties[Environment.ConnectionStringName], Is.EqualTo("MyName"));
+		}
 	}
 }
