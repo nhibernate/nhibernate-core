@@ -459,7 +459,10 @@
     <Compile Include="Bytecode\ProxyFactoryFactoryNotConfiguredException.cs" />
     <Compile Include="Bytecode\UnableToLoadProxyFactoryFactoryException.cs" />
     <Compile Include="Cache\FakeCache.cs" />
+    <Compile Include="Cfg\Hbm2ddlKeyWords.cs" />
+    <Compile Include="Cfg\Loquacious\CacheConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\ConfigurationExtensions.cs" />
+    <Compile Include="Cfg\Loquacious\DbIntegrationConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\FluentSessionFactoryConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\IBatcherConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\ICacheConfiguration.cs" />
@@ -473,6 +476,9 @@
     <Compile Include="Cfg\Loquacious\IProxyConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\IQueryCacheConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\ITransactionConfiguration.cs" />
+    <Compile Include="Cfg\Loquacious\MappingsConfiguration.cs" />
+    <Compile Include="Cfg\Loquacious\ProxyConfiguration.cs" />
+    <Compile Include="Cfg\SchemaAutoAction.cs" />
     <Compile Include="Cfg\SessionFactoryConfigurationBase.cs" />
     <Compile Include="Cfg\ISessionFactoryConfiguration.cs" />
     <Compile Include="Cfg\MappingSchema\AbstractDecoratable.cs" />

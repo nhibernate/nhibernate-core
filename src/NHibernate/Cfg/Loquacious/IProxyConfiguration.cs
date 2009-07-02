@@ -6,4 +6,10 @@ namespace NHibernate.Cfg.Loquacious
 		IProxyConfiguration DisableValidation();
 		IFluentSessionFactoryConfiguration Through<TProxyFactoryFactory>() where TProxyFactoryFactory : IProxyFactoryFactory;
 	}
+
+	public interface IProxyConfigurationProperties
+	{
+		bool Validation { set; }
+		void ProxyFactoryFactory<TProxyFactoryFactory>() where TProxyFactoryFactory : IProxyFactoryFactory;
+	}
 }

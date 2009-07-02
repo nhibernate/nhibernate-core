@@ -4,7 +4,7 @@ namespace NHibernate.Cfg.Loquacious
 	public interface ICommandsConfiguration
 	{
 		ICommandsConfiguration Preparing();
-		ICommandsConfiguration WithTimeout(int seconds);
+		ICommandsConfiguration WithTimeout(byte seconds);
 		ICommandsConfiguration ConvertingExceptionsThrough<TExceptionConverter>() where TExceptionConverter : ISQLExceptionConverter;
 		ICommandsConfiguration AutoCommentingSql();
 		IDbIntegrationConfiguration WithHqlToSqlSubstitutions(string csvQuerySubstitutions);

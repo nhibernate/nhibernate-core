@@ -5,4 +5,10 @@ namespace NHibernate.Cfg.Loquacious
 		IMappingsConfiguration UsingDefaultCatalog(string defaultCatalogName);
 		IFluentSessionFactoryConfiguration UsingDefaultSchema(string defaultSchemaName);
 	}
+
+	public interface IMappingsConfigurationProperties
+	{
+		string DefaultCatalog { set; }
+		string DefaultSchema { set; }
+	}
 }

@@ -142,42 +142,44 @@ namespace NHibernate.Cfg
 
 			#region Hbm2DDL
 			string autoSchemaExport = PropertiesHelper.GetString(Environment.Hbm2ddlAuto, properties, null);
-			if ("update" == autoSchemaExport)
+			if (SchemaAutoAction.Update == autoSchemaExport)
 			{
 				settings.IsAutoUpdateSchema = true;
 			}
-			if ("create" == autoSchemaExport)
+			else if (SchemaAutoAction.Create == autoSchemaExport)
 			{
 				settings.IsAutoCreateSchema = true;
 			}
-			if ("create-drop" == autoSchemaExport)
+			else if (SchemaAutoAction.Recreate == autoSchemaExport)
 			{
 				settings.IsAutoCreateSchema = true;
 				settings.IsAutoDropSchema = true;
 			}
-			if ("validate" == autoSchemaExport)
+			else if (SchemaAutoAction.Validate == autoSchemaExport)
 			{
 				settings.IsAutoValidateSchema = true;
 			}
 
 			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, properties, "not-defined");
-			switch (autoKeyWordsImport.ToLowerInvariant())
+			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
+			if (autoKeyWordsImport == Hbm2DDLKeyWords.None)
 			{
-				case "none":
-					settings.IsKeywordsImportEnabled = false;
-					settings.IsAutoQuoteEnabled = false;
-					break;
-				case "keywords":
-					settings.IsKeywordsImportEnabled = true;
-					break;
-				case "auto-quote":
-					settings.IsKeywordsImportEnabled = true;
-					settings.IsAutoQuoteEnabled = true;
-					break;
-				case "not-defined":
-					settings.IsKeywordsImportEnabled = true;
-					settings.IsAutoQuoteEnabled = false;
-					break;
+				settings.IsKeywordsImportEnabled = false;
+				settings.IsAutoQuoteEnabled = false;
+			}
+			else if (autoKeyWordsImport == Hbm2DDLKeyWords.Keywords)
+			{
+				settings.IsKeywordsImportEnabled = true;
+			}
+			else if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
+			{
+				settings.IsKeywordsImportEnabled = true;
+				settings.IsAutoQuoteEnabled = true;
+			}
+			else if (autoKeyWordsImport == "not-defined")
+			{
+				settings.IsKeywordsImportEnabled = true;
+				settings.IsAutoQuoteEnabled = false;
 			}
 
 			#endregion
