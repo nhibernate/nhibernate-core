@@ -79,7 +79,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			using (ISession s = OpenSession())
 			{
-				var personQuery =
+				QueryOver<Person> personQuery =
 					new QueryOver<Person>()
 						.Where(p => p.Name == "test person 1");
 

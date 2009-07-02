@@ -42,41 +42,41 @@ namespace NHibernate.Criterion
 			get { return _criteria; }
 		}
 
-		public IQueryOver<T> And(Expression<Func<T, bool>> expression)
+		public QueryOver<T> And(Expression<Func<T, bool>> expression)
 		{
 			return Add(expression);
 		}
 
-		public IQueryOver<T> And(Expression<Func<bool>> expression)
+		public QueryOver<T> And(Expression<Func<bool>> expression)
 		{
 			return Add(expression);
 		}
 
-		public IQueryOver<T> Where(Expression<Func<T, bool>> expression)
+		public QueryOver<T> Where(Expression<Func<T, bool>> expression)
 		{
 			return Add(expression);
 		}
 
-		public IQueryOver<T> Where(Expression<Func<bool>> expression)
+		public QueryOver<T> Where(Expression<Func<bool>> expression)
 		{
 			return Add(expression);
 		}
 
-		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path)
+		public QueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path)
 		{
 			return new QueryOver<U>(_impl,
 				_criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body)));
 		}
 
-		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path)
+		public QueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path)
 		{
 			return new QueryOver<U>(_impl,
 				_criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body)));
 		}
 
-		public IQueryOver<T> Join(Expression<Func<T, object>> path, Expression<Func<object>> alias)
+		public QueryOver<T> Join(Expression<Func<T, object>> path, Expression<Func<object>> alias)
 		{
 			return AddAlias(
 				ExpressionProcessor.FindMemberExpression(path.Body),
@@ -89,6 +89,9 @@ namespace NHibernate.Criterion
 			return _criteria.List<T>();
 		}
 
+		/// <summary>
+		/// Get an executable instance of <c>IQueryOver&lt;T&gt;</c>,
+		/// to actually run the query.</summary>
 		public IQueryOver<T> GetExecutableQueryOver(ISession session)
 		{
 			_impl.Session = session.GetSessionImplementation();
@@ -112,6 +115,28 @@ namespace NHibernate.Criterion
 			_criteria.Add(ExpressionProcessor.ProcessExpression(expression));
 			return this;
 		}
+
+
+		IQueryOver<T> IQueryOver<T>.And(Expression<Func<T, bool>> expression)
+		{ return And(expression); }
+
+		IQueryOver<T> IQueryOver<T>.And(Expression<Func<bool>> expression)
+		{ return And(expression); }
+
+		IQueryOver<T> IQueryOver<T>.Where(Expression<Func<T, bool>> expression)
+		{ return Where(expression); }
+
+		IQueryOver<T> IQueryOver<T>.Where(Expression<Func<bool>> expression)
+		{ return Where(expression); }
+
+		IQueryOver<U> IQueryOver<T>.JoinQueryOver<U>(Expression<Func<T, U>> path)
+		{ return JoinQueryOver(path); }
+
+		IQueryOver<U> IQueryOver<T>.JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path)
+		{ return JoinQueryOver(path); }
+
+		IQueryOver<T> IQueryOver<T>.Join(Expression<Func<T, object>> path, Expression<Func<object>> alias)
+		{ return Join(path, alias); }
 
 	}
 
