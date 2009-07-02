@@ -142,7 +142,12 @@ namespace NHibernate.Impl
 				MethodCallExpression methodCallExpression = (MethodCallExpression)expression;
 
 				if (methodCallExpression.Method.Name == "GetType")
-					return FindMemberExpression(methodCallExpression.Object) + ".class";
+				{
+					if (methodCallExpression.Object.NodeType == ExpressionType.MemberAccess)
+						return FindMemberExpression(methodCallExpression.Object) + ".class";
+					else
+						return "class";
+				}
 
 				throw new Exception("Unrecognised method call in epression " + expression.ToString());
 			}

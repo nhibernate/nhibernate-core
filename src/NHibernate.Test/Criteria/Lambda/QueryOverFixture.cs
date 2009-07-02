@@ -25,7 +25,8 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Add(Restrictions.Gt("Age", 10))
 					.Add(Restrictions.Ge("Age", 11))
 					.Add(Restrictions.Lt("Age", 50))
-					.Add(Restrictions.Le("Age", 49));
+					.Add(Restrictions.Le("Age", 49))
+					.Add(Restrictions.Eq("class", typeof(Person)));
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
@@ -34,7 +35,8 @@ namespace NHibernate.Test.Criteria.Lambda
 					.And(p => p.Age > 10)
 					.And(p => p.Age >= 11)
 					.And(p => p.Age < 50)
-					.And(p => p.Age <= 49);
+					.And(p => p.Age <= 49)
+					.And(p => p.GetType() == typeof(Person));
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
@@ -103,12 +105,24 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected = 
 				CreateTestCriteria(typeof(Person), "personAlias")
-					.Add(Restrictions.Eq("personAlias.Name", "test name"));
+					.Add(Restrictions.Eq("personAlias.Name", "test name"))
+					.Add(Restrictions.Not(Restrictions.Eq("personAlias.Name", "not test name")))
+					.Add(Restrictions.Gt("personAlias.Age", 10))
+					.Add(Restrictions.Ge("personAlias.Age", 11))
+					.Add(Restrictions.Lt("personAlias.Age", 50))
+					.Add(Restrictions.Le("personAlias.Age", 49))
+					.Add(Restrictions.Eq("personAlias.class", typeof(Person)));
 
 			Person personAlias = null;
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>(() => personAlias)
-					.Where(() => personAlias.Name == "test name");
+					.Where(() => personAlias.Name == "test name")
+					.And(() => personAlias.Name != "not test name")
+					.And(() => personAlias.Age > 10)
+					.And(() => personAlias.Age >= 11)
+					.And(() => personAlias.Age < 50)
+					.And(() => personAlias.Age <= 49)
+					.And(() => personAlias.GetType() == typeof(Person));
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
