@@ -1872,7 +1872,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public ICriteria<T> QueryOver<T>() where T : class
+		public IQueryOver<T> QueryOver<T>() where T : class
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{

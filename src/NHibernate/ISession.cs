@@ -787,7 +787,7 @@ namespace NHibernate
 		/// </summary>
 		/// <typeparam name="T">The entity class</typeparam>
 		/// <returns>An ICriteria&lt;T&gt; object</returns>
-		ICriteria<T> QueryOver<T>() where T : class;
+		IQueryOver<T> QueryOver<T>() where T : class;
 
 		/// <summary>
 		/// Create a new instance of <c>Query</c> for the given query string

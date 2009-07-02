@@ -30,12 +30,12 @@ namespace NHibernate.Test.Criteria.Lambda
 			return new CriteriaImpl(persistentClass, alias, null);
 		}
 
-		protected ICriteria<T> CreateTestQueryOver<T>()
+		protected IQueryOver<T> CreateTestQueryOver<T>()
 		{
 			return new QueryOver<T>(new CriteriaImpl(typeof(T), null));
 		}
 
-		protected ICriteria<T> CreateTestQueryOver<T>(Expression<Func<object>> alias)
+		protected IQueryOver<T> CreateTestQueryOver<T>(Expression<Func<object>> alias)
 		{
 			string aliasContainer = ExpressionProcessor.FindMemberExpression(alias.Body);
 			return new QueryOver<T>(new CriteriaImpl(typeof(T), aliasContainer, null));
@@ -51,7 +51,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertObjectsAreEqual(expected, actual);
 		}
 
-		protected void AssertCriteriaAreEqual<T>(ICriteria expected, ICriteria<T> actual)
+		protected void AssertCriteriaAreEqual<T>(ICriteria expected, IQueryOver<T> actual)
 		{
 			AssertObjectsAreEqual(expected, ((QueryOver<T>)actual).UnderlyingCriteria);
 		}

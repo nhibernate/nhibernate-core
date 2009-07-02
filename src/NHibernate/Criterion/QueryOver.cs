@@ -10,10 +10,10 @@ namespace NHibernate.Criterion
 {
 
 	/// <summary>
-	/// Implementation of the <see cref="ICriteria&lt;T&gt;"/> interface
+	/// Implementation of the <see cref="IQueryOver&lt;T&gt;"/> interface
 	/// </summary>
 	[Serializable]
-	public class QueryOver<T> : ICriteria<T>
+	public class QueryOver<T> : IQueryOver<T>
 	{
 
 		private ICriteria		_criteria;
@@ -42,41 +42,41 @@ namespace NHibernate.Criterion
 			get { return _criteria; }
 		}
 
-		public ICriteria<T> And(Expression<Func<T, bool>> expression)
+		public IQueryOver<T> And(Expression<Func<T, bool>> expression)
 		{
 			return Add(expression);
 		}
 
-		public ICriteria<T> And(Expression<Func<bool>> expression)
+		public IQueryOver<T> And(Expression<Func<bool>> expression)
 		{
 			return Add(expression);
 		}
 
-		public ICriteria<T> Where(Expression<Func<T, bool>> expression)
+		public IQueryOver<T> Where(Expression<Func<T, bool>> expression)
 		{
 			return Add(expression);
 		}
 
-		public ICriteria<T> Where(Expression<Func<bool>> expression)
+		public IQueryOver<T> Where(Expression<Func<bool>> expression)
 		{
 			return Add(expression);
 		}
 
-		public ICriteria<U> JoinWalk<U>(Expression<Func<T, U>> path)
+		public IQueryOver<U> JoinWalk<U>(Expression<Func<T, U>> path)
 		{
 			return new QueryOver<U>(_impl,
 				_criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body)));
 		}
 
-		public ICriteria<U> JoinWalk<U>(Expression<Func<T, IEnumerable<U>>> path)
+		public IQueryOver<U> JoinWalk<U>(Expression<Func<T, IEnumerable<U>>> path)
 		{
 			return new QueryOver<U>(_impl,
 				_criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body)));
 		}
 
-		public ICriteria<T> Join(Expression<Func<T, object>> path, Expression<Func<object>> alias)
+		public IQueryOver<T> Join(Expression<Func<T, object>> path, Expression<Func<object>> alias)
 		{
 			return AddAlias(
 				ExpressionProcessor.FindMemberExpression(path.Body),
@@ -89,7 +89,7 @@ namespace NHibernate.Criterion
 			return _criteria.List<T>();
 		}
 
-		public ICriteria<T> GetExecutableQueryOver(ISession session)
+		public IQueryOver<T> GetExecutableQueryOver(ISession session)
 		{
 			_impl.Session = session.GetSessionImplementation();
 			return this;

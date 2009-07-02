@@ -7,7 +7,7 @@ namespace NHibernate
 {
 
 	/// <summary>
-	/// Criteria&lt;T&gt; is an API for retrieving entities by composing
+	/// QueryOver&lt;T&gt; is an API for retrieving entities by composing
 	/// <see cref="Criterion.Expression" /> objects expressed using Lambda expression syntax.
 	/// </summary>
 	/// <remarks>
@@ -18,7 +18,7 @@ namespace NHibernate
 	///		.List();
 	/// </code>
 	/// </remarks>
-	public interface ICriteria<T>
+	public interface IQueryOver<T>
 	{
 
 		/// <summary>
@@ -26,28 +26,28 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="expression">Lambda expression</param>
 		/// <returns>criteria instance</returns>
-		ICriteria<T> And(Expression<Func<T, bool>> expression);
+		IQueryOver<T> And(Expression<Func<T, bool>> expression);
 
 		/// <summary>
 		/// Add criterion expressed as a lambda expression
 		/// </summary>
 		/// <param name="expression">Lambda expression</param>
 		/// <returns>criteria instance</returns>
-		ICriteria<T> And(Expression<Func<bool>> expression);
+		IQueryOver<T> And(Expression<Func<bool>> expression);
 
 		/// <summary>
 		/// Identical semantics to Add() to allow more readable queries
 		/// </summary>
 		/// <param name="expression">Lambda expression</param>
 		/// <returns>criteria instance</returns>
-		ICriteria<T> Where(Expression<Func<T, bool>> expression);
+		IQueryOver<T> Where(Expression<Func<T, bool>> expression);
 
 		/// <summary>
 		/// Identical semantics to Add() to allow more readable queries
 		/// </summary>
 		/// <param name="expression">Lambda expression</param>
 		/// <returns>criteria instance</returns>
-		ICriteria<T> Where(Expression<Func<bool>> expression);
+		IQueryOver<T> Where(Expression<Func<bool>> expression);
 
 		/// <summary>
 		/// Creates a new NHibernate.ICriteria&lt;T&gt;, "rooted" at the associated entity
@@ -55,7 +55,7 @@ namespace NHibernate
 		/// <typeparam name="U">Type of sub-criteria</typeparam>
 		/// <param name="path">Lambda expression returning association path</param>
 		/// <returns>The created "sub criteria"</returns>
-		ICriteria<U> JoinWalk<U>(Expression<Func<T, U>> path);
+		IQueryOver<U> JoinWalk<U>(Expression<Func<T, U>> path);
 
 		/// <summary>
 		/// Creates a new NHibernate.ICriteria&lt;T&gt;, "rooted" at the associated entity
@@ -64,7 +64,7 @@ namespace NHibernate
 		/// <typeparam name="U">Type of sub-criteria (type of the collection)</typeparam>
 		/// <param name="path">Lambda expression returning association path</param>
 		/// <returns>The created "sub criteria"</returns>
-		ICriteria<U> JoinWalk<U>(Expression<Func<T, IEnumerable<U>>> path);
+		IQueryOver<U> JoinWalk<U>(Expression<Func<T, IEnumerable<U>>> path);
 
 		/// <summary>
 		/// Join an association, assigning an alias to the joined entity
@@ -72,7 +72,7 @@ namespace NHibernate
 		/// <param name="path">Lambda expression returning association path</param>
 		/// <param name="alias">Lambda expression returning alias reference</param>
 		/// <returns>criteria instance</returns>
-		ICriteria<T> Join(Expression<Func<T, object>> path, Expression<Func<object>> alias);
+		IQueryOver<T> Join(Expression<Func<T, object>> path, Expression<Func<object>> alias);
 
 		/// <summary>
 		/// Get the results of the root type and fill the <see cref="IList&lt;T&gt;"/>
@@ -83,7 +83,7 @@ namespace NHibernate
 		/// <summary>
 		/// Get an executable instance of <c>Criteria&lt;T&gt;</c>,
 		/// to actually run the query.</summary>
-		ICriteria<T> GetExecutableQueryOver(ISession session);
+		IQueryOver<T> GetExecutableQueryOver(ISession session);
 
 	}
 

@@ -12,7 +12,7 @@ namespace NHibernate.Test.Criteria.Lambda
 {
 
 	[TestFixture]
-	public class CriteriaOfTFixture : LambdaFixtureBase
+	public class QueryOverFixture : LambdaFixtureBase
 	{
 
 		[Test]
@@ -27,7 +27,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Add(Restrictions.Lt("Age", 50))
 					.Add(Restrictions.Le("Age", 49));
 
-			ICriteria<Person> actual =
+			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
 					.And(p => p.Name == "test name")
 					.And(p => p.Name != "not test name")
@@ -51,7 +51,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Add(Restrictions.LtProperty("Age", "Height"))
 					.Add(Restrictions.LeProperty("Age", "Height"));
 
-			ICriteria<Person> actual =
+			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
 					.And(p => p.Age == p.Height)
 					.And(p => p.Age != p.Height)
@@ -74,7 +74,7 @@ namespace NHibernate.Test.Criteria.Lambda
 							Restrictions.Gt("Age", 21),
 							Restrictions.Eq("HasCar", true))));
 
-			ICriteria<Person> actual =
+			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
 					.Where(p => p.Name == "test name" && (p.Age > 21 || p.HasCar));
 
@@ -90,7 +90,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.And(() => personAlias.Name == "test name")
 					.And(p => p.Name == "test name");
 
-			ICriteria<Person> actual =
+			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>(() => personAlias)
 					.Where(() => personAlias.Name == "test name")
 					.Where(p => p.Name == "test name");
@@ -106,7 +106,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Add(Restrictions.Eq("personAlias.Name", "test name"));
 
 			Person personAlias = null;
-			ICriteria<Person> actual =
+			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>(() => personAlias)
 					.Where(() => personAlias.Name == "test name");
 
@@ -121,7 +121,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.CreateCriteria("Father")
 						.Add(Expression.Eq("Name", "test name"));
 
-			ICriteria<Person> actual =
+			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
 					.JoinWalk(p => p.Father) // sub-criteria
 						.Where(f => f.Name == "test name");
@@ -137,7 +137,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.CreateCriteria("Children")
 						.Add(Expression.Eq("Nickname", "test name"));
 
-			ICriteria<Child> actual =
+			IQueryOver<Child> actual =
 				CreateTestQueryOver<Person>()
 					.JoinWalk<Child>(p => p.Children) // sub-criteria
 						.Where(c => c.Nickname == "test name");
@@ -155,7 +155,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			Person fatherAlias = null;
 			Child childAlias = null;
-			ICriteria<Person> actual =
+			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
 					.Join(p => p.Father, () => fatherAlias)
 					.Join(p => p.Children, () => childAlias);
