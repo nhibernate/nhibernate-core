@@ -123,7 +123,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
-					.JoinWalk(p => p.Father) // sub-criteria
+					.JoinQueryOver(p => p.Father) // sub-criteria
 						.Where(f => f.Name == "test name");
 
 			AssertCriteriaAreEqual(expected, actual);
@@ -139,7 +139,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			IQueryOver<Child> actual =
 				CreateTestQueryOver<Person>()
-					.JoinWalk<Child>(p => p.Children) // sub-criteria
+					.JoinQueryOver<Child>(p => p.Children) // sub-criteria
 						.Where(c => c.Nickname == "test name");
 
 			AssertCriteriaAreEqual(expected, actual);

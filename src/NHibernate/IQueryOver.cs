@@ -55,7 +55,7 @@ namespace NHibernate
 		/// <typeparam name="U">Type of sub-criteria</typeparam>
 		/// <param name="path">Lambda expression returning association path</param>
 		/// <returns>The created "sub criteria"</returns>
-		IQueryOver<U> JoinWalk<U>(Expression<Func<T, U>> path);
+		IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path);
 
 		/// <summary>
 		/// Creates a new NHibernate.ICriteria&lt;T&gt;, "rooted" at the associated entity
@@ -64,7 +64,7 @@ namespace NHibernate
 		/// <typeparam name="U">Type of sub-criteria (type of the collection)</typeparam>
 		/// <param name="path">Lambda expression returning association path</param>
 		/// <returns>The created "sub criteria"</returns>
-		IQueryOver<U> JoinWalk<U>(Expression<Func<T, IEnumerable<U>>> path);
+		IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path);
 
 		/// <summary>
 		/// Join an association, assigning an alias to the joined entity

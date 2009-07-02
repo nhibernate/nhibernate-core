@@ -62,14 +62,14 @@ namespace NHibernate.Criterion
 			return Add(expression);
 		}
 
-		public IQueryOver<U> JoinWalk<U>(Expression<Func<T, U>> path)
+		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path)
 		{
 			return new QueryOver<U>(_impl,
 				_criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body)));
 		}
 
-		public IQueryOver<U> JoinWalk<U>(Expression<Func<T, IEnumerable<U>>> path)
+		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path)
 		{
 			return new QueryOver<U>(_impl,
 				_criteria.CreateCriteria(
