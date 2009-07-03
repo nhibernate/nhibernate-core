@@ -8,6 +8,7 @@ namespace NHibernate.Util
 {
 	public sealed class CollectionHelper
 	{
+		[Serializable]
 		private class EmptyEnumerator : IDictionaryEnumerator
 		{
 			public object Key
@@ -51,9 +52,10 @@ namespace NHibernate.Util
 		/// <summary>
 		/// A read-only dictionary that is always empty and permits lookup by <see langword="null" /> key.
 		/// </summary>
+		[Serializable]
 		private class EmptyMapClass : IDictionary
 		{
-			private static readonly EmptyEnumerator EmptyEnumerator = new EmptyEnumerator();
+			private static readonly EmptyEnumerator emptyEnumerator = new EmptyEnumerator();
 
 			public bool Contains(object key)
 			{
@@ -72,7 +74,7 @@ namespace NHibernate.Util
 
 			IDictionaryEnumerator IDictionary.GetEnumerator()
 			{
-				return EmptyEnumerator;
+				return emptyEnumerator;
 			}
 
 			public void Remove(object key)
@@ -127,10 +129,11 @@ namespace NHibernate.Util
 
 			public IEnumerator GetEnumerator()
 			{
-				return EmptyEnumerator;
+				return emptyEnumerator;
 			}
 		}
 
+		[Serializable]
 		private class EmptyListClass : IList
 		{
 			public int Add(object value)
@@ -385,6 +388,7 @@ namespace NHibernate.Util
 		}
 
 		// ~~~~~~~~~~~~~~~~~~~~~~ Generics ~~~~~~~~~~~~~~~~~~~~~~
+		[Serializable]
 		private class EmptyEnumerator<TKey, TValue> : IEnumerator<KeyValuePair<TKey, TValue>>
 		{
 			#region IEnumerator<KeyValuePair<TKey,TValue>> Members
@@ -431,6 +435,7 @@ namespace NHibernate.Util
 			#endregion
 		}
 
+		[Serializable]
 		public class EmptyEnumerableClass<T> : IEnumerable<T>
 		{
 			#region IEnumerable<T> Members
@@ -452,7 +457,8 @@ namespace NHibernate.Util
 			#endregion
 		}
 
-		private class EmptyEnumerator<T>: IEnumerator<T> 
+		[Serializable]
+		private class EmptyEnumerator<T> : IEnumerator<T> 
 		{
 			#region IEnumerator<T> Members
 
@@ -493,9 +499,10 @@ namespace NHibernate.Util
 		/// <summary>
 		/// A read-only dictionary that is always empty and permits lookup by <see langword="null" /> key.
 		/// </summary>
+		[Serializable]
 		public class EmptyMapClass<TKey, TValue> : IDictionary<TKey, TValue>
 		{
-			private static readonly EmptyEnumerator<TKey, TValue> EmptyEnumerator = new EmptyEnumerator<TKey, TValue>();
+			private static readonly EmptyEnumerator<TKey, TValue> emptyEnumerator = new EmptyEnumerator<TKey, TValue>();
 
 			#region IDictionary<TKey,TValue> Members
 
@@ -580,7 +587,7 @@ namespace NHibernate.Util
 
 			IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
 			{
-				return EmptyEnumerator;
+				return emptyEnumerator;
 			}
 
 			#endregion
