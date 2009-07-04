@@ -487,7 +487,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if (_ast == null)
 			{
 				// Parse the query string into an HQL AST.
-				var lex = new HqlLexer(new CaseInsensitiveStringStream(_hql));
+			   var lex = new HqlLexer(new CaseInsensitiveStringStream(_hql));
 				_tokens = new CommonTokenStream(lex);
 
 				var parser = new HqlParser(_tokens);
@@ -500,14 +500,19 @@ namespace NHibernate.Hql.Ast.ANTLR
 					log.Debug("parse() - HQL: " + _hql);
 				}
 
-				_ast = (IASTNode)parser.statement().Tree;
+			   try
+			   {
+               _ast = (IASTNode)parser.statement().Tree;
 
-				var walker = new NodeTraverser(new ConstantConverter(_sfi));
-				walker.TraverseDepthFirst(_ast);
+               var walker = new NodeTraverser(new ConstantConverter(_sfi));
+               walker.TraverseDepthFirst(_ast);
 
-				//showHqlAst( hqlAst );
-
-				parser.ParseErrorHandler.ThrowQueryException();
+               //showHqlAst( hqlAst );
+			   }
+            finally
+			   {
+               parser.ParseErrorHandler.ThrowQueryException();
+			   }
 			}
 		}
 
@@ -594,17 +599,15 @@ namespace NHibernate.Hql.Ast.ANTLR
 				var hqlSqlWalker = new HqlSqlWalker(_qti, _sfi, nodes, _tokenReplacements, _collectionRole);
 				hqlSqlWalker.TreeAdaptor = new HqlSqlWalkerTreeAdaptor(hqlSqlWalker);
 
-				// Transform the tree.
-				_resultAst = (IStatement)hqlSqlWalker.statement().Tree;
-
-				/*
-				if ( AST_LOG.isDebugEnabled() ) {
-					ASTPrinter printer = new ASTPrinter( SqlTokenTypes.class );
-					AST_LOG.debug( printer.showAsString( w.getAST(), "--- SQL AST ---" ) );
-				}
-				*/
-
-				hqlSqlWalker.ParseErrorHandler.ThrowQueryException();
+			   try
+			   {
+               // Transform the tree.
+               _resultAst = (IStatement)hqlSqlWalker.statement().Tree;
+			   }
+            finally
+			   {
+               hqlSqlWalker.ParseErrorHandler.ThrowQueryException();
+			   }
 			}
 
 			return _resultAst;
@@ -648,16 +651,21 @@ namespace NHibernate.Hql.Ast.ANTLR
 				var gen = new SqlGenerator(_sfi, nodes);
 				//gen.TreeAdaptor = new ASTTreeAdaptor();
 
-				gen.statement();
+            try
+            {
+               gen.statement();
 
-				_sql = gen.GetSQL();
+               _sql = gen.GetSQL();
 
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("SQL: " + _sql);
-				}
-
-				gen.ParseErrorHandler.ThrowQueryException();
+               if (log.IsDebugEnabled)
+               {
+                  log.Debug("SQL: " + _sql);
+               }
+            }
+            finally
+            {
+               gen.ParseErrorHandler.ThrowQueryException();
+            }
 
 				_parameters = gen.GetCollectedParameters();
 			}

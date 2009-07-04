@@ -299,6 +299,7 @@ logicalExpr
 	| ^(OR logicalExpr logicalExpr)
 	| ^(NOT logicalExpr)
 	| comparisonExpr
+	| functionCall
 	;
 
 // TODO: Add any other comparison operators here.

@@ -197,6 +197,7 @@ booleanOp[ bool parens ]
 booleanExpr[ bool parens ]
 	: booleanOp [ parens ]
 	| comparisonExpr [ parens ]
+	| methodCall
 	| st=SQL_TOKEN { Out(st); } // solely for the purpose of mapping-defined where-fragments
 	;
 	

@@ -1,6 +1,8 @@
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
+using NHibernate.Engine.Query;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1849
@@ -29,19 +31,19 @@ namespace NHibernate.Test.NHSpecificTest.NH1849
 		}
 
 		/// <summary>
-		/// This test may throw an ado exception due to the absence of a full text index,
-		/// however the query should compile
-		/// </summary>
-		[Test, Ignore]
+      /// We don't actually execute the query, since it will throw an ado exception due to the absence of a full text index,
+      /// however the query should compile
+      /// </summary>
+		[Test]
 		public void ExecutesCustomSqlFunctionContains()
 		{
-			sessions.Statistics.Clear();
-			using (ISession session = OpenSession())
-			{
-				session.CreateQuery("from Customer c where contains(c.Name, :smth)").SetString("smth", "aaaa").List();
+         string hql = @"from Customer c where contains(c.Name, :smth)";
 
-				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(1));
-			}
-		}
+         HQLQueryPlan plan = new HQLQueryPlan(hql, false, new CollectionHelper.EmptyMapClass<string, IFilter>(), sessions);
+
+         Assert.AreEqual(1, plan.ParameterMetadata.NamedParameterNames.Count);
+         Assert.AreEqual(1, plan.QuerySpaces.Count);
+         Assert.AreEqual(1, plan.SqlStrings.Length);
+      }
 	}
 }
