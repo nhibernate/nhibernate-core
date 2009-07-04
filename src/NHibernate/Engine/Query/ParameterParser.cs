@@ -56,7 +56,7 @@ namespace NHibernate.Engine.Query
 				// check comments
 				if (indx + 1 < stringLength && sqlString.Substring(indx,2) == "/*")
 				{
-					var closeCommentIdx = sqlString.IndexOf("*/");
+					var closeCommentIdx = sqlString.IndexOf("*/", indx+2);
 					recognizer.Other(sqlString.Substring(indx, (closeCommentIdx- indx)+2));
 					indx = closeCommentIdx + 1;
 					continue;
