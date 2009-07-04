@@ -69,18 +69,22 @@ namespace NHibernate.Param
 
 		public void AdjustNamedParameterLocationsForQueryParameters(QueryParameters parameters)
 		{
-			foreach (int existingParameterLocation in parameters.FilteredParameterLocations)
+			// NH Different behaviour NH-1776
+			// Analyze all named parameters declared after filters 
+			//in general all named parameters but depend on the complexity of the query
+			foreach (ParameterInfo entry in _namedParameters.Values)
 			{
-				foreach (ParameterInfo entry in _namedParameters.Values)
+				int amountOfPush = 0;
+				foreach (int existingParameterLocation in parameters.FilteredParameterLocations)
 				{
-					for (int index = 0; index < entry.SqlLocations.Length; index++)
+					// a parameter span, at least, one value; where span more than one all values are cosecutive
+					// the first position determines the position of the others values
+					if (entry.SqlLocations[0] >= existingParameterLocation)
 					{
-						if (entry.SqlLocations[index] >= existingParameterLocation)
-						{
-							entry.IncrementLocation(index);
-						}
+						amountOfPush++;
 					}
 				}
+				entry.IncrementLocation(amountOfPush);
 			}
 		}
 
@@ -165,9 +169,16 @@ namespace NHibernate.Param
 
 		public IType ExpectedType { get; private set; }
 
-		public void IncrementLocation(int index)
+		public void IncrementLocation(int amountOfPush)
 		{
-			sqlLocations[index] = originalLocation[index] + 1;
+			if(amountOfPush <= 0)
+			{
+				return; // short cut
+			}
+			for (int i = 0; i < sqlLocations.Length; i++)
+			{
+				sqlLocations[i] = originalLocation[i] + amountOfPush;
+			}
 		}
 	}
 }
