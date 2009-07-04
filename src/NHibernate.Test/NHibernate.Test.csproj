@@ -532,6 +532,9 @@
     <Compile Include="NHSpecificTest\NH1849\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1850\Customer.cs" />
     <Compile Include="NHSpecificTest\NH1850\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1857\Department.cs" />
+    <Compile Include="NHSpecificTest\NH1857\Employee.cs" />
+    <Compile Include="NHSpecificTest\NH1857\FullJoinTest.cs" />
     <Compile Include="NHSpecificTest\NH1859\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH1859\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH1864\Fixture.cs" />
@@ -1947,6 +1950,7 @@
     <EmbeddedResource Include="DriverTest\MultiTypeEntity.hbm.xml" />
     <EmbeddedResource Include="Criteria\Lambda\Mappings.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1857\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1859\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1864\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1849\Mappings.hbm.xml" />

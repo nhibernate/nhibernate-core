@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1857"
+                   default-lazy="false">
+  <class name="Department">
+    <id name="Id">
+      <generator class="assigned" />
+    </id>
+
+    <property name="Name" />
+
+    <set name="Employees" access="field.camelcase-underscore" inverse="true"
+         cascade="all-delete-orphan" lazy="false">
+      <key column="DepartmentId" />
+      <one-to-many class="Employee"/>
+    </set>
+  </class>
+
+  <class name="Employee">
+    <id name="Id">
+      <generator class="assigned" />
+    </id>
+
+    <property name="Name" />
+
+    <property name="CompanyJoinDate" />
+
+    <many-to-one name="Department" class="Department" />
+  </class>
+  
+</hibernate-mapping>
