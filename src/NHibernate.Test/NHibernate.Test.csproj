@@ -528,7 +528,6 @@
     <Compile Include="NHSpecificTest\NH1837\Customer.cs" />
     <Compile Include="NHSpecificTest\NH1837\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1837\Order.cs" />
-    <Compile Include="NHSpecificTest\NH1849\CustomDialect.cs" />
     <Compile Include="NHSpecificTest\NH1849\Customer.cs" />
     <Compile Include="NHSpecificTest\NH1849\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1850\Customer.cs" />
