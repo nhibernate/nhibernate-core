@@ -177,6 +177,27 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertCriteriaAreEqual(expected, actual);
 		}
 
+		[Test]
+		public void OrderBy()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person), "personAlias")
+					.AddOrder(Order.Asc("Name"))
+					.AddOrder(Order.Desc("Age"))
+					.AddOrder(Order.Desc("personAlias.Name"))
+					.AddOrder(Order.Asc("personAlias.Age"));
+
+			Person personAlias = null;
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>(() => personAlias)
+					.OrderBy(p => p.Name, Order.Asc)
+					.ThenBy(p => p.Age, Order.Desc)
+					.ThenBy(() => personAlias.Name, Order.Desc)
+					.ThenBy(() => personAlias.Age, Order.Asc);
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
 	}
 
 }

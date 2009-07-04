@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
+using NHibernate.Criterion;
+
 namespace NHibernate
 {
 
@@ -48,6 +50,42 @@ namespace NHibernate
 		/// <param name="expression">Lambda expression</param>
 		/// <returns>criteria instance</returns>
 		IQueryOver<T> Where(Expression<Func<bool>> expression);
+
+		/// <summary>
+		/// Add order expressed as a lambda expression
+		/// </summary>
+		/// <typeparam name="T">Type (same as criteria type)</typeparam>
+		/// <param name="expression">Lambda expression</param>
+		/// <param name="orderDelegate">Order delegate (direction)</param>
+		/// <returns>criteria instance</returns>
+		IQueryOver<T> OrderBy(Expression<Func<T, object>> path, Func<string, Order> orderDelegate);
+
+		/// <summary>
+		/// Add order expressed as a lambda expression
+		/// </summary>
+		/// <typeparam name="T">Type (same as criteria type)</typeparam>
+		/// <param name="expression">Lambda expression</param>
+		/// <param name="orderDelegate">Order delegate (direction)</param>
+		/// <returns>criteria instance</returns>
+		IQueryOver<T> OrderBy(Expression<Func<object>> path, Func<string, Order> orderDelegate);
+
+		/// <summary>
+		/// Add order expressed as a lambda expression
+		/// </summary>
+		/// <typeparam name="T">Type (same as criteria type)</typeparam>
+		/// <param name="expression">Lambda expression</param>
+		/// <param name="orderDelegate">Order delegate (direction)</param>
+		/// <returns>criteria instance</returns>
+		IQueryOver<T> ThenBy(Expression<Func<T, object>> path, Func<string, Order> orderDelegate);
+
+		/// <summary>
+		/// Add order expressed as a lambda expression
+		/// </summary>
+		/// <typeparam name="T">Type (same as criteria type)</typeparam>
+		/// <param name="expression">Lambda expression</param>
+		/// <param name="orderDelegate">Order delegate (direction)</param>
+		/// <returns>criteria instance</returns>
+		IQueryOver<T> ThenBy(Expression<Func<object>> path, Func<string, Order> orderDelegate);
 
 		/// <summary>
 		/// Creates a new NHibernate.ICriteria&lt;T&gt;, "rooted" at the associated entity

@@ -62,6 +62,26 @@ namespace NHibernate.Criterion
 			return Add(expression);
 		}
 
+		public QueryOver<T> OrderBy(Expression<Func<T, object>> path, Func<string, Order> orderDelegate)
+		{
+			return AddOrder(path, orderDelegate);
+		}
+
+		public QueryOver<T> OrderBy(Expression<Func<object>> path, Func<string, Order> orderDelegate)
+		{
+			return AddOrder(path, orderDelegate);
+		}
+
+		public QueryOver<T> ThenBy(Expression<Func<T, object>> path, Func<string, Order> orderDelegate)
+		{
+			return AddOrder(path, orderDelegate);
+		}
+
+		public QueryOver<T> ThenBy(Expression<Func<object>> path, Func<string, Order> orderDelegate)
+		{
+			return AddOrder(path, orderDelegate);
+		}
+
 		public QueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path)
 		{
 			return new QueryOver<U>(_impl,
@@ -116,6 +136,18 @@ namespace NHibernate.Criterion
 			return this;
 		}
 
+		private QueryOver<T> AddOrder(Expression<Func<T, object>> path, Func<string, Order> orderDelegate)
+		{
+			_criteria.AddOrder(ExpressionProcessor.ProcessOrder<T>(path, orderDelegate));
+			return this;
+		}
+
+		private QueryOver<T> AddOrder(Expression<Func<object>> path, Func<string, Order> orderDelegate)
+		{
+			_criteria.AddOrder(ExpressionProcessor.ProcessOrder(path, orderDelegate));
+			return this;
+		}
+
 
 		IQueryOver<T> IQueryOver<T>.And(Expression<Func<T, bool>> expression)
 		{ return And(expression); }
@@ -128,6 +160,18 @@ namespace NHibernate.Criterion
 
 		IQueryOver<T> IQueryOver<T>.Where(Expression<Func<bool>> expression)
 		{ return Where(expression); }
+
+		IQueryOver<T> IQueryOver<T>.OrderBy(Expression<Func<T, object>> path, Func<string, Order> orderDelegate)
+		{ return OrderBy(path, orderDelegate); }
+
+		IQueryOver<T> IQueryOver<T>.OrderBy(Expression<Func<object>> path, Func<string, Order> orderDelegate)
+		{ return OrderBy(path, orderDelegate); }
+
+		IQueryOver<T> IQueryOver<T>.ThenBy(Expression<Func<T, object>> path, Func<string, Order> orderDelegate)
+		{ return ThenBy(path, orderDelegate); }
+
+		IQueryOver<T> IQueryOver<T>.ThenBy(Expression<Func<object>> path, Func<string, Order> orderDelegate)
+		{ return ThenBy(path, orderDelegate); }
 
 		IQueryOver<U> IQueryOver<T>.JoinQueryOver<U>(Expression<Func<T, U>> path)
 		{ return JoinQueryOver(path); }
