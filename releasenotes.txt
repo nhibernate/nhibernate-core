@@ -33,6 +33,21 @@ Build 2.1.0
 		* ADOException now use string instead SqlString
 		* IParameterizedType is using IDictionary<string, string>
 
+Build 2.1.0.CR1 (rev4578)
+=============================
+** Bug
+    * [NH-1849] - Using custom sql function "contains" causes an Antlr exception
+    * [NH-1857] - NH2.1: Full Join in HQL query does not work.
+    * [NH-1859] - SQL-Commands with more than one comment don't work
+    * [NH-1864] - SQL response parameter mishandling when using filter on two classes
+
+** Improvement
+    * [NH-1844] - SessionIdLoggingContext introduced in trunk revision 4265 is very time costly
+    * [NH-1850] - NHibernate should log query duration
+
+** New Feature
+    * [NH-1853] - Add a Configuration.AddNamespace method to allow adding mappings within a specific folder
+    
 Build 2.1.0.Beta2 (rev4501)
 =============================
 ** Sub-task
