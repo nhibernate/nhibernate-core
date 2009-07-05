@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH645
 		}
 	}
 
-	[TestFixture, Ignore("Not fixed yet in the AST-HQL parser")]
+	[TestFixture]
 	public class HqlFunctionWithAstHqlParser : HQLFunctionFixtureBase
 	{
 		protected override void Configure(Configuration configuration)
