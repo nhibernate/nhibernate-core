@@ -213,6 +213,14 @@ namespace NHibernate.Util
 		/// <returns></returns>
 		public static string Unqualify(string qualifiedName)
 		{
+			if(qualifiedName.IndexOf('`') > 0)
+			{
+				// less performance but correctly manage generics classes
+				// where the entity-name was not specified
+				// Note: the enitty-name is mandatory when the user want work with different type-args
+				// for the same generic-entity implementation
+				return GetClassname(qualifiedName);
+			}
 			return Unqualify(qualifiedName, ".");
 		}
 

@@ -539,6 +539,7 @@
     <Compile Include="NHSpecificTest\NH1859\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH1864\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1864\Model.cs" />
+    <Compile Include="NHSpecificTest\NH1867\AddMappingTest.cs" />
     <Compile Include="NHSpecificTest\NH1868\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1868\Model.cs" />
     <Compile Include="NHSpecificTest\NH473\Child.cs" />
