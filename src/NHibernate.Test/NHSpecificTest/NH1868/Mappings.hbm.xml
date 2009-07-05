@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1868">
+
+  <class name="Category">
+    <id name="ID" type="Int32">
+      <generator class="hilo" />
+    </id>
+    <property name="ValidUntil" type="DateTime" />
+    <filter name="validity" condition="ValidUntil > :date" />
+  </class>
+
+  <class name="Package">
+    <id name="ID" type="Int32">
+      <generator class="hilo" />
+    </id>
+    <property name="ValidUntil" type="DateTime" />
+    <filter name="validity" condition="ValidUntil > :date" />
+  </class>
+
+  <class name="Invoice">
+    <id name="ID" type="Int32">
+      <generator class="hilo" />
+    </id>
+    
+    <many-to-one name="Category" column="CategoryId" class="Category" />
+    <many-to-one name="Package" column="PacakgeId" class="Package" />
+    <property name="ValidUntil" type="DateTime" />
+    <filter name="validity" condition="ValidUntil > :date" />
+  </class>
+
+  <filter-def name="validity">
+    <filter-param name="date" type="DateTime"/>
+  </filter-def>
+
+</hibernate-mapping>
