@@ -19,6 +19,7 @@ namespace NHibernate.Hql.Ast.ANTLR
         /// </summary>
         public HqlToken(ICharStream input, int type, int channel, int start, int stop) : base(input, type, channel, start, stop)
         {
+           charPositionInLine = input.CharPositionInLine - (stop - start + 1);
         }
 
         /// <summary>
