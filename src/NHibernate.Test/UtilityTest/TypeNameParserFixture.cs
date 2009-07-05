@@ -265,5 +265,34 @@ namespace NHibernate.Test.UtilityTest
 			var a = TypeNameParser.Parse(typeName);
 			Assert.That(a.ToString(), Is.EqualTo(expected));
 		}
+
+		private class A<T>
+		{
+			public class B { }
+		}
+
+		private class Aa<T>
+		{
+			public class Bb<TX, TJ, TZ>
+			{
+				public class C { }
+			}
+		}
+
+		[Test]
+		[Description("Parser multiple nested classes with a generic in the middle.")]
+		public void ParseNestedWithinGeneric()
+		{
+			// NH-1867
+			CheckInput(typeof(A<int>.B).FullName, typeof(A<int>.B).FullName, null);
+		}
+
+		[Test]
+		[Description("Parser multiple nested classes with a generics.")]
+		public void ComplexNestedWithGeneric()
+		{
+			CheckInput(typeof(Aa<int>.Bb<int, short, string>).FullName, typeof(Aa<int>.Bb<int, short, string>).FullName, null);
+			CheckInput(typeof(Aa<int>.Bb<int, short, string>.C).FullName, typeof(Aa<int>.Bb<int, short, string>.C).FullName, null);
+		} 
 	}
 }

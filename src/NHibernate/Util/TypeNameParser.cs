@@ -65,7 +65,8 @@ namespace NHibernate.Util
 				{
 					throw new ParserException("Invalid generic fully-qualified type name:" + type);
 				}
-				string cardinalityString = type.Substring(genericTypeCardinalityIdx + 1, genericTypeArgsStartIdx - genericTypeCardinalityIdx - 1);
+				// the follow will fail with a generic class with more the 9 type-args (I would see that entity class)
+				string cardinalityString = type.Substring(genericTypeCardinalityIdx + 1, 1);
 				int genericTypeCardinality = int.Parse(cardinalityString);
 
 				// get the FullName of the non-generic type
