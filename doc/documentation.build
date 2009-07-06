@@ -7,6 +7,7 @@
 >
 
 	<property name="root.dir" value=".." />
+	<include buildfile="${root.dir}/build-common/common.xml"/>
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
 	<target name="init" depends="common.init">
@@ -41,7 +42,7 @@
 		</copy>
 	</target>
 
-	<target name="api" depends="init ndoc-project" description="Generates the API documentation (in MSDN style and VS.NET 2003 if available)">
+	<target name="api" depends="init common.find-ndoc ndoc-project" description="Generates the API documentation (in MSDN style and VS.NET 2003 if available)">
 		<uptodate property="api.uptodate">
 			<sourcefiles>
 				<include name="${bin.dir}/*.dll" />
@@ -56,12 +57,11 @@
 		<echo if="${api.uptodate}">API documentation is up to date, skipping generation step.</echo>
 
 		<if test="${not api.uptodate}">
-			<property name="ndocconsole.exe" value="C:\net\NDoc2Alpha\NDocConsole.exe" />
-			<exec program="${ndocconsole.exe}">
+			<exec program="${ndoc-console}">
 				<arg line="-documenter=MSDN-Help2" />
 				<arg line="-project=NHibernate.ndoc" />
 			</exec>
-			<exec program="${ndocconsole.exe}">
+			<exec program="${ndoc-console}">
 				<arg line="-documenter=MSDN-CHM" />
 				<arg line="-project=NHibernate.ndoc" />
 			</exec>

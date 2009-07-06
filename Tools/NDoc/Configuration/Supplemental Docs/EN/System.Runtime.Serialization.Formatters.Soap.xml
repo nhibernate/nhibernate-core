@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<doc>
+  <assembly>
+    <name>System.Runtime.Serialization.Formatters.Soap</name>
+  </assembly>
+  <members>
+    <member name="Overload:System.Runtime.Serialization.Formatters.Soap.SoapFormatter.Deserialize">
+      <summary>Deserializes a stream into an object graph.</summary>
+    </member>
+    <member name="Overload:System.Runtime.Serialization.Formatters.Soap.SoapFormatter.Serialize">
+      <summary>Serializes an object or graph of connected objects.</summary>
+    </member>
+  </members>
+</doc>

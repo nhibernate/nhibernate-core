@@ -1,0 +1,536 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<doc>
+  <assembly>
+    <name>System.Xml</name>
+  </assembly>
+  <members>
+    <member name="Overload:System.Xml.NameTable.Add">
+      <summary>Atomizes the specified string and adds it to the <b>NameTable</b>.</summary>
+    </member>
+    <member name="Overload:System.Xml.NameTable.Get">
+      <summary>Gets the atomized string.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlAtomicValue.ValueAs">
+      <summary>Returns the validated XML element or attribute's value as the specified type.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchemaCollection.Add">
+      <summary>Adds the given schema into the schema collection.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchemaCollection.Contains">
+      <summary>Gets a value indicating whether a schema with the specified namespace is in the collection.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchemaDatatype.ChangeType">
+      <summary>Converts the value specified, whose type is one of the valid Common Language Runtime (CLR) representations of the XML schema type represented by the <see cref="T:System.Xml.Schema.XmlSchemaDatatype" />, to another valid CLR representation of the same value.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchemaDatatype.ParseValue">
+      <summary>When overridden in a derived class, validates the <b>string</b> specified against a built-in or user-defined simple type.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchemaInference.InferSchema">
+      <summary>Infers an XML Schema Definition Language (XSD) schema from the XML document specified.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchemaSet.Add">
+      <summary>Adds the given XML Schema definition language (XSD) schema to the <see cref="T:System.Xml.Schema.XmlSchemaSet" />.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchemaSet.Contains">
+      <summary>Indicates whether an XML Schema definition language (XSD) schema is in the <see cref="T:System.Xml.Schema.XmlSchemaSet" />.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchemaSet.Schemas">
+      <summary>Returns a collection of XML Schema definition language (XSD) schemas in the <see cref="T:System.Xml.Schema.XmlSchemaSet" />.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchemaType.GetBuiltInComplexType">
+      <summary>Returns an <see cref="T:System.Xml.Schema.XmlSchemaComplexType" /> that represents the built-in complex type of the complex type specified.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchemaType.GetBuiltInSimpleType">
+      <summary>Returns an <see cref="T:System.Xml.Schema.XmlSchemaSimpleType" /> that represents the built-in simple type of the simple type specified.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchemaValidator.Initialize">
+      <summary>Initializes the state of the <see cref="T:System.Xml.Schema.XmlSchemaValidator" /> object.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchemaValidator.ValidateAttribute">
+      <summary>Validates the attribute in the current element context.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchemaValidator.ValidateElement">
+      <summary>Validates the element in the current context.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchemaValidator.ValidateEndElement">
+      <summary>Verifies if the text content of the element is valid according to its data type for elements with simple content, and verifies if the content of the current element is complete for elements with complex content.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchemaValidator.ValidateText">
+      <summary>Validates whether text is allowed in the current element context, and accumulates the text for validation if the current element has simple content.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchemaValidator.ValidateWhitespace">
+      <summary>Validates whether white space is allowed in the current element context, and accumulates the white space for validation if the current element has simple content.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchema.Compile">
+      <summary>Compiles the XML Schema Object Model (SOM) into schema information for validation. Used to check the syntactic and semantic structure of the programmatically built SOM. Semantic validation checking is performed during compilation.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchema.Read">
+      <summary>Reads an XML Schema.</summary>
+    </member>
+    <member name="Overload:System.Xml.Schema.XmlSchema.Write">
+      <summary>Writes out an XML Schema.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.Advanced.SchemaImporterExtensionCollection.Add">
+      <summary>Adds the specified importer extension to the collection.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.Advanced.SchemaImporterExtensionCollection.Remove">
+      <summary>Removes an object from the collection.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.Advanced.SchemaImporterExtension.ImportSchemaType">
+      <summary>Allows you to manipulate the code generated by examining the imported schema and specifying the CLR type that it maps to.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.Configuration.SchemaImporterExtensionElementCollection.Item">
+      <summary>Gets or sets the object that represents the XML element at the specified index.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.Configuration.SchemaImporterExtensionElementCollection.Remove">
+      <summary>Removes the specified item from the collection.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.SoapAttributeOverrides.Add">
+      <summary>Adds a <see cref="T:System.Xml.Serialization.SoapAttributes" /> to the collection of <b>SoapAttributes</b> objects contained by the <see cref="T:System.Xml.Serialization.SoapAttributeOverrides" />.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.SoapAttributeOverrides.Item">
+      <summary>Gets an object that represents the collection of overriding SOAP attributes.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.SoapCodeExporter.AddMappingMetadata">
+      <summary>Add a <see cref="T:System.Xml.Serialization.SoapElementAttribute" /> declaration to a method parameter or return value that corresponds to a part element of a SOAP message definition in a WSDL document.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.SoapReflectionImporter.ImportMembersMapping">
+      <summary>Generates a mapping to an XML Schema element for a .NET Framework type.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.SoapReflectionImporter.ImportTypeMapping">
+      <summary>Returns an object that is used to map from a type to an XML representation using the specified type.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.SoapSchemaExporter.ExportMembersMapping">
+      <summary>Adds to the applicable <see cref="T:System.Xml.Schema.XmlSchema" /> object a data type definition for each of the element parts of a SOAP-encoded message definition.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.SoapSchemaImporter.ImportMembersMapping">
+      <summary>Generates internal type mapping information for a single SOAP-encoded element part defined in a WSDL document.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlAttributeOverrides.Add">
+      <summary>Adds an <see cref="T:System.Xml.Serialization.XmlAttributes" /> object to the collection of <b>XmlAttributes</b> objects.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlAttributeOverrides.Item">
+      <summary>Gets an object that represents the collection of overriding attributes.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlCodeExporter.AddMappingMetadata">
+      <summary>Adds an <see cref="T:System.Xml.Serialization.XmlElementAttribute" /> declaration to a method parameter or return value that corresponds to a <b>&lt;part&gt;</b> element of a SOAP message definition in a Web Services Description Language (WSDL) document.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlReflectionImporter.ImportMembersMapping">
+      <summary>Returns internal type mappings using information from a Web service method.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlReflectionImporter.ImportTypeMapping">
+      <summary>Generates a mapping to an XML Schema element for a specified .NET Framework type.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSchemaExporter.ExportAnyType">
+      <summary>Adds an element declaration for an object or type to a SOAP message or to an <see cref="T:System.Xml.Schema.XmlSchema" /> object.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSchemaExporter.ExportMembersMapping">
+      <summary>Adds an element declaration to the applicable <see cref="T:System.Xml.Schema.XmlSchema" /> for each of the element parts of a literal SOAP message definition.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSchemaExporter.ExportTypeMapping">
+      <summary>Adds an element declaration for an object or type to a SOAP message or an <see cref="T:System.Xml.Schema.XmlSchema" /> object.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSchemaImporter.ImportDerivedTypeMapping">
+      <summary>Generates internal type mapping information for an element defined in an XML schema document or as a part in a WSDL document.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSchemaImporter.ImportMembersMapping">
+      <summary>Generates internal type mapping information for the element parts of a literal-use SOAP message defined in a WSDL document.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSchemaImporter.ImportSchemaType">
+      <summary>Generates internal type mapping information for an element defined in an XML schema document.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSchemas.Add">
+      <summary>Adds an object to the collection of the <see cref="T:System.Xml.Schema.XmlSchema" /> objects.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSchemas.Contains">
+      <summary>Determines whether the specified item is a member of the collection.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSchemas.Item">
+      <summary>Gets or sets the <see cref="T:System.Xml.Schema.XmlSchema" /> object from the collection.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationReader.AddFixup">
+      <summary>Stores an object that contains a callback method to subsequently be called, as necessary, to fill in .NET Framework collections or enumerations that map to SOAP-encoded arrays or SOAP-encoded, multi-referenced elements.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationReader.CreateInvalidCastException">
+      <summary>Creates an <see cref="T:System.InvalidCastException" /> that indicates that an explicit reference conversion failed.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationReader.ReadReferencedElement">
+      <summary>Deserializes an object from a SOAP-encoded <b>multiRef</b> element.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationReader.ReadReferencingElement">
+      <summary>Deserializes an object from an XML element in a SOAP message that contains a reference to a <b>multiRef</b> element.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationReader.ReadString">
+      <summary>Reads and returns the current string appended to the input value.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationReader.ToByteArrayBase64">
+      <summary>Reads the current value and returns it as a base-64 byte array.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationReader.ToByteArrayHex">
+      <summary>Returns the current value as a hexadecimal byte array.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationReader.UnknownAttribute">
+      <summary>Raises a <see cref="E:System.Xml.Serialization.XmlSerializer.UnknownAttribute" /> event for the current position of the <see cref="T:System.Xml.XmlReader" />.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationReader.UnknownNode">
+      <summary>Raises an <see cref="E:System.Xml.Serialization.XmlSerializer.UnknownNode" /> event for the current position of the <see cref="T:System.Xml.XmlReader" />.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.CreateInvalidAnyTypeException">
+      <summary>Creates an <see cref="T:System.InvalidOperationException" />.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.CreateUnknownTypeException">
+      <summary>Creates an <see cref="T:System.InvalidOperationException" /> that indicates that a type being serialized is not being used in a valid manner or is unexpectedly encountered.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.FromEnum">
+      <summary>Takes a numeric enumeration value and returns a string that consists of delimited identifiers that represent the enumeration members that have been set.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.FromXmlQualifiedName">
+      <summary>Produces an XML qualified name, with invalid characters replaced by escape sequences.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.WriteAttribute">
+      <summary>Instructs an <see cref="T:System.Xml.XmlNode" /> object to write an XML attribute that has no namespace specified for its name.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.WriteElementQualifiedName">
+      <summary>Writes an XML element with a specified qualified name in its body.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.WriteElementString">
+      <summary>Writes an opening element tag, including any attributes.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.WriteElementStringRaw">
+      <summary>Writes an XML element with a specified value in its body.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.WriteEmptyTag">
+      <summary>Writes an XML element whose body is empty.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.WriteEndElement">
+      <summary>Writes a <b>&lt;closing&gt;</b> element tag.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.WriteNullableStringEncodedRaw">
+      <summary>Writes a byte array as the body of an XML element. <see cref="T:System.Xml.XmlNode" /> inserts an <b>xsi:nil='true'</b> attribute if the string's value is a null reference (<b>Nothing</b> in Visual Basic).</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.WriteNullableStringLiteralRaw">
+      <summary>Writes a byte array as the body of an XML element. <see cref="T:System.Xml.XmlNode" /> inserts an <b>xsi:nil='true' </b>attribute if the string's value is a null reference (<b>Nothing</b> in Visual Basic).</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.WriteNullTagEncoded">
+      <summary>Instructs <see cref="T:System.Xml.XmlNode" /> to write an XML element with an <b>xsi:nil='true'</b> attribute.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.WriteNullTagLiteral">
+      <summary>Instructs <see cref="T:System.Xml.XmlNode" /> to write an XML element with an <b>xsi:nil='true'</b> attribute.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.WritePotentiallyReferencingElement">
+      <summary>Writes a SOAP message XML element that can contain a reference to a <b>&lt;multiRef&gt;</b> XML element for a given object.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.WriteReferencingElement">
+      <summary>Writes a SOAP message XML element that contains a reference to a <b>multiRef</b> element for a given object.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.WriteSerializable">
+      <summary>Instructs <see cref="T:System.Xml.XmlNode" /> to write an object that uses custom XML formatting as an XML element.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.WriteStartElement">
+      <summary>Instructs <see cref="T:System.Xml.XmlNode" /> to write an opening element tag, including any attributes.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.WriteValue">
+      <summary>Instructs <see cref="T:System.Xml.XmlNode" /> to write the specified value.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializationWriter.WriteXmlAttribute">
+      <summary>Instructs <see cref="T:System.Xml.XmlNode" /> to write an XML attribute.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializerFactory.CreateSerializer">
+      <summary>Returns a derivation of the <see cref="T:System.Xml.Serialization.XmlSerializerFactory" /> class that is used to serialize a type.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializer.Deserialize">
+      <summary>Deserializes an XML document.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializer.FromMappings">
+      <summary>Returns an instance of the <see cref="T:System.Xml.Serialization.XmlSerializer" /> class from the specified mappings.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializer.GenerateSerializer">
+      <summary>Returns an assembly that contains typed serializers.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializer.GetXmlSerializerAssemblyName">
+      <summary>Returns the name of the assembly that contains one or more versions of the <see cref="T:System.Xml.Serialization.XmlSerializer" /> especially created to serialize or deserialize specific types.</summary>
+    </member>
+    <member name="Overload:System.Xml.Serialization.XmlSerializer.Serialize">
+      <summary>Serializes an object into an XML document.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlAttributeCollection.ItemOf">
+      <summary>Gets the attribute with the specified name or index.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlConvert.ToDateTime">
+      <summary>Converts the <see cref="T:System.String" /> to a <see cref="T:System.DateTime" /> equivalent.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlConvert.ToString">
+      <summary>Converts strongly typed data to an equivalent <see cref="T:System.String" /> representation.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlDocument.CreateAttribute">
+      <summary>Creates an <see cref="T:System.Xml.XmlAttribute" /> with the specified name.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlDocument.CreateElement">
+      <summary>Creates an <see cref="T:System.Xml.XmlElement" />.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlDocument.CreateNavigator">
+      <summary>Creates a new <see cref="T:System.Xml.XPath.XPathNavigator" /> object for navigating this document.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlDocument.CreateNode">
+      <summary>Creates an <see cref="T:System.Xml.XmlNode" />.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlDocument.GetElementsByTagName">
+      <summary>Returns an <see cref="T:System.Xml.XmlNodeList" /> containing a list of all descendant elements that match the specified name.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlDocument.Load">
+      <summary>Loads the specified XML data.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlDocument.Save">
+      <summary>Saves the XML document to the specified location.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlDocument.Validate">
+      <summary>Validates the <see cref="T:System.Xml.XmlDocument" /> against the XML Schema Definition Language (XSD) schemas contained in the <see cref="P:System.Xml.XmlDocument.Schemas" /> property.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlElement.GetAttribute">
+      <summary>Returns the attribute value for the specified attribute.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlElement.GetAttributeNode">
+      <summary>Return the specified <see cref="T:System.Xml.XmlAttribute" />.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlElement.GetElementsByTagName">
+      <summary>Returns an <see cref="T:System.Xml.XmlNodeList" /> containing a list of all descendant elements that match the specified name.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlElement.HasAttribute">
+      <summary>Determines whether the current node has the specified attribute.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlElement.RemoveAttribute">
+      <summary>Removes the specified attribute. (If the removed attribute has a default value, it is immediately replaced).</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlElement.RemoveAttributeNode">
+      <summary>Removes an <see cref="T:System.Xml.XmlAttribute" />.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlElement.SetAttribute">
+      <summary>Sets the value of the specified attribute.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlElement.SetAttributeNode">
+      <summary>Adds a new <see cref="T:System.Xml.XmlAttribute" />.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlNamedNodeMap.GetNamedItem">
+      <summary>Retrieves the specified <see cref="T:System.Xml.XmlNode" /> from the collection of nodes in the <see cref="T:System.Xml.XmlNamedNodeMap" />.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlNamedNodeMap.RemoveNamedItem">
+      <summary>Removes the specified node from the <b>XmlNamedNodeMap</b>.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlNameTable.Add">
+      <summary>When overridden in a derived class, atomizes the specified string and adds it to the <b>XmlNameTable</b>.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlNameTable.Get">
+      <summary>When overridden in a derived class, gets the atomized string.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlNodeReader.GetAttribute">
+      <summary>Gets the value of an attribute.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlNodeReader.MoveToAttribute">
+      <summary>Moves to the specified attribute.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlNode.Item">
+      <summary>Gets the specified child element.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlNode.SelectNodes">
+      <summary>Selects a list of nodes matching the XPath expression.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlNode.SelectSingleNode">
+      <summary>Selects the first <b>XmlNode</b> that matches the XPath expression.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlQualifiedName.Equals">
+      <summary>Determines whether two object instances are equal.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlQualifiedName.ToString">
+      <summary>Returns the string value of the <see cref="T:System.Xml.XmlQualifiedName" />.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.Create">
+      <summary>Creates a new <see cref="T:System.Xml.XmlReader" /> instance.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.GetAttribute">
+      <summary>When overridden in a derived class, gets the value of an attribute.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.IsStartElement">
+      <summary>Tests if the current content node is a start tag.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.Item">
+      <summary>When overridden in a derived class, gets the value of the attribute.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.MoveToAttribute">
+      <summary>When overridden in a derived class, moves to the specified attribute.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.ReadElementContentAs">
+      <summary>Reads the current element and returns the contents as an object of the type specified.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.ReadElementContentAsBoolean">
+      <summary>Reads the current element value as a <see cref="T:System.Boolean" /> object.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.ReadElementContentAsDateTime">
+      <summary>Reads the current element and returns the contents as a <see cref="T:System.DateTime" /> object.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.ReadElementContentAsDecimal">
+      <summary>Reads the current element value as a <see cref="T:System.Decimal" /> object.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.ReadElementContentAsDouble">
+      <summary>Reads the current element and returns the contents as a double-precision floating-point number.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.ReadElementContentAsFloat">
+      <summary>Reads the current element value as a single-precision floating-point number.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.ReadElementContentAsInt">
+      <summary>Reads the current element and returns the contents as a 32-bit signed integer.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.ReadElementContentAsLong">
+      <summary>Reads the current element and returns the contents as a 64-bit signed integer.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.ReadElementContentAsObject">
+      <summary>Reads the current element and returns the contents as an <see cref="T:System.Object" />.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.ReadElementContentAsString">
+      <summary>Reads the current element and returns the contents as a <see cref="T:System.String" /> object.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.ReadElementString">
+      <summary>This is a helper method for reading simple text-only elements.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.ReadStartElement">
+      <summary>Checks that the current node is an element and advances the reader to the next node.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.ReadToDescendant">
+      <summary>Advances the <see cref="T:System.Xml.XmlReader" /> to the next matching descendant element.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.ReadToFollowing">
+      <summary>Reads until the named element is found.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlReader.ReadToNextSibling">
+      <summary>Advances the <b>XmlReader</b> to the next matching sibling element.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlTextReader.GetAttribute">
+      <summary>Gets the value of an attribute.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlTextReader.MoveToAttribute">
+      <summary>Moves to the specified attribute.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlTextWriter.WriteRaw">
+      <summary>Writes raw markup manually.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlTextWriter.WriteStartAttribute">
+      <summary>Writes the start of an attribute.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlTextWriter.WriteStartDocument">
+      <summary>Writes the XML declaration with the version "1.0".</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlTextWriter.WriteStartElement">
+      <summary>Writes the specified start tag.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlValidatingReader.GetAttribute">
+      <summary>Gets the value of an attribute.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlValidatingReader.MoveToAttribute">
+      <summary>Moves to the specified attribute.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlWriter.Create">
+      <summary>Creates a new <see cref="T:System.Xml.XmlWriter" /> instance.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlWriter.WriteAttributeString">
+      <summary>When overridden in a derived class, writes an attribute with the specified value.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlWriter.WriteElementString">
+      <summary>When overridden in a derived class, writes an element containing a string value.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlWriter.WriteNode">
+      <summary>Copies everything from the source object to the current writer instance.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlWriter.WriteRaw">
+      <summary>When overridden in a derived class, writes raw markup manually.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlWriter.WriteStartAttribute">
+      <summary>When overridden in a derived class, writes the start of an attribute.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlWriter.WriteStartDocument">
+      <summary>When overridden in a derived class, writes the XML declaration.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlWriter.WriteStartElement">
+      <summary>When overridden in a derived class, writes the specified start tag.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlWriter.WriteValue">
+      <summary>Writes a single simple-typed value.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathExpression.AddSort">
+      <summary>When overridden in a derived class, sorts the nodes selected by the XPath expression.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathExpression.Compile">
+      <summary>Compiles the XPath expression specified and returns an <see cref="T:System.Xml.XPath.XPathExpression" /> object that represents the XPath expression.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathExpression.SetContext">
+      <summary>When overridden in a derived class, specifies the <see cref="T:System.Xml.IXmlNamespaceResolver" /> object to use for namespace resolution.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathItem.ValueAs">
+      <summary>Returns the item's value as the specified type.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathNavigator.AppendChild">
+      <summary>Creates a new child node at the end of the list of child nodes of the current node.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathNavigator.Evaluate">
+      <summary>Evaluates the specified XPath expression and returns the typed result.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathNavigator.InsertAfter">
+      <summary>Creates a new sibling node after the currently selected node.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathNavigator.InsertBefore">
+      <summary>Creates a new sibling node before the currently selected node.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathNavigator.Matches">
+      <summary>Determines whether the current node matches the specified <see cref="N:System.Xml.XPath">System.Xml.XPath</see> expression.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathNavigator.MoveToChild">
+      <summary>Moves the <see cref="T:System.Xml.XPath.XPathNavigator" /> to the child node specified.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathNavigator.MoveToFirstNamespace">
+      <summary>Moves the <see cref="T:System.Xml.XPath.XPathNavigator" /> to the first namespace node of the current node.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathNavigator.MoveToFollowing">
+      <summary>Moves the <see cref="T:System.Xml.XPath.XPathNavigator" /> to the specified element in document order.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathNavigator.MoveToNext">
+      <summary>Moves the <see cref="T:System.Xml.XPath.XPathNavigator" /> to the next sibling node of the current node.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathNavigator.MoveToNextNamespace">
+      <summary>Moves the <see cref="T:System.Xml.XPath.XPathNavigator" /> to the next namespace node.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathNavigator.PrependChild">
+      <summary>Creates a new child node at the beginning of the list of child nodes of the current node.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathNavigator.ReplaceSelf">
+      <summary>Replaces the current node with the content specified.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathNavigator.Select">
+      <summary>Selects a node set, using the specified XPath expression.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathNavigator.SelectAncestors">
+      <summary>Selects all the ancestor nodes of the current node that match the selection criteria.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathNavigator.SelectChildren">
+      <summary>Selects all the child nodes of the current node that match the selection criteria.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathNavigator.SelectDescendants">
+      <summary>Selects all the descendant nodes of the current node that match the selection criteria.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathNavigator.SelectSingleNode">
+      <summary>Selects a single node in the <see cref="T:System.Xml.XPath.XPathNavigator" />.</summary>
+    </member>
+    <member name="Overload:System.Xml.XPath.XPathNavigator.ValueAs">
+      <summary>Returns the current node's value as the <see cref="T:System.Type" /> specified.</summary>
+    </member>
+    <member name="Overload:System.Xml.Xsl.XslCompiledTransform.Load">
+      <summary>Compiles the style sheet.</summary>
+    </member>
+    <member name="Overload:System.Xml.Xsl.XslCompiledTransform.Transform">
+      <summary>Executes the XSLT transformation.</summary>
+    </member>
+    <member name="Overload:System.Xml.Xsl.XslTransform.Load">
+      <summary>Loads the XSLT style sheet, including style sheets referenced in <b>xsl:include</b> and <b>xsl:import</b> elements.</summary>
+    </member>
+    <member name="Overload:System.Xml.Xsl.XslTransform.Transform">
+      <summary>Transforms the XML data using the loaded XSLT style sheet.</summary>
+    </member>
+  </members>
+</doc>

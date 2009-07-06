@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<doc>
+  <assembly>
+    <name>System.Web.Services</name>
+  </assembly>
+  <members>
+    <member name="Overload:System.Web.Services.Configuration.ProtocolElementCollection.CopyTo">
+      <summary>Copies the elements from the collection to an array.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Configuration.ProtocolElementCollection.Item">
+      <summary>Gets or sets an element in the collection.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Configuration.ProtocolElementCollection.RemoveAt">
+      <summary>Removes a specified element from the collection.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Configuration.SoapExtensionTypeElementCollection.CopyTo">
+      <summary>Copies the contents of the <see cref="T:System.Configuration.ConfigurationElementCollection" /> to an array.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Configuration.SoapExtensionTypeElementCollection.Item">
+      <summary>Gets or sets an element in the collection.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Configuration.SoapExtensionTypeElementCollection.RemoveAt">
+      <summary>Removes a specified element from the collection.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Configuration.TypeElementCollection.CopyTo">
+      <summary>Copies the contents of the <see cref="T:System.Configuration.ConfigurationElementCollection" /> to an array.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Configuration.TypeElementCollection.Item">
+      <summary>Gets or sets an element in the collection.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Configuration.TypeElementCollection.RemoveAt">
+      <summary>Removes a specified element from the collection.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Configuration.WsiProfilesElementCollection.CopyTo">
+      <summary>Copies the contents of the <see cref="T:System.Configuration.ConfigurationElementCollection" /> to an array.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Configuration.WsiProfilesElementCollection.Item">
+      <summary>Gets or sets an element in the collection.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Configuration.WsiProfilesElementCollection.RemoveAt">
+      <summary>Removes a specified element from the collection.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Description.BindingCollection.Item">
+      <summary>Gets or sets the <see cref="T:System.Web.Services.Description.Binding" /> instance specified by the parameter passed in.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Description.FaultBindingCollection.Item">
+      <summary>Gets or sets the <see cref="T:System.Web.Services.Description.FaultBinding" /> instance specified by the parameter passed in.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Description.MessageCollection.Item">
+      <summary>Gets or sets the <see cref="T:System.Web.Services.Description.Message" /> instance specified by the parameter passed in.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Description.MessagePartCollection.Item">
+      <summary>Gets or sets the value of a <see cref="T:System.Web.Services.Description.MessagePart" /> specified by the parameter passed in.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Description.OperationFaultCollection.Item">
+      <summary>Gets or sets the <see cref="T:System.Web.Services.Description.OperationFault" /> specified by the parameter passed in.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Description.PortCollection.Item">
+      <summary>Gets or sets the <see cref="T:System.Web.Services.Description.Port" /> instance specified by the parameter passed in.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Description.PortTypeCollection.Item">
+      <summary>Gets or sets the <see cref="T:System.Web.Services.Description.PortType" /> specified by the parameter passed in.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Description.ServiceCollection.Item">
+      <summary>Gets or sets the <see cref="T:System.Web.Services.Description.Service" /> instance specified by the parameter passed in.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Description.ServiceDescriptionCollection.Item">
+      <summary>Gets or sets the <see cref="T:System.Web.Services.Description.ServiceDescription" /> instance specified by the parameter passed in.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Description.ServiceDescriptionFormatExtensionCollection.Find">
+      <summary>Searches the <see cref="T:System.Web.Services.Description.ServiceDescriptionFormatExtensionCollection" /> and returns the first member of the collection specified by the parameter passed in.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Description.ServiceDescriptionFormatExtensionCollection.FindAll">
+      <summary>Searches the <see cref="T:System.Web.Services.Description.ServiceDescriptionFormatExtensionCollection" /> for all members of the collection specified by the parameter passed in.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Description.ServiceDescription.Read">
+      <summary>Initializes an instance of the <see cref="T:System.Web.Services.Description.ServiceDescription" /> class by directly loading the XML.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Description.ServiceDescription.Write">
+      <summary>Writes out the <see cref="T:System.Web.Services.Description.ServiceDescription" /> as a Web Services Description Language (WSDL) file.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Description.WebReferenceOptions.Read">
+      <summary>Returns a new instance of <see cref="T:System.Web.Services.Description.WebReferenceOptions" /> based on the code generation options described in the specified input.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Description.WebServicesInteroperability.CheckConformance">
+      <summary>Verifies whether a given Web service or services conforms to a given WS-I specification, and provides a list of any violations that it finds.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Discovery.ContractReference.Resolve">
+      <summary>Downloads the referenced document at <see cref="P:System.Web.Services.Discovery.DiscoveryReference.Url" /> to resolve whether the referenced document is valid.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Discovery.DiscoveryClientProtocol.Download">
+      <summary>Downloads the discovery document at the supplied URL into a <see cref="T:System.IO.Stream" /> object.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Discovery.DiscoveryClientReferenceCollection.Add">
+      <summary>Adds a <see cref="T:System.Web.Services.Discovery.DiscoveryReference" /> to the <see cref="T:System.Web.Services.Discovery.DiscoveryClientReferenceCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Discovery.DiscoveryDocument.Read">
+      <summary>Reads and returns a <see cref="T:System.Web.Services.Discovery.DiscoveryDocument" /> from the passed object.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Discovery.DiscoveryDocument.Write">
+      <summary>Writes this <see cref="T:System.Web.Services.Discovery.DiscoveryDocument" /> into the passed object.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Discovery.DiscoveryReference.Resolve">
+      <summary>Resolves whether the referenced document is valid.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.AnyReturnReader.GetInitializer">
+      <summary>Returns the parameter passed to the <see cref="M:System.Web.Services.Protocols.AnyReturnReader.Initialize.1.b4c5a2da">Initialize</see> method.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.HtmlFormParameterReader.Read">
+      <summary>Reads name-value pairs into Web method parameter values.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.HttpSimpleClientProtocol.InvokeAsync">
+      <summary>Invokes the specified method asynchronously.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.HttpWebClientProtocol.GenerateXmlMappings">
+      <summary>Gets the <see cref="T:System.Xml.Serialization.XmlMembersMapping" /> for each XML Web service method exposed by the specified type(s).</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.HttpWebClientProtocol.GetWebResponse">
+      <summary>Returns a response from a request to an XML Web service method.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.LogicalMethodInfo.Create">
+      <summary>Given an array of <see cref="T:System.Reflection.MethodInfo" />, creates an array of <see cref="T:System.Web.Services.Protocols.LogicalMethodInfo" />.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.MimeFormatter.GetInitializer">
+      <summary>When overridden in a derived class, returns an initializer for the specified method.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.MimeFormatter.GetInitializers">
+      <summary>When overridden in a derived class, returns an array of initializer objects corresponding to an input array of method definitions.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.NopReturnReader.GetInitializer">
+      <summary>Returns an initializer for the specified method.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.SoapExtension.GetInitializer">
+      <summary>When overridden in a derived class, allows a SOAP extension to initialize data specific to an XML Web service method at a one time performance cost.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.SoapHttpClientProtocol.InvokeAsync">
+      <summary>Invokes the specified method asynchronously.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.TextReturnReader.GetInitializer">
+      <summary>Returns an initializer for the specified method.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.UrlEncodedParameterWriter.Encode">
+      <summary>Encodes all the parameter values for a Web method and writes them to the specified writer.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.UrlEncodedParameterWriter.GetInitializer">
+      <summary>Returns an initializer for the specified method.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.UrlParameterReader.Read">
+      <summary>Reads name/value pairs encoded in the query string of an HTTP request into Web method parameter values.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.ValueCollectionParameterReader.GetInitializer">
+      <summary>Returns an initializer.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.ValueCollectionParameterReader.IsSupported">
+      <summary>Determines whether a method definition's parameter definitions are supported by the <see cref="T:System.Web.Services.Protocols.ValueCollectionParameterReader" /> class.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.ValueCollectionParameterReader.Read">
+      <summary>Reads a name/value pair.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.WebClientProtocol.GetWebResponse">
+      <summary>Returns a response from a request to an XML Web service method. This protected method is called by the XML Web service client infrastructure to get the response from a synchronous XML Web service request.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.XmlReturnReader.GetInitializer">
+      <summary>Returns an initializer for the specified method.</summary>
+    </member>
+    <member name="Overload:System.Web.Services.Protocols.XmlReturnReader.GetInitializers">
+      <summary>Returns an array of initializer objects corresponding to an input array of method definitions for a specified class derived from <see cref="T:System.Web.Services.Protocols.MimeFormatter" />.</summary>
+    </member>
+  </members>
+</doc>

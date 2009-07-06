@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<doc>
+  <assembly>
+    <name>System.DirectoryServices</name>
+  </assembly>
+  <members>
+    <member name="Overload:System.DirectoryServices.ActiveDirectorySecurity.AccessRuleFactory">
+      <summary>Creates an <see cref="T:System.Security.AccessControl.AccessRule" /> object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectorySecurity.AddAccessRule">
+      <summary>Adds an access rule to DACL of an object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectorySecurity.AddAuditRule">
+      <summary>Adds an audit rule to the SACL of an object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectorySecurity.AuditRuleFactory">
+      <summary>Creates an <see cref="T:System.Security.AccessControl.AuditRule" /> object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectorySecurity.RemoveAccessRule">
+      <summary>Removes an access rule from the DACL of an object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectorySecurity.RemoveAccessRuleSpecific">
+      <summary>Removes access rules that exactly match the specified access rule from the DACL of an object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectorySecurity.RemoveAuditRule">
+      <summary>Removes audit rules from the SACL of an object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectorySecurity.RemoveAuditRuleSpecific">
+      <summary>Removes all audit rules that exactly match the specified audit rule from the SACL of an object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectorySecurity.ResetAccessRule">
+      <summary>Replaces all access rules in DACL of an object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectorySecurity.SetAccessRule">
+      <summary>Replaces access rules in the DACL of an object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectorySecurity.SetAuditRule">
+      <summary>Replaces audit rules in the SACL of an object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectoryInterSiteTransport.Dispose">
+      <summary>Releases the resources that are used by the object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectoryPartition.Dispose">
+      <summary>Releases the resources that are held by the object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectoryReplicationMetadata.CopyTo">
+      <summary>Copies all objects in this collection to the specified array, starting at the specified index of the target array.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectorySchedule.SetSchedule">
+      <summary>Adds a range of times to the schedule.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectorySchemaClassCollection.AddRange">
+      <summary>Appends a range of items to this collection.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectorySchemaClass.Dispose">
+      <summary>Releases the resources that are used by the <see cref="T:System.DirectoryServices.ActiveDirectory.ActiveDirectorySchemaClass" /> object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectorySchemaPropertyCollection.AddRange">
+      <summary>Appends a range of items to this collection.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectorySchemaProperty.Dispose">
+      <summary>Releases the resources that are used by the <see cref="T:System.DirectoryServices.ActiveDirectory.ActiveDirectorySchemaProperty" /> object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectorySchema.Dispose">
+      <summary>Releases the managed resources that are used by the <see cref="T:System.DirectoryServices.ActiveDIrectory.ActiveDirectorySchema" /> object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectorySchema.FindAllClasses">
+      <summary>Retrieves all Active Directory classes in the schema.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectorySchema.FindAllProperties">
+      <summary>Retrieves all of the Active Directory properties in the schema.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectorySiteCollection.AddRange">
+      <summary>Appends a range of items to this collection.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectorySiteLinkBridge.Dispose">
+      <summary>Releases the resources used by the <see cref="T:System.DirectoryServices.ActiveDirectory.ActiveDirectorySiteLinkBridge" /> object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectorySiteLinkBridge.FindByName">
+      <summary>Gets a <see cref="T:System.DirectoryServices.ActiveDirectory.ActiveDirectorySiteLinkBridge" /> object that matches a given name.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectorySiteLinkCollection.AddRange">
+      <summary>Appends a range of items to this collection.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectorySiteLink.Dispose">
+      <summary>Releases the resources used by the object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectorySiteLink.FindByName">
+      <summary>Returns a site link based on a site link name.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectorySite.Dispose">
+      <summary>Releases the resources used by the object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectorySubnetCollection.AddRange">
+      <summary>Adds a range of items to this collection.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ActiveDirectorySubnet.Dispose">
+      <summary>Releases all resources that are used by the <see cref="T:System.DirectoryServices.ActiveDirectory.ActiveDirectorySubnet" /> object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.AdamInstance.Dispose">
+      <summary>Releases the resources that are used by the <see cref="T:System.DirectoryServices.ActiveDirectory.AdamInstance" /> object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ApplicationPartition.Dispose">
+      <summary>Releases the resources that are used by the <see cref="T:System.DirectoryServices.ActiveDirectory.ApplicationPartition" /> object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ApplicationPartition.FindAllDirectoryServers">
+      <summary>Retrieves the directory servers for this application partition.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ApplicationPartition.FindAllDiscoverableDirectoryServers">
+      <summary>Retrieves the directory servers that have registered either a site-specific DNS record for the current site or a non-site-specific DNS record for the application partition.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ApplicationPartition.FindDirectoryServer">
+      <summary>Retrieves a directory server for this application partition.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ConfigurationSet.Dispose">
+      <summary>Releases the resources that are used by the object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ConfigurationSet.FindAdamInstance">
+      <summary>Finds an ADAM instance in this configuration set.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ConfigurationSet.FindAllAdamInstances">
+      <summary>Returns all ADAM instances in this configuration set.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.DirectoryServer.Dispose">
+      <summary>Releases resources that are used by the object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.DomainController.Dispose">
+      <summary>Causes the object to release resources.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.DomainController.FindAll">
+      <summary>Finds a set of domain controllers.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.DomainController.FindOne">
+      <summary>Finds a single domain controller.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.Domain.FindAllDiscoverableDomainControllers">
+      <summary>Finds all of the discoverable domain controllers in this domain.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.Domain.FindAllDomainControllers">
+      <summary>Finds all of the domain controllers in this domain.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.Domain.FindDomainController">
+      <summary>Finds any domain controller in this domain.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.Domain.UpdateLocalSideOfTrustRelationship">
+      <summary>Updates the local side of a trust relationship.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.Forest.Dispose">
+      <summary>Releases the resources that are held by the object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.Forest.FindAllDiscoverableGlobalCatalogs">
+      <summary>Finds all of the discoverable global catalogs in this forest.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.Forest.FindAllGlobalCatalogs">
+      <summary>Finds all the global catalogs in this forest.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.Forest.FindGlobalCatalog">
+      <summary>Finds a single global catalog in this forest.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.Forest.UpdateLocalSideOfTrustRelationship">
+      <summary>Updates the password for the local side of a trust relationship.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.GlobalCatalog.FindAll">
+      <summary>Finds all global catalog servers.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.GlobalCatalog.FindOne">
+      <summary>Finds a single global catalog server.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ActiveDirectory.ReplicationConnection.Dispose">
+      <summary>Releases the resources held by the object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.DirectoryEntries.Find">
+      <summary>Returns a member of this collection.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.DirectoryEntry.CopyTo">
+      <summary>Creates a copy of this entry.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.DirectoryEntry.Dispose">
+      <summary>Disposes of the resources that are used by the <see cref="T:System.DirectoryServices.DirectoryEntry" /> object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.DirectoryEntry.MoveTo">
+      <summary>Moves this <see cref="T:System.DirectoryServices.DirectoryEntry" />.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.DirectoryEntry.RefreshCache">
+      <summary>Loads the property values for this <see cref="T:System.DirectoryServices.DirectoryEntry" /> object into the property cache.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.DirectorySearcher.Dispose">
+      <summary>Releases the managed resources that are used by the object.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.DirectoryServicesPermissionEntryCollection.AddRange">
+      <summary>Appends the contents of the specified <see cref="T:System.DirectoryServices.DirectoryServicesPermissionEntry" /> array to this collection.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.DirectorySynchronization.ResetDirectorySynchronizationCookie">
+      <summary>Gets the directory synchronization search cookie.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.PropertyValueCollection.AddRange">
+      <summary>Appends a set of property values to this collection.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.ResultPropertyCollection.CopyTo">
+      <summary>Copies the <see cref="T:System.Collections.DictionaryBase" /> elements to a one-dimensional <see cref="T:System.Array" /> at the specified index.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.SchemaNameCollection.AddRange">
+      <summary>Appends a set of specified schema names to this collection.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.SearchResultCollection.Dispose">
+      <summary>Releases all resources that are used by the <see cref="T:System.DirectoryServices.SearchResultCollection" /> object.</summary>
+    </member>
+  </members>
+</doc>

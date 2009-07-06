@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<doc>
+  <assembly>
+    <name>System.DirectoryServices.Protocols</name>
+  </assembly>
+  <members>
+    <member name="Overload:System.DirectoryServices.Protocols.DirectoryAttributeCollection.AddRange">
+      <summary>Adds objects to the current collection.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.Protocols.DirectoryAttributeModificationCollection.AddRange">
+      <summary>Adds the specified objects to the current collection.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.Protocols.DirectoryAttribute.Add">
+      <summary>Adds the specified value to this attribute.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.Protocols.DirectoryAttribute.Insert">
+      <summary>Inserts the specified <span class="parameter">value</span> into the <see cref="T:System.DirectoryServices.Protocols.DirectoryAttribute" /> collection at the specified <span class="parameter">index</span>.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.Protocols.DsmlSoapHttpConnection.SendRequest">
+      <summary>Sends an object to the DSML server.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.Protocols.LdapConnection.BeginSendRequest">
+      <summary>Sends data asynchronously to the server.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.Protocols.LdapConnection.Bind">
+      <summary>Sends an LDAP bind.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.Protocols.LdapConnection.Dispose">
+      <summary>Closes and optionally releases the LDAP handle.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.Protocols.LdapConnection.SendRequest">
+      <summary>Sends a single <see cref="T:System.DirectoryServices.Protocols.DirectoryRequest" /> as an LDAP v3 operation.</summary>
+    </member>
+    <member name="Overload:System.DirectoryServices.Protocols.SearchResultAttributeCollection.CopyTo">
+      <summary>The <see cref="Overload:System.DirectoryServices.Protocols.SearchResultAttributeCollection.CopyTo" /> method copies specified portions of the collection to a specified location.</summary>
+    </member>
+  </members>
+</doc>

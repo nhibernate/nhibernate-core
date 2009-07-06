@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<doc>
+  <assembly>
+    <name>System.Configuration</name>
+  </assembly>
+  <members>
+    <member name="Overload:System.Configuration.CommaDelimitedStringCollectionConverter.ConvertFrom">
+      <summary>Converts a <see cref="T:System.String" /> object to a <see cref="T:System.Configuration.CommaDelimitedStringCollection" /> object.</summary>
+    </member>
+    <member name="Overload:System.Configuration.CommaDelimitedStringCollectionConverter.ConvertTo">
+      <summary>Converts a <see cref="T:System.Configuration.CommaDelimitedStringCollection" /> object to a <see cref="T:System.String" /> object.</summary>
+    </member>
+    <member name="Overload:System.Configuration.ConfigurationConverterBase.CanConvertFrom">
+      <summary>Determines whether the conversion is allowed.</summary>
+    </member>
+    <member name="Overload:System.Configuration.ConfigurationConverterBase.CanConvertTo">
+      <summary>Determines whether the conversion is allowed.</summary>
+    </member>
+    <member name="Overload:System.Configuration.ConfigurationElementCollection.BaseAdd">
+      <summary>Adds a <see cref="T:System.Configuration.ConfigurationElement" /> to an <see cref="T:System.Configuration.ConfigurationElementCollection" /> instance when overridden in a derived class.</summary>
+    </member>
+    <member name="Overload:System.Configuration.ConfigurationElementCollection.BaseGet">
+      <summary>Gets the <see cref="T:System.Configuration.ConfigurationElement" /> at the specified index location.</summary>
+    </member>
+    <member name="Overload:System.Configuration.ConfigurationElementCollection.CreateNewElement">
+      <summary>When overridden in a derived class, creates a new <see cref="T:System.Configuration.ConfigurationElement" />.</summary>
+    </member>
+    <member name="Overload:System.Configuration.ConfigurationElementCollection.Equals">
+      <summary>Compares the <see cref="T:System.Configuration.ConfigurationElementCollection" /> to the specified object.</summary>
+    </member>
+    <member name="Overload:System.Configuration.ConfigurationElement.Equals">
+      <summary>Compares the current <see cref="T:System.Configuration.ConfigurationElement" /> instance to the specified object.</summary>
+    </member>
+    <member name="Overload:System.Configuration.ConfigurationElement.Item">
+      <summary>Gets or sets a property, attribute, or child element of this <see cref="T:System.Configuration.ConfigurationElement" /> object.</summary>
+    </member>
+    <member name="Overload:System.Configuration.ConfigurationErrorsException.GetFilename">
+      <summary>Gets the path to the configuration file being read when this configuration exception was thrown.</summary>
+    </member>
+    <member name="Overload:System.Configuration.ConfigurationErrorsException.GetLineNumber">
+      <summary>Gets the line number within the configuration file that was being processed when this configuration exception was thrown.</summary>
+    </member>
+    <member name="Overload:System.Configuration.ConfigurationManager.OpenExeConfiguration">
+      <summary>Opens the specified client configuration file as a <see cref="T:System.Configuration.Configuration" /> object.</summary>
+    </member>
+    <member name="Overload:System.Configuration.ConfigurationSectionCollection.Get">
+      <summary>Gets a <see cref="T:System.Configuration.ConfigurationSection" /> object from this <see cref="T:System.Configuration.ConfigurationSectionCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Configuration.ConfigurationSectionCollection.Item">
+      <summary>Gets the specified <see cref="T:System.Configuration.ConfigurationSection" /> object.</summary>
+    </member>
+    <member name="Overload:System.Configuration.ConfigurationSectionGroupCollection.Get">
+      <summary>Gets a <see cref="T:System.Configuration.ConfigurationSectionGroup" /> object from the collection</summary>
+    </member>
+    <member name="Overload:System.Configuration.ConfigurationSectionGroupCollection.Item">
+      <summary>Gets or sets a <see cref="T:System.Configuration.ConfigurationSectionGroup" /> contained in this <see cref="T:System.Configuration.ConfigurationSectionGroupCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Configuration.ConfigurationSectionGroup.ForceDeclaration">
+      <summary>Forces the declaration for this <see cref="T:System.Configuration.ConfigurationSectionGroup" /> object.</summary>
+    </member>
+    <member name="Overload:System.Configuration.Configuration.Save">
+      <summary>Writes the configuration settings contained within this <see cref="T:System.Configuration.Configuration" /> object to the current XML configuration file.</summary>
+    </member>
+    <member name="Overload:System.Configuration.Configuration.SaveAs">
+      <summary>Writes the configuration settings contained within this <see cref="T:System.Configuration.Configuration" /> object to the specified XML configuration file.</summary>
+    </member>
+    <member name="Overload:System.Configuration.ConnectionStringSettingsCollection.Item">
+      <summary>Gets or sets a <see cref="T:System.Configuration.ConnectionStringSettings" /> object in the collection.</summary>
+    </member>
+    <member name="Overload:System.Configuration.ConnectionStringSettingsCollection.Remove">
+      <summary>Removes a <see cref="T:System.Configuration.ConnectionStringSettings" /> object from the collection.</summary>
+    </member>
+    <member name="Overload:System.Configuration.GenericEnumConverter.ConvertFrom">
+      <summary>Converts a <see cref="T:System.String" /> to an <see cref="T:System.Enum" /> type.</summary>
+    </member>
+    <member name="Overload:System.Configuration.GenericEnumConverter.ConvertTo">
+      <summary>Converts an <see cref="T:System.Enum" /> type to a <see cref="T:System.String" /> value.</summary>
+    </member>
+    <member name="Overload:System.Configuration.InfiniteIntConverter.ConvertFrom">
+      <summary>Converts a <see cref="T:System.String" /> to an <see cref="T:System.Int32" />.</summary>
+    </member>
+    <member name="Overload:System.Configuration.InfiniteIntConverter.ConvertTo">
+      <summary>Converts an <see cref="T:System.Int32" /> to a <see cref="T:System.String" />.</summary>
+    </member>
+    <member name="Overload:System.Configuration.InfiniteTimeSpanConverter.ConvertFrom">
+      <summary>Converts a <see cref="T:System.String" /> to a <see cref="T:System.TimeSpan" />.</summary>
+    </member>
+    <member name="Overload:System.Configuration.InfiniteTimeSpanConverter.ConvertTo">
+      <summary>Converts a <see cref="T:System.TimeSpan" /> to a <see cref="T:System.String" />.</summary>
+    </member>
+    <member name="Overload:System.Configuration.Internal.DelegatingConfigHost.OpenStreamForRead">
+      <summary>This member is for internal use only.</summary>
+    </member>
+    <member name="Overload:System.Configuration.Internal.DelegatingConfigHost.OpenStreamForWrite">
+      <summary>This member is for internal use only.</summary>
+    </member>
+    <member name="Overload:System.Configuration.Internal.DelegatingConfigHost.WriteCompleted">
+      <summary>This member is for internal use only.</summary>
+    </member>
+    <member name="Overload:System.Configuration.Internal.IInternalConfigHost.OpenStreamForRead">
+      <summary>This member is for internal use only.</summary>
+    </member>
+    <member name="Overload:System.Configuration.Internal.IInternalConfigHost.OpenStreamForWrite">
+      <summary>This member is for internal use only.</summary>
+    </member>
+    <member name="Overload:System.Configuration.Internal.IInternalConfigHost.WriteCompleted">
+      <summary>This member is for internal use only.</summary>
+    </member>
+    <member name="Overload:System.Configuration.KeyValueConfigurationCollection.Add">
+      <summary>Adds a <see cref="T:System.Configuration.KeyValueConfigurationElement" /> object to the collection.</summary>
+    </member>
+    <member name="Overload:System.Configuration.KeyValueConfigurationCollection.CreateNewElement">
+      <summary>When overridden in a derived class, the <see cref="Overload:System.Configuration.KeyValueConfigurationCollection.CreateNewElement" /> method creates a new <see cref="T:System.Configuration.KeyValueConfigurationElement" /> object.</summary>
+    </member>
+    <member name="Overload:System.Configuration.KeyValueConfigurationCollection.Item">
+      <summary>Gets or sets the <see cref="T:System.Configuration.KeyValueConfigurationElement" /> object.</summary>
+    </member>
+    <member name="Overload:System.Configuration.NameValueConfigurationCollection.Remove">
+      <summary>Removes a <see cref="T:System.Configuration.NameValueConfigurationElement" /> object from the collection.</summary>
+    </member>
+    <member name="Overload:System.Configuration.ProviderSettingsCollection.Item">
+      <summary>Indexer to an instance of the <see cref="T:System.Configuration.ProviderSettingsCollection" /> class.</summary>
+    </member>
+    <member name="Overload:System.Configuration.SectionInformation.ForceDeclaration">
+      <summary>Forces the associated configuration section to appear in the configuration file.</summary>
+    </member>
+    <member name="Overload:System.Configuration.TimeSpanMinutesConverter.ConvertFrom">
+      <summary>Converts a <see cref="T:System.String" /> to a <see cref="T:System.TimeSpan" />.</summary>
+    </member>
+    <member name="Overload:System.Configuration.TimeSpanMinutesConverter.ConvertTo">
+      <summary>Converts a <see cref="T:System.TimeSpan" /> to a <see cref="T:System.String" />.</summary>
+    </member>
+    <member name="Overload:System.Configuration.TimeSpanMinutesOrInfiniteConverter.ConvertFrom">
+      <summary>Converts a <see cref="T:System.String" /> to a <see cref="T:System.TimeSpan" />.</summary>
+    </member>
+    <member name="Overload:System.Configuration.TimeSpanMinutesOrInfiniteConverter.ConvertTo">
+      <summary>Converts a <see cref="T:System.TimeSpan" /> to a <see cref="T:System.String" />.</summary>
+    </member>
+    <member name="Overload:System.Configuration.TimeSpanSecondsConverter.ConvertFrom">
+      <summary>Converts a <see cref="T:System.String" /> to a <see cref="T:System.TimeSpan" />.</summary>
+    </member>
+    <member name="Overload:System.Configuration.TimeSpanSecondsConverter.ConvertTo">
+      <summary>Converts a <see cref="T:System.TimeSpan" /> to a <see cref="T:System.String" />.</summary>
+    </member>
+    <member name="Overload:System.Configuration.TimeSpanSecondsOrInfiniteConverter.ConvertFrom">
+      <summary>Converts a <see cref="T:System.String" /> to a <see cref="T:System.TimeSpan" />.</summary>
+    </member>
+    <member name="Overload:System.Configuration.TimeSpanSecondsOrInfiniteConverter.ConvertTo">
+      <summary>Converts a <see cref="T:System.TimeSpan" /> to a. <see cref="T:System.String" />.</summary>
+    </member>
+    <member name="Overload:System.Configuration.TypeNameConverter.ConvertFrom">
+      <summary>Converts a <see cref="T:System.String" /> to a <see cref="T:System.Type" />.</summary>
+    </member>
+    <member name="Overload:System.Configuration.TypeNameConverter.ConvertTo">
+      <summary>Converts a <see cref="T:System.Type" /> to a <see cref="T:System.String" />.</summary>
+    </member>
+    <member name="Overload:System.Configuration.WhiteSpaceTrimStringConverter.ConvertFrom">
+      <summary>Converts a <see cref="T:System.String" /> to canonical form.</summary>
+    </member>
+    <member name="Overload:System.Configuration.WhiteSpaceTrimStringConverter.ConvertTo">
+      <summary>Converts a <see cref="T:System.String" /> to canonical form.</summary>
+    </member>
+  </members>
+</doc>

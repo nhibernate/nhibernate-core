@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<doc>
+  <assembly>
+    <name>Microsoft.JScript</name>
+  </assembly>
+  <members>
+    <member name="Overload:Microsoft.JScript.COMFieldInfo.SetValue">
+      <summary>Sets the value of the field supported by the given object.</summary>
+    </member>
+    <member name="Overload:Microsoft.JScript.COMMethodInfo.Invoke">
+      <summary>Invokes the method or constructor represented by the current instance, using the specified parameters.</summary>
+    </member>
+    <member name="Overload:Microsoft.JScript.COMPropertyInfo.GetAccessors">
+      <summary>Returns an array whose elements reflect the public <b>get</b>, <b>set</b>, and other accessors of the property reflected by the current instance.</summary>
+    </member>
+    <member name="Overload:Microsoft.JScript.COMPropertyInfo.GetGetMethod">
+      <summary>Returns the public <b>get</b> accessor for this property.</summary>
+    </member>
+    <member name="Overload:Microsoft.JScript.COMPropertyInfo.GetSetMethod">
+      <summary>Returns the public <b>set</b> accessor for this property.</summary>
+    </member>
+    <member name="Overload:Microsoft.JScript.COMPropertyInfo.GetValue">
+      <summary>Returns the value of the property with optional index values for indexed properties.</summary>
+    </member>
+    <member name="Overload:Microsoft.JScript.COMPropertyInfo.SetValue">
+      <summary>Sets the value of the property with optional index values for index properties.</summary>
+    </member>
+    <member name="Overload:Microsoft.JScript.Convert.ToString">
+      <summary>Returns a <see cref="T:System.String" /> that represents the current <see cref="T:System.Object" />.</summary>
+    </member>
+    <member name="Overload:Microsoft.JScript.JScriptCodeProvider.CreateGenerator">
+      <summary>Provides access to instances of the JScript code generator and code compiler.</summary>
+    </member>
+    <member name="Overload:Microsoft.JScript.JSMethodInfo.Invoke">
+      <summary>Invokes the method or constructor represented by the current instance, using the specified parameters.</summary>
+    </member>
+    <member name="Overload:Microsoft.JScript.JSMethod.Invoke">
+      <summary>Invokes the method or constructor represented by the current instance, using the specified parameters.</summary>
+    </member>
+    <member name="Overload:Microsoft.JScript.StringObject.Equals">
+      <summary>Determines whether the specified <see cref="T:System.Object" /> instances are considered equal.</summary>
+    </member>
+    <member name="Overload:Microsoft.JScript.TypedArray.Equals">
+      <summary>Determines whether the specified <see cref="T:System.Object" /> instances are considered equal.</summary>
+    </member>
+  </members>
+</doc>

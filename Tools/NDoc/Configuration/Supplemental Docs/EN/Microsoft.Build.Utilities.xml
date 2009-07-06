@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<doc>
+  <assembly>
+    <name>Microsoft.Build.Utilities</name>
+  </assembly>
+  <members>
+    <member name="Overload:Microsoft.Build.Utilities.CommandLineBuilder.AppendFileNameIfNotNull">
+      <summary>Appends the command line with file name represented by the parameter, inserting quotation marks if necessary.</summary>
+    </member>
+    <member name="Overload:Microsoft.Build.Utilities.CommandLineBuilder.AppendFileNamesIfNotNull">
+      <summary>Appends the command line with a list of file names, inserting quotation marks if necessary.</summary>
+    </member>
+    <member name="Overload:Microsoft.Build.Utilities.CommandLineBuilder.AppendSwitchIfNotNull">
+      <summary>Appends the command line with a switch.</summary>
+    </member>
+    <member name="Overload:Microsoft.Build.Utilities.CommandLineBuilder.AppendSwitchUnquotedIfNotNull">
+      <summary>Appends the command line with a switch, without attempting to encapsulate the switch parameters with quotation marks.</summary>
+    </member>
+    <member name="Overload:Microsoft.Build.Utilities.TaskLoggingHelper.LogCommandLine">
+      <summary>Logs the command line.</summary>
+    </member>
+    <member name="Overload:Microsoft.Build.Utilities.TaskLoggingHelper.LogError">
+      <summary>Logs an error.</summary>
+    </member>
+    <member name="Overload:Microsoft.Build.Utilities.TaskLoggingHelper.LogErrorFromException">
+      <summary>Logs an error using the message from the specified exception.</summary>
+    </member>
+    <member name="Overload:Microsoft.Build.Utilities.TaskLoggingHelper.LogErrorFromResources">
+      <summary>Logs an error using the specified resource string.</summary>
+    </member>
+    <member name="Overload:Microsoft.Build.Utilities.TaskLoggingHelper.LogErrorWithCodeFromResources">
+      <summary>Logs an error with an error code using the specified resource string.</summary>
+    </member>
+    <member name="Overload:Microsoft.Build.Utilities.TaskLoggingHelper.LogMessage">
+      <summary>Logs a message with the specified string.</summary>
+    </member>
+    <member name="Overload:Microsoft.Build.Utilities.TaskLoggingHelper.LogMessageFromResources">
+      <summary>Logs a message with the specified resource string.</summary>
+    </member>
+    <member name="Overload:Microsoft.Build.Utilities.TaskLoggingHelper.LogMessagesFromFile">
+      <summary>Logs errors, warnings, and messages for each line of text in the given file.</summary>
+    </member>
+    <member name="Overload:Microsoft.Build.Utilities.TaskLoggingHelper.LogWarning">
+      <summary>Logs a warning.</summary>
+    </member>
+    <member name="Overload:Microsoft.Build.Utilities.TaskLoggingHelper.LogWarningFromException">
+      <summary>Logs a warning using the message from the specified exception.</summary>
+    </member>
+    <member name="Overload:Microsoft.Build.Utilities.TaskLoggingHelper.LogWarningFromResources">
+      <summary>Logs a warning using the specified resource string.</summary>
+    </member>
+    <member name="Overload:Microsoft.Build.Utilities.TaskLoggingHelper.LogWarningWithCodeFromResources">
+      <summary>Logs a warning with a warning code using the specified resource string.</summary>
+    </member>
+  </members>
+</doc>

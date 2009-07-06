@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<doc>
+  <assembly>
+    <name>System.EnterpriseServices</name>
+  </assembly>
+  <members>
+    <member name="Overload:System.EnterpriseServices.CompensatingResourceManager.ClerkMonitor.Item">
+      <summary>Gets the <see cref="T:System.EnterpriseServices.CompensatingResourceManager.ClerkInfo" /> object for this <see cref="T:System.EnterpriseServices.CompensatingResourceManager.ClerkMonitor" />.</summary>
+    </member>
+    <member name="Overload:System.EnterpriseServices.RegistrationHelperTx.InstallAssembly">
+      <summary>Installs the named assembly in the COM+ catalog using transactional semantics</summary>
+    </member>
+    <member name="Overload:System.EnterpriseServices.RegistrationHelperTx.UninstallAssembly">
+      <summary>Uninstalls an assembly from a COM+ application using transactional semantics.</summary>
+    </member>
+    <member name="Overload:System.EnterpriseServices.RegistrationHelper.InstallAssembly">
+      <summary>Provides the run-time components available to the COM+ catalog.</summary>
+    </member>
+    <member name="Overload:System.EnterpriseServices.RegistrationHelper.UninstallAssembly">
+      <summary>Uninstalls an assembly previous registered with <see cref="Overload:System.EnterpriseServices.RegistrationHelper.InstallAssembly" />.</summary>
+    </member>
+    <member name="Overload:System.EnterpriseServices.ServicedComponent.Dispose">
+      <summary>Releases the resources used by the <see cref="T:System.EnterpriseServices.ServicedComponent" />.</summary>
+    </member>
+  </members>
+</doc>

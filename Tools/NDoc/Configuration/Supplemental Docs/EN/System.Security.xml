@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<doc>
+  <assembly>
+    <name>System.Security</name>
+  </assembly>
+  <members>
+    <member name="Overload:System.Security.Cryptography.CryptographicAttributeObjectCollection.Add">
+      <summary>Adds an object to the collection.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Pkcs.CmsRecipientCollection.CopyTo">
+      <summary>Copies the <see cref="T:System.Security.Cryptography.Pkcs.CmsRecipientCollection" /> collection to an array.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Pkcs.EnvelopedCms.Decrypt">
+      <summary>Decrypts the contents of the decoded enveloped CMS/PKCS #7 message.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Pkcs.EnvelopedCms.Encrypt">
+      <summary>Encrypts the contents of the CMS/PKCS #7 message.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Pkcs.RecipientInfoCollection.CopyTo">
+      <summary>The <see cref="Overload:System.Security.Cryptography.Pkcs.RecipientInfoCollection.CopyTo" /> method copies the <see cref="T:System.Security.Cryptography.Pkcs.RecipientInfoCollection" /> collection to an array.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Pkcs.SignedCms.CheckSignature">
+      <summary>Verifies the digital signatures on the signed CMS/PKCS #7 message.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Pkcs.SignedCms.ComputeSignature">
+      <summary>Creates a signature, and adds the signature to the CMS/PKCS #7 message.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Pkcs.SignedCms.RemoveSignature">
+      <summary>Removes the specified signature from the <see cref="P:System.Security.Cryptography.Pkcs.SignedCms.SignerInfos" /> collection.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Pkcs.SignerInfoCollection.CopyTo">
+      <summary>The <see cref="Overload:System.Security.Cryptography.Pkcs.SignerInfoCollection.CopyTo" /> method copies the <see cref="T:System.Security.Cryptography.Pkcs.SignerInfoCollection" /> collection to an array.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Pkcs.SignerInfo.CheckSignature">
+      <summary>Verifies the digital signature of the message.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Pkcs.SignerInfo.ComputeCounterSignature">
+      <summary>Creates a countersignature and adds the signature to the CMS/PKCS #7 message.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Pkcs.SignerInfo.RemoveCounterSignature">
+      <summary>Removes the specified countersignature from the <see cref="P:System.Security.Cryptography.Pkcs.SignerInfo.CounterSignerInfos" /> collection.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.X509Certificates.X509Certificate2UI.DisplayCertificate">
+      <summary>Displays a dialog box that contains the properties of an X.509 certificate and its associated certificate chain.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.X509Certificates.X509Certificate2UI.SelectFromCollection">
+      <summary>Displays a dialog box for selecting an X.509 certificate from a certificate collection.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.EncryptedKey.AddReference">
+      <summary>Adds a<b></b>reference element to the <b>&lt;ReferenceList&gt;</b> element.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.EncryptedXml.DecryptKey">
+      <summary>Decrypts an <b>&lt;EncryptedKey&gt;</b> element.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.EncryptedXml.Encrypt">
+      <summary>Encrypts the outer XML of an element using the specified certificate or key in the key mapping table.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.EncryptedXml.EncryptData">
+      <summary>Encrypts XML data using a symmetric algorithm.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.EncryptedXml.EncryptKey">
+      <summary>Encrypts the key that a recipient uses to decrypt an <b>&lt;EncryptedData&gt;</b> element.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.EncryptionPropertyCollection.CopyTo">
+      <summary>Copies the elements of the <see cref="T:System.Security.Cryptography.Xml.EncryptionPropertyCollection" /> object to an array, starting at a particular array index.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.KeyInfoX509Data.AddSubjectKeyId">
+      <summary>Adds a subject key identifier (SKI) to the <see cref="T:System.Security.Cryptography.Xml.KeyInfoX509Data" /> object.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.KeyInfo.GetEnumerator">
+      <summary>Returns an enumerator of the <see cref="T:System.Security.Cryptography.Xml.KeyInfoClause" /> objects in the <see cref="T:System.Security.Cryptography.Xml.KeyInfo" /> object.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.SignedXml.CheckSignature">
+      <summary>Determines whether the <see cref="P:System.Security.Cryptography.Xml.SignedXml.Signature" /> property verifies.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.SignedXml.ComputeSignature">
+      <summary>Computes an XML digital signature.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.Transform.GetOutput">
+      <summary>Returns the output of the current <see cref="T:System.Security.Cryptography.Xml.Transform" /> object.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.XmlDecryptionTransform.GetOutput">
+      <summary>Returns the output of the current <see cref="T:System.Security.Cryptography.Xml.XmlDsigEnvelopedSignatureTransform" /> object.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.XmlDsigBase64Transform.GetOutput">
+      <summary>Returns the output of the current <see cref="T:System.Security.Cryptography.Xml.XmlDsigBase64Transform" /> object.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.XmlDsigC14NTransform.GetOutput">
+      <summary>Returns the output of the current <see cref="T:System.Security.Cryptography.Xml.XmlDsigC14NTransform" /> object.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.XmlDsigEnvelopedSignatureTransform.GetOutput">
+      <summary>Returns the output of the current <see cref="T:System.Security.Cryptography.Xml.XmlDsigEnvelopedSignatureTransform" /> object.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.XmlDsigExcC14NTransform.GetOutput">
+      <summary>Returns the output of the current <see cref="T:System.Security.Cryptography.Xml.XmlDsigExcC14NTransform" /> object.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.XmlDsigXPathTransform.GetOutput">
+      <summary>Returns the output of the current <see cref="T:System.Security.Cryptography.Xml.XmlDsigXPathTransform" /> object.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.XmlDsigXsltTransform.GetOutput">
+      <summary>Returns the output of the current <see cref="T:System.Security.Cryptography.Xml.XmlDsigXsltTransform" /> object.</summary>
+    </member>
+    <member name="Overload:System.Security.Cryptography.Xml.XmlLicenseTransform.GetOutput">
+      <summary>Returns the output of an <see cref="T:System.Security.Cryptography.Xml.XmlLicenseTransform" /> object.</summary>
+    </member>
+  </members>
+</doc>

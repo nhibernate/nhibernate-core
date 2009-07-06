@@ -250,5 +250,7 @@
 	<target name="common.find-nunit">
 		<property name="nunit-console" value="${tools.dir}/NUnit/nunit-console-x86.exe" />
 	</target>
-
+	<target name="common.find-ndoc">
+		<property name="ndoc-console" value="${tools.dir}/ndoc/NDocConsole.exe" />
+	</target>
 </project>

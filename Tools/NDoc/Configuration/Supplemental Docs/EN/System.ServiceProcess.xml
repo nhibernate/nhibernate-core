@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<doc>
+  <assembly>
+    <name>System.ServiceProcess</name>
+  </assembly>
+  <members>
+    <member name="Overload:System.ServiceProcess.ServiceBase.Dispose">
+      <summary>Disposes of the resources used by the <see cref="T:System.ServiceProcess.ServiceBase" />.</summary>
+    </member>
+    <member name="Overload:System.ServiceProcess.ServiceBase.Run">
+      <summary>Provides the main entry point for a service executable.</summary>
+    </member>
+    <member name="Overload:System.ServiceProcess.ServiceControllerPermissionEntryCollection.AddRange">
+      <summary>Appends a set of specified permission entries to this collection.</summary>
+    </member>
+    <member name="Overload:System.ServiceProcess.ServiceController.Dispose">
+      <summary>Releases all resources used by the <see cref="T:System.ComponentModel.Component" />.</summary>
+    </member>
+    <member name="Overload:System.ServiceProcess.ServiceController.GetDevices">
+      <summary>Retrieves the device driver services on a computer.</summary>
+    </member>
+    <member name="Overload:System.ServiceProcess.ServiceController.GetServices">
+      <summary>Retrieves the non-device driver services on a computer, and those that are not drivers.</summary>
+    </member>
+    <member name="Overload:System.ServiceProcess.ServiceController.Start">
+      <summary>Starts the service.</summary>
+    </member>
+    <member name="Overload:System.ServiceProcess.ServiceController.WaitForStatus">
+      <summary>Waits for the service to reach the specified status.</summary>
+    </member>
+    <member name="Overload:System.ServiceProcess.SessionChangeDescription.Equals">
+      <summary>Determines whether two session change descriptions are equal.</summary>
+    </member>
+  </members>
+</doc>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<doc>
+  <assembly>
+    <name>System.Runtime.Remoting</name>
+  </assembly>
+  <members>
+    <member name="Overload:System.Runtime.Remoting.MetadataServices.MetaData.ConvertSchemaStreamToCodeSourceStream">
+      <summary>Converts a specified schema definition to C# source code proxy, which can then be compiled into a runtime proxy assembly.</summary>
+    </member>
+    <member name="Overload:System.Runtime.Remoting.MetadataServices.MetaData.ConvertTypesToSchemaToFile">
+      <summary>Converts the specified types to XML schema, and writes it to a file.</summary>
+    </member>
+    <member name="Overload:System.Runtime.Remoting.MetadataServices.MetaData.ConvertTypesToSchemaToStream">
+      <summary>Converts the specified types to XML schema, and writes it to a stream.</summary>
+    </member>
+  </members>
+</doc>

@@ -1,0 +1,746 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<doc>
+  <assembly>
+    <name>System.Data</name>
+  </assembly>
+  <members>
+    <member name="Overload:Microsoft.SqlServer.Server.SqlDataRecord.Item">
+      <summary>Gets the common language runtime (CLR) type value for the column.</summary>
+    </member>
+    <member name="Overload:Microsoft.SqlServer.Server.SqlMetaData.Adjust">
+      <summary>Validates the specified value against the metadata, and adjusts the value if necessary.</summary>
+    </member>
+    <member name="Overload:Microsoft.SqlServer.Server.SqlPipe.Send">
+      <summary>Sends results directly to the client.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataAdapter.Dispose">
+      <summary>Releases the resources used by the <see cref="T:System.Data.Common.DataAdapter" />.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataAdapter.Fill">
+      <summary>Adds or refreshes rows in the <see cref="T:System.Data.DataSet" /> to match those in the data source using the <b>DataSet</b> name, and creates a <see cref="T:System.Data.DataTable" />.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataAdapter.FillSchema">
+      <summary>Adds a <see cref="T:System.Data.DataTable" /> to the specified <see cref="T:System.Data.DataSet" />.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataColumnMappingCollection.Add">
+      <summary>Adds a <see cref="T:System.Data.Common.DataColumnMapping" /> object to the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataColumnMappingCollection.AddRange">
+      <summary>Adds an array of values to the end of the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataColumnMappingCollection.Contains">
+      <summary>Gets a value indicating whether a <see cref="T:System.Data.Common.DataColumnMapping" /> object exists in the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataColumnMappingCollection.CopyTo">
+      <summary>Copies the elements of the collection to an array.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataColumnMappingCollection.IndexOf">
+      <summary>Gets the location of the specified <see cref="T:System.Data.Common.DataColumnMapping" /> within the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataColumnMappingCollection.Insert">
+      <summary>Inserts an object into the <see cref="T:System.Data.Common.DataColumnMappingCollection" /> at a specified index.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataColumnMappingCollection.Item">
+      <summary>Gets or sets the <see cref="T:System.Data.Common.DataColumnMapping" /> object specified.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataColumnMappingCollection.Remove">
+      <summary>Removes a specified object from the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataColumnMappingCollection.RemoveAt">
+      <summary>Removes the specified <see cref="T:System.Data.Common.DataColumnMapping" /> object from the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataTableMappingCollection.Add">
+      <summary>Adds a <see cref="T:System.Data.Common.DataTableMapping" /> object to the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataTableMappingCollection.AddRange">
+      <summary>Copies the elements of a given array to the end of the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataTableMappingCollection.Contains">
+      <summary>Gets a value indicating whether a particular <see cref="T:System.Data.Common.DataTableMapping" /> object exists in the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataTableMappingCollection.CopyTo">
+      <summary>Copies the elements of a given collection to the specified array.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataTableMappingCollection.IndexOf">
+      <summary>Gets the location of the specified <see cref="T:System.Data.Common.DataTableMapping" /> object within the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataTableMappingCollection.Insert">
+      <summary>Inserts an object into the <see cref="T:System.Data.Common.DataTableMappingCollection" /> at a specified index.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataTableMappingCollection.Item">
+      <summary>Gets or sets the <see cref="T:System.Data.Common.DataTableMapping" /> object specified.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataTableMappingCollection.Remove">
+      <summary>Removes a specified object from the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DataTableMappingCollection.RemoveAt">
+      <summary>Removes the specified <see cref="T:System.Data.Common.DataTableMapping" /> object from the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbCommandBuilder.Dispose">
+      <summary>Releases the resources used by the <see cref="T:System.Data.Common.DbCommandBuilder" />.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbCommandBuilder.GetDeleteCommand">
+      <summary>Gets the automatically generated <see cref="T:System.Data.Common.DbCommand" /> object required to perform deletions at the data source.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbCommandBuilder.GetInsertCommand">
+      <summary>Gets the automatically generated <see cref="T:System.Data.Common.DbCommand" /> object required to perform insertions at the data source.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbCommandBuilder.GetParameterName">
+      <summary>Returns the name of the specified parameter.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbCommandBuilder.GetUpdateCommand">
+      <summary>Gets the automatically generated <see cref="T:System.Data.Common.DbCommand" /> object required to perform updates at the data source.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbCommand.ExecuteReader">
+      <summary>Executes the <see cref="P:System.Data.Common.CommandText" /> against the <see cref="P:System.Data.Common.Connection" /> and returns a <see cref="T:System.Data.Common.DbDataReader" />.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader">
+      <summary>For a description of this member, see <see cref="Overload:System.Data.IDbCommand.ExecuteReader">IDbCommand.ExecuteReader</see>.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbConnectionStringBuilder.AppendKeyValuePair">
+      <summary>Provides an efficient and safe way to append a key and value to an existing <see cref="T:System.Text.StringBuilder" /> object.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbConnectionStringBuilder.System.ComponentModel.ICustomTypeDescriptor.GetEvents">
+      <summary>For a description of this member, see <see cref="M:System.ComponentModel.ICustomTypeDescriptor.GetEvents">ICustomTypeDescriptor.GetEvents</see>.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbConnectionStringBuilder.System.ComponentModel.ICustomTypeDescriptor.GetProperties">
+      <summary>For a description of this member, see <see cref="M:System.ComponentModel.ICustomTypeDescriptor.GetProperties">ICustomTypeDescriptor.GetProperties</see>.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbConnection.BeginTransaction">
+      <summary>Starts a database transaction.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbConnection.GetSchema">
+      <summary>Returns schema information for the data source of this <see cref="T:System.Data.Common.DbConnection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbConnection.System.Data.IDbConnection.BeginTransaction">
+      <summary>For a description of this member, see <see cref="Overload:System.Data.IDbConnection.BeginTransaction">IDbConnection.BeginTransaction</see>.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbDataAdapter.Dispose">
+      <summary>Releases the unmanaged resources used by the <see cref="T:System.Data.Common.DbDataAdapter" />.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbDataAdapter.Fill">
+      <summary>Fills a <see cref="T:System.Data.DataSet" /> or a <see cref="T:System.Data. DataTable" />.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbDataAdapter.FillSchema">
+      <summary>Adds a <see cref="T:System.Data.DataTable" /> to a <see cref="T:System.Data.DataSet" /> and configures the schema to match that in the data source.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbDataAdapter.Update">
+      <summary>Calls the respective INSERT, UPDATE, or DELETE statements for each inserted, updated, or deleted row in the <see cref="T:System.Data.DataSet" />.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbDataReader.Dispose">
+      <summary>Releases the resources used by the <see cref="T:System.Data.Common.DbDataReader" />.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbDataReader.Item">
+      <summary>Gets the value of a specified column as an instance of <see cref="T:System.Object" />.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbDataRecord.Item">
+      <summary>Indicates that value from a column in its native format. This property is read-only.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbDataRecord.System.ComponentModel.ICustomTypeDescriptor.GetEvents">
+      <summary>For a description of this member, see <see cref="M:System.ComponentModel.ICustomTypeDescriptor.GetEvents">ICustomTypeDescriptor.GetEvents</see>.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbDataRecord.System.ComponentModel.ICustomTypeDescriptor.GetProperties">
+      <summary>For a description of this member, see <see cref="M:System.ComponentModel.ICustomTypeDescriptor.GetProperties">ICustomTypeDescriptor.GetProperties</see>.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbParameterCollection.Contains">
+      <summary>Indicates whether a <see cref="T:System.Data.Common.DbParameter" /> with the specified property exists in the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbParameterCollection.GetParameter">
+      <summary>Gets the <see cref="T:System.Data.Common.DbParameter" /> with the specified property value.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbParameterCollection.IndexOf">
+      <summary>Returns the index of the specified <see cref="T:System.Data.Common.DbParameter" /> object.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbParameterCollection.Item">
+      <summary>Gets and sets a <see cref="T:System.Data.Common.DbParameter" /> in the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbParameterCollection.RemoveAt">
+      <summary>Removes a specified <see cref="T:System.Data.Common.DbParameter" /> object from the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbParameterCollection.SetParameter">
+      <summary>Sets the specified parameter to the specified value.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbProviderFactories.GetFactory">
+      <summary>Returns an instance of a <see cref="T:System.Data.Common.DbProviderFactory" />.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.DbTransaction.Dispose">
+      <summary>Releases the unmanaged resources used by the <see cref="T:System.Data.Common.DbTransaction" /> and optionally releases the managed resources.</summary>
+    </member>
+    <member name="Overload:System.Data.Common.RowUpdatedEventArgs.CopyToRows">
+      <summary>Lets you access the rows processed during a batch update operation.</summary>
+    </member>
+    <member name="Overload:System.Data.ConstraintCollection.Add">
+      <summary>Adds a <see cref="T:System.Data.Constraint" /> object to the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.ConstraintCollection.IndexOf">
+      <summary>Gets the index of the specified <see cref="T:System.Data.Constraint" />.</summary>
+    </member>
+    <member name="Overload:System.Data.ConstraintCollection.Item">
+      <summary>Gets the specified <see cref="T:System.Data.Constraint" /> from the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.ConstraintCollection.Remove">
+      <summary>Removes a <see cref="T:System.Data.Constraint" /> from the <see cref="T:System.Data.ConstraintCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataColumnCollection.Add">
+      <summary>Creates and adds a <see cref="T:System.Data.DataColumn" /> object to the <see cref="T:System.Data.DataColumnCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataColumnCollection.CopyTo">
+      <summary>Copies the collection to an array, starting at the specified index.</summary>
+    </member>
+    <member name="Overload:System.Data.DataColumnCollection.IndexOf">
+      <summary>Searches for the specified <see cref="T:System.Data.DataColumn" /> and returns the zero-based index of the first occurrence within the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.DataColumnCollection.Item">
+      <summary>Gets the specified <see cref="T:System.Data.DataColumn" /> from the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.DataColumnCollection.Remove">
+      <summary>Removes a <see cref="T:System.Data.DataColumn" /> object from the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRelationCollection.Add">
+      <summary>Adds a <see cref="T:System.Data.DataRelation" /> to the <see cref="T:System.Data.DataRelationCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRelationCollection.CopyTo">
+      <summary>Copies the collection of <see cref="T:System.Data.DataRelation" /> objects.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRelationCollection.IndexOf">
+      <summary>Gets the index of the specified data relation.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRelationCollection.Item">
+      <summary>Gets the specified <see cref="T:System.Data.DataRelation" /> from the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRelationCollection.Remove">
+      <summary>Removes the specified relation from the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRowCollection.Add">
+      <summary>Adds a <see cref="T:System.Data.DataRow" /> to the <see cref="T:System.Data.DataRowCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRowCollection.Contains">
+      <summary>Gets a value that indicates whether the primary key columns of any row in the collection contain the specified value.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRowCollection.CopyTo">
+      <summary>Copies all the <see cref="T:System.Data.DataRow" /> objects from the collection into the given array, starting at the given destination array index.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRowCollection.Find">
+      <summary>Gets a specified <see cref="T:System.Data.DataRow" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRowView.CreateChildView">
+      <summary>Returns a <see cref="T:System.Data.DataView" /> for the child <see cref="T:System.Data.DataTable" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRowView.Equals">
+      <summary>Gets a value indicating whether the current <see cref="T:System.Data.DataRowView" /> is identical to the specified object.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRowView.Item">
+      <summary>Gets or sets a value in a specified column.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRowView.System.ComponentModel.ICustomTypeDescriptor.GetEvents">
+      <summary>For a description of this member, see <see cref="M:System.ComponentModel.ICustomTypeDescriptor.GetEvents">ICustomTypeDescriptor.GetEvents</see>.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRowView.System.ComponentModel.ICustomTypeDescriptor.GetProperties">
+      <summary>For a description of this member, see <see cref="M:System.ComponentModel.ICustomTypeDescriptor.GetProperties">ICustomTypeDescriptor.GetProperties</see>.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRow.GetChildRows">
+      <summary>Gets the child rows of a <see cref="T:System.Data.DataRow" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRow.GetColumnError">
+      <summary>Gets the error description for a column.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRow.GetParentRow">
+      <summary>Gets the parent row of a <see cref="T:System.Data.DataRow" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRow.GetParentRows">
+      <summary>Gets the parent rows of a <see cref="T:System.Data.DataRow" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRow.IsNull">
+      <summary>Gets a value that indicates whether the specified column contains a null value.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRow.Item">
+      <summary>Gets or sets data stored in a specified column.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRow.SetColumnError">
+      <summary>Sets the error description for a column.</summary>
+    </member>
+    <member name="Overload:System.Data.DataRow.SetParentRow">
+      <summary>Sets the parent row of a <see cref="T:System.Data.DataRow" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataSetSchemaImporterExtension.ImportSchemaType">
+      <summary>This member supports the .NET Framework infrastructure and is not intended to be used directly from your code.</summary>
+    </member>
+    <member name="Overload:System.Data.DataSet.CreateDataReader">
+      <summary>Returns a <see cref="T:System.Data.DataTableReader" /> with one result set per <see cref="T:System.Data.DataTable" />, in the same sequence as the tables appear in the <see cref="P:System.Data.DataSet.Tables" /> collection.</summary>
+    </member>
+    <member name="Overload:System.Data.DataSet.DetermineSchemaSerializationMode">
+      <summary>Determines the <see cref="P:System.Data.DataSet.SchemaSerializationMode" /> for a <see cref="T:System.Data.DataSet" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataSet.GetChanges">
+      <summary>Gets a copy of the <see cref="T:System.Data.DataSet" /> containing all changes made to it since it was last loaded, or since <see cref="M:System.Data.DataSet.AcceptChanges" /> was called.</summary>
+    </member>
+    <member name="Overload:System.Data.DataSet.HasChanges">
+      <summary>Gets a value indicating whether the <see cref="T:System.Data.DataSet" /> has changes, including new, deleted, or modified rows.</summary>
+    </member>
+    <member name="Overload:System.Data.DataSet.InferXmlSchema">
+      <summary>Applies XML schema to the <see cref="T:System.Data.DataSet" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataSet.Load">
+      <summary>Fills a <see cref="T:System.Data.DataSet" /> with values from a data source using the supplied <see cref="T:System.Data.IDataReader" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataSet.Merge">
+      <summary>Merges a specified <see cref="T:System.Data.DataSet" />, <see cref="T:System.Data.DataTable" />, or array of <see cref="T:System.Data.DataRow" /> objects into the current <b>DataSet</b> or <b>DataTable</b>.</summary>
+    </member>
+    <member name="Overload:System.Data.DataSet.ReadXml">
+      <summary>Reads XML schema and data into the <see cref="T:System.Data.DataSet" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataSet.ReadXmlSchema">
+      <summary>Reads an XML schema into the <see cref="T:System.Data.DataSet" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataSet.WriteXml">
+      <summary>Writes XML data, and optionally the schema, from the <see cref="T:System.Data.DataSet" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataSet.WriteXmlSchema">
+      <summary>Writes the <see cref="T:System.Data.DataSet" /> structure as an XML schema.</summary>
+    </member>
+    <member name="Overload:System.Data.DataTableCollection.Add">
+      <summary>Adds a <see cref="T:System.Data.DataTable" /> object to the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.DataTableCollection.Contains">
+      <summary>Gets a value indicating whether a <see cref="T:System.Data.DataTable" /> object with the specified name exists in the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.DataTableCollection.CopyTo">
+      <summary>Copies all of the elements of the current <see cref="T:System.Data.DataTableCollection" /> to a one-dimensional <see cref="T:System.Array" />, starting at the specified destination array index.</summary>
+    </member>
+    <member name="Overload:System.Data.DataTableCollection.IndexOf">
+      <summary>Gets the index in the collection of the specified <see cref="T:System.Data.DataTable" /> object.</summary>
+    </member>
+    <member name="Overload:System.Data.DataTableCollection.Item">
+      <summary>Gets the specified <see cref="T:System.Data.DataTable" /> object from the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.DataTableCollection.Remove">
+      <summary>Removes a specified <see cref="T:System.Data.DataTable" /> object from the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.DataTableReader.Item">
+      <summary>Gets the value of the specified column in its native format.</summary>
+    </member>
+    <member name="Overload:System.Data.DataTable.GetChanges">
+      <summary>Gets a copy of the <see cref="T:System.Data.DataTable" /> containing all changes made to it since it was last loaded, or since <see cref="M:System.Data.DataTable.AcceptChanges" /> was called.</summary>
+    </member>
+    <member name="Overload:System.Data.DataTable.Load">
+      <summary>Fills a <see cref="T:System.Data.DataTable" /> with values from a data source using the supplied <see cref="T:System.Data.IDataReader" />. If the <b>DataTable</b> already contains rows, the incoming data from the data source is merged with the existing rows.</summary>
+    </member>
+    <member name="Overload:System.Data.DataTable.LoadDataRow">
+      <summary>Finds and updates a specific row. If no matching row is found, a new row is created using the given values.</summary>
+    </member>
+    <member name="Overload:System.Data.DataTable.Merge">
+      <summary>Merge the specified <see cref="T:System.Data.DataTable" /> with the current <b>DataTable</b>.</summary>
+    </member>
+    <member name="Overload:System.Data.DataTable.ReadXml">
+      <summary>Reads XML schema and data into the <see cref="T:System.Data.DataTable" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataTable.ReadXmlSchema">
+      <summary>Reads an XML schema into the <see cref="T:System.Data.DataTable" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataTable.Select">
+      <summary>Gets an array of <see cref="T:System.Data.DataRow" /> objects.</summary>
+    </member>
+    <member name="Overload:System.Data.DataTable.WriteXml">
+      <summary>Writes the current contents of the <see cref="T:System.Data.DataTable" /> as XML.</summary>
+    </member>
+    <member name="Overload:System.Data.DataTable.WriteXmlSchema">
+      <summary>Writes the current data structure of the <see cref="T:System.Data.DataTable" /> as an XML schema.</summary>
+    </member>
+    <member name="Overload:System.Data.DataViewSettingCollection.CopyTo">
+      <summary>Copies the collection objects to a one-dimensional <see cref="T:System.Array" /> instance starting at the specified index.</summary>
+    </member>
+    <member name="Overload:System.Data.DataViewSettingCollection.Item">
+      <summary>Gets the specified <see cref="T:System.Data.DataTable" /> from the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.DataView.Dispose">
+      <summary>Disposes of the resources, other than memory, that are used by the <see cref="T:System.Data.DataView" /> object.</summary>
+    </member>
+    <member name="Overload:System.Data.DataView.Equals">
+      <summary>Determines whether the specified objects are considered equal.</summary>
+    </member>
+    <member name="Overload:System.Data.DataView.Find">
+      <summary>Finds a row in the <see cref="T:System.Data.DataView" /> by the specified sort key value.</summary>
+    </member>
+    <member name="Overload:System.Data.DataView.FindRows">
+      <summary>Returns an array of <see cref="T:System.Data.DataRowView" /> objects whose columns match the specified sort key value.</summary>
+    </member>
+    <member name="Overload:System.Data.DataView.ToTable">
+      <summary>Creates and returns a new <see cref="T:System.Data.DataTable" /> based on rows in an existing <see cref="T:System.Data.DataView" />.</summary>
+    </member>
+    <member name="Overload:System.Data.DataView.UpdateIndex">
+      <summary>Reserved for internal use only.</summary>
+    </member>
+    <member name="Overload:System.Data.DBConcurrencyException.CopyToRows">
+      <summary>Copies the <see cref="T:System.Data.DataRow" /> objects whose update failure generated this exception to the specified array.</summary>
+    </member>
+    <member name="Overload:System.Data.ForeignKeyConstraint.Equals">
+      <summary>Gets a value indicating whether the current <see cref="T:System.Data.ForeignKeyConstraint" /> is identical to the specified object.</summary>
+    </member>
+    <member name="Overload:System.Data.IDataRecord.Item">
+      <summary>Gets the specified column.</summary>
+    </member>
+    <member name="Overload:System.Data.IDbCommand.ExecuteReader">
+      <summary>Executes the <see cref="P:System.Data.IDbCommand.CommandText" /> against the <see cref="P:System.Data.IDbCommand.Connection" /> and builds an <see cref="T:System.Data.IDataReader" />.</summary>
+    </member>
+    <member name="Overload:System.Data.IDbConnection.BeginTransaction">
+      <summary>Begins a database transaction.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcCommandBuilder.GetDeleteCommand">
+      <summary>Gets the automatically generated <see cref="T:System.Data.Odbc.OdbcCommand" /> object required to perform deletions at the data source.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcCommandBuilder.GetInsertCommand">
+      <summary>Gets the automatically generated <see cref="T:System.Data.Odbc.OdbcCommand" /> object required to perform insertions at the data source.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcCommandBuilder.GetUpdateCommand">
+      <summary>Gets the automatically generated <see cref="T:System.Data.Odbc.OdbcCommand" /> object required to perform updates at the data source.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcCommandBuilder.QuoteIdentifier">
+      <summary>Given an unquoted identifier in the correct catalog case, returns the correct quoted form of that identifier. This includes correctly escaping any embedded quotes in the identifier.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcCommandBuilder.UnquoteIdentifier">
+      <summary>Given a quoted identifier, returns the correct unquoted form of that identifier, including correctly unescaping any embedded quotes in the identifier.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcCommand.ExecuteReader">
+      <summary>Sends the <see cref="P:System.Data.Odbc.OdbcCommand.CommandText" /> to the <see cref="P:System.Data.Odbc.OdbcCommand.Connection" /> and builds an <see cref="T:System.Data.Odbc.OdbcDataReader" />.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcConnection.BeginTransaction">
+      <summary>Starts a transaction at the data source.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcConnection.GetSchema">
+      <summary>Returns schema information for the data source of this <see cref="T:System.Data.Odbc.OdbcConnection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcDataReader.Item">
+      <summary>Gets the value of a column in its native format.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcErrorCollection.CopyTo">
+      <summary>Copies the elements of the <see cref="T:System.Data.Odbc.OdbcErrorCollection" /> into an array, starting at the specified index within the array.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcParameterCollection.Add">
+      <summary>Adds an <see cref="T:System.Data.Odbc.OdbcParameter" /> to the <see cref="T:System.Data.Odbc.OdbcParameterCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcParameterCollection.AddRange">
+      <summary>Adds elements to the end of the <see cref="T:System.Data.Odbc.OdbcParameterCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcParameterCollection.Contains">
+      <summary>Gets a value indicating whether an <see cref="T:System.Data.Odbc.OdbcParameter" /> object exists in the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcParameterCollection.CopyTo">
+      <summary>Copies all the elements of the current <see cref="T:System.Data.Odbc.OdbcParameterCollection" /> to the specified object.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcParameterCollection.IndexOf">
+      <summary>Gets the location of the specified <see cref="T:System.Data.Odbc.OdbcParameter" /> within the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcParameterCollection.Insert">
+      <summary>Inserts a <see cref="T:System.Data.Odbc.OdbcParameter" /> object into the <see cref="T:System.Data.Odbc.OdbcParameterCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcParameterCollection.Item">
+      <summary>Gets or sets the <see cref="T:System.Data.Odbc.OdbcParameter" /> with a specified attribute.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcParameterCollection.Remove">
+      <summary>Removes the <see cref="T:System.Data.Odbc.OdbcParameter" /> object from the <see cref="T:System.Data.Odbc.OdbcParameterCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.Odbc.OdbcParameterCollection.RemoveAt">
+      <summary>Removes the <see cref="T:System.Data.Odbc.OdbcParameter" /> object from the <see cref="T:System.Data.Odbc.OdbcParameterCollection" /> at the specified index.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbCommandBuilder.GetDeleteCommand">
+      <summary>Gets the automatically generated <see cref="T:System.Data.OleDb.OleDbCommand" /> object required to perform deletions at the data source.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbCommandBuilder.GetInsertCommand">
+      <summary>Gets the automatically generated <see cref="T:System.Data.OleDb.OleDbCommand" /> object required to perform insertions at the data source.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbCommandBuilder.GetUpdateCommand">
+      <summary>Gets the automatically generated <see cref="T:System.Data.OleDb.OleDbCommand" /> object required to perform updates at the data source.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbCommandBuilder.QuoteIdentifier">
+      <summary>Given an unquoted identifier in the correct catalog case, returns the correct quoted form of that identifier. This includes correctly escaping any embedded quotes in the identifier.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbCommandBuilder.UnquoteIdentifier">
+      <summary>Given a quoted identifier, returns the correct unquoted form of that identifier. This includes correctly un-escaping any embedded quotes in the identifier.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbCommand.ExecuteReader">
+      <summary>Sends the <see cref="P:System.Data.OleDb.OleDbCommand.CommandText" /> to the <see cref="P:System.Data.OleDb.OleDbCommand.Connection" /> and builds an <see cref="T:System.Data.OleDb.OleDbDataReader" />.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbCommand.System.Data.IDbCommand.ExecuteReader">
+      <summary>For a description of this member, see <see cref="Overload:System.Data.IDbCommand.ExecuteReader">IDbCommand.ExecuteReader</see>.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbConnection.BeginTransaction">
+      <summary>Starts a database transaction.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbConnection.GetSchema">
+      <summary>Returns schema information for the data source of this <see cref="T:System.Data.OleDb.OleDbConnection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbDataAdapter.Fill">
+      <summary>Adds or refreshes rows in the <see cref="T:System.Data.DataSet" /> to match those in an ADO <b>Recordset</b> or <b>Record</b> object.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbDataReader.Item">
+      <summary>Gets the value of a column in its native format.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbErrorCollection.CopyTo">
+      <summary>Copies the elements of the <see cref="T:System.Data.OleDb.OleDbErrorCollection" /> into an <see cref="T:System.Array" />.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbParameterCollection.Add">
+      <summary>Adds an <see cref="T:System.Data.OleDb.OleDbParameter" /> to the <see cref="T:System.Data.OleDb.OleDbParameterCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbParameterCollection.AddRange">
+      <summary>Adds elements to the end of the <see cref="T:System.Data.OleDb.OleDbParameterCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbParameterCollection.Contains">
+      <summary>Determines whether the specified object is in this <see cref="T:System.Data.OleDb.OleDbParameterCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbParameterCollection.CopyTo">
+      <summary>Copies all the elements of the current <see cref="T:System.Data.OleDb.OleDbParameterCollection" /> to the specified object.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbParameterCollection.IndexOf">
+      <summary>Gets the location of the specified <see cref="T:System.Data.OleDb.OleDbParameterCollection" /> within the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbParameterCollection.Insert">
+      <summary>Inserts a <see cref="T:System.Data.OleDb.OleDbParameter" /> object into the <see cref="T:System.Data.OleDb.OleDbParameterCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbParameterCollection.Item">
+      <summary>Gets or sets the <see cref="T:System.Data.OleDb.OleDbParameter" /> with a specified attribute.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbParameterCollection.Remove">
+      <summary>Removes the <see cref="T:System.Data.OleDb.OleDbParameter" /> object from the <see cref="T:System.Data.OleDb.OleDbParameterCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbParameterCollection.RemoveAt">
+      <summary>Removes the <see cref="T:System.Data.OleDb.OleDbParameter" /> object from the <see cref="T:System.Data.OleDb.OleDbParameterCollection" /> at the specified index.</summary>
+    </member>
+    <member name="Overload:System.Data.OleDb.OleDbTransaction.Begin">
+      <summary>Initiates a nested database transaction.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlBulkCopyColumnMappingCollection.Add">
+      <summary>Adds a new <see cref="T:System.Data.SqlClient.SqlBulkCopyColumnMapping" /> to the <see cref="T:System.Data.SqlClient.SqlBulkCopyColumnMappingCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlBulkCopy.WriteToServer">
+      <summary>Copies all rows from a data source to a destination table specified by the <see cref="P:System.Data.SqlClient.SqlBulkCopy.DestinationTableName" /> property of the <see cref="T:System.Data.SqlClient.SqlBulkCopy" /> object.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlCommandBuilder.GetDeleteCommand">
+      <summary>Gets the automatically generated <see cref="T:System.Data.SqlClient.SqlCommand" /> object required to perform deletions on the database.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlCommandBuilder.GetUpdateCommand">
+      <summary>Gets the automatically generated <see cref="T:System.Data.SqlClient.SqlCommand" /> object required to perform updates on the database.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlCommand.BeginExecuteNonQuery">
+      <summary>Initiates the asynchronous execution of the Transact-SQL statement or stored procedure that is described by this <see cref="T:System.Data.SqlClient.SqlCommand" />.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlCommand.BeginExecuteReader">
+      <summary>Initiates the asynchronous execution of the Transact-SQL statement or stored procedure that is described by this <see cref="T:System.Data.SqlClient.SqlCommand" />, and retrieves one or more result sets from the server.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlCommand.BeginExecuteXmlReader">
+      <summary>Initiates the asynchronous execution of the Transact-SQL statement or stored procedure that is described by this <see cref="T:System.Data.SqlClient.SqlCommand" /> and returns results as an <see cref="T:System.Xml.XmlReader" /> object.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlCommand.ExecuteReader">
+      <summary>Sends the <see cref="P:System.Data.SqlClient.SqlCommand.CommandText" /> to the <see cref="P:System.Data.SqlClient.SqlCommand.Connection" /> and builds a <see cref="T:System.Data.SqlClient.SqlDataReader" />.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlConnection.BeginTransaction">
+      <summary>Starts a database transaction.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlConnection.GetSchema">
+      <summary>Returns schema information for the data source of this <see cref="T:System.Data.SqlClient.SqlConnection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlDataReader.Item">
+      <summary>Gets the value of a column in its native format.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlDependency.Start">
+      <summary>Starts the listener for receiving dependency change notifications.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlDependency.Stop">
+      <summary>Stops a listener for a connection specified in a previous <see cref="Overload:System.Data.SqlClient.SqlDependency.Start" /> call.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlErrorCollection.CopyTo">
+      <summary>Copies the elements of the <see cref="T:System.Data.SqlClient.SqlErrorCollection" /> collection.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlParameterCollection.Add">
+      <summary>Adds a <see cref="T:System.Data.SqlClient.SqlParameter" /> to the <see cref="T:System.Data.SqlClient.SqlParameterCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlParameterCollection.AddRange">
+      <summary>Adds elements to the end of the <see cref="T:System.Data.SqlClient.SqlParameterCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlParameterCollection.Contains">
+      <summary>Determines whether the specified object is in this <see cref="T:System.Data.SqlClient.SqlParameterCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlParameterCollection.CopyTo">
+      <summary>Copies all the elements of the current <see cref="T:System.Data.SqlClient.SqlParameterCollection" /> to the specified object.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlParameterCollection.IndexOf">
+      <summary>Gets the location of the specified <see cref="T:System.Data.SqlClient.SqlParameter" /> within the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlParameterCollection.Insert">
+      <summary>Inserts a <see cref="T:System.Data.SqlClient.SqlParameter" /> object into the <see cref="T:System.Data.SqlClient.SqlParameterCollection" />.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlParameterCollection.Item">
+      <summary>Gets the <see cref="T:System.Data.SqlClient.SqlParameter" /> with a specified attribute.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlParameterCollection.Remove">
+      <summary>Removes the specified <see cref="T:System.Data.SqlClient.SqlParameter" /> from the collection.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlParameterCollection.RemoveAt">
+      <summary>Removes the <see cref="T:System.Data.SqlClient.SqlParameter" /> object from the <see cref="T:System.Data.SqlClient.SqlParameterCollection" /> at the specified index.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlClient.SqlTransaction.Rollback">
+      <summary>Rolls back a transaction from a pending state.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlBinary.CompareTo">
+      <summary>Compares this instance to a specified object and returns an indication of their relative values.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlBinary.Equals">
+      <summary>Compares two <see cref="T:System.Data.SqlTypes.SqlBinary" /> structures to determine whether they are equal.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlBinary.op_Explicit">
+      <summary>Converts to a <see cref="T:System.Data.SqlTypes.SqlBinary" /> structure.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlBoolean.CompareTo">
+      <summary>Compares this instance to a specified object and returns an indication of their relative values.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlBoolean.Equals">
+      <summary>Compares two <see cref="T:System.Data.SqlTypes.SqlBoolean" /> structures to determine whether they are equal.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlBoolean.op_Explicit">
+      <summary>Converts a <see cref="T:System.Data.SqlTypes.SqlBoolean" /> to a specified structure.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlBytes.op_Explicit">
+      <summary>Converts to a <see cref="T:System.Data.SqlTypes.SqlBytes" /> structure.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlByte.CompareTo">
+      <summary>Compares this instance to the supplied object and returns an indication of their relative values.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlByte.Equals">
+      <summary>Performs a logical comparison to determine whether a <see cref="T:System.Data.SqlTypes.SqlByte" /> structure's value is equal to another object.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlByte.op_Explicit">
+      <summary>Converts a parameter to a <see cref="T:System.Data.SqlTypes.SqlByte" />.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlChars.op_Explicit">
+      <summary>Converts to a T:System.Data.SqlTypes.SqlChars structure.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlDateTime.CompareTo">
+      <summary>Compares this <see cref="T:System.Data.SqlTypes.SqlDateTime" /> structure to the supplied parameter and returns an indication of their relative values.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlDateTime.Equals">
+      <summary>Performs a logical comparison of two <see cref="T:System.Data.SqlTypes.SqlDateTime" /> structures to determine whether they are equal.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlDateTime.op_Explicit">
+      <summary>Converts a parameter to and from a <see cref="T:System.Data.SqlTypes.SqlDateTime" /> structure.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlDecimal.CompareTo">
+      <summary>Compares this instance to the supplied object and returns an indication of their relative values.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlDecimal.Equals">
+      <summary>Returns a value that indicates whether an instance of <see cref="T:System.Data.SqlTypes.SqlDecimal" /> and the supplied object parameter represent the same value.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlDecimal.op_Explicit">
+      <summary>Converts the supplied structure to <see cref="T:System.Data.SqlTypes.SqlDecimal" />.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlDecimal.op_Implicit">
+      <summary>Converts the supplied structure to <see cref="T:System.Data.SqlTypes.SqlDecimal" />.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlDouble.CompareTo">
+      <summary>Compares this <see cref="T:System.Data.SqlTypes.SqlDouble" /> instance to the supplied object and returns an indication of their relative values.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlDouble.Equals">
+      <summary>Returns a value that indicates whether an instance of <see cref="T:System.Data.SqlTypes.SqlDouble" /> and the supplied object parameter represent the same value.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlDouble.op_Explicit">
+      <summary>Converts to and from a <see cref="T:System.Data.SqlTypes.SqlDouble" />.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlDouble.op_Implicit">
+      <summary>Converts to a T:System.Data.SqlTypes.SqlDouble structure.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlGuid.CompareTo">
+      <summary>Compares this <see cref="T:System.Data.SqlTypes.SqlGuid" /> structure to the supplied object and returns an indication of their relative values.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlGuid.Equals">
+      <summary>Performs a logical comparison of two structures to determine whether they are equal.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlGuid.op_Explicit">
+      <summary>Converts to and from a <see cref="T:System.Data.SqlTypes.SqlGuid" /> instance.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlInt16.CompareTo">
+      <summary>Compares this instance to the supplied object and returns an indication of their relative values.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlInt16.Equals">
+      <summary>Performs a logical comparison of two structures to determine whether they are equal.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlInt16.op_Explicit">
+      <summary>Converts to and from a <see cref="T:System.Data.SqlTypes.SqlInt16" />.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlInt16.op_Implicit">
+      <summary>Converts to a <see cref="T:System.Data.SqlTypes.SqlInt16" /> structure.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlInt32.CompareTo">
+      <summary>Compares this instance to the supplied object and returns an indication of their relative values.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlInt32.Equals">
+      <summary>Performs a logical comparison of two structures to determine whether they are equal.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlInt32.op_Explicit">
+      <summary>Converts to and from a <see cref="T:System.Data.SqlTypes.SqlInt32" />.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlInt32.op_Implicit">
+      <summary>Converts to a <see cref="T:System.Data.SqlTypes.SqlInt32" /> structure.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlInt64.CompareTo">
+      <summary>Compares this instance to the supplied object and returns an indication of their relative values.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlInt64.Equals">
+      <summary>Performs a logical comparison of two structures to determine whether they are equal.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlInt64.op_Explicit">
+      <summary>Converts to and from a <see cref="T:System.Data.SqlTypes.SqlInt64" />.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlInt64.op_Implicit">
+      <summary>Converts to a <see cref="T:System.Data.SqlTypes.SqlInt64" /> structure.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlMoney.CompareTo">
+      <summary>Compares this instance to the supplied object and returns an indication of their relative values.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlMoney.Equals">
+      <summary>Performs a logical comparison of two structures to determine whether they are equal.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlMoney.op_Explicit">
+      <summary>Converts to and from a <see cref="T:System.Data.SqlTypes.SqlMoney" />.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlMoney.op_Implicit">
+      <summary>Converts to a <see cref="T:System.Data.SqlTypes.SqlMoney" /> structure.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlSingle.CompareTo">
+      <summary>Compares this instance to the supplied object and returns an indication of their relative values.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlSingle.Equals">
+      <summary>Performs a logical comparison of two structures to determine whether they are equal.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlSingle.op_Explicit">
+      <summary>Converts to and from a <see cref="T:System.Data.SqlTypes.SqlSingle" />.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlSingle.op_Implicit">
+      <summary>Converts to a <see cref="T:System.Data.SqlTypes.SqlSingle" /> structure.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlString.CompareTo">
+      <summary>Compares this instance to a specified object and returns an indication of their relative values.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlString.Equals">
+      <summary>Performs a logical comparison of two structures to determine whether they are equal.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlString.op_Explicit">
+      <summary>Converts to and from a <see cref="T:System.Data.SqlTypes.SqlString" />.</summary>
+    </member>
+    <member name="Overload:System.Data.SqlTypes.SqlTypesSchemaImporterExtensionHelper.ImportSchemaType">
+      <summary>The <see cref="T:System.Data.SqlTypes.SqlTypesSchemaImporterExtensionHelper" /> class is not intended for use as a stand-alone component, but as a class from which other classes derive standard functionality.</summary>
+    </member>
+    <member name="Overload:System.Data.UniqueConstraint.Equals">
+      <summary>Compares this constraint to a second to determine if both are identical.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlDataDocument.CreateElement">
+      <summary>Creates an <see cref="T:System.Xml.XmlElement" />.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlDataDocument.CreateNavigator">
+      <summary>Creates a new <see cref="T:System.Xml.XPath.XPathNavigator" /> object for navigating this document. The navigator is positioned on the Document node.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlDataDocument.GetElementsByTagName">
+      <summary>Returns an <see cref="T:System.Xml.XmlNodeList" /> containing a list of all descendant elements that match the specified name.</summary>
+    </member>
+    <member name="Overload:System.Xml.XmlDataDocument.Load">
+      <summary>Loads the <b>XmlDataDocument</b> using the specified data source and synchronizes the <see cref="T:System.Data.DataSet" /> with the loaded data.</summary>
+    </member>
+  </members>
+</doc>

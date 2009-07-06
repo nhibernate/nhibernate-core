@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<doc>
+  <assembly>
+    <name>System.Configuration.Install</name>
+  </assembly>
+  <members>
+    <member name="Overload:System.Configuration.Install.InstallerCollection.AddRange">
+      <summary>Adds the specified installers to this collection.</summary>
+    </member>
+  </members>
+</doc>

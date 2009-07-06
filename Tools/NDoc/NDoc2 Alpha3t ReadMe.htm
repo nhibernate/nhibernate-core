@@ -1,0 +1,529 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+<title>Whats new in NDoc2 Alpha 3</title>
+<style type="text/css">
+        body {font-family:Verdana;font-size:85%;margin-left:40px}
+        th {border:1px solid black;background-color:silver;font-weight:bold;font-family:Verdana;font-size:85%}
+        td {border:1px solid black;font-family:Verdana;font-size:85%}
+        h1, h2, h3, h4, h5 {font-family:Verdana;font-size:85%}
+        h1 {font-size:200%;margin-left:-40px;}
+        h2 {font-size:150%;border-top:1px solid black;margin-left:-20px;}
+        h3 {font-size:125%}
+        h4 {font-size:100%}
+        .changed {background-color: #ffffd0;}
+        .red {color:#ff0000}
+    </style>
+</head>
+
+<body>
+
+<h1>What&#39;s New in NDoc2 Alpha 3t?</h1>
+<!--	<div class="changed">
+        <h3 class="red">Important</h3>
+	<p>Do <b>NOT</b> use project files created from previous NDoc2 alpha versions; 
+	create new project files from scratch..</p>
+    </div>-->
+<div>
+	<h2><a id="knownissues">Known Issues</h2>
+	<h3>VS2005 Solution/Project Import</h3>
+	<p>This build does not support import from VS2005 solutions or Projects - you 
+	will need to add assemblies and XML docs manually</p>
+	<h3>SDK Links</h3>
+	<p>MS have created an unfortunate problem with the new v2.0 sdk docs. There 
+	are currently now THREE separate distributions of the docs (Framework SDK, VS 
+	Express and MSDN library) each with a different help2 namespace name! </p>
+	<p>This has left us in a no-win situation, especially for CHM&#39;s. There is no 
+	way that NDoc can know which set of docs will be installed on an end-user machine, 
+	and no way that the compiled CHM can determine this info a &#39;run-time&#39; (although 
+	theoretically possible, security restrictions implemented in XP SP2 prohibit 
+	it!).</p>
+	<p>NDoc currently assumes the following,<br />
+	CHM - The installed SDK docs are those supplied with the MSDN library rather 
+	than the .Net 2.0 Framework SDK.<br />
+	Help2 - The NDoc-generated docs will be installed (directly, or within another 
+	collection) into the VS.NET help collection.<br />
+	</p>
+	<p>If the sdk links are broken in a chm, there is now a way that the correct 
+	Help2 namespace can be specified. Look in the chm&#39;s index and you will find 
+	a topic called &#39;SDK Link Manager&#39;. open this topic and correct the namespace 
+	in the input field provided, and then navigate to another page. The corrected 
+	namespace will be persisted provided that the chm is not moved to another directory 
+	in the file-system.</p>
+	<div class="changed">
+	<h4>SDK links from CHM.</h4>
+	<p><span class="Red">In order to guarantee that sdk links are correct, a copy 
+	of the .Net framework docs must be present on the build machine.</span> If there 
+	are no &#39;reference&#39; docs available, then NDoc will fall back to <i>guessing</i> 
+	the url. This generally works without problem, but there are some difficulties 
+	with overload members as the MS page naming scheme is somewhat non-deterministic...
+	</p>
+	<p>Note: It does not matter which source these reference docs came from, either 
+	the MSDN or the .Net framework SDK docs will work fine.</p>
+	</div>
+</div>
+<div>
+	<h2>Documentation Inheritance</h2>
+	<p>This release incorporates several enhancements to help minimize the effort 
+	required to document complex APIs.</p>
+	<h3>&lt;inheritdoc/&gt;</h3>
+	<p>By use of a new tag &lt;inheritdoc/&gt;, documentation can be inherited from base 
+	members, interfaces or a DescriptionAttribute.</p>
+	<p>The syntax of this new tag is as follows,</p>
+	<p><code>&lt;inheritdoc [cref=&quot;link-ref&quot;]/&gt;</code></p>
+	<dl>
+		<dt>cref (optional)</dt>
+		<dd>This attribute overrides the standard search path to allow documentation 
+		inheritance from the user-specified location. This attribute is only valid 
+		on members within a type.</dd>
+	</dl>
+	<p>If an explicit cref is not specified, the search method is as follows,</p>
+	<ol>
+		<li>If the member is inherited or is an override, the Base Member.</li>
+		<li>Any interface member that the member implicitly implements.</li>
+		<li><span class="changed">If the member is part of an overload set, the 
+		&lt;overloads&gt; tag. <span class="red">(not currently implemented)</span></span></li>
+		<li>Any DescriptionAttribute applied to the member.</li>
+	</ol>
+	<p>Searching is recursive.</p>
+	<p>Interfaces will be searched in the order they are declared.</p>
+	<p>If possible, and appropriate, the &lt;typeparam&gt;, &lt;param&gt;, &lt;value&gt; and &lt;returns&gt; 
+	tag contents will be inherited in addition to the &lt;summary&gt;.</p>
+	<p>The following table details which tags can be inherited for any given member 
+	type,</p>
+	<table border="0" width="100%" cellspacing="0" style="border: 1px solid black">
+		<tr>
+			<th>&nbsp;</th>
+			<th>summary</th>
+			<th>typeparam</th>
+			<th>param</th>
+			<th>value</th>
+			<th>returns</th>
+		</tr>
+		<tr>
+			<td>Constructor</td>
+			<td align="center"><font face="Wingdings">ü</font></td>
+			<td align="center">&nbsp;</td>
+			<td align="center">&nbsp;</td>
+			<td align="center">&nbsp;</td>
+			<td align="center">&nbsp;</td>
+		</tr>
+		<tr>
+			<td>Field</td>
+			<td align="center"><font face="Wingdings">ü</font></td>
+			<td align="center">&nbsp;</td>
+			<td align="center">&nbsp;</td>
+			<td align="center">&nbsp;</td>
+			<td align="center">&nbsp;</td>
+		</tr>
+		<tr>
+			<td>Property</td>
+			<td align="center"><font face="Wingdings">ü</font></td>
+			<td align="center"><font face="Wingdings">ü</font></td>
+			<td align="center"><font face="Wingdings">ü</font></td>
+			<td align="center"><font face="Wingdings">ü</font></td>
+			<td align="center">&nbsp;</td>
+		</tr>
+		<tr>
+			<td>Method</td>
+			<td align="center"><font face="Wingdings">ü</font></td>
+			<td align="center"><font face="Wingdings">ü</font></td>
+			<td align="center"><font face="Wingdings">ü</font></td>
+			<td align="center">&nbsp;</td>
+			<td align="center"><font face="Wingdings">ü</font></td>
+		</tr>
+		<tr>
+			<td>Event</td>
+			<td align="center"><font face="Wingdings">ü</font></td>
+			<td align="center">&nbsp;</td>
+			<td align="center">&nbsp;</td>
+			<td align="center">&nbsp;</td>
+			<td align="center">&nbsp;</td>
+		</tr>
+	</table>
+	<p></p>
+	<div style="margin-left: 12pt; padding: 6pt; background-color: #f8f8f8">
+		<b>Why an explicit tag rather than having a single setting to enable inheritance?</b><p>
+		An tag has major advantages over a single &#39;global&#39; setting,</p>
+		<ul>
+			<li>The tag prevents the compiler producing warnings that documentation 
+			is missing.</li>
+			<li>The tag makes it clear that the user explicitly wishes to inherit 
+			documentation, rather than they have accidentally omitted to document 
+			a member.</li>
+			<li>The tag allows more control when required.</li>
+		</ul>
+	</div>
+	<h3></a><a id="overloads">Overloads</h3>
+	<p>Overloads summaries will be <b>automatically</b> inherited if none is supplied 
+	by the user.</p>
+	<p>The &lt;overloads&gt; tag may specify an &lt;inheritdoc&gt; tag with a cref attribute.</p>
+	<p>The search path is as follows,</p>
+	<ol>
+		<li>An &lt;overloads&gt; tag on the base class.</li>
+		<li>An &lt;overloads&gt; tag on any implemented interfaces.</li>
+		<li>The first summary found in the overloads list.</li>
+	</ol>
+	<h3>Explicit Interface Implementations</h3>
+	<p>Explicit interface implementations will <b>automatically</b> inherit documentation 
+	from the interface member they implement if no documentation is supplied by 
+	the user.</p>
+	<div style="margin-left: 12pt; padding: 0pt 6pt; background-color: #f8f8f8">
+		<p style="padding: 0pt">We do this automatically for 2 reasons, </p>
+		<ol>
+			<li>These members are, by definition, private and so the compiler will 
+			not warn if the user does not supply documentation</li>
+			<li>There is no possible ambiguity; the member <b>must</b> be implementing 
+			the exact semantics described in the interface documentation.</li>
+		</ol>
+	</div>
+	<h3>AutoDocumentConstructors</h3>
+	<p>Constructors cannot be inherited, so documentation inheritance is not possible. 
+	However, constructors without any summary comments can be documented with &#39;boiler-plate&#39; 
+	text.</p>
+	<div style="margin-left: 12pt; padding: 0pt 6pt; background-color: #f8f8f8">
+		<h5 style="padding: 0pt;">Static Constructor</h5>
+		<p>Initializes the static fields of the <span style="color: blue;"><u>ClassName</u></span> 
+		class.</p>
+		<h5 style="padding: 0pt;">Instance Constructor</h5>
+		<p>Initializes a new instance of the <span style="color: blue;"><u>ClassName</u></span> 
+		class.</p>
+	</div>
+</div>
+<div>
+	<h2>Additional Framework Documentation</h2>
+	<p>This release of NDoc is supplied with additional xml docs for all framework 
+	assemblies. They augment the standard xml docs supplied with the framework by 
+	providing &lt;overloads&gt; summary descriptions for all the overloaded members in 
+	the framework assemblies. This improves the quality of the generated documentation, 
+	especially in &#39;members&#39; list topics. </p>
+	<p>These docs are automatically imported as required, and require no additional 
+	setup by the user.</p>
+</div>
+<div>
+	<h2>Exclude</h2>
+	<p>The &lt;exclude/&gt; tag directs NDoc2 to exclude the item, <b>and any children</b>, 
+	from the documentation. It can be applied to any documentable item (namespace, 
+	type or member).</p>
+	<p>The exclude is now correctly applied if a member is inherited. If an excluded 
+	member is overridden in a derived type the exclude tag must be re-applied. However, 
+	if the overriding member specifies &lt;inheritdoc/&gt;, then any underlying exclude 
+	is also applied.</p>
+	<p>Explicit interface implementations automatically inherit any exclude applied 
+	to the interface members.</p>
+</div>
+<div>
+	<h2>Incremental Builds</h2>
+	<p>NDoc can now perform incremental builds.</p>
+	<p>Once a full build has been completed with <b>CleanIntermediates</b> set to 
+	false (the default), the new settings flag <b>IncrementalBuild</b> can be set 
+	to true. </p>
+	<p>NDoc will perform a normal reflection/merge step, but will only rebuild those 
+	pages that have changed. This should help to speed things up for users with 
+	large projects... </p>
+	<ul>
+		<li>Changes to &#39;Global&#39; settings such as Title will force the incremental 
+		build <b>OFF</b>.</li>
+		<li>Comparison between builds is performed at the type-level. Any change 
+		to a type or its members will result in the rebuilding of all topics within 
+		the type.</li>
+		<li>Assembly Version (and Assembly File Version) are not considered in comparisons. 
+		If the version has changed, only the re-generated topics will reflect the 
+		change.</li>
+		<li>Topics for types/members which no longer exist in the assembly will 
+		be removed from the generated documentation.</li>
+	</ul>
+</div>
+<div>
+	<h2>MSDN style documenters</h2>
+	<p>The HtmlHelp1(CHM) and Web output has been split into separate documenters. 
+	This will ease future enhancements to the Web output to make it more standards 
+	compliant (and hence usable with FireFox!)</p>
+	<p><b>Note:</b> I have not yet finalized the naming of the documenters - if 
+	you have comments/suggestions, please let me know...</p>
+</div>
+<div>
+	<h2>Performance</h2>
+	<p>NDoc scaled very badly with page generation throughput dropping significantly 
+	on large projects. The internal structure of the documenters has been redesigned, 
+	and performance should now be far more linear. In addition, the absolute throughput 
+	should be considerably better, partly because of the improvements in .net 2.0 
+	xslt processing and also because the NDoc processing path and algorithms have 
+	been significantly optimized.</p>
+	<p>This release uses much less memory resources than previous releases…</p>
+</div>
+<div>
+	<h2>QA</h2>
+	<h3>QA Log</h3>
+	<p>A QA log is produced on each run of NDoc. This logs any QA problems detected 
+	within the build. This is experimental; I will be adding additional tests later, 
+	and standardizing the message format.</p>
+	<h4>What is checked?</h4>
+	<h5>Malformed tags</h5>
+	<ul>
+		<li>Completely broken comments (flagged by compiler)</li>
+		<li>tags without required attributes</li>
+		<li>tags with no contents</li>
+		<li>duplicate &lt;param&gt; or &lt;typeparam&gt; tags </li>
+	</ul>
+	<h5>Missing Documentation</h5>
+	<ul>
+		<li>Ensures all recommended tags exist for type or member. </li>
+	</ul>
+</div>
+<div>
+	<h2>AutoText</h2>
+	<h3>Additional Auto-text</h3>
+	<p>A group of new settings in the &quot;AutoText&quot; category control the addition of 
+	the following &#39;boiler-plate&#39; text fragments to the summary of applicable types/members.</p>
+	<ul>
+		<li>This class cannot be inherited. </li>
+		<li>This class is abstract and so cannot be instantiated. </li>
+		<li>This is a static class and so cannot be inherited or instantiated.
+		</li>
+		<li>This field is read-only and a constant. </li>
+		<li>This field is read-only.</li>
+	</ul>
+	<h3>HighlightInheritedAndAutoText</h3>
+	<p>This is a new helper setting. When set to True, any inherited or auto text 
+	on a page will show a color-coded highlight (AutoText:green, Inherited:yellow). 
+	Additionally, the source of inherited text will be show above the text. </p>
+</div>
+<div>
+	<h2>New ShowMissing* Settings</h2>
+	<h3>ShowMissingTypeParamsOnTypes</h3>
+	<p>When <b>true</b>, NDoc will show where &lt;typeparam&gt; tags are missing on Types.</p>
+	<h3>ShowMissingTypeParamsOnMembers</h3>
+	<p>When <b>true</b>, NDoc will show where &lt;typeparam&gt; tags are missing on Members.</p>
+</div>
+<div>
+	<h2>Visibility</h2>
+	<p>The <b>DocumentInternalProtectedAsInternal</b> setting has been removed because 
+	it was superfluous and if it was set incorrectly could produce misleading documentation.
+	</p>
+	<p>NDoc2 will now automatically infer this setting if <b>DocumentProtected</b> 
+	is true and <b>DocumentInternal</b> is false.</p>
+</div>
+<div>
+	<h2>TOC management</h2>
+	<h3>Namespace nesting</h3>
+	A new setting <b>NamespaceTocStyle</b> has been added to allow namespaces to 
+	be nested within the table of contents
+	<h3>Inner class nesting</h3>
+	A new setting <b>NestedTypeTocStyle</b> has been added to allow inner types 
+	to be nested within the table of contents. The types will be placed below the 
+	containing type&#39;s members.
+	<h3>Short-Filenames</h3>
+	Some users have had problems with NDoc abending due to generated filenames exceeding 
+	the windows maximum path length. A new setting <b>UseAbbreviatedFileNames</b> 
+	has been introduced. When this is set to true NDoc with abbreviate the generated 
+	filenames by substituting the namespace section of the filename with a short 
+	and (hopefully!) unique hash value.
+	<p>Additionally, NDoc will apply an &quot;emergency&quot; truncation of filenames if they 
+	would exceed the maximum path length. However this truncation will make the 
+	generated filenames very difficult to distinguish or link to from other documentation.
+	</p>
+</div>
+<div>
+	<h2>Custom Attributes</h2>
+	The display of Custom Attributes in syntax sections is now significantly improved.
+	<ul>
+		<li>Custom Attributes are now show on the style that they coded.</li>
+		<li>PInvoke attributes and Pseudo-attributes are now documented.</li>
+		<li>Enumerated members values are decoded to their text equivalents.</li>
+		<li>There are links from the attributes to their definitions </li>
+	</ul>
+</div>
+<div>
+	<h2>Assembly Loading</h2>
+	<p>The assembly loading mechanism has been re-written.</p>
+	<ul>
+		<li>Assemblies are always &#39;shadow-copied&#39; - the original assembly is never 
+		locked.</li>
+		<li>Multi-file assemblies are now correctly loaded regardless of assembly 
+		manifest module location.</li>
+		<li>Resource-only modules of multi-file assemblies are not loaded unless 
+		absolutely required.</li>
+		<li>Referenced assemblies are not loaded unless absolutely required.</li>
+		<li>Assemblies can be loaded from server shares without raising security 
+		exceptions.</li>
+	</ul>
+</div>
+<div>
+	<h2>Link Errors</h2>
+	<p>If a link to external documentation cannot be resolved, the link will be 
+	disabled, and displayed in bold.</p>
+	<h2>Intellisense documenter</h2>
+	The Intellisense documenter is a weird one; it&#39;s not really a documenter in 
+	the commonly understood way...
+	<p>It&#39;s main use is for ISVs and other developers who produce software that 
+	is publicly distributed. In these cases, the xml files generated by the compiler 
+	can include a lot of junk. </p>
+	<p>For example,<br />
+	</p>
+	<ul>
+		<li>Only summaries, typeparams, params and exceptions are read by Intellisense, 
+		everything else is just a waste of disk-space/processor-cycles.</li>
+		<li>Comments on internal and private members shouldn&#39;t be distributed.
+		</li>
+	</ul>
+	<p></p>
+	<p>This documenter creates a set of Intellisense compatible files from the results 
+	of the NDoc reflection/merge process, using the standard NDoc visibility filters 
+	to control which members are included. </p>
+	<p>This method also has the advantage of producing more complete Intellisense 
+	files using the documentation inheritance processes...</p>
+</div>
+<div>
+	<h2>Change Log</h2>
+	<h3 style="border-top: 1px solid black">Alpha 3t</h3>
+	<h4>Core</h4>
+	<ul>
+		<li>FEATURE - Filter WebService proxy classes</li>
+		<li>FEATURE - Filter VB &#39;My*&#39; classes</li>
+		<li>BUG - Default values &amp; Attribute args - escape strings with chars not 
+		valid in xml</li>
+		<li>BUG - Locks prevent assembly cache deletion - COM interop assemblies 
+		- Added UseAssemblyShadowCache setting</li>
+		<li>BUG - Duplicate &lt;param&gt; or &lt;typeparam&gt; tags cause abend</li>
+		<li>BUG - Incorrect signature for methods with custom modifiers on params</li>
+	</ul>
+	<h4>MSDN Documenters</h4>
+	<ul>
+		<li>BUG - Syntax - Attribute arguments of System.Type incorrectly rendered
+		</li>
+		<li>BUG - Syntax - OptionalAttribute not required for VB as it has keyword</li>
+	</ul>
+	<h4>Console</h4>
+	<ul>
+		<li>BUG - Divide by Zero Abend when no documentable types</li>
+	</ul>
+	<h3 style="border-top: 1px solid black">Alpha 3r</h3>
+	<h4>Core</h4>
+	<ul>
+		<li>BUG - Documentation not generated for structure constructors</li>
+		<li>BUG - Missing parameters on delegates</li>
+		<li>BUG - Event Data - some args do not resolve links</li>
+		<li>BUG - Default values &amp; Attribute args - escape strings with chars not 
+		valid in xml</li>
+	</ul>
+	<h4>MSDN Documenters</h4>
+	<ul>
+		<li>BUG - Class Members - misspelled &#39;overridden&#39;</li>
+		<li>BUG - Class Members &amp; Enum topics - see also themselves</li>
+		<li>BUG - Incorrect ordering of topic sections</li>
+		<li>BUG - Example link in header abends if no example section</li>
+		<li>BUG - VB syntax - delegates incorrectly state both &#39;Sub&#39; &amp; &#39;Function&#39;</li>
+		<li>BUG - VB Syntax - arrays incorrectly use square brackets, should be 
+		parentheses</li>
+		<li>BUG - Syntax - params should not have links</li>
+		<li>BUG - Incorrect ordering of methods in TOC</li>
+		<li>BUG - Incorrect handling of Attributes in overload list topic syntax</li>
+		<li>BUG - VB Syntax - OptionalAttribute not required as VB has keyword</li>
+	</ul>
+	<h4>Console</h4>
+	<ul>
+		<li>BUG - Incorrect default documenter</li>
+	</ul>
+	<h3 style="border-top: 1px solid black">Alpha 3g</h3>
+	<h4>GUI</h4>
+	<ul>
+		<li>BUG - PropertyGrid missing expansions for File &amp; FolderPath entries</li>
+		<li>BUG - AssemblyVersionInformationType enum description has superfluous 
+		full-stop at end</li>
+		<li>BUG - MRU has duplicates differing only by case</li>
+		<li>BUG - Abend if MRU &#39;owner&#39; menu item clicked</li>
+		<li>BUG - Namespace Comments Editor - occasional abend</li>
+	</ul>
+	<h3 style="border-top: 1px solid black">Alpha 3f</h3>
+	<h4>Core</h4>
+	<ul>
+		<li>BUG - Incorrect doc matching for members with params of nested type</li>
+		<li>BUG - Abend if multiple &lt;overloads&gt; tags for same member name</li>
+		<li>BUG - Incorrect matching of docs inherited from generic type definition</li>
+		<li>BUG - Namespace &amp; Inheritance hierarchies incorrect for generic types</li>
+		<li>BUG - Abend if property indexer param is mixed generic\concrete</li>
+		<li>BUG - Enum syntax incorrect if nested in generic class</li>
+	</ul>
+	<h4>MSDN Documenters</h4>
+	<ul>
+		<li>FEATURE - Split HtmlHelp1(CHM) &amp; Web documenters - Renamed Documenters</li>
+		<li>FEATURE - Additional source docs for framework overload descriptions</li>
+	</ul>
+	<h3 style="border-top: 1px solid black">Alpha 3e</h3>
+	<h4>Core</h4>
+	<ul>
+		<li>FEATURE - Basic Exclusion</li>
+		<li>FEATURE - Exclusion Inheritance with &lt;inheritdoc/&gt;</li>
+		<li>FEATURE - Exclusion Inheritance - Automatic on Explicit Implementations</li>
+		<li>FEATURE - Add XML declaration to Project files</li>
+		<li>FEATURE - Reduced memory consumption during Reflection phase</li>
+		<li>BUG - Incorrect handling of Jagged Array parameters</li>
+		<li>BUG - Abend on doc loading if docs contain empty overloads tag</li>
+		<li>BUG - Missing* messages erroneously inherited</li>
+		<li>BUG - AutoText added multiple times if summary inherited</li>
+		<li>BUG - Static members should never be inherited</li>
+		<li>BUG - Default Constructor not auto-documented</li>
+		<li>BUG - Overload Inheritance - Non-optimal search path</li>
+	</ul>
+	<h4>MSDN/VS.Net Documenter</h4>
+	<ul>
+		<li>FEATURE - Help1 SDK link mapping</li>
+		<li>BUG - PathTooLong exceptions on very long member ids</li>
+		<li>BUG - Incorrect titles for Methods with ParamArray parameters</li>
+		<li>BUG - J# syntax - no syntax for unsafe methods - should be message text</li>
+		<li>BUG - Incorrect link for overload members in member lists</li>
+		<li>BUG - AutoText not visible</li>
+	</ul>
+	<h4>GUI</h4>
+	<ul>
+		<li>FEATURE - New Chrome - VS.NET/Whidbey Toolbars etc</li>
+		<li>BUG - PropertyGrid - exception on right-click over category</li>
+		<li>BUG - View fails - Unable to locate Dexplore.exe</li>
+	</ul>
+	<h4>Console</h4>
+	<ul>
+		<li>BUG - Exception stack-trace does not include inner exception info</li>
+	</ul>
+	<h3 style="border-top: 1px solid black">Alpha 3d</h3>
+	<h4>Core</h4>
+	<ul>
+		<li>FEATURE - Improved Overloads tag inheritance </li>
+		<li>FEATURE - New setting - ShowMissingTypeParamsOnTypes</li>
+		<li>FEATURE - New setting - ShowMissingTypeParamsOnMembers</li>
+		<li>FEATURE - Do not apply QA checks to framework-supplied xml files</li>
+		<li>BUG - Inherited Explicit Implementations should be excluded </li>
+		<li>BUG - ReferencePaths not searched correctly </li>
+		<li>BUG - Unhelpful exception message on Assembly resolution failure
+		</li>
+		<li>BUG - Project schema version should be 2.0 </li>
+		<li>BUG - Incorrect handling of hidden/hiding for Property members</li>
+	</ul>
+	<h4>MSDN/VS.Net Documenter</h4>
+	<ul>
+		<li>BUG - Incorrect format of comments email &#39;Subject&#39; </li>
+		<li>BUG - See Also link in header abends if no see-also section </li>
+		<li>BUG - Member Lists - Explicit Implementations missing if overloaded
+		</li>
+		<li>BUG - Incorrect title on member topics if member is overloaded </li>
+		<li>BUG - File mapping - incorrect ids in map for overload topics </li>
+		<li>BUG - J# syntax - Incorrect formatting of structures </li>
+		<li>BUG - Preliminary tag - Incorrect Formatting </li>
+	</ul>
+	<h4>Intellisense Documenter</h4>
+	<ul>
+		<li>BUG - Overloaded members missing </li>
+		<li>BUG - Don&#39;t output member tag if it contains no documentation </li>
+	</ul>
+	<h4>Console</h4>
+	<ul>
+		<li>BUG - Don&#39;t wait for key press if console redirected </li>
+	</ul>
+</div>
+</a>
+
+</body>
+
+</html>
