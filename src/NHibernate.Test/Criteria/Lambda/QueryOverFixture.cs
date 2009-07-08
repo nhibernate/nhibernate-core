@@ -179,19 +179,31 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void Alias_LeftJoin()
+		public void Alias_JoinCombinations()
 		{
 			ICriteria expected =
-				CreateTestCriteria(typeof(Person))
-					.CreateAlias("Father", "fatherAlias", JoinType.LeftOuterJoin)
-					.CreateAlias("Children", "childAlias", JoinType.LeftOuterJoin);
+				CreateTestCriteria(typeof(Relation))
+					.CreateAlias("Related1", "related1Alias")
+					.CreateAlias("Collection1", "collection1Alias")
+					.CreateAlias("Related2", "related2Alias", JoinType.LeftOuterJoin)
+					.CreateAlias("Collection2", "collection2Alias", JoinType.LeftOuterJoin)
+					.CreateAlias("Related3", "related3Alias", JoinType.RightOuterJoin)
+					.CreateAlias("Collection3", "collection3Alias", JoinType.RightOuterJoin)
+					.CreateAlias("Related4", "related4Alias", JoinType.FullJoin)
+					.CreateAlias("Collection4", "collection4Alias", JoinType.FullJoin);
 
-			Person fatherAlias = null;
-			Child childAlias = null;
-			IQueryOver<Person> actual =
-				CreateTestQueryOver<Person>()
-					.Left.Join(p => p.Father, () => fatherAlias)
-					.Left.Join(p => p.Children, () => childAlias);
+			Relation related1Alias = null, related2Alias = null, related3Alias = null, related4Alias = null;
+			Relation collection1Alias = null, collection2Alias = null, collection3Alias = null, collection4Alias = null;
+			IQueryOver<Relation> actual =
+				CreateTestQueryOver<Relation>()
+					.Inner.Join(r => r.Related1, () => related1Alias)
+					.Inner.Join(r => r.Collection1, () => collection1Alias)
+					.Left.Join(r => r.Related2, () => related2Alias)
+					.Left.Join(r => r.Collection2, () => collection2Alias)
+					.Right.Join(r => r.Related3, () => related3Alias)
+					.Right.Join(r => r.Collection3, () => collection3Alias)
+					.Full.Join(r => r.Related4, () => related4Alias)
+					.Full.Join(r => r.Collection4, () => collection4Alias);
 
 			AssertCriteriaAreEqual(expected, actual);
 		}

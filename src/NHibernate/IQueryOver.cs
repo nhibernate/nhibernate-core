@@ -121,7 +121,10 @@ namespace NHibernate
 		/// <returns>criteria instance</returns>
 		IQueryOver<T> Join(Expression<Func<T, object>> path, Expression<Func<object>> alias, JoinType joinType);
 
-		IQueryOverJoinBuilder<T> Left { get; }
+		IQueryOverJoinBuilder<T> Inner	{ get; }
+		IQueryOverJoinBuilder<T> Left	{ get; }
+		IQueryOverJoinBuilder<T> Right	{ get; }
+		IQueryOverJoinBuilder<T> Full	{ get; }
 
 		/// <summary>
 		/// Get the results of the root type and fill the <see cref="IList&lt;T&gt;"/>

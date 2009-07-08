@@ -23,5 +23,20 @@ namespace NHibernate.Test.Criteria.Lambda
 		public virtual string	Nickname	{ get; set; }
 	}
 
+	public class Relation
+	{
+
+		public virtual Relation Related1	{ get; set; }
+		public virtual Relation Related2	{ get; set; }
+		public virtual Relation Related3	{ get; set; }
+		public virtual Relation Related4	{ get; set; }
+
+		public virtual IEnumerable<Relation>	Collection1	{ get; set; }
+		public virtual IEnumerable<Relation>	Collection2	{ get; set; }
+		public virtual IEnumerable<Relation>	Collection3	{ get; set; }
+		public virtual IEnumerable<Relation>	Collection4	{ get; set; }
+
+	}
+
 }
 

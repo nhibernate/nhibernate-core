@@ -117,6 +117,21 @@ namespace NHibernate.Criterion
 			get { return new QueryOverJoinBuilder<T>(this, JoinType.InnerJoin); }
 		}
 
+		public QueryOverJoinBuilder<T> Left
+		{
+			get { return new QueryOverJoinBuilder<T>(this, JoinType.LeftOuterJoin); }
+		}
+
+		public QueryOverJoinBuilder<T> Right
+		{
+			get { return new QueryOverJoinBuilder<T>(this, JoinType.RightOuterJoin); }
+		}
+
+		public QueryOverJoinBuilder<T> Full
+		{
+			get { return new QueryOverJoinBuilder<T>(this, JoinType.FullJoin); }
+		}
+
 		public IList<T> List()
 		{
 			return _criteria.List<T>();
@@ -198,8 +213,17 @@ namespace NHibernate.Criterion
 		IQueryOver<T> IQueryOver<T>.Join(Expression<Func<T, object>> path, Expression<Func<object>> alias, JoinType joinType)
 		{ return Join(path, alias, joinType); }
 
+		IQueryOverJoinBuilder<T> IQueryOver<T>.Inner
+		{ get { return new IQueryOverJoinBuilder<T>(this, JoinType.InnerJoin); } }
+
 		IQueryOverJoinBuilder<T> IQueryOver<T>.Left
 		{ get { return new IQueryOverJoinBuilder<T>(this, JoinType.LeftOuterJoin); } }
+
+		IQueryOverJoinBuilder<T> IQueryOver<T>.Right
+		{ get { return new IQueryOverJoinBuilder<T>(this, JoinType.RightOuterJoin); } }
+
+		IQueryOverJoinBuilder<T> IQueryOver<T>.Full
+		{ get { return new IQueryOverJoinBuilder<T>(this, JoinType.FullJoin); } }
 
 	}
 
