@@ -98,12 +98,67 @@ namespace NHibernate
 
 		/// <summary>
 		/// Creates a new NHibernate.ICriteria&lt;T&gt;, "rooted" at the associated entity
+		/// </summary>
+		/// <typeparam name="U">Type of sub-criteria</typeparam>
+		/// <param name="path">Lambda expression returning association path</param>
+		/// <param name="alias">Lambda expression returning alias reference</param>
+		/// <returns>The created "sub criteria"</returns>
+		IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path, Expression<Func<U>> alias);
+
+		/// <summary>
+		/// Creates a new NHibernate.ICriteria&lt;T&gt;, "rooted" at the associated entity
+		/// </summary>
+		/// <typeparam name="U">Type of sub-criteria</typeparam>
+		/// <param name="path">Lambda expression returning association path</param>
+		/// <returns>The created "sub criteria"</returns>
+		IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path, JoinType joinType);
+
+		/// <summary>
+		/// Creates a new NHibernate.ICriteria&lt;T&gt;, "rooted" at the associated entity
+		/// </summary>
+		/// <typeparam name="U">Type of sub-criteria</typeparam>
+		/// <param name="path">Lambda expression returning association path</param>
+		/// <param name="alias">Lambda expression returning alias reference</param>
+		/// <returns>The created "sub criteria"</returns>
+		IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path, Expression<Func<U>> alias, JoinType joinType);
+
+		/// <summary>
+		/// Creates a new NHibernate.ICriteria&lt;T&gt;, "rooted" at the associated entity
 		/// specifying a collection for the join.
 		/// </summary>
 		/// <typeparam name="U">Type of sub-criteria (type of the collection)</typeparam>
 		/// <param name="path">Lambda expression returning association path</param>
 		/// <returns>The created "sub criteria"</returns>
 		IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path);
+
+		/// <summary>
+		/// Creates a new NHibernate.ICriteria&lt;T&gt;, "rooted" at the associated entity
+		/// specifying a collection for the join.
+		/// </summary>
+		/// <typeparam name="U">Type of sub-criteria (type of the collection)</typeparam>
+		/// <param name="path">Lambda expression returning association path</param>
+		/// <param name="alias">Lambda expression returning alias reference</param>
+		/// <returns>The created "sub criteria"</returns>
+		IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path, Expression<Func<U>> alias);
+
+		/// <summary>
+		/// Creates a new NHibernate.ICriteria&lt;T&gt;, "rooted" at the associated entity
+		/// specifying a collection for the join.
+		/// </summary>
+		/// <typeparam name="U">Type of sub-criteria (type of the collection)</typeparam>
+		/// <param name="path">Lambda expression returning association path</param>
+		/// <returns>The created "sub criteria"</returns>
+		IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path, JoinType joinType);
+
+		/// <summary>
+		/// Creates a new NHibernate.ICriteria&lt;T&gt;, "rooted" at the associated entity
+		/// specifying a collection for the join.
+		/// </summary>
+		/// <typeparam name="U">Type of sub-criteria (type of the collection)</typeparam>
+		/// <param name="path">Lambda expression returning association path</param>
+		/// <param name="alias">Lambda expression returning alias reference</param>
+		/// <returns>The created "sub criteria"</returns>
+		IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType);
 
 		/// <summary>
 		/// Join an association, assigning an alias to the joined entity

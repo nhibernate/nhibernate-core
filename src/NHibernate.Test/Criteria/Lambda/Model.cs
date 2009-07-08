@@ -36,6 +36,8 @@ namespace NHibernate.Test.Criteria.Lambda
 		public virtual IEnumerable<Relation>	Collection3	{ get; set; }
 		public virtual IEnumerable<Relation>	Collection4	{ get; set; }
 
+		public virtual IEnumerable<Person>		People		{ get; set; }
+
 	}
 
 }

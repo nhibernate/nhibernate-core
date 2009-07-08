@@ -94,7 +94,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			PushName(name);
 			string fieldPath = _fieldPath.Peek();
 
-			if (expected == null)
+			if (expected == null || actual == null)
 			{
 				Assert.AreEqual(expected, actual, fieldPath);
 				_fieldPath.Pop();

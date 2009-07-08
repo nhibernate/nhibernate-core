@@ -154,8 +154,38 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			IQueryOver<Child> actual =
 				CreateTestQueryOver<Person>()
-					.JoinQueryOver<Child>(p => p.Children) // sub-criteria
+					.JoinQueryOver(p => p.Children) // sub-criteria
 						.Where(c => c.Nickname == "test name");
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void SubCriteria_JoinQueryOverCombinations()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Relation))
+					.CreateCriteria("Related1")
+					.CreateCriteria("Related2", JoinType.LeftOuterJoin)
+					.CreateCriteria("Related3", JoinType.RightOuterJoin)
+					.CreateCriteria("Related4", JoinType.FullJoin)
+					.CreateCriteria("Collection1", "collection1Alias")
+					.CreateCriteria("Collection2", "collection2Alias", JoinType.LeftOuterJoin)
+					.CreateCriteria("Collection3", JoinType.RightOuterJoin)
+					.CreateCriteria("People", "personAlias", JoinType.FullJoin);
+
+			Relation collection1Alias = null, collection2Alias = null;
+			Person personAlias = null;
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Relation>()
+					.Inner.JoinQueryOver(r => r.Related1)
+					.Left.JoinQueryOver(r => r.Related2)
+					.Right.JoinQueryOver(r => r.Related3)
+					.Full.JoinQueryOver(r => r.Related4)
+					.JoinQueryOver(r => r.Collection1, () => collection1Alias)
+					.Left.JoinQueryOver(r => r.Collection2, () => collection2Alias)
+					.Right.JoinQueryOver(r => r.Collection3)
+					.Full.JoinQueryOver(r => r.People, () => personAlias);
 
 			AssertCriteriaAreEqual(expected, actual);
 		}

@@ -12,28 +12,70 @@ namespace NHibernate.Criterion
 	public class QueryOverJoinBuilder<T> : QueryOverJoinBuilderBase<QueryOver<T>, T>
 	{
 		public QueryOverJoinBuilder(QueryOver<T> root, JoinType joinType) : base(root, joinType) { }
+
+		public QueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path)
+		{
+			return root.JoinQueryOver<U>(path, joinType);
+		}
+
+		public QueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path, Expression<Func<U>> alias)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType);
+		}
+
+		public QueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path)
+		{
+			return root.JoinQueryOver<U>(path, joinType);
+		}
+
+		public QueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path, Expression<Func<U>> alias)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType);
+		}
+
 	}
 
 	public class IQueryOverJoinBuilder<T> : QueryOverJoinBuilderBase<IQueryOver<T>, T>
 	{
 		public IQueryOverJoinBuilder(IQueryOver<T> root, JoinType joinType) : base(root, joinType) { }
+
+		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path)
+		{
+			return root.JoinQueryOver<U>(path, joinType);
+		}
+
+		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path, Expression<Func<U>> alias)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType);
+		}
+
+		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path)
+		{
+			return root.JoinQueryOver<U>(path, joinType);
+		}
+
+		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path, Expression<Func<U>> alias)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType);
+		}
+
 	}
 
 	public class QueryOverJoinBuilderBase<R, T> where R : IQueryOver<T>
 	{
 
-		private R _root;
-		private JoinType _joinType;
+		protected R root;
+		protected JoinType joinType;
 
 		public QueryOverJoinBuilderBase(R root, JoinType joinType)
 		{
-			_root = root;
-			_joinType = joinType;
+			this.root = root;
+			this.joinType = joinType;
 		}
 
 		public R Join(Expression<Func<T, object>> path, Expression<Func<object>> alias)
 		{
-			return (R)_root.Join(path, alias, _joinType);
+			return (R)root.Join(path, alias, joinType);
 		}
 
 	}
