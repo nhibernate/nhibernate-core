@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 
 using NHibernate.Criterion;
+using NHibernate.SqlCommand;
 
 namespace NHibernate
 {
@@ -111,6 +112,16 @@ namespace NHibernate
 		/// <param name="alias">Lambda expression returning alias reference</param>
 		/// <returns>criteria instance</returns>
 		IQueryOver<T> Join(Expression<Func<T, object>> path, Expression<Func<object>> alias);
+
+		/// <summary>
+		/// Join an association, assigning an alias to the joined entity
+		/// </summary>
+		/// <param name="path">Lambda expression returning association path</param>
+		/// <param name="alias">Lambda expression returning alias reference</param>
+		/// <returns>criteria instance</returns>
+		IQueryOver<T> Join(Expression<Func<T, object>> path, Expression<Func<object>> alias, JoinType joinType);
+
+		IQueryOverJoinBuilder<T> Left { get; }
 
 		/// <summary>
 		/// Get the results of the root type and fill the <see cref="IList&lt;T&gt;"/>

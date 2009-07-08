@@ -4,6 +4,7 @@ using System.Collections;
 using NUnit.Framework;
 
 using NHibernate.Criterion;
+using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -128,7 +129,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void SubCriteria_JoinWalk_ToOne()
+		public void SubCriteria_JoinQueryOver_ToOne()
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
@@ -144,7 +145,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void SubCriteria_JoinWalk_ToMany()
+		public void SubCriteria_JoinQueryOver_ToMany()
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
@@ -173,6 +174,24 @@ namespace NHibernate.Test.Criteria.Lambda
 				CreateTestQueryOver<Person>()
 					.Join(p => p.Father, () => fatherAlias)
 					.Join(p => p.Children, () => childAlias);
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void Alias_LeftJoin()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.CreateAlias("Father", "fatherAlias", JoinType.LeftOuterJoin)
+					.CreateAlias("Children", "childAlias", JoinType.LeftOuterJoin);
+
+			Person fatherAlias = null;
+			Child childAlias = null;
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>()
+					.Left.Join(p => p.Father, () => fatherAlias)
+					.Left.Join(p => p.Children, () => childAlias);
 
 			AssertCriteriaAreEqual(expected, actual);
 		}

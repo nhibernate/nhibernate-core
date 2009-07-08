@@ -104,6 +104,19 @@ namespace NHibernate.Criterion
 				JoinType.InnerJoin);
 		}
 
+		public QueryOver<T> Join(Expression<Func<T, object>> path, Expression<Func<object>> alias, JoinType joinType)
+		{
+			return AddAlias(
+				ExpressionProcessor.FindMemberExpression(path.Body),
+				ExpressionProcessor.FindMemberExpression(alias.Body),
+				joinType);
+		}
+
+		public QueryOverJoinBuilder<T> Inner
+		{
+			get { return new QueryOverJoinBuilder<T>(this, JoinType.InnerJoin); }
+		}
+
 		public IList<T> List()
 		{
 			return _criteria.List<T>();
@@ -181,6 +194,12 @@ namespace NHibernate.Criterion
 
 		IQueryOver<T> IQueryOver<T>.Join(Expression<Func<T, object>> path, Expression<Func<object>> alias)
 		{ return Join(path, alias); }
+
+		IQueryOver<T> IQueryOver<T>.Join(Expression<Func<T, object>> path, Expression<Func<object>> alias, JoinType joinType)
+		{ return Join(path, alias, joinType); }
+
+		IQueryOverJoinBuilder<T> IQueryOver<T>.Left
+		{ get { return new IQueryOverJoinBuilder<T>(this, JoinType.LeftOuterJoin); } }
 
 	}
 
