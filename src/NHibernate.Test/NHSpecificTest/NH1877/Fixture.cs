@@ -56,7 +56,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1877
 					Projections.GroupProperty(Projections.SqlFunction("month", NHibernateUtil.Int32, Projections.Property("BirthDate"))));
 
 				var result = crit.UniqueResult();
-				Assert.That(result, Has.Count.EqualTo(1));
 				Assert.That(result,Is.EqualTo(7));
 			}
 		}

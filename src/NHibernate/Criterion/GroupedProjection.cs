@@ -8,6 +8,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
+	[Serializable]
 	public class GroupedProjection:IProjection
 	{
 		private readonly IProjection projection;
