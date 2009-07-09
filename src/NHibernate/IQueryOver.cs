@@ -15,9 +15,9 @@ namespace NHibernate
 	/// </summary>
 	/// <remarks>
 	/// <code>
-	/// IList&lt;Cat&gt cats = session.QueryOver&lt;Cat&gt;()
-	/// 	.Add( c =&gt; c.Name == "Tigger" )
-	///		.Add( c =&gt; c.Weight > minWeight ) )
+	/// IList&lt;Cat&gt; cats = session.QueryOver&lt;Cat&gt;()
+	/// 	.Where( c =&gt; c.Name == "Tigger" )
+	///		.And( c =&gt; c.Weight > minWeight ) )
 	///		.List();
 	/// </code>
 	/// </remarks>
@@ -55,8 +55,7 @@ namespace NHibernate
 		/// <summary>
 		/// Add order expressed as a lambda expression
 		/// </summary>
-		/// <typeparam name="T">Type (same as criteria type)</typeparam>
-		/// <param name="expression">Lambda expression</param>
+		/// <param name="path">Lambda expression</param>
 		/// <param name="orderDelegate">Order delegate (direction)</param>
 		/// <returns>criteria instance</returns>
 		IQueryOver<T> OrderBy(Expression<Func<T, object>> path, Func<string, Order> orderDelegate);
@@ -64,8 +63,7 @@ namespace NHibernate
 		/// <summary>
 		/// Add order expressed as a lambda expression
 		/// </summary>
-		/// <typeparam name="T">Type (same as criteria type)</typeparam>
-		/// <param name="expression">Lambda expression</param>
+		/// <param name="path">Lambda expression</param>
 		/// <param name="orderDelegate">Order delegate (direction)</param>
 		/// <returns>criteria instance</returns>
 		IQueryOver<T> OrderBy(Expression<Func<object>> path, Func<string, Order> orderDelegate);
@@ -73,8 +71,7 @@ namespace NHibernate
 		/// <summary>
 		/// Add order expressed as a lambda expression
 		/// </summary>
-		/// <typeparam name="T">Type (same as criteria type)</typeparam>
-		/// <param name="expression">Lambda expression</param>
+		/// <param name="path">Lambda expression</param>
 		/// <param name="orderDelegate">Order delegate (direction)</param>
 		/// <returns>criteria instance</returns>
 		IQueryOver<T> ThenBy(Expression<Func<T, object>> path, Func<string, Order> orderDelegate);
@@ -82,8 +79,7 @@ namespace NHibernate
 		/// <summary>
 		/// Add order expressed as a lambda expression
 		/// </summary>
-		/// <typeparam name="T">Type (same as criteria type)</typeparam>
-		/// <param name="expression">Lambda expression</param>
+		/// <param name="path">Lambda expression</param>
 		/// <param name="orderDelegate">Order delegate (direction)</param>
 		/// <returns>criteria instance</returns>
 		IQueryOver<T> ThenBy(Expression<Func<object>> path, Func<string, Order> orderDelegate);
@@ -110,6 +106,7 @@ namespace NHibernate
 		/// </summary>
 		/// <typeparam name="U">Type of sub-criteria</typeparam>
 		/// <param name="path">Lambda expression returning association path</param>
+		/// <param name="joinType">Type of join</param>
 		/// <returns>The created "sub criteria"</returns>
 		IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path, JoinType joinType);
 
@@ -119,6 +116,7 @@ namespace NHibernate
 		/// <typeparam name="U">Type of sub-criteria</typeparam>
 		/// <param name="path">Lambda expression returning association path</param>
 		/// <param name="alias">Lambda expression returning alias reference</param>
+		/// <param name="joinType">Type of join</param>
 		/// <returns>The created "sub criteria"</returns>
 		IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path, Expression<Func<U>> alias, JoinType joinType);
 
@@ -147,6 +145,7 @@ namespace NHibernate
 		/// </summary>
 		/// <typeparam name="U">Type of sub-criteria (type of the collection)</typeparam>
 		/// <param name="path">Lambda expression returning association path</param>
+		/// <param name="joinType">Type of join</param>
 		/// <returns>The created "sub criteria"</returns>
 		IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path, JoinType joinType);
 
@@ -157,6 +156,7 @@ namespace NHibernate
 		/// <typeparam name="U">Type of sub-criteria (type of the collection)</typeparam>
 		/// <param name="path">Lambda expression returning association path</param>
 		/// <param name="alias">Lambda expression returning alias reference</param>
+		/// <param name="joinType">Type of join</param>
 		/// <returns>The created "sub criteria"</returns>
 		IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType);
 
@@ -173,6 +173,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="path">Lambda expression returning association path</param>
 		/// <param name="alias">Lambda expression returning alias reference</param>
+		/// <param name="joinType">Type of join</param>
 		/// <returns>criteria instance</returns>
 		IQueryOver<T> Join(Expression<Func<T, object>> path, Expression<Func<object>> alias, JoinType joinType);
 
