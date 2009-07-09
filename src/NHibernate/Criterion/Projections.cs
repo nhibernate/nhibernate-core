@@ -202,6 +202,16 @@ namespace NHibernate.Criterion
 		}
 
 		/// <summary>
+		/// A grouping projection value
+		/// </summary>
+		/// <param name="projection"></param>
+		/// <returns></returns>
+		public static GroupedProjection GroupProperty(IProjection projection)
+		{
+			return new GroupedProjection(projection);
+		}
+
+		/// <summary>
 		/// A projected property value
 		/// </summary>
 		/// <param name="propertyName"></param>
