@@ -1,6 +1,8 @@
 using System;
 using System.Data;
 using System.Data.Odbc;
+using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Driver
 {
@@ -12,10 +14,6 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public class OdbcDriver : DriverBase
 	{
-		public OdbcDriver()
-		{
-		}
-
 		public override IDbConnection CreateConnection()
 		{
 			return new OdbcConnection();
@@ -39,6 +37,39 @@ namespace NHibernate.Driver
 		public override string NamedPrefix
 		{
 			get { return String.Empty; }
+		}
+
+		private static void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
+		{
+			// Override the defaults using data from SqlType.
+			if (sqlType.LengthDefined)
+			{
+				dbParam.Size = sqlType.Length;
+			}
+
+			if (sqlType.PrecisionDefined)
+			{
+				dbParam.Precision = sqlType.Precision;
+				dbParam.Scale = sqlType.Scale;
+			}
+		}
+
+		public static void SetParameterSizes(IDataParameterCollection parameters, SqlType[] parameterTypes)
+		{
+			for (int i = 0; i < parameters.Count; i++)
+			{
+				SetVariableLengthParameterSize((IDbDataParameter)parameters[i], parameterTypes[i]);
+			}
+		}
+
+		public override IDbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
+		{
+			IDbCommand command = base.GenerateCommand(type, sqlString, parameterTypes);
+			if (IsPrepareSqlEnabled)
+			{
+				SetParameterSizes(command.Parameters, parameterTypes);
+			}
+			return command;
 		}
 	}
 }
