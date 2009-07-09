@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Runtime.CompilerServices;
 using log4net;
+using NHibernate.AdoNet.Util;
 using NHibernate.Dialect;
 using NHibernate.Engine;
-using NHibernate.Engine.Transaction;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -14,9 +14,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Id
 {
-	using System.Transactions;
-	using NHibernate.AdoNet.Util;
-
 	/// <summary>
 	/// An <see cref="IIdentifierGenerator" /> that uses a database table to store the last
 	/// generated value.
@@ -38,7 +35,8 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(TableGenerator));
+		private static readonly ILog log = LogManager.GetLogger(typeof (TableGenerator));
+
 		/// <summary>
 		/// An additional where clause that is added to 
 		/// the queries against the table.
@@ -83,7 +81,6 @@ namespace NHibernate.Id
 		/// <param name="dialect">The <see cref="Dialect"/> to help with Configuration.</param>
 		public virtual void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect dialect)
 		{
-
 			tableName = PropertiesHelper.GetString(TableParamName, parms, DefaultTableName);
 			columnName = PropertiesHelper.GetString(ColumnParamName, parms, DefaultColumnName);
 			whereClause = PropertiesHelper.GetString(Where, parms, "");
@@ -95,8 +92,16 @@ namespace NHibernate.Id
 				tableName = dialect.Qualify(catalogName, schemaName, tableName);
 			}
 
-			query = "select " + columnName + " from " + dialect.AppendLockHint(LockMode.Upgrade, tableName)
-			        + dialect.ForUpdateString;
+			var selectBuilder = new SqlStringBuilder(100);
+			selectBuilder.Add("select " + columnName)
+				.Add(" from " + dialect.AppendLockHint(LockMode.Upgrade, tableName));
+			if (string.IsNullOrEmpty(whereClause) == false)
+			{
+				selectBuilder.Add(" where ").Add(whereClause);
+			}
+			selectBuilder.Add(dialect.ForUpdateString);
+
+			query = selectBuilder.ToString();
 
 			columnType = type as PrimitiveType;
 			if (columnType == null)
@@ -119,21 +124,16 @@ namespace NHibernate.Id
 				columnSqlType = SqlTypeFactory.Int32;
 			}
 
-			parameterTypes = new SqlType[2] {columnSqlType, columnSqlType};
+			parameterTypes = new[] {columnSqlType, columnSqlType};
 
-			SqlStringBuilder builder = new SqlStringBuilder();
+			var builder = new SqlStringBuilder(100);
 			builder.Add("update " + tableName + " set ")
-				.Add(columnName)
-				.Add(" = ")
-				.Add(Parameter.Placeholder)
+				.Add(columnName).Add(" = ").Add(Parameter.Placeholder)
 				.Add(" where ")
-				.Add(columnName)
-				.Add(" = ")
-				.Add(Parameter.Placeholder);
+				.Add(columnName).Add(" = ").Add(Parameter.Placeholder);
 			if (string.IsNullOrEmpty(whereClause) == false)
 			{
-				builder.Add(" and ")
-					.Add(whereClause);
+				builder.Add(" and ").Add(whereClause);
 			}
 
 			updateSql = builder.ToSqlString();
@@ -172,16 +172,16 @@ namespace NHibernate.Id
 		/// create the necessary database objects and to create the first value as <c>1</c> 
 		/// for the TableGenerator.
 		/// </returns>
-		public string[] SqlCreateStrings(Dialect.Dialect dialect)
+		public virtual string[] SqlCreateStrings(Dialect.Dialect dialect)
 		{
 			// changed the first value to be "1" by default since an uninitialized Int32 is 0 - leaving
 			// it at 0 would cause problems with an unsaved-value="0" which is what most people are 
 			// defaulting <id>'s with Int32 types at.
-			return new string[]
-				{
-					"create table " + tableName + " ( " + columnName + " " + dialect.GetTypeName(columnSqlType) + " )",
-					"insert into " + tableName + " values ( 1 )"
-				};
+			return new[]
+			       	{
+			       		"create table " + tableName + " ( " + columnName + " " + dialect.GetTypeName(columnSqlType) + " )",
+			       		"insert into " + tableName + " values ( 1 )"
+			       	};
 		}
 
 		/// <summary>
@@ -191,9 +191,9 @@ namespace NHibernate.Id
 		/// <returns>
 		/// A <see cref="string"/> that will drop the database objects for the TableGenerator.
 		/// </returns>
-		public string[] SqlDropString(Dialect.Dialect dialect)
+		public virtual string[] SqlDropString(Dialect.Dialect dialect)
 		{
-			return new string[] { dialect.GetDropTableString(tableName) };
+			return new[] {dialect.GetDropTableString(tableName)};
 		}
 
 		/// <summary>
@@ -209,7 +209,8 @@ namespace NHibernate.Id
 
 		#endregion
 
-		public override object DoWorkInCurrentTransaction(ISessionImplementor session, IDbConnection conn, IDbTransaction transaction)
+		public override object DoWorkInCurrentTransaction(ISessionImplementor session, IDbConnection conn,
+		                                                  IDbTransaction transaction)
 		{
 			long result;
 			int rows;
@@ -243,15 +244,18 @@ namespace NHibernate.Id
 				}
 				finally
 				{
-					if (rs != null) rs.Close();
+					if (rs != null)
+					{
+						rs.Close();
+					}
 					qps.Dispose();
 				}
 
-				IDbCommand ups =
-					session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateSql, parameterTypes);
+				IDbCommand ups = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateSql,
+				                                                                           parameterTypes);
 				ups.Connection = conn;
 				ups.Transaction = transaction;
-				
+
 				try
 				{
 					columnType.Set(ups, result + 1, 0);
@@ -270,7 +274,8 @@ namespace NHibernate.Id
 				{
 					ups.Dispose();
 				}
-			} while (rows == 0);
+			}
+			while (rows == 0);
 
 			return result;
 		}
