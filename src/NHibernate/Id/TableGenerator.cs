@@ -92,8 +92,16 @@ namespace NHibernate.Id
 				tableName = dialect.Qualify(catalogName, schemaName, tableName);
 			}
 
-			query = "select " + columnName + " from " + dialect.AppendLockHint(LockMode.Upgrade, tableName)
-			        + dialect.ForUpdateString;
+			var selectBuilder = new SqlStringBuilder(100);
+			selectBuilder.Add("select " + columnName)
+				.Add(" from " + dialect.AppendLockHint(LockMode.Upgrade, tableName));
+			if (string.IsNullOrEmpty(whereClause) == false)
+			{
+				selectBuilder.Add(" where ").Add(whereClause);
+			}
+			selectBuilder.Add(dialect.ForUpdateString);
+
+			query = selectBuilder.ToString();
 
 			columnType = type as PrimitiveType;
 			if (columnType == null)
@@ -118,9 +126,11 @@ namespace NHibernate.Id
 
 			parameterTypes = new[] {columnSqlType, columnSqlType};
 
-			var builder = new SqlStringBuilder();
-			builder.Add("update " + tableName + " set ").Add(columnName).Add(" = ").Add(Parameter.Placeholder).Add(" where ").Add
-				(columnName).Add(" = ").Add(Parameter.Placeholder);
+			var builder = new SqlStringBuilder(100);
+			builder.Add("update " + tableName + " set ")
+				.Add(columnName).Add(" = ").Add(Parameter.Placeholder)
+				.Add(" where ")
+				.Add(columnName).Add(" = ").Add(Parameter.Placeholder);
 			if (string.IsNullOrEmpty(whereClause) == false)
 			{
 				builder.Add(" and ").Add(whereClause);
