@@ -156,20 +156,15 @@ namespace NHibernate.Cfg
 			collections[collection.Role] = collection;
 		}
 
-		internal void AddUniquePropertyReference(string referencedClass, string propertyName)
+		public void AddUniquePropertyReference(string referencedClass, string propertyName)
 		{
-			PropertyReference upr = new PropertyReference();
-			upr.referencedClass = referencedClass;
-			upr.propertyName = propertyName;
-			upr.unique = true;
+			var upr = new PropertyReference {referencedClass = referencedClass, propertyName = propertyName, unique = true};
 			propertyReferences.Add(upr);
 		}
 
-		internal void AddPropertyReference(string referencedClass, string propertyName)
+		public void AddPropertyReference(string referencedClass, string propertyName)
 		{
-			PropertyReference upr = new PropertyReference();
-			upr.referencedClass = referencedClass;
-			upr.propertyName = propertyName;
+			var upr = new PropertyReference {referencedClass = referencedClass, propertyName = propertyName};
 			propertyReferences.Add(upr);
 		}
 
@@ -178,6 +173,11 @@ namespace NHibernate.Cfg
 			PersistentClass result;
 			classes.TryGetValue(className, out result);
 			return result;
+		}
+
+		public Dialect.Dialect Dialect
+		{
+			get { return dialect; }
 		}
 
 		/// <summary>
@@ -485,7 +485,7 @@ namespace NHibernate.Cfg
 
 		public void AddTypeDef(string typeName, string typeClass, IDictionary<string, string> paramMap)
 		{
-			TypeDef def = new TypeDef(typeClass, paramMap);
+			var def = new TypeDef(typeClass, paramMap);
 			typeDefs[typeName] = def;
 			log.Debug("Added " + typeName + " with class " + typeClass);
 		}
@@ -582,7 +582,7 @@ namespace NHibernate.Cfg
 
 		private static string BuildTableNameKey(string schema, string catalog, string name)
 		{
-			StringBuilder keyBuilder = new StringBuilder();
+			var keyBuilder = new StringBuilder();
 			if (schema != null)
 				keyBuilder.Append(schema);
 			keyBuilder.Append(".");
