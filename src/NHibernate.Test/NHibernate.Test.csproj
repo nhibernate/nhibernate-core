@@ -348,6 +348,7 @@
     <Compile Include="HQL\Ast\WithClauseFixture.cs" />
     <Compile Include="HQL\Ast\Zoo.cs" />
     <Compile Include="HQL\BaseFunctionFixture.cs" />
+    <Compile Include="IdTest\TableGeneratorFixture.cs" />
     <Compile Include="LazyOneToOne\Employee.cs" />
     <Compile Include="LazyOneToOne\Employment.cs" />
     <Compile Include="LazyOneToOne\LazyOneToOneTest.cs" />
