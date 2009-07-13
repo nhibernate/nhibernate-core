@@ -8,7 +8,7 @@ using NHibernate.Type;
 namespace NHibernate
 {
 	/// <summary>
-	/// The main runtime interface between a Java application and Hibernate. This is the central
+	/// The main runtime interface between a .NET application and NHibernate. This is the central
 	/// API class abstracting the notion of a persistence service.
 	/// </summary>
 	/// <remarks>
