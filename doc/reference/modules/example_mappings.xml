@@ -18,13 +18,13 @@
 
         <mediaobject>
             <imageobject role="fo">
-                <imagedata fileref="images/EmployerEmployee.gif" format="GIF" align="center"/>
+                <imagedata fileref="images/EmployerEmployee.png" format="PNG" align="center"/>
             </imageobject>
             <imageobject role="html">
-                <imagedata fileref="../shared/images/EmployerEmployee.gif" format="GIF" align="center"/>
+                <imagedata fileref="../shared/images/EmployerEmployee.png" format="PNG" align="center"/>
             </imageobject>
             <imageobject role="chm">
-                <imagedata fileref="shared/images/EmployerEmployee.gif" format="GIF" align="center"/>
+                <imagedata fileref="shared/images/EmployerEmployee.png" format="PNG" align="center"/>
             </imageobject>
         </mediaobject>
         

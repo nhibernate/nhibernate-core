@@ -11,13 +11,13 @@
 
         <mediaobject>
             <imageobject role="fo">
-                <imagedata fileref="images/overview.svg" format="SVG" align="center"/>
+                <imagedata fileref="images/overview.png" format="PNG" align="center"/>
             </imageobject>
             <imageobject role="html">
-                <imagedata fileref="../shared/images/overview.gif" format="GIF" align="center"/>
+                <imagedata fileref="../shared/images/overview.png" format="PNG" align="center"/>
             </imageobject>
             <imageobject role="chm">
-                <imagedata fileref="shared/images/overview.gif" format="GIF" align="center"/>
+                <imagedata fileref="shared/images/overview.png" format="PNG" align="center"/>
             </imageobject>
         </mediaobject>
 
@@ -36,13 +36,13 @@
 
         <mediaobject>
             <imageobject role="fo">
-                <imagedata fileref="images/lite.svg" format="SVG" align="center"/>
+                <imagedata fileref="images/lite.png" format="PNG" align="center"/>
             </imageobject>
             <imageobject role="html">
-                <imagedata fileref="../shared/images/lite.gif" format="GIF" align="center"/>
+                <imagedata fileref="../shared/images/lite.png" format="PNG" align="center"/>
             </imageobject>
             <imageobject role="chm">
-                <imagedata fileref="shared/images/lite.gif" format="GIF" align="center"/>
+                <imagedata fileref="shared/images/lite.png" format="PNG" align="center"/>
             </imageobject>
         </mediaobject>
 
@@ -53,13 +53,13 @@
 
         <mediaobject>
             <imageobject role="fo">
-                <imagedata fileref="images/full_cream.svg" format="SVG" align="center"/>
+                <imagedata fileref="images/fullcream.png" format="PNG" align="center"/>
             </imageobject>
             <imageobject role="html">
-                <imagedata fileref="../shared/images/full_cream.gif" format="GIF" align="center"/>
+                <imagedata fileref="../shared/images/fullcream.png" format="PNG" align="center"/>
             </imageobject>
             <imageobject role="chm">
-                <imagedata fileref="shared/images/full_cream.gif" format="GIF" align="center"/>
+                <imagedata fileref="shared/images/fullcream.png" format="PNG" align="center"/>
             </imageobject>
         </mediaobject>
 
