@@ -5,17 +5,29 @@ using System.Collections.Generic;
 namespace NHibernate.Test.Criteria.Lambda
 {
 
+	public enum PersonGender
+	{
+		Male = 1,
+		Female = 2,
+	}
+
 	public class Person
 	{
+		public static string StaticName;
+
 		public virtual int					Id			{ get; set; }
 		public virtual string				Name		{ get; set; }
 		public virtual int					Age			{ get; set; }
+		public virtual PersonGender			Gender		{ get; set; }
 		public virtual int					Height		{ get; set; }
 		public virtual bool					HasCar		{ get; set; }
 		public virtual Person				Father		{ get; set; }
+		public virtual bool					IsParent	{ get; set; }
 
 		public virtual IEnumerable<Child>	Children	{ get; set; }
 	}
+
+	public class CustomPerson : Person { }
 
 	public class Child
 	{
