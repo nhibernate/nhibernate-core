@@ -20,7 +20,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1027
 		}
 
 		[Test]
-		[Ignore("Not completely fixed yet.")]
 		public void CanMakeCriteriaQueryAcrossBothAssociations()
 		{
 			AssertDialect();
