@@ -7,7 +7,6 @@
 >
 
 	<property name="root.dir" value=".." />
-	<include buildfile="${root.dir}/build-common/common.xml"/>
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
 	<target name="init" depends="common.init">
@@ -22,7 +21,7 @@
 	<target name="clean" depends="init">
 		<nant target="clean" buildfile="reference/reference.build" />
 		<delete dir="${doc.out.dir}" />
-		<delete file="NHibernate.ndoc" />
+		<delete file="NHibernate.shfbproj" />
 	</target>
 
 	<target name="manual" depends="init">
@@ -34,15 +33,15 @@
 		</nant>
 	</target>
 
-	<target name="ndoc-project" depends="init">
-		<copy file="NHibernate.ndoc.in" tofile="NHibernate.ndoc" overwrite="true">
+	<target name="apidocbuilder-project" depends="init">
+		<copy file="NHibernate.shfbproj.template" tofile="NHibernate.shfbproj" overwrite="true">
 			<filterchain>
 				<expandproperties />
 			</filterchain>
 		</copy>
 	</target>
 
-	<target name="api" depends="init common.find-ndoc ndoc-project" description="Generates the API documentation (in MSDN style and VS.NET 2003 if available)">
+	<target name="api" depends="init apidocbuilder-project" description="Generates the API documentation (in MSDN style and VS.NET 2005 if available)">
 		<uptodate property="api.uptodate">
 			<sourcefiles>
 				<include name="${bin.dir}/*.dll" />
@@ -57,13 +56,9 @@
 		<echo if="${api.uptodate}">API documentation is up to date, skipping generation step.</echo>
 
 		<if test="${not api.uptodate}">
-			<exec program="${ndoc-console}">
-				<arg line="-documenter=MSDN-Help2" />
-				<arg line="-project=NHibernate.ndoc" />
-			</exec>
-			<exec program="${ndoc-console}">
-				<arg line="-documenter=MSDN-CHM" />
-				<arg line="-project=NHibernate.ndoc" />
+			<property name="apidocbuilder.exe" value="${directory::get-parent-directory(environment::get-folder-path('System'))}\Microsoft.NET\Framework\v3.5\MSBuild.exe" />
+			<exec program="${apidocbuilder.exe}">
+				<arg line="NHibernate.shfbproj" />
 			</exec>
 		</if>
 	</target>

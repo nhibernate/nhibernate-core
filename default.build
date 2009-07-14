@@ -156,6 +156,11 @@
 		description="Builds the Help Documentation">
 		<nant buildfile="doc/documentation.build" target="manual" />
 	</target>
+	
+	<target name="api" depends="init binaries"
+		description="Builds the API Documentation">
+		<nant buildfile="doc/documentation.build" target="api" />
+	</target>
 
 	<target name="build-all-frameworks" depends="init">
 		<!-- Save the current framework -->
@@ -299,7 +304,7 @@
 		<nant buildfile="src/NHibernate.Setup/NHibernate.Setup.build" target="msi" />
 	</target>
 	
-	<target name="package" depends="init set-release-project-configuration test binaries manual sources-zip binaries-zip"
+	<target name="package" depends="init binaries manual sources-zip binaries-zip"
 		description="Creates files for the File Release System on SourceForge">
 
 		<property name="dist.output.dir" value="${project::get-base-directory()}/build/" />
