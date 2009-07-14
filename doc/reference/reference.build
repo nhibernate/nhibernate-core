@@ -12,7 +12,7 @@
 		<property name="lang" value="en" />
 
 		<property name="output.dir" value="${build.dir}/doc" />
-		<property name="output.html.basename" value="NHibernate.Documentation" />
+		<property name="output.html.basename" value="NHibernate.Reference" />
 		<property name="output.help2.dir" value="${output.dir}/help2" />
 
 		<property name="build.html.dir" value="${output.dir}" />
