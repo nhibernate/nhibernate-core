@@ -283,7 +283,208 @@ namespace Eg
         </para>
 
     </sect1>
+    
+    <sect1 id="persistent-classes-dynamicmodels">
+        <title>Dynamic models</title>
+        
+        <para>
+            <emphasis>Note that the following features are currently considered
+                experimental and may change in the near future.</emphasis>
+        </para>
+        
+        <para>
+            Persistent entities don't necessarily have to be represented as POCO classes
+            at runtime. NHibernate also supports dynamic models
+            (using <literal>Dictionaries</literal> of <literal>Dictionary</literal>s at runtime) . With this approach, you don't
+            write persistent classes, only mapping files.
+        </para>
+        
+        <para>
+            By default, NHibernate works in normal POCO mode. You may set a default entity
+            representation mode for a particular <literal>ISessionFactory</literal> using the
+            <literal>default_entity_mode</literal> configuration option (see
+            <xref linkend="configuration-optional-properties"/>.
+        </para>
+        
+        <para>
+            The following examples demonstrates the representation using <literal>Map</literal>s (Dictionary).
+            First, in the mapping file, an <literal>entity-name</literal> has to be declared
+            instead of (or in addition to) a class name:
+        </para>
+        
+        <programlisting><![CDATA[<hibernate-mapping>
 
+    <class entity-name="Customer">
+
+        <id name="id"
+            type="long"
+            column="ID">
+            <generator class="sequence"/>
+        </id>
+
+        <property name="name"
+            column="NAME"
+            type="string"/>
+
+        <property name="address"
+            column="ADDRESS"
+            type="string"/>
+
+        <many-to-one name="organization"
+            column="ORGANIZATION_ID"
+            class="Organization"/>
+
+        <bag name="orders"
+            inverse="true"
+            lazy="false"
+            cascade="all">
+            <key column="CUSTOMER_ID"/>
+            <one-to-many class="Order"/>
+        </bag>
+
+    </class>
+    
+</hibernate-mapping>]]></programlisting>
+        
+        <para>
+            
+            Note that even though associations are declared using target class names,
+            the target type of an associations may also be a dynamic entity instead
+            of a POCO.
+        </para>
+        
+        <para>
+            After setting the default entity mode to <literal>dynamic-map</literal>
+            for the <literal>ISessionFactory</literal>, we can at runtime work with
+            <literal>Dictionaries</literal> of <literal>Dictionaries</literal>:
+        </para>
+        
+        <programlisting><![CDATA[Session s = OpenSession();
+Transaction tx = s.BeginTransaction();
+ISession s = OpenSession();
+
+// Create a customer
+var frank = new Dictionary<string, object>();
+frank["name"] = "Frank";
+
+// Create an organization
+var foobar = new Dictionary<string, object>();
+foobar["name"] = "Foobar Inc.";
+
+// Link both
+frank["organization"] =  foobar;
+
+// Save both
+s.Save("Customer", frank);
+s.Save("Organization", foobar);
+
+tx.Commit();
+s.Close();]]></programlisting>
+        
+        <para>
+            The advantages of a dynamic mapping are quick turnaround time for prototyping
+            without the need for entity class implementation. However, you lose compile-time
+            type checking and will very likely deal with many exceptions at runtime. Thanks
+            to the NHibernate mapping, the database schema can easily be normalized and sound,
+            allowing to add a proper domain model implementation on top later on.
+        </para>
+        
+        <para>
+            Entity representation modes can also be set on a per <literal>ISession</literal>
+            basis:
+        </para>
+        
+        <programlisting><![CDATA[Session dynamicSession = pocoSession.GetSession(EntityMode.Map);
+
+// Create a customer
+var frank = new Dictionary<string, object>();
+frank["name"] = "Frank";
+dynamicSession.Save("Customer", frank);
+...
+dynamicSession.Flush();
+dynamicSession.Close()
+...
+// Continue on pocoSession
+]]></programlisting>
+        
+        
+        <para>
+            Please note that the call to <literal>GetSession()</literal> using an
+            <literal>EntityMode</literal> is on the <literal>ISession</literal> API, not the
+            <literal>ISessionFactory</literal>. That way, the new <literal>ISession</literal>
+            shares the underlying ADO connection, transaction, and other context
+            information. This means you don't have tocall <literal>Flush()</literal>
+            and <literal>Close()</literal> on the secondary <literal>ISession</literal>, and
+            also leave the transaction and connection handling to the primary unit of work.
+        </para>
+    </sect1>
+    
+    <sect1 id="persistent-classes-tuplizers" revision="1">
+        <title>Tuplizers</title>
+        
+        <para>
+            <literal>NHibernate.Tuple.Tuplizer</literal>, and its sub-interfaces, are responsible
+            for managing a particular representation of a piece of data, given that representation's
+            <literal>NHibernate.EntityMode</literal>.  If a given piece of data is thought of as
+            a data structure, then a tuplizer is the thing which knows how to create such a data structure
+            and how to extract values from and inject values into such a data structure.  For example,
+            for the POCO entity mode, the correpsonding tuplizer knows how create the POCO through its
+            constructor and how to access the POCO properties using the defined property accessors.
+            There are two high-level types of Tuplizers, represented by the
+            <literal>NHibernate.Tuple.Entity.IEntityTuplizer</literal> and <literal>NHibernate.Tuple.Component.IComponentTuplizer</literal>
+            interfaces.  <literal>IEntityTuplizer</literal>s are responsible for managing the above mentioned
+            contracts in regards to entities, while <literal>IComponentTuplizer</literal>s do the same for
+            components.
+        </para>
+        
+        <para>
+            Users may also plug in their own tuplizers.  Perhaps you require that a <literal>System.Collections.IDictionary</literal>
+            implementation other than <literal>System.Collections.Hashtable</literal> be used while in the
+            dynamic-map entity-mode; or perhaps you need to define a different proxy generation strategy
+            than the one used by default.  Both would be achieved by defining a custom tuplizer
+            implementation.  Tuplizers definitions are attached to the entity or component mapping they
+            are meant to manage.  Going back to the example of our customer entity:
+        </para>
+        
+        <programlisting><![CDATA[<hibernate-mapping>
+    <class entity-name="Customer">
+        <!--
+            Override the dynamic-map entity-mode
+            tuplizer for the customer entity
+        -->
+        <tuplizer entity-mode="dynamic-map"
+                class="CustomMapTuplizerImpl"/>
+
+        <id name="id" type="long" column="ID">
+            <generator class="sequence"/>
+        </id>
+
+        <!-- other properties -->
+        ...
+    </class>
+</hibernate-mapping>
+
+
+public class CustomMapTuplizerImpl:
+        NHibernate.Tuple.Entity.DynamicMapEntityTuplizer {
+    // override the BuildInstantiator() method to plug in our custom map...
+   protected override IInstantiator BuildInstantiator(
+            NHibernate.Mapping.PersistentClass mappingInfo) {
+        return new CustomMapInstantiator( mappingInfo );
+    }
+
+    private static final class CustomMapInstantiator:
+            NHibernate.Tuple.DynamicMapInstantiator {
+        // override the generateMap() method to return our custom map...
+	    protected override IDictionary GenerateMap() {
+		    return new CustomMap();
+	    }
+    }
+}]]></programlisting>
+        
+        
+    </sect1>
+    
     <sect1 id="persistent-classes-lifecycle">
         <title>Lifecycle Callbacks</title>
 
