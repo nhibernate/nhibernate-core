@@ -915,6 +915,9 @@ sess.Close();]]></programlisting>
             For exceptions thrown by the data provider while interacting with the database,
             NHibernate will wrap the error in an instance of <literal>ADOException</literal>.
             The underlying exception is accessible by calling <literal>ADOException.InnerException</literal>.
+            NHibernate converts the DbException into an appropriate ADOException subclass using the ISQLExceptionConverter attached to the SessionFactory. 
+            By default, the ISQLExceptionConverter is defined by the configured dialect; however, it is also possible to plug in a custom implementation 
+            (see the api-docs for the ISQLExceptionConverter class for details).
         </para>
 
         <para>
