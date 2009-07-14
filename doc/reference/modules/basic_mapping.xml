@@ -2499,7 +2499,24 @@
                 The <literal>IUserType</literal> can now retrieve the value for the parameter named 
                 <literal>default</literal> from the <literal>IDictionary</literal> object passed to it.
             </para>
-
+            <para>
+                If you use a certain <literal>UserType</literal> very often, it may be useful to define a
+                shorter name for it. You can do this using the <literal>&lt;typedef&gt;</literal> element.
+                Typedefs assign a name to a custom type, and may also contain a list of default
+                parameter values if the type is parameterized.
+            </para>
+            
+            <programlisting><![CDATA[<typedef class="MyCompany.UserTypes.DefaultValueIntegerType" name="default_zero">
+    <param name="default">0</param>
+</typedef>]]></programlisting>
+            
+            <programlisting><![CDATA[<property name="priority" type="default_zero"/>]]></programlisting>
+            
+            <para>
+                It is also possible to override the parameters supplied in a typedef on a case-by-case basis
+                by using type parameters on the property mapping.
+            </para>
+            
             <para>
                 Even though NHibernate's rich range of built-in types and support for components means you
                 will very rarely <emphasis>need</emphasis> to use a custom type, it is nevertheless
