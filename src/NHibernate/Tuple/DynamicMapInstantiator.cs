@@ -46,7 +46,7 @@ namespace NHibernate.Tuple
 			return map;
 		}
 
-		protected internal virtual IDictionary GenerateMap()
+		protected virtual IDictionary GenerateMap()
 		{
 			return new Hashtable();
 		}
