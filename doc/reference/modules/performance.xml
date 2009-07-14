@@ -43,6 +43,14 @@
             </listitem>
             <listitem>
                 <para>
+                    <emphasis>"Extra-lazy" collection fetching</emphasis> - individual
+                    elements of the collection are accessed from the database as needed.
+                    Hibernate tries not to fetch the whole collection into memory unless
+                    absolutely needed (suitable for very large collections)
+                </para>
+            </listitem>
+            <listitem>
+                <para>
                     <emphasis>Batch fetching</emphasis> - an optimization strategy
                     for select fetching - NHibernate retrieves a batch of entity instances 
                     or collections in a single <literal>SELECT</literal>, by specifying 
