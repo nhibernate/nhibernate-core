@@ -2,13 +2,13 @@
 <project name="NHibernate TeamCity Build" xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd" default="clean-configure-test">
 	<property name="root.dir" value="." />
 	<include buildfile="${root.dir}/default.build" />
+
 	<if test="${not property::exists('CCNetLabel') and not property::exists('build.number')}">
 		<fail>This build file is for use with CruiseControl.NET or TeamCity</fail>
 	</if>
-	
 	<property name="build.number" value="${CCNetLabel}" if="${property::exists('CCNetLabel')}" />
 
-	<target name="clean-configure-test" depends="cleanall init copy-teamcity-configuration build test">
+	<target name="clean-configure-test" depends="cleanall init copy-teamcity-configuration package">
 
 	</target>
 	<target name="copy-teamcity-configuration">

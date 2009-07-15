@@ -146,6 +146,7 @@
 			debug="${build.debug}"
 			output="${bin.dir}/${project::get-name()}.exe" 
 			if="${sign}"
+			optimize="true"
 		>
 			<nowarn>
 				<warning number="1591" /> <!-- No XML comment for publicly visible member -->
@@ -161,6 +162,7 @@
 			debug="${build.debug}"
 			output="${bin.dir}/${project::get-name()}.exe" 
 			unless="${sign}"
+			optimize="true"
 		>
 			<nowarn>
 				<warning number="1591" /> <!-- No XML comment for publicly visible member -->
