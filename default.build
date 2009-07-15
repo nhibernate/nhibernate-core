@@ -152,11 +152,16 @@
 		<nant buildfile="doc/documentation.build" target="api manual" />
 	</target>
 	
-	<target name="manual" depends="init binaries"
-		description="Builds the Help Documentation">
+	<target name="reference" depends="init binaries"
+		description="Builds Reference Manual">
 		<nant buildfile="doc/documentation.build" target="manual" />
 	</target>
 	
+	<target name="reference-zip" depends="init binaries"
+		description="Builds Reference Manual zip">
+		<nant buildfile="doc/documentation.build" target="manual-zip" />
+	</target>
+
 	<target name="api" depends="init binaries"
 		description="Builds the API Documentation">
 		<nant buildfile="doc/documentation.build" target="api" />
@@ -247,90 +252,100 @@
 	</target>
 
 	<target name="sources-zip" depends="init sources">
-		<mkdir dir="${build.dir}/src" />
-		<zip zipfile="${build.dir}/src/NHibernate-${project.version}-src.zip">
+		<zip zipfile="${build.dir}/NHibernate-${project.version}-src.zip">
 			<fileset basedir="${source.tmpdir}">
 				<include name="**/*" />
 			</fileset>
 		</zip>
 	</target>
 
-	<target name="copy-release-notes" depends="init">
-		<copy file="releasenotes.txt" todir="${build.dir}" />
-	</target>
-
-	<target name="copy-xml-schemas" depends="init">
-		<!--
-			TODO: Probably need to think of a better place for the XML schemas since
-			they are used by NHibernate and this build file.
-		-->
-		<copy todir="${build.dir}">
-			<fileset basedir="src/NHibernate">
-				<include name="nhibernate-mapping.xsd" />
-				<include name="nhibernate-configuration.xsd" />
-			</fileset>
-		</copy>
-	</target>
-
-	<target name="copy-config-templates" depends="init">
-		<!--
-			TODO: I don't like where these are put now.  Should think of a better 
-			place for these.
-		-->
-		<copy todir="${build.dir}/config.templates">
-			<fileset basedir="src/NHibernate.Config.Templates">
-				<include name="*"/>
-			</fileset>
-		</copy>
-	</target>
-	
-	<target name="binaries-zip" depends="init binaries copy-release-notes copy-xml-schemas copy-config-templates">
-		<zip zipfile="${build.dir}/bin/NHibernate-${project.version}-bin.zip">
-			<fileset basedir="${build.dir}">
-				<include name="releasenotes.txt" />
-				<include name="*.xsd" />
-				<include name="bin/**" />
-
-				<exclude name="**/*.hbm.xml" />
-				<exclude name="**/*.commandlog" />
-				<exclude name="**/MyTest*" />
+	<target name="binaries-zip" depends="init bin-pack">
+		<zip zipfile="${build.dir}/NHibernate-${project.version}-bin.zip">
+			<fileset basedir="${bin-pack.tmpdir}">
+				<include name="**/*" />
 			</fileset>
 		</zip>
 	</target>
 
-	<target name="prepare-installer-files" depends="init sources-zip copy-release-notes" />
+	<target name="bin-pack" depends="init binaries">
+		<property name="bin-pack.tmpdir" value="${build.dir}/tmp-bin" />
+		<property name="bin-pack.conf-template" value="${bin-pack.tmpdir}/Configuration_Templates" />
+		<property name="bin-pack.required" value="${bin-pack.tmpdir}/Required_Bins" />
+		<property name="bin-pack.requiredlazy" value="${bin-pack.tmpdir}/Required_For_LazyLoading" />
+		<property name="bin-pack.tests" value="${bin-pack.tmpdir}/Tests" />
+		
+		<copy file="releasenotes.txt" todir="${bin-pack.tmpdir}"/>
+		<copy file="readme.html" todir="${bin-pack.tmpdir}"/>
+		<copy file="lgpl.txt" todir="${bin-pack.tmpdir}"/>
+		<copy file="gfdl.txt" todir="${bin-pack.tmpdir}"/>
+		<copy file="HowInstall.txt" todir="${bin-pack.tmpdir}"/>
 
-	<target name="installer" depends="init binaries doc prepare-installer-files">
-		<nant buildfile="src/NHibernate.Setup/NHibernate.Setup.build" target="msi" />
+		<!--Configuration templates-->
+		<copy todir="${bin-pack.conf-template}">
+			<fileset basedir="src/NHibernate.Config.Templates">
+				<include name="*"/>
+			</fileset>
+		</copy>
+
+		<!--Minimal Required Bins-->
+		<copy todir="${bin-pack.required}">
+			<fileset basedir="src/NHibernate">
+				<include name="*.xsd" />
+			</fileset>
+		</copy>
+		<copy todir="${bin-pack.required}">
+			<fileset basedir="${bin.dir}">
+				<include name="Antlr3.Runtime.dll" />
+				<include name="Iesi.Collections.???" />
+				<include name="log4net*" />
+				<include name="NHibernate.???" />
+			</fileset>
+		</copy>
+		<!--Required Bins for lazy loading NHibernate.ByteCode.Castle.dll-->
+		<copy file="Choose_Only_One.txt" todir="${bin-pack.requiredlazy}"/>
+		<copy todir="${bin-pack.requiredlazy}/Castle">
+			<fileset basedir="${bin.dir}">
+				<include name="Castle.*" />
+				<include name="NHibernate.ByteCode.Castle.???" />
+			</fileset>
+		</copy>
+		<copy todir="${bin-pack.requiredlazy}/LinFu">
+			<fileset basedir="${bin.dir}">
+				<include name="LinFu.*" />
+				<include name="NHibernate.ByteCode.LinFu.???" />
+			</fileset>
+		</copy>
+		<copy todir="${bin-pack.requiredlazy}/Spring">
+			<fileset basedir="${bin.dir}">
+				<include name="antlr.runtime.dll" />
+				<include name="Common.Logging.dll" />
+				<include name="Spring.*" />
+				<include name="NHibernate.ByteCode.Spring.???" />
+			</fileset>
+		</copy>
+		<!-- Tests -->
+		<copy file="${bin.dir}/TestEnbeddedConfig.cfg.xml" todir="${bin-pack.tests}"/>
+		<copy file="${bin.dir}/ABC.hbm.xml" todir="${bin-pack.tests}"/>
+		<copy todir="${bin-pack.tests}">
+			<fileset basedir="${bin.dir}">
+				<include name="nunit*" />
+				<include name="NHibernate.Domain*" />
+				<include name="NHibernate.Test*" />
+			</fileset>
+		</copy>
 	</target>
 	
-	<target name="package" depends="init binaries manual sources-zip binaries-zip"
-		description="Creates files for the File Release System on SourceForge">
+	<target name="package" depends="init binaries reference-zip sources-zip binaries-zip"
+		description="Creates files for the General Available Release on SourceForge">
 
-		<property name="dist.output.dir" value="${project::get-base-directory()}/build/" />
-		<move todir="${dist.output.dir}" flatten="true" overwrite="true">
-			<fileset basedir="${build.dir}">
-				<include name="*.msi" />
-				<include name="src/NHibernate-${project.version}-src.zip" />
-				<include name="bin/NHibernate-${project.version}-bin.zip" />
-			</fileset>
-		</move>
-
-		<echo message="Created a '${project.config}' package in ${dist.output.dir}" />
-
+		<echo message="Created a '${project.config}' package in ${build.dir}" />
 	</target>
+	
+	<target name="release" depends="init binaries binaries-zip sources-zip"
+		description="Creates files for the partial (Alpha-Beta-Candidate) Release on SourceForge">
 
-	<target name="fxcop" depends="init" >
- 		<exec program="${fxcop.exe}" 
- 			  commandline="/f:${build.dir}\bin\nhibernate.dll /o:${build.dir}\bin\fxcop-results.xml"
- 			  failonerror="false"/>
- 	</target>
- 	
- 	<target name="simian" depends="init" >
- 		<exec program="${simian.exe}" verbose="true" 
- 			  commandline="-recurse=src/*.cs -formatter=xml:${build.dir}\bin\simian-results.xml -failOnDuplication-"
- 			  failonerror="false"/>
- 	</target>
+		<echo message="Created a '${project.config}' package in ${build.dir}" />
+	</target>
 
 	<target name="visual-studio" depends="init" description="Modifies AssemblyInfo.cs files to work with Visual Studio">
 		<property name="visual-studio" value="true" />
