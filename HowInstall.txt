@@ -1,0 +1,7 @@
+Required Bins : Minimal required assemblies to work with NHibernate
+
+
+Required for LazyLoading : 
+NHibernate 2.1 has a new important feature regarding dynamic-proxy systems for lazy-loading
+Details are available in releasenotes.txt and in this post
+http://nhforge.org/blogs/nhibernate/archive/2008/11/09/nh2-1-0-bytecode-providers.aspx

@@ -32,6 +32,14 @@
 			</properties>
 		</nant>
 	</target>
+	
+	<target name="manual-zip" depends="manual">
+		<zip zipfile="${build.dir}/NHibernate-${project.version}-reference.zip">
+			<fileset basedir="${doc.out.dir}">
+				<include name="**/*" />
+			</fileset>
+		</zip>
+	</target>
 
 	<target name="apidocbuilder-project" depends="init">
 		<copy file="NHibernate.shfbproj.template" tofile="NHibernate.shfbproj" overwrite="true">
