@@ -11,7 +11,7 @@
 
 	<!-- Pass -D:skip.tests=true to NAnt to skip running tests when building -->
 	<property name="skip.tests" value="false" overwrite="false" />
-
+	<property name="skip.manual" value="false" overwrite="false" />
 	<!--
 		Supported versions of .NET Framework, separated by spaces.
 		Used by *-all-frameworks targets.
@@ -152,14 +152,14 @@
 		<nant buildfile="doc/documentation.build" target="api manual" />
 	</target>
 	
-	<target name="reference" depends="init binaries"
+	<target name="reference" depends="init binaries" unless="${skip.manual}"
 		description="Builds Reference Manual">
 		<nant buildfile="doc/documentation.build" target="manual" />
 	</target>
 	
-	<target name="reference-zip" depends="init binaries"
+	<target name="reference-zip" depends="init binaries" unless="${skip.manual}"
 		description="Builds Reference Manual zip">
-		<nant buildfile="doc/documentation.build" target="manual-zip" />
+		<nant buildfile="doc/documentation.build" target="manual-zip"/>
 	</target>
 
 	<target name="api" depends="init binaries"

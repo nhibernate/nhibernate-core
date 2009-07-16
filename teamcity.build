@@ -8,7 +8,7 @@
 	
 	<property name="build.number" value="${CCNetLabel}" if="${property::exists('CCNetLabel')}" />
 
-	<target name="clean-configure-test" depends="cleanall init copy-teamcity-configuration build test">
+	<target name="clean-configure-test" depends="cleanall init copy-teamcity-configuration package">
 
 	</target>
 	<target name="copy-teamcity-configuration">
