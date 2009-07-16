@@ -154,11 +154,13 @@
 
 	<!-- named project configurations -->
 	<target name="set-debug-project-configuration" description="Perform a 'debug' build">
+		<property name="build.release" value="false" />
 		<property name="build.debug" value="true" />
 		<property name="build.name" value="NHibernate-${project.version}-${project.config}" />
 	</target>
 	
 	<target name="set-release-project-configuration" description="Perform a 'release' build">
+		<property name="build.release" value="true" />
 		<property name="build.debug" value="false" />
 		<property name="build.name" value="NHibernate-${project.version}" />
 	</target>
