@@ -1,4 +1,6 @@
+using System.IO;
 using NHibernate.Cfg;
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using NUnit.Framework;
 
@@ -179,6 +181,18 @@ namespace NHibernate.Test.MappingTest
 			cm = cfg.GetClassMapping("NHibernate.Test.MappingTest.Dog");
 			metaAttribute = cm.GetMetaAttribute("Auditable");
 			Assert.That(metaAttribute, Is.Not.Null);
+		}
+
+		[Test]
+		public void XmlSerialization()
+		{
+			// NH-1865 (have a look to comments in JIRA)
+			var mdp = new MappingDocumentParser();
+			using (Stream stream = GetType().Assembly.GetManifestResourceStream("NHibernate.Test.MappingTest.Wicked.hbm.xml"))
+			{
+				HbmMapping mapping = mdp.Parse(stream);
+				Assert.That(mapping, Is.XmlSerializable);
+			}
 		}
 	}
 }
