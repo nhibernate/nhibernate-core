@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using NHibernate.Mapping;
 using NHibernate.Util;
 
@@ -10,7 +11,12 @@ namespace NHibernate.Cfg.MappingSchema
 	{
 		private static readonly IDictionary<string, MetaAttribute> EmptyMetaData = new CollectionHelper.EmptyMapClass<string, MetaAttribute>();
 
+		[NonSerialized]
+		[XmlIgnore]
 		private IDictionary<string, MetaAttribute> mappedMetaData;
+
+		[NonSerialized]
+		[XmlIgnore]
 		private IDictionary<string, MetaAttribute> inheritableMetaData;
 
 		public virtual IDictionary<string, MetaAttribute> MappedMetaData
