@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Hql;
+
 namespace NHibernate.Cfg.Loquacious
 {
 	public static class ConfigurationExtensions
@@ -49,6 +50,25 @@ namespace NHibernate.Cfg.Loquacious
 		public static Configuration DataBaseIntegration(this Configuration configuration, Action<IDbIntegrationConfigurationProperties> dataBaseIntegration)
 		{
 			dataBaseIntegration(new DbIntegrationConfigurationProperties(configuration));
+			return configuration;
+		}
+
+		public static Configuration EntityCache<TEntity>(this Configuration configuration, Action<IEntityCacheConfigurationProperties<TEntity>> entityCacheConfiguration)
+			where TEntity : class
+		{
+			var ecc = new EntityCacheConfigurationProperties<TEntity>();
+			entityCacheConfiguration(ecc);
+			if (ecc.Strategy.HasValue)
+			{
+				configuration.SetCacheConcurrencyStrategy(typeof (TEntity).FullName, EntityCacheUsageParser.ToString(ecc.Strategy.Value),
+				                                          ecc.RegionName);
+			}
+			foreach (var collection in ecc.Collections)
+			{
+				configuration.SetCollectionCacheConcurrencyStrategy(collection.Key,
+				                                                    EntityCacheUsageParser.ToString(collection.Value.Strategy),
+				                                                    collection.Value.RegionName);
+			}
 			return configuration;
 		}
 	}

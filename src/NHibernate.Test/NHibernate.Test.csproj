@@ -109,6 +109,8 @@
     <Compile Include="CfgTest\HbmOrderingFixture.cs" />
     <Compile Include="CfgTest\LocatedInTestAssembly.cs" />
     <Compile Include="CfgTest\Loquacious\ConfigurationFixture.cs" />
+    <Compile Include="CfgTest\Loquacious\EntityCacheConfigurationFixture.cs" />
+    <Compile Include="CfgTest\Loquacious\EntityToCache.cs" />
     <Compile Include="CfgTest\Loquacious\LambdaConfigurationFixture.cs" />
     <Compile Include="CfgTest\MappingDocumentAggregatorTests.cs" />
     <Compile Include="CfgTest\MappingDocumentParserTests.cs" />
@@ -1368,6 +1370,7 @@
     <Compile Include="UserCollection\User.cs" />
     <Compile Include="UserCollection\UserCollectionTypeTest.cs" />
     <Compile Include="UtilityTest\AssemblyQualifiedTypeNameFixture.cs" />
+    <Compile Include="UtilityTest\ExpressionsHelperFixture.cs" />
     <Compile Include="UtilityTest\IdentityMapFixture.cs" />
     <Compile Include="UtilityTest\IdentityMapSequencedFixture.cs" />
     <Compile Include="UtilityTest\JoinedEnumerableFixture.cs" />
@@ -1957,6 +1960,7 @@
     <EmbeddedResource Include="Bytecode\Lightweight\ProductLine.hbm.xml" />
     <EmbeddedResource Include="DriverTest\MultiTypeEntity.hbm.xml" />
     <EmbeddedResource Include="Criteria\Lambda\Mappings.hbm.xml" />
+    <EmbeddedResource Include="CfgTest\Loquacious\EntityToCache.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
     <EmbeddedResource Include="NHSpecificTest\NH1877\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1868\Mappings.hbm.xml" />

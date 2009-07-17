@@ -464,6 +464,7 @@
     <Compile Include="Cfg\Loquacious\CacheConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\ConfigurationExtensions.cs" />
     <Compile Include="Cfg\Loquacious\DbIntegrationConfiguration.cs" />
+    <Compile Include="Cfg\Loquacious\EntityCacheConfigurationProperties.cs" />
     <Compile Include="Cfg\Loquacious\FluentSessionFactoryConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\IBatcherConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\ICacheConfiguration.cs" />
@@ -472,6 +473,7 @@
     <Compile Include="Cfg\Loquacious\IConnectionConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\IDbIntegrationConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\IDbSchemaIntegrationConfiguration.cs" />
+    <Compile Include="Cfg\Loquacious\IEntityCacheConfigurationProperties.cs" />
     <Compile Include="Cfg\Loquacious\IFluentSessionFactoryConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\IMappingsConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\IProxyConfiguration.cs" />
@@ -638,6 +640,7 @@
     <Compile Include="Type\DbTimestampType.cs" />
     <Compile Include="Type\DefaultCollectionTypeFactory.cs" />
     <Compile Include="Bytecode\ICollectionTypeFactory.cs" />
+    <Compile Include="Util\ExpressionsHelper.cs" />
     <Compile Include="Util\NullableDictionary.cs" />
     <Compile Include="Hql\Ast\ANTLR\Util\PathHelper.cs" />
     <Compile Include="Hql\Ast\ANTLR\Util\SyntheticAndFactory.cs" />

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.CfgTest.Loquacious"
+				   assembly="NHibernate.Test">
+
+	<class name="EntityToCache">
+		<id name="Id" type="Int32">
+			<generator class="hilo" />
+		</id>
+
+		<property name="Name" />
+		<bag name="Elements">
+			<key column="parentId"/>
+			<element type="string"/>
+		</bag>
+	</class>
+</hibernate-mapping>
