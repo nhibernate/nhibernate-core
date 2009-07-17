@@ -102,51 +102,6 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		}
 
 		/// <summary>
-		/// Convert a string to <see cref="ClassCacheUsage"/>.
-		/// </summary>
-		/// <param name="usage">The string that represent <see cref="ClassCacheUsage"/>.</param>
-		/// <returns>
-		/// The <paramref name="usage"/> converted to <see cref="ClassCacheUsage"/>.
-		/// </returns>
-		/// <exception cref="HibernateConfigException">If the values is invalid.</exception>
-		/// <remarks>
-		/// See <see cref="ClassCacheUsage"/> for allowed values.
-		/// </remarks>
-		public static ClassCacheUsage ClassCacheUsageConvertFrom(string usage)
-		{
-			switch (usage)
-			{
-				case "read-only":
-					return ClassCacheUsage.Readonly;
-				case "read-write":
-					return ClassCacheUsage.ReadWrite;
-				case "nonstrict-read-write":
-					return ClassCacheUsage.NonStrictReadWrite;
-				case "transactional":
-					return ClassCacheUsage.Transactional;
-				default:
-					throw new HibernateConfigException(string.Format("Invalid ClassCacheUsage value:{0}", usage));
-			}
-		}
-
-		internal static string ClassCacheUsageConvertToString(ClassCacheUsage usage)
-		{
-			switch (usage)
-			{
-				case ClassCacheUsage.Readonly:
-					return "read-only";
-				case ClassCacheUsage.ReadWrite:
-					return "read-write";
-				case ClassCacheUsage.NonStrictReadWrite:
-					return "nonstrict-read-write";
-				case ClassCacheUsage.Transactional:
-					return "transactional";
-				default:
-					return string.Empty;
-			}
-		}
-
-		/// <summary>
 		/// Convert a string to <see cref="ClassCacheInclude"/>.
 		/// </summary>
 		/// <param name="include">The string that represent <see cref="ClassCacheInclude"/>.</param>

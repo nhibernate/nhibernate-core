@@ -19,7 +19,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		/// <param name="collection">The cache role.</param>
 		/// <param name="usage">Cache strategy.</param>
 		/// <exception cref="ArgumentException">When <paramref name="collection"/> is null or empty.</exception>
-		public CollectionCacheConfiguration(string collection, ClassCacheUsage usage)
+		public CollectionCacheConfiguration(string collection, EntityCacheUsage usage)
 		{
 			if (String.IsNullOrEmpty(collection))
 				throw new ArgumentException("collection is null or empty.", "collection");
@@ -34,7 +34,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		/// <param name="usage">Cache strategy.</param>
 		/// <param name="region">The cache region.</param>
 		/// <exception cref="ArgumentException">When <paramref name="collection"/> is null or empty.</exception>
-		public CollectionCacheConfiguration(string collection, ClassCacheUsage usage, string region)
+		public CollectionCacheConfiguration(string collection, EntityCacheUsage usage, string region)
 			:this(collection,usage)
 		{
 			this.region = region;
@@ -54,7 +54,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 							collection = collectionCacheElement.Value;
 							break;
 						case "usage":
-							usage = CfgXmlHelper.ClassCacheUsageConvertFrom(collectionCacheElement.Value);
+							usage = EntityCacheUsageParser.Parse(collectionCacheElement.Value);
 							break;
 						case "region":
 							region = collectionCacheElement.Value;
@@ -84,11 +84,11 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			get { return region; }
 		}
 
-		private ClassCacheUsage usage;
+		private EntityCacheUsage usage;
 		/// <summary>
 		/// Cache strategy.
 		/// </summary>
-		public ClassCacheUsage Usage
+		public EntityCacheUsage Usage
 		{
 			get { return usage; }
 		}

@@ -178,7 +178,7 @@ namespace NHibernate.Test.CfgTest
 			HibernateConfiguration hc = new HibernateConfiguration(xtr);
 			Assert.AreEqual(1, hc.SessionFactory.ClassesCache.Count);
 			Assert.AreEqual("Class1", hc.SessionFactory.ClassesCache[0].Class);
-			Assert.AreEqual(ClassCacheUsage.Readonly, hc.SessionFactory.ClassesCache[0].Usage);
+			Assert.AreEqual(EntityCacheUsage.Readonly, hc.SessionFactory.ClassesCache[0].Usage);
 			Assert.AreEqual(ClassCacheInclude.NonLazy, hc.SessionFactory.ClassesCache[0].Include);
 			Assert.AreEqual("ARegion", hc.SessionFactory.ClassesCache[0].Region);
 		}
@@ -198,7 +198,7 @@ namespace NHibernate.Test.CfgTest
 			HibernateConfiguration hc = new HibernateConfiguration(xtr);
 			Assert.AreEqual(1, hc.SessionFactory.CollectionsCache.Count);
 			Assert.AreEqual("Collection1", hc.SessionFactory.CollectionsCache[0].Collection);
-			Assert.AreEqual(ClassCacheUsage.NonStrictReadWrite, hc.SessionFactory.CollectionsCache[0].Usage);
+			Assert.AreEqual(EntityCacheUsage.NonStrictReadWrite, hc.SessionFactory.CollectionsCache[0].Usage);
 			Assert.AreEqual("ARegion", hc.SessionFactory.CollectionsCache[0].Region);
 		}
 

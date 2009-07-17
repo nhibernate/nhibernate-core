@@ -4,21 +4,6 @@ using System.Xml.XPath;
 namespace NHibernate.Cfg.ConfigurationSchema
 {
 	/// <summary>
-	/// Values for class-cache and collection-cache strategy.
-	/// </summary>
-	public enum ClassCacheUsage
-	{
-		/// <summary>Xml value: read-only</summary>
-		Readonly,
-		/// <summary>Xml value: read-write</summary>
-		ReadWrite,
-		/// <summary>Xml value: nonstrict-read-write</summary>
-		NonStrictReadWrite,
-		/// <summary>Xml value: transactional</summary>
-		Transactional
-	}
-
-	/// <summary>
 	/// Values for class-cache include.
 	/// </summary>
 	/// <remarks>Not implemented in Cache.</remarks>
@@ -47,7 +32,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		/// <param name="clazz">The class full name.</param>
 		/// <param name="usage">Cache strategy.</param>
 		/// <exception cref="ArgumentException">When <paramref name="clazz"/> is null or empty.</exception>
-		public ClassCacheConfiguration(string clazz, ClassCacheUsage usage)
+		public ClassCacheConfiguration(string clazz, EntityCacheUsage usage)
 		{
 			if (string.IsNullOrEmpty(clazz))
 				throw new ArgumentException("clazz is null or empty.", "clazz");
@@ -62,7 +47,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		/// <param name="usage">Cache strategy.</param>
 		/// <param name="include">Values for class-cache include.</param>
 		/// <exception cref="ArgumentException">When <paramref name="clazz"/> is null or empty.</exception>
-		public ClassCacheConfiguration(string clazz, ClassCacheUsage usage, ClassCacheInclude include)
+		public ClassCacheConfiguration(string clazz, EntityCacheUsage usage, ClassCacheInclude include)
 			: this(clazz, usage)
 		{
 			this.include = include;
@@ -75,7 +60,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		/// <param name="usage">Cache strategy.</param>
 		/// <param name="region">The cache region.</param>
 		/// <exception cref="ArgumentException">When <paramref name="clazz"/> is null or empty.</exception>
-		public ClassCacheConfiguration(string clazz, ClassCacheUsage usage, string region)
+		public ClassCacheConfiguration(string clazz, EntityCacheUsage usage, string region)
 			: this(clazz, usage)
 		{
 			this.region = region;
@@ -89,7 +74,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		/// <param name="include">Values for class-cache include.</param>
 		/// <param name="region">The cache region.</param>
 		/// <exception cref="ArgumentException">When <paramref name="clazz"/> is null or empty.</exception>
-		public ClassCacheConfiguration(string clazz, ClassCacheUsage usage, ClassCacheInclude include, string region)
+		public ClassCacheConfiguration(string clazz, EntityCacheUsage usage, ClassCacheInclude include, string region)
 			: this(clazz, usage, include)
 		{
 			this.region = region;
@@ -109,7 +94,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 							clazz = classCacheElement.Value;
 							break;
 						case "usage":
-							usage = CfgXmlHelper.ClassCacheUsageConvertFrom(classCacheElement.Value);
+							usage = EntityCacheUsageParser.Parse(classCacheElement.Value);
 							break;
 						case "region":
 							region = classCacheElement.Value;
@@ -143,11 +128,11 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		}
 
 
-		private ClassCacheUsage usage;
+		private EntityCacheUsage usage;
 		/// <summary>
 		/// Cache strategy.
 		/// </summary>
-		public ClassCacheUsage Usage
+		public EntityCacheUsage Usage
 		{
 			get { return usage; }
 		}

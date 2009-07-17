@@ -1434,7 +1434,7 @@ namespace NHibernate.Cfg
 			{
 				string region = string.IsNullOrEmpty(ccc.Region) ? ccc.Class : ccc.Region;
 				bool includeLazy = (ccc.Include != ClassCacheInclude.NonLazy);
-				SetCacheConcurrencyStrategy(ccc.Class, CfgXmlHelper.ClassCacheUsageConvertToString(ccc.Usage), region, includeLazy);
+				SetCacheConcurrencyStrategy(ccc.Class, EntityCacheUsageParser.ToString(ccc.Usage), region, includeLazy);
 			}
 
 			// Load collection-cache
@@ -1449,7 +1449,7 @@ namespace NHibernate.Cfg
 				}
 
 				string region = string.IsNullOrEmpty(ccc.Region) ? role : ccc.Region;
-				SetCollectionCacheConcurrencyStrategy(role, CfgXmlHelper.ClassCacheUsageConvertToString(ccc.Usage), region);
+				SetCollectionCacheConcurrencyStrategy(role, EntityCacheUsageParser.ToString(ccc.Usage), region);
 			}
 
 			// Events
