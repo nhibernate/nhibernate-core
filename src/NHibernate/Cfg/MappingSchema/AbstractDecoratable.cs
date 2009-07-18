@@ -19,6 +19,7 @@ namespace NHibernate.Cfg.MappingSchema
 		[XmlIgnore]
 		private IDictionary<string, MetaAttribute> inheritableMetaData;
 
+		[XmlIgnore]
 		public virtual IDictionary<string, MetaAttribute> MappedMetaData
 		{
 			get
@@ -31,6 +32,7 @@ namespace NHibernate.Cfg.MappingSchema
 			}
 		}
 
+		[XmlIgnore]
 		public IDictionary<string, MetaAttribute> InheritableMetaData
 		{
 			get
