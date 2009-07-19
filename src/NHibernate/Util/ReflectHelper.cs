@@ -594,5 +594,28 @@ namespace NHibernate.Util
 			}
 			return result;
 		}
+
+		public static IDictionary<string,string> ToTypeParameters(this object source)
+		{
+			if(source == null)
+			{
+				return new Dictionary<string, string>(1);
+			}
+			var props = source.GetType().GetProperties();
+			if(props.Length == 0)
+			{
+				return new Dictionary<string, string>(1);
+			}
+			var result = new Dictionary<string, string>(props.Length);
+			foreach (var prop in props)
+			{
+				var value = prop.GetValue(source, null);
+				if (!ReferenceEquals(null, value))
+				{
+					result[prop.Name] = value.ToString();
+				}
+			}
+			return result;
+		}
 	}
 }

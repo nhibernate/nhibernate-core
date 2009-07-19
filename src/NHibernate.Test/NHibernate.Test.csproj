@@ -112,6 +112,7 @@
     <Compile Include="CfgTest\Loquacious\EntityCacheConfigurationFixture.cs" />
     <Compile Include="CfgTest\Loquacious\EntityToCache.cs" />
     <Compile Include="CfgTest\Loquacious\LambdaConfigurationFixture.cs" />
+    <Compile Include="CfgTest\Loquacious\TypeDefinitionFixture.cs" />
     <Compile Include="CfgTest\MappingDocumentAggregatorTests.cs" />
     <Compile Include="CfgTest\MappingDocumentParserTests.cs" />
     <Compile Include="CfgTest\SchemaAutoActionFixture.cs" />
