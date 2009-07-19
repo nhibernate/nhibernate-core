@@ -33,6 +33,23 @@ Build 2.1.0
 		* ADOException now use string instead SqlString
 		* IParameterizedType is using IDictionary<string, string>
 
+Build 2.1.0.GA (rev4652)
+=============================
+** Bug
+    * [NH-1027] - Querying multiply collections + paging in SQL2005 fail if both has same col name
+    * [NH-1865] - NHibernate throws InvalidOperationException on Linux/Mono 2.4
+    * [NH-1867] - Cannot map a type nested within a generic type
+    * [NH-1868] - InvalidCastException when using the same filter on two parent entities and a many-to-one
+    * [NH-1890] - Iesi.Collections file version lower than previous releases
+
+** Improvement
+    * [NH-1877] - Support for Projections.GroupBy(IProjection projection) 
+
+
+** Patch
+    * [NH-1872] - OdbcDriver - PrepareSql - SetParameterSizes
+    * [NH-1876] - Id.TableGenerator fails to apply where clause when selecting the next 'Hi' value (creates infinite loop)
+
 Build 2.1.0.CR1 (rev4578)
 =============================
 ** Bug
