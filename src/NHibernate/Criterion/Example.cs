@@ -481,7 +481,7 @@ namespace NHibernate.Criterion
 			{
 				bool isString = propertyValue is String;
 				crit = (_isLikeEnabled && isString) ?
-				       (ICriterion) new LikeExpression(propertyName, propertyValue.ToString(), escapeCharacter, _isIgnoreCaseEnabled) :
+				       (ICriterion) new LikeExpression(propertyName, propertyValue.ToString(), _matchMode, escapeCharacter, _isIgnoreCaseEnabled) :
 							 new SimpleExpression(propertyName, propertyValue, " = ", _isIgnoreCaseEnabled && isString);
 			}
 			else
