@@ -42,6 +42,51 @@ namespace NHibernate.Test.ExpressionTest
 		}
 
 		[Test]
+		public void TestEnableLikeWithMatchmodeStart() {
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction()) {
+				Componentizable master = GetMaster("hib", null, "open source1");
+				ICriteria crit = s.CreateCriteria(typeof(Componentizable));
+				Example ex = Example.Create(master).EnableLike(MatchMode.Start);
+				crit.Add(ex);
+				IList result = crit.List();
+				Assert.IsNotNull(result);
+				Assert.AreEqual(1, result.Count);
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void TestEnableLikeWithMatchmodeEnd() {
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction()) {
+				Componentizable master = GetMaster("nate", null, "ORM tool1");
+				ICriteria crit = s.CreateCriteria(typeof(Componentizable));
+				Example ex = Example.Create(master).EnableLike(MatchMode.End);
+				crit.Add(ex);
+				IList result = crit.List();
+				Assert.IsNotNull(result);
+				Assert.AreEqual(1, result.Count);
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void TestEnableLikeWithMatchmodeAnywhere() {
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction()) {
+				Componentizable master = GetMaster("bern", null, null);
+				ICriteria crit = s.CreateCriteria(typeof(Componentizable));
+				Example ex = Example.Create(master).EnableLike(MatchMode.Anywhere);
+				crit.Add(ex);
+				IList result = crit.List();
+				Assert.IsNotNull(result);
+				Assert.AreEqual(3, result.Count);
+				t.Commit();
+			}
+		}
+
+		[Test]
 		public void TestJunctionNotExpressionQBE()
 		{
 			using (ISession s = OpenSession())
