@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1899" default-access="field.camelcase"
+                   default-lazy="false">
+    <class name="Parent">
+        <id name="Id">
+            <generator class="assigned" />
+        </id>
+        <map name="_relations" table="RelationsTable" lazy="false" cascade="all-delete-orphan">
+            <key column="ParentID" />            
+            <index column="KeyId" type="NHibernate.Test.NHSpecificTest.NH1899.Key, NHibernate.Test" />
+            <element column="Value" type="NHibernate.Test.NHSpecificTest.NH1899.Value, NHibernate.Test" />
+        </map>
+    </class>
+</hibernate-mapping>

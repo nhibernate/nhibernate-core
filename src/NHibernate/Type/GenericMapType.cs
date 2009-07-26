@@ -71,7 +71,7 @@ namespace NHibernate.Type
 			IDictionary<TKey, TValue> result = (IDictionary<TKey, TValue>)target;
 			result.Clear();
 
-			IEnumerable iter = (IDictionary)original;
+			IEnumerable<KeyValuePair<TKey, TValue>> iter = (IDictionary<TKey, TValue>)original; 
 			foreach (KeyValuePair<TKey, TValue> me in iter)
 			{
 				TKey key = (TKey)cp.IndexType.Replace(me.Key, null, session, owner, copyCache);
