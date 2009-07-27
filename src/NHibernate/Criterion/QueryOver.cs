@@ -62,19 +62,14 @@ namespace NHibernate.Criterion
 			return Add(expression);
 		}
 
-		public QueryOver<T> Select(Expression<Func<object>>[] projections)
+		public QueryOver<T> Select(params Expression<Func<T, object>>[] projections)
 		{
+			List<IProjection> projectionList = new List<IProjection>();
+
 			foreach (var projection in projections)
-				Select(projection);
+				projectionList.Add(Projections.Property(ExpressionProcessor.FindMemberExpression(projection.Body)));
 
-			return this;
-		}
-
-		public QueryOver<T> Select(Expression<Func<T, object>>[] projections)
-		{
-			foreach (var projection in projections)
-				Select(projection);
-
+			_criteria.SetProjection(projectionList.ToArray());
 			return this;
 		}
 
@@ -230,16 +225,6 @@ namespace NHibernate.Criterion
 			return this;
 		}
 
-		private void Select(Expression<Func<T, object>> projection)
-		{
-			_criteria.SetProjection(Projections.Property(ExpressionProcessor.FindMemberExpression(projection.Body)));
-		}
-
-		private void Select(Expression<Func<object>> projection)
-		{
-			_criteria.SetProjection(Projections.Property(ExpressionProcessor.FindMemberExpression(projection.Body)));
-		}
-
 		private QueryOver<T> AddOrder(Expression<Func<T, object>> path, Func<string, Order> orderDelegate)
 		{
 			_criteria.AddOrder(ExpressionProcessor.ProcessOrder<T>(path, orderDelegate));
@@ -266,9 +251,6 @@ namespace NHibernate.Criterion
 		{ return Where(expression); }
 
 		IQueryOver<T> IQueryOver<T>.Select(params Expression<Func<T, object>>[] projections)
-		{ return Select(projections); }
-
-		IQueryOver<T> IQueryOver<T>.Select(params Expression<Func<object>>[] projections)
 		{ return Select(projections); }
 
 		IQueryOver<T> IQueryOver<T>.OrderBy(Expression<Func<T, object>> path, Func<string, Order> orderDelegate)

@@ -264,18 +264,19 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
-					.SetProjection(Projections.Property("Name"))
-					.SetProjection(Projections.Property("Age"))
-					.SetProjection(Projections.Property("personAlias.Gender"))
-					.SetProjection(Projections.Property("personAlias.HasCar"));
+					.SetProjection(
+						Projections.Property("Name"),
+						Projections.Property("Age"),
+						Projections.Property("personAlias.Gender"),
+						Projections.Property("personAlias.HasCar"));
 
 			Person personAlias = null;
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>(() => personAlias)
 					.Select(p => p.Name,
-							p => p.Age)
-					.Select(() => personAlias.Gender,
-							() => personAlias.HasCar);
+							p => p.Age,
+							p => personAlias.Gender,
+							p => personAlias.HasCar);
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
