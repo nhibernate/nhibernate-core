@@ -25,6 +25,11 @@ namespace NHibernate
 	{
 
 		/// <summary>
+		/// Access the underlying ICriteria
+		/// </summary>
+		ICriteria UnderlyingCriteria { get; }
+
+		/// <summary>
 		/// Add criterion expressed as a lambda expression
 		/// </summary>
 		/// <param name="expression">Lambda expression</param>
