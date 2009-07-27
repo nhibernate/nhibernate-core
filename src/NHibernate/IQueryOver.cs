@@ -97,6 +97,18 @@ namespace NHibernate
 		IQueryOver<T> ThenBy(Expression<Func<object>> path, Func<string, Order> orderDelegate);
 
 		/// <summary>
+		/// Set the first result to be retrieved
+		/// </summary>
+		/// <param name="firstResult"></param>
+		IQueryOver<T> Skip(int firstResult);
+
+		/// <summary>
+		/// Set a limit upon the number of objects to be retrieved
+		/// </summary>
+		/// <param name="maxResults"></param>
+		IQueryOver<T> Take(int maxResults);
+
+		/// <summary>
 		/// Creates a new NHibernate.ICriteria&lt;T&gt;, "rooted" at the associated entity
 		/// </summary>
 		/// <typeparam name="U">Type of sub-criteria</typeparam>

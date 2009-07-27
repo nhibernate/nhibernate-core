@@ -93,6 +93,18 @@ namespace NHibernate.Criterion
 			return AddOrder(path, orderDelegate);
 		}
 
+		public IQueryOver<T> Skip(int firstResult)
+		{
+			_criteria.SetFirstResult(firstResult);
+			return this;
+		}
+
+		public IQueryOver<T> Take(int maxResults)
+		{
+			_criteria.SetMaxResults(maxResults);
+			return this;
+		}
+
 		public QueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path)
 		{
 			return new QueryOver<U>(_impl,
@@ -243,6 +255,9 @@ namespace NHibernate.Criterion
 		}
 
 
+		ICriteria IQueryOver<T>.UnderlyingCriteria
+		{ get { return UnderlyingCriteria; } }
+
 		IQueryOver<T> IQueryOver<T>.And(Expression<Func<T, bool>> expression)
 		{ return And(expression); }
 
@@ -269,6 +284,12 @@ namespace NHibernate.Criterion
 
 		IQueryOver<T> IQueryOver<T>.ThenBy(Expression<Func<object>> path, Func<string, Order> orderDelegate)
 		{ return ThenBy(path, orderDelegate); }
+
+		IQueryOver<T> IQueryOver<T>.Skip(int firstResult)
+		{ return Skip(firstResult); }
+
+		IQueryOver<T> IQueryOver<T>.Take(int maxResults)
+		{ return Take(maxResults); }
 
 		IQueryOver<U> IQueryOver<T>.JoinQueryOver<U>(Expression<Func<T, U>> path)
 		{ return JoinQueryOver(path); }

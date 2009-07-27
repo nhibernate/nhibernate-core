@@ -281,6 +281,22 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertCriteriaAreEqual(expected, actual);
 		}
 
+		[Test]
+		public void Paging()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.SetFirstResult(90)
+					.SetMaxResults(10);
+
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>()
+					.Skip(90)
+					.Take(10);
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
 	}
 
 }
