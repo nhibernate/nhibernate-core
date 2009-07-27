@@ -259,6 +259,27 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertCriteriaAreEqual(expected, actual);
 		}
 
+		[Test]
+		public void Project()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person), "personAlias")
+					.SetProjection(Projections.Property("Name"))
+					.SetProjection(Projections.Property("Age"))
+					.SetProjection(Projections.Property("personAlias.Gender"))
+					.SetProjection(Projections.Property("personAlias.HasCar"));
+
+			Person personAlias = null;
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>(() => personAlias)
+					.Select(p => p.Name,
+							p => p.Age)
+					.Select(() => personAlias.Gender,
+							() => personAlias.HasCar);
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
 	}
 
 }

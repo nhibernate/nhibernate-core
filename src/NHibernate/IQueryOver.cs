@@ -53,6 +53,20 @@ namespace NHibernate
 		IQueryOver<T> Where(Expression<Func<bool>> expression);
 
 		/// <summary>
+		/// Add projection expressed as a lambda expression
+		/// </summary>
+		/// <param name="projections">Lambda expressions</param>
+		/// <returns>criteria instance</returns>
+		IQueryOver<T> Select(params Expression<Func<T, object>>[] projections);
+
+		/// <summary>
+		/// Add projection expressed as a lambda expression
+		/// </summary>
+		/// <param name="projections">Lambda expressions</param>
+		/// <returns>criteria instance</returns>
+		IQueryOver<T> Select(params Expression<Func<object>>[] projections);
+
+		/// <summary>
 		/// Add order expressed as a lambda expression
 		/// </summary>
 		/// <param name="path">Lambda expression</param>
