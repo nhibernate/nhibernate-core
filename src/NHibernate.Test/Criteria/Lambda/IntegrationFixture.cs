@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using NUnit.Framework;
 
@@ -88,6 +89,59 @@ namespace NHibernate.Test.Criteria.Lambda
 						.List();
 
 				Assert.That(actual[0].Age, Is.EqualTo(20));
+			}
+		}
+
+		[Test]
+		public void Project_SingleProperty()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new Person() { Name = "test person 1", Age = 20 });
+				s.Save(new Person() { Name = "test person 2", Age = 30 });
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var actual =
+					s.QueryOver<Person>()
+						.Select(p => p.Age)
+						.OrderBy(p => p.Age, Order.Asc)
+						.List<int>();
+
+				Assert.That(actual[0], Is.EqualTo(20));
+			}
+		}
+
+		[Test]
+		public void Project_MultipleProperties()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new Person() { Name = "test person 1", Age = 20 });
+				s.Save(new Person() { Name = "test person 2", Age = 30 });
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				Person personAlias = null;
+				var actual =
+					s.QueryOver<Person>(() => personAlias)
+						.Select(p => p.Name,
+								p => personAlias.Age)
+						.OrderBy(p => p.Age, Order.Asc)
+						.List<object[]>()
+						.Select(props => new {
+							TestName = (string)props[0],
+							TestAge = (int)props[1],
+							});
+
+				Assert.That(actual.ElementAt(0).TestName, Is.EqualTo("test person 1"));
+				Assert.That(actual.ElementAt(1).TestAge, Is.EqualTo(30));
 			}
 		}
 

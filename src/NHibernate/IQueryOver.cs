@@ -195,6 +195,12 @@ namespace NHibernate
 		/// <returns>The list filled with the results.</returns>
 		IList<T> List();
 
+		/// <summary>
+		/// Get the results of the root type and fill the <see cref="IList&lt;T&gt;"/>
+		/// </summary>
+		/// <returns>The list filled with the results.</returns>
+		IList<U> List<U>();
+
 	}
 
 }

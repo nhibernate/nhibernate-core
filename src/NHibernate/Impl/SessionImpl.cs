@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using Iesi.Collections;
@@ -1878,6 +1879,16 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				return new QueryOver<T>(new CriteriaImpl(typeof(T), this));
+			}
+		}
+
+		public IQueryOver<T> QueryOver<T>(Expression<Func<T>> alias) where T : class
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				string aliasPath = ExpressionProcessor.FindMemberExpression(alias.Body);
+				return new QueryOver<T>(new CriteriaImpl(typeof(T), aliasPath, this));
 			}
 		}
 

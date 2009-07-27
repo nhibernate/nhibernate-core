@@ -198,6 +198,11 @@ namespace NHibernate.Criterion
 			return _criteria.List<T>();
 		}
 
+		public IList<U> List<U>()
+		{
+			return _criteria.List<U>();
+		}
+
 		/// <summary>
 		/// Get an executable instance of <c>IQueryOver&lt;T&gt;</c>,
 		/// to actually run the query.</summary>
@@ -309,6 +314,9 @@ namespace NHibernate.Criterion
 
 		IList<T> IQueryOver<T>.List()
 		{ return List(); }
+
+		IList<U> IQueryOver<T>.List<U>()
+		{ return List<U>(); }
 
 	}
 
