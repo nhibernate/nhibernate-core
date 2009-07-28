@@ -297,6 +297,20 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertCriteriaAreEqual(expected, actual);
 		}
 
+		[Test]
+		public void Cachable()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.SetCacheable(true);
+
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>()
+					.Cacheable();
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
 	}
 
 }

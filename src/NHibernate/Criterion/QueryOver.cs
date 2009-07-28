@@ -105,6 +105,12 @@ namespace NHibernate.Criterion
 			return this;
 		}
 
+		public IQueryOver<T> Cacheable()
+		{
+			_criteria.SetCacheable(true);
+			return this;
+		}
+
 		public QueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path)
 		{
 			return new QueryOver<U>(_impl,
@@ -290,6 +296,9 @@ namespace NHibernate.Criterion
 
 		IQueryOver<T> IQueryOver<T>.Take(int maxResults)
 		{ return Take(maxResults); }
+
+		IQueryOver<T> IQueryOver<T>.Cacheable()
+		{ return Cacheable(); }
 
 		IQueryOver<U> IQueryOver<T>.JoinQueryOver<U>(Expression<Func<T, U>> path)
 		{ return JoinQueryOver(path); }

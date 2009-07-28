@@ -109,6 +109,11 @@ namespace NHibernate
 		IQueryOver<T> Take(int maxResults);
 
 		/// <summary>
+		/// Enable caching of this query result set
+		/// </summary>
+		IQueryOver<T> Cacheable();
+
+		/// <summary>
 		/// Creates a new NHibernate.ICriteria&lt;T&gt;, "rooted" at the associated entity
 		/// </summary>
 		/// <typeparam name="U">Type of sub-criteria</typeparam>
