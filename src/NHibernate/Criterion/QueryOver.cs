@@ -111,6 +111,18 @@ namespace NHibernate.Criterion
 			return this;
 		}
 
+		public IQueryOver<T> CacheMode(CacheMode cacheMode)
+		{
+			_criteria.SetCacheMode(cacheMode);
+			return this;
+		}
+
+		public IQueryOver<T> CacheRegion(string cacheRegion)
+		{
+			_criteria.SetCacheRegion(cacheRegion);
+			return this;
+		}
+
 		public QueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path)
 		{
 			return new QueryOver<U>(_impl,
@@ -299,6 +311,12 @@ namespace NHibernate.Criterion
 
 		IQueryOver<T> IQueryOver<T>.Cacheable()
 		{ return Cacheable(); }
+
+		IQueryOver<T> IQueryOver<T>.CacheMode(CacheMode cacheMode)
+		{ return CacheMode(cacheMode); }
+
+		IQueryOver<T> IQueryOver<T>.CacheRegion(string cacheRegion)
+		{ return CacheRegion(cacheRegion); }
 
 		IQueryOver<U> IQueryOver<T>.JoinQueryOver<U>(Expression<Func<T, U>> path)
 		{ return JoinQueryOver(path); }

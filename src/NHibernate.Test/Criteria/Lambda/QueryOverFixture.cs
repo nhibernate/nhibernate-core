@@ -302,11 +302,15 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
-					.SetCacheable(true);
+					.SetCacheable(true)
+					.SetCacheMode(CacheMode.Put)
+					.SetCacheRegion("my cache region");
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
-					.Cacheable();
+					.Cacheable()
+					.CacheMode(CacheMode.Put)
+					.CacheRegion("my cache region");
 
 			AssertCriteriaAreEqual(expected, actual);
 		}

@@ -113,6 +113,18 @@ namespace NHibernate
 		/// </summary>
 		IQueryOver<T> Cacheable();
 
+		/// <summary> Override the cache mode for this particular query. </summary>
+		/// <param name="cacheMode">The cache mode to use. </param>
+		/// <returns> this (for method chaining) </returns>
+		IQueryOver<T> CacheMode(CacheMode cacheMode);
+
+		/// <summary>
+		/// Set the name of the cache region.
+		/// </summary>
+		/// <param name="cacheRegion">the name of a query cache region, or <see langword="null" />
+		/// for the default query cache</param>
+		IQueryOver<T> CacheRegion(string cacheRegion);
+
 		/// <summary>
 		/// Creates a new NHibernate.ICriteria&lt;T&gt;, "rooted" at the associated entity
 		/// </summary>
