@@ -1,5 +1,6 @@
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 
 using NHibernate.Criterion;
@@ -28,6 +29,22 @@ namespace NHibernate.Test.Criteria.Lambda
 			Expression<Func<Person, object>> e = (Person p) => p.Age;
 			string property = ExpressionProcessor.FindMemberExpression(e.Body);
 			Assert.AreEqual("Age", property);
+		}
+
+		[Test]
+		public void TestFindMemberExpressionSubCollectionIndex()
+		{
+			Expression<Func<Person, object>> e = (Person p) => p.PersonList[0].Children;
+			string property = ExpressionProcessor.FindMemberExpression(e.Body);
+			Assert.AreEqual("PersonList.Children", property);
+		}
+
+		[Test]
+		public void TestFindMemberExpressionSubCollectionExtensionMethod()
+		{
+			Expression<Func<Person, object>> e = (Person p) => p.PersonList.First().Children;
+			string property = ExpressionProcessor.FindMemberExpression(e.Body);
+			Assert.AreEqual("PersonList.Children", property);
 		}
 
 		[Test]

@@ -121,10 +121,15 @@ namespace NHibernate.Impl
 			{
 				MemberExpression memberExpression = (MemberExpression)expression;
 
-				if (memberExpression.Expression.NodeType == ExpressionType.MemberAccess)
+				if (memberExpression.Expression.NodeType == ExpressionType.MemberAccess
+					|| memberExpression.Expression.NodeType == ExpressionType.Call)
+				{
 					return FindMemberExpression(memberExpression.Expression) + "." + memberExpression.Member.Name;
+				}
 				else
+				{
 					return memberExpression.Member.Name;
+				}
 			}
 
 			if (expression is UnaryExpression)
@@ -148,6 +153,12 @@ namespace NHibernate.Impl
 					else
 						return "class";
 				}
+
+				if (methodCallExpression.Method.Name == "get_Item")
+					return FindMemberExpression(methodCallExpression.Object);
+
+				if (methodCallExpression.Method.Name == "First")
+					return FindMemberExpression(methodCallExpression.Arguments[0]);
 
 				throw new Exception("Unrecognised method call in epression " + expression.ToString());
 			}
