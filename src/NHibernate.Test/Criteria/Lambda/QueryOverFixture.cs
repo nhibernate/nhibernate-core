@@ -251,10 +251,10 @@ namespace NHibernate.Test.Criteria.Lambda
 			Person personAlias = null;
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>(() => personAlias)
-					.OrderBy(p => p.Name, Order.Asc)
-					.ThenBy(p => p.Age, Order.Desc)
-					.ThenBy(() => personAlias.Name, Order.Desc)
-					.ThenBy(() => personAlias.Age, Order.Asc);
+					.OrderBy(p => p.Name).Asc
+					.ThenBy(p => p.Age).Desc
+					.ThenBy(() => personAlias.Name).Desc
+					.ThenBy(() => personAlias.Age).Asc;
 
 			AssertCriteriaAreEqual(expected, actual);
 		}

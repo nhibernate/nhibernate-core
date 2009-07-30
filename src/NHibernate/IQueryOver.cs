@@ -68,33 +68,29 @@ namespace NHibernate
 		/// Add order expressed as a lambda expression
 		/// </summary>
 		/// <param name="path">Lambda expression</param>
-		/// <param name="orderDelegate">Order delegate (direction)</param>
 		/// <returns>criteria instance</returns>
-		IQueryOver<T> OrderBy(Expression<Func<T, object>> path, Func<string, Order> orderDelegate);
+		IQueryOverOrderBuilder<T> OrderBy(Expression<Func<T, object>> path);
 
 		/// <summary>
 		/// Add order expressed as a lambda expression
 		/// </summary>
 		/// <param name="path">Lambda expression</param>
-		/// <param name="orderDelegate">Order delegate (direction)</param>
 		/// <returns>criteria instance</returns>
-		IQueryOver<T> OrderBy(Expression<Func<object>> path, Func<string, Order> orderDelegate);
+		IQueryOverOrderBuilder<T> OrderBy(Expression<Func<object>> path);
 
 		/// <summary>
 		/// Add order expressed as a lambda expression
 		/// </summary>
 		/// <param name="path">Lambda expression</param>
-		/// <param name="orderDelegate">Order delegate (direction)</param>
 		/// <returns>criteria instance</returns>
-		IQueryOver<T> ThenBy(Expression<Func<T, object>> path, Func<string, Order> orderDelegate);
+		IQueryOverOrderBuilder<T> ThenBy(Expression<Func<T, object>> path);
 
 		/// <summary>
 		/// Add order expressed as a lambda expression
 		/// </summary>
 		/// <param name="path">Lambda expression</param>
-		/// <param name="orderDelegate">Order delegate (direction)</param>
 		/// <returns>criteria instance</returns>
-		IQueryOver<T> ThenBy(Expression<Func<object>> path, Func<string, Order> orderDelegate);
+		IQueryOverOrderBuilder<T> ThenBy(Expression<Func<object>> path);
 
 		/// <summary>
 		/// Set the first result to be retrieved

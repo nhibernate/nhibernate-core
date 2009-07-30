@@ -108,7 +108,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				var actual =
 					s.QueryOver<Person>()
 						.Select(p => p.Age)
-						.OrderBy(p => p.Age, Order.Asc)
+						.OrderBy(p => p.Age).Asc
 						.List<int>();
 
 				Assert.That(actual[0], Is.EqualTo(20));
@@ -133,7 +133,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					s.QueryOver<Person>(() => personAlias)
 						.Select(p => p.Name,
 								p => personAlias.Age)
-						.OrderBy(p => p.Age, Order.Asc)
+						.OrderBy(p => p.Age).Asc
 						.List<object[]>()
 						.Select(props => new {
 							TestName = (string)props[0],

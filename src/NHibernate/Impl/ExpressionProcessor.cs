@@ -419,6 +419,20 @@ namespace NHibernate.Impl
 			return order;
 		}
 
+		/// <summary>
+		/// Convert a lambda expression to NHibernate Order
+		/// </summary>
+		/// <param name="expression">The lambda expression to convert</param>
+		/// <param name="orderDelegate">The appropriate order delegate (order direction)</param>
+		/// <returns>NHibernate Order</returns>
+		public static Order ProcessOrder(	LambdaExpression expression,
+											Func<string, Order> orderDelegate)
+		{
+			string property = FindMemberExpression(expression.Body);
+			Order order = orderDelegate(property);
+			return order;
+		}
+
 		private static AbstractCriterion ProcessSubqueryExpression(LambdaSubqueryType subqueryType,
 																	BinaryExpression be)
 		{

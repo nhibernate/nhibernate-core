@@ -73,51 +73,51 @@ namespace NHibernate.Criterion
 			return this;
 		}
 
-		public QueryOver<T> OrderBy(Expression<Func<T, object>> path, Func<string, Order> orderDelegate)
+		public QueryOverOrderBuilder<T> OrderBy(Expression<Func<T, object>> path)
 		{
-			return AddOrder(path, orderDelegate);
+			return new QueryOverOrderBuilder<T>(this, path);
 		}
 
-		public QueryOver<T> OrderBy(Expression<Func<object>> path, Func<string, Order> orderDelegate)
+		public QueryOverOrderBuilder<T> OrderBy(Expression<Func<object>> path)
 		{
-			return AddOrder(path, orderDelegate);
+			return new QueryOverOrderBuilder<T>(this, path);
 		}
 
-		public QueryOver<T> ThenBy(Expression<Func<T, object>> path, Func<string, Order> orderDelegate)
+		public QueryOverOrderBuilder<T> ThenBy(Expression<Func<T, object>> path)
 		{
-			return AddOrder(path, orderDelegate);
+			return new QueryOverOrderBuilder<T>(this, path);
 		}
 
-		public QueryOver<T> ThenBy(Expression<Func<object>> path, Func<string, Order> orderDelegate)
+		public QueryOverOrderBuilder<T> ThenBy(Expression<Func<object>> path)
 		{
-			return AddOrder(path, orderDelegate);
+			return new QueryOverOrderBuilder<T>(this, path);
 		}
 
-		public IQueryOver<T> Skip(int firstResult)
+		public QueryOver<T> Skip(int firstResult)
 		{
 			_criteria.SetFirstResult(firstResult);
 			return this;
 		}
 
-		public IQueryOver<T> Take(int maxResults)
+		public QueryOver<T> Take(int maxResults)
 		{
 			_criteria.SetMaxResults(maxResults);
 			return this;
 		}
 
-		public IQueryOver<T> Cacheable()
+		public QueryOver<T> Cacheable()
 		{
 			_criteria.SetCacheable(true);
 			return this;
 		}
 
-		public IQueryOver<T> CacheMode(CacheMode cacheMode)
+		public QueryOver<T> CacheMode(CacheMode cacheMode)
 		{
 			_criteria.SetCacheMode(cacheMode);
 			return this;
 		}
 
-		public IQueryOver<T> CacheRegion(string cacheRegion)
+		public QueryOver<T> CacheRegion(string cacheRegion)
 		{
 			_criteria.SetCacheRegion(cacheRegion);
 			return this;
@@ -260,18 +260,6 @@ namespace NHibernate.Criterion
 			return this;
 		}
 
-		private QueryOver<T> AddOrder(Expression<Func<T, object>> path, Func<string, Order> orderDelegate)
-		{
-			_criteria.AddOrder(ExpressionProcessor.ProcessOrder<T>(path, orderDelegate));
-			return this;
-		}
-
-		private QueryOver<T> AddOrder(Expression<Func<object>> path, Func<string, Order> orderDelegate)
-		{
-			_criteria.AddOrder(ExpressionProcessor.ProcessOrder(path, orderDelegate));
-			return this;
-		}
-
 
 		ICriteria IQueryOver<T>.UnderlyingCriteria
 		{ get { return UnderlyingCriteria; } }
@@ -291,17 +279,17 @@ namespace NHibernate.Criterion
 		IQueryOver<T> IQueryOver<T>.Select(params Expression<Func<T, object>>[] projections)
 		{ return Select(projections); }
 
-		IQueryOver<T> IQueryOver<T>.OrderBy(Expression<Func<T, object>> path, Func<string, Order> orderDelegate)
-		{ return OrderBy(path, orderDelegate); }
+		IQueryOverOrderBuilder<T> IQueryOver<T>.OrderBy(Expression<Func<T, object>> path)
+		{ return new IQueryOverOrderBuilder<T>(this, path); }
 
-		IQueryOver<T> IQueryOver<T>.OrderBy(Expression<Func<object>> path, Func<string, Order> orderDelegate)
-		{ return OrderBy(path, orderDelegate); }
+		IQueryOverOrderBuilder<T> IQueryOver<T>.OrderBy(Expression<Func<object>> path)
+		{ return new IQueryOverOrderBuilder<T>(this, path); }
 
-		IQueryOver<T> IQueryOver<T>.ThenBy(Expression<Func<T, object>> path, Func<string, Order> orderDelegate)
-		{ return ThenBy(path, orderDelegate); }
+		IQueryOverOrderBuilder<T> IQueryOver<T>.ThenBy(Expression<Func<T, object>> path)
+		{ return new IQueryOverOrderBuilder<T>(this, path); }
 
-		IQueryOver<T> IQueryOver<T>.ThenBy(Expression<Func<object>> path, Func<string, Order> orderDelegate)
-		{ return ThenBy(path, orderDelegate); }
+		IQueryOverOrderBuilder<T> IQueryOver<T>.ThenBy(Expression<Func<object>> path)
+		{ return new IQueryOverOrderBuilder<T>(this, path); }
 
 		IQueryOver<T> IQueryOver<T>.Skip(int firstResult)
 		{ return Skip(firstResult); }
