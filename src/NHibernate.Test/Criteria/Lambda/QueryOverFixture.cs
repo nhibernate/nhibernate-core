@@ -315,6 +315,22 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertCriteriaAreEqual(expected, actual);
 		}
 
+		[Test]
+		public void Fetch()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.SetFetchMode("PersonList", FetchMode.Eager)
+					.SetFetchMode("PersonList.PersonList", FetchMode.Lazy);
+
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>()
+					.Fetch(p => p.PersonList).Eager
+					.Fetch(p => p.PersonList[0].PersonList).Lazy;
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
 	}
 
 }

@@ -123,6 +123,11 @@ namespace NHibernate.Criterion
 			return this;
 		}
 
+		public QueryOverFetchBuilder<T> Fetch(Expression<Func<T, object>> path)
+		{
+			return new QueryOverFetchBuilder<T>(this, path);
+		}
+
 		public QueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path)
 		{
 			return new QueryOver<U>(_impl,
@@ -305,6 +310,9 @@ namespace NHibernate.Criterion
 
 		IQueryOver<T> IQueryOver<T>.CacheRegion(string cacheRegion)
 		{ return CacheRegion(cacheRegion); }
+
+		IQueryOverFetchBuilder<T> IQueryOver<T>.Fetch(Expression<Func<T, object>> path)
+		{ return new IQueryOverFetchBuilder<T>(this, path); }
 
 		IQueryOver<U> IQueryOver<T>.JoinQueryOver<U>(Expression<Func<T, U>> path)
 		{ return JoinQueryOver(path); }

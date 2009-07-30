@@ -122,6 +122,14 @@ namespace NHibernate
 		IQueryOver<T> CacheRegion(string cacheRegion);
 
 		/// <summary>
+		/// Specify an association fetching strategy.  Currently, only
+		/// one-to-many and one-to-one associations are supported.
+		/// </summary>
+		/// <param name="path">A lambda expression path (e.g., ChildList[0].Granchildren[0].Pets).</param>
+		/// <returns></returns>
+		IQueryOverFetchBuilder<T> Fetch(Expression<Func<T, object>> path);
+
+		/// <summary>
 		/// Creates a new NHibernate.ICriteria&lt;T&gt;, "rooted" at the associated entity
 		/// </summary>
 		/// <typeparam name="U">Type of sub-criteria</typeparam>
