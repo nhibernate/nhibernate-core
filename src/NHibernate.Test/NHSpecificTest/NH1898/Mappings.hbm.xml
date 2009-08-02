@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1898"
+                   default-lazy="false">
+  <class name="DomainClass">
+    <id name="Id">
+      <generator class="assigned" />
+    </id>
+    <property name="Data" />
+  </class>
+  <query name='replaceQuery'>
+    <query-param name='old' type='String'/>
+    <query-param name='new' type='String'/>
+    <![CDATA[
+       update DomainClass set
+          Data = replace(Data,:old, :new)
+    ]]>
+  </query>
+</hibernate-mapping>
