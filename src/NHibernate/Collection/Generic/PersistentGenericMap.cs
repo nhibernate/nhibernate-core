@@ -16,13 +16,13 @@ namespace NHibernate.Collection.Generic
 	/// <typeparam name="TKey">The type of the keys in the IDictionary.</typeparam>
 	/// <typeparam name="TValue">The type of the elements in the IDictionary.</typeparam>
 	[Serializable]
-	[DebuggerTypeProxy(typeof (DictionaryProxy<,>))]
+	[DebuggerTypeProxy(typeof(DictionaryProxy<,>))]
 	public class PersistentGenericMap<TKey, TValue> : PersistentMap, IDictionary<TKey, TValue>
 	{
 		// TODO NH: find a way to writeonce (no duplicated code from PersistentMap)
 		protected IDictionary<TKey, TValue> gmap;
-		public PersistentGenericMap() {}
-		public PersistentGenericMap(ISessionImplementor session) : base(session) {}
+		public PersistentGenericMap() { }
+		public PersistentGenericMap(ISessionImplementor session) : base(session) { }
 
 		public PersistentGenericMap(ISessionImplementor session, IDictionary<TKey, TValue> map)
 			: base(session, map as IDictionary)
@@ -37,15 +37,15 @@ namespace NHibernate.Collection.Generic
 			foreach (KeyValuePair<TKey, TValue> e in gmap)
 			{
 				object copy = persister.ElementType.DeepCopy(e.Value, entityMode, persister.Factory);
-				clonedMap[e.Key] = (TValue) copy;
+				clonedMap[e.Key] = (TValue)copy;
 			}
 			return clonedMap;
 		}
 
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
-			gmap = (IDictionary<TKey, TValue>) persister.CollectionType.Instantiate(anticipatedSize);
-			map = (IDictionary) gmap;
+			gmap = (IDictionary<TKey, TValue>)persister.CollectionType.Instantiate(anticipatedSize);
+			map = (IDictionary)gmap;
 		}
 
 		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
@@ -156,7 +156,7 @@ namespace NHibernate.Collection.Generic
 			}
 			else
 			{
-				value = (TValue) result;
+				value = (TValue)result;
 				return true;
 			}
 		}
@@ -166,7 +166,7 @@ namespace NHibernate.Collection.Generic
 			get
 			{
 				object result = ReadElementByIndex(key);
-				return result == Unknown ? gmap[key] : (TValue) result;
+				return result == Unknown ? gmap[key] : (TValue)result;
 			}
 			set
 			{
@@ -234,7 +234,7 @@ namespace NHibernate.Collection.Generic
 			{
 				if (exists.Value)
 				{
-					TValue x = ((IDictionary<TKey, TValue>) this)[item.Key];
+					TValue x = ((IDictionary<TKey, TValue>)this)[item.Key];
 					TValue y = item.Value;
 					return EqualityComparer<TValue>.Default.Equals(x, y);
 				}
@@ -269,7 +269,7 @@ namespace NHibernate.Collection.Generic
 
 		bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
 		{
-			if (((ICollection<KeyValuePair<TKey, TValue>>) this).Contains(item))
+			if (((ICollection<KeyValuePair<TKey, TValue>>)this).Contains(item))
 			{
 				Remove(item.Key);
 				return true;
@@ -285,6 +285,16 @@ namespace NHibernate.Collection.Generic
 		#region IEnumerable<KeyValuePair<TKey,TValue>> Members
 
 		IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
+		{
+			Read();
+			return gmap.GetEnumerator();
+		}
+
+		#endregion
+
+		#region IEnumerable Members
+
+		IEnumerator IEnumerable.GetEnumerator()
 		{
 			Read();
 			return gmap.GetEnumerator();

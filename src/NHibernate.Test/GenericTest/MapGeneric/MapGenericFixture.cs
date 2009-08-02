@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using NHibernate.Engine;
@@ -77,6 +78,51 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 				s.Flush();
 			}
 		}
+
+		[Test]
+		public void SimpleTypes()
+		{
+			A a = new A();
+			a.Name = "first generic type";
+			a.Items = new Dictionary<string, B>();
+			B firstB = new B();
+			firstB.Name = "first b";
+			B secondB = new B();
+			secondB.Name = "second b";
+			B thirdB = new B();
+			thirdB.Name = "third b";
+
+			a.Items.Add("first", firstB);
+			a.Items.Add("second", secondB);
+			a.Items.Add("third", thirdB);
+
+			using (ISession s = OpenSession())
+			{
+				s.SaveOrUpdate(a);
+				s.Flush();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				a = s.Load<A>(a.Id);
+				IDictionary<string, B> genericDict = a.Items;
+				IEnumerable<KeyValuePair<string, B>> genericEnum = a.Items;
+				IEnumerable nonGenericEnum = a.Items;
+
+				foreach (var enumerable in genericDict)
+				{
+					Assert.That(enumerable, Is.InstanceOf<KeyValuePair<string, B>>());
+				}
+				foreach (var enumerable in genericEnum)
+				{
+					Assert.That(enumerable, Is.InstanceOf<KeyValuePair<string, B>>());
+				}
+				foreach (var enumerable in nonGenericEnum)
+				{
+					Assert.That(enumerable, Is.InstanceOf<KeyValuePair<string, B>>());
+				}
+			}
+		} 
 
 		// NH-669
 		[Test]
