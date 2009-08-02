@@ -58,6 +58,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			{
 				try
 				{
+					CheckParametersExpectedType(parameters); // NH Different behavior (NH-1898)
 					var parameterTypes = new List<SqlType>(Parameters.Count);
 					foreach (var parameterSpecification in Parameters)
 					{
@@ -97,6 +98,33 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			{
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
 																 "could not execute update query", sql);
+			}
+		}
+
+		private void CheckParametersExpectedType(QueryParameters parameters)
+		{
+			foreach (var specification in Parameters)
+			{
+				if (specification.ExpectedType == null)
+				{
+					var namedSpec = specification as NamedParameterSpecification;
+					if (namedSpec != null)
+					{
+						TypedValue tv;
+						if(parameters.NamedParameters.TryGetValue(namedSpec.Name, out tv))
+						{
+							specification.ExpectedType = tv.Type;
+						}
+					}
+					else
+					{
+						var posSpec = specification as PositionalParameterSpecification;
+						if (posSpec != null)
+						{
+							specification.ExpectedType = parameters.PositionalParameterTypes[posSpec.HqlPosition];
+						}
+					}
+				}
 			}
 		}
 

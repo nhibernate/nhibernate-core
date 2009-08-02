@@ -126,6 +126,7 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
+			RegisterFunction("replace", new StandardSafeSQLFunction("replace",NHibernateUtil.String, 3));
 
 			RegisterKeyword("top");
 			RegisterKeyword("integer");
