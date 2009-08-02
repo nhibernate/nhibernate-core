@@ -260,14 +260,7 @@ namespace NHibernate.Impl
 
 		public IQuery SetParameter(int position, object val, IType type)
 		{
-			if (parameterMetadata.OrdinalParameterCount == 0)
-			{
-				throw new ArgumentException("No positional parameters in query: " + QueryString);
-			}
-			if (position < 0 || position > parameterMetadata.OrdinalParameterCount - 1)
-			{
-				throw new ArgumentException("Positional parameter does not exist: " + position + " in query: " + QueryString);
-			}
+			CheckPositionalParameter(position);
 			int size = values.Count;
 			if (position < size)
 			{
@@ -305,12 +298,26 @@ namespace NHibernate.Impl
 
 		public IQuery SetParameter<T>(int position, T val)
 		{
-			return SetParameter(position, val, GuessType(typeof (T)));
+			CheckPositionalParameter(position);
+
+			return SetParameter(position, val, parameterMetadata.GetOrdinalParameterExpectedType(position + 1) ?? GuessType(typeof(T)));
+		}
+
+		private void CheckPositionalParameter(int position)
+		{
+			if (parameterMetadata.OrdinalParameterCount == 0)
+			{
+				throw new ArgumentException("No positional parameters in query: " + QueryString);
+			}
+			if (position < 0 || position > parameterMetadata.OrdinalParameterCount - 1)
+			{
+				throw new ArgumentException("Positional parameter does not exist: " + position + " in query: " + QueryString);
+			}
 		}
 
 		public IQuery SetParameter<T>(string name, T val)
 		{
-			return SetParameter(name, val, GuessType(typeof (T)));
+			return SetParameter(name, val, parameterMetadata.GetNamedParameterExpectedType(name) ?? GuessType(typeof (T)));
 		}
 
 		public IQuery SetParameter(string name, object val)
