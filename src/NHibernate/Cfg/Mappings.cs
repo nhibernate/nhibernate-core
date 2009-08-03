@@ -69,6 +69,7 @@ namespace NHibernate.Cfg
 		private readonly IList<PropertyReference> propertyReferences;
 		private readonly IDictionary<string, FilterDefinition> filterDefinitions;
 		private readonly IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects;
+		private readonly Queue<FilterSecondPassArgs> filtersSecondPasses;
 
 		private readonly INamingStrategy namingStrategy;
 
@@ -98,6 +99,7 @@ namespace NHibernate.Cfg
 			IDictionary<string, ResultSetMappingDefinition> resultSetMappings,
 			IDictionary<string, string> imports,
 			IList<SecondPassCommand> secondPasses,
+			Queue<FilterSecondPassArgs> filtersSecondPasses,
 			IList<PropertyReference> propertyReferences,
 			INamingStrategy namingStrategy,
 			IDictionary<string, TypeDef> typeDefs,
@@ -108,7 +110,7 @@ namespace NHibernate.Cfg
 			IDictionary<Table, ColumnNames> columnNameBindingPerTable,
 			string defaultAssembly,
 			string defaultNamespace,
-						Dialect.Dialect dialect)
+			Dialect.Dialect dialect)
 		{
 			this.classes = classes;
 			this.collections = collections;
@@ -129,6 +131,7 @@ namespace NHibernate.Cfg
 			this.defaultAssembly = defaultAssembly;
 			this.defaultNamespace = defaultNamespace;
 			this.dialect = dialect;
+			this.filtersSecondPasses = filtersSecondPasses;
 		}
 
 		/// <summary>
@@ -454,12 +457,22 @@ namespace NHibernate.Cfg
 
 		public void AddFilterDefinition(FilterDefinition definition)
 		{
-			filterDefinitions.Add(definition.FilterName, definition);
+			FilterDefinition fd;
+			if (filterDefinitions.TryGetValue(definition.FilterName, out fd))
+			{
+				if(fd!=null)
+				{
+					throw new MappingException("Duplicated filter-def named: " + definition.FilterName);
+				}
+			}
+			filterDefinitions[definition.FilterName] = definition;
 		}
 
 		public FilterDefinition GetFilterDefinition(string name)
 		{
-			return filterDefinitions[name];
+			FilterDefinition result;
+			filterDefinitions.TryGetValue(name, out result);
+			return result;
 		}
 
 		public void AddAuxiliaryDatabaseObject(IAuxiliaryDatabaseObject auxiliaryDatabaseObject)
@@ -638,6 +651,34 @@ namespace NHibernate.Cfg
 			return persistentClass;
 		}
 
+		public void ExpectedFilterDefinition(IFilterable filterable, string filterName, string condition)
+		{
+			var fdef = GetFilterDefinition(filterName);
+			if (string.IsNullOrEmpty(condition))
+			{
+				if (fdef != null)
+				{
+					// where immediately available, apply the condition
+					condition = fdef.DefaultFilterCondition;
+				}
+			}
+			if (string.IsNullOrEmpty(condition) && fdef == null)
+			{
+				log.Debug(string.Format("Adding filter second pass [{0}]", filterName));
+				filtersSecondPasses.Enqueue(new FilterSecondPassArgs(filterable, filterName));
+			}
+			else if (string.IsNullOrEmpty(condition) && fdef != null)
+			{
+				// Both sides does not have condition
+				throw new MappingException("no filter condition found for filter: " + filterName);
+			}
+
+			if (fdef == null)
+			{
+				// if not available add an expected filter definition
+				FilterDefinitions[filterName] = null;
+			}
+		}
 	}
 
 	public delegate void SecondPassCommand(IDictionary<string, PersistentClass> persistentClasses);

@@ -19,8 +19,4 @@
 	<filter-def name="seniorSalespersons">
 		<filter-param name="asOfDate" type="DateTime"/>
 	</filter-def>
-
-	<filter-def name="cat">
-		<filter-param name="catId" type="long"/>
-	</filter-def>
 </hibernate-mapping>

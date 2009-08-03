@@ -105,6 +105,8 @@
     <Compile Include="CfgTest\ConfigurationSchemaFixture.cs" />
     <Compile Include="CfgTest\ConfigurationSerializationTests.cs" />
     <Compile Include="CfgTest\DefaultNsAssmFixture.cs" />
+    <Compile Include="FilterTest\ConfigFixture.cs" />
+    <Compile Include="FilterTest\FilterSecondPassArgsFixture.cs" />
     <Compile Include="CfgTest\HbmBinderFixture.cs" />
     <Compile Include="CfgTest\HbmOrderingFixture.cs" />
     <Compile Include="CfgTest\LocatedInTestAssembly.cs" />
@@ -1954,6 +1956,9 @@
     <EmbeddedResource Include="Bytecode\Lightweight\ProductLine.hbm.xml" />
     <EmbeddedResource Include="DriverTest\MultiTypeEntity.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="FilterTest\WrongFilterDefInClass.hbm.xml" />
+    <EmbeddedResource Include="FilterTest\SimpleFiltered.hbm.xml" />
+    <EmbeddedResource Include="FilterTest\SimpleFilteredFiltersDefsOk.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1898\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1907\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1899\Mappings.hbm.xml" />
