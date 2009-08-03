@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2">
+	
+	<filter-def name="LiveFilter" condition=":LiveParam = Live">
+		<filter-param name="LiveParam" type="boolean"/>
+	</filter-def>
+
+	<filter-def name="LiveFilter2">
+		<![CDATA[Name = :LiveParam2]]>
+		<filter-param name="LiveParam2" type="string"/>
+	</filter-def>
+</hibernate-mapping>

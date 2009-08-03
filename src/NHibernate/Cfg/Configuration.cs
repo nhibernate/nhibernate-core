@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 using Iesi.Collections;
@@ -61,6 +62,7 @@ namespace NHibernate.Cfg
 		protected IDictionary<string, NHibernate.Mapping.Collection> collections;
 		protected IDictionary<string, Table> tables;
 		protected IList<SecondPassCommand> secondPasses;
+		protected Queue<FilterSecondPassArgs> filtersSecondPasses;
 		protected IList<Mappings.PropertyReference> propertyReferences;
 		private IInterceptor interceptor;
 		private IDictionary<string, string> properties;
@@ -113,6 +115,7 @@ namespace NHibernate.Cfg
 			tableNameBinding = GetSerialedObject<IDictionary<string, Mappings.TableDescription>>(info, "tableNameBinding");
 			tables = GetSerialedObject<IDictionary<string, Table>>(info, "tables");
 			typeDefs = GetSerialedObject<IDictionary<string, TypeDef>>(info, "typeDefs");
+			filtersSecondPasses = GetSerialedObject<Queue<FilterSecondPassArgs>>(info, "filtersSecondPasses");
 		}
 
 		private T GetSerialedObject<T>(SerializationInfo info, string name)
@@ -151,6 +154,7 @@ namespace NHibernate.Cfg
 			info.AddValue("tableNameBinding", tableNameBinding);
 			info.AddValue("tables", tables);
 			info.AddValue("typeDefs", typeDefs);
+			info.AddValue("filtersSecondPasses", filtersSecondPasses);
 		}
 		#endregion
 
@@ -179,7 +183,7 @@ namespace NHibernate.Cfg
 			extendsQueue = new HashedSet<ExtendsQueueEntry>();
 			tableNameBinding = new Dictionary<string, Mappings.TableDescription>();
 			columnNameBindingPerTable = new Dictionary<Table, Mappings.ColumnNames>();
-
+			filtersSecondPasses = new Queue<FilterSecondPassArgs>();
 		}
 		[Serializable]
 		private class Mapping : IMapping
@@ -520,7 +524,7 @@ namespace NHibernate.Cfg
 		{
 			ProcessPreMappingBuildProperties();
 			return new Mappings(classes, collections, tables, NamedQueries, NamedSQLQueries, SqlResultSetMappings, Imports,
-			                    secondPasses, propertyReferences, namingStrategy, typeDefs, FilterDefinitions, extendsQueue,
+			                    secondPasses, filtersSecondPasses, propertyReferences, namingStrategy, typeDefs, FilterDefinitions, extendsQueue,
 			                    auxiliaryDatabaseObjects, tableNameBinding, columnNameBindingPerTable, defaultAssembly,
 			                    defaultNamespace, dialect);
 		}
@@ -904,6 +908,69 @@ namespace NHibernate.Cfg
 
 		private void Validate()
 		{
+			ValidateEntities();
+
+			ValidateCollections();
+
+			ValidateFilterDefs();
+		}
+
+		private void ValidateFilterDefs()
+		{
+			var filterNames = new HashedSet<string>();
+			foreach (var filterDefinition in FilterDefinitions)
+			{
+				if(filterDefinition.Value == null)
+				{
+					// a class/collection has a filter but the filter-def was not added.
+					filterNames.Add(filterDefinition.Key);
+				}
+			}
+			if(filterNames.Count > 0)
+			{
+				var message = new StringBuilder();
+				message.Append("filter-def for filter named ");
+				foreach (var filterName in filterNames)
+				{
+					message.AppendLine(filterName);
+				}
+				message.AppendLine("was not found.");
+				throw new MappingException(message.ToString());
+			}
+
+			// check filter-def without reference
+			if (FilterDefinitions.Count > 0)
+			{
+				filterNames.Clear();
+				var filterables = new JoinedEnumerable(ClassMappings, CollectionMappings);
+				foreach (IFilterable filterable in filterables)
+				{
+					filterNames.AddAll(filterable.FilterMap.Keys);
+				}
+				foreach (var filterName in FilterDefinitions.Keys)
+				{
+					if (!filterNames.Contains(filterName))
+					{
+						// if you are going to remove this exception at least add a log.Error
+						// because the usage of filter-def, outside its scope, may cause unexpected behaviour
+						// during queries.
+						throw new MappingException("filter-def for filter named '" + filterName
+						                           + "' was never used to filter classes nor collections.");
+					}
+				}
+			}
+		}
+
+		private void ValidateCollections()
+		{
+			foreach (var col in collections.Values)
+			{
+				col.Validate(mapping);
+			}
+		}
+
+		private void ValidateEntities()
+		{
 			bool validateProxy = PropertiesHelper.GetBoolean(Environment.UseProxyValidator, properties, true);
 			HashedSet<string> allProxyErrors = null;
 			IProxyValidator pvalidator = Environment.BytecodeProvider.ProxyFactoryFactory.ProxyValidator;
@@ -932,11 +999,6 @@ namespace NHibernate.Cfg
 			if (allProxyErrors != null)
 			{
 				throw new InvalidProxyTypeException(allProxyErrors);
-			}
-
-			foreach (var col in collections.Values)
-			{
-				col.Validate(mapping);
 			}
 		}
 
@@ -1006,6 +1068,23 @@ namespace NHibernate.Cfg
 			foreach (var table in TableMappings)
 			{
 				SecondPassCompileForeignKeys(table, done);
+			}
+
+			log.Info("processing filters (second pass)");
+			foreach (var filterSecondPassArgs in filtersSecondPasses)
+			{
+				FilterDefinition filterDef;
+				var filterName = filterSecondPassArgs.FilterName;
+				FilterDefinitions.TryGetValue(filterName, out filterDef);
+				if(filterDef == null)
+				{
+					throw new MappingException("filter-def for filter named " + filterName + " was not found.");
+				}
+				if(string.IsNullOrEmpty(filterDef.DefaultFilterCondition))
+				{
+					throw new MappingException("no filter condition found for filter: " + filterName);
+				}
+				filterSecondPassArgs.Filterable.FilterMap[filterName] = filterDef.DefaultFilterCondition;
 			}
 		}
 

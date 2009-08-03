@@ -1017,17 +1017,19 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					condition = (propertyNameNode == null) ? null : propertyNameNode.Value;
 				}
 
-			//TODO: bad implementation, cos it depends upon ordering of mapping doc
-			//      fixing this requires that Collection/PersistentClass gain access
-			//      to the Mappings reference from Configuration (or the filterDefinitions
-			//      map directly) sometime during Configuration.buildSessionFactory
-			//      (after all the types/filter-defs are known and before building
-			//      persisters).
 			if (StringHelper.IsEmpty(condition))
-				condition = mappings.GetFilterDefinition(name).DefaultFilterCondition;
-			if (condition == null)
-				throw new MappingException("no filter condition found for filter: " + name);
-			log.Debug("Applying filter [" + name + "] as [" + condition + "]");
+			{
+				var fdef = mappings.GetFilterDefinition(name);
+				if (fdef != null)
+				{
+					// where immediately available, apply the condition
+					condition = fdef.DefaultFilterCondition;
+				}
+			}
+
+			mappings.ExpectedFilterDefinition(filterable, name, condition);
+
+			log.Debug(string.Format("Applying filter [{0}] as [{1}]", name, condition));
 			filterable.AddFilter(name, condition);
 		}
 

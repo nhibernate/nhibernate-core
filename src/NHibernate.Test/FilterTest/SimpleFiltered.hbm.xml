@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   default-lazy="false" 
+				   assembly="NHibernate.Test" 
+				   namespace="NHibernate.Test.FilterTest" >
+
+	<class name="TestClass">
+		<id name="Id" column="id">
+			<generator class="assigned" />
+		</id>
+		<property name="Name"/>
+		<property name="Live" type="Boolean" />
+		<filter name="LiveFilter" />
+		<filter name="LiveFilter2" />
+	</class>
+	
+</hibernate-mapping>
