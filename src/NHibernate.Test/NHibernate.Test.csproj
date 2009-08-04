@@ -546,6 +546,8 @@
     <Compile Include="NHSpecificTest\NH1899\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH1907\MyType.cs" />
     <Compile Include="NHSpecificTest\NH1907\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1908\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1908\Model.cs" />
     <Compile Include="NHSpecificTest\NH473\Child.cs" />
     <Compile Include="NHSpecificTest\NH473\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH473\Parent.cs" />
@@ -1956,6 +1958,7 @@
     <EmbeddedResource Include="Bytecode\Lightweight\ProductLine.hbm.xml" />
     <EmbeddedResource Include="DriverTest\MultiTypeEntity.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1908\Mappings.hbm.xml" />
     <EmbeddedResource Include="FilterTest\WrongFilterDefInClass.hbm.xml" />
     <EmbeddedResource Include="FilterTest\SimpleFiltered.hbm.xml" />
     <EmbeddedResource Include="FilterTest\SimpleFilteredFiltersDefsOk.hbm.xml" />
