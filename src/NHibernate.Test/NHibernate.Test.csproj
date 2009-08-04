@@ -556,6 +556,8 @@
     <Compile Include="NHSpecificTest\NH1898\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH1899\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH1899\SampleTest.cs" />
+    <Compile Include="NHSpecificTest\NH1904\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1904\Model.cs" />
     <Compile Include="NHSpecificTest\NH1907\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1907\MyType.cs" />
     <Compile Include="NHSpecificTest\NH1908\Fixture.cs" />
@@ -1973,6 +1975,7 @@
     <EmbeddedResource Include="Criteria\Lambda\Mappings.hbm.xml" />
     <EmbeddedResource Include="CfgTest\Loquacious\EntityToCache.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1904\Mappings.hbm.xml" />
     <EmbeddedResource Include="FilterTest\SimpleFiltered.hbm.xml" />
     <EmbeddedResource Include="FilterTest\SimpleFilteredFiltersDefsOk.hbm.xml" />
     <EmbeddedResource Include="FilterTest\WrongFilterDefInClass.hbm.xml" />
