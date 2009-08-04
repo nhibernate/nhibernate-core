@@ -130,12 +130,17 @@ namespace NHibernate.Properties
 				return null;
 			}
 
-			// the BindingFlags.IgnoreCase is important here because if type is a struct, the GetProperty method does
-			// not ignore case by default. If type is a class, it _does_ ignore case... we're better off explicitly
-			// stating that casing should be ignored so we get the same behavior for both structs and classes
-			PropertyInfo property =
-				type.GetProperty(propertyName,
-				                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.IgnoreCase);
+			BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+
+			if (type.IsValueType)
+			{
+				// the BindingFlags.IgnoreCase is important here because if type is a struct, the GetProperty method does
+				// not ignore case by default. If type is a class, it _does_ ignore case... we're better off explicitly
+				// stating that casing should be ignored so we get the same behavior for both structs and classes
+				bindingFlags = bindingFlags | BindingFlags.IgnoreCase;
+			}
+
+			PropertyInfo property = type.GetProperty(propertyName, bindingFlags);
 
 			if (property != null && property.CanWrite)
 			{
