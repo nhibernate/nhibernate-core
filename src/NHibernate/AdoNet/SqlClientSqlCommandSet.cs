@@ -18,6 +18,7 @@ namespace NHibernate.AdoNet
 		private object instance;
 		private PropSetter<SqlConnection> connectionSetter;
 		private PropSetter<SqlTransaction> transactionSetter;
+		private PropSetter<int> commandTimeoutSetter;
 		private PropGetter<SqlConnection> connectionGetter;
 		private SqlClientSqlCommandSet.PropGetter<System.Data.SqlClient.SqlCommand> commandGetter;
 		private AppendCommand doAppend;
@@ -41,6 +42,9 @@ namespace NHibernate.AdoNet
 			transactionSetter = (PropSetter<SqlTransaction>)
 			                    Delegate.CreateDelegate(typeof(PropSetter<SqlTransaction>),
 			                                            instance, "set_Transaction");
+			commandTimeoutSetter = (PropSetter<int>)
+								Delegate.CreateDelegate(typeof(PropSetter<int>),
+														instance, "set_CommandTimeout");
 			connectionGetter = (PropGetter<SqlConnection>)
 			                   Delegate.CreateDelegate(typeof(PropGetter<SqlConnection>),
 			                                           instance, "get_Connection");
@@ -128,6 +132,11 @@ namespace NHibernate.AdoNet
 		public SqlTransaction Transaction
 		{
 			set { transactionSetter(value); }
+		}
+
+		public int CommandTimeout
+		{
+			set { commandTimeoutSetter(value); }
 		}
 
 		///<summary>
