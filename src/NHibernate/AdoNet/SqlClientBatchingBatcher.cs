@@ -1,6 +1,7 @@
 using System.Data;
 using System.Text;
 using NHibernate.AdoNet.Util;
+using NHibernate.Util;
 
 namespace NHibernate.AdoNet
 {
@@ -21,11 +22,32 @@ namespace NHibernate.AdoNet
 		{
 			batchSize = Factory.Settings.AdoBatchSize;
 			currentBatch = new SqlClientSqlCommandSet();
+			SetCommandTimeout();
 			//we always create this, because we need to deal with a scenario in which
 			//the user change the logging configuration at runtime. Trying to put this
 			//behind an if(log.IsDebugEnabled) will cause a null reference exception 
 			//at that point.
 			currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
+		}
+
+		private void SetCommandTimeout()
+		{
+			int timeout = PropertiesHelper.GetInt32(Cfg.Environment.CommandTimeout, Cfg.Environment.Properties, -1);
+
+			if (timeout > 0)
+			{
+				try
+				{
+					currentBatch.CommandTimeout = timeout;
+				}
+				catch (Exception e)
+				{
+					if (log.IsWarnEnabled)
+					{
+						log.Warn(e.ToString());
+					}
+				}
+			}
 		}
 
 		public override int BatchSize
