@@ -57,5 +57,15 @@ namespace NHibernate.Dialect
 				return "select uuid()";
 			}
 		}
+
+		public override SqlString AppendIdentitySelectToInsert (NHibernate.SqlCommand.SqlString insertString)
+		{
+			return insertString.Append(";" + IdentitySelectString);
+		}
+
+		public override bool SupportsInsertSelectIdentity
+		{
+			get { return true; }
+		}
 	}
 }
