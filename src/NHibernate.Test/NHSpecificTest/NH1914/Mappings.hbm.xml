@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.NH1914"
+									 default-lazy="false">
+
+	<class name="IDS" table="IDS">
+		<id name="Identifier">
+			<generator class="assigned" />
+		</id>
+		<property name="Name" not-null="true" />
+		<map name="CRSPLUTs" table="CRSPLUTs" cascade="all-delete-orphan">
+			<key column="ParentID"/>
+			<index column="OrganID" type="String"/>
+			<one-to-many class="ListOfHLUT"/>
+		</map>
+	</class>
+
+	<class name="ListOfHLUT" table="ListOfHLUT">
+		<id name="ID" column="CollectionID">
+			<generator class="native" />
+		</id>
+		<list name="Values" table="CustomValues" cascade="all">
+			<key column="ParentID"/>
+			<index column="Indexer" type="Int32"/>
+			<one-to-many class="HLUT"/>
+		</list>
+	</class>
+
+	<class name="HLUT" table="HLUT">
+
+		<!--NotWorking with below id generation.-->
+		<id name="Identifier" unsaved-value="0">
+			<generator class="assigned" />
+		</id>
+
+		<!--Working with below id generation.-->
+		<!--
+		<id name="Identifier" unsaved-value="any">
+			<generator class="native" />
+		</id>-->
+
+		<property name="Name" not-null="true" />
+		<list name="Entries" table="Entries" cascade="all">
+			<key column="ParentID"/>
+			<index column="Indexer" type="Int32"/>
+			<composite-element class="Entry">
+				<property name="Key1" type="Double" access="field" />
+				<property name="Value" type="Double" access="field"/>
+			</composite-element>
+		</list>
+	</class>
+
+</hibernate-mapping>

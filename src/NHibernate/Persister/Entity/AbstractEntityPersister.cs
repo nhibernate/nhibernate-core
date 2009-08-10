@@ -3630,7 +3630,19 @@ namespace NHibernate.Persister.Entity
 			// check the id unsaved-value
 			bool? result2 = entityMetamodel.IdentifierProperty.UnsavedValue.IsUnsaved(id);
 			if (result2.HasValue)
-				return result2;
+			{
+				if (IdentifierGenerator is Assigned)
+				{
+					// if using assigned identifier, we can only make assumptions
+					// if the value is a known unsaved-value
+					if (result2.Value)
+						return true;
+				}
+				else
+				{
+					return result2;
+				}
+			}
 
 			// check to see if it is in the second-level cache
 			if (HasCache)

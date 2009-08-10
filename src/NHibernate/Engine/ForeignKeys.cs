@@ -1,3 +1,5 @@
+using log4net;
+using NHibernate.Id;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
@@ -7,6 +9,8 @@ namespace NHibernate.Engine
 	/// <summary> Algorithms related to foreign key constraint transparency </summary>
 	public static class ForeignKeys
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(ForeignKeys));
+
 		public class Nullifier
 		{
 			private readonly bool isDelete;
@@ -194,6 +198,17 @@ namespace NHibernate.Engine
 			// the database
 			if (assumed.HasValue)
 				return assumed.Value;
+
+			if (persister.IdentifierGenerator is Assigned)
+			{
+				// When using assigned identifiers we cannot tell if an entity
+				// is transient or detached without querying the database.
+				// This could potentially cause Select N+1 in cascaded saves, so warn the user.
+				log.Warn("Unable to determine if " + entity.ToString()
+					+ " with assigned identifier " + persister.GetIdentifier(entity, session.EntityMode)
+					+ " is transient or detached; querying the database."
+					+ " Use explicit Save() or Update() in session to prevent this.");
+			}
 
 			// hit the database, after checking the session cache for a snapshot
 			System.Object[] snapshot =

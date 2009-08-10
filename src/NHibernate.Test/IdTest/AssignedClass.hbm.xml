@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
+
+	<class name="NHibernate.Test.IdTest.Parent, NHibernate.Test">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+
+		<property name="Name" />
+
+		<bag name="Children" inverse="true" cascade="all">
+			<key column="Parent"/>
+			<one-to-many class="NHibernate.Test.IdTest.Child, NHibernate.Test"/>
+		</bag>
+	</class>
+
+	<class name="NHibernate.Test.IdTest.Child, NHibernate.Test">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+
+		<many-to-one name="Parent" class="NHibernate.Test.IdTest.Parent, NHibernate.Test" />
+	</class>
+
+</hibernate-mapping>
