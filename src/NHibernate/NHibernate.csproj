@@ -544,10 +544,17 @@
     <Compile Include="Hql\Ast\ANTLR\Tree\ASTErrorNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\InsertStatement.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\UpdateStatement.cs" />
+    <Compile Include="IQueryExpression.cs" />
     <Compile Include="IQueryOver.cs" />
     <Compile Include="Criterion\QueryOver.cs" />
     <Compile Include="Impl\ExpressionProcessor.cs" />
     <Compile Include="Impl\SessionIdLoggingContext.cs" />
+    <Compile Include="Linq\LinqExpression.cs" />
+    <Compile Include="Linq\LinqExtensionMethods.cs" />
+    <Compile Include="Linq\NhQueryProvider.cs" />
+    <Compile Include="Linq\Query.cs" />
+    <Compile Include="Linq\QueryProvider.cs" />
+    <Compile Include="Linq\TypeHelper.cs" />
     <Compile Include="Param\AbstractExplicitParameterSpecification.cs" />
     <Compile Include="Param\AggregatedIndexCollectionSelectorParameterSpecifications.cs" />
     <Compile Include="Param\CollectionFilterKeyParameterSpecification.cs" />

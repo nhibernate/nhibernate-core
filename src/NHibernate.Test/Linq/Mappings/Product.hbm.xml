@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+									 namespace="NHibernate.Test.Linq.Entities" assembly="NHibernate.Test">
+
+	<class name="Product" table="Products">
+		<id name="Id" column="ProductId" type="long" unsaved-value="-1" 
+				access="field.camelcase-underscore">
+			<generator class="native" />
+		</id>
+
+		<property name="Name" column="ProductName" type="string" length="40"
+							not-null="true" access="field.camelcase-underscore"/>
+
+		<many-to-one name="Supplier" class="Supplier" column="SupplierId"
+						 access="field.camelcase-underscore" fetch="select"/>
+
+		<many-to-one name="Category" class="ProductCategory" column="CategoryId"
+								 access="field.camelcase-underscore" fetch="select"/>
+
+		<property name="QuantityPerUnit" column="QuantityPerUnit" type="string" length="20"
+							access="field.camelcase-underscore"/>
+
+		<property name="UnitPrice" column="UnitPrice" type="Decimal"
+							access="field.camelcase-underscore"/>
+
+		<property name="UnitsInStock" column="UnitsInStock" type="int"
+							access="field.camelcase-underscore"/>
+
+		<property name="UnitsOnOrder" column="UnitsOnOrder" type="int"
+							access="field.camelcase-underscore"/>
+
+		<property name="ReorderLevel" column="ReorderLevel" type="int"
+							access="field.camelcase-underscore"/>
+
+		<property name="Discontinued" column="Discontinued" type="boolean"
+							not-null="true" access="field.camelcase-underscore"/>
+
+		<bag name="OrderLines" lazy="true" access="field.camelcase-underscore"
+				 cascade="none">
+			<key column="ProductId"/>
+			<one-to-many class="OrderLine"/>
+		</bag>
+
+	</class>
+	
+</hibernate-mapping>

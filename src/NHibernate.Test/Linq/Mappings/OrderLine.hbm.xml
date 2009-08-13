@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+									 namespace="NHibernate.Test.Linq.Entities" assembly="NHibernate.Test">
+
+	<class name="OrderLine" table="OrderLines">
+
+		<id name="Id" column="OrderLineId" type="long" unsaved-value="-1" 
+				access="field.camelcase-underscore">
+			<generator class="native" />
+		</id>
+
+		<many-to-one name="Order" class="Order" column="OrderId" not-null="true"
+								 access="field.camelcase-underscore" fetch="select"/>
+
+		<many-to-one name="Product" class="Product" column="ProductId" not-null="true"
+								 access="field.camelcase-underscore" fetch="select"/>
+
+		<property name="UnitPrice" column="UnitPrice" type="Decimal"
+							not-null="true" access="field.camelcase-underscore"/>
+
+		<property name="Quantity" column="Quantity" type="int"
+							not-null="true" access="field.camelcase-underscore"/>
+
+		<property name="Discount" column="Discount" type="Decimal"
+							not-null="true" access="field.camelcase-underscore"/>
+		
+	</class>
+	
+</hibernate-mapping>

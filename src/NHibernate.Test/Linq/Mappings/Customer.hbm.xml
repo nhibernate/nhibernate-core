@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+									 namespace="NHibernate.Test.Linq.Entities" assembly="NHibernate.Test">
+
+	<class name="Customer" table="Customers">
+		<id name="Id" column="CustomerId" type="long" unsaved-value="-1" 
+				access="field.camelcase-underscore">
+			<generator class="native" />
+		</id>
+
+		<property name="CompanyName" column="CompanyName" type="string" length="40"
+						  not-null="true" access="field.camelcase-underscore"/>
+
+		<property name="ContactName" column="ContactName" type="string" length="30"
+							access="field.camelcase-underscore"/>
+
+		<property name="ContactTitle" column="ContactTitle" type="string" length="30"
+							access="field.camelcase-underscore"/>
+
+		<component name="Address" class="NHibernate.Test.Linq.Entities.Address, NHibernate.Test"
+							 access="field.camelcase-underscore" insert="true" update="true">
+
+			<property name="Street" column="Address" type="string" length="60"
+								access="field.camelcase-underscore"/>
+
+			<property name="City" column="City" type="string" length="15"
+								access="field.camelcase-underscore"/>
+
+			<property name="Region" column="Region" type="string" length="15"
+								access="field.camelcase-underscore"/>
+
+			<property name="PostalCode" column="PostalCode" type="string" length="10"
+								access="field.camelcase-underscore"/>
+
+			<property name="Country" column="Country" type="string" length="15"
+								access="field.camelcase-underscore"/>
+
+			<property name="PhoneNumber" column="Phone" type="string" length="24"
+								access="field.camelcase-underscore"/>
+
+			<property name="Fax" column="Fax" type="string" length="24"
+								access="field.camelcase-underscore"/>
+			
+		</component>
+
+		<set name="Orders" lazy="true" access="field.camelcase-underscore"
+				 cascade="all-delete-orphan" inverse="true">
+			<key column="CustomerId"/>
+			<one-to-many class="Order"/>
+		</set>		
+		
+	</class>
+	
+</hibernate-mapping>

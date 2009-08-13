@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+									 namespace="NHibernate.Test.Linq.Entities" assembly="NHibernate.Test">
+
+	<class name="Employee" table="Employees">
+		<id name="Id" column="EmployeeId" type="long" unsaved-value="-1" 
+				access="field.camelcase-underscore">
+			<generator class="native" />
+		</id>
+
+		<property name="LastName" column="LastName" type="string" length="20"
+						  not-null="true" access="field.camelcase-underscore"/>
+
+		<property name="FirstName" column="FirstName" type="string" length="10"
+							not-null="true" access="field.camelcase-underscore"/>
+
+		<property name="Title" column="Title" type="string" length="30"
+							access="field.camelcase-underscore"/>
+
+		<property name="TitleOfCourtesy" column="TitleOfCourtesy" type="string" length="25"
+							access="field.camelcase-underscore"/>
+
+		<property name="BirthDate" column="BirthDate" type="DateTime"
+							access="field.camelcase-underscore"/>
+
+		<property name="HireDate" column="HireDate" type="DateTime"
+							access="field.camelcase-underscore"/>
+
+		<component name="Address" class="NHibernate.Test.Linq.Entities.Address, NHibernate.Test"
+							 access="field.camelcase-underscore" insert="true" update="true">
+			
+			<property name="Street" column="Address" type="string" length="60"
+								access="field.camelcase-underscore"/>
+
+			<property name="City" column="City" type="string" length="15"
+								access="field.camelcase-underscore"/>
+
+			<property name="Region" column="Region" type="string" length="15"
+								access="field.camelcase-underscore"/>
+
+			<property name="PostalCode" column="PostalCode" type="string" length="10"
+								access="field.camelcase-underscore"/>
+
+			<property name="Country" column="Country" type="string" length="15"
+								access="field.camelcase-underscore"/>
+
+			<property name="PhoneNumber" column="HomePhone" type="string" length="24"
+								access="field.camelcase-underscore"/>
+			
+		</component>
+
+		<property name="Extension" column="Extension" type="string" length="4"
+							access="field.camelcase-underscore"/>
+
+		<property name="Notes" column="Notes" type="string" length="4000"
+							access="field.camelcase-underscore"/>
+
+		<many-to-one name="Superior" class="Employee" column="ReportsTo"  
+								 access="field.camelcase-underscore" fetch="select"/>
+
+		<set name="Subordinates" lazy="true" access="field.camelcase-underscore"
+				 cascade="save-update">
+			<key column="ReportsTo"/>
+			<one-to-many class="Employee"/>
+		</set>
+
+		<set name="Orders" lazy="true" access="field.camelcase-underscore"
+				 cascade="save-update">
+			<key column="EmployeeId"/>
+			<one-to-many class="Order"/>
+		</set>
+
+		<bag name="Territories" lazy="true" access="field.camelcase-underscore"
+				 cascade="none"  table="EmployeeTerritories">
+			<key column="EmployeeId"/>
+			<many-to-many class="Territory" column="TerritoryId"/>
+		</bag>
+
+	</class>
+	
+</hibernate-mapping>

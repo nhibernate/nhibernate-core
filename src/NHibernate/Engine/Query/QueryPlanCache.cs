@@ -72,6 +72,35 @@ namespace NHibernate.Engine.Query
 			return plan;
 		}
 
+        public HQLQueryPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters)
+        {
+            string expressionStr = queryExpression.Key;
+
+            var key = new HQLQueryPlanKey(expressionStr, shallow, enabledFilters);
+            var plan = (HQLQueryPlan)planCache[key];
+
+            if (plan == null)
+            {
+                if (log.IsDebugEnabled)
+                {
+                    log.Debug("unable to locate HQL query plan in cache; generating (" + expressionStr + ")");
+                }
+                plan = new HQLQueryPlan(expressionStr, queryExpression, shallow, enabledFilters, factory);
+            }
+            else
+            {
+                if (log.IsDebugEnabled)
+                {
+                    log.Debug("located HQL query plan in cache (" + expressionStr + ")");
+                }
+            }
+
+            planCache.Put(key, plan);
+
+            return plan;
+        }
+
+
 		public FilterQueryPlan GetFilterQueryPlan(string filterString, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
 			var key = new FilterQueryPlanKey(filterString, collectionRole, shallow, enabledFilters);

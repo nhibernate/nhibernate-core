@@ -81,6 +81,14 @@ namespace NHibernate.Engine
 		/// <returns></returns>
 		IList List(string query, QueryParameters parameters);
 
+        /// <summary>
+        /// Execute a <c>List()</c> expression query
+        /// </summary>
+        /// <param name="queryExpression"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        IList List(IQueryExpression queryExpression, QueryParameters parameters);
+
 		void List(string query, QueryParameters parameters, IList results);
 
 		/// <summary>

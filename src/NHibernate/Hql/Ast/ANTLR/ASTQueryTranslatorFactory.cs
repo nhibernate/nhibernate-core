@@ -10,7 +10,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	/// Author: Gavin King
 	/// Ported by: Steve Strong
 	/// </summary>
-	public class ASTQueryTranslatorFactory : IQueryTranslatorFactory
+	public class ASTQueryTranslatorFactory : IQueryTranslatorFactory2
 	{
 		public IQueryTranslator CreateQueryTranslator(string queryIdentifier, string queryString, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory)
 		{
@@ -21,5 +21,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			return new QueryTranslatorImpl(queryIdentifier, queryString, filters, factory);
 		}
+
+        public IQueryTranslator CreateQueryTranslator(string queryIdentifier, IQueryExpression queryExpression, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory)
+        {
+            return new QueryTranslatorImpl(queryIdentifier, queryExpression, filters, factory);
+        }
 	}
 }

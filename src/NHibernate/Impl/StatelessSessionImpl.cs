@@ -133,6 +133,16 @@ namespace NHibernate.Impl
 			}
 		}
 
+        public override IList List(IQueryExpression queryExpression, QueryParameters parameters)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
+        {
+            throw new System.NotImplementedException();
+        }
+
 		public override IList<T> List<T>(string query, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))

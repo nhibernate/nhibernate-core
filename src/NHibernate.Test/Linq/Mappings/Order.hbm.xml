@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+									 namespace="NHibernate.Test.Linq.Entities" assembly="NHibernate.Test">
+
+	<class name="Order" table="Orders">
+		<id name="Id" column="OrderId" type="long" unsaved-value="-1" 
+				access="field.camelcase-underscore">
+			<generator class="native" />
+		</id>
+
+		<many-to-one name="Customer" class="Customer" column="CustomerId" not-null="true"
+								 access="field.camelcase-underscore" fetch="select"/>
+
+		<many-to-one name="Employee" class="Employee" column="EmployeeId" 
+								 access="field.camelcase-underscore" fetch="select"/>
+
+		<property name="OrderDate" column="OrderDate" type="DateTime"
+							access="field.camelcase-underscore"/>
+
+		<property name="RequiredDate" column="RequiredDate" type="DateTime"
+							access="field.camelcase-underscore"/>
+
+		<property name="ShippingDate" column="ShippedDate" type="DateTime"
+							access="field.camelcase-underscore"/>
+
+		<many-to-one name="Shipper" class="Shipper" column="ShipVia"
+								 access="field.camelcase-underscore" fetch="select"/>
+
+		<property name="Freight" column="Freight" type="Decimal"
+							access="field.camelcase-underscore"/>
+
+		<property name="ShippedTo" column="ShipName" type="string" length="40"
+							access="field.camelcase-underscore"/>
+		
+		<component name="ShippingAddress" class="NHibernate.Test.Linq.Entities.Address, NHibernate.Test"
+							 access="field.camelcase-underscore" insert="true" update="true">
+			
+			<property name="Street" column="ShipAddress" type="string" length="60"
+								access="field.camelcase-underscore"/>
+
+			<property name="City" column="ShipCity" type="string" length="15"
+								access="field.camelcase-underscore"/>
+
+			<property name="Region" column="ShipRegion" type="string" length="15"
+								access="field.camelcase-underscore"/>
+
+			<property name="PostalCode" column="ShipPostalCode" type="string" length="10"
+								access="field.camelcase-underscore"/>
+
+			<property name="Country" column="ShipCountry" type="string" length="15"
+								access="field.camelcase-underscore"/>
+			
+		</component>
+
+		<set name="OrderLines" lazy="true" access="field.camelcase-underscore"
+				 cascade="all-delete-orphan" inverse="true">
+			<key column="OrderId"/>
+			<one-to-many class="OrderLine"/>
+		</set>
+		
+	</class>
+	
+</hibernate-mapping>

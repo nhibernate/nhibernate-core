@@ -13,6 +13,7 @@ namespace NHibernate.Impl
 	public class QueryImpl : AbstractQueryImpl
 	{
 		private readonly Dictionary<string, LockMode> lockModes = new Dictionary<string, LockMode>(2);
+        private readonly IQueryExpression _queryExpression;
 
 		public QueryImpl(string queryString, FlushMode flushMode, ISessionImplementor session, ParameterMetadata parameterMetadata)
 			: base(queryString, flushMode, session, parameterMetadata)
@@ -23,6 +24,12 @@ namespace NHibernate.Impl
 			: this(queryString, FlushMode.Unspecified, session, parameterMetadata)
 		{
 		}
+
+        public QueryImpl(IQueryExpression queryExpression, ISessionImplementor session, ParameterMetadata parameterMetadata)
+            : base(queryExpression.Key, FlushMode.Unspecified, session, parameterMetadata)
+        {
+            _queryExpression = queryExpression;
+        }
 
 		public override IEnumerable Enumerable()
 		{
@@ -61,7 +68,14 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				return Session.List(ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
+                if (_queryExpression == null)
+                {
+                    return Session.List(ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
+                }
+                else
+                {
+                    return Session.List(_queryExpression, GetQueryParameters(namedParams));
+                }
 			}
 			finally
 			{

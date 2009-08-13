@@ -6,6 +6,7 @@ using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Event;
 using NHibernate.Hql;
+using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -30,9 +31,15 @@ namespace NHibernate.Engine.Query
 
 		public HQLQueryPlan(string hql, bool shallow, 
 			IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
-			: this(hql, null, shallow, enabledFilters, factory)
+			: this(hql, (string) null, shallow, enabledFilters, factory)
 		{
 		}
+
+        public HQLQueryPlan(string expressionStr, IQueryExpression queryExpression, bool shallow,
+            IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
+            : this(expressionStr, queryExpression, null, shallow, enabledFilters, factory)
+        {
+        }
 
 		protected internal HQLQueryPlan(string hql, string collectionRole, bool shallow,
 			IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
@@ -98,8 +105,38 @@ namespace NHibernate.Engine.Query
 					}
 				}
 			}
-
 		}
+
+        protected internal HQLQueryPlan(string expressionStr, IQueryExpression queryExpression, string collectionRole, bool shallow,
+                                    IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
+        {
+            sourceQuery = expressionStr;
+            this.shallow = shallow;
+
+            enabledFilterNames = new HashedSet<string>(enabledFilters.Keys);
+
+            // TODO - no support for polymorphism here - done during Expression -> AST translation?
+            // TODO - polymorphism approach used in method above also sucks.  Could be done in AST much more cleanly?  Look at this...
+            IQueryTranslatorFactory2 qtFactory = new ASTQueryTranslatorFactory();
+
+            IQueryTranslator translator = qtFactory.CreateQueryTranslator(expressionStr, queryExpression, enabledFilters,
+                                                                          factory);
+
+            translator.Compile(factory.Settings.QuerySubstitutions, shallow);
+
+            translators = new[] { translator };
+
+            sqlStrings = new List<string>(translator.CollectSqlStrings).ToArray();
+
+            querySpaces = new HashedSet<string>(translator.QuerySpaces);
+
+            // TODO - need to build parameterMetadata.  Current function no good, since is parses the HQL.  Might need to walk the AST here,
+            // probably inside the QueryTranslator.  That's probably a better place for the parsing to be anyway; possibly worth moving for classic as well...
+            //parameterMetadata = BuildParameterMetadata(translator.GetParameterTranslations(), hql);
+            parameterMetadata = new ParameterMetadata(new OrdinalParameterDescriptor[0], new Dictionary<string, NamedParameterDescriptor>());
+
+            returnMetadata = new ReturnMetadata(translator.ReturnAliases, translator.ReturnTypes);
+        }
 
 		public string SourceQuery
 		{

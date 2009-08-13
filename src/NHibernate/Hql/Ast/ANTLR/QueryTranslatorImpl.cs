@@ -58,6 +58,28 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_factory = factory;
 		}
 
+        /// <summary>
+        /// Creates a new AST-based query translator.
+        /// </summary>
+        /// <param name="queryIdentifier">The query-identifier (used in stats collection)</param>
+        /// <param name="queryExpression">The hql query to translate</param>
+        /// <param name="enabledFilters">Currently enabled filters</param>
+        /// <param name="factory">The session factory constructing this translator instance.</param>
+        public QueryTranslatorImpl(
+                string queryIdentifier,
+                IQueryExpression queryExpression,
+                IDictionary<string, IFilter> enabledFilters,
+                ISessionFactoryImplementor factory)
+        {
+            _queryIdentifier = queryIdentifier;
+            _hql = queryExpression.ToString();
+            _compiled = false;
+            _shallowQuery = false;
+            _enabledFilters = enabledFilters;
+            _factory = factory;
+            _parser = new HqlParseEngine(queryExpression.Translate(factory), factory);
+        }
+
 		/// <summary>
 		/// Compile a "normal" query. This method may be called multiple
 		/// times. Subsequent invocations are no-ops.

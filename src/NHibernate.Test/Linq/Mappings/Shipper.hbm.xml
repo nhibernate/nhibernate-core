@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+									 namespace="NHibernate.Test.Linq.Entities" assembly="NHibernate.Test">
+
+	<class name="Shipper" table="Shippers">
+		<id name="Id" column="ShipperId" type="long" unsaved-value="-1" 
+				access="field.camelcase-underscore">
+			<generator class="native" />
+		</id>
+
+		<property name="CompanyName" column="CompanyName" type="string" length="40"
+						  not-null="true" access="field.camelcase-underscore"/>
+
+		<property name="PhoneNumber" column="Phone" type="string" length="24"
+							access="field.camelcase-underscore"/>
+
+		<bag name="Orders" lazy="true" access="field.camelcase-underscore"
+				 cascade="none">
+			<key column="ShipVia"/>
+			<one-to-many class="Order"/>
+		</bag>
+
+	</class>
+	
+</hibernate-mapping>

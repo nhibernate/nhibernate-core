@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+									 namespace="NHibernate.Test.Linq.Entities" assembly="NHibernate.Test">
+
+	<class name="Region" table="Region">
+		<id name="Id" column="RegionId" type="long" unsaved-value="-1" 
+				access="field.camelcase-underscore">
+			<generator class="native" />
+		</id>
+
+		<property name="Description" column="RegionDescription" type="string" length="50"
+							not-null="true" access="field.camelcase-underscore"/>
+
+		<set name="Territories" lazy="true" access="field.camelcase-underscore"
+				 inverse="true" cascade="all-delete-orphan">
+			<key column="RegionId"/>
+			<one-to-many class="Territory"/>
+		</set>
+		
+	</class>
+	
+</hibernate-mapping>

@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+									 namespace="NHibernate.Test.Linq.Entities" assembly="NHibernate.Test">
+
+	<class name="Territory" table="Territories">
+		<id name="Id" column="TerritoryId" type="long" unsaved-value="-1"
+				access="field.camelcase-underscore">
+			<generator class="native" />
+		</id>
+
+		<property name="Description" column="TerritoryDescription" type="string" length="50"
+							not-null="true" access="field.camelcase-underscore"/>
+		
+		<many-to-one name="Region" class="Region" column="RegionId" not-null="true"
+								 access="field.camelcase-underscore" fetch="select"/>
+
+		<set name="Employees" lazy="true" access="field.camelcase-underscore"
+				 cascade="save-update" table="EmployeeTerritories">
+			<key column="TerritoryId"/>
+			<many-to-many class="Employee" column="EmployeeId"/>
+		</set>
+		
+	</class>
+	
+</hibernate-mapping>

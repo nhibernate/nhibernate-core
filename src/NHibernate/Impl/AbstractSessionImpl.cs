@@ -76,6 +76,8 @@ namespace NHibernate.Impl
 		public abstract void CloseSessionFromDistributedTransaction();
 		public abstract IList List(string query, QueryParameters parameters);
 		public abstract void List(string query, QueryParameters parameters, IList results);
+        public abstract IList List(IQueryExpression queryExpression, QueryParameters parameters);
+        public abstract void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results);
 		public abstract IList<T> List<T>(string query, QueryParameters queryParameters);
 		public abstract IList<T> List<T>(CriteriaImpl criteria);
 		public abstract void List(CriteriaImpl criteria, IList results);
@@ -245,6 +247,18 @@ namespace NHibernate.Impl
 			}
 		}
 
+        public virtual IQuery CreateQuery(IQueryExpression queryExpression)
+        {
+            using (new SessionIdLoggingContext(SessionId))
+            {
+                CheckAndUpdateSessionStatus();
+                QueryImpl query = new QueryImpl(queryExpression, this,
+                                                GetHQLQueryPlan(queryExpression, false).ParameterMetadata);
+                query.SetComment("[expression]");
+                return query;
+            }
+        }
+
 		public virtual IQuery CreateQuery(string queryString)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -274,6 +288,14 @@ namespace NHibernate.Impl
 				return factory.QueryPlanCache.GetHQLQueryPlan(query, shallow, EnabledFilters);
 			}
 		}
+
+        protected internal virtual HQLQueryPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow)
+        {
+            using (new SessionIdLoggingContext(SessionId))
+            {
+                return factory.QueryPlanCache.GetHQLQueryPlan(queryExpression, shallow, EnabledFilters);
+            }
+        }
 
 		protected internal virtual NativeSQLQueryPlan GetNativeSQLQueryPlan(NativeSQLQuerySpecification spec)
 		{
