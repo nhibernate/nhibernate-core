@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.NH1927">
+
+  <class name="Customer" >
+    <id name="ID" type="Int32">
+      <generator class="hilo" />
+    </id>
+
+    <set name="Invoices" inverse="true" lazy="true" >
+      <key column="CustomerID"/>
+      <one-to-many class="Invoice"/>
+      <filter name="validity" condition="ValidUntil > :date" />
+    </set>
+
+    <property name="ValidUntil" type="DateTime" />
+    <filter name="validity" condition="ValidUntil > :date" />
+  </class>
+
+  <class name="Invoice">
+    <id name="ID" type="Int32">
+      <generator class="hilo" />
+    </id>
+
+    <property name="ValidUntil" type="DateTime" />
+    <many-to-one name="Customer" column="CustomerID" class="Customer"/>
+    <filter name="validity" condition="ValidUntil > :date" />
+  </class>
+
+  <filter-def name="validity">
+    <filter-param name="date" type="DateTime"/>
+  </filter-def>
+</hibernate-mapping>

@@ -575,7 +575,9 @@ namespace NHibernate.Loader
 					if (enabledFilters.Count > 0)
 					{
 						var manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFilters);
-						outerjoin.AddCondition(manyToOneFilterFragment);
+						var joinClauseDoesNotContainsFilterAlready = outerjoin.ToFromFragmentString.IndexOfCaseInsensitive(manyToOneFilterFragment) == -1;
+						if(joinClauseDoesNotContainsFilterAlready)
+							outerjoin.AddCondition(manyToOneFilterFragment);
 					}
 				}
 				last = oj;
