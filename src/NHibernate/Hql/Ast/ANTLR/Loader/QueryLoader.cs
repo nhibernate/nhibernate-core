@@ -106,21 +106,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 			return dialect.ApplyLocksToSql(sql, aliasedLockModes, keyColumnNames);
 		}
 
-		protected override int BindParameterValues(IDbCommand statement, QueryParameters queryParameters, int startIndex,
-		                                           ISessionImplementor session)
-		{
-			int position = startIndex;
-
-			IList<IParameterSpecification> parameterSpecs = _queryTranslator.CollectedParameterSpecifications;
-
-			foreach (var spec in parameterSpecs)
-			{
-				position += spec.Bind(statement, queryParameters, session, position);
-			}
-
-			return position - startIndex;
-		}
-
 		protected override string[] Aliases
 		{
 			get { return _sqlAliases; }
