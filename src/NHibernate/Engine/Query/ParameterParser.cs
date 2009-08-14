@@ -64,7 +64,17 @@ namespace NHibernate.Engine.Query
 				if (afterNewLine && (indx + 1 < stringLength) && sqlString.Substring(indx, 2) == "--")
 				{
 					var closeCommentIdx = sqlString.IndexOf(Environment.NewLine, indx + 2);
-					recognizer.Other(sqlString.Substring(indx, closeCommentIdx - indx));
+					string comment;
+					if (closeCommentIdx == -1)
+					{
+						closeCommentIdx = sqlString.Length;
+						comment = sqlString.Substring(indx);
+					}
+					else
+					{
+						comment = sqlString.Substring(indx, closeCommentIdx - indx + Environment.NewLine.Length);
+					}
+					recognizer.Other(comment);
 					indx = closeCommentIdx + NewLineLength - 1;
 					continue;
 				}
