@@ -581,6 +581,8 @@
     <Compile Include="NHSpecificTest\NH1908\Model.cs" />
     <Compile Include="NHSpecificTest\NH1914\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1914\Model.cs" />
+    <Compile Include="NHSpecificTest\NH1920\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1920\Model.cs" />
     <Compile Include="NHSpecificTest\NH473\Child.cs" />
     <Compile Include="NHSpecificTest\NH473\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH473\Parent.cs" />
@@ -1994,6 +1996,7 @@
     <EmbeddedResource Include="Criteria\Lambda\Mappings.hbm.xml" />
     <EmbeddedResource Include="CfgTest\Loquacious\EntityToCache.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1920\Mappings.hbm.xml" />
     <EmbeddedResource Include="Linq\Mappings\Customer.hbm.xml" />
     <EmbeddedResource Include="Linq\Mappings\Employee.hbm.xml" />
     <EmbeddedResource Include="Linq\Mappings\Order.hbm.xml" />

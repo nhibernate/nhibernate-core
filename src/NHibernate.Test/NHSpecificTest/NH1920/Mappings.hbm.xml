@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.NH1920">
+
+	<class name="Customer" table="Customers">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<bag name="Orders">
+			<key column="Customer_Id" />
+			<one-to-many class="Order" />
+			<filter name="state" condition=":deleted = IsDeleted" />
+		</bag>
+		<property name="IsDeleted" not-null="true" />
+	</class>
+
+	<class name="Order" table="Orders">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<property name="IsDeleted" not-null="true" />
+		<property name="Memo" not-null="false" />
+		<many-to-one name="Customer" class="Customer" column="Customer_Id" />
+		<filter name="state" condition=":deleted = IsDeleted" />
+	</class>
+
+	<filter-def name="state" condition=":deleted = IsDeleted">
+		<filter-param name="deleted" type="Boolean"/>
+	</filter-def>
+
+</hibernate-mapping>
