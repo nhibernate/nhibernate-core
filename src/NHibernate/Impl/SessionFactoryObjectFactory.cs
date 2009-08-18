@@ -17,17 +17,11 @@ namespace NHibernate.Impl
 	/// you are serializing in the same AppDomain then there will be no problem because the uid will
 	/// be in this object.
 	/// </para>
-	/// <para>
-	/// TODO: verify that the AppDomain statements are correct.
-	/// </para>
 	/// </remarks>
 	public static class SessionFactoryObjectFactory
 	{
-		// to stop this class from being unloaded - this is a comment
-		// from h2.0.3 - is this applicable to .net also???
 		private static readonly ILog log;
 
-		// in h2.0.3 these use a class called "FastHashMap"
 		private static readonly IDictionary<string, ISessionFactory> Instances = new Dictionary<string, ISessionFactory>();
 		private static readonly IDictionary<string, ISessionFactory> NamedInstances = new Dictionary<string, ISessionFactory>();
 
