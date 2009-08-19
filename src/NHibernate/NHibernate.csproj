@@ -62,6 +62,9 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
@@ -490,6 +493,7 @@
     <Compile Include="Cfg\MappingSchema\HbmTimestamp.cs" />
     <Compile Include="Cfg\MappingSchema\HbmVersion.cs" />
     <Compile Include="Cfg\MappingSchema\IDecoratable.cs" />
+    <Compile Include="Context\WcfOperationSessionContext.cs" />
     <Compile Include="Criterion\GroupedProjection.cs" />
     <Compile Include="Criterion\IPropertyProjection.cs" />
     <Compile Include="Criterion\QueryOverFetchBuilder.cs" />
