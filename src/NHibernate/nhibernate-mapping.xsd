@@ -367,6 +367,9 @@
 	</xs:element>
 	<xs:element name="definition">
 		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="param" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
 			<xs:attribute name="class" use="required" type="xs:string" />
 		</xs:complexType>
 	</xs:element>

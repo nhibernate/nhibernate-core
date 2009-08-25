@@ -458,6 +458,7 @@
     <Compile Include="Cache\FakeCache.cs" />
     <Compile Include="Cfg\FilterSecondPassArgs.cs" />
     <Compile Include="Cfg\MappingSchema\AbstractDecoratable.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmDefinition.cs" />
     <Compile Include="Cfg\MappingSchema\HbmTimestamp.cs" />
     <Compile Include="Cfg\MappingSchema\HbmVersion.cs" />
     <Compile Include="Cfg\MappingSchema\IDecoratable.cs" />
