@@ -486,6 +486,7 @@
     <Compile Include="Cfg\Loquacious\ITypeDefConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\MappingsConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\ProxyConfiguration.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmDefinition.cs" />
     <Compile Include="Cfg\SchemaAutoAction.cs" />
     <Compile Include="Cfg\SessionFactoryConfigurationBase.cs" />
     <Compile Include="Cfg\ISessionFactoryConfiguration.cs" />

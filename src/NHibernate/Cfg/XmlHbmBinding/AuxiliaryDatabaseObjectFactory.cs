@@ -49,6 +49,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					customObject.AddDialectScope(dialectName);
 				}
 
+				customObject.SetParameterValues(definitionSchema.FindParameterValues());
+
 				return customObject;
 			}
 			catch (TypeLoadException exception)

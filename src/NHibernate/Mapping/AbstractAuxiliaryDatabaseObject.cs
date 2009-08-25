@@ -17,6 +17,7 @@ namespace NHibernate.Mapping
 	public abstract class AbstractAuxiliaryDatabaseObject : IAuxiliaryDatabaseObject
 	{
 		private readonly HashedSet<string> dialectScopes;
+		private IDictionary<string, string> parameters = new Dictionary<string, string>();
 
 		protected AbstractAuxiliaryDatabaseObject()
 		{
@@ -38,6 +39,11 @@ namespace NHibernate.Mapping
 			get { return dialectScopes; }
 		}
 
+		public IDictionary<string, string> Parameters
+		{
+			get { return parameters; }
+		}
+
 		public bool AppliesToDialect(Dialect.Dialect dialect)
 		{
 			// empty means no scoping
@@ -47,6 +53,10 @@ namespace NHibernate.Mapping
 		public abstract string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema);
 		public abstract string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema);
 
-		public void SetParameterValues(IDictionary<string, string> parameters) {}
+		public void SetParameterValues(IDictionary<string, string> parameters)
+		{
+			this.parameters = parameters;
+		}
+
 	}
 }
