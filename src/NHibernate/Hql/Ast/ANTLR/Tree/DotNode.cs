@@ -496,7 +496,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			//
 			///////////////////////////////////////////////////////////////////////////////
 
-			if ( elem == null ) 
+			bool found = elem != null;
+			// even though we might find a pre-existing element by join path, for FromElements originating in a from-clause
+			// we should only ever use the found element if the aliases match (null != null here).  Implied joins are
+			// always (?) ok to reuse.
+			bool useFoundFromElement = found && ( elem.IsImplied || ( AreSame(classAlias, elem.ClassAlias ) ) );
+
+			if ( ! useFoundFromElement )
 			{
 				// If this is an implied join in a from element, then use the impled join type which is part of the
 				// tree parser's state (set by the gramamar actions).
@@ -529,6 +535,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			SetImpliedJoin( elem );
 			Walker.AddQuerySpaces( elem.EntityPersister.QuerySpaces );
 			FromElement = elem;	// This 'dot' expression now refers to the resulting from element.
+		}
+
+		private bool AreSame(String alias1, String alias2) {
+			// again, null != null here
+			return !StringHelper.IsEmpty( alias1 ) && !StringHelper.IsEmpty( alias2 ) && alias1.Equals( alias2 );
 		}
 
 		private void SetImpliedJoin(FromElement elem)

@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.NH1905">
+
+
+	<class name="Mas" table="mas"	>
+		<id name="Id" type="Int32" >
+			<generator class="assigned" />
+		</id>
+		<set name="Els" table="MasEls"	>
+			<key column="IdMas" />
+			<many-to-many column="IdEls" class="El"/>
+		</set>
+	</class>
+
+	<class name="Det" table="det"	>
+		<id name="Id" type="Int32" >
+			<generator class="assigned" />
+		</id>
+		<many-to-one class="Mas" name="Mas" column="IdMas" />
+	</class>
+
+	<class name="El" table="Els"	>
+		<id name="Id" type="Int32" >
+			<generator class="assigned" />
+		</id>
+		<property name="Descr" type="String" />
+	</class>
+
+</hibernate-mapping>
