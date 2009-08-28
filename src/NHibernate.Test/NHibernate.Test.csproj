@@ -359,6 +359,8 @@
     <Compile Include="NHSpecificTest\ElementsEnums\IntEnumsBagPartialNameFixture.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\IntEnumsBagFixture.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\Something.cs" />
+    <Compile Include="NHSpecificTest\NH1905\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1905\Model.cs" />
     <Compile Include="NHSpecificTest\NH1911\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1911\Model.cs" />
     <Compile Include="NHSpecificTest\NH1920\Fixture.cs" />
@@ -1974,6 +1976,7 @@
     <EmbeddedResource Include="Bytecode\Lightweight\ProductLine.hbm.xml" />
     <EmbeddedResource Include="DriverTest\MultiTypeEntity.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1905\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1939\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1911\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1920\Mappings.hbm.xml" />
