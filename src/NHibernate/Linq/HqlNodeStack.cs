@@ -1,0 +1,78 @@
+using System;
+using System.Collections.Generic;
+using NHibernate.Hql.Ast;
+
+namespace NHibernate.Linq
+{
+    public class HqlNodeStack
+    {
+        private readonly Stack<HqlTreeNode> _stack = new Stack<HqlTreeNode>();
+        private readonly HqlNill _root;
+
+        public HqlNodeStack(HqlTreeBuilder builder)
+        {
+            _root = builder.Holder();
+            _stack.Push(_root);
+        }
+
+        public IEnumerable<HqlTreeNode> NodesPreOrder
+        {
+            get { return _root.NodesPreOrder; }
+        }
+
+        public IEnumerable<HqlTreeNode> Finish()
+        {
+            var holder = (HqlNill) _stack.Pop();
+
+            return holder.Children;
+        }
+
+        public void PushAndPop(HqlTreeNode query)
+        {
+            Push(query).Dispose();
+        }
+
+        public IDisposable Push(HqlTreeNode query)
+        {
+            _stack.Peek().AddChild(query);
+
+            _stack.Push(query);
+
+            var stackEntry = new HqlNodeStackEntry(this, query);
+
+            return stackEntry;
+        }
+
+        private HqlTreeNode Peek()
+        {
+            return _stack.Peek();
+        }
+
+        private void Pop()
+        {
+            _stack.Pop();
+        }
+
+        public class HqlNodeStackEntry : IDisposable
+        {
+            private readonly HqlNodeStack _parent;
+            private readonly HqlTreeNode _node;
+
+            internal HqlNodeStackEntry(HqlNodeStack parent, HqlTreeNode node)
+            {
+                _parent = parent;
+                _node = node;
+            }
+
+            public void Dispose()
+            {
+                if (_parent.Peek() != _node)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                _parent.Pop();
+            }
+        }
+    }
+}
