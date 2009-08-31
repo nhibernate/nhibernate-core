@@ -2,10 +2,12 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
 									 namespace="NHibernate.Test.Linq.Entities" assembly="NHibernate.Test">
 
+    <import class="NHibernate.Test.Linq.Entities.Thing, NHibernate.Test"/>
+    
 	<class name="Product" table="Products">
-		<id name="Id" column="ProductId" type="long" unsaved-value="-1" 
+		<id name="ProductId" column="ProductId" type="int" unsaved-value="-1" 
 				access="field.camelcase-underscore">
-			<generator class="native" />
+			<generator class="assigned" />
 		</id>
 
 		<property name="Name" column="ProductName" type="string" length="40"

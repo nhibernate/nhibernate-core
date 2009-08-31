@@ -3,9 +3,9 @@
 									 namespace="NHibernate.Test.Linq.Entities" assembly="NHibernate.Test">
 
 	<class name="Shipper" table="Shippers">
-		<id name="Id" column="ShipperId" type="long" unsaved-value="-1" 
+		<id name="ShipperId" column="ShipperId" type="int" unsaved-value="-1" 
 				access="field.camelcase-underscore">
-			<generator class="native" />
+			<generator class="assigned" />
 		</id>
 
 		<property name="CompanyName" column="CompanyName" type="string" length="40"

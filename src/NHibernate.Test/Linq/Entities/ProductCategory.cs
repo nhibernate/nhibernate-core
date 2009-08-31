@@ -4,21 +4,22 @@ using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Linq.Entities
 {
-    public class ProductCategory : Entity<ProductCategory>
+    public class ProductCategory
     {
         private readonly ISet<Product> _products;
         private string _description;
         private string _name;
+        private int _categoryId;
 
-        public ProductCategory() : this(null)
-        {
-        }
-
-        public ProductCategory(string name)
+        public ProductCategory() 
         {
             _products = new HashedSet<Product>();
+        }
 
-            _name = name;
+        public virtual int CategoryId
+        {
+            get { return _categoryId; }
+            set { _categoryId = value; }
         }
 
         public virtual string Name

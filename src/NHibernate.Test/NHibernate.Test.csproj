@@ -364,7 +364,6 @@
     <Compile Include="LazyOneToOne\Person.cs" />
     <Compile Include="LazyProperty\Book.cs" />
     <Compile Include="LazyProperty\LazyPropertyFixture.cs" />
-    <Compile Include="Linq\BasicLinqTests.cs" />
     <Compile Include="Linq\Entities\Address.cs" />
     <Compile Include="Linq\Entities\Customer.cs" />
     <Compile Include="Linq\Entities\Employee.cs" />
@@ -378,7 +377,9 @@
     <Compile Include="Linq\Entities\Shipper.cs" />
     <Compile Include="Linq\Entities\Supplier.cs" />
     <Compile Include="Linq\Entities\Territory.cs" />
+    <Compile Include="Linq\LinqQuerySamples.cs" />
     <Compile Include="Linq\LinqTestCase.cs" />
+    <Compile Include="Linq\ReadonlyTestCase.cs" />
     <Compile Include="MappingTest\NonReflectiveBinderFixture.cs" />
     <Compile Include="MappingTest\Wicked.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\AbstractIntEnumsBagFixture.cs" />

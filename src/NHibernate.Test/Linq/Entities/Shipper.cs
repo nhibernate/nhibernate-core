@@ -3,21 +3,22 @@ using System.Collections.ObjectModel;
 
 namespace NHibernate.Test.Linq.Entities
 {
-    public class Shipper : Entity<Shipper>
+    public class Shipper
     {
         private readonly IList<Order> _orders;
         private string _companyName;
         private string _phoneNumber;
+        private int _shipperId;
 
-        public Shipper() : this(null)
+        public Shipper() 
         {
+            _orders = new List<Order>();
         }
 
-        public Shipper(string companyName)
+        public virtual int ShipperId
         {
-            _companyName = companyName;
-
-            _orders = new List<Order>();
+            get { return _shipperId; }
+            set { _shipperId = value; }
         }
 
         public virtual string CompanyName

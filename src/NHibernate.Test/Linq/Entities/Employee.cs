@@ -5,7 +5,7 @@ using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Linq.Entities
 {
-    public class Employee : Entity<Employee>
+    public class Employee
     {
         private readonly ISet<Order> _orders;
         private readonly ISet<Employee> _subordinates;
@@ -20,20 +20,19 @@ namespace NHibernate.Test.Linq.Entities
         private Employee _superior;
         private string _title;
         private string _titleOfCourtesy;
+        private int _employeeId;
 
         public Employee()
-            : this(null, null)
         {
-        }
-
-        public Employee(string firstName, string lastName)
-        {
-            _firstName = firstName;
-            _lastName = lastName;
-
             _subordinates = new HashedSet<Employee>();
             _orders = new HashedSet<Order>();
             _territories = new List<Territory>();
+        }
+
+        public virtual int EmployeeId
+        {
+            get { return _employeeId; }
+            set { _employeeId = value; }
         }
 
         public virtual string FirstName

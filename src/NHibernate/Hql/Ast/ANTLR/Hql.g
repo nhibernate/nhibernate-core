@@ -110,6 +110,7 @@ tokens
 	CONSTANT;
 	NUM_INT;
 	NUM_DOUBLE;
+	NUM_DECIMAL;
 	NUM_FLOAT;
 	NUM_LONG;
 	JAVA_CONSTANT;
@@ -630,6 +631,7 @@ constant
 	| NUM_FLOAT
 	| NUM_LONG
 	| NUM_DOUBLE
+	| NUM_DECIMAL
 	| QUOTED_String
 	| NULL
 	| TRUE
@@ -744,6 +746,10 @@ NUM_INT
 					{
 						_type = NUM_FLOAT;
 					}
+					else if (t != null && t.Text.ToUpperInvariant().IndexOf('M')>=0)
+					{
+						_type = NUM_DECIMAL;
+					}
 					else
 					{
 						_type = NUM_DOUBLE; // assume double
@@ -778,6 +784,10 @@ NUM_INT
 				{
 					_type = NUM_FLOAT;
 				}
+				else if (t != null && t.Text.ToUpperInvariant().IndexOf('M')>=0)
+				{
+					_type = NUM_DECIMAL;
+				}
 				else
 				{
 					_type = NUM_DOUBLE; // assume double
@@ -800,6 +810,6 @@ EXPONENT
 
 fragment
 FLOAT_SUFFIX
-	:	'f'|'d'
+	:	'f'|'d'|'m'
 	;
 

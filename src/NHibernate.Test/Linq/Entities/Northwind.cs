@@ -22,6 +22,11 @@ namespace NHibernate.Test.Linq.Entities
             get { return _session.Query<Product>(); }
         }
 
+        public IQueryable<Shipper> Shippers
+        {
+            get { return _session.Query<Shipper>(); }
+        }
+
         public IQueryable<Order> Orders
         {
             get { return _session.Query<Order>(); }
@@ -35,6 +40,11 @@ namespace NHibernate.Test.Linq.Entities
         public IQueryable<Employee> Employees
         {
             get { return _session.Query<Employee>(); }
+        }
+
+        public IQueryable<ProductCategory> Categories
+        {
+            get { return _session.Query<ProductCategory>(); }
         }
     }
 }

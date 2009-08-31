@@ -4,23 +4,24 @@ using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Linq.Entities
 {
-    public class Customer : Entity<Customer>
+    public class Customer
     {
         private readonly ISet<Order> _orders;
         private Address _address;
         private string _companyName;
         private string _contactName;
         private string _contactTitle;
+        private string _customerId;
 
-        public Customer() : this(null)
-        {
-        }
-
-        public Customer(string companyName)
+        public Customer()
         {
             _orders = new HashedSet<Order>();
+        }
 
-            _companyName = companyName;
+        public virtual string CustomerId
+        {
+            get { return _customerId; }
+            set { _customerId = value; }
         }
 
         public virtual string CompanyName

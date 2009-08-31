@@ -273,6 +273,7 @@ simpleExpr
 	
 constant
 	: NUM_DOUBLE
+	| NUM_DECIMAL
 	| NUM_FLOAT
 	| NUM_INT
 	| NUM_LONG

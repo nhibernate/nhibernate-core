@@ -3,9 +3,9 @@
 									 namespace="NHibernate.Test.Linq.Entities" assembly="NHibernate.Test">
 
 	<class name="ProductCategory" table="Categories">
-		<id name="Id" column="CategoryId" type="long" unsaved-value="-1" 
+		<id name="CategoryId" column="CategoryId" type="int" unsaved-value="-1" 
 				access="field.camelcase-underscore">
-			<generator class="native" />
+			<generator class="assigned" />
 		</id>
 
 		<property name="Name" column="CategoryName" type="string" length="15"

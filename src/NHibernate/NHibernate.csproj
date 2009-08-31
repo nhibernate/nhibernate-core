@@ -55,6 +55,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\3.5\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Remotion, Version=1.13.9.2, Culture=neutral, PublicKeyToken=cab60358ab4081ea, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\3.5\Remotion.dll</HintPath>
+    </Reference>
+    <Reference Include="Remotion.Data.Linq, Version=1.13.9.2, Culture=neutral, PublicKeyToken=cab60358ab4081ea, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\3.5\Remotion.Data.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -549,17 +557,26 @@
     <Compile Include="Hql\Ast\ANTLR\Tree\ASTErrorNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\InsertStatement.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\UpdateStatement.cs" />
+    <Compile Include="Hql\Ast\HqlExpression.cs" />
+    <Compile Include="Hql\Ast\HqlTreeBuilder.cs" />
+    <Compile Include="Hql\Ast\HqlTreeNode.cs" />
     <Compile Include="IQueryExpression.cs" />
     <Compile Include="IQueryOver.cs" />
     <Compile Include="Criterion\QueryOver.cs" />
     <Compile Include="Impl\ExpressionProcessor.cs" />
     <Compile Include="Impl\SessionIdLoggingContext.cs" />
-    <Compile Include="Linq\LinqExpression.cs" />
+    <Compile Include="Linq\CommandData.cs" />
+    <Compile Include="Linq\HqlNodeStack.cs" />
     <Compile Include="Linq\LinqExtensionMethods.cs" />
-    <Compile Include="Linq\NhQueryProvider.cs" />
-    <Compile Include="Linq\Query.cs" />
-    <Compile Include="Linq\QueryProvider.cs" />
-    <Compile Include="Linq\TypeHelper.cs" />
+    <Compile Include="Linq\NamedParameter.cs" />
+    <Compile Include="Linq\NhExpressionTreeVisitor.cs" />
+    <Compile Include="Linq\NhQueryable.cs" />
+    <Compile Include="Linq\NhQueryExecutor.cs" />
+    <Compile Include="Linq\Nominator.cs" />
+    <Compile Include="Linq\ParameterAggregator.cs" />
+    <Compile Include="Linq\ProjectionEvaluator.cs" />
+    <Compile Include="Linq\QueryModelVisitor.cs" />
+    <Compile Include="Linq\ResultTransformer.cs" />
     <Compile Include="Param\AbstractExplicitParameterSpecification.cs" />
     <Compile Include="Param\AggregatedIndexCollectionSelectorParameterSpecifications.cs" />
     <Compile Include="Param\CollectionFilterKeyParameterSpecification.cs" />

@@ -37,6 +37,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
                         return NHibernateUtil.Single;
                     case HqlSqlWalker.NUM_DOUBLE:
                         return NHibernateUtil.Double;
+                    case HqlSqlWalker.NUM_DECIMAL:
+				        return NHibernateUtil.Decimal;
 					case HqlSqlWalker.QUOTED_String:
 						return NHibernateUtil.String;
 					case HqlSqlWalker.TRUE:

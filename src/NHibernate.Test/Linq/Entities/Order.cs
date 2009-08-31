@@ -5,7 +5,7 @@ using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Linq.Entities
 {
-    public class Order : Entity<Order>
+    public class Order
     {
         private readonly ISet<OrderLine> _orderLines;
         private Customer _customer;
@@ -17,16 +17,17 @@ namespace NHibernate.Test.Linq.Entities
         private Shipper _shipper;
         private Address _shippingAddress;
         private DateTime? _shippingDate;
+        private int _orderId;
 
-        public Order() : this(null)
-        {
-        }
-
-        public Order(Customer customer)
+        public Order()         
         {
             _orderLines = new HashedSet<OrderLine>();
+        }
 
-            _customer = customer;
+        public virtual int OrderId
+        {
+            get { return _orderId; }
+            set { _orderId = value; }
         }
 
         public virtual Customer Customer

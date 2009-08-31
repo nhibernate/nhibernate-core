@@ -89,7 +89,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			{
 				literal.Text = DetermineIntegerRepresentation(literal.Text, literal.Type);
 			}
-			else if (literal.Type == HqlSqlWalker.NUM_FLOAT || literal.Type == HqlSqlWalker.NUM_DOUBLE)
+			else if (literal.Type == HqlSqlWalker.NUM_FLOAT || literal.Type == HqlSqlWalker.NUM_DOUBLE || literal.Type == HqlSqlWalker.NUM_DECIMAL)
 			{
 				literal.Text = DetermineDecimalRepresentation(literal.Text, literal.Type);
 			}
@@ -177,6 +177,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 					literalValue = literalValue.Substring(0, literalValue.Length - 1);
 				}
 			}
+            else if (type == HqlSqlWalker.NUM_DECIMAL)
+            {
+                if (literalValue.EndsWith("m") || literalValue.EndsWith("M"))
+                {
+                    literalValue = literalValue.Substring(0, literalValue.Length - 1);
+                }
+            }
 
 			Decimal number;
 			try
@@ -294,6 +301,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			{
 				node.Type = HqlSqlWalker.NUM_DOUBLE;
 			}
+            else if (value is decimal)
+            {
+                node.Type = HqlSqlWalker.NUM_DECIMAL;
+            }
 			else if (value is float)
 			{
 				node.Type = HqlSqlWalker.NUM_FLOAT;

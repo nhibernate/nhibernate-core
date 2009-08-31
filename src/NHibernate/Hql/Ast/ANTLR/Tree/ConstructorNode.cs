@@ -109,7 +109,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else 
 			{
-				_constructor = ResolveConstructor(path);
+                if (Hack != null && Hack is ConstructorInfo)
+                {
+                    // The Linq parser has the constructor information available, so it can pass it straight through.
+                    // Currently using nasty Hack property :)  This *will* be improved!
+                    _constructor = (ConstructorInfo)Hack;
+                }
+                else
+                {
+                    _constructor = ResolveConstructor(path);
+                }
 			}
 		}
 

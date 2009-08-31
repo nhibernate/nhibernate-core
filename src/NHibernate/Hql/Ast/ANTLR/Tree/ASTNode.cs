@@ -17,6 +17,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private readonly IToken _token;
 		private List<IASTNode> _children;
 
+        // TODO - currently just used for Constructor stuff in Linq.  Should really have a subtype,
+        // and a new TreeFactory thingy for the Linq AST generator.  But for now...
+        private object _hack;
+        public object Hack { get { return _hack; } set { _hack = value; } }
+
 		public ASTNode()
 			: this((IToken)null) {}
 

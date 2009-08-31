@@ -3,33 +3,48 @@ using System.Collections.ObjectModel;
 
 namespace NHibernate.Test.Linq.Entities
 {
-    public class Product : Entity<Product>
+    public class Thing
+    {
+        public int ProductId { get; set; }
+        public decimal? UnitPrice { get; set; }
+        public decimal? Other { get; set; }
+
+        public Thing(int productId, decimal? unitPrice, decimal? other)
+        {
+            ProductId = productId;
+            UnitPrice = unitPrice;
+            Other = other;
+        }
+    }
+
+    public class Product
     {
         private readonly IList<OrderLine> _orderLines;
         private ProductCategory _category;
         private bool _discontinued;
-        private string _name;
         private string _quantityPerUnit;
         private int _reorderLevel;
         private Supplier _supplier;
         private decimal? _unitPrice;
         private int _unitsInStock;
         private int _unitsOnOrder;
+        private int _productId;
+        private string _name;
 
-        public Product() : this(null)
-        {
-        }
-
-        public Product(string name)
+        public Product()
         {
             _orderLines = new List<OrderLine>();
+        }
 
-            _name = name;
+        public virtual int ProductId
+        {
+            get { return _productId; }
+            set { _productId = value; }
         }
 
         public virtual string Name
         {
-            get { return _name; }
+            get { return _name; } 
             set { _name = value; }
         }
 

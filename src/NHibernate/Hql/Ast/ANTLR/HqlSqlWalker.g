@@ -300,6 +300,14 @@ logicalExpr
 	| ^(NOT logicalExpr)
 	| comparisonExpr
 	| functionCall
+	| logicalPath
+	;
+
+logicalPath
+	@after {
+	    PrepareLogicOperator( $logicalPath.tree );
+	}
+	: p=addrExpr [ true ] {Resolve($p.tree);}  -> ^(EQ $p TRUE)
 	;
 
 // TODO: Add any other comparison operators here.
@@ -325,7 +333,7 @@ comparisonExpr
 //	| ^(IS_TRUE expr)
 //	| ^(IS_FALSE expr)
 	| ^(EXISTS ( expr | collectionFunctionOrSubselect ) )
-	) 
+	)
 	;
 
 inRhs @init {	int UP = 99999;		// TODO - added this to get compile working.  It's bogus & should be removed
@@ -418,6 +426,7 @@ numericLiteral
 	| NUM_LONG
 	| NUM_FLOAT
 	| NUM_DOUBLE
+	| NUM_DECIMAL
 	;
 
 stringLiteral

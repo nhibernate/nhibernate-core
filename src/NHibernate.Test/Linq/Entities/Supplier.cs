@@ -4,7 +4,7 @@ using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Linq.Entities
 {
-    public class Supplier : Entity<Supplier>
+    public class Supplier
     {
         private readonly ISet<Product> _products;
         private Address _address;
@@ -12,16 +12,17 @@ namespace NHibernate.Test.Linq.Entities
         private string _contactName;
         private string _contactTitle;
         private string _homePage;
+        private int _supplierId;
 
-        public Supplier() : this(null)
-        {
-        }
-
-        public Supplier(string companyName)
+        public Supplier() 
         {
             _products = new HashedSet<Product>();
+        }
 
-            _companyName = companyName;
+        public virtual int SupplierId 
+        {
+            get { return _supplierId; }
+            set { _supplierId = value; }
         }
 
         public virtual string CompanyName
