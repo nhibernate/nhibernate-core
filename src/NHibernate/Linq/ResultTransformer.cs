@@ -5,6 +5,7 @@ using NHibernate.Transform;
 
 namespace NHibernate.Linq
 {
+    [Serializable]
     public class ResultTransformer : IResultTransformer
     {
         private readonly LambdaExpression _expression;
