@@ -25,6 +25,9 @@
 			<include name="Iesi.Collections.dll" />
 			<include name="log4net.dll" />
 			<include name="Antlr3.Runtime.dll" />
+			<include name="Remotion.dll" />
+			<include name="Remotion.Data.Linq.dll" />
+			<include name="Remotion.Interfaces.dll" />
 		</assemblyfileset>
 
 		<resourcefileset id="project.resources" prefix="NHibernate" dynamicprefix="true">
