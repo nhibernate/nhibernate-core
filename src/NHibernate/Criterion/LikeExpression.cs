@@ -74,7 +74,19 @@ namespace NHibernate.Criterion
 				lhs.Add(columns[0]);
 
 			criteriaQuery.AddUsedTypedValues(GetTypedValues(criteria, criteriaQuery));
-			lhs.Add(" like ").AddParameter();
+
+			if (ignoreCase)
+			{
+				Dialect.Dialect dialect = criteriaQuery.Factory.Dialect;
+				lhs.Add(" like ")
+					.Add(dialect.LowercaseFunction)
+					.Add(StringHelper.OpenParen)
+					.AddParameter()
+					.Add(StringHelper.ClosedParen);
+			}
+			else
+				lhs.Add(" like ").AddParameter();
+
 			if (escapeChar.HasValue)
 				lhs.Add(" escape '" + escapeChar + "'");
 			return lhs.ToSqlString();
