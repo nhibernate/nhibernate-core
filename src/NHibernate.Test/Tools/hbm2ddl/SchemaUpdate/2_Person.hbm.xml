@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.Tools.hbm2ddl.SchemaUpdate"
+				   assembly="NHibernate.Test">
+
+	<class name="Person">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="FirstName"/>
+		<property name="LastName"/>
+	</class>
+
+</hibernate-mapping>

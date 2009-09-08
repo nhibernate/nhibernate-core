@@ -117,7 +117,7 @@ namespace NHibernate.Tool.hbm2ddl
 						using (IDataReader rs = statement.ExecuteReader())
 						{
 							while (rs.Read())
-								sequences.Add(((string) rs[1]).ToLower().Trim());
+								sequences.Add(((string) rs[0]).ToLower().Trim());
 						}
 					}
 				}
