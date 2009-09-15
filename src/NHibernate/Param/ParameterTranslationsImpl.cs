@@ -67,21 +67,6 @@ namespace NHibernate.Param
 			}
 		}
 
-		public void AdjustNamedParameterLocationsForQueryParameters(QueryParameters parameters)
-		{
-			// NH Different behaviour NH-1776
-			// Analyze all named parameters declared after filters 
-			// in general all named parameters but depend on the complexity of the query (see sub query)
-			RestoreOriginalParameterLocations();
-			foreach (int filterParameterLocation in parameters.FilteredParameterLocations)
-			{
-				foreach (ParameterInfo entry in _namedParameters.Values)
-				{
-					entry.IncrementLocationAfterFilterLocation(filterParameterLocation);
-				}
-			}
-		}
-
 		public int GetOrdinalParameterSqlLocation(int ordinalPosition)
 		{
 			return GetOrdinalParameterInfo(ordinalPosition).SqlLocations[0];
@@ -115,14 +100,6 @@ namespace NHibernate.Param
 		public int OrdinalParameterCount
 		{
 			get { return _ordinalParameters.Length; }
-		}
-
-		private void RestoreOriginalParameterLocations()
-		{
-			foreach (ParameterInfo entry in _namedParameters.Values)
-			{
-				entry.RestoreOriginalParameterLocations();
-			}
 		}
 
 		private ParameterInfo GetOrdinalParameterInfo(int ordinalPosition)
@@ -170,24 +147,5 @@ namespace NHibernate.Param
 		}
 
 		public IType ExpectedType { get; private set; }
-
-		public void RestoreOriginalParameterLocations()
-		{
-			for (int i = 0; i < sqlLocations.Length; i++)
-			{
-				sqlLocations[i] = originalLocation[i];
-			}
-		}
-
-		public void IncrementLocationAfterFilterLocation(int filterParameterLocation)
-		{
-			for (int i = 0; i < sqlLocations.Length; i++)
-			{
-				if (sqlLocations[i] >= filterParameterLocation)
-				{
-					sqlLocations[i]++;
-				}
-			}
-		}
 	}
 }

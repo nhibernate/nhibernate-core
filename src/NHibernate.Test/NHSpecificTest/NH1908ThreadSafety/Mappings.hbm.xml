@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.NH1908ThreadSafety">
+
+	<class name="Order" table="Orders">
+		<id name="Id" type="Int64" unsaved-value="none">
+			<generator class="assigned"/>
+		</id>
+		<property name="Email" type="String" not-null="true"/>
+		<bag name="ActiveOrderLines" inverse="true" cascade="none" lazy="true"
+				 optimistic-lock="false">
+			<key column="OrderId"/>
+			<one-to-many class="OrderLine"/>
+			<filter name="CurrentOnly"/>
+		</bag>
+	</class>
+
+	<class name="OrderLine" discriminator-value="null">
+		<id name="Id" type="Int64" unsaved-value="none">
+			<generator class="assigned"/>
+		</id>
+		<property name="ValidUntil"/>
+		<filter name="CurrentOnly"/>
+	</class>
+
+	<filter-def name="CurrentOnly" condition="ValidUntil > :date">
+		<filter-param name="date" type="DateTime"/>
+	</filter-def>
+</hibernate-mapping>
