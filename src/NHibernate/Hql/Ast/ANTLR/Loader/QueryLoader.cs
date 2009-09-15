@@ -58,11 +58,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 			get { return HasSubselectLoadableCollections(); }
 		}
 
-		protected override void AdjustNamedParameterLocationsForQueryParameters(QueryParameters parameters)
-		{
-			_queryTranslator.AdjustNamedParameterLocationsForQueryParameters(parameters);
-		}
-
 		protected override SqlString ApplyLocks(SqlString sql, IDictionary<string, LockMode> lockModes,
 		                                        Dialect.Dialect dialect)
 		{

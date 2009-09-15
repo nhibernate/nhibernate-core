@@ -1174,7 +1174,6 @@ namespace NHibernate.Loader
 		protected virtual SqlString ProcessFilters(QueryParameters parameters, ISessionImplementor session)
 		{
 			parameters.ProcessFilters(SqlString, session);
-			AdjustNamedParameterLocationsForQueryParameters(parameters);
 			return parameters.FilteredSQL;
 		}
 
@@ -1267,15 +1266,6 @@ namespace NHibernate.Loader
 		public virtual int[] GetNamedParameterLocs(string name)
 		{
 			throw new AssertionFailure("no named parameters");
-		}
-
-		protected virtual void AdjustNamedParameterLocationsForQueryParameters(QueryParameters parameters)
-		{
-			// if you support named parameter locations (by overriding GetNamedParameterLocs), then you might need to
-			//  allow for the locations to be adjusted by introduced filtered parameters by overriding
-			//  this method too.
-			if ((parameters.NamedParameters != null) && (parameters.NamedParameters.Keys.Count > 0))
-				throw new AssertionFailure(GetType() + " must override to handle implementation of named parameter locations");
 		}
 
 		/// <summary>
@@ -1734,6 +1724,7 @@ namespace NHibernate.Loader
 			for (int index = 0; index < parameters.PositionalParameterTypes.Length; index++)
 			{
 				int location = parameters.PositionalParameterLocations[index];
+				location = parameters.FindAdjustedParameterLocation(location);
 				IType type = parameters.PositionalParameterTypes[index];
 				ArrayHelper.SafeSetValue(paramTypeList, location, type);
 				span += type.GetColumnSpan(Factory);
@@ -1760,6 +1751,7 @@ namespace NHibernate.Loader
 					for (int i = 0; i < locs.Length; i++)
 					{
 						int location = locs[i];
+						location = parameters.FindAdjustedParameterLocation(location);
 
 						// can still clash with positional parameters
 						//  could consider throwing an exception to locate problem (NH-1098)

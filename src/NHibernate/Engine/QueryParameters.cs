@@ -39,6 +39,7 @@ namespace NHibernate.Engine
 		private object _optionalId;
 		private string _comment;
 		private bool _readOnly;
+		private IDictionary<int, int> _adjustedParameterLocations;
 
 		private SqlString processedSQL;
 
@@ -286,15 +287,12 @@ namespace NHibernate.Engine
 
 		/************** Filters ********************************/
 
-		private void AdjustPostionalParameterLocations(int parameterIndex)
+		public int FindAdjustedParameterLocation(int parameterIndex)
 		{
-			for (int i = 0; i < _positionalParameterLocations.Length; i++)
-			{
-				if (_positionalParameterLocations[i] >= parameterIndex)
-				{
-					_positionalParameterLocations[i]++;
-				}
-			}
+			if (_adjustedParameterLocations == null)
+				return parameterIndex;
+
+			return _adjustedParameterLocations[parameterIndex];
 		}
 
 		public void ProcessFilters(SqlString sql, ISessionImplementor session)
@@ -314,7 +312,9 @@ namespace NHibernate.Engine
 
 			var result = new SqlStringBuilder();
 
-			int parameterIndex = 0; // keep track of the positional parameter
+			int originalParameterIndex = 0; // keep track of the positional parameter
+			int newParameterIndex = 0;
+			_adjustedParameterLocations = new Dictionary<int, int>();
 
 			foreach (var part in sql.Parts)
 			{
@@ -329,7 +329,9 @@ namespace NHibernate.Engine
 					// types for the named parameters are added later to the end of the list.
 					// see test fixture NH-1098
 
-					parameterIndex++;
+					_adjustedParameterLocations[originalParameterIndex] = newParameterIndex;
+					originalParameterIndex++;
+					newParameterIndex++;
 					continue;
 				}
 
@@ -358,9 +360,8 @@ namespace NHibernate.Engine
 									result.AddParameter();
 									filteredParameterTypes.Add(type);
 									filteredParameterValues.Add(elementValue);
-									filteredParameterLocations.Add(parameterIndex);
-									AdjustPostionalParameterLocations(parameterIndex);
-									parameterIndex++;
+									filteredParameterLocations.Add(newParameterIndex);
+									newParameterIndex++;
 									if (i < coll.Count)
 									{
 										result.Add(", ");
@@ -376,9 +377,8 @@ namespace NHibernate.Engine
 								result.AddParameter();
 								filteredParameterTypes.Add(type);
 								filteredParameterValues.Add(value);
-								filteredParameterLocations.Add(parameterIndex);
-								AdjustPostionalParameterLocations(parameterIndex);
-								parameterIndex++;
+								filteredParameterLocations.Add(newParameterIndex);
+								newParameterIndex++;
 							}
 						}
 					}
@@ -401,7 +401,7 @@ namespace NHibernate.Engine
 
 			for (int i = 0; i < _positionalParameterLocations.Length; i++)
 			{
-				int location = _positionalParameterLocations[i];
+				int location = FindAdjustedParameterLocation(_positionalParameterLocations[i]);
 				object value = _positionalParameterValues[i];
 				IType type = _positionalParameterTypes[i];
 				ArrayHelper.SafeSetValue(values, location, value);
@@ -428,7 +428,7 @@ namespace NHibernate.Engine
 					int[] locations = getNamedParameterLocations(name);
 					for (int i = 0; i < locations.Length; i++)
 					{
-						int location = locations[i];
+						int location = FindAdjustedParameterLocation(locations[i]);
 
 						// can still clash with positional parameters
 						//  could consider throwing an exception to locate problem (NH-1098)

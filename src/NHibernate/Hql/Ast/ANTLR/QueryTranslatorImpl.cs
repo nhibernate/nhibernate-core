@@ -464,11 +464,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 				throw new QueryExecutionRequestException("Not supported for DML operations", _hql);
 			}
 		}
-
-	    public void AdjustNamedParameterLocationsForQueryParameters(QueryParameters parameters)
-	    {
-	        ((ParameterTranslationsImpl) GetParameterTranslations()).AdjustNamedParameterLocationsForQueryParameters(parameters);
-	    }
 	}
 
 	internal class HqlParseEngine

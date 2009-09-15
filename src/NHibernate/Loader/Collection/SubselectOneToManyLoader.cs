@@ -45,24 +45,5 @@ namespace NHibernate.Loader.Collection
 		{
 			return namedParameterLocMap[name];
 		}
-
-		protected override void AdjustNamedParameterLocationsForQueryParameters(QueryParameters parameters)
-		{
-			if (namedParameterLocMap == null)
-				return;
-
-			foreach (int existingParameterLocation in parameters.FilteredParameterLocations)
-			{
-				foreach (IList<int> namedParameterLocations in namedParameterLocMap.Values)
-				{
-					for (int index = 0; index < namedParameterLocations.Count; index++)
-					{
-						if (namedParameterLocations[index] >= existingParameterLocation)
-							namedParameterLocations[index]++;
-					}
-				}
-			}
-		}
-
 	}
 }
