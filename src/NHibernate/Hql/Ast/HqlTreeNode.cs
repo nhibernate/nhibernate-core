@@ -82,6 +82,13 @@ namespace NHibernate.Hql.Ast
             _children.Add(child);
             _node.AddChild(child.AstNode);
         }
+
+        public void AddChild(int index, HqlTreeNode node)
+        {
+            _children.Insert(index, node);
+            _node.InsertChild(index, node.AstNode);
+        }
+
     }
 
     public class HqlQuery : HqlTreeNode
@@ -99,6 +106,41 @@ namespace NHibernate.Hql.Ast
             : base(HqlSqlWalker.IDENT, ident, factory)
         {
         }
+
+        internal HqlIdent(IASTFactory factory, System.Type type)
+            : base(HqlSqlWalker.IDENT, "", factory)
+        {
+            if (IsNullableType(type))
+            {
+                type = ExtractUnderlyingTypeFromNullable(type);
+            }
+
+            switch (System.Type.GetTypeCode(type))
+            {
+                case TypeCode.Int32:
+                    _node.Text = "integer";
+                    break;
+                case TypeCode.Decimal:
+                    _node.Text = "decimal";
+                    break;
+                case TypeCode.DateTime:
+                    _node.Text = "datetime";
+                    break;
+                default:
+                    throw new NotSupportedException(string.Format("Don't currently support idents of type {0}", type.Name));
+            }
+        }
+
+        private static System.Type ExtractUnderlyingTypeFromNullable(System.Type type)
+        {
+            return type.GetGenericArguments()[0];
+        }
+
+        private static bool IsNullableType(System.Type type)
+        {
+            return (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
+        }
+
     }
 
     public class HqlRange : HqlTreeNode
@@ -276,6 +318,11 @@ namespace NHibernate.Hql.Ast
 
     public class HqlOrderBy : HqlTreeNode
     {
+        public HqlOrderBy(IASTFactory factory)
+            : base(HqlSqlWalker.ORDER, "", factory)
+        {
+        }
+
         public HqlOrderBy(IASTFactory factory, HqlTreeNode expression, HqlDirection hqlDirection)
             : base(HqlSqlWalker.ORDER, "", factory, expression,
                    hqlDirection == HqlDirection.Ascending ?
@@ -405,6 +452,12 @@ namespace NHibernate.Hql.Ast
 
     public class HqlCount : HqlTreeNode
     {
+
+        public HqlCount(IASTFactory factory)
+            : base(HqlSqlWalker.COUNT, "count", factory)
+        {
+        }
+        
         public HqlCount(IASTFactory factory, HqlTreeNode child)
             : base(HqlSqlWalker.COUNT, "count", factory, child)
         {
@@ -430,40 +483,8 @@ namespace NHibernate.Hql.Ast
     {
         public HqlCast(IASTFactory factory, HqlTreeNode expression, System.Type type) : base(HqlSqlWalker.METHOD_CALL, "method", factory)
         {
-            HqlIdent typeIdent;
-
-            if (IsNullableType(type))
-            {
-                type = ExtractUnderlyingTypeFromNullable(type);
-            }
-
-            switch (System.Type.GetTypeCode(type))
-            {
-                case TypeCode.Int32:
-                    typeIdent = new HqlIdent(factory, "integer");
-                    break;
-                case TypeCode.Decimal:
-                    typeIdent = new HqlIdent(factory, "decimal");
-                    break;
-                case TypeCode.DateTime:
-                    typeIdent = new HqlIdent(factory, "datetime");
-                    break;
-                default:
-                    throw new NotSupportedException(string.Format("Don't currently support casts to {0}", type.Name));
-            }
-
             AddChild(new HqlIdent(factory, "cast"));
-            AddChild(new HqlExpressionList(factory, expression, typeIdent));
-        }
-
-        private static System.Type ExtractUnderlyingTypeFromNullable(System.Type type)
-        {
-            return type.GetGenericArguments()[0];
-        }
-
-        private static bool IsNullableType(System.Type type)
-        {
-            return (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
+            AddChild(new HqlExpressionList(factory, expression, new HqlIdent(factory, type)));
         }
     }
 
@@ -518,12 +539,22 @@ namespace NHibernate.Hql.Ast
         public HqlMax(IASTFactory factory) : base(HqlSqlWalker.AGGREGATE, "max", factory)
         {
         }
-    }
+
+        public HqlMax(IASTFactory factory, HqlTreeNode expression)
+            : base(HqlSqlWalker.AGGREGATE, "max", factory, expression)
+        {
+        }
+}
 
     public class HqlMin : HqlTreeNode
     {
         public HqlMin(IASTFactory factory)
             : base(HqlSqlWalker.AGGREGATE, "min", factory)
+        {
+        }
+
+        public HqlMin(IASTFactory factory, HqlTreeNode expression)
+            : base(HqlSqlWalker.AGGREGATE, "min", factory, expression)
         {
         }
     }
@@ -559,6 +590,20 @@ namespace NHibernate.Hql.Ast
     public class HqlElements : HqlTreeNode
     {
         public HqlElements(IASTFactory factory) : base(HqlSqlWalker.ELEMENTS, "elements", factory)
+        {
+        }
+    }
+
+    public class HqlDistinct : HqlTreeNode
+    {
+        public HqlDistinct(IASTFactory factory) : base(HqlSqlWalker.DISTINCT, "distinct", factory)
+        {
+        }
+    }
+
+    public class HqlGroupBy : HqlTreeNode
+    {
+        public HqlGroupBy(IASTFactory factory) : base(HqlSqlWalker.GROUP, "group by", factory)
         {
         }
     }

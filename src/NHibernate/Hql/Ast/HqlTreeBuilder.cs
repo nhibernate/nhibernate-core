@@ -8,7 +8,7 @@ namespace NHibernate.Hql.Ast
 {
     public class HqlTreeBuilder
     {
-        private readonly ASTFactory _factory;
+        private readonly IASTFactory _factory;
 
         public HqlTreeBuilder()
         {
@@ -83,6 +83,11 @@ namespace NHibernate.Hql.Ast
         public HqlIdent Ident(string ident)
         {
             return new HqlIdent(_factory, ident);
+        }
+
+        public HqlIdent Ident(System.Type type)
+        {
+            return new HqlIdent(_factory, type);
         }
 
         public HqlAlias Alias(string alias)
@@ -179,6 +184,11 @@ namespace NHibernate.Hql.Ast
             }
         }
 
+        public HqlOrderBy OrderBy()
+        {
+            return new HqlOrderBy(_factory);
+        }
+
         public HqlOrderBy OrderBy(HqlTreeNode expression, HqlDirection hqlDirection)
         {
             return new HqlOrderBy(_factory, expression, hqlDirection);
@@ -249,6 +259,11 @@ namespace NHibernate.Hql.Ast
             return new HqlGreaterThanOrEqual(_factory);
         }
 
+        public HqlCount Count()
+        {
+            return new HqlCount(_factory);
+        }
+
         public HqlCount Count(HqlTreeNode child)
         {
             return new HqlCount(_factory, child);
@@ -299,9 +314,19 @@ namespace NHibernate.Hql.Ast
             return new HqlMin(_factory);
         }
 
+        public HqlMin Min(HqlTreeNode expression)
+        {
+            return new HqlMin(_factory, expression);
+        }
+
         public HqlMax Max()
         {
             return new HqlMax(_factory);
+        }
+
+        public HqlMax Max(HqlTreeNode expression)
+        {
+            return new HqlMax(_factory, expression);
         }
 
         public HqlAnd And(HqlTreeNode left, HqlTreeNode right)
@@ -328,5 +353,26 @@ namespace NHibernate.Hql.Ast
         {
             return new HqlElements(_factory);
         }
+
+        public HqlDistinct Distinct()
+        {
+            return new HqlDistinct(_factory);
+        }
+
+        public HqlDirectionAscending Ascending()
+        {
+            return new HqlDirectionAscending(_factory);
+        }
+
+        public HqlDirectionDescending Descending()
+        {
+            return new HqlDirectionDescending(_factory);
+        }
+
+        public HqlGroupBy GroupBy()
+        {
+            return new HqlGroupBy(_factory);
+        }
     }
+
 }

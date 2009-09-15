@@ -17,7 +17,7 @@
 						 access="field.camelcase-underscore" fetch="select"/>
 
 		<many-to-one name="Category" class="ProductCategory" column="CategoryId"
-								 access="field.camelcase-underscore" fetch="select"/>
+								 access="field.camelcase-underscore" />
 
 		<property name="QuantityPerUnit" column="QuantityPerUnit" type="string" length="20"
 							access="field.camelcase-underscore"/>

@@ -27,12 +27,12 @@ namespace NHibernate.Linq
             return holder.Children;
         }
 
-        public void PushAndPop(HqlTreeNode query)
+        public void PushLeaf(HqlTreeNode query)
         {
-            Push(query).Dispose();
+            PushNode(query).Dispose();
         }
 
-        public IDisposable Push(HqlTreeNode query)
+        public IDisposable PushNode(HqlTreeNode query)
         {
             _stack.Peek().AddChild(query);
 

@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Remotion.Data.Linq.Parsing;
 
 namespace NHibernate.Linq
 {
     /// <summary>
     /// Performs bottom-up analysis to determine which nodes that match a certain predicate
     /// </summary>
-    class Nominator : ExpressionTreeVisitor
+    class Nominator : NhExpressionTreeVisitor
     {
         readonly Func<Expression, bool> _fnIsCandidate;
         HashSet<Expression> _candidates;

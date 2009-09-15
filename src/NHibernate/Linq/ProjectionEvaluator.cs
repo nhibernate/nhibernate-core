@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
@@ -11,22 +12,20 @@ namespace NHibernate.Linq
         protected readonly HqlNodeStack _stack;
         private readonly ParameterAggregator _parameterAggregator;
         private HashSet<Expression> _hqlNodes;
-        private readonly ParameterExpression _objectArray;
-        private Expression _projectionExpression;
+        private readonly ParameterExpression _inputParameter;
+        private readonly Func<Expression, bool> _predicate;
         private int _iColumn;
 
-        public ProjectionEvaluator(ParameterAggregator parameterAggregator, ParameterExpression objectArray)
+        public ProjectionEvaluator(ParameterAggregator parameterAggregator, System.Type inputType, Func<Expression, bool> predicate)
         {
             _parameterAggregator = parameterAggregator;
-            _objectArray = objectArray;
+            _inputParameter = Expression.Parameter(inputType, "input");
+            _predicate = predicate;
             _hqlTreeBuilder = new HqlTreeBuilder();
             _stack = new HqlNodeStack(_hqlTreeBuilder);
         }
 
-        public Expression ProjectionExpression
-        {
-            get { return _projectionExpression; }
-        }
+        public LambdaExpression ProjectionExpression { get; private set; }
 
         public IEnumerable<HqlTreeNode> GetAstBuilderNode()
         {
@@ -36,14 +35,14 @@ namespace NHibernate.Linq
         public void Visit(Expression expression)
         {
             // First, find the sub trees that can be expressed purely in HQL
-            _hqlNodes = new Nominator(CanBeEvaluatedInHql).Nominate(expression);
+            _hqlNodes = new Nominator(_predicate).Nominate(expression);
 
             // Now visit the tree
             Expression projection = VisitExpression(expression);
 
             if ((projection != expression) && !_hqlNodes.Contains(expression))
             {
-                _projectionExpression = projection;
+                ProjectionExpression = Expression.Lambda(projection, _inputParameter);
             }
         }
 
@@ -57,21 +56,16 @@ namespace NHibernate.Linq
             if (_hqlNodes.Contains(expression))
             {
                 // Pure HQL evaluation
-                var hqlVisitor = new NhExpressionTreeVisitor(_parameterAggregator);
+                var hqlVisitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
                 hqlVisitor.Visit(expression);
-                hqlVisitor.GetAstBuilderNode().ForEach(n =>_stack.PushAndPop(n) );
+                hqlVisitor.GetHqlTreeNodes().ForEach(n =>_stack.PushLeaf(n) );
 
-                return Expression.Convert(Expression.ArrayIndex(_objectArray, Expression.Constant(_iColumn++)),
+                return Expression.Convert(Expression.ArrayIndex(_inputParameter, Expression.Constant(_iColumn++)),
                                           expression.Type);
             }
 
             // Can't handle this node with HQL.  Just recurse down, and emit the expression
             return base.VisitExpression(expression);
-        }
-
-        private static bool CanBeEvaluatedInHql(Expression expression)
-        {
-            return (expression.NodeType != ExpressionType.MemberInit) && (expression.NodeType != ExpressionType.New);
         }
     }
 }

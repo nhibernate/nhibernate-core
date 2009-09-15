@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using NHibernate.Test.Linq.Entities;
 using NUnit.Framework;
 
@@ -207,16 +208,118 @@ namespace NHibernate.Test.Linq
         [Ignore("TODO")]
         public void DLinq17()
         {
+            using (ISession s = OpenSession())
+            {
+                /////////////
+                ///// Flattened Select
+                /////////////
+
+                //// In HQL select, get all the data that's needed
+                //var dbOrders =
+                //    s.CreateQuery("select o.OrderId, od, o.Freight from Order o join o.OrderLines od").List<object[]>();
+
+                //// Now group by the items in the parent select, grouping the items in the child select (note lookups on object[], ala ProjectionEvaluator)
+                //// Note the casts to get the types correct.  Need to check if ProjectionEvaluator handles that, but think it does
+                //var a = from o in dbOrders
+                //        group new { OrderLine = (OrderLine)o[1], Freight = (Decimal?)o[2] } by new { OrderId = (int) o[0] }
+                //            into g
+                //            select
+                //            // Select the parent items,  and the child items in a nested select
+                //            new { g.Key.OrderId, DiscountedProducts = from e in g select new { e.OrderLine, FreeShippingDiscount = e.Freight } };
+
+                //a.ToList();
+
+                /////////////
+                ///// Nested Select
+                /////////////
+                //var dbOrders2 = s.CreateQuery("select o.OrderId from Order o").List<int>();
+
+                //var q2 = from o in dbOrders2
+                //         select new
+                //                    {
+                //                        OrderId = o,
+                //                        DiscountedProducts =
+                //                             from subO in db.Orders
+                //                                 where subO.OrderId == o
+                //                                 from orderLine in subO.OrderLines
+                //                                 select new { orderLine, FreeShippingDiscount = subO.Freight }
+                //                    };
+
+                //q2.ToList();
+
+                ///////////
+                /// Batching Select
+                ///////////
+                var dbOrders3 = s.CreateQuery("select o.OrderId from Order o").List<int>();
+
+                //var q3 = dbOrders3.SubQueryBatcher(orderId => orderId,
+                //                                   ids => from subO in db.Orders.ToList()  // Note that ToList is just because current group by code is incorrent in our linq provider
+                //                                          where ids.Contains(subO.OrderId)
+                //                                          from orderLine in subO.OrderLines
+                //                                          group new {orderLine, FreeShippingDiscount = subO.Freight}
+                //                                             by subO.OrderId
+                //                                          into g
+                //                                             select g
+                //                                   )
+                //                                   .Select((input, index) => new
+                //                                    {
+                //                                         OrderId = input.Item,
+                //                                         DiscountedProducts = input.Batcher.GetData(index)
+                //                    });
+
+                // This is what we want:
+                //var q3 = dbOrders3.SubQueryBatcher(orderId => orderId,
+                //                                   ids => db.Orders
+                //                                       .Where(o => ids.Contains(o.OrderId))
+                //                                       .Select(o => new {o.OrderId, o.OrderLines, o.Freight}).ToList()
+                //                                       .GroupBy(k => k.OrderId, e => new { e.OrderLines, FreeShippingDiscount = e.Freight})
+                //                                   )
+                //                                   .Select((input, index) => new
+                //                                    {
+                //                                         OrderId = input.Item,
+                //                                         DiscountedProducts = input.Batcher.GetData(index)
+                //                    });
+
+                // This is what we're using since our provider can't yet handle the in or the group by clauses correctly (note the ToList and the Where clause moving to get us into Linq to Objects world)
+                var q3 = dbOrders3.SubQueryBatcher(orderId => orderId,
+                                   ids =>
+                                       (from o in db.Orders
+                                       from ol in o.OrderLines
+                                       select new { OrderLines = ol, FreeShippingDiscount = o.Freight, o.OrderId })
+                                       .ToList()
+                                       .Where(o => ids.Contains(o.OrderId))
+                                       .GroupBy(k => k.OrderId, e => new { e.OrderLines, e.FreeShippingDiscount })
+                                   )
+                                   .Select((input, index) => new
+                                   {
+                                       OrderId = input.Item,
+                                       DiscountedProducts = input.Batcher.GetData(index)
+                                   });
+
+
+                foreach (var x in q3)
+                {
+                    Console.WriteLine(x.OrderId);
+
+                    foreach (var y in x.DiscountedProducts)
+                    {
+                        Console.WriteLine(y.FreeShippingDiscount);
+                    }
+                }
+
+                q3.ToList();
+            }
+
             var q =
                 from o in db.Orders
                 select new
                            {
                                o.OrderId,
                                DiscountedProducts =
-                    from od in o.OrderLines.Cast<OrderLine>()
-                    where od.Discount > 0.0m
-                    select od,
-                               FreeShippingDiscount = o.Freight
+                                    from od in o.OrderLines
+//                                    from od in o.OrderLines.Cast<OrderLine>()
+                                    where od.Discount > 0.0m
+                                    select od, FreeShippingDiscount = o.Freight
                            };
 
             ObjectDumper.Write(q, 1);
@@ -236,7 +339,8 @@ namespace NHibernate.Test.Linq
                            {
                                o.OrderId,
                                DiscountedProducts =
-                    from od in o.OrderLines.Cast<OrderLine>()
+                    from od in o.OrderLines
+//                    from od in o.OrderLines.Cast<OrderLine>()
                     where od.Discount > 0.0m
                     select new {od.Quantity, od.UnitPrice},
                                FreeShippingDiscount = o.Freight
@@ -259,7 +363,8 @@ namespace NHibernate.Test.Linq
                            {
                                o.OrderId,
                                DiscountedProducts =
-                    from od in o.OrderLines.Cast<OrderLine>()
+                    from od in o.OrderLines
+//                    from od in o.OrderLines.Cast<OrderLine>()
                     where od.Discount > 0.0m
                     orderby od.Discount descending
                     select od,
@@ -349,6 +454,42 @@ namespace NHibernate.Test.Linq
         [Ignore("TODO")]
         public void DLinq25()
         {
+            using (var session = OpenSession())
+            {
+                var output = session
+                    .CreateQuery(
+                    "select p.Category.CategoryId, p from Product p where p.UnitPrice = (select min(p2.UnitPrice) from Product p2 where p.Category.CategoryId = p2.Category.CategoryId)"
+                    )
+                    .List<object[]>()
+                    .GroupBy(input => input[0])
+                    .Select(input => new {CategoryId = (int) input.Key, CheapestProducts = from g in input select (Product) g[1]});
+            }
+
+            /*
+             * From g, only using g.Key, min(UnitPrice), g
+             *  - g.Key is fine
+             *  - min(UnitPrice) is fine
+             *  - g is the problem.  Can't just issue a single select since it's non-aggregating
+             *    However, don't want to loose the aggregate; need that processed in the DB
+             * 
+             * To get additional information over and above g.Key and any aggregates, need a where clause against the aggregate:
+             * 
+             * select xxx, yyy, zzz from Product p where p.UnitPrice = (select min(p2.UnitPrice) from Product p2)
+             * 
+             * the outer where comes from the inner where in the queryModel:
+             *
+             * where p2.UnitPrice == g.Min(p3 => p3.UnitPrice)
+             * 
+             * also need additional constraints on the aggregate to fulfil the groupby requirements:
+             * 
+             * where p.Category.CategoryId = p2.Category.CategoryId
+             * 
+             * so join the inner select to the outer select using the group by criteria
+             * 
+             * finally, need to do some client-side processing to get the "shape" correct
+             * 
+             */
+
             var categories =
                 from p in db.Products
                 group p by p.Category.CategoryId
@@ -357,12 +498,12 @@ namespace NHibernate.Test.Linq
                                {
                                    CategoryId = g.Key,
                                    CheapestProducts =
-                    from p2 in g
-                    where p2.UnitPrice == g.Min(p3 => p3.UnitPrice)
-                    select p2
+                    (IEnumerable<Product>) (from p2 in g
+                                            where p2.UnitPrice == g.Min(p3 => p3.UnitPrice)
+                                            select p2)
                                };
 
-            ObjectDumper.Write(categories, 1);
+            Console.WriteLine(ObjectDumper.Write(categories, 1));
         }
 
         [Category("COUNT/SUM/MIN/MAX/AVG")]
@@ -592,7 +733,6 @@ namespace NHibernate.Test.Linq
         [Category("GROUP BY/HAVING")]
         [Test(Description = "This sample uses group by to partition Products by " +
                             "CategoryId.")]
-        [Ignore("TODO")]
         public void DLinq42()
         {
             IQueryable<IGrouping<int, Product>> q =
@@ -617,7 +757,6 @@ namespace NHibernate.Test.Linq
         [Category("GROUP BY/HAVING")]
         [Test(Description = "This sample uses group by and Max " +
                             "to find the maximum unit price for each CategoryId.")]
-        [Ignore("TODO")]
         public void DLinq43()
         {
             var q =
@@ -775,16 +914,27 @@ namespace NHibernate.Test.Linq
 
         [Category("GROUP BY/HAVING")]
         [Test(Description = "This sample uses Group By to group products by CategoryId and SupplierId.")]
-        [Ignore("TODO")]
         public void DLinq50()
         {
+            //var prods = db.Products.ToList();
+
             var categories =
                 from p in db.Products
                 group p by new {p.Category.CategoryId, p.Supplier.SupplierId}
                 into g
                     select new {g.Key, g};
 
-            ObjectDumper.Write(categories, 1);
+            var nhOutput = ObjectDumper.Write(categories, 1);
+
+            var categories2 =
+                from p in db.Products.ToList()
+                group p by new {p.Category.CategoryId, p.Supplier.SupplierId}
+                into g
+                    select new {g.Key, g};
+
+            string linq2ObjectsOutput = ObjectDumper.Write(categories2, 1);
+
+            Assert.AreEqual(nhOutput, linq2ObjectsOutput);
         }
 
         [Category("GROUP BY/HAVING")]
@@ -911,7 +1061,8 @@ namespace NHibernate.Test.Linq
         {
             IQueryable<Customer> q =
                 from c in db.Customers
-                where c.Orders.Cast<Order>().All(o => o.ShippingAddress.City == c.Address.City)
+                where c.Orders.All(o => o.ShippingAddress.City == c.Address.City)
+//                where c.Orders.Cast<Order>().All(o => o.ShippingAddress.City == c.Address.City)
                 select c;
 
             ObjectDumper.Write(q);
@@ -1114,7 +1265,8 @@ namespace NHibernate.Test.Linq
         {
             IQueryable<Order> q =
                 from c in db.Customers
-                from o in c.Orders.Cast<Order>()
+                from o in c.Orders
+//                from o in c.Orders.Cast<Order>()
                 where c.Address.City == "London"
                 select o;
 
@@ -1144,7 +1296,8 @@ namespace NHibernate.Test.Linq
         {
             var q =
                 from c in db.Customers
-                from o in c.Orders.Cast<Order>()
+                from o in c.Orders
+//                from o in c.Orders.Cast<Order>()
                 where c.Address.City == "London"
                 select new {o.OrderDate, o.ShippingAddress.Region};
 
@@ -1158,7 +1311,8 @@ namespace NHibernate.Test.Linq
         {
             var q =
                 from c in db.Customers
-                from o in c.Orders.Cast<Order>()
+                from o in c.Orders
+//                from o in c.Orders.Cast<Order>()
                 where c.Address.City == "London"
                 select new {c.Address.City, o.OrderDate, o.ShippingAddress.Region};
 
@@ -1209,7 +1363,8 @@ namespace NHibernate.Test.Linq
         {
             IQueryable<Customer> q =
                 from c in db.Customers
-                from o in c.Orders.Cast<Order>()
+                from o in c.Orders
+//                from o in c.Orders.Cast<Order>()
                 select c;
 
             List<Customer> list = q.ToList();
@@ -1235,12 +1390,12 @@ namespace NHibernate.Test.Linq
         [Test(Description = "This sample uses foreign key navigation in the " +
                             "from clause to filter for employees in Seattle, " +
                             "and also list their territories.")]
-        [Ignore("TODO")]
         public void DLinqJoin3()
         {
             var q =
                 from e in db.Employees
-                from et in e.Territories.Cast<Territory>()
+                from et in e.Territories
+//                from et in e.Territories.Cast<Territory>()
                 where e.Address.City == "Seattle"
                 select new {e.FirstName, e.LastName, et.Region.Description};
 
@@ -1256,7 +1411,8 @@ namespace NHibernate.Test.Linq
         {
             var q =
                 from e1 in db.Employees
-                from e2 in e1.Subordinates.Cast<Employee>()
+                from e2 in e1.Subordinates
+//                from e2 in e1.Subordinates.Cast<Employee>()
                 where e1.Address.City == e2.Address.City
                 select new
                            {
@@ -1347,8 +1503,80 @@ namespace NHibernate.Test.Linq
         }
     }
 
+    public class ParentChildBatch<T, TKey, TSub>
+    {
+        public T Item { get; private set; }
+        public SubQueryBatcher<T, TKey, TSub> Batcher { get; private set; }
+
+        public ParentChildBatch(T item, SubQueryBatcher<T, TKey, TSub> batcher)
+        {
+            Item = item;
+            Batcher = batcher;
+        }
+    }
+
+    public class SubQueryBatcher<T, TKey, TSub>
+    {
+        private readonly IEnumerable<T> _inputStream;
+        private readonly Func<T, TKey> _keySelector;
+        private readonly Func<TKey[], IEnumerable<IGrouping<TKey, TSub>>> _childSelector;
+        private const int BatchSize = 10;
+        private readonly Dictionary<int, IEnumerable<TSub>> _results = new Dictionary<int, IEnumerable<TSub>>();
+        private readonly HashSet<int> _batchesFetched = new HashSet<int>();
+
+        public SubQueryBatcher(IEnumerable<T> inputStream, Func<T, TKey> keySelector, Func<TKey[], IEnumerable<IGrouping<TKey, TSub>>> childSelector)
+        {
+            _inputStream = inputStream.ToList(); // TODO - can we avoid enumerating the entire input stream?
+            _keySelector = keySelector;
+            _childSelector = childSelector;
+        }
+
+        public IEnumerable<TSub> GetData(int index)
+        {
+            // From index, work out which batch we need
+            int batch = index / BatchSize;
+
+            // Get the batch
+            FetchBatch(batch);
+
+            // Return the results
+            return _results[index];
+        }
+
+        private void FetchBatch(int batch)
+        {
+            if (_batchesFetched.Contains(batch))
+            {
+                // We've got this batch
+                return;
+            }
+
+            // Get the keys for this batch
+            var keys = _inputStream.Skip(batch*BatchSize).Take(BatchSize).Select(_keySelector).ToArray();
+
+            // And get the children for this set of keys
+            var children = _childSelector(keys);
+
+            int i = 0;
+            foreach (var child in children)
+            {
+                _results[batch * BatchSize + i] = child.Select(o => o);
+                i++;
+            }
+
+            _batchesFetched.Add(batch);
+        }
+    } 
+
     public static class MyEnumerableExtensions
     {
+        public static IEnumerable<ParentChildBatch<T, TKey, TSub>> SubQueryBatcher<T, TKey, TSub>(this IEnumerable<T> items, Func<T, TKey> keySelector, Func<TKey[], IEnumerable<IGrouping<TKey, TSub>>> children)
+        {
+            var sqb = new SubQueryBatcher<T, TKey, TSub>(items, keySelector, children);
+
+            return items.Select(i => new ParentChildBatch<T, TKey, TSub>(i, sqb));
+        }
+
         public static void Each<T>(this IEnumerable<T> items, Action<T> action)
         {
             foreach (T t in items)
@@ -1367,7 +1595,7 @@ namespace NHibernate.Test.Linq
 
         private ObjectDumper(int depth)
         {
-            _writer = Console.Out;
+            _writer = new StringWriter(new StringBuilder());
             _depth = depth;
         }
 
@@ -1376,10 +1604,11 @@ namespace NHibernate.Test.Linq
             Write(o, 0);
         }
 
-        public static void Write(object o, int depth)
+        public static string Write(object o, int depth)
         {
             var dumper = new ObjectDumper(depth);
- //           dumper.WriteObject(null, o);
+            dumper.WriteObject(null, o);
+            return dumper._writer.ToString();
         }
 
         private void Write(string s)

@@ -114,14 +114,7 @@ namespace NHibernate.Test.Linq
         public void TestFixtureTearDown()
         {
             OnFixtureTeardown();
-            /*
-			bool wasCleaned = CheckDatabaseWasCleaned();
-
-            if (!wasCleaned)
-			{
-                Assert.Fail("Test didn't clean up after itself.  database cleaned: "+ wasCleaned);
-			}
-            */
+ 
 			DropSchema();
             Cleanup();
         }
@@ -181,32 +174,6 @@ namespace NHibernate.Test.Linq
             }
 
             return true;
-        }
-
-        private bool CheckDatabaseWasCleaned()
-        {
-            if (_sessions.GetAllClassMetadata().Count == 0)
-            {
-                // Return early in the case of no mappings, also avoiding
-                // a warning when executing the HQL below.
-                return true;
-            }
-
-            bool empty;
-            using (ISession s = _sessions.OpenSession())
-            {
-                IList objects = s.CreateQuery("from System.Object o").List();
-                empty = objects.Count == 0;
-            }
-
-            if (!empty)
-            {
-                log.Error("Test case didn't clean up the database after itself, re-creating the schema");
-                DropSchema();
-                CreateSchema();
-            }
-
-            return empty;
         }
 
         private bool CheckConnectionsWereClosed()

@@ -825,7 +825,7 @@ namespace NHibernate.Type
 			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("SortedList", new[] { indexClass, elementClass },
 																																									 signature);
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new[] { role, propertyRef, false, comparer });
+			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, false, comparer });
 		}
 
 		public static CollectionType GenericSortedDictionary(string role, string propertyRef, object comparer,
@@ -835,7 +835,7 @@ namespace NHibernate.Type
 			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("SortedDictionary", new[] { indexClass, elementClass },
 																																						 signature);
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new[] { role, propertyRef, false, comparer });
+			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, false, comparer });
 		}
 
 		public static CollectionType GenericSet(string role, string propertyRef, System.Type elementClass)
@@ -853,7 +853,7 @@ namespace NHibernate.Type
 			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("SortedSet", new[] { elementClass },
 																																									 signature);
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new[] { role, propertyRef, false, comparer });
+			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, false, comparer });
 		}
 
 		public static CollectionType GenericOrderedSet(string role, string propertyRef,
