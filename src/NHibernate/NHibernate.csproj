@@ -587,6 +587,10 @@
     <Compile Include="Linq\ProjectionEvaluator.cs" />
     <Compile Include="Linq\QueryModelVisitor.cs" />
     <Compile Include="Linq\ResultTransformer.cs" />
+    <Compile Include="Loader\Criteria\ComponentCollectionCriteriaInfoProvider.cs" />
+    <Compile Include="Loader\Criteria\EntityCriteriaInfoProvider.cs" />
+    <Compile Include="Loader\Criteria\ICriteriaInfoProvider.cs" />
+    <Compile Include="Loader\Criteria\ScalarCollectionCriteriaInfoProvider.cs" />
     <Compile Include="Param\AbstractExplicitParameterSpecification.cs" />
     <Compile Include="Param\AggregatedIndexCollectionSelectorParameterSpecifications.cs" />
     <Compile Include="Param\CollectionFilterKeyParameterSpecification.cs" />

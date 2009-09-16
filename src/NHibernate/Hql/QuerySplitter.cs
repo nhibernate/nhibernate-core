@@ -46,6 +46,8 @@ namespace NHibernate.Hql
 
 			//TODO: this is one of the ugliest and most fragile pieces of code in Hibernate....
 
+			SessionFactoryHelper helper = new SessionFactoryHelper(factory);
+
 			string[] tokens = StringHelper.Split(StringHelper.WhiteSpace + "(),", query, true);
 			if (tokens.Length == 0)
 			{
@@ -95,7 +97,7 @@ namespace NHibernate.Hql
 					     (next == null || !notAfterClassTokens.Contains(next))) ||
 					    PathExpressionParser.EntityClass.Equals(last))
 					{
-						System.Type clazz = SessionFactoryHelper.GetImportedClass(factory, token);
+						System.Type clazz = helper.GetImportedClass(token);
 						if (clazz != null)
 						{
 							string[] implementors = factory.GetImplementors(clazz.FullName);

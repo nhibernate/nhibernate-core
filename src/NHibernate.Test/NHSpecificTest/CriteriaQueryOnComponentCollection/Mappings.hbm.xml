@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection"
+				   assembly="NHibernate.Test">
+
+	<class name="Employee" table="Employees" lazy="false">
+		<id name="Id" type="Int32">
+			<generator class="assigned" />
+		</id>
+
+		<set name="Amounts" table="Amounts">
+			<key column="EmployeeId"/>
+			<composite-element class="Money">
+				<property name="Amount" type="Decimal" not-null="true"/>
+				<property name="Currency" type="String" not-null="true"/>
+			</composite-element>
+		</set>
+
+		<set name="ManagedEmployees" table="ManagedEmployees">
+			<key column="EmployeeId"/>
+			<composite-element class="ManagedEmployee">
+				<property name="Position" type="string" not-null="true"/>
+				<many-to-one name="Employee" class="Employee"/>
+			</composite-element>
+		</set>
+		
+	</class>
+</hibernate-mapping>

@@ -17,6 +17,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	{
 		private readonly ISessionFactoryImplementor _sfi;
 		private readonly NullableDictionary<string, IPropertyMapping> _collectionPropertyMappingByRole;
+		private readonly SessionFactoryHelper helper;
 
 		/// <summary>
 		/// Construct a new SessionFactoryHelperExtensions instance.
@@ -25,6 +26,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		public SessionFactoryHelperExtensions(ISessionFactoryImplementor sfi)
 		{
 			_sfi = sfi;
+			helper = new SessionFactoryHelper(_sfi);
 			_collectionPropertyMappingByRole = new NullableDictionary<string, IPropertyMapping>();
 		}
 
@@ -251,7 +253,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// <returns>The defined persister for this class, or null if none found.</returns>
 		private static IQueryable FindQueryableUsingImports(ISessionFactoryImplementor sfi, string className) 
 		{
-			return SessionFactoryHelper.FindQueryableUsingImports(sfi, className);
+			return new SessionFactoryHelper(sfi).FindQueryableUsingImports(className);
 		}
 
 		/// <summary>
@@ -261,7 +263,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// <returns>The defined persister for this entity, or null if none found.</returns>
 		private IEntityPersister FindEntityPersisterByName(string name)
 		{
-			return SessionFactoryHelper.FindEntityPersisterUsingImports(_sfi, name);
+			return helper.FindEntityPersisterUsingImports(name);
 		}
 
 		/// <summary>

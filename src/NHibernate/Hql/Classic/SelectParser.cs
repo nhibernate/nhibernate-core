@@ -35,6 +35,7 @@ namespace NHibernate.Hql.Classic
 
 		public void Token(string token, QueryTranslator q)
 		{
+			SessionFactoryHelper helper = new SessionFactoryHelper(q.Factory);
 			string lctoken = token.ToLowerInvariant();
 
 			if (first)
@@ -55,7 +56,7 @@ namespace NHibernate.Hql.Classic
 			if (afterNew)
 			{
 				afterNew = false;
-				holderClass = SessionFactoryHelper.GetImportedClass(q.Factory, token);
+				holderClass = helper.GetImportedClass(token);
 				if (holderClass == null)
 				{
 					throw new QueryException("class not found: " + token);

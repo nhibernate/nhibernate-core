@@ -228,7 +228,8 @@ namespace NHibernate.Impl
 
 				if (log.IsDebugEnabled)
 				{
-					log.Debug(string.Format("[session-id={0}] opened session at timestamp:{1}", SessionId, timestamp));
+					log.DebugFormat("[session-id={0}] opened session at timestamp: {1}, for session factory: [{2}/{3}]",
+						SessionId, timestamp, factory.Name, factory.Uuid);
 				}
 
 				CheckAndUpdateSessionStatus();

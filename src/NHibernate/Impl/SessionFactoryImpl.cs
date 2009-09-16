@@ -1172,11 +1172,22 @@ namespace NHibernate.Impl
 		}
 
 		#region NHibernate specific
+		
 		public string TryGetGuessEntityName(System.Type implementor)
 		{
 			string result;
 			implementorToEntityName.TryGetValue(implementor, out result);
 			return result;
+		}
+
+		public string Name
+		{
+			get { return name; }
+		}
+
+		public string Uuid
+		{
+			get { return uuid; }
 		}
 
 		#endregion

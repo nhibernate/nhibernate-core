@@ -20,13 +20,13 @@ namespace NHibernate.Test.NHSpecificTest.NH830
 			sess.Flush();
 
 			//reload the data and then setup the many-to-many association
-			mum = (Cat) sess.Get(typeof(Cat), mum.Id);
-			son = (Cat) sess.Get(typeof(Cat), son.Id);
+			mum = (Cat) sess.Get(typeof (Cat), mum.Id);
+			son = (Cat) sess.Get(typeof (Cat), son.Id);
 			mum.Children.Add(son);
 			son.Parents.Add(mum);
 
 			//Use criteria API to search first 
-			IList result = sess.CreateCriteria(typeof(Cat))
+			IList result = sess.CreateCriteria(typeof (Cat))
 				.CreateAlias("Children", "child")
 				.Add(Expression.Eq("child.Id", son.Id))
 				.List();

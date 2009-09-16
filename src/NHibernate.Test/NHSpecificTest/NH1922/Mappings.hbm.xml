@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.NH1922">
+
+  <class name="Customer" >
+    <id name="ID" type="Int32">
+      <generator class="hilo" />
+    </id>
+
+    <property name="ValidUntil" type="DateTime" />
+  </class>
+
+</hibernate-mapping>
