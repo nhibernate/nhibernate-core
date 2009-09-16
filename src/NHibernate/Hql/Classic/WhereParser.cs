@@ -463,6 +463,7 @@ namespace NHibernate.Hql.Classic
 
 		private void DoToken(string token, QueryTranslator q)
 		{
+			SessionFactoryHelper helper = new SessionFactoryHelper(q.Factory);
 			if (q.IsName(StringHelper.Root(token))) //path expression
 			{
 				DoPathExpression(q.Unalias(token), q);
@@ -508,7 +509,7 @@ namespace NHibernate.Hql.Classic
 					{
 						fieldName = StringHelper.Unqualify(token);
 						string typeName = StringHelper.Qualifier(token);
-						importedType = SessionFactoryHelper.GetImportedClass(q.Factory, typeName);
+						importedType = helper.GetImportedClass(typeName);
 					}
 
 					if (indexOfDot > -1 && importedType != null &&

@@ -13,6 +13,7 @@ using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Exceptions;
+using NHibernate.Hql.Util;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -48,10 +49,12 @@ namespace NHibernate.Loader
 
 		private readonly ISessionFactoryImplementor factory;
 		private ColumnNameCache columnNameCache;
+		protected SessionFactoryHelper helper;
 
 		public Loader(ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
+			helper = new SessionFactoryHelper(factory);
 		}
 
 		/// <summary> 

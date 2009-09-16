@@ -783,7 +783,6 @@ namespace NHibernate.Loader
 			else
 			{
 				SqlStringBuilder buf = new SqlStringBuilder(associations.Count * 3);
-				buf.Add(StringHelper.CommaSpace);
 
 				int entityAliasCount = 0;
 				int collectionAliasCount = 0;
@@ -804,16 +803,16 @@ namespace NHibernate.Loader
 						joinable.SelectFragment(next == null ? null : next.Joinable, next == null ? null : next.RHSAlias, join.RHSAlias,
 																		entitySuffix, collectionSuffix, join.JoinType == JoinType.LeftOuterJoin);
 
-					buf.Add(selectFragment);
-
+					if (selectFragment.Trim().Length > 0)
+					{
+						buf.Add(StringHelper.CommaSpace)
+							.Add(selectFragment);
+					}
 					if (joinable.ConsumesEntityAlias())
 						entityAliasCount++;
 
 					if (joinable.ConsumesCollectionAlias() && join.JoinType == JoinType.LeftOuterJoin)
 						collectionAliasCount++;
-
-					if (i < associations.Count - 1 && selectFragment.Trim().Length > 0)
-						buf.Add(StringHelper.CommaSpace);
 				}
 
 				return buf.ToSqlString().ToString();

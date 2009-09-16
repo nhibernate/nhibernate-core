@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
+using log4net;
 using NHibernate.Engine;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -24,6 +26,8 @@ namespace NHibernate.Loader.Criteria
 		//these are not the actual "physical" SQL aliases
 		private readonly string[] userAliases;
 		private readonly IList<string> userAliasList = new List<string>();
+
+	    private static readonly ILog logger = LogManager.GetLogger(typeof (CriteriaJoinWalker));
 
 		public CriteriaJoinWalker(IOuterJoinLoadable persister, CriteriaQueryTranslator translator,
 		                          ISessionFactoryImplementor factory, ICriteria criteria, string rootEntityName,
@@ -126,7 +130,14 @@ namespace NHibernate.Loader.Criteria
 
 		protected override string GenerateTableAlias(int n, string path, IJoinable joinable)
 		{
-			if (joinable.ConsumesEntityAlias())
+			bool shouldCreateUserAlias = joinable.ConsumesEntityAlias(); 
+			if(shouldCreateUserAlias == false  && joinable.IsCollection)
+			{
+				var elementType = ((ICollectionPersister)joinable).ElementType;
+				if (elementType != null)
+					shouldCreateUserAlias = elementType.IsComponentType;
+			}
+			if (shouldCreateUserAlias)
 			{
 				ICriteria subcriteria = translator.GetCriteria(path);
 				string sqlAlias = subcriteria == null ? null : translator.GetSQLAlias(subcriteria);
@@ -135,10 +146,8 @@ namespace NHibernate.Loader.Criteria
 					userAliasList.Add(subcriteria.Alias); //alias may be null
 					return sqlAlias; //EARLY EXIT
 				}
-				else
-				{
-					userAliasList.Add(null);
-				}
+
+				userAliasList.Add(null);
 			}
 			return base.GenerateTableAlias(n + translator.SQLAliasCount, path, joinable);
 		}

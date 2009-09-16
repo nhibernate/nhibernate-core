@@ -537,7 +537,7 @@ namespace NHibernate.Hql.Classic
 
 		internal IQueryable GetPersisterUsingImports(string className)
 		{
-			return SessionFactoryHelper.FindQueryableUsingImports(Factory, className);
+			return helper.FindQueryableUsingImports(className);
 		}
 
 		internal IQueryable GetPersister(string clazz)
@@ -1320,7 +1320,7 @@ namespace NHibernate.Hql.Classic
 			return result;
 		}
 
-		public static string[] ConcreteQueries(string query, ISessionFactoryImplementor factory)
+		public string[] ConcreteQueries(string query, ISessionFactoryImplementor factory)
 		{
 			// TODO H3.2 check if the QuerySplitter can do the work (this method is not present in H3.2)
 
@@ -1374,7 +1374,7 @@ namespace NHibernate.Hql.Classic
 						((last != null && beforeClassTokens.Contains(last)) && (next == null || !notAfterClassTokens.Contains(next))) ||
 						PathExpressionParser.EntityClass.Equals(last))
 					{
-						System.Type clazz = SessionFactoryHelper.GetImportedClass(factory, token);
+						System.Type clazz = helper.GetImportedClass(token);
 						if (clazz != null)
 						{
 							string[] implementors = factory.GetImplementors(clazz.FullName);

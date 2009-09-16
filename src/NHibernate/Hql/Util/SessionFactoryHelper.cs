@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
 using NHibernate.Engine;
+using NHibernate.Hql.Ast.ANTLR;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
 
@@ -9,12 +13,21 @@ namespace NHibernate.Hql.Util
 	/// </summary>
 	public class SessionFactoryHelper
 	{
-		public static IQueryable FindQueryableUsingImports(ISessionFactoryImplementor sfi, string className)
+		private readonly ISessionFactoryImplementor sfi;
+		private readonly IDictionary<string,CollectionPropertyMapping> collectionPropertyMappingByRole = 
+			new Dictionary<string,CollectionPropertyMapping>();
+
+		public SessionFactoryHelper(ISessionFactoryImplementor sfi)
 		{
-			return FindEntityPersisterUsingImports(sfi, className) as IQueryable;
+			this.sfi = sfi;
 		}
 
-		public static IEntityPersister FindEntityPersisterUsingImports(ISessionFactoryImplementor sfi, string className)
+		public IQueryable FindQueryableUsingImports(string className)
+		{
+			return FindEntityPersisterUsingImports(className) as IQueryable;
+		}
+
+		public IEntityPersister FindEntityPersisterUsingImports(string className)
 		{
 			// NH : short cut
 			if (string.IsNullOrEmpty(className))
@@ -61,7 +74,74 @@ namespace NHibernate.Hql.Util
 			return TypeNameParser.Parse(assemblyQualifiedName).Type;
 		}
 
-		public static System.Type GetImportedClass(ISessionFactoryImplementor sfi, string className)
+
+
+		/// <summary>
+		/// Locate the collection persister by the collection role.
+		/// </summary>
+		/// <param name="role">The collection role name.</param>
+		/// <returns>The defined CollectionPersister for this collection role, or null.</returns>
+		public IQueryableCollection GetCollectionPersister(String role)
+		{
+			try
+			{
+				return (IQueryableCollection)sfi.GetCollectionPersister(role);
+			}
+			catch (InvalidCastException cce)
+			{
+				throw new QueryException("collection is not queryable: " + role);
+			}
+			catch (Exception e)
+			{
+				throw new QueryException("collection not found: " + role);
+			}
+		}
+
+		/// <summary>
+		/// Locate the persister by class or entity name, requiring that such a persister
+		/// exists
+		/// </summary>
+		/// <param name="name">The class or entity name</param>
+		/// <returns>The defined persister for this entity</returns>
+		public IEntityPersister RequireClassPersister(String name)
+		{
+			IEntityPersister cp = FindEntityPersisterByName(name);
+			if (cp == null)
+			{
+				throw new QuerySyntaxException(name + " is not mapped");
+			}
+
+			return cp;
+		}
+
+		/// <summary>
+		/// Locate the persister by class or entity name.
+		/// </summary>
+		/// <param name="name">The class or entity name</param>
+		/// <returns>The defined persister for this entity, or null if none found.</returns>
+		private IEntityPersister FindEntityPersisterByName(String name)
+		{
+			// First, try to get the persister using the given name directly.
+			try
+			{
+				return sfi.GetEntityPersister(name);
+			}
+			catch (MappingException ignore)
+			{
+				// unable to locate it using this name
+			}
+
+			// If that didn't work, try using the 'import' name.
+			String importedClassName = sfi.GetImportedClassName(name);
+			if (importedClassName == null)
+			{
+				return null;
+			}
+			return sfi.GetEntityPersister(importedClassName);
+		}
+
+
+		public System.Type GetImportedClass(string className)
 		{
 			string importedName = sfi.GetImportedClassName(className);
 
@@ -72,6 +152,50 @@ namespace NHibernate.Hql.Util
 
 			// NH Different implementation: our sessionFactory.Imports hold AssemblyQualifiedName
 			return System.Type.GetType(importedName, false);
+		}
+
+
+		/// <summary>
+		/// Retreive a PropertyMapping describing the given collection role.
+		/// </summary>
+		/// <param name="role">The collection role for whcih to retrieve the property mapping.</param>
+		/// <returns>The property mapping.</returns>
+		public IPropertyMapping GetCollectionPropertyMapping(String role)
+		{
+			return collectionPropertyMappingByRole[role];
+		}
+
+
+		/* Locate the collection persister by the collection role, requiring that
+		* such a persister exist.
+		*
+		* @param role The collection role name.
+		* @return The defined CollectionPersister for this collection role.
+		* @throws QueryException Indicates that the collection persister could not be found.
+		*/
+		public IQueryableCollection RequireQueryableCollection(String role)
+		{
+			try
+			{
+				IQueryableCollection queryableCollection = (IQueryableCollection)sfi
+						.GetCollectionPersister(role);
+				if (queryableCollection != null)
+				{
+					collectionPropertyMappingByRole.Add(role,
+							new CollectionPropertyMapping(queryableCollection));
+				}
+				return queryableCollection;
+			}
+			catch (InvalidCastException)
+			{
+				throw new QueryException(
+						"collection role is not queryable: " + role);
+			}
+			catch (Exception)
+			{
+				throw new QueryException("collection role not found: "
+						+ role);
+			}
 		}
 	}
 }
