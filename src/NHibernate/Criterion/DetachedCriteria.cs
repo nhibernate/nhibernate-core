@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
@@ -62,6 +63,15 @@ namespace NHibernate.Criterion
 		public ICriteria GetExecutableCriteria(ISession session)
 		{
 			impl.Session = session.GetSessionImplementation();
+			return impl;
+		}
+
+		/// <summary>
+		/// Get an executable instance of <c>Criteria</c>,
+		/// to actually run the query.</summary>
+		public ICriteria GetExecutableCriteria(IStatelessSession session)
+		{
+			impl.Session = (ISessionImplementor)session;
 			return impl;
 		}
 
