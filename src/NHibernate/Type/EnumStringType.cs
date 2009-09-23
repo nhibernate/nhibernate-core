@@ -126,7 +126,7 @@ namespace NHibernate.Type
 		public virtual object GetValue(object code)
 		{
 			//code is an enum instance.
-			return code == null ? string.Empty : code.ToString();
+			return code == null ? string.Empty : Enum.Format(ReturnedClass, code, "G");
 		}
 
 		/// <summary>
@@ -144,7 +144,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				par.Value = Enum.Format(ReturnedClass, value, "G");
+				par.Value = GetValue(value);
 			}
 		}
 

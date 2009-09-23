@@ -575,6 +575,9 @@
     <Compile Include="NHSpecificTest\NH1938\Model.cs" />
     <Compile Include="NHSpecificTest\NH1939\AuxType.cs" />
     <Compile Include="NHSpecificTest\NH1939\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1941\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1941\Model.cs" />
+    <Compile Include="NHSpecificTest\NH1941\SexEnumStringType.cs" />
     <Compile Include="NHSpecificTest\NH473\Child.cs" />
     <Compile Include="NHSpecificTest\NH473\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH473\Parent.cs" />
@@ -1986,6 +1989,7 @@
     <EmbeddedResource Include="Bytecode\Lightweight\ProductLine.hbm.xml" />
     <EmbeddedResource Include="DriverTest\MultiTypeEntity.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1941\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1922\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\CriteriaQueryOnComponentCollection\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1908ThreadSafety\Mappings.hbm.xml" />
