@@ -152,7 +152,7 @@ namespace NHibernate.Cfg.MappingSchema {
         public string precision;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="positiveInteger")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType="nonNegativeInteger")]
         public string scale;
         
         /// <remarks/>
@@ -937,7 +937,7 @@ namespace NHibernate.Cfg.MappingSchema {
         public string precision;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="positiveInteger")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType="nonNegativeInteger")]
         public string scale;
         
         /// <remarks/>
@@ -1101,7 +1101,7 @@ namespace NHibernate.Cfg.MappingSchema {
         public string precision;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType="positiveInteger")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType="nonNegativeInteger")]
         public string scale;
         
         /// <remarks/>

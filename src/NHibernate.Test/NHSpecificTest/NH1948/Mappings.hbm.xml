@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.NH1948">
+
+	<class name="Person">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+
+		<property name="Age" type="decimal" precision="2" scale="0" />
+
+		<property name="ShoeSize">
+			<column name="ShoeSizeColumn" precision="2" scale="0"/>
+		</property>
+
+		<bag name="FavouriteNumbers" table="FavNum">
+			<key column="Person" />
+			<element type="decimal" precision="2" scale="0" />
+		</bag>
+
+	</class>
+
+</hibernate-mapping>

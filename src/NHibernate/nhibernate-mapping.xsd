@@ -233,7 +233,7 @@
 			</xs:attribute>
 			<xs:attribute name="length" type="xs:positiveInteger" />
 			<xs:attribute name="precision" type="xs:positiveInteger" />
-			<xs:attribute name="scale" type="xs:positiveInteger" />
+			<xs:attribute name="scale" type="xs:nonNegativeInteger" />
 			<xs:attribute name="not-null" type="xs:boolean">
 			</xs:attribute>
 			<xs:attribute name="unique" type="xs:boolean">
@@ -448,7 +448,7 @@
 			<xs:attribute name="type" type="xs:string" />
 			<xs:attribute name="length" type="xs:positiveInteger" />
 			<xs:attribute name="precision" type="xs:positiveInteger" />
-			<xs:attribute name="scale" type="xs:positiveInteger" />
+			<xs:attribute name="scale" type="xs:nonNegativeInteger" />
 			<xs:attribute name="not-null" default="false" type="xs:boolean">
 			</xs:attribute>
 			<xs:attribute name="unique" default="false" type="xs:boolean">
@@ -1158,7 +1158,7 @@
 			<xs:attribute name="column" type="xs:string" />
 			<xs:attribute name="length" type="xs:positiveInteger" />
 			<xs:attribute name="precision" type="xs:positiveInteger" />
-			<xs:attribute name="scale" type="xs:positiveInteger" />
+			<xs:attribute name="scale" type="xs:nonNegativeInteger" />
 			<xs:attribute name="not-null" type="xs:boolean">
 			</xs:attribute>
 			<xs:attribute name="unique" default="false" type="xs:boolean">
