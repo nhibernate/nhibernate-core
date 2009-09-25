@@ -84,7 +84,7 @@ namespace NHibernate.Test.Linq
                 }
 
                 BuildSessionFactory();
-                CreateSchema();
+                //CreateSchema();
                 if (!AppliesTo(_sessions))
                 {
                     DropSchema();
@@ -92,7 +92,7 @@ namespace NHibernate.Test.Linq
                     Assert.Ignore(GetType() + " does not apply with the current session-factory configuration");
                 }
 
-                OnFixtureSetup();
+                //OnFixtureSetup();
             }
             catch (Exception e)
             {
@@ -115,7 +115,7 @@ namespace NHibernate.Test.Linq
         {
             OnFixtureTeardown();
  
-			DropSchema();
+			//DropSchema();
             Cleanup();
         }
 

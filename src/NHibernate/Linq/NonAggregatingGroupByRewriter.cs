@@ -8,21 +8,19 @@ using Remotion.Data.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq
 {
-    public class NonAggregatingGroupByRewriter : QueryModelVisitorBase
+    public class NonAggregatingGroupByRewriter
     {
-        public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
+        public void ReWrite(QueryModel queryModel)
         {
-            var subQueryExpression = fromClause.FromExpression as SubQueryExpression;
+            var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
 
             if ((subQueryExpression != null) &&
                 (subQueryExpression.QueryModel.ResultOperators.Count() == 1) &&
                 (subQueryExpression.QueryModel.ResultOperators[0] is GroupResultOperator) &&
                 (IsNonAggregatingGroupBy(queryModel)))
             {
-                FlattenSubQuery(subQueryExpression, fromClause, queryModel);
+                FlattenSubQuery(subQueryExpression, queryModel.MainFromClause, queryModel);
             }
-
-            base.VisitMainFromClause(fromClause, queryModel);
         }
 
         private void FlattenSubQuery(SubQueryExpression subQueryExpression, MainFromClause fromClause,
@@ -38,6 +36,11 @@ namespace NHibernate.Linq
             MainFromClause innerMainFromClause = subQueryExpression.QueryModel.MainFromClause;
 
             CopyFromClauseData(innerMainFromClause, fromClause);
+
+            foreach (var bodyClause in subQueryExpression.QueryModel.BodyClauses)
+            {
+                queryModel.BodyClauses.Add(bodyClause);
+            }
 
             // Move the result operator up 
             if (queryModel.ResultOperators.Count != 0)
@@ -58,7 +61,7 @@ namespace NHibernate.Linq
 
         private static bool IsNonAggregatingGroupBy(QueryModel queryModel)
         {
-            return new AggregateDetectionVisitor().Visit(queryModel.SelectClause.Selector) == false;
+            return new GroupByAggregateDetectionVisitor().Visit(queryModel.SelectClause.Selector) == false;
         }
     }
 

@@ -229,6 +229,11 @@ namespace NHibernate.Hql.Ast
             : base(HqlSqlWalker.EQ, "==", factory)
         {
         }
+
+        public HqlEquality(IASTFactory factory, HqlTreeNode lhs, HqlTreeNode rhs)
+            : base(HqlSqlWalker.EQ, "==", factory, lhs, rhs)
+        {
+        }
     }
 
     public class HqlParameter : HqlTreeNode

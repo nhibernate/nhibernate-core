@@ -4,11 +4,11 @@ using Remotion.Data.Linq.Parsing;
 
 namespace NHibernate.Linq
 {
-    internal class GroupBySelectorVisitor : ExpressionTreeVisitor
+    internal class GroupByKeySelectorVisitor : ExpressionTreeVisitor
     {
         private readonly ParameterExpression _parameter;
 
-        public GroupBySelectorVisitor(ParameterExpression parameter)
+        public GroupByKeySelectorVisitor(ParameterExpression parameter)
         {
             _parameter = parameter;
         }

@@ -31,7 +31,7 @@ namespace NHibernate.Linq
             VisitExpression(expression);
         }
 
-        protected override Expression VisitNhAverage(AverageExpression expression)
+        protected override Expression VisitNhAverage(NhAverageExpression expression)
         {
             var visitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
             visitor.Visit(expression.Expression);
@@ -41,14 +41,17 @@ namespace NHibernate.Linq
             return expression;
         }
 
-        protected override Expression VisitNhCount(CountExpression expression)
+        protected override Expression VisitNhCount(NhCountExpression expression)
         {
-            _stack.PushLeaf(_hqlTreeBuilder.Cast(_hqlTreeBuilder.Count(_hqlTreeBuilder.RowStar()), expression.Type));
+            var visitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
+            visitor.Visit(expression.Expression);
+
+            _stack.PushLeaf(_hqlTreeBuilder.Cast(_hqlTreeBuilder.Count(visitor.GetHqlTreeNodes().Single()), expression.Type));
 
             return expression;
         }
 
-        protected override Expression VisitNhMin(MinExpression expression)
+        protected override Expression VisitNhMin(NhMinExpression expression)
         {
             var visitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
             visitor.Visit(expression.Expression);
@@ -58,7 +61,7 @@ namespace NHibernate.Linq
             return expression;
         }
 
-        protected override Expression VisitNhMax(MaxExpression expression)
+        protected override Expression VisitNhMax(NhMaxExpression expression)
         {
             var visitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
             visitor.Visit(expression.Expression);
@@ -68,7 +71,7 @@ namespace NHibernate.Linq
             return expression;
         }
 
-        protected override Expression VisitNhSum(SumExpression expression)
+        protected override Expression VisitNhSum(NhSumExpression expression)
         {
             var visitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
             visitor.Visit(expression.Expression);
@@ -78,7 +81,7 @@ namespace NHibernate.Linq
             return expression;
         }
 
-        protected override Expression VisitNhDistinct(DistinctExpression expression)
+        protected override Expression VisitNhDistinct(NhDistinctExpression expression)
         {
             var visitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
             visitor.Visit(expression.Expression);

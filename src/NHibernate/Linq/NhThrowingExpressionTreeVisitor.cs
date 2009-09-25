@@ -1,4 +1,3 @@
-using System;
 using System.Linq.Expressions;
 using Remotion.Data.Linq.Parsing;
 
@@ -11,91 +10,106 @@ namespace NHibernate.Linq
             switch ((NhExpressionType)expression.NodeType)
             {
                 case NhExpressionType.Average:
-                    return VisitNhAverage((AverageExpression)expression);
+                    return VisitNhAverage((NhAverageExpression)expression);
                 case NhExpressionType.Min:
-                    return VisitNhMin((MinExpression)expression);
+                    return VisitNhMin((NhMinExpression)expression);
                 case NhExpressionType.Max:
-                    return VisitNhMax((MaxExpression)expression);
+                    return VisitNhMax((NhMaxExpression)expression);
                 case NhExpressionType.Sum:
-                    return VisitNhSum((SumExpression)expression);
+                    return VisitNhSum((NhSumExpression)expression);
                 case NhExpressionType.Count:
-                    return VisitNhCount((CountExpression)expression);
+                    return VisitNhCount((NhCountExpression)expression);
                 case NhExpressionType.Distinct:
-                    return VisitNhDistinct((DistinctExpression) expression);
+                    return VisitNhDistinct((NhDistinctExpression) expression);
+                case NhExpressionType.New:
+                    return VisitNhNew((NhNewExpression) expression);
             }
 
             return base.VisitExpression(expression);
         }
 
-        protected virtual Expression VisitNhDistinct(DistinctExpression expression)
+        protected virtual Expression VisitNhNew(NhNewExpression expression)
         {
-            return VisitUnhandledItem<DistinctExpression, Expression>(expression, "VisitNhDistinct", BaseVisitNhDistinct);
+            return VisitUnhandledItem<NhNewExpression, Expression>(expression, "VisitNhNew", BaseVisitNhNew);
         }
 
-        protected virtual Expression VisitNhAverage(AverageExpression expression)
+        protected virtual Expression VisitNhDistinct(NhDistinctExpression expression)
         {
-            return VisitUnhandledItem<AverageExpression, Expression>(expression, "VisitNhAverage", BaseVisitNhAverage);
+            return VisitUnhandledItem<NhDistinctExpression, Expression>(expression, "VisitNhDistinct", BaseVisitNhDistinct);
         }
 
-        protected virtual Expression VisitNhMin(MinExpression expression)
+        protected virtual Expression VisitNhAverage(NhAverageExpression expression)
         {
-            return VisitUnhandledItem<MinExpression, Expression>(expression, "VisitNhMin", BaseVisitNhMin);
+            return VisitUnhandledItem<NhAverageExpression, Expression>(expression, "VisitNhAverage", BaseVisitNhAverage);
         }
 
-        protected virtual Expression VisitNhMax(MaxExpression expression)
+        protected virtual Expression VisitNhMin(NhMinExpression expression)
         {
-            return VisitUnhandledItem<MaxExpression, Expression>(expression, "VisitNhMax", BaseVisitNhMax);
+            return VisitUnhandledItem<NhMinExpression, Expression>(expression, "VisitNhMin", BaseVisitNhMin);
         }
 
-        protected virtual Expression VisitNhSum(SumExpression expression)
+        protected virtual Expression VisitNhMax(NhMaxExpression expression)
         {
-            return VisitUnhandledItem<SumExpression, Expression>(expression, "VisitNhSum", BaseVisitNhSum);
+            return VisitUnhandledItem<NhMaxExpression, Expression>(expression, "VisitNhMax", BaseVisitNhMax);
         }
 
-        protected virtual Expression VisitNhCount(CountExpression expression)
+        protected virtual Expression VisitNhSum(NhSumExpression expression)
         {
-            return VisitUnhandledItem<CountExpression, Expression>(expression, "VisitNhCount", BaseVisitNhCount);
+            return VisitUnhandledItem<NhSumExpression, Expression>(expression, "VisitNhSum", BaseVisitNhSum);
         }
 
-        protected virtual Expression BaseVisitNhCount(CountExpression expression)
+        protected virtual Expression VisitNhCount(NhCountExpression expression)
         {
-            return expression;
+            return VisitUnhandledItem<NhCountExpression, Expression>(expression, "VisitNhCount", BaseVisitNhCount);
         }
 
-        protected virtual Expression BaseVisitNhSum(SumExpression expression)
-        {
-            Expression nx = base.VisitExpression(expression.Expression);
-
-            return nx != expression.Expression ? new SumExpression(nx) : expression;
-        }
-
-        protected virtual Expression BaseVisitNhMax(MaxExpression expression)
+        protected virtual Expression BaseVisitNhCount(NhCountExpression expression)
         {
             Expression nx = base.VisitExpression(expression.Expression);
 
-            return nx != expression.Expression ? new MaxExpression(nx) : expression;
+            return nx != expression.Expression ? new NhCountExpression(nx) : expression;
         }
 
-        protected virtual Expression BaseVisitNhMin(MinExpression expression)
+        protected virtual Expression BaseVisitNhSum(NhSumExpression expression)
         {
             Expression nx = base.VisitExpression(expression.Expression);
 
-            return nx != expression.Expression ? new MinExpression(nx) : expression;
+            return nx != expression.Expression ? new NhSumExpression(nx) : expression;
         }
 
-        protected virtual Expression BaseVisitNhAverage(AverageExpression expression)
+        protected virtual Expression BaseVisitNhMax(NhMaxExpression expression)
         {
             Expression nx = base.VisitExpression(expression.Expression);
 
-            return nx != expression.Expression ? new AverageExpression(nx) : expression;
+            return nx != expression.Expression ? new NhMaxExpression(nx) : expression;
         }
 
-        private Expression BaseVisitNhDistinct(DistinctExpression expression)
+        protected virtual Expression BaseVisitNhMin(NhMinExpression expression)
         {
             Expression nx = base.VisitExpression(expression.Expression);
 
-            return nx != expression.Expression ? new DistinctExpression(nx) : expression;
+            return nx != expression.Expression ? new NhMinExpression(nx) : expression;
         }
 
+        protected virtual Expression BaseVisitNhAverage(NhAverageExpression expression)
+        {
+            Expression nx = base.VisitExpression(expression.Expression);
+
+            return nx != expression.Expression ? new NhAverageExpression(nx) : expression;
+        }
+
+        protected Expression BaseVisitNhDistinct(NhDistinctExpression expression)
+        {
+            Expression nx = base.VisitExpression(expression.Expression);
+
+            return nx != expression.Expression ? new NhDistinctExpression(nx) : expression;
+        }
+
+        protected Expression BaseVisitNhNew(NhNewExpression expression)
+        {
+            var arguments = base.VisitExpressionList(expression.Arguments);
+
+            return arguments != expression.Arguments ? new NhNewExpression(expression.Members, arguments) : expression;
+        }
     }
 }

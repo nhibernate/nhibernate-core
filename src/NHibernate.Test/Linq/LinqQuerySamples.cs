@@ -802,7 +802,7 @@ namespace NHibernate.Test.Linq
                     select new
                                {
                                    g.Key,
-                                   AveragePrice = g.Average(p => p.UnitPrice)
+                                   AveragePrice = g.Average(p2 => p2.UnitPrice)
                                };
 
             ObjectDumper.Write(q, 1);
@@ -1274,8 +1274,7 @@ namespace NHibernate.Test.Linq
         }
 
         [Category("JOIN")]
-        [Test(Description = "This sample shows how to construct a join where one side is nullable and the other isn't.")
-        ]
+        [Test(Description = "This sample shows how to construct a join where one side is nullable and the other isn't.")]
         [Ignore("TODO")]
         public void DLinqJoin10()
         {
@@ -1323,12 +1322,7 @@ namespace NHibernate.Test.Linq
         [Test(Description = "This sample uses foreign key navigation in the " +
                             "from clause to select all orders for customers.")]
         public void DLinqJoin1c()
-        {/*
-            using (ISession session = OpenSession())
-            {
-                var x = session.CreateQuery("select o.OrderDate from Customer c join c.Orders o").List();
-            }
-            */
+        {
             IQueryable<Order> q =
                 from c in db.Customers
                 from o in c.Orders
@@ -1427,21 +1421,44 @@ namespace NHibernate.Test.Linq
         }
 
         [Category("JOIN")]
-        [Test(Description = "This sample explictly joins two tables and projects results from both tables.")]
-        [Ignore("TODO")]
+        [Test(Description = "This sample explictly joins two tables and projects results from both tables using a group join.")]
         public void DLinqJoin5()
         {
             var q =
-                from c in db.Customers
+                from c in db.Customers 
                 join o in db.Orders on c.CustomerId equals o.Customer.CustomerId into orders
-                select new {c.ContactName, OrderCount = orders.Count()};
+                select new {c.ContactName, OrderCount = orders.Average(x => x.Freight)};
+
+            ObjectDumper.Write(q);
+        }
+
+        [Category("JOIN")]
+        [Test(Description = "This sample explictly joins two tables and projects results from both tables.")]
+        public void DLinqJoin5a()
+        {
+            var q =
+                from c in db.Customers
+                join o in db.Orders on c.CustomerId equals o.Customer.CustomerId
+                select new { c.ContactName, o.OrderId };
+
+            ObjectDumper.Write(q);
+        }
+
+        [Category("JOIN")]
+        [Test(Description = "This sample explictly joins two tables and projects results from both tables using a group join.")]
+        public void DLinqJoin5b()
+        {
+            var q = from c in db.Customers
+                    join o in db.Orders on c.CustomerId equals o.Customer.CustomerId
+                    group new { c, o } by c.ContactName
+                        into g
+                        select new { ContactName = g.Key, OrderCount = g.Average(i => i.o.Freight) };
 
             ObjectDumper.Write(q);
         }
 
         [Category("JOIN")]
         [Test(Description = "This sample explictly joins three tables and projects results from each of them.")]
-        [Ignore("TODO")]
         public void DLinqJoin6()
         {
             var q =

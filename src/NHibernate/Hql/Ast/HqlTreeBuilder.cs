@@ -100,6 +100,11 @@ namespace NHibernate.Hql.Ast
             return new HqlEquality(_factory);
         }
 
+        public HqlEquality Equality(HqlTreeNode lhs, HqlTreeNode rhs)
+        {
+            return new HqlEquality(_factory, lhs, rhs);
+        }
+
         public HqlBooleanAnd BooleanAnd()
         {
             return new HqlBooleanAnd(_factory);

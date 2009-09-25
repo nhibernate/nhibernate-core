@@ -7,44 +7,55 @@ using Remotion.Data.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq
 {
-    public class AggregatingGroupByRewriter : QueryModelVisitorBase
+    public class AggregatingGroupByRewriter
     {
-        public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
+        public void ReWrite(QueryModel queryModel)
         {
-            var subQueryExpression = fromClause.FromExpression as SubQueryExpression;
+            var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
 
             if ((subQueryExpression != null) &&
                 (subQueryExpression.QueryModel.ResultOperators.Count() == 1) &&
                 (subQueryExpression.QueryModel.ResultOperators[0] is GroupResultOperator) &&
                 (IsAggregatingGroupBy(queryModel)))
             {
-                FlattenSubQuery(subQueryExpression, fromClause, queryModel);
+                FlattenSubQuery(subQueryExpression, queryModel.MainFromClause, queryModel);
             }
-
-            base.VisitMainFromClause(fromClause, queryModel);
         }
 
         private static bool IsAggregatingGroupBy(QueryModel queryModel)
         {
-            return new AggregateDetectionVisitor().Visit(queryModel.SelectClause.Selector);
+            return new GroupByAggregateDetectionVisitor().Visit(queryModel.SelectClause.Selector);
         }
 
         private void FlattenSubQuery(SubQueryExpression subQueryExpression, FromClauseBase fromClause,
                                      QueryModel queryModel)
         {
-            // Replace the outer select clause...
-            queryModel.SelectClause.TransformExpressions(GroupBySelectClauseVisitor.Visit);
-
-            MainFromClause innerMainFromClause = subQueryExpression.QueryModel.MainFromClause;
-            CopyFromClauseData(innerMainFromClause, fromClause);
-
             // Move the result operator up 
             if (queryModel.ResultOperators.Count != 0)
             {
                 throw new NotImplementedException();
             }
 
-            queryModel.ResultOperators.Add(subQueryExpression.QueryModel.ResultOperators[0]);
+            var groupBy = (GroupResultOperator) subQueryExpression.QueryModel.ResultOperators[0];
+
+            // Replace the outer select clause...
+            queryModel.SelectClause.TransformExpressions(s => GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryExpression.QueryModel));
+
+            queryModel.SelectClause.TransformExpressions(
+                s =>
+                new SwapQuerySourceVisitor(queryModel.MainFromClause, subQueryExpression.QueryModel.MainFromClause).Swap
+                    (s));
+
+
+            MainFromClause innerMainFromClause = subQueryExpression.QueryModel.MainFromClause;
+            CopyFromClauseData(innerMainFromClause, fromClause);
+
+            foreach (var bodyClause in subQueryExpression.QueryModel.BodyClauses)
+            {
+                queryModel.BodyClauses.Add(bodyClause);
+            }
+
+            queryModel.ResultOperators.Add(groupBy);
         }
 
         protected void CopyFromClauseData(FromClauseBase source, FromClauseBase destination)
