@@ -23,6 +23,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		public virtual bool					HasCar		{ get; set; }
 		public virtual Person				Father		{ get; set; }
 		public virtual bool					IsParent	{ get; set; }
+		public virtual char					Blood		{ get; set; }
 
 		public virtual IEnumerable<Child>	Children	{ get; set; }
 		public virtual IList<Person>		PersonList	{ get; set; }

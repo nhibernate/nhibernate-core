@@ -67,6 +67,22 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void SimpleCriterion_Char()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.Add(Restrictions.Eq("Blood", 'A'))
+					.Add(Restrictions.Not(Restrictions.Eq("Blood", 'B')));
+
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>()
+					.And(p => p.Blood == 'A')
+					.And(p => p.Blood != 'B');
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
 		public void MultipleCriterionExpression()
 		{
 			ICriteria expected =

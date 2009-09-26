@@ -9,6 +9,7 @@
 		</id>
 		<property name="Name" />
 		<property name="Age" />
+		<property name="Blood" />
 	</class>
 
 	<class name="Child">
