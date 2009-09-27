@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+					 namespace="NHibernate.Test.NHSpecificTest.NH1959"
+					 assembly="NHibernate.Test">
+
+	<class name="ClassA">
+		<id name="Id">
+			<generator class="guid.comb"/>
+		</id>
+		<idbag name="TheBag">
+			<collection-id column="collection_id" type="guid">
+				<generator class="guid.comb"/>
+			</collection-id>
+			<key>
+				<column name="classA"	not-null="true" />
+			</key>
+			<many-to-many class="ClassB">
+				<column name="classB"	not-null="true" />
+			</many-to-many>
+		</idbag>
+	</class>
+
+	<class name="ClassB">
+		<id name="Id">
+			<generator class="guid.comb"/>
+		</id>
+	</class>
+
+</hibernate-mapping>

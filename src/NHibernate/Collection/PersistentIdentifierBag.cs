@@ -290,6 +290,9 @@ namespace NHibernate.Collection
 
 		protected void BeforeRemove(int index)
 		{
+			if (!identifiers.ContainsKey(index))
+				return; // index not previously persisted, nothing to do
+
 			// Move the identifier being removed to the end of the list (i.e. it isn't actually removed).
 			object removedId = identifiers[index];
 			int last = values.Count - 1;
