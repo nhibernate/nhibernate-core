@@ -13,6 +13,16 @@ namespace NHibernate.Test.Linq
         private Northwind _northwind;
         private ISession _session;
 
+        protected override bool PerformDbDataSetup
+        {
+            get { return true; }
+        }
+
+        protected override bool PerformDbDataTeardown
+        {
+            get { return true; }
+        }
+
         protected override string MappingsAssembly
         {
             get { return "NHibernate.Test"; }

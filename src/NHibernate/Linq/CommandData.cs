@@ -8,8 +8,10 @@ namespace NHibernate.Linq
 {
     public class CommandData
     {
+        private readonly NamedParameter[] _namedParameters;
         private readonly List<LambdaExpression> _itemTransformers;
         private readonly List<LambdaExpression> _listTransformers;
+        private readonly List<Action<IQuery>> _additionalCriteria;
 
         public CommandData(HqlQuery statement, NamedParameter[] namedParameters, List<LambdaExpression> itemTransformers, List<LambdaExpression> listTransformers, List<Action<IQuery>> additionalCriteria)
         {
@@ -17,47 +19,29 @@ namespace NHibernate.Linq
             _listTransformers = listTransformers;
 
             Statement = statement;
-            NamedParameters = namedParameters;
-            AdditionalCriteria = additionalCriteria;
+            _namedParameters = namedParameters;
+            _additionalCriteria = additionalCriteria;
         }
 
         public HqlQuery Statement { get; private set; }
-        public NamedParameter[] NamedParameters { get; private set; }
 
-        public List<Action<IQuery>> AdditionalCriteria { get; set; }
-
-        public System.Type QueryResultType { get; set; }
-
-        public IQuery CreateQuery(ISession session, System.Type type)
+        public void SetParameters(IQuery query)
         {
-            var query = session.CreateQuery(new HqlExpression(Statement, type));
-
-            SetParameters(query);
-
-            SetResultTransformer(query);
-
-            AddAdditionalCriteria(query);
-
-            return query;
-        }
-
-        private void SetParameters(IQuery query)
-        {
-            foreach (var parameter in NamedParameters)
+            foreach (var parameter in _namedParameters)
             {
                 query.SetParameter(parameter.Name, parameter.Value);
             }
         }
 
-        private void AddAdditionalCriteria(IQuery query)
+        public void AddAdditionalCriteria(IQuery query)
         {
-            foreach (var criteria in AdditionalCriteria)
+            foreach (var criteria in _additionalCriteria)
             {
                 criteria(query);
             }
         }
 
-        private void SetResultTransformer(IQuery query)
+        public void SetResultTransformer(IQuery query)
         {
             var itemTransformer = MergeLambdas(_itemTransformers);
             var listTransformer = MergeLambdas(_listTransformers);

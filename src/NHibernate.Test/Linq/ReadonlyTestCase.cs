@@ -63,6 +63,9 @@ namespace NHibernate.Test.Linq
             get { return "NHibernate.DomainModel"; }
         }
 
+        protected abstract bool PerformDbDataSetup { get; }
+        protected abstract bool PerformDbDataTeardown { get; }
+
         static ReadonlyTestCase()
         {
             // Configure log4net here since configuration through an attribute doesn't always work.
@@ -84,7 +87,12 @@ namespace NHibernate.Test.Linq
                 }
 
                 BuildSessionFactory();
-                CreateSchema();
+
+                if (PerformDbDataSetup)
+                {
+                    CreateSchema();
+                }
+
                 if (!AppliesTo(_sessions))
                 {
                     DropSchema();
@@ -92,7 +100,10 @@ namespace NHibernate.Test.Linq
                     Assert.Ignore(GetType() + " does not apply with the current session-factory configuration");
                 }
 
-                OnFixtureSetup();
+                if (PerformDbDataSetup)
+                {
+                    OnFixtureSetup();
+                }
             }
             catch (Exception e)
             {
@@ -114,8 +125,12 @@ namespace NHibernate.Test.Linq
         public void TestFixtureTearDown()
         {
             OnFixtureTeardown();
- 
-			DropSchema();
+
+            if (PerformDbDataTeardown)
+            {
+                DropSchema();
+            }
+
             Cleanup();
         }
 

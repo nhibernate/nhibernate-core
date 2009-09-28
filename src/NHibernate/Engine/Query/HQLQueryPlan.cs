@@ -28,8 +28,9 @@ namespace NHibernate.Engine.Query
 
 		private readonly HashedSet<string> enabledFilterNames;
 		private readonly bool shallow;
+	    private IQueryExpression sourceQueryExpression;
 
-		public HQLQueryPlan(string hql, bool shallow, 
+	    public HQLQueryPlan(string hql, bool shallow, 
 			IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
 			: this(hql, (string) null, shallow, enabledFilters, factory)
 		{
@@ -110,6 +111,7 @@ namespace NHibernate.Engine.Query
         protected internal HQLQueryPlan(string expressionStr, IQueryExpression queryExpression, string collectionRole, bool shallow,
                                     IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
         {
+            sourceQueryExpression = queryExpression;
             sourceQuery = expressionStr;
             this.shallow = shallow;
 
@@ -192,7 +194,12 @@ namespace NHibernate.Engine.Query
 			}
 		}
 
-		private static ParameterMetadata BuildParameterMetadata(IParameterTranslations parameterTranslations, string hql)
+	    public IQueryExpression QueryExpression
+	    {
+            get { return sourceQueryExpression; }
+	    }
+
+	    private static ParameterMetadata BuildParameterMetadata(IParameterTranslations parameterTranslations, string hql)
 		{
 			long start = DateTime.Now.Ticks;
 			ParamLocationRecognizer recognizer = ParamLocationRecognizer.ParseLocations(hql);

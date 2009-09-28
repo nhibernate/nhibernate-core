@@ -557,7 +557,6 @@
     <Compile Include="Hql\Ast\ANTLR\Tree\ASTErrorNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\InsertStatement.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\UpdateStatement.cs" />
-    <Compile Include="Hql\Ast\HqlExpression.cs" />
     <Compile Include="Hql\Ast\HqlTreeBuilder.cs" />
     <Compile Include="Hql\Ast\HqlTreeNode.cs" />
     <Compile Include="IQueryExpression.cs" />
@@ -581,7 +580,6 @@
     <Compile Include="Linq\NhExpressionTreeVisitor.cs" />
     <Compile Include="Linq\NhNewExpression.cs" />
     <Compile Include="Linq\NhQueryable.cs" />
-    <Compile Include="Linq\NhQueryExecutor.cs" />
     <Compile Include="Linq\NhThrowingExpressionTreeVisitor.cs" />
     <Compile Include="Linq\Nominator.cs" />
     <Compile Include="Linq\NonAggregatingGroupBy.cs" />

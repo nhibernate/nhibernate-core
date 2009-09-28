@@ -86,6 +86,7 @@ namespace NHibernate.Engine.Query
                     log.Debug("unable to locate HQL query plan in cache; generating (" + expressionStr + ")");
                 }
                 plan = new HQLQueryPlan(expressionStr, queryExpression, shallow, enabledFilters, factory);
+                planCache.Put(key, plan);
             }
             else
             {
@@ -94,8 +95,6 @@ namespace NHibernate.Engine.Query
                     log.Debug("located HQL query plan in cache (" + expressionStr + ")");
                 }
             }
-
-            planCache.Put(key, plan);
 
             return plan;
         }

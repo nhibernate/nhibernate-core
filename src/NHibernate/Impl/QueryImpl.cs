@@ -74,6 +74,7 @@ namespace NHibernate.Impl
                 }
                 else
                 {
+                    _queryExpression.SetQueryParametersPriorToExecute(this);
                     return Session.List(_queryExpression, GetQueryParameters(namedParams));
                 }
 			}
