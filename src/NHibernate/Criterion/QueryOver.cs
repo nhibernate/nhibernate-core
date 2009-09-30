@@ -128,6 +128,16 @@ namespace NHibernate.Criterion
 			return new QueryOverFetchBuilder<T>(this, path);
 		}
 
+		public QueryOverLockBuilder<T> Lock()
+		{
+			return new QueryOverLockBuilder<T>(this, null);
+		}
+
+		public QueryOverLockBuilder<T> Lock(Expression<Func<object>> alias)
+		{
+			return new QueryOverLockBuilder<T>(this, alias);
+		}
+
 		public QueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path)
 		{
 			return new QueryOver<U>(_impl,
@@ -313,6 +323,12 @@ namespace NHibernate.Criterion
 
 		IQueryOverFetchBuilder<T> IQueryOver<T>.Fetch(Expression<Func<T, object>> path)
 		{ return new IQueryOverFetchBuilder<T>(this, path); }
+
+		IQueryOverLockBuilder<T> IQueryOver<T>.Lock()
+		{ return new IQueryOverLockBuilder<T>(this, null); }
+
+		IQueryOverLockBuilder<T> IQueryOver<T>.Lock(Expression<Func<object>> alias)
+		{ return new IQueryOverLockBuilder<T>(this, alias); }
 
 		IQueryOver<U> IQueryOver<T>.JoinQueryOver<U>(Expression<Func<T, U>> path)
 		{ return JoinQueryOver(path); }

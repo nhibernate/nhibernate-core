@@ -347,6 +347,35 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertCriteriaAreEqual(expected, actual);
 		}
 
+		[Test]
+		public void LockAll()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.SetLockMode(LockMode.UpgradeNoWait);
+
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>()
+					.Lock().UpgradeNoWait;
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void LockAlias()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person), "personAlias")
+					.SetLockMode("personAlias", LockMode.UpgradeNoWait);
+
+			Person personAlias = null;
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>(() => personAlias)
+					.Lock(() => personAlias).UpgradeNoWait;
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
 	}
 
 }

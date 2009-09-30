@@ -130,6 +130,16 @@ namespace NHibernate
 		IQueryOverFetchBuilder<T> Fetch(Expression<Func<T, object>> path);
 
 		/// <summary>
+		/// Set the lock mode of the current entity
+		/// </summary>
+		IQueryOverLockBuilder<T> Lock();
+
+		/// <summary>
+		/// Set the lock mode of the aliased entity
+		/// </summary>
+		IQueryOverLockBuilder<T> Lock(Expression<Func<object>> alias);
+
+		/// <summary>
 		/// Creates a new NHibernate.ICriteria&lt;T&gt;, "rooted" at the associated entity
 		/// </summary>
 		/// <typeparam name="U">Type of sub-criteria</typeparam>
