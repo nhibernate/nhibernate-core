@@ -44,6 +44,11 @@ namespace NHibernate
 		IQueryOver<T> And(Expression<Func<bool>> expression);
 
 		/// <summary>
+		/// Add arbitrary ICriterion (e.g., to allow protected member access)
+		/// </summary>
+		IQueryOver<T> And(ICriterion expression);
+
+		/// <summary>
 		/// Identical semantics to Add() to allow more readable queries
 		/// </summary>
 		/// <param name="expression">Lambda expression</param>
@@ -56,6 +61,11 @@ namespace NHibernate
 		/// <param name="expression">Lambda expression</param>
 		/// <returns>criteria instance</returns>
 		IQueryOver<T> Where(Expression<Func<bool>> expression);
+
+		/// <summary>
+		/// Add arbitrary ICriterion (e.g., to allow protected member access)
+		/// </summary>
+		IQueryOver<T> Where(ICriterion expression);
 
 		/// <summary>
 		/// Add projection expressed as a lambda expression

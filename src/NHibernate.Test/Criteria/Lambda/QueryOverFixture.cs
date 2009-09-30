@@ -118,6 +118,22 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void PrivateProperties()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.Add(Restrictions.Eq("Name", "test name"))
+					.Add(Restrictions.Not(Restrictions.Eq("Name", "not test name")));
+
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>()
+					.Where(Restrictions.Eq("Name", "test name"))
+					.And(Restrictions.Not(Restrictions.Eq("Name", "not test name")));
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
 		public void SimpleCriterion_AliasReferenceSyntax()
 		{
 			ICriteria expected = 

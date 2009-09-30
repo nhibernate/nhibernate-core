@@ -52,12 +52,22 @@ namespace NHibernate.Criterion
 			return Add(expression);
 		}
 
+		public QueryOver<T> And(ICriterion expression)
+		{
+			return Add(expression);
+		}
+
 		public QueryOver<T> Where(Expression<Func<T, bool>> expression)
 		{
 			return Add(expression);
 		}
 
 		public QueryOver<T> Where(Expression<Func<bool>> expression)
+		{
+			return Add(expression);
+		}
+
+		public QueryOver<T> Where(ICriterion expression)
 		{
 			return Add(expression);
 		}
@@ -275,6 +285,12 @@ namespace NHibernate.Criterion
 			return this;
 		}
 
+		private QueryOver<T> Add(ICriterion expression)
+		{
+			_criteria.Add(expression);
+			return this;
+		}
+
 
 		ICriteria IQueryOver<T>.UnderlyingCriteria
 		{ get { return UnderlyingCriteria; } }
@@ -285,10 +301,16 @@ namespace NHibernate.Criterion
 		IQueryOver<T> IQueryOver<T>.And(Expression<Func<bool>> expression)
 		{ return And(expression); }
 
+		IQueryOver<T> IQueryOver<T>.And(ICriterion expression)
+		{ return And(expression); }
+
 		IQueryOver<T> IQueryOver<T>.Where(Expression<Func<T, bool>> expression)
 		{ return Where(expression); }
 
 		IQueryOver<T> IQueryOver<T>.Where(Expression<Func<bool>> expression)
+		{ return Where(expression); }
+
+		IQueryOver<T> IQueryOver<T>.Where(ICriterion expression)
 		{ return Where(expression); }
 
 		IQueryOver<T> IQueryOver<T>.Select(params Expression<Func<T, object>>[] projections)
