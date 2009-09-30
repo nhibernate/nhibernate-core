@@ -258,6 +258,36 @@ namespace NHibernate.Criterion
 			return _criteria.List<U>();
 		}
 
+		public T UniqueResult()
+		{
+			return _criteria.UniqueResult<T>();
+		}
+
+		public U UniqueResult<U>()
+		{
+			return _criteria.UniqueResult<U>();
+		}
+
+		IEnumerable<T> Future()
+		{
+			return _criteria.Future<T>();
+		}
+
+		IEnumerable<U> Future<U>()
+		{
+			return _criteria.Future<U>();
+		}
+
+		IFutureValue<T> FutureValue()
+		{
+			return _criteria.FutureValue<T>();
+		}
+
+		IFutureValue<U> FutureValue<U>()
+		{
+			return _criteria.FutureValue<U>();
+		}
+
 		/// <summary>
 		/// Get an executable instance of <c>IQueryOver&lt;T&gt;</c>,
 		/// to actually run the query.</summary>
@@ -399,6 +429,24 @@ namespace NHibernate.Criterion
 
 		IList<U> IQueryOver<T>.List<U>()
 		{ return List<U>(); }
+
+		T IQueryOver<T>.UniqueResult()
+		{ return UniqueResult(); }
+
+		U IQueryOver<T>.UniqueResult<U>()
+		{ return UniqueResult<U>(); }
+
+		IEnumerable<T> IQueryOver<T>.Future()
+		{ return Future(); }
+
+		IEnumerable<U> IQueryOver<T>.Future<U>()
+		{ return Future<U>(); }
+
+		IFutureValue<T> IQueryOver<T>.FutureValue()
+		{ return FutureValue(); }
+
+		IFutureValue<U> IQueryOver<T>.FutureValue<U>()
+		{ return FutureValue<U>(); }
 
 	}
 

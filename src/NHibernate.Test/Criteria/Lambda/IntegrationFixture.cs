@@ -145,6 +145,36 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
+		[Test]
+		public void UniqueResult()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new Person() { Name = "test person 1", Age = 20 });
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				Person actual =
+					s.QueryOver<Person>()
+						.UniqueResult();
+
+				Assert.That(actual.Name, Is.EqualTo("test person 1"));
+			}
+
+			using (ISession s = OpenSession())
+			{
+				string actual =
+					s.QueryOver<Person>()
+						.Select(p => p.Name)
+						.UniqueResult<string>();
+
+				Assert.That(actual, Is.EqualTo("test person 1"));
+			}
+		}
+
 	}
 
 }

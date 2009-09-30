@@ -259,6 +259,49 @@ namespace NHibernate
 		/// <returns>The list filled with the results.</returns>
 		IList<U> List<U>();
 
+		/// <summary>
+		/// Convenience method to return a single instance that matches
+		/// the query, or null if the query returns no results.
+		/// </summary>
+		/// <returns>the single result or <see langword="null" /></returns>
+		/// <exception cref="HibernateException">
+		/// If there is more than one matching result
+		/// </exception>
+		T UniqueResult();
+
+		/// <summary>
+		/// Override type of <see cref="UniqueResult()" />.
+		/// </summary>
+		U UniqueResult<U>();
+
+		/// <summary>
+		/// Get a enumerable that when enumerated will execute
+		/// a batch of queries in a single database roundtrip
+		/// </summary>
+		IEnumerable<T> Future();
+
+		/// <summary>
+		/// Get a enumerable that when enumerated will execute
+		/// a batch of queries in a single database roundtrip
+		/// </summary>
+		IEnumerable<U> Future<U>();
+
+		/// <summary>
+		/// Get an IFutureValue instance, whose value can be retrieved through
+		/// its Value property. The query is not executed until the Value property
+		/// is retrieved, which will execute other Future queries as well in a
+		/// single roundtrip
+		/// </summary>
+		IFutureValue<T> FutureValue();
+
+		/// <summary>
+		/// Get an IFutureValue instance, whose value can be retrieved through
+		/// its Value property. The query is not executed until the Value property
+		/// is retrieved, which will execute other Future queries as well in a
+		/// single roundtrip
+		/// </summary>
+		IFutureValue<U> FutureValue<U>();
+
 	}
 
 }

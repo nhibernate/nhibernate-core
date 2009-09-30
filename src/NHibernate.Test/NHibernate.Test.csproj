@@ -390,6 +390,7 @@
     <Compile Include="NHSpecificTest\ElementsEnums\IntEnumsBagPartialNameFixture.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\IntEnumsBagFixture.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\Something.cs" />
+    <Compile Include="NHSpecificTest\Futures\FutureQueryOverFixture.cs" />
     <Compile Include="NHSpecificTest\NH1922\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1922\Model.cs" />
     <Compile Include="NHSpecificTest\NH1927\Fixture.cs" />
