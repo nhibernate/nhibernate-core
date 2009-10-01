@@ -122,11 +122,13 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
+					.SetProjection(Projections.Property("Name"))
 					.Add(Restrictions.Eq("Name", "test name"))
 					.Add(Restrictions.Not(Restrictions.Eq("Name", "not test name")));
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
+					.Select(Projections.Property("Name"))
 					.Where(Restrictions.Eq("Name", "test name"))
 					.And(Restrictions.Not(Restrictions.Eq("Name", "not test name")));
 

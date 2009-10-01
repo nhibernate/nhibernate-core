@@ -75,6 +75,11 @@ namespace NHibernate
 		IQueryOver<T> Select(params Expression<Func<T, object>>[] projections);
 
 		/// <summary>
+		/// Add arbitrary IProjections to query
+		/// </summary>
+		IQueryOver<T> Select(params IProjection[] projections);
+
+		/// <summary>
 		/// Add order expressed as a lambda expression
 		/// </summary>
 		/// <param name="path">Lambda expression</param>
