@@ -679,6 +679,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 			dot.Resolve( true, false, alias == null ? null : alias.Text );
 
 			FromElement fromElement = dot.GetImpliedJoin();
+
+			if (fromElement == null)
+			{
+				throw new InvalidPathException("Invalid join: " + dot.Path);
+			}
+
 			fromElement.SetAllPropertyFetch(propertyFetch!=null);
 
 			if ( with != null )
