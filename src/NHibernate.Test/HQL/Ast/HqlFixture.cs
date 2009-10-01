@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using NHibernate.Engine.Query;
+using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Util;
 using NUnit.Framework;
 
@@ -129,6 +130,21 @@ namespace NHibernate.Test.HQL.Ast
 				s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = 123L")).List();
 				s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = 123")).List();
 				s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = {0}", int.MaxValue + 1L)).List();
+			}
+		}
+
+		[Test]
+		public void InvalidJoinOnProperty()
+		{
+			// NH-1915
+			using (ISession s = OpenSession())
+			{
+				Assert.Throws<InvalidPathException>(
+					() =>
+					{
+						s.CreateQuery("from Zoo z inner join fetch z.classification").List();
+					},
+					"Incorrect path not caught during parsing");
 			}
 		}
 	}
