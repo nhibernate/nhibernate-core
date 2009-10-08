@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	namespace="NHibernate.Test.DriverTest"
+	assembly="NHibernate.Test">
+
+	<class name="SqlServerCeEntity">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+
+		<property name="StringProp"/>  <!-- maps to NVARCHAR(255)   -->
+		<property name="BinaryProp"/>  <!-- maps to VARBINARY(8000) -->
+
+		<property name="StringClob" type="StringClob">
+			<column name="StringClob" sql-type="ntext"/>
+		</property>
+
+		<property name="BinaryBlob" type="BinaryBlob">
+			<column name="BinaryBlob" sql-type="image"/>
+		</property>
+
+	</class>
+</hibernate-mapping>

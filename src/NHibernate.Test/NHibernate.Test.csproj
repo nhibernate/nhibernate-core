@@ -160,6 +160,7 @@
     <Compile Include="Criteria\ProjectionsTest.cs" />
     <Compile Include="Criteria\Reptile.cs" />
     <Compile Include="DriverTest\SqlClientDriverFixture.cs" />
+    <Compile Include="DriverTest\SqlServerCeDriverFixture.cs" />
     <Compile Include="ExpressionTest\RestrictionsFixture.cs" />
     <Compile Include="Criteria\Student.cs" />
     <Compile Include="Criteria\StudentDTO.cs" />
@@ -2029,6 +2030,7 @@
     <EmbeddedResource Include="DriverTest\MultiTypeEntity.hbm.xml" />
     <EmbeddedResource Include="Criteria\Lambda\Mappings.hbm.xml" />
     <EmbeddedResource Include="CfgTest\Loquacious\EntityToCache.hbm.xml" />
+    <EmbeddedResource Include="DriverTest\SqlServerCeEntity.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
     <EmbeddedResource Include="NHSpecificTest\NH1959\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1948\Mappings.hbm.xml" />
