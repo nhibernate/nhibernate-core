@@ -53,6 +53,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.Int32, "strftime(\"%d\", ?1)"));
 			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "strftime(\"%m\", ?1)"));
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "strftime(\"%Y\", ?1)"));
+			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
 		}
 
 		public override Schema.IDataBaseSchema GetDataBaseSchema(DbConnection connection)
