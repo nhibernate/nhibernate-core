@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH1025">
+
+	<class name="Entity">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+
+    <set name ="Components" table="Components" >
+      <key column="EntityID" />
+      <composite-element class="Component">
+        <parent name="Parent"/>
+        <property name="ValueA" />
+        <property name="ValueB" />
+        <property name="ValueC" />
+      </composite-element>
+    </set>
+	</class>
+</hibernate-mapping>
