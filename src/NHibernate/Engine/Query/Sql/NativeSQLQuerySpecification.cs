@@ -38,7 +38,7 @@ namespace NHibernate.Engine.Query.Sql
 				hCode = 29 * hCode + CollectionHelper.GetHashCode(this.querySpaces);
 				if (this.sqlQueryReturns != null)
 				{
-					hCode = 29 * hCode + sqlQueryReturns.Length;
+					hCode = 29 * hCode + CollectionHelper.GetHashCode(this.sqlQueryReturns);
 				}
 			}
 
@@ -65,16 +65,13 @@ namespace NHibernate.Engine.Query.Sql
 			if (this == obj)
 				return true;
 
-			NativeSQLQuerySpecification that = obj as NativeSQLQuerySpecification;
+			var that = obj as NativeSQLQuerySpecification;
 
 			if (that == null)
 				return false;
 
-			return hashCode == that.hashCode &&
-			       CollectionHelper.CollectionEquals(querySpaces, that.querySpaces) &&
-			       querySpaces.Equals(that.querySpaces) &&
-			       queryString.Equals(that.queryString) &&
-						 CollectionHelper.CollectionEquals<INativeSQLQueryReturn>(sqlQueryReturns, that.sqlQueryReturns);
+			// NHibernate different impl.: NativeSQLQuerySpecification is immutable and the hash is calculated at Ctor
+			return hashCode == that.hashCode;
 		}
 
 		public override int GetHashCode()

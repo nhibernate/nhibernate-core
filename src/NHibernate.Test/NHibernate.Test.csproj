@@ -106,6 +106,9 @@
     <Compile Include="CfgTest\ConfigurationSerializationTests.cs" />
     <Compile Include="CfgTest\DefaultNsAssmFixture.cs" />
     <Compile Include="DriverTest\SqlServerCeDriverFixture.cs" />
+    <Compile Include="EngineTest\NativeSQLQueryNonScalarReturnTest.cs" />
+    <Compile Include="EngineTest\NativeSQLQueryScalarReturnTest.cs" />
+    <Compile Include="EngineTest\NativeSQLQuerySpecificationTest.cs" />
     <Compile Include="FilterTest\ConfigFixture.cs" />
     <Compile Include="FilterTest\FilterSecondPassArgsFixture.cs" />
     <Compile Include="CfgTest\HbmBinderFixture.cs" />

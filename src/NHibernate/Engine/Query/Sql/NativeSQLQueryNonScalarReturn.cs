@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using NHibernate.Util;
 using System.Collections.Generic;
 
@@ -50,6 +49,29 @@ namespace NHibernate.Engine.Query.Sql
 		public IDictionary<string, string[]> PropertyResultsMap
 		{
 			get { return propertyResults; }
+		}
+
+		public override bool Equals(object obj)
+		{
+			return Equals(obj as NativeSQLQueryNonScalarReturn);
+		}
+
+		public bool Equals(NativeSQLQueryNonScalarReturn other)
+		{
+			if (ReferenceEquals(null, other))
+			{
+				return false;
+			}
+			if (ReferenceEquals(this, other))
+			{
+				return true;
+			}
+			return Equals(other.alias, alias);
+		}
+
+		public override int GetHashCode()
+		{
+			return alias.GetHashCode();
 		}
 	}
 }

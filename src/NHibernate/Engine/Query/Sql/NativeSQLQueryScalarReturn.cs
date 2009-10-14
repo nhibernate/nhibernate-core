@@ -28,5 +28,28 @@ namespace NHibernate.Engine.Query.Sql
 		{
 			get { return type; }
 		}
+
+		public override bool Equals(object obj)
+		{
+			return Equals(obj as NativeSQLQueryScalarReturn);
+		}
+
+		public bool Equals(NativeSQLQueryScalarReturn other)
+		{
+			if (ReferenceEquals(null, other))
+			{
+				return false;
+			}
+			if (ReferenceEquals(this, other))
+			{
+				return true;
+			}
+			return Equals(other.columnAlias, columnAlias);
+		}
+
+		public override int GetHashCode()
+		{
+			return columnAlias.GetHashCode();
+		}
 	}
 }
