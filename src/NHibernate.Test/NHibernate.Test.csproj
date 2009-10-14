@@ -161,6 +161,9 @@
     <Compile Include="Criteria\Reptile.cs" />
     <Compile Include="DriverTest\SqlClientDriverFixture.cs" />
     <Compile Include="DriverTest\SqlServerCeDriverFixture.cs" />
+    <Compile Include="EngineTest\NativeSQLQueryNonScalarReturnTest.cs" />
+    <Compile Include="EngineTest\NativeSQLQueryScalarReturnTest.cs" />
+    <Compile Include="EngineTest\NativeSQLQuerySpecificationTest.cs" />
     <Compile Include="ExpressionTest\RestrictionsFixture.cs" />
     <Compile Include="Criteria\Student.cs" />
     <Compile Include="Criteria\StudentDTO.cs" />
