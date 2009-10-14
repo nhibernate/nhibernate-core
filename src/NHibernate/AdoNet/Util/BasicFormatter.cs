@@ -79,6 +79,7 @@ namespace NHibernate.AdoNet.Util
 			private bool afterInsert;
 			private bool afterOn;
 			private bool beginLine = true;
+			private bool endCommandFound;
 
 			private int indent = 1;
 			private int inFunction;
@@ -186,6 +187,7 @@ namespace NHibernate.AdoNet.Util
 			{
 				Out();
 				indent = 1;
+				endCommandFound = true;
 				Newline();
 			}
 
@@ -285,6 +287,7 @@ namespace NHibernate.AdoNet.Util
 				{
 					afterInsert = true;
 				}
+				endCommandFound = false;
 			}
 
 			private void Select()
@@ -296,6 +299,7 @@ namespace NHibernate.AdoNet.Util
 				afterByOrFromOrSelects.Insert(afterByOrFromOrSelects.Count, afterByOrSetOrFromOrSelect);
 				parensSinceSelect = 0;
 				afterByOrSetOrFromOrSelect = true;
+				endCommandFound = false;
 			}
 
 			private void Out()
@@ -353,6 +357,11 @@ namespace NHibernate.AdoNet.Util
 
 			private void CloseParen()
 			{
+				if (endCommandFound)
+				{
+					Out();
+					return;
+				} 
 				parensSinceSelect--;
 				if (parensSinceSelect < 0)
 				{
@@ -384,6 +393,11 @@ namespace NHibernate.AdoNet.Util
 
 			private void OpenParen()
 			{
+				if(endCommandFound)
+				{
+					Out();
+					return;
+				}
 				if (IsFunctionName(lastToken) || inFunction > 0)
 				{
 					inFunction++;

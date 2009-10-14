@@ -1405,6 +1405,7 @@
     <Compile Include="UserCollection\User.cs" />
     <Compile Include="UserCollection\UserCollectionTypeTest.cs" />
     <Compile Include="UtilityTest\AssemblyQualifiedTypeNameFixture.cs" />
+    <Compile Include="UtilityTest\BasicFormatterFixture.cs" />
     <Compile Include="UtilityTest\IdentityMapFixture.cs" />
     <Compile Include="UtilityTest\IdentityMapSequencedFixture.cs" />
     <Compile Include="UtilityTest\JoinedEnumerableFixture.cs" />
