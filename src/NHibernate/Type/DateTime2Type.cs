@@ -19,5 +19,37 @@ namespace NHibernate.Type
 		{
 			get { return "DateTime2"; }
 		}
+
+		public override object Get(IDataReader rs, int index)
+		{
+			try
+			{
+				return Convert.ToDateTime(rs[index]);
+			}
+			catch (Exception ex)
+			{
+				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[index]), ex);
+			}
+		}
+
+		public override void Set(IDbCommand st, object value, int index)
+		{
+			((IDataParameter) st.Parameters[index]).Value = (DateTime) value;
+		}
+
+		public override bool IsEqual(object x, object y)
+		{
+			if (x == y)
+			{
+				return true;
+			}
+
+			if (x == null || y == null)
+			{
+				return false;
+			}
+
+			return x.Equals(y);
+		}
 	}
 }
