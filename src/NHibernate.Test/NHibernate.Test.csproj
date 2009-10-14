@@ -583,6 +583,8 @@
     <Compile Include="NHSpecificTest\NH1948\Model.cs" />
     <Compile Include="NHSpecificTest\NH1959\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1959\Model.cs" />
+    <Compile Include="NHSpecificTest\NH1990\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1990\Model.cs" />
     <Compile Include="NHSpecificTest\NH473\Child.cs" />
     <Compile Include="NHSpecificTest\NH473\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH473\Parent.cs" />
@@ -1996,6 +1998,7 @@
     <EmbeddedResource Include="DriverTest\MultiTypeEntity.hbm.xml" />
     <EmbeddedResource Include="DriverTest\SqlServerCeEntity.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1990\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1959\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1948\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1941\Mappings.hbm.xml" />
