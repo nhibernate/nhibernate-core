@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+					 namespace="NHibernate.Test.NHSpecificTest.NH1990"
+					 assembly="NHibernate.Test">
+
+  <class name="NewsFeed" table="NWS_Feed" batch-size="100">
+    <id name="Id" type="Guid" column="OID">
+      <generator class="guid"></generator>
+    </id>
+    <property name="Title" type="String" not-null="true"/>
+    <property name="Url" type="String" not-null="true"/>
+    <property name="Status" type="Int32" not-null="true"/>
+    <bag name="Items" cascade="all" fetch="subselect" inverse="true"  >
+      <key column="FK_Feed_OID"/>
+      <one-to-many class="NewsItem"></one-to-many>
+      <filter name="StatusFilter" condition=":Status=Status" />
+    </bag>
+    <filter name="StatusFilter" condition=":Status=Status" />
+  </class>
+
+  <class name="NewsItem" table="NWS_Item" batch-size="100">
+    <id name="Id" type="Guid" column="OID">
+      <generator class="guid"></generator>
+    </id>
+    <property name="Title" type="String" not-null="true"/>
+    <property name="Status" type="Int32" not-null="true"/>
+    <many-to-one name="Feed" class="NewsFeed" column="FK_Feed_OID" not-null="true"/>
+
+    <filter name="StatusFilter" condition=":Status=Status" />
+  </class>
+
+  <filter-def name="StatusFilter">
+    <filter-param name="Status" type="Int32"/>
+  </filter-def>
+</hibernate-mapping>
+
+

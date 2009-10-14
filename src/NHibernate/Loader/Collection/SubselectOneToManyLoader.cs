@@ -3,6 +3,7 @@ using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Loader.Collection
 {
@@ -31,8 +32,8 @@ namespace NHibernate.Loader.Collection
 
 			namedParameters = queryParameters.NamedParameters;
 			// NH Different behavior: to deal with positionslParameter+NamedParameter+ParameterOfFilters
-			types = queryParameters.PositionalParameterTypes;
-			values = queryParameters.PositionalParameterValues;
+			types = new List<IType>(new JoinedEnumerable<IType>(queryParameters.FilteredParameterTypes, queryParameters.PositionalParameterTypes)).ToArray();
+			values = new List<object>(new JoinedEnumerable<object>(queryParameters.FilteredParameterValues, queryParameters.PositionalParameterValues)).ToArray();
 			this.namedParameterLocMap = namedParameterLocMap;
 		}
 
