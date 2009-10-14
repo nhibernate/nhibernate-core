@@ -33,5 +33,14 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 			SavingAndRetrievingAction(new AllDates { Sql_datetime2 = DateTime.MaxValue },
 									  entity => DateTimeAssert.AreEqual(entity.Sql_datetime2, DateTime.MaxValue));
 		}
+
+		[Test]
+		public void SaveMillisecond()
+		{
+			DateTime datetime2 = DateTime.MinValue.AddMilliseconds(123);
+
+			SavingAndRetrievingAction(new AllDates { Sql_datetime2 = datetime2 },
+																entity => Assert.That(entity.Sql_datetime2, Is.EqualTo(datetime2)));
+		}
 	}
 }
