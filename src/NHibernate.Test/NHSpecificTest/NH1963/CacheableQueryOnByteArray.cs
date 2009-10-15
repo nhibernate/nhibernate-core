@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1963
             return dialect as MsSql2000Dialect != null;
         }
 
-        [Test,Ignore]
+        [Test]
         public void Should_be_able_to_do_cacheable_query_on_byte_array_field()
         {
             using (ISession session = this.OpenSession())
@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1963
                 var data = new byte[] { 1, 2, 3 };
 
                 var result = session.CreateQuery("from DomainClass d where d.ByteData = :data")
-                    .SetParameter("data", data)
+                    .SetBinary("data", data)
                     .SetCacheable(true)
                     .UniqueResult<DomainClass>();
 
@@ -59,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1963
                 var data = new byte[] { 1, 2, 3 };
 
                 var result = session.CreateQuery("from DomainClass d where d.ByteData = :data")
-                    .SetParameter("data", data)
+										.SetBinary("data", data)
                     .SetCacheable(true)
                     .UniqueResult<DomainClass>();
 

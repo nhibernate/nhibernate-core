@@ -27,5 +27,16 @@ namespace NHibernate.Test.EngineTest
 		{
 			Assert.AreEqual("null", new TypedValue(NHibernateUtil.Int32, null, EntityMode.Poco).ToString());
 		}
+
+		[Test]
+		public void WhenTheTypeIsAnArray_ChoseTheDefaultComparer()
+		{
+			byte[] value = new byte[]{1,2,3};
+
+
+			var tv = new TypedValue(NHibernateUtil.BinaryBlob, value, EntityMode.Poco);
+
+			Assert.That(tv.Comparer, Is.TypeOf<TypedValue.DefaultComparer>());
+		}
 	}
 }

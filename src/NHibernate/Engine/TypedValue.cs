@@ -22,7 +22,7 @@ namespace NHibernate.Engine
 			this.type = type;
 			this.value = value;
 			ICollection values = value as ICollection;
-			if (!type.IsCollectionType && values != null)
+			if (!type.IsCollectionType && values != null && !type.ReturnedClass.IsArray)
 				comparer = new ParameterListComparer(entityMode);
 			else
 				comparer = new DefaultComparer(entityMode);
@@ -36,6 +36,11 @@ namespace NHibernate.Engine
 		public IType Type
 		{
 			get { return type; }
+		}
+
+		public IEqualityComparer<TypedValue> Comparer
+		{
+			get { return comparer; }
 		}
 
 		public override int GetHashCode()
@@ -54,7 +59,7 @@ namespace NHibernate.Engine
 		}
 
 		[Serializable]
-		private class ParameterListComparer : IEqualityComparer<TypedValue>
+		public class ParameterListComparer : IEqualityComparer<TypedValue>
 		{
 			private readonly EntityMode entityMode;
 
@@ -118,7 +123,7 @@ namespace NHibernate.Engine
 		}
 
 		[Serializable]
-		private class DefaultComparer : IEqualityComparer<TypedValue>
+		public class DefaultComparer : IEqualityComparer<TypedValue>
 		{
 			private readonly EntityMode entityMode;
 
