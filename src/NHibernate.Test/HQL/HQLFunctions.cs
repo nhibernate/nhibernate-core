@@ -736,6 +736,23 @@ namespace NHibernate.Test.Hql
 			}
 		}
 
+		[Test]
+		public void CastNH1979()
+		{
+			IgnoreIfNotSupported("cast");
+			using (ISession s = OpenSession())
+			{
+				Animal a1 = new Animal("abcdef", 1.3f);
+				s.Save(a1);
+				s.Flush();
+			}
+			using (ISession s = OpenSession())
+			{
+				string hql = "select cast(((a.BodyWeight + 50) / :divisor) as int) from Animal a";
+				IList l = s.CreateQuery(hql).SetInt32("divisor", 2).List();
+				Assert.AreEqual(1, l.Count);
+			}
+		}
 
 		[Test]
 		public void Current_TimeStamp()
