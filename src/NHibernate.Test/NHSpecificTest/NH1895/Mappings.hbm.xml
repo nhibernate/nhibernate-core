@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1895"
+                   default-lazy="false">
+   <class name="Order" table="[Order]">
+      <id name="Id" type="guid" column="O_Id">
+         <generator class="assigned" />
+      </id>
+      <property name="Name" type="string" column="O_Name" />
+      <bag name="Details" inverse="true" cascade="delete-orphan" lazy="false" >
+         <key column="D_OrderId" />
+         <one-to-many class="Detail" />
+      </bag>
+   </class>
+   <class name="Detail" table="Detail">
+      <id name="Id" type="guid" column="D_Id">
+         <generator class="assigned" />
+      </id>
+      <property name="Name" type="string" column="D_Name" />
+      <many-to-one name="Parent" column="D_OrderId" not-null="true" class="Order" />
+   </class>
+</hibernate-mapping>
