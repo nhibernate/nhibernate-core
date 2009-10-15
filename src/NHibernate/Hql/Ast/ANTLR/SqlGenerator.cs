@@ -397,7 +397,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 			public void Parameter()
 			{
-				args.Add(new SqlString(SqlCommand.Parameter.Placeholder));
+				if (argInd == args.Count)
+				{
+					args.Add(new SqlString(SqlCommand.Parameter.Placeholder));
+				}
+				else
+				{
+					args[argInd] = args[argInd].Append(new SqlString(SqlCommand.Parameter.Placeholder));
+				}
 			}
 
 			public void CommaBetweenParameters(string comma)
