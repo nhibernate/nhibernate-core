@@ -1,5 +1,6 @@
 using System.Collections;
 using Iesi.Collections.Generic;
+using NHibernate.Criterion;
 using NHibernate.Stat;
 using NUnit.Framework;
 
@@ -209,5 +210,53 @@ namespace NHibernate.Test.Stats
 			tx.Commit();
 			s.Close();
 		}
+
+		[Test]
+		public void IncrementQueryExecutionCount_WhenExplicitQueryIsExecuted()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				FillDb(s);
+				tx.Commit();
+			}
+
+			IStatistics stats = sessions.Statistics;
+			stats.Clear();
+			using (ISession s = OpenSession())
+			{
+				var r = s.CreateCriteria<Country>().List();
+			}
+			Assert.AreEqual(1, stats.QueryExecutionCount);
+
+			stats.Clear();
+			using (ISession s = OpenSession())
+			{
+				var r = s.CreateQuery("from Country").List();
+			}
+			Assert.AreEqual(1, stats.QueryExecutionCount);
+
+			stats.Clear();
+			using (ISession s = OpenSession())
+			{
+				var r = s.CreateMultiQuery().Add("from Country").Add("from Continent").List();
+			}
+			Assert.AreEqual(1, stats.QueryExecutionCount);
+
+			stats.Clear();
+			using (ISession s = OpenSession())
+			{
+				var r = s.CreateMultiCriteria().Add(DetachedCriteria.For<Country>()).Add(DetachedCriteria.For<Continent>()).List();
+			}
+			Assert.AreEqual(1, stats.QueryExecutionCount);
+
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				CleanDb(s);
+				tx.Commit();
+			}
+		}
+
 	}
 }

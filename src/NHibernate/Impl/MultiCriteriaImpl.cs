@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
 using log4net;
@@ -189,6 +190,14 @@ namespace NHibernate.Impl
 
 		private void GetResultsFromDatabase(IList results)
 		{
+			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
+			var stopWatch = new Stopwatch();
+			if (statsEnabled)
+			{
+				stopWatch.Start();
+			}
+			int rowCount = 0;
+
 			using (
 				IDbCommand command =
 					session.Batcher.PrepareCommand(CommandType.Text, sqlString, types.ToArray()))
@@ -228,6 +237,8 @@ namespace NHibernate.Impl
 						int count;
 						for (count = 0; count < maxRows && reader.Read(); count++)
 						{
+							rowCount++;
+
 							object o =
 								loader.GetRowFromResultSet(reader, session, queryParameters, loader.GetLockModes(queryParameters.LockModes),
 														   null, hydratedObjects[i], keys, false);
@@ -261,6 +272,11 @@ namespace NHibernate.Impl
 						loader.CreateSubselects(subselectResultKeys[i], parameters[i], session);
 					}
 				}
+			}
+			if (statsEnabled)
+			{
+				stopWatch.Stop();
+				session.Factory.StatisticsImplementor.QueryExecuted(string.Format("{0} queries (MultiCriteria)", loaders.Count), rowCount, stopWatch.Elapsed);
 			}
 		}
 
