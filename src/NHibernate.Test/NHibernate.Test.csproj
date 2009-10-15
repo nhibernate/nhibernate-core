@@ -368,6 +368,8 @@
     <Compile Include="NHSpecificTest\ElementsEnums\Something.cs" />
     <Compile Include="NHSpecificTest\NH1025\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1025\Model.cs" />
+    <Compile Include="NHSpecificTest\NH1895\DomainClasses.cs" />
+    <Compile Include="NHSpecificTest\NH1895\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH1905\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1905\Model.cs" />
     <Compile Include="NHSpecificTest\NH1908ThreadSafety\Fixture.cs" />
@@ -2005,6 +2007,7 @@
     <EmbeddedResource Include="DriverTest\MultiTypeEntity.hbm.xml" />
     <EmbeddedResource Include="DriverTest\SqlServerCeEntity.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1895\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1025\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1985\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1990\Mappings.hbm.xml" />

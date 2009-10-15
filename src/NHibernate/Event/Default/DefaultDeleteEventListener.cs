@@ -140,12 +140,16 @@ namespace NHibernate.Event.Default
 		protected virtual void DeleteTransientEntity(IEventSource session, object entity, bool cascadeDeleteEnabled, IEntityPersister persister, ISet transientEntities)
 		{
 			log.Info("handling transient entity in delete processing");
-			if (transientEntities.Contains(entity))
+			// NH different impl : NH-1895
+			if(transientEntities == null)
+			{
+				transientEntities = new HashedSet();
+			}
+			if (!transientEntities.Add(entity))
 			{
 				log.Debug("already handled transient entity; skipping");
 				return;
 			}
-			transientEntities.Add(entity);
 			CascadeBeforeDelete(session, persister, entity, null, transientEntities);
 			CascadeAfterDelete(session, persister, entity, transientEntities);
 		}
