@@ -743,6 +743,7 @@
 			<xs:attribute name="foreign-key" type="xs:string" />
 			<xs:attribute name="lazy" type="restrictedLaziness">
 			</xs:attribute>
+			<xs:attribute name="not-found" default="exception" type="notFoundMode"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="key-property">
