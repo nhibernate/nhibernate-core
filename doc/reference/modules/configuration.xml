@@ -458,12 +458,10 @@ ISession session = sessions.OpenSession(conn);
                         <entry>
                             Specifies the bytecode provider to use to optimize the use of reflection in NHibernate.
                             Use <literal>null</literal> to disable the optimization completely, <literal>lcg</literal>
-                            to use lightweight code generation (supported on .NET 2.0 only), and <literal>
-                            codedom</literal> to use CodeDOM-based code generation (supported on .NET 1.1, has problems
-                            with generic types on .NET 2.0). 
+                            to use lightweight code generation. 
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
-                                <literal>null</literal> | <literal>lcg</literal> | <literal>codedom</literal>
+                                <literal>null</literal> | <literal>lcg</literal>
                             </para>
                         </entry>
                     </row>

@@ -5,7 +5,7 @@
         <title>Getting started with NHibernate</title>
 
         <para>
-            This tutorial explains a setup of NHibernate 1.0.2 within a Microsoft
+            This tutorial explains a setup of NHibernate 2.1.0 within a Microsoft
             environment. The tools used in this tutorial are:
         </para>
         
@@ -15,13 +15,13 @@
                 ASP.NET.
             </listitem>
             <listitem>
-                Microsoft SQL Server 2000 - the database server. This tutorial uses
-                the desktop edition (MSDE), a free download from Microsoft. Support
+                Microsoft SQL Server 2005 - the database server. This tutorial uses
+                the desktop edition (SQL-EXPRESS), a free download from Microsoft. Support
                 for other databases is only a matter of changing the NHibernate SQL
                 dialect and driver configuration.
             </listitem>
             <listitem>
-                Microsoft Visual Studio .NET 2003 - the development environment.
+                Microsoft Visual Studio .NET (at leats 2005) - the development environment.
             </listitem>
         </orderedlist>
 
@@ -40,7 +40,8 @@
             configuration elements according to the listing below:
         </para>
 
-        <programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+        <programlisting>
+				<![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 <configuration>
     <!-- Add this element -->
     <configSections>
@@ -53,10 +54,11 @@
     <!-- Add this element -->
     <hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
         <session-factory>
-            <property name="dialect">NHibernate.Dialect.MsSql2000Dialect</property>
+            <property name="dialect">NHibernate.Dialect.MsSql2005Dialect</property>
             <property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>
-            <property name="connection.connection_string">Server=(local);initial catalog=quickstart;Integrated Security=SSPI</property>
-            
+            <property name="connection.connection_string">Server=localhost\SQLEXPRESS;initial catalog=quickstart;Integrated Security=True</property>
+            <property name="proxyfactory.factory_class">NHibernate.ByteCode.LinFu.ProxyFactoryFactory, NHibernate.ByteCode.LinFu</property>
+
             <mapping assembly="QuickStart" />
         </session-factory>
     </hibernate-configuration>
