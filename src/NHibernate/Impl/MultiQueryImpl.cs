@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Iesi.Collections;
 using log4net;
@@ -474,6 +475,14 @@ namespace NHibernate.Impl
 
 		protected ArrayList DoList()
 		{
+			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
+			var stopWatch = new Stopwatch();
+			if (statsEnabled)
+			{
+				stopWatch.Start();
+			}
+			int rowCount = 0;
+
 			IDbCommand command = PrepareQueriesCommand();
 
 			BindParameters(command);
@@ -535,6 +544,8 @@ namespace NHibernate.Impl
 							log.Debug("result set row: " + count);
 						}
 
+						rowCount++;
+
 						object result =
 							translator.Loader.GetRowFromResultSet(reader,
 														   session,
@@ -589,6 +600,11 @@ namespace NHibernate.Impl
 				{
 					translator.Loader.CreateSubselects(subselectResultKeys[i], parameter, session);
 				}
+			}
+			if (statsEnabled)
+			{
+				stopWatch.Stop();
+				session.Factory.StatisticsImplementor.QueryExecuted(string.Format("{0} queries (MultiQuery)", translators.Count), rowCount, stopWatch.Elapsed);
 			}
 			return results;
 		}
