@@ -1504,6 +1504,7 @@ namespace NHibernate.Persister.Collection
 
 		public int GetSize(object key, ISessionImplementor session)
 		{
+			using(new SessionIdLoggingContext(session.SessionId))
 			try
 			{
 				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sqlSelectSizeString, KeyType.SqlTypes(factory));
@@ -1540,6 +1541,7 @@ namespace NHibernate.Persister.Collection
 		private bool Exists(object key, object indexOrElement, IType indexOrElementType, SqlString sql,
 		                    ISessionImplementor session)
 		{
+			using(new SessionIdLoggingContext(session.SessionId))
 			try
 			{
 				List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
@@ -1579,6 +1581,7 @@ namespace NHibernate.Persister.Collection
 
 		public virtual object GetElementByIndex(object key, object index, ISessionImplementor session, object owner)
 		{
+			using(new SessionIdLoggingContext(session.SessionId))
 			try
 			{
 				List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
