@@ -1230,6 +1230,7 @@ namespace NHibernate.Persister.Entity
 
 			log.Debug("initializing lazy properties from datastore");
 
+			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
 				object result = null;
@@ -1406,6 +1407,7 @@ namespace NHibernate.Persister.Entity
 				log.Debug("Getting current persistent state for: " + MessageHelper.InfoString(this, id, Factory));
 			}
 
+			using (new SessionIdLoggingContext(session.SessionId))
 			try
 			{
 				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory));
@@ -1661,7 +1663,7 @@ namespace NHibernate.Persister.Entity
 			{
 				log.Debug("Getting version: " + MessageHelper.InfoString(this, id, Factory));
 			}
-
+			using(new SessionIdLoggingContext(session.SessionId))
 			try
 			{
 				IDbCommand st = session.Batcher.PrepareQueryCommand(CommandType.Text, VersionSelectString, IdentifierType.SqlTypes(Factory));
@@ -2415,6 +2417,7 @@ namespace NHibernate.Persister.Entity
 			IDbCommand sequentialSelect = null;
 			IDataReader sequentialResultSet = null;
 			bool sequentialSelectEmpty = false;
+			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
 				if (hasDeferred)
@@ -3917,6 +3920,7 @@ namespace NHibernate.Persister.Entity
 		{
 			session.Batcher.ExecuteBatch(); //force immediate execution of the insert
 
+			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
 				IDbCommand cmd =
@@ -4007,6 +4011,7 @@ namespace NHibernate.Persister.Entity
 			///////////////////////////////////////////////////////////////////////
 
 			object[] snapshot = new object[naturalIdPropertyCount];
+			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
 				IDbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));

@@ -2,6 +2,7 @@ using System.Data;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
+using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
@@ -48,6 +49,7 @@ namespace NHibernate.Id.Insert
 			}
 
 			SqlString selectSQL = SelectSQL;
+			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
 				//fetch the generated id in a separate query

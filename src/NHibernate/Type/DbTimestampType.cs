@@ -4,6 +4,7 @@ using System.Data.Common;
 using log4net;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
+using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
@@ -58,6 +59,7 @@ namespace NHibernate.Type
 			var tsSelect = new SqlString(timestampSelectString);
 			IDbCommand ps = null;
 			IDataReader rs = null;
+			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
 				ps = session.Batcher.PrepareCommand(CommandType.Text, tsSelect, EmptyParams);
