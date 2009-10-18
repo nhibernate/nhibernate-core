@@ -108,7 +108,7 @@ namespace NHibernate.Bytecode
 			{
 				throw new HibernateByteCodeException(type.FullName + " does not implement " + typeof(ICollectionTypeFactory).FullName);
 			}
-			if (collectionTypeFactory != null)
+			if (collectionTypeFactory != null && !collectionTypeFactoryClass.Equals(type))
 			{
 				throw new InvalidOperationException("CollectionTypeFactory in use, can't change it.");
 			}
