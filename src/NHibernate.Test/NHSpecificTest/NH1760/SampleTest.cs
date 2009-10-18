@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1760
 			{
 				var customer = new Customer {Name = "Alkampfer"};
 				session.Save(customer);
-				var testClass = new TestClass {Id = new TestClassId{Customer = customer, SomeInt = 42}, Value = "TESTVALUE"};
+				var testClass = new TestClass { Id = new TestClassId { Customer = customer, SomeInt = 42 }, Value = "TESTVALUE" };
 				session.Save(testClass);
 				tx.Commit();
 			}
@@ -25,13 +25,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1760
 			using (ISession session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				session.CreateQuery("from TestClass").ExecuteUpdate();
-				session.CreateQuery("from Customer").ExecuteUpdate();
+				session.CreateQuery("delete from TestClass").ExecuteUpdate();
+				session.CreateQuery("delete from Customer").ExecuteUpdate();
 				tx.Commit();
 			}
 		}
 
-		[Test, Ignore("Not fixed yet.")]
+		[Test]
 		public void CanUseCriteria()
 		{
 			FillDb();
@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1760
 			using (ISession session = OpenSession())
 			{
 				IList<TestClass> retvalue =
-					session.CreateQuery("Select tc from TestClass tc where tc.Id.Customer.Name = :name").SetString("name", "Alkampfer")
+					session.CreateQuery("Select tc from TestClass tc join tc.Id.Customer cu where cu.Name = :name").SetString("name", "Alkampfer")
 						.List<TestClass>();
 				hqlCount = retvalue.Count;
 			}
@@ -53,8 +53,29 @@ namespace NHibernate.Test.NHSpecificTest.NH1760
 				IList<TestClass> retvalue = c.List<TestClass>();
 				criteriaCount = retvalue.Count;
 			}
-			Assert.That(hqlCount == criteriaCount);
-			Assert.That(hqlCount, Is.EqualTo(1));
+			Assert.That(criteriaCount, Is.EqualTo(1));
+			Assert.That(criteriaCount, Is.EqualTo(hqlCount));
+
+			Cleanup();
+		}
+
+		[Test]
+		public void TheJoinShouldBeOptional()
+		{
+			FillDb();
+			int criteriaCount;
+
+			using (ISession session = OpenSession())
+			{
+				using (var ls = new SqlLogSpy())
+				{
+					ICriteria c = session.CreateCriteria(typeof(TestClass));
+					IList<TestClass> retvalue = c.List<TestClass>();
+					Assert.That(ls.GetWholeLog(), Text.DoesNotContain("join"));
+					criteriaCount = retvalue.Count;
+				}
+			}
+			Assert.That(criteriaCount, Is.EqualTo(1));
 
 			Cleanup();
 		}
