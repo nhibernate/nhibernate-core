@@ -50,6 +50,12 @@ namespace NHibernate.Impl
 			this.factory = factory;
 		}
 
+		protected internal AbstractSessionImpl(ISessionFactoryImplementor factory, Guid sessionId)
+			: this(factory)
+		{
+			this.sessionId = sessionId;
+		}
+
 		#region ISessionImplementor Members
 
 		public void Initialize()

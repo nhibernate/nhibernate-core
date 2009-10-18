@@ -242,7 +242,7 @@ namespace NHibernate.Impl
 		/// <param name="parent">The parent Session</param>
 		/// <param name="entityMode">The entity mode</param>
 		private SessionImpl(SessionImpl parent, EntityMode entityMode)
-			: base(parent.Factory)
+			: base(parent.Factory, parent.SessionId)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
