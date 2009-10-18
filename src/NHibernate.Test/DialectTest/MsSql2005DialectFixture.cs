@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Dialect;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
@@ -184,5 +185,12 @@ namespace NHibernate.Test.DialectTest
             System.Console.WriteLine(ifExistsDropConstraint);
             Assert.AreEqual(expected, ifExistsDropConstraint);
 	    }
+
+			[Test]
+			public void GetLimitStringWithSqlComments()
+			{
+				var d = new MsSql2005Dialect();
+				Assert.Throws<NotSupportedException>(()=> d.GetLimitString(new SqlString(" /* criteria query */ SELECT p from lcdtm"), 0, 2));
+			}
 	}
 }
