@@ -237,7 +237,7 @@ namespace NHibernate.Loader
 		/// For an entity class, add to a list of associations to be fetched
 		/// by outerjoin
 		/// </summary>
-		private void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
+		protected virtual void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
 		{
 			int n = persister.CountSubclassProperties();
 			for (int i = 0; i < n; i++)

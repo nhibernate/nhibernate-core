@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using log4net;
@@ -58,22 +57,21 @@ namespace NHibernate.Loader.Criteria
 			userAliases = ArrayHelper.ToStringArray(userAliasList);
 		}
 
-		protected override void InitAll(SqlString whereString, SqlString orderByString, LockMode lockMode)
+		protected override void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
 		{
-			// NH different behavior (NH-1760)
-			WalkCompositeComponentIdTree();
-			base.InitAll(whereString, orderByString, lockMode);
+			// NH different behavior (NH-1476, NH-1760, NH-1785)
+			base.WalkEntityTree(persister, alias, path, currentDepth);
+			WalkCompositeComponentIdTree(persister, alias, path);
 		}
 
-		private void WalkCompositeComponentIdTree()
+		private void WalkCompositeComponentIdTree(IOuterJoinLoadable persister, string alias, string path)
 		{
-			IType type = Persister.IdentifierType;
-			string propertyName = Persister.IdentifierPropertyName;
+			IType type = persister.IdentifierType;
+			string propertyName = persister.IdentifierPropertyName;
 			if (type != null && type.IsComponentType && !(type is EmbeddedComponentType))
 			{
-				ILhsAssociationTypeSqlInfo associationTypeSQLInfo = JoinHelper.GetIdLhsSqlInfo(Alias, Persister, Factory);
-				WalkComponentTree((IAbstractComponentType) type, 0, Alias, SubPath(string.Empty, propertyName), 0,
-				                  associationTypeSQLInfo);
+				ILhsAssociationTypeSqlInfo associationTypeSQLInfo = JoinHelper.GetIdLhsSqlInfo(alias, persister, Factory);
+				WalkComponentTree((IAbstractComponentType)type, 0, alias, SubPath(path, propertyName), 0, associationTypeSQLInfo);
 			}
 		}
 
