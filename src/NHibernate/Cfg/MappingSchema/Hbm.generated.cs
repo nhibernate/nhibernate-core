@@ -1967,6 +1967,15 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool lazySpecified;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("not-found")]
+        [System.ComponentModel.DefaultValueAttribute(HbmNotFoundMode.Exception)]
+        public HbmNotFoundMode notfound;
+        
+        public HbmKeyManyToOne() {
+            this.notfound = HbmNotFoundMode.Exception;
+        }
     }
     
     /// <remarks/>
