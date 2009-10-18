@@ -1,10 +1,11 @@
+using System.Collections;
 using System.Collections.Generic;
+using Iesi.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1356
 {
-	[TestFixture]
-	public class Fixture : BugTestCase
+	public abstract class Fixture : BugTestCase
 	{
 		[Test]
 		public void CanLoadWithGenericCompositeElement()
@@ -13,9 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1356
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					Person person = new Person();
-					person.Name = "Bob";
-					person.Addresses = new List<Address>();
+					var person = new Person {Name = "Bob", Addresses = NewCollection()};
 					person.Addresses.Add(new Address("123 Main St.", "Anytown", "LA", "12345"));
 					person.Addresses.Add(new Address("456 Main St.", "Anytown", "LA", "12345"));
 
@@ -25,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1356
 			}
 			using (ISession session = OpenSession())
 			{
-				Person person = session.CreateQuery("from Person").UniqueResult<Person>();
+				var person = session.CreateQuery("from Person").UniqueResult<Person>();
 
 				Assert.IsNotNull(person);
 				Assert.IsNotNull(person.Addresses);
@@ -39,6 +38,50 @@ namespace NHibernate.Test.NHSpecificTest.NH1356
 					tx.Commit();
 				}
 			}
+		}
+
+		protected abstract ICollection<Address> NewCollection();
+	}
+
+	[TestFixture]
+	public class FixtureWithList : Fixture
+	{
+		protected override IList Mappings
+		{
+			get { return new[] {"NHSpecificTest." + BugNumber + ".MappingsList.hbm.xml"}; }
+		}
+
+		protected override ICollection<Address> NewCollection()
+		{
+				return new List<Address>();
+		}
+	}
+
+	[TestFixture]
+	public class FixtureWithBag : Fixture
+	{
+		protected override IList Mappings
+		{
+			get { return new[] {"NHSpecificTest." + BugNumber + ".MappingsBag.hbm.xml"}; }
+		}
+
+		protected override ICollection<Address> NewCollection()
+		{
+			return new List<Address>();
+		}
+	}
+
+	[TestFixture]
+	public class FixtureWithSet : Fixture
+	{
+		protected override IList Mappings
+		{
+			get { return new[] {"NHSpecificTest." + BugNumber + ".MappingsSet.hbm.xml"}; }
+		}
+
+		protected override ICollection<Address> NewCollection()
+		{
+			return new HashedSet<Address>();
 		}
 	}
 }

@@ -6,9 +6,8 @@
 		</id>
 		<property name="Name" />
 
-		<list name="Addresses" table="Addresses" lazy="false">
+		<bag name="Addresses" table="Addresses" lazy="false" generic="true">
 			<key column="PersonId" />
-			<index column="Position" />
 
 			<composite-element class="Address">
 				<property name="Street" access="field.camelcase" />
@@ -16,6 +15,6 @@
 				<property name="State" access="field.camelcase" />
 				<property name="PostalCode" access="field.camelcase" />
 			</composite-element>
-		</list>
+		</bag>
 	</class>
 </hibernate-mapping>

@@ -4,8 +4,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1356
 {
 	public class Person
 	{
-		private IList<Address> addressBag;
-		private IList<Address> addresses;
+		private ICollection<Address> addresses;
 		private int id;
 		private string name;
 
@@ -21,16 +20,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1356
 			set { name = value; }
 		}
 
-		public IList<Address> Addresses
+		public ICollection<Address> Addresses
 		{
 			get { return addresses; }
 			set { addresses = value; }
-		}
-
-		public IList<Address> AddressBag
-		{
-			get { return addressBag; }
-			set { addressBag = value; }
 		}
 	}
 
