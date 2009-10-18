@@ -330,7 +330,11 @@ IList loggedCats = sess.CreateSQLQuery(sql)
         The above query will return a list of <literal>CatDTO</literal> which has been instantiated and injected the values of NAME and BIRTHNAME into its corresponding
         properties or fields.
         </para>
-    </sect2>
+		<para>
+			IMPORTANT: The custom <literal>IResultTransformer</literal> should override <literal>Equals</literal> and <literal>GetHashCode</literal>, 
+			otherwise the query translation won't be cached. This also will result in memory leak.
+		</para>
+	</sect2>
 
     <sect2>
       <title>Handling inheritance</title>
