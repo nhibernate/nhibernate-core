@@ -1,9 +1,16 @@
+using System.Data;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
 {
 	public class MySQL5Dialect : MySQLDialect
 	{
+		public MySQL5Dialect()
+		{
+			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
+			RegisterColumnType(DbType.Decimal, 19, "DECIMAL($p, $s)");
+		}
+
 		//Reference 5.x
 		//Numeric:
 		//http://dev.mysql.com/doc/refman/5.0/en/numeric-type-overview.html
