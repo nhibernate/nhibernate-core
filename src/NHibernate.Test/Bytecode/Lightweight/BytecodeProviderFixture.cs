@@ -123,7 +123,7 @@ namespace NHibernate.Test.Bytecode.Lightweight
 			var bcp = new BytecodeProviderImpl();
 			ctf = bcp.CollectionTypeFactory; // initialize the instance
 			// try to set it
-			Assert.Throws<InvalidOperationException>(() => bcp.SetCollectionTypeFactoryClass(typeof(Type.DefaultCollectionTypeFactory)));
+			Assert.Throws<InvalidOperationException>(() => bcp.SetCollectionTypeFactoryClass(typeof(CustomCollectionTypeFactory)));
 		}
 
 		private class CustomCollectionTypeFactory : Type.DefaultCollectionTypeFactory
@@ -152,6 +152,16 @@ namespace NHibernate.Test.Bytecode.Lightweight
 			cfg.SetProperty(Environment.CollectionTypeFactoryClass, typeof(CustomCollectionTypeFactory).AssemblyQualifiedName);
 			cfg.AddResource("NHibernate.Test.Bytecode.Lightweight.ProductLine.hbm.xml", GetType().Assembly);
 			Assert.That(Environment.BytecodeProvider.CollectionTypeFactory, Is.TypeOf<CustomCollectionTypeFactory>());
+		}
+
+		[Test]
+		[Explicit("The BytecodeProvider is static and can't be different in the same application.")]
+		public void ShouldNotThrownAnExceptionWithTheSameTypeOfCollectionTypeFactory()
+		{
+			ICollectionTypeFactory ctf;
+			var bcp = new BytecodeProviderImpl();
+			ctf = bcp.CollectionTypeFactory; // initialize the instance
+			Assert.DoesNotThrow(() => bcp.SetCollectionTypeFactoryClass(typeof (Type.DefaultCollectionTypeFactory)));
 		}
 	}
 }
