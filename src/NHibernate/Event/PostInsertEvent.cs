@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Event
@@ -9,40 +7,14 @@ namespace NHibernate.Event
 	/// Occurs after inserting an item in the datastore 
 	/// </summary>
 	[Serializable]
-	public class PostInsertEvent : AbstractEvent
+	public class PostInsertEvent : AbstractPostDatabaseOperationEvent
 	{
-		private readonly object entity;
-		private readonly object id;
-		private readonly object[] state;
-		private readonly IEntityPersister persister;
-
 		public PostInsertEvent(object entity, object id, object[] state, IEntityPersister persister, IEventSource source)
-			: base(source)
+			: base(source, entity,id,persister)
 		{
-			this.entity = entity;
-			this.id = id;
-			this.state = state;
-			this.persister = persister;
+			State = state;
 		}
 
-		public object Entity
-		{
-			get { return entity; }
-		}
-
-		public object Id
-		{
-			get { return id; }
-		}
-
-		public object[] State
-		{
-			get { return state; }
-		}
-
-		public IEntityPersister Persister
-		{
-			get { return persister; }
-		}
+		public object[] State { get; private set; }
 	}
 }

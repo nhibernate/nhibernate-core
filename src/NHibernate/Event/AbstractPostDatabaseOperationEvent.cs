@@ -1,21 +1,20 @@
 using System;
-using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Event
 {
 	/// <summary> 
-	/// Represents an operation we are about to perform against the database. 
+	/// Represents an operation we performed against the database. 
 	/// </summary>
 	[Serializable]
-	public abstract class AbstractPreDatabaseOperationEvent : AbstractEvent, IPreDatabaseOperationEventArgs
+	public class AbstractPostDatabaseOperationEvent : AbstractEvent, IPostDatabaseOperationEventArgs
 	{
 		/// <summary> Constructs an event containing the pertinent information. </summary>
 		/// <param name="source">The session from which the event originated. </param>
 		/// <param name="entity">The entity to be invloved in the database operation. </param>
 		/// <param name="id">The entity id to be invloved in the database operation. </param>
 		/// <param name="persister">The entity's persister. </param>
-		protected AbstractPreDatabaseOperationEvent(IEventSource source, object entity, object id, IEntityPersister persister)
+		protected AbstractPostDatabaseOperationEvent(IEventSource source, object entity, object id, IEntityPersister persister)
 			: base(source)
 		{
 			Entity = entity;
@@ -33,11 +32,5 @@ namespace NHibernate.Event
 		/// The persister for the <see cref="Entity"/>. 
 		/// </summary>
 		public IEntityPersister Persister { get; private set; }
-
-		[Obsolete("Use Session property instead")]
-		public ISessionImplementor Source
-		{
-			get { return Session; }
-		}
 	}
 }
