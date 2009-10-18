@@ -525,8 +525,12 @@
     <Compile Include="Driver\IfxDriver.cs" />
     <Compile Include="Driver\OracleLiteDataClientDriver.cs" />
     <Compile Include="EntityModeEqualityComparer.cs" />
+    <Compile Include="Event\AbstractPostDatabaseOperationEvent.cs" />
     <Compile Include="Event\AbstractPreDatabaseOperationEvent.cs" />
+    <Compile Include="Event\IDatabaseEventArgs.cs" />
     <Compile Include="Event\IDestructible.cs" />
+    <Compile Include="Event\IPostDatabaseOperationEventArgs.cs" />
+    <Compile Include="Event\IPreDatabaseOperationEventArgs.cs" />
     <Compile Include="Exceptions\AdoExceptionContextInfo.cs" />
     <Compile Include="Exceptions\ReflectionBasedSqlStateExtracter.cs" />
     <Compile Include="Exceptions\SqlStateExtracter.cs" />
