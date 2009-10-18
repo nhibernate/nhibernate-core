@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1785">
+	
+	<class name="Entity1" table="Entity1">
+		<id name="Id" type="Guid" column="id">
+			<generator class="guid" />
+		</id>
+		<set name="Entities2" lazy="true" inverse="true" table="Entity2">
+			<key column="id">
+			</key>
+			<one-to-many class="Entity2"/>
+		</set>
+	</class>
+	
+	<class name="Entity2" table="Entity2">
+		<composite-id class="Entity2Id" name="Id">
+			<key-many-to-one name="Entity1" class="Entity1" column="id1"  />
+			<key-many-to-one name="Entity3" class="Entity3" column="id3"  />
+		</composite-id>
+	</class>
+	
+	<class name="Entity3" table="Entity3">
+		<id name="Id" type="Guid" column="id">
+			<generator class="guid" />
+		</id>
+		<many-to-one name="Entity4" class="Entity4" column="entity4_id" />
+	</class>
+	
+	<class name="Entity4" table="Entity4">
+		<id name="Id" type="Guid" column="id">
+			<generator class="guid" />
+		</id>
+	</class>
+</hibernate-mapping>
