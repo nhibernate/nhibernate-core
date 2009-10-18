@@ -1852,6 +1852,18 @@ namespace NHibernate.Persister.Entity
 			return result;
 		}
 
+		public string[] ToIdentifierColumns(string name)
+		{
+			string alias = GenerateTableAlias(name, 0);
+			string[] cols = IdentifierColumnNames;
+			var result = new string[cols.Length];
+			for (int j = 0; j < cols.Length; j++)
+			{
+				result[j] = StringHelper.Qualify(alias, cols[j]);
+			}
+			return result;
+		}
+
 		private int GetSubclassPropertyIndex(string propertyName)
 		{
 			return Array.IndexOf(subclassPropertyNameClosure, propertyName);

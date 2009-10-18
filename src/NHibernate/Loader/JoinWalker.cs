@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Iesi.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -218,20 +217,18 @@ namespace NHibernate.Loader
 			}
 		}
 
-		private void WalkEntityAssociationTree(IAssociationType associationType, IOuterJoinLoadable persister, int propertyNumber,
-			string alias, string path, bool nullable, int currentDepth)
+		private void WalkEntityAssociationTree(IAssociationType associationType, IOuterJoinLoadable persister,
+		                                       int propertyNumber, string alias, string path, bool nullable, int currentDepth,
+		                                       ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
 		{
-			string[] aliasedLhsColumns =
-				JoinHelper.GetAliasedLHSColumnNames(associationType, alias, propertyNumber, persister, Factory);
-
-			string[] lhsColumns = JoinHelper.GetLHSColumnNames(associationType, propertyNumber, persister, Factory);
-			string lhsTable = JoinHelper.GetLHSTableName(associationType, propertyNumber, persister);
+			string[] aliasedLhsColumns = associationTypeSQLInfo.GetAliasedColumnNames(associationType, 0);
+			string[] lhsColumns = associationTypeSQLInfo.GetColumnNames(associationType, 0);
+			string lhsTable = associationTypeSQLInfo.GetTableName(associationType);
 
 			string subpath = SubPath(path, persister.GetSubclassPropertyName(propertyNumber));
 
-			JoinType joinType =
-				GetJoinType(associationType, persister.GetFetchMode(propertyNumber), subpath, lhsTable, lhsColumns, nullable,
-										currentDepth, persister.GetCascadeStyle(propertyNumber));
+			JoinType joinType = GetJoinType(associationType, persister.GetFetchMode(propertyNumber), subpath, lhsTable,
+			                                lhsColumns, nullable, currentDepth, persister.GetCascadeStyle(propertyNumber));
 
 			AddAssociationToJoinTreeIfNecessary(associationType, aliasedLhsColumns, alias, subpath, currentDepth, joinType);
 		}
@@ -246,15 +243,16 @@ namespace NHibernate.Loader
 			for (int i = 0; i < n; i++)
 			{
 				IType type = persister.GetSubclassPropertyType(i);
+				ILhsAssociationTypeSqlInfo associationTypeSQLInfo = JoinHelper.GetLhsSqlInfo(alias, i, persister, Factory);
 				if (type.IsAssociationType)
 				{
-					WalkEntityAssociationTree((IAssociationType)type, persister, i, alias, path,
-																		persister.IsSubclassPropertyNullable(i), currentDepth);
+					WalkEntityAssociationTree((IAssociationType) type, persister, i, alias, path,
+					                          persister.IsSubclassPropertyNullable(i), currentDepth, associationTypeSQLInfo);
 				}
 				else if (type.IsComponentType)
 				{
-					WalkComponentTree((IAbstractComponentType)type, i, 0, persister, alias,
-														SubPath(path, persister.GetSubclassPropertyName(i)), currentDepth);
+					WalkComponentTree((IAbstractComponentType) type, 0, alias, SubPath(path, persister.GetSubclassPropertyName(i)),
+					                  currentDepth, associationTypeSQLInfo);
 				}
 			}
 		}
@@ -262,8 +260,8 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// For a component, add to a list of associations to be fetched by outerjoin
 		/// </summary>
-		private void WalkComponentTree(IAbstractComponentType componentType, int propertyNumber, int begin,
-			IOuterJoinLoadable persister, string alias, string path, int currentDepth)
+		protected void WalkComponentTree(IAbstractComponentType componentType, int begin, string alias, string path,
+		                                 int currentDepth, ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
 		{
 			IType[] types = componentType.Subtypes;
 			string[] propertyNames = componentType.PropertyNames;
@@ -271,19 +269,18 @@ namespace NHibernate.Loader
 			{
 				if (types[i].IsAssociationType)
 				{
-					IAssociationType associationType = (IAssociationType)types[i];
-					string[] aliasedLhsColumns =
-						JoinHelper.GetAliasedLHSColumnNames(associationType, alias, propertyNumber, begin, persister, Factory);
+					var associationType = (IAssociationType) types[i];
 
-					string[] lhsColumns = JoinHelper.GetLHSColumnNames(associationType, propertyNumber, begin, persister, Factory);
-					string lhsTable = JoinHelper.GetLHSTableName(associationType, propertyNumber, persister);
+					string[] aliasedLhsColumns = associationTypeSQLInfo.GetAliasedColumnNames(associationType, begin);
+					string[] lhsColumns = associationTypeSQLInfo.GetColumnNames(associationType, begin);
+					string lhsTable = associationTypeSQLInfo.GetTableName(associationType);
 
 					string subpath = SubPath(path, propertyNames[i]);
 					bool[] propertyNullability = componentType.PropertyNullability;
 
-					JoinType joinType =
-						GetJoinType(associationType, componentType.GetFetchMode(i), subpath, lhsTable, lhsColumns,
-												propertyNullability == null || propertyNullability[i], currentDepth, componentType.GetCascadeStyle(i));
+					JoinType joinType = GetJoinType(associationType, componentType.GetFetchMode(i), subpath, lhsTable, lhsColumns,
+					                                propertyNullability == null || propertyNullability[i], currentDepth,
+					                                componentType.GetCascadeStyle(i));
 
 					AddAssociationToJoinTreeIfNecessary(associationType, aliasedLhsColumns, alias, subpath, currentDepth, joinType);
 				}
@@ -291,7 +288,7 @@ namespace NHibernate.Loader
 				{
 					string subpath = SubPath(path, propertyNames[i]);
 
-					WalkComponentTree((IAbstractComponentType)types[i], propertyNumber, begin, persister, alias, subpath, currentDepth);
+					WalkComponentTree((IAbstractComponentType) types[i], begin, alias, subpath, currentDepth, associationTypeSQLInfo);
 				}
 				begin += types[i].GetColumnSpan(Factory);
 			}
@@ -339,12 +336,9 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Extend the path by the given property name
 		/// </summary>
-		private static string SubPath(string path, string property)
+		protected static string SubPath(string path, string property)
 		{
-			if (path == null || path.Length == 0)
-				return property;
-			else
-				return StringHelper.Qualify(path, property);
+			return string.IsNullOrEmpty(path) ? property : StringHelper.Qualify(path, property);
 		}
 
 		/// <summary>

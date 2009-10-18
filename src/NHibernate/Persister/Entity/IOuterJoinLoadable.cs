@@ -108,5 +108,10 @@ namespace NHibernate.Persister.Entity
 		/// Get the table name for the given property path
 		/// </summary>
 		string GetPropertyTableName(string propertyName);
+
+		/// <summary>
+		/// Return the alised identifier column names
+		/// </summary>
+		string[] ToIdentifierColumns(string alias);
 	}
 }

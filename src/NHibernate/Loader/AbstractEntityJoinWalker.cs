@@ -28,7 +28,7 @@ namespace NHibernate.Loader
 			alias = rootSqlAlias;
 		}
 
-		protected void InitAll(SqlString whereString, SqlString orderByString, LockMode lockMode)
+		protected virtual void InitAll(SqlString whereString, SqlString orderByString, LockMode lockMode)
 		{
 			WalkEntityTree(persister, Alias);
 			IList<OuterJoinableAssociation> allAssociations = new List<OuterJoinableAssociation>(associations);
@@ -99,7 +99,7 @@ namespace NHibernate.Loader
 
 		public abstract string Comment { get; }
 
-		protected ILoadable Persister
+		protected IOuterJoinLoadable Persister
 		{
 			get { return persister; }
 		}

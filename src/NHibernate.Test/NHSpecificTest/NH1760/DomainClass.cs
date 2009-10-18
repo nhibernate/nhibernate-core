@@ -4,22 +4,22 @@ namespace NHibernate.Test.NHSpecificTest.NH1760
 {
 	public class Customer
 	{
-		public Int32 Id { get; set; }
-		public String Name { get; set; }
+		public virtual Int32 Id { get; set; }
+		public virtual String Name { get; set; }
 	}
 
 	public class TestClass
 	{
-		public TestClassId Id { get; set; }
-		public String Value { get; set; }
+		public virtual TestClassId Id { get; set; }
+		public virtual String Value { get; set; }
 	}
 
 	public class TestClassId
 	{
-		public Customer Customer { get; set; }
-		public Int32 SomeInt { get; set; }
+		public virtual Customer Customer { get; set; }
+		public virtual Int32 SomeInt { get; set; }
 
-		public bool Equals(TestClassId other)
+		public virtual bool Equals(TestClassId other)
 		{
 			if (ReferenceEquals(null, other))
 			{

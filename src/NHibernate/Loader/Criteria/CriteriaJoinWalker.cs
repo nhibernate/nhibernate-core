@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using log4net;
@@ -55,6 +56,25 @@ namespace NHibernate.Loader.Criteria
 
 			userAliasList.Add(criteria.Alias); //root entity comes *last*
 			userAliases = ArrayHelper.ToStringArray(userAliasList);
+		}
+
+		protected override void InitAll(SqlString whereString, SqlString orderByString, LockMode lockMode)
+		{
+			// NH different behavior (NH-1760)
+			WalkCompositeComponentIdTree();
+			base.InitAll(whereString, orderByString, lockMode);
+		}
+
+		private void WalkCompositeComponentIdTree()
+		{
+			IType type = Persister.IdentifierType;
+			string propertyName = Persister.IdentifierPropertyName;
+			if (type != null && type.IsComponentType && !(type is EmbeddedComponentType))
+			{
+				ILhsAssociationTypeSqlInfo associationTypeSQLInfo = JoinHelper.GetIdLhsSqlInfo(Alias, Persister, Factory);
+				WalkComponentTree((IAbstractComponentType) type, 0, Alias, SubPath(string.Empty, propertyName), 0,
+				                  associationTypeSQLInfo);
+			}
 		}
 
 		public IType[] ResultTypes
