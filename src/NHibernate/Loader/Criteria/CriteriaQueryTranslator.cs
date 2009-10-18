@@ -620,12 +620,12 @@ namespace NHibernate.Loader.Criteria
 		public TypedValue GetTypedValue(ICriteria subcriteria, string propertyName, object value)
 		{
 			// Detect discriminator values...
-			if (value is System.Type)
+			var entityClass = value as System.Type;
+			if (entityClass != null)
 			{
-				System.Type entityClass = (System.Type)value;
 				IQueryable q = helper.FindQueryableUsingImports(entityClass.FullName);
 
-				if (q != null)
+				if (q != null && q.DiscriminatorValue != null)
 				{
 					// NH Different implementation : We are using strongly typed parameter for SQL query (see DiscriminatorValue comment)
 					return new TypedValue(q.DiscriminatorType, q.DiscriminatorValue, EntityMode.Poco);

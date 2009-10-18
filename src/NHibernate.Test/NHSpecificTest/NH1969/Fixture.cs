@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1969
 			}
 		}
 
-		[Test, Ignore]
+		[Test]
 		public void TestMappedTypeCriteria()
 		{
 			using (ISession s = OpenSession())
