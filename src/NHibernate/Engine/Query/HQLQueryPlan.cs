@@ -135,7 +135,7 @@ namespace NHibernate.Engine.Query
         	var parameterTranslations = translator.GetParameterTranslations();
 
 			var namedParamDescriptorMap = new Dictionary<string, NamedParameterDescriptor>();
-			foreach (NamedParameterDescriptor entry in queryExpression.Parameters)
+			foreach (NamedParameterDescriptor entry in queryExpression.ParameterDescriptors)
 			{
 				namedParamDescriptorMap[entry.Name] =
 					new NamedParameterDescriptor(entry.Name, parameterTranslations.GetNamedParameterExpectedType(entry.Name),

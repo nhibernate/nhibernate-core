@@ -259,8 +259,10 @@ namespace NHibernate.Impl
             {
                 CheckAndUpdateSessionStatus();
                 HQLQueryPlan queryPlan = GetHQLQueryPlan(queryExpression, false);
-                QueryImpl query = new QueryImpl(queryPlan.QueryExpression, this,
-                                                queryPlan.ParameterMetadata);
+				QueryImpl query = new QueryImpl(queryPlan.QueryExpression, 
+												this,
+                                                queryPlan.ParameterMetadata
+												);
                 query.SetComment("[expression]");
                 return query;
             }

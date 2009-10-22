@@ -43,14 +43,18 @@ namespace NHibernate.Linq
         {
             var nhLinqExpression = new NhLinqExpression(expression);
 
-            var query = _session.CreateQuery(nhLinqExpression).List();
+        	var query = _session.CreateQuery(nhLinqExpression);
+
+			SetParameters(query, nhLinqExpression.ParameterValuesByName);
+
+        	var results = query.List();
 
             if (nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence)
             {
-                return query.AsQueryable();
+                return results.AsQueryable();
             }
 
-            return query[0];
+            return results[0];
         }
 
         public TResult Execute<TResult>(Expression expression)
@@ -67,6 +71,14 @@ namespace NHibernate.Linq
         {
             return new NhQueryable<T>(this, expression);
         }
+
+		void SetParameters(IQuery query, IDictionary<string, object> parameters)
+		{
+			foreach (var parameterName in query.NamedParameters)
+			{
+				query.SetParameter(parameterName, parameters[parameterName]);
+			}
+		}
     }
 
     public enum NhLinqExpressionReturnType
@@ -80,14 +92,13 @@ namespace NHibernate.Linq
         private readonly Expression _expression;
         private CommandData _commandData;
     	private readonly IDictionary<ConstantExpression, NamedParameter> _queryParameters;
-    	private readonly IDictionary<string, object> _queryParameterValues;
 
-        public NhLinqExpression(Expression expression)
+    	public NhLinqExpression(Expression expression)
         {
             _expression = PartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
 
 			_queryParameters = ExpressionParameterVisitor.Visit(_expression);
-			_queryParameterValues = _queryParameters.Values.ToDictionary(p => p.Name, p => p.Value);
+			ParameterValuesByName = _queryParameters.Values.ToDictionary(p => p.Name, p => p.Value);
 
 			Key = ExpressionKeyVisitor.Visit(_expression, _queryParameters);
             Type = _expression.Type;
@@ -111,14 +122,14 @@ namespace NHibernate.Linq
 
 			_commandData = QueryModelVisitor.GenerateHqlQuery(queryModel, _queryParameters, requiredHqlParameters);
 
-    		Parameters = requiredHqlParameters.AsReadOnly();
+    		ParameterDescriptors = requiredHqlParameters.AsReadOnly();
 
             return _commandData.Statement.AstNode;
         }
 
         public string Key { get; private set; }
 
-		public IList<NamedParameterDescriptor> Parameters { get; private set; }
+		public IList<NamedParameterDescriptor> ParameterDescriptors { get; private set; }
 
 		public ICollection<NamedParameter> ParameterValues { get; private set; }
 
@@ -126,9 +137,10 @@ namespace NHibernate.Linq
 
         public System.Type Type { get; private set; }
 
-        public void SetQueryParametersPriorToExecute(QueryImpl impl)
+    	public IDictionary<string, object> ParameterValuesByName { get; private set; }
+
+    	public void SetQueryPropertiesPriorToExecute(IQuery impl)
         {
-            _commandData.SetParameters(impl, _queryParameterValues);
             _commandData.SetResultTransformer(impl);
             _commandData.AddAdditionalCriteria(impl);
         }

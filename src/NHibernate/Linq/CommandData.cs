@@ -23,14 +23,6 @@ namespace NHibernate.Linq
 
         public HqlQuery Statement { get; private set; }
 
-        public void SetParameters(IQuery query, IDictionary<string, object> parameters)
-        {
-            foreach (var parameterName in query.NamedParameters)
-            {
-                query.SetParameter(parameterName, parameters[parameterName]);
-            }
-        }
-
         public void AddAdditionalCriteria(IQuery query)
         {
             foreach (var criteria in _additionalCriteria)

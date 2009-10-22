@@ -10,7 +10,7 @@ namespace NHibernate
         IASTNode Translate(ISessionFactory sessionFactory);
         string Key { get; }
         System.Type Type { get; }
-    	IList<NamedParameterDescriptor> Parameters { get; }
-    	void SetQueryParametersPriorToExecute(QueryImpl impl);
+    	IList<NamedParameterDescriptor> ParameterDescriptors { get; }
+    	void SetQueryPropertiesPriorToExecute(IQuery impl);
     }
 }
