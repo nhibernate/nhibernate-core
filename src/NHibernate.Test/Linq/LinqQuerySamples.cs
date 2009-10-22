@@ -45,6 +45,43 @@ namespace NHibernate.Test.Linq
                                }, x => x.CustomerId);
         }
 
+		[Category("WHERE")]
+		[Test(Description = "This sample uses WHERE to filter for Customers in London and then Madrid to ensure that the parameterization is working.")]
+		public void DLinq1b()
+		{
+			string city = "London";
+
+			IOrderedQueryable<Customer> q =
+				from c in db.Customers
+				where c.Address.City == city
+				orderby c.CustomerId
+				select c;
+
+			AssertByIds(q, new[]
+                               {
+                                   "AROUT",
+                                   "BSBEV",
+                                   "CONSH",
+                                   "EASTC",
+                                   "NORTS",
+                                   "SEVES"
+                               }, x => x.CustomerId);
+
+			city = "Madrid";
+
+			q = from c in db.Customers
+				where c.Address.City == city
+				orderby c.CustomerId
+				select c;
+
+			AssertByIds(q, new[]
+                               {
+                                   "BOLID",
+                                   "FISSA",
+                                   "ROMEY"
+                               }, x => x.CustomerId);
+		}
+
         [Category("SELECT/DISTINCT")]
         [Test(
             Description =
