@@ -117,6 +117,9 @@ namespace NHibernate.Hql.Ast
 
             switch (System.Type.GetTypeCode(type))
             {
+				case TypeCode.Boolean:
+            		_node.Text = "bool";
+            		break;
                 case TypeCode.Int32:
                     _node.Text = "integer";
                     break;
@@ -126,6 +129,9 @@ namespace NHibernate.Hql.Ast
                 case TypeCode.DateTime:
                     _node.Text = "datetime";
                     break;
+				case TypeCode.String:
+            		_node.Text = "string";
+            		break;
                 default:
                     throw new NotSupportedException(string.Format("Don't currently support idents of type {0}", type.Name));
             }
@@ -239,8 +245,9 @@ namespace NHibernate.Hql.Ast
     public class HqlParameter : HqlTreeNode
     {
         public HqlParameter(IASTFactory factory, string name)
-            : base(HqlSqlWalker.PARAM, name, factory)
+            : base(HqlSqlWalker.COLON, ":", factory)
         {
+			AddChild(new HqlIdent(factory, name));
         }
     }
 

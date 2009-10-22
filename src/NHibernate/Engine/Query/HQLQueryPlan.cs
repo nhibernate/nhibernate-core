@@ -132,10 +132,17 @@ namespace NHibernate.Engine.Query
 
             querySpaces = new HashedSet<string>(translator.QuerySpaces);
 
-            // TODO - need to build parameterMetadata.  Current function no good, since is parses the HQL.  Might need to walk the AST here,
-            // probably inside the QueryTranslator.  That's probably a better place for the parsing to be anyway; possibly worth moving for classic as well...
-            //parameterMetadata = BuildParameterMetadata(translator.GetParameterTranslations(), hql);
-            parameterMetadata = new ParameterMetadata(new OrdinalParameterDescriptor[0], new Dictionary<string, NamedParameterDescriptor>());
+        	var parameterTranslations = translator.GetParameterTranslations();
+
+			var namedParamDescriptorMap = new Dictionary<string, NamedParameterDescriptor>();
+			foreach (NamedParameterDescriptor entry in queryExpression.Parameters)
+			{
+				namedParamDescriptorMap[entry.Name] =
+					new NamedParameterDescriptor(entry.Name, parameterTranslations.GetNamedParameterExpectedType(entry.Name),
+												 entry.SourceLocations, entry.JpaStyle);
+			}
+
+			parameterMetadata = new ParameterMetadata(new OrdinalParameterDescriptor[0], namedParamDescriptorMap);
 
             returnMetadata = new ReturnMetadata(translator.ReturnAliases, translator.ReturnTypes);
         }

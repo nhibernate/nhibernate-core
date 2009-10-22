@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
 using Remotion.Data.Linq.Clauses.Expressions;
 using Remotion.Data.Linq.Clauses.ExpressionTreeVisitors;
@@ -12,12 +13,14 @@ namespace NHibernate.Linq
     {
         protected readonly HqlTreeBuilder _hqlTreeBuilder;
         protected readonly HqlNodeStack _stack;
-        private readonly ParameterAggregator _parameterAggregator;
+    	private readonly IDictionary<ConstantExpression, NamedParameter> _parameters;
+    	private readonly IList<NamedParameterDescriptor> _requiredHqlParameters;
 
-        public HqlGeneratorExpressionTreeVisitor(ParameterAggregator parameterAggregator)
+    	public HqlGeneratorExpressionTreeVisitor(IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters)
         {
-            _parameterAggregator = parameterAggregator;
-            _hqlTreeBuilder = new HqlTreeBuilder();
+			_parameters = parameters;
+			_requiredHqlParameters = requiredHqlParameters;
+			_hqlTreeBuilder = new HqlTreeBuilder();
             _stack = new HqlNodeStack(_hqlTreeBuilder);
         }
 
@@ -33,7 +36,7 @@ namespace NHibernate.Linq
 
         protected override Expression VisitNhAverage(NhAverageExpression expression)
         {
-            var visitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
+            var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
             visitor.Visit(expression.Expression);
 
             _stack.PushLeaf(_hqlTreeBuilder.Cast(_hqlTreeBuilder.Average(visitor.GetHqlTreeNodes().Single()), expression.Type));
@@ -43,7 +46,7 @@ namespace NHibernate.Linq
 
         protected override Expression VisitNhCount(NhCountExpression expression)
         {
-            var visitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
+			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
             visitor.Visit(expression.Expression);
 
             _stack.PushLeaf(_hqlTreeBuilder.Cast(_hqlTreeBuilder.Count(visitor.GetHqlTreeNodes().Single()), expression.Type));
@@ -53,7 +56,7 @@ namespace NHibernate.Linq
 
         protected override Expression VisitNhMin(NhMinExpression expression)
         {
-            var visitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
+			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
             visitor.Visit(expression.Expression);
 
             _stack.PushLeaf(_hqlTreeBuilder.Cast(_hqlTreeBuilder.Min(visitor.GetHqlTreeNodes().Single()), expression.Type));
@@ -63,7 +66,7 @@ namespace NHibernate.Linq
 
         protected override Expression VisitNhMax(NhMaxExpression expression)
         {
-            var visitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
+			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
             visitor.Visit(expression.Expression);
 
             _stack.PushLeaf(_hqlTreeBuilder.Cast(_hqlTreeBuilder.Max(visitor.GetHqlTreeNodes().Single()), expression.Type));
@@ -73,7 +76,7 @@ namespace NHibernate.Linq
 
         protected override Expression VisitNhSum(NhSumExpression expression)
         {
-            var visitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
+			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
             visitor.Visit(expression.Expression);
 
             _stack.PushLeaf(_hqlTreeBuilder.Cast(_hqlTreeBuilder.Sum(visitor.GetHqlTreeNodes().Single()), expression.Type));
@@ -83,7 +86,7 @@ namespace NHibernate.Linq
 
         protected override Expression VisitNhDistinct(NhDistinctExpression expression)
         {
-            var visitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
+			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
             visitor.Visit(expression.Expression);
 
             _stack.PushLeaf(_hqlTreeBuilder.Distinct());
@@ -216,15 +219,17 @@ namespace NHibernate.Linq
                 }
             }
 
-            /*
-            var namedParameter = _parameterAggregator.AddParameter(expression.Value);
+        	NamedParameter namedParameter;
 
-            _expression = _hqlTreeBuilder.Parameter(namedParameter.Name);
-
-            return expression;
-             */
-            // TODO - get parameter support in place in the HQLQueryPlan
-            _stack.PushLeaf(_hqlTreeBuilder.Constant(expression.Value));
+			if (_parameters.TryGetValue(expression, out namedParameter))
+			{
+				_stack.PushLeaf(_hqlTreeBuilder.Cast(_hqlTreeBuilder.Parameter(namedParameter.Name), namedParameter.Value.GetType()));
+				_requiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, new []{ _requiredHqlParameters.Count + 1}, false));
+			}
+			else
+			{
+				_stack.PushLeaf(_hqlTreeBuilder.Constant(expression.Value));
+			}
 
             return expression;
         }
@@ -331,7 +336,7 @@ namespace NHibernate.Linq
 
         protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
         {
-            CommandData query = QueryModelVisitor.GenerateHqlQuery(expression.QueryModel, _parameterAggregator);
+            CommandData query = QueryModelVisitor.GenerateHqlQuery(expression.QueryModel, _parameters, _requiredHqlParameters);
 
             _stack.PushLeaf(query.Statement);
             

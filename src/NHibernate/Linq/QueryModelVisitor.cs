@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
 using Remotion.Data.Linq;
 using Remotion.Data.Linq.Clauses;
@@ -14,7 +15,6 @@ namespace NHibernate.Linq
     public class QueryModelVisitor : QueryModelVisitorBase
 	{
 		private readonly HqlTreeBuilder _hqlTreeBuilder;
-		private readonly ParameterAggregator _parameterAggregator;
 
         private readonly List<Action<IQuery>> _additionalCriteria = new List<Action<IQuery>>();
         private readonly List<LambdaExpression> _listTransformers = new List<LambdaExpression>();
@@ -27,19 +27,17 @@ namespace NHibernate.Linq
 		private HqlSelect _selectClause;
 
         private ResultOperatorProcessingMode _resultOperatorProcessingMode;
+    	private readonly IDictionary<ConstantExpression, NamedParameter> _parameters;
+    	private readonly IList<NamedParameterDescriptor> _requiredHqlParameters;
 
-		private QueryModelVisitor(ParameterAggregator parameterAggregator)
+    	private QueryModelVisitor(IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters)
 		{
+			_parameters = parameters;
+			_requiredHqlParameters = requiredHqlParameters;
 			_hqlTreeBuilder = new HqlTreeBuilder();
-			_parameterAggregator = parameterAggregator;
 		}
 
-		public static CommandData GenerateHqlQuery(QueryModel queryModel)
-		{
-			return GenerateHqlQuery(queryModel, new ParameterAggregator());
-		}
-
-		public static CommandData GenerateHqlQuery(QueryModel queryModel, ParameterAggregator aggregator)
+		public static CommandData GenerateHqlQuery(QueryModel queryModel, IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters)
 		{
             // Merge aggregating result operators (distinct, count, sum etc) into the select clause
             new MergeAggregatingResultsRewriter().ReWrite(queryModel);
@@ -56,7 +54,7 @@ namespace NHibernate.Linq
             // Flatten pointless subqueries
 		    new QueryReferenceExpressionFlattener().ReWrite(queryModel);
 
-			var visitor = new QueryModelVisitor(aggregator);
+			var visitor = new QueryModelVisitor(parameters, requiredHqlParameters);
 			visitor.VisitQueryModel(queryModel);
 			return visitor.GetHqlCommand();
 		}
@@ -100,7 +98,6 @@ namespace NHibernate.Linq
 			}
 
 			return new CommandData(query,
-			                       _parameterAggregator.GetParameters(),
                                    _itemTransformers,
 			                       _listTransformers,
 			                       _additionalCriteria);
@@ -144,7 +141,7 @@ namespace NHibernate.Linq
 
 		public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
 		{
-			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
+			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
 			visitor.Visit(fromClause.FromExpression);
 
 		    _fromClauses.Add(_hqlTreeBuilder.Range(
@@ -278,7 +275,7 @@ namespace NHibernate.Linq
 
 		private void ProcessGroupByOperator(GroupResultOperator resultOperator)
 		{
-			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
+			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
 			visitor.Visit(resultOperator.KeySelector);
 			_groupByClause = _hqlTreeBuilder.GroupBy();
 			_groupByClause.AddChild(visitor.GetHqlTreeNodes().Single());
@@ -301,7 +298,7 @@ namespace NHibernate.Linq
                 return;
             }
 
-            var visitor = new ProjectionEvaluator(_parameterAggregator, typeof(object[]), CanBeEvaluatedInHqlSelectStatement);
+            var visitor = new ProjectionEvaluator(typeof(object[]), CanBeEvaluatedInHqlSelectStatement, _parameters, _requiredHqlParameters);
 
             visitor.Visit(selectClause.Selector);
 
@@ -318,7 +315,7 @@ namespace NHibernate.Linq
 		public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
 		{
 			// Visit the predicate to build the query
-			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
+			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
 			visitor.Visit(whereClause.Predicate);
 
 			// There maybe a where clause in existence already, in which case we AND with it.
@@ -331,7 +328,7 @@ namespace NHibernate.Linq
 
 			foreach (Ordering clause in orderByClause.Orderings)
 			{
-				var visitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
+				var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
 				visitor.Visit(clause.Expression);
 
 				_orderByClause.AddChild(visitor.GetHqlTreeNodes().Single());
@@ -345,13 +342,13 @@ namespace NHibernate.Linq
 
 		public override void VisitJoinClause(JoinClause joinClause, QueryModel queryModel, int index)
 		{
-            var fromVisitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
+			var fromVisitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
             fromVisitor.Visit(joinClause.InnerSequence);
 
-            var innerKey = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
+			var innerKey = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
             innerKey.Visit(joinClause.InnerKeySelector);
 
-            var outerKey = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
+			var outerKey = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
             outerKey.Visit(joinClause.OuterKeySelector);
 
             _whereClauses.Add(_hqlTreeBuilder.Equality(innerKey.GetHqlTreeNodes().Single(), outerKey.GetHqlTreeNodes().Single()));
@@ -369,7 +366,7 @@ namespace NHibernate.Linq
 				if (member.Expression is QuerySourceReferenceExpression)
 				{
 					// It's a join
-					var visitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
+					var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
 					visitor.Visit(fromClause.FromExpression);
 
 				    _fromClauses.Add(_hqlTreeBuilder.Join(

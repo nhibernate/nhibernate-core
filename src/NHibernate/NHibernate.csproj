@@ -569,6 +569,7 @@
     <Compile Include="Criterion\QueryOver.cs" />
     <Compile Include="Impl\ExpressionProcessor.cs" />
     <Compile Include="Impl\SessionIdLoggingContext.cs" />
+    <Compile Include="Linq\ExpressionKeyVisitor.cs" />
     <Compile Include="Linq\GroupByAggregateDetectionVisitor.cs" />
     <Compile Include="Linq\AggregatingGroupByRewriter.cs" />
     <Compile Include="Linq\AggregatingGroupJoinRewriter.cs" />

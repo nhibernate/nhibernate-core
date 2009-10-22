@@ -63,6 +63,11 @@ namespace NHibernate.Impl
 
 		public override IList List()
 		{
+			if (_queryExpression != null)
+			{
+				_queryExpression.SetQueryParametersPriorToExecute(this);
+			}
+
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
@@ -74,7 +79,6 @@ namespace NHibernate.Impl
                 }
                 else
                 {
-                    _queryExpression.SetQueryParametersPriorToExecute(this);
                     return Session.List(_queryExpression, GetQueryParameters(namedParams));
                 }
 			}

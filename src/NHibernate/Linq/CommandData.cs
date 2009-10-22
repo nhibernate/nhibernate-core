@@ -8,28 +8,26 @@ namespace NHibernate.Linq
 {
     public class CommandData
     {
-        private readonly NamedParameter[] _namedParameters;
-        private readonly List<LambdaExpression> _itemTransformers;
+    	private readonly List<LambdaExpression> _itemTransformers;
         private readonly List<LambdaExpression> _listTransformers;
         private readonly List<Action<IQuery>> _additionalCriteria;
 
-        public CommandData(HqlQuery statement, NamedParameter[] namedParameters, List<LambdaExpression> itemTransformers, List<LambdaExpression> listTransformers, List<Action<IQuery>> additionalCriteria)
+        public CommandData(HqlQuery statement, List<LambdaExpression> itemTransformers, List<LambdaExpression> listTransformers, List<Action<IQuery>> additionalCriteria)
         {
             _itemTransformers = itemTransformers;
             _listTransformers = listTransformers;
 
             Statement = statement;
-            _namedParameters = namedParameters;
-            _additionalCriteria = additionalCriteria;
+        	_additionalCriteria = additionalCriteria;
         }
 
         public HqlQuery Statement { get; private set; }
 
-        public void SetParameters(IQuery query)
+        public void SetParameters(IQuery query, IDictionary<string, object> parameters)
         {
-            foreach (var parameter in _namedParameters)
+            foreach (var parameterName in query.NamedParameters)
             {
-                query.SetParameter(parameter.Name, parameter.Value);
+                query.SetParameter(parameterName, parameters[parameterName]);
             }
         }
 

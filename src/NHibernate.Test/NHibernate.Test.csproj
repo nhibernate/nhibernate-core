@@ -62,6 +62,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\3.5\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="Remotion.Data.Linq, Version=1.13.9.2, Culture=neutral, PublicKeyToken=cab60358ab4081ea, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\3.5\Remotion.Data.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -383,6 +387,7 @@
     <Compile Include="Linq\Entities\Territory.cs" />
     <Compile Include="Linq\LinqQuerySamples.cs" />
     <Compile Include="Linq\LinqTestCase.cs" />
+    <Compile Include="Linq\ParameterisedQueries.cs" />
     <Compile Include="Linq\ReadonlyTestCase.cs" />
     <Compile Include="MappingTest\NonReflectiveBinderFixture.cs" />
     <Compile Include="MappingTest\Wicked.cs" />

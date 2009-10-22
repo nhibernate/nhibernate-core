@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
 using Remotion.Data.Linq.Parsing;
 
@@ -10,18 +11,20 @@ namespace NHibernate.Linq
     {
         protected readonly HqlTreeBuilder _hqlTreeBuilder;
         protected readonly HqlNodeStack _stack;
-        private readonly ParameterAggregator _parameterAggregator;
         private HashSet<Expression> _hqlNodes;
         private readonly ParameterExpression _inputParameter;
         private readonly Func<Expression, bool> _predicate;
-        private int _iColumn;
+    	private readonly IDictionary<ConstantExpression, NamedParameter> _parameters;
+    	private readonly IList<NamedParameterDescriptor> _requiredHqlParameters;
+    	private int _iColumn;
 
-        public ProjectionEvaluator(ParameterAggregator parameterAggregator, System.Type inputType, Func<Expression, bool> predicate)
+		public ProjectionEvaluator(System.Type inputType, Func<Expression, bool> predicate, IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters)
         {
-            _parameterAggregator = parameterAggregator;
             _inputParameter = Expression.Parameter(inputType, "input");
             _predicate = predicate;
-            _hqlTreeBuilder = new HqlTreeBuilder();
+        	_parameters = parameters;
+			_requiredHqlParameters = requiredHqlParameters;
+			_hqlTreeBuilder = new HqlTreeBuilder();
             _stack = new HqlNodeStack(_hqlTreeBuilder);
         }
 
@@ -56,7 +59,7 @@ namespace NHibernate.Linq
             if (_hqlNodes.Contains(expression))
             {
                 // Pure HQL evaluation
-                var hqlVisitor = new HqlGeneratorExpressionTreeVisitor(_parameterAggregator);
+				var hqlVisitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
                 hqlVisitor.Visit(expression);
                 hqlVisitor.GetHqlTreeNodes().ForEach(n =>_stack.PushLeaf(n) );
 
