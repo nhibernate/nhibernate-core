@@ -5,7 +5,7 @@ using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
 using Remotion.Data.Linq.Parsing;
 
-namespace NHibernate.Linq
+namespace NHibernate.Linq.Visitors
 {
     public class ProjectionEvaluator : ExpressionTreeVisitor
     {

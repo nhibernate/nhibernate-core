@@ -1,10 +1,9 @@
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Linq.ReWriters;
 using Remotion.Data.Linq.Clauses.Expressions;
-using Remotion.Data.Linq.Clauses.ResultOperators;
-using Remotion.Data.Linq.Parsing;
 
-namespace NHibernate.Linq
+namespace NHibernate.Linq.Visitors
 {
     // TODO: This needs strengthening.  Possibly a lot in common with the GroupJoinAggregateDetectionVisitor class, which does many more checks
     internal class GroupByAggregateDetectionVisitor : NhExpressionTreeVisitor

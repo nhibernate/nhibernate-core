@@ -1,8 +1,8 @@
-using System;
 using System.Linq.Expressions;
+using NHibernate.Linq.ReWriters;
 using Remotion.Data.Linq.Parsing;
 
-namespace NHibernate.Linq
+namespace NHibernate.Linq.Visitors
 {
     public class NhExpressionTreeVisitor : ExpressionTreeVisitor
     {

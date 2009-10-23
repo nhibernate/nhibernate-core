@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace NHibernate.Linq
+namespace NHibernate.Linq.Visitors
 {
     /// <summary>
     /// Performs bottom-up analysis to determine which nodes that match a certain predicate
