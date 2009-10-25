@@ -620,4 +620,11 @@ namespace NHibernate.Hql.Ast
         }
     }
 
+	public class HqlAll : HqlTreeNode
+	{
+		public HqlAll(IASTFactory factory)
+			: base(HqlSqlWalker.ALL, "all", factory)
+        {
+        }
+	}
 }

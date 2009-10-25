@@ -246,35 +246,76 @@ namespace NHibernate.Linq.Visitors
                         // Any has one or two arguments.  Arg 1 is the source and arg 2 is the optional predicate
                         using (_stack.PushNode(_hqlTreeBuilder.Exists()))
                         {
-                            using (_stack.PushNode(_hqlTreeBuilder.Query()))
-                            {
-                                using (_stack.PushNode(_hqlTreeBuilder.SelectFrom()))
-                                {
-                                    using (_stack.PushNode(_hqlTreeBuilder.From()))
-                                    {
-                                        using (_stack.PushNode(_hqlTreeBuilder.Range()))
-                                        {
-                                            VisitExpression(expression.Arguments[0]);
+							using (_stack.PushNode(_hqlTreeBuilder.Query()))
+							{
+								using (_stack.PushNode(_hqlTreeBuilder.SelectFrom()))
+								{
+									using (_stack.PushNode(_hqlTreeBuilder.From()))
+									{
+										using (_stack.PushNode(_hqlTreeBuilder.Range()))
+										{
+											VisitExpression(expression.Arguments[0]);
 
-                                            if (expression.Arguments.Count > 1)
-                                            {
-                                                var expr = (LambdaExpression) expression.Arguments[1];
-                                                _stack.PushLeaf(_hqlTreeBuilder.Alias(expr.Parameters[0].Name));
-                                            }
-                                        }
-                                    }
-                                }
-                                if (expression.Arguments.Count > 1)
-                                {
-                                    using (_stack.PushNode(_hqlTreeBuilder.Where()))
-                                    {
-                                        VisitExpression(expression.Arguments[1]);
-                                    }
-                                }
-                            }
+											if (expression.Arguments.Count > 1)
+											{
+												var expr = (LambdaExpression) expression.Arguments[1];
+												_stack.PushLeaf(_hqlTreeBuilder.Alias(expr.Parameters[0].Name));
+											}
+										}
+									}
+								}
+								if (expression.Arguments.Count > 1)
+								{
+									using (_stack.PushNode(_hqlTreeBuilder.Where()))
+									{
+										VisitExpression(expression.Arguments[1]);
+									}
+								}
+							}
                         }
                         break;
-                    case "Min": 
+
+					case "All":
+						// All has one or two arguments.  Arg 1 is the source and arg 2 is the optional predicate
+						using (_stack.PushNode(_hqlTreeBuilder.Not()))
+						{
+							using (_stack.PushNode(_hqlTreeBuilder.Exists()))
+							{
+								using (_stack.PushNode(_hqlTreeBuilder.Query()))
+								{
+									using (_stack.PushNode(_hqlTreeBuilder.SelectFrom()))
+									{
+										using (_stack.PushNode(_hqlTreeBuilder.From()))
+										{
+											using (_stack.PushNode(_hqlTreeBuilder.Range()))
+											{
+												VisitExpression(expression.Arguments[0]);
+
+												if (expression.Arguments.Count > 1)
+												{
+													var expr = (LambdaExpression) expression.Arguments[1];
+
+													_stack.PushLeaf(_hqlTreeBuilder.Alias(expr.Parameters[0].Name));
+												}
+											}
+										}
+									}
+									if (expression.Arguments.Count > 1)
+									{
+										using (_stack.PushNode(_hqlTreeBuilder.Where()))
+										{
+											using (_stack.PushNode(_hqlTreeBuilder.Not()))
+											{
+												VisitExpression(expression.Arguments[1]);
+											}
+										}
+									}
+								}
+							}
+						}
+                		break;
+
+					case "Min": 
                         using (_stack.PushNode(_hqlTreeBuilder.Min()))
                         {
                             VisitExpression(expression.Arguments[1]);

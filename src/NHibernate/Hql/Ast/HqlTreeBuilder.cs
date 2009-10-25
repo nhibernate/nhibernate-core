@@ -378,6 +378,10 @@ namespace NHibernate.Hql.Ast
         {
             return new HqlGroupBy(_factory);
         }
-    }
 
+		public HqlAll All()
+    	{
+    		return new HqlAll(_factory);
+    	}
+    }
 }

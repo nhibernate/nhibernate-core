@@ -219,11 +219,6 @@ namespace NHibernate.Test.Linq
                             "a shaped subset of the data about Customers.")]
         public void DLinq16()
         {
-           /*
-            * 1) bottom up search of select expression to identify nodes that can be done with hql and those that can't
-            * 2) top down walk; for the nodes that are hql, call the hql generator and create an objectArray[] expression
-            * 3)                for the other nodes, ignore the hql and just return the linq expression
-            */ 
             var q =
                 from c in db.Customers
                 select new
@@ -1093,10 +1088,9 @@ namespace NHibernate.Test.Linq
         [Category("EXISTS/IN/ANY/ALL")]
         [Test(Description = "This sample uses All to return Customers whom all of their orders " +
                             "have been shipped to their own city or whom have no orders.")]
-        [Ignore("TODO")]
         public void DLinq54()
         {
-            IQueryable<Customer> q =
+			IQueryable<Customer> q =
                 from c in db.Customers
                 where c.Orders.All(o => o.ShippingAddress.City == c.Address.City)
 //                where c.Orders.Cast<Order>().All(o => o.ShippingAddress.City == c.Address.City)
