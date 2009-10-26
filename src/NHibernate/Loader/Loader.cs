@@ -11,6 +11,7 @@ using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Engine.Query;
 using NHibernate.Event;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Util;
@@ -1104,7 +1105,8 @@ namespace NHibernate.Loader
 			bool useLimit = UseLimit(selection, dialect);
 			bool hasFirstRow = GetFirstRow(selection) > 0;
 			bool useOffset = hasFirstRow && useLimit && dialect.SupportsLimitOffset;
-			// TODO NH bool callable = queryParameters.Callable;
+			bool isCallable = queryParameters.Callable;
+			bool hasReturnValue = queryParameters.HasReturnValue;
 
 			if (useLimit)
 			{
@@ -1114,10 +1116,19 @@ namespace NHibernate.Loader
 
 			sqlString = PreprocessSQL(sqlString, queryParameters, dialect);
 
-			// TODO NH: Callable for SP -> PrepareCallableQueryCommand
-			IDbCommand command =
-				session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString,
-				                                    GetParameterTypes(queryParameters, useLimit, useOffset));
+			IDbCommand command = null;
+			if (isCallable)
+			{
+				command =
+					session.Batcher.PrepareQueryCommand(CommandType.StoredProcedure, CallableParser.Parse(sqlString.ToString()),
+														GetParameterTypes(queryParameters, useLimit, useOffset));
+			}
+			else
+			{
+				command =
+					session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString,
+														GetParameterTypes(queryParameters, useLimit, useOffset));
+			}
 
 			try
 			{
@@ -1133,11 +1144,12 @@ namespace NHibernate.Loader
 				{
 					colIndex += BindLimitParameters(command, colIndex, selection, session);
 				}
-				// TODO NH
-				//if (callable)
-				//{
-				//  colIndex = dialect.RegisterResultSetOutParameter(command, col);
-				//}
+
+				if (isCallable)
+				{
+					colIndex +=
+						session.Factory.ConnectionProvider.Driver.RegisterResultSetOutParameter(command, colIndex, hasReturnValue);
+				}
 
 				colIndex += BindParameterValues(command, queryParameters, colIndex, session);
 
@@ -1263,7 +1275,7 @@ namespace NHibernate.Loader
 			// NH Different behavior:
 			// The responsibility of parameter binding was entirely moved to QueryParameters
 			// to deal with positionslParameter+NamedParameter+ParameterOfFilters
-			return queryParameters.BindParameters(statement, GetNamedParameterLocs, 0, session);
+			return queryParameters.BindParameters(statement, GetNamedParameterLocs, startIndex, session);
 		}
 
 		public virtual int[] GetNamedParameterLocs(string name)

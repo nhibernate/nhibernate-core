@@ -80,6 +80,17 @@ namespace NHibernate.Driver
 		IDbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes);
 
 		/// <summary>
+		/// Registers an OUT parameter which will be returing a
+		/// <see cref="IDataReader"/>.  How this is accomplished varies greatly
+		/// from DB to DB, hence its inclusion here.
+		/// </summary>
+		/// <param name="command">The <see cref="IDbCommand"/> with CommandType.StoredProcedure.</param>
+		/// <param name="position">The bind position at which to register the OUT param.</param>
+		/// <param name="hasReturnValue">Whether the out parameter is a return value, or an out parameter.</param>
+		/// <returns>The number of (contiguous) bind positions used.</returns>
+		int RegisterResultSetOutParameter(IDbCommand command, int position, bool hasReturnValue);
+
+		/// <summary>
 		/// Prepare the <paramref name="command" /> by calling <see cref="IDbCommand.Prepare()" />.
 		/// May be a no-op if the driver does not support preparing commands, or for any other reason.
 		/// </summary>

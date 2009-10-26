@@ -171,7 +171,7 @@ namespace NHibernate.Engine.Query
 					new NamedParameterDescriptor(name, null, description.BuildPositionsArray(), description.JpaStyle);				
 			}
 
-			return new ParameterMetadata(ordinalDescriptors, namedParamDescriptorMap);
+			return new ParameterMetadata(ordinalDescriptors, namedParamDescriptorMap, recognizer.HasReturnValue);
 		}
 
 		[Serializable]

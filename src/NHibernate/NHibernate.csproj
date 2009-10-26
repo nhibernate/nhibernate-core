@@ -524,6 +524,7 @@
     <Compile Include="Dialect\SybaseASA9Dialect.cs" />
     <Compile Include="Driver\IfxDriver.cs" />
     <Compile Include="Driver\OracleLiteDataClientDriver.cs" />
+    <Compile Include="Engine\Query\CallableParser.cs" />
     <Compile Include="EntityModeEqualityComparer.cs" />
     <Compile Include="Event\AbstractPostDatabaseOperationEvent.cs" />
     <Compile Include="Event\AbstractPreDatabaseOperationEvent.cs" />

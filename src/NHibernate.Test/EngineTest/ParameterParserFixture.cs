@@ -59,5 +59,22 @@ ORDER BY Name + :pizza";
 			Assert.DoesNotThrow(() => p = recognizer.NamedParameterDescriptionMap["pizza"]);
 		}
 
+		[Test]
+		public void CanRecogniseNoReturnValueParameter()
+		{
+			string query = "{ call myFunction(?) }";
+			ParamLocationRecognizer recognizer = new ParamLocationRecognizer();
+			ParameterParser.Parse(query, recognizer);
+			Assert.That(recognizer.HasReturnValue, Is.False);
+		}
+
+		[Test]
+		public void CanRecogniseReturnValueParameter()
+		{
+			string query = "{ ? = call myFunction(?) }";
+			ParamLocationRecognizer recognizer = new ParamLocationRecognizer();
+			ParameterParser.Parse(query, recognizer);
+			Assert.That(recognizer.HasReturnValue, Is.True);
+		}
 	}
 }

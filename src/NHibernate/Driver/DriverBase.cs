@@ -136,6 +136,11 @@ namespace NHibernate.Driver
 			return cmd;
 		}
 
+		public virtual int RegisterResultSetOutParameter(IDbCommand command, int position, bool hasReturnValue)
+		{
+			throw new NotImplementedException(GetType().Name + " does not support resultsets via stored procedures");
+		}
+
 		private void SetCommandTimeout(IDbCommand cmd, object envTimeout)
 		{
 			if (commandTimeout >= 0)

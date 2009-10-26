@@ -1,6 +1,8 @@
 using System.Data;
+using System.Reflection;
 using NHibernate.AdoNet;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Driver
 {
@@ -14,7 +16,13 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public class OracleDataClientDriver : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
 	{
+		private const string driverAssemblyName = "Oracle.DataAccess";
+		private const string connectionTypeName = "Oracle.DataAccess.Client.OracleConnection";
+		private const string commandTypeName = "Oracle.DataAccess.Client.OracleCommand";
 		private static readonly SqlType GuidSqlType = new SqlType(DbType.Binary, 16);
+		private readonly PropertyInfo oracleDbType;
+		private readonly object oracleDbTypeRefCursor;
+
 		/// <summary>
 		/// Initializes a new instance of <see cref="OracleDataClientDriver"/>.
 		/// </summary>
@@ -23,10 +31,15 @@ namespace NHibernate.Driver
 		/// </exception>
 		public OracleDataClientDriver()
 			: base(
-			"Oracle.DataAccess",
-			"Oracle.DataAccess.Client.OracleConnection",
-			"Oracle.DataAccess.Client.OracleCommand")
+			driverAssemblyName,
+			connectionTypeName,
+			commandTypeName)
 		{
+			System.Type parameterType = ReflectHelper.TypeFromAssembly("Oracle.DataAccess.Client.OracleParameter", driverAssemblyName, false);
+			oracleDbType = parameterType.GetProperty("OracleDbType");
+
+			System.Type oracleDbTypeEnum = ReflectHelper.TypeFromAssembly("Oracle.DataAccess.Client.OracleDbType", driverAssemblyName, false);
+			oracleDbTypeRefCursor = System.Enum.Parse(oracleDbTypeEnum, "RefCursor");
 		}
 
 		/// <summary></summary>
@@ -67,6 +80,19 @@ namespace NHibernate.Driver
 					base.InitializeParameter(dbParam, name, sqlType);
 					break;
 			}
+		}
+
+		public override int RegisterResultSetOutParameter(IDbCommand command, int position, bool hasReturnValue)
+		{
+			IDbDataParameter outCursor = command.CreateParameter();
+			outCursor.ParameterName = "";
+			oracleDbType.SetValue(outCursor, oracleDbTypeRefCursor, null);
+
+			outCursor.Direction = hasReturnValue ? ParameterDirection.ReturnValue : ParameterDirection.Output;
+
+			command.Parameters.Insert(position, outCursor);
+
+			return 1;
 		}
 
 		#region IEmbeddedBatcherFactoryProvider Members
