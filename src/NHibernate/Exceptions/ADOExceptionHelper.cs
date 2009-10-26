@@ -36,7 +36,9 @@ namespace NHibernate.Exceptions
 		public static Exception Convert(ISQLExceptionConverter converter, Exception sqlException, string message,
 		                                   SqlString sql)
 		{
-			return Convert(converter, new AdoExceptionContextInfo {SqlException = sqlException, Message = message, Sql = sql.ToString()});
+			return Convert(converter,
+			               new AdoExceptionContextInfo
+			               	{SqlException = sqlException, Message = message, Sql = sql != null ? sql.ToString() : null});
 		}
 
 		/// <summary> 
@@ -57,9 +59,9 @@ namespace NHibernate.Exceptions
 		                                   object[] parameterValues, IDictionary<string, TypedValue> namedParameters)
 		{
 			sql = TryGetActualSqlQuery(sqle, sql);
-			string extendMessage = ExtendMessage(message, sql.ToString(), parameterValues, namedParameters);
+			string extendMessage = ExtendMessage(message, sql != null ? sql.ToString() : null, parameterValues, namedParameters);
 			ADOExceptionReporter.LogExceptions(sqle, extendMessage);
-			return new ADOException(extendMessage, sqle, sql.ToString());
+			return new ADOException(extendMessage, sqle, sql != null ? sql.ToString() : SQLNotAvailable);
 		}
 
 		/// <summary> For the given <see cref="Exception"/>, locates the <see cref="System.Data.Common.DbException"/>. </summary>
@@ -81,7 +83,7 @@ namespace NHibernate.Exceptions
 		                                   IDictionary<string, TypedValue> namedParameters)
 		{
 			var sb = new StringBuilder();
-			sb.Append(message).Append(Environment.NewLine).Append("[ ").Append(sql).Append(" ]");
+			sb.Append(message).Append(Environment.NewLine).Append("[ ").Append(sql ?? SQLNotAvailable).Append(" ]");
 			if (parameterValues != null && parameterValues.Length > 0)
 			{
 				sb.Append(Environment.NewLine).Append("Positional parameters: ");

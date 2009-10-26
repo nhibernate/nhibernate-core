@@ -110,6 +110,7 @@
     <Compile Include="EngineTest\NativeSQLQueryNonScalarReturnTest.cs" />
     <Compile Include="EngineTest\NativeSQLQueryScalarReturnTest.cs" />
     <Compile Include="EngineTest\NativeSQLQuerySpecificationTest.cs" />
+    <Compile Include="ExceptionsTest\NullQueryTest.cs" />
     <Compile Include="FilterTest\ConfigFixture.cs" />
     <Compile Include="FilterTest\FilterSecondPassArgsFixture.cs" />
     <Compile Include="CfgTest\HbmBinderFixture.cs" />
