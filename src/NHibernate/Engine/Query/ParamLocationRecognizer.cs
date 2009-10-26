@@ -13,6 +13,8 @@ namespace NHibernate.Engine.Query
 
 		private readonly List<int> ordinalParameterLocationList = new List<int>();
 
+		private bool hasReturnValue = false;
+
 		/// <summary> 
 		/// Convenience method for creating a param location recognizer and
 		/// initiating the parse. 
@@ -47,11 +49,16 @@ namespace NHibernate.Engine.Query
 			get { return ordinalParameterLocationList; }
 		}
 
+		public bool HasReturnValue
+		{
+			get { return hasReturnValue; }
+		}
+
 		#region IRecognizer Members
 
 		public void OutParameter(int position)
 		{
-			// don't care...
+			hasReturnValue = true;
 		}
 
 		public void OrdinalParameter(int position)

@@ -47,5 +47,12 @@ namespace NHibernate.Driver
 				base.InitializeParameter(dbParam, name, sqlType);
 			}
 		}
+
+		public override int RegisterResultSetOutParameter(IDbCommand command, int position, bool hasReturnValue)
+		{
+			throw new System.NotImplementedException(GetType().Name +
+				" does not support resultsets via stored procedures." +
+				" Consider using OracleDataClientDriver instead.");
+		}
 	}
 }
