@@ -9,12 +9,12 @@ namespace NHibernate.Test.EngineTest
 	public class CallableParserFixture
 	{
 		[Test]
-		public void CanFindCallableFunctionName()
+		public void CanDetermineIsCallable()
 		{
 			string query = @"{ call myFunction(:name) }";
 
-			SqlString sqlFunction =  CallableParser.Parse(query);
-			Assert.That(sqlFunction.ToString(), Is.EqualTo("myFunction"));
+			CallableParser.Detail detail = CallableParser.Parse(query);
+			Assert.That(detail.IsCallable, Is.True);
 		}
 
 		[Test]
@@ -22,10 +22,17 @@ namespace NHibernate.Test.EngineTest
 		{
 			string query = @"SELECT id FROM mytable";
 
-			Assert.Throws<ParserException>(() =>
-				{
-					SqlString sqlFunction =  CallableParser.Parse(query);
-				});
+			CallableParser.Detail detail = CallableParser.Parse(query);
+			Assert.That(detail.IsCallable, Is.False);
+		}
+
+		[Test]
+		public void CanFindCallableFunctionName()
+		{
+			string query = @"{ call myFunction(:name) }";
+
+			CallableParser.Detail detail = CallableParser.Parse(query);
+			Assert.That(detail.FunctionName, Is.EqualTo("myFunction"));
 		}
 
 		[Test]
@@ -33,8 +40,26 @@ namespace NHibernate.Test.EngineTest
 		{
 			string query = @"{ call myFunction }";
 
-			SqlString sqlFunction =  CallableParser.Parse(query);
-			Assert.That(sqlFunction.ToString(), Is.EqualTo("myFunction"));
+			CallableParser.Detail detail = CallableParser.Parse(query);
+			Assert.That(detail.FunctionName, Is.EqualTo("myFunction"));
+		}
+
+		[Test]
+		public void CanDetermineHasReturn()
+		{
+			string query = @"{ ? = call myFunction(:name) }";
+
+			CallableParser.Detail detail = CallableParser.Parse(query);
+			Assert.That(detail.HasReturn, Is.True);
+		}
+
+		[Test]
+		public void CanDetermineHasNoReturn()
+		{
+			string query = @"{ call myFunction(:name) }";
+
+			CallableParser.Detail detail = CallableParser.Parse(query);
+			Assert.That(detail.HasReturn, Is.False);
 		}
 	}
 }

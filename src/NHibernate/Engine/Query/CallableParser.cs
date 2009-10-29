@@ -8,26 +8,42 @@ namespace NHibernate.Engine.Query
 {
 	public static class CallableParser
 	{
+
+		public class Detail
+		{
+			public bool IsCallable;
+			public bool HasReturn;
+			public string FunctionName;
+		}
+
 		private static readonly Regex functionNameFinder = new Regex(@"\{[\S\s]*call[\s]+([\w]+)[^\w]");
 		private static readonly int NewLineLength = Environment.NewLine.Length;
 
-		public static SqlString Parse(string sqlString)
+		public static Detail Parse(string sqlString)
 		{
-			bool isCallableSyntax = sqlString.IndexOf("{") == 0 &&
-									sqlString.IndexOf("}") == (sqlString.Length - 1) &&
-									sqlString.IndexOf("call") > 0;
+			Detail callableDetail = new Detail();
 
-			if (!isCallableSyntax)
-				throw new ParserException("Expected callable syntax {? = call procedure_name[(?, ?, ...)]} but got: " + sqlString);
+			callableDetail.IsCallable = sqlString.IndexOf("{") == 0 &&
+										sqlString.IndexOf("}") == (sqlString.Length - 1) &&
+										sqlString.IndexOf("call") > 0;
 
+			if (!callableDetail.IsCallable)
+				return callableDetail;
 
 			Match functionMatch = functionNameFinder.Match(sqlString);
 
 			if ((!functionMatch.Success) || (functionMatch.Groups.Count < 2))
 				throw new HibernateException("Could not determine function name for callable SQL: " + sqlString);
 
-			string function = functionMatch.Groups[1].Value;
-			return new SqlString(function);
+			callableDetail.FunctionName = functionMatch.Groups[1].Value;
+
+			callableDetail.HasReturn = sqlString.IndexOf("call") > 0 &&
+										sqlString.IndexOf("?") > 0 &&
+										sqlString.IndexOf("=") > 0 &&
+										sqlString.IndexOf("?") < sqlString.IndexOf("call") &&
+										sqlString.IndexOf("=") < sqlString.IndexOf("call");
+
+			return callableDetail;
 		}
 	}
 }

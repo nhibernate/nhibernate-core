@@ -12,15 +12,6 @@ namespace NHibernate.Engine.Query
 		private static readonly OrdinalParameterDescriptor[] EmptyOrdinals = new OrdinalParameterDescriptor[0];
 		private readonly OrdinalParameterDescriptor[] ordinalDescriptors;
 		private readonly Dictionary<string, NamedParameterDescriptor> namedDescriptorMap;
-		private readonly bool hasReturnValue = false;
-
-		public ParameterMetadata(OrdinalParameterDescriptor[] ordinalDescriptors,
-			IDictionary<string, NamedParameterDescriptor> namedDescriptorMap,
-			bool hasReturnValue)
-			: this (ordinalDescriptors, namedDescriptorMap)
-		{
-			this.hasReturnValue = hasReturnValue;
-		}
 
 		public ParameterMetadata(OrdinalParameterDescriptor[] ordinalDescriptors,
 			IDictionary<string, NamedParameterDescriptor> namedDescriptorMap)
@@ -50,11 +41,6 @@ namespace NHibernate.Engine.Query
 		public ICollection<string> NamedParameterNames
 		{
 			get { return namedDescriptorMap.Keys; }
-		}
-
-		public bool HasReturnValue
-		{
-			get { return hasReturnValue; }
 		}
 
 		public OrdinalParameterDescriptor GetOrdinalParameterDescriptor(int position)

@@ -279,8 +279,6 @@ namespace NHibernate.Engine
 
 		public bool Callable { get; set; }
 
-		public bool HasReturnValue { get; set; }
-
 		public bool ReadOnly
 		{
 			get { return _readOnly; }

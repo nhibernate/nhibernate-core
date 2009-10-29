@@ -27,7 +27,6 @@ namespace NHibernate.Impl
 		private readonly IList<INativeSQLQueryReturn> queryReturns;
 		private readonly ICollection<string> querySpaces;
 		private readonly bool callable;
-		private readonly bool hasReturnValue;
 		private bool autoDiscoverTypes;
 
 		/// <summary> Constructs a SQLQueryImpl given a sql query defined in the mappings. </summary>
@@ -53,7 +52,14 @@ namespace NHibernate.Impl
 
 			querySpaces = queryDef.QuerySpaces;
 			callable = queryDef.IsCallable;
-			hasReturnValue = parameterMetadata.HasReturnValue;
+		}
+
+		internal SqlQueryImpl(string sql, IList<INativeSQLQueryReturn> queryReturns, ICollection<string> querySpaces, FlushMode flushMode, bool callable, ISessionImplementor session, ParameterMetadata parameterMetadata)
+			: base(sql, flushMode, session, parameterMetadata)
+		{
+			this.queryReturns = queryReturns;
+			this.querySpaces = querySpaces;
+			this.callable = callable;
 		}
 
 		internal SqlQueryImpl(string sql, string[] returnAliases, System.Type[] returnClasses, LockMode[] lockModes, ISessionImplementor session, ICollection<string> querySpaces, FlushMode flushMode, ParameterMetadata parameterMetadata)
@@ -174,7 +180,6 @@ namespace NHibernate.Impl
 		{
 			QueryParameters qp = base.GetQueryParameters(namedParams);
 			qp.Callable = callable;
-			qp.HasReturnValue = hasReturnValue;
 			qp.HasAutoDiscoverScalarTypes = autoDiscoverTypes;
 			return qp;
 		}

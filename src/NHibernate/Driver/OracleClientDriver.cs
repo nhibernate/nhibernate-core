@@ -1,5 +1,6 @@
 using System.Data;
 using System.Data.OracleClient;
+using NHibernate.Engine.Query;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Driver
@@ -48,10 +49,17 @@ namespace NHibernate.Driver
 			}
 		}
 
-		public override int RegisterResultSetOutParameter(IDbCommand command, int position, bool hasReturnValue)
+		protected override void OnBeforePrepare(IDbCommand command)
 		{
+			base.OnBeforePrepare(command);
+
+			CallableParser.Detail detail = CallableParser.Parse(command.CommandText);
+
+			if (!detail.IsCallable)
+				return;
+
 			throw new System.NotImplementedException(GetType().Name +
-				" does not support resultsets via stored procedures." +
+				" does not support CallableStatement syntax (stored procedures)." +
 				" Consider using OracleDataClientDriver instead.");
 		}
 	}
