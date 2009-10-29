@@ -1,6 +1,7 @@
 using System.Data;
 using System.Reflection;
 using NHibernate.AdoNet;
+using NHibernate.Engine.Query;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
@@ -82,17 +83,24 @@ namespace NHibernate.Driver
 			}
 		}
 
-		public override int RegisterResultSetOutParameter(IDbCommand command, int position, bool hasReturnValue)
+		protected override void OnBeforePrepare(IDbCommand command)
 		{
+			base.OnBeforePrepare(command);
+
+			CallableParser.Detail detail = CallableParser.Parse(command.CommandText);
+
+			if (!detail.IsCallable)
+				return;
+
+			command.CommandType = CommandType.StoredProcedure;
+			command.CommandText = detail.FunctionName;
+
 			IDbDataParameter outCursor = command.CreateParameter();
-			outCursor.ParameterName = "";
 			oracleDbType.SetValue(outCursor, oracleDbTypeRefCursor, null);
 
-			outCursor.Direction = hasReturnValue ? ParameterDirection.ReturnValue : ParameterDirection.Output;
+			outCursor.Direction = detail.HasReturn ? ParameterDirection.ReturnValue : ParameterDirection.Output;
 
-			command.Parameters.Insert(position, outCursor);
-
-			return 1;
+			command.Parameters.Insert(0, outCursor);
 		}
 
 		#region IEmbeddedBatcherFactoryProvider Members

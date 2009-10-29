@@ -8,25 +8,25 @@
 	namespace="NHibernate.Test.SqlTest"
 	default-access="field">
 	
-	<sql-query name="simpleScalar" callable="true">
+	<sql-query name="simpleScalar">
 		<return-scalar column="name" type="string"/>
 		<return-scalar column="value" type="long"/>
 		{ ? = call simpleScalar(:number) }
 	</sql-query>
 
-	<sql-query name="paramhandling" callable="true">
+	<sql-query name="paramhandling">
 		<return-scalar column="value" type="long"/>
 		<return-scalar column="value2" type="long"/>
 		{ ? = call testParamHandling(?, ?) }
 	</sql-query>
 
-	<sql-query name="paramhandling_mixed" callable="true">
+	<sql-query name="paramhandling_mixed">
 		<return-scalar column="value" type="long"/>
 		<return-scalar column="value2" type="long"/>
 		{ ? = call testParamHandling(?,:second) }
 	</sql-query>
 
-	<sql-query name="selectAllEmployments" callable="true">
+	<sql-query name="selectAllEmployments">
 		<return alias="emp" class="Employment">
 			<return-property name="employee" column="EMPLOYEE"/>
 			<return-property name="employer" column="EMPLOYER"/>
@@ -42,7 +42,7 @@
 		{ ? = call allEmployments }
 	</sql-query>
 
-	<sql-query name="selectEmploymentsForRegion" callable="true">
+	<sql-query name="selectEmploymentsForRegion">
 		<return alias="emp" class="Employment">
 			<return-property name="employee" column="EMPLOYEE"/>
 			<return-property name="employer" column="EMPLOYER"/>

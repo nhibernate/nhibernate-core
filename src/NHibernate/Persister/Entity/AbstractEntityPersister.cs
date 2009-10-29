@@ -3332,20 +3332,20 @@ namespace NHibernate.Persister.Entity
 				SqlCommandInfo defaultDelete = GenerateDeleteString(j);
 
 				sqlInsertStrings[j] = customSQLInsert[j] != null
-																? new SqlCommandInfo(customSQLInsert[j], insertCallable[j], defaultInsert.ParameterTypes)
+																? new SqlCommandInfo(customSQLInsert[j], defaultInsert.ParameterTypes)
 																: defaultInsert;
 
 				sqlUpdateStrings[j] = customSQLUpdate[j] != null
-																? new SqlCommandInfo(customSQLUpdate[j], updateCallable[j], defaultUpdate.ParameterTypes)
+																? new SqlCommandInfo(customSQLUpdate[j], defaultUpdate.ParameterTypes)
 																: defaultUpdate;
 
 				// NH: in practice for lazy update de update sql is the same any way.
 				sqlLazyUpdateStrings[j] = customSQLUpdate[j] != null
-																		? new SqlCommandInfo(customSQLUpdate[j], updateCallable[j], defaultUpdate.ParameterTypes)
+																		? new SqlCommandInfo(customSQLUpdate[j], defaultUpdate.ParameterTypes)
 																		: GenerateUpdateString(NonLazyPropertyUpdateability, j, false);
 
 				sqlDeleteStrings[j] = customSQLDelete[j] != null
-																? new SqlCommandInfo(customSQLDelete[j], deleteCallable[j], defaultDelete.ParameterTypes)
+																? new SqlCommandInfo(customSQLDelete[j], defaultDelete.ParameterTypes)
 																: defaultDelete;
 			}
 

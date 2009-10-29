@@ -136,11 +136,6 @@ namespace NHibernate.Driver
 			return cmd;
 		}
 
-		public virtual int RegisterResultSetOutParameter(IDbCommand command, int position, bool hasReturnValue)
-		{
-			throw new NotImplementedException(GetType().Name + " does not support resultsets via stored procedures");
-		}
-
 		private void SetCommandTimeout(IDbCommand cmd, object envTimeout)
 		{
 			if (commandTimeout >= 0)
@@ -215,10 +210,21 @@ namespace NHibernate.Driver
 
 		public void PrepareCommand(IDbCommand command)
 		{
+			OnBeforePrepare(command);
+
 			if (SupportsPreparingCommands && prepareSql)
 			{
 				command.Prepare();
 			}
+		}
+
+		/// <summary>
+		/// Override to make any adjustments to the IDbCommand object.  (e.g., Oracle custom OUT parameter)
+		/// Parameters have been bound by this point, so their order can be adjusted too.
+		/// This is analagous to the RegisterResultSetOutParameter() function in Hibernate.
+		/// </summary>
+		protected virtual void OnBeforePrepare(IDbCommand command)
+		{
 		}
 
 		public IDbDataParameter GenerateOutputParameter(IDbCommand command)

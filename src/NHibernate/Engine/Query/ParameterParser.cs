@@ -44,8 +44,10 @@ namespace NHibernate.Engine.Query
 		public static void Parse(string sqlString, IRecognizer recognizer)
 		{
 			bool hasMainOutputParameter = sqlString.IndexOf("call") > 0 &&
-			                              sqlString.IndexOf("?") < sqlString.IndexOf("call") &&
-			                              sqlString.IndexOf("=") < sqlString.IndexOf("call");
+										  sqlString.IndexOf("?") > 0 &&
+										  sqlString.IndexOf("=") > 0 &&
+										  sqlString.IndexOf("?") < sqlString.IndexOf("call") &&
+										  sqlString.IndexOf("=") < sqlString.IndexOf("call");
 			bool foundMainOutputParam = false;
 
 			int stringLength = sqlString.Length;

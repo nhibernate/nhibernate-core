@@ -1,12 +1,10 @@
 using System.Data;
-using NHibernate.Engine.Query;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.SqlCommand
 {
 	public class SqlCommandInfo
 	{
-		private readonly CommandType commandType;
 		private readonly SqlString text;
 		private readonly SqlType[] parameterTypes;
 
@@ -14,22 +12,12 @@ namespace NHibernate.SqlCommand
 		{
 			this.text = text;
 			this.parameterTypes = parameterTypes;
-			this.commandType = CommandType.Text;
-		}
-
-		public SqlCommandInfo(SqlString text, bool isStoredProcedure, SqlType[] parameterTypes)
-			: this(text, parameterTypes)
-		{
-			if (isStoredProcedure)
-			{
-				this.commandType = CommandType.StoredProcedure;
-				this.text = CallableParser.Parse(text.ToString());
-			}
 		}
 
 		public CommandType CommandType
 		{
-			get { return commandType; }
+			// Always Text for now
+			get { return CommandType.Text; }
 		}
 
 		public SqlString Text

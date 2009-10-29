@@ -39,7 +39,7 @@
 		</id>
 		<property name="name" not-null="true"/>
 		<loader query-ref="person"/>
-		<sql-insert callable="true" check="none">{ call createPerson(?, ?) }</sql-insert>
+		<sql-insert check="none">{ call createPerson(?, ?) }</sql-insert>
 		<sql-update>UPDATE PERSON SET NAME=UPPER(?) WHERE PERID=?</sql-update>
 		<sql-delete>DELETE FROM PERSON WHERE PERID=?</sql-delete>
 	</class>
@@ -204,7 +204,7 @@
 
 	<database-object>
 		<create>
-			CREATE OR REPLACE PROCEDURE createPerson(p_name PERSON.NAME%TYPE, p_id PERSON.PERID%TYPE)
+			CREATE OR REPLACE PROCEDURE createPerson(unused OUT SYS_REFCURSOR, p_name PERSON.NAME%TYPE, p_id PERSON.PERID%TYPE)
 			AS
 			rowcount INTEGER;
 			BEGIN
