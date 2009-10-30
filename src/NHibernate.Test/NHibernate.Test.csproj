@@ -637,6 +637,8 @@
     <Compile Include="NHSpecificTest\NH1985\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH1990\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1990\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2003\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2003\Model.cs" />
     <Compile Include="NHSpecificTest\NH473\Child.cs" />
     <Compile Include="NHSpecificTest\NH473\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH473\Parent.cs" />
@@ -2050,6 +2052,7 @@
     <EmbeddedResource Include="CfgTest\Loquacious\EntityToCache.hbm.xml" />
     <EmbeddedResource Include="DriverTest\SqlServerCeEntity.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH2003\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1356\MappingsBag.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1356\MappingsList.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1356\MappingsSet.hbm.xml" />
