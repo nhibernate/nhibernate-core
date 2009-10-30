@@ -234,7 +234,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (columnSchema.length != null)
 				column.Length = int.Parse(columnSchema.length);
 
-			column.IsNullable = columnSchema.notnullSpecified ? columnSchema.notnull : false;
+			column.IsNullable = columnSchema.notnullSpecified ? !columnSchema.notnull : false;
 			column.IsUnique = columnSchema.uniqueSpecified && columnSchema.unique;
 			column.CheckConstraint = columnSchema.check ?? string.Empty;
 			column.SqlType = columnSchema.sqltype;
