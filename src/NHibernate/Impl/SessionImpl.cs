@@ -2173,7 +2173,9 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				return enabledFilters[filterName];
+				IFilter result;
+				enabledFilters.TryGetValue(filterName, out result);
+				return result;
 			}
 		}
 
