@@ -468,6 +468,7 @@
 			</xs:choice>
 			<xs:attribute name="name" use="required" type="xs:string" />
 			<xs:attribute name="condition" type="xs:string" />
+      <xs:attribute name="use-many-to-one" default="true" type="xs:boolean"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="filter-param">

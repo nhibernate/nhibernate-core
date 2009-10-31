@@ -67,5 +67,21 @@ namespace NHibernate.Util
 				}
 			}
 		}
+
+		/// <summary>
+		/// Get only filters enabled for many-to-one association.
+		/// </summary>
+		/// <param name="enabledFilters">All enabled filters</param>
+		/// <returns>A new <see cref="IDictionary{TKey,TValue}"/> for filters enabled for many to one.</returns>
+		public static IDictionary<string, IFilter> GetEnabledForManyToOne(IDictionary<string, IFilter> enabledFilters)
+		{
+			var enabledFiltersForManyToOne = new Dictionary<string, IFilter>();
+			foreach (var enabledFilter in enabledFilters)
+			{
+				if (enabledFilter.Value.FilterDefinition.UseInManyToOne)
+					enabledFiltersForManyToOne.Add(enabledFilter.Key, enabledFilter.Value);
+			}
+			return enabledFiltersForManyToOne;
+		}
 	}
 }
