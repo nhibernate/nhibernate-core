@@ -1,3 +1,67 @@
+Build 2.1.1.GA (rev4814)
+=============================
+
+** Sub-task
+    * [NH-1368] - Check same behavior for other persistent collection.
+
+** Bug
+    * [NH-1255] - key-many-to-one && not-found
+    * [NH-1476] - filtering by key-many-to-one causes invalid sql
+    * [NH-1760] - Missing table join when use a criteria on key-many-to-one part of a Composite Id
+    * [NH-1785] - Invalid SQL generated for join on composite id using Criteria API 
+    * [NH-1858] - Problem with MsSql2000 and 2005 Dialects GetLimitString when using use_sql_comments=true
+    * [NH-1895] - delete-orphan mapping, NullReferenceException in DefaultDeleteEventListener.DeleteTransientEntity
+    * [NH-1898] - HQL query parser can't determine parameter type when using native sql function in hql query.
+    * [NH-1899] - SaveOrUpdateCopy throws InvalidCastException
+    * [NH-1902] - QBE don't set the '%' wildcards when using an other matchmode than Matchmode.Exact
+    * [NH-1904] - Protected properties and public properties cannot have the same name with different case
+    * [NH-1905] - Join used together  with subquery generates wrong SQL
+    * [NH-1907] - IQuery.SetParameter<T> should use DetermineType
+    * [NH-1908] - Mishandling of filter parameters causes System.InvalidCastException
+    * [NH-1911] - Aggregate parameters in projection are not substituted
+    * [NH-1913] - AdoNet batcher not using CommandTimeout
+    * [NH-1914] - Collections with out native ID generation is not working
+    * [NH-1915] - CLONE -HQL AST-Parser: Null-Pointer Exception on Non-Exsistant Entity on Joins
+    * [NH-1917] - Not retrieving AUTO_INCREMENT identifier on MySQL because of connection closing
+    * [NH-1920] - Session Filters + collection + parametrized query = bug 
+    * [NH-1926] - Oracle: Schema update crashes
+    * [NH-1931] - NativeSQLQuerySpecification.Equals compares collections by reference
+    * [NH-1938] - No 'lower' call in sql-query in LikeExpression with 'ignorecae' = true
+    * [NH-1939] - Missing <param> element in NHibernate mapping schema.
+    * [NH-1941] - Custom Enum-String mapping is not written to SQL statement
+    * [NH-1948] - Hibernate mapping file does not allow a value of 0 for the "scale" attribute of the "property" element
+    * [NH-1959] - Adding/Removing items to idbag in one transaction causes KeyNotFoundException
+    * [NH-1963] - System.InvalidCastException on cacheable query with byte array query parameter
+    * [NH-1964] - Byte array truncation to a length of 8000
+    * [NH-1969] - Criteria API does not handle property of type "System.Type" correctly
+    * [NH-1973] - DateTime sent to dataase is not accurate to millisecond
+    * [NH-1979] - cast and parameter combination in HQL fails to parse
+    * [NH-1983] - Blobs and Clobs with Sql Server CE
+    * [NH-1985] - NHibernate is allowing deletion of immutable objects
+    * [NH-1987] - MultiQuery does not update statistics
+    * [NH-1990] - Subquery filter parameters are not set as variables in SQL
+    * [NH-1992] - BasicFormatter throws exceptions for certain types of data
+    * [NH-1997] - Original exception information lost when error occurs NHibernate.Engine.TransactionHelper.Work.DoWork
+    * [NH-2000] - Problem when calling ISession.GetEnableFIilter with a not enabled filter name
+    * [NH-2003] - IsNullable property is not set properly in ClassIdBinder.cs
+
+** Improvement
+    * [NH-847] - Oracle stored procedure with Ref Cursor out
+    * [NH-1525] - IResultTransformer should override Equals and GetHashCode
+    * [NH-1912] - Add decimal types to MySQL dialect.
+    * [NH-1943] - Fix introduction in docs so it won't mention VS 2003
+    * [NH-1980] - Ignore exception when trying to set the same type of CollectionTypeFactory
+
+** New Feature
+    * [NH-1922] - Allow DetachedCriteria To Work with IStatelessSession
+    * [NH-1936] - Introduce new Interface IPostEvent in NHibernate.Event
+    * [NH-1998] - Possibility to turn off many-to-one filters
+
+** Patch
+    * [NH-1903] - GetEnumerator().Current inconsistent for generic 
+    * [NH-1970] - SQLite dialect - Fix to substring function
+    * [NH-1993] - Patch for a bug in MySQLMetaData.cs
+
 Build 2.1.0
 ========================
 ** Known BREAKING CHANGES from NH2.0.xGA to NH2.1.0
