@@ -4918,6 +4918,15 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string condition;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("use-many-to-one")]
+        [System.ComponentModel.DefaultValueAttribute(true)]
+        public bool usemanytoone;
+        
+        public HbmFilterDef() {
+            this.usemanytoone = true;
+        }
     }
     
     /// <remarks/>

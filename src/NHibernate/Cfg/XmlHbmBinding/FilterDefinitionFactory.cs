@@ -19,7 +19,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			log.DebugFormat("Parsed filter-def [{0}]", filterDefSchema.name);
 
-			return new FilterDefinition(filterDefSchema.name, defaultCondition, parameterTypes);
+			return new FilterDefinition(filterDefSchema.name, defaultCondition, parameterTypes, filterDefSchema.usemanytoone);
 		}
 
 		private static IDictionary<string, IType> GetFilterParameterTypes(HbmFilterDef filterDefSchema)
