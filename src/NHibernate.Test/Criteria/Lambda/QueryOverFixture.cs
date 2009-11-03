@@ -179,6 +179,23 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void SubCriteria_JoinQueryOver_ToOneAlias()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person), "personAlias")
+					.CreateCriteria("personAlias.Father")
+						.Add(Expression.Eq("Name", "test name"));
+
+			Person personAlias = null;
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>(() => personAlias)
+					.JoinQueryOver(() => personAlias.Father) // sub-criteria
+						.Where(f => f.Name == "test name");
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
 		public void SubCriteria_JoinQueryOver_ToMany()
 		{
 			ICriteria expected =
@@ -189,6 +206,23 @@ namespace NHibernate.Test.Criteria.Lambda
 			IQueryOver<Child> actual =
 				CreateTestQueryOver<Person>()
 					.JoinQueryOver(p => p.Children) // sub-criteria
+						.Where(c => c.Nickname == "test name");
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void SubCriteria_JoinQueryOver_ToManyAlias()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person), "personAlias")
+					.CreateCriteria("personAlias.Children", JoinType.InnerJoin)
+						.Add(Expression.Eq("Nickname", "test name"));
+
+			Person personAlias = null;
+			IQueryOver<Child> actual =
+				CreateTestQueryOver<Person>(() => personAlias)
+					.Inner.JoinQueryOver(() => personAlias.Children) // sub-criteria
 						.Where(c => c.Nickname == "test name");
 
 			AssertCriteriaAreEqual(expected, actual);
@@ -238,6 +272,25 @@ namespace NHibernate.Test.Criteria.Lambda
 				CreateTestQueryOver<Person>()
 					.Join(p => p.Father, () => fatherAlias)
 					.Join(p => p.Children, () => childAlias);
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void Alias_JoinAlias()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person), "personAlias")
+					.CreateAlias("personAlias.Father", "fatherAlias")
+					.CreateAlias("personAlias.Children", "childAlias", JoinType.InnerJoin);
+
+			Person personAlias = null;
+			Person fatherAlias = null;
+			Child childAlias = null;
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>(() => personAlias)
+					.Join(() => personAlias.Father, () => fatherAlias)
+					.Inner.Join(() => personAlias.Children, () => childAlias);
 
 			AssertCriteriaAreEqual(expected, actual);
 		}

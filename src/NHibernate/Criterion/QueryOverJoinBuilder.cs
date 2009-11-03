@@ -18,7 +18,17 @@ namespace NHibernate.Criterion
 			return root.JoinQueryOver<U>(path, joinType);
 		}
 
+		public QueryOver<U> JoinQueryOver<U>(Expression<Func<U>> path)
+		{
+			return root.JoinQueryOver<U>(path, joinType);
+		}
+
 		public QueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path, Expression<Func<U>> alias)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType);
+		}
+
+		public QueryOver<U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias)
 		{
 			return root.JoinQueryOver<U>(path, alias, joinType);
 		}
@@ -28,7 +38,17 @@ namespace NHibernate.Criterion
 			return root.JoinQueryOver<U>(path, joinType);
 		}
 
+		public QueryOver<U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path)
+		{
+			return root.JoinQueryOver<U>(path, joinType);
+		}
+
 		public QueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path, Expression<Func<U>> alias)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType);
+		}
+
+		public QueryOver<U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias)
 		{
 			return root.JoinQueryOver<U>(path, alias, joinType);
 		}
@@ -44,7 +64,17 @@ namespace NHibernate.Criterion
 			return root.JoinQueryOver<U>(path, joinType);
 		}
 
+		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<U>> path)
+		{
+			return root.JoinQueryOver<U>(path, joinType);
+		}
+
 		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path, Expression<Func<U>> alias)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType);
+		}
+
+		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias)
 		{
 			return root.JoinQueryOver<U>(path, alias, joinType);
 		}
@@ -54,7 +84,17 @@ namespace NHibernate.Criterion
 			return root.JoinQueryOver<U>(path, joinType);
 		}
 
+		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path)
+		{
+			return root.JoinQueryOver<U>(path, joinType);
+		}
+
 		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path, Expression<Func<U>> alias)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType);
+		}
+
+		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias)
 		{
 			return root.JoinQueryOver<U>(path, alias, joinType);
 		}
@@ -74,6 +114,11 @@ namespace NHibernate.Criterion
 		}
 
 		public R Join(Expression<Func<T, object>> path, Expression<Func<object>> alias)
+		{
+			return (R)root.Join(path, alias, joinType);
+		}
+
+		public R Join(Expression<Func<object>> path, Expression<Func<object>> alias)
 		{
 			return (R)root.Join(path, alias, joinType);
 		}
