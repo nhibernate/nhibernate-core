@@ -32,13 +32,17 @@ namespace NHibernate.Test.Criteria.Lambda
 
 		protected IQueryOver<T> CreateTestQueryOver<T>()
 		{
-			return new QueryOver<T>(new CriteriaImpl(typeof(T), null));
+			return (IQueryOver<T>)
+				typeof(QueryOver<T>).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new System.Type[] { typeof(CriteriaImpl) }, null)
+					.Invoke(new object[] { new CriteriaImpl(typeof(T), null) });
 		}
 
 		protected IQueryOver<T> CreateTestQueryOver<T>(Expression<Func<object>> alias)
 		{
 			string aliasContainer = ExpressionProcessor.FindMemberExpression(alias.Body);
-			return new QueryOver<T>(new CriteriaImpl(typeof(T), aliasContainer, null));
+			return (IQueryOver<T>)
+				typeof(QueryOver<T>).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new System.Type[] { typeof(CriteriaImpl) }, null)
+					.Invoke(new object[] { new CriteriaImpl(typeof(T), aliasContainer, null) });
 		}
 
 		protected void AssertCriteriaAreEqual(ICriteria expected, ICriteria actual)
@@ -54,6 +58,20 @@ namespace NHibernate.Test.Criteria.Lambda
 		protected void AssertCriteriaAreEqual<T>(ICriteria expected, IQueryOver<T> actual)
 		{
 			AssertObjectsAreEqual(expected, ((QueryOver<T>)actual).UnderlyingCriteria);
+		}
+
+		protected void AssertCriteriaAreEqual<T>(DetachedCriteria expected, QueryOver<T> actual)
+		{
+			ICriteria criteria = actual.UnderlyingCriteria;
+			CriteriaImpl criteriaImpl = (CriteriaImpl)
+				typeof(QueryOver<T>).GetField("_impl", BindingFlags.NonPublic | BindingFlags.Instance)
+				.GetValue(actual);
+
+			DetachedCriteria actualDetached = (DetachedCriteria)
+				typeof(DetachedCriteria).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new System.Type[] { typeof(CriteriaImpl), typeof(ICriteria) }, null)
+					.Invoke(new object[] { criteriaImpl, criteria });
+
+			AssertObjectsAreEqual(expected, actualDetached);
 		}
 
 		private void AssertDictionariesAreEqual(IDictionary expected, IDictionary actual)

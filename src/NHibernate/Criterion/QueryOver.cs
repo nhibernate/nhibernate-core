@@ -25,13 +25,20 @@ namespace NHibernate.Criterion
 			_criteria = _impl;
 		}
 
-		public QueryOver(CriteriaImpl impl)
+		public QueryOver(Expression<Func<T>> alias)
+		{
+			string aliasPath = ExpressionProcessor.FindMemberExpression(alias.Body);
+			_impl = new CriteriaImpl(typeof(T), aliasPath, null);
+			_criteria = _impl;
+		}
+
+		protected internal QueryOver(CriteriaImpl impl)
 		{
 			_impl = impl;
 			_criteria = impl;
 		}
 
-		public QueryOver(CriteriaImpl rootImpl, ICriteria criteria)
+		protected internal QueryOver(CriteriaImpl rootImpl, ICriteria criteria)
 		{
 			_impl = rootImpl;
 			_criteria = criteria;

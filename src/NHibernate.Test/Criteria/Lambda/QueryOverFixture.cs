@@ -447,6 +447,21 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertCriteriaAreEqual(expected, actual);
 		}
 
+		[Test]
+		public void DetachedQueryOver()
+		{
+			DetachedCriteria expected =
+				DetachedCriteria.For<Person>("personAlias")
+					.Add(Restrictions.Eq("personAlias.Name", "test name"));
+
+			Person personAlias = null;
+			QueryOver<Person> actual =
+				new QueryOver<Person>(() => personAlias)
+					.Where(() => personAlias.Name == "test name");
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
 	}
 
 }
