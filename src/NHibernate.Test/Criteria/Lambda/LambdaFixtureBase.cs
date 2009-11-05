@@ -60,17 +60,21 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertObjectsAreEqual(expected, ((QueryOver<T>)actual).UnderlyingCriteria);
 		}
 
-		protected void AssertCriteriaAreEqual<T>(DetachedCriteria expected, QueryOver<T> actual)
+		protected DetachedCriteria ToDetachedCriteria<T>(QueryOver<T> actual)
 		{
 			ICriteria criteria = actual.UnderlyingCriteria;
 			CriteriaImpl criteriaImpl = (CriteriaImpl)
 				typeof(QueryOver<T>).GetField("_impl", BindingFlags.NonPublic | BindingFlags.Instance)
 				.GetValue(actual);
 
-			DetachedCriteria actualDetached = (DetachedCriteria)
+			return (DetachedCriteria)
 				typeof(DetachedCriteria).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new System.Type[] { typeof(CriteriaImpl), typeof(ICriteria) }, null)
 					.Invoke(new object[] { criteriaImpl, criteria });
+		}
 
+		protected void AssertCriteriaAreEqual<T>(DetachedCriteria expected, QueryOver<T> actual)
+		{
+			DetachedCriteria actualDetached = ToDetachedCriteria(actual);
 			AssertObjectsAreEqual(expected, actualDetached);
 		}
 

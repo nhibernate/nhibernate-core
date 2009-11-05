@@ -176,11 +176,11 @@ namespace NHibernate.Impl
 			MethodCallExpression methodCallExpression = expression as MethodCallExpression;
 
 			if (methodCallExpression == null)
-				throw new Exception("right operand should be detachedCriteriaInstance.As<T>() - " + expression.ToString());
+				throw new Exception("right operand should be detachedQueryInstance.As<T>() - " + expression.ToString());
 
-			var criteriaExpression = Expression.Lambda(methodCallExpression.Arguments[0]).Compile();
-			object detachedCriteria = criteriaExpression.DynamicInvoke();
-			return (DetachedCriteria)detachedCriteria;
+			var criteriaExpression = Expression.Lambda(methodCallExpression.Object).Compile();
+			QueryOver detachedQuery = (QueryOver)criteriaExpression.DynamicInvoke();
+			return detachedQuery.DetachedCriteria;
 		}
 
 		private static bool EvaluatesToNull(Expression expression)

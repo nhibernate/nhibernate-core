@@ -9,15 +9,33 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion
 {
 
+	[Serializable]
+	public class QueryOver
+	{
+
+		protected ICriteria _criteria;
+		protected CriteriaImpl _impl;
+
+		protected QueryOver() { }
+
+		public ICriteria UnderlyingCriteria
+		{
+			get { return _criteria; }
+		}
+
+		public DetachedCriteria DetachedCriteria
+		{
+			get { return new DetachedCriteria(_impl, _impl); }
+		}
+
+	}
+
 	/// <summary>
 	/// Implementation of the <see cref="IQueryOver&lt;T&gt;"/> interface
 	/// </summary>
 	[Serializable]
-	public class QueryOver<T> : IQueryOver<T>
+	public class QueryOver<T> : QueryOver, IQueryOver<T>
 	{
-
-		private ICriteria		_criteria;
-		private CriteriaImpl	_impl;
 
 		public QueryOver()
 		{
@@ -44,9 +62,15 @@ namespace NHibernate.Criterion
 			_criteria = criteria;
 		}
 
-		public ICriteria UnderlyingCriteria
+		/// <summary>
+		/// Method to allow comparison of detached query in Lambda expression
+		/// e.g., p =&gt; p.Name == myQuery.As&lt;string&gt;
+		/// </summary>
+		/// <typeparam name="T">type returned by query</typeparam>
+		/// <returns>throws an exception if evaluated directly at runtime.</returns>
+		public R As<R>()
 		{
-			get { return _criteria; }
+			throw new HibernateException("Incorrect syntax;  .As<T> method is for use in Lambda expressions only.");
 		}
 
 		public QueryOver<T> And(Expression<Func<T, bool>> expression)
@@ -144,6 +168,11 @@ namespace NHibernate.Criterion
 		{
 			_criteria.SetCacheRegion(cacheRegion);
 			return this;
+		}
+
+		QueryOverSubqueryBuilder<T> WithSubquery
+		{
+			get { return new QueryOverSubqueryBuilder<T>(this); }
 		}
 
 		public QueryOverFetchBuilder<T> Fetch(Expression<Func<T, object>> path)
@@ -468,6 +497,9 @@ namespace NHibernate.Criterion
 
 		IQueryOver<T> IQueryOver<T>.CacheRegion(string cacheRegion)
 		{ return CacheRegion(cacheRegion); }
+
+		IQueryOverSubqueryBuilder<T> IQueryOver<T>.WithSubquery
+		{ get { return new IQueryOverSubqueryBuilder<T>(this); } }
 
 		IQueryOverFetchBuilder<T> IQueryOver<T>.Fetch(Expression<Func<T, object>> path)
 		{ return new IQueryOverFetchBuilder<T>(this, path); }

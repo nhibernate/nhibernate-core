@@ -45,7 +45,7 @@ namespace NHibernate.Criterion
 			criteria = impl;
 		}
 
-		protected DetachedCriteria(CriteriaImpl impl, ICriteria criteria)
+		protected internal DetachedCriteria(CriteriaImpl impl, ICriteria criteria)
 		{
 			this.impl = impl;
 			this.criteria = criteria;

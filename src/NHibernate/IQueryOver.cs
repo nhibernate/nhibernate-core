@@ -137,6 +137,11 @@ namespace NHibernate
 		IQueryOver<T> CacheRegion(string cacheRegion);
 
 		/// <summary>
+		/// Add a subquery expression
+		/// </summary>
+		IQueryOverSubqueryBuilder<T> WithSubquery { get; }
+
+		/// <summary>
 		/// Specify an association fetching strategy.  Currently, only
 		/// one-to-many and one-to-one associations are supported.
 		/// </summary>

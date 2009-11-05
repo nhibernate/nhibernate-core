@@ -160,6 +160,7 @@
     <Compile Include="Criteria\Lambda\IntegrationFixture.cs" />
     <Compile Include="Criteria\Lambda\LambdaFixtureBase.cs" />
     <Compile Include="Criteria\Lambda\Model.cs" />
+    <Compile Include="Criteria\Lambda\SubqueryFixture.cs" />
     <Compile Include="Criteria\MaterialResource.cs" />
     <Compile Include="Criteria\ProjectionsTest.cs" />
     <Compile Include="Criteria\Reptile.cs" />
