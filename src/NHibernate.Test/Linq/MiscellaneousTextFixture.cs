@@ -23,13 +23,6 @@ namespace NHibernate.Test.Linq
         [Test(Description = "This sample uses Count to find the number of Orders placed before yesterday in the database.")]
         public void CountWithWhereClause()
         {
-			using (var s = OpenSession())
-			{
-				var r = s.CreateQuery("select cast(count(o), int) from Order o where o.OrderDate <= cast(:p1, datetime)")
-					     .SetParameter("p1", DateTime.Today.AddDays(-1))
-					     .List();
-			}
-
             var q = from o in db.Orders where o.OrderDate <= DateTime.Today.AddDays(-1) select o;
 
             int count = q.Count();
