@@ -5,6 +5,7 @@ using System.Linq;
 using NHibernate.Test.Linq.Entities;
 using NHibernate.Connection;
 using System.Data;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
@@ -54,9 +55,9 @@ namespace NHibernate.Test.Linq
             using (ITransaction tx = session.BeginTransaction())
             {
                 var shippers = new List<Shipper>();
-                var shipper = new Shipper { ShipperId = 1, CompanyName = "Speedy Express", PhoneNumber = "(503) 555-9831" }; session.Insert(shipper); shippers.Add(shipper);
-                shipper = new Shipper { ShipperId = 2, CompanyName = "United Package", PhoneNumber = "(503) 555-3199" }; session.Insert(shipper); shippers.Add(shipper);
-                shipper = new Shipper { ShipperId = 3, CompanyName = "Federal Shipping", PhoneNumber = "(503) 555-9931" }; session.Insert(shipper); shippers.Add(shipper);
+				var shipper = new Shipper { ShipperId = 1, CompanyName = "Speedy Express", PhoneNumber = "(503) 555-9831", Reference = new Guid("356E4A7E-B027-4321-BA40-E2677E6502CF") }; session.Insert(shipper); shippers.Add(shipper);
+				shipper = new Shipper { ShipperId = 2, CompanyName = "United Package", PhoneNumber = "(503) 555-3199", Reference = new Guid("6DFCD0D7-4D2E-4525-A502-3EA9AA52E965") }; session.Insert(shipper); shippers.Add(shipper);
+				shipper = new Shipper { ShipperId = 3, CompanyName = "Federal Shipping", PhoneNumber = "(503) 555-9931", Reference = new Guid("716F114B-E253-4166-8C76-46E6F340B58F") }; session.Insert(shipper); shippers.Add(shipper);
 
                 var categories = new List<ProductCategory>();
                 var category = new ProductCategory { CategoryId = 1, Name = "Beverages", Description = "Soft drinks, coffees, teas, beers, and ales" }; session.Insert(category); categories.Add(category);
@@ -3311,5 +3312,16 @@ namespace NHibernate.Test.Linq
         {
             get { return _session; }
         }
+
+		public void AssertByIds<T, K>(IEnumerable<T> q, K[] ids, Converter<T, K> getId)
+		{
+			int current = 0;
+			foreach (T customer in q)
+			{
+				Assert.AreEqual(ids[current], getId(customer));
+				current += 1;
+			}
+			Assert.AreEqual(current, ids.Length);
+		}
     }
 }

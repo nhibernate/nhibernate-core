@@ -133,6 +133,11 @@ namespace NHibernate.Hql.Ast
             		_node.Text = "string";
             		break;
                 default:
+					if (type == typeof(Guid))
+					{
+						_node.Text = "guid";
+						break;
+					}
                     throw new NotSupportedException(string.Format("Don't currently support idents of type {0}", type.Name));
             }
         }

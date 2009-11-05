@@ -6,11 +6,30 @@ using Remotion.Data.Linq.Clauses;
 using Remotion.Data.Linq.Clauses.Expressions;
 using Remotion.Data.Linq.Clauses.ResultOperators;
 
-namespace NHibernate.Linq.ReWriters
+namespace NHibernate.Linq.GroupBy
 {
+	/// <summary>
+	/// An AggregatingGroupBy is a query such as:
+	/// 
+	///		from p in db.Products
+	///		group p by p.Category.CategoryId
+	///		into g
+	///		    select new
+	///		               {
+	///		                   g.Key,
+	///		                   MaxPrice = g.Max(p => p.UnitPrice)
+	///		               };
+	/// 
+	/// Where the grouping operation is being fully aggregated and hence does not create any form of heirarchy.
+	/// This class takes such queries, flattens out the re-linq sub-query and re-writes the outer select
+	/// </summary>
 	public class AggregatingGroupByRewriter
 	{
-		public void ReWrite(QueryModel queryModel)
+		private AggregatingGroupByRewriter()
+		{
+		}
+
+		public static void ReWrite(QueryModel queryModel)
 		{
 			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
 
@@ -19,7 +38,8 @@ namespace NHibernate.Linq.ReWriters
 			    (subQueryExpression.QueryModel.ResultOperators[0] is GroupResultOperator) &&
 			    (IsAggregatingGroupBy(queryModel)))
 			{
-				FlattenSubQuery(subQueryExpression, queryModel.MainFromClause, queryModel);
+				var rewriter = new AggregatingGroupByRewriter();
+				rewriter.FlattenSubQuery(subQueryExpression, queryModel.MainFromClause, queryModel);
 			}
 		}
 
@@ -46,7 +66,6 @@ namespace NHibernate.Linq.ReWriters
 				s =>
 				new SwapQuerySourceVisitor(queryModel.MainFromClause, subQueryExpression.QueryModel.MainFromClause).Swap
 					(s));
-
 
 			MainFromClause innerMainFromClause = subQueryExpression.QueryModel.MainFromClause;
 			CopyFromClauseData(innerMainFromClause, fromClause);

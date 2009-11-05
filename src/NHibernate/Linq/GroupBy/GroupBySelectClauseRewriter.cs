@@ -6,7 +6,7 @@ using Remotion.Data.Linq.Clauses;
 using Remotion.Data.Linq.Clauses.Expressions;
 using Remotion.Data.Linq.Clauses.ResultOperators;
 
-namespace NHibernate.Linq.ReWriters
+namespace NHibernate.Linq.GroupBy
 {
 	internal class GroupBySelectClauseRewriter : NhExpressionTreeVisitor
 	{
@@ -127,77 +127,5 @@ namespace NHibernate.Linq.ReWriters
 			// valid assumption.  Should probably be passed a list of aggregating subqueries that we are flattening so that we can check...
 			return GroupBySelectClauseRewriter.ReWrite(expression.QueryModel.SelectClause.Selector, _groupBy, _model);
 		}
-	}
-
-	public enum NhExpressionType
-	{
-		Average = 10000,
-		Min,
-		Max,
-		Sum,
-		Count,
-		Distinct,
-		New
-	}
-
-	public class NhAggregatedExpression : Expression
-	{
-		public Expression Expression { get; set; }
-
-		public NhAggregatedExpression(Expression expression, NhExpressionType type)
-			: base((ExpressionType)type, expression.Type)
-		{
-			Expression = expression;
-		}
-	}
-
-	public class NhAverageExpression : NhAggregatedExpression
-	{
-		public NhAverageExpression(Expression expression) : base(expression, NhExpressionType.Average)
-		{
-		}
-	}
-
-	public class NhMinExpression : NhAggregatedExpression
-	{
-		public NhMinExpression(Expression expression)
-			: base(expression, NhExpressionType.Min)
-		{
-		}
-	}
-
-	public class NhMaxExpression : NhAggregatedExpression
-	{
-		public NhMaxExpression(Expression expression)
-			: base(expression, NhExpressionType.Max)
-		{
-		}
-	}
-
-	public class NhSumExpression : NhAggregatedExpression
-	{
-		public NhSumExpression(Expression expression)
-			: base(expression, NhExpressionType.Sum)
-		{
-		}
-	}
-
-	public class NhDistinctExpression : NhAggregatedExpression
-	{
-		public NhDistinctExpression(Expression expression)
-			: base(expression, NhExpressionType.Distinct)
-		{
-		}
-	}
-
-	public class NhCountExpression : Expression
-	{
-		public NhCountExpression(Expression expression)
-			: base((ExpressionType)NhExpressionType.Count, typeof(int))
-		{
-			Expression = expression;
-		}
-
-		public Expression Expression { get; private set; }
 	}
 }

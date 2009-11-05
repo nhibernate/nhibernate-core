@@ -5,6 +5,9 @@ using Remotion.Data.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
+	/// <summary>
+	/// Locates constants in the expression tree and generates parameters for each one
+	/// </summary>
 	public class ExpressionParameterVisitor : ExpressionTreeVisitor
 	{
 		private readonly Dictionary<ConstantExpression, NamedParameter> _parameters = new Dictionary<ConstantExpression, NamedParameter>();

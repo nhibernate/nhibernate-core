@@ -1,5 +1,6 @@
+using System;
 using System.Linq.Expressions;
-using NHibernate.Linq.ReWriters;
+using NHibernate.Linq.Expressions;
 using Remotion.Data.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
@@ -10,18 +11,13 @@ namespace NHibernate.Linq.Visitors
         {
             switch ((NhExpressionType)expression.NodeType)
             {
-                case NhExpressionType.Average:
-                    return VisitNhAverage((NhAverageExpression)expression);
-                case NhExpressionType.Min:
-                    return VisitNhMin((NhMinExpression)expression);
-                case NhExpressionType.Max:
-                    return VisitNhMax((NhMaxExpression)expression);
-                case NhExpressionType.Sum:
-                    return VisitNhSum((NhSumExpression)expression);
-                case NhExpressionType.Count:
-                    return VisitNhCount((NhCountExpression)expression);
-                case NhExpressionType.Distinct:
-                    return VisitNhDistinct((NhDistinctExpression) expression);
+				case NhExpressionType.Average:
+				case NhExpressionType.Min:
+				case NhExpressionType.Max:
+				case NhExpressionType.Sum:
+				case NhExpressionType.Count:
+				case NhExpressionType.Distinct:
+					return VisitNhAggregate((NhAggregatedExpression)expression);
                 case NhExpressionType.New:
                     return VisitNhNew((NhNewExpression) expression);
             }
@@ -33,6 +29,27 @@ namespace NHibernate.Linq.Visitors
         {
             return VisitUnhandledItem<NhNewExpression, Expression>(expression, "VisitNhNew", BaseVisitNhNew);
         }
+
+		protected virtual Expression VisitNhAggregate(NhAggregatedExpression expression)
+		{
+			switch ((NhExpressionType)expression.NodeType)
+			{
+				case NhExpressionType.Average:
+					return VisitNhAverage((NhAverageExpression)expression);
+				case NhExpressionType.Min:
+					return VisitNhMin((NhMinExpression)expression);
+				case NhExpressionType.Max:
+					return VisitNhMax((NhMaxExpression)expression);
+				case NhExpressionType.Sum:
+					return VisitNhSum((NhSumExpression)expression);
+				case NhExpressionType.Count:
+					return VisitNhCount((NhCountExpression)expression);
+				case NhExpressionType.Distinct:
+					return VisitNhDistinct((NhDistinctExpression)expression);
+				default:
+					throw new ArgumentException();
+			}
+		}
 
         protected virtual Expression VisitNhDistinct(NhDistinctExpression expression)
         {

@@ -15,16 +15,17 @@ namespace NHibernate.Dialect.Function
 	[Serializable]
 	public class CastFunction : ISQLFunction, IFunctionGrammar
 	{
-		private LazyType returnType;
+		//private LazyType returnType;
 		#region ISQLFunction Members
 
 		public IType ReturnType(IType columnType, IMapping mapping)
 		{
 			//note there is a weird implementation in the client side
 			//TODO: cast that use only costant are not supported in SELECT. Ex: cast(5 as string)
-			return SetLazyType(columnType); 
+			//return SetLazyType(columnType); 
+			return columnType;
 		}
-
+		/*
 		private LazyType SetLazyType(IType columnType)
 		{
 			if(returnType == null)
@@ -34,6 +35,7 @@ namespace NHibernate.Dialect.Function
 			returnType.RealType = columnType;
 			return returnType;
 		}
+		 */
 		public bool HasArguments
 		{
 			get { return true; }
@@ -53,7 +55,7 @@ namespace NHibernate.Dialect.Function
 			string typeName = args[1].ToString();
 			string sqlType;
 			IType hqlType = TypeFactory.HeuristicType(typeName);
-			SetLazyType(hqlType);
+			//SetLazyType(hqlType);
 			if (hqlType != null)
 			{
 				SqlType[] sqlTypeCodes = hqlType.SqlTypes(factory);

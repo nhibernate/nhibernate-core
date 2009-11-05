@@ -8,11 +8,15 @@ using Remotion.Data.Linq.Clauses;
 using Remotion.Data.Linq.Clauses.Expressions;
 using Remotion.Data.Linq.Clauses.ResultOperators;
 
-namespace NHibernate.Linq.ReWriters
+namespace NHibernate.Linq.GroupBy
 {
 	public class NonAggregatingGroupByRewriter
 	{
-		public void ReWrite(QueryModel queryModel)
+		private NonAggregatingGroupByRewriter()
+		{
+		}
+
+		public static void ReWrite(QueryModel queryModel)
 		{
 			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
 
@@ -21,7 +25,8 @@ namespace NHibernate.Linq.ReWriters
 			    (subQueryExpression.QueryModel.ResultOperators[0] is GroupResultOperator) &&
 			    (IsNonAggregatingGroupBy(queryModel)))
 			{
-				FlattenSubQuery(subQueryExpression, queryModel.MainFromClause, queryModel);
+				var rewriter = new NonAggregatingGroupByRewriter();
+				rewriter.FlattenSubQuery(subQueryExpression, queryModel.MainFromClause, queryModel);
 			}
 		}
 

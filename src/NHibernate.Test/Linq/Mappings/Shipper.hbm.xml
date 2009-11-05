@@ -14,6 +14,8 @@
 		<property name="PhoneNumber" column="Phone" type="string" length="24"
 							access="field.camelcase-underscore"/>
 
+		<property name="Reference" column="Reference" type="guid" access="field.camelcase-underscore"/>
+		
 		<bag name="Orders" lazy="true" access="field.camelcase-underscore"
 				 cascade="none">
 			<key column="ShipVia"/>

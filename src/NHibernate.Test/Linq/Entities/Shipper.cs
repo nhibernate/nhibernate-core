@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -9,6 +10,7 @@ namespace NHibernate.Test.Linq.Entities
         private string _companyName;
         private string _phoneNumber;
         private int _shipperId;
+		private Guid _reference;
 
         public Shipper() 
         {
@@ -32,6 +34,12 @@ namespace NHibernate.Test.Linq.Entities
             get { return _phoneNumber; }
             set { _phoneNumber = value; }
         }
+
+    	public virtual Guid Reference
+    	{
+			get { return _reference; }
+			set { _reference = value; }
+    	}
 
         public virtual ReadOnlyCollection<Order> Orders
         {

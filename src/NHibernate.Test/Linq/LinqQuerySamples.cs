@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using NHibernate.Test.Linq.Entities;
 using NUnit.Framework;
 
@@ -13,17 +9,6 @@ namespace NHibernate.Test.Linq
     [TestFixture]
     public class LinqQuerySamples : LinqTestCase
     {
-        private static void AssertByIds<T, K>(IEnumerable<T> q, K[] ids, Converter<T, K> getId)
-        {
-            int current = 0;
-            foreach (T customer in q)
-            {
-                Assert.AreEqual(ids[current], getId(customer));
-                current += 1;
-            }
-            Assert.AreEqual(current, ids.Length);
-        }
-
         [Category("WHERE")]
         [Test(Description = "This sample uses WHERE to filter for Customers in London.")]
         public void DLinq1()
@@ -237,7 +222,7 @@ namespace NHibernate.Test.Linq
                             "all orders containing their OrderId, a subsequence of the " +
                             "items in the order where there is a discount, and the money " +
                             "saved if shipping is not included.")]
-        [Ignore("TODO")]
+        [Ignore("TODO - nested select")]
         public void DLinq17()
         {
             using (ISession s = OpenSession())
@@ -362,7 +347,7 @@ namespace NHibernate.Test.Linq
                             "all orders containing their OrderId, a subsequence of the " +
                             "items in the order where there is a discount, and the money " +
                             "saved if shipping is not included.")]
-        [Ignore("TODO")]
+        [Ignore("TODO - nested select")]
         public void DLinq17b()
         {
             var q =
@@ -386,7 +371,7 @@ namespace NHibernate.Test.Linq
                             "all orders containing their OrderId, a subsequence of the " +
                             "items in the order where there is a discount, and the money " +
                             "saved if shipping is not included.")]
-        [Ignore("TODO")]
+		[Ignore("TODO - nested select")]
         public void DLinq17c()
         {
             var q =
@@ -483,7 +468,7 @@ namespace NHibernate.Test.Linq
         [Category("COUNT/SUM/MIN/MAX/AVG")]
         [Test(Description = "This sample uses Min to find the Products that have the lowest unit price " +
                             "in each category.")]
-        [Ignore("TODO")]
+        [Ignore("TODO nested aggregating group by")]
         public void DLinq25()
         {
             using (var session = OpenSession())
@@ -557,7 +542,7 @@ namespace NHibernate.Test.Linq
         [Category("COUNT/SUM/MIN/MAX/AVG")]
         [Test(Description = "This sample uses Max to find the Products that have the highest unit price " +
                             "in each category.")]
-        [Ignore("TODO")]
+		[Ignore("TODO nested aggregating group by")]
         public void DLinq28()
         {
             var categories =
@@ -611,7 +596,7 @@ namespace NHibernate.Test.Linq
         [Category("COUNT/SUM/MIN/MAX/AVG")]
         [Test(Description = "This sample uses Average to find the Products that have unit price higher than " +
                             "the average unit price of the category for each category.")]
-        [Ignore("TODO")]
+		[Ignore("TODO nested aggregating group by")]
         public void DLinq31()
         {
             var categories =
@@ -742,7 +727,7 @@ namespace NHibernate.Test.Linq
         [Category("ORDER BY")]
         [Test(Description = "This sample uses Orderby, Max and Group By to find the Products that have " +
                             "the highest unit price in each category, and sorts the group by category id.")]
-        [Ignore("TODO")]
+		[Ignore("TODO nested aggregating group by")]
         public void DLinq41()
         {
             var categories =
@@ -1108,7 +1093,7 @@ namespace NHibernate.Test.Linq
         [Category("UNION ALL/UNION/INTERSECT")]
         [Test(Description = "This sample uses Concat to return a sequence of all Customer and Employee " +
                             "phone/fax numbers.")]
-        [Ignore("TODO")]
+        [Ignore("TODO set operations")]
         public void DLinq55()
         {
             IQueryable<string> q = (
@@ -1128,7 +1113,7 @@ namespace NHibernate.Test.Linq
         [Category("UNION ALL/UNION/INTERSECT")]
         [Test(Description = "This sample uses Concat to return a sequence of all Customer and Employee " +
                             "name and phone number mappings.")]
-        [Ignore("TODO")]
+		[Ignore("TODO set operations")]
         public void DLinq56()
         {
             var q = (
@@ -1145,7 +1130,7 @@ namespace NHibernate.Test.Linq
         [Category("UNION ALL/UNION/INTERSECT")]
         [Test(Description = "This sample uses Union to return a sequence of all countries that either " +
                             "Customers or Employees are in.")]
-        [Ignore("TODO")]
+		[Ignore("TODO set operations")]
         public void DLinq57()
         {
             IQueryable<string> q = (
@@ -1162,7 +1147,7 @@ namespace NHibernate.Test.Linq
         [Category("UNION ALL/UNION/INTERSECT")]
         [Test(Description = "This sample uses Intersect to return a sequence of all countries that both " +
                             "Customers and Employees live in.")]
-        [Ignore("TODO")]
+		[Ignore("TODO set operations")]
         public void DLinq58()
         {
             IQueryable<string> q = (
@@ -1179,7 +1164,7 @@ namespace NHibernate.Test.Linq
         [Category("UNION ALL/UNION/INTERSECT")]
         [Test(Description = "This sample uses Except to return a sequence of all countries that " +
                             "Customers live in but no Employees live in.")]
-        [Ignore("TODO")]
+		[Ignore("TODO set operations")]
         public void DLinq59()
         {
             IQueryable<string> q = (
@@ -1306,7 +1291,7 @@ namespace NHibernate.Test.Linq
 
         [Category("JOIN")]
         [Test(Description = "This sample shows how to construct a join where one side is nullable and the other isn't.")]
-        [Ignore("TODO")]
+        [Ignore("TODO nullable join")]
         public void DLinqJoin10()
         {
             var q =
@@ -1488,7 +1473,19 @@ namespace NHibernate.Test.Linq
             ObjectDumper.Write(q);
         }
 
-        [Category("JOIN")]
+		[Category("JOIN")]
+		[Test(Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
+		public void DLinqJoin5c()
+		{
+			var q =
+				from c in db.Customers
+				join o in db.Orders on new {c.CustomerId} equals new {o.Customer.CustomerId}
+				select new { c.ContactName, o.OrderId };
+
+			ObjectDumper.Write(q);
+		}
+
+		[Category("JOIN")]
         [Test(Description = "This sample explictly joins three tables and projects results from each of them.")]
         public void DLinqJoin6()
         {
@@ -1506,7 +1503,7 @@ namespace NHibernate.Test.Linq
             Description =
                 "This sample shows how to get LEFT OUTER JOIN by using DefaultIfEmpty(). The DefaultIfEmpty() method returns null when there is no Order for the Employee."
             )]
-        [Ignore("TODO")]
+        [Ignore("TODO left outer join")]
         public void DLinqJoin7()
         {
             var q =
@@ -1520,7 +1517,7 @@ namespace NHibernate.Test.Linq
 
         [Category("JOIN")]
         [Test(Description = "This sample projects a 'let' expression resulting from a join.")]
-        [Ignore("TODO")]
+        [Ignore("TODO let expression")]
         public void DLinqJoin8()
         {
             var q =
@@ -1534,21 +1531,41 @@ namespace NHibernate.Test.Linq
         }
 
         [Category("JOIN")]
-        [Test(Description = "This sample shows a join with a composite key.")]
-        [Ignore("TODO")]
+        [Test(Description = "This sample shows a group join with a composite key.")]
         public void DLinqJoin9()
         {
-            var q =
-                from o in db.Orders
-                from p in db.Products
-                join d in db.OrderLines
-                    on new {o.OrderId, p.ProductId} equals new {d.Order.OrderId, d.Product.ProductId}
-                    into details
-                from d in details
-                select new {o.OrderId, p.ProductId, d.UnitPrice};
+        	var expected =
+        		(from o in db.Orders.ToList()
+        		 from p in db.Products.ToList()
+        		 join d in db.OrderLines.ToList()
+        		 	on new {o.OrderId, p.ProductId} equals new {d.Order.OrderId, d.Product.ProductId}
+        		 	into details
+        		 from d in details
+        		 select new {o.OrderId, p.ProductId, d.UnitPrice}).ToList();
 
-            ObjectDumper.Write(q);
+        	var actual =
+        		(from o in db.Orders
+        		 from p in db.Products
+        		 join d in db.OrderLines
+        		 	on new {o.OrderId, p.ProductId} equals new {d.Order.OrderId, d.Product.ProductId}
+        		 	into details
+        		 from d in details
+        		 select new {o.OrderId, p.ProductId, d.UnitPrice}).ToList();
+
+			Assert.AreEqual(expected.Count, actual.Count);
         }
+
+		[Category("JOIN")]
+		[Test(Description = "This sample shows a join which is then grouped")]
+		public void DLinqJoin9b()
+		{
+			var q = from c in db.Customers
+					 join o in db.Orders on c.CustomerId equals o.Customer.CustomerId
+					 group o by c into x
+					 select new { CustomerName = x.Key.ContactName, Order = x };
+
+			ObjectDumper.Write(q);
+		}
     }
 
     public class ParentChildBatch<T, TKey, TSub>
@@ -1634,181 +1651,7 @@ namespace NHibernate.Test.Linq
         }
     }
 
-    public class ObjectDumper
-    {
-        private readonly int _depth;
-        private readonly TextWriter _writer;
-        private int _level;
-        private int _pos;
-
-        private ObjectDumper(int depth)
-        {
-            _writer = new StringWriter(new StringBuilder());
-            _depth = depth;
-        }
-
-        public static void Write(object o)
-        {
-            Write(o, 0);
-        }
-
-        public static string Write(object o, int depth)
-        {
-            var dumper = new ObjectDumper(depth);
-            dumper.WriteObject(null, o);
-            return dumper._writer.ToString();
-        }
-
-        private void Write(string s)
-        {
-            if (s != null)
-            {
-                _writer.Write(s);
-                _pos += s.Length;
-            }
-        }
-
-        private void WriteIndent()
-        {
-            for (int i = 0; i < _level; i++) _writer.Write("  ");
-        }
-
-        private void WriteLine()
-        {
-            _writer.WriteLine();
-            _pos = 0;
-        }
-
-        private void WriteTab()
-        {
-            Write("  ");
-            while (_pos%8 != 0) Write(" ");
-        }
-
-        private void WriteObject(string prefix, object o)
-        {
-            if (o == null || o is ValueType || o is string)
-            {
-                WriteIndent();
-                Write(prefix);
-                WriteValue(o);
-                WriteLine();
-            }
-            else if (o is IEnumerable)
-            {
-                foreach (object element in (IEnumerable) o)
-                {
-                    if (element is IEnumerable && !(element is string))
-                    {
-                        WriteIndent();
-                        Write(prefix);
-                        Write("...");
-                        WriteLine();
-                        if (_level < _depth)
-                        {
-                            _level++;
-                            WriteObject(prefix, element);
-                            _level--;
-                        }
-                    }
-                    else
-                    {
-                        WriteObject(prefix, element);
-                    }
-                }
-            }
-            else
-            {
-                MemberInfo[] members = o.GetType().GetMembers(BindingFlags.Public | BindingFlags.Instance);
-                WriteIndent();
-                Write(prefix);
-                bool propWritten = false;
-                foreach (MemberInfo m in members)
-                {
-                    var f = m as FieldInfo;
-                    var p = m as PropertyInfo;
-                    if (f != null || p != null)
-                    {
-                        if (propWritten)
-                        {
-                            WriteTab();
-                        }
-                        else
-                        {
-                            propWritten = true;
-                        }
-                        Write(m.Name);
-                        Write("=");
-                        System.Type t = f != null ? f.FieldType : p.PropertyType;
-                        if (t.IsValueType || t == typeof (string))
-                        {
-                            WriteValue(f != null ? f.GetValue(o) : p.GetValue(o, null));
-                        }
-                        else
-                        {
-                            if (typeof (IEnumerable).IsAssignableFrom(t))
-                            {
-                                Write("...");
-                            }
-                            else
-                            {
-                                Write("{ }");
-                            }
-                        }
-                    }
-                }
-                if (propWritten) WriteLine();
-                if (_level < _depth)
-                {
-                    foreach (MemberInfo m in members)
-                    {
-                        var f = m as FieldInfo;
-                        var p = m as PropertyInfo;
-                        if (f != null || p != null)
-                        {
-                            System.Type t = f != null ? f.FieldType : p.PropertyType;
-                            if (!(t.IsValueType || t == typeof (string)))
-                            {
-                                object value = f != null ? f.GetValue(o) : p.GetValue(o, null);
-                                if (value != null)
-                                {
-                                    _level++;
-                                    WriteObject(m.Name + ": ", value);
-                                    _level--;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void WriteValue(object o)
-        {
-            if (o == null)
-            {
-                Write("null");
-            }
-            else if (o is DateTime)
-            {
-                Write(((DateTime) o).ToShortDateString());
-            }
-            else if (o is ValueType || o is string)
-            {
-                Write(o.ToString());
-            }
-            else if (o is IEnumerable)
-            {
-                Write("...");
-            }
-            else
-            {
-                Write("{ }");
-            }
-        }
-    }
-
-    public class Name
+	public class Name
     {
         public string FirstName;
         public string LastName;

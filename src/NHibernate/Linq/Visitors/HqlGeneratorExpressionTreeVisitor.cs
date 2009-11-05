@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
+using NHibernate.Linq.Expressions;
 using NHibernate.Linq.ReWriters;
 using Remotion.Data.Linq.Clauses.Expressions;
 using Remotion.Data.Linq.Clauses.ExpressionTreeVisitors;

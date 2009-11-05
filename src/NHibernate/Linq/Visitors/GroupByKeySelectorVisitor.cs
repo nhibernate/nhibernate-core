@@ -6,9 +6,9 @@ namespace NHibernate.Linq.Visitors
 {
     internal class GroupByKeySelectorVisitor : ExpressionTreeVisitor
     {
-        private readonly ParameterExpression _parameter;
+        private readonly Expression _parameter;
 
-        public GroupByKeySelectorVisitor(ParameterExpression parameter)
+        public GroupByKeySelectorVisitor(Expression parameter)
         {
             _parameter = parameter;
         }
@@ -23,4 +23,25 @@ namespace NHibernate.Linq.Visitors
             return _parameter;
         }
     }
+
+	internal class GroupByKeySourceFinder : ExpressionTreeVisitor
+	{
+		private Expression _source;
+
+		public GroupByKeySourceFinder()
+		{
+		}
+
+		public Expression Visit(Expression expression)
+		{
+			VisitExpression(expression);
+			return _source;
+		}
+
+		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+		{
+			_source = expression;
+			return expression;
+		}
+	}
 }

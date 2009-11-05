@@ -47,7 +47,7 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(this, expression);
 		}
 
-		void SetParameters(IQuery query, IDictionary<string, object> parameters)
+		static void SetParameters(IQuery query, IDictionary<string, object> parameters)
 		{
 			foreach (var parameterName in query.NamedParameters)
 			{

@@ -6,6 +6,13 @@ using Remotion.Data.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
+	/// <summary>
+	/// Performs the equivalent of a ToString() on an expression. Swaps out constants for 
+	/// parameters so that, for example:
+	///		from c in Customers where c.City = "London"
+	/// generate the same key as 
+	///		from c in Customers where c.City = "Madrid"
+	/// </summary>
 	public class ExpressionKeyVisitor : ExpressionTreeVisitor
 	{
 		private readonly IDictionary<ConstantExpression, NamedParameter> _parameters;

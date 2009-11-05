@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Visitors;
 using Remotion.Data.Linq;
 using Remotion.Data.Linq.Clauses;
@@ -12,9 +13,15 @@ namespace NHibernate.Linq.ReWriters
 {
 	public class MergeAggregatingResultsRewriter : QueryModelVisitorBase
 	{
-		public void ReWrite(QueryModel model)
+		private MergeAggregatingResultsRewriter()
 		{
-			this.VisitQueryModel(model);
+		}
+
+		public static void ReWrite(QueryModel model)
+		{
+			var rewriter = new MergeAggregatingResultsRewriter();
+
+			rewriter.VisitQueryModel(model);
 		}
 
 		public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)
@@ -68,7 +75,7 @@ namespace NHibernate.Linq.ReWriters
 
 		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
 		{
-			new MergeAggregatingResultsRewriter().ReWrite(expression.QueryModel);
+			MergeAggregatingResultsRewriter.ReWrite(expression.QueryModel);
 			return expression;
 		}
 
