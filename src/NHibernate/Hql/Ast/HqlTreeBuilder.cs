@@ -383,5 +383,20 @@ namespace NHibernate.Hql.Ast
     	{
     		return new HqlAll(_factory);
     	}
+
+        public HqlLike Like()
+        {
+            return new HqlLike(_factory);
+        }
+
+        public HqlConcat Concat()
+        {
+            return new HqlConcat(_factory);
+        }
+
+        public HqlExpressionList ExpressionList()
+        {
+            return new HqlExpressionList(_factory);
+        }
     }
 }

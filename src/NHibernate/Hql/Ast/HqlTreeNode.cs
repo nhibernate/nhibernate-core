@@ -632,4 +632,18 @@ namespace NHibernate.Hql.Ast
         {
         }
 	}
+
+    public class HqlLike : HqlTreeNode
+    {
+        public HqlLike(IASTFactory factory) : base(HqlSqlWalker.LIKE, "like", factory)
+        {
+        }
+    }
+
+    public class HqlConcat : HqlTreeNode
+    {
+        public HqlConcat(IASTFactory factory) : base(HqlSqlWalker.METHOD_CALL, "method", factory)
+        {
+        }
+    }
 }

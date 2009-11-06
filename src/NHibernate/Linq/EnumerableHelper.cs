@@ -1,8 +1,28 @@
+using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace NHibernate.Linq
 {
+    public static class ReflectionHelper
+    {
+        public delegate void Action();
+
+        public static MethodInfo GetMethod<TSource>(Expression<Action<TSource>> method)
+        {
+            var methodInfo = ((MethodCallExpression) method.Body).Method;
+            return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
+        }
+
+        public static MethodInfo GetMethod(Expression<Action> method)
+        {
+            var methodInfo = ((MethodCallExpression)method.Body).Method;
+            return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
+        }
+    }
+
+    // TODO rename / remove - reflection helper above is better
     public static class EnumerableHelper
     {
         public static MethodInfo GetMethod(string name, System.Type[] parameterTypes)

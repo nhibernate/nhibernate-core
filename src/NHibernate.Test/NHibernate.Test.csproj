@@ -375,6 +375,7 @@
     <Compile Include="LazyOneToOne\Person.cs" />
     <Compile Include="LazyProperty\Book.cs" />
     <Compile Include="LazyProperty\LazyPropertyFixture.cs" />
+    <Compile Include="Linq\AggregateTests.cs" />
     <Compile Include="Linq\Entities\Address.cs" />
     <Compile Include="Linq\Entities\Customer.cs" />
     <Compile Include="Linq\Entities\Employee.cs" />

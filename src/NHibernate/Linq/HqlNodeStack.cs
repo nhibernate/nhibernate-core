@@ -11,6 +11,7 @@ namespace NHibernate.Linq
 
         public HqlNodeStack(HqlTreeBuilder builder)
         {
+            // TODO - only reason for the build is to have a root node.  Sucks, change this
             _root = builder.Holder();
             _stack.Push(_root);
         }

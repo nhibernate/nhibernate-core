@@ -1,16 +1,36 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast.ANTLR.Tree;
+using NHibernate.Linq.ResultOperators;
 using NHibernate.Linq.Visitors;
+using Remotion.Data.Linq.Clauses;
+using Remotion.Data.Linq.Clauses.StreamedData;
 using Remotion.Data.Linq.Parsing.ExpressionTreeVisitors;
 using Remotion.Data.Linq.Parsing.Structure;
+using Remotion.Data.Linq.Parsing.Structure.IntermediateModel;
 
 namespace NHibernate.Linq
 {
 	public class NhLinqExpression : IQueryExpression
 	{
+	    private static readonly MethodCallExpressionNodeTypeRegistry MethodCallRegistry =
+	        MethodCallExpressionNodeTypeRegistry.CreateDefault();
+
+        static NhLinqExpression()
+        {
+            MethodCallRegistry.Register(
+                new[]
+                    {
+                        MethodCallExpressionNodeTypeRegistry.GetRegisterableMethodDefinition(ReflectionHelper.GetMethod(() => Queryable.Aggregate<object>(null, null))),
+                        MethodCallExpressionNodeTypeRegistry.GetRegisterableMethodDefinition(ReflectionHelper.GetMethod(() => Queryable.Aggregate<object, object>(null, null, null)))
+                    },
+                typeof (AggregateExpressionNode));
+        }
+
+
 		private readonly Expression _expression;
 		private CommandData _commandData;
 		private readonly IDictionary<ConstantExpression, NamedParameter> _queryParameters;
@@ -40,7 +60,8 @@ namespace NHibernate.Linq
 		public IASTNode Translate(ISessionFactory sessionFactory)
 		{
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
-			var queryModel = new QueryParser(new ExpressionTreeParser(MethodCallExpressionNodeTypeRegistry.CreateDefault())).GetParsedQuery(_expression);
+            // TODO - can we cache any of this? 
+			var queryModel = new QueryParser(new ExpressionTreeParser(MethodCallRegistry)).GetParsedQuery(_expression);
 
 			_commandData = QueryModelVisitor.GenerateHqlQuery(queryModel, _queryParameters, requiredHqlParameters);
 
@@ -67,4 +88,65 @@ namespace NHibernate.Linq
 			_commandData.AddAdditionalCriteria(impl);
 		}
 	}
+
+    public class AggregateExpressionNode : ResultOperatorExpressionNodeBase
+    {
+        public MethodCallExpressionParseInfo ParseInfo { get; set; }
+        public Expression OptionalSeed { get; set; }
+        public LambdaExpression Accumulator { get; set; }
+        public LambdaExpression OptionalSelector { get; set; }
+
+        public AggregateExpressionNode(MethodCallExpressionParseInfo parseInfo, Expression arg1, Expression arg2, LambdaExpression optionalSelector) : base(parseInfo, null, optionalSelector)
+        {
+            ParseInfo = parseInfo;
+
+            if (arg2 != null)
+            {
+                OptionalSeed = arg1;
+                Accumulator = (LambdaExpression) arg2;
+            }
+            else
+            {
+                Accumulator = (LambdaExpression) arg1;
+            }
+
+            OptionalSelector = optionalSelector;
+        }
+
+        public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
+        {
+            return new AggregateResultOperator(ParseInfo, OptionalSeed, Accumulator, OptionalSelector);
+        }
+    }
+
+    public class AggregateResultOperator : ClientSideTransformOperator
+    {
+        public MethodCallExpressionParseInfo ParseInfo { get; set; }
+        public Expression OptionalSeed { get; set; }
+        public LambdaExpression Accumulator { get; set; }
+        public LambdaExpression OptionalSelector { get; set; }
+
+        public AggregateResultOperator(MethodCallExpressionParseInfo parseInfo, Expression optionalSeed, LambdaExpression accumulator, LambdaExpression optionalSelector)
+        {
+            ParseInfo = parseInfo;
+            OptionalSeed = optionalSeed;
+            Accumulator = accumulator;
+            OptionalSelector = optionalSelector;
+        }
+
+        public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ResultOperatorBase Clone(CloneContext cloneContext)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

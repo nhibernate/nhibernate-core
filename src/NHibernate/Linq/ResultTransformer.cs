@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
+using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Transform;
+using Remotion.Collections;
 
 namespace NHibernate.Linq
 {
@@ -30,7 +32,38 @@ namespace NHibernate.Linq
 
         public IList TransformList(IList collection)
         {
-            return _listTransformation == null ? collection : (IList) _listTransformation.DynamicInvoke(collection);
+            if (_listTransformation == null)
+            {
+                return collection;
+            }
+
+            object transformResult = collection;
+
+            if (collection.Count > 0)
+            {
+                if (collection[0] is object[])
+                {
+                    if ( ((object[])collection[0]).Length != 1)
+                    {
+                        // We only expect single items
+                        throw new NotSupportedException();
+                    }
+
+                    transformResult = _listTransformation.DynamicInvoke(collection.Cast<object[]>().Select(o => o[0]));
+                }
+                else
+                {
+                    transformResult = _listTransformation.DynamicInvoke(collection);
+                }
+            }
+
+            if (transformResult is IList)
+            {
+                return (IList) transformResult;
+            }
+
+            var list = new ArrayList {transformResult};
+            return list;
         }
     }
 }

@@ -214,11 +214,68 @@ namespace NHibernate.Linq.Visitors
             {
                 ProcessClientSideSelect((ClientSideSelect) resultOperator);
             }
-			else
+            else if (resultOperator is AggregateResultOperator)
+            {
+                ProcessAggregateOperator((AggregateResultOperator)resultOperator);
+            }
+            else
 			{
 				throw new NotSupportedException(string.Format("The {0} result operator is not current supported",
 				                                              resultOperator.GetType().Name));
 			}
+        }
+
+        private void ProcessAggregateOperator(AggregateResultOperator resultOperator)
+        {
+            var inputType = resultOperator.Accumulator.Parameters[1].Type;
+            var accumulatorType = resultOperator.Accumulator.Parameters[0].Type;
+            var inputList = Expression.Parameter(typeof(IEnumerable<>).MakeGenericType(typeof(object)), "inputList");
+
+            var castToItem = EnumerableHelper.GetMethod("Cast", new[] { typeof(IEnumerable) }, new[] { inputType });
+            var castToItemExpr = Expression.Call(castToItem, inputList);
+
+            MethodCallExpression call;
+
+            if (resultOperator.ParseInfo.ParsedExpression.Arguments.Count == 2)
+            {
+                var aggregate = ReflectionHelper.GetMethod(() => Enumerable.Aggregate<object>(null, null));
+                aggregate = aggregate.GetGenericMethodDefinition().MakeGenericMethod(inputType);
+
+                call = Expression.Call(
+                    aggregate,
+                    castToItemExpr,
+                    resultOperator.Accumulator
+                    );
+                
+            }
+            else if (resultOperator.ParseInfo.ParsedExpression.Arguments.Count == 3)
+            {
+                var aggregate = ReflectionHelper.GetMethod(() => Enumerable.Aggregate<object, object>(null, null, null));
+                aggregate = aggregate.GetGenericMethodDefinition().MakeGenericMethod(inputType, accumulatorType);
+
+                call = Expression.Call(
+                    aggregate,
+                    castToItemExpr,
+                    resultOperator.OptionalSeed,
+                    resultOperator.Accumulator
+                    );
+            }
+            else
+            {
+                var selectorType = resultOperator.OptionalSelector.Type.GetGenericArguments()[2];
+                var aggregate = ReflectionHelper.GetMethod(() => Enumerable.Aggregate<object, object, object>(null, null, null, null));
+                aggregate = aggregate.GetGenericMethodDefinition().MakeGenericMethod(inputType, accumulatorType, selectorType);
+
+                call = Expression.Call(
+                    aggregate,
+                    castToItemExpr,
+                    resultOperator.OptionalSeed,
+                    resultOperator.Accumulator,
+                    resultOperator.OptionalSelector
+                    );
+            }
+
+            _listTransformers.Add(Expression.Lambda(call, inputList));
         }
 
         private void ProcessClientSideSelect(ClientSideSelect resultOperator)
@@ -251,13 +308,6 @@ namespace NHibernate.Linq.Visitors
 
 		private void ProcessNonAggregatingGroupBy(NonAggregatingGroupBy resultOperator, QueryModel model)
 		{
-			/*
-			public static IQueryable<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(
-				    this IQueryable<TSource> source, 
-					Expression<Func<TSource, TKey>> keySelector,
-		            Expression<Func<TSource, TElement>> elementSelector);
-			*/
-
 			var tSource = model.SelectClause.Selector.Type;
 			var tKey = resultOperator.GroupBy.KeySelector.Type;
 			var tElement = resultOperator.GroupBy.ElementSelector.Type;
@@ -305,31 +355,7 @@ namespace NHibernate.Linq.Visitors
 
 			LambdaExpression elementSelectorExpr = Expression.Lambda(elementSelector, itemParam);
 
-			ParameterExpression objectArrayParam = Expression.Parameter(typeof (object[]), "array");
-
-			Expression castToItemExpr;
-			if (_itemTransformers.Count > 0)
-			{
-				// The item transformer will already have removed the object[].  We need to do this:
-				// list.Cast<tSource>().GroupBy(keySelectorExpr, elementSelectorExpr).ToList();
-				castToItemExpr = Expression.Call(castToItem, listParameter);
-			}
-			else
-			{
-				// We have an object[] in the ResultTransformer
-				// list.Cast<object[]>().Select(o => o[0]).Cast<tSource>().GroupBy(keySelectorExpr, elementSelectorExpr).ToList();
-				var castToObjectArray = EnumerableHelper.GetMethod("Cast", new[] { typeof(IEnumerable) }, new[] { typeof(object[]) });
-				var selectObject = EnumerableHelper.GetMethod("Select", new[] { typeof(IEnumerable<>), typeof(Func<,>) }, new[] { typeof(object[]), typeof(object) });
-
-				var castToObjectArrayExpr = Expression.Call(castToObjectArray, listParameter);
-
-				LambdaExpression index = Expression.Lambda(Expression.ArrayIndex(objectArrayParam, Expression.Constant(0)),
-										   objectArrayParam);
-
-				var selectObjectExpr = Expression.Call(selectObject, castToObjectArrayExpr, index);
-
-				castToItemExpr = Expression.Call(castToItem, selectObjectExpr);
-			}
+			Expression castToItemExpr = Expression.Call(castToItem, listParameter);
 
 			var groupByExpr = Expression.Call(groupByMethod, castToItemExpr, keySelectorExpr, elementSelectorExpr);
 
