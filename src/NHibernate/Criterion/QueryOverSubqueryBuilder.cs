@@ -51,7 +51,12 @@ namespace NHibernate.Criterion
 		public S WhereProperty(Expression<Func<T, object>> expression)
 		{
 			string property = ExpressionProcessor.FindMemberExpression(expression.Body);
-			return (S) new S().Set(root, property);
+			return (S)new S().Set(root, property, null);
+		}
+
+		public S WhereValue(object value)
+		{
+			return (S)new S().Set(root, null, value);
 		}
 
 	}

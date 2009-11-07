@@ -35,6 +35,7 @@ namespace NHibernate.Test.Criteria.Lambda
 	{
 		public virtual int		Id			{ get; set; }
 		public virtual string	Nickname	{ get; set; }
+		public virtual int		Age			{ get; set; }
 	}
 
 	public class Relation

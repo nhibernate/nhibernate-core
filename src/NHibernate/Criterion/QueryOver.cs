@@ -66,7 +66,7 @@ namespace NHibernate.Criterion
 		/// Method to allow comparison of detached query in Lambda expression
 		/// e.g., p =&gt; p.Name == myQuery.As&lt;string&gt;
 		/// </summary>
-		/// <typeparam name="T">type returned by query</typeparam>
+		/// <typeparam name="R">type returned by query</typeparam>
 		/// <returns>throws an exception if evaluated directly at runtime.</returns>
 		public R As<R>()
 		{
