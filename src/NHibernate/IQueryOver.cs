@@ -317,7 +317,7 @@ namespace NHibernate
 		/// <param name="path">Lambda expression returning association path</param>
 		/// <param name="alias">Lambda expression returning alias reference</param>
 		/// <returns>criteria instance</returns>
-		IQueryOver<T> Join(Expression<Func<T, object>> path, Expression<Func<object>> alias);
+		IQueryOver<T> JoinAlias(Expression<Func<T, object>> path, Expression<Func<object>> alias);
 
 		/// <summary>
 		/// Join an association, assigning an alias to the joined entity
@@ -325,16 +325,7 @@ namespace NHibernate
 		/// <param name="path">Lambda expression returning association path</param>
 		/// <param name="alias">Lambda expression returning alias reference</param>
 		/// <returns>criteria instance</returns>
-		IQueryOver<T> Join(Expression<Func<object>> path, Expression<Func<object>> alias);
-
-		/// <summary>
-		/// Join an association, assigning an alias to the joined entity
-		/// </summary>
-		/// <param name="path">Lambda expression returning association path</param>
-		/// <param name="alias">Lambda expression returning alias reference</param>
-		/// <param name="joinType">Type of join</param>
-		/// <returns>criteria instance</returns>
-		IQueryOver<T> Join(Expression<Func<T, object>> path, Expression<Func<object>> alias, JoinType joinType);
+		IQueryOver<T> JoinAlias(Expression<Func<object>> path, Expression<Func<object>> alias);
 
 		/// <summary>
 		/// Join an association, assigning an alias to the joined entity
@@ -343,7 +334,16 @@ namespace NHibernate
 		/// <param name="alias">Lambda expression returning alias reference</param>
 		/// <param name="joinType">Type of join</param>
 		/// <returns>criteria instance</returns>
-		IQueryOver<T> Join(Expression<Func<object>> path, Expression<Func<object>> alias, JoinType joinType);
+		IQueryOver<T> JoinAlias(Expression<Func<T, object>> path, Expression<Func<object>> alias, JoinType joinType);
+
+		/// <summary>
+		/// Join an association, assigning an alias to the joined entity
+		/// </summary>
+		/// <param name="path">Lambda expression returning association path</param>
+		/// <param name="alias">Lambda expression returning alias reference</param>
+		/// <param name="joinType">Type of join</param>
+		/// <returns>criteria instance</returns>
+		IQueryOver<T> JoinAlias(Expression<Func<object>> path, Expression<Func<object>> alias, JoinType joinType);
 
 		IQueryOverJoinBuilder<T> Inner { get; }
 		IQueryOverJoinBuilder<T> Left	{ get; }

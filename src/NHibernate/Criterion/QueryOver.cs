@@ -318,7 +318,7 @@ namespace NHibernate.Criterion
 					joinType));
 		}
 
-		public QueryOver<T> Join(Expression<Func<T, object>> path, Expression<Func<object>> alias)
+		public QueryOver<T> JoinAlias(Expression<Func<T, object>> path, Expression<Func<object>> alias)
 		{
 			return AddAlias(
 				ExpressionProcessor.FindMemberExpression(path.Body),
@@ -326,7 +326,7 @@ namespace NHibernate.Criterion
 				JoinType.InnerJoin);
 		}
 
-		public QueryOver<T> Join(Expression<Func<object>> path, Expression<Func<object>> alias)
+		public QueryOver<T> JoinAlias(Expression<Func<object>> path, Expression<Func<object>> alias)
 		{
 			return AddAlias(
 				ExpressionProcessor.FindMemberExpression(path.Body),
@@ -334,7 +334,7 @@ namespace NHibernate.Criterion
 				JoinType.InnerJoin);
 		}
 
-		public QueryOver<T> Join(Expression<Func<T, object>> path, Expression<Func<object>> alias, JoinType joinType)
+		public QueryOver<T> JoinAlias(Expression<Func<T, object>> path, Expression<Func<object>> alias, JoinType joinType)
 		{
 			return AddAlias(
 				ExpressionProcessor.FindMemberExpression(path.Body),
@@ -342,7 +342,7 @@ namespace NHibernate.Criterion
 				joinType);
 		}
 
-		public QueryOver<T> Join(Expression<Func<object>> path, Expression<Func<object>> alias, JoinType joinType)
+		public QueryOver<T> JoinAlias(Expression<Func<object>> path, Expression<Func<object>> alias, JoinType joinType)
 		{
 			return AddAlias(
 				ExpressionProcessor.FindMemberExpression(path.Body),
@@ -558,17 +558,17 @@ namespace NHibernate.Criterion
 		IQueryOver<U> IQueryOver<T>.JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType)
 		{ return JoinQueryOver(path, alias, joinType); }
 
-		IQueryOver<T> IQueryOver<T>.Join(Expression<Func<T, object>> path, Expression<Func<object>> alias)
-		{ return Join(path, alias); }
+		IQueryOver<T> IQueryOver<T>.JoinAlias(Expression<Func<T, object>> path, Expression<Func<object>> alias)
+		{ return JoinAlias(path, alias); }
 
-		IQueryOver<T> IQueryOver<T>.Join(Expression<Func<object>> path, Expression<Func<object>> alias)
-		{ return Join(path, alias); }
+		IQueryOver<T> IQueryOver<T>.JoinAlias(Expression<Func<object>> path, Expression<Func<object>> alias)
+		{ return JoinAlias(path, alias); }
 
-		IQueryOver<T> IQueryOver<T>.Join(Expression<Func<T, object>> path, Expression<Func<object>> alias, JoinType joinType)
-		{ return Join(path, alias, joinType); }
+		IQueryOver<T> IQueryOver<T>.JoinAlias(Expression<Func<T, object>> path, Expression<Func<object>> alias, JoinType joinType)
+		{ return JoinAlias(path, alias, joinType); }
 
-		IQueryOver<T> IQueryOver<T>.Join(Expression<Func<object>> path, Expression<Func<object>> alias, JoinType joinType)
-		{ return Join(path, alias, joinType); }
+		IQueryOver<T> IQueryOver<T>.JoinAlias(Expression<Func<object>> path, Expression<Func<object>> alias, JoinType joinType)
+		{ return JoinAlias(path, alias, joinType); }
 
 		IQueryOverJoinBuilder<T> IQueryOver<T>.Inner
 		{ get { return new IQueryOverJoinBuilder<T>(this, JoinType.InnerJoin); } }

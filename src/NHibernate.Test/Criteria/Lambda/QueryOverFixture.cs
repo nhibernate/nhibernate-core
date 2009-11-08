@@ -270,8 +270,8 @@ namespace NHibernate.Test.Criteria.Lambda
 			Child childAlias = null;
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
-					.Join(p => p.Father, () => fatherAlias)
-					.Join(p => p.Children, () => childAlias);
+					.JoinAlias(p => p.Father, () => fatherAlias)
+					.JoinAlias(p => p.Children, () => childAlias);
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
@@ -289,8 +289,8 @@ namespace NHibernate.Test.Criteria.Lambda
 			Child childAlias = null;
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>(() => personAlias)
-					.Join(() => personAlias.Father, () => fatherAlias)
-					.Inner.Join(() => personAlias.Children, () => childAlias);
+					.JoinAlias(() => personAlias.Father, () => fatherAlias)
+					.Inner.JoinAlias(() => personAlias.Children, () => childAlias);
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
@@ -313,14 +313,14 @@ namespace NHibernate.Test.Criteria.Lambda
 			Relation collection1Alias = null, collection2Alias = null, collection3Alias = null, collection4Alias = null;
 			IQueryOver<Relation> actual =
 				CreateTestQueryOver<Relation>()
-					.Inner.Join(r => r.Related1, () => related1Alias)
-					.Inner.Join(r => r.Collection1, () => collection1Alias)
-					.Left.Join(r => r.Related2, () => related2Alias)
-					.Left.Join(r => r.Collection2, () => collection2Alias)
-					.Right.Join(r => r.Related3, () => related3Alias)
-					.Right.Join(r => r.Collection3, () => collection3Alias)
-					.Full.Join(r => r.Related4, () => related4Alias)
-					.Full.Join(r => r.Collection4, () => collection4Alias);
+					.Inner.JoinAlias(r => r.Related1, () => related1Alias)
+					.Inner.JoinAlias(r => r.Collection1, () => collection1Alias)
+					.Left.JoinAlias(r => r.Related2, () => related2Alias)
+					.Left.JoinAlias(r => r.Collection2, () => collection2Alias)
+					.Right.JoinAlias(r => r.Related3, () => related3Alias)
+					.Right.JoinAlias(r => r.Collection3, () => collection3Alias)
+					.Full.JoinAlias(r => r.Related4, () => related4Alias)
+					.Full.JoinAlias(r => r.Collection4, () => collection4Alias);
 
 			AssertCriteriaAreEqual(expected, actual);
 		}

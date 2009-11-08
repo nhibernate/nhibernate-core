@@ -113,14 +113,14 @@ namespace NHibernate.Criterion
 			this.joinType = joinType;
 		}
 
-		public R Join(Expression<Func<T, object>> path, Expression<Func<object>> alias)
+		public R JoinAlias(Expression<Func<T, object>> path, Expression<Func<object>> alias)
 		{
-			return (R)root.Join(path, alias, joinType);
+			return (R)root.JoinAlias(path, alias, joinType);
 		}
 
-		public R Join(Expression<Func<object>> path, Expression<Func<object>> alias)
+		public R JoinAlias(Expression<Func<object>> path, Expression<Func<object>> alias)
 		{
-			return (R)root.Join(path, alias, joinType);
+			return (R)root.JoinAlias(path, alias, joinType);
 		}
 
 	}
