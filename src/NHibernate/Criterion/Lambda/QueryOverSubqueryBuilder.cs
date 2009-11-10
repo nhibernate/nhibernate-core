@@ -38,6 +38,24 @@ namespace NHibernate.Criterion.Lambda
 		}
 
 		/// <summary>
+		/// Add an Exists subquery criterion
+		/// </summary>
+		public R WhereExists<U>(QueryOver<U> detachedQuery)
+		{
+			root.And(Subqueries.Exists(detachedQuery.DetachedCriteria));
+			return root;
+		}
+
+		/// <summary>
+		/// Add a NotExists subquery criterion
+		/// </summary>
+		public R WhereNotExists<U>(QueryOver<U> detachedQuery)
+		{
+			root.And(Subqueries.NotExists(detachedQuery.DetachedCriteria));
+			return root;
+		}
+
+		/// <summary>
 		/// Subquery expression in the format
 		/// .Where(t =&gt; t.Property [==, !=, >, etc.] detachedQueryOver.As&lt;propertyType&gt;())
 		/// </summary>
@@ -48,7 +66,68 @@ namespace NHibernate.Criterion.Lambda
 			return root;
 		}
 
+		/// <summary>
+		/// Subquery expression in the format
+		/// .Where(() =&gt; alias.Property [==, !=, >, etc.] detachedQueryOver.As&lt;propertyType&gt;())
+		/// </summary>
+		public R Where(Expression<Func<bool>> expression)
+		{
+			AbstractCriterion criterion = ExpressionProcessor.ProcessSubquery(LambdaSubqueryType.Exact, expression);
+			root.And(criterion);
+			return root;
+		}
+
+		/// <summary>
+		/// Subquery expression in the format
+		/// .WhereAll(t =&gt; t.Property [==, !=, >, etc.] detachedQueryOver.As&lt;propertyType&gt;())
+		/// </summary>
+		public R WhereAll(Expression<Func<T, bool>> expression)
+		{
+			AbstractCriterion criterion = ExpressionProcessor.ProcessSubquery<T>(LambdaSubqueryType.All, expression);
+			root.And(criterion);
+			return root;
+		}
+
+		/// <summary>
+		/// Subquery expression in the format
+		/// .WhereAll(() =&gt; alias.Property [==, !=, >, etc.] detachedQueryOver.As&lt;propertyType&gt;())
+		/// </summary>
+		public R WhereAll(Expression<Func<bool>> expression)
+		{
+			AbstractCriterion criterion = ExpressionProcessor.ProcessSubquery(LambdaSubqueryType.All, expression);
+			root.And(criterion);
+			return root;
+		}
+
+		/// <summary>
+		/// Subquery expression in the format
+		/// .WhereSome(t =&gt; t.Property [==, !=, >, etc.] detachedQueryOver.As&lt;propertyType&gt;())
+		/// </summary>
+		public R WhereSome(Expression<Func<T, bool>> expression)
+		{
+			AbstractCriterion criterion = ExpressionProcessor.ProcessSubquery<T>(LambdaSubqueryType.Some, expression);
+			root.And(criterion);
+			return root;
+		}
+
+		/// <summary>
+		/// Subquery expression in the format
+		/// .WhereSome(() =&gt; alias.Property [==, !=, >, etc.] detachedQueryOver.As&lt;propertyType&gt;())
+		/// </summary>
+		public R WhereSome(Expression<Func<bool>> expression)
+		{
+			AbstractCriterion criterion = ExpressionProcessor.ProcessSubquery(LambdaSubqueryType.Some, expression);
+			root.And(criterion);
+			return root;
+		}
+
 		public S WhereProperty(Expression<Func<T, object>> expression)
+		{
+			string property = ExpressionProcessor.FindMemberExpression(expression.Body);
+			return (S)new S().Set(root, property, null);
+		}
+
+		public S WhereProperty(Expression<Func<object>> expression)
 		{
 			string property = ExpressionProcessor.FindMemberExpression(expression.Body);
 			return (S)new S().Set(root, property, null);

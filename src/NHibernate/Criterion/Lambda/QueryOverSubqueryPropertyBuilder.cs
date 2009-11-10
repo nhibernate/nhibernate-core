@@ -78,6 +78,16 @@ namespace NHibernate.Criterion.Lambda
 		}
 
 		/// <summary>
+		/// Add a property equal all subquery criterion
+		/// </summary>
+		/// <param name="detachedCriteria">detached subquery</param>
+		public R EqAll<U>(QueryOver<U> detachedCriteria)
+		{
+			AddSubquery(Subqueries.PropertyEqAll, Subqueries.EqAll, detachedCriteria);
+			return root;
+		}
+
+		/// <summary>
 		/// Create a property greater than or equal subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
@@ -88,12 +98,52 @@ namespace NHibernate.Criterion.Lambda
 		}
 
 		/// <summary>
+		/// Create a property greater than or equal all subquery criterion
+		/// </summary>
+		/// <param name="detachedCriteria">detached subquery</param>
+		public R GeAll<U>(QueryOver<U> detachedCriteria)
+		{
+			AddSubquery(Subqueries.PropertyGeAll, Subqueries.GeAll, detachedCriteria);
+			return root;
+		}
+
+		/// <summary>
+		/// Create a property greater than or equal some subquery criterion
+		/// </summary>
+		/// <param name="detachedCriteria">detached subquery</param>
+		public R GeSome<U>(QueryOver<U> detachedCriteria)
+		{
+			AddSubquery(Subqueries.PropertyGeSome, Subqueries.GeSome, detachedCriteria);
+			return root;
+		}
+
+		/// <summary>
 		/// Create a property greater than subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
 		public R Gt<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyGt, Subqueries.Gt, detachedCriteria);
+			return root;
+		}
+
+		/// <summary>
+		/// Create a property greater than all subquery criterion
+		/// </summary>
+		/// <param name="detachedCriteria">detached subquery</param>
+		public R GtAll<U>(QueryOver<U> detachedCriteria)
+		{
+			AddSubquery(Subqueries.PropertyGtAll, Subqueries.GtAll, detachedCriteria);
+			return root;
+		}
+
+		/// <summary>
+		/// Create a property greater than some subquery criterion
+		/// </summary>
+		/// <param name="detachedCriteria">detached subquery</param>
+		public R GtSome<U>(QueryOver<U> detachedCriteria)
+		{
+			AddSubquery(Subqueries.PropertyGtSome, Subqueries.GtSome, detachedCriteria);
 			return root;
 		}
 
@@ -118,12 +168,52 @@ namespace NHibernate.Criterion.Lambda
 		}
 
 		/// <summary>
+		/// Create a property less than or equal all subquery criterion
+		/// </summary>
+		/// <param name="detachedCriteria">detached subquery</param>
+		public R LeAll<U>(QueryOver<U> detachedCriteria)
+		{
+			AddSubquery(Subqueries.PropertyLeAll, Subqueries.LeAll, detachedCriteria);
+			return root;
+		}
+
+		/// <summary>
+		/// Create a property less than or equal some subquery criterion
+		/// </summary>
+		/// <param name="detachedCriteria">detached subquery</param>
+		public R LeSome<U>(QueryOver<U> detachedCriteria)
+		{
+			AddSubquery(Subqueries.PropertyLeSome, Subqueries.LeSome, detachedCriteria);
+			return root;
+		}
+
+		/// <summary>
 		/// Create a property less than subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
 		public R Lt<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyLt, Subqueries.Lt, detachedCriteria);
+			return root;
+		}
+
+		/// <summary>
+		/// Create a property less than all subquery criterion
+		/// </summary>
+		/// <param name="detachedCriteria">detached subquery</param>
+		public R LtAll<U>(QueryOver<U> detachedCriteria)
+		{
+			AddSubquery(Subqueries.PropertyLtAll, Subqueries.LtAll, detachedCriteria);
+			return root;
+		}
+
+		/// <summary>
+		/// Create a property less than some subquery criterion
+		/// </summary>
+		/// <param name="detachedCriteria">detached subquery</param>
+		public R LtSome<U>(QueryOver<U> detachedCriteria)
+		{
+			AddSubquery(Subqueries.PropertyLtSome, Subqueries.LtSome, detachedCriteria);
 			return root;
 		}
 
