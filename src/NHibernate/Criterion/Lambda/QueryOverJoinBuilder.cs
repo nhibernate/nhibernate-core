@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
 
-namespace NHibernate.Criterion
+namespace NHibernate.Criterion.Lambda
 {
 
 	public class QueryOverJoinBuilder<T> : QueryOverJoinBuilderBase<QueryOver<T>, T>

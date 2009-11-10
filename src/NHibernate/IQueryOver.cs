@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 
 using NHibernate.Criterion;
+using NHibernate.Criterion.Lambda;
 using NHibernate.SqlCommand;
 
 namespace NHibernate

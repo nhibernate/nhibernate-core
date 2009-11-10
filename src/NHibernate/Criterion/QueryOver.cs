@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
+using NHibernate.Criterion.Lambda;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
 
