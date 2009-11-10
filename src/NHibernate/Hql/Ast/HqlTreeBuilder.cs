@@ -398,5 +398,10 @@ namespace NHibernate.Hql.Ast
         {
             return new HqlExpressionList(_factory);
         }
+
+        public HqlMethodCall MethodCall()
+        {
+            return new HqlMethodCall(_factory);
+        }
     }
 }

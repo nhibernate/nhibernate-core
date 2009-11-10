@@ -7,7 +7,6 @@ using System.Reflection;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Expressions;
-using Remotion.Data.Linq;
 using Remotion.Data.Linq.Clauses.Expressions;
 using Remotion.Data.Linq.Clauses.ExpressionTreeVisitors;
 
@@ -206,16 +205,28 @@ namespace NHibernate.Linq.Visitors
 
         protected override Expression VisitMemberExpression(MemberExpression expression)
         {
+            // Strip out the .Value property of a nullable type, HQL doesn't need that
+            if (expression.Member.Name == "Value" && expression.Expression.Type.IsNullable())
+            {
+                VisitExpression(expression.Expression);
+                return expression;
+            }
+
+            // Look for "special" properties (DateTime.Month etc)
+            var generator = _methodGeneratorRegistry.GetPropertyGenerator(expression.Expression.Type, expression.Member);
+
+            if (generator != null)
+            {
+                generator.BuildHql(expression.Member, expression.Expression, this);
+                return expression;
+            }
+
+            // Else just emit standard HQL for a property reference
             using (_stack.PushNode(_hqlTreeBuilder.Dot()))
             {
-                Expression newExpression = VisitExpression(expression.Expression);
+                VisitExpression(expression.Expression);
 
                 _stack.PushLeaf(_hqlTreeBuilder.Ident(expression.Member.Name));
-
-                if (newExpression != expression.Expression)
-                {
-                    return Expression.MakeMemberAccess(newExpression, expression.Member);
-                }
             }
 
             return expression;
@@ -253,7 +264,7 @@ namespace NHibernate.Linq.Visitors
         {
             var generator = _methodGeneratorRegistry.GetMethodGenerator(expression.Method);
 
-            generator.BuildHql(expression.Object, expression.Arguments, this);
+            generator.BuildHql(expression.Method, expression.Object, expression.Arguments, this);
 
             return expression;
         }
@@ -320,6 +331,12 @@ namespace NHibernate.Linq.Visitors
         }
     }
 
+    public interface IHqlGeneratorForProperty
+    {
+        IEnumerable<MemberInfo> SupportedProperties { get; }
+        void BuildHql(MemberInfo member, Expression expression, HqlGeneratorExpressionTreeVisitor hqlGeneratorExpressionTreeVisitor);
+    }
+
     public class MethodGeneratorRegistry
     {
         public static MethodGeneratorRegistry Initialise()
@@ -329,11 +346,13 @@ namespace NHibernate.Linq.Visitors
             // TODO - could use reflection here
             registry.Register(new QueryableMethodsGenerator());
             registry.Register(new StringMethodsGenerator());
+            registry.Register(new DateTimePropertyGenerator());
 
             return registry;
         }
 
         private readonly Dictionary<MethodInfo, IHqlGeneratorForMethod> _registeredMethods = new Dictionary<MethodInfo, IHqlGeneratorForMethod>();
+        private readonly Dictionary<MemberInfo, IHqlGeneratorForProperty> _registeredProperties = new Dictionary<MemberInfo, IHqlGeneratorForProperty>();
 
         public IHqlGeneratorForMethod GetMethodGenerator(MethodInfo method)
         {
@@ -349,7 +368,20 @@ namespace NHibernate.Linq.Visitors
                 return methodGenerator;
             }
 
-            throw new NotSupportedException();
+            throw new NotSupportedException(method.ToString());
+        }
+
+        public IHqlGeneratorForProperty GetPropertyGenerator(System.Type type, MemberInfo member)
+        {
+            IHqlGeneratorForProperty propertyGenerator;
+
+            if (_registeredProperties.TryGetValue(member, out propertyGenerator))
+            {
+                return propertyGenerator;
+            }
+
+            // TODO - different usage pattern to method generator
+            return null;
         }
 
         public void RegisterMethodGenerator(MethodInfo method, IHqlGeneratorForMethod generator)
@@ -357,35 +389,48 @@ namespace NHibernate.Linq.Visitors
             _registeredMethods.Add(method, generator);
         }
 
-        private void Register(IHqlGeneratorForType typeMethodGenerator)
+        public void RegisterPropertyGenerator(MemberInfo property, IHqlGeneratorForProperty generator)
         {
-            typeMethodGenerator.RegisterMethods(this);
+            _registeredProperties.Add(property, generator);
         }
 
+        private void Register(IHqlGeneratorForType typeMethodGenerator)
+        {
+            typeMethodGenerator.Register(this);
+        }
     }
 
     public interface IHqlGeneratorForMethod
     {
         IEnumerable<MethodInfo> SupportedMethods { get; }
-        void BuildHql(Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor);
+        void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor);
     }
 
     public interface IHqlGeneratorForType
     {
-        void RegisterMethods(MethodGeneratorRegistry methodGeneratorRegistry);
+        void Register(MethodGeneratorRegistry methodGeneratorRegistry);
     }
 
     abstract public class BaseHqlGeneratorForType : IHqlGeneratorForType
     {
         protected readonly List<IHqlGeneratorForMethod> MethodRegistry = new List<IHqlGeneratorForMethod>();
+        protected readonly List<IHqlGeneratorForProperty> PropertyRegistry = new List<IHqlGeneratorForProperty>();
 
-        public void RegisterMethods(MethodGeneratorRegistry methodGeneratorRegistry)
+        public void Register(MethodGeneratorRegistry methodGeneratorRegistry)
         {
             foreach (var generator in MethodRegistry)
             {
                 foreach (var method in generator.SupportedMethods)
                 {
                     methodGeneratorRegistry.RegisterMethodGenerator(method, generator);
+                }
+            }
+
+            foreach (var generator in PropertyRegistry)
+            {
+                foreach (var property in generator.SupportedProperties)
+                {
+                    methodGeneratorRegistry.RegisterPropertyGenerator(property, generator);
                 }
             }
         }
@@ -395,7 +440,44 @@ namespace NHibernate.Linq.Visitors
     {
         public IEnumerable<MethodInfo> SupportedMethods { get; protected set; }
 
-        public abstract void BuildHql(Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor);
+        public abstract void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor);
+    }
+
+    public class DateTimePropertyGenerator : BaseHqlGeneratorForType
+    {
+        public DateTimePropertyGenerator()
+        {
+            PropertyRegistry.Add(new DatePartGenerator());
+        }
+
+        public class DatePartGenerator : BaseHqlGeneratorForProperty
+        {
+            public DatePartGenerator()
+            {
+                SupportedProperties = new[]
+                                          {
+                                              ReflectionHelper.GetProperty((DateTime x) => x.Year),
+                                              ReflectionHelper.GetProperty((DateTime x) => x.Month),
+                                              ReflectionHelper.GetProperty((DateTime x) => x.Day),
+                                              ReflectionHelper.GetProperty((DateTime x) => x.Hour),
+                                              ReflectionHelper.GetProperty((DateTime x) => x.Minute),
+                                              ReflectionHelper.GetProperty((DateTime x) => x.Second),
+                                          };
+            }
+
+            public override void BuildHql(MemberInfo member, Expression expression, HqlGeneratorExpressionTreeVisitor hqlVisitor)
+            {
+                using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.MethodCall()))
+                {
+                    hqlVisitor.Stack.PushLeaf(hqlVisitor.TreeBuilder.Ident(member.Name.ToLowerInvariant()));
+
+                    using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.ExpressionList()))
+                    {
+                        hqlVisitor.Visit(expression);
+                    }
+                }
+            }
+        }
     }
 
     public class StringMethodsGenerator : BaseHqlGeneratorForType
@@ -407,6 +489,30 @@ namespace NHibernate.Linq.Visitors
             MethodRegistry.Add(new EndsWithGenerator());
             MethodRegistry.Add(new ContainsGenerator());
             MethodRegistry.Add(new EqualsGenerator());
+            MethodRegistry.Add(new ToUpperLowerGenerator());
+
+            PropertyRegistry.Add(new LengthGenerator());
+        }
+
+        public class LengthGenerator : BaseHqlGeneratorForProperty
+        {
+            public LengthGenerator()
+            {
+                SupportedProperties = new[] {ReflectionHelper.GetProperty((string x) => x.Length)};
+            }
+
+            public override void BuildHql(MemberInfo member, Expression expression, HqlGeneratorExpressionTreeVisitor hqlVisitor)
+            {
+                using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.MethodCall()))
+                {
+                    hqlVisitor.Stack.PushLeaf(hqlVisitor.TreeBuilder.Ident("length"));
+
+                    using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.ExpressionList()))
+                    {
+                        hqlVisitor.Visit(expression);
+                    }
+                }
+            }
         }
 
         class StartsWithGenerator : BaseHqlGeneratorForMethod
@@ -416,7 +522,7 @@ namespace NHibernate.Linq.Visitors
                 SupportedMethods = new[] { ReflectionHelper.GetMethod<string>(x => x.StartsWith(null)) };
             }
 
-            public override void BuildHql(Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
+            public override void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
             {
                 using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Like()))
                 {
@@ -446,7 +552,7 @@ namespace NHibernate.Linq.Visitors
                 SupportedMethods = new[] { ReflectionHelper.GetMethod<string>(x => x.EndsWith(null)) };
             }
 
-            public override void BuildHql(Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
+            public override void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
             {
                 using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Like()))
                 {
@@ -476,7 +582,7 @@ namespace NHibernate.Linq.Visitors
                 SupportedMethods = new[] { ReflectionHelper.GetMethod<string>(x => x.Contains(null)) };
             }
 
-            public override void BuildHql(Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
+            public override void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
             {
                 using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Like()))
                 {
@@ -508,13 +614,47 @@ namespace NHibernate.Linq.Visitors
                 SupportedMethods = new[] { ReflectionHelper.GetMethod<string>(x => x.Equals((string)null)) };
             }
 
-            public override void BuildHql(Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
+            public override void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
             {
                 using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Equality()))
                 {
                     hqlVisitor.Visit(targetObject);
 
                     hqlVisitor.Visit(arguments[0]);
+                }
+            }
+        }
+
+        class ToUpperLowerGenerator : BaseHqlGeneratorForMethod
+        {
+            public ToUpperLowerGenerator()
+            {
+                SupportedMethods = new[]
+                                       {
+                                           ReflectionHelper.GetMethod<string>(x => x.ToUpper()),
+                                           ReflectionHelper.GetMethod<string>(x => x.ToUpperInvariant()),
+                                           ReflectionHelper.GetMethod<string>(x => x.ToLower()),
+                                           ReflectionHelper.GetMethod<string>(x => x.ToLowerInvariant())
+                                       };
+            }
+
+            public override void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
+            {
+                using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.MethodCall()))
+                {
+                    if (((method.Name == "ToUpper") || (method.Name == "ToUpperInvariant")))
+                    {
+                        hqlVisitor.Stack.PushLeaf(hqlVisitor.TreeBuilder.Ident("lower"));
+                    }
+                    else
+                    {
+                        hqlVisitor.Stack.PushLeaf(hqlVisitor.TreeBuilder.Ident("upper"));
+                    }
+
+                    using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.ExpressionList()))
+                    {
+                        hqlVisitor.Visit(targetObject);
+                    }
                 }
             }
         }
@@ -544,7 +684,7 @@ namespace NHibernate.Linq.Visitors
                                        };
             }
 
-            public override void BuildHql(Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
+            public override void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
             {
                 // Any has one or two arguments.  Arg 1 is the source and arg 2 is the optional predicate
                 using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Exists()))
@@ -590,7 +730,7 @@ namespace NHibernate.Linq.Visitors
                                        };
             }
 
-            public override void BuildHql(Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
+            public override void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
             {
                 // All has two arguments.  Arg 1 is the source and arg 2 is the predicate
                 using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Not()))
@@ -638,7 +778,7 @@ namespace NHibernate.Linq.Visitors
                                        };
             }
 
-            public override void BuildHql(Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
+            public override void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
             {
                 using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Min()))
                 {
@@ -658,7 +798,7 @@ namespace NHibernate.Linq.Visitors
                                        };
             }
 
-            public override void BuildHql(Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
+            public override void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
             {
                 using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Max()))
                 {

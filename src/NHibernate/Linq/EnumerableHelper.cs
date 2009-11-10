@@ -20,6 +20,11 @@ namespace NHibernate.Linq
             var methodInfo = ((MethodCallExpression)method.Body).Method;
             return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
         }
+
+        public static MemberInfo GetProperty<TSource, TResult>(Expression<Func<TSource, TResult>> property)
+        {
+            return ((MemberExpression) property.Body).Member;
+        }
     }
 
     // TODO rename / remove - reflection helper above is better

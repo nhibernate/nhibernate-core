@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace NHibernate.Linq
@@ -17,5 +18,11 @@ namespace NHibernate.Linq
                 method(item);
             }
         }
+
+        public static bool IsNullable(this System.Type type)
+        {
+            return (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
+        }
+
     }
 }

@@ -147,6 +147,7 @@ namespace NHibernate.Hql.Ast
             return type.GetGenericArguments()[0];
         }
 
+        // TODO - code duplicated in LinqExtensionMethods
         private static bool IsNullableType(System.Type type)
         {
             return (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
@@ -643,6 +644,13 @@ namespace NHibernate.Hql.Ast
     public class HqlConcat : HqlTreeNode
     {
         public HqlConcat(IASTFactory factory) : base(HqlSqlWalker.METHOD_CALL, "method", factory)
+        {
+        }
+    }
+
+    public class HqlMethodCall : HqlTreeNode
+    {
+        public HqlMethodCall(IASTFactory factory) : base(HqlSqlWalker.METHOD_CALL, "method", factory)
         {
         }
     }
