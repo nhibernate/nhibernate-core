@@ -1,46 +1,31 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Expressions;
+using NHibernate.Linq.Functions;
 using Remotion.Data.Linq.Clauses.Expressions;
-using Remotion.Data.Linq.Clauses.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.Visitors
 {
-    public class HqlGeneratorExpressionTreeVisitor : NhThrowingExpressionTreeVisitor
+    public class HqlGeneratorExpressionTreeVisitor : IHqlExpressionVisitor
     {
-        protected readonly HqlTreeBuilder _hqlTreeBuilder;
-        protected readonly HqlNodeStack _stack;
+        private readonly HqlTreeBuilder _hqlTreeBuilder;
     	private readonly IDictionary<ConstantExpression, NamedParameter> _parameters;
     	private readonly IList<NamedParameterDescriptor> _requiredHqlParameters;
-        static private readonly MethodGeneratorRegistry _methodGeneratorRegistry = MethodGeneratorRegistry.Initialise();
+        static private readonly FunctionRegistry FunctionRegistry = FunctionRegistry.Initialise();
 
         public HqlGeneratorExpressionTreeVisitor(IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters)
         {
 			_parameters = parameters;
 			_requiredHqlParameters = requiredHqlParameters;
 			_hqlTreeBuilder = new HqlTreeBuilder();
-            _stack = new HqlNodeStack(_hqlTreeBuilder);
         }
 
-        public IEnumerable<HqlTreeNode> GetHqlTreeNodes()
+        public virtual HqlTreeNode Visit(Expression expression)
         {
-            return _stack.Finish();
-        }
-
-        public virtual void Visit(Expression expression)
-        {
-            VisitExpression(expression);
-        }
-
-        public HqlNodeStack Stack
-        {
-            get { return _stack; }
+            return VisitExpression(expression);
         }
 
         public HqlTreeBuilder TreeBuilder
@@ -48,191 +33,263 @@ namespace NHibernate.Linq.Visitors
             get { return _hqlTreeBuilder; }
         }
 
-        protected override Expression VisitNhAverage(NhAverageExpression expression)
+        protected HqlTreeNode VisitExpression(Expression expression)
         {
-            var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
-            visitor.Visit(expression.Expression);
+            if (expression == null)
+                return null;
 
-            _stack.PushLeaf(_hqlTreeBuilder.Cast(_hqlTreeBuilder.Average(visitor.GetHqlTreeNodes().Single()), expression.Type));
-
-            return expression;
-        }
-
-        protected override Expression VisitNhCount(NhCountExpression expression)
-        {
-			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
-            visitor.Visit(expression.Expression);
-
-            _stack.PushLeaf(_hqlTreeBuilder.Cast(_hqlTreeBuilder.Count(visitor.GetHqlTreeNodes().Single()), expression.Type));
-
-            return expression;
-        }
-
-        protected override Expression VisitNhMin(NhMinExpression expression)
-        {
-			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
-            visitor.Visit(expression.Expression);
-
-            _stack.PushLeaf(_hqlTreeBuilder.Cast(_hqlTreeBuilder.Min(visitor.GetHqlTreeNodes().Single()), expression.Type));
-
-            return expression;
-        }
-
-        protected override Expression VisitNhMax(NhMaxExpression expression)
-        {
-			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
-            visitor.Visit(expression.Expression);
-
-            _stack.PushLeaf(_hqlTreeBuilder.Cast(_hqlTreeBuilder.Max(visitor.GetHqlTreeNodes().Single()), expression.Type));
-
-            return expression;
-        }
-
-        protected override Expression VisitNhSum(NhSumExpression expression)
-        {
-			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
-            visitor.Visit(expression.Expression);
-
-            _stack.PushLeaf(_hqlTreeBuilder.Cast(_hqlTreeBuilder.Sum(visitor.GetHqlTreeNodes().Single()), expression.Type));
-
-            return expression;
-        }
-
-        protected override Expression VisitNhDistinct(NhDistinctExpression expression)
-        {
-			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
-            visitor.Visit(expression.Expression);
-
-            _stack.PushLeaf(_hqlTreeBuilder.Distinct());
-
-            foreach (var node in visitor.GetHqlTreeNodes())
+            switch (expression.NodeType)
             {
-                _stack.PushLeaf(node);
+                case ExpressionType.ArrayLength:
+                case ExpressionType.Convert:
+                case ExpressionType.ConvertChecked:
+                case ExpressionType.Negate:
+                case ExpressionType.NegateChecked:
+                case ExpressionType.Not:
+                case ExpressionType.Quote:
+                case ExpressionType.TypeAs:
+                case ExpressionType.UnaryPlus:
+                    return VisitUnaryExpression((UnaryExpression)expression);
+                case ExpressionType.Add:
+                case ExpressionType.AddChecked:
+                case ExpressionType.Divide:
+                case ExpressionType.Modulo:
+                case ExpressionType.Multiply:
+                case ExpressionType.MultiplyChecked:
+                case ExpressionType.Power:
+                case ExpressionType.Subtract:
+                case ExpressionType.SubtractChecked:
+                case ExpressionType.And:
+                case ExpressionType.Or:
+                case ExpressionType.ExclusiveOr:
+                case ExpressionType.LeftShift:
+                case ExpressionType.RightShift:
+                case ExpressionType.AndAlso:
+                case ExpressionType.OrElse:
+                case ExpressionType.Equal:
+                case ExpressionType.NotEqual:
+                case ExpressionType.GreaterThanOrEqual:
+                case ExpressionType.GreaterThan:
+                case ExpressionType.LessThan:
+                case ExpressionType.LessThanOrEqual:
+                case ExpressionType.Coalesce:
+                case ExpressionType.ArrayIndex:
+                    return VisitBinaryExpression((BinaryExpression)expression);
+                case ExpressionType.Conditional:
+                    return VisitConditionalExpression((ConditionalExpression)expression);
+                case ExpressionType.Constant:
+                    return VisitConstantExpression((ConstantExpression)expression);
+                case ExpressionType.Invoke:
+                    return VisitInvocationExpression((InvocationExpression)expression);
+                case ExpressionType.Lambda:
+                    return VisitLambdaExpression((LambdaExpression)expression);
+                case ExpressionType.MemberAccess:
+                    return VisitMemberExpression((MemberExpression)expression);
+                case ExpressionType.Call:
+                    return VisitMethodCallExpression((MethodCallExpression)expression);
+                //case ExpressionType.New:
+                //    return VisitNewExpression((NewExpression)expression);
+                case ExpressionType.NewArrayBounds:
+                //case ExpressionType.NewArrayInit:
+                //    return VisitNewArrayExpression((NewArrayExpression)expression);
+                //case ExpressionType.MemberInit:
+                //    return VisitMemberInitExpression((MemberInitExpression)expression);
+                //case ExpressionType.ListInit:
+                //    return VisitListInitExpression((ListInitExpression)expression);
+                case ExpressionType.Parameter:
+                    return VisitParameterExpression((ParameterExpression)expression);
+                //case ExpressionType.TypeIs:
+                //    return VisitTypeBinaryExpression((TypeBinaryExpression)expression);
+
+                default:
+                    if (expression is SubQueryExpression)
+                        return VisitSubQueryExpression((SubQueryExpression)expression);
+
+                    if (expression is QuerySourceReferenceExpression)
+                        return VisitQuerySourceReferenceExpression((QuerySourceReferenceExpression)expression);
+
+                    switch ((NhExpressionType)expression.NodeType)
+                    {
+                        case NhExpressionType.Average:
+                            return VisitNhAverage((NhAverageExpression)expression);
+                        case NhExpressionType.Min:
+                            return VisitNhMin((NhMinExpression)expression);
+                        case NhExpressionType.Max:
+                            return VisitNhMax((NhMaxExpression)expression);
+                        case NhExpressionType.Sum:
+                            return VisitNhSum((NhSumExpression)expression);
+                        case NhExpressionType.Count:
+                            return VisitNhCount((NhCountExpression)expression);
+                        case NhExpressionType.Distinct:
+                            return VisitNhDistinct((NhDistinctExpression)expression);
+                        //case NhExpressionType.New:
+                        //    return VisitNhNew((NhNewExpression)expression);
+                    }
+
+                    throw new NotSupportedException(expression.GetType().Name);
             }
-
-            return expression;
         }
 
-        protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+        private HqlTreeNode VisitInvocationExpression(InvocationExpression expression)
         {
-            _stack.PushLeaf(_hqlTreeBuilder.Ident(expression.ReferencedQuerySource.ItemName));
-
-            return expression;
+            return VisitExpression(expression.Expression);
         }
 
-        protected override Expression VisitBinaryExpression(BinaryExpression expression)
+
+        protected HqlTreeNode VisitNhAverage(NhAverageExpression expression)
         {
-            HqlTreeNode operatorNode = GetHqlOperatorNodeForBinaryOperator(expression);
-
-            using (_stack.PushNode(operatorNode))
-            {
-                VisitExpression(expression.Left);
-
-                VisitExpression(expression.Right);
-            }
-
-            return expression;
+            return _hqlTreeBuilder.Cast(
+                _hqlTreeBuilder.Average(VisitExpression(expression.Expression).AsExpression()),
+                expression.Type);
         }
 
-        private HqlTreeNode GetHqlOperatorNodeForBinaryOperator(BinaryExpression expression)
+        protected HqlTreeNode VisitNhCount(NhCountExpression expression)
         {
+            return _hqlTreeBuilder.Cast(
+                _hqlTreeBuilder.Count(VisitExpression(expression.Expression).AsExpression()),
+                expression.Type);
+        }
+
+        protected HqlTreeNode VisitNhMin(NhMinExpression expression)
+        {
+            return _hqlTreeBuilder.Cast(
+                _hqlTreeBuilder.Min(VisitExpression(expression.Expression).AsExpression()), 
+                expression.Type);
+        }
+
+        protected HqlTreeNode VisitNhMax(NhMaxExpression expression)
+        {
+            return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Max(VisitExpression(expression.Expression).AsExpression()), expression.Type);
+        }
+
+        protected HqlTreeNode VisitNhSum(NhSumExpression expression)
+        {
+            return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Sum(VisitExpression(expression.Expression).AsExpression()), expression.Type);
+        }
+
+        protected HqlTreeNode VisitNhDistinct(NhDistinctExpression expression)
+        {
+			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
+
+            return _hqlTreeBuilder.DistinctHolder(
+                _hqlTreeBuilder.Distinct(),
+                visitor.VisitExpression(expression.Expression));
+        }
+
+        protected HqlTreeNode VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+        {
+            return _hqlTreeBuilder.Ident(expression.ReferencedQuerySource.ItemName);
+        }
+
+        protected HqlTreeNode VisitBinaryExpression(BinaryExpression expression)
+        {
+            var lhs = VisitExpression(expression.Left).AsExpression();
+            var rhs = VisitExpression(expression.Right).AsExpression();
+
             switch (expression.NodeType)
             {
                 case ExpressionType.Equal:
-                    return _hqlTreeBuilder.Equality();
+                    // Need to check for boolean equality
+                    if (lhs is HqlBooleanExpression || rhs is HqlBooleanExpression)
+                    {
+                        lhs =
+                            _hqlTreeBuilder.Case(
+                                new [] { _hqlTreeBuilder.When(lhs, _hqlTreeBuilder.Constant(1)) },
+                                _hqlTreeBuilder.Constant(0));
+
+                        rhs =
+                            _hqlTreeBuilder.Case(
+                                new [] { _hqlTreeBuilder.When(rhs, _hqlTreeBuilder.Constant(1)) },
+                                _hqlTreeBuilder.Constant(0));
+                    }
+
+                    return _hqlTreeBuilder.Equality(lhs, rhs);
 
                 case ExpressionType.NotEqual:
-                    return _hqlTreeBuilder.Inequality();
+                    // Need to check for boolean in-equality
+                    if (lhs is HqlBooleanExpression || rhs is HqlBooleanExpression)
+                    {
+                        lhs =
+                            _hqlTreeBuilder.Case(
+                                new [] { _hqlTreeBuilder.When(lhs, _hqlTreeBuilder.Constant(1)) },
+                                _hqlTreeBuilder.Constant(0));
+
+                        rhs =
+                            _hqlTreeBuilder.Case(
+                                new [] { _hqlTreeBuilder.When(rhs, _hqlTreeBuilder.Constant(1)) },
+                                _hqlTreeBuilder.Constant(0));
+                    }
+
+                    return _hqlTreeBuilder.Inequality(lhs, rhs);
 
                 case ExpressionType.And:
                 case ExpressionType.AndAlso:
-                    return _hqlTreeBuilder.BooleanAnd();
+                    return _hqlTreeBuilder.BooleanAnd(lhs.AsBooleanExpression(), rhs.AsBooleanExpression());
 
                 case ExpressionType.Or:
                 case ExpressionType.OrElse:
-                    return _hqlTreeBuilder.BooleanOr();
+                    return _hqlTreeBuilder.BooleanOr(lhs.AsBooleanExpression(), rhs.AsBooleanExpression());
 
                 case ExpressionType.Add:
-                    return _hqlTreeBuilder.Add();
+                    return _hqlTreeBuilder.Add(lhs, rhs);
 
                 case ExpressionType.Subtract:
-                    return _hqlTreeBuilder.Subtract();
+                    return _hqlTreeBuilder.Subtract(lhs, rhs);
 
                 case ExpressionType.Multiply:
-                    return _hqlTreeBuilder.Multiply();
+                    return _hqlTreeBuilder.Multiply(lhs, rhs);
 
                 case ExpressionType.Divide:
-                    return _hqlTreeBuilder.Divide();
+                    return _hqlTreeBuilder.Divide(lhs, rhs);
 
                 case ExpressionType.LessThan:
-                    return _hqlTreeBuilder.LessThan();
+                    return _hqlTreeBuilder.LessThan(lhs, rhs);
 
                 case ExpressionType.LessThanOrEqual:
-                    return _hqlTreeBuilder.LessThanOrEqual();
+                    return _hqlTreeBuilder.LessThanOrEqual(lhs, rhs);
 
                 case ExpressionType.GreaterThan:
-                    return _hqlTreeBuilder.GreaterThan();
+                    return _hqlTreeBuilder.GreaterThan(lhs, rhs);
 
                 case ExpressionType.GreaterThanOrEqual:
-                    return _hqlTreeBuilder.GreaterThanOrEqual();
+                    return _hqlTreeBuilder.GreaterThanOrEqual(lhs, rhs);
             }
 
             throw new InvalidOperationException();
         }
 
-        protected override Expression VisitUnaryExpression(UnaryExpression expression)
-        {
-            HqlTreeNode operatorNode = GetHqlOperatorNodeforUnaryOperator(expression);
-
-            using (_stack.PushNode(operatorNode))
-            {
-                VisitExpression(expression.Operand);
-            }
-
-            return expression;
-        }
-
-        private HqlTreeNode GetHqlOperatorNodeforUnaryOperator(UnaryExpression expression)
+        protected HqlTreeNode VisitUnaryExpression(UnaryExpression expression)
         {
             switch (expression.NodeType)
             {
                 case ExpressionType.Not:
-                    return _hqlTreeBuilder.Not();
+                    return _hqlTreeBuilder.Not(VisitExpression(expression.Operand).AsBooleanExpression());
             }
             
             throw new InvalidOperationException();
         }
 
-        protected override Expression VisitMemberExpression(MemberExpression expression)
+        protected HqlTreeNode VisitMemberExpression(MemberExpression expression)
         {
             // Strip out the .Value property of a nullable type, HQL doesn't need that
             if (expression.Member.Name == "Value" && expression.Expression.Type.IsNullable())
             {
-                VisitExpression(expression.Expression);
-                return expression;
+                return VisitExpression(expression.Expression);
             }
 
             // Look for "special" properties (DateTime.Month etc)
-            var generator = _methodGeneratorRegistry.GetPropertyGenerator(expression.Expression.Type, expression.Member);
+            var generator = FunctionRegistry.GetPropertyGenerator(expression.Member);
 
             if (generator != null)
             {
-                generator.BuildHql(expression.Member, expression.Expression, this);
-                return expression;
+                return generator.BuildHql(expression.Member, expression.Expression, _hqlTreeBuilder, this);
             }
 
             // Else just emit standard HQL for a property reference
-            using (_stack.PushNode(_hqlTreeBuilder.Dot()))
-            {
-                VisitExpression(expression.Expression);
-
-                _stack.PushLeaf(_hqlTreeBuilder.Ident(expression.Member.Name));
-            }
-
-            return expression;
+            return _hqlTreeBuilder.Dot(VisitExpression(expression.Expression).AsExpression(), _hqlTreeBuilder.Ident(expression.Member.Name));
         }
 
-        protected override Expression VisitConstantExpression(ConstantExpression expression)
+        protected HqlTreeNode VisitConstantExpression(ConstantExpression expression)
         {
             if (expression.Value != null)
             {
@@ -240,8 +297,7 @@ namespace NHibernate.Linq.Visitors
 
                 if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof (NhQueryable<>))
                 {
-                    _stack.PushLeaf(_hqlTreeBuilder.Ident(t.GetGenericArguments()[0].Name));
-                    return expression;
+                    return _hqlTreeBuilder.Ident(t.GetGenericArguments()[0].Name);
                 }
             }
 
@@ -249,562 +305,55 @@ namespace NHibernate.Linq.Visitors
 
 			if (_parameters.TryGetValue(expression, out namedParameter))
 			{
-				_stack.PushLeaf(_hqlTreeBuilder.Cast(_hqlTreeBuilder.Parameter(namedParameter.Name), namedParameter.Value.GetType()));
-				_requiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, new []{ _requiredHqlParameters.Count + 1}, false));
+                _requiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, new[] { _requiredHqlParameters.Count + 1 }, false));
+                
+                if (namedParameter.Value is bool)
+                {
+                    return _hqlTreeBuilder.Equality(_hqlTreeBuilder.Parameter(namedParameter.Name).AsExpression(),
+                                                    _hqlTreeBuilder.Constant(1));
+                }
+
+                return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Parameter(namedParameter.Name).AsExpression(), namedParameter.Value.GetType());
 			}
-			else
-			{
-				_stack.PushLeaf(_hqlTreeBuilder.Constant(expression.Value));
-			}
-
-            return expression;
+            
+            return _hqlTreeBuilder.Constant(expression.Value);
         }
 
-        protected override Expression VisitMethodCallExpression(MethodCallExpression expression)
+        protected HqlTreeNode VisitMethodCallExpression(MethodCallExpression expression)
         {
-            var generator = _methodGeneratorRegistry.GetMethodGenerator(expression.Method);
+            var generator = FunctionRegistry.GetMethodGenerator(expression.Method);
 
-            generator.BuildHql(expression.Method, expression.Object, expression.Arguments, this);
-
-            return expression;
+            return generator.BuildHql(expression.Method, expression.Object, expression.Arguments, _hqlTreeBuilder, this);
         }
 
-        protected override Expression VisitLambdaExpression(LambdaExpression expression)
+        protected HqlTreeNode VisitLambdaExpression(LambdaExpression expression)
         {
-            VisitExpression(expression.Body);
-
-            return expression;
+            return VisitExpression(expression.Body);
         }
 
-        protected override Expression VisitParameterExpression(ParameterExpression expression)
+        protected HqlTreeNode VisitParameterExpression(ParameterExpression expression)
         {
-            _stack.PushLeaf(_hqlTreeBuilder.Ident(expression.Name));
-
-            return expression;
+            return _hqlTreeBuilder.Ident(expression.Name);
         }
 
-        protected override Expression VisitConditionalExpression(ConditionalExpression expression)
+        protected HqlTreeNode VisitConditionalExpression(ConditionalExpression expression)
         {
-            using (_stack.PushNode(_hqlTreeBuilder.Case()))
+            var when = _hqlTreeBuilder.When(VisitExpression(expression.Test).AsExpression(), VisitExpression(expression.IfTrue).AsExpression());
+            HqlExpression ifFalse = null;
+
+            if (expression.IfFalse != null)
             {
-                using (_stack.PushNode(_hqlTreeBuilder.When()))
-                {
-                    VisitExpression(expression.Test);
-
-                    VisitExpression(expression.IfTrue);
-                }
-
-                if (expression.IfFalse != null)
-                {
-                    using (_stack.PushNode(_hqlTreeBuilder.Else()))
-                    {
-                        VisitExpression(expression.IfFalse);
-                    }
-                }
+                ifFalse = VisitExpression(expression.IfFalse).AsExpression();
             }
 
-            return expression;
+            return _hqlTreeBuilder.Case(new []{when}, ifFalse);
         }
 
-        protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
+        protected HqlTreeNode VisitSubQueryExpression(SubQueryExpression expression)
         {
             CommandData query = QueryModelVisitor.GenerateHqlQuery(expression.QueryModel, _parameters, _requiredHqlParameters);
 
-            _stack.PushLeaf(query.Statement);
-            
-            return expression;
-        }
-
-
-        // Called when a LINQ expression type is not handled above.
-        protected override Exception CreateUnhandledItemException<T>(T unhandledItem, string visitMethod)
-        {
-            string itemText = FormatUnhandledItem(unhandledItem);
-            var message = string.Format("The expression '{0}' (type: {1}) is not supported by this LINQ provider.", itemText, typeof(T));
-            return new NotSupportedException(message);
-        }
-
-        private string FormatUnhandledItem<T>(T unhandledItem)
-        {
-            var itemAsExpression = unhandledItem as Expression;
-            return itemAsExpression != null ? FormattingExpressionTreeVisitor.Format(itemAsExpression) : unhandledItem.ToString();
-        }
-    }
-
-    public interface IHqlGeneratorForProperty
-    {
-        IEnumerable<MemberInfo> SupportedProperties { get; }
-        void BuildHql(MemberInfo member, Expression expression, HqlGeneratorExpressionTreeVisitor hqlGeneratorExpressionTreeVisitor);
-    }
-
-    public class MethodGeneratorRegistry
-    {
-        public static MethodGeneratorRegistry Initialise()
-        {
-            var registry = new MethodGeneratorRegistry();
-
-            // TODO - could use reflection here
-            registry.Register(new QueryableMethodsGenerator());
-            registry.Register(new StringMethodsGenerator());
-            registry.Register(new DateTimePropertyGenerator());
-
-            return registry;
-        }
-
-        private readonly Dictionary<MethodInfo, IHqlGeneratorForMethod> _registeredMethods = new Dictionary<MethodInfo, IHqlGeneratorForMethod>();
-        private readonly Dictionary<MemberInfo, IHqlGeneratorForProperty> _registeredProperties = new Dictionary<MemberInfo, IHqlGeneratorForProperty>();
-
-        public IHqlGeneratorForMethod GetMethodGenerator(MethodInfo method)
-        {
-            IHqlGeneratorForMethod methodGenerator;
-
-            if (method.IsGenericMethod)
-            {
-                method = method.GetGenericMethodDefinition();
-            }
-
-            if (_registeredMethods.TryGetValue(method, out methodGenerator))
-            {
-                return methodGenerator;
-            }
-
-            throw new NotSupportedException(method.ToString());
-        }
-
-        public IHqlGeneratorForProperty GetPropertyGenerator(System.Type type, MemberInfo member)
-        {
-            IHqlGeneratorForProperty propertyGenerator;
-
-            if (_registeredProperties.TryGetValue(member, out propertyGenerator))
-            {
-                return propertyGenerator;
-            }
-
-            // TODO - different usage pattern to method generator
-            return null;
-        }
-
-        public void RegisterMethodGenerator(MethodInfo method, IHqlGeneratorForMethod generator)
-        {
-            _registeredMethods.Add(method, generator);
-        }
-
-        public void RegisterPropertyGenerator(MemberInfo property, IHqlGeneratorForProperty generator)
-        {
-            _registeredProperties.Add(property, generator);
-        }
-
-        private void Register(IHqlGeneratorForType typeMethodGenerator)
-        {
-            typeMethodGenerator.Register(this);
-        }
-    }
-
-    public interface IHqlGeneratorForMethod
-    {
-        IEnumerable<MethodInfo> SupportedMethods { get; }
-        void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor);
-    }
-
-    public interface IHqlGeneratorForType
-    {
-        void Register(MethodGeneratorRegistry methodGeneratorRegistry);
-    }
-
-    abstract public class BaseHqlGeneratorForType : IHqlGeneratorForType
-    {
-        protected readonly List<IHqlGeneratorForMethod> MethodRegistry = new List<IHqlGeneratorForMethod>();
-        protected readonly List<IHqlGeneratorForProperty> PropertyRegistry = new List<IHqlGeneratorForProperty>();
-
-        public void Register(MethodGeneratorRegistry methodGeneratorRegistry)
-        {
-            foreach (var generator in MethodRegistry)
-            {
-                foreach (var method in generator.SupportedMethods)
-                {
-                    methodGeneratorRegistry.RegisterMethodGenerator(method, generator);
-                }
-            }
-
-            foreach (var generator in PropertyRegistry)
-            {
-                foreach (var property in generator.SupportedProperties)
-                {
-                    methodGeneratorRegistry.RegisterPropertyGenerator(property, generator);
-                }
-            }
-        }
-    }
-
-    public abstract class BaseHqlGeneratorForMethod : IHqlGeneratorForMethod
-    {
-        public IEnumerable<MethodInfo> SupportedMethods { get; protected set; }
-
-        public abstract void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor);
-    }
-
-    public class DateTimePropertyGenerator : BaseHqlGeneratorForType
-    {
-        public DateTimePropertyGenerator()
-        {
-            PropertyRegistry.Add(new DatePartGenerator());
-        }
-
-        public class DatePartGenerator : BaseHqlGeneratorForProperty
-        {
-            public DatePartGenerator()
-            {
-                SupportedProperties = new[]
-                                          {
-                                              ReflectionHelper.GetProperty((DateTime x) => x.Year),
-                                              ReflectionHelper.GetProperty((DateTime x) => x.Month),
-                                              ReflectionHelper.GetProperty((DateTime x) => x.Day),
-                                              ReflectionHelper.GetProperty((DateTime x) => x.Hour),
-                                              ReflectionHelper.GetProperty((DateTime x) => x.Minute),
-                                              ReflectionHelper.GetProperty((DateTime x) => x.Second),
-                                          };
-            }
-
-            public override void BuildHql(MemberInfo member, Expression expression, HqlGeneratorExpressionTreeVisitor hqlVisitor)
-            {
-                using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.MethodCall()))
-                {
-                    hqlVisitor.Stack.PushLeaf(hqlVisitor.TreeBuilder.Ident(member.Name.ToLowerInvariant()));
-
-                    using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.ExpressionList()))
-                    {
-                        hqlVisitor.Visit(expression);
-                    }
-                }
-            }
-        }
-    }
-
-    public class StringMethodsGenerator : BaseHqlGeneratorForType
-    {
-        public StringMethodsGenerator()
-        {
-            // TODO - could use reflection
-            MethodRegistry.Add(new StartsWithGenerator());
-            MethodRegistry.Add(new EndsWithGenerator());
-            MethodRegistry.Add(new ContainsGenerator());
-            MethodRegistry.Add(new EqualsGenerator());
-            MethodRegistry.Add(new ToUpperLowerGenerator());
-
-            PropertyRegistry.Add(new LengthGenerator());
-        }
-
-        public class LengthGenerator : BaseHqlGeneratorForProperty
-        {
-            public LengthGenerator()
-            {
-                SupportedProperties = new[] {ReflectionHelper.GetProperty((string x) => x.Length)};
-            }
-
-            public override void BuildHql(MemberInfo member, Expression expression, HqlGeneratorExpressionTreeVisitor hqlVisitor)
-            {
-                using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.MethodCall()))
-                {
-                    hqlVisitor.Stack.PushLeaf(hqlVisitor.TreeBuilder.Ident("length"));
-
-                    using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.ExpressionList()))
-                    {
-                        hqlVisitor.Visit(expression);
-                    }
-                }
-            }
-        }
-
-        class StartsWithGenerator : BaseHqlGeneratorForMethod
-        {
-            public StartsWithGenerator()
-            {
-                SupportedMethods = new[] { ReflectionHelper.GetMethod<string>(x => x.StartsWith(null)) };
-            }
-
-            public override void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
-            {
-                using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Like()))
-                {
-                    hqlVisitor.Visit(targetObject);
-
-                    // TODO - this sucks.  Concat() just pushes a method node, and we have to do all the child stuff.  
-                    // Sort out the tree stuff so it works properly
-                    using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Concat()))
-                    {
-                        hqlVisitor.Stack.PushLeaf(hqlVisitor.TreeBuilder.Ident("concat"));
-
-                        using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.ExpressionList()))
-                        {
-                            hqlVisitor.Visit(arguments[0]);
-
-                            hqlVisitor.Stack.PushLeaf(hqlVisitor.TreeBuilder.Constant("%"));
-                        }
-                    }
-                }
-            }
-        }
-
-        class EndsWithGenerator : BaseHqlGeneratorForMethod
-        {
-            public EndsWithGenerator()
-            {
-                SupportedMethods = new[] { ReflectionHelper.GetMethod<string>(x => x.EndsWith(null)) };
-            }
-
-            public override void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
-            {
-                using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Like()))
-                {
-                    hqlVisitor.Visit(targetObject);
-
-                    // TODO - this sucks.  Concat() just pushes a method node, and we have to do all the child stuff.  
-                    // Sort out the tree stuff so it works properly
-                    using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Concat()))
-                    {
-                        hqlVisitor.Stack.PushLeaf(hqlVisitor.TreeBuilder.Ident("concat"));
-
-                        using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.ExpressionList()))
-                        {
-                            hqlVisitor.Stack.PushLeaf(hqlVisitor.TreeBuilder.Constant("%"));
-
-                            hqlVisitor.Visit(arguments[0]);
-                        }
-                    }
-                }
-            }
-        }
-
-        class ContainsGenerator : BaseHqlGeneratorForMethod
-        {
-            public ContainsGenerator()
-            {
-                SupportedMethods = new[] { ReflectionHelper.GetMethod<string>(x => x.Contains(null)) };
-            }
-
-            public override void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
-            {
-                using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Like()))
-                {
-                    hqlVisitor.Visit(targetObject);
-
-                    // TODO - this sucks.  Concat() just pushes a method node, and we have to do all the child stuff.  
-                    // Sort out the tree stuff so it works properly
-                    using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Concat()))
-                    {
-                        hqlVisitor.Stack.PushLeaf(hqlVisitor.TreeBuilder.Ident("concat"));
-
-                        using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.ExpressionList()))
-                        {
-                            hqlVisitor.Stack.PushLeaf(hqlVisitor.TreeBuilder.Constant("%"));
-
-                            hqlVisitor.Visit(arguments[0]);
-
-                            hqlVisitor.Stack.PushLeaf(hqlVisitor.TreeBuilder.Constant("%"));
-                        }
-                    }
-                }
-            }
-        }
-
-        class EqualsGenerator : BaseHqlGeneratorForMethod
-        {
-            public EqualsGenerator()
-            {
-                SupportedMethods = new[] { ReflectionHelper.GetMethod<string>(x => x.Equals((string)null)) };
-            }
-
-            public override void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
-            {
-                using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Equality()))
-                {
-                    hqlVisitor.Visit(targetObject);
-
-                    hqlVisitor.Visit(arguments[0]);
-                }
-            }
-        }
-
-        class ToUpperLowerGenerator : BaseHqlGeneratorForMethod
-        {
-            public ToUpperLowerGenerator()
-            {
-                SupportedMethods = new[]
-                                       {
-                                           ReflectionHelper.GetMethod<string>(x => x.ToUpper()),
-                                           ReflectionHelper.GetMethod<string>(x => x.ToUpperInvariant()),
-                                           ReflectionHelper.GetMethod<string>(x => x.ToLower()),
-                                           ReflectionHelper.GetMethod<string>(x => x.ToLowerInvariant())
-                                       };
-            }
-
-            public override void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
-            {
-                using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.MethodCall()))
-                {
-                    if (((method.Name == "ToUpper") || (method.Name == "ToUpperInvariant")))
-                    {
-                        hqlVisitor.Stack.PushLeaf(hqlVisitor.TreeBuilder.Ident("lower"));
-                    }
-                    else
-                    {
-                        hqlVisitor.Stack.PushLeaf(hqlVisitor.TreeBuilder.Ident("upper"));
-                    }
-
-                    using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.ExpressionList()))
-                    {
-                        hqlVisitor.Visit(targetObject);
-                    }
-                }
-            }
-        }
-    }
-
-    public class QueryableMethodsGenerator : BaseHqlGeneratorForType
-    {
-        public QueryableMethodsGenerator()
-        {
-            // TODO - could use reflection
-            MethodRegistry.Add(new AnyGenerator());
-            MethodRegistry.Add(new AllGenerator());
-            MethodRegistry.Add(new MinGenerator());
-            MethodRegistry.Add(new MaxGenerator());
-        }
-
-        class AnyGenerator : BaseHqlGeneratorForMethod
-        {
-            public AnyGenerator()
-            {
-                SupportedMethods = new[]
-                                       {
-                                           ReflectionHelper.GetMethod(() => Queryable.Any<object>(null)),
-                                           ReflectionHelper.GetMethod(() => Queryable.Any<object>(null, null)),
-                                           ReflectionHelper.GetMethod(() => Enumerable.Any<object>(null)),
-                                           ReflectionHelper.GetMethod(() => Enumerable.Any<object>(null, null))
-                                       };
-            }
-
-            public override void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
-            {
-                // Any has one or two arguments.  Arg 1 is the source and arg 2 is the optional predicate
-                using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Exists()))
-                {
-                    using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Query()))
-                    {
-                        using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.SelectFrom()))
-                        {
-                            using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.From()))
-                            {
-                                using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Range()))
-                                {
-                                    hqlVisitor.Visit(arguments[0]);
-
-                                    if (arguments.Count > 1)
-                                    {
-                                        var expr = (LambdaExpression)arguments[1];
-                                        hqlVisitor.Stack.PushLeaf(hqlVisitor.TreeBuilder.Alias(expr.Parameters[0].Name));
-                                    }
-                                }
-                            }
-                        }
-                        if (arguments.Count > 1)
-                        {
-                            using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Where()))
-                            {
-                                hqlVisitor.Visit(arguments[1]);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        class AllGenerator : BaseHqlGeneratorForMethod
-        {
-            public AllGenerator()
-            {
-                SupportedMethods = new[]
-                                       {
-                                           ReflectionHelper.GetMethod(() => Queryable.All<object>(null, null)),
-                                           ReflectionHelper.GetMethod(() => Enumerable.All<object>(null, null))
-                                       };
-            }
-
-            public override void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
-            {
-                // All has two arguments.  Arg 1 is the source and arg 2 is the predicate
-                using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Not()))
-                {
-                    using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Exists()))
-                    {
-                        using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Query()))
-                        {
-                            using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.SelectFrom()))
-                            {
-                                using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.From()))
-                                {
-                                    using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Range()))
-                                    {
-                                        hqlVisitor.Visit(arguments[0]);
-
-                                        var expr = (LambdaExpression)arguments[1];
-
-                                        hqlVisitor.Stack.PushLeaf(hqlVisitor.TreeBuilder.Alias(expr.Parameters[0].Name));
-                                    }
-                                }
-                            }
-
-                            using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Where()))
-                            {
-                                using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Not()))
-                                {
-                                    hqlVisitor.Visit(arguments[1]);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        class MinGenerator : BaseHqlGeneratorForMethod
-        {
-            public MinGenerator()
-            {
-                SupportedMethods = new[]
-                                       {
-                                           ReflectionHelper.GetMethod(() => Queryable.Min<object>(null)),
-                                           ReflectionHelper.GetMethod(() => Enumerable.Min<object>(null))
-                                       };
-            }
-
-            public override void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
-            {
-                using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Min()))
-                {
-                    hqlVisitor.Visit(arguments[1]);
-                }
-            }
-        }
-
-        class MaxGenerator : BaseHqlGeneratorForMethod
-        {
-            public MaxGenerator()
-            {
-                SupportedMethods = new[]
-                                       {
-                                           ReflectionHelper.GetMethod(() => Queryable.Max<object>(null)),
-                                           ReflectionHelper.GetMethod(() => Enumerable.Max<object>(null))
-                                       };
-            }
-
-            public override void BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlGeneratorExpressionTreeVisitor hqlVisitor)
-            {
-                using (hqlVisitor.Stack.PushNode(hqlVisitor.TreeBuilder.Max()))
-                {
-                    hqlVisitor.Visit(arguments[1]);
-                }
-            }
+            return query.Statement;
         }
     }
 }

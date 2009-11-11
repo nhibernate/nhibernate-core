@@ -51,7 +51,7 @@ namespace NHibernate.Linq.Visitors
         private readonly List<LambdaExpression> _itemTransformers = new List<LambdaExpression>();
 
         private readonly List<HqlTreeNode> _fromClauses = new List<HqlTreeNode>();
-        private readonly List<HqlTreeNode> _whereClauses = new List<HqlTreeNode>();
+        private readonly List<HqlBooleanExpression> _whereClauses = new List<HqlBooleanExpression>();
         private HqlGroupBy _groupByClause;
         private HqlTreeNode _orderByClause;
 		private HqlSelect _selectClause;
@@ -110,13 +110,13 @@ namespace NHibernate.Linq.Visitors
 			                       _additionalCriteria);
 		}
 
-        private HqlTreeNode MergeWhereClauses()
+        private HqlBooleanExpression MergeWhereClauses()
         {
-            HqlTreeNode output = _whereClauses[0];
+            HqlBooleanExpression output = _whereClauses[0];
 
             for (var i = 1; i < _whereClauses.Count; i++)
             {
-                output = _hqlTreeBuilder.And(output, _whereClauses[i]);
+                output = _hqlTreeBuilder.BooleanAnd(output, _whereClauses[i]);
             }
 
             return output;
@@ -149,10 +149,9 @@ namespace NHibernate.Linq.Visitors
 		public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
 		{
 			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
-			visitor.Visit(fromClause.FromExpression);
 
 		    _fromClauses.Add(_hqlTreeBuilder.Range(
-		                         visitor.GetHqlTreeNodes().Single(),
+                                 visitor.Visit(fromClause.FromExpression),
 		                         _hqlTreeBuilder.Alias(fromClause.ItemName)));
 
 			base.VisitMainFromClause(fromClause, queryModel);
@@ -389,9 +388,8 @@ namespace NHibernate.Linq.Visitors
     	private void ProcessGroupByOperator(GroupResultOperator resultOperator)
 		{
 			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
-			visitor.Visit(resultOperator.KeySelector);
-			_groupByClause = _hqlTreeBuilder.GroupBy();
-			_groupByClause.AddChild(visitor.GetHqlTreeNodes().Single());
+
+            _groupByClause = _hqlTreeBuilder.GroupBy(visitor.Visit(resultOperator.KeySelector).AsExpression());
 		}
 
 		private void ProcessFirstOperator()
@@ -420,7 +418,7 @@ namespace NHibernate.Linq.Visitors
                 _itemTransformers.Add(visitor.ProjectionExpression);
             }
 
-            _selectClause = _hqlTreeBuilder.Select(visitor.GetAstBuilderNode());
+            _selectClause = _hqlTreeBuilder.Select(visitor.GetHqlNodes());
 
 			base.VisitSelectClause(selectClause, queryModel);
 		}
@@ -428,11 +426,9 @@ namespace NHibernate.Linq.Visitors
 		public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
 		{
 			// Visit the predicate to build the query
-			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
-			visitor.Visit(whereClause.Predicate);
+			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);			
 
-			// There maybe a where clause in existence already, in which case we AND with it.
-            _whereClauses.Add(visitor.GetHqlTreeNodes().Single());
+            _whereClauses.Add(visitor.Visit(whereClause.Predicate).AsBooleanExpression());
 		}
 
 		public override void VisitOrderByClause(OrderByClause orderByClause, QueryModel queryModel, int index)
@@ -442,15 +438,12 @@ namespace NHibernate.Linq.Visitors
 			foreach (Ordering clause in orderByClause.Orderings)
 			{
 				var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
-				visitor.Visit(clause.Expression);
 
-				_orderByClause.AddChild(visitor.GetHqlTreeNodes().Single());
+                _orderByClause.AddChild(visitor.Visit(clause.Expression));
 				_orderByClause.AddChild(clause.OrderingDirection == OrderingDirection.Asc
 				                        	? _hqlTreeBuilder.Ascending()
 				                        	: (HqlTreeNode) _hqlTreeBuilder.Descending());
 			}
-
-			base.VisitOrderByClause(orderByClause, queryModel, index);
 		}
 
 		public override void VisitJoinClause(JoinClause joinClause, QueryModel queryModel, int index)
@@ -459,11 +452,10 @@ namespace NHibernate.Linq.Visitors
 			var whereClause = equalityVisitor.Visit(joinClause.InnerKeySelector, joinClause.OuterKeySelector);
 
 			var fromVisitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
-            fromVisitor.Visit(joinClause.InnerSequence);
 
             _whereClauses.Add(whereClause);
 
-            _fromClauses.Add(_hqlTreeBuilder.Range(fromVisitor.GetHqlTreeNodes().Single(),
+            _fromClauses.Add(_hqlTreeBuilder.Range(fromVisitor.Visit(joinClause.InnerSequence),
                                                    _hqlTreeBuilder.Alias(joinClause.ItemName)));
 		}
 
@@ -477,10 +469,9 @@ namespace NHibernate.Linq.Visitors
 				{
 					// It's a join
 					var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
-					visitor.Visit(fromClause.FromExpression);
 
 				    _fromClauses.Add(_hqlTreeBuilder.Join(
-				                         visitor.GetHqlTreeNodes().Single(),
+                                         visitor.Visit(fromClause.FromExpression).AsExpression(),
 				                         _hqlTreeBuilder.Alias(fromClause.ItemName)));
 				}
 				else
@@ -493,10 +484,9 @@ namespace NHibernate.Linq.Visitors
 			{
 				// TODO - exact same code as in MainFromClause; refactor this out
 				var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
-				visitor.Visit(fromClause.FromExpression);
 
 				_fromClauses.Add(_hqlTreeBuilder.Range(
-									 visitor.GetHqlTreeNodes().Single(),
+                                     visitor.Visit(fromClause.FromExpression),
 									 _hqlTreeBuilder.Alias(fromClause.ItemName)));
 
 			}

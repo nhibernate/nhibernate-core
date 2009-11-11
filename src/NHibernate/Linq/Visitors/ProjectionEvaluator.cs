@@ -9,30 +9,27 @@ namespace NHibernate.Linq.Visitors
 {
     public class ProjectionEvaluator : ExpressionTreeVisitor
     {
-        protected readonly HqlTreeBuilder _hqlTreeBuilder;
-        protected readonly HqlNodeStack _stack;
         private HashSet<Expression> _hqlNodes;
         private readonly ParameterExpression _inputParameter;
         private readonly Func<Expression, bool> _predicate;
     	private readonly IDictionary<ConstantExpression, NamedParameter> _parameters;
     	private readonly IList<NamedParameterDescriptor> _requiredHqlParameters;
     	private int _iColumn;
+        private readonly List<HqlExpression> _hqlTreeNodes = new List<HqlExpression>();
 
-		public ProjectionEvaluator(System.Type inputType, Func<Expression, bool> predicate, IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters)
+        public ProjectionEvaluator(System.Type inputType, Func<Expression, bool> predicate, IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters)
         {
             _inputParameter = Expression.Parameter(inputType, "input");
             _predicate = predicate;
         	_parameters = parameters;
 			_requiredHqlParameters = requiredHqlParameters;
-			_hqlTreeBuilder = new HqlTreeBuilder();
-            _stack = new HqlNodeStack(_hqlTreeBuilder);
         }
 
         public LambdaExpression ProjectionExpression { get; private set; }
 
-        public IEnumerable<HqlTreeNode> GetAstBuilderNode()
+        public IEnumerable<HqlExpression> GetHqlNodes()
         {
-            return _stack.Finish();
+            return _hqlTreeNodes;
         }
 
         public void Visit(Expression expression)
@@ -58,10 +55,10 @@ namespace NHibernate.Linq.Visitors
 
             if (_hqlNodes.Contains(expression))
             {
-                // Pure HQL evaluation
+                // Pure HQL evaluation - TODO - cache the Visitor?
 				var hqlVisitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
-                hqlVisitor.Visit(expression);
-                hqlVisitor.GetHqlTreeNodes().ForEach(n =>_stack.PushLeaf(n) );
+                
+                _hqlTreeNodes.Add(hqlVisitor.Visit(expression).AsExpression());
 
                 return Expression.Convert(Expression.ArrayIndex(_inputParameter, Expression.Constant(_iColumn++)),
                                           expression.Type);

@@ -46,5 +46,15 @@ namespace NHibernate.Test.Linq.Entities
         {
             get { return _session.Query<ProductCategory>(); }
         }
+
+        public IQueryable<Timesheet> Timesheets
+        {
+            get { return _session.Query<Timesheet>(); }
+        }
+
+        public IQueryable<Mammal> Mammals
+        {
+            get { return _session.Query<Mammal>(); }
+        }
     }
 }

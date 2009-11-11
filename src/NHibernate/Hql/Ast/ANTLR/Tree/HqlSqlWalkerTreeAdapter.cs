@@ -176,15 +176,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				var dupped = (IASTNode) Create(node.Token);
 
-                // TODO - nasty hack for Linq.  To be removed :).  In general, should this just call the copy 
-                // constructor or something?  Then this may work for derived classes... (via a Create overload...)
-                ASTNode x = dupped as ASTNode;
-                ASTNode y = node as ASTNode;
-                if (x != null && y != null)
-                {
-                    x.Hack = y.Hack;
-                }
-
 				dupped.Parent = node.Parent;
 
 				return dupped;

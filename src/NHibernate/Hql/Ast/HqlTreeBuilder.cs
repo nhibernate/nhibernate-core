@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 
 namespace NHibernate.Hql.Ast
@@ -70,11 +69,6 @@ namespace NHibernate.Hql.Ast
             return new HqlRange(_factory, ident);
         }
 
-        public HqlRange Range()
-        {
-            return new HqlRange(_factory);
-        }
-
         public HqlRange Range(HqlTreeNode ident, HqlAlias alias)
         {
             return new HqlRange(_factory, ident, alias);
@@ -95,49 +89,44 @@ namespace NHibernate.Hql.Ast
             return new HqlAlias(_factory, alias);
         }
 
-        public HqlEquality Equality()
-        {
-            return new HqlEquality(_factory);
-        }
-
-        public HqlEquality Equality(HqlTreeNode lhs, HqlTreeNode rhs)
+        public HqlEquality Equality(HqlExpression lhs, HqlExpression rhs)
         {
             return new HqlEquality(_factory, lhs, rhs);
         }
 
-        public HqlBooleanAnd BooleanAnd()
+        public HqlBooleanAnd BooleanAnd(HqlBooleanExpression lhs, HqlBooleanExpression rhs)
         {
-            return new HqlBooleanAnd(_factory);
+            return new HqlBooleanAnd(_factory, lhs, rhs);
         }
 
-        public HqlBooleanOr BooleanOr()
+        public HqlBooleanOr BooleanOr(HqlBooleanExpression lhs, HqlBooleanExpression rhs)
         {
-            return new HqlBooleanOr(_factory);
+            return new HqlBooleanOr(_factory, lhs, rhs);
         }
 
-        public HqlAdd Add()
+        public HqlAdd Add(HqlExpression lhs, HqlExpression rhs)
         {
-            return new HqlAdd(_factory);
+            return new HqlAdd(_factory, lhs, rhs);
         }
 
-        public HqlSubtract Subtract()
+        public HqlSubtract Subtract(HqlExpression lhs, HqlExpression rhs)
         {
-            return new HqlSubtract(_factory);
+            return new HqlSubtract(_factory, lhs, rhs);
         }
 
-        public HqlMultiplty Multiply()
+        public HqlMultiplty Multiply(HqlExpression lhs, HqlExpression rhs)
         {
-            return new HqlMultiplty(_factory);
+            return new HqlMultiplty(_factory, lhs, rhs);
         }
 
-        public HqlDivide Divide()
+        public HqlDivide Divide(HqlExpression lhs, HqlExpression rhs)
         {
-            return new HqlDivide(_factory);
+            return new HqlDivide(_factory, lhs, rhs);
         }
 
-        public HqlDot Dot()
+        public HqlDot Dot(HqlExpression lhs, HqlExpression rhs)
         {
-            return new HqlDot(_factory);
+            return new HqlDot(_factory, lhs, rhs);
         }
 
         public HqlParameter Parameter(string name)
@@ -145,14 +134,9 @@ namespace NHibernate.Hql.Ast
             return new HqlParameter(_factory, name);
         }
 
-        public HqlWhere Where(HqlTreeNode expression)
+        public HqlWhere Where(HqlExpression expression)
         {
             return new HqlWhere(_factory, expression);
-        }
-
-        public HqlWhere Where()
-        {
-            return new HqlWhere(_factory);
         }
 
         // TODO - constant will be removed when we have parameter handling done properly.  Particularly bad datetime handling here, so it'll be good to delete it :)
@@ -194,74 +178,64 @@ namespace NHibernate.Hql.Ast
             return new HqlOrderBy(_factory);
         }
 
-        public HqlOrderBy OrderBy(HqlTreeNode expression, HqlDirection hqlDirection)
-        {
-            return new HqlOrderBy(_factory, expression, hqlDirection);
-        }
-
-        public HqlSelect Select(HqlTreeNode expression)
+        public HqlSelect Select(HqlExpression expression)
         {
             return new HqlSelect(_factory, expression);
         }
 
-        public HqlSelect Select(params HqlTreeNode[] expression)
+        public HqlSelect Select(params HqlExpression[] expression)
         {
             return new HqlSelect(_factory, expression);
         }
 
-        public HqlSelect Select(IEnumerable<HqlTreeNode> expressions)
+        public HqlSelect Select(IEnumerable<HqlExpression> expressions)
         {
             return new HqlSelect(_factory, expressions.ToArray());
         }
 
-        public HqlConstructor Constructor(ConstructorInfo constructor)
+        public HqlCase Case(HqlWhen[] whenClauses)
         {
-            return new HqlConstructor(_factory, constructor);
+            return new HqlCase(_factory, whenClauses, null);
         }
 
-        public HqlNill Holder()
+        public HqlCase Case(HqlWhen[] whenClauses, HqlExpression ifFalse)
         {
-            return new HqlNill(_factory);
+            return new HqlCase(_factory, whenClauses, ifFalse);
         }
 
-        public HqlCase Case()
+        public HqlWhen When(HqlExpression predicate, HqlExpression ifTrue)
         {
-            return new HqlCase(_factory);
+            return new HqlWhen(_factory, predicate, ifTrue);
         }
 
-        public HqlWhen When()
+        public HqlElse Else(HqlExpression ifFalse)
         {
-            return new HqlWhen(_factory);
+            return new HqlElse(_factory, ifFalse);
         }
 
-        public HqlElse Else()
+        public HqlInequality Inequality(HqlExpression lhs, HqlExpression rhs)
         {
-            return new HqlElse(_factory);
+            return new HqlInequality(_factory, lhs, rhs);
         }
 
-        public HqlInequality Inequality()
+        public HqlLessThan LessThan(HqlExpression lhs, HqlExpression rhs)
         {
-            return new HqlInequality(_factory);
+            return new HqlLessThan(_factory, lhs, rhs);
         }
 
-        public HqlLessThan LessThan()
+        public HqlLessThanOrEqual LessThanOrEqual(HqlExpression lhs, HqlExpression rhs)
         {
-            return new HqlLessThan(_factory);
+            return new HqlLessThanOrEqual(_factory, lhs, rhs);
         }
 
-        public HqlLessThanOrEqual LessThanOrEqual()
+        public HqlGreaterThan GreaterThan(HqlExpression lhs, HqlExpression rhs)
         {
-            return new HqlLessThanOrEqual(_factory);
+            return new HqlGreaterThan(_factory, lhs, rhs);
         }
 
-        public HqlGreaterThan GreaterThan()
+        public HqlGreaterThanOrEqual GreaterThanOrEqual(HqlExpression lhs, HqlExpression rhs)
         {
-            return new HqlGreaterThan(_factory);
-        }
-
-        public HqlGreaterThanOrEqual GreaterThanOrEqual()
-        {
-            return new HqlGreaterThanOrEqual(_factory);
+            return new HqlGreaterThanOrEqual(_factory, lhs, rhs);
         }
 
         public HqlCount Count()
@@ -269,7 +243,7 @@ namespace NHibernate.Hql.Ast
             return new HqlCount(_factory);
         }
 
-        public HqlCount Count(HqlTreeNode child)
+        public HqlCount Count(HqlExpression child)
         {
             return new HqlCount(_factory, child);
         }
@@ -279,7 +253,7 @@ namespace NHibernate.Hql.Ast
             return new HqlRowStar(_factory);
         }
 
-        public HqlCast Cast(HqlTreeNode expression, System.Type type)
+        public HqlCast Cast(HqlExpression expression, System.Type type)
         {
             return new HqlCast(_factory, expression, type);
         }
@@ -289,57 +263,32 @@ namespace NHibernate.Hql.Ast
             return new HqlBitwiseNot(_factory);
         }
 
-        public HqlNot Not()
+        public HqlNot Not(HqlBooleanExpression operand)
         {
-            return new HqlNot(_factory);
+            return new HqlNot(_factory, operand);
         }
 
-        public HqlAverage Average()
-        {
-            return new HqlAverage(_factory);
-        }
-
-        public HqlAverage Average(HqlTreeNode expression)
+        public HqlAverage Average(HqlExpression expression)
         {
             return new HqlAverage(_factory, expression);
         }
 
-        public HqlSum Sum()
-        {
-            return new HqlSum(_factory);
-        }
-
-        public HqlSum Sum(HqlTreeNode expression)
+        public HqlSum Sum(HqlExpression expression)
         {
             return new HqlSum(_factory, expression);
         }
 
-        public HqlMin Min()
-        {
-            return new HqlMin(_factory);
-        }
-
-        public HqlMin Min(HqlTreeNode expression)
+        public HqlMin Min(HqlExpression expression)
         {
             return new HqlMin(_factory, expression);
         }
 
-        public HqlMax Max()
-        {
-            return new HqlMax(_factory);
-        }
-
-        public HqlMax Max(HqlTreeNode expression)
+        public HqlMax Max(HqlExpression expression)
         {
             return new HqlMax(_factory, expression);
         }
 
-        public HqlAnd And(HqlTreeNode left, HqlTreeNode right)
-        {
-            return new HqlAnd(_factory, left, right);
-        }
-
-        public HqlJoin Join(HqlTreeNode expression, HqlAlias @alias)
+        public HqlJoin Join(HqlExpression expression, HqlAlias @alias)
         {
             return new HqlJoin(_factory, expression, @alias);
         }
@@ -349,9 +298,9 @@ namespace NHibernate.Hql.Ast
             return new HqlAny(_factory);
         }
 
-        public HqlExists Exists()
+        public HqlExists Exists(HqlQuery query)
         {
-            return new HqlExists(_factory);
+            return new HqlExists(_factory, query);
         }
 
         public HqlElements Elements()
@@ -374,9 +323,9 @@ namespace NHibernate.Hql.Ast
             return new HqlDirectionDescending(_factory);
         }
 
-        public HqlGroupBy GroupBy()
+        public HqlGroupBy GroupBy(HqlExpression expression)
         {
-            return new HqlGroupBy(_factory);
+            return new HqlGroupBy(_factory, expression);
         }
 
 		public HqlAll All()
@@ -384,14 +333,14 @@ namespace NHibernate.Hql.Ast
     		return new HqlAll(_factory);
     	}
 
-        public HqlLike Like()
+        public HqlLike Like(HqlExpression lhs, HqlExpression rhs)
         {
-            return new HqlLike(_factory);
+            return new HqlLike(_factory, lhs, rhs);
         }
 
-        public HqlConcat Concat()
+        public HqlConcat Concat(params HqlExpression[] args)
         {
-            return new HqlConcat(_factory);
+            return new HqlConcat(_factory, args);
         }
 
         public HqlExpressionList ExpressionList()
@@ -399,9 +348,14 @@ namespace NHibernate.Hql.Ast
             return new HqlExpressionList(_factory);
         }
 
-        public HqlMethodCall MethodCall()
+        public HqlMethodCall MethodCall(string methodName, HqlExpression parameter)
         {
-            return new HqlMethodCall(_factory);
+            return new HqlMethodCall(_factory, methodName, parameter);
+        }
+
+        public HqlDistinctHolder DistinctHolder(params HqlTreeNode[] children)
+        {
+            return new HqlDistinctHolder(_factory, children);
         }
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 
@@ -8,18 +7,37 @@ namespace NHibernate.Hql.Ast
 {
     public class HqlTreeNode
     {
-        protected readonly IASTNode _node;
-        protected readonly List<HqlTreeNode> _children;
+        private readonly IASTNode _node;
+        private readonly List<HqlTreeNode> _children;
 
-        protected HqlTreeNode(int type, string text, IASTFactory factory, params HqlTreeNode[] children)
+        protected HqlTreeNode(int type, string text, IASTFactory factory, IEnumerable<HqlTreeNode> children)
         {
             _node = factory.CreateNode(type, text);
             _children = new List<HqlTreeNode>();
 
+            AddChildren(children);
+        }
+
+        protected HqlTreeNode(int type, string text, IASTFactory factory, params HqlTreeNode[] children) : this(type, text, factory, (IEnumerable<HqlTreeNode>) children)
+        {
+        }
+
+        private void AddChildren(IEnumerable<HqlTreeNode> children)
+        {
             foreach (var child in children)
             {
-                _children.Add(child);
-                _node.AddChild(child.AstNode);
+                if (child != null)
+                {
+                    if (child is HqlDistinctHolder)
+                    {
+                       AddChildren(child.Children);    
+                    }
+                    else
+                    {
+                        _children.Add(child);
+                        _node.AddChild(child.AstNode);
+                    }
+                }
             }
         }
 
@@ -57,19 +75,18 @@ namespace NHibernate.Hql.Ast
 
         public IEnumerable<HqlTreeNode> Children
         {
-            get 
-            { 
-                foreach (var child in _children)
-                {
-                    yield return child;
-                }
-            }
+            get { return _children; }
         }
 
         public void ClearChildren()
         {
             _children.Clear();
             _node.ClearChildren();
+        }
+
+        protected void SetText(string text)
+        {
+            _node.Text = text;
         }
 
         internal IASTNode AstNode
@@ -79,28 +96,74 @@ namespace NHibernate.Hql.Ast
 
         internal void AddChild(HqlTreeNode child)
         {
-            _children.Add(child);
-            _node.AddChild(child.AstNode);
+            if (child is HqlDistinctHolder)
+            {
+                AddChildren(child.Children);
+            }
+            else
+            {
+                _children.Add(child);
+                _node.AddChild(child.AstNode);
+            }
         }
 
-        public void AddChild(int index, HqlTreeNode node)
+        public HqlExpression AsExpression()
         {
-            _children.Insert(index, node);
-            _node.InsertChild(index, node.AstNode);
+            // TODO - nice error handling if cast fails
+            return (HqlExpression) this;
         }
 
+        public virtual HqlBooleanExpression AsBooleanExpression()
+        {
+            // TODO - nice error handling if cast fails
+            return (HqlBooleanExpression)this;
+        }
     }
 
-    public class HqlQuery : HqlTreeNode
+    public abstract class HqlStatement : HqlTreeNode
     {
-        internal HqlQuery(IASTFactory factory, params HqlTreeNode[] children)
+        protected HqlStatement(int type, string text, IASTFactory factory, params HqlTreeNode[] children)
+            : base(type, text, factory, children)
+        {
+        }
+    }
+
+    public abstract class HqlExpression : HqlTreeNode
+    {
+        protected HqlExpression(int type, string text, IASTFactory factory, IEnumerable<HqlTreeNode> children)
+            : base(type, text, factory, children)
+        {
+        }
+
+        protected HqlExpression(int type, string text, IASTFactory factory, params HqlTreeNode[] children)
+            : base(type, text, factory, children)
+        {
+        }
+    }
+
+    public abstract class HqlBooleanExpression : HqlExpression
+    {
+        protected HqlBooleanExpression(int type, string text, IASTFactory factory, IEnumerable<HqlTreeNode> children)
+            : base(type, text, factory, children)
+        {
+        }
+
+        protected HqlBooleanExpression(int type, string text, IASTFactory factory, params HqlTreeNode[] children)
+            : base(type, text, factory, children)
+        {
+        }
+    }
+
+    public class HqlQuery : HqlExpression
+    {
+        internal HqlQuery(IASTFactory factory, params HqlStatement[] children)
             : base(HqlSqlWalker.QUERY, "query", factory, children)
         {
         }
     }
 
 
-    public class HqlIdent : HqlTreeNode
+    public class HqlIdent : HqlExpression
     {
         internal HqlIdent(IASTFactory factory, string ident)
             : base(HqlSqlWalker.IDENT, ident, factory)
@@ -118,24 +181,24 @@ namespace NHibernate.Hql.Ast
             switch (System.Type.GetTypeCode(type))
             {
 				case TypeCode.Boolean:
-            		_node.Text = "bool";
+            		SetText("bool");
             		break;
                 case TypeCode.Int32:
-                    _node.Text = "integer";
+                    SetText("integer");
                     break;
                 case TypeCode.Decimal:
-                    _node.Text = "decimal";
+                    SetText("decimal");
                     break;
                 case TypeCode.DateTime:
-                    _node.Text = "datetime";
+                    SetText("datetime");
                     break;
 				case TypeCode.String:
-            		_node.Text = "string";
+            		SetText("string");
             		break;
                 default:
 					if (type == typeof(Guid))
 					{
-						_node.Text = "guid";
+						SetText("guid");
 						break;
 					}
                     throw new NotSupportedException(string.Format("Don't currently support idents of type {0}", type.Name));
@@ -155,7 +218,7 @@ namespace NHibernate.Hql.Ast
 
     }
 
-    public class HqlRange : HqlTreeNode
+    public class HqlRange : HqlStatement
     {
         internal HqlRange(IASTFactory factory, params HqlTreeNode[] children)
             : base(HqlSqlWalker.RANGE, "range", factory, children)
@@ -163,7 +226,7 @@ namespace NHibernate.Hql.Ast
         }
     }
 
-    public class HqlFrom : HqlTreeNode
+    public class HqlFrom : HqlStatement
     {
         internal HqlFrom(IASTFactory factory, params HqlTreeNode[] children)
             : base(HqlSqlWalker.FROM, "from", factory, children)
@@ -171,7 +234,7 @@ namespace NHibernate.Hql.Ast
         }
     }
 
-    public class HqlSelectFrom : HqlTreeNode
+    public class HqlSelectFrom : HqlStatement
     {
         internal HqlSelectFrom(IASTFactory factory, params HqlTreeNode[] children)
             : base(HqlSqlWalker.SELECT_FROM, "select_from", factory, children)
@@ -179,7 +242,7 @@ namespace NHibernate.Hql.Ast
         }
     }
 
-    public class HqlAlias : HqlTreeNode
+    public class HqlAlias : HqlExpression
     {
         public HqlAlias(IASTFactory factory, string @alias)
             : base(HqlSqlWalker.ALIAS, alias, factory)
@@ -187,68 +250,63 @@ namespace NHibernate.Hql.Ast
         }
     }
 
-    public class HqlDivide : HqlTreeNode
+    public class HqlDivide : HqlExpression
     {
-        public HqlDivide(IASTFactory factory)
-            : base(HqlSqlWalker.DIV, "/", factory)
+        public HqlDivide(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
+            : base(HqlSqlWalker.DIV, "/", factory, lhs, rhs)
         {
         }
     }
 
-    public class HqlMultiplty : HqlTreeNode
+    public class HqlMultiplty : HqlExpression
     {
-        public HqlMultiplty(IASTFactory factory)
-            : base(HqlSqlWalker.STAR, "*", factory)
+        public HqlMultiplty(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
+            : base(HqlSqlWalker.STAR, "*", factory, lhs, rhs)
         {
         }
     }
 
-    public class HqlSubtract : HqlTreeNode
+    public class HqlSubtract : HqlExpression
     {
-        public HqlSubtract(IASTFactory factory)
-            : base(HqlSqlWalker.MINUS, "-", factory)
+        public HqlSubtract(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
+            : base(HqlSqlWalker.MINUS, "-", factory, lhs, rhs)
         {
         }
     }
 
-    public class HqlAdd : HqlTreeNode
+    public class HqlAdd : HqlExpression
     {
-        public HqlAdd(IASTFactory factory)
-            : base(HqlSqlWalker.PLUS, "+", factory)
+        public HqlAdd(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
+            : base(HqlSqlWalker.PLUS, "+", factory, lhs, rhs)
         {
         }
     }
 
-    public class HqlBooleanOr : HqlTreeNode
+    public class HqlBooleanOr : HqlBooleanExpression
     {
-        public HqlBooleanOr(IASTFactory factory)
-            : base(HqlSqlWalker.OR, "or", factory)
+        public HqlBooleanOr(IASTFactory factory, HqlBooleanExpression lhs, HqlBooleanExpression rhs)
+            : base(HqlSqlWalker.OR, "or", factory, lhs, rhs)
         {
         }
     }
 
-    public class HqlBooleanAnd : HqlTreeNode
+    public class HqlBooleanAnd : HqlBooleanExpression
     {
-        public HqlBooleanAnd(IASTFactory factory)
-            : base(HqlSqlWalker.AND, "/", factory)
+        public HqlBooleanAnd(IASTFactory factory, HqlBooleanExpression lhs, HqlBooleanExpression rhs)
+            : base(HqlSqlWalker.AND, "/", factory, lhs, rhs)
         {
         }
     }
 
-    public class HqlEquality : HqlTreeNode
+    public class HqlEquality : HqlBooleanExpression
     {
-        public HqlEquality(IASTFactory factory)
-            : base(HqlSqlWalker.EQ, "==", factory)
-        {
-        }
-
-        public HqlEquality(IASTFactory factory, HqlTreeNode lhs, HqlTreeNode rhs)
+        public HqlEquality(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
             : base(HqlSqlWalker.EQ, "==", factory, lhs, rhs)
         {
         }
     }
 
-    public class HqlParameter : HqlTreeNode
+    public class HqlParameter : HqlExpression
     {
         public HqlParameter(IASTFactory factory, string name)
             : base(HqlSqlWalker.COLON, ":", factory)
@@ -257,28 +315,40 @@ namespace NHibernate.Hql.Ast
         }
     }
 
-    public class HqlDot : HqlTreeNode
+    public class HqlDot : HqlExpression
     {
-        public HqlDot(IASTFactory factory)
-            : base(HqlSqlWalker.DOT, ".", factory)
+        private readonly IASTFactory _factory;
+
+        public HqlDot(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
+            : base(HqlSqlWalker.DOT, ".", factory, lhs, rhs)
+        {
+            _factory = factory;
+        }
+
+        public override HqlBooleanExpression AsBooleanExpression()
+        {
+            // If we are of boolean type, then we can acts as boolean expression
+            // TODO - implement type check
+            return new HqlBooleanDot(_factory, this);
+        }
+    }
+
+    public class HqlBooleanDot : HqlBooleanExpression
+    {
+        public HqlBooleanDot(IASTFactory factory, HqlDot dot) : base(dot.AstNode.Type, dot.AstNode.Text, factory, dot.Children)
         {
         }
     }
 
-    public class HqlWhere : HqlTreeNode
+    public class HqlWhere : HqlStatement
     {
-        public HqlWhere(IASTFactory factory)
-            : base(HqlSqlWalker.WHERE, "where", factory)
-        {
-        }
-
-        public HqlWhere(IASTFactory factory, HqlTreeNode expression)
+        public HqlWhere(IASTFactory factory, HqlExpression expression)
             : base(HqlSqlWalker.WHERE, "where", factory, expression)
         {
         }
     }
 
-    public class HqlConstant : HqlTreeNode
+    public class HqlConstant : HqlExpression
     {
         public HqlConstant(IASTFactory factory, int type, string value)
             : base(type, value, factory)
@@ -334,17 +404,10 @@ namespace NHibernate.Hql.Ast
         }
     }
 
-    public class HqlOrderBy : HqlTreeNode
+    public class HqlOrderBy : HqlStatement
     {
         public HqlOrderBy(IASTFactory factory)
             : base(HqlSqlWalker.ORDER, "", factory)
-        {
-        }
-
-        public HqlOrderBy(IASTFactory factory, HqlTreeNode expression, HqlDirection hqlDirection)
-            : base(HqlSqlWalker.ORDER, "", factory, expression,
-                   hqlDirection == HqlDirection.Ascending ?
-                        (HqlTreeNode)new HqlDirectionAscending(factory) : (HqlTreeNode)new HqlDirectionDescending(factory))
         {
         }
     }
@@ -355,7 +418,7 @@ namespace NHibernate.Hql.Ast
         Descending
     }
 
-    public class HqlDirectionAscending : HqlTreeNode
+    public class HqlDirectionAscending : HqlStatement
     {
         public HqlDirectionAscending(IASTFactory factory)
             : base(HqlSqlWalker.ASCENDING, "asc", factory)
@@ -363,7 +426,7 @@ namespace NHibernate.Hql.Ast
         }
     }
 
-    public class HqlDirectionDescending : HqlTreeNode
+    public class HqlDirectionDescending : HqlStatement
     {
         public HqlDirectionDescending(IASTFactory factory)
             : base(HqlSqlWalker.DESCENDING, "desc", factory)
@@ -371,96 +434,83 @@ namespace NHibernate.Hql.Ast
         }
     }
 
-    public class HqlSelect : HqlTreeNode
+    public class HqlSelect : HqlStatement
     {
-        public HqlSelect(IASTFactory factory, params HqlTreeNode[] expression)
+        public HqlSelect(IASTFactory factory, params HqlExpression[] expression)
             : base(HqlSqlWalker.SELECT, "select", factory, expression)
         {
         }
     }
 
-    public class HqlConstructor : HqlTreeNode
+    public class HqlElse : HqlStatement
     {
-        public HqlConstructor(IASTFactory factory, ConstructorInfo ctor)
-            : base(HqlSqlWalker.CONSTRUCTOR, "ctor", factory)
-        {
-            ((ASTNode)_node).Hack = ctor;
-        }
-    }
-
-    public class HqlNill : HqlTreeNode
-    {
-        public HqlNill(IASTFactory factory)
-            : base(0, "nill", factory)
+        public HqlElse(IASTFactory factory, HqlExpression ifFalse)
+            : base(HqlSqlWalker.ELSE, "else", factory, ifFalse)
         {
         }
     }
 
-    public class HqlElse : HqlTreeNode
+    public class HqlWhen : HqlStatement
     {
-        public HqlElse(IASTFactory factory)
-            : base(HqlSqlWalker.ELSE, "else", factory)
+        public HqlWhen(IASTFactory factory, HqlExpression predicate, HqlExpression ifTrue)
+            : base(HqlSqlWalker.WHEN, "when", factory, predicate, ifTrue)
         {
         }
     }
 
-    public class HqlWhen : HqlTreeNode
+    public class HqlCase : HqlExpression
     {
-        public HqlWhen(IASTFactory factory)
-            : base(HqlSqlWalker.WHEN, "when", factory)
+        public HqlCase(IASTFactory factory, HqlWhen[] whenClauses, HqlExpression ifFalse)
+            : base(HqlSqlWalker.CASE, "case", factory, whenClauses)
+        {
+            if (ifFalse != null)
+            {
+                AddChild(new HqlElse(factory, ifFalse));
+            }
+        }
+    }
+
+    public class HqlGreaterThanOrEqual : HqlBooleanExpression
+    {
+        public HqlGreaterThanOrEqual(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
+            : base(HqlSqlWalker.GE, "ge", factory, lhs, rhs)
         {
         }
     }
 
-    public class HqlCase : HqlTreeNode
+    public class HqlGreaterThan : HqlBooleanExpression
     {
-        public HqlCase(IASTFactory factory)
-            : base(HqlSqlWalker.CASE, "case", factory)
+        public HqlGreaterThan(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
+            : base(HqlSqlWalker.GT, "gt", factory, lhs, rhs)
         {
         }
     }
 
-    public class HqlGreaterThanOrEqual : HqlTreeNode
+    public class HqlLessThanOrEqual : HqlBooleanExpression
     {
-        public HqlGreaterThanOrEqual(IASTFactory factory)
-            : base(HqlSqlWalker.GE, "ge", factory)
+        public HqlLessThanOrEqual(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
+            : base(HqlSqlWalker.LE, "le", factory, lhs, rhs)
         {
         }
     }
 
-    public class HqlGreaterThan : HqlTreeNode
+    public class HqlLessThan : HqlBooleanExpression
     {
-        public HqlGreaterThan(IASTFactory factory)
-            : base(HqlSqlWalker.GT, "gt", factory)
+        public HqlLessThan(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
+            : base(HqlSqlWalker.LT, "lt", factory, lhs, rhs)
         {
         }
     }
 
-    public class HqlLessThanOrEqual : HqlTreeNode
+    public class HqlInequality : HqlBooleanExpression
     {
-        public HqlLessThanOrEqual(IASTFactory factory)
-            : base(HqlSqlWalker.LE, "le", factory)
+        public HqlInequality(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
+            : base(HqlSqlWalker.NE, "ne", factory, lhs, rhs)
         {
         }
     }
 
-    public class HqlLessThan : HqlTreeNode
-    {
-        public HqlLessThan(IASTFactory factory)
-            : base(HqlSqlWalker.LT, "lt", factory)
-        {
-        }
-    }
-
-    public class HqlInequality : HqlTreeNode
-    {
-        public HqlInequality(IASTFactory factory)
-            : base(HqlSqlWalker.NE, "ne", factory)
-        {
-        }
-    }
-
-    public class HqlRowStar : HqlTreeNode
+    public class HqlRowStar : HqlStatement
     {
         public HqlRowStar(IASTFactory factory)
             : base(HqlSqlWalker.ROW_STAR, "*", factory)
@@ -468,23 +518,23 @@ namespace NHibernate.Hql.Ast
         }
     }
 
-    public class HqlCount : HqlTreeNode
+    public class HqlCount : HqlExpression
     {
-
         public HqlCount(IASTFactory factory)
             : base(HqlSqlWalker.COUNT, "count", factory)
         {
         }
-        
-        public HqlCount(IASTFactory factory, HqlTreeNode child)
+
+        public HqlCount(IASTFactory factory, HqlExpression child)
             : base(HqlSqlWalker.COUNT, "count", factory, child)
         {
         }
     }
 
-    public class HqlAs : HqlTreeNode
+    public class HqlAs : HqlExpression
     {
-        public HqlAs(IASTFactory factory, HqlTreeNode expression, System.Type type) : base(HqlSqlWalker.AS, "as", factory, expression)
+        public HqlAs(IASTFactory factory, HqlExpression expression, System.Type type)
+            : base(HqlSqlWalker.AS, "as", factory, expression)
         {
             switch (System.Type.GetTypeCode(type))
             {
@@ -497,136 +547,118 @@ namespace NHibernate.Hql.Ast
         }
     }
 
-    public class HqlCast : HqlTreeNode
+    public class HqlCast : HqlExpression
     {
-        public HqlCast(IASTFactory factory, HqlTreeNode expression, System.Type type) : base(HqlSqlWalker.METHOD_CALL, "method", factory)
+        public HqlCast(IASTFactory factory, HqlExpression expression, System.Type type)
+            : base(HqlSqlWalker.METHOD_CALL, "method", factory)
         {
             AddChild(new HqlIdent(factory, "cast"));
             AddChild(new HqlExpressionList(factory, expression, new HqlIdent(factory, type)));
         }
     }
 
-    public class HqlExpressionList : HqlTreeNode
+    public class HqlExpressionList : HqlStatement
     {
         public HqlExpressionList(IASTFactory factory, params HqlTreeNode[] expression) : base(HqlSqlWalker.EXPR_LIST, "expr_list", factory, expression)
         {
         }
     }
 
-    public class HqlNot : HqlTreeNode
+    public class HqlNot : HqlBooleanExpression
     {
-        public HqlNot(IASTFactory factory) : base(HqlSqlWalker.NOT, "not", factory)
+        public HqlNot(IASTFactory factory, HqlBooleanExpression operand)
+            : base(HqlSqlWalker.NOT, "not", factory, operand)
         {
         }
     }
 
-    public class HqlAverage : HqlTreeNode
+    public class HqlAverage : HqlExpression
     {
-        public HqlAverage(IASTFactory factory)
-            : base(HqlSqlWalker.AGGREGATE, "avg", factory)
-        {
-        }
-
-        public HqlAverage(IASTFactory factory, HqlTreeNode expression) : base(HqlSqlWalker.AGGREGATE, "avg", factory, expression)
+        public HqlAverage(IASTFactory factory, HqlExpression expression)
+            : base(HqlSqlWalker.AGGREGATE, "avg", factory, expression)
         {
         }
     }
 
-    public class HqlBitwiseNot : HqlTreeNode
+    public class HqlBitwiseNot : HqlExpression
     {
         public HqlBitwiseNot(IASTFactory factory) : base(HqlSqlWalker.BNOT, "not", factory)
         {
         }
     }
 
-    public class HqlSum : HqlTreeNode
+    public class HqlSum : HqlExpression
     {
         public HqlSum(IASTFactory factory)
             : base(HqlSqlWalker.AGGREGATE, "sum", factory)
         {
         }
 
-        public HqlSum(IASTFactory factory, HqlTreeNode expression)
+        public HqlSum(IASTFactory factory, HqlExpression expression)
             : base(HqlSqlWalker.AGGREGATE, "sum", factory, expression)
         {
         }
     }
 
-    public class HqlMax : HqlTreeNode
+    public class HqlMax : HqlExpression
     {
-        public HqlMax(IASTFactory factory) : base(HqlSqlWalker.AGGREGATE, "max", factory)
-        {
-        }
-
-        public HqlMax(IASTFactory factory, HqlTreeNode expression)
+        public HqlMax(IASTFactory factory, HqlExpression expression)
             : base(HqlSqlWalker.AGGREGATE, "max", factory, expression)
         {
         }
 }
 
-    public class HqlMin : HqlTreeNode
+    public class HqlMin : HqlExpression
     {
-        public HqlMin(IASTFactory factory)
-            : base(HqlSqlWalker.AGGREGATE, "min", factory)
-        {
-        }
-
-        public HqlMin(IASTFactory factory, HqlTreeNode expression)
+        public HqlMin(IASTFactory factory, HqlExpression expression)
             : base(HqlSqlWalker.AGGREGATE, "min", factory, expression)
         {
         }
     }
 
-    public class HqlAnd : HqlTreeNode
+    public class HqlJoin : HqlStatement
     {
-        public HqlAnd(IASTFactory factory, HqlTreeNode left, HqlTreeNode right) : base(HqlSqlWalker.AND, "and", factory, left, right)
+        public HqlJoin(IASTFactory factory, HqlExpression expression, HqlAlias @alias) : base(HqlSqlWalker.JOIN, "join", factory, expression, @alias)
         {
         }
     }
 
-    public class HqlJoin : HqlTreeNode
-    {
-        public HqlJoin(IASTFactory factory, HqlTreeNode expression, HqlAlias @alias) : base(HqlSqlWalker.JOIN, "join", factory, expression, @alias)
-        {
-        }
-    }
-
-    public class HqlAny : HqlTreeNode
+    public class HqlAny : HqlBooleanExpression
     {
         public HqlAny(IASTFactory factory) : base(HqlSqlWalker.ANY, "any", factory)
         {
         }
     }
 
-    public class HqlExists : HqlTreeNode
+    public class HqlExists : HqlBooleanExpression
     {
-        public HqlExists(IASTFactory factory) : base(HqlSqlWalker.EXISTS, "exists", factory)
+        public HqlExists(IASTFactory factory, HqlQuery query) : base(HqlSqlWalker.EXISTS, "exists", factory, query)
         {
         }
     }
 
-    public class HqlElements : HqlTreeNode
+    public class HqlElements : HqlBooleanExpression
     {
         public HqlElements(IASTFactory factory) : base(HqlSqlWalker.ELEMENTS, "elements", factory)
         {
         }
     }
 
-    public class HqlDistinct : HqlTreeNode
+    public class HqlDistinct : HqlStatement
     {
         public HqlDistinct(IASTFactory factory) : base(HqlSqlWalker.DISTINCT, "distinct", factory)
         {
         }
     }
 
-    public class HqlGroupBy : HqlTreeNode
+    public class HqlGroupBy : HqlStatement
     {
-        public HqlGroupBy(IASTFactory factory) : base(HqlSqlWalker.GROUP, "group by", factory)
+        public HqlGroupBy(IASTFactory factory, HqlExpression expression) : base(HqlSqlWalker.GROUP, "group by", factory, expression)
         {
         }
     }
 
-	public class HqlAll : HqlTreeNode
+    public class HqlAll : HqlBooleanExpression
 	{
 		public HqlAll(IASTFactory factory)
 			: base(HqlSqlWalker.ALL, "all", factory)
@@ -634,23 +666,37 @@ namespace NHibernate.Hql.Ast
         }
 	}
 
-    public class HqlLike : HqlTreeNode
+    public class HqlLike : HqlBooleanExpression
     {
-        public HqlLike(IASTFactory factory) : base(HqlSqlWalker.LIKE, "like", factory)
+        public HqlLike(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
+            : base(HqlSqlWalker.LIKE, "like", factory, lhs, rhs)
         {
         }
     }
 
-    public class HqlConcat : HqlTreeNode
+    public class HqlConcat : HqlExpression
     {
-        public HqlConcat(IASTFactory factory) : base(HqlSqlWalker.METHOD_CALL, "method", factory)
+        public HqlConcat(IASTFactory factory, params HqlExpression[] args)
+            : base(HqlSqlWalker.METHOD_CALL, "method", factory)
         {
+            AddChild(new HqlIdent(factory, "concat"));
+            AddChild(new HqlExpressionList(factory, args));
         }
     }
 
-    public class HqlMethodCall : HqlTreeNode
+    public class HqlMethodCall : HqlExpression
     {
-        public HqlMethodCall(IASTFactory factory) : base(HqlSqlWalker.METHOD_CALL, "method", factory)
+        public HqlMethodCall(IASTFactory factory, string methodName, HqlExpression parameter)
+            : base(HqlSqlWalker.METHOD_CALL, "method", factory)
+        {
+            AddChild(new HqlIdent(factory, methodName));
+            AddChild(new HqlExpressionList(factory, parameter));
+        }
+    }
+
+    public class HqlDistinctHolder : HqlExpression
+    {
+        public HqlDistinctHolder(IASTFactory factory, HqlTreeNode[] children) : base(int.MinValue, "distinct holder", factory, children)
         {
         }
     }

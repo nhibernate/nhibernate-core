@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
@@ -23,7 +22,7 @@ namespace NHibernate.Linq.Visitors
 			_hqlTreeBuilder = new HqlTreeBuilder();
 		}
 
-		public HqlTreeNode Visit(Expression innerKeySelector, Expression outerKeySelector)
+		public HqlBooleanExpression Visit(Expression innerKeySelector, Expression outerKeySelector)
 		{
 			if (innerKeySelector is NewExpression && outerKeySelector is NewExpression)
 			{
@@ -35,18 +34,18 @@ namespace NHibernate.Linq.Visitors
 			}
 		}
 
-		private HqlTreeNode VisitNew(NewExpression innerKeySelector, NewExpression outerKeySelector)
+        private HqlBooleanExpression VisitNew(NewExpression innerKeySelector, NewExpression outerKeySelector)
 		{
 			if (innerKeySelector.Arguments.Count != outerKeySelector.Arguments.Count)
 			{
 				throw new NotSupportedException();
 			}
 
-			HqlTreeNode hql = GenerateEqualityNode(innerKeySelector, outerKeySelector, 0);
+			HqlBooleanExpression hql = GenerateEqualityNode(innerKeySelector, outerKeySelector, 0);
 
 			for (int i = 1; i < innerKeySelector.Arguments.Count; i++)
 			{
-				hql = _hqlTreeBuilder.And(hql, GenerateEqualityNode(innerKeySelector, outerKeySelector, i));
+				hql = _hqlTreeBuilder.BooleanAnd(hql, GenerateEqualityNode(innerKeySelector, outerKeySelector, i));
 			}
 
 			return hql;
@@ -59,13 +58,11 @@ namespace NHibernate.Linq.Visitors
 
 		private HqlEquality GenerateEqualityNode(Expression leftExpr, Expression rightExpr)
 		{
+            // TODO - why two visitors? Can't we just reuse?
 			var left = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
-			left.Visit(leftExpr);
-
 			var right = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
-			right.Visit(rightExpr);
 
-			return _hqlTreeBuilder.Equality(left.GetHqlTreeNodes().Single(), right.GetHqlTreeNodes().Single());
+		    return _hqlTreeBuilder.Equality(left.Visit(leftExpr).AsExpression(), right.Visit(rightExpr).AsExpression());
 		}
 	}
 }

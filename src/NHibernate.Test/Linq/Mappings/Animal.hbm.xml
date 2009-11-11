@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="NHibernate.Test.Linq.Entities" assembly="NHibernate.Test">
+  <class name="Animal">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+
+    <property name="Description"/>
+    <property name="BodyWeight" column="body_weight"/>
+    <many-to-one name="Mother" column="mother_id"/>
+    <many-to-one name="Father" column="father_id"/>
+    <property name="SerialNumber"/>
+
+    <bag name="Children" lazy="true">
+      <key column="ParentId" />
+      <one-to-many class="Animal" />
+    </bag>
+
+    <joined-subclass name="Reptile">
+      <key column="Animal"/>
+      <property name="BodyTemperature"/>
+
+      <joined-subclass name="Lizard">
+        <key column="Reptile"/>
+      </joined-subclass>
+    </joined-subclass>
+
+    <joined-subclass name="Mammal">
+      <key column="Animal"/>
+      <property name="Pregnant"/>
+      <property name="BirthDate" type="DateTime"/>
+
+      <joined-subclass name="Dog">
+        <key column="Mammal"/>
+      </joined-subclass>
+
+      <joined-subclass name="Cat">
+        <key column="Mammal"/>
+      </joined-subclass>
+    </joined-subclass>
+  </class>
+</hibernate-mapping>

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="NHibernate.Test.Linq.Entities" assembly="NHibernate.Test">
+  <class name="Role" table="Roles">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <property name="Name" />
+    <property name="IsActive" />
+
+    <many-to-one name="Entity" class="AnotherEntity" cascade="all">
+      <column name="EntityId" />
+    </many-to-one>
+
+		<many-to-one name="ParentRole" cascade="all">
+			<column name="ParentId" />
+		</many-to-one>
+  </class>
+</hibernate-mapping>

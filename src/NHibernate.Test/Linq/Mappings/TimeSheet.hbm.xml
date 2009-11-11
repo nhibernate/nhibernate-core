@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="NHibernate.Test.Linq.Entities" assembly="NHibernate.Test">
+  <class name="Timesheet" table="Timesheets">
+    <id name="Id" column="TimesheetId">
+      <generator class="native" />
+    </id>
+
+    <property name="SubmittedDate" />
+    <property name="Submitted" />
+
+    <bag name="Entries" cascade="all-delete-orphan">
+      <key column="TimesheetID" />
+      <one-to-many class="NHibernate.Test.Linq.Entities.TimesheetEntry" />
+    </bag>
+
+    <bag name="Users" cascade="all-delete-orphan" access="field.camelcase" table="TimeSheetUsers">
+      <key column="TimesheetID" />
+      <many-to-many class="NHibernate.Test.Linq.Entities.User" column="UserId" />
+    </bag>
+  </class>
+
+  <class name="TimesheetEntry" table="TimesheetEntries">
+    <id name="Id" column="TimesheetEntryId">
+      <generator class="native" />
+    </id>
+
+    <property name="EntryDate" />
+    <property name="NumberOfHours" />
+    <property name="Comments" />
+  </class>
+</hibernate-mapping>
