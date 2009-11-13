@@ -1,6 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Hql.Ast;
+using NHibernate.Linq.Visitors;
+
+namespace NHibernate.Linq
+{
+    public class LinqExtensionMethodAttribute : Attribute
+    {
+        public string Name { get; private set; }
+
+        public LinqExtensionMethodAttribute()
+        {
+        }
+
+        public LinqExtensionMethodAttribute(string name)
+        {
+            Name = name;
+        }
+    }
+}
 
 namespace NHibernate.Linq.Functions
 {
@@ -35,6 +57,15 @@ namespace NHibernate.Linq.Functions
                 return methodGenerator;
             }
 
+            // No method generator registered.  Look to see if it's a standard LinqExtensionMethod
+            var attr = (LinqExtensionMethodAttribute) method.GetCustomAttributes(typeof (LinqExtensionMethodAttribute), false)[0];
+            if (attr != null)
+            {
+                // It is
+                // TODO - cache this?  Is it worth it?
+                return new HqlGeneratorForExtensionMethod(attr, method);
+            }
+
             throw new NotSupportedException(method.ToString());
         }
 
@@ -64,6 +95,38 @@ namespace NHibernate.Linq.Functions
         private void Register(IHqlGeneratorForType typeMethodGenerator)
         {
             typeMethodGenerator.Register(this);
+        }
+    }
+
+    public class HqlGeneratorForExtensionMethod : BaseHqlGeneratorForMethod
+    {
+        private readonly string _name;
+
+        public HqlGeneratorForExtensionMethod(LinqExtensionMethodAttribute attribute, MethodInfo method)
+        {
+            _name = string.IsNullOrEmpty(attribute.Name) ? method.Name : attribute.Name;
+        }
+
+        public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
+        {
+            var args = visitor.Visit(targetObject)
+                              .Union(arguments.Select(a => visitor.Visit(a)))
+                              .Cast<HqlExpression>();
+
+            return treeBuilder.MethodCall(_name, args);
+        }
+    }
+
+    static class UnionExtension
+    {
+        public static IEnumerable<HqlTreeNode> Union(this HqlTreeNode first, IEnumerable<HqlTreeNode> rest)
+        {
+            yield return first;
+
+            foreach (var x in rest)
+            {
+                yield return x;
+            }
         }
     }
 }

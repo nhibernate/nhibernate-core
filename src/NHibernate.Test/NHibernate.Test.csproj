@@ -73,6 +73,10 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Linq.Dynamic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\3.5\System.Linq.Dynamic.dll</HintPath>
+    </Reference>
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -377,6 +381,8 @@
     <Compile Include="LazyProperty\LazyPropertyFixture.cs" />
     <Compile Include="Linq\AggregateTests.cs" />
     <Compile Include="Linq\BinaryBooleanExpressionTests.cs" />
+    <Compile Include="Linq\BinaryExpressionOrdererTests.cs" />
+    <Compile Include="Linq\DynamicQueryTests.cs" />
     <Compile Include="Linq\Entities\Address.cs" />
     <Compile Include="Linq\Entities\Animal.cs" />
     <Compile Include="Linq\Entities\AnotherEntity.cs" />
@@ -396,6 +402,9 @@
     <Compile Include="Linq\Entities\Timesheet.cs" />
     <Compile Include="Linq\Entities\User.cs" />
     <Compile Include="Linq\Entities\UserComponent.cs" />
+    <Compile Include="Linq\EnumTests.cs" />
+    <Compile Include="Linq\ExtensionMethods.cs" />
+    <Compile Include="Linq\FunctionTests.cs" />
     <Compile Include="Linq\LinqQuerySamples.cs" />
     <Compile Include="Linq\LinqTestCase.cs" />
     <Compile Include="Linq\MiscellaneousTextFixture.cs" />

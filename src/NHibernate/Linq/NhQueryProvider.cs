@@ -39,7 +39,9 @@ namespace NHibernate.Linq
 
 		public IQueryable CreateQuery(Expression expression)
 		{
-			throw new NotImplementedException();
+		    var m = ReflectionHelper.GetMethod((NhQueryProvider p) => p.CreateQuery<object>(null)).MakeGenericMethod(expression.Type.GetGenericArguments()[0]);
+
+		    return (IQueryable) m.Invoke(this, new[] {expression});
 		}
 
 		public IQueryable<T> CreateQuery<T>(Expression expression)

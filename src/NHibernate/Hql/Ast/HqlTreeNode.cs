@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 
@@ -123,6 +124,11 @@ namespace NHibernate.Hql.Ast
     public abstract class HqlStatement : HqlTreeNode
     {
         protected HqlStatement(int type, string text, IASTFactory factory, params HqlTreeNode[] children)
+            : base(type, text, factory, children)
+        {
+        }
+
+        protected HqlStatement(int type, string text, IASTFactory factory, IEnumerable<HqlTreeNode> children)
             : base(type, text, factory, children)
         {
         }
@@ -407,7 +413,7 @@ namespace NHibernate.Hql.Ast
     public class HqlOrderBy : HqlStatement
     {
         public HqlOrderBy(IASTFactory factory)
-            : base(HqlSqlWalker.ORDER, "", factory)
+            : base(HqlSqlWalker.ORDER, "order by", factory)
         {
         }
     }
@@ -559,7 +565,13 @@ namespace NHibernate.Hql.Ast
 
     public class HqlExpressionList : HqlStatement
     {
-        public HqlExpressionList(IASTFactory factory, params HqlTreeNode[] expression) : base(HqlSqlWalker.EXPR_LIST, "expr_list", factory, expression)
+        public HqlExpressionList(IASTFactory factory, params HqlExpression[] expressions)
+            : base(HqlSqlWalker.EXPR_LIST, "expr_list", factory, expressions)
+        {
+        }
+
+        public HqlExpressionList(IASTFactory factory, IEnumerable<HqlExpression> expressions)
+            : base(HqlSqlWalker.EXPR_LIST, "expr_list", factory, expressions.Cast<HqlTreeNode>())
         {
         }
     }
@@ -686,11 +698,11 @@ namespace NHibernate.Hql.Ast
 
     public class HqlMethodCall : HqlExpression
     {
-        public HqlMethodCall(IASTFactory factory, string methodName, HqlExpression parameter)
+        public HqlMethodCall(IASTFactory factory, string methodName, IEnumerable<HqlExpression> parameters)
             : base(HqlSqlWalker.METHOD_CALL, "method", factory)
         {
             AddChild(new HqlIdent(factory, methodName));
-            AddChild(new HqlExpressionList(factory, parameter));
+            AddChild(new HqlExpressionList(factory, parameters));
         }
     }
 

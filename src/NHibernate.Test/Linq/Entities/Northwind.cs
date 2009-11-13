@@ -56,5 +56,10 @@ namespace NHibernate.Test.Linq.Entities
         {
             get { return _session.Query<Mammal>(); }
         }
+
+        public IQueryable<User> Users
+        {
+            get { return _session.Query<User>(); }
+        }
     }
 }

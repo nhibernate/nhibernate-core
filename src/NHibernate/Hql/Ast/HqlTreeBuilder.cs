@@ -146,30 +146,28 @@ namespace NHibernate.Hql.Ast
             {
                 return new HqlNull(_factory);
             }
-            else
+
+            switch (System.Type.GetTypeCode(value.GetType()))
             {
-                switch (System.Type.GetTypeCode(value.GetType()))
-                {
-                    case TypeCode.Int16:
-                    case TypeCode.Int32:
-                    case TypeCode.Int64:
-                        return new HqlIntegerConstant(_factory, value.ToString());
-                    case TypeCode.Single:
-                        return new HqlFloatConstant(_factory, value.ToString());
-                    case TypeCode.Double:
-                        return new HqlDoubleConstant(_factory, value.ToString());
-                    case TypeCode.Decimal:
-                        return new HqlDecimalConstant(_factory, value.ToString());
-                    case TypeCode.String:
-                    case TypeCode.Char:
-                        return new HqlStringConstant(_factory, "\'" + value + "\'");
-                    case TypeCode.DateTime:
-                        return new HqlStringConstant(_factory, "\'" + ((DateTime)value).ToString() + "\'");
-                    case TypeCode.Boolean:
-                        return new HqlStringConstant(_factory, "\'" + (((bool)value) ? "true" : "false") + "\'");
-                    default:
-                        throw new NotSupportedException(string.Format("The constant for '{0}' is not supported", value));
-                }
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                    return new HqlIntegerConstant(_factory, value.ToString());
+                case TypeCode.Single:
+                    return new HqlFloatConstant(_factory, value.ToString());
+                case TypeCode.Double:
+                    return new HqlDoubleConstant(_factory, value.ToString());
+                case TypeCode.Decimal:
+                    return new HqlDecimalConstant(_factory, value.ToString());
+                case TypeCode.String:
+                case TypeCode.Char:
+                    return new HqlStringConstant(_factory, "\'" + value + "\'");
+                case TypeCode.DateTime:
+                    return new HqlStringConstant(_factory, "\'" + (DateTime)value + "\'");
+                case TypeCode.Boolean:
+                    return new HqlStringConstant(_factory, "\'" + ((bool)value ? "true" : "false") + "\'");
+                default:
+                    throw new NotSupportedException(string.Format("The constant for '{0}' is not supported", value));
             }
         }
 
@@ -348,9 +346,14 @@ namespace NHibernate.Hql.Ast
             return new HqlExpressionList(_factory);
         }
 
-        public HqlMethodCall MethodCall(string methodName, HqlExpression parameter)
+        public HqlMethodCall MethodCall(string methodName, IEnumerable<HqlExpression> parameters)
         {
-            return new HqlMethodCall(_factory, methodName, parameter);
+            return new HqlMethodCall(_factory, methodName, parameters);
+        }
+
+        public HqlMethodCall MethodCall(string methodName, params HqlExpression[] parameters)
+        {
+            return new HqlMethodCall(_factory, methodName, parameters);
         }
 
         public HqlDistinctHolder DistinctHolder(params HqlTreeNode[] children)

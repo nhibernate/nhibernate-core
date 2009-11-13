@@ -39,6 +39,8 @@ namespace NHibernate.Linq
 		{
 			_expression = PartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
 
+		    _expression = NameUnNamedParameters.Visit(_expression);
+
 			_queryParameters = ExpressionParameterVisitor.Visit(_expression);
 			ParameterValuesByName = _queryParameters.Values.ToDictionary(p => p.Name, p => p.Value);
 
@@ -57,9 +59,10 @@ namespace NHibernate.Linq
 			}
 		}
 
-		public IASTNode Translate(ISessionFactory sessionFactory)
+	    public IASTNode Translate(ISessionFactory sessionFactory)
 		{
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
+
             // TODO - can we cache any of this? 
 			var queryModel = new QueryParser(new ExpressionTreeParser(MethodCallRegistry)).GetParsedQuery(_expression);
 
@@ -88,6 +91,39 @@ namespace NHibernate.Linq
 			_commandData.AddAdditionalCriteria(impl);
 		}
 	}
+
+    public class NameUnNamedParameters : NhExpressionTreeVisitor
+    {
+        public static Expression Visit(Expression expression)
+        {
+            var visitor = new NameUnNamedParameters();
+
+            return visitor.VisitExpression(expression);
+        }
+
+        private readonly Dictionary<ParameterExpression, ParameterExpression> _renamedParameters = new Dictionary<ParameterExpression, ParameterExpression>();
+
+        protected override Expression VisitParameterExpression(ParameterExpression expression)
+        {
+            if (string.IsNullOrEmpty(expression.Name))
+            {
+                ParameterExpression renamed;
+                
+                if (_renamedParameters.TryGetValue(expression, out renamed))
+                {
+                    return renamed;
+                }
+
+                renamed = Expression.Parameter(expression.Type, Guid.NewGuid().ToString());
+
+                _renamedParameters.Add(expression, renamed);
+
+                return renamed;
+            }
+
+            return base.VisitParameterExpression(expression);
+        }
+    }
 
     public class AggregateExpressionNode : ResultOperatorExpressionNodeBase
     {

@@ -16,6 +16,9 @@ namespace NHibernate.Linq.Functions
             MethodRegistry.Add(new ContainsGenerator());
             MethodRegistry.Add(new EqualsGenerator());
             MethodRegistry.Add(new ToUpperLowerGenerator());
+            MethodRegistry.Add(new SubStringGenerator());
+            MethodRegistry.Add(new IndexOfGenerator());
+            MethodRegistry.Add(new ReplaceGenerator());
 
             PropertyRegistry.Add(new LengthGenerator());
         }
@@ -127,6 +130,79 @@ namespace NHibernate.Linq.Functions
                 }
 
                 return treeBuilder.MethodCall(methodName, visitor.Visit(targetObject).AsExpression());
+            }
+        }
+
+        class SubStringGenerator : BaseHqlGeneratorForMethod
+        {
+            public SubStringGenerator()
+            {
+                SupportedMethods = new[]
+                                       {
+                                           ReflectionHelper.GetMethod<string>(s => s.Substring(0)),
+                                           ReflectionHelper.GetMethod<string>(s => s.Substring(0, 0))
+                                       };
+            }
+            public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
+            {
+                if (arguments.Count == 1)
+                {
+                    return treeBuilder.MethodCall("substring", visitor.Visit(targetObject).AsExpression(), 
+                        treeBuilder.Constant(0), 
+                        visitor.Visit(arguments[0]).AsExpression());
+                }
+                
+                return treeBuilder.MethodCall("substring", visitor.Visit(targetObject).AsExpression(), 
+                    visitor.Visit(arguments[0]).AsExpression(), 
+                    visitor.Visit(arguments[1]).AsExpression());
+            }
+        }
+
+        class IndexOfGenerator : BaseHqlGeneratorForMethod
+        {
+            public IndexOfGenerator()
+            {
+                SupportedMethods = new[]
+                                       {
+                                           ReflectionHelper.GetMethod<string>(s => s.IndexOf(' ')),
+                                           ReflectionHelper.GetMethod<string>(s => s.IndexOf(" ")),
+                                           ReflectionHelper.GetMethod<string>(s => s.IndexOf(' ', 0)),
+                                           ReflectionHelper.GetMethod<string>(s => s.IndexOf(" ", 0))
+                                       };
+            }
+            public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
+            {
+                if (arguments.Count == 1)
+                {
+                    return treeBuilder.MethodCall("locate", 
+                        visitor.Visit(arguments[0]).AsExpression(),
+                        visitor.Visit(targetObject).AsExpression(),
+                        treeBuilder.Constant(0));
+                }
+                return treeBuilder.MethodCall("locate", 
+                    visitor.Visit(arguments[0]).AsExpression(),
+                    visitor.Visit(targetObject).AsExpression(),
+                    visitor.Visit(arguments[1]).AsExpression());
+            }
+        }
+
+        class ReplaceGenerator : BaseHqlGeneratorForMethod
+        {
+            public ReplaceGenerator()
+            {
+                SupportedMethods = new[]
+                                       {
+                                           ReflectionHelper.GetMethod<string>(s => s.Replace(' ', ' ')),
+                                           ReflectionHelper.GetMethod<string>(s => s.Replace("", ""))
+                                       };
+            }
+
+            public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
+            {
+                return treeBuilder.MethodCall("replace",
+                                              visitor.Visit(targetObject).AsExpression(),
+                                              visitor.Visit(arguments[0]).AsExpression(),
+                                              visitor.Visit(arguments[1]).AsExpression());
             }
         }
     }

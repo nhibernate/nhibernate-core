@@ -264,9 +264,11 @@ namespace NHibernate.Linq.Visitors
             {
                 case ExpressionType.Not:
                     return _hqlTreeBuilder.Not(VisitExpression(expression.Operand).AsBooleanExpression());
+                case ExpressionType.Convert:
+                    return VisitExpression(expression.Operand);
             }
-            
-            throw new InvalidOperationException();
+
+            throw new NotSupportedException(expression.ToString());
         }
 
         protected HqlTreeNode VisitMemberExpression(MemberExpression expression)
@@ -313,7 +315,7 @@ namespace NHibernate.Linq.Visitors
                                                     _hqlTreeBuilder.Constant(1));
                 }
 
-                return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Parameter(namedParameter.Name).AsExpression(), namedParameter.Value.GetType());
+                return _hqlTreeBuilder.Parameter(namedParameter.Name).AsExpression();
 			}
             
             return _hqlTreeBuilder.Constant(expression.Value);
@@ -346,7 +348,7 @@ namespace NHibernate.Linq.Visitors
                 ifFalse = VisitExpression(expression.IfFalse).AsExpression();
             }
 
-            return _hqlTreeBuilder.Case(new []{when}, ifFalse);
+            return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Case(new []{when}, ifFalse), expression.Type);
         }
 
         protected HqlTreeNode VisitSubQueryExpression(SubQueryExpression expression)
