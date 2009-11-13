@@ -407,6 +407,7 @@
     <Compile Include="Linq\FunctionTests.cs" />
     <Compile Include="Linq\LinqQuerySamples.cs" />
     <Compile Include="Linq\LinqTestCase.cs" />
+    <Compile Include="Linq\MethodCallTests.cs" />
     <Compile Include="Linq\MiscellaneousTextFixture.cs" />
     <Compile Include="Linq\ObjectDumper.cs" />
     <Compile Include="Linq\ParameterisedQueries.cs" />
