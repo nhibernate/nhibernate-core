@@ -23,6 +23,7 @@
 			<include name="LinFu.DynamicProxy.dll" />
 			<include name="nunit.framework.dll" />
 			<include name="Antlr3.Runtime.dll" />
+      <include name="System.Linq.Dynamic.dll" />
 		</assemblyfileset>
 		<resourcefileset id="project.resources" prefix="NHibernate.Test" dynamicprefix="true">
 			<include name="**/*.xml" />
