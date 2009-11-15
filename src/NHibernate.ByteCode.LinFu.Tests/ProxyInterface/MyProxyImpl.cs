@@ -4,11 +4,13 @@ namespace NHibernate.ByteCode.LinFu.Tests.ProxyInterface
 {
 	public class MyProxyImpl: IMyProxy
 	{
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
 		private static void Level1()
 		{
 			Level2();
 		}
 
+		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
 		private static void Level2()
 		{
 			throw new ArgumentException("thrown from Level2");
