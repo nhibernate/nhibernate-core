@@ -25,6 +25,10 @@ namespace NHibernate.Test.Criteria.Lambda
 		public virtual bool					IsParent	{ get; set; }
 		public virtual char					Blood		{ get; set; }
 
+		public virtual int?					NullableAge			{ get; set; }
+		public virtual PersonGender?		NullableGender		{ get; set; }
+		public virtual bool?				NullableIsParent	{ get; set; }
+
 		public virtual IEnumerable<Child>	Children	{ get; set; }
 		public virtual IList<Person>		PersonList	{ get; set; }
 	}

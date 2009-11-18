@@ -124,6 +124,13 @@ namespace NHibernate.Impl
 				if (memberExpression.Expression.NodeType == ExpressionType.MemberAccess
 					|| memberExpression.Expression.NodeType == ExpressionType.Call)
 				{
+					if (IsNullableOfT(memberExpression.Member.DeclaringType))
+					{
+						// it's a Nullable<T>, so ignore any .Value
+						if (memberExpression.Member.Name == "Value")
+							return FindMemberExpression(memberExpression.Expression);
+					}
+
 					return FindMemberExpression(memberExpression.Expression) + "." + memberExpression.Member.Name;
 				}
 				else
@@ -258,6 +265,9 @@ namespace NHibernate.Impl
 			if (type.IsAssignableFrom(value.GetType()))
 				return value;
 
+			if (IsNullableOfT(type))
+				type = Nullable.GetUnderlyingType(type);
+
 			if (type.IsEnum)
 				return Enum.ToObject(type, value);
 
@@ -265,6 +275,12 @@ namespace NHibernate.Impl
 				return Convert.ChangeType(value, type);
 
 			throw new Exception("Cannot convert '" + value.ToString() + "' to " + type.ToString());
+		}
+
+		private static bool IsNullableOfT(System.Type type)
+		{
+			return type.IsGenericType
+				&& type.GetGenericTypeDefinition().Equals(typeof(Nullable<>));
 		}
 
 		private static ICriterion ProcessSimpleExpression(BinaryExpression be)

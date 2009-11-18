@@ -116,6 +116,38 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
+		[Test]
+		public void TestEvaluateNullableIntExpression()
+		{
+			ICriterion before = Restrictions.Eq("NullableAge", 5);
+			ICriterion after = ExpressionProcessor.ProcessExpression<Person>(p => p.NullableAge == 5);
+			Assert.AreEqual(before.ToString(), after.ToString());
+		}
+
+		[Test]
+		public void TestEvaluateNullableEnumExpression()
+		{
+			ICriterion before = Restrictions.Eq("NullableGender", PersonGender.Female);
+			ICriterion after = ExpressionProcessor.ProcessExpression<Person>(p => p.NullableGender == PersonGender.Female);
+			Assert.AreEqual(before.ToString(), after.ToString());
+		}
+
+		[Test]
+		public void TestEvaluateNullableEnumValueExpression()
+		{
+			ICriterion before = Restrictions.Eq("NullableGender", PersonGender.Female);
+			ICriterion after = ExpressionProcessor.ProcessExpression<Person>(p => p.NullableGender.Value == PersonGender.Female);
+			Assert.AreEqual(before.ToString(), after.ToString());
+		}
+
+		[Test]
+		public void TestEvaluateNullableBoolExpression()
+		{
+			ICriterion before = Restrictions.Eq("NullableIsParent", true);
+			ICriterion after = ExpressionProcessor.ProcessExpression<Person>(p => p.NullableIsParent.Value);
+			Assert.AreEqual(before.ToString(), after.ToString());
+		}
+
 	}
 
 }
