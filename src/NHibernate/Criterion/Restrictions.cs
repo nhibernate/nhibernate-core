@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using NHibernate.Criterion.Lambda;
 using NHibernate.Impl;
 
 namespace NHibernate.Criterion
@@ -756,6 +757,28 @@ namespace NHibernate.Criterion
 		{
 			ICriterion criterion = ExpressionProcessor.ProcessExpression(expression);
 			return criterion;
+		}
+
+		/// <summary>
+		/// Build an ICriterion for the given property
+		/// </summary>
+		/// <param name="expression">lambda expression identifying property</param>
+		/// <returns>returns LambdaRestrictionBuilder</returns>
+		public static LambdaRestrictionBuilder WhereProperty<T>(Expression<Func<T, object>> expression)
+		{
+			string property = ExpressionProcessor.FindMemberExpression(expression.Body);
+			return new LambdaRestrictionBuilder(property);
+		}
+
+		/// <summary>
+		/// Build an ICriterion for the given property
+		/// </summary>
+		/// <param name="expression">lambda expression identifying property</param>
+		/// <returns>returns LambdaRestrictionBuilder</returns>
+		public static LambdaRestrictionBuilder WhereProperty(Expression<Func<object>> expression)
+		{
+			string property = ExpressionProcessor.FindMemberExpression(expression.Body);
+			return new LambdaRestrictionBuilder(property);
 		}
 
 	}
