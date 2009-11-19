@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using NHibernate.Criterion.Lambda;
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Criterion
@@ -30,6 +33,18 @@ namespace NHibernate.Criterion
 		{
 			conjunction.Add(Restrictions.Eq(property, value));
 			return this;
+		}
+
+		public LambdaNaturalIdentifierBuilder Set<T>(Expression<Func<T, object>> expression)
+		{
+			string property = ExpressionProcessor.FindMemberExpression(expression.Body);
+			return new LambdaNaturalIdentifierBuilder(this, property);
+		}
+
+		public LambdaNaturalIdentifierBuilder Set(Expression<Func<object>> expression)
+		{
+			string property = ExpressionProcessor.FindMemberExpression(expression.Body);
+			return new LambdaNaturalIdentifierBuilder(this, property);
 		}
 	}
 }

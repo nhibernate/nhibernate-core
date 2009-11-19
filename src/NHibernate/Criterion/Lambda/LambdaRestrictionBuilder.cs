@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
@@ -44,6 +45,30 @@ namespace NHibernate.Criterion.Lambda
 		public LambdaBetweenBuilder IsBetween(object lo)
 		{
 			return new LambdaBetweenBuilder(propertyName, lo);
+		}
+
+		/// <summary>
+		/// Apply an "in" constraint to the named property
+		/// </summary>
+		public AbstractCriterion IsIn(ICollection values)
+		{
+			return Restrictions.In(propertyName, values);
+		}
+
+		/// <summary>
+		/// Apply an "in" constraint to the named property
+		/// </summary>
+		public AbstractCriterion IsIn(object[] values)
+		{
+			return Restrictions.In(propertyName, values);
+		}
+
+		/// <summary>
+		/// Apply an "in" constraint to the named property
+		/// </summary>
+		public AbstractCriterion IsInG<T>(ICollection<T> values)
+		{
+			return Restrictions.InG(propertyName, values);
 		}
 
 		/// <summary>

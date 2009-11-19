@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
-using System.Collections.Generic;
 
 namespace NHibernate.Criterion
 {
@@ -26,6 +28,28 @@ namespace NHibernate.Criterion
 		/// </returns>
 		public Junction Add(ICriterion criterion)
 		{
+			criteria.Add(criterion);
+			return this;
+		}
+
+		/// <summary>
+		/// Adds an <see cref="ICriterion"/> to the list of <see cref="ICriterion"/>s
+		/// to junction together.
+		/// </summary>
+		public Junction Add<T>(Expression<Func<T, bool>> expression)
+		{
+			ICriterion criterion = ExpressionProcessor.ProcessExpression<T>(expression);
+			criteria.Add(criterion);
+			return this;
+		}
+
+		/// <summary>
+		/// Adds an <see cref="ICriterion"/> to the list of <see cref="ICriterion"/>s
+		/// to junction together.
+		/// </summary>
+		public Junction Add(Expression<Func<bool>> expression)
+		{
+			ICriterion criterion = ExpressionProcessor.ProcessExpression(expression);
 			criteria.Add(criterion);
 			return this;
 		}

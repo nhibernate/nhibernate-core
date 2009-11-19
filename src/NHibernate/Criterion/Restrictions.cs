@@ -760,11 +760,34 @@ namespace NHibernate.Criterion
 		}
 
 		/// <summary>
+		/// Create an ICriterion for the negation of the supplied LambdaExpression
+		/// </summary>
+		/// <typeparam name="T">generic type</typeparam>
+		/// <param name="expression">lambda expression</param>
+		/// <returns>return NHibernate.Criterion.ICriterion</returns>
+		public static ICriterion WhereNot<T>(Expression<Func<T, bool>> expression)
+		{
+			ICriterion criterion = ExpressionProcessor.ProcessExpression<T>(expression);
+			return Restrictions.Not(criterion);
+		}
+
+		/// <summary>
+		/// Create an ICriterion for the negation of the supplied LambdaExpression
+		/// </summary>
+		/// <param name="expression">lambda expression</param>
+		/// <returns>return NHibernate.Criterion.ICriterion</returns>
+		public static ICriterion WhereNot(Expression<Func<bool>> expression)
+		{
+			ICriterion criterion = ExpressionProcessor.ProcessExpression(expression);
+			return Restrictions.Not(criterion);
+		}
+
+		/// <summary>
 		/// Build an ICriterion for the given property
 		/// </summary>
 		/// <param name="expression">lambda expression identifying property</param>
 		/// <returns>returns LambdaRestrictionBuilder</returns>
-		public static LambdaRestrictionBuilder WhereProperty<T>(Expression<Func<T, object>> expression)
+		public static LambdaRestrictionBuilder On<T>(Expression<Func<T, object>> expression)
 		{
 			string property = ExpressionProcessor.FindMemberExpression(expression.Body);
 			return new LambdaRestrictionBuilder(property);
@@ -775,7 +798,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		/// <param name="expression">lambda expression identifying property</param>
 		/// <returns>returns LambdaRestrictionBuilder</returns>
-		public static LambdaRestrictionBuilder WhereProperty(Expression<Func<object>> expression)
+		public static LambdaRestrictionBuilder On(Expression<Func<object>> expression)
 		{
 			string property = ExpressionProcessor.FindMemberExpression(expression.Body);
 			return new LambdaRestrictionBuilder(property);

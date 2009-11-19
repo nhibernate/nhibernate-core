@@ -505,6 +505,7 @@
     <Compile Include="Context\WcfOperationSessionContext.cs" />
     <Compile Include="Criterion\GroupedProjection.cs" />
     <Compile Include="Criterion\IPropertyProjection.cs" />
+    <Compile Include="Criterion\Lambda\LambdaNaturalIdentifierBuilder.cs" />
     <Compile Include="Criterion\Lambda\LambdaRestrictionBuilder.cs" />
     <Compile Include="Criterion\Lambda\LambdaSubqueryBuilder.cs" />
     <Compile Include="Criterion\Lambda\QueryOverFetchBuilder.cs" />
