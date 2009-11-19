@@ -103,6 +103,23 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void DetachedSubquery()
+		{
+			DetachedCriteria expected =
+				DetachedCriteria.For<Person>("personAlias")
+					.Add(Subqueries.PropertyEq("Name", DetachedCriteriaName))
+					.Add(Subqueries.PropertyEq("personAlias.Name", DetachedCriteriaName));
+
+			Person personAlias = null;
+			QueryOver<Person> actual =
+				new QueryOver<Person>(() => personAlias)
+					.WithSubquery.WhereProperty(p => p.Name).Eq(DetachedQueryOverName)
+					.WithSubquery.WhereProperty(() => personAlias.Name).Eq(DetachedQueryOverName);
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
 		public void PropertyCriterion()
 		{
 			ICriteria expected =

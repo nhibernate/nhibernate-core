@@ -171,7 +171,7 @@ namespace NHibernate.Criterion
 			return this;
 		}
 
-		QueryOverSubqueryBuilder<T> WithSubquery
+		public QueryOverSubqueryBuilder<T> WithSubquery
 		{
 			get { return new QueryOverSubqueryBuilder<T>(this); }
 		}
