@@ -89,6 +89,16 @@ namespace NHibernate.Criterion
 			return Add(expression);
 		}
 
+		public QueryOverRestrictionBuilder<T> AndRestrictionOn(Expression<Func<T, object>> expression)
+		{
+			return new QueryOverRestrictionBuilder<T>(this, ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
+		public QueryOverRestrictionBuilder<T> AndRestrictionOn(Expression<Func<object>> expression)
+		{
+			return new QueryOverRestrictionBuilder<T>(this, ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
 		public QueryOver<T> Where(Expression<Func<T, bool>> expression)
 		{
 			return Add(expression);
@@ -102,6 +112,16 @@ namespace NHibernate.Criterion
 		public QueryOver<T> Where(ICriterion expression)
 		{
 			return Add(expression);
+		}
+
+		public QueryOverRestrictionBuilder<T> WhereRestrictionOn(Expression<Func<T, object>> expression)
+		{
+			return new QueryOverRestrictionBuilder<T>(this, ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
+		public QueryOverRestrictionBuilder<T> WhereRestrictionOn(Expression<Func<object>> expression)
+		{
+			return new QueryOverRestrictionBuilder<T>(this, ExpressionProcessor.FindMemberExpression(expression.Body));
 		}
 
 		public QueryOver<T> Select(params Expression<Func<T, object>>[] projections)
@@ -457,6 +477,12 @@ namespace NHibernate.Criterion
 		IQueryOver<T> IQueryOver<T>.And(ICriterion expression)
 		{ return And(expression); }
 
+		IQueryOverRestrictionBuilder<T> IQueryOver<T>.AndRestrictionOn(Expression<Func<T, object>> expression)
+		{ return new IQueryOverRestrictionBuilder<T>(this, ExpressionProcessor.FindMemberExpression(expression.Body)); }
+
+		IQueryOverRestrictionBuilder<T> IQueryOver<T>.AndRestrictionOn(Expression<Func<object>> expression)
+		{ return new IQueryOverRestrictionBuilder<T>(this, ExpressionProcessor.FindMemberExpression(expression.Body)); }
+
 		IQueryOver<T> IQueryOver<T>.Where(Expression<Func<T, bool>> expression)
 		{ return Where(expression); }
 
@@ -465,6 +491,12 @@ namespace NHibernate.Criterion
 
 		IQueryOver<T> IQueryOver<T>.Where(ICriterion expression)
 		{ return Where(expression); }
+
+		IQueryOverRestrictionBuilder<T> IQueryOver<T>.WhereRestrictionOn(Expression<Func<T, object>> expression)
+		{ return new IQueryOverRestrictionBuilder<T>(this, ExpressionProcessor.FindMemberExpression(expression.Body)); }
+
+		IQueryOverRestrictionBuilder<T> IQueryOver<T>.WhereRestrictionOn(Expression<Func<object>> expression)
+		{ return new IQueryOverRestrictionBuilder<T>(this, ExpressionProcessor.FindMemberExpression(expression.Body)); }
 
 		IQueryOver<T> IQueryOver<T>.Select(params Expression<Func<T, object>>[] projections)
 		{ return Select(projections); }

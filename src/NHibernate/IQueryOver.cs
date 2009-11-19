@@ -50,6 +50,20 @@ namespace NHibernate
 		IQueryOver<T> And(ICriterion expression);
 
 		/// <summary>
+		/// Add restriction to a property
+		/// </summary>
+		/// <param name="expression">Lambda expression containing path to property</param>
+		/// <returns>criteria instance</returns>
+		IQueryOverRestrictionBuilder<T> AndRestrictionOn(Expression<Func<T, object>> expression);
+
+		/// <summary>
+		/// Add restriction to a property
+		/// </summary>
+		/// <param name="expression">Lambda expression containing path to property</param>
+		/// <returns>criteria instance</returns>
+		IQueryOverRestrictionBuilder<T> AndRestrictionOn(Expression<Func<object>> expression);
+
+		/// <summary>
 		/// Identical semantics to Add() to allow more readable queries
 		/// </summary>
 		/// <param name="expression">Lambda expression</param>
@@ -67,6 +81,20 @@ namespace NHibernate
 		/// Add arbitrary ICriterion (e.g., to allow protected member access)
 		/// </summary>
 		IQueryOver<T> Where(ICriterion expression);
+
+		/// <summary>
+		/// Identical semantics to AndRestrictionOn() to allow more readable queries
+		/// </summary>
+		/// <param name="expression">Lambda expression</param>
+		/// <returns>criteria instance</returns>
+		IQueryOverRestrictionBuilder<T> WhereRestrictionOn(Expression<Func<T, object>> expression);
+
+		/// <summary>
+		/// Identical semantics to AndRestrictionOn() to allow more readable queries
+		/// </summary>
+		/// <param name="expression">Lambda expression</param>
+		/// <returns>criteria instance</returns>
+		IQueryOverRestrictionBuilder<T> WhereRestrictionOn(Expression<Func<object>> expression);
 
 		/// <summary>
 		/// Add projection expressed as a lambda expression
