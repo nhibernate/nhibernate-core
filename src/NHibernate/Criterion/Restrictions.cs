@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using NHibernate.Impl;
 
 namespace NHibernate.Criterion
 {
@@ -731,5 +734,29 @@ namespace NHibernate.Criterion
 		{
 			return new NaturalIdentifier();
 		}
+
+		/// <summary>
+		/// Create an ICriterion for the supplied LambdaExpression
+		/// </summary>
+		/// <typeparam name="T">generic type</typeparam>
+		/// <param name="expression">lambda expression</param>
+		/// <returns>return NHibernate.Criterion.ICriterion</returns>
+		public static ICriterion Where<T>(Expression<Func<T, bool>> expression)
+		{
+			ICriterion criterion = ExpressionProcessor.ProcessExpression<T>(expression);
+			return criterion;
+		}
+
+		/// <summary>
+		/// Create an ICriterion for the supplied LambdaExpression
+		/// </summary>
+		/// <param name="expression">lambda expression</param>
+		/// <returns>return NHibernate.Criterion.ICriterion</returns>
+		public static ICriterion Where(Expression<Func<bool>> expression)
+		{
+			ICriterion criterion = ExpressionProcessor.ProcessExpression(expression);
+			return criterion;
+		}
+
 	}
 }
