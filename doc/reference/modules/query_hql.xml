@@ -294,7 +294,9 @@ select count(distinct cat.Name), count(cat) from Eg.Cat cat]]></programlisting>
             Note that these last two queries will require more than one SQL <literal>SELECT</literal>. This
             means that the <literal>order by</literal> clause does not correctly order the whole result set.
         </para>
-        
+		<para>
+			In order to use non-mapped base classes or interfaces in HQL queries, they have to be imported. See <xref linkend="mapping-declaration-import"/> for more information.
+		</para>
     </sect1>
 
     <sect1 id="queryhql-where">
