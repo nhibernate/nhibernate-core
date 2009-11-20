@@ -101,18 +101,39 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void Negation()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person), "personAlias")
+					.Add(Restrictions.Not(Restrictions.Eq("Name", "test name")))
+					.Add(Restrictions.Not(Restrictions.Eq("personAlias.Name", "test name")));
+
+			Person personAlias = null;
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>(() => personAlias)
+					.AndNot(p => p.Name == "test name")
+					.AndNot(() => personAlias.Name == "test name");
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
 		public void Where_BehavesTheSameAs_And()
 		{
 			Person personAlias = null;
 			QueryOver<Person> expected = (QueryOver<Person>)
 				CreateTestQueryOver<Person>(() => personAlias)
 					.And(() => personAlias.Name == "test name")
-					.And(p => p.Name == "test name");
+					.And(p => p.Name == "test name")
+					.AndNot(() => personAlias.Name == "test name")
+					.AndNot(p => p.Name == "test name");
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>(() => personAlias)
 					.Where(() => personAlias.Name == "test name")
-					.Where(p => p.Name == "test name");
+					.Where(p => p.Name == "test name")
+					.WhereNot(() => personAlias.Name == "test name")
+					.WhereNot(p => p.Name == "test name");
 
 			AssertCriteriaAreEqual(expected.UnderlyingCriteria, actual);
 		}

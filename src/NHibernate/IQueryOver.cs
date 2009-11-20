@@ -50,6 +50,20 @@ namespace NHibernate
 		IQueryOver<T> And(ICriterion expression);
 
 		/// <summary>
+		/// Add negation of criterion expressed as a lambda expression
+		/// </summary>
+		/// <param name="expression">Lambda expression</param>
+		/// <returns>criteria instance</returns>
+		IQueryOver<T> AndNot(Expression<Func<T, bool>> expression);
+
+		/// <summary>
+		/// Add negation of criterion expressed as a lambda expression
+		/// </summary>
+		/// <param name="expression">Lambda expression</param>
+		/// <returns>criteria instance</returns>
+		IQueryOver<T> AndNot(Expression<Func<bool>> expression);
+
+		/// <summary>
 		/// Add restriction to a property
 		/// </summary>
 		/// <param name="expression">Lambda expression containing path to property</param>
@@ -64,14 +78,14 @@ namespace NHibernate
 		IQueryOverRestrictionBuilder<T> AndRestrictionOn(Expression<Func<object>> expression);
 
 		/// <summary>
-		/// Identical semantics to Add() to allow more readable queries
+		/// Identical semantics to And() to allow more readable queries
 		/// </summary>
 		/// <param name="expression">Lambda expression</param>
 		/// <returns>criteria instance</returns>
 		IQueryOver<T> Where(Expression<Func<T, bool>> expression);
 
 		/// <summary>
-		/// Identical semantics to Add() to allow more readable queries
+		/// Identical semantics to And() to allow more readable queries
 		/// </summary>
 		/// <param name="expression">Lambda expression</param>
 		/// <returns>criteria instance</returns>
@@ -81,6 +95,20 @@ namespace NHibernate
 		/// Add arbitrary ICriterion (e.g., to allow protected member access)
 		/// </summary>
 		IQueryOver<T> Where(ICriterion expression);
+
+		/// <summary>
+		/// Identical semantics to AndNot() to allow more readable queries
+		/// </summary>
+		/// <param name="expression">Lambda expression</param>
+		/// <returns>criteria instance</returns>
+		IQueryOver<T> WhereNot(Expression<Func<T, bool>> expression);
+
+		/// <summary>
+		/// Identical semantics to AndNot() to allow more readable queries
+		/// </summary>
+		/// <param name="expression">Lambda expression</param>
+		/// <returns>criteria instance</returns>
+		IQueryOver<T> WhereNot(Expression<Func<bool>> expression);
 
 		/// <summary>
 		/// Identical semantics to AndRestrictionOn() to allow more readable queries

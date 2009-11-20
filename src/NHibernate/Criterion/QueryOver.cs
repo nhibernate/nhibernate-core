@@ -89,6 +89,16 @@ namespace NHibernate.Criterion
 			return Add(expression);
 		}
 
+		public QueryOver<T> AndNot(Expression<Func<T, bool>> expression)
+		{
+			return AddNot(expression);
+		}
+
+		public QueryOver<T> AndNot(Expression<Func<bool>> expression)
+		{
+			return AddNot(expression);
+		}
+
 		public QueryOverRestrictionBuilder<T> AndRestrictionOn(Expression<Func<T, object>> expression)
 		{
 			return new QueryOverRestrictionBuilder<T>(this, ExpressionProcessor.FindMemberExpression(expression.Body));
@@ -112,6 +122,16 @@ namespace NHibernate.Criterion
 		public QueryOver<T> Where(ICriterion expression)
 		{
 			return Add(expression);
+		}
+
+		public QueryOver<T> WhereNot(Expression<Func<T, bool>> expression)
+		{
+			return AddNot(expression);
+		}
+
+		public QueryOver<T> WhereNot(Expression<Func<bool>> expression)
+		{
+			return AddNot(expression);
 		}
 
 		public QueryOverRestrictionBuilder<T> WhereRestrictionOn(Expression<Func<T, object>> expression)
@@ -464,6 +484,18 @@ namespace NHibernate.Criterion
 			return this;
 		}
 
+		private QueryOver<T> AddNot(Expression<Func<T, bool>> expression)
+		{
+			_criteria.Add(Restrictions.Not(ExpressionProcessor.ProcessExpression<T>(expression)));
+			return this;
+		}
+
+		private QueryOver<T> AddNot(Expression<Func<bool>> expression)
+		{
+			_criteria.Add(Restrictions.Not(ExpressionProcessor.ProcessExpression(expression)));
+			return this;
+		}
+
 
 		ICriteria IQueryOver<T>.UnderlyingCriteria
 		{ get { return UnderlyingCriteria; } }
@@ -476,6 +508,12 @@ namespace NHibernate.Criterion
 
 		IQueryOver<T> IQueryOver<T>.And(ICriterion expression)
 		{ return And(expression); }
+
+		IQueryOver<T> IQueryOver<T>.AndNot(Expression<Func<T, bool>> expression)
+		{ return AndNot(expression); }
+
+		IQueryOver<T> IQueryOver<T>.AndNot(Expression<Func<bool>> expression)
+		{ return AndNot(expression); }
 
 		IQueryOverRestrictionBuilder<T> IQueryOver<T>.AndRestrictionOn(Expression<Func<T, object>> expression)
 		{ return new IQueryOverRestrictionBuilder<T>(this, ExpressionProcessor.FindMemberExpression(expression.Body)); }
@@ -491,6 +529,12 @@ namespace NHibernate.Criterion
 
 		IQueryOver<T> IQueryOver<T>.Where(ICriterion expression)
 		{ return Where(expression); }
+
+		IQueryOver<T> IQueryOver<T>.WhereNot(Expression<Func<T, bool>> expression)
+		{ return WhereNot(expression); }
+
+		IQueryOver<T> IQueryOver<T>.WhereNot(Expression<Func<bool>> expression)
+		{ return WhereNot(expression); }
 
 		IQueryOverRestrictionBuilder<T> IQueryOver<T>.WhereRestrictionOn(Expression<Func<T, object>> expression)
 		{ return new IQueryOverRestrictionBuilder<T>(this, ExpressionProcessor.FindMemberExpression(expression.Body)); }
