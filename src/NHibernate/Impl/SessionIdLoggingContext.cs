@@ -1,15 +1,11 @@
 using System;
-using log4net;
 
 namespace NHibernate.Impl
 {
-	using System.Web;
-
 	public class SessionIdLoggingContext : IDisposable
 	{
-		[ThreadStatic] private static Guid? CurrentSessionId;
-
-		private const string CurrentSessionIdKey = "NHibernate.Impl.SessionIdLoggingContext.CurrentSessionId";
+		[ThreadStatic]
+		private static Guid? CurrentSessionId;
 
 		private readonly Guid? oldSessonId;
 
@@ -20,30 +16,25 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Error handling in this case will only kick in if we cannot set values on the TLS
-		/// this is usally the case if we are called from the finalizer, since this is something
-		/// that we do only for logging, we ignore the error.
+		/// We always set the result to use a thread static variable, on the face of it,
+		/// it looks like it is not a valid choice, since ASP.Net and WCF may decide to switch
+		/// threads on us. But, since SessionIdLoggingContext is only used inside NH calls, and since
+		/// NH calls are never async, this isn't an issue for us.
+		/// In addition to that, attempting to match to the current context has proven to be performance hit.
 		/// </summary>
 		public static Guid? SessionId
 		{
-			get
-			{
-				if (HttpContext.Current != null)
-					return (Guid?)HttpContext.Current.Items[CurrentSessionIdKey];
-				return CurrentSessionId;
-			}
-			set
-			{
-				if (HttpContext.Current != null)
-					HttpContext.Current.Items[CurrentSessionIdKey] = value;
-				else
-					CurrentSessionId = value;
-			}
+			get { return CurrentSessionId; }
+			set { CurrentSessionId = value; }
 		}
+
+		#region IDisposable Members
 
 		public void Dispose()
 		{
 			SessionId = oldSessonId;
 		}
+
+		#endregion
 	}
 }
