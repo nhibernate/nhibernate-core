@@ -2371,6 +2371,7 @@ namespace NHibernate.Impl
 
 				if (rtn == null)
 				{
+				    log.DebugFormat("Creating child session with {0}", entityMode);
 					rtn = new SessionImpl(this, entityMode);
 					childSessionsByEntityMode.Add(entityMode, rtn);
 				}
