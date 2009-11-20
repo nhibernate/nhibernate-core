@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH2011">
+
+	<class name="Order" table="Orders">
+
+		<id name="Id">
+			<generator class="guid.comb"/>
+		</id>
+
+		<component name="GroupComponent">
+
+			<bag name="Countries" table="OrderCountries" cascade="none">
+				<key column="OrderId" />
+				<many-to-many column="CountryCode" class="Country" />
+			</bag>
+
+		</component>
+
+	</class>
+
+	<class name="Country" table="Countries">
+
+		<id name="CountryCode" unsaved-value="null">
+			<generator class="assigned"/>
+		</id>
+
+	</class>
+
+</hibernate-mapping>
