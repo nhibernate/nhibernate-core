@@ -1125,8 +1125,10 @@ namespace NHibernate.Type
 																					? new object[subtypes.Length]
 																					: componentType.GetPropertyValues(original[i], session);
 					object[] targetComponentValues = componentType.GetPropertyValues(target[i], session);
-					ReplaceAssociations(origComponentValues, targetComponentValues, subtypes, session, null, copyCache,
+					object[] componentCopy = ReplaceAssociations(origComponentValues, targetComponentValues, subtypes, session, null, copyCache,
 															foreignKeyDirection);
+					if (!componentType.IsAnyType)
+						componentType.SetPropertyValues(target[i], componentCopy, session.EntityMode);
 					copied[i] = target[i];
 				}
 				else if (!types[i].IsAssociationType)
