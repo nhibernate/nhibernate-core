@@ -1,3 +1,17 @@
+Build 2.1.2.GA (rev4853)
+=============================
+
+** Bug
+    * [NH-2011] - Many-to-many inside a component will not be saved when using SaveOrUpdateCopy or Merge
+
+** Improvement
+    * [NH-2022] - Allow overriding in Query By Example
+
+
+** Patch
+    * [NH-2007] - SesssionIdLoggingContext patch for big resultsets
+    * [NH-2019] - Clarification about the use of <import> for polymorphic queries
+    
 Build 2.1.1.GA (rev4814)
 =============================
 
