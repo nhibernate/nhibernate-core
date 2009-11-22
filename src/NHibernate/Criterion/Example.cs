@@ -57,9 +57,9 @@ namespace NHibernate.Criterion
 		}
 
 		//private static readonly IPropertySelector NotNull = new NotNullPropertySelector();
-		private static readonly IPropertySelector NotNullOrEmptyString = new NotNullOrEmptyStringPropertySelector();
-		private static readonly IPropertySelector All = new AllPropertySelector();
-		private static readonly IPropertySelector NotNullOrZero = new NotNullOrZeroPropertySelector();
+		protected static readonly IPropertySelector NotNullOrEmptyString = new NotNullOrEmptyStringPropertySelector();
+		protected static readonly IPropertySelector All = new AllPropertySelector();
+		protected static readonly IPropertySelector NotNullOrZero = new NotNullOrZeroPropertySelector();
 
 		/// <summary>
 		/// Implementation of <see cref="IPropertySelector"/> that includes all
@@ -476,19 +476,20 @@ namespace NHibernate.Criterion
 				builder.Add(" and ");
 			}
 
-			ICriterion crit;
-			if (propertyValue != null)
-			{
-				bool isString = propertyValue is String;
-				crit = (_isLikeEnabled && isString) ?
-				       (ICriterion) new LikeExpression(propertyName, propertyValue.ToString(), _matchMode, escapeCharacter, _isIgnoreCaseEnabled) :
-							 new SimpleExpression(propertyName, propertyValue, " = ", _isIgnoreCaseEnabled && isString);
-			}
-			else
-			{
-				crit = new NullExpression(propertyName);
-			}
+			ICriterion crit = propertyValue != null
+			                  	? GetNotNullPropertyCriterion(propertyValue, propertyName)
+			                  	: new NullExpression(propertyName);
 			builder.Add(crit.ToSqlString(criteria, cq, enabledFilters));
+		}
+
+		protected virtual ICriterion GetNotNullPropertyCriterion(object propertyValue, string propertyName)
+		{
+			bool isString = propertyValue is string;
+			return (_isLikeEnabled && isString)
+			       	? (ICriterion)
+			       	  new LikeExpression(propertyName, propertyValue.ToString(), _matchMode, escapeCharacter,
+			       	                     _isIgnoreCaseEnabled)
+			       	: new SimpleExpression(propertyName, propertyValue, " = ", _isIgnoreCaseEnabled && isString);
 		}
 
 		protected void AppendComponentCondition(
