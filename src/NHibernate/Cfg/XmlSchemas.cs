@@ -10,12 +10,12 @@ namespace NHibernate.Cfg
 		private const string CfgSchemaResource = "NHibernate.nhibernate-configuration.xsd";
 		private const string MappingSchemaResource = "NHibernate.nhibernate-mapping.xsd";
 
-		private readonly XmlSchema config = ReadXmlSchemaFromEmbeddedResource(CfgSchemaResource);
-		private readonly XmlSchema mapping = ReadXmlSchemaFromEmbeddedResource(MappingSchemaResource);
+		private static readonly XmlSchema ConfigSchema = ReadXmlSchemaFromEmbeddedResource(CfgSchemaResource);
+		private static readonly XmlSchema MappingSchema = ReadXmlSchemaFromEmbeddedResource(MappingSchemaResource);
 
 		public XmlReaderSettings CreateConfigReaderSettings()
 		{
-			XmlReaderSettings result = CreateXmlReaderSettings(config);
+			XmlReaderSettings result = CreateXmlReaderSettings(ConfigSchema);
 			result.ValidationEventHandler += new ValidationEventHandler(ConfigSettingsValidationEventHandler);
 			result.IgnoreComments = true;
 			return result;
@@ -23,7 +23,7 @@ namespace NHibernate.Cfg
 
 		public XmlReaderSettings CreateMappingReaderSettings()
 		{
-			return CreateXmlReaderSettings(mapping);
+			return CreateXmlReaderSettings(MappingSchema);
 		}
 
 		private static XmlSchema ReadXmlSchemaFromEmbeddedResource(string resourceName)
