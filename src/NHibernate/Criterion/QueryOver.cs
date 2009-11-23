@@ -19,6 +19,16 @@ namespace NHibernate.Criterion
 
 		protected QueryOver() { }
 
+		public static QueryOver<T> Of<T>()
+		{
+			return new QueryOver<T>();
+		}
+
+		public static QueryOver<T> Of<T>(Expression<Func<T>> alias)
+		{
+			return new QueryOver<T>(alias);
+		}
+
 		public ICriteria UnderlyingCriteria
 		{
 			get { return _criteria; }
@@ -38,13 +48,13 @@ namespace NHibernate.Criterion
 	public class QueryOver<T> : QueryOver, IQueryOver<T>
 	{
 
-		public QueryOver()
+		protected internal QueryOver()
 		{
 			_impl = new CriteriaImpl(typeof(T), null);
 			_criteria = _impl;
 		}
 
-		public QueryOver(Expression<Func<T>> alias)
+		protected internal QueryOver(Expression<Func<T>> alias)
 		{
 			string aliasPath = ExpressionProcessor.FindMemberExpression(alias.Body);
 			_impl = new CriteriaImpl(typeof(T), aliasPath, null);

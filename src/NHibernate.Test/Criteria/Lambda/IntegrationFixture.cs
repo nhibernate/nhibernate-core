@@ -81,7 +81,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (ISession s = OpenSession())
 			{
 				QueryOver<Person> personQuery =
-					new QueryOver<Person>()
+					QueryOver.Of<Person>()
 						.Where(p => p.Name == "test person 1");
 
 				IList<Person> actual =

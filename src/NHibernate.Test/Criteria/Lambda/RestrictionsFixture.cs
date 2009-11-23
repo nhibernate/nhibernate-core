@@ -158,7 +158,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			Person personAlias = null;
 			QueryOver<Person> actual =
-				new QueryOver<Person>(() => personAlias)
+				QueryOver.Of<Person>(() => personAlias)
 					.WhereRestrictionOn(p => p.Age).IsBetween(18).And(65)
 					.WhereRestrictionOn(() => personAlias.Age).IsBetween(18).And(65)
 					.AndRestrictionOn(p => p.Name).IsIn(new string[] { "name1", "name2", "name3" })

@@ -47,7 +47,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			get
 			{
 				return
-					new QueryOver<Child>(() => _subqueryChildAlias)
+					QueryOver.Of<Child>(() => _subqueryChildAlias)
 						.Where(() => _subqueryChildAlias.Nickname == "subquery name");
 			}
 		}
@@ -57,7 +57,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			get
 			{
 				return
-					new QueryOver<Child>(() => _subqueryChildAlias)
+					QueryOver.Of<Child>(() => _subqueryChildAlias)
 						.Where(() => _subqueryChildAlias.Nickname == "subquery name")
 						.Select(p => p.Nickname);
 			}
@@ -68,7 +68,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			get
 			{
 				return
-					new QueryOver<Child>(() => _subqueryChildAlias)
+					QueryOver.Of<Child>(() => _subqueryChildAlias)
 						.Where(() => _subqueryChildAlias.Nickname == "subquery name")
 						.Select(p => p.Age);
 			}
@@ -112,7 +112,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			Person personAlias = null;
 			QueryOver<Person> actual =
-				new QueryOver<Person>(() => personAlias)
+				QueryOver.Of<Person>(() => personAlias)
 					.WithSubquery.WhereProperty(p => p.Name).Eq(DetachedQueryOverName)
 					.WithSubquery.WhereProperty(() => personAlias.Name).Eq(DetachedQueryOverName);
 

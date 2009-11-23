@@ -477,7 +477,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			Person personAlias = null;
 			QueryOver<Person> actual =
-				new QueryOver<Person>(() => personAlias)
+				QueryOver.Of<Person>(() => personAlias)
 					.Where(() => personAlias.Name == "test name");
 
 			AssertCriteriaAreEqual(expected, actual);

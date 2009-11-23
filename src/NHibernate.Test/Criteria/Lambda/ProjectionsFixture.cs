@@ -27,7 +27,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			get
 			{
 				return
-					new QueryOver<Child>(() => _subqueryChildAlias)
+					QueryOver.Of<Child>(() => _subqueryChildAlias)
 						.Where(() => _subqueryChildAlias.Nickname == "subquery name")
 						.Select(p => p.Age);
 			}
