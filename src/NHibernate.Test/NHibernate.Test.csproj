@@ -160,6 +160,7 @@
     <Compile Include="Criteria\Enrolment.cs" />
     <Compile Include="Criteria\Lambda\CriteriaAssertFixture.cs" />
     <Compile Include="Criteria\Lambda\ExpressionProcessorFixture.cs" />
+    <Compile Include="Criteria\Lambda\ProjectionsFixture.cs" />
     <Compile Include="Criteria\Lambda\QueryOverFixture.cs" />
     <Compile Include="Criteria\Lambda\IntegrationFixture.cs" />
     <Compile Include="Criteria\Lambda\LambdaFixtureBase.cs" />

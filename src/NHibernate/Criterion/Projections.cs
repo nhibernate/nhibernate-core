@@ -1,4 +1,6 @@
 using System;
+using System.Linq.Expressions;
+using NHibernate.Impl;
 using NHibernate.Type;
 
 namespace NHibernate.Criterion
@@ -315,6 +317,139 @@ namespace NHibernate.Criterion
 		{
 			SelectSubqueryExpression expr = new SelectSubqueryExpression(detachedCriteria);
 			return new SubqueryProjection(expr);
+		}
+
+		/// <summary>
+		/// A property average value
+		/// </summary>
+		public static AggregateProjection Avg<T>(Expression<Func<T, object>> expression)
+		{
+			return Projections.Avg(ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
+		/// <summary>
+		/// A property average value
+		/// </summary>
+		public static AggregateProjection Avg(Expression<Func<object>> expression)
+		{
+			return Projections.Avg(ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
+		/// <summary>
+		/// A property value count
+		/// </summary>
+		public static CountProjection Count<T>(Expression<Func<T, object>> expression)
+		{
+			return Projections.Count(ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
+		/// <summary>
+		/// A property value count
+		/// </summary>
+		public static CountProjection Count(Expression<Func<object>> expression)
+		{
+			return Projections.Count(ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
+		/// <summary>
+		/// A distinct property value count
+		/// </summary>
+		public static CountProjection CountDistinct<T>(Expression<Func<T, object>> expression)
+		{
+			return Projections.CountDistinct(ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
+		/// <summary>
+		/// A distinct property value count
+		/// </summary>
+		public static CountProjection CountDistinct(Expression<Func<object>> expression)
+		{
+			return Projections.CountDistinct(ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
+		/// <summary>
+		/// A grouping property value
+		/// </summary>
+		public static PropertyProjection GroupProperty<T>(Expression<Func<T, object>> expression)
+		{
+			return Projections.GroupProperty(ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
+		/// <summary>
+		/// A grouping property value
+		/// </summary>
+		public static PropertyProjection GroupProperty(Expression<Func<object>> expression)
+		{
+			return Projections.GroupProperty(ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
+		/// <summary>
+		/// A property maximum value
+		/// </summary>
+		public static AggregateProjection Max<T>(Expression<Func<T, object>> expression)
+		{
+			return Projections.Max(ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
+		/// <summary>
+		/// A property maximum value
+		/// </summary>
+		public static AggregateProjection Max(Expression<Func<object>> expression)
+		{
+			return Projections.Max(ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
+		/// <summary>
+		/// A property minimum value
+		/// </summary>
+		public static AggregateProjection Min<T>(Expression<Func<T, object>> expression)
+		{
+			return Projections.Min(ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
+		/// <summary>
+		/// A property minimum value
+		/// </summary>
+		public static AggregateProjection Min(Expression<Func<object>> expression)
+		{
+			return Projections.Min(ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
+		/// <summary>
+		/// A projected property value
+		/// </summary>
+		public static PropertyProjection Property<T>(Expression<Func<T, object>> expression)
+		{
+			return Projections.Property(ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
+		/// <summary>
+		/// A projected property value
+		/// </summary>
+		public static PropertyProjection Property(Expression<Func<object>> expression)
+		{
+			return Projections.Property(ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
+		public static IProjection SubQuery<T>(QueryOver<T> detachedQueryOver)
+		{
+			return Projections.SubQuery(detachedQueryOver.DetachedCriteria);
+		}
+
+		/// <summary>
+		/// A property value sum
+		/// </summary>
+		public static AggregateProjection Sum<T>(Expression<Func<T, object>> expression)
+		{
+			return Projections.Sum(ExpressionProcessor.FindMemberExpression(expression.Body));
+		}
+
+		/// <summary>
+		/// A property value sum
+		/// </summary>
+		public static AggregateProjection Sum(Expression<Func<object>> expression)
+		{
+			return Projections.Sum(ExpressionProcessor.FindMemberExpression(expression.Body));
 		}
 	}
 }

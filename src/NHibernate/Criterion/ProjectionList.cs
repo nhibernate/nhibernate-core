@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
-using System.Collections.Generic;
 
 namespace NHibernate.Criterion
 {
@@ -30,6 +32,11 @@ namespace NHibernate.Criterion
 		public ProjectionList Add(IProjection projection, String alias)
 		{
 			return Add(Projections.Alias(projection, alias));
+		}
+
+		public ProjectionList Add<T>(IProjection projection, Expression<Func<T>> alias)
+		{
+			return Add(projection, ExpressionProcessor.FindMemberExpression(alias.Body));
 		}
 
 		public IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
