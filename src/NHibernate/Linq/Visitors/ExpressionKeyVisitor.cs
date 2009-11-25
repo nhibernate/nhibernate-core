@@ -15,12 +15,12 @@ namespace NHibernate.Linq.Visitors
 	/// </summary>
 	public class ExpressionKeyVisitor : ExpressionTreeVisitor
 	{
-		private readonly IDictionary<ConstantExpression, NamedParameter> _parameters;
+		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
 		readonly StringBuilder _string = new StringBuilder();
 
-		private ExpressionKeyVisitor(IDictionary<ConstantExpression, NamedParameter> parameters)
+		private ExpressionKeyVisitor(IDictionary<ConstantExpression, NamedParameter> constantToParameterMap)
 		{
-			_parameters = parameters;
+			_constantToParameterMap = constantToParameterMap;
 		}
 
 		public static string Visit(Expression expression, IDictionary<ConstantExpression, NamedParameter> parameters)
@@ -76,7 +76,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			NamedParameter param;
 
-			if (_parameters.TryGetValue(expression, out param))
+			if (_constantToParameterMap.TryGetValue(expression, out param))
 			{
 				_string.Append(param.Name);
 			}

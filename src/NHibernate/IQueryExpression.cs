@@ -11,6 +11,5 @@ namespace NHibernate
         string Key { get; }
         System.Type Type { get; }
     	IList<NamedParameterDescriptor> ParameterDescriptors { get; }
-    	void SetQueryPropertiesPriorToExecute(IQuery impl);
     }
 }

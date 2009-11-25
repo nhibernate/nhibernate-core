@@ -4,10 +4,10 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-    [Ignore]
 	public class MethodCallTests : LinqTestCase
 	{
 		[Test]
+        [Ignore("Waiting for re-linq support")]
 		public void CanExecuteAny()
 		{
 			bool result = db.Users.Any();
@@ -15,7 +15,8 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public void CanExecuteAnyWithArguments()
+        [Ignore("Waiting for re-linq support")]
+        public void CanExecuteAnyWithArguments()
 		{
 			bool result = db.Users.Any(u => u.Name == "user-does-not-exist");
 			Assert.IsFalse(result);

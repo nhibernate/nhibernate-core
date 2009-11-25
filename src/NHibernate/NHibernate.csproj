@@ -586,6 +586,7 @@
     <Compile Include="Linq\Expressions\NhMaxExpression.cs" />
     <Compile Include="Linq\Expressions\NhMinExpression.cs" />
     <Compile Include="Linq\Expressions\NhSumExpression.cs" />
+    <Compile Include="Impl\ExpressionQueryImpl.cs" />
     <Compile Include="Linq\Visitors\IHqlExpressionVisitor.cs" />
     <Compile Include="Linq\GroupJoin\IsAggregatingResults.cs" />
     <Compile Include="Linq\GroupJoin\GroupJoinAggregateDetectionVisitor.cs" />
@@ -602,6 +603,7 @@
     <Compile Include="Linq\Functions\DateTimeGenerator.cs" />
     <Compile Include="Linq\Functions\StringGenerator.cs" />
     <Compile Include="Linq\Functions\QueryableGenerator.cs" />
+    <Compile Include="Linq\ReWriters\RemoveUnnecessaryBodyOperators.cs" />
     <Compile Include="Linq\Visitors\SwapQuerySourceVisitor.cs" />
     <Compile Include="Linq\Visitors\EqualityHqlGenerator.cs" />
     <Compile Include="Linq\Visitors\ExpressionParameterVisitor.cs" />
@@ -613,7 +615,7 @@
     <Compile Include="Linq\GroupBy\AggregatingGroupByRewriter.cs" />
     <Compile Include="Linq\GroupJoin\AggregatingGroupJoinRewriter.cs" />
     <Compile Include="Linq\ResultOperators\ClientSideTransformOperator.cs" />
-    <Compile Include="Linq\CommandData.cs" />
+    <Compile Include="Linq\ExpressionToHqlTranslationResults.cs" />
     <Compile Include="Linq\EnumerableHelper.cs" />
     <Compile Include="Linq\GroupBy\GroupBySelectClauseRewriter.cs" />
     <Compile Include="Linq\Visitors\GroupByKeySelectorVisitor.cs" />

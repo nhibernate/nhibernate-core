@@ -48,10 +48,10 @@ namespace NHibernate.Test.Linq
                 var nhNewYork = new NhLinqExpression(newYork.Body);
 
                 Assert.AreEqual(nhLondon.Key, nhNewYork.Key);
-				Assert.AreEqual(1, nhLondon.ParameterValues.Count);
-				Assert.AreEqual(1, nhNewYork.ParameterValues.Count);
-				Assert.AreEqual("London", nhLondon.ParameterValues.First().Value);
-				Assert.AreEqual("New York", nhNewYork.ParameterValues.First().Value);
+				Assert.AreEqual(1, nhLondon.ParameterValuesByName.Count);
+				Assert.AreEqual(1, nhNewYork.ParameterValuesByName.Count);
+				Assert.AreEqual("London", nhLondon.ParameterValuesByName.First().Value);
+				Assert.AreEqual("New York", nhNewYork.ParameterValuesByName.First().Value);
 			}
         }
 

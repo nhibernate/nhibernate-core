@@ -6,6 +6,7 @@ using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Linq.ResultOperators;
 using NHibernate.Linq.Visitors;
+using Remotion.Data.Linq;
 using Remotion.Data.Linq.Clauses;
 using Remotion.Data.Linq.Clauses.StreamedData;
 using Remotion.Data.Linq.Parsing.ExpressionTreeVisitors;
@@ -16,24 +17,20 @@ namespace NHibernate.Linq
 {
 	public class NhLinqExpression : IQueryExpression
 	{
-	    private static readonly MethodCallExpressionNodeTypeRegistry MethodCallRegistry =
-	        MethodCallExpressionNodeTypeRegistry.CreateDefault();
+        public string Key { get; private set; }
 
-        static NhLinqExpression()
-        {
-            MethodCallRegistry.Register(
-                new[]
-                    {
-                        MethodCallExpressionNodeTypeRegistry.GetRegisterableMethodDefinition(ReflectionHelper.GetMethod(() => Queryable.Aggregate<object>(null, null))),
-                        MethodCallExpressionNodeTypeRegistry.GetRegisterableMethodDefinition(ReflectionHelper.GetMethod(() => Queryable.Aggregate<object, object>(null, null, null)))
-                    },
-                typeof (AggregateExpressionNode));
-        }
+        public System.Type Type { get; private set; }
 
+        public IList<NamedParameterDescriptor> ParameterDescriptors { get; private set; }
+
+        public NhLinqExpressionReturnType ReturnType { get; private set; }
+
+        public IDictionary<string, object> ParameterValuesByName { get; private set; }
+
+        public ExpressionToHqlTranslationResults ExpressionToHqlTranslationResults { get; private set; }
 
 		private readonly Expression _expression;
-		private CommandData _commandData;
-		private readonly IDictionary<ConstantExpression, NamedParameter> _queryParameters;
+	    private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
 
 		public NhLinqExpression(Expression expression)
 		{
@@ -41,13 +38,13 @@ namespace NHibernate.Linq
 
 		    _expression = NameUnNamedParameters.Visit(_expression);
 
-			_queryParameters = ExpressionParameterVisitor.Visit(_expression);
-			ParameterValuesByName = _queryParameters.Values.ToDictionary(p => p.Name, p => p.Value);
+			_constantToParameterMap = ExpressionParameterVisitor.Visit(_expression);
 
-			Key = ExpressionKeyVisitor.Visit(_expression, _queryParameters);
-			Type = _expression.Type;
+			ParameterValuesByName = _constantToParameterMap.Values.ToDictionary(p => p.Name, p => p.Value);
 
-			ParameterValues = _queryParameters.Values;
+			Key = ExpressionKeyVisitor.Visit(_expression, _constantToParameterMap);
+			
+            Type = _expression.Type;
 
 			// Note - re-linq handles return types via the GetOutputDataInfo method, and allows for SingleOrDefault here for the ChoiceResultOperator...
 			ReturnType = NhLinqExpressionReturnType.Scalar;
@@ -64,33 +61,37 @@ namespace NHibernate.Linq
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
 
             // TODO - can we cache any of this? 
-			var queryModel = new QueryParser(new ExpressionTreeParser(MethodCallRegistry)).GetParsedQuery(_expression);
+            var queryModel = NhRelinqQueryParser.Parse(_expression);
 
-			_commandData = QueryModelVisitor.GenerateHqlQuery(queryModel, _queryParameters, requiredHqlParameters);
+			ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModel, _constantToParameterMap, requiredHqlParameters);
 
 			ParameterDescriptors = requiredHqlParameters.AsReadOnly();
 
-			return _commandData.Statement.AstNode;
-		}
-
-		public string Key { get; private set; }
-
-		public IList<NamedParameterDescriptor> ParameterDescriptors { get; private set; }
-
-		public ICollection<NamedParameter> ParameterValues { get; private set; }
-
-		public NhLinqExpressionReturnType ReturnType { get; private set; }
-
-		public System.Type Type { get; private set; }
-
-		public IDictionary<string, object> ParameterValuesByName { get; private set; }
-
-		public void SetQueryPropertiesPriorToExecute(IQuery impl)
-		{
-			_commandData.SetResultTransformer(impl);
-			_commandData.AddAdditionalCriteria(impl);
+			return ExpressionToHqlTranslationResults.Statement.AstNode;
 		}
 	}
+
+    public static class NhRelinqQueryParser
+    {
+	    public static readonly MethodCallExpressionNodeTypeRegistry MethodCallRegistry =
+	        MethodCallExpressionNodeTypeRegistry.CreateDefault();
+
+        static NhRelinqQueryParser()
+        {
+            MethodCallRegistry.Register(
+                new[]
+                    {
+                        MethodCallExpressionNodeTypeRegistry.GetRegisterableMethodDefinition(ReflectionHelper.GetMethod(() => Queryable.Aggregate<object>(null, null))),
+                        MethodCallExpressionNodeTypeRegistry.GetRegisterableMethodDefinition(ReflectionHelper.GetMethod(() => Queryable.Aggregate<object, object>(null, null, null)))
+                    },
+                typeof (AggregateExpressionNode));
+        }
+
+        public static QueryModel Parse(Expression expression)
+        {
+            return new QueryParser(new ExpressionTreeParser(MethodCallRegistry)).GetParsedQuery(expression);
+        }
+    }
 
     public class NameUnNamedParameters : NhExpressionTreeVisitor
     {

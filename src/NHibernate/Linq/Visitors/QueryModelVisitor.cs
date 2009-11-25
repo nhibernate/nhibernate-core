@@ -18,8 +18,11 @@ namespace NHibernate.Linq.Visitors
 {
     public class QueryModelVisitor : QueryModelVisitorBase
 	{
-		public static CommandData GenerateHqlQuery(QueryModel queryModel, IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters)
+		public static ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters)
 		{
+            // Remove unnecessary body operators
+		    RemoveUnnecessaryBodyOperators.ReWrite(queryModel);
+
 			// Merge aggregating result operators (distinct, count, sum etc) into the select clause
 			MergeAggregatingResultsRewriter.ReWrite(queryModel);
 
@@ -41,12 +44,12 @@ namespace NHibernate.Linq.Visitors
 			var visitor = new QueryModelVisitor(parameters, requiredHqlParameters);
 			visitor.VisitQueryModel(queryModel);
 
-			return visitor.GetHqlCommand();
+			return visitor.GetTranslation();
 		}
 
 		private readonly HqlTreeBuilder _hqlTreeBuilder;
 
-        private readonly List<Action<IQuery>> _additionalCriteria = new List<Action<IQuery>>();
+        private readonly List<Action<IQuery, IDictionary<string, object>>> _additionalCriteria = new List<Action<IQuery, IDictionary<string, object>>>();
         private readonly List<LambdaExpression> _listTransformers = new List<LambdaExpression>();
         private readonly List<LambdaExpression> _itemTransformers = new List<LambdaExpression>();
 
@@ -66,7 +69,8 @@ namespace NHibernate.Linq.Visitors
 			_requiredHqlParameters = requiredHqlParameters;
 			_hqlTreeBuilder = new HqlTreeBuilder();
 		}
-		public CommandData GetHqlCommand()
+
+        public ExpressionToHqlTranslationResults GetTranslation()
 		{
 			HqlSelectFrom selectFrom = _hqlTreeBuilder.SelectFrom();
 
@@ -104,10 +108,10 @@ namespace NHibernate.Linq.Visitors
 				query.AddChild(_orderByClause);
 			}
 
-			return new CommandData(query,
-                                   _itemTransformers,
-			                       _listTransformers,
-			                       _additionalCriteria);
+            return new ExpressionToHqlTranslationResults(query,
+                                                         _itemTransformers,
+                                                         _listTransformers,
+                                                         _additionalCriteria);
 		}
 
         private HqlBooleanExpression MergeWhereClauses()
@@ -297,13 +301,33 @@ namespace NHibernate.Linq.Visitors
 
         private void ProcessTakeOperator(TakeResultOperator resultOperator)
 		{
-			_additionalCriteria.Add(q => q.SetMaxResults(resultOperator.GetConstantCount()));
+            NamedParameter parameterName;
+
+            // TODO - very similar to ProcessSkip, plus want to investigate the scenario in the "else"
+            // clause to see if it is valid
+            if (_parameters.TryGetValue(resultOperator.Count as ConstantExpression, out parameterName))
+            {
+                _additionalCriteria.Add((q, p) => q.SetMaxResults((int) p[parameterName.Name]));
+            }
+            else
+            {
+                _additionalCriteria.Add((q, p) => q.SetMaxResults(resultOperator.GetConstantCount()));
+            }
 		}
 
 		private void ProcessSkipOperator(SkipResultOperator resultOperator)
 		{
-			_additionalCriteria.Add(q => q.SetFirstResult(resultOperator.GetConstantCount()));
-		}
+            NamedParameter parameterName;
+
+            if (_parameters.TryGetValue(resultOperator.Count as ConstantExpression, out parameterName))
+            {
+                _additionalCriteria.Add((q, p) => q.SetFirstResult((int)p[parameterName.Name]));
+            }
+            else
+            {
+                _additionalCriteria.Add((q, p) => q.SetFirstResult(resultOperator.GetConstantCount()));
+            }
+        }
 
 		private void ProcessNonAggregatingGroupBy(NonAggregatingGroupBy resultOperator, QueryModel model)
 		{
@@ -394,7 +418,7 @@ namespace NHibernate.Linq.Visitors
 
 		private void ProcessFirstOperator()
 		{
-			_additionalCriteria.Add(q => q.SetMaxResults(1));
+			_additionalCriteria.Add((q, p) => q.SetMaxResults(1));
 		}
 
 		private static bool CanBeEvaluatedInHqlSelectStatement(Expression expression)

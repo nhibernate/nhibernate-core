@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
+using NHibernate.Test.Linq.Entities;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -29,5 +31,71 @@ namespace NHibernate.Test.Linq
 
             Console.WriteLine(count);
         }
+
+        [Category("From NHUser list")]
+        [Test(Description = "Telerik grid example, http://www.telerik.com/community/forums/aspnet-mvc/grid/grid-and-nhibernate-linq.aspx")]
+        public void TelerikGridWhereClause()
+        {
+            Expression<Func<Customer, bool>> filter = c => c.ContactName.ToLower().StartsWith("a");
+            IQueryable<Customer> value = db.Customers;
+
+            var results = value.Where(filter).ToList();
+
+            Assert.IsFalse(results.Where(c => !c.ContactName.ToLower().StartsWith("a")).Any());
+        }
+
+        [Category("From NHUser list")]
+        [Test(Description = "Predicated count on a child list")]
+        public void PredicatedCountOnChildList()
+        {
+            var results = (from c in db.Customers
+                           select new
+                                      {
+                                          c.ContactName,
+                                          Count = c.Orders.Count(o => o.Employee.EmployeeId == 4)
+                                      }).ToList();
+
+            Assert.AreEqual(91, results.Count());
+            Assert.AreEqual(2, results.Where(c => c.ContactName == "Maria Anders").Single().Count);
+            Assert.AreEqual(4, results.Where(c => c.ContactName == "Thomas Hardy").Single().Count);
+            Assert.AreEqual(0, results.Where(c => c.ContactName == "Elizabeth Brown").Single().Count);
+        }
+
+        [Category("From NHUser list")]
+        [Test(Description = "Reference an outer object in a predicate")]
+        public void ReferenceToOuter()
+        {
+           var results = from c in db.Customers
+                  where
+                  c.Orders.Any(o => o.ShippedTo == c.CompanyName)
+                  select c;
+
+            Assert.AreEqual(85, results.Count());
+        }
+
+        [Category("Paging")]
+		[Test(Description = "This sample uses a where clause and the Skip and Take operators to select " +
+							"the second, third and fourth pages of products")]
+		public void TriplePageSelection()
+		{
+			IQueryable<Product> q = (
+			                        	from p in db.Products
+			                        	where p.ProductId > 1
+			                        	orderby p.ProductId
+			                        	select p
+			);
+
+            IQueryable<Product> page2 = q.Skip(5).Take(5);
+            IQueryable<Product> page3 = q.Skip(10).Take(5);
+            IQueryable<Product> page4 = q.Skip(15).Take(5);
+
+			var firstResultOnPage2 = page2.First();
+			var firstResultOnPage3 = page3.First();
+			var firstResultOnPage4 = page4.First();
+
+			Assert.AreNotEqual(firstResultOnPage2.ProductId, firstResultOnPage3.ProductId);
+			Assert.AreNotEqual(firstResultOnPage3.ProductId, firstResultOnPage4.ProductId);
+			Assert.AreNotEqual(firstResultOnPage2.ProductId, firstResultOnPage4.ProductId);
+		}
 	}
 }

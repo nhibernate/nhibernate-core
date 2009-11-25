@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Impl;
 
 namespace NHibernate.Linq
 {
@@ -21,6 +22,7 @@ namespace NHibernate.Linq
 			var query = _session.CreateQuery(nhLinqExpression);
 
 			SetParameters(query, nhLinqExpression.ParameterValuesByName);
+		    SetResultTransformerAndAdditionalCriteria(query, nhLinqExpression.ParameterValuesByName);
 
 			var results = query.List();
 
@@ -56,5 +58,19 @@ namespace NHibernate.Linq
 				query.SetParameter(parameterName, parameters[parameterName]);
 			}
 		}
+
+        public void SetResultTransformerAndAdditionalCriteria(IQuery query, IDictionary<string, object> parameters)
+        {
+            var queryImpl = (ExpressionQueryImpl) query;
+
+            var nhExpression = (NhLinqExpression) queryImpl.QueryExpression;
+
+            query.SetResultTransformer(nhExpression.ExpressionToHqlTranslationResults.ResultTransformer);
+
+            foreach (var criteria in nhExpression.ExpressionToHqlTranslationResults.AdditionalCriteria)
+            {
+                criteria(query, parameters);
+            }
+        }
 	}
 }
