@@ -137,6 +137,11 @@ namespace NHibernate
 		IQueryOver<T> Select(params IProjection[] projections);
 
 		/// <summary>
+		/// Create a list of projections inline
+		/// </summary>
+		QueryOverProjectionBuilder<IQueryOver<T>, T> SelectList { get; }
+
+		/// <summary>
 		/// Add order expressed as a lambda expression
 		/// </summary>
 		/// <param name="path">Lambda expression</param>

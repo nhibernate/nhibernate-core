@@ -370,7 +370,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// A grouping property value
 		/// </summary>
-		public static PropertyProjection GroupProperty<T>(Expression<Func<T, object>> expression)
+		public static PropertyProjection Group<T>(Expression<Func<T, object>> expression)
 		{
 			return Projections.GroupProperty(ExpressionProcessor.FindMemberExpression(expression.Body));
 		}
@@ -378,7 +378,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// A grouping property value
 		/// </summary>
-		public static PropertyProjection GroupProperty(Expression<Func<object>> expression)
+		public static PropertyProjection Group(Expression<Func<object>> expression)
 		{
 			return Projections.GroupProperty(ExpressionProcessor.FindMemberExpression(expression.Body));
 		}

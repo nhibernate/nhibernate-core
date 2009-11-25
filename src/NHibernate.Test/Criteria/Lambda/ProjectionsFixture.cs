@@ -70,8 +70,8 @@ namespace NHibernate.Test.Criteria.Lambda
 						.Add(Projections.Count(() => personAlias.Age))
 						.Add(Projections.CountDistinct<Person>(p => p.Age))
 						.Add(Projections.CountDistinct(() => personAlias.Age))
-						.Add(Projections.GroupProperty<Person>(p => p.Age))
-						.Add(Projections.GroupProperty(() => personAlias.Age))
+						.Add(Projections.Group<Person>(p => p.Age))
+						.Add(Projections.Group(() => personAlias.Age))
 						.Add(Projections.Max<Person>(p => p.Age))
 						.Add(Projections.Max(() => personAlias.Age))
 						.Add(Projections.Min<Person>(p => p.Age))
@@ -81,6 +81,59 @@ namespace NHibernate.Test.Criteria.Lambda
 						.Add(Projections.SubQuery(DetachedQueryOverAge))
 						.Add(Projections.Sum<Person>(p => p.Age))
 						.Add(Projections.Sum(() => personAlias.Age)));
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void InlineProjectionList()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person), "personAlias")
+					.SetProjection(Projections.ProjectionList()
+						.Add(Projections.Alias(Projections.Avg("Age"), "personAgeProjectionAlias"))
+						.Add(Projections.Avg("Age"))
+						.Add(Projections.Avg("personAlias.Age"))
+						.Add(Projections.Count("Age"))
+						.Add(Projections.Count("personAlias.Age"))
+						.Add(Projections.CountDistinct("Age"))
+						.Add(Projections.CountDistinct("personAlias.Age"))
+						.Add(Projections.GroupProperty("Age"))
+						.Add(Projections.GroupProperty("personAlias.Age"))
+						.Add(Projections.Max("Age"))
+						.Add(Projections.Max("personAlias.Age"))
+						.Add(Projections.Min("Age"))
+						.Add(Projections.Min("personAlias.Age"))
+						.Add(Projections.Property("Age"))
+						.Add(Projections.Property("personAlias.Age"))
+						.Add(Projections.SubQuery(DetachedCriteriaAge))
+						.Add(Projections.Sum("Age"))
+						.Add(Projections.Sum("personAlias.Age")));
+
+			Person personAlias = null;
+			Person personAgeProjectionAlias = null;
+			var actual =
+				CreateTestQueryOver<Person>(() => personAlias)
+					.SelectList
+						.SelectAvg(p => p.Age).WithAlias(() => personAgeProjectionAlias)
+						.Select(Projections.Avg("Age")) // allows private properties
+						.SelectAvg(() => personAlias.Age)
+						.SelectCount(p => p.Age)
+						.SelectCount(() => personAlias.Age)
+						.SelectCountDistinct(p => p.Age)
+						.SelectCountDistinct(() => personAlias.Age)
+						.SelectGroup(p => p.Age)
+						.SelectGroup(() => personAlias.Age)
+						.SelectMax(p => p.Age)
+						.SelectMax(() => personAlias.Age)
+						.SelectMin(p => p.Age)
+						.SelectMin(() => personAlias.Age)
+						.Select(p => p.Age)
+						.Select(() => personAlias.Age)
+						.SelectSubQuery(DetachedQueryOverAge)
+						.SelectSum(p => p.Age)
+						.SelectSum(() => personAlias.Age)
+						.EndSelect;
 
 			AssertCriteriaAreEqual(expected, actual);
 		}

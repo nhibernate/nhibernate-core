@@ -512,6 +512,7 @@
     <Compile Include="Criterion\Lambda\QueryOverJoinBuilder.cs" />
     <Compile Include="Criterion\Lambda\QueryOverLockBuilder.cs" />
     <Compile Include="Criterion\Lambda\QueryOverOrderBuilder.cs" />
+    <Compile Include="Criterion\Lambda\QueryOverProjectionBuilder.cs" />
     <Compile Include="Criterion\Lambda\QueryOverRestrictionBuilder.cs" />
     <Compile Include="Criterion\Lambda\QueryOverSubqueryBuilder.cs" />
     <Compile Include="Criterion\Lambda\QueryOverSubqueryPropertyBuilder.cs" />

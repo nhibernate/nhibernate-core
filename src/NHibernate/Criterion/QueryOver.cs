@@ -171,6 +171,11 @@ namespace NHibernate.Criterion
 			return this;
 		}
 
+		QueryOverProjectionBuilder<QueryOver<T>, T> SelectList
+		{
+			get { return new QueryOverProjectionBuilder<QueryOver<T>, T>(this, this); }
+		}
+
 		public QueryOverOrderBuilder<T> OrderBy(Expression<Func<T, object>> path)
 		{
 			return new QueryOverOrderBuilder<T>(this, path);
@@ -557,6 +562,9 @@ namespace NHibernate.Criterion
 
 		IQueryOver<T> IQueryOver<T>.Select(params IProjection[] projections)
 		{ return Select(projections); }
+
+		QueryOverProjectionBuilder<IQueryOver<T>, T> IQueryOver<T>.SelectList
+		{ get { return new QueryOverProjectionBuilder<IQueryOver<T>,T>(this, this); } }
 
 		IQueryOverOrderBuilder<T> IQueryOver<T>.OrderBy(Expression<Func<T, object>> path)
 		{ return new IQueryOverOrderBuilder<T>(this, path); }
