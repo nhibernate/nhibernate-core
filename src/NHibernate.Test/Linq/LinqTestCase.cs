@@ -49,7 +49,8 @@ namespace NHibernate.Test.Linq
                                "Linq.Mappings.Role.hbm.xml",
                                "Linq.Mappings.User.hbm.xml",
                                "Linq.Mappings.TimeSheet.hbm.xml",
-                               "Linq.Mappings.Animal.hbm.xml"
+                               "Linq.Mappings.Animal.hbm.xml",
+                               "Linq.Mappings.Patient.hbm.xml"
 
                            };
             }
@@ -69,7 +70,7 @@ namespace NHibernate.Test.Linq
             using (ITransaction tx = session.BeginTransaction())
             {
                 CreateMiscTestData(session);
-
+                CreatePatientData(session);
                 tx.Commit();
             }
         }
@@ -218,6 +219,93 @@ namespace NHibernate.Test.Linq
 
 			foreach (Animal animal in animals)
                 session.Save(animal);
+        }
+
+        private void CreatePatientData(ISession session)
+        {
+            State newYork = new State
+            {
+                Abbreviation = "NY",
+                FullName = "New York"
+            };
+            State florida = new State
+            {
+                Abbreviation = "FL",
+                FullName = "Florida"
+            };
+
+            Physician drDobbs = new Physician
+            {
+                Name = "Dr Dobbs"
+            };
+            Physician drWatson = new Physician
+            {
+                Name = "Dr Watson"
+            };
+
+            PatientRecord bobBarkerRecord = new PatientRecord
+            {
+                Name = new PatientName
+                {
+                    FirstName = "Bob",
+                    LastName = "Barker"
+                },
+                Address = new PatientAddress
+                {
+                    AddressLine1 = "123 Main St",
+                    City = "New York",
+                    State = newYork,
+                    ZipCode = "10001"
+                },
+                BirthDate = new DateTime(1930, 1, 1),
+                Gender = Gender.Male
+            };
+
+            PatientRecord johnDoeRecord1 = new PatientRecord
+            {
+                Name = new PatientName
+                {
+                    FirstName = "John",
+                    LastName = "Doe"
+                },
+                Address = new PatientAddress
+                {
+                    AddressLine1 = "123 Main St",
+                    City = "Tampa",
+                    State = florida,
+                    ZipCode = "33602"
+                },
+                BirthDate = new DateTime(1969, 1, 1),
+                Gender = Gender.Male
+            };
+
+            PatientRecord johnDoeRecord2 = new PatientRecord
+            {
+                Name = new PatientName
+                {
+                    FirstName = "John",
+                    LastName = "Doe"
+                },
+                Address = new PatientAddress
+                {
+                    AddressLine1 = "123 Main St",
+                    AddressLine2 = "Apt 2",
+                    City = "Tampa",
+                    State = florida,
+                    ZipCode = "33602"
+                },
+                BirthDate = new DateTime(1969, 1, 1)
+            };
+
+            Patient bobBarker = new Patient(new[] { bobBarkerRecord }, false, drDobbs);
+            Patient johnDoe = new Patient(new[] { johnDoeRecord1, johnDoeRecord2 }, true, drWatson);
+
+            session.Save(newYork);
+            session.Save(florida);
+            session.Save(drDobbs);
+            session.Save(drWatson);
+            session.Save(bobBarker);
+            session.Save(johnDoe);
         }
 
         private void CreateNorthwindData(IStatelessSession session)

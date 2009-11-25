@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="NHibernate.Test.Linq.Entities" assembly="NHibernate.Test">
+  <class name="Patient" table="Patients">
+    <id name="Id" column="PatientId" type="Int64">
+      <generator class="native" />
+    </id>
+    <property type="System.Boolean" not-null="true" name="Active" column="[Active]" />
+    <many-to-one name="Physician" cascade="none" column="PhysicianId" not-null="true" class="Physician" />
+    <bag name="PatientRecords" inverse="true" lazy="true" cascade="all">
+      <key column="PatientId" />
+      <one-to-many class="PatientRecord" />
+    </bag>
+  </class>
+
+  <class name="Physician" table="Physicians">
+    <id name="Id" column="PhysicianId" type="Int64">
+      <generator class="native" />
+    </id>
+    <property type="System.String" not-null="true" name="Name" column="[Name]" />
+  </class>
+
+  <class name="PatientRecord" table="PatientRecords">
+    <id name="Id" column="PatientRecordId" type="System.Int64">
+      <generator class="native" />
+    </id>
+    <property type="NHibernate.Test.Linq.Entities.Gender, NHibernate.Test" not-null="true" name="Gender" column="[Gender]" />
+    <property type="System.DateTime" not-null="true" name="BirthDate" column="[BirthDate]" />
+
+    <component name="Name" class="PatientName">
+      <property type="System.String" not-null="true" name="FirstName" column="[FirstName]" />
+      <property type="System.String" not-null="true" name="LastName" column="[LastName]" />
+    </component>
+
+    <component name="Address" class="PatientAddress">
+
+      <property type="System.String" name="AddressLine1" column="[AddressLine1]" />
+
+      <property type="System.String" name="AddressLine2" column="[AddressLine2]" />
+
+      <property type="System.String" name="City" column="[City]" />
+
+      <many-to-one name="State" cascade="none" column="StateId" class="State" />
+
+      <property type="System.String" name="ZipCode" column="[ZipCode]" />
+
+    </component>
+
+
+    <many-to-one name="Patient" cascade="none" column="PatientId" not-null="true" class="Patient" />
+  </class>
+
+  <class name="State" table="States">
+    <id name="Id" column="StateId" type="System.Int64">
+      <generator class="native" />
+    </id>
+    <property type="System.String" not-null="true" name="Abbreviation" column="[Abbreviation]" />
+    <property type="System.String" not-null="true" name="FullName" column="[FullName]" />
+  </class>
+</hibernate-mapping>

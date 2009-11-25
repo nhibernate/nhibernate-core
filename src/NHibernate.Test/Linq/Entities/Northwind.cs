@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Linq;
 
 namespace NHibernate.Test.Linq.Entities
@@ -60,6 +62,26 @@ namespace NHibernate.Test.Linq.Entities
         public IQueryable<User> Users
         {
             get { return _session.Query<User>(); }
+        }
+
+        public IQueryable<PatientRecord> PatientRecords
+        {
+            get { return _session.Query<PatientRecord>(); }
+        }
+
+        public IQueryable<State> States
+        {
+            get { return _session.Query<State>(); }
+        }
+
+        public IQueryable<Patient> Patients
+        {
+            get { return _session.Query<Patient>(); }
+        }
+
+        public IQueryable<Physician> Physicians
+        {
+            get { return _session.Query<Physician>(); }
         }
     }
 }
