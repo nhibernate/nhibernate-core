@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Impl;
+using NHibernate.Type;
 
 namespace NHibernate.Linq
 {
@@ -51,15 +52,23 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(this, expression);
 		}
 
-		static void SetParameters(IQuery query, IDictionary<string, object> parameters)
+		static void SetParameters(IQuery query, IDictionary<string, Pair<object, IType>> parameters)
 		{
 			foreach (var parameterName in query.NamedParameters)
 			{
-				query.SetParameter(parameterName, parameters[parameterName]);
+			    var param = parameters[parameterName];
+                if (param.Left == null)
+                {
+                    query.SetParameter(parameterName, param.Left, param.Right);
+                }
+                else
+                {
+                    query.SetParameter(parameterName, param.Left);
+                }
 			}
 		}
 
-        public void SetResultTransformerAndAdditionalCriteria(IQuery query, IDictionary<string, object> parameters)
+        public void SetResultTransformerAndAdditionalCriteria(IQuery query, IDictionary<string, Pair<object, IType>> parameters)
         {
             var queryImpl = (ExpressionQueryImpl) query;
 
@@ -73,4 +82,10 @@ namespace NHibernate.Linq
             }
         }
 	}
+
+    public class Pair<TLeft, TRight>
+    {
+        public TLeft Left { get; set; }
+        public TRight Right { get; set; }
+    }
 }

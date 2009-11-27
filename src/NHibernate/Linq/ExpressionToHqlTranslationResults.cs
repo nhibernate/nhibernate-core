@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
+using NHibernate.Type;
 
 namespace NHibernate.Linq
 {
@@ -10,9 +11,9 @@ namespace NHibernate.Linq
     {
         public HqlQuery Statement { get; private set; }
         public ResultTransformer ResultTransformer { get; private set; }
-        public List<Action<IQuery, IDictionary<string, object>>> AdditionalCriteria { get; private set; }
+        public List<Action<IQuery, IDictionary<string, Pair<object, IType>>>> AdditionalCriteria { get; private set; }
 
-        public ExpressionToHqlTranslationResults(HqlQuery statement, IList<LambdaExpression> itemTransformers, IList<LambdaExpression> listTransformers, List<Action<IQuery, IDictionary<string, object>>> additionalCriteria)
+        public ExpressionToHqlTranslationResults(HqlQuery statement, IList<LambdaExpression> itemTransformers, IList<LambdaExpression> listTransformers, List<Action<IQuery, IDictionary<string, Pair<object, IType>>>> additionalCriteria)
         {
             Statement = statement;
 

@@ -201,6 +201,29 @@ namespace NHibernate.Linq.Visitors
                             _hqlTreeBuilder.Case(
                                 new [] { _hqlTreeBuilder.When(rhs, _hqlTreeBuilder.Constant(1)) },
                                 _hqlTreeBuilder.Constant(0));
+
+                        return _hqlTreeBuilder.Equality(lhs, rhs);
+                    }
+
+                    // Also check for nullability
+                    if (expression.Left.Type.IsNullable() || expression.Right.Type.IsNullable())
+                    {
+                        // TODO - yuck.  This clone is needed because the AST tree nodes are not immutable,
+                        // and sharing nodes between multiple branches will cause issues in the hqlSqlWalker phase -
+                        // a node, x, gets visited during the walk and updated to refer to a real property.  Later in
+                        // the walk, x get revisited (since we copied it here), but now the type doesn't match what
+                        // the parser expects.  So we can't share.  Implementing Clone() on HqlTreeNode would be better
+                        // that doing a full visit of the Expression tree.  Allowing shared nodes in the AST would be better
+                        // still, but might be more work
+                        var lhs2 = VisitExpression(expression.Left).AsExpression();
+                        var rhs2 = VisitExpression(expression.Right).AsExpression();
+
+                        return _hqlTreeBuilder.BooleanOr(
+                                _hqlTreeBuilder.BooleanAnd(
+                                    _hqlTreeBuilder.IsNull(lhs),
+                                    _hqlTreeBuilder.IsNull(rhs)),
+                                _hqlTreeBuilder.Equality(lhs2, rhs2)
+                                );
                     }
 
                     return _hqlTreeBuilder.Equality(lhs, rhs);
@@ -218,6 +241,30 @@ namespace NHibernate.Linq.Visitors
                             _hqlTreeBuilder.Case(
                                 new [] { _hqlTreeBuilder.When(rhs, _hqlTreeBuilder.Constant(1)) },
                                 _hqlTreeBuilder.Constant(0));
+
+                        return _hqlTreeBuilder.Inequality(lhs, rhs);
+
+                    }
+
+                    // Also check for nullability
+                    if (expression.Left.Type.IsNullable() || expression.Right.Type.IsNullable())
+                    {
+                        var lhs2 = VisitExpression(expression.Left).AsExpression();
+                        var rhs2 = VisitExpression(expression.Right).AsExpression();
+                        var lhs3 = VisitExpression(expression.Left).AsExpression();
+                        var rhs3 = VisitExpression(expression.Right).AsExpression();
+
+                        return
+                            _hqlTreeBuilder.BooleanOr(
+                                _hqlTreeBuilder.BooleanOr(
+                                    _hqlTreeBuilder.BooleanAnd(
+                                        _hqlTreeBuilder.IsNull(lhs),
+                                        _hqlTreeBuilder.IsNotNull(rhs)),
+                                    _hqlTreeBuilder.BooleanAnd(
+                                        _hqlTreeBuilder.IsNotNull(lhs2),
+                                        _hqlTreeBuilder.IsNull(rhs2))
+                                    ),
+                                _hqlTreeBuilder.Inequality(lhs3, rhs3));
                     }
 
                     return _hqlTreeBuilder.Inequality(lhs, rhs);

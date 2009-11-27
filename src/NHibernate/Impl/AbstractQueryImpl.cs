@@ -336,11 +336,14 @@ namespace NHibernate.Impl
 					throw new ArgumentNullException("val",
 																					"A type specific Set(name, val) should be called because the Type can not be guessed from a null value.");
 				}
-			}
+
+                SetParameter(name, val, type);
+            }
 			else
 			{
 				SetParameter(name, val, DetermineType(name, val));
 			}
+
 			return this;
 		}
 

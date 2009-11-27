@@ -24,5 +24,10 @@ namespace NHibernate.Linq
             return (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
         }
 
+        public static System.Type NullableOf(this System.Type type)
+        {
+            return type.GetGenericArguments()[0];
+        }
+
     }
 }

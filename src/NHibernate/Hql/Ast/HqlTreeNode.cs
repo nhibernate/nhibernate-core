@@ -192,6 +192,9 @@ namespace NHibernate.Hql.Ast
                 case TypeCode.Int32:
                     SetText("integer");
                     break;
+                case TypeCode.Int64:
+                    SetText("long");
+                    break;
                 case TypeCode.Decimal:
                     SetText("decimal");
                     break;
@@ -201,6 +204,9 @@ namespace NHibernate.Hql.Ast
 				case TypeCode.String:
             		SetText("string");
             		break;
+                case TypeCode.Double:
+                    SetText("double");
+                    break;
                 default:
 					if (type == typeof(Guid))
 					{
@@ -299,7 +305,7 @@ namespace NHibernate.Hql.Ast
     public class HqlBooleanAnd : HqlBooleanExpression
     {
         public HqlBooleanAnd(IASTFactory factory, HqlBooleanExpression lhs, HqlBooleanExpression rhs)
-            : base(HqlSqlWalker.AND, "/", factory, lhs, rhs)
+            : base(HqlSqlWalker.AND, "and", factory, lhs, rhs)
         {
         }
     }
@@ -576,9 +582,9 @@ namespace NHibernate.Hql.Ast
         }
     }
 
-    public class HqlNot : HqlBooleanExpression
+    public class HqlBooleanNot : HqlBooleanExpression
     {
-        public HqlNot(IASTFactory factory, HqlBooleanExpression operand)
+        public HqlBooleanNot(IASTFactory factory, HqlBooleanExpression operand)
             : base(HqlSqlWalker.NOT, "not", factory, operand)
         {
         }
@@ -709,6 +715,21 @@ namespace NHibernate.Hql.Ast
     public class HqlDistinctHolder : HqlExpression
     {
         public HqlDistinctHolder(IASTFactory factory, HqlTreeNode[] children) : base(int.MinValue, "distinct holder", factory, children)
+        {
+        }
+    }
+
+    public class HqlIsNull : HqlBooleanExpression
+    {
+        public HqlIsNull(IASTFactory factory, HqlExpression lhs)
+            : base(HqlSqlWalker.IS_NULL, "is null", factory, lhs)
+        {
+        }
+    }
+
+    public class HqlIsNotNull : HqlBooleanExpression
+    {
+        public HqlIsNotNull(IASTFactory factory, HqlExpression lhs) : base(HqlSqlWalker.IS_NOT_NULL, "is not null", factory, lhs)
         {
         }
     }

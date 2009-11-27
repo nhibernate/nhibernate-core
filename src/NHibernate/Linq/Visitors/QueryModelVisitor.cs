@@ -9,6 +9,7 @@ using NHibernate.Linq.GroupBy;
 using NHibernate.Linq.GroupJoin;
 using NHibernate.Linq.ResultOperators;
 using NHibernate.Linq.ReWriters;
+using NHibernate.Type;
 using Remotion.Data.Linq;
 using Remotion.Data.Linq.Clauses;
 using Remotion.Data.Linq.Clauses.Expressions;
@@ -49,7 +50,7 @@ namespace NHibernate.Linq.Visitors
 
 		private readonly HqlTreeBuilder _hqlTreeBuilder;
 
-        private readonly List<Action<IQuery, IDictionary<string, object>>> _additionalCriteria = new List<Action<IQuery, IDictionary<string, object>>>();
+        private readonly List<Action<IQuery, IDictionary<string, Pair<object, IType>>>> _additionalCriteria = new List<Action<IQuery, IDictionary<string, Pair<object, IType>>>>();
         private readonly List<LambdaExpression> _listTransformers = new List<LambdaExpression>();
         private readonly List<LambdaExpression> _itemTransformers = new List<LambdaExpression>();
 
@@ -200,11 +201,32 @@ namespace NHibernate.Linq.Visitors
             {
                 ProcessGroupByOperator((GroupResultOperator)resultOperator);
             }
+            else if (resultOperator is SingleResultOperator)
+            {
+                ProcessSingleOperator((SingleResultOperator) resultOperator);
+            }
             else
             {
                 throw new NotSupportedException(string.Format("The {0} result operator is not current supported",
                                                               resultOperator.GetType().Name));
             }
+        }
+
+        private void ProcessSingleOperator(SingleResultOperator resultOperator)
+        {
+            Expression<Func<IEnumerable<object>, object>> lambda;
+            
+            if (resultOperator.ReturnDefaultWhenEmpty)
+            {
+                lambda = (IEnumerable<object> list) => list.SingleOrDefault();
+            }
+            else
+            {
+                lambda = (IEnumerable<object> list) => list.Single();
+            }
+
+            _additionalCriteria.Add((q, p) => q.SetMaxResults(1));
+            _listTransformers.Add(lambda);
         }
 
         private void ProcessClientSideResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel)
@@ -307,7 +329,7 @@ namespace NHibernate.Linq.Visitors
             // clause to see if it is valid
             if (_parameters.TryGetValue(resultOperator.Count as ConstantExpression, out parameterName))
             {
-                _additionalCriteria.Add((q, p) => q.SetMaxResults((int) p[parameterName.Name]));
+                _additionalCriteria.Add((q, p) => q.SetMaxResults((int) p[parameterName.Name].Left));
             }
             else
             {
@@ -321,7 +343,7 @@ namespace NHibernate.Linq.Visitors
 
             if (_parameters.TryGetValue(resultOperator.Count as ConstantExpression, out parameterName))
             {
-                _additionalCriteria.Add((q, p) => q.SetFirstResult((int)p[parameterName.Name]));
+                _additionalCriteria.Add((q, p) => q.SetFirstResult((int)p[parameterName.Name].Left));
             }
             else
             {
@@ -389,19 +411,6 @@ namespace NHibernate.Linq.Visitors
 			_listTransformers.Add(lambdaExpr);
 			
 			return;
-			/*
-		    _listTransformers.Add(Expression.Lambda(
-		                                     Expression.Call(toList,
-		                                                     Expression.Call(groupByMethod,
-		                                                                     Expression.Call(castToItem,
-		                                                                                     Expression.Call(selectObject,
-		                                                                                                     Expression.Call(
-		                                                                                                         castToObjectArray,
-		                                                                                                         listParameter),
-		                                                                                                     index)),
-		                                                                     keySelectorExpr)
-															), 
-														listParameter));*/
 		}
 
     	private static System.Type SourceOf(Expression keySelector)

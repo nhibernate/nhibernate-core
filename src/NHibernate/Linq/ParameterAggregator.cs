@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using NHibernate.Type;
 
 namespace NHibernate.Linq
 {
@@ -6,9 +7,9 @@ namespace NHibernate.Linq
     {
         private readonly List<NamedParameter> _parameters = new List<NamedParameter>();
 
-        public NamedParameter AddParameter(object value)
+        public NamedParameter AddParameter(object value, IType type)
         {
-            var parameter = new NamedParameter("p" + (_parameters.Count + 1), value);
+            var parameter = new NamedParameter("p" + (_parameters.Count + 1), value, type);
             _parameters.Add(parameter);
             return parameter;
         }

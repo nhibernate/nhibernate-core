@@ -3538,7 +3538,7 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = orders.Where(o => o.OrderId == 11077 ).First(), Product = products.Where(p => p.Name == "Original Frankfurter grüne Soße").First(), UnitPrice = 13.00M, Quantity = 2, Discount = 0M }; session.Insert(orderLine);
         }
 
-        protected override void  OnFixtureSetup()
+        protected override void OnFixtureSetup()
         {
             CreateTestData();
         }

@@ -261,9 +261,9 @@ namespace NHibernate.Hql.Ast
             return new HqlBitwiseNot(_factory);
         }
 
-        public HqlNot Not(HqlBooleanExpression operand)
+        public HqlBooleanNot Not(HqlBooleanExpression operand)
         {
-            return new HqlNot(_factory, operand);
+            return new HqlBooleanNot(_factory, operand);
         }
 
         public HqlAverage Average(HqlExpression expression)
@@ -360,5 +360,16 @@ namespace NHibernate.Hql.Ast
         {
             return new HqlDistinctHolder(_factory, children);
         }
+
+        public HqlIsNull IsNull(HqlExpression lhs)
+        {
+            return new HqlIsNull(_factory, lhs);
+        }
+
+        public HqlIsNotNull IsNotNull(HqlExpression lhs)
+        {
+            return new HqlIsNotNull(_factory, lhs);
+        }
     }
+
 }

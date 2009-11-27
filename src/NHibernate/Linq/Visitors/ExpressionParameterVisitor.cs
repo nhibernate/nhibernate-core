@@ -25,7 +25,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			if (!typeof(IQueryable).IsAssignableFrom(expression.Type))
 			{
-				_parameters.Add(expression, new NamedParameter("p" + (_parameters.Count + 1), expression.Value));
+				_parameters.Add(expression, new NamedParameter("p" + (_parameters.Count + 1), expression.Value, NHibernateUtil.GuessType(expression.Type)));
 			}
 
 			return base.VisitConstantExpression(expression);

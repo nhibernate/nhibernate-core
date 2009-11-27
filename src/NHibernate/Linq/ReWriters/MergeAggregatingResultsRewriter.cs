@@ -53,9 +53,14 @@ namespace NHibernate.Linq.ReWriters
 			}
 			else if (resultOperator is CountResultOperator)
 			{
-				queryModel.SelectClause.Selector = new NhCountExpression(queryModel.SelectClause.Selector);
+				queryModel.SelectClause.Selector = new NhShortCountExpression(queryModel.SelectClause.Selector);
 				queryModel.ResultOperators.Remove(resultOperator);
 			}
+            else if (resultOperator is LongCountResultOperator)
+            {
+                queryModel.SelectClause.Selector = new NhLongCountExpression(queryModel.SelectClause.Selector);
+                queryModel.ResultOperators.Remove(resultOperator);
+            }
 
 			base.VisitResultOperator(resultOperator, queryModel, index);
 		}
@@ -89,7 +94,7 @@ namespace NHibernate.Linq.ReWriters
 				{
 					case "Count":
 						return CreateAggregate(m.Arguments[0], (LambdaExpression)m.Arguments[1],
-						                       e => new NhCountExpression(e));
+						                       e => new NhShortCountExpression(e));
 					case "Min":
 						return CreateAggregate(m.Arguments[0], (LambdaExpression) m.Arguments[1],
 						                       e => new NhMinExpression(e));

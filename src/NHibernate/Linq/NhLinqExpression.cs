@@ -6,6 +6,7 @@ using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Linq.ResultOperators;
 using NHibernate.Linq.Visitors;
+using NHibernate.Type;
 using Remotion.Data.Linq;
 using Remotion.Data.Linq.Clauses;
 using Remotion.Data.Linq.Clauses.StreamedData;
@@ -25,7 +26,7 @@ namespace NHibernate.Linq
 
         public NhLinqExpressionReturnType ReturnType { get; private set; }
 
-        public IDictionary<string, object> ParameterValuesByName { get; private set; }
+        public IDictionary<string, Pair<object, IType>> ParameterValuesByName { get; private set; }
 
         public ExpressionToHqlTranslationResults ExpressionToHqlTranslationResults { get; private set; }
 
@@ -40,7 +41,10 @@ namespace NHibernate.Linq
 
 			_constantToParameterMap = ExpressionParameterVisitor.Visit(_expression);
 
-			ParameterValuesByName = _constantToParameterMap.Values.ToDictionary(p => p.Name, p => p.Value);
+		    ParameterValuesByName = _constantToParameterMap.Values.ToDictionary(p => p.Name,
+		                                                                        p =>
+		                                                                        new Pair<object, IType>
+		                                                                            {Left = p.Value, Right = p.Type});
 
 			Key = ExpressionKeyVisitor.Visit(_expression, _constantToParameterMap);
 			
