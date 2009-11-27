@@ -10,36 +10,39 @@ namespace NHibernate.Cfg
 		private const string CfgSchemaResource = "NHibernate.nhibernate-configuration.xsd";
 		private const string MappingSchemaResource = "NHibernate.nhibernate-mapping.xsd";
 
-		private readonly XmlSchema config = ReadXmlSchemaFromEmbeddedResource(CfgSchemaResource);
-		private readonly XmlSchema mapping = ReadXmlSchemaFromEmbeddedResource(MappingSchemaResource);
+		private static readonly XmlSchemaSet ConfigSchemaSet = ReadXmlSchemaFromEmbeddedResource(CfgSchemaResource);
+		private static readonly XmlSchemaSet MappingSchemaSet = ReadXmlSchemaFromEmbeddedResource(MappingSchemaResource);
 
 		public XmlReaderSettings CreateConfigReaderSettings()
 		{
-			XmlReaderSettings result = CreateXmlReaderSettings(config);
-			result.ValidationEventHandler += new ValidationEventHandler(ConfigSettingsValidationEventHandler);
+			XmlReaderSettings result = CreateXmlReaderSettings(ConfigSchemaSet);
+			result.ValidationEventHandler += ConfigSettingsValidationEventHandler;
 			result.IgnoreComments = true;
 			return result;
 		}
 
 		public XmlReaderSettings CreateMappingReaderSettings()
 		{
-			return CreateXmlReaderSettings(mapping);
+			return CreateXmlReaderSettings(MappingSchemaSet);
 		}
 
-		private static XmlSchema ReadXmlSchemaFromEmbeddedResource(string resourceName)
+		private static XmlSchemaSet ReadXmlSchemaFromEmbeddedResource(string resourceName)
 		{
 			Assembly executingAssembly = Assembly.GetExecutingAssembly();
 
 			using (Stream resourceStream = executingAssembly.GetManifestResourceStream(resourceName))
-				return XmlSchema.Read(resourceStream, null);
+			{
+				var xmlSchema = XmlSchema.Read(resourceStream, null);
+				var xmlSchemaSet = new XmlSchemaSet();
+				xmlSchemaSet.Add(xmlSchema);
+				xmlSchemaSet.Compile();
+				return xmlSchemaSet;
+			}
 		}
 
-		private static XmlReaderSettings CreateXmlReaderSettings(XmlSchema xmlSchema)
+		private static XmlReaderSettings CreateXmlReaderSettings(XmlSchemaSet xmlSchemaSet)
 		{
-			XmlReaderSettings settings = new XmlReaderSettings();
-			settings.ValidationType = ValidationType.Schema;
-			settings.Schemas.Add(xmlSchema);
-			return settings;
+			return new XmlReaderSettings {ValidationType = ValidationType.Schema, Schemas = xmlSchemaSet};
 		}
 
 		private static void ConfigSettingsValidationEventHandler(object sender, ValidationEventArgs e)
