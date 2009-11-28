@@ -15,6 +15,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public abstract class Binder
 	{
+		/// <summary>The XML Namespace for the nhibernate-mapping</summary>
+		public const string MappingSchemaXMLNS = "urn:nhibernate-mapping-2.2";
+
 		protected static readonly ILog log = LogManager.GetLogger(typeof (Binder));
 
 		protected static readonly IDictionary<string, MetaAttribute> EmptyMeta =
@@ -155,6 +158,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				{
 					var hbmDocument = new XmlDocument();
 					hbmDocument.Load(reader);
+					// note that the prefix has absolutely nothing to do with what the user
+					// selects as their prefix in the document.  It is the prefix we use to 
+					// build the XPath and the nsmgr takes care of translating our prefix into
+					// the user defined prefix...
+					var namespaceManager = new XmlNamespaceManager(hbmDocument.NameTable);
+					namespaceManager.AddNamespace(HbmConstants.nsPrefix, MappingSchemaXMLNS);
+
 					return hbmDocument.DocumentElement;
 				}
 			}

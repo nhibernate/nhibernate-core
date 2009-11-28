@@ -10,12 +10,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 	public class MappingRootBinder : Binder
 	{
 		private readonly Dialect.Dialect dialect;
-		private readonly XmlNamespaceManager namespaceManager;
 
-		public MappingRootBinder(Mappings mappings, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
+		public MappingRootBinder(Mappings mappings, Dialect.Dialect dialect)
 			: base(mappings)
 		{
-			this.namespaceManager = namespaceManager;
 			this.dialect = dialect;
 		}
 
@@ -81,15 +79,26 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddRootClasses(XmlNode parentNode, HbmClass rootClass, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			var binder = new RootClassBinder(this, namespaceManager, dialect);
+			var binder = new RootClassBinder(this, GetNamespaceManager(parentNode), dialect);
 
 			binder.Bind(parentNode, rootClass, inheritedMetas);
+		}
+
+		private XmlNamespaceManager GetNamespaceManager(XmlNode parentNode)
+		{
+			// note that the prefix has absolutely nothing to do with what the user
+			// selects as their prefix in the document.  It is the prefix we use to 
+			// build the XPath and the nsmgr takes care of translating our prefix into
+			// the user defined prefix...
+			var namespaceManager = new XmlNamespaceManager(parentNode.OwnerDocument.NameTable);
+			namespaceManager.AddNamespace(HbmConstants.nsPrefix, MappingSchemaXMLNS);
+			return namespaceManager;
 		}
 
 		private void AddUnionSubclasses(XmlNode parentNode, HbmUnionSubclass unionSubclass,
 		                                IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			var binder = new UnionSubclassBinder(this, namespaceManager, dialect);
+			var binder = new UnionSubclassBinder(this, GetNamespaceManager(parentNode), dialect);
 
 			binder.Bind(parentNode, inheritedMetas);
 		}
@@ -97,14 +106,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void AddJoinedSubclasses(XmlNode parentNode, HbmJoinedSubclass joinedSubclass,
 		                                 IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			var binder = new JoinedSubclassBinder(this, namespaceManager, dialect);
+			var binder = new JoinedSubclassBinder(this, GetNamespaceManager(parentNode), dialect);
 
 			binder.Bind(parentNode, inheritedMetas);
 		}
 
 		private void AddSubclasses(XmlNode parentNode, HbmSubclass subClass, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			var binder = new SubclassBinder(this, namespaceManager, dialect);
+			var binder = new SubclassBinder(this, GetNamespaceManager(parentNode), dialect);
 
 			binder.Bind(parentNode, inheritedMetas);
 		}

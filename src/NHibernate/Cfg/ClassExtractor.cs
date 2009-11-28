@@ -1,4 +1,5 @@
 using System.Xml;
+using NHibernate.Cfg.XmlHbmBinding;
 using NHibernate.Util;
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
@@ -92,7 +93,7 @@ namespace NHibernate.Cfg
 			// TODO this should be extracted into a utility method since there's similar
 			// code in Configuration
 			XmlNamespaceManager nsmgr = new XmlNamespaceManager(document.NameTable);
-			nsmgr.AddNamespace(HbmConstants.nsPrefix, Configuration.MappingSchemaXMLNS);
+			nsmgr.AddNamespace(HbmConstants.nsPrefix, Binder.MappingSchemaXMLNS);
 
 			// Since the document is validated, no error checking is done in this method.
 			HashedSet<ClassEntry> classEntries = new HashedSet<ClassEntry>();

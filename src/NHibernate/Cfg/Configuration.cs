@@ -51,9 +51,6 @@ namespace NHibernate.Cfg
 	[Serializable]
 	public class Configuration:ISerializable
 	{
-		/// <summary>The XML Namespace for the nhibernate-mapping</summary>
-		public const string MappingSchemaXMLNS = "urn:nhibernate-mapping-2.2";
-
 		/// <summary>Default name for hibernate configuration file.</summary>
 		public const string DefaultHibernateCfgFileName = "hibernate.cfg.xml";
 
@@ -497,32 +494,48 @@ namespace NHibernate.Cfg
 		/// <param name="doc">The NamedXmlDocument that contains the <b>validated</b> mapping XML file.</param>
 		private void AddValidatedDocument(NamedXmlDocument doc)
 		{
+			HbmMapping mappingMeta = null;
 			try
 			{
-				// note that the prefix has absolutely nothing to do with what the user
-				// selects as their prefix in the document.  It is the prefix we use to 
-				// build the XPath and the nsmgr takes care of translating our prefix into
-				// the user defined prefix...
-				var namespaceManager = new XmlNamespaceManager(doc.Document.NameTable);
-				namespaceManager.AddNamespace(HbmConstants.nsPrefix, MappingSchemaXMLNS);
-
-				Dialect.Dialect dialect = Dialect.Dialect.GetDialect(properties);
-				Mappings mappings = CreateMappings(dialect);
-
 				// TODO : The mappingMeta should be the property of NamedXmlDocument 
 				// A validated document IS a deserialized doc and we don't need to deserialize it more than one time.
-				HbmMapping mappingMeta;
 				using (var reader = new StringReader(doc.Document.DocumentElement.OuterXml))
 				{
-					mappingMeta= (HbmMapping) new XmlSerializer(typeof (HbmMapping)).Deserialize(reader);
+					mappingMeta = (HbmMapping) new XmlSerializer(typeof (HbmMapping)).Deserialize(reader);
 				}
-
-				new MappingRootBinder(mappings, namespaceManager, dialect).Bind(mappingMeta);
 			}
 			catch (Exception e)
 			{
 				string nameFormatted = doc.Name ?? "(unknown)";
 				LogAndThrow(new MappingException("Could not compile the mapping document: " + nameFormatted, e));
+			}
+			AddDeserializedMapping(mappingMeta, doc.Name);
+		}
+
+		/// <summary>
+		/// Add mapping data using deserialized class.
+		/// </summary>
+		/// <param name="mappingDocument">Mapping metadata.</param>
+		/// <param name="documentFileName">XML file's name where available; otherwise null.</param>
+		public void AddDeserializedMapping(HbmMapping mappingDocument, string documentFileName)
+		{
+			if (mappingDocument == null)
+			{
+				throw new ArgumentNullException("mappingDocument");
+			}
+			try
+			{
+			  Dialect.Dialect dialect = Dialect.Dialect.GetDialect(properties);
+			  Mappings mappings = CreateMappings(dialect);
+
+			  new MappingRootBinder(mappings, dialect).Bind(mappingDocument);
+			}
+			catch (Exception e)
+			{
+				var message = documentFileName == null
+				              	? "Could not compile deserialized mapping document."
+				              	: "Could not compile the mapping document: " + documentFileName;
+			  LogAndThrow(new MappingException(message, e));
 			}
 		}
 

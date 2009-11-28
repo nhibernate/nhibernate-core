@@ -44,7 +44,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			foreach (XmlNode subnode in node.ChildNodes)
 			{
 				//I am only concerned with elements that are from the nhibernate namespace
-				if (subnode.NamespaceURI != Configuration.MappingSchemaXMLNS)
+				if (subnode.NamespaceURI != MappingSchemaXMLNS)
 					continue;
 
 				string name = subnode.LocalName; //.Name;
@@ -346,7 +346,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			foreach (XmlNode subnode in node.ChildNodes)
 			{
 				//I am only concerned with elements that are from the nhibernate namespace
-				if (subnode.NamespaceURI != Configuration.MappingSchemaXMLNS)
+				if (subnode.NamespaceURI != MappingSchemaXMLNS)
 					continue;
 
 				string name = subnode.Name;
@@ -593,7 +593,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			foreach (XmlNode subnode in node.ChildNodes)
 			{
 				//I am only concerned with elements that are from the nhibernate namespace
-				if (subnode.NamespaceURI != Configuration.MappingSchemaXMLNS)
+				if (subnode.NamespaceURI != MappingSchemaXMLNS)
 					continue;
 
 				string name = subnode.LocalName; //.Name;
