@@ -8,11 +8,13 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
+using System.Xml.Serialization;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Cfg.XmlHbmBinding;
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
@@ -507,7 +509,15 @@ namespace NHibernate.Cfg
 				Dialect.Dialect dialect = Dialect.Dialect.GetDialect(properties);
 				Mappings mappings = CreateMappings(dialect);
 
-				new MappingRootBinder(mappings, namespaceManager, dialect).Bind(doc.Document.DocumentElement);
+				// TODO : The mappingMeta should be the property of NamedXmlDocument 
+				// A validated document IS a deserialized doc and we don't need to deserialize it more than one time.
+				HbmMapping mappingMeta;
+				using (var reader = new StringReader(doc.Document.DocumentElement.OuterXml))
+				{
+					mappingMeta= (HbmMapping) new XmlSerializer(typeof (HbmMapping)).Deserialize(reader);
+				}
+
+				new MappingRootBinder(mappings, namespaceManager, dialect).Bind(mappingMeta);
 			}
 			catch (Exception e)
 			{

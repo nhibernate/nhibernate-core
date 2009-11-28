@@ -22,10 +22,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			this.dialect = dialect;
 		}
 
-		public void Bind(XmlNode node)
+		public void Bind(HbmMapping mappingSchema)
 		{
 			IDictionary<string, MetaAttribute> inheritedMetas = EmptyMeta;
-			var mappingSchema = Deserialize<HbmMapping>(node);
 			// get meta's from <hibernate-mapping>
 			inheritedMetas = GetMetas(mappingSchema, inheritedMetas, true);
 
@@ -33,7 +32,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			AddFilterDefinitions(mappingSchema);
 			AddTypeDefs(mappingSchema);
 
-			AddEntitiesMappings(node, mappingSchema, inheritedMetas);
+			AddEntitiesMappings(mappingSchema, inheritedMetas);
 
 			AddQueries(mappingSchema);
 			AddSqlQueries(mappingSchema);
@@ -42,7 +41,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			AddResultSetMappingDefinitions(mappingSchema);
 		}
 
-		private void AddEntitiesMappings(XmlNode node, HbmMapping mappingSchema, IDictionary<string, MetaAttribute> inheritedMetas)
+		private void AddEntitiesMappings(HbmMapping mappingSchema, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			foreach (var rootClass in mappingSchema.RootClasses)
 			{
