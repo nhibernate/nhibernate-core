@@ -24,9 +24,9 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return Item1 as HbmTimestamp; }
 		}
 
-		protected override HbmMeta[] GetMetadataField()
+		protected override HbmMeta[] Metadatas
 		{
-			return meta;
+			get { return meta ?? new HbmMeta[0]; }
 		}
 	}
 }

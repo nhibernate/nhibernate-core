@@ -4,19 +4,34 @@ namespace NHibernate.Cfg.MappingSchema
 {
 	partial class HbmMapping : AbstractDecoratable
 	{
-		public HbmDatabaseObject[] ListDatabaseObjects()
+		public HbmDatabaseObject[] DatabaseObjects
 		{
-			return databaseobject ?? new HbmDatabaseObject[0];
+			get { return databaseobject ?? new HbmDatabaseObject[0]; }
 		}
 
-		public HbmFilterDef[] ListFilterDefs()
+		public HbmFilterDef[] FilterDefinitions
 		{
-			return filterdef ?? new HbmFilterDef[0];
+			get { return filterdef ?? new HbmFilterDef[0]; }
 		}
 
-		protected override HbmMeta[] GetMetadataField()
+		public HbmResultSet[] ResultSets
 		{
-			return meta;
+			get { return resultset ?? new HbmResultSet[0]; }
+		}
+
+		public HbmTypedef[] TypeDefinitions
+		{
+			get { return typedef ?? new HbmTypedef[0]; }
+		}
+
+		public HbmImport[] Imports
+		{
+			get { return import ?? new HbmImport[0]; }
+		}
+
+		protected override HbmMeta[] Metadatas
+		{
+			get { return meta ?? new HbmMeta[0]; }
 		}
 
 		public HbmClass[] RootClasses

@@ -72,7 +72,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddFilterDefinitions(HbmMapping mappingSchema)
 		{
-			foreach (HbmFilterDef filterDefSchema in mappingSchema.ListFilterDefs())
+			foreach (HbmFilterDef filterDefSchema in mappingSchema.FilterDefinitions)
 			{
 				FilterDefinition definition = FilterDefinitionFactory.CreateFilterDefinition(filterDefSchema);
 				mappings.AddFilterDefinition(definition);
@@ -123,7 +123,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		public void AddImports(HbmMapping mappingSchema)
 		{
-			foreach (HbmImport importSchema in mappingSchema.import ?? new HbmImport[0])
+			foreach (HbmImport importSchema in mappingSchema.Imports)
 			{
 				string fullClassName = FullQualifiedClassName(importSchema.@class, mappings);
 				string rename = importSchema.rename ?? StringHelper.GetClassname(fullClassName);
@@ -135,7 +135,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		public void AddTypeDefs(HbmMapping mappingSchema)
 		{
-			foreach (HbmTypedef typedef in mappingSchema.typedef ?? new HbmTypedef[0])
+			foreach (HbmTypedef typedef in mappingSchema.TypeDefinitions)
 			{
 				string typeClass = FullQualifiedClassName(typedef.@class, mappings);
 				string typeName = typedef.name;
@@ -151,7 +151,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddAuxiliaryDatabaseObjects(HbmMapping mappingSchema)
 		{
-			foreach (HbmDatabaseObject objectSchema in mappingSchema.ListDatabaseObjects())
+			foreach (HbmDatabaseObject objectSchema in mappingSchema.DatabaseObjects)
 			{
 				IAuxiliaryDatabaseObject dbObject = AuxiliaryDatabaseObjectFactory.Create(mappings, objectSchema);
 				mappings.AddAuxiliaryDatabaseObject(dbObject);
@@ -162,7 +162,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			var binder = new ResultSetMappingBinder(this);
 
-			foreach (HbmResultSet resultSetSchema in mappingSchema.resultset ?? new HbmResultSet[0])
+			foreach (HbmResultSet resultSetSchema in mappingSchema.ResultSets)
 			{
 				// Do not inline this variable or the anonymous method will not work correctly.
 				HbmResultSet tempResultSetSchema = resultSetSchema;

@@ -26,7 +26,7 @@ namespace NHibernate.Cfg.MappingSchema
 			{
 				if (mappedMetaData == null)
 				{
-					CreateMappedMetadata(GetMetadataField());
+					CreateMappedMetadata(Metadatas);
 				}
 				return mappedMetaData;
 			}
@@ -39,7 +39,7 @@ namespace NHibernate.Cfg.MappingSchema
 			{
 				if (mappedMetaData == null)
 				{
-					CreateMappedMetadata(GetMetadataField());
+					CreateMappedMetadata(Metadatas);
 				}
 				return inheritableMetaData;
 			}
@@ -75,6 +75,6 @@ namespace NHibernate.Cfg.MappingSchema
 			}
 		}
 
-		protected abstract HbmMeta[] GetMetadataField();
+		protected abstract HbmMeta[] Metadatas { get; }
 	}
 }

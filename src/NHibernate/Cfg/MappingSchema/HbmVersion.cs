@@ -2,9 +2,9 @@ namespace NHibernate.Cfg.MappingSchema
 {
 	partial class HbmVersion : AbstractDecoratable
 	{
-		protected override HbmMeta[] GetMetadataField()
+		protected override HbmMeta[] Metadatas
 		{
-			return meta;
+			get { return meta ?? new HbmMeta[0]; }
 		}
 	}
 }
