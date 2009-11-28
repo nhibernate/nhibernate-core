@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Xml;
-
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
 using NHibernate.Mapping;
@@ -11,11 +9,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class MappingRootBinder : Binder
 	{
-		private readonly XmlNamespaceManager namespaceManager;
 		private readonly Dialect.Dialect dialect;
+		private readonly XmlNamespaceManager namespaceManager;
 
-		public MappingRootBinder(Mappings mappings, XmlNamespaceManager namespaceManager,
-			Dialect.Dialect dialect)
+		public MappingRootBinder(Mappings mappings, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
 			: base(mappings)
 		{
 			this.namespaceManager = namespaceManager;
@@ -43,19 +40,19 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddEntitiesMappings(HbmMapping mappingSchema, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			foreach (var rootClass in mappingSchema.RootClasses)
+			foreach (HbmClass rootClass in mappingSchema.RootClasses)
 			{
 				AddRootClasses(Serialize(rootClass), rootClass, inheritedMetas);
 			}
-			foreach (var subclass in mappingSchema.SubClasses)
+			foreach (HbmSubclass subclass in mappingSchema.SubClasses)
 			{
 				AddSubclasses(Serialize(subclass), subclass, inheritedMetas);
 			}
-			foreach (var joinedSubclass in mappingSchema.JoinedSubclasses)
+			foreach (HbmJoinedSubclass joinedSubclass in mappingSchema.JoinedSubclasses)
 			{
 				AddJoinedSubclasses(Serialize(joinedSubclass), joinedSubclass, inheritedMetas);
 			}
-			foreach (var unionSubclass in mappingSchema.UnionSubclasses)
+			foreach (HbmUnionSubclass unionSubclass in mappingSchema.UnionSubclasses)
 			{
 				AddUnionSubclasses(Serialize(unionSubclass), unionSubclass, inheritedMetas);
 			}
@@ -84,55 +81,61 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddRootClasses(XmlNode parentNode, HbmClass rootClass, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			RootClassBinder binder = new RootClassBinder(this, namespaceManager, dialect);
+			var binder = new RootClassBinder(this, namespaceManager, dialect);
 
 			binder.Bind(parentNode, rootClass, inheritedMetas);
 		}
 
-		private void AddUnionSubclasses(XmlNode parentNode, HbmUnionSubclass unionSubclass, IDictionary<string, MetaAttribute> inheritedMetas)
+		private void AddUnionSubclasses(XmlNode parentNode, HbmUnionSubclass unionSubclass,
+		                                IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			UnionSubclassBinder binder = new UnionSubclassBinder(this, namespaceManager, dialect);
+			var binder = new UnionSubclassBinder(this, namespaceManager, dialect);
 
 			binder.Bind(parentNode, inheritedMetas);
 		}
 
-		private void AddJoinedSubclasses(XmlNode parentNode, HbmJoinedSubclass joinedSubclass, IDictionary<string, MetaAttribute> inheritedMetas)
+		private void AddJoinedSubclasses(XmlNode parentNode, HbmJoinedSubclass joinedSubclass,
+		                                 IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			JoinedSubclassBinder binder = new JoinedSubclassBinder(this, namespaceManager, dialect);
+			var binder = new JoinedSubclassBinder(this, namespaceManager, dialect);
 
 			binder.Bind(parentNode, inheritedMetas);
 		}
 
 		private void AddSubclasses(XmlNode parentNode, HbmSubclass subClass, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			SubclassBinder binder = new SubclassBinder(this, namespaceManager, dialect);
+			var binder = new SubclassBinder(this, namespaceManager, dialect);
 
 			binder.Bind(parentNode, inheritedMetas);
 		}
 
 		private void AddQueries(HbmMapping mappingSchema)
 		{
-			NamedQueryBinder binder = new NamedQueryBinder(this);
+			var binder = new NamedQueryBinder(this);
 
 			foreach (object item in mappingSchema.Items1 ?? new object[0])
 			{
-				HbmQuery querySchema = item as HbmQuery;
+				var querySchema = item as HbmQuery;
 
 				if (querySchema != null)
+				{
 					binder.AddQuery(querySchema);
+				}
 			}
 		}
 
 		private void AddSqlQueries(HbmMapping mappingSchema)
 		{
-			NamedSQLQueryBinder binder = new NamedSQLQueryBinder(this);
+			var binder = new NamedSQLQueryBinder(this);
 
 			foreach (object item in mappingSchema.Items1 ?? new object[0])
 			{
-				HbmSqlQuery sqlQuerySchema = item as HbmSqlQuery;
+				var sqlQuerySchema = item as HbmSqlQuery;
 
 				if (sqlQuerySchema != null)
+				{
 					binder.AddSqlQuery(sqlQuerySchema);
+				}
 			}
 		}
 
@@ -155,7 +158,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				string typeClass = FullQualifiedClassName(typedef.@class, mappings);
 				string typeName = typedef.name;
 				IEnumerable<HbmParam> paramIter = typedef.param ?? new HbmParam[0];
-				Dictionary<string, string> parameters = new Dictionary<string, string>(5);
+				var parameters = new Dictionary<string, string>(5);
 				foreach (HbmParam param in paramIter)
 				{
 					parameters.Add(param.name, param.GetText().Trim());
@@ -175,7 +178,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddResultSetMappingDefinitions(HbmMapping mappingSchema)
 		{
-			ResultSetMappingBinder binder = new ResultSetMappingBinder(this);
+			var binder = new ResultSetMappingBinder(this);
 
 			foreach (HbmResultSet resultSetSchema in mappingSchema.resultset ?? new HbmResultSet[0])
 			{
