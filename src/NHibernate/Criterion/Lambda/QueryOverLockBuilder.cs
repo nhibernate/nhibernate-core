@@ -9,23 +9,23 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 
-	public class QueryOverLockBuilder<T> : QueryOverLockBuilderBase<QueryOver<T>, T>
+	public class QueryOverLockBuilder<S,T> : QueryOverLockBuilderBase<QueryOver<S,T>, S, T>
 	{
 
-		public QueryOverLockBuilder(QueryOver<T> root, Expression<Func<object>> alias)
+		public QueryOverLockBuilder(QueryOver<S,T> root, Expression<Func<object>> alias)
 			: base(root, alias) { }
 
 	}
 
-	public class IQueryOverLockBuilder<T> : QueryOverLockBuilderBase<IQueryOver<T>, T>
+	public class IQueryOverLockBuilder<S,T> : QueryOverLockBuilderBase<IQueryOver<S,T>, S, T>
 	{
 
-		public IQueryOverLockBuilder(IQueryOver<T> root, Expression<Func<object>> alias)
+		public IQueryOverLockBuilder(IQueryOver<S,T> root, Expression<Func<object>> alias)
 			: base(root, alias) { }
 
 	}
 
-	public class QueryOverLockBuilderBase<R, T> where R : IQueryOver<T>
+	public class QueryOverLockBuilderBase<R, S, T> where R : IQueryOver<S,T>
 	{
 
 		protected R root;

@@ -224,7 +224,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.CreateCriteria("Children")
 						.Add(Expression.Eq("Nickname", "test name"));
 
-			IQueryOver<Child> actual =
+			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
 					.JoinQueryOver(p => p.Children) // sub-criteria
 						.Where(c => c.Nickname == "test name");
@@ -241,7 +241,7 @@ namespace NHibernate.Test.Criteria.Lambda
 						.Add(Expression.Eq("Nickname", "test name"));
 
 			Person personAlias = null;
-			IQueryOver<Child> actual =
+			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>(() => personAlias)
 					.Inner.JoinQueryOver(() => personAlias.Children) // sub-criteria
 						.Where(c => c.Nickname == "test name");
@@ -265,7 +265,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			Relation collection1Alias = null, collection2Alias = null;
 			Person personAlias = null;
-			IQueryOver<Person> actual =
+			IQueryOver<Relation> actual =
 				CreateTestQueryOver<Relation>()
 					.Inner.JoinQueryOver(r => r.Related1)
 					.Left.JoinQueryOver(r => r.Related2)

@@ -9,15 +9,15 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 
-	public class QueryOverProjectionBuilder<R, T>
+	public class QueryOverProjectionBuilder<R, S, T>
 	{
 
 		private R fluentReturn;
-		private IQueryOver<T> criteria;
+		private IQueryOver<S,T> criteria;
 		private ProjectionList projectionList;
 		private IProjection lastProjection = null;
 
-		public QueryOverProjectionBuilder(R fluentReturn, IQueryOver<T> criteria)
+		public QueryOverProjectionBuilder(R fluentReturn, IQueryOver<S,T> criteria)
 		{
 			this.fluentReturn = fluentReturn;
 			this.criteria = criteria;
@@ -52,7 +52,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// Create an alias for the previous projection
 		/// </summary>
-		public QueryOverProjectionBuilder<R, T> WithAlias(Expression<Func<object>> alias)
+		public QueryOverProjectionBuilder<R, S, T> WithAlias(Expression<Func<object>> alias)
 		{
 			string aliasContainer = ExpressionProcessor.FindMemberExpression(alias.Body);
 			lastProjection = Projections.Alias(lastProjection, aliasContainer);
@@ -62,7 +62,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// Select an arbitrary projection
 		/// </summary>
-		public QueryOverProjectionBuilder<R, T> Select(IProjection projection)
+		public QueryOverProjectionBuilder<R, S, T> Select(IProjection projection)
 		{
 			PushProjection(projection);
 			return this;
@@ -71,7 +71,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// A property average value
 		/// </summary>
-		public QueryOverProjectionBuilder<R, T> SelectAvg(Expression<Func<T, object>> expression)
+		public QueryOverProjectionBuilder<R, S, T> SelectAvg(Expression<Func<T, object>> expression)
 		{
 			PushProjection(Projections.Avg(expression));
 			return this;
@@ -80,7 +80,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// A property average value
 		/// </summary>
-		public QueryOverProjectionBuilder<R, T> SelectAvg(Expression<Func<object>> expression)
+		public QueryOverProjectionBuilder<R, S, T> SelectAvg(Expression<Func<object>> expression)
 		{
 			PushProjection(Projections.Avg(expression));
 			return this;
@@ -89,7 +89,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// A property value count
 		/// </summary>
-		public QueryOverProjectionBuilder<R, T> SelectCount(Expression<Func<T, object>> expression)
+		public QueryOverProjectionBuilder<R, S, T> SelectCount(Expression<Func<T, object>> expression)
 		{
 			PushProjection(Projections.Count(expression));
 			return this;
@@ -98,7 +98,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// A property value count
 		/// </summary>
-		public QueryOverProjectionBuilder<R, T> SelectCount(Expression<Func<object>> expression)
+		public QueryOverProjectionBuilder<R, S, T> SelectCount(Expression<Func<object>> expression)
 		{
 			PushProjection(Projections.Count(expression));
 			return this;
@@ -107,7 +107,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// A distinct property value count
 		/// </summary>
-		public QueryOverProjectionBuilder<R, T> SelectCountDistinct(Expression<Func<T, object>> expression)
+		public QueryOverProjectionBuilder<R, S, T> SelectCountDistinct(Expression<Func<T, object>> expression)
 		{
 			PushProjection(Projections.CountDistinct(expression));
 			return this;
@@ -116,7 +116,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// A distinct property value count
 		/// </summary>
-		public QueryOverProjectionBuilder<R, T> SelectCountDistinct(Expression<Func<object>> expression)
+		public QueryOverProjectionBuilder<R, S, T> SelectCountDistinct(Expression<Func<object>> expression)
 		{
 			PushProjection(Projections.CountDistinct(expression));
 			return this;
@@ -125,7 +125,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// A grouping property value
 		/// </summary>
-		public QueryOverProjectionBuilder<R, T> SelectGroup(Expression<Func<T, object>> expression)
+		public QueryOverProjectionBuilder<R, S, T> SelectGroup(Expression<Func<T, object>> expression)
 		{
 			PushProjection(Projections.Group(expression));
 			return this;
@@ -134,7 +134,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// A grouping property value
 		/// </summary>
-		public QueryOverProjectionBuilder<R, T> SelectGroup(Expression<Func<object>> expression)
+		public QueryOverProjectionBuilder<R, S, T> SelectGroup(Expression<Func<object>> expression)
 		{
 			PushProjection(Projections.Group(expression));
 			return this;
@@ -143,7 +143,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// A property maximum value
 		/// </summary>
-		public QueryOverProjectionBuilder<R, T> SelectMax(Expression<Func<T, object>> expression)
+		public QueryOverProjectionBuilder<R, S, T> SelectMax(Expression<Func<T, object>> expression)
 		{
 			PushProjection(Projections.Max(expression));
 			return this;
@@ -152,7 +152,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// A property maximum value
 		/// </summary>
-		public QueryOverProjectionBuilder<R, T> SelectMax(Expression<Func<object>> expression)
+		public QueryOverProjectionBuilder<R, S, T> SelectMax(Expression<Func<object>> expression)
 		{
 			PushProjection(Projections.Max(expression));
 			return this;
@@ -161,7 +161,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// A property minimum value
 		/// </summary>
-		public QueryOverProjectionBuilder<R, T> SelectMin(Expression<Func<T, object>> expression)
+		public QueryOverProjectionBuilder<R, S, T> SelectMin(Expression<Func<T, object>> expression)
 		{
 			PushProjection(Projections.Min(expression));
 			return this;
@@ -170,7 +170,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// A property minimum value
 		/// </summary>
-		public QueryOverProjectionBuilder<R, T> SelectMin(Expression<Func<object>> expression)
+		public QueryOverProjectionBuilder<R, S, T> SelectMin(Expression<Func<object>> expression)
 		{
 			PushProjection(Projections.Min(expression));
 			return this;
@@ -179,7 +179,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// A projected property value
 		/// </summary>
-		public QueryOverProjectionBuilder<R, T> Select(Expression<Func<T, object>> expression)
+		public QueryOverProjectionBuilder<R, S, T> Select(Expression<Func<T, object>> expression)
 		{
 			PushProjection(Projections.Property(expression));
 			return this;
@@ -188,13 +188,13 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// A projected property value
 		/// </summary>
-		public QueryOverProjectionBuilder<R, T> Select(Expression<Func<object>> expression)
+		public QueryOverProjectionBuilder<R, S, T> Select(Expression<Func<object>> expression)
 		{
 			PushProjection(Projections.Property(expression));
 			return this;
 		}
 
-		public QueryOverProjectionBuilder<R, T> SelectSubQuery<U>(QueryOver<U> detachedQueryOver)
+		public QueryOverProjectionBuilder<R, S, T> SelectSubQuery<U>(QueryOver<U> detachedQueryOver)
 		{
 			PushProjection(Projections.SubQuery(detachedQueryOver));
 			return this;
@@ -203,7 +203,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// A property value sum
 		/// </summary>
-		public QueryOverProjectionBuilder<R, T> SelectSum(Expression<Func<T, object>> expression)
+		public QueryOverProjectionBuilder<R, S, T> SelectSum(Expression<Func<T, object>> expression)
 		{
 			PushProjection(Projections.Sum(expression));
 			return this;
@@ -212,7 +212,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// A property value sum
 		/// </summary>
-		public QueryOverProjectionBuilder<R, T> SelectSum(Expression<Func<object>> expression)
+		public QueryOverProjectionBuilder<R, S, T> SelectSum(Expression<Func<object>> expression)
 		{
 			PushProjection(Projections.Sum(expression));
 			return this;

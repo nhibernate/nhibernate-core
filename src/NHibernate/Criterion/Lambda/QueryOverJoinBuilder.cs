@@ -8,100 +8,100 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Criterion.Lambda
 {
-
-	public class QueryOverJoinBuilder<T> : QueryOverJoinBuilderBase<QueryOver<T>, T>
+	
+	public class QueryOverJoinBuilder<S,T> : QueryOverJoinBuilderBase<QueryOver<S,T>, S, T>
 	{
-		public QueryOverJoinBuilder(QueryOver<T> root, JoinType joinType) : base(root, joinType) { }
+		public QueryOverJoinBuilder(QueryOver<S,T> root, JoinType joinType) : base(root, joinType) { }
 
-		public QueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path)
+		public QueryOver<S,U> JoinQueryOver<U>(Expression<Func<T, U>> path)
 		{
 			return root.JoinQueryOver<U>(path, joinType);
 		}
 
-		public QueryOver<U> JoinQueryOver<U>(Expression<Func<U>> path)
+		public QueryOver<S,U> JoinQueryOver<U>(Expression<Func<U>> path)
 		{
 			return root.JoinQueryOver<U>(path, joinType);
 		}
 
-		public QueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path, Expression<Func<U>> alias)
+		public QueryOver<S,U> JoinQueryOver<U>(Expression<Func<T, U>> path, Expression<Func<U>> alias)
 		{
 			return root.JoinQueryOver<U>(path, alias, joinType);
 		}
 
-		public QueryOver<U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias)
+		public QueryOver<S,U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias)
 		{
 			return root.JoinQueryOver<U>(path, alias, joinType);
 		}
 
-		public QueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path)
+		public QueryOver<S,U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path)
 		{
 			return root.JoinQueryOver<U>(path, joinType);
 		}
 
-		public QueryOver<U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path)
+		public QueryOver<S,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path)
 		{
 			return root.JoinQueryOver<U>(path, joinType);
 		}
 
-		public QueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path, Expression<Func<U>> alias)
+		public QueryOver<S,U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path, Expression<Func<U>> alias)
 		{
 			return root.JoinQueryOver<U>(path, alias, joinType);
 		}
 
-		public QueryOver<U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias)
+		public QueryOver<S,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias)
 		{
 			return root.JoinQueryOver<U>(path, alias, joinType);
 		}
 
 	}
 
-	public class IQueryOverJoinBuilder<T> : QueryOverJoinBuilderBase<IQueryOver<T>, T>
+	public class IQueryOverJoinBuilder<S,T> : QueryOverJoinBuilderBase<IQueryOver<S,T>, S, T>
 	{
-		public IQueryOverJoinBuilder(IQueryOver<T> root, JoinType joinType) : base(root, joinType) { }
+		public IQueryOverJoinBuilder(IQueryOver<S,T> root, JoinType joinType) : base(root, joinType) { }
 
-		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path)
+		public IQueryOver<S,U> JoinQueryOver<U>(Expression<Func<T, U>> path)
 		{
 			return root.JoinQueryOver<U>(path, joinType);
 		}
 
-		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<U>> path)
+		public IQueryOver<S,U> JoinQueryOver<U>(Expression<Func<U>> path)
 		{
 			return root.JoinQueryOver<U>(path, joinType);
 		}
 
-		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, U>> path, Expression<Func<U>> alias)
+		public IQueryOver<S,U> JoinQueryOver<U>(Expression<Func<T, U>> path, Expression<Func<U>> alias)
 		{
 			return root.JoinQueryOver<U>(path, alias, joinType);
 		}
 
-		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias)
+		public IQueryOver<S,U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias)
 		{
 			return root.JoinQueryOver<U>(path, alias, joinType);
 		}
 
-		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path)
+		public IQueryOver<S,U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path)
 		{
 			return root.JoinQueryOver<U>(path, joinType);
 		}
 
-		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path)
+		public IQueryOver<S,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path)
 		{
 			return root.JoinQueryOver<U>(path, joinType);
 		}
 
-		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path, Expression<Func<U>> alias)
+		public IQueryOver<S,U> JoinQueryOver<U>(Expression<Func<T, IEnumerable<U>>> path, Expression<Func<U>> alias)
 		{
 			return root.JoinQueryOver<U>(path, alias, joinType);
 		}
 
-		public IQueryOver<U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias)
+		public IQueryOver<S,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias)
 		{
 			return root.JoinQueryOver<U>(path, alias, joinType);
 		}
 
 	}
 
-	public class QueryOverJoinBuilderBase<R, T> where R : IQueryOver<T>
+	public class QueryOverJoinBuilderBase<R, S, T> where R : IQueryOver<S,T>
 	{
 
 		protected R root;

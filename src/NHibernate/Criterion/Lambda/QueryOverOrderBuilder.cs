@@ -9,29 +9,29 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 
-	public class QueryOverOrderBuilder<T> : QueryOverOrderBuilderBase<QueryOver<T>, T>
+	public class QueryOverOrderBuilder<S,T> : QueryOverOrderBuilderBase<QueryOver<S,T>, S, T>
 	{
 
-		public QueryOverOrderBuilder(QueryOver<T> root, Expression<Func<T, object>> path) : base(root, path)
+		public QueryOverOrderBuilder(QueryOver<S,T> root, Expression<Func<T, object>> path) : base(root, path)
 		{}
 
-		public QueryOverOrderBuilder(QueryOver<T> root, Expression<Func<object>> path) : base(root, path)
+		public QueryOverOrderBuilder(QueryOver<S,T> root, Expression<Func<object>> path) : base(root, path)
 		{}
 
 	}
 
-	public class IQueryOverOrderBuilder<T> : QueryOverOrderBuilderBase<IQueryOver<T>, T>
+	public class IQueryOverOrderBuilder<S,T> : QueryOverOrderBuilderBase<IQueryOver<S,T>, S, T>
 	{
 
-		public IQueryOverOrderBuilder(IQueryOver<T> root, Expression<Func<T, object>> path) : base(root, path)
+		public IQueryOverOrderBuilder(IQueryOver<S,T> root, Expression<Func<T, object>> path) : base(root, path)
 		{}
 
-		public IQueryOverOrderBuilder(IQueryOver<T> root, Expression<Func<object>> path) : base(root, path)
+		public IQueryOverOrderBuilder(IQueryOver<S,T> root, Expression<Func<object>> path) : base(root, path)
 		{}
 
 	}
 
-	public class QueryOverOrderBuilderBase<R, T> where R : IQueryOver<T>
+	public class QueryOverOrderBuilderBase<R, S, T> where R : IQueryOver<S, T>
 	{
 
 		protected R root;

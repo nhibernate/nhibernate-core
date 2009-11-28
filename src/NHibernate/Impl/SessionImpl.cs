@@ -1918,22 +1918,22 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public IQueryOver<T> QueryOver<T>() where T : class
+		public IQueryOver<T,T> QueryOver<T>() where T : class
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				return new QueryOver<T>(new CriteriaImpl(typeof(T), this));
+				return new QueryOver<T,T>(new CriteriaImpl(typeof(T), this));
 			}
 		}
 
-		public IQueryOver<T> QueryOver<T>(Expression<Func<T>> alias) where T : class
+		public IQueryOver<T,T> QueryOver<T>(Expression<Func<T>> alias) where T : class
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				string aliasPath = ExpressionProcessor.FindMemberExpression(alias.Body);
-				return new QueryOver<T>(new CriteriaImpl(typeof(T), aliasPath, this));
+				return new QueryOver<T,T>(new CriteriaImpl(typeof(T), aliasPath, this));
 			}
 		}
 

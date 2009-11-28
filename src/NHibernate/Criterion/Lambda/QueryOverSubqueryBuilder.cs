@@ -9,25 +9,25 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 
-	public class QueryOverSubqueryBuilder<T> : QueryOverSubqueryBuilderBase<QueryOver<T>, T, QueryOverSubqueryPropertyBuilder<T>>
+	public class QueryOverSubqueryBuilder<S,T> : QueryOverSubqueryBuilderBase<QueryOver<S,T>, S, T, QueryOverSubqueryPropertyBuilder<S,T>>
 	{
 
-		public QueryOverSubqueryBuilder(QueryOver<T> root)
+		public QueryOverSubqueryBuilder(QueryOver<S,T> root)
 			: base(root) { }
 
 	}
 
-	public class IQueryOverSubqueryBuilder<T> : QueryOverSubqueryBuilderBase<IQueryOver<T>, T, IQueryOverSubqueryPropertyBuilder<T>>
+	public class IQueryOverSubqueryBuilder<S,T> : QueryOverSubqueryBuilderBase<IQueryOver<S,T>, S, T, IQueryOverSubqueryPropertyBuilder<S,T>>
 	{
 
-		public IQueryOverSubqueryBuilder(IQueryOver<T> root)
+		public IQueryOverSubqueryBuilder(IQueryOver<S,T> root)
 			: base(root) { }
 
 	}
 
-	public class QueryOverSubqueryBuilderBase<R, T, S>
-		where R : IQueryOver<T>
-		where S : QueryOverSubqueryPropertyBuilderBase, new()
+	public class QueryOverSubqueryBuilderBase<R, S, T, B>
+		where R : IQueryOver<S,T>
+		where B : QueryOverSubqueryPropertyBuilderBase, new()
 	{
 
 		protected R root;
@@ -121,21 +121,21 @@ namespace NHibernate.Criterion.Lambda
 			return root;
 		}
 
-		public S WhereProperty(Expression<Func<T, object>> expression)
+		public B WhereProperty(Expression<Func<T, object>> expression)
 		{
 			string property = ExpressionProcessor.FindMemberExpression(expression.Body);
-			return (S)new S().Set(root, property, null);
+			return (B)new B().Set(root, property, null);
 		}
 
-		public S WhereProperty(Expression<Func<object>> expression)
+		public B WhereProperty(Expression<Func<object>> expression)
 		{
 			string property = ExpressionProcessor.FindMemberExpression(expression.Body);
-			return (S)new S().Set(root, property, null);
+			return (B)new B().Set(root, property, null);
 		}
 
-		public S WhereValue(object value)
+		public B WhereValue(object value)
 		{
-			return (S)new S().Set(root, null, value);
+			return (B)new B().Set(root, null, value);
 		}
 
 	}

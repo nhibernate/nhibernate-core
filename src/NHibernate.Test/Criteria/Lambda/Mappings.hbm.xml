@@ -10,12 +10,18 @@
 		<property name="Name" />
 		<property name="Age" />
 		<property name="Blood" />
+		<bag name="Children" inverse="true" cascade="all-delete-orphan">
+			<key column="Parent" />
+			<one-to-many class="Child" />
+		</bag>
 	</class>
 
 	<class name="Child">
 		<id name="Id">
 			<generator class="native"/>
 		</id>
+		<property name="Nickname" />
+		<many-to-one name="Parent" class="Person" />
 	</class>
 
 </hibernate-mapping>

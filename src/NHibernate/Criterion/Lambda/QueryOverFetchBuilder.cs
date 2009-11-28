@@ -9,29 +9,29 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion
 {
 
-	public class QueryOverFetchBuilder<T> : QueryOverFetchBuilderBase<QueryOver<T>, T>
+	public class QueryOverFetchBuilder<S,T> : QueryOverFetchBuilderBase<QueryOver<S,T>, S, T>
 	{
 
-		public QueryOverFetchBuilder(QueryOver<T> root, Expression<Func<T, object>> path)
+		public QueryOverFetchBuilder(QueryOver<S,T> root, Expression<Func<S, object>> path)
 			: base(root, path) { }
 
 	}
 
-	public class IQueryOverFetchBuilder<T> : QueryOverFetchBuilderBase<IQueryOver<T>, T>
+	public class IQueryOverFetchBuilder<S,T> : QueryOverFetchBuilderBase<IQueryOver<S,T>, S, T>
 	{
 
-		public IQueryOverFetchBuilder(IQueryOver<T> root, Expression<Func<T, object>> path)
+		public IQueryOverFetchBuilder(IQueryOver<S,T> root, Expression<Func<S, object>> path)
 			: base(root, path) { }
 
 	}
 
-	public class QueryOverFetchBuilderBase<R, T> where R : IQueryOver<T>
+	public class QueryOverFetchBuilderBase<R, S, T> where R : IQueryOver<S,T>
 	{
 
 		protected R root;
 		protected string path;
 
-		protected QueryOverFetchBuilderBase(R root, Expression<Func<T, object>> path)
+		protected QueryOverFetchBuilderBase(R root, Expression<Func<S, object>> path)
 		{
 			this.root = root;
 			this.path = ExpressionProcessor.FindMemberExpression(path.Body);

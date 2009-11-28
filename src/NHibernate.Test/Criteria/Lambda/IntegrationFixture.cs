@@ -37,8 +37,8 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				s.CreateQuery("delete from Person").ExecuteUpdate();
 				s.CreateQuery("delete from Child").ExecuteUpdate();
+				s.CreateQuery("delete from Person").ExecuteUpdate();
 				t.Commit();
 			}
 		}
@@ -172,6 +172,36 @@ namespace NHibernate.Test.Criteria.Lambda
 						.UniqueResult<string>();
 
 				Assert.That(actual, Is.EqualTo("test person 1"));
+			}
+		}
+
+		[Test]
+		public void SubCriteria()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new Person() { Name = "Name 1" }
+						.AddChild(new Child() { Nickname = "Name 1.1"})
+						.AddChild(new Child() { Nickname = "Name 1.2"}));
+
+				s.Save(new Person() { Name = "Name 2" }
+						.AddChild(new Child() { Nickname = "Name 2.1"})
+						.AddChild(new Child() { Nickname = "Name 2.2"}));
+
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var persons =
+					s.QueryOver<Person>()
+						.JoinQueryOver(p => p.Children)
+							.Where(c => c.Nickname == "Name 2.1")
+							.List();
+
+				Assert.That(persons.Count, Is.EqualTo(1));
+				Assert.That(persons[0].Name, Is.EqualTo("Name 2"));
 			}
 		}
 

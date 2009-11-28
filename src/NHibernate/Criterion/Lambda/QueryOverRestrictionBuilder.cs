@@ -10,24 +10,24 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 
-	public class QueryOverRestrictionBuilder<T> : QueryOverRestrictionBuilderBase<QueryOver<T>, T>
+	public class QueryOverRestrictionBuilder<S,T> : QueryOverRestrictionBuilderBase<QueryOver<S,T>, S, T>
 	{
 
-		public QueryOverRestrictionBuilder(QueryOver<T> root, string propertyName)
+		public QueryOverRestrictionBuilder(QueryOver<S,T> root, string propertyName)
 			: base(root, propertyName) { }
 
 	}
 
-	public class IQueryOverRestrictionBuilder<T> : QueryOverRestrictionBuilderBase<IQueryOver<T>, T>
+	public class IQueryOverRestrictionBuilder<S,T> : QueryOverRestrictionBuilderBase<IQueryOver<S,T>, S, T>
 	{
 
-		public IQueryOverRestrictionBuilder(IQueryOver<T> root, string propertyName)
+		public IQueryOverRestrictionBuilder(IQueryOver<S,T> root, string propertyName)
 			: base(root, propertyName) { }
 
 	}
 
-	public class QueryOverRestrictionBuilderBase<R, T>
-		where R : IQueryOver<T>
+	public class QueryOverRestrictionBuilderBase<R,S,T>
+		where R : IQueryOver<S,T>
 	{
 		public class LambdaBetweenBuilder
 		{

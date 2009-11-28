@@ -788,14 +788,14 @@ namespace NHibernate
 		/// </summary>
 		/// <typeparam name="T">The entity class</typeparam>
 		/// <returns>An ICriteria&lt;T&gt; object</returns>
-		IQueryOver<T> QueryOver<T>() where T : class;
+		IQueryOver<T,T> QueryOver<T>() where T : class;
 
 		/// <summary>
 		/// Creates a new <c>IQueryOver&lt;T&gt;</c> for the entity class.
 		/// </summary>
 		/// <typeparam name="T">The entity class</typeparam>
 		/// <returns>An ICriteria&lt;T&gt; object</returns>
-		IQueryOver<T> QueryOver<T>(Expression<Func<T>> alias) where T : class;
+		IQueryOver<T,T> QueryOver<T>(Expression<Func<T>> alias) where T : class;
 
 		/// <summary>
 		/// Create a new instance of <c>Query</c> for the given query string

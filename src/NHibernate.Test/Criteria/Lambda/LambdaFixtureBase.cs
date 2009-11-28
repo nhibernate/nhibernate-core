@@ -30,18 +30,18 @@ namespace NHibernate.Test.Criteria.Lambda
 			return new CriteriaImpl(persistentClass, alias, null);
 		}
 
-		protected IQueryOver<T> CreateTestQueryOver<T>()
+		protected IQueryOver<T,T> CreateTestQueryOver<T>()
 		{
-			return (IQueryOver<T>)
-				typeof(QueryOver<T>).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new System.Type[] { typeof(CriteriaImpl) }, null)
+			return (IQueryOver<T,T>)
+				typeof(QueryOver<T,T>).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new System.Type[] { typeof(CriteriaImpl) }, null)
 					.Invoke(new object[] { new CriteriaImpl(typeof(T), null) });
 		}
 
-		protected IQueryOver<T> CreateTestQueryOver<T>(Expression<Func<object>> alias)
+		protected IQueryOver<T,T> CreateTestQueryOver<T>(Expression<Func<object>> alias)
 		{
 			string aliasContainer = ExpressionProcessor.FindMemberExpression(alias.Body);
-			return (IQueryOver<T>)
-				typeof(QueryOver<T>).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new System.Type[] { typeof(CriteriaImpl) }, null)
+			return (IQueryOver<T,T>)
+				typeof(QueryOver<T,T>).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new System.Type[] { typeof(CriteriaImpl) }, null)
 					.Invoke(new object[] { new CriteriaImpl(typeof(T), aliasContainer, null) });
 		}
 

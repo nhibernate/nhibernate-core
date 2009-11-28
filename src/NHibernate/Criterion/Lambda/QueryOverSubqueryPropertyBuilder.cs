@@ -9,7 +9,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 
-	public class QueryOverSubqueryPropertyBuilder<T> : QueryOverSubqueryPropertyBuilderBase<QueryOver<T>, T>
+	public class QueryOverSubqueryPropertyBuilder<S,T> : QueryOverSubqueryPropertyBuilderBase<QueryOver<S,T>, S, T>
 	{
 
 		public QueryOverSubqueryPropertyBuilder()
@@ -17,7 +17,7 @@ namespace NHibernate.Criterion.Lambda
 
 	}
 
-	public class IQueryOverSubqueryPropertyBuilder<T> : QueryOverSubqueryPropertyBuilderBase<IQueryOver<T>, T>
+	public class IQueryOverSubqueryPropertyBuilder<S,T> : QueryOverSubqueryPropertyBuilderBase<IQueryOver<S,T>, S, T>
 	{
 
 		public IQueryOverSubqueryPropertyBuilder()
@@ -32,8 +32,8 @@ namespace NHibernate.Criterion.Lambda
 		internal abstract QueryOverSubqueryPropertyBuilderBase Set(object root, string path, object value);
 	}
 
-	public class QueryOverSubqueryPropertyBuilderBase<R, T> : QueryOverSubqueryPropertyBuilderBase
-		where R : IQueryOver<T>
+	public class QueryOverSubqueryPropertyBuilderBase<R, S, T> : QueryOverSubqueryPropertyBuilderBase
+		where R : IQueryOver<S,T>
 	{
 
 		protected R root;
