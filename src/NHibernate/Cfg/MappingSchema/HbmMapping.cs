@@ -38,5 +38,15 @@ namespace NHibernate.Cfg.MappingSchema
 		{
 			get { return Items != null ? Items.OfType<HbmUnionSubclass>().ToArray(): new HbmUnionSubclass[0]; }
 		}
+
+		public HbmQuery[] HqlQueries
+		{
+			get { return Items1 != null ? Items1.OfType<HbmQuery>().ToArray() : new HbmQuery[0]; }
+		}
+
+		public HbmSqlQuery[] SqlQueries
+		{
+			get { return Items1 != null ? Items1.OfType<HbmSqlQuery>().ToArray() : new HbmSqlQuery[0]; }
+		}
 	}
 }

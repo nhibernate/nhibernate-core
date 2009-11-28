@@ -112,31 +112,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void AddQueries(HbmMapping mappingSchema)
 		{
 			var binder = new NamedQueryBinder(this);
-
-			foreach (object item in mappingSchema.Items1 ?? new object[0])
-			{
-				var querySchema = item as HbmQuery;
-
-				if (querySchema != null)
-				{
-					binder.AddQuery(querySchema);
-				}
-			}
+			System.Array.ForEach(mappingSchema.HqlQueries, binder.AddQuery);
 		}
 
 		private void AddSqlQueries(HbmMapping mappingSchema)
 		{
 			var binder = new NamedSQLQueryBinder(this);
-
-			foreach (object item in mappingSchema.Items1 ?? new object[0])
-			{
-				var sqlQuerySchema = item as HbmSqlQuery;
-
-				if (sqlQuerySchema != null)
-				{
-					binder.AddSqlQuery(sqlQuerySchema);
-				}
-			}
+			System.Array.ForEach(mappingSchema.SqlQueries, binder.AddSqlQuery);
 		}
 
 		public void AddImports(HbmMapping mappingSchema)
