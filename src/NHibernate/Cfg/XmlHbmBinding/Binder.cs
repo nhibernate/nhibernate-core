@@ -142,6 +142,24 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				return (T) new XmlSerializer(typeof (T)).Deserialize(reader);
 		}
 
+		protected static XmlNode Serialize<T>(T hbmElement)
+		{
+			// TODO : this method is only for TEMPORAL usage; should be removed after refactorize all binders
+			var serializer = new XmlSerializer(typeof (T));
+			using (var memStream = new MemoryStream(2000))
+			using (var xmlWriter = XmlWriter.Create(memStream))
+			{
+				serializer.Serialize(xmlWriter, hbmElement);
+				memStream.Position = 0;
+				using (XmlReader reader = XmlReader.Create(memStream))
+				{
+					var hbmDocument = new XmlDocument();
+					hbmDocument.Load(reader);
+					return hbmDocument.DocumentElement;
+				}
+			}
+		}
+
 		protected static string GetXmlEnumAttribute(Enum cascadeStyle)
 		{
 			MemberInfo[] memberInfo = cascadeStyle.GetType().GetMember(cascadeStyle.ToString());
@@ -231,7 +249,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					continue;
 				}
 				var inheritableValue = GetAttributeValue(metaNode, "inherit");
-				bool inheritable = inheritableValue != null ? IsTrue(inheritableValue) : false;
+				bool inheritable = inheritableValue != null ? IsTrue(inheritableValue) : true;
 				if (onlyInheritable & !inheritable)
 				{
 					continue;

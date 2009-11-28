@@ -30,7 +30,8 @@
 			</property>
 		</component>
 
-		<set name="SortedEmployee" sort="NonExistingComparator">
+		<!--<set name="SortedEmployee" sort="NonExistingComparator">-->
+		<set name="SortedEmployee">
 			<meta attribute="globalmutated">sortedemployee level</meta>
 			<key column="attrb_id"/>
 			<many-to-many class="Employee" column="id"/>
@@ -71,7 +72,7 @@
 			<property name="Pregnant"/>
 			<property name="Birthdate" type="Date"/>
 			<subclass name="DomesticAnimal">
-				<meta attribute="Auditable"/>
+				<meta attribute="Auditable" inherit="true"/>
 				<property name="Name"/>
 				<many-to-one name="Owner"/>
 				<subclass name="Cat"/>
