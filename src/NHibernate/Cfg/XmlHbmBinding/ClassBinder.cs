@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -187,7 +186,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.BatchSize = classMapping.BatchSize.Value;
 
 			// SELECT BEFORE UPDATE
-			model.SelectBeforeUpdate = classMapping.SelectBeforeUpdate;;
+			model.SelectBeforeUpdate = classMapping.SelectBeforeUpdate;
 
 			// META ATTRIBUTES
 			model.MetaAttributes = GetMetas(classMapping, inheritedMetas);
@@ -253,17 +252,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				string tupClassName = FullQualifiedClassName(tuplizer.@class, mappings);
 				entity.AddTuplizer(EntityMode.Poco, tupClassName);
 			}
-		}
-
-		private XmlNode LocateTuplizerDefinition(XmlNode container, EntityMode mode)
-		{
-			string modeToFind = EntityModeHelper.ToString(mode);
-			foreach (XmlNode node in container.SelectNodes(HbmConstants.nsTuplizer, namespaceManager))
-			{
-				if (modeToFind.Equals(node.Attributes["entity-mode"].Value))
-					return node;
-			}
-			return null;
 		}
 
 		private void BindJoin(XmlNode node, Join join, IDictionary<string, MetaAttribute> inheritedMetas)
@@ -419,25 +407,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				bool callable = IsCallable(element);
 				model.SetCustomSQLUpdate(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
 			}
-		}
-
-		private static Versioning.OptimisticLock GetOptimisticLockMode(XmlAttribute olAtt)
-		{
-			if (olAtt == null)
-				return Versioning.OptimisticLock.Version;
-
-			string olMode = olAtt.Value;
-
-			if (olMode == null || "version".Equals(olMode))
-				return Versioning.OptimisticLock.Version;
-			else if ("dirty".Equals(olMode))
-				return Versioning.OptimisticLock.Dirty;
-			else if ("all".Equals(olMode))
-				return Versioning.OptimisticLock.All;
-			else if ("none".Equals(olMode))
-				return Versioning.OptimisticLock.None;
-			else
-				throw new MappingException("Unsupported optimistic-lock style: " + olMode);
 		}
 
 		protected PersistentClass GetSuperclass(XmlNode subnode)
@@ -983,7 +952,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					{
 						case HbmCustomSQLCheck.None:
 							return ExecuteUpdateResultCheckStyle.None;
-							break;
 						case HbmCustomSQLCheck.Rowcount:
 							return ExecuteUpdateResultCheckStyle.Count;
 						case HbmCustomSQLCheck.Param:
