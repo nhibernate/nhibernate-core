@@ -495,7 +495,13 @@
     <Compile Include="Cfg\Loquacious\MappingsConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\ProxyConfiguration.cs" />
     <Compile Include="Cfg\MappingSchema\HbmDefinition.cs" />
-    <Compile Include="Cfg\MappingSchema\IEntityMetadata.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmExtensions.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmJoinedSubclass.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmSubclass.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmUnionSubclass.cs" />
+    <Compile Include="Cfg\MappingSchema\IEntityDiscriminableMapping.cs" />
+    <Compile Include="Cfg\MappingSchema\IEntityMapping.cs" />
+    <Compile Include="Cfg\MappingSchema\IEntitySqlsMapping.cs" />
     <Compile Include="Cfg\SchemaAutoAction.cs" />
     <Compile Include="Cfg\SessionFactoryConfigurationBase.cs" />
     <Compile Include="Cfg\ISessionFactoryConfiguration.cs" />

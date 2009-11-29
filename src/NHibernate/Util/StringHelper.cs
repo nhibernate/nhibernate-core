@@ -6,13 +6,8 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Util
 {
 	/// <summary></summary>
-	public sealed class StringHelper
+	public static class StringHelper
 	{
-		private StringHelper()
-		{
-			// not creatable
-		}
-
 		public const string WhiteSpace = " \n\r\f\t";
 
 		/// <summary></summary>
@@ -392,6 +387,21 @@ namespace NHibernate.Util
 				buf.Append(NullSafeToString(array[i])).Append(CommaSpace);
 			}
 			return buf.Append(NullSafeToString(array[len - 1])).ToString();
+		}
+
+		public static string LinesToString(this string[] text)
+		{
+			if(text == null)
+			{
+				return null;
+			}
+			if(text.Length == 1)
+			{
+				return text[0];
+			}
+			var sb = new StringBuilder(200);
+			Array.ForEach(text, t => sb.AppendLine(t));
+			return sb.ToString();
 		}
 
 		/// <summary>

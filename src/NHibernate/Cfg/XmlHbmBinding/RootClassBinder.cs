@@ -16,7 +16,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		public void Bind(XmlNode node, HbmClass classSchema, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			RootClass rootClass = new RootClass();
-			BindClass(node, classSchema, rootClass, inheritedMetas);
+			BindClass(classSchema, rootClass, inheritedMetas);
 			inheritedMetas = GetMetas(classSchema, inheritedMetas, true); // get meta's from <class>
 
 			//TABLENAME

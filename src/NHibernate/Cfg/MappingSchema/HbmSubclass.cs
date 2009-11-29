@@ -1,33 +1,17 @@
 namespace NHibernate.Cfg.MappingSchema
 {
-	partial class HbmClass : AbstractDecoratable, IEntityMapping, IEntityDiscriminableMapping
+	public partial class HbmSubclass : AbstractDecoratable, IEntityMapping, IEntityDiscriminableMapping
 	{
-		public HbmId Id
-		{
-			get { return Item as HbmId; }
-		}
-
-		public HbmCompositeId CompositeId
-		{
-			get { return Item as HbmCompositeId; }
-		}
-
-		public HbmVersion Version
-		{
-			get { return Item1 as HbmVersion; }
-		}
-
-		public HbmTimestamp Timestamp
-		{
-			get { return Item1 as HbmTimestamp; }
-		}
-
-		#region Implementation of IEntityMapping
+		#region Overrides of AbstractDecoratable
 
 		protected override HbmMeta[] Metadatas
 		{
 			get { return meta ?? new HbmMeta[0]; }
 		}
+
+		#endregion
+
+		#region Implementation of IEntityMapping
 
 		public string EntityName
 		{
@@ -71,7 +55,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public int? BatchSize
 		{
-			get { return batchsizeSpecified ? batchsize : (int?) null; }
+			get { return !string.IsNullOrEmpty(batchsize) ? int.Parse(batchsize) : (int?)null; }
 		}
 
 		public bool SelectBeforeUpdate
@@ -86,7 +70,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public bool? IsAbstract
 		{
-			get { return abstractSpecified ? @abstract : (bool?) null; }
+			get { return abstractSpecified ? @abstract : (bool?)null; }
 		}
 
 		public HbmSynchronize[] Synchronize
@@ -128,5 +112,6 @@ namespace NHibernate.Cfg.MappingSchema
 		}
 
 		#endregion
+
 	}
 }

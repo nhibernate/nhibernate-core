@@ -832,7 +832,10 @@ namespace NHibernate.Mapping
 		/// <param name="constraint"></param>
 		public void AddCheckConstraint(string constraint)
 		{
-			checkConstraints.Add(constraint);
+			if (!string.IsNullOrEmpty(constraint))
+			{
+				checkConstraints.Add(constraint);
+			}
 		}
 
 		internal void SetHasDenormalizedTables()

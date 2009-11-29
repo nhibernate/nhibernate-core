@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using NHibernate.Cfg.MappingSchema;
@@ -96,13 +97,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					model.AddJoin(join);
 				}
 				else if ("subclass".Equals(name))
-					new SubclassBinder(this).HandleSubclass(model, subnode, inheritedMetas);
+					new SubclassBinder(this).HandleSubclass(model, subnode, Deserialize<HbmSubclass>(subnode) , inheritedMetas);
 
 				else if ("joined-subclass".Equals(name))
-					new JoinedSubclassBinder(this).HandleJoinedSubclass(model, subnode, inheritedMetas);
+					new JoinedSubclassBinder(this).HandleJoinedSubclass(model, subnode, Deserialize<HbmJoinedSubclass>(subnode), inheritedMetas);
 
 				else if ("union-subclass".Equals(name))
-					new UnionSubclassBinder(this).HandleUnionSubclass(model, subnode, inheritedMetas);
+					new UnionSubclassBinder(this).HandleUnionSubclass(model, subnode, Deserialize<HbmUnionSubclass>(subnode), inheritedMetas);
 
 				else if ("filter".Equals(name))
 					ParseFilter(subnode, model);
@@ -137,18 +138,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		protected void BindClass(XmlNode node, IDecoratable classMapping, PersistentClass model, IDictionary<string, MetaAttribute> inheritedMetas)
+		protected void BindClass(IEntityMapping classMapping, PersistentClass model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			// transfer an explicitly defined entity name
 			// handle the lazy attribute
-			XmlAttribute lazyNode = node.Attributes["lazy"];
-			bool lazy = lazyNode == null ? mappings.DefaultLazy : "true".Equals(lazyNode.Value);
 			// go ahead and set the lazy here, since pojo.proxy can override it.
-			model.IsLazy = lazy;
+			model.IsLazy = classMapping.UseLazy.HasValue ? classMapping.UseLazy.Value : mappings.DefaultLazy;
 
-			string entityName = (node.Attributes["entity-name"] != null ? node.Attributes["entity-name"].Value : null)
-			                    ??
-			                    ClassForNameChecked(node.Attributes["name"].Value, mappings, "persistent class {0} not found").
+			// transfer an explicitly defined entity name
+			string entityName = classMapping.EntityName ??
+			                    ClassForNameChecked(classMapping.Name, mappings, "persistent class {0} not found").
 			                    	FullName;
 			if (entityName == null)
 			{
@@ -156,26 +154,24 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 			model.EntityName = entityName;
 
-			BindPocoRepresentation(node, model);
-			BindXmlRepresentation(node, model);
-			BindMapRepresentation(node, model);
+			BindPocoRepresentation(classMapping, model);
+			BindXmlRepresentation(classMapping, model);
+			BindMapRepresentation(classMapping, model);
 
-			BindPersistentClassCommonValues(node, classMapping, model, inheritedMetas);
+			BindPersistentClassCommonValues(classMapping, model, inheritedMetas);
 		}
 
-		private void BindPersistentClassCommonValues(XmlNode node, IDecoratable classMapping, PersistentClass model, IDictionary<string, MetaAttribute> inheritedMetas)
+		private void BindPersistentClassCommonValues(IEntityMapping classMapping, PersistentClass model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			// DISCRIMINATOR
-			XmlAttribute discriminatorNode = node.Attributes["discriminator-value"];
-			model.DiscriminatorValue = (discriminatorNode == null) ? model.EntityName : discriminatorNode.Value;
+			var discriminable = classMapping as IEntityDiscriminableMapping;
+			model.DiscriminatorValue = (discriminable == null || string.IsNullOrEmpty(discriminable.DiscriminatorValue)) ? model.EntityName : discriminable.DiscriminatorValue;
 
 			// DYNAMIC UPDATE
-			XmlAttribute dynamicNode = node.Attributes["dynamic-update"];
-			model.DynamicUpdate = (dynamicNode == null) ? false : "true".Equals(dynamicNode.Value);
+			model.DynamicUpdate = classMapping.DynamicUpdate;
 
 			// DYNAMIC INSERT
-			XmlAttribute insertNode = node.Attributes["dynamic-insert"];
-			model.DynamicInsert = (insertNode == null) ? false : "true".Equals(insertNode.Value);
+			model.DynamicInsert = classMapping.DynamicInsert;
 
 			// IMPORT
 			// For entities, the EntityName is the key to find a persister
@@ -187,102 +183,81 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				mappings.AddImport(qualifiedName, StringHelper.Unqualify(model.EntityName));
 
 			// BATCH SIZE
-			XmlAttribute batchNode = node.Attributes["batch-size"];
-			if (batchNode != null)
-				model.BatchSize = int.Parse(batchNode.Value);
+			if (classMapping.BatchSize.HasValue)
+				model.BatchSize = classMapping.BatchSize.Value;
 
 			// SELECT BEFORE UPDATE
-			XmlAttribute sbuNode = node.Attributes["select-before-update"];
-			if (sbuNode != null)
-				model.SelectBeforeUpdate = "true".Equals(sbuNode.Value);
+			model.SelectBeforeUpdate = classMapping.SelectBeforeUpdate;;
 
-			// OPTIMISTIC LOCK MODE
-			XmlAttribute olNode = node.Attributes["optimistic-lock"];
-			model.OptimisticLockMode = GetOptimisticLockMode(olNode);
+			// OPTIMISTIC LOCK MODE (hack)
+			var hbmClass = classMapping as HbmClass;
+			if(hbmClass != null)
+			{
+				model.OptimisticLockMode = hbmClass.optimisticlock.ToOptimisticLock();
+			}
 
 			// META ATTRIBUTES
-			model.MetaAttributes = classMapping != null
-			                       	? GetMetas(classMapping, inheritedMetas)
-			                       	: GetMetas(node.SelectNodes(HbmConstants.nsMeta, namespaceManager), inheritedMetas);
+			model.MetaAttributes = GetMetas(classMapping, inheritedMetas);
 
 			// PERSISTER
-			XmlAttribute persisterNode = node.Attributes["persister"];
-			if (persisterNode == null)
-			{
-				//persister = typeof( EntityPersister );
-			}
-			else
-				model.EntityPersisterClass = ClassForNameChecked(persisterNode.Value, mappings,
+			if(!string.IsNullOrEmpty(classMapping.Persister))
+				model.EntityPersisterClass = ClassForNameChecked(classMapping.Persister, mappings,
 				                                                 "could not instantiate persister class: {0}");
 
 			// CUSTOM SQL
-			HandleCustomSQL(node, model);
+			HandleCustomSQL(classMapping, model);
 
-			foreach (XmlNode syncNode in node.SelectNodes(HbmConstants.nsSynchronize, namespaceManager))
-				model.AddSynchronizedTable(XmlHelper.GetAttributeValue(syncNode, "table"));
-
-			bool? isAbstract = null;
-			XmlAttribute abstractNode = node.Attributes["abstract"];
-			if (abstractNode != null)
+			foreach (var synchronize in classMapping.Synchronize)
 			{
-				if ("true".Equals(abstractNode.Value) || "1".Equals(abstractNode.Value))
-					isAbstract = true;
-				else if ("false".Equals(abstractNode.Value) || "0".Equals(abstractNode.Value))
-					isAbstract = false;
+				model.AddSynchronizedTable(synchronize.table);
 			}
-			model.IsAbstract = isAbstract;
+
+			model.IsAbstract = classMapping.IsAbstract;
 		}
 
-		private void BindMapRepresentation(XmlNode node, PersistentClass entity)
+		private void BindMapRepresentation(IEntityMapping classMapping, PersistentClass entity)
 		{
-			XmlNode tuplizer = LocateTuplizerDefinition(node, EntityMode.Map);
+			HbmTuplizer tuplizer = classMapping.Tuplizers.FirstOrDefault(tp => tp.entitymode == HbmTuplizerEntitymode.DynamicMap);
 			if (tuplizer != null)
 			{
-				string tupClassName = FullQualifiedClassName(tuplizer.Attributes["class"].Value, mappings);
+				string tupClassName = FullQualifiedClassName(tuplizer.@class, mappings);
 				entity.AddTuplizer(EntityMode.Map, tupClassName);
 			}
 		}
 
-		private void BindXmlRepresentation(XmlNode node, PersistentClass entity)
+		private void BindXmlRepresentation(IEntityMapping classMapping, PersistentClass entity)
 		{
-			string nodeName = null;
-			XmlAttribute nodeAtt = node.Attributes["node"];
-			if(nodeAtt != null)
-				nodeName = nodeAtt.Value;
-			if (nodeName == null)
-				nodeName = StringHelper.Unqualify(entity.EntityName);
-			entity.NodeName = nodeName;
+			entity.NodeName = string.IsNullOrEmpty(classMapping.Node) ? StringHelper.Unqualify(entity.EntityName): classMapping.Node;
 
-			XmlNode tuplizer = LocateTuplizerDefinition(node, EntityMode.Xml);
+			HbmTuplizer tuplizer = classMapping.Tuplizers.FirstOrDefault(tp => tp.entitymode == HbmTuplizerEntitymode.Xml);
 			if (tuplizer != null)
 			{
-				string tupClassName = FullQualifiedClassName(tuplizer.Attributes["class"].Value, mappings);
+				string tupClassName = FullQualifiedClassName(tuplizer.@class, mappings);
 				entity.AddTuplizer(EntityMode.Xml, tupClassName);
 			}
 		}
 
-		private void BindPocoRepresentation(XmlNode node, PersistentClass entity)
+		private void BindPocoRepresentation(IEntityMapping classMapping, PersistentClass entity)
 		{
-			string className = node.Attributes["name"] == null
+			string className = classMapping.Name == null
 			                   	? null
-			                   	: ClassForNameChecked(node.Attributes["name"].Value, mappings, "persistent class {0} not found").
+													: ClassForNameChecked(classMapping.Name, mappings, "persistent class {0} not found").
 			                   	  	AssemblyQualifiedName;
 
 			entity.ClassName = className;
 
-			XmlAttribute proxyNode = node.Attributes["proxy"];
-			if (proxyNode != null)
+			if (!string.IsNullOrEmpty(classMapping.Proxy))
 			{
-				entity.ProxyInterfaceName = ClassForNameChecked(proxyNode.Value, mappings, "proxy class not found: {0}").AssemblyQualifiedName;
+				entity.ProxyInterfaceName = ClassForNameChecked(classMapping.Proxy, mappings, "proxy class not found: {0}").AssemblyQualifiedName;
 				entity.IsLazy = true;
 			}
 			else if (entity.IsLazy)
 				entity.ProxyInterfaceName = className;
 
-			XmlNode tuplizer = LocateTuplizerDefinition(node, EntityMode.Poco);
+			HbmTuplizer tuplizer = classMapping.Tuplizers.FirstOrDefault(tp=> tp.entitymode == HbmTuplizerEntitymode.Poco);
 			if (tuplizer != null)
 			{
-				string tupClassName = FullQualifiedClassName(tuplizer.Attributes["class"].Value, mappings);
+				string tupClassName = FullQualifiedClassName(tuplizer.@class, mappings);
 				entity.AddTuplizer(EntityMode.Poco, tupClassName);
 			}
 		}
@@ -313,7 +288,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			XmlAttribute actionNode = node.Attributes["schema-action"];
 			string action = actionNode == null ? "all" : actionNode.Value;
 
-			Table table = mappings.AddTable(schema, catalog, GetClassTableName(persistentClass, node), null, false, action);
+			string tableName = node.Attributes["table"] != null ? node.Attributes["table"].Value : null;
+			Table table = mappings.AddTable(schema, catalog, GetClassTableName(persistentClass, tableName), null, false, action);
 			join.Table = table;
 
 			XmlAttribute fetchNode = node.Attributes["fetch"];
@@ -401,33 +377,31 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			HandleCustomSQL(node, join);
 		}
 
-		private void HandleCustomSQL(XmlNode node, PersistentClass model)
+		private void HandleCustomSQL(IEntitySqlsMapping sqlsMapping, PersistentClass model)
 		{
-			XmlNode element = node.SelectSingleNode(HbmConstants.nsSqlInsert, namespaceManager);
-
-			if (element != null)
+			var sqlInsert = sqlsMapping.SqlInsert;
+			if (sqlInsert != null)
 			{
-				bool callable = IsCallable(element);
-				model.SetCustomSQLInsert(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
+				bool callable = sqlInsert.callableSpecified && sqlInsert.callable;
+				model.SetCustomSQLInsert(sqlInsert.Text.LinesToString(), callable, GetResultCheckStyle(sqlInsert));
 			}
 
-			element = node.SelectSingleNode(HbmConstants.nsSqlDelete, namespaceManager);
-			if (element != null)
+			var sqlDelete = sqlsMapping.SqlDelete;
+			if (sqlDelete != null)
 			{
-				bool callable = IsCallable(element);
-				model.SetCustomSQLDelete(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
+				bool callable = sqlDelete.callableSpecified && sqlDelete.callable;
+				model.SetCustomSQLDelete(sqlDelete.Text.LinesToString(), callable, GetResultCheckStyle(sqlDelete));
 			}
 
-			element = node.SelectSingleNode(HbmConstants.nsSqlUpdate, namespaceManager);
-			if (element != null)
+			var sqlUpdate = sqlsMapping.SqlUpdate;
+			if (sqlUpdate != null)
 			{
-				bool callable = IsCallable(element);
-				model.SetCustomSQLUpdate(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
+				bool callable = sqlUpdate.callableSpecified && sqlUpdate.callable;
+				model.SetCustomSQLUpdate(sqlUpdate.Text.LinesToString(), callable, GetResultCheckStyle(sqlUpdate));
 			}
 
-			element = node.SelectSingleNode(HbmConstants.nsLoader, namespaceManager);
-			if (element != null)
-				model.LoaderName = XmlHelper.GetAttributeValue(element, "query-ref");
+			if (sqlsMapping.SqlLoader != null)
+				model.LoaderName = sqlsMapping.SqlLoader.queryref;
 		}
 
 		private void HandleCustomSQL(XmlNode node, Join model)
@@ -494,13 +468,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			return superModel;
 		}
 
-		protected string GetClassTableName(PersistentClass model, XmlNode node)
+		protected string GetClassTableName(PersistentClass model, string mappedTableName)
 		{
-			XmlAttribute tableNameNode = node.Attributes["table"];
-			if (tableNameNode == null)
-				return mappings.NamingStrategy.ClassToTableName(model.EntityName);
-			else
-				return mappings.NamingStrategy.TableName(tableNameNode.Value);
+			return string.IsNullOrEmpty(mappedTableName)
+			       	? mappings.NamingStrategy.ClassToTableName(model.EntityName)
+			       	: mappings.NamingStrategy.TableName(mappedTableName);
 		}
 
 		protected void MakeIdentifier(XmlNode node, SimpleValue model)
@@ -1002,6 +974,31 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				// NONE might be a better option moving forward in the case of callable
 				return ExecuteUpdateResultCheckStyle.Count;
 			return ExecuteUpdateResultCheckStyle.Parse(attr.Value);
+		}
+
+		protected static ExecuteUpdateResultCheckStyle GetResultCheckStyle(HbmCustomSQL customSQL)
+		{
+			if (customSQL != null)
+			{
+				if (!customSQL.checkSpecified)
+				{
+					return ExecuteUpdateResultCheckStyle.Count;
+				}
+				else
+				{
+					switch (customSQL.check)
+					{
+						case HbmCustomSQLCheck.None:
+							return ExecuteUpdateResultCheckStyle.None;
+							break;
+						case HbmCustomSQLCheck.Rowcount:
+							return ExecuteUpdateResultCheckStyle.Count;
+						case HbmCustomSQLCheck.Param:
+							return null; // not supported
+					}
+				}
+			}
+			return null;
 		}
 
 		protected void ParseFilter(XmlNode filterElement, IFilterable filterable)

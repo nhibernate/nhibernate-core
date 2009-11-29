@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Xml;
-
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using NHibernate.Persister.Entity;
 
@@ -18,19 +18,18 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public void Bind(XmlNode node, IDictionary<string, MetaAttribute> inheritedMetas)
+		public void Bind(XmlNode node, HbmSubclass subClassMapping, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			PersistentClass superModel = GetSuperclass(node);
-			HandleSubclass(superModel, node, inheritedMetas);
+			HandleSubclass(superModel, node, subClassMapping, inheritedMetas);
 		}
 
-		public void HandleSubclass(PersistentClass model, XmlNode subnode, IDictionary<string, MetaAttribute> inheritedMetas)
+		public void HandleSubclass(PersistentClass model, XmlNode subnode, HbmSubclass subClassMapping, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			Subclass subclass = new SingleTableSubclass(model);
 
-			BindClass(subnode, null, subclass, inheritedMetas);
-
-			inheritedMetas = GetMetas(subnode.SelectNodes(HbmConstants.nsMeta, namespaceManager), inheritedMetas, true); // get meta's from <subclass>
+			BindClass(subClassMapping, subclass, inheritedMetas);
+			inheritedMetas = GetMetas(subClassMapping, inheritedMetas, true); // get meta's from <subclass>
 
 			if (subclass.EntityPersisterClass == null)
 				subclass.RootClazz.EntityPersisterClass = typeof(SingleTableEntityPersister);
