@@ -300,17 +300,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			LogMappedProperty(property);
 		}
 
-		public static void MakeVersion(XmlNode node, SimpleValue model)
-		{
-			if (node != null && node.Attributes != null)
-			{
-				XmlAttribute attribute = node.Attributes["unsaved-value"];
-				model.NullValue = attribute == null ? null : attribute.Value;
-			}
-			else
-				model.NullValue = null;
-		}
-
 		private static void BindCache(HbmCache cacheSchema, RootClass rootClass)
 		{
 			if (cacheSchema != null)

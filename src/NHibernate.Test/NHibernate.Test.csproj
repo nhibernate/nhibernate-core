@@ -113,7 +113,6 @@
     <Compile Include="CfgTest\ConfigurationSerializationTests.cs" />
     <Compile Include="CfgTest\DefaultNsAssmFixture.cs" />
     <Compile Include="CfgTest\EntityCacheUsageParserFixture.cs" />
-    <Compile Include="CfgTest\HbmBinderFixture.cs" />
     <Compile Include="CfgTest\HbmOrderingFixture.cs" />
     <Compile Include="CfgTest\LocatedInTestAssembly.cs" />
     <Compile Include="CfgTest\Loquacious\ConfigurationFixture.cs" />
