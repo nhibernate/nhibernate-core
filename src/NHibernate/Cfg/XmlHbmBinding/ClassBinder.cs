@@ -189,13 +189,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			// SELECT BEFORE UPDATE
 			model.SelectBeforeUpdate = classMapping.SelectBeforeUpdate;;
 
-			// OPTIMISTIC LOCK MODE (hack)
-			var hbmClass = classMapping as HbmClass;
-			if(hbmClass != null)
-			{
-				model.OptimisticLockMode = hbmClass.optimisticlock.ToOptimisticLock();
-			}
-
 			// META ATTRIBUTES
 			model.MetaAttributes = GetMetas(classMapping, inheritedMetas);
 

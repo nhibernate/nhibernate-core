@@ -17,6 +17,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			RootClass rootClass = new RootClass();
 			BindClass(classSchema, rootClass, inheritedMetas);
+			// OPTIMISTIC LOCK MODE
+			rootClass.OptimisticLockMode = classSchema.optimisticlock.ToOptimisticLock();
+
 			inheritedMetas = GetMetas(classSchema, inheritedMetas, true); // get meta's from <class>
 
 			//TABLENAME
