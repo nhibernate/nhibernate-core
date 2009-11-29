@@ -1,6 +1,6 @@
 namespace NHibernate.Cfg.MappingSchema
 {
-	public interface IEntityMapping : IDecoratable, IEntitySqlsMapping
+	public interface IEntityMapping : IDecoratable, IEntitySqlsMapping, IPropertiesContainerMapping
 	{
 		string EntityName { get; }
 		string Name { get; }

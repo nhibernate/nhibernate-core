@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+
 namespace NHibernate.Cfg.MappingSchema
 {
 	public partial class HbmSubclass : AbstractDecoratable, IEntityMapping, IEntityDiscriminableMapping
@@ -113,5 +116,13 @@ namespace NHibernate.Cfg.MappingSchema
 
 		#endregion
 
+		#region Implementation of IPropertiesContainerMapping
+
+		public IEnumerable<IEntityPropertyMapping> Properties
+		{
+			get { return Items.Cast<IEntityPropertyMapping>(); }
+		}
+
+		#endregion
 	}
 }

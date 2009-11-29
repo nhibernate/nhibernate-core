@@ -55,7 +55,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			BindVersion(classSchema.Version, rootClass, table, inheritedMetas);
 
 			rootClass.CreatePrimaryKey(dialect);
-
 			PropertiesFromXML(node, rootClass, inheritedMetas);
 			mappings.AddClass(rootClass);
 		}

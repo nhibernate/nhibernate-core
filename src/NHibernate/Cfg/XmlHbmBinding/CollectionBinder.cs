@@ -7,13 +7,29 @@ using NHibernate.Type;
 using NHibernate.Util;
 
 using Array = NHibernate.Mapping.Array;
+using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class CollectionBinder : ClassBinder
 	{
+		private static readonly HashSet<System.Type> SupportedCollections = new HashSet<System.Type>
+		                                                                    	{
+		                                                                    		typeof (HbmMap),
+		                                                                    		typeof (HbmBag),
+		                                                                    		typeof (HbmIdbag),
+		                                                                    		typeof (HbmSet),
+		                                                                    		typeof (HbmList),
+		                                                                    		typeof (HbmArray),
+		                                                                    		typeof (HbmPrimitiveArray)
+		                                                                    	};
 		private readonly IDictionary<string, CreateCollectionCommand> createCollectionCommands =
 			new Dictionary<string, CreateCollectionCommand>();
+
+		public static bool IsSupported(System.Type type)
+		{
+			return SupportedCollections.Contains(type);
+		}
 
 		public CollectionBinder(ClassBinder parent)
 			: base(parent)
@@ -36,6 +52,49 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			return createCollectionCommands.ContainsKey(xmlTagName);
 		}
+
+		public Mapping.Collection Create(ICollectionPropertyMapping collectionMapping, string className,
+			string path, PersistentClass owner, System.Type containingType, IDictionary<string, MetaAttribute> inheritedMetas)
+		{
+			var collectionType = collectionMapping.GetType();
+			if (collectionType == typeof (HbmBag))
+			{
+				return createCollectionCommands["bag"](Serialize(typeof (HbmBag), collectionMapping), className, path, owner,
+				                                       containingType, inheritedMetas);
+			}
+			else if (collectionType == typeof (HbmSet))
+			{
+				return createCollectionCommands["set"](Serialize(typeof(HbmSet), collectionMapping), className, path, owner,
+				                                       containingType, inheritedMetas);
+			}
+			else if (collectionType == typeof (HbmList))
+			{
+				return createCollectionCommands["list"](Serialize(typeof(HbmList), collectionMapping), className, path, owner,
+				                                       containingType, inheritedMetas);
+			}
+			else if (collectionType == typeof (HbmMap))
+			{
+				return createCollectionCommands["map"](Serialize(typeof(HbmMap), collectionMapping), className, path, owner,
+				                                       containingType, inheritedMetas);
+			}
+			else if (collectionType == typeof (HbmIdbag))
+			{
+				return createCollectionCommands["idbag"](Serialize(typeof(HbmIdbag), collectionMapping), className, path, owner,
+				                                       containingType, inheritedMetas);
+			}
+			else if (collectionType == typeof (HbmArray))
+			{
+				return createCollectionCommands["array"](Serialize(typeof(HbmArray), collectionMapping), className, path, owner,
+				                                       containingType, inheritedMetas);
+			}
+			else if (collectionType == typeof (HbmPrimitiveArray))
+			{
+				return createCollectionCommands["primitive-array"](Serialize(typeof(HbmPrimitiveArray), collectionMapping), className, path, owner,
+				                                       containingType, inheritedMetas);
+			}
+			throw new MappingException("Not supported collection mapping element:" + collectionType);
+		}
+
 
 		public Mapping.Collection Create(string xmlTagName, XmlNode node, string className,
 			string path, PersistentClass owner, System.Type containingType, IDictionary<string, MetaAttribute> inheritedMetas)

@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+
 namespace NHibernate.Cfg.MappingSchema
 {
 	public partial class HbmJoinedSubclass : AbstractDecoratable, IEntityMapping
@@ -99,6 +102,15 @@ namespace NHibernate.Cfg.MappingSchema
 		public HbmCustomSQL SqlDelete
 		{
 			get { return sqldelete; }
+		}
+
+		#endregion
+
+		#region Implementation of IPropertiesContainerMapping
+
+		public IEnumerable<IEntityPropertyMapping> Properties
+		{
+			get { return Items.Cast<IEntityPropertyMapping>(); }
 		}
 
 		#endregion

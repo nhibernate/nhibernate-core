@@ -148,7 +148,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		protected static XmlNode Serialize<T>(T hbmElement)
 		{
 			// TODO : this method is only for TEMPORAL usage; should be removed after refactorize all binders
-			var serializer = new XmlSerializer(typeof (T));
+			var xmlTypeMapping = typeof (T);
+			return Serialize(xmlTypeMapping, hbmElement);
+		}
+
+		protected static XmlNode Serialize(System.Type xmlTypeMapping, object hbmElement)
+		{
+			// TODO : this method is only for TEMPORAL usage; should be removed after refactorize all binders
+			var serializer = new XmlSerializer(xmlTypeMapping);
 			using (var memStream = new MemoryStream(2000))
 			using (var xmlWriter = XmlWriter.Create(memStream))
 			{
