@@ -16,7 +16,7 @@ namespace NHibernate.Engine.Query
 			public string FunctionName;
 		}
 
-		private static readonly Regex functionNameFinder = new Regex(@"\{[\S\s]*call[\s]+([\w]+)[^\w]");
+		private static readonly Regex functionNameFinder = new Regex(@"\{[\S\s]*call[\s]+([\w\.]+)[^\w]");
 		private static readonly int NewLineLength = Environment.NewLine.Length;
 
 		public static Detail Parse(string sqlString)

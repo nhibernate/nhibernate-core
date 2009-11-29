@@ -45,6 +45,15 @@ namespace NHibernate.Test.EngineTest
 		}
 
 		[Test]
+		public void CanFindCallablePackageFunctionName()
+		{
+			string query = @"{ call myPackage.No2_Function(:name) }";
+
+			CallableParser.Detail detail = CallableParser.Parse(query);
+			Assert.That(detail.FunctionName, Is.EqualTo("myPackage.No2_Function"));
+		}
+
+		[Test]
 		public void CanDetermineHasReturn()
 		{
 			string query = @"{ ? = call myFunction(:name) }";
