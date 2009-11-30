@@ -79,9 +79,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddRootClasses(XmlNode parentNode, HbmClass rootClass, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			var binder = new RootClassBinder(this, GetNamespaceManager(parentNode), dialect);
+			var binder = new RootClassBinder(Mappings, GetNamespaceManager(parentNode), dialect);
 
-			binder.Bind(parentNode, rootClass, inheritedMetas);
+			binder.Bind(rootClass, inheritedMetas);
 		}
 
 		private XmlNamespaceManager GetNamespaceManager(XmlNode parentNode)
@@ -98,7 +98,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void AddUnionSubclasses(XmlNode parentNode, HbmUnionSubclass unionSubclass,
 		                                IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			var binder = new UnionSubclassBinder(this, GetNamespaceManager(parentNode), dialect);
+			var binder = new UnionSubclassBinder(Mappings, GetNamespaceManager(parentNode), dialect);
 
 			binder.Bind(parentNode, unionSubclass, inheritedMetas);
 		}
@@ -106,7 +106,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void AddJoinedSubclasses(XmlNode parentNode, HbmJoinedSubclass joinedSubclass,
 		                                 IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			var binder = new JoinedSubclassBinder(this, GetNamespaceManager(parentNode), dialect);
+			var binder = new JoinedSubclassBinder(Mappings, GetNamespaceManager(parentNode), dialect);
 
 			binder.Bind(parentNode, joinedSubclass, inheritedMetas);
 		}
@@ -120,13 +120,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddQueries(HbmMapping mappingSchema)
 		{
-			var binder = new NamedQueryBinder(this);
+			var binder = new NamedQueryBinder(Mappings);
 			System.Array.ForEach(mappingSchema.HqlQueries, binder.AddQuery);
 		}
 
 		private void AddSqlQueries(HbmMapping mappingSchema)
 		{
-			var binder = new NamedSQLQueryBinder(this);
+			var binder = new NamedSQLQueryBinder(Mappings);
 			System.Array.ForEach(mappingSchema.SqlQueries, binder.AddSqlQuery);
 		}
 
@@ -169,7 +169,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddResultSetMappingDefinitions(HbmMapping mappingSchema)
 		{
-			var binder = new ResultSetMappingBinder(this);
+			var binder = new ResultSetMappingBinder(Mappings);
 
 			foreach (HbmResultSet resultSetSchema in mappingSchema.ResultSets)
 			{

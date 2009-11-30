@@ -25,20 +25,17 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		protected readonly Mappings mappings;
 
-		protected Binder(Binder parent)
-		{
-			if (parent == null)
-				throw new ArgumentNullException("parent");
-
-			mappings = parent.mappings;
-		}
-
 		protected Binder(Mappings mappings)
 		{
 			if (mappings == null)
 				throw new ArgumentNullException("mappings");
 
 			this.mappings = mappings;
+		}
+
+		public Mappings Mappings
+		{
+			get { return mappings; }
 		}
 
 		/// <summary>

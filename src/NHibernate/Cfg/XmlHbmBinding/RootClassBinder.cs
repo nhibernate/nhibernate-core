@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
@@ -8,12 +9,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class RootClassBinder : ClassBinder
 	{
-		public RootClassBinder(Binder parent, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
-			: base(parent, namespaceManager, dialect)
+		public RootClassBinder(Mappings mappings, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
+			: base(mappings, namespaceManager, dialect)
 		{
 		}
 
-		public void Bind(XmlNode node, HbmClass classSchema, IDictionary<string, MetaAttribute> inheritedMetas)
+		public void Bind(HbmClass classSchema, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			RootClass rootClass = new RootClass();
 			BindClass(classSchema, rootClass, inheritedMetas);
@@ -55,8 +56,38 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			BindVersion(classSchema.Version, rootClass, table, inheritedMetas);
 
 			rootClass.CreatePrimaryKey(dialect);
-			PropertiesFromXML(node, rootClass, inheritedMetas);
+			BindNaturalId(classSchema.naturalid, rootClass, inheritedMetas);
+			new PropertiesBinder(mappings, rootClass, namespaceManager, dialect).Bind(classSchema.Properties, inheritedMetas);
+
+			BindJoins(classSchema.Joins, rootClass, inheritedMetas);
+			BindSubclasses(classSchema.Subclasses, rootClass, inheritedMetas);
+			BindJoinedSubclasses(classSchema.JoinedSubclasses, rootClass, inheritedMetas);
+			BindUnionSubclasses(classSchema.UnionSubclasses, rootClass, inheritedMetas);
+
+			new FiltersBinder(rootClass, Mappings).Bind(classSchema.filter);
+
 			mappings.AddClass(rootClass);
+		}
+
+		private void BindNaturalId(HbmNaturalId naturalid, PersistentClass rootClass, IDictionary<string, MetaAttribute> inheritedMetas)
+		{
+			if (naturalid == null)
+			{
+				return;
+			}
+			//by default, natural-ids are "immutable" (constant)
+			var propBinder = new PropertiesBinder(mappings, rootClass, namespaceManager, dialect);
+			var uk = new UniqueKey { Name = "_UniqueKey", Table = rootClass.Table };
+			propBinder.Bind(naturalid.Properties, inheritedMetas, property =>
+				{
+					if (!naturalid.mutable)
+						property.IsUpdateable = false;
+					property.IsNaturalIdentifier = true;
+
+					uk.AddColumns(property.ColumnIterator.OfType<Column>());
+				});
+
+			rootClass.Table.AddUniqueKey(uk);	
 		}
 
 		private string GetClassTableName(PersistentClass model, HbmClass classSchema)

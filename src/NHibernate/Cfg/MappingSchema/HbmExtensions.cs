@@ -1,4 +1,3 @@
-using System;
 using NHibernate.Engine;
 
 namespace NHibernate.Cfg.MappingSchema

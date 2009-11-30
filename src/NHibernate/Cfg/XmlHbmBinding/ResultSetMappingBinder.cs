@@ -18,11 +18,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public ResultSetMappingBinder(Binder parent)
-			: base(parent)
-		{
-		}
-
 		public ResultSetMappingDefinition Create(HbmResultSet resultSetSchema)
 		{
 			return Create(resultSetSchema.name, resultSetSchema.Items);

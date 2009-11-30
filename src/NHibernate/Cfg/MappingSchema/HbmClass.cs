@@ -26,6 +26,26 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return Item1 as HbmTimestamp; }
 		}
 
+		public IEnumerable<HbmJoin> Joins
+		{
+			get { return Items1 != null ? Items1.OfType<HbmJoin>(): new HbmJoin[0]; }
+		}
+
+		public IEnumerable<HbmSubclass> Subclasses
+		{
+			get { return Items1 != null ? Items1.OfType<HbmSubclass>() : new HbmSubclass[0]; }
+		}
+
+		public IEnumerable<HbmJoinedSubclass> JoinedSubclasses
+		{
+			get { return Items1 != null ? Items1.OfType<HbmJoinedSubclass>() : new HbmJoinedSubclass[0]; }
+		}
+
+		public IEnumerable<HbmUnionSubclass> UnionSubclasses
+		{
+			get { return Items1 != null ? Items1.OfType<HbmUnionSubclass>() : new HbmUnionSubclass[0]; }
+		}
+
 		#region Implementation of IEntityMapping
 
 		protected override HbmMeta[] Metadatas
@@ -137,7 +157,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public IEnumerable<IEntityPropertyMapping> Properties
 		{
-			get { return Items.Cast<IEntityPropertyMapping>(); }
+			get { return Items != null ? Items.Cast<IEntityPropertyMapping>(): new IEntityPropertyMapping[0]; }
 		}
 
 		#endregion

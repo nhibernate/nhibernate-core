@@ -10,7 +10,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public IEnumerable<IEntityPropertyMapping> Properties
 		{
-			get { return Items.Cast<IEntityPropertyMapping>(); }
+			get { return Items != null ? Items.Cast<IEntityPropertyMapping>() : new IEntityPropertyMapping[0]; }
 		}
 
 		#endregion

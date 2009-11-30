@@ -1,6 +1,6 @@
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmSet : ICollectionPropertyMapping
+	public partial class HbmSet : AbstractDecoratable, ICollectionPropertyMapping
 	{
 		#region Implementation of IEntityPropertyMapping
 
@@ -9,6 +9,35 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return name; }
 		}
 
-		#endregion	
+		public string Access
+		{
+			get { return access; }
+		}
+
+		public bool OptimisticKock
+		{
+			get { return optimisticlock; }
+		}
+
+		#endregion
+
+		#region Implementation of IReferencePropertyMapping
+
+		public string Cascade
+		{
+			get { return cascade; }
+		}
+
+		#endregion
+
+		#region Overrides of AbstractDecoratable
+
+		protected override HbmMeta[] Metadatas
+		{
+			get { return meta ?? new HbmMeta[0]; }
+		}
+
+		#endregion
+
 	}
 }

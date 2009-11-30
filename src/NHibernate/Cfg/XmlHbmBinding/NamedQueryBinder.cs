@@ -12,11 +12,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public NamedQueryBinder(Binder parent)
-			: base(parent)
-		{
-		}
-
 		public void AddQuery(HbmQuery querySchema)
 		{
 			string queryName = querySchema.name;
@@ -36,11 +31,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 										? CacheModeConverter.GetCacheMode(querySchema.cachemode)
 										: null;
 
-
-
 			IDictionary<string,string> parameterTypes = new LinkedHashMap<string,string>();
 
-			NamedQueryDefinition namedQuery = new NamedQueryDefinition(queryText, cacheable, region, timeout,
+			var namedQuery = new NamedQueryDefinition(queryText, cacheable, region, timeout,
 				fetchSize, flushMode, cacheMode, readOnly, comment, parameterTypes);
 
 			mappings.AddQuery(queryName, namedQuery);

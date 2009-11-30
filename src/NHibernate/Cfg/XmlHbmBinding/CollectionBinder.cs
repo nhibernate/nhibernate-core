@@ -31,8 +31,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			return SupportedCollections.Contains(type);
 		}
 
-		public CollectionBinder(ClassBinder parent)
-			: base(parent)
+		public CollectionBinder(Mappings mappings, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect) : base(mappings, namespaceManager, dialect)
 		{
 			CreateCommandCollection();
 		}

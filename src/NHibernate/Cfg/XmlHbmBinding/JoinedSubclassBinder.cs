@@ -8,8 +8,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class JoinedSubclassBinder : ClassBinder
 	{
-		public JoinedSubclassBinder(Binder parent, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
-			: base(parent, namespaceManager, dialect)
+		public JoinedSubclassBinder(Mappings mappings, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
+			: base(mappings, namespaceManager, dialect)
 		{
 		}
 
@@ -68,7 +68,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			mytable.AddCheckConstraint(joinedSubclassMapping.check);
 
 			// properties
-			PropertiesFromXML(subnode, subclass, inheritedMetas);
+			new PropertiesBinder(mappings, subclass, namespaceManager, dialect).Bind(joinedSubclassMapping.Properties, inheritedMetas);
+
+			BindJoinedSubclasses(joinedSubclassMapping.JoinedSubclasses, subclass, inheritedMetas);
 
 			model.AddSubclass(subclass);
 			mappings.AddClass(subclass);

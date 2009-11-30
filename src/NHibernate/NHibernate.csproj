@@ -499,6 +499,7 @@
     <Compile Include="Cfg\MappingSchema\HbmBag.cs" />
     <Compile Include="Cfg\MappingSchema\HbmComponent.cs" />
     <Compile Include="Cfg\MappingSchema\HbmDefinition.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmDynamicComponent.cs" />
     <Compile Include="Cfg\MappingSchema\HbmExtensions.cs" />
     <Compile Include="Cfg\MappingSchema\HbmIdbag.cs" />
     <Compile Include="Cfg\MappingSchema\HbmJoinedSubclass.cs" />
@@ -518,6 +519,7 @@
     <Compile Include="Cfg\MappingSchema\IEntityPropertyMapping.cs" />
     <Compile Include="Cfg\MappingSchema\IEntitySqlsMapping.cs" />
     <Compile Include="Cfg\MappingSchema\IPropertiesContainerMapping.cs" />
+    <Compile Include="Cfg\MappingSchema\IReferencePropertyMapping.cs" />
     <Compile Include="Cfg\SchemaAutoAction.cs" />
     <Compile Include="Cfg\SessionFactoryConfigurationBase.cs" />
     <Compile Include="Cfg\ISessionFactoryConfiguration.cs" />
@@ -525,6 +527,10 @@
     <Compile Include="Cfg\MappingSchema\HbmTimestamp.cs" />
     <Compile Include="Cfg\MappingSchema\HbmVersion.cs" />
     <Compile Include="Cfg\MappingSchema\IDecoratable.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\FiltersBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\PropertiesBinder.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Context\WcfOperationSessionContext.cs" />
     <Compile Include="Criterion\GroupedProjection.cs" />
     <Compile Include="Criterion\IPropertyProjection.cs" />

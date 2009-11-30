@@ -13,11 +13,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public ClassIdBinder(Binder parent, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
-			: base(parent, namespaceManager, dialect)
-		{
-		}
-
 		public void BindId(HbmId idSchema, PersistentClass rootClass, Table table)
 		{
 			if (idSchema != null)

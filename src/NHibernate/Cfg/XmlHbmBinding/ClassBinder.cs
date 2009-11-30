@@ -16,125 +16,18 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		protected readonly Dialect.Dialect dialect;
 		protected readonly XmlNamespaceManager namespaceManager;
 
-		protected ClassBinder(Binder parent, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
-			: base(parent)
+		protected ClassBinder(Mappings mappings, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
+			: base(mappings)
 		{
 			this.dialect = dialect;
 			this.namespaceManager = namespaceManager;
 		}
 
 		protected ClassBinder(ClassBinder parent)
-			: base(parent)
+			: base(parent.Mappings)
 		{
 			dialect = parent.dialect;
 			namespaceManager = parent.namespaceManager;
-		}
-
-		protected void PropertiesFromXML(XmlNode node, PersistentClass model, IDictionary<string, MetaAttribute> inheritedMetas)
-		{
-			PropertiesFromXML(node, model, inheritedMetas, null, true, true, false);
-		}
-
-		protected void PropertiesFromXML(XmlNode node, PersistentClass model, IDictionary<string, MetaAttribute> inheritedMetas, UniqueKey uniqueKey, bool mutable, bool nullable, bool naturalId)
-		{
-			string entityName = model.EntityName;
-
-			Table table = model.Table;
-
-			foreach (XmlNode subnode in node.ChildNodes)
-			{
-				//I am only concerned with elements that are from the nhibernate namespace
-				if (subnode.NamespaceURI != MappingSchemaXMLNS)
-					continue;
-
-				string name = subnode.LocalName; //.Name;
-				string propertyName = GetPropertyName(subnode);
-
-				IValue value = null;
-				CollectionBinder collectionBinder = new CollectionBinder(this);
-				if (collectionBinder.CanCreate(name))
-				{
-					Mapping.Collection collection = collectionBinder.Create(name, subnode, entityName, propertyName, model,
-					                                                        model.MappedClass, inheritedMetas);
-
-					mappings.AddCollection(collection);
-					value = collection;
-				}
-				else if ("many-to-one".Equals(name))
-				{
-					value = new ManyToOne(table);
-					BindManyToOne(subnode, (ManyToOne) value, propertyName, true);
-				}
-				else if ("any".Equals(name))
-				{
-					value = new Any(table);
-					BindAny(subnode, (Any) value, true);
-				}
-				else if ("one-to-one".Equals(name))
-				{
-					value = new OneToOne(table, model);
-					BindOneToOne(subnode, (OneToOne) value);
-				}
-				else if ("property".Equals(name))
-				{
-					value = new SimpleValue(table);
-					BindSimpleValue(subnode, (SimpleValue) value, true, propertyName);
-				}
-				else if ("component".Equals(name) || "dynamic-component".Equals(name))
-				{
-					string subpath = StringHelper.Qualify(entityName, propertyName);
-					// NH: Modified from H2.1 to allow specifying the type explicitly using class attribute
-					System.Type reflectedClass = GetPropertyType(subnode, model.MappedClass, propertyName);
-					value = new Component(model);
-					BindComponent(subnode, (Component) value, reflectedClass, entityName, propertyName, subpath, true, inheritedMetas);
-				}
-				else if ("join".Equals(name))
-				{
-					Join join = new Join();
-					join.PersistentClass = model;
-					BindJoin(subnode, join, inheritedMetas);
-					model.AddJoin(join);
-				}
-				else if ("subclass".Equals(name))
-					new SubclassBinder(this).HandleSubclass(model, subnode, Deserialize<HbmSubclass>(subnode) , inheritedMetas);
-
-				else if ("joined-subclass".Equals(name))
-					new JoinedSubclassBinder(this).HandleJoinedSubclass(model, subnode, Deserialize<HbmJoinedSubclass>(subnode), inheritedMetas);
-
-				else if ("union-subclass".Equals(name))
-					new UnionSubclassBinder(this).HandleUnionSubclass(model, subnode, Deserialize<HbmUnionSubclass>(subnode), inheritedMetas);
-
-				else if ("filter".Equals(name))
-					ParseFilter(subnode, model);
-				else if ("natural-id".Equals(name))
-				{
-					UniqueKey uk = new UniqueKey();
-					uk.Name = "_UniqueKey";
-					uk.Table = table;
-					//by default, natural-ids are "immutable" (constant)
-
-					bool mutableId = false;
-					if (subnode.Attributes["mutable"] != null)
-					{
-						mutableId = "true".Equals(subnode.Attributes["mutable"]);						
-					}
-
-					PropertiesFromXML(subnode, model, inheritedMetas, uk, mutableId, false, true);
-					table.AddUniqueKey(uk);
-				}
-
-				if (value != null)
-				{
-					Property property = CreateProperty(value, propertyName, model.ClassName, subnode, inheritedMetas);
-					if (!mutable)
-						property.IsUpdateable = false;
-					if (naturalId)
-						property.IsNaturalIdentifier = true;
-					model.AddProperty(property);
-					if (uniqueKey != null)
-						uniqueKey.AddColumns(new SafetyEnumerable<Column>(property.ColumnIterator));
-				}
-			}
 		}
 
 		protected void BindClass(IEntityMapping classMapping, PersistentClass model, IDictionary<string, MetaAttribute> inheritedMetas)
@@ -158,6 +51,30 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			BindMapRepresentation(classMapping, model);
 
 			BindPersistentClassCommonValues(classMapping, model, inheritedMetas);
+		}
+
+		protected void BindUnionSubclasses(IEnumerable<HbmUnionSubclass> unionSubclasses, PersistentClass persistentClass, IDictionary<string, MetaAttribute> inheritedMetas)
+		{
+			foreach (var unionSubclass in unionSubclasses)
+			{
+				new UnionSubclassBinder(this).HandleUnionSubclass(persistentClass, Serialize(unionSubclass), unionSubclass, inheritedMetas);
+			}
+		}
+
+		protected void BindJoinedSubclasses(IEnumerable<HbmJoinedSubclass> joinedSubclasses, PersistentClass persistentClass, IDictionary<string, MetaAttribute> inheritedMetas)
+		{
+			foreach (var joinedSubclass in joinedSubclasses)
+			{
+				new JoinedSubclassBinder(this).HandleJoinedSubclass(persistentClass, Serialize(joinedSubclass), joinedSubclass, inheritedMetas);
+			}
+		}
+
+		protected void BindSubclasses(IEnumerable<HbmSubclass> subclasses, PersistentClass persistentClass, IDictionary<string, MetaAttribute> inheritedMetas)
+		{
+			foreach (var subclass in subclasses)
+			{
+				new SubclassBinder(this).HandleSubclass(persistentClass, Serialize(subclass), subclass, inheritedMetas);
+			}
 		}
 
 		private void BindPersistentClassCommonValues(IEntityMapping classMapping, PersistentClass model, IDictionary<string, MetaAttribute> inheritedMetas)
@@ -254,6 +171,16 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
+		protected void BindJoins(IEnumerable<HbmJoin> joins, PersistentClass persistentClass, IDictionary<string, MetaAttribute> inheritedMetas)
+		{
+			foreach (var hbmJoin in joins)
+			{
+				var join = new Join { PersistentClass = persistentClass };
+				BindJoin(Serialize(hbmJoin), join, inheritedMetas);
+				persistentClass.AddJoin(join);
+			}
+		}
+
 		private void BindJoin(XmlNode node, Join join, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			PersistentClass persistentClass = join.PersistentClass;
@@ -310,7 +237,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				XmlAttribute nameAttribute = subnode.Attributes["name"];
 				string propertyName = nameAttribute == null ? null : nameAttribute.Value;
 				IValue value = null;
-				var collectionBinder = new CollectionBinder(this);
+				var collectionBinder = new CollectionBinder(Mappings, namespaceManager, dialect);
 				if (collectionBinder.CanCreate(name))
 				{
 					Mapping.Collection collection = collectionBinder.Create(name, subnode, persistentClass.EntityName, propertyName,
@@ -536,7 +463,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				IValue value = null;
 
-				CollectionBinder binder = new CollectionBinder(this);
+				CollectionBinder binder = new CollectionBinder(Mappings, namespaceManager, dialect);
 
 				if (binder.CanCreate(name))
 				{
@@ -882,7 +809,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			BindColumns(node, model, isNullable, false, null);
 		}
 
-		private void BindOneToOne(XmlNode node, OneToOne model)
+		protected void BindOneToOne(XmlNode node, OneToOne model)
 		{
 			//BindColumns( node, model, isNullable, false, null, mappings );
 

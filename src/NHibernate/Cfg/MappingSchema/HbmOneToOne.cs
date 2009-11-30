@@ -1,6 +1,6 @@
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmOneToOne : IEntityPropertyMapping
+	public partial class HbmOneToOne : AbstractDecoratable, IEntityPropertyMapping
 	{
 		#region Implementation of IEntityPropertyMapping
 
@@ -9,6 +9,26 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return name; }
 		}
 
+		public string Access
+		{
+			get { return access; }
+		}
+
+		public bool OptimisticKock
+		{
+			get { return true; }
+		}
+
 		#endregion	
+		
+		#region Overrides of AbstractDecoratable
+
+		protected override HbmMeta[] Metadatas
+		{
+			get { return meta ?? new HbmMeta[0]; }
+		}
+
+		#endregion
+
 	}
 }

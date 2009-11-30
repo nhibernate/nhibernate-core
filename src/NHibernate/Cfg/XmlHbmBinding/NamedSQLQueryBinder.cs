@@ -12,11 +12,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public NamedSQLQueryBinder(Binder parent)
-			: base(parent)
-		{
-		}
-
 		public void AddSqlQuery(HbmSqlQuery querySchema)
 		{
 			mappings.AddSecondPass(delegate
@@ -45,7 +40,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					if (string.IsNullOrEmpty(resultSetRef))
 					{
 						ResultSetMappingDefinition definition =
-							new ResultSetMappingBinder(this).Create(querySchema);
+							new ResultSetMappingBinder(Mappings).Create(querySchema);
 
 						namedQuery = new NamedSQLQueryDefinition(queryText,
 							definition.GetQueryReturns(), synchronizedTables, cacheable, region, timeout,

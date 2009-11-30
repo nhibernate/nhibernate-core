@@ -9,7 +9,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 	public class SubclassBinder : ClassBinder
 	{
 		public SubclassBinder(Binder parent, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
-			: base(parent, namespaceManager, dialect)
+			: base(parent.Mappings, namespaceManager, dialect)
 		{
 		}
 
@@ -37,7 +37,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			log.InfoFormat("Mapping subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);
 
 			// properties
-			PropertiesFromXML(subnode, subclass, inheritedMetas);
+			new PropertiesBinder(mappings, subclass, namespaceManager, dialect).Bind(subClassMapping.Properties, inheritedMetas);
+			BindJoins(subClassMapping.Joins, subclass, inheritedMetas);
+			BindSubclasses(subClassMapping.Subclasses, subclass, inheritedMetas);
 
 			model.AddSubclass(subclass);
 			mappings.AddClass(subclass);

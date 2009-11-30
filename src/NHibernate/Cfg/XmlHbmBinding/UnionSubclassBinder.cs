@@ -8,8 +8,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class UnionSubclassBinder : ClassBinder
 	{
-		public UnionSubclassBinder(Binder parent, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
-			: base(parent, namespaceManager, dialect)
+		public UnionSubclassBinder(Mappings mappings, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
+			: base(mappings, namespaceManager, dialect)
 		{
 		}
 
@@ -48,7 +48,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			log.InfoFormat("Mapping union-subclass: {0} -> {1}", unionSubclass.EntityName, unionSubclass.Table.Name);
 
 			// properties
-			PropertiesFromXML(subnode, unionSubclass, inheritedMetas);
+			new PropertiesBinder(mappings, unionSubclass, namespaceManager, dialect).Bind(unionSubclassMapping.Properties, inheritedMetas);
+			BindUnionSubclasses(unionSubclassMapping.UnionSubclasses, unionSubclass, inheritedMetas);
 
 			model.AddSubclass(unionSubclass);
 			mappings.AddClass(unionSubclass);

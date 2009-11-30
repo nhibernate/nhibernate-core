@@ -5,6 +5,16 @@ namespace NHibernate.Cfg.MappingSchema
 {
 	public partial class HbmSubclass : AbstractDecoratable, IEntityMapping, IEntityDiscriminableMapping
 	{
+		public IEnumerable<HbmJoin> Joins
+		{
+			get { return join ?? new HbmJoin[0]; }
+		}
+
+		public IEnumerable<HbmSubclass> Subclasses
+		{
+			get { return subclass1 ?? new HbmSubclass[0]; }
+		}
+
 		#region Overrides of AbstractDecoratable
 
 		protected override HbmMeta[] Metadatas
@@ -120,7 +130,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public IEnumerable<IEntityPropertyMapping> Properties
 		{
-			get { return Items.Cast<IEntityPropertyMapping>(); }
+			get { return Items != null ? Items.Cast<IEntityPropertyMapping>() : new IEntityPropertyMapping[0]; }
 		}
 
 		#endregion

@@ -1,7 +1,9 @@
 namespace NHibernate.Cfg.MappingSchema
 {
-	public interface IEntityPropertyMapping
+	public interface IEntityPropertyMapping: IDecoratable
 	{
 		string Name { get; }
+		string Access { get; }
+		bool OptimisticKock { get; }
 	}
 }

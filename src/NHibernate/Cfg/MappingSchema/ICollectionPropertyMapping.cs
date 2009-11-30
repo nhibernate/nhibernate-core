@@ -1,6 +1,6 @@
 namespace NHibernate.Cfg.MappingSchema
 {
-	public interface ICollectionPropertyMapping: IEntityPropertyMapping
+	public interface ICollectionPropertyMapping : IEntityPropertyMapping, IReferencePropertyMapping
 	{
 		
 	}

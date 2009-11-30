@@ -1,6 +1,9 @@
+using System.Collections.Generic;
+using System.Linq;
+
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmMap : AbstractDecoratable, ICollectionPropertyMapping
+	public partial class HbmDynamicComponent: AbstractDecoratable, IEntityPropertyMapping, IPropertiesContainerMapping
 	{
 		#region Implementation of IEntityPropertyMapping
 
@@ -21,11 +24,11 @@ namespace NHibernate.Cfg.MappingSchema
 
 		#endregion
 
-		#region Implementation of IReferencePropertyMapping
+		#region Implementation of IPropertiesContainerMapping
 
-		public string Cascade
+		public IEnumerable<IEntityPropertyMapping> Properties
 		{
-			get { return cascade; }
+			get { return Items != null ? Items.Cast<IEntityPropertyMapping>() : new IEntityPropertyMapping[0]; }
 		}
 
 		#endregion
@@ -34,10 +37,10 @@ namespace NHibernate.Cfg.MappingSchema
 
 		protected override HbmMeta[] Metadatas
 		{
-			get { return meta ?? new HbmMeta[0]; }
+			get { return new HbmMeta[0]; }
 		}
 
 		#endregion
-
+		
 	}
 }
