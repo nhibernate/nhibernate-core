@@ -64,7 +64,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria criteria = actual.UnderlyingCriteria;
 			CriteriaImpl criteriaImpl = (CriteriaImpl)
-				typeof(QueryOver<T>).GetField("_impl", BindingFlags.NonPublic | BindingFlags.Instance)
+				typeof(QueryOver<T>).GetField("impl", BindingFlags.NonPublic | BindingFlags.Instance)
 				.GetValue(actual);
 
 			return (DetachedCriteria)

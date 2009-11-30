@@ -10,51 +10,51 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 
-	public class QueryOverRestrictionBuilder<S,T> : QueryOverRestrictionBuilderBase<QueryOver<S,T>, S, T>
+	public class QueryOverRestrictionBuilder<TRoot,TSubType> : QueryOverRestrictionBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 
-		public QueryOverRestrictionBuilder(QueryOver<S,T> root, string propertyName)
+		public QueryOverRestrictionBuilder(QueryOver<TRoot,TSubType> root, string propertyName)
 			: base(root, propertyName) { }
 
 	}
 
-	public class IQueryOverRestrictionBuilder<S,T> : QueryOverRestrictionBuilderBase<IQueryOver<S,T>, S, T>
+	public class IQueryOverRestrictionBuilder<TRoot,TSubType> : QueryOverRestrictionBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 
-		public IQueryOverRestrictionBuilder(IQueryOver<S,T> root, string propertyName)
+		public IQueryOverRestrictionBuilder(IQueryOver<TRoot,TSubType> root, string propertyName)
 			: base(root, propertyName) { }
 
 	}
 
-	public class QueryOverRestrictionBuilderBase<R,S,T>
-		where R : IQueryOver<S,T>
+	public class QueryOverRestrictionBuilderBase<TReturn,TRoot,TSubType>
+		where TReturn : IQueryOver<TRoot,TSubType>
 	{
 		public class LambdaBetweenBuilder
 		{
-			private R root;
+			private TReturn root;
 			private string propertyName;
 			private object lo;
 
-			public LambdaBetweenBuilder(R root, string propertyName, object lo)
+			public LambdaBetweenBuilder(TReturn root, string propertyName, object lo)
 			{
 				this.root = root;
 				this.propertyName = propertyName;
 				this.lo = lo;
 			}
 
-			public R And(object hi)
+			public TReturn And(object hi)
 			{
-				return (R)root.And(Restrictions.Between(propertyName, lo, hi));
+				return (TReturn)root.And(Restrictions.Between(propertyName, lo, hi));
 			}
 		}
 
-		private R root;
+		private TReturn root;
 		private string propertyName;
 
 		/// <summary>
 		/// Constructed with property name
 		/// </summary>
-		public QueryOverRestrictionBuilderBase(R root, string propertyName)
+		public QueryOverRestrictionBuilderBase(TReturn root, string propertyName)
 		{
 			this.root = root;
 			this.propertyName = propertyName;
@@ -71,97 +71,97 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// Apply an "in" constraint to the named property
 		/// </summary>
-		public R IsIn(ICollection values)
+		public TReturn IsIn(ICollection values)
 		{
-			return (R)root.And(Restrictions.In(propertyName, values));
+			return (TReturn)root.And(Restrictions.In(propertyName, values));
 		}
 
 		/// <summary>
 		/// Apply an "in" constraint to the named property
 		/// </summary>
-		public R IsIn(object[] values)
+		public TReturn IsIn(object[] values)
 		{
-			return (R)root.And(Restrictions.In(propertyName, values));
+			return (TReturn)root.And(Restrictions.In(propertyName, values));
 		}
 
 		/// <summary>
 		/// Apply an "in" constraint to the named property
 		/// </summary>
-		public R IsInG<T>(ICollection<T> values)
+		public TReturn IsInG<T>(ICollection<T> values)
 		{
-			return (R)root.And(Restrictions.InG(propertyName, values));
+			return (TReturn)root.And(Restrictions.InG(propertyName, values));
 		}
 
 		/// <summary>
 		/// A case-insensitive "like", similar to Postgres "ilike" operator
 		/// </summary>
-		public R IsInsensitiveLike(object value)
+		public TReturn IsInsensitiveLike(object value)
 		{
-			return (R)root.And(Restrictions.InsensitiveLike(propertyName, value));
+			return (TReturn)root.And(Restrictions.InsensitiveLike(propertyName, value));
 		}
 		
 		/// <summary>
 		/// A case-insensitive "like", similar to Postgres "ilike" operator
 		/// </summary>
-		public R IsInsensitiveLike(string value, MatchMode matchMode)
+		public TReturn IsInsensitiveLike(string value, MatchMode matchMode)
 		{
-			return (R)root.And(Restrictions.InsensitiveLike(propertyName, value, matchMode));
+			return (TReturn)root.And(Restrictions.InsensitiveLike(propertyName, value, matchMode));
 		}
 
 		/// <summary>
 		/// Apply an "is empty" constraint to the named property
 		/// </summary>
-		public R IsEmpty
+		public TReturn IsEmpty
 		{
-			get { return (R)root.And(Restrictions.IsEmpty(propertyName)); }
+			get { return (TReturn)root.And(Restrictions.IsEmpty(propertyName)); }
 		}
 
 		/// <summary>
 		/// Apply a "not is empty" constraint to the named property
 		/// </summary>
-		public R IsNotEmpty
+		public TReturn IsNotEmpty
 		{
-			get { return (R)root.And(Restrictions.IsNotEmpty(propertyName)); }
+			get { return (TReturn)root.And(Restrictions.IsNotEmpty(propertyName)); }
 		}
 
 		/// <summary>
 		/// Apply an "is null" constraint to the named property
 		/// </summary>
-		public R IsNull
+		public TReturn IsNull
 		{
-			get { return (R)root.And(Restrictions.IsNull(propertyName)); }
+			get { return (TReturn)root.And(Restrictions.IsNull(propertyName)); }
 		}
 
 		/// <summary>
 		/// Apply an "not is null" constraint to the named property
 		/// </summary>
-		public R IsNotNull
+		public TReturn IsNotNull
 		{
-			get { return (R)root.And(Restrictions.IsNotNull(propertyName)); }
+			get { return (TReturn)root.And(Restrictions.IsNotNull(propertyName)); }
 		}
 
 		/// <summary>
 		/// Apply a "like" constraint to the named property
 		/// </summary>
-		public R IsLike(object value)
+		public TReturn IsLike(object value)
 		{
-			return (R)root.And(Restrictions.Like(propertyName, value));
+			return (TReturn)root.And(Restrictions.Like(propertyName, value));
 		}
 		
 		/// <summary>
 		/// Apply a "like" constraint to the named property
 		/// </summary>
-		public R IsLike(string value, MatchMode matchMode)
+		public TReturn IsLike(string value, MatchMode matchMode)
 		{
-			return (R)root.And(Restrictions.Like(propertyName, value, matchMode));
+			return (TReturn)root.And(Restrictions.Like(propertyName, value, matchMode));
 		}
 		
 		/// <summary>
 		/// Apply a "like" constraint to the named property
 		/// </summary>
-		public R IsLike(string value, MatchMode matchMode, char? escapeChar)
+		public TReturn IsLike(string value, MatchMode matchMode, char? escapeChar)
 		{
-			return (R)root.And(Restrictions.Like(propertyName, value, matchMode, escapeChar));
+			return (TReturn)root.And(Restrictions.Like(propertyName, value, matchMode, escapeChar));
 		}
 		
 	}

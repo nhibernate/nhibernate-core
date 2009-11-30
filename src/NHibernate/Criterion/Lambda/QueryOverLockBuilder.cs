@@ -9,29 +9,29 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 
-	public class QueryOverLockBuilder<S,T> : QueryOverLockBuilderBase<QueryOver<S,T>, S, T>
+	public class QueryOverLockBuilder<TRoot,TSubType> : QueryOverLockBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 
-		public QueryOverLockBuilder(QueryOver<S,T> root, Expression<Func<object>> alias)
+		public QueryOverLockBuilder(QueryOver<TRoot,TSubType> root, Expression<Func<object>> alias)
 			: base(root, alias) { }
 
 	}
 
-	public class IQueryOverLockBuilder<S,T> : QueryOverLockBuilderBase<IQueryOver<S,T>, S, T>
+	public class IQueryOverLockBuilder<TRoot,TSubType> : QueryOverLockBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 
-		public IQueryOverLockBuilder(IQueryOver<S,T> root, Expression<Func<object>> alias)
+		public IQueryOverLockBuilder(IQueryOver<TRoot,TSubType> root, Expression<Func<object>> alias)
 			: base(root, alias) { }
 
 	}
 
-	public class QueryOverLockBuilderBase<R, S, T> where R : IQueryOver<S,T>
+	public class QueryOverLockBuilderBase<TReturn, TRoot, TSubType> where TReturn : IQueryOver<TRoot,TSubType>
 	{
 
-		protected R root;
+		protected TReturn root;
 		protected string alias;
 
-		protected QueryOverLockBuilderBase(R root, Expression<Func<object>> alias)
+		protected QueryOverLockBuilderBase(TReturn root, Expression<Func<object>> alias)
 		{
 			this.root = root;
 
@@ -47,7 +47,7 @@ namespace NHibernate.Criterion.Lambda
 				root.UnderlyingCriteria.SetLockMode(lockMode);
 		}
 
-		public R Force
+		public TReturn Force
 		{
 			get
 			{
@@ -56,7 +56,7 @@ namespace NHibernate.Criterion.Lambda
 			}
 		}
 
-		public R None
+		public TReturn None
 		{
 			get
 			{
@@ -65,7 +65,7 @@ namespace NHibernate.Criterion.Lambda
 			}
 		}
 
-		public R Read
+		public TReturn Read
 		{
 			get
 			{
@@ -74,7 +74,7 @@ namespace NHibernate.Criterion.Lambda
 			}
 		}
 
-		public R Upgrade
+		public TReturn Upgrade
 		{
 			get
 			{
@@ -83,7 +83,7 @@ namespace NHibernate.Criterion.Lambda
 			}
 		}
 
-		public R UpgradeNoWait
+		public TReturn UpgradeNoWait
 		{
 			get
 			{
@@ -92,7 +92,7 @@ namespace NHibernate.Criterion.Lambda
 			}
 		}
 
-		public R Write
+		public TReturn Write
 		{
 			get
 			{

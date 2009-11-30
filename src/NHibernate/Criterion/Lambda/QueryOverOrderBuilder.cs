@@ -9,47 +9,47 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 
-	public class QueryOverOrderBuilder<S,T> : QueryOverOrderBuilderBase<QueryOver<S,T>, S, T>
+	public class QueryOverOrderBuilder<TRoot,TSubType> : QueryOverOrderBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 
-		public QueryOverOrderBuilder(QueryOver<S,T> root, Expression<Func<T, object>> path) : base(root, path)
+		public QueryOverOrderBuilder(QueryOver<TRoot,TSubType> root, Expression<Func<TSubType, object>> path) : base(root, path)
 		{}
 
-		public QueryOverOrderBuilder(QueryOver<S,T> root, Expression<Func<object>> path) : base(root, path)
+		public QueryOverOrderBuilder(QueryOver<TRoot,TSubType> root, Expression<Func<object>> path) : base(root, path)
 		{}
 
 	}
 
-	public class IQueryOverOrderBuilder<S,T> : QueryOverOrderBuilderBase<IQueryOver<S,T>, S, T>
+	public class IQueryOverOrderBuilder<TRoot,TSubType> : QueryOverOrderBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 
-		public IQueryOverOrderBuilder(IQueryOver<S,T> root, Expression<Func<T, object>> path) : base(root, path)
+		public IQueryOverOrderBuilder(IQueryOver<TRoot,TSubType> root, Expression<Func<TSubType, object>> path) : base(root, path)
 		{}
 
-		public IQueryOverOrderBuilder(IQueryOver<S,T> root, Expression<Func<object>> path) : base(root, path)
+		public IQueryOverOrderBuilder(IQueryOver<TRoot,TSubType> root, Expression<Func<object>> path) : base(root, path)
 		{}
 
 	}
 
-	public class QueryOverOrderBuilderBase<R, S, T> where R : IQueryOver<S, T>
+	public class QueryOverOrderBuilderBase<TReturn, TRoot, TSubType> where TReturn : IQueryOver<TRoot, TSubType>
 	{
 
-		protected R root;
+		protected TReturn root;
 		protected LambdaExpression path;
 
-		protected QueryOverOrderBuilderBase(R root, Expression<Func<T, object>> path)
+		protected QueryOverOrderBuilderBase(TReturn root, Expression<Func<TSubType, object>> path)
 		{
 			this.root = root;
 			this.path = path;
 		}
 
-		protected QueryOverOrderBuilderBase(R root, Expression<Func<object>> path)
+		protected QueryOverOrderBuilderBase(TReturn root, Expression<Func<object>> path)
 		{
 			this.root = root;
 			this.path = path;
 		}
 
-		public R Asc
+		public TReturn Asc
 		{
 			get
 			{
@@ -58,7 +58,7 @@ namespace NHibernate.Criterion.Lambda
 			}
 		}
 
-		public R Desc
+		public TReturn Desc
 		{
 			get
 			{

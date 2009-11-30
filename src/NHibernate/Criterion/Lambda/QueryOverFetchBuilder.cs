@@ -9,35 +9,35 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion
 {
 
-	public class QueryOverFetchBuilder<S,T> : QueryOverFetchBuilderBase<QueryOver<S,T>, S, T>
+	public class QueryOverFetchBuilder<TRoot,TSubType> : QueryOverFetchBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 
-		public QueryOverFetchBuilder(QueryOver<S,T> root, Expression<Func<S, object>> path)
+		public QueryOverFetchBuilder(QueryOver<TRoot,TSubType> root, Expression<Func<TRoot, object>> path)
 			: base(root, path) { }
 
 	}
 
-	public class IQueryOverFetchBuilder<S,T> : QueryOverFetchBuilderBase<IQueryOver<S,T>, S, T>
+	public class IQueryOverFetchBuilder<TRoot,TSubType> : QueryOverFetchBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 
-		public IQueryOverFetchBuilder(IQueryOver<S,T> root, Expression<Func<S, object>> path)
+		public IQueryOverFetchBuilder(IQueryOver<TRoot,TSubType> root, Expression<Func<TRoot, object>> path)
 			: base(root, path) { }
 
 	}
 
-	public class QueryOverFetchBuilderBase<R, S, T> where R : IQueryOver<S,T>
+	public class QueryOverFetchBuilderBase<TReturn, TRoot, TSubType> where TReturn : IQueryOver<TRoot,TSubType>
 	{
 
-		protected R root;
+		protected TReturn root;
 		protected string path;
 
-		protected QueryOverFetchBuilderBase(R root, Expression<Func<S, object>> path)
+		protected QueryOverFetchBuilderBase(TReturn root, Expression<Func<TRoot, object>> path)
 		{
 			this.root = root;
 			this.path = ExpressionProcessor.FindMemberExpression(path.Body);
 		}
 
-		public R Eager
+		public TReturn Eager
 		{
 			get
 			{
@@ -46,7 +46,7 @@ namespace NHibernate.Criterion
 			}
 		}
 
-		public R Lazy
+		public TReturn Lazy
 		{
 			get
 			{
@@ -55,7 +55,7 @@ namespace NHibernate.Criterion
 			}
 		}
 
-		public R Default
+		public TReturn Default
 		{
 			get
 			{

@@ -9,7 +9,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 
-	public class QueryOverSubqueryPropertyBuilder<S,T> : QueryOverSubqueryPropertyBuilderBase<QueryOver<S,T>, S, T>
+	public class QueryOverSubqueryPropertyBuilder<TRoot,TSubType> : QueryOverSubqueryPropertyBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 
 		public QueryOverSubqueryPropertyBuilder()
@@ -17,7 +17,7 @@ namespace NHibernate.Criterion.Lambda
 
 	}
 
-	public class IQueryOverSubqueryPropertyBuilder<S,T> : QueryOverSubqueryPropertyBuilderBase<IQueryOver<S,T>, S, T>
+	public class IQueryOverSubqueryPropertyBuilder<TRoot,TSubType> : QueryOverSubqueryPropertyBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 
 		public IQueryOverSubqueryPropertyBuilder()
@@ -32,11 +32,11 @@ namespace NHibernate.Criterion.Lambda
 		internal abstract QueryOverSubqueryPropertyBuilderBase Set(object root, string path, object value);
 	}
 
-	public class QueryOverSubqueryPropertyBuilderBase<R, S, T> : QueryOverSubqueryPropertyBuilderBase
-		where R : IQueryOver<S,T>
+	public class QueryOverSubqueryPropertyBuilderBase<TReturn, TRoot, TSubType> : QueryOverSubqueryPropertyBuilderBase
+		where TReturn : IQueryOver<TRoot,TSubType>
 	{
 
-		protected R root;
+		protected TReturn root;
 		protected string path;
 		protected object value;
 
@@ -46,7 +46,7 @@ namespace NHibernate.Criterion.Lambda
 
 		internal override QueryOverSubqueryPropertyBuilderBase Set(object root, string path, object value)
 		{
-			this.root = (R)root;
+			this.root = (TReturn)root;
 			this.path = path;
 			this.value = value;
 			return this;
@@ -71,7 +71,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Add a property equal subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
-		public R Eq<U>(QueryOver<U> detachedCriteria)
+		public TReturn Eq<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyEq, Subqueries.Eq, detachedCriteria);
 			return root;
@@ -81,7 +81,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Add a property equal all subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
-		public R EqAll<U>(QueryOver<U> detachedCriteria)
+		public TReturn EqAll<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyEqAll, Subqueries.EqAll, detachedCriteria);
 			return root;
@@ -91,7 +91,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Create a property greater than or equal subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
-		public R Ge<U>(QueryOver<U> detachedCriteria)
+		public TReturn Ge<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyGe, Subqueries.Ge, detachedCriteria);
 			return root;
@@ -101,7 +101,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Create a property greater than or equal all subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
-		public R GeAll<U>(QueryOver<U> detachedCriteria)
+		public TReturn GeAll<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyGeAll, Subqueries.GeAll, detachedCriteria);
 			return root;
@@ -111,7 +111,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Create a property greater than or equal some subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
-		public R GeSome<U>(QueryOver<U> detachedCriteria)
+		public TReturn GeSome<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyGeSome, Subqueries.GeSome, detachedCriteria);
 			return root;
@@ -121,7 +121,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Create a property greater than subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
-		public R Gt<U>(QueryOver<U> detachedCriteria)
+		public TReturn Gt<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyGt, Subqueries.Gt, detachedCriteria);
 			return root;
@@ -131,7 +131,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Create a property greater than all subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
-		public R GtAll<U>(QueryOver<U> detachedCriteria)
+		public TReturn GtAll<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyGtAll, Subqueries.GtAll, detachedCriteria);
 			return root;
@@ -141,7 +141,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Create a property greater than some subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
-		public R GtSome<U>(QueryOver<U> detachedCriteria)
+		public TReturn GtSome<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyGtSome, Subqueries.GtSome, detachedCriteria);
 			return root;
@@ -151,7 +151,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Create a property in subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
-		public R In<U>(QueryOver<U> detachedCriteria)
+		public TReturn In<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyIn, Subqueries.In, detachedCriteria);
 			return root;
@@ -161,7 +161,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Create a property less than or equal subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
-		public R Le<U>(QueryOver<U> detachedCriteria)
+		public TReturn Le<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyLe, Subqueries.Le, detachedCriteria);
 			return root;
@@ -171,7 +171,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Create a property less than or equal all subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
-		public R LeAll<U>(QueryOver<U> detachedCriteria)
+		public TReturn LeAll<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyLeAll, Subqueries.LeAll, detachedCriteria);
 			return root;
@@ -181,7 +181,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Create a property less than or equal some subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
-		public R LeSome<U>(QueryOver<U> detachedCriteria)
+		public TReturn LeSome<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyLeSome, Subqueries.LeSome, detachedCriteria);
 			return root;
@@ -191,7 +191,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Create a property less than subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
-		public R Lt<U>(QueryOver<U> detachedCriteria)
+		public TReturn Lt<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyLt, Subqueries.Lt, detachedCriteria);
 			return root;
@@ -201,7 +201,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Create a property less than all subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
-		public R LtAll<U>(QueryOver<U> detachedCriteria)
+		public TReturn LtAll<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyLtAll, Subqueries.LtAll, detachedCriteria);
 			return root;
@@ -211,7 +211,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Create a property less than some subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
-		public R LtSome<U>(QueryOver<U> detachedCriteria)
+		public TReturn LtSome<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyLtSome, Subqueries.LtSome, detachedCriteria);
 			return root;
@@ -221,7 +221,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Create a property not equal subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
-		public R Ne<U>(QueryOver<U> detachedCriteria)
+		public TReturn Ne<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyNe, Subqueries.Ne, detachedCriteria);
 			return root;
@@ -231,7 +231,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Create a property not in subquery criterion
 		/// </summary>
 		/// <param name="detachedCriteria">detached subquery</param>
-		public R NotIn<U>(QueryOver<U> detachedCriteria)
+		public TReturn NotIn<U>(QueryOver<U> detachedCriteria)
 		{
 			AddSubquery(Subqueries.PropertyNotIn, Subqueries.NotIn, detachedCriteria);
 			return root;

@@ -9,30 +9,30 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 
-	public class QueryOverSubqueryBuilder<S,T> : QueryOverSubqueryBuilderBase<QueryOver<S,T>, S, T, QueryOverSubqueryPropertyBuilder<S,T>>
+	public class QueryOverSubqueryBuilder<TRoot,TSubType> : QueryOverSubqueryBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType, QueryOverSubqueryPropertyBuilder<TRoot,TSubType>>
 	{
 
-		public QueryOverSubqueryBuilder(QueryOver<S,T> root)
+		public QueryOverSubqueryBuilder(QueryOver<TRoot,TSubType> root)
 			: base(root) { }
 
 	}
 
-	public class IQueryOverSubqueryBuilder<S,T> : QueryOverSubqueryBuilderBase<IQueryOver<S,T>, S, T, IQueryOverSubqueryPropertyBuilder<S,T>>
+	public class IQueryOverSubqueryBuilder<TRoot,TSubType> : QueryOverSubqueryBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType, IQueryOverSubqueryPropertyBuilder<TRoot,TSubType>>
 	{
 
-		public IQueryOverSubqueryBuilder(IQueryOver<S,T> root)
+		public IQueryOverSubqueryBuilder(IQueryOver<TRoot,TSubType> root)
 			: base(root) { }
 
 	}
 
-	public class QueryOverSubqueryBuilderBase<R, S, T, B>
-		where R : IQueryOver<S,T>
-		where B : QueryOverSubqueryPropertyBuilderBase, new()
+	public class QueryOverSubqueryBuilderBase<TReturn, TRoot, TSubType, TBuilderType>
+		where TReturn : IQueryOver<TRoot,TSubType>
+		where TBuilderType : QueryOverSubqueryPropertyBuilderBase, new()
 	{
 
-		protected R root;
+		protected TReturn root;
 
-		protected QueryOverSubqueryBuilderBase(R root)
+		protected QueryOverSubqueryBuilderBase(TReturn root)
 		{
 			this.root = root;
 		}
@@ -40,7 +40,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// Add an Exists subquery criterion
 		/// </summary>
-		public R WhereExists<U>(QueryOver<U> detachedQuery)
+		public TReturn WhereExists<U>(QueryOver<U> detachedQuery)
 		{
 			root.And(Subqueries.Exists(detachedQuery.DetachedCriteria));
 			return root;
@@ -49,7 +49,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// Add a NotExists subquery criterion
 		/// </summary>
-		public R WhereNotExists<U>(QueryOver<U> detachedQuery)
+		public TReturn WhereNotExists<U>(QueryOver<U> detachedQuery)
 		{
 			root.And(Subqueries.NotExists(detachedQuery.DetachedCriteria));
 			return root;
@@ -59,9 +59,9 @@ namespace NHibernate.Criterion.Lambda
 		/// Subquery expression in the format
 		/// .Where(t =&gt; t.Property [==, !=, >, etc.] detachedQueryOver.As&lt;propertyType&gt;())
 		/// </summary>
-		public R Where(Expression<Func<T, bool>> expression)
+		public TReturn Where(Expression<Func<TSubType, bool>> expression)
 		{
-			AbstractCriterion criterion = ExpressionProcessor.ProcessSubquery<T>(LambdaSubqueryType.Exact, expression);
+			AbstractCriterion criterion = ExpressionProcessor.ProcessSubquery<TSubType>(LambdaSubqueryType.Exact, expression);
 			root.And(criterion);
 			return root;
 		}
@@ -70,7 +70,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Subquery expression in the format
 		/// .Where(() =&gt; alias.Property [==, !=, >, etc.] detachedQueryOver.As&lt;propertyType&gt;())
 		/// </summary>
-		public R Where(Expression<Func<bool>> expression)
+		public TReturn Where(Expression<Func<bool>> expression)
 		{
 			AbstractCriterion criterion = ExpressionProcessor.ProcessSubquery(LambdaSubqueryType.Exact, expression);
 			root.And(criterion);
@@ -81,9 +81,9 @@ namespace NHibernate.Criterion.Lambda
 		/// Subquery expression in the format
 		/// .WhereAll(t =&gt; t.Property [==, !=, >, etc.] detachedQueryOver.As&lt;propertyType&gt;())
 		/// </summary>
-		public R WhereAll(Expression<Func<T, bool>> expression)
+		public TReturn WhereAll(Expression<Func<TSubType, bool>> expression)
 		{
-			AbstractCriterion criterion = ExpressionProcessor.ProcessSubquery<T>(LambdaSubqueryType.All, expression);
+			AbstractCriterion criterion = ExpressionProcessor.ProcessSubquery<TSubType>(LambdaSubqueryType.All, expression);
 			root.And(criterion);
 			return root;
 		}
@@ -92,7 +92,7 @@ namespace NHibernate.Criterion.Lambda
 		/// Subquery expression in the format
 		/// .WhereAll(() =&gt; alias.Property [==, !=, >, etc.] detachedQueryOver.As&lt;propertyType&gt;())
 		/// </summary>
-		public R WhereAll(Expression<Func<bool>> expression)
+		public TReturn WhereAll(Expression<Func<bool>> expression)
 		{
 			AbstractCriterion criterion = ExpressionProcessor.ProcessSubquery(LambdaSubqueryType.All, expression);
 			root.And(criterion);
@@ -103,9 +103,9 @@ namespace NHibernate.Criterion.Lambda
 		/// Subquery expression in the format
 		/// .WhereSome(t =&gt; t.Property [==, !=, >, etc.] detachedQueryOver.As&lt;propertyType&gt;())
 		/// </summary>
-		public R WhereSome(Expression<Func<T, bool>> expression)
+		public TReturn WhereSome(Expression<Func<TSubType, bool>> expression)
 		{
-			AbstractCriterion criterion = ExpressionProcessor.ProcessSubquery<T>(LambdaSubqueryType.Some, expression);
+			AbstractCriterion criterion = ExpressionProcessor.ProcessSubquery<TSubType>(LambdaSubqueryType.Some, expression);
 			root.And(criterion);
 			return root;
 		}
@@ -114,28 +114,28 @@ namespace NHibernate.Criterion.Lambda
 		/// Subquery expression in the format
 		/// .WhereSome(() =&gt; alias.Property [==, !=, >, etc.] detachedQueryOver.As&lt;propertyType&gt;())
 		/// </summary>
-		public R WhereSome(Expression<Func<bool>> expression)
+		public TReturn WhereSome(Expression<Func<bool>> expression)
 		{
 			AbstractCriterion criterion = ExpressionProcessor.ProcessSubquery(LambdaSubqueryType.Some, expression);
 			root.And(criterion);
 			return root;
 		}
 
-		public B WhereProperty(Expression<Func<T, object>> expression)
+		public TBuilderType WhereProperty(Expression<Func<TSubType, object>> expression)
 		{
 			string property = ExpressionProcessor.FindMemberExpression(expression.Body);
-			return (B)new B().Set(root, property, null);
+			return (TBuilderType)new TBuilderType().Set(root, property, null);
 		}
 
-		public B WhereProperty(Expression<Func<object>> expression)
+		public TBuilderType WhereProperty(Expression<Func<object>> expression)
 		{
 			string property = ExpressionProcessor.FindMemberExpression(expression.Body);
-			return (B)new B().Set(root, property, null);
+			return (TBuilderType)new TBuilderType().Set(root, property, null);
 		}
 
-		public B WhereValue(object value)
+		public TBuilderType WhereValue(object value)
 		{
-			return (B)new B().Set(root, null, value);
+			return (TBuilderType)new TBuilderType().Set(root, null, value);
 		}
 
 	}
