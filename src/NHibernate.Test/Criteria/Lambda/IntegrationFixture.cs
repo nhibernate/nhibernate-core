@@ -205,6 +205,66 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
+		[Test]
+		public void SubQuery()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new Person() { Name = "Name 1", Age = 1 }
+						.AddChild(new Child() { Nickname = "Name 1.1", Age = 1}));
+
+				s.Save(new Person() { Name = "Name 2", Age = 2 }
+						.AddChild(new Child() { Nickname = "Name 2.1", Age = 2})
+						.AddChild(new Child() { Nickname = "Name 2.2", Age = 2}));
+
+				s.Save(new Person() { Name = "Name 3", Age = 3 }
+						.AddChild(new Child() { Nickname = "Name 3.1", Age = 3}));
+
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				Person personAlias = null;
+				object childCountAlias = null;
+
+				QueryOver<Child> averageChildAge =
+					QueryOver.Of<Child>()
+						.SelectList
+							.SelectAvg(c => c.Age)
+							.EndSelect;
+
+				QueryOver<Child> childCountQuery =
+					QueryOver.Of<Child>()
+						.Where(c => c.Parent.Id == personAlias.Id)
+						.Select(Projections.RowCount());
+
+				var nameAndChildCount =
+					s.QueryOver<Person>(() => personAlias)
+						.WithSubquery.Where(p => p.Age <= averageChildAge.As<int>())
+						.SelectList
+							.Select(p => p.Name)
+							.SelectSubQuery(childCountQuery).WithAlias(() => childCountAlias)
+							.EndSelect
+							.OrderBy(() => childCountAlias).Desc
+						.List<object[]>()
+						.Select(props => new {
+							Name = (string)props[0],
+							ChildCount = (int)props[1],
+							})
+						.ToList();
+
+				Assert.That(nameAndChildCount.Count, Is.EqualTo(2));
+
+				Assert.That(nameAndChildCount[0].Name, Is.EqualTo("Name 2"));
+				Assert.That(nameAndChildCount[0].ChildCount, Is.EqualTo(2));
+
+				Assert.That(nameAndChildCount[1].Name, Is.EqualTo("Name 1"));
+				Assert.That(nameAndChildCount[1].ChildCount, Is.EqualTo(1));
+			}
+		}
+
 	}
 
 }

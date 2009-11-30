@@ -21,6 +21,7 @@
 			<generator class="native"/>
 		</id>
 		<property name="Nickname" />
+		<property name="Age" />
 		<many-to-one name="Parent" class="Person" />
 	</class>
 

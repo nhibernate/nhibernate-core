@@ -264,7 +264,7 @@ namespace NHibernate.Criterion
 			return this;
 		}
 
-		QueryOverProjectionBuilder<QueryOver<TRoot,TSubType>, TRoot, TSubType> SelectList
+		public QueryOverProjectionBuilder<QueryOver<TRoot,TSubType>, TRoot, TSubType> SelectList
 		{
 			get { return new QueryOverProjectionBuilder<QueryOver<TRoot,TSubType>, TRoot, TSubType>(this, this); }
 		}
