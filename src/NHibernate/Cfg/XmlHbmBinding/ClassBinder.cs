@@ -115,6 +115,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			// CUSTOM SQL
 			HandleCustomSQL(classMapping, model);
+			if (classMapping.SqlLoader != null)
+				model.LoaderName = classMapping.SqlLoader.queryref;
 
 			foreach (var synchronize in classMapping.Synchronize)
 			{
@@ -219,37 +221,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			HandleCustomSQL(joinMapping, join);
 		}
 
-		private void HandleCustomSQL(IEntitySqlsMapping sqlsMapping, PersistentClass model)
+		private void HandleCustomSQL(IEntitySqlsMapping sqlsMapping, ISqlCustomizable model)
 		{
-			// TODO : common interface between PersistentClass & Join for custom SQL
-			var sqlInsert = sqlsMapping.SqlInsert;
-			if (sqlInsert != null)
-			{
-				bool callable = sqlInsert.callableSpecified && sqlInsert.callable;
-				model.SetCustomSQLInsert(sqlInsert.Text.LinesToString(), callable, GetResultCheckStyle(sqlInsert));
-			}
-
-			var sqlDelete = sqlsMapping.SqlDelete;
-			if (sqlDelete != null)
-			{
-				bool callable = sqlDelete.callableSpecified && sqlDelete.callable;
-				model.SetCustomSQLDelete(sqlDelete.Text.LinesToString(), callable, GetResultCheckStyle(sqlDelete));
-			}
-
-			var sqlUpdate = sqlsMapping.SqlUpdate;
-			if (sqlUpdate != null)
-			{
-				bool callable = sqlUpdate.callableSpecified && sqlUpdate.callable;
-				model.SetCustomSQLUpdate(sqlUpdate.Text.LinesToString(), callable, GetResultCheckStyle(sqlUpdate));
-			}
-
-			if (sqlsMapping.SqlLoader != null)
-				model.LoaderName = sqlsMapping.SqlLoader.queryref;
-		}
-
-		private void HandleCustomSQL(IEntitySqlsMapping sqlsMapping, Join model)
-		{
-			// TODO : common interface between PersistentClass & Join for custom SQL
 			var sqlInsert = sqlsMapping.SqlInsert;
 			if (sqlInsert != null)
 			{

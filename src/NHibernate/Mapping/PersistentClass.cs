@@ -14,7 +14,7 @@ namespace NHibernate.Mapping
 	/// <c>&lt;joined-subclass&gt;</c>.
 	/// </summary>
 	[Serializable]
-	public abstract class PersistentClass : IFilterable, IMetaAttributable
+	public abstract class PersistentClass : IFilterable, IMetaAttributable, ISqlCustomizable
 	{
 		private static readonly Alias PKAlias = new Alias(15, "PK");
 
