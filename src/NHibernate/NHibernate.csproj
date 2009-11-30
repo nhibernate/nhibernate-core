@@ -502,6 +502,7 @@
     <Compile Include="Cfg\MappingSchema\HbmDynamicComponent.cs" />
     <Compile Include="Cfg\MappingSchema\HbmExtensions.cs" />
     <Compile Include="Cfg\MappingSchema\HbmIdbag.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmJoin.cs" />
     <Compile Include="Cfg\MappingSchema\HbmJoinedSubclass.cs" />
     <Compile Include="Cfg\MappingSchema\HbmList.cs" />
     <Compile Include="Cfg\MappingSchema\HbmManyToOne.cs" />

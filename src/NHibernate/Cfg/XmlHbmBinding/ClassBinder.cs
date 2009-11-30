@@ -176,117 +176,52 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			foreach (var hbmJoin in joins)
 			{
 				var join = new Join { PersistentClass = persistentClass };
-				BindJoin(Serialize(hbmJoin), join, inheritedMetas);
+				BindJoin(hbmJoin, join, inheritedMetas);
 				persistentClass.AddJoin(join);
 			}
 		}
 
-		private void BindJoin(XmlNode node, Join join, IDictionary<string, MetaAttribute> inheritedMetas)
+		private void BindJoin(HbmJoin joinMapping, Join join, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			PersistentClass persistentClass = join.PersistentClass;
-			String path = persistentClass.EntityName;
 
 			// TABLENAME
+			string schema = joinMapping.schema ?? mappings.SchemaName;
+			string catalog = joinMapping.catalog ?? mappings.CatalogName;
 
-			XmlAttribute schemaNode = node.Attributes["schema"];
-			string schema = schemaNode == null ? mappings.SchemaName : schemaNode.Value;
-			XmlAttribute catalogNode = node.Attributes["catalog"];
-			string catalog = catalogNode == null ? mappings.CatalogName : catalogNode.Value;
+			string action = "all"; // joinMapping.schemaaction ?? "all";
 
-			XmlAttribute actionNode = node.Attributes["schema-action"];
-			string action = actionNode == null ? "all" : actionNode.Value;
-
-			string tableName = node.Attributes["table"] != null ? node.Attributes["table"].Value : null;
+			string tableName = joinMapping.table;
 			Table table = mappings.AddTable(schema, catalog, GetClassTableName(persistentClass, tableName), null, false, action);
 			join.Table = table;
 
-			XmlAttribute fetchNode = node.Attributes["fetch"];
-			if (fetchNode != null)
-				join.IsSequentialSelect = "select".Equals(fetchNode.Value);
-
-			XmlAttribute invNode = node.Attributes["inverse"];
-			if (invNode != null)
-				join.IsInverse = "true".Equals(invNode.Value);
-
-			XmlAttribute nullNode = node.Attributes["optional"];
-			if (nullNode != null)
-				join.IsOptional = "true".Equals(nullNode.Value);
+			join.IsSequentialSelect = joinMapping.fetch == HbmJoinFetch.Select;
+			join.IsInverse = joinMapping.inverse;
+			join.IsOptional = joinMapping.optional;
 
 			log.InfoFormat("Mapping class join: {0} -> {1}", persistentClass.EntityName, join.Table.Name);
 
 			// KEY
-			XmlNode keyNode = node.SelectSingleNode(HbmConstants.nsKey, namespaceManager);
 			SimpleValue key = new DependantValue(table, persistentClass.Identifier);
 			join.Key = key;
-			if (keyNode.Attributes["on-delete"] != null)
-				key.IsCascadeDeleteEnabled = "cascade".Equals(keyNode.Attributes["on-delete"].Value);
-			BindSimpleValue(keyNode, key, false, persistentClass.EntityName);
+			key.IsCascadeDeleteEnabled = joinMapping.key.ondelete == HbmOndelete.Cascade;
+			BindSimpleValue(Serialize(joinMapping.key), key, false, persistentClass.EntityName);
 
 			join.CreatePrimaryKey(dialect);
 			join.CreateForeignKey();
 
 			// PROPERTIES
-			//PropertiesFromXML(node, persistentClass, mappings);
-			foreach (XmlNode subnode in node.ChildNodes)
-			{
-				//I am only concerned with elements that are from the nhibernate namespace
-				if (subnode.NamespaceURI != MappingSchemaXMLNS)
-					continue;
-
-				string name = subnode.Name;
-				XmlAttribute nameAttribute = subnode.Attributes["name"];
-				string propertyName = nameAttribute == null ? null : nameAttribute.Value;
-				IValue value = null;
-				var collectionBinder = new CollectionBinder(Mappings, namespaceManager, dialect);
-				if (collectionBinder.CanCreate(name))
-				{
-					Mapping.Collection collection = collectionBinder.Create(name, subnode, persistentClass.EntityName, propertyName,
-					                                                        persistentClass, persistentClass.MappedClass,
-					                                                        inheritedMetas);
-
-					mappings.AddCollection(collection);
-					value = collection;
-				}
-				else
-				{
-					switch (name)
-					{
-						case "many-to-one":
-							value = new ManyToOne(table);
-							BindManyToOne(subnode, (ManyToOne) value, propertyName, true);
-							break;
-						case "any":
-							value = new Any(table);
-							BindAny(subnode, (Any) value, true);
-							break;
-						case "property":
-							value = new SimpleValue(table);
-							BindSimpleValue(subnode, (SimpleValue) value, true, propertyName);
-							break;
-						case "component":
-						case "dynamic-component":
-							string subpath = StringHelper.Qualify(path, propertyName);
-							value = new Component(join);
-							BindComponent(subnode, (Component) value, join.PersistentClass.MappedClass, join.PersistentClass.ClassName,
-							              propertyName, subpath, true, inheritedMetas);
-							break;
-					}
-				}
-				if (value != null)
-				{
-					var prop = CreateProperty(value, propertyName, persistentClass.MappedClass.AssemblyQualifiedName, subnode,
-					                          inheritedMetas);
-					prop.IsOptional = join.IsOptional;
-					join.AddProperty(prop);
-				}
-			}
+			new PropertiesBinder(Mappings, persistentClass, namespaceManager, dialect).Bind(joinMapping.Properties, join.Table,
+			                                                                                inheritedMetas, p => { },
+			                                                                                join.AddProperty);
 
 			// CUSTOM SQL
-			HandleCustomSQL(node, join);
+			HandleCustomSQL(joinMapping, join);
 		}
 
 		private void HandleCustomSQL(IEntitySqlsMapping sqlsMapping, PersistentClass model)
 		{
+			// TODO : common interface between PersistentClass & Join for custom SQL
 			var sqlInsert = sqlsMapping.SqlInsert;
 			if (sqlInsert != null)
 			{
@@ -312,27 +247,28 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.LoaderName = sqlsMapping.SqlLoader.queryref;
 		}
 
-		private void HandleCustomSQL(XmlNode node, Join model)
+		private void HandleCustomSQL(IEntitySqlsMapping sqlsMapping, Join model)
 		{
-			XmlNode element = node.SelectSingleNode(HbmConstants.nsSqlInsert, namespaceManager);
-			if (element != null)
+			// TODO : common interface between PersistentClass & Join for custom SQL
+			var sqlInsert = sqlsMapping.SqlInsert;
+			if (sqlInsert != null)
 			{
-				bool callable = IsCallable(element);
-				model.SetCustomSQLInsert(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
+				bool callable = sqlInsert.callableSpecified && sqlInsert.callable;
+				model.SetCustomSQLInsert(sqlInsert.Text.LinesToString(), callable, GetResultCheckStyle(sqlInsert));
 			}
 
-			element = node.SelectSingleNode(HbmConstants.nsSqlDelete, namespaceManager);
-			if (element != null)
+			var sqlDelete = sqlsMapping.SqlDelete;
+			if (sqlDelete != null)
 			{
-				bool callable = IsCallable(element);
-				model.SetCustomSQLDelete(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
+				bool callable = sqlDelete.callableSpecified && sqlDelete.callable;
+				model.SetCustomSQLDelete(sqlDelete.Text.LinesToString(), callable, GetResultCheckStyle(sqlDelete));
 			}
 
-			element = node.SelectSingleNode(HbmConstants.nsSqlUpdate, namespaceManager);
-			if (element != null)
+			var sqlUpdate = sqlsMapping.SqlUpdate;
+			if (sqlUpdate != null)
 			{
-				bool callable = IsCallable(element);
-				model.SetCustomSQLUpdate(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
+				bool callable = sqlUpdate.callableSpecified && sqlUpdate.callable;
+				model.SetCustomSQLUpdate(sqlUpdate.Text.LinesToString(), callable, GetResultCheckStyle(sqlUpdate));
 			}
 		}
 

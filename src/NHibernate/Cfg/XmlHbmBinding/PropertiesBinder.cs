@@ -20,18 +20,33 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		public void Bind(IEnumerable<IEntityPropertyMapping> properties, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			Bind(properties, inheritedMetas, null);
+			Bind(properties, inheritedMetas, p => { });
 		}
 
 		public void Bind(IEnumerable<IEntityPropertyMapping> properties, IDictionary<string, MetaAttribute> inheritedMetas, Action<Property> modifier)
 		{
-			Action<Property> action = modifier ?? (p => { }); 
+			Bind(properties, model.Table, inheritedMetas, modifier, p => model.AddProperty(p));
+		}
+
+		public void Bind(IEnumerable<IEntityPropertyMapping> properties, Table table, IDictionary<string, MetaAttribute> inheritedMetas, Action<Property> modifier, Action<Property> addToModelAction)
+		{
+			if (table == null)
+			{
+				throw new ArgumentNullException("table");
+			}
+			if (modifier == null)
+			{
+				throw new ArgumentNullException("modifier");
+			}
+			if (addToModelAction == null)
+			{
+				throw new ArgumentNullException("addToModelAction");
+			}
 			string entityName = model.EntityName;
-			Table table = model.Table;
 
 			foreach (var entityPropertyMapping in properties)
 			{
-				Property property= null;
+				Property property = null;
 
 				string propertyName = entityPropertyMapping.Name;
 
@@ -106,9 +121,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					BindAnyProperty(anyMapping, property);
 				}
 
-				if(property != null)
+				if (property != null)
 				{
-					action(property);
+					modifier(property);
 					if (log.IsDebugEnabled)
 					{
 						string msg = "Mapped property: " + property.Name;
@@ -119,9 +134,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 							msg += ", type: " + property.Type.Name;
 						log.Debug(msg);
 					}
-					model.AddProperty(property);
+					addToModelAction(property);
 				}
-			}
+			}			
 		}
 
 		private void BindValueProperty(HbmProperty propertyMapping, Property property)
