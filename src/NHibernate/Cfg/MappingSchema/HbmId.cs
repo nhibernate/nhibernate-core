@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmId: IColumnsMapping
+	public partial class HbmId: AbstractDecoratable, IColumnsMapping
 	{
 		#region Implementation of IColumnsMapping
 
@@ -28,5 +29,14 @@ namespace NHibernate.Cfg.MappingSchema
 				};
 			}
 		}
+
+		#region Overrides of AbstractDecoratable
+
+		protected override HbmMeta[] Metadatas
+		{
+			get { return meta ?? new HbmMeta[0]; }
+		}
+
+		#endregion
 	}
 }

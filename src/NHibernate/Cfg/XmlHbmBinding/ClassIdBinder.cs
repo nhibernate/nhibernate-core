@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Xml;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using NHibernate.Util;
@@ -17,35 +17,22 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			if (idSchema != null)
 			{
-				SimpleValue id = CreateIdentifier(idSchema, rootClass, table);
+				var id = new SimpleValue(table) { TypeName = idSchema.type1 };
+				rootClass.Identifier = id;
 
-				AddColumns(idSchema, id);
+				Func<HbmColumn> defaultColumn = () => new HbmColumn
+				                                      	{
+				                                      		name = idSchema.name ?? RootClass.DefaultIdentifierColumnName,
+																									length = idSchema.length
+				                                      	};
+				new ColumnsBinder(id, Mappings).Bind(idSchema.Columns, false, defaultColumn);
+
 				CreateIdentifierProperty(idSchema, rootClass, id);
 				VerifiyIdTypeIsValid(id, rootClass.EntityName);
 				BindGenerator(idSchema, id);
 				id.Table.SetIdentifierValue(id);
 				BindUnsavedValue(idSchema, id);
 			}
-		}
-
-		private static SimpleValue CreateIdentifier(HbmId idSchema, PersistentClass rootClass, Table table)
-		{
-			SimpleValue iv = new SimpleValue(table);
-			iv.TypeName = idSchema.type1;
-			rootClass.Identifier = iv;
-
-			return iv;
-		}
-
-		private void AddColumns(HbmId idSchema, SimpleValue id)
-		{
-			if (idSchema.column1 != null)
-				AddColumnFromAttribute(idSchema, id);
-			else
-				AddColumnsFromList(idSchema, id);
-
-			if (id.ColumnSpan == 0)
-				AddDefaultColumn(idSchema, id);
 		}
 
 		private void CreateIdentifierProperty(HbmId idSchema, PersistentClass rootClass, SimpleValue id)
@@ -56,8 +43,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				id.SetTypeUsingReflection(rootClass.MappedClass == null ? null : rootClass.MappedClass.AssemblyQualifiedName,
 				                          idSchema.name, access);
 
-				Property property = new Property(id);
-				property.Name = idSchema.name;
+				var property = new Property(id) {Name = idSchema.name};
 
 				if (property.Value.Type == null)
 					throw new MappingException("could not determine a property type for: " + property.Name);
@@ -68,7 +54,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				property.IsInsertable = true;
 				property.IsOptimisticLocked = true;
 				property.Generation = PropertyGeneration.Never;
-				property.MetaAttributes = GetMetas(idSchema);
+				property.MetaAttributes = GetMetas(idSchema, EmptyMeta);
 
 				rootClass.IdentifierProperty = property;
 
@@ -114,7 +100,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private IDictionary<string,string> GetGeneratorProperties(HbmId idSchema, IValue id)
 		{
-			Dictionary<string, string> results = new Dictionary<string, string>();
+			var results = new Dictionary<string, string>();
 
 			if (id.Table.Schema != null)
 				results.Add(Id.PersistentIdGeneratorParmsNames.Schema, id.Table.Schema);
@@ -130,111 +116,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private static void BindUnsavedValue(HbmId idSchema, SimpleValue id)
 		{
 			id.NullValue = idSchema.unsavedvalue ?? (id.IdentifierGeneratorStrategy == "assigned" ? "undefined" : null);
-		}
-
-		private void AddColumnFromAttribute(HbmId idSchema, SimpleValue id)
-		{
-			Column column = CreateColumn(idSchema);
-			column.Value = id;
-			column.Name = mappings.NamingStrategy.ColumnName(idSchema.column1);
-
-			if (id.Table != null)
-				id.Table.AddColumn(column);
-
-			id.AddColumn(column);
-		}
-
-		private void AddColumnsFromList(HbmId idSchema, SimpleValue id)
-		{
-			int count = 0;
-
-			foreach (HbmColumn columnSchema in idSchema.column ?? new HbmColumn[0])
-			{
-				Column column = CreateColumn(columnSchema, id, count++);
-				column.Name = mappings.NamingStrategy.ColumnName(columnSchema.name);
-
-				if (id.Table != null)
-					id.Table.AddColumn(column);
-				//table=null -> an association, fill it in later
-
-				id.AddColumn(column);
-
-				if (columnSchema.index != null && id.Table != null)
-				{
-					var tokens = new StringTokenizer(columnSchema.index, ",", false);
-					foreach (string token in tokens)
-						id.Table.GetOrCreateIndex(token.Trim()).AddColumn(column);
-				}
-
-				if (columnSchema.uniquekey != null && id.Table != null)
-				{
-					var tokens = new StringTokenizer(columnSchema.uniquekey, ",", false);
-					foreach (string token in tokens)
-						id.Table.GetOrCreateUniqueKey(token.Trim()).AddColumn(column);
-				}
-			}
-		}
-
-		private void AddDefaultColumn(HbmId idSchema, SimpleValue id)
-		{
-			Column column = CreateColumn(idSchema);
-			column.Value = id;
-			string propertyName = idSchema.name ?? RootClass.DefaultIdentifierColumnName;
-			column.Name = mappings.NamingStrategy.PropertyToColumnName(propertyName);
-
-			id.Table.AddColumn(column);
-			id.AddColumn(column);
-		}
-
-		private static IDictionary<string, MetaAttribute> GetMetas(HbmId idSchema)
-		{
-			Dictionary<string, MetaAttribute> map = new Dictionary<string, MetaAttribute>();
-
-			foreach (HbmMeta metaSchema in idSchema.meta ?? new HbmMeta[0])
-			{
-				MetaAttribute meta;
-				if (!map.TryGetValue(metaSchema.attribute, out meta))
-				{
-					meta = new MetaAttribute(metaSchema.attribute);
-					map[metaSchema.attribute] = meta;
-				}
-
-				meta.AddValue(metaSchema.GetText());
-			}
-
-			return map;
-		}
-
-		private static Column CreateColumn(HbmId idSchema)
-		{
-			Column column = new Column();
-
-			if (idSchema.length != null)
-				column.Length = int.Parse(idSchema.length);
-
-			column.IsNullable = false;
-			column.IsUnique = false;
-			column.CheckConstraint = string.Empty;
-			column.SqlType = null;
-
-			return column;
-		}
-
-		private static Column CreateColumn(HbmColumn columnSchema, IValue type, int index)
-		{
-			Column column = new Column();
-			column.Value = type;
-			column.TypeIndex = index;
-
-			if (columnSchema.length != null)
-				column.Length = int.Parse(columnSchema.length);
-
-			column.IsNullable = columnSchema.notnullSpecified ? !columnSchema.notnull : false;
-			column.IsUnique = columnSchema.uniqueSpecified && columnSchema.unique;
-			column.CheckConstraint = columnSchema.check ?? string.Empty;
-			column.SqlType = columnSchema.sqltype;
-
-			return column;
 		}
 	}
 }
