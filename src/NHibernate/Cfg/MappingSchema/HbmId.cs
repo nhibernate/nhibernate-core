@@ -2,13 +2,8 @@ using System.Collections.Generic;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	partial class HbmVersion : AbstractDecoratable, IColumnsMapping
+	public partial class HbmId: IColumnsMapping
 	{
-		protected override HbmMeta[] Metadatas
-		{
-			get { return meta ?? new HbmMeta[0]; }
-		}
-
 		#region Implementation of IColumnsMapping
 
 		public IEnumerable<HbmColumn> Columns
@@ -29,6 +24,7 @@ namespace NHibernate.Cfg.MappingSchema
 				yield return new HbmColumn
 				{
 					name = column1,
+					length = length,
 				};
 			}
 		}

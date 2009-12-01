@@ -1,26 +1,23 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	partial class HbmVersion : AbstractDecoratable, IColumnsMapping
+	public partial class HbmManyToMany: IColumnsMapping
 	{
-		protected override HbmMeta[] Metadatas
-		{
-			get { return meta ?? new HbmMeta[0]; }
-		}
 
 		#region Implementation of IColumnsMapping
 
 		public IEnumerable<HbmColumn> Columns
 		{
-			get { return column ?? AsColumns(); }
+			get { return Items != null ? Items.OfType<HbmColumn>() : AsColumns(); }
 		}
 
 		#endregion
 
 		private IEnumerable<HbmColumn> AsColumns()
 		{
-			if (string.IsNullOrEmpty(column1))
+			if (string.IsNullOrEmpty(column))
 			{
 				yield break;
 			}
@@ -28,7 +25,7 @@ namespace NHibernate.Cfg.MappingSchema
 			{
 				yield return new HbmColumn
 				{
-					name = column1,
+					name = column,
 				};
 			}
 		}

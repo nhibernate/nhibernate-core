@@ -4,36 +4,8 @@ using System.Linq;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmManyToOne : AbstractDecoratable, IEntityPropertyMapping, IColumnsMapping, IFormulasMapping
+	public partial class HbmElement: IColumnsMapping, IFormulasMapping
 	{
-		#region Implementation of IEntityPropertyMapping
-
-		public string Name
-		{
-			get { return name; }
-		}
-
-		public string Access
-		{
-			get { return access; }
-		}
-
-		public bool OptimisticKock
-		{
-			get { return optimisticlock; }
-		}
-
-		#endregion
-
-		#region Overrides of AbstractDecoratable
-
-		protected override HbmMeta[] Metadatas
-		{
-			get { return meta ?? new HbmMeta[0]; }
-		}
-
-		#endregion
-
 		#region Implementation of IColumnsMapping
 
 		public IEnumerable<HbmColumn> Columns
@@ -54,12 +26,12 @@ namespace NHibernate.Cfg.MappingSchema
 				yield return new HbmColumn
 				{
 					name = column,
+					length = length,
+					scale = scale,
+					precision = precision,
 					notnull = notnull,
-					notnullSpecified = notnullSpecified,
 					unique = unique,
 					uniqueSpecified = true,
-					uniquekey = uniquekey,
-					index = index
 				};
 			}
 		}
