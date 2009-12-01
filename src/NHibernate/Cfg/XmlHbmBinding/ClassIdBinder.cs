@@ -17,7 +17,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			if (idSchema != null)
 			{
-				var id = new SimpleValue(table) { TypeName = idSchema.type1 };
+				var id = new SimpleValue(table);
+				new TypeBinder(id, Mappings).Bind(idSchema.Type);
+
 				rootClass.Identifier = id;
 
 				Func<HbmColumn> defaultColumn = () => new HbmColumn

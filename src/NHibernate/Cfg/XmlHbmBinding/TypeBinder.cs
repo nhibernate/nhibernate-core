@@ -29,11 +29,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			Bind(new HbmType { name= typeName });
 		}
 
-		private void Bind(HbmType typeMapping)
+		public void Bind(HbmType typeMapping)
 		{
 			if (typeMapping == null)
 			{
-				throw new ArgumentNullException("typeMapping");
+				// will find the type through reflection
+				return;
 			}
 			string originalTypeName = typeMapping.name;
 			if(originalTypeName == null)
