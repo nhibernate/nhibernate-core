@@ -12,7 +12,7 @@ namespace NHibernate.Util
 	/// Helper class that contains common array functions and 
 	/// data structures used through out NHibernate.
 	/// </summary>
-	public sealed class ArrayHelper
+	public static class ArrayHelper
 	{
 		public static readonly object[] EmptyObjectArray = new object[0];
 		public static readonly IType[] EmptyTypeArray = new IType[0];
@@ -21,10 +21,6 @@ namespace NHibernate.Util
 
 		public static readonly bool[] True = new bool[] { true };
 		public static readonly bool[] False = new bool[] { false };
-
-		private ArrayHelper()
-		{
-		}
 
 		public static bool IsAllNegative(int[] array)
 		{
@@ -224,6 +220,16 @@ namespace NHibernate.Util
 				// we want to override the values from to if they exists
 				to[de.Key] = de.Value;
 			}
+		}
+
+		public static IDictionary<TKey, TValue> AddOrOverride<TKey, TValue>(this IDictionary<TKey, TValue> destination, IDictionary<TKey, TValue> sourceOverride)
+		{
+			foreach (KeyValuePair<TKey, TValue> de in sourceOverride)
+			{
+				// we want to override the values from to if they exists
+				destination[de.Key] = de.Value;
+			}
+			return destination;
 		}
 
 		public static int[] GetBatchSizes(int maxBatchSize)

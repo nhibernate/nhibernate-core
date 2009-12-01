@@ -197,7 +197,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			string propertyName = versionSchema.name;
 			var simpleValue = new SimpleValue(table);
-			BindVersionType(versionSchema.type, simpleValue);
+			new TypeBinder(simpleValue, Mappings).Bind(versionSchema.type);
 			new ColumnsBinder(simpleValue, Mappings).Bind(versionSchema.Columns, false,
 			                                              () =>
 			                                              new HbmColumn
@@ -219,13 +219,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			simpleValue.NullValue = versionSchema.unsavedvalue;
 			rootClass.Version = property;
 			rootClass.AddProperty(property);
-		}
-
-		private void BindVersionType(string versionTypeName, SimpleValue simpleValue)
-		{
-			if (versionTypeName == null)
-				return;
-			BindTypeDef(versionTypeName, versionTypeName, new Dictionary<string, string>(), simpleValue);
 		}
 
 		private void BindProperty(HbmVersion versionSchema, Property property, IDictionary<string, MetaAttribute> inheritedMetas)
