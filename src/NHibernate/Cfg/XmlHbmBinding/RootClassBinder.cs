@@ -16,7 +16,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		public void Bind(HbmClass classSchema, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			RootClass rootClass = new RootClass();
+			var rootClass = new RootClass();
 			BindClass(classSchema, rootClass, inheritedMetas);
 			// OPTIMISTIC LOCK MODE
 			rootClass.OptimisticLockMode = classSchema.optimisticlock.ToOptimisticLock();
@@ -104,9 +104,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				return;
 
 			string propertyName = timestampSchema.name;
-			SimpleValue simpleValue = new SimpleValue(table);
-
-			BindColumns(timestampSchema, simpleValue, propertyName);
+			var simpleValue = new SimpleValue(table);
+			new ColumnsBinder(simpleValue, Mappings).Bind(timestampSchema.Columns, false,
+			                                              () =>
+			                                              new HbmColumn
+			                                              	{name = mappings.NamingStrategy.PropertyToColumnName(propertyName)});
 
 			if (!simpleValue.IsTypeSpecified)
 			{
@@ -136,42 +138,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			simpleValue.NullValue = timestampSchema.unsavedvalue == HbmTimestampUnsavedvalue.Null ? null : "undefined";
 			rootClass.Version = property;
 			rootClass.AddProperty(property);
-		}
-
-		private void BindColumns(HbmTimestamp timestampSchema, SimpleValue model, string propertyPath)
-		{
-			Table table = model.Table;
-
-			if (timestampSchema.column != null)
-			{
-				Column col = new Column();
-				col.Value = model;
-				BindColumn(col, false);
-				col.Name = mappings.NamingStrategy.ColumnName(timestampSchema.column);
-
-				if (table != null)
-					table.AddColumn(col);
-
-				model.AddColumn(col);
-			}
-
-			if (model.ColumnSpan == 0)
-			{
-				Column col = new Column();
-				col.Value = model;
-				BindColumn(col, false);
-				col.Name = mappings.NamingStrategy.PropertyToColumnName(propertyPath);
-				model.Table.AddColumn(col);
-				model.AddColumn(col);
-			}
-		}
-
-		private static void BindColumn(Column column, bool isNullable)
-		{
-			column.IsNullable = isNullable;
-			column.IsUnique = false;
-			column.CheckConstraint = string.Empty;
-			column.SqlType = null;
 		}
 
 		private void BindProperty(HbmTimestamp timestampSchema, Property property, IDictionary<string, MetaAttribute> inheritedMetas)
@@ -230,9 +196,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				return;
 
 			string propertyName = versionSchema.name;
-			SimpleValue simpleValue = new SimpleValue(table);
+			var simpleValue = new SimpleValue(table);
 			BindVersionType(versionSchema.type, simpleValue);
-			BindColumns(versionSchema, simpleValue, false, propertyName);
+			new ColumnsBinder(simpleValue, Mappings).Bind(versionSchema.Columns, false,
+			                                              () =>
+			                                              new HbmColumn
+			                                              	{name = mappings.NamingStrategy.PropertyToColumnName(propertyName)});
+
 			if (!simpleValue.IsTypeSpecified)
 				simpleValue.TypeName = NHibernateUtil.Int32.Name;
 
@@ -256,43 +226,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (versionTypeName == null)
 				return;
 			BindTypeDef(versionTypeName, versionTypeName, new Dictionary<string, string>(), simpleValue);
-		}
-
-		private void BindColumns(HbmVersion versionSchema, SimpleValue model, bool isNullable, string propertyPath)
-		{
-			Table table = model.Table;
-			if (versionSchema.column1 != null)
-			{
-				var col = new Column {Value = model};
-				BindColumn(col, isNullable);
-				col.Name = mappings.NamingStrategy.ColumnName(versionSchema.column1);
-
-				if (table != null)
-					table.AddColumn(col);
-
-				model.AddColumn(col);
-			}
-			else if (versionSchema.column != null)
-			{
-				foreach (HbmColumn hbmColumn in versionSchema.column)
-				{
-					var col = new Column {Value = model};
-					BindColumn(hbmColumn, col, isNullable);
-					if (table != null)
-						table.AddColumn(col);
-
-					model.AddColumn(col);
-				}
-			}
-
-			if (model.ColumnSpan == 0)
-			{
-				var col = new Column {Value = model};
-				BindColumn(col, isNullable);
-				col.Name = mappings.NamingStrategy.PropertyToColumnName(propertyPath);
-				model.Table.AddColumn(col);
-				model.AddColumn(col);
-			}
 		}
 
 		private void BindProperty(HbmVersion versionSchema, Property property, IDictionary<string, MetaAttribute> inheritedMetas)
