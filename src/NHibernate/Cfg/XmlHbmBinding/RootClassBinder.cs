@@ -51,7 +51,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			BindCache(classSchema.cache, rootClass);
 			new ClassIdBinder(this).BindId(classSchema.Id, rootClass, table);
 			new ClassCompositeIdBinder(this).BindCompositeId(classSchema.CompositeId, rootClass);
-			new ClassDiscriminatorBinder(this).BindDiscriminator(classSchema.discriminator, rootClass, table);
+			new ClassDiscriminatorBinder(rootClass, Mappings).BindDiscriminator(classSchema.discriminator, table);
 			BindTimestamp(classSchema.Timestamp, rootClass, table, inheritedMetas);
 			BindVersion(classSchema.Version, rootClass, table, inheritedMetas);
 

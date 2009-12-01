@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace NHibernate.Cfg.MappingSchema
@@ -25,6 +24,8 @@ namespace NHibernate.Cfg.MappingSchema
 					{
 						name = column,
 						length = length,
+						notnull = notnull,
+						notnullSpecified = true
 					};
 				}
 			}

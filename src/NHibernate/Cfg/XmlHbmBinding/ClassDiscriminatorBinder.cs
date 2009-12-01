@@ -3,21 +3,22 @@ using NHibernate.Mapping;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public class ClassDiscriminatorBinder : ClassBinder
+	public class ClassDiscriminatorBinder: Binder
 	{
-		public ClassDiscriminatorBinder(ClassBinder parent)
-			: base(parent)
+		private readonly PersistentClass rootClass;
+
+		public ClassDiscriminatorBinder(PersistentClass rootClass, Mappings mappings) : base(mappings)
 		{
+			this.rootClass = rootClass;
 		}
 
-		public void BindDiscriminator(HbmDiscriminator discriminatorSchema, PersistentClass rootClass,
-			Table table)
+		public void BindDiscriminator(HbmDiscriminator discriminatorSchema, Table table)
 		{
 			if (discriminatorSchema == null)
 				return;
 
 			//DISCRIMINATOR
-			SimpleValue discriminator = new SimpleValue(table);
+			var discriminator = new SimpleValue(table);
 			rootClass.Discriminator = discriminator;
 			BindSimpleValue(discriminatorSchema, discriminator);
 
@@ -38,73 +39,23 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (discriminatorSchema.formula != null)
 			{
-				Formula f = new Formula();
-				f.FormulaString = discriminatorSchema.formula;
+				var f = new Formula {FormulaString = discriminatorSchema.formula};
 				discriminator.AddFormula(f);
 			}
 			else
-				BindColumns(discriminatorSchema, discriminator);
-		}
-
-		private void BindColumns(HbmDiscriminator discriminatorSchema, SimpleValue discriminator)
-		{
-			Table table = discriminator.Table;
-
-			//COLUMN(S)
-			if (discriminatorSchema.column != null)
 			{
-				Column col = new Column();
-				col.Value = discriminator;
-				BindColumn(discriminatorSchema, col);
-				col.Name = mappings.NamingStrategy.ColumnName(discriminatorSchema.column);
-
-				if (table != null)
-					table.AddColumn(col);
-
-				discriminator.AddColumn(col);
+				new ColumnsBinder(discriminator, Mappings).Bind(discriminatorSchema.Columns, false,
+				                                                () =>
+				                                                new HbmColumn
+				                                                	{
+				                                                		name =
+				                                                			mappings.NamingStrategy.PropertyToColumnName(
+				                                                			RootClass.DefaultDiscriminatorColumnName),
+				                                                		length = discriminatorSchema.length,
+																														notnull = discriminatorSchema.notnull,
+																														notnullSpecified = true
+				                                                	});
 			}
-			else if (discriminatorSchema.Item != null && discriminatorSchema.Item is HbmColumn)
-			{
-				HbmColumn theCol = (HbmColumn)discriminatorSchema.Item;
-				Column col = new Column();
-				col.Value = discriminator;
-				BindColumn(theCol, col, false);
-
-				col.Name = mappings.NamingStrategy.ColumnName(theCol.name);
-
-				if (table != null)
-					table.AddColumn(col);
-				//table=null -> an association, fill it in later
-
-				discriminator.AddColumn(col);
-
-				BindIndex(theCol.index, table, col);
-				BindUniqueKey(theCol.uniquekey, table, col);
-			}
-
-			if (discriminator.ColumnSpan == 0)
-			{
-				Column col = new Column();
-				col.Value = discriminator;
-				BindColumn(discriminatorSchema, col);
-
-				col.Name = mappings.NamingStrategy.PropertyToColumnName(
-					RootClass.DefaultDiscriminatorColumnName);
-
-				discriminator.Table.AddColumn(col);
-				discriminator.AddColumn(col);
-			}
-		}
-
-		private static void BindColumn(HbmDiscriminator discriminatorSchema, Column column)
-		{
-			if (discriminatorSchema.length != null)
-				column.Length = int.Parse(discriminatorSchema.length);
-
-			column.IsNullable = !discriminatorSchema.notnull;
-			column.IsUnique = false;
-			column.CheckConstraint = string.Empty;
-			column.SqlType = null;
 		}
 	}
 }
