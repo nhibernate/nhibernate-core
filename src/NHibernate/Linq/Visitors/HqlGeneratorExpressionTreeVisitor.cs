@@ -346,7 +346,7 @@ namespace NHibernate.Linq.Visitors
 
                 if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof (NhQueryable<>))
                 {
-                    return _hqlTreeBuilder.Ident(t.GetGenericArguments()[0].Name);
+                    return _hqlTreeBuilder.Ident(t.GetGenericArguments()[0].FullName);
                 }
             }
 

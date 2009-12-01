@@ -47,10 +47,10 @@ namespace NHibernate.Engine.Query
 			return metadata;
 		}
 
-		public HQLQueryPlan GetHQLQueryPlan(string queryString, bool shallow, IDictionary<string, IFilter> enabledFilters)
+		public IQueryPlan GetHQLQueryPlan(string queryString, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
 			var key = new HQLQueryPlanKey(queryString, shallow, enabledFilters);
-			var plan = (HQLQueryPlan)planCache[key];
+			var plan = (IQueryPlan)planCache[key];
 
 			if (plan == null)
 			{
@@ -58,7 +58,7 @@ namespace NHibernate.Engine.Query
 				{
 					log.Debug("unable to locate HQL query plan in cache; generating (" + queryString + ")");
 				}
-				plan = new HQLQueryPlan(queryString, shallow, enabledFilters, factory);
+				plan = new HQLStringQueryPlan(queryString, shallow, enabledFilters, factory);
 				planCache.Put(key, plan);
 			}
 			else
@@ -72,12 +72,12 @@ namespace NHibernate.Engine.Query
 			return plan;
 		}
 
-        public HQLQueryPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters)
+        public IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters)
         {
             string expressionStr = queryExpression.Key;
 
             var key = new HQLQueryPlanKey(expressionStr, shallow, enabledFilters);
-            var plan = (HQLQueryPlan)planCache[key];
+            var plan = (IQueryExpressionPlan)planCache[key];
 
             if (plan == null)
             {
@@ -85,7 +85,7 @@ namespace NHibernate.Engine.Query
                 {
                     log.Debug("unable to locate HQL query plan in cache; generating (" + expressionStr + ")");
                 }
-                plan = new HQLQueryPlan(expressionStr, queryExpression, shallow, enabledFilters, factory);
+                plan = new HQLLinqQueryPlan(expressionStr, queryExpression, shallow, enabledFilters, factory);
                 planCache.Put(key, plan);
             }
             else

@@ -127,7 +127,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 					break;
 				default:
 					// Case 2: The current token is after FROM and before '.'.
-					if (t != IDENT && input.LA(-1) == FROM && input.LA(2) == DOT)
+                    if (t != IDENT && input.LA(-1) == FROM && ((input.LA(2) == DOT) || (input.LA(2) == IDENT) || (input.LA(2) == -1)))
 					{
 						HqlToken hqlToken = (HqlToken)input.LT(1);
 						if (hqlToken.PossibleId)

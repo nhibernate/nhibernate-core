@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 
 namespace NHibernate.Hql.Classic
@@ -8,20 +10,25 @@ namespace NHibernate.Hql.Classic
 	/// </summary>
 	public class ClassicQueryTranslatorFactory : IQueryTranslatorFactory
 	{
-		#region IQueryTranslatorFactory Members
-
-		public IQueryTranslator CreateQueryTranslator(string queryIdentifier, string queryString, IDictionary<string, IFilter> filters,
-		                                              ISessionFactoryImplementor factory)
+		public IQueryTranslator[] CreateQueryTranslators(string queryString, string collectionRole, bool shallow, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory)
 		{
-			return new QueryTranslator(queryIdentifier, queryString, filters, factory);
-		}
+		    var translators = QuerySplitter.ConcreteQueries(queryString, factory)
+                                        .Select(hql => new QueryTranslator(queryString, hql, filters, factory))
+	                                    .ToArray();
 
-		public IFilterTranslator CreateFilterTranslator(string queryIdentifier, string queryString, IDictionary<string, IFilter> filters,
-		                                                ISessionFactoryImplementor factory)
-		{
-			return new QueryTranslator(queryIdentifier, queryString, filters, factory);
-		}
+            foreach (var translator in translators)
+            {
+                if (collectionRole == null)
+                {
+                    translator.Compile(factory.Settings.QuerySubstitutions, shallow);
+                }
+                else
+                {
+                    translator.Compile(collectionRole, factory.Settings.QuerySubstitutions, shallow);
+                }
+            }
 
-		#endregion
+		    return translators;
+		}
 	}
 }

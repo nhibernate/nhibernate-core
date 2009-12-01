@@ -33,10 +33,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_startIndex = -1;
 			_stopIndex = -1;
 			_childIndex = -1;
-			_token = other._token;
+			_token = new HqlToken(other._token);
 			_startIndex = other._startIndex;
 			_stopIndex = other._stopIndex;
-			
 		}
 
 		public bool IsNil

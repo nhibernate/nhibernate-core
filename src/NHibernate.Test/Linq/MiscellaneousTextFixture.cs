@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Linq;
 using NHibernate.Test.Linq.Entities;
 using NUnit.Framework;
 
@@ -97,5 +98,20 @@ namespace NHibernate.Test.Linq
 			Assert.AreNotEqual(firstResultOnPage3.ProductId, firstResultOnPage4.ProductId);
 			Assert.AreNotEqual(firstResultOnPage2.ProductId, firstResultOnPage4.ProductId);
 		}
+
+        [Test]
+        public void SelectFromObject()
+        {
+            using (var s = OpenSession())
+            {
+                var hql = s.CreateQuery("from System.Object o").List();
+
+                var r = from o in s.Query<object>() select o;
+
+                var l = r.ToList();
+
+                Console.WriteLine(l.Count);
+            } 
+        }
 	}
 }

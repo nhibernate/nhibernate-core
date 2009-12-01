@@ -109,7 +109,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				HQLQueryPlan plan = GetHQLQueryPlan(query, false);
+				var plan = GetHQLQueryPlan(query, false);
 				bool success = false;
 				try
 				{
@@ -381,7 +381,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				// take the union of the query spaces (ie the queried tables)
-				HQLQueryPlan plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, EnabledFilters);
+				var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, EnabledFilters);
 				return plan.Translators;
 			}
 		}
@@ -964,7 +964,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				HQLQueryPlan plan = GetHQLQueryPlan(query, false);
+				var plan = GetHQLQueryPlan(query, false);
 				bool success = false;
 				int result;
 				try

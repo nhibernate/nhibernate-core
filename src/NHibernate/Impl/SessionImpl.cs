@@ -619,7 +619,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				HQLQueryPlan plan = GetHQLQueryPlan(query, false);
+				var plan = GetHQLQueryPlan(query, false);
 				AutoFlushIfRequired(plan.QuerySpaces);
 
 				bool success = false;
@@ -663,7 +663,7 @@ namespace NHibernate.Impl
             {
                 CheckAndUpdateSessionStatus();
                 queryParameters.ValidateParameters();
-                HQLQueryPlan plan = GetHQLQueryPlan(queryExpression, false);
+                var plan = GetHQLQueryPlan(queryExpression, false);
                 AutoFlushIfRequired(plan.QuerySpaces);
 
                 bool success = false;
@@ -694,7 +694,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				HQLQueryPlan plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, enabledFilters);
+				var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, enabledFilters);
 				AutoFlushIfRequired(plan.QuerySpaces);
 				return plan.Translators;
 			}
@@ -730,7 +730,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				HQLQueryPlan plan = GetHQLQueryPlan(query, true);
+				var plan = GetHQLQueryPlan(query, true);
 				AutoFlushIfRequired(plan.QuerySpaces);
 
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
@@ -751,7 +751,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				HQLQueryPlan plan = GetHQLQueryPlan(query, true);
+				var plan = GetHQLQueryPlan(query, true);
 				AutoFlushIfRequired(plan.QuerySpaces);
 
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
@@ -2785,7 +2785,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				HQLQueryPlan plan = GetHQLQueryPlan(query, false);
+				var plan = GetHQLQueryPlan(query, false);
 				AutoFlushIfRequired(plan.QuerySpaces);
 
 				bool success = false;

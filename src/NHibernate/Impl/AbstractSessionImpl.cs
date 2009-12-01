@@ -290,7 +290,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		protected internal virtual HQLQueryPlan GetHQLQueryPlan(string query, bool shallow)
+		protected internal virtual IQueryPlan GetHQLQueryPlan(string query, bool shallow)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -298,7 +298,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-        protected internal virtual HQLQueryPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow)
+        protected internal virtual IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow)
         {
             using (new SessionIdLoggingContext(SessionId))
             {

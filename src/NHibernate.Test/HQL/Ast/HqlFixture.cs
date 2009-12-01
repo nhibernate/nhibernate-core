@@ -12,7 +12,7 @@ namespace NHibernate.Test.HQL.Ast
 	{
 		protected HQLQueryPlan CreateQueryPlan(string hql, bool scalar)
 		{
-			return new HQLQueryPlan(hql, scalar, new CollectionHelper.EmptyMapClass<string, IFilter>(), sessions);
+			return new HQLStringQueryPlan(hql, scalar, new CollectionHelper.EmptyMapClass<string, IFilter>(), sessions);
 		}
 
 		protected HQLQueryPlan CreateQueryPlan(string hql)

@@ -46,12 +46,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// <param name="factory">The session factory constructing this translator instance.</param>
 		public QueryTranslatorImpl(
 				string queryIdentifier,
-				string query,
+				HqlParseEngine parsedQuery,
 				IDictionary<string, IFilter> enabledFilters,
 				ISessionFactoryImplementor factory)
 		{
 			_queryIdentifier = queryIdentifier;
-			_hql = query;
+		    _parser = parsedQuery;
 			_compiled = false;
 			_shallowQuery = false;
 			_enabledFilters = enabledFilters;
@@ -466,7 +466,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		}
 	}
 
-	internal class HqlParseEngine
+    public class HqlParseEngine
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(HqlParseEngine));
 
@@ -581,7 +581,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		}
 	}
 
-	internal class HqlSqlTranslator
+    internal class HqlSqlTranslator
 	{
 		private readonly IASTNode _inputAst;
 		private readonly CommonTokenStream _tokens;

@@ -23,6 +23,20 @@ namespace NHibernate.Hql.Ast.ANTLR
         }
 
         /// <summary>
+        /// Public constructor
+        /// </summary>
+        public HqlToken(IToken other)
+            : base(other)
+        {
+            var hqlToken = other as HqlToken;
+
+            if (hqlToken != null)
+            {
+                _previousTokenType = hqlToken._previousTokenType;
+            }
+        }
+
+        /// <summary>
         /// Indicates if the token could be an identifier.
         /// </summary>
         public bool PossibleId
