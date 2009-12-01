@@ -538,6 +538,7 @@
     <Compile Include="Cfg\MappingSchema\IFormulasMapping.cs" />
     <Compile Include="Cfg\MappingSchema\IPropertiesContainerMapping.cs" />
     <Compile Include="Cfg\MappingSchema\IReferencePropertyMapping.cs" />
+    <Compile Include="Cfg\MappingSchema\ITypeMapping.cs" />
     <Compile Include="Cfg\SchemaAutoAction.cs" />
     <Compile Include="Cfg\SessionFactoryConfigurationBase.cs" />
     <Compile Include="Cfg\ISessionFactoryConfiguration.cs" />

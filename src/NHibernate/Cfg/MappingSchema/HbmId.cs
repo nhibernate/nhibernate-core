@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmId: AbstractDecoratable, IColumnsMapping
+	public partial class HbmId: AbstractDecoratable, IColumnsMapping, ITypeMapping
 	{
 		#region Implementation of IColumnsMapping
 
@@ -35,6 +35,15 @@ namespace NHibernate.Cfg.MappingSchema
 		protected override HbmMeta[] Metadatas
 		{
 			get { return meta ?? new HbmMeta[0]; }
+		}
+
+		#endregion
+
+		#region Implementation of ITypeMapping
+
+		public HbmType Type
+		{
+			get { return type ?? (!string.IsNullOrEmpty(type1) ? new HbmType { name = type1 } : null); }
 		}
 
 		#endregion
