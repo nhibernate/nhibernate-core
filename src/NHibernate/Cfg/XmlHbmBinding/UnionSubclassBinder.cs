@@ -21,10 +21,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		public void Bind(XmlNode node, HbmUnionSubclass unionSubclassMapping, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			PersistentClass superModel = GetSuperclass(node);
-			HandleUnionSubclass(superModel, node, unionSubclassMapping, inheritedMetas);
+			HandleUnionSubclass(superModel, unionSubclassMapping, inheritedMetas);
 		}
 
-		public void HandleUnionSubclass(PersistentClass model, XmlNode subnode, HbmUnionSubclass unionSubclassMapping, IDictionary<string, MetaAttribute> inheritedMetas)
+		public void HandleUnionSubclass(PersistentClass model, HbmUnionSubclass unionSubclassMapping, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			var unionSubclass = new UnionSubclass(model);
 

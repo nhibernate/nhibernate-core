@@ -21,10 +21,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		public void Bind(XmlNode node, HbmSubclass subClassMapping, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			PersistentClass superModel = GetSuperclass(node);
-			HandleSubclass(superModel, node, subClassMapping, inheritedMetas);
+			HandleSubclass(superModel, subClassMapping, inheritedMetas);
 		}
 
-		public void HandleSubclass(PersistentClass model, XmlNode subnode, HbmSubclass subClassMapping, IDictionary<string, MetaAttribute> inheritedMetas)
+		public void HandleSubclass(PersistentClass model, HbmSubclass subClassMapping, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			Subclass subclass = new SingleTableSubclass(model);
 

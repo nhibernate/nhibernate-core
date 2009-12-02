@@ -57,7 +57,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			foreach (var unionSubclass in unionSubclasses)
 			{
-				new UnionSubclassBinder(this).HandleUnionSubclass(persistentClass, Serialize(unionSubclass), unionSubclass, inheritedMetas);
+				new UnionSubclassBinder(this).HandleUnionSubclass(persistentClass, unionSubclass, inheritedMetas);
 			}
 		}
 
@@ -73,7 +73,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			foreach (var subclass in subclasses)
 			{
-				new SubclassBinder(this).HandleSubclass(persistentClass, Serialize(subclass), subclass, inheritedMetas);
+				new SubclassBinder(this).HandleSubclass(persistentClass, subclass, inheritedMetas);
 			}
 		}
 

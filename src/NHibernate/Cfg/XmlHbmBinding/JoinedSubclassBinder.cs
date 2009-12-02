@@ -40,8 +40,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string catalog = joinedSubclassMapping.catalog ?? mappings.CatalogName;
 
 			// TODO: very strange, the schema does not support it
-			XmlAttribute actionNode = subnode.Attributes["schema-action"];
-			string action = actionNode == null ? "all" : actionNode.Value;
+			//XmlAttribute actionNode = subnode.Attributes["schema-action"];
+			//string action = actionNode == null ? "all" : actionNode.Value;
+			string action = "all";
 
 			Table mytable = mappings.AddTable(schema, catalog, GetClassTableName(subclass, joinedSubclassMapping.table), null, false, action);
 			((ITableOwner)subclass).Table = mytable;
