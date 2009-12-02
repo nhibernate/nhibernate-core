@@ -552,6 +552,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Cfg\XmlHbmBinding\TypeBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\ValuePropertyBinder.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Context\WcfOperationSessionContext.cs" />
     <Compile Include="Criterion\GroupedProjection.cs" />
     <Compile Include="Criterion\IPropertyProjection.cs" />

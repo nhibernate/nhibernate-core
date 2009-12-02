@@ -61,7 +61,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				if ((propertyMapping = entityPropertyMapping as HbmProperty) != null)
 				{
 					var value = new SimpleValue(table);
-					BindSimpleValue(Serialize(propertyMapping), value, true, propertyName);
+					new ValuePropertyBinder(value, Mappings).BindSimpleValue(propertyMapping, propertyName, true);
 					property = CreateProperty(entityPropertyMapping, model.ClassName, value, inheritedMetas);
 					BindValueProperty(propertyMapping, property);
 				}
