@@ -233,7 +233,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.ExtraLazy = true;
 			}
 
-			XmlNode oneToManyNode = node.SelectSingleNode(HbmConstants.nsOneToMany, namespaceManager);
+			XmlNode oneToManyNode = node.SelectSingleNode(HbmConstants.nsOneToMany, NamespaceManager);
 			if (oneToManyNode != null)
 			{
 				OneToMany oneToMany = new OneToMany(model.Owner);
@@ -326,14 +326,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			else
 				AddCollectionSecondPass(node, model, inheritedMetas);
 
-			foreach (XmlNode filter in node.SelectNodes(HbmConstants.nsFilter, namespaceManager))
+			foreach (XmlNode filter in node.SelectNodes(HbmConstants.nsFilter, NamespaceManager))
 				ParseFilter(filter, model);
 
-			XmlNode loader = node.SelectSingleNode(HbmConstants.nsLoader, namespaceManager);
+			XmlNode loader = node.SelectSingleNode(HbmConstants.nsLoader, NamespaceManager);
 			if (loader != null)
 				model.LoaderName = XmlHelper.GetAttributeValue(loader, "query-ref");
 
-			XmlNode key = node.SelectSingleNode(HbmConstants.nsKey, namespaceManager);
+			XmlNode key = node.SelectSingleNode(HbmConstants.nsKey, NamespaceManager);
 			if (key != null)
 				model.ReferencedPropertyName = XmlHelper.GetAttributeValue(key, "property-ref");
 
@@ -438,7 +438,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void HandleCustomSQL(XmlNode node, Mapping.Collection model)
 		{
-			XmlNode element = node.SelectSingleNode(HbmConstants.nsSqlInsert, namespaceManager);
+			XmlNode element = node.SelectSingleNode(HbmConstants.nsSqlInsert, NamespaceManager);
 
 			if (element != null)
 			{
@@ -446,21 +446,21 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.SetCustomSQLInsert(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
 			}
 
-			element = node.SelectSingleNode(HbmConstants.nsSqlDelete, namespaceManager);
+			element = node.SelectSingleNode(HbmConstants.nsSqlDelete, NamespaceManager);
 			if (element != null)
 			{
 				bool callable = IsCallable(element);
 				model.SetCustomSQLDelete(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
 			}
 
-			element = node.SelectSingleNode(HbmConstants.nsSqlUpdate, namespaceManager);
+			element = node.SelectSingleNode(HbmConstants.nsSqlUpdate, NamespaceManager);
 			if (element != null)
 			{
 				bool callable = IsCallable(element);
 				model.SetCustomSQLUpdate(element.InnerText.Trim(), callable, GetResultCheckStyle(element, callable));
 			}
 
-			element = node.SelectSingleNode(HbmConstants.nsSqlDeleteAll, namespaceManager);
+			element = node.SelectSingleNode(HbmConstants.nsSqlDeleteAll, NamespaceManager);
 			if (element != null)
 			{
 				bool callable = IsCallable(element);
@@ -499,8 +499,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			BindCollectionSecondPass(node, model, persistentClasses, inheritedMetas);
 
-			XmlNode subnode = node.SelectSingleNode(HbmConstants.nsListIndex, namespaceManager);
-			if (subnode == null) { subnode = node.SelectSingleNode(HbmConstants.nsIndex, namespaceManager); }
+			XmlNode subnode = node.SelectSingleNode(HbmConstants.nsListIndex, NamespaceManager);
+			if (subnode == null) { subnode = node.SelectSingleNode(HbmConstants.nsIndex, NamespaceManager); }
 			SimpleValue iv = new SimpleValue(model.CollectionTable);
 			BindIntegerValue(subnode, iv, IndexedCollection.DefaultIndexColumnName, model.IsOneToMany);
 			model.Index = iv;
@@ -522,7 +522,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			BindCollectionSecondPass(node, model, persitentClasses, inheritedMetas);
 
-			XmlNode subnode = node.SelectSingleNode(HbmConstants.nsCollectionId, namespaceManager);
+			XmlNode subnode = node.SelectSingleNode(HbmConstants.nsCollectionId, NamespaceManager);
 			SimpleValue id = new SimpleValue(model.CollectionTable);
 			BindSimpleValue(subnode, id, false, IdentifierCollection.DefaultIdentifierColumnName);
 			model.Identifier = id;
@@ -715,7 +715,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			collection.ManyToManyOrdering = orderFragment;
 
 			// Bind the filters
-			if ((manyToManyNode.SelectSingleNode(HbmConstants.nsFilter, namespaceManager) != null ||
+			if ((manyToManyNode.SelectSingleNode(HbmConstants.nsFilter, NamespaceManager) != null ||
 				whereCondition != null) &&
 					collection.FetchMode == FetchMode.Join &&
 						collection.Element.FetchMode != FetchMode.Join)
@@ -723,7 +723,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					"many-to-many defining filter or where without join fetching " +
 						"not valid within collection using join fetching [" + collection.Role + "]"
 					);
-			foreach (XmlNode filterElement in manyToManyNode.SelectNodes(HbmConstants.nsFilter, namespaceManager))
+			foreach (XmlNode filterElement in manyToManyNode.SelectNodes(HbmConstants.nsFilter, NamespaceManager))
 			{
 				string name = XmlHelper.GetAttributeValue(filterElement, "name");
 				string condition = filterElement.InnerText.Trim();

@@ -18,9 +18,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public void Bind(XmlNode node, HbmJoinedSubclass joinedSubclassMapping, IDictionary<string, MetaAttribute> inheritedMetas)
+		public void Bind(HbmJoinedSubclass joinedSubclassMapping, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			PersistentClass superModel = GetSuperclass(node);
+			PersistentClass superModel = GetSuperclass(joinedSubclassMapping.extends);
 			HandleJoinedSubclass(superModel, joinedSubclassMapping, inheritedMetas);
 		}
 
@@ -64,7 +64,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			mytable.AddCheckConstraint(joinedSubclassMapping.check);
 
 			// properties
-			new PropertiesBinder(mappings, subclass, namespaceManager, dialect).Bind(joinedSubclassMapping.Properties, inheritedMetas);
+			new PropertiesBinder(mappings, subclass, NamespaceManager, dialect).Bind(joinedSubclassMapping.Properties, inheritedMetas);
 
 			BindJoinedSubclasses(joinedSubclassMapping.JoinedSubclasses, subclass, inheritedMetas);
 

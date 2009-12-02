@@ -18,9 +18,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public void Bind(XmlNode node, HbmSubclass subClassMapping, IDictionary<string, MetaAttribute> inheritedMetas)
+		public void Bind(HbmSubclass subClassMapping, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			PersistentClass superModel = GetSuperclass(node);
+			PersistentClass superModel = GetSuperclass(subClassMapping.extends);
 			HandleSubclass(superModel, subClassMapping, inheritedMetas);
 		}
 
@@ -37,7 +37,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			log.InfoFormat("Mapping subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);
 
 			// properties
-			new PropertiesBinder(mappings, subclass, namespaceManager, dialect).Bind(subClassMapping.Properties, inheritedMetas);
+			new PropertiesBinder(mappings, subclass, NamespaceManager, dialect).Bind(subClassMapping.Properties, inheritedMetas);
 			BindJoins(subClassMapping.Joins, subclass, inheritedMetas);
 			BindSubclasses(subClassMapping.Subclasses, subclass, inheritedMetas);
 

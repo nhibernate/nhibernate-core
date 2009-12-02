@@ -57,7 +57,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			rootClass.CreatePrimaryKey(dialect);
 			BindNaturalId(classSchema.naturalid, rootClass, inheritedMetas);
-			new PropertiesBinder(mappings, rootClass, namespaceManager, dialect).Bind(classSchema.Properties, inheritedMetas);
+			new PropertiesBinder(mappings, rootClass, NamespaceManager, dialect).Bind(classSchema.Properties, inheritedMetas);
 
 			BindJoins(classSchema.Joins, rootClass, inheritedMetas);
 			BindSubclasses(classSchema.Subclasses, rootClass, inheritedMetas);
@@ -76,7 +76,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				return;
 			}
 			//by default, natural-ids are "immutable" (constant)
-			var propBinder = new PropertiesBinder(mappings, rootClass, namespaceManager, dialect);
+			var propBinder = new PropertiesBinder(mappings, rootClass, NamespaceManager, dialect);
 			var uk = new UniqueKey { Name = "_UniqueKey", Table = rootClass.Table };
 			propBinder.Bind(naturalid.Properties, inheritedMetas, property =>
 				{

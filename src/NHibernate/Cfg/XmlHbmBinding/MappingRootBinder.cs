@@ -100,7 +100,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			var binder = new UnionSubclassBinder(Mappings, GetNamespaceManager(parentNode), dialect);
 
-			binder.Bind(parentNode, unionSubclass, inheritedMetas);
+			binder.Bind(unionSubclass, inheritedMetas);
 		}
 
 		private void AddJoinedSubclasses(XmlNode parentNode, HbmJoinedSubclass joinedSubclass,
@@ -108,14 +108,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			var binder = new JoinedSubclassBinder(Mappings, GetNamespaceManager(parentNode), dialect);
 
-			binder.Bind(parentNode, joinedSubclass, inheritedMetas);
+			binder.Bind(joinedSubclass, inheritedMetas);
 		}
 
 		private void AddSubclasses(XmlNode parentNode, HbmSubclass subClass, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			var binder = new SubclassBinder(this, GetNamespaceManager(parentNode), dialect);
 
-			binder.Bind(parentNode, subClass, inheritedMetas);
+			binder.Bind(subClass, inheritedMetas);
 		}
 
 		private void AddQueries(HbmMapping mappingSchema)

@@ -18,9 +18,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 		}
 
-		public void Bind(XmlNode node, HbmUnionSubclass unionSubclassMapping, IDictionary<string, MetaAttribute> inheritedMetas)
+		public void Bind(HbmUnionSubclass unionSubclassMapping, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			PersistentClass superModel = GetSuperclass(node);
+			PersistentClass superModel = GetSuperclass(unionSubclassMapping.extends);
 			HandleUnionSubclass(superModel, unionSubclassMapping, inheritedMetas);
 		}
 
@@ -48,7 +48,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			log.InfoFormat("Mapping union-subclass: {0} -> {1}", unionSubclass.EntityName, unionSubclass.Table.Name);
 
 			// properties
-			new PropertiesBinder(mappings, unionSubclass, namespaceManager, dialect).Bind(unionSubclassMapping.Properties, inheritedMetas);
+			new PropertiesBinder(mappings, unionSubclass, NamespaceManager, dialect).Bind(unionSubclassMapping.Properties, inheritedMetas);
 			BindUnionSubclasses(unionSubclassMapping.UnionSubclasses, unionSubclass, inheritedMetas);
 
 			model.AddSubclass(unionSubclass);

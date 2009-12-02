@@ -67,7 +67,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 				else if ((collectionMapping = entityPropertyMapping as ICollectionPropertyMapping) != null)
 				{
-					var collectionBinder = new CollectionBinder(Mappings, namespaceManager, dialect);
+					var collectionBinder = new CollectionBinder(Mappings, NamespaceManager, dialect);
 
 					Mapping.Collection collection = collectionBinder.Create(collectionMapping, entityName, propertyName, model,
 																												model.MappedClass, inheritedMetas);

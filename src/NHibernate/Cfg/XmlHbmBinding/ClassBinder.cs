@@ -13,7 +13,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 	public abstract class ClassBinder : Binder
 	{
 		protected readonly Dialect.Dialect dialect;
-		protected readonly XmlNamespaceManager namespaceManager;
+		private readonly XmlNamespaceManager namespaceManager;
 
 		protected ClassBinder(Mappings mappings, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
 			: base(mappings)
@@ -26,7 +26,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			: base(parent.Mappings)
 		{
 			dialect = parent.dialect;
-			namespaceManager = parent.namespaceManager;
+			namespaceManager = parent.NamespaceManager;
+		}
+
+		public XmlNamespaceManager NamespaceManager
+		{
+			get { return namespaceManager; }
 		}
 
 		protected void BindClass(IEntityMapping classMapping, PersistentClass model, IDictionary<string, MetaAttribute> inheritedMetas)
@@ -212,7 +217,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			join.CreateForeignKey();
 
 			// PROPERTIES
-			new PropertiesBinder(Mappings, persistentClass, namespaceManager, dialect).Bind(joinMapping.Properties, join.Table,
+			new PropertiesBinder(Mappings, persistentClass, NamespaceManager, dialect).Bind(joinMapping.Properties, join.Table,
 			                                                                                inheritedMetas, p => { },
 			                                                                                join.AddProperty);
 
@@ -244,14 +249,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		protected PersistentClass GetSuperclass(XmlNode subnode)
+		protected PersistentClass GetSuperclass(string extendsName)
 		{
-			XmlAttribute extendsAttr = subnode.Attributes["extends"];
-			if (extendsAttr == null)
+			if (string.IsNullOrEmpty(extendsName))
 			{
-				throw new MappingException("'extends' attribute is not found.");
+				throw new MappingException("'extends' attribute is not found or is empty.");
 			}
-			string extendsName = extendsAttr.Value;
 			PersistentClass superModel = mappings.GetClass(extendsName);
 			if(superModel == null)
 			{
@@ -276,7 +279,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			//GENERATOR
 
-			XmlNode subnode = node.SelectSingleNode(HbmConstants.nsGenerator, namespaceManager);
+			XmlNode subnode = node.SelectSingleNode(HbmConstants.nsGenerator, NamespaceManager);
 			if (subnode != null)
 			{
 				if (subnode.Attributes["class"] == null)
@@ -295,7 +298,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				if (mappings.SchemaName != null)
 					parms.Add(Id.PersistentIdGeneratorParmsNames.Schema, dialect.QuoteForSchemaName(mappings.SchemaName));
 
-				foreach (XmlNode childNode in subnode.SelectNodes(HbmConstants.nsParam, namespaceManager))
+				foreach (XmlNode childNode in subnode.SelectNodes(HbmConstants.nsParam, NamespaceManager))
 					parms.Add(
 						childNode.Attributes["name"].Value,
 						childNode.InnerText
@@ -326,7 +329,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			model.RoleName = path;
 
-			inheritedMetas = GetMetas(node.SelectNodes(HbmConstants.nsMeta, namespaceManager), inheritedMetas);
+			inheritedMetas = GetMetas(node.SelectNodes(HbmConstants.nsMeta, NamespaceManager), inheritedMetas);
 			model.MetaAttributes = inheritedMetas;
 
 			XmlAttribute classNode = node.Attributes["class"];
@@ -371,7 +374,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				IValue value = null;
 
-				CollectionBinder binder = new CollectionBinder(Mappings, namespaceManager, dialect);
+				CollectionBinder binder = new CollectionBinder(Mappings, NamespaceManager, dialect);
 
 				if (binder.CanCreate(name))
 				{
@@ -510,7 +513,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 								"\" for property: " + propName);
 			}
 
-			property.MetaAttributes = GetMetas(node.SelectNodes(HbmConstants.nsMeta, namespaceManager), inheritedMetas);
+			property.MetaAttributes = GetMetas(node.SelectNodes(HbmConstants.nsMeta, NamespaceManager), inheritedMetas);
 			property.LogMapped(log);
 		}
 
@@ -552,7 +555,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (typeNode != null)
 				typeName = typeNode.Value;
 
-			XmlNode typeChild = node.SelectSingleNode(HbmConstants.nsType, namespaceManager);
+			XmlNode typeChild = node.SelectSingleNode(HbmConstants.nsType, NamespaceManager);
 			if (typeName == null && typeChild != null)
 			{
 				originalTypeName = typeChild.Attributes["name"].Value;
@@ -612,7 +615,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 			else
 			{
-				var fcn = node.SelectSingleNode(HbmConstants.nsFormula, namespaceManager);
+				var fcn = node.SelectSingleNode(HbmConstants.nsFormula, NamespaceManager);
 				return fcn != null && !string.IsNullOrEmpty(fcn.InnerText) ? fcn.InnerText : null;
 			}
 		}
@@ -661,7 +664,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (metaAttribute != null)
 			{
 				model.MetaType = metaAttribute.Value;
-				XmlNodeList metaValues = node.SelectNodes(HbmConstants.nsMetaValue, namespaceManager);
+				XmlNodeList metaValues = node.SelectNodes(HbmConstants.nsMetaValue, NamespaceManager);
 				if (metaValues != null && metaValues.Count > 0)
 				{
 					IDictionary<object, string> values = new Dictionary<object, string>();
@@ -811,7 +814,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				int count = 0;
 
-				foreach (XmlNode columnElement in node.SelectNodes(HbmConstants.nsColumn, namespaceManager))
+				foreach (XmlNode columnElement in node.SelectNodes(HbmConstants.nsColumn, NamespaceManager))
 				{
 					Column col = new Column();
 					col.Value = model;
@@ -1011,7 +1014,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				typeName = typeAttribute.Value;
 			else
 			{
-				XmlNode typeNode = node.SelectSingleNode(HbmConstants.nsType, namespaceManager);
+				XmlNode typeNode = node.SelectSingleNode(HbmConstants.nsType, NamespaceManager);
 				if (typeNode == null) //we will have to use reflection
 					return null;
 				XmlAttribute nameAttribute = typeNode.Attributes["name"]; //we know it exists because the schema validate it
@@ -1039,7 +1042,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		protected XmlNodeList SelectNodes(XmlNode node, string xpath)
 		{
-			return node.SelectNodes(xpath, namespaceManager);
+			return node.SelectNodes(xpath, NamespaceManager);
 		}
 
 		protected static string GetPropertyName(XmlNode node)
