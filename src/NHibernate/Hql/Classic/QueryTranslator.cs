@@ -10,6 +10,7 @@ using Iesi.Collections.Generic;
 using log4net;
 
 using NHibernate.Engine;
+using NHibernate.Engine.Query;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
 using NHibernate.Loader;
@@ -366,7 +367,52 @@ namespace NHibernate.Hql.Classic
 			get { return actualReturnTypes; }
 		}
 
-		public virtual string[][] ScalarColumnNames
+	    public ParameterMetadata BuildParameterMetadata()
+	    {
+	        return BuildParameterMetadata(GetParameterTranslations(), queryString);
+	    }
+
+        private static ParameterMetadata BuildParameterMetadata(IParameterTranslations parameterTranslations, string hql)
+        {
+            long start = DateTime.Now.Ticks;
+            ParamLocationRecognizer recognizer = ParamLocationRecognizer.ParseLocations(hql);
+            long end = DateTime.Now.Ticks;
+            if (log.IsDebugEnabled)
+            {
+                log.Debug("HQL param location recognition took " + (end - start) + " mills (" + hql + ")");
+            }
+
+            int ordinalParamCount = parameterTranslations.OrdinalParameterCount;
+            int[] locations = recognizer.OrdinalParameterLocationList.ToArray();
+            if (parameterTranslations.SupportsOrdinalParameterMetadata && locations.Length != ordinalParamCount)
+            {
+                throw new HibernateException("ordinal parameter mismatch");
+            }
+            ordinalParamCount = locations.Length;
+            OrdinalParameterDescriptor[] ordinalParamDescriptors = new OrdinalParameterDescriptor[ordinalParamCount];
+            for (int i = 1; i <= ordinalParamCount; i++)
+            {
+                ordinalParamDescriptors[i - 1] =
+                    new OrdinalParameterDescriptor(i,
+                                                   parameterTranslations.SupportsOrdinalParameterMetadata
+                                                    ? parameterTranslations.GetOrdinalParameterExpectedType(i)
+                                                    : null, locations[i - 1]);
+            }
+
+            Dictionary<string, NamedParameterDescriptor> namedParamDescriptorMap = new Dictionary<string, NamedParameterDescriptor>();
+            foreach (KeyValuePair<string, ParamLocationRecognizer.NamedParameterDescription> entry in recognizer.NamedParameterDescriptionMap)
+            {
+                string name = entry.Key;
+                ParamLocationRecognizer.NamedParameterDescription description = entry.Value;
+                namedParamDescriptorMap[name] =
+                    new NamedParameterDescriptor(name, parameterTranslations.GetNamedParameterExpectedType(name),
+                                                 description.BuildPositionsArray(), description.JpaStyle);
+
+            }
+            return new ParameterMetadata(ordinalParamDescriptors, namedParamDescriptorMap);
+        }
+
+	    public virtual string[][] ScalarColumnNames
 		{
 			get { return scalarColumnNames; }
 		}

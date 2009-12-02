@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
+using NHibernate.Engine.Query;
 using NHibernate.Type;
 
 namespace NHibernate.Hql
@@ -120,5 +121,7 @@ namespace NHibernate.Hql
 		Loader.Loader Loader { get; }
 
 		IType[] ActualReturnTypes { get; }
+
+        ParameterMetadata BuildParameterMetadata();
 	}
 }

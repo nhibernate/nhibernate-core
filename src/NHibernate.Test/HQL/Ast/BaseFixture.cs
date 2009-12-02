@@ -39,9 +39,7 @@ namespace NHibernate.Test.HQL.Ast
 
 		public string GetSql(string query)
 		{
-		    var parser = new HqlParseEngine(query, false, sessions);
-            parser.Parse();
-			var qt = new QueryTranslatorImpl(null, parser, emptyfilters, sessions);
+            var qt = new QueryTranslatorImpl(null, new HqlParseEngine(query, false, sessions).Parse(), emptyfilters, sessions);
 			qt.Compile(null, false);
 			return qt.SQLString;
 		}

@@ -553,9 +553,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Cfg\XmlHbmBinding\TypeBinder.cs" />
-    <Compile Include="Cfg\XmlHbmBinding\ValuePropertyBinder.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Cfg\XmlHbmBinding\ValuePropertyBinder.cs" />
     <Compile Include="Context\WcfOperationSessionContext.cs" />
     <Compile Include="Criterion\GroupedProjection.cs" />
     <Compile Include="Criterion\IPropertyProjection.cs" />
@@ -587,6 +585,8 @@
     <Compile Include="Driver\IfxDriver.cs" />
     <Compile Include="Driver\OracleLiteDataClientDriver.cs" />
     <Compile Include="Engine\Query\CallableParser.cs" />
+    <Compile Include="Engine\Query\HQLExpressionQueryPlan.cs" />
+    <Compile Include="Engine\Query\HQLStringQueryPlan.cs" />
     <Compile Include="EntityModeEqualityComparer.cs" />
     <Compile Include="Event\AbstractPostDatabaseOperationEvent.cs" />
     <Compile Include="Event\AbstractPreDatabaseOperationEvent.cs" />
@@ -598,9 +598,11 @@
     <Compile Include="Exceptions\ReflectionBasedSqlStateExtracter.cs" />
     <Compile Include="Exceptions\SqlStateExtracter.cs" />
     <Compile Include="Exceptions\TemplatedViolatedConstraintNameExtracter.cs" />
+    <Compile Include="Hql\Ast\ANTLR\AstPolymorphicProcessor.cs" />
     <Compile Include="Hql\Ast\ANTLR\ASTQueryTranslatorFactory.cs" />
     <Compile Include="Hql\Ast\ANTLR\CaseInsensitiveStringStream.cs" />
     <Compile Include="Hql\Ast\ANTLR\CollectionProperties.cs" />
+    <Compile Include="Hql\Ast\ANTLR\CrossJoinDictionaryArrays.cs" />
     <Compile Include="Hql\Ast\ANTLR\DetailedSemanticException.cs" />
     <Compile Include="Hql\Ast\ANTLR\ErrorCounter.cs" />
     <Compile Include="Hql\Ast\ANTLR\Exec\AbstractStatementExecutor.cs" />
@@ -621,6 +623,8 @@
     <Compile Include="Hql\Ast\ANTLR\InvalidWithClauseException.cs" />
     <Compile Include="Hql\Ast\ANTLR\IParseErrorHandler.cs" />
     <Compile Include="Hql\Ast\ANTLR\Loader\QueryLoader.cs" />
+    <Compile Include="Hql\Ast\ANTLR\PolymorphicQuerySourceDetector.cs" />
+    <Compile Include="Hql\Ast\ANTLR\QuerySourceDetector.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\AssignmentSpecification.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\ASTErrorNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\InsertStatement.cs" />

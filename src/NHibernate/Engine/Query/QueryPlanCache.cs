@@ -85,7 +85,7 @@ namespace NHibernate.Engine.Query
                 {
                     log.Debug("unable to locate HQL query plan in cache; generating (" + expressionStr + ")");
                 }
-                plan = new HQLLinqQueryPlan(expressionStr, queryExpression, shallow, enabledFilters, factory);
+                plan = new HQLExpressionQueryPlan(expressionStr, queryExpression, shallow, enabledFilters, factory);
                 planCache.Put(key, plan);
             }
             else

@@ -13,8 +13,8 @@ namespace NHibernate.Hql.Classic
 		public IQueryTranslator[] CreateQueryTranslators(string queryString, string collectionRole, bool shallow, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory)
 		{
 		    var translators = QuerySplitter.ConcreteQueries(queryString, factory)
-                                        .Select(hql => new QueryTranslator(queryString, hql, filters, factory))
-	                                    .ToArray();
+                                           .Select(hql => new QueryTranslator(queryString, hql, filters, factory))
+	                                       .ToArray();
 
             foreach (var translator in translators)
             {
