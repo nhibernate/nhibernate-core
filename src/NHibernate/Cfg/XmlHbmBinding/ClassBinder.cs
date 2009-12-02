@@ -65,7 +65,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			foreach (var joinedSubclass in joinedSubclasses)
 			{
-				new JoinedSubclassBinder(this).HandleJoinedSubclass(persistentClass, Serialize(joinedSubclass), joinedSubclass, inheritedMetas);
+				new JoinedSubclassBinder(this).HandleJoinedSubclass(persistentClass, joinedSubclass, inheritedMetas);
 			}
 		}
 

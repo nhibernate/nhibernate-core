@@ -51,5 +51,19 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				                                        	});
 			}
 		}
+
+		public void BindSimpleValue(HbmKey propertyMapping, string propertyPath, bool isNullable)
+		{
+			new ColumnsBinder(value, Mappings).Bind(propertyMapping.Columns, isNullable,
+			                                        () =>
+			                                        new HbmColumn
+			                                        	{
+			                                        		name = mappings.NamingStrategy.PropertyToColumnName(propertyPath),
+			                                        		notnull = propertyMapping.notnull,
+			                                        		notnullSpecified = propertyMapping.notnullSpecified,
+			                                        		unique = propertyMapping.unique,
+			                                        		uniqueSpecified = propertyMapping.uniqueSpecified,
+			                                        	});
+		}
 	}
 }

@@ -21,12 +21,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		public void Bind(XmlNode node, HbmJoinedSubclass joinedSubclassMapping, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			PersistentClass superModel = GetSuperclass(node);
-			HandleJoinedSubclass(superModel, node, joinedSubclassMapping, inheritedMetas);
+			HandleJoinedSubclass(superModel, joinedSubclassMapping, inheritedMetas);
 		}
 
-		public void HandleJoinedSubclass(PersistentClass model, XmlNode subnode, HbmJoinedSubclass joinedSubclassMapping, IDictionary<string, MetaAttribute> inheritedMetas)
+		public void HandleJoinedSubclass(PersistentClass model, HbmJoinedSubclass joinedSubclassMapping, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			JoinedSubclass subclass = new JoinedSubclass(model);
+			var subclass = new JoinedSubclass(model);
 
 			BindClass(joinedSubclassMapping, subclass, inheritedMetas);
 			inheritedMetas = GetMetas(joinedSubclassMapping, inheritedMetas, true); // get meta's from <joined-subclass>
@@ -50,12 +50,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			log.InfoFormat("Mapping joined-subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);
 
 			// KEY
-			XmlNode keyNode = subnode.SelectSingleNode(HbmConstants.nsKey, namespaceManager);
-			SimpleValue key = new DependantValue(mytable, subclass.Identifier);
-			subclass.Key = key;
-			if (keyNode.Attributes["on-delete"] != null)
-				key.IsCascadeDeleteEnabled = "cascade".Equals(keyNode.Attributes["on-delete"].Value);
-			BindSimpleValue(keyNode, key, false, subclass.EntityName);
+			BindKey(subclass, joinedSubclassMapping.key, mytable);
 
 			subclass.CreatePrimaryKey(dialect);
 
@@ -77,5 +72,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			mappings.AddClass(subclass);
 		}
 
+		private void BindKey(JoinedSubclass subclass, HbmKey keyMapping, Table mytable)
+		{
+			// TODO : property-ref ?? 
+			SimpleValue key = new DependantValue(mytable, subclass.Identifier);
+			subclass.Key = key;
+			key.IsCascadeDeleteEnabled = keyMapping.ondelete == HbmOndelete.Cascade;
+			key.ForeignKeyName = keyMapping.foreignkey;
+
+			new ValuePropertyBinder(key, Mappings).BindSimpleValue(keyMapping, subclass.EntityName, false);
+		}
 	}
 }
