@@ -122,7 +122,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			property.Generation = PropertyGeneration.Never;
 			property.MetaAttributes = new Dictionary<string, MetaAttribute>();
 
-			LogMappedProperty(property);
+			property.LogMapped(log);
 		}
 
 		private System.Type GetPropertyType(System.Type containingType, string propertyName, HbmCompositeId idSchema)
@@ -212,7 +212,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			property.Generation = PropertyGeneration.Never;
 			property.MetaAttributes = new Dictionary<string, MetaAttribute>();
 
-			LogMappedProperty(property);
+			property.LogMapped(log);
 		}
 
 		private void BindSimpleValue(HbmKeyProperty keyPropertySchema, SimpleValue model, bool isNullable, string path)
@@ -268,7 +268,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			property.IsOptimisticLocked = true;
 			property.Generation = PropertyGeneration.Never;
 			property.MetaAttributes = new Dictionary<string, MetaAttribute>();
-			LogMappedProperty(property);
+			property.LogMapped(log);
 		}
 	}
 }

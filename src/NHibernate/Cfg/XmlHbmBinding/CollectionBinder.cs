@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 
 using NHibernate.Mapping;
@@ -479,14 +480,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (log.IsDebugEnabled)
 			{
-				string msg = "Mapped collection key: " + Columns(collection.Key);
+				string msg = "Mapped collection key: " + string.Join(",", collection.Key.ColumnIterator.Select(c => c.Text).ToArray());
 				if (collection.IsIndexed)
-					msg += ", index: " + Columns(((IndexedCollection)collection).Index);
+					msg += ", index: " + string.Join(",", ((IndexedCollection)collection).Index.ColumnIterator.Select(c => c.Text).ToArray());
 				if (collection.IsOneToMany)
 					msg += ", one-to-many: " + collection.Element.Type.Name;
 				else
 				{
-					msg += ", element: " + Columns(collection.Element);
+					msg += ", element: " + string.Join(",", collection.Element.ColumnIterator.Select(c => c.Text).ToArray());
 					msg += ", type: " + collection.Element.Type.Name;
 				}
 				log.Debug(msg);

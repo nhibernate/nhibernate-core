@@ -172,7 +172,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			property.MetaAttributes = GetMetas(timestampSchema, inheritedMetas);
 
-			LogMappedProperty(property);
+			property.LogMapped(log);
 		}
 
 		private static PropertyGeneration Convert(HbmVersionGeneration versionGeneration)
@@ -253,7 +253,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			property.MetaAttributes = GetMetas(versionSchema, inheritedMetas);
 
-			LogMappedProperty(property);
+			property.LogMapped(log);
 		}
 
 		private static void BindCache(HbmCache cacheSchema, RootClass rootClass)

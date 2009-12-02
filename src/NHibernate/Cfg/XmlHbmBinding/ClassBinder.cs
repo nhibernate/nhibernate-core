@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
@@ -511,18 +510,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 								"\" for property: " + propName);
 			}
 
-			if (log.IsDebugEnabled)
-			{
-				string msg = "Mapped property: " + property.Name;
-				string columns = Columns(property.Value);
-				if (columns.Length > 0)
-					msg += " -> " + columns;
-				if (property.Type != null)
-					msg += ", type: " + property.Type.Name;
-				log.Debug(msg);
-			}
-
 			property.MetaAttributes = GetMetas(node.SelectNodes(HbmConstants.nsMeta, namespaceManager), inheritedMetas);
+			property.LogMapped(log);
 		}
 
 		protected static PropertyGeneration ParsePropertyGeneration(string name)
@@ -536,21 +525,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				default:
 					return PropertyGeneration.Never;
 			}
-		}
-
-		protected static string Columns(IValue val)
-		{
-			StringBuilder columns = new StringBuilder();
-			bool first = true;
-			foreach (ISelectable col in val.ColumnIterator)
-			{
-				if (first)
-					first = false;
-				else
-					columns.Append(", ");
-				columns.Append(col.Text);
-			}
-			return columns.ToString();
 		}
 
 		//automatically makes a column with the default name if none is specified by XML
@@ -1076,23 +1050,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				return (propertyNameNode == null) ? null : propertyNameNode.Value;
 			}
 			return null;
-		}
-
-		protected static void LogMappedProperty(Mapping.Property property)
-		{
-			if (log.IsDebugEnabled)
-			{
-				string msg = "Mapped property: " + property.Name;
-				string columns = Columns(property.Value);
-
-				if (columns.Length > 0)
-					msg += " -> " + columns;
-
-				if (property.Type != null)
-					msg += ", type: " + property.Type.Name;
-
-				log.Debug(msg);
-			}
 		}
 
 		protected static void BindIndex(string indexAttribute, Table table, Column column)

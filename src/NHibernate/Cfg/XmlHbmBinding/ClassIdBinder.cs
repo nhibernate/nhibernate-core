@@ -60,7 +60,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				rootClass.IdentifierProperty = property;
 
-				LogMappedProperty(property);
+				property.LogMapped(log);
 			}
 		}
 

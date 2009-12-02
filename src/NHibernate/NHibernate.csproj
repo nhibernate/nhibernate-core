@@ -548,6 +548,7 @@
     <Compile Include="Cfg\MappingSchema\IDecoratable.cs" />
     <Compile Include="Cfg\XmlHbmBinding\ColumnsBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\FiltersBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\MappingLogExtensions.cs" />
     <Compile Include="Cfg\XmlHbmBinding\PropertiesBinder.cs">
       <SubType>Code</SubType>
     </Compile>
