@@ -47,8 +47,14 @@ namespace NHibernate.SqlTypes
 			SqlType result;
 			if (!SqlTypes.TryGetValue(key, out result))
 			{
-				result = createDelegate(length);
-				SqlTypes.Add(key, result);
+				lock(SqlTypes)
+				{
+					if (!SqlTypes.TryGetValue(key, out result))
+					{
+						result = createDelegate(length);
+						SqlTypes.Add(key, result);
+					}
+				}
 			}
 			return (T) result;
 		}
