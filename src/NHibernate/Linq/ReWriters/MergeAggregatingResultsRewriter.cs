@@ -53,29 +53,40 @@ namespace NHibernate.Linq.ReWriters
 			}
 			else if (resultOperator is CountResultOperator)
 			{
-				queryModel.SelectClause.Selector = new NhShortCountExpression(queryModel.SelectClause.Selector);
+                queryModel.SelectClause.Selector = new NhShortCountExpression(new NhStarExpression(queryModel.SelectClause.Selector));
 				queryModel.ResultOperators.Remove(resultOperator);
 			}
             else if (resultOperator is LongCountResultOperator)
             {
-                queryModel.SelectClause.Selector = new NhLongCountExpression(queryModel.SelectClause.Selector);
+                queryModel.SelectClause.Selector = new NhLongCountExpression(new NhStarExpression(queryModel.SelectClause.Selector));
                 queryModel.ResultOperators.Remove(resultOperator);
             }
 
 			base.VisitResultOperator(resultOperator, queryModel, index);
 		}
-
+        
 		public override void VisitSelectClause(SelectClause selectClause, QueryModel queryModel)
 		{
-			selectClause.TransformExpressions(s => new MergeAggregatingResultsInExpressionRewriter().Visit(s));
+            selectClause.TransformExpressions(MergeAggregatingResultsInExpressionRewriter.Rewrite);
 		}
+       
+        public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
+        {
+            whereClause.TransformExpressions(MergeAggregatingResultsInExpressionRewriter.Rewrite);
+        }
 	}
-
+    
 	internal class MergeAggregatingResultsInExpressionRewriter : NhExpressionTreeVisitor
 	{
-		public Expression Visit(Expression expression)
+        private MergeAggregatingResultsInExpressionRewriter()
+        {
+        }
+
+		public static Expression Rewrite(Expression expression)
 		{
-			return VisitExpression(expression);
+		    var visitor = new MergeAggregatingResultsInExpressionRewriter();
+
+			return visitor.VisitExpression(expression);
 		}
 
 		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
@@ -83,7 +94,7 @@ namespace NHibernate.Linq.ReWriters
 			MergeAggregatingResultsRewriter.ReWrite(expression.QueryModel);
 			return expression;
 		}
-
+        
 		protected override Expression VisitMethodCallExpression(MethodCallExpression m)
 		{
 			if (m.Method.DeclaringType == typeof(Queryable) ||
@@ -94,36 +105,43 @@ namespace NHibernate.Linq.ReWriters
 				{
 					case "Count":
 						return CreateAggregate(m.Arguments[0], (LambdaExpression)m.Arguments[1],
-						                       e => new NhShortCountExpression(e));
+						                       e => new NhShortCountExpression(e),
+                                               () => new CountResultOperator());
 					case "Min":
 						return CreateAggregate(m.Arguments[0], (LambdaExpression) m.Arguments[1],
-						                       e => new NhMinExpression(e));
+						                       e => new NhMinExpression(e),
+                                               () => new MinResultOperator());
 					case "Max":
 						return CreateAggregate(m.Arguments[0], (LambdaExpression)m.Arguments[1],
-						                       e => new NhMaxExpression(e));
+						                       e => new NhMaxExpression(e),
+                                               () => new MaxResultOperator());
 					case "Sum":
 						return CreateAggregate(m.Arguments[0], (LambdaExpression)m.Arguments[1],
-						                       e => new NhSumExpression(e));
+						                       e => new NhSumExpression(e),
+                                               () => new SumResultOperator());
 					case "Average":
 						return CreateAggregate(m.Arguments[0], (LambdaExpression)m.Arguments[1],
-						                       e => new NhAverageExpression(e));
+						                       e => new NhAverageExpression(e),
+                                               () => new AverageResultOperator());
 				}
 			}
 
 			return base.VisitMethodCallExpression(m);
 		}
 
-		private Expression CreateAggregate(Expression fromClauseExpression, LambdaExpression body, Func<Expression,Expression> factory)
+		private Expression CreateAggregate(Expression fromClauseExpression, LambdaExpression body, Func<Expression,Expression> aggregateFactory, Func<ResultOperatorBase> resultOperatorFactory)
 		{
+            // TODO - need generated name here
 			var fromClause = new MainFromClause("x2", body.Parameters[0].Type, fromClauseExpression);
 			var selectClause = body.Body;
 			selectClause = ReplacingExpressionTreeVisitor.Replace(body.Parameters[0],
 			                                                      new QuerySourceReferenceExpression(
 			                                                      	fromClause), selectClause);
 			var queryModel = new QueryModel(fromClause,
-			                                new SelectClause(factory(selectClause)));
+			                                new SelectClause(aggregateFactory(selectClause)));
 
-			queryModel.ResultOperators.Add(new AverageResultOperator());
+            // TODO - this sucks, but we use it to get the Type of the SubQueryExpression correct
+            queryModel.ResultOperators.Add(resultOperatorFactory());
 
 			var subQuery = new SubQueryExpression(queryModel);
 

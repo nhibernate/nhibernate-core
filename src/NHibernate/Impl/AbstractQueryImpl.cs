@@ -27,7 +27,7 @@ namespace NHibernate.Impl
 		private readonly ArrayList values = new ArrayList(4);
 		private readonly List<IType> types = new List<IType>(4);
 		private readonly Dictionary<string, TypedValue> namedParameters = new Dictionary<string, TypedValue>(4);
-		private readonly Dictionary<string, TypedValue> namedParameterLists = new Dictionary<string, TypedValue>(4);
+	    protected readonly Dictionary<string, TypedValue> namedParameterLists = new Dictionary<string, TypedValue>(4);
 		private bool cacheable;
 		private string cacheRegion;
 		private bool readOnly;

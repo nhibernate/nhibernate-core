@@ -13,7 +13,7 @@ namespace NHibernate.Linq.ResultOperators
 
 		public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo)
 		{
-			throw new NotImplementedException();
+		    return null;
 		}
 
 		public override ResultOperatorBase Clone(CloneContext cloneContext)

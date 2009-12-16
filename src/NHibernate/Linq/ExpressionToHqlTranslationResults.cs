@@ -9,16 +9,23 @@ namespace NHibernate.Linq
 {
     public class ExpressionToHqlTranslationResults
     {
-        public HqlQuery Statement { get; private set; }
+        public HqlTreeNode Statement { get; private set; }
         public ResultTransformer ResultTransformer { get; private set; }
-        public List<Action<IQuery, IDictionary<string, Pair<object, IType>>>> AdditionalCriteria { get; private set; }
+        public Delegate PostExecuteTransformer { get; private set; }
+        public List<Action<IQuery, IDictionary<string, Tuple<object, IType>>>> AdditionalCriteria { get; private set; }
 
-        public ExpressionToHqlTranslationResults(HqlQuery statement, IList<LambdaExpression> itemTransformers, IList<LambdaExpression> listTransformers, List<Action<IQuery, IDictionary<string, Pair<object, IType>>>> additionalCriteria)
+        public ExpressionToHqlTranslationResults(HqlTreeNode statement, 
+            IList<LambdaExpression> itemTransformers, 
+            IList<LambdaExpression> listTransformers,
+            IList<LambdaExpression> postExecuteTransformers,
+            List<Action<IQuery, IDictionary<string, Tuple<object, IType>>>> additionalCriteria)
         {
             Statement = statement;
 
-            var itemTransformer = MergeLambdas(itemTransformers);
-            var listTransformer = MergeLambdas(listTransformers);
+            PostExecuteTransformer = MergeLambdasAndCompile(postExecuteTransformers);
+
+            var itemTransformer = MergeLambdasAndCompile(itemTransformers);
+            var listTransformer = MergeLambdasAndCompile(listTransformers);
 
             if (itemTransformer != null || listTransformer != null)
             {
@@ -28,7 +35,7 @@ namespace NHibernate.Linq
         	AdditionalCriteria = additionalCriteria;
         }
 
-        private static LambdaExpression MergeLambdas(IList<LambdaExpression> transformations)
+        private static Delegate MergeLambdasAndCompile(IList<LambdaExpression> transformations)
         {
             if (transformations == null || transformations.Count == 0)
             {
@@ -44,7 +51,7 @@ namespace NHibernate.Linq
                 listTransformLambda = Expression.Lambda(invoked, listTransformLambda.Parameters.ToArray());
             }
 
-            return listTransformLambda;
+            return listTransformLambda.Compile();
         }
     }
 }

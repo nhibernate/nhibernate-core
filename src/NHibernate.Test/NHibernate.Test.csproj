@@ -383,6 +383,7 @@
     <Compile Include="Linq\AggregateTests.cs" />
     <Compile Include="Linq\BinaryBooleanExpressionTests.cs" />
     <Compile Include="Linq\BinaryExpressionOrdererTests.cs" />
+    <Compile Include="Linq\CollectionAssert.cs" />
     <Compile Include="Linq\DynamicQueryTests.cs" />
     <Compile Include="Linq\Entities\Address.cs" />
     <Compile Include="Linq\Entities\Animal.cs" />
@@ -404,6 +405,7 @@
     <Compile Include="Linq\Entities\Timesheet.cs" />
     <Compile Include="Linq\Entities\User.cs" />
     <Compile Include="Linq\Entities\UserComponent.cs" />
+    <Compile Include="Linq\Entities\UserDto.cs" />
     <Compile Include="Linq\EnumTests.cs" />
     <Compile Include="Linq\ExtensionMethods.cs" />
     <Compile Include="Linq\FunctionTests.cs" />
@@ -420,6 +422,10 @@
     <Compile Include="Linq\PropertyMethodMappingTests.cs" />
     <Compile Include="Linq\QueryReuseTests.cs" />
     <Compile Include="Linq\ReadonlyTestCase.cs" />
+    <Compile Include="Linq\RegresstionTests.cs" />
+    <Compile Include="Linq\SelectionTests.cs" />
+    <Compile Include="Linq\WhereSubqueryTests.cs" />
+    <Compile Include="Linq\WhereTests.cs" />
     <Compile Include="MappingTest\NonReflectiveBinderFixture.cs" />
     <Compile Include="MappingTest\Wicked.cs" />
     <Compile Include="NHSpecificTest\CriteriaQueryOnComponentCollection\Employee.cs" />

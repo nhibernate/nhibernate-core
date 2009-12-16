@@ -13,16 +13,10 @@ namespace NHibernate.Linq
         private readonly Delegate _listTransformation;
         private readonly Delegate _itemTransformation;
 
-        public ResultTransformer(LambdaExpression itemTransformation, LambdaExpression listTransformation)
+        public ResultTransformer(Delegate itemTransformation, Delegate listTransformation)
         {
-            if (itemTransformation != null)
-            {
-                _itemTransformation = itemTransformation.Compile();
-            }
-            if (listTransformation != null)
-            {
-                _listTransformation = listTransformation.Compile();
-            }
+            _itemTransformation = itemTransformation;
+            _listTransformation = listTransformation;
         }
 
         public object TransformTuple(object[] tuple, string[] aliases)
@@ -39,9 +33,9 @@ namespace NHibernate.Linq
 
             object transformResult = collection;
 
-            if (collection.Count > 0)
+            //if (collection.Count > 0)
             {
-                if (collection[0] is object[])
+                if (collection.Count > 0 && collection[0] is object[])
                 {
                     if ( ((object[])collection[0]).Length != 1)
                     {

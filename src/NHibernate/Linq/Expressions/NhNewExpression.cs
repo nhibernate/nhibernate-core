@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 
@@ -26,4 +27,17 @@ namespace NHibernate.Linq.Expressions
 			get { return _members; }
 		}
 	}
+
+    public class NhStarExpression : Expression
+    {
+        public NhStarExpression(Expression expression) : base((ExpressionType) NhExpressionType.Star, expression.Type)
+        {
+            Expression = expression;
+        }
+
+        public Expression Expression
+        {
+            get; private set;
+        }
+    }
 }

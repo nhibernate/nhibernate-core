@@ -27,20 +27,17 @@ namespace NHibernate.Hql.Ast.ANTLR
                 var className = GetClassName(querySource);
                 var classType = _sessionFactoryHelper.GetImportedClass(className);
 
-                if (classType != null)
-                {
-                    AddImplementorsToMap(querySource, classType);
-                }
+                AddImplementorsToMap(querySource, classType == null ? className : classType.FullName);
             }
 
             return _map;
         }
 
-        private void AddImplementorsToMap(IASTNode querySource, System.Type classType)
+        private void AddImplementorsToMap(IASTNode querySource, string className)
         {
-            var implementors = _sfi.GetImplementors(classType.FullName);
+            var implementors = _sfi.GetImplementors(className);
 
-            if (implementors.Length == 1 && implementors[0] == classType.FullName)
+            if (implementors.Length == 1 && implementors[0] == className)
             {
                 // No need to change things
                 return;

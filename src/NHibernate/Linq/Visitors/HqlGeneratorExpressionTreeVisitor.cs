@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
@@ -16,6 +17,13 @@ namespace NHibernate.Linq.Visitors
     	private readonly IList<NamedParameterDescriptor> _requiredHqlParameters;
         static private readonly FunctionRegistry FunctionRegistry = FunctionRegistry.Initialise();
 
+        public static HqlTreeNode Visit(Expression expression, IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters)
+        {
+            var visitor = new HqlGeneratorExpressionTreeVisitor(parameters, requiredHqlParameters);
+
+            return visitor.VisitExpression(expression);
+        }
+
         public HqlGeneratorExpressionTreeVisitor(IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters)
         {
 			_parameters = parameters;
@@ -23,7 +31,7 @@ namespace NHibernate.Linq.Visitors
 			_hqlTreeBuilder = new HqlTreeBuilder();
         }
 
-        public virtual HqlTreeNode Visit(Expression expression)
+        public HqlTreeNode Visit(Expression expression)
         {
             return VisitExpression(expression);
         }
@@ -122,12 +130,19 @@ namespace NHibernate.Linq.Visitors
                             return VisitNhCount((NhCountExpression)expression);
                         case NhExpressionType.Distinct:
                             return VisitNhDistinct((NhDistinctExpression)expression);
+                        case NhExpressionType.Star:
+                            return VisitNhStar((NhStarExpression) expression);
                         //case NhExpressionType.New:
                         //    return VisitNhNew((NhNewExpression)expression);
                     }
 
                     throw new NotSupportedException(expression.GetType().Name);
             }
+        }
+
+        protected HqlTreeNode VisitNhStar(NhStarExpression expression)
+        {
+            return _hqlTreeBuilder.Star();
         }
 
         private HqlTreeNode VisitInvocationExpression(InvocationExpression expression)
@@ -206,7 +221,7 @@ namespace NHibernate.Linq.Visitors
                     }
 
                     // Also check for nullability
-                    if (expression.Left.Type.IsNullable() || expression.Right.Type.IsNullable())
+                    if (expression.Left.Type.IsNullableOrReference() || expression.Right.Type.IsNullableOrReference())
                     {
                         // TODO - yuck.  This clone is needed because the AST tree nodes are not immutable,
                         // and sharing nodes between multiple branches will cause issues in the hqlSqlWalker phase -
@@ -247,7 +262,7 @@ namespace NHibernate.Linq.Visitors
                     }
 
                     // Also check for nullability
-                    if (expression.Left.Type.IsNullable() || expression.Right.Type.IsNullable())
+                    if (expression.Left.Type.IsNullableOrReference() || expression.Right.Type.IsNullableOrReference())
                     {
                         var lhs2 = VisitExpression(expression.Left).AsExpression();
                         var rhs2 = VisitExpression(expression.Right).AsExpression();

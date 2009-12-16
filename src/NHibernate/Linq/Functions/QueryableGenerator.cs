@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -125,5 +127,75 @@ namespace NHibernate.Linq.Functions
                 return treeBuilder.Max(visitor.Visit(arguments[1]).AsExpression());
             }
         }
+    }
+
+    public class ICollectionGenerator : BaseHqlGeneratorForType
+    {
+        public ICollectionGenerator()
+        {
+            // TODO - could use reflection
+            MethodRegistry.Add(new ContainsGenerator());
+        }
+
+        public override bool SupportsMethod(MethodInfo method)
+        {
+            var declaringType = method.DeclaringType;
+
+            if (declaringType.IsGenericType)
+            {
+                if (declaringType.GetGenericTypeDefinition() == typeof(ICollection<>) ||
+                    declaringType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                {
+                    if (method.Name == "Contains")
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public override IHqlGeneratorForMethod GetMethodGenerator(MethodInfo method)
+        {
+            // TODO - ick
+            if (method.Name == "Contains")
+            {
+                return new ContainsGenerator();
+            }
+
+            throw new NotSupportedException(method.Name);
+        }
+
+        class ContainsGenerator : BaseHqlGeneratorForMethod
+        {
+            public ContainsGenerator()
+            {
+                SupportedMethods = new MethodInfo[0];
+            }
+
+            public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
+            {
+                // TODO - alias generator
+                var alias = treeBuilder.Alias("x");
+
+                var param = Expression.Parameter(targetObject.Type, "x");
+                var where = treeBuilder.Where(visitor.Visit(Expression.Lambda(
+                                                                     Expression.Equal(param, arguments[0]), param))
+                                                          .AsExpression());
+                
+                return treeBuilder.Exists(
+                    treeBuilder.Query(
+                        treeBuilder.SelectFrom(
+                            treeBuilder.From(
+                                treeBuilder.Range(
+                                    visitor.Visit(targetObject),
+                                    alias)
+                                )
+                            ),
+                        where));
+            }
+        }
+
     }
 }

@@ -8,11 +8,13 @@ namespace NHibernate.Hql.Ast
 {
     public class HqlTreeNode
     {
+        public IASTFactory Factory { get; private set; }
         private readonly IASTNode _node;
         private readonly List<HqlTreeNode> _children;
 
         protected HqlTreeNode(int type, string text, IASTFactory factory, IEnumerable<HqlTreeNode> children)
         {
+            Factory = factory;
             _node = factory.CreateNode(type, text);
             _children = new List<HqlTreeNode>();
 
@@ -107,18 +109,27 @@ namespace NHibernate.Hql.Ast
                 _node.AddChild(child.AstNode);
             }
         }
+    }
 
-        public HqlExpression AsExpression()
+    public static class HqlTreeNodeExtensions
+    {
+        public static HqlExpression AsExpression(this HqlTreeNode node)
         {
             // TODO - nice error handling if cast fails
-            return (HqlExpression) this;
+            return (HqlExpression)node;
         }
 
-        public virtual HqlBooleanExpression AsBooleanExpression()
+        public static HqlBooleanExpression AsBooleanExpression(this HqlTreeNode node)
         {
+            if (node is HqlDot)
+            {
+                return new HqlBooleanDot(node.Factory, (HqlDot) node);
+            }
+
             // TODO - nice error handling if cast fails
-            return (HqlBooleanExpression)this;
+            return (HqlBooleanExpression)node;
         }
+        
     }
 
     public abstract class HqlStatement : HqlTreeNode
@@ -329,19 +340,9 @@ namespace NHibernate.Hql.Ast
 
     public class HqlDot : HqlExpression
     {
-        private readonly IASTFactory _factory;
-
         public HqlDot(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
             : base(HqlSqlWalker.DOT, ".", factory, lhs, rhs)
         {
-            _factory = factory;
-        }
-
-        public override HqlBooleanExpression AsBooleanExpression()
-        {
-            // If we are of boolean type, then we can acts as boolean expression
-            // TODO - implement type check
-            return new HqlBooleanDot(_factory, this);
         }
     }
 
@@ -408,6 +409,23 @@ namespace NHibernate.Hql.Ast
         }
     }
 
+    public class HqlFalse : HqlConstant
+    {
+        public HqlFalse(IASTFactory factory)
+            : base(factory, HqlSqlWalker.FALSE, "false")
+        {
+        }
+    }
+
+    public class HqlTrue : HqlConstant
+    {
+        public HqlTrue(IASTFactory factory)
+            : base(factory, HqlSqlWalker.TRUE, "true")
+        {
+        }
+    }
+
+
     public class HqlNull : HqlConstant
     {
         public HqlNull(IASTFactory factory)
@@ -430,7 +448,15 @@ namespace NHibernate.Hql.Ast
         Descending
     }
 
-    public class HqlDirectionAscending : HqlStatement
+    public class HqlDirectionStatement : HqlStatement
+    {
+        public HqlDirectionStatement(int type, string text, IASTFactory factory)
+            : base(type, text, factory)
+        {
+        }
+    }
+
+    public class HqlDirectionAscending : HqlDirectionStatement
     {
         public HqlDirectionAscending(IASTFactory factory)
             : base(HqlSqlWalker.ASCENDING, "asc", factory)
@@ -438,7 +464,7 @@ namespace NHibernate.Hql.Ast
         }
     }
 
-    public class HqlDirectionDescending : HqlStatement
+    public class HqlDirectionDescending : HqlDirectionStatement
     {
         public HqlDirectionDescending(IASTFactory factory)
             : base(HqlSqlWalker.DESCENDING, "desc", factory)
@@ -730,6 +756,30 @@ namespace NHibernate.Hql.Ast
     public class HqlIsNotNull : HqlBooleanExpression
     {
         public HqlIsNotNull(IASTFactory factory, HqlExpression lhs) : base(HqlSqlWalker.IS_NOT_NULL, "is not null", factory, lhs)
+        {
+        }
+    }
+
+    public class HqlStar : HqlExpression
+    {
+        public HqlStar(IASTFactory factory) : base(HqlSqlWalker.ROW_STAR, "*", factory)
+        {
+        }
+    }
+
+    public class HqlIn : HqlBooleanExpression
+    {
+        public HqlIn(IASTFactory factory, HqlExpression itemExpression, HqlTreeNode source)
+            : base(HqlSqlWalker.IN, "in", factory, itemExpression)
+        {
+            AddChild(new HqlInList(factory, source));
+        }
+    }
+
+    public class HqlInList : HqlTreeNode
+    {
+        public HqlInList(IASTFactory factory, HqlTreeNode source)
+            : base(HqlSqlWalker.IN_LIST, "inlist", factory, source)
         {
         }
     }

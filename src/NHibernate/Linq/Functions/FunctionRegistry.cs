@@ -36,12 +36,14 @@ namespace NHibernate.Linq.Functions
             registry.Register(new QueryableGenerator());
             registry.Register(new StringGenerator());
             registry.Register(new DateTimeGenerator());
+            registry.Register(new ICollectionGenerator());
 
             return registry;
         }
 
         private readonly Dictionary<MethodInfo, IHqlGeneratorForMethod> _registeredMethods = new Dictionary<MethodInfo, IHqlGeneratorForMethod>();
         private readonly Dictionary<MemberInfo, IHqlGeneratorForProperty> _registeredProperties = new Dictionary<MemberInfo, IHqlGeneratorForProperty>();
+        private readonly List<IHqlGeneratorForType> _typeGenerators = new List<IHqlGeneratorForType>();
 
         public IHqlGeneratorForMethod GetMethodGenerator(MethodInfo method)
         {
@@ -58,12 +60,21 @@ namespace NHibernate.Linq.Functions
             }
 
             // No method generator registered.  Look to see if it's a standard LinqExtensionMethod
-            var attr = (LinqExtensionMethodAttribute) method.GetCustomAttributes(typeof (LinqExtensionMethodAttribute), false)[0];
-            if (attr != null)
+            var attr = method.GetCustomAttributes(typeof (LinqExtensionMethodAttribute), false);
+            if (attr.Length == 1)
             {
                 // It is
                 // TODO - cache this?  Is it worth it?
-                return new HqlGeneratorForExtensionMethod(attr, method);
+                return new HqlGeneratorForExtensionMethod((LinqExtensionMethodAttribute) attr[0], method);
+            }
+
+            // Not that either.  Let's query each type generator to see if it can handle it
+            foreach (var typeGenerator in _typeGenerators)
+            {
+                if (typeGenerator.SupportsMethod(method))
+                {
+                    return typeGenerator.GetMethodGenerator(method);
+                }
             }
 
             throw new NotSupportedException(method.ToString());
@@ -94,6 +105,7 @@ namespace NHibernate.Linq.Functions
 
         private void Register(IHqlGeneratorForType typeMethodGenerator)
         {
+            _typeGenerators.Add(typeMethodGenerator);
             typeMethodGenerator.Register(this);
         }
     }

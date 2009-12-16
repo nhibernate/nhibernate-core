@@ -8,6 +8,7 @@
 		Sum,
 		Count,
 		Distinct,
-		New
+		New,
+	    Star
 	}
 }

@@ -83,5 +83,15 @@ namespace NHibernate.Test.Linq.Entities
         {
             get { return _session.Query<Physician>(); }
         }
+
+        public IQueryable<Role> Role
+        {
+            get { return _session.Query<Role>(); }
+        }
+
+        public IEnumerable<IUser> IUsers
+        {
+            get { return _session.Query<IUser>(); }
+        }
     }
 }

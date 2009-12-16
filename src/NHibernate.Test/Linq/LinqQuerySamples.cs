@@ -235,8 +235,8 @@ namespace NHibernate.Test.Linq
                 //var dbOrders =
                 //    s.CreateQuery("select o.OrderId, od, o.Freight from Order o join o.OrderLines od").List<object[]>();
 
-                //// Now group by the items in the parent select, grouping the items in the child select (note lookups on object[], ala ProjectionEvaluator)
-                //// Note the casts to get the types correct.  Need to check if ProjectionEvaluator handles that, but think it does
+                //// Now group by the items in the parent select, grouping the items in the child select (note lookups on object[], ala SelectClauseVisitor)
+                //// Note the casts to get the types correct.  Need to check if SelectClauseVisitor handles that, but think it does
                 //var a = from o in dbOrders
                 //        group new { OrderLine = (OrderLine)o[1], Freight = (Decimal?)o[2] } by new { OrderId = (int) o[0] }
                 //            into g

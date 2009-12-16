@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using NHibernate.Impl;
 using NHibernate.Type;
 
@@ -22,12 +24,26 @@ namespace NHibernate.Linq
 
 			var query = _session.CreateQuery(nhLinqExpression);
 
+		    var nhQuery = query.As<ExpressionQueryImpl>().QueryExpression.As<NhLinqExpression>();
+
 			SetParameters(query, nhLinqExpression.ParameterValuesByName);
-		    SetResultTransformerAndAdditionalCriteria(query, nhLinqExpression.ParameterValuesByName);
+		    SetResultTransformerAndAdditionalCriteria(query, nhQuery, nhLinqExpression.ParameterValuesByName);
 
 			var results = query.List();
 
-			if (nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence)
+            if (nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
+            {
+                try
+                {
+                    return nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer.DynamicInvoke(results.AsQueryable());
+                }
+                catch (TargetInvocationException e)
+                {
+                    throw e.InnerException;
+                }
+            }
+
+            if (nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence)
 			{
 				return results.AsQueryable();
 			}
@@ -52,28 +68,39 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(this, expression);
 		}
 
-		static void SetParameters(IQuery query, IDictionary<string, Pair<object, IType>> parameters)
+		static void SetParameters(IQuery query, IDictionary<string, Tuple<object, IType>> parameters)
 		{
 			foreach (var parameterName in query.NamedParameters)
 			{
 			    var param = parameters[parameterName];
-                if (param.Left == null)
+
+                if (param.First == null)
                 {
-                    query.SetParameter(parameterName, param.Left, param.Right);
+                    if (typeof(ICollection).IsAssignableFrom(param.Second.ReturnedClass))
+                    {
+                        query.SetParameterList(parameterName, null, param.Second);
+                    }
+                    else
+                    {
+                        query.SetParameter(parameterName, null, param.Second);
+                    }
                 }
                 else
                 {
-                    query.SetParameter(parameterName, param.Left);
+                    if (param.First is ICollection)
+                    {
+                        query.SetParameterList(parameterName, (ICollection) param.First);
+                    }
+                    else
+                    {
+                        query.SetParameter(parameterName, param.First);
+                    }
                 }
 			}
 		}
 
-        public void SetResultTransformerAndAdditionalCriteria(IQuery query, IDictionary<string, Pair<object, IType>> parameters)
+        public void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters)
         {
-            var queryImpl = (ExpressionQueryImpl) query;
-
-            var nhExpression = (NhLinqExpression) queryImpl.QueryExpression;
-
             query.SetResultTransformer(nhExpression.ExpressionToHqlTranslationResults.ResultTransformer);
 
             foreach (var criteria in nhExpression.ExpressionToHqlTranslationResults.AdditionalCriteria)
@@ -83,9 +110,17 @@ namespace NHibernate.Linq
         }
 	}
 
-    public class Pair<TLeft, TRight>
+    public class Tuple<T1, T2>
     {
-        public TLeft Left { get; set; }
-        public TRight Right { get; set; }
+        public T1 First { get; set; }
+        public T2 Second { get; set; }
+ 
+    }
+
+    public class Tuple<T1, T2, T3>
+    {
+        public T1 First { get; set; }
+        public T2 Second { get; set; }
+        public T3 Third { get; set; }
     }
 }

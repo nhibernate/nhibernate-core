@@ -9,7 +9,6 @@ using NHibernate.Linq.Visitors;
 using NHibernate.Type;
 using Remotion.Data.Linq;
 using Remotion.Data.Linq.Clauses;
-using Remotion.Data.Linq.Clauses.StreamedData;
 using Remotion.Data.Linq.Parsing.ExpressionTreeVisitors;
 using Remotion.Data.Linq.Parsing.Structure;
 using Remotion.Data.Linq.Parsing.Structure.IntermediateModel;
@@ -26,14 +25,15 @@ namespace NHibernate.Linq
 
         public NhLinqExpressionReturnType ReturnType { get; private set; }
 
-        public IDictionary<string, Pair<object, IType>> ParameterValuesByName { get; private set; }
+        public IDictionary<string, Tuple<object, IType>> ParameterValuesByName { get; private set; }
 
         public ExpressionToHqlTranslationResults ExpressionToHqlTranslationResults { get; private set; }
 
 		private readonly Expression _expression;
 	    private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
+	    private IASTNode _astNode;
 
-		public NhLinqExpression(Expression expression)
+	    public NhLinqExpression(Expression expression)
 		{
 			_expression = PartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
 
@@ -43,8 +43,8 @@ namespace NHibernate.Linq
 
 		    ParameterValuesByName = _constantToParameterMap.Values.ToDictionary(p => p.Name,
 		                                                                        p =>
-		                                                                        new Pair<object, IType>
-		                                                                            {Left = p.Value, Right = p.Type});
+		                                                                        new Tuple<object, IType>
+		                                                                            {First = p.Value, Second = p.Type});
 
 			Key = ExpressionKeyVisitor.Visit(_expression, _constantToParameterMap);
 			
@@ -62,16 +62,22 @@ namespace NHibernate.Linq
 
 	    public IASTNode Translate(ISessionFactory sessionFactory)
 		{
-			var requiredHqlParameters = new List<NamedParameterDescriptor>();
+            //if (_astNode == null)
+            {
+                var requiredHqlParameters = new List<NamedParameterDescriptor>();
 
-            // TODO - can we cache any of this? 
-            var queryModel = NhRelinqQueryParser.Parse(_expression);
+                // TODO - can we cache any of this? 
+                var queryModel = NhRelinqQueryParser.Parse(_expression);
 
-			ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModel, _constantToParameterMap, requiredHqlParameters);
+                ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModel,
+                                                                                       _constantToParameterMap,
+                                                                                       requiredHqlParameters);
 
-			ParameterDescriptors = requiredHqlParameters.AsReadOnly();
+                ParameterDescriptors = requiredHqlParameters.AsReadOnly();
+                _astNode = ExpressionToHqlTranslationResults.Statement.AstNode;
+            }
 
-			return ExpressionToHqlTranslationResults.Statement.AstNode;
+	        return _astNode;
 		}
 	}
 
@@ -89,6 +95,14 @@ namespace NHibernate.Linq
                         MethodCallExpressionNodeTypeRegistry.GetRegisterableMethodDefinition(ReflectionHelper.GetMethod(() => Queryable.Aggregate<object, object>(null, null, null)))
                     },
                 typeof (AggregateExpressionNode));
+
+            MethodCallRegistry.Register(
+                new []
+                    {
+                        MethodCallExpressionNodeTypeRegistry.GetRegisterableMethodDefinition(ReflectionHelper.GetMethod((List<object> l) => l.Contains(null))),
+                        
+                    },
+                typeof(ContainsExpressionNode));
         }
 
         public static QueryModel Parse(Expression expression)
@@ -178,16 +192,6 @@ namespace NHibernate.Linq
             OptionalSeed = optionalSeed;
             Accumulator = accumulator;
             OptionalSelector = optionalSelector;
-        }
-
-        public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override ResultOperatorBase Clone(CloneContext cloneContext)
-        {
-            throw new NotImplementedException();
         }
     }
 }

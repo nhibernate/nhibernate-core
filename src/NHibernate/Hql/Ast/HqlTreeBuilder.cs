@@ -341,11 +341,6 @@ namespace NHibernate.Hql.Ast
             return new HqlConcat(_factory, args);
         }
 
-        public HqlExpressionList ExpressionList()
-        {
-            return new HqlExpressionList(_factory);
-        }
-
         public HqlMethodCall MethodCall(string methodName, IEnumerable<HqlExpression> parameters)
         {
             return new HqlMethodCall(_factory, methodName, parameters);
@@ -370,6 +365,30 @@ namespace NHibernate.Hql.Ast
         {
             return new HqlIsNotNull(_factory, lhs);
         }
-    }
 
+        public HqlTreeNode ExpressionList(IEnumerable<HqlExpression> expressions)
+        {
+            return new HqlExpressionList(_factory, expressions);
+        }
+
+        public HqlStar Star()
+        {
+            return new HqlStar(_factory);
+        }
+
+        public HqlTrue True()
+        {
+            return new HqlTrue(_factory);
+        }
+
+        public HqlFalse False()
+        {
+            return new HqlFalse(_factory);
+        }
+
+        public HqlIn In(HqlExpression itemExpression, HqlTreeNode source)
+        {
+            return new HqlIn(_factory, itemExpression, source);
+        }
+    }
 }

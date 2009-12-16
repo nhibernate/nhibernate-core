@@ -9,18 +9,21 @@ namespace NHibernate.Linq.Visitors
     /// </summary>
     class Nominator : NhExpressionTreeVisitor
     {
-        readonly Func<Expression, bool> _fnIsCandidate;
-        HashSet<Expression> _candidates;
-        bool _cannotBeCandidate;
+        private readonly Func<Expression, bool> _fnIsCandidate;
+        private readonly Func<Expression, bool> _fnIsCandidateShortcut;
+        private HashSet<Expression> _candidates;
+        private bool _canBeCandidate;
 
-        internal Nominator(Func<Expression, bool> fnIsCandidate)
+        internal Nominator(Func<Expression, bool> fnIsCandidate, Func<Expression, bool> fnIsCandidateShortcut)
         {
             _fnIsCandidate = fnIsCandidate;
+            _fnIsCandidateShortcut = fnIsCandidateShortcut;
         }
 
         internal HashSet<Expression> Nominate(Expression expression)
         {
             _candidates = new HashSet<Expression>();
+            _canBeCandidate = true;
             VisitExpression(expression);
             return _candidates;
         }
@@ -29,12 +32,18 @@ namespace NHibernate.Linq.Visitors
         {
             if (expression != null)
             {
-                bool saveCannotBeEvaluated = _cannotBeCandidate;
-                _cannotBeCandidate = false;
+                bool saveCanBeCandidate = _canBeCandidate;
+                _canBeCandidate = true;
+
+                if (_fnIsCandidateShortcut(expression))
+                {
+                    _candidates.Add(expression);
+                    return expression;
+                }
 
                 base.VisitExpression(expression);
 
-                if (!_cannotBeCandidate)
+                if (_canBeCandidate)
                 {
                     if (_fnIsCandidate(expression))
                     {
@@ -42,11 +51,11 @@ namespace NHibernate.Linq.Visitors
                     }
                     else
                     {
-                        _cannotBeCandidate = true;
+                        _canBeCandidate = false;
                     }
                 }
 
-                _cannotBeCandidate |= saveCannotBeEvaluated;
+                _canBeCandidate = _canBeCandidate & saveCanBeCandidate;
             }
 
             return expression;
