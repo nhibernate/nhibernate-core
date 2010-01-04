@@ -49,12 +49,12 @@ namespace NHibernate
 		/// <exception cref="HibernateException">
 		/// If there is more than one matching result
 		/// </exception>
-		TRoot UniqueResult();
+		TRoot Single();
 
 		/// <summary>
-		/// Override type of <see cref="UniqueResult()" />.
+		/// Override type of <see cref="Single()" />.
 		/// </summary>
-		U UniqueResult<U>();
+		U Single<U>();
 
 		/// <summary>
 		/// Get a enumerable that when enumerated will execute

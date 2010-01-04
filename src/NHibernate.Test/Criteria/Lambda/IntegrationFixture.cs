@@ -159,7 +159,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				Person actual =
 					s.QueryOver<Person>()
-						.UniqueResult();
+						.Single();
 
 				Assert.That(actual.Name, Is.EqualTo("test person 1"));
 			}
@@ -169,7 +169,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				string actual =
 					s.QueryOver<Person>()
 						.Select(p => p.Name)
-						.UniqueResult<string>();
+						.Single<string>();
 
 				Assert.That(actual, Is.EqualTo("test person 1"));
 			}

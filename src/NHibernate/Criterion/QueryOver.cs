@@ -56,12 +56,12 @@ namespace NHibernate.Criterion
 			return criteria.List<U>();
 		}
 
-		private TRoot UniqueResult()
+		private TRoot Single()
 		{
 			return criteria.UniqueResult<TRoot>();
 		}
 
-		private U UniqueResult<U>()
+		private U Single<U>()
 		{
 			return criteria.UniqueResult<U>();
 		}
@@ -125,11 +125,11 @@ namespace NHibernate.Criterion
 		IList<U> IQueryOver<TRoot>.List<U>()
 		{ return List<U>(); }
 
-		TRoot IQueryOver<TRoot>.UniqueResult()
-		{ return UniqueResult(); }
+		TRoot IQueryOver<TRoot>.Single()
+		{ return Single(); }
 
-		U IQueryOver<TRoot>.UniqueResult<U>()
-		{ return UniqueResult<U>(); }
+		U IQueryOver<TRoot>.Single<U>()
+		{ return Single<U>(); }
 
 		IEnumerable<TRoot> IQueryOver<TRoot>.Future()
 		{ return Future(); }
