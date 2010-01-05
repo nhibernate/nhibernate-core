@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
-using System.Xml;
 using System.Xml.Serialization;
 
 using log4net;
@@ -136,44 +134,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			return ClassForNameChecked(unqualifiedName, mappings, "unknown class {0}").AssemblyQualifiedName;
 		}
 
-		protected static T Deserialize<T>(XmlNode node)
-		{
-			using (StringReader reader = new StringReader(node.OuterXml))
-				return (T) new XmlSerializer(typeof (T)).Deserialize(reader);
-		}
-
-		protected static XmlNode Serialize<T>(T hbmElement)
-		{
-			// TODO : this method is only for TEMPORAL usage; should be removed after refactorize all binders
-			var xmlTypeMapping = typeof (T);
-			return Serialize(xmlTypeMapping, hbmElement);
-		}
-
-		protected static XmlNode Serialize(System.Type xmlTypeMapping, object hbmElement)
-		{
-			// TODO : this method is only for TEMPORAL usage; should be removed after refactorize all binders
-			var serializer = new XmlSerializer(xmlTypeMapping);
-			using (var memStream = new MemoryStream(2000))
-			using (var xmlWriter = XmlWriter.Create(memStream))
-			{
-				serializer.Serialize(xmlWriter, hbmElement);
-				memStream.Position = 0;
-				using (XmlReader reader = XmlReader.Create(memStream))
-				{
-					var hbmDocument = new XmlDocument();
-					hbmDocument.Load(reader);
-					// note that the prefix has absolutely nothing to do with what the user
-					// selects as their prefix in the document.  It is the prefix we use to 
-					// build the XPath and the nsmgr takes care of translating our prefix into
-					// the user defined prefix...
-					var namespaceManager = new XmlNamespaceManager(hbmDocument.NameTable);
-					namespaceManager.AddNamespace(HbmConstants.nsPrefix, MappingSchemaXMLNS);
-
-					return hbmDocument.DocumentElement;
-				}
-			}
-		}
-
 		protected static string GetXmlEnumAttribute(Enum cascadeStyle)
 		{
 			MemberInfo[] memberInfo = cascadeStyle.GetType().GetMember(cascadeStyle.ToString());
@@ -187,22 +147,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 
 			return null;
-		}
-
-		protected static bool IsTrue(string xmlNodeValue)
-		{
-			return "true".Equals(xmlNodeValue) || "1".Equals(xmlNodeValue);
-		}
-
-		protected static bool IsFalse(string xmlNodeValue)
-		{
-			return "false".Equals(xmlNodeValue) || "0".Equals(xmlNodeValue);
-		}
-
-		protected static string GetAttributeValue(XmlNode node, string attributeName)
-		{
-			XmlAttribute att = node.Attributes[attributeName];
-			return att != null ? att.Value : null;
 		}
 
 		public static IDictionary<string, MetaAttribute> GetMetas(IDecoratable decoratable, IDictionary<string, MetaAttribute> inheritedMeta)
@@ -246,58 +190,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				meta.AddValues(metaAttribute.Value.Values);
 			}
 			return map;
-		}
-
-		public static IDictionary<string, MetaAttribute> GetMetas(XmlNodeList nodes, IDictionary<string, MetaAttribute> inheritedMeta)
-		{
-			return GetMetas(nodes, inheritedMeta, false);
-		}
-
-		public static IDictionary<string, MetaAttribute> GetMetas(XmlNodeList nodes, IDictionary<string, MetaAttribute> inheritedMeta, bool onlyInheritable)
-		{
-			var map = new Dictionary<string, MetaAttribute>(inheritedMeta);
-			foreach (XmlNode metaNode in nodes)
-			{
-				if(metaNode.Name != "meta")
-				{
-					continue;
-				}
-				var inheritableValue = GetAttributeValue(metaNode, "inherit");
-				bool inheritable = inheritableValue != null ? IsTrue(inheritableValue) : true;
-				if (onlyInheritable & !inheritable)
-				{
-					continue;
-				}
-				string name = GetAttributeValue(metaNode, "attribute");
-
-				MetaAttribute meta;
-				MetaAttribute inheritedAttribute;
-				map.TryGetValue(name, out meta);
-				inheritedMeta.TryGetValue(name, out inheritedAttribute);
-				if (meta == null)
-				{
-					meta = new MetaAttribute(name);
-					map[name] = meta;
-				}
-				else if (meta == inheritedAttribute)
-				{
-					meta = new MetaAttribute(name);
-					map[name] = meta;
-				}
-				meta.AddValue(metaNode.InnerText);
-			}
-			return map;
-		}
-
-		protected XmlNamespaceManager GetNamespaceManager(XmlNode parentNode)
-		{
-			// note that the prefix has absolutely nothing to do with what the user
-			// selects as their prefix in the document.  It is the prefix we use to 
-			// build the XPath and the nsmgr takes care of translating our prefix into
-			// the user defined prefix...
-			var namespaceManager = new XmlNamespaceManager(parentNode.OwnerDocument.NameTable);
-			namespaceManager.AddNamespace(HbmConstants.nsPrefix, MappingSchemaXMLNS);
-			return namespaceManager;
 		}
 	}
 }
