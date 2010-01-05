@@ -965,10 +965,14 @@ namespace NHibernate.Cfg
 			if (FilterDefinitions.Count > 0)
 			{
 				filterNames.Clear();
-				var filterables = new JoinedEnumerable(ClassMappings, CollectionMappings);
-				foreach (IFilterable filterable in filterables)
+				foreach (var persistentClass in ClassMappings)
 				{
-					filterNames.AddAll(filterable.FilterMap.Keys);
+					filterNames.AddAll(persistentClass.FilterMap.Keys);
+				}
+				foreach (var collectionMapping in CollectionMappings)
+				{
+					filterNames.AddAll(collectionMapping.FilterMap.Keys);
+					filterNames.AddAll(collectionMapping.ManyToManyFilterMap.Keys);
 				}
 				foreach (var filterName in FilterDefinitions.Keys)
 				{

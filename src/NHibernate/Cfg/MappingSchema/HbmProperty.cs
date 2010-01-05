@@ -18,7 +18,7 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return access; }
 		}
 
-		public bool OptimisticKock
+		public bool OptimisticLock
 		{
 			get { return optimisticlock; }
 		}

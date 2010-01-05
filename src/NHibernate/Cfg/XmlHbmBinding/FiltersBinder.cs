@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using NHibernate.Util;
+using System;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -15,6 +16,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		public void Bind(IEnumerable<HbmFilter> filters)
+		{
+			Bind(filters, (name, condition) => filterable.AddFilter(name, condition));
+		}
+
+		public void Bind(IEnumerable<HbmFilter> filters, Action<string, string> addFilterDelegate)
 		{
 			if (filters == null)
 			{
@@ -44,7 +50,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				mappings.ExpectedFilterDefinition(filterable, name, condition);
 
 				log.Debug(string.Format("Applying filter [{0}] as [{1}]", name, condition));
-				filterable.AddFilter(name, condition);
+				addFilterDelegate(name, condition);
 			}
 		}
 	}

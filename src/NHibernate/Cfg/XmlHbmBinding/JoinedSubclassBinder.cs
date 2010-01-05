@@ -1,4 +1,3 @@
-using System.Xml;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using NHibernate.Persister.Entity;
@@ -8,8 +7,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class JoinedSubclassBinder : ClassBinder
 	{
-		public JoinedSubclassBinder(Mappings mappings, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
-			: base(mappings, namespaceManager, dialect)
+		public JoinedSubclassBinder(Mappings mappings, Dialect.Dialect dialect)
+			: base(mappings, dialect)
 		{
 		}
 
@@ -64,7 +63,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			mytable.AddCheckConstraint(joinedSubclassMapping.check);
 
 			// properties
-			new PropertiesBinder(mappings, subclass, NamespaceManager, dialect).Bind(joinedSubclassMapping.Properties, inheritedMetas);
+			new PropertiesBinder(mappings, subclass, dialect).Bind(joinedSubclassMapping.Properties, inheritedMetas);
 
 			BindJoinedSubclasses(joinedSubclassMapping.JoinedSubclasses, subclass, inheritedMetas);
 

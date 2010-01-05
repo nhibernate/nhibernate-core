@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 
@@ -9,8 +8,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class RootClassBinder : ClassBinder
 	{
-		public RootClassBinder(Mappings mappings, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
-			: base(mappings, namespaceManager, dialect)
+		public RootClassBinder(Mappings mappings, Dialect.Dialect dialect)
+			: base(mappings, dialect)
 		{
 		}
 
@@ -57,7 +56,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			rootClass.CreatePrimaryKey(dialect);
 			BindNaturalId(classSchema.naturalid, rootClass, inheritedMetas);
-			new PropertiesBinder(mappings, rootClass, NamespaceManager, dialect).Bind(classSchema.Properties, inheritedMetas);
+			new PropertiesBinder(mappings, rootClass, dialect).Bind(classSchema.Properties, inheritedMetas);
 
 			BindJoins(classSchema.Joins, rootClass, inheritedMetas);
 			BindSubclasses(classSchema.Subclasses, rootClass, inheritedMetas);
@@ -76,7 +75,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				return;
 			}
 			//by default, natural-ids are "immutable" (constant)
-			var propBinder = new PropertiesBinder(mappings, rootClass, NamespaceManager, dialect);
+			var propBinder = new PropertiesBinder(mappings, rootClass, dialect);
 			var uk = new UniqueKey { Name = "_UniqueKey", Table = rootClass.Table };
 			propBinder.Bind(naturalid.Properties, inheritedMetas, property =>
 				{

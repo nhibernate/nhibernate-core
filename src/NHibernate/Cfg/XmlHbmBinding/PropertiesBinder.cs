@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using System;
@@ -10,12 +9,36 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class PropertiesBinder : ClassBinder
 	{
-		private readonly PersistentClass model;
+		private readonly PersistentClass persistentClass;
+		private readonly Component component;
+		private readonly string entityName;
+		private readonly System.Type mappedClass;
+		private readonly string className;
+		private readonly bool componetDefaultNullable;
+		private readonly string propertyBasePath;
 
-		public PropertiesBinder(Mappings mappings, PersistentClass model, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
-			: base(mappings, namespaceManager, dialect)
+		public PropertiesBinder(Mappings mappings, PersistentClass persistentClass, Dialect.Dialect dialect)
+			: base(mappings, dialect)
 		{
-			this.model = model;
+			this.persistentClass = persistentClass;
+			entityName = persistentClass.EntityName;
+			propertyBasePath = entityName;
+			className = persistentClass.ClassName;
+			mappedClass = persistentClass.MappedClass;
+			componetDefaultNullable = true;
+			component = null;
+		}
+
+		public PropertiesBinder(Mappings mappings, Component component, string className, string path, bool isNullable, Dialect.Dialect dialect)
+			: base(mappings, dialect)
+		{
+			persistentClass = component.Owner;
+			this.component = component;
+			entityName = className;
+			this.className = component.ComponentClassName;
+			mappedClass = component.ComponentClass;
+			propertyBasePath = path;
+			componetDefaultNullable = isNullable;
 		}
 
 		public void Bind(IEnumerable<IEntityPropertyMapping> properties, IDictionary<string, MetaAttribute> inheritedMetas)
@@ -25,7 +48,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		public void Bind(IEnumerable<IEntityPropertyMapping> properties, IDictionary<string, MetaAttribute> inheritedMetas, Action<Property> modifier)
 		{
-			Bind(properties, model.Table, inheritedMetas, modifier, p => model.AddProperty(p));
+			Bind(properties, persistentClass.Table, inheritedMetas, modifier, p => persistentClass.AddProperty(p));
 		}
 
 		public void Bind(IEnumerable<IEntityPropertyMapping> properties, Table table, IDictionary<string, MetaAttribute> inheritedMetas, Action<Property> modifier, Action<Property> addToModelAction)
@@ -42,7 +65,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				throw new ArgumentNullException("addToModelAction");
 			}
-			string entityName = model.EntityName;
 
 			foreach (var entityPropertyMapping in properties)
 			{
@@ -50,75 +72,102 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				string propertyName = entityPropertyMapping.Name;
 
-				ICollectionPropertyMapping collectionMapping;
+				ICollectionPropertiesMapping collectionMapping;
 				HbmManyToOne manyToOneMapping;
 				HbmAny anyMapping;
 				HbmOneToOne oneToOneMapping;
 				HbmProperty propertyMapping;
 				HbmComponent componentMapping;
 				HbmDynamicComponent dynamicComponentMapping;
+				HbmNestedCompositeElement nestedCompositeElementMapping;
+				HbmKeyProperty keyPropertyMapping;
+				HbmKeyManyToOne keyManyToOneMapping;
 
 				if ((propertyMapping = entityPropertyMapping as HbmProperty) != null)
 				{
 					var value = new SimpleValue(table);
 					new ValuePropertyBinder(value, Mappings).BindSimpleValue(propertyMapping, propertyName, true);
-					property = CreateProperty(entityPropertyMapping, model.ClassName, value, inheritedMetas);
+					property = CreateProperty(entityPropertyMapping, className, value, inheritedMetas);
 					BindValueProperty(propertyMapping, property);
 				}
-				else if ((collectionMapping = entityPropertyMapping as ICollectionPropertyMapping) != null)
+				else if ((collectionMapping = entityPropertyMapping as ICollectionPropertiesMapping) != null)
 				{
-					var collectionBinder = new CollectionBinder(Mappings, NamespaceManager, dialect);
+					var collectionBinder = new CollectionBinder(Mappings, dialect);
+					string propertyPath = propertyName == null ? null : StringHelper.Qualify(propertyBasePath, propertyName);
 
-					Mapping.Collection collection = collectionBinder.Create(collectionMapping, entityName, propertyName, model,
-																												model.MappedClass, inheritedMetas);
+					Mapping.Collection collection = collectionBinder.Create(collectionMapping, entityName, propertyPath, persistentClass,
+																												mappedClass, inheritedMetas);
 
 					mappings.AddCollection(collection);
 
-					property = CreateProperty(collectionMapping, model.ClassName, collection, inheritedMetas);
+					property = CreateProperty(collectionMapping, className, collection, inheritedMetas);
 					BindCollectionProperty(collectionMapping, property);
 				}
 				else if ((manyToOneMapping = entityPropertyMapping as HbmManyToOne) != null)
 				{
 					var value = new ManyToOne(table);
-					BindManyToOne(Serialize(manyToOneMapping), value, propertyName, true);
-					property = CreateProperty(entityPropertyMapping, model.ClassName, value, inheritedMetas);
+					BindManyToOne(manyToOneMapping, value, propertyName, true);
+					property = CreateProperty(entityPropertyMapping, className, value, inheritedMetas);
 					BindManyToOneProperty(manyToOneMapping, property);
 				}
 				else if ((componentMapping = entityPropertyMapping as HbmComponent) != null)
 				{
-					string subpath = StringHelper.Qualify(entityName, propertyName);
-					var subnode = Serialize(componentMapping);
-					var value = new Component(model);
+					string subpath = propertyName == null ? null : StringHelper.Qualify(propertyBasePath, propertyName);
+					var value = CreateNewComponent();
 					// NH: Modified from H2.1 to allow specifying the type explicitly using class attribute
-					System.Type reflectedClass = GetPropertyType(subnode, model.MappedClass, propertyName);
-					BindComponent(subnode, value, reflectedClass, entityName, propertyName, subpath, true, inheritedMetas);
-					property = CreateProperty(entityPropertyMapping, model.ClassName, value, inheritedMetas);
+					System.Type reflectedClass = mappedClass == null ? null : GetPropertyType(componentMapping.Class, mappedClass, propertyName, componentMapping.Access);
+					BindComponent(componentMapping, value, reflectedClass, entityName, subpath, componetDefaultNullable, inheritedMetas);
+					property = CreateProperty(entityPropertyMapping, className, value, inheritedMetas);
 					BindComponentProperty(componentMapping, property);
 				}
 				else if ((oneToOneMapping = entityPropertyMapping as HbmOneToOne) != null)
 				{
-					var value = new OneToOne(table, model);
-					BindOneToOne(Serialize(oneToOneMapping), value);
-					property = CreateProperty(entityPropertyMapping, model.ClassName, value, inheritedMetas);
+					var value = new OneToOne(table, persistentClass);
+					BindOneToOne(oneToOneMapping, value);
+					property = CreateProperty(entityPropertyMapping, className, value, inheritedMetas);
 					BindOneToOneProperty(oneToOneMapping, property);
 				}
 				else if ((dynamicComponentMapping = entityPropertyMapping as HbmDynamicComponent) != null)
 				{
-					string subpath = StringHelper.Qualify(entityName, propertyName);
-					var subnode = Serialize(dynamicComponentMapping);
-					var value = new Component(model);
+					string subpath = propertyName == null ? null : StringHelper.Qualify(propertyBasePath, propertyName);
+					var value = CreateNewComponent();
 					// NH: Modified from H2.1 to allow specifying the type explicitly using class attribute
-					System.Type reflectedClass = GetPropertyType(subnode, model.MappedClass, propertyName);
-					BindComponent(subnode, value, reflectedClass, entityName, propertyName, subpath, true, inheritedMetas);
-					property = CreateProperty(entityPropertyMapping, model.ClassName, value, inheritedMetas);
+					System.Type reflectedClass = mappedClass == null ? null : GetPropertyType(dynamicComponentMapping.Class, mappedClass, propertyName, dynamicComponentMapping.Access);
+					BindComponent(dynamicComponentMapping, value, reflectedClass, entityName, subpath, componetDefaultNullable, inheritedMetas);
+					property = CreateProperty(entityPropertyMapping, className, value, inheritedMetas);
 					BindComponentProperty(dynamicComponentMapping, property);
 				}
 				else if ((anyMapping = entityPropertyMapping as HbmAny) != null)
 				{
 					var value = new Any(table);
-					BindAny(Serialize(anyMapping), value, true);
-					property = CreateProperty(entityPropertyMapping, model.ClassName, value, inheritedMetas);
+					BindAny(anyMapping, value, true);
+					property = CreateProperty(entityPropertyMapping, className, value, inheritedMetas);
 					BindAnyProperty(anyMapping, property);
+				}
+				else if ((nestedCompositeElementMapping = entityPropertyMapping as HbmNestedCompositeElement) != null)
+				{
+					if (component == null)
+					{
+						throw new AssertionFailure("Nested Composite Element without a owner component.");
+					}
+					string subpath = propertyName == null ? null : StringHelper.Qualify(propertyBasePath, propertyName);
+					var value = CreateNewComponent();
+					// NH: Modified from H2.1 to allow specifying the type explicitly using class attribute
+					System.Type reflectedClass = mappedClass == null ? null : GetPropertyType(nestedCompositeElementMapping.Class, mappedClass, propertyName, nestedCompositeElementMapping.access);
+					BindComponent(nestedCompositeElementMapping, value, reflectedClass, entityName, subpath, componetDefaultNullable, inheritedMetas);
+					property = CreateProperty(entityPropertyMapping, className, value, inheritedMetas);
+				}
+				else if ((keyPropertyMapping = entityPropertyMapping as HbmKeyProperty) != null)
+				{
+					var value = new SimpleValue(table);
+					new ValuePropertyBinder(value, Mappings).BindSimpleValue(keyPropertyMapping, propertyName, componetDefaultNullable);
+					property = CreateProperty(entityPropertyMapping, className, value, inheritedMetas);
+				}
+				else if ((keyManyToOneMapping = entityPropertyMapping as HbmKeyManyToOne) != null)
+				{
+					var value = new ManyToOne(table);
+					BindKeyManyToOne(keyManyToOneMapping, value, propertyName, componetDefaultNullable);
+					property = CreateProperty(entityPropertyMapping, className, value, inheritedMetas);
 				}
 
 				if (property != null)
@@ -137,6 +186,70 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					addToModelAction(property);
 				}
 			}			
+		}
+
+		private Component CreateNewComponent()
+		{
+			// Manage nested components
+			return component != null ? new Component(component) : new Component(persistentClass);
+		}
+
+		private System.Type GetPropertyType(string classMapping, System.Type containingType, string propertyName, string propertyAccess)
+		{
+			if(!string.IsNullOrEmpty(classMapping))
+				return ClassForNameChecked(classMapping, mappings, "could not find class: {0}");
+			else if (containingType == null)
+				return null;
+
+			string access = GetPropertyAccessorName(propertyAccess);
+
+			return ReflectHelper.ReflectedPropertyClass(containingType, propertyName, access);
+		}
+
+		private void BindKeyManyToOne(HbmKeyManyToOne keyManyToOneMapping, ManyToOne model, string defaultColumnName, bool isNullable)
+		{
+			new ValuePropertyBinder(model, Mappings).BindSimpleValue(keyManyToOneMapping, defaultColumnName, isNullable);
+			InitLaziness(keyManyToOneMapping.Lazy, model, true);
+
+			model.ReferencedEntityName = GetEntityName(keyManyToOneMapping, mappings);
+			model.IsIgnoreNotFound = keyManyToOneMapping.NotFoundMode == HbmNotFoundMode.Ignore;
+
+			BindForeingKey(keyManyToOneMapping.foreignkey, model);
+		}
+
+		private void BindManyToOne(HbmManyToOne manyToOneMapping, ManyToOne model, string defaultColumnName, bool isNullable)
+		{
+			new ValuePropertyBinder(model, Mappings).BindSimpleValue(manyToOneMapping, defaultColumnName, isNullable);
+			InitOuterJoinFetchSetting(manyToOneMapping, model);
+			InitLaziness(manyToOneMapping.Lazy, model, true);
+
+			var ukName = !string.IsNullOrEmpty(manyToOneMapping.propertyref) ? manyToOneMapping.propertyref : null;
+			if (ukName != null)
+				model.ReferencedPropertyName = ukName;
+
+			model.ReferencedEntityName = GetEntityName(manyToOneMapping, mappings);
+			model.IsIgnoreNotFound = manyToOneMapping.NotFoundMode == HbmNotFoundMode.Ignore;
+
+			if (ukName != null && !model.IsIgnoreNotFound)
+			{
+				AddManyToOneSecondPass(model);
+			}
+
+			BindForeingKey(manyToOneMapping.foreignkey, model);
+		}
+
+		private void InitOuterJoinFetchSetting(HbmManyToOne manyToOneMapping, ManyToOne model)
+		{
+			FetchMode fetchStyle = !manyToOneMapping.fetchSpecified
+															? (!manyToOneMapping.outerjoinSpecified ? FetchMode.Default : GetFetchStyle(manyToOneMapping.outerjoin))
+															: GetFetchStyle(manyToOneMapping.fetch);
+
+			model.FetchMode = fetchStyle;
+		}
+
+		private void AddManyToOneSecondPass(ManyToOne manyToOne)
+		{
+			mappings.AddSecondPass(manyToOne.CreatePropertyRefConstraints);
 		}
 
 		private void BindValueProperty(HbmProperty propertyMapping, Property property)
@@ -237,33 +350,38 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		private void BindCollectionProperty(ICollectionPropertyMapping collectionMapping, Property property)
+		private void BindCollectionProperty(ICollectionPropertiesMapping collectionMapping, Property property)
 		{
 			property.Cascade = collectionMapping.Cascade ?? mappings.DefaultCascade;
 		}
 
-		private Property CreateProperty(IEntityPropertyMapping propertyMapping, string className, IValue value, IDictionary<string, MetaAttribute> inheritedMetas)
+		private Property CreateProperty(IEntityPropertyMapping propertyMapping, string propertyOwnerClassName, IValue value, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			if (string.IsNullOrEmpty(propertyMapping.Name))
 			{
-				throw new MappingException("A property mapping must define the name attribute [" + className + "]");
+				throw new MappingException("A property mapping must define the name attribute [" + propertyOwnerClassName + "]");
 			}
 
-			var propertyAccessorName = propertyMapping.Access ?? Mappings.DefaultAccess;
+			var propertyAccessorName = GetPropertyAccessorName(propertyMapping.Access);
 
-			if (!string.IsNullOrEmpty(className) && value.IsSimpleValue)
-				value.SetTypeUsingReflection(className, propertyMapping.Name, propertyAccessorName);
+			if (!string.IsNullOrEmpty(propertyOwnerClassName) && value.IsSimpleValue)
+				value.SetTypeUsingReflection(propertyOwnerClassName, propertyMapping.Name, propertyAccessorName);
 
 			var property = new Property
 					{
 						Name = propertyMapping.Name,
 						PropertyAccessorName = propertyAccessorName,
 						Value = value,
-						IsOptimisticLocked = propertyMapping.OptimisticKock,
+						IsOptimisticLocked = propertyMapping.OptimisticLock,
 						MetaAttributes = GetMetas(propertyMapping, inheritedMetas)
 					};
 
 			return property;
+		}
+
+		private string GetPropertyAccessorName(string propertyMappedAccessor)
+		{
+			return propertyMappedAccessor ?? Mappings.DefaultAccess;
 		}
 	}
 }

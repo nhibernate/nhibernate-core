@@ -289,5 +289,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			return map;
 		}
 
+		protected XmlNamespaceManager GetNamespaceManager(XmlNode parentNode)
+		{
+			// note that the prefix has absolutely nothing to do with what the user
+			// selects as their prefix in the document.  It is the prefix we use to 
+			// build the XPath and the nsmgr takes care of translating our prefix into
+			// the user defined prefix...
+			var namespaceManager = new XmlNamespaceManager(parentNode.OwnerDocument.NameTable);
+			namespaceManager.AddNamespace(HbmConstants.nsPrefix, MappingSchemaXMLNS);
+			return namespaceManager;
+		}
 	}
 }

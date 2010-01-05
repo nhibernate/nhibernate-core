@@ -31,5 +31,15 @@ namespace NHibernate.Cfg.MappingSchema
 				};
 			}
 		}
+
+		public bool? IsNullable
+		{
+			get { return notnullSpecified ? !notnull : (bool?)null; }
+		}
+
+		public bool? IsUpdatable
+		{
+			get { return updateSpecified ? update : (bool?)null; }
+		}
 	}
 }

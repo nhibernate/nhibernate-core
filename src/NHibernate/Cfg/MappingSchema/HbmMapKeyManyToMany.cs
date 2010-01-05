@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmMapKeyManyToMany: IColumnsMapping, IFormulasMapping
+	public partial class HbmMapKeyManyToMany: IColumnsMapping, IFormulasMapping, IRelationship
 	{
 
 		#region Implementation of IColumnsMapping
@@ -47,6 +48,25 @@ namespace NHibernate.Cfg.MappingSchema
 			{
 				yield return new HbmFormula { Text = new[] { formula } };
 			}
+		}
+
+		#endregion
+
+		#region Implementation of IRelationship
+
+		public string EntityName
+		{
+			get { return entityname; }
+		}
+
+		public string Class
+		{
+			get { return @class; }
+		}
+
+		public HbmNotFoundMode NotFoundMode
+		{
+			get { return HbmNotFoundMode.Exception; }
 		}
 
 		#endregion

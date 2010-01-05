@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
-using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -31,7 +29,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				CreateIdentifierProperty(idSchema, rootClass, id);
 				VerifiyIdTypeIsValid(id, rootClass.EntityName);
-				BindGenerator(idSchema, id);
+				new IdGeneratorBinder(Mappings).BindGenerator(id, idSchema.generator);
 				id.Table.SetIdentifierValue(id);
 				BindUnsavedValue(idSchema, id);
 			}
@@ -72,47 +70,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (id.Type.ReturnedClass.IsArray)
 				throw new MappingException(
 					"Illegal use of an array as an identifier (arrays don't reimplement equals).");
-		}
-
-		private void BindGenerator(HbmId idSchema, SimpleValue id)
-		{
-			if (idSchema.generator != null)
-			{
-				if (idSchema.generator.@class == null)
-					throw new MappingException("no class given for generator");
-
-				// NH Differen behavior : specific feature NH-1817
-				TypeDef typeDef = mappings.GetTypeDef(idSchema.generator.@class);
-				if (typeDef != null)
-				{
-					id.IdentifierGeneratorStrategy = typeDef.TypeClass;
-					// parameters on the property mapping should override parameters in the typedef
-					var allParameters = new Dictionary<string, string>(typeDef.Parameters);
-					ArrayHelper.AddAll(allParameters, GetGeneratorProperties(idSchema, id));
-
-					id.IdentifierGeneratorProperties = allParameters;
-				}
-				else
-				{
-					id.IdentifierGeneratorStrategy = idSchema.generator.@class;
-					id.IdentifierGeneratorProperties = GetGeneratorProperties(idSchema, id);
-				}
-			}
-		}
-
-		private IDictionary<string,string> GetGeneratorProperties(HbmId idSchema, IValue id)
-		{
-			var results = new Dictionary<string, string>();
-
-			if (id.Table.Schema != null)
-				results.Add(Id.PersistentIdGeneratorParmsNames.Schema, id.Table.Schema);
-			else if (mappings.SchemaName != null)
-				results.Add(Id.PersistentIdGeneratorParmsNames.Schema, dialect.QuoteForSchemaName(mappings.SchemaName));
-
-			foreach (HbmParam paramSchema in idSchema.generator.param ?? new HbmParam[0])
-				results.Add(paramSchema.name, paramSchema.GetText());
-
-			return results;
 		}
 
 		private static void BindUnsavedValue(HbmId idSchema, SimpleValue id)

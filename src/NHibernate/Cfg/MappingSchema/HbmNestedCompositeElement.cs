@@ -1,12 +1,20 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmComponent : AbstractDecoratable, IEntityPropertyMapping, IComponentMapping
+	public partial class HbmNestedCompositeElement : AbstractDecoratable, IEntityPropertyMapping, IComponentMapping
 	{
-		#region Implementation of IEntityPropertyMapping
+		#region Implementation of IPropertiesContainerMapping
+
+		public IEnumerable<IEntityPropertyMapping> Properties
+		{
+			get { return Items != null ? Items.Cast<IEntityPropertyMapping>() : new IEntityPropertyMapping[0]; }
+		}
+
+		#endregion
+
+		#region Implementation of IComponentMapping
 
 		public string Class
 		{
@@ -35,16 +43,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public bool OptimisticLock
 		{
-			get { return optimisticlock; }
-		}
-
-		#endregion
-
-		#region Implementation of IPropertiesContainerMapping
-
-		public IEnumerable<IEntityPropertyMapping> Properties
-		{
-			get { return Items != null ? Items.Cast<IEntityPropertyMapping>() : new IEntityPropertyMapping[0]; }
+			get { return true; }
 		}
 
 		#endregion
@@ -53,10 +52,9 @@ namespace NHibernate.Cfg.MappingSchema
 
 		protected override HbmMeta[] Metadatas
 		{
-			get { return meta ?? new HbmMeta[0]; }
+			get { return new HbmMeta[0];}
 		}
 
 		#endregion
-
 	}
 }

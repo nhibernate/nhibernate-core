@@ -1,11 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmManyToMany: IColumnsMapping
+	public partial class HbmManyToMany : IColumnsMapping, IFormulasMapping, IRelationship
 	{
-
 		#region Implementation of IColumnsMapping
 
 		public IEnumerable<HbmColumn> Columns
@@ -26,8 +26,50 @@ namespace NHibernate.Cfg.MappingSchema
 				yield return new HbmColumn
 				{
 					name = column,
+					unique = unique,
+					uniqueSpecified = true
 				};
 			}
 		}
+
+		#region Implementation of IFormulasMapping
+
+		public IEnumerable<HbmFormula> Formulas
+		{
+			get { return Items != null ? Items.OfType<HbmFormula>() : AsFormulas(); }
+		}
+
+		private IEnumerable<HbmFormula> AsFormulas()
+		{
+			if (string.IsNullOrEmpty(formula))
+			{
+				yield break;
+			}
+			else
+			{
+				yield return new HbmFormula { Text = new[] { formula } };
+			}
+		}
+
+		#endregion
+
+		#region Implementation of IRelationship
+
+		public string EntityName
+		{
+			get { return entityname; }
+		}
+
+		public string Class
+		{
+			get { return @class; }
+		}
+
+		public HbmNotFoundMode NotFoundMode
+		{
+			get { return notfound; }
+		}
+
+		#endregion
 	}
 }

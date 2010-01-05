@@ -19,4 +19,9 @@
 	<filter-def name="seniorSalespersons">
 		<filter-param name="asOfDate" type="DateTime"/>
 	</filter-def>
+
+	<!-- added definition as done in JAVA test (a filter without filterdef is invalid)-->
+	<filter-def name="cat">
+		<filter-param name="catId" type="long"/>
+	</filter-def>
 </hibernate-mapping>

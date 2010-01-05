@@ -4,6 +4,6 @@ namespace NHibernate.Cfg.MappingSchema
 	{
 		string Name { get; }
 		string Access { get; }
-		bool OptimisticKock { get; }
+		bool OptimisticLock { get; }
 	}
 }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmCollectionId: IColumnsMapping
+	public partial class HbmCollectionId : IColumnsMapping, ITypeMapping
 	{
 		#region Implementation of IColumnsMapping
 
@@ -28,5 +28,14 @@ namespace NHibernate.Cfg.MappingSchema
 				};
 			}
 		}
+
+		#region Implementation of ITypeMapping
+
+		public HbmType Type
+		{
+			get { return !string.IsNullOrEmpty(type) ? new HbmType { name = type } : null; }
+		}
+
+		#endregion
 	}
 }

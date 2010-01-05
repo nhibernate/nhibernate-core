@@ -23,16 +23,18 @@ namespace NHibernate.Cfg.MappingSchema
 			}
 			else
 			{
-				yield return new HbmColumn
-				{
-					name = column,
-					length = length,
-					scale = scale,
-					precision = precision,
-					notnull = notnull,
-					unique = unique,
-					uniqueSpecified = true,
-				};
+				yield return
+					new HbmColumn
+						{
+							name = column,
+							length = length,
+							scale = scale,
+							precision = precision,
+							notnull = notnull,
+							notnullSpecified = true,
+							unique = unique,
+							uniqueSpecified = true,
+						};
 			}
 		}
 

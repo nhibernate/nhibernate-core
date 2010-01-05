@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmIndexManyToMany: IColumnsMapping
+	public partial class HbmIndexManyToMany: IColumnsMapping, IRelationship
 	{
 		#region Implementation of IColumnsMapping
 
@@ -27,5 +27,24 @@ namespace NHibernate.Cfg.MappingSchema
 				};
 			}
 		}
+
+		#region Implementation of IRelationship
+
+		public string EntityName
+		{
+			get { return entityname; }
+		}
+
+		public string Class
+		{
+			get { return @class; }
+		}
+
+		public HbmNotFoundMode NotFoundMode
+		{
+			get { return HbmNotFoundMode.Exception; }
+		}
+
+		#endregion
 	}
 }

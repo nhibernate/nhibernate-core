@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmMapKey: IColumnsMapping
+	public partial class HbmMapKey: IColumnsMapping, ITypeMapping
 	{
 
 		#region Implementation of IColumnsMapping
@@ -48,6 +49,15 @@ namespace NHibernate.Cfg.MappingSchema
 			{
 				yield return new HbmFormula { Text = new[] { formula } };
 			}
+		}
+
+		#endregion
+
+		#region Implementation of ITypeMapping
+
+		public HbmType Type
+		{
+			get { return string.IsNullOrEmpty(type) ? null : new HbmType { name = type }; }
 		}
 
 		#endregion

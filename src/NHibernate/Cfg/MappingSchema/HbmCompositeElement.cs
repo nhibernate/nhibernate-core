@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmComponent : AbstractDecoratable, IEntityPropertyMapping, IComponentMapping
+	public partial class HbmCompositeElement : AbstractDecoratable, IComponentMapping
 	{
-		#region Implementation of IEntityPropertyMapping
+		#region Implementation of IComponentMapping
 
 		public string Class
 		{
@@ -20,31 +20,12 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public string EmbeddedNode
 		{
-			get { return node; }
+			get { return node;}
 		}
 
 		public string Name
 		{
-			get { return name; }
-		}
-
-		public string Access
-		{
-			get { return access; }
-		}
-
-		public bool OptimisticLock
-		{
-			get { return optimisticlock; }
-		}
-
-		#endregion
-
-		#region Implementation of IPropertiesContainerMapping
-
-		public IEnumerable<IEntityPropertyMapping> Properties
-		{
-			get { return Items != null ? Items.Cast<IEntityPropertyMapping>() : new IEntityPropertyMapping[0]; }
+			get { return null; }
 		}
 
 		#endregion
@@ -58,5 +39,13 @@ namespace NHibernate.Cfg.MappingSchema
 
 		#endregion
 
+		#region Implementation of IPropertiesContainerMapping
+
+		public IEnumerable<IEntityPropertyMapping> Properties
+		{
+			get { return Items != null ? Items.Cast<IEntityPropertyMapping>() : new IEntityPropertyMapping[0]; }
+		}
+
+		#endregion
 	}
 }

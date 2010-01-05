@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmOneToOne : AbstractDecoratable, IEntityPropertyMapping, IFormulasMapping
+	public partial class HbmOneToOne : AbstractDecoratable, IEntityPropertyMapping, IFormulasMapping, IRelationship
 	{
 		#region Implementation of IEntityPropertyMapping
 
@@ -16,7 +16,7 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return access; }
 		}
 
-		public bool OptimisticKock
+		public bool OptimisticLock
 		{
 			get { return true; }
 		}
@@ -53,5 +53,28 @@ namespace NHibernate.Cfg.MappingSchema
 
 		#endregion
 
+		#region Implementation of IRelationship
+
+		public string EntityName
+		{
+			get { return entityname; }
+		}
+
+		public string Class
+		{
+			get { return @class; }
+		}
+
+		public HbmNotFoundMode NotFoundMode
+		{
+			get { return HbmNotFoundMode.Exception; }
+		}
+
+		#endregion
+
+		public HbmLaziness? Lazy
+		{
+			get { return lazySpecified ? lazy : (HbmLaziness?)null; }
+		}
 	}
 }

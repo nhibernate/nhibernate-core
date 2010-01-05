@@ -499,6 +499,9 @@
     <Compile Include="Cfg\MappingSchema\HbmBag.cs" />
     <Compile Include="Cfg\MappingSchema\HbmCollectionId.cs" />
     <Compile Include="Cfg\MappingSchema\HbmComponent.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmCompositeElement.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmCompositeIndex.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmCompositeMapKey.cs" />
     <Compile Include="Cfg\MappingSchema\HbmDefinition.cs" />
     <Compile Include="Cfg\MappingSchema\HbmDiscriminator.cs" />
     <Compile Include="Cfg\MappingSchema\HbmDynamicComponent.cs" />
@@ -523,21 +526,28 @@
     <Compile Include="Cfg\MappingSchema\HbmMapKey.cs" />
     <Compile Include="Cfg\MappingSchema\HbmMapKeyManyToMany.cs" />
     <Compile Include="Cfg\MappingSchema\HbmNaturalId.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmNestedCompositeElement.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmOneToMany.cs" />
     <Compile Include="Cfg\MappingSchema\HbmOneToOne.cs" />
     <Compile Include="Cfg\MappingSchema\HbmPrimitiveArray.cs" />
     <Compile Include="Cfg\MappingSchema\HbmProperty.cs" />
     <Compile Include="Cfg\MappingSchema\HbmSet.cs" />
     <Compile Include="Cfg\MappingSchema\HbmSubclass.cs" />
     <Compile Include="Cfg\MappingSchema\HbmUnionSubclass.cs" />
-    <Compile Include="Cfg\MappingSchema\ICollectionPropertyMapping.cs" />
+    <Compile Include="Cfg\MappingSchema\IAnyMapping.cs" />
+    <Compile Include="Cfg\MappingSchema\ICollectionPropertiesMapping.cs" />
+    <Compile Include="Cfg\MappingSchema\ICollectionSqlsMapping.cs" />
     <Compile Include="Cfg\MappingSchema\IColumnsMapping.cs" />
+    <Compile Include="Cfg\MappingSchema\IComponentMapping.cs" />
     <Compile Include="Cfg\MappingSchema\IEntityDiscriminableMapping.cs" />
     <Compile Include="Cfg\MappingSchema\IEntityMapping.cs" />
     <Compile Include="Cfg\MappingSchema\IEntityPropertyMapping.cs" />
     <Compile Include="Cfg\MappingSchema\IEntitySqlsMapping.cs" />
     <Compile Include="Cfg\MappingSchema\IFormulasMapping.cs" />
+    <Compile Include="Cfg\MappingSchema\IIndexedCollectionMapping.cs" />
     <Compile Include="Cfg\MappingSchema\IPropertiesContainerMapping.cs" />
     <Compile Include="Cfg\MappingSchema\IReferencePropertyMapping.cs" />
+    <Compile Include="Cfg\MappingSchema\IRelationship.cs" />
     <Compile Include="Cfg\MappingSchema\ITypeMapping.cs" />
     <Compile Include="Cfg\SchemaAutoAction.cs" />
     <Compile Include="Cfg\SessionFactoryConfigurationBase.cs" />
@@ -548,6 +558,7 @@
     <Compile Include="Cfg\MappingSchema\IDecoratable.cs" />
     <Compile Include="Cfg\XmlHbmBinding\ColumnsBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\FiltersBinder.cs" />
+    <Compile Include="Cfg\XmlHbmBinding\IdGeneratorBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\MappingLogExtensions.cs" />
     <Compile Include="Cfg\XmlHbmBinding\PropertiesBinder.cs">
       <SubType>Code</SubType>

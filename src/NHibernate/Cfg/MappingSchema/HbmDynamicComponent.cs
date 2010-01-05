@@ -1,11 +1,27 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmDynamicComponent: AbstractDecoratable, IEntityPropertyMapping, IPropertiesContainerMapping
+	public partial class HbmDynamicComponent: AbstractDecoratable, IEntityPropertyMapping, IComponentMapping
 	{
 		#region Implementation of IEntityPropertyMapping
+
+		public string Class
+		{
+			get { return null; }
+		}
+
+		public HbmParent Parent
+		{
+			get { return null; }
+		}
+
+		public string EmbeddedNode
+		{
+			get { return node; }
+		}
 
 		public string Name
 		{
@@ -17,7 +33,7 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return access; }
 		}
 
-		public bool OptimisticKock
+		public bool OptimisticLock
 		{
 			get { return optimisticlock; }
 		}

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmAny : AbstractDecoratable, IEntityPropertyMapping, IColumnsMapping
+	public partial class HbmAny : AbstractDecoratable, IEntityPropertyMapping, IColumnsMapping, IAnyMapping
 	{
 		#region Implementation of IEntityPropertyMapping
 
@@ -17,7 +17,7 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return access; }
 		}
 
-		public bool OptimisticKock
+		public bool OptimisticLock
 		{
 			get { return optimisticlock; }
 		}
@@ -57,5 +57,22 @@ namespace NHibernate.Cfg.MappingSchema
 				};
 			}
 		}
+
+		#region Implementation of IAnyMapping
+
+		public string MetaType
+		{
+			get { return metatype; }
+		}
+
+		public ICollection<HbmMetaValue> MetaValues
+		{
+			get
+			{
+				return metavalue ?? new HbmMetaValue[0];
+			}
+		}
+
+		#endregion
 	}
 }

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmManyToOne : AbstractDecoratable, IEntityPropertyMapping, IColumnsMapping, IFormulasMapping
+	public partial class HbmManyToOne : AbstractDecoratable, IEntityPropertyMapping, IColumnsMapping, IFormulasMapping, IRelationship
 	{
 		#region Implementation of IEntityPropertyMapping
 
@@ -18,7 +18,7 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return access; }
 		}
 
-		public bool OptimisticKock
+		public bool OptimisticLock
 		{
 			get { return optimisticlock; }
 		}
@@ -84,5 +84,29 @@ namespace NHibernate.Cfg.MappingSchema
 		}
 
 		#endregion
+
+		#region Implementation of IRelationship
+
+		public string EntityName
+		{
+			get { return entityname; }
+		}
+
+		public string Class
+		{
+			get { return @class; }
+		}
+
+		public HbmNotFoundMode NotFoundMode
+		{
+			get { return notfound; }
+		}
+
+		#endregion
+
+		public HbmLaziness? Lazy
+		{
+			get { return lazySpecified ? lazy : (HbmLaziness?) null;}
+		}
 	}
 }

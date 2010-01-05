@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmManyToAny: IColumnsMapping
+	public partial class HbmManyToAny : IColumnsMapping, IAnyMapping
 	{
 
 		#region Implementation of IColumnsMapping
@@ -28,5 +29,22 @@ namespace NHibernate.Cfg.MappingSchema
 				};
 			}
 		}
+
+		#region Implementation of IAnyMapping
+
+		public string MetaType
+		{
+			get { return metatype; }
+		}
+
+		public ICollection<HbmMetaValue> MetaValues
+		{
+			get
+			{
+				return metavalue ?? new HbmMetaValue[0];
+			}
+		}
+
+		#endregion
 	}
 }

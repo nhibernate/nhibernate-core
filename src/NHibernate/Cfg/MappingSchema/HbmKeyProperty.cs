@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmKeyProperty: IColumnsMapping, ITypeMapping
+	public partial class HbmKeyProperty : AbstractDecoratable, IColumnsMapping, ITypeMapping, IEntityPropertyMapping
 	{
 
 		#region Implementation of IColumnsMapping
@@ -35,6 +36,34 @@ namespace NHibernate.Cfg.MappingSchema
 		public HbmType Type
 		{
 			get { return type ?? (!string.IsNullOrEmpty(type1) ? new HbmType { name = type1 } : null); }
+		}
+
+		#endregion
+
+		#region Overrides of AbstractDecoratable
+
+		protected override HbmMeta[] Metadatas
+		{
+			get { return meta ?? new HbmMeta[0]; }
+		}
+
+		#endregion
+
+		#region Implementation of IEntityPropertyMapping
+
+		public string Name
+		{
+			get { return name; }
+		}
+
+		public string Access
+		{
+			get { return access; }
+		}
+
+		public bool OptimisticLock
+		{
+			get { return false; }
 		}
 
 		#endregion

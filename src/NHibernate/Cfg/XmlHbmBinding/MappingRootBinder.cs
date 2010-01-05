@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Xml;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
 using NHibernate.Mapping;
@@ -40,19 +39,19 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			foreach (HbmClass rootClass in mappingSchema.RootClasses)
 			{
-				AddRootClasses(Serialize(rootClass), rootClass, inheritedMetas);
+				AddRootClasses(rootClass, inheritedMetas);
 			}
 			foreach (HbmSubclass subclass in mappingSchema.SubClasses)
 			{
-				AddSubclasses(Serialize(subclass), subclass, inheritedMetas);
+				AddSubclasses(subclass, inheritedMetas);
 			}
 			foreach (HbmJoinedSubclass joinedSubclass in mappingSchema.JoinedSubclasses)
 			{
-				AddJoinedSubclasses(Serialize(joinedSubclass), joinedSubclass, inheritedMetas);
+				AddJoinedSubclasses(joinedSubclass, inheritedMetas);
 			}
 			foreach (HbmUnionSubclass unionSubclass in mappingSchema.UnionSubclasses)
 			{
-				AddUnionSubclasses(Serialize(unionSubclass), unionSubclass, inheritedMetas);
+				AddUnionSubclasses(unionSubclass, inheritedMetas);
 			}
 		}
 
@@ -77,43 +76,32 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		private void AddRootClasses(XmlNode parentNode, HbmClass rootClass, IDictionary<string, MetaAttribute> inheritedMetas)
+		private void AddRootClasses(HbmClass rootClass, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			var binder = new RootClassBinder(Mappings, GetNamespaceManager(parentNode), dialect);
+			var binder = new RootClassBinder(Mappings, dialect);
 
 			binder.Bind(rootClass, inheritedMetas);
 		}
 
-		private XmlNamespaceManager GetNamespaceManager(XmlNode parentNode)
-		{
-			// note that the prefix has absolutely nothing to do with what the user
-			// selects as their prefix in the document.  It is the prefix we use to 
-			// build the XPath and the nsmgr takes care of translating our prefix into
-			// the user defined prefix...
-			var namespaceManager = new XmlNamespaceManager(parentNode.OwnerDocument.NameTable);
-			namespaceManager.AddNamespace(HbmConstants.nsPrefix, MappingSchemaXMLNS);
-			return namespaceManager;
-		}
-
-		private void AddUnionSubclasses(XmlNode parentNode, HbmUnionSubclass unionSubclass,
+		private void AddUnionSubclasses(HbmUnionSubclass unionSubclass,
 		                                IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			var binder = new UnionSubclassBinder(Mappings, GetNamespaceManager(parentNode), dialect);
+			var binder = new UnionSubclassBinder(Mappings, dialect);
 
 			binder.Bind(unionSubclass, inheritedMetas);
 		}
 
-		private void AddJoinedSubclasses(XmlNode parentNode, HbmJoinedSubclass joinedSubclass,
+		private void AddJoinedSubclasses(HbmJoinedSubclass joinedSubclass,
 		                                 IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			var binder = new JoinedSubclassBinder(Mappings, GetNamespaceManager(parentNode), dialect);
+			var binder = new JoinedSubclassBinder(Mappings, dialect);
 
 			binder.Bind(joinedSubclass, inheritedMetas);
 		}
 
-		private void AddSubclasses(XmlNode parentNode, HbmSubclass subClass, IDictionary<string, MetaAttribute> inheritedMetas)
+		private void AddSubclasses(HbmSubclass subClass, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			var binder = new SubclassBinder(this, GetNamespaceManager(parentNode), dialect);
+			var binder = new SubclassBinder(this, dialect);
 
 			binder.Bind(subClass, inheritedMetas);
 		}

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Xml;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using NHibernate.Persister.Entity;
@@ -8,8 +7,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class SubclassBinder : ClassBinder
 	{
-		public SubclassBinder(Binder parent, XmlNamespaceManager namespaceManager, Dialect.Dialect dialect)
-			: base(parent.Mappings, namespaceManager, dialect)
+		public SubclassBinder(Binder parent, Dialect.Dialect dialect)
+			: base(parent.Mappings, dialect)
 		{
 		}
 
@@ -37,7 +36,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			log.InfoFormat("Mapping subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);
 
 			// properties
-			new PropertiesBinder(mappings, subclass, NamespaceManager, dialect).Bind(subClassMapping.Properties, inheritedMetas);
+			new PropertiesBinder(mappings, subclass, dialect).Bind(subClassMapping.Properties, inheritedMetas);
 			BindJoins(subClassMapping.Joins, subclass, inheritedMetas);
 			BindSubclasses(subClassMapping.Subclasses, subclass, inheritedMetas);
 
