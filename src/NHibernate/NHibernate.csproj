@@ -881,7 +881,6 @@
     <Compile Include="Cfg\MappingSchema\MappingDocumentParser.cs" />
     <Compile Include="Cfg\XmlHbmBinding\AuxiliaryDatabaseObjectFactory.cs" />
     <Compile Include="Cfg\MappingSchema\HbmFilterDef.cs" />
-    <Compile Include="Cfg\XmlHbmBinding\CacheModeConverter.cs" />
     <Compile Include="Cfg\XmlHbmBinding\ClassCompositeIdBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\ClassDiscriminatorBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\ClassIdBinder.cs" />

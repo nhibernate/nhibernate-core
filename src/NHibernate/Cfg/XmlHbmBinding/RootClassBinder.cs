@@ -259,7 +259,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			if (cacheSchema != null)
 			{
-				rootClass.CacheConcurrencyStrategy = GetXmlEnumAttribute(cacheSchema.usage);
+				rootClass.CacheConcurrencyStrategy = cacheSchema.usage.ToCacheConcurrencyStrategy();
 				rootClass.CacheRegionName = cacheSchema.region;
 			}
 		}

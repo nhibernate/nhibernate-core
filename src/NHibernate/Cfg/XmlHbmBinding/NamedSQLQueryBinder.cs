@@ -29,7 +29,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 					FlushMode flushMode = FlushModeConverter.GetFlushMode(querySchema);
 					CacheMode? cacheMode = (querySchema.cachemodeSpecified)
-												? CacheModeConverter.GetCacheMode(querySchema.cachemode)
+												? querySchema.cachemode.ToCacheMode()
 												: null;
 
 					IDictionary<string,string> parameterTypes = new LinkedHashMap<string,string>();

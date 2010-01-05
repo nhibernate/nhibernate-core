@@ -37,7 +37,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 
 			compositeId.Table.SetIdentifierValue(compositeId);
-			compositeId.NullValue = GetXmlEnumAttribute(idSchema.unsavedvalue);
+			compositeId.NullValue = idSchema.unsavedvalue.ToNullValue();
 
 			System.Type compIdClass = compositeId.ComponentClass;
 			if (!ReflectHelper.OverridesEquals(compIdClass))

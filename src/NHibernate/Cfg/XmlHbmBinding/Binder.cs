@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Xml.Serialization;
-
 using log4net;
 using NHibernate.Mapping;
 using NHibernate.Type;
@@ -132,21 +129,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		protected static string GetQualifiedClassName(string unqualifiedName, Mappings mappings)
 		{
 			return ClassForNameChecked(unqualifiedName, mappings, "unknown class {0}").AssemblyQualifiedName;
-		}
-
-		protected static string GetXmlEnumAttribute(Enum cascadeStyle)
-		{
-			MemberInfo[] memberInfo = cascadeStyle.GetType().GetMember(cascadeStyle.ToString());
-
-			if (memberInfo != null && memberInfo.Length == 1)
-			{
-				object[] customAttributes = memberInfo[0].GetCustomAttributes(typeof(XmlEnumAttribute), false);
-
-				if (customAttributes.Length == 1)
-					return ((XmlEnumAttribute)customAttributes[0]).Name;
-			}
-
-			return null;
 		}
 
 		public static IDictionary<string, MetaAttribute> GetMetas(IDecoratable decoratable, IDictionary<string, MetaAttribute> inheritedMeta)

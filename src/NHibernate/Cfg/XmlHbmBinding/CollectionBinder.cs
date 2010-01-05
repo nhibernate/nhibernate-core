@@ -823,7 +823,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			if (cacheSchema != null)
 			{
-				collection.CacheConcurrencyStrategy = GetXmlEnumAttribute(cacheSchema.usage);
+				collection.CacheConcurrencyStrategy = cacheSchema.usage.ToCacheConcurrencyStrategy();
 				collection.CacheRegionName = cacheSchema.region;
 			}
 		}
