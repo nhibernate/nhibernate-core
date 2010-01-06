@@ -97,7 +97,6 @@ namespace NHibernate.AdoNet
 		{
 			try
 			{
-				LogCommand(cmd);
 				IDbConnection sessionConnection = connectionManager.GetConnection();
 
 				if (cmd.Connection != null)
@@ -201,7 +200,8 @@ namespace NHibernate.AdoNet
 		public int ExecuteNonQuery(IDbCommand cmd)
 		{
 			CheckReaders();
-			Prepare(cmd);
+            LogCommand(cmd);
+            Prepare(cmd);
 			Stopwatch duration = null;
 			if(log.IsDebugEnabled)
 				duration = Stopwatch.StartNew();
@@ -225,7 +225,8 @@ namespace NHibernate.AdoNet
 		public IDataReader ExecuteReader(IDbCommand cmd)
 		{
 			CheckReaders();
-			Prepare(cmd);
+            LogCommand(cmd);
+            Prepare(cmd);
 			Stopwatch duration = null;
 			if (log.IsDebugEnabled)
 				duration = Stopwatch.StartNew();
