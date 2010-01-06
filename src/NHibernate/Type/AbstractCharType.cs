@@ -48,7 +48,7 @@ namespace NHibernate.Type
 
 		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			((IDataParameter)cmd.Parameters[index]).Value = (char)value;
+			((IDataParameter)cmd.Parameters[index]).Value = Convert.ToChar(value);
 		}
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
