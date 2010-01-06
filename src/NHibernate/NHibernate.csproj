@@ -1487,7 +1487,6 @@
     <Compile Include="Util\WeakHashtable.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Util\XmlHelper.cs" />
     <Compile Include="Properties\XmlAccessor.cs" />
     <EmbeddedResource Include="nhibernate-configuration.xsd">
       <SubType>

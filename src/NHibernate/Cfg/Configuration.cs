@@ -8,7 +8,6 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
-using System.Xml.Serialization;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
 using log4net;
@@ -494,22 +493,7 @@ namespace NHibernate.Cfg
 		/// <param name="doc">The NamedXmlDocument that contains the <b>validated</b> mapping XML file.</param>
 		private void AddValidatedDocument(NamedXmlDocument doc)
 		{
-			HbmMapping mappingMeta = null;
-			try
-			{
-				// TODO : The mappingMeta should be the property of NamedXmlDocument 
-				// A validated document IS a deserialized doc and we don't need to deserialize it more than one time.
-				using (var reader = new StringReader(doc.Document.DocumentElement.OuterXml))
-				{
-					mappingMeta = (HbmMapping) new XmlSerializer(typeof (HbmMapping)).Deserialize(reader);
-				}
-			}
-			catch (Exception e)
-			{
-				string nameFormatted = doc.Name ?? "(unknown)";
-				LogAndThrow(new MappingException("Could not compile the mapping document: " + nameFormatted, e));
-			}
-			AddDeserializedMapping(mappingMeta, doc.Name);
+			AddDeserializedMapping(doc.Document, doc.Name);
 		}
 
 		/// <summary>
@@ -1762,11 +1746,21 @@ namespace NHibernate.Cfg
 					hbmDocument.Load(reader);
 					return new NamedXmlDocument(name, hbmDocument);
 				}
+				catch(MappingException)
+				{
+					throw;
+				}
+				catch (Exception e)
+				{
+					string nameFormatted = name ?? "(unknown)";
+					LogAndThrow(new MappingException("Could not compile the mapping document: " + nameFormatted, e));
+				}
 				finally
 				{
 					currentDocumentName = null;
 				}
 			}
+			return null;
 		}
 
 		/// <summary>

@@ -1,8 +1,8 @@
 using System.Xml;
-using NHibernate.Cfg.XmlHbmBinding;
+using System.Linq;
 using NHibernate.Util;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
+using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Cfg
 {
@@ -59,8 +59,7 @@ namespace NHibernate.Cfg
 
 			public override bool Equals(object obj)
 			{
-				ClassEntry that = obj as ClassEntry;
-				return Equals(that);
+				return Equals(obj as ClassEntry);
 			}
 
 			public bool Equals(ClassEntry obj)
@@ -88,39 +87,18 @@ namespace NHibernate.Cfg
 		/// </summary>
 		/// <param name="document">A validated <see cref="XmlDocument"/> representing
 		/// a mapping file.</param>
-		public static ICollection<ClassEntry> GetClassEntries(XmlDocument document)
+		public static ICollection<ClassEntry> GetClassEntries(HbmMapping document)
 		{
-			// TODO this should be extracted into a utility method since there's similar
-			// code in Configuration
-			XmlNamespaceManager nsmgr = new XmlNamespaceManager(document.NameTable);
-			nsmgr.AddNamespace(HbmConstants.nsPrefix, Binder.MappingSchemaXMLNS);
-
 			// Since the document is validated, no error checking is done in this method.
-			HashedSet<ClassEntry> classEntries = new HashedSet<ClassEntry>();
+			var classEntries = new HashSet<ClassEntry>();
 
-			XmlNode root = document.DocumentElement;
+			string assembly = document.assembly;
+			string @namespace = document.@namespace;
 
-			string assembly = XmlHelper.GetAttributeValue(root, "assembly");
-			string @namespace = XmlHelper.GetAttributeValue(root, "namespace");
-
-			XmlNodeList classNodes = document.SelectNodes(
-				"//" + HbmConstants.nsClass +
-				"|//" + HbmConstants.nsSubclass +
-				"|//" + HbmConstants.nsJoinedSubclass +
-				"|//" + HbmConstants.nsUnionSubclass,
-				nsmgr
-				);
-
-			if (classNodes != null)
-			{
-				foreach (XmlNode classNode in classNodes)
-				{
-					string name = XmlHelper.GetAttributeValue(classNode, "name");
-					string extends = XmlHelper.GetAttributeValue(classNode, "extends");
-					string entityName = XmlHelper.GetAttributeValue(classNode, "entity-name");
-					classEntries.Add(new ClassEntry(extends, name, entityName, assembly, @namespace));
-				}
-			}
+			classEntries.UnionWith(document.RootClasses.Select(c=> new ClassEntry(null, c.Name, c.EntityName, assembly, @namespace)));
+			classEntries.UnionWith(document.SubClasses.Select(c => new ClassEntry(c.extends, c.Name, c.EntityName, assembly, @namespace)));
+			classEntries.UnionWith(document.JoinedSubclasses.Select(c => new ClassEntry(c.extends, c.Name, c.EntityName, assembly, @namespace)));
+			classEntries.UnionWith(document.UnionSubclasses.Select(c => new ClassEntry(c.extends, c.Name, c.EntityName, assembly, @namespace)));
 
 			return classEntries;
 		}

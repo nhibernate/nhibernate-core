@@ -10,9 +10,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public abstract class Binder
 	{
-		/// <summary>The XML Namespace for the nhibernate-mapping</summary>
-		public const string MappingSchemaXMLNS = "urn:nhibernate-mapping-2.2";
-
 		protected static readonly ILog log = LogManager.GetLogger(typeof (Binder));
 
 		protected static readonly IDictionary<string, MetaAttribute> EmptyMeta =
