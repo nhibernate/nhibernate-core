@@ -17,6 +17,10 @@ namespace NHibernate
 	{
 		private readonly string sql;
 
+	    public ADOException()
+	    {
+	        
+	    }
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ADOException"/> class.
 		/// </summary>
