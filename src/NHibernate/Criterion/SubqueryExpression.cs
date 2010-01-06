@@ -14,17 +14,25 @@ namespace NHibernate.Criterion
 	{
 		private readonly CriteriaImpl criteriaImpl;
 		private readonly String quantifier;
-		private readonly String op;
+	    private readonly bool prefixOp;
+	    private readonly String op;
 		private QueryParameters parameters;
 		private IType[] types;
 
 		[NonSerialized] private CriteriaQueryTranslator innerQuery;
 
-		protected SubqueryExpression(String op, String quantifier, DetachedCriteria dc)
+        protected SubqueryExpression(String op, String quantifier, DetachedCriteria dc)
+            :this(op, quantifier, dc, true)
+        {
+            
+        }
+
+		protected SubqueryExpression(String op, String quantifier, DetachedCriteria dc, bool prefixOp)
 		{
 			criteriaImpl = dc.GetCriteriaImpl();
 			this.quantifier = quantifier;
-			this.op = op;
+		    this.prefixOp = prefixOp;
+		    this.op = op;
 		}
 
 		public IType[] GetTypes()
@@ -68,16 +76,27 @@ namespace NHibernate.Criterion
 				buf.Add(" ").Add(op).Add(" ");
 			}
 
-			if (quantifier != null)
+            if (quantifier != null && prefixOp)
 			{
 				buf.Add(quantifier).Add(" ");
 			}
-			return buf.Add("(").Add(sql).Add(")").ToSqlString();
+		    
+            buf.Add("(").Add(sql).Add(")");
+
+            if(quantifier!=null && prefixOp==false)
+            {
+                buf.Add(" ").Add(quantifier);
+            }
+
+		    return buf.ToSqlString();
 		}
 
 		public override string ToString()
 		{
-			return string.Format("{0} {1} ({2})", op, quantifier, criteriaImpl);
+            if(prefixOp)
+			    return string.Format("{0} {1} ({2})", op, quantifier, criteriaImpl);
+            return string.Format("{0} ({1}) {2}", op, criteriaImpl, quantifier);
+
 		}
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)

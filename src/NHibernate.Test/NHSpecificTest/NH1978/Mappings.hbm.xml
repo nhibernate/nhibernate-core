@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+	namespace="NHibernate.Test.NHSpecificTest.NH1978"
+	assembly="NHibernate.Test"
+	xmlns="urn:nhibernate-mapping-2.2">
+  <class name="Employee" lazy="true" table="Employee">
+    <id name="ID" type="Int32" unsaved-value="0">
+      <generator class="native" />
+    </id>
+    <property name="EmpName" type="String">
+    </property>
+    <many-to-one name="PlanParent" class="_401k" >
+      <column name="Plan401kID" sql-type="int" not-null="false" />
+    </many-to-one>
+  </class>
+  <class name="_401k" lazy="true" table="[401k]">
+    <id name="ID" type="Int32" unsaved-value="0">
+      <generator class="native" />
+    </id>
+    <property name="PlanName" type="String">
+    </property>
+    <bag name="Employees" inverse="true" lazy="true" cascade="all-delete-orphan" >
+      <key column="Plan401kID" />
+      <one-to-many class="Employee"/>
+    </bag>
+  </class>
+</hibernate-mapping>

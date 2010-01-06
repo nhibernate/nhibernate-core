@@ -318,5 +318,14 @@ namespace NHibernate.Criterion
 			return Subqueries.NotExists(detachedQuery.DetachedCriteria);
 		}
 
+        public static AbstractCriterion IsNull(DetachedCriteria dc)
+        {
+            return new NullSubqueryExpression("IS NULL", dc);
+        }
+
+        public static AbstractCriterion IsNotNull(DetachedCriteria dc)
+        {
+            return new NullSubqueryExpression("IS NOT NULL", dc);
+        }
 	}
 }

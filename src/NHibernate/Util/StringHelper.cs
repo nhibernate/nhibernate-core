@@ -620,10 +620,11 @@ namespace NHibernate.Util
 			{
 				return result + "x"; //ick!
 			}
-			else
+			if(char.IsLetter(result[0]) || '_' == result[0])
 			{
 				return result;
 			}
+		    return "alias_" + result;
 		}
 
 		public static string MoveAndToBeginning(string filter)

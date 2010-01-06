@@ -127,6 +127,33 @@ namespace NHibernate.Test.Criteria
 			}
 		}
 
+        [Test]
+        public void TestSubcriteriaBeingNull()
+        {
+            ISession session = OpenSession();
+            ITransaction t = session.BeginTransaction();
+
+            Course hibernateCourse = new Course();
+            hibernateCourse.CourseCode = "HIB";
+            hibernateCourse.Description = "Hibernate Training";
+            session.Save(hibernateCourse);
+
+            DetachedCriteria subcriteria = DetachedCriteria.For<Enrolment>("e");
+            subcriteria.Add(Expression.EqProperty("e.CourseCode", "c.CourseCode"));
+            subcriteria.SetProjection(Projections.Avg("Semester"));
+
+            DetachedCriteria criteria = DetachedCriteria.For<Course>("c");
+            criteria.SetProjection(Projections.Count("id"));
+            criteria.Add(Expression.Or(Subqueries.Le(5, subcriteria), Subqueries.IsNull(subcriteria)));
+
+            object o = criteria.GetExecutableCriteria(session).UniqueResult();
+            Assert.AreEqual(1, o);
+
+            session.Delete(hibernateCourse);
+            t.Commit();
+            session.Close();
+        }
+
 		[Test]
 		public void Subselect()
 		{
