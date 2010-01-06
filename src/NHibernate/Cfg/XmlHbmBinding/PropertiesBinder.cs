@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using System;
@@ -173,16 +172,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				if (property != null)
 				{
 					modifier(property);
-					if (log.IsDebugEnabled)
-					{
-						string msg = "Mapped property: " + property.Name;
-						string columns = string.Join(",", property.Value.ColumnIterator.Select(c => c.Text).ToArray());
-						if (columns.Length > 0)
-							msg += " -> " + columns;
-						if (property.Type != null)
-							msg += ", type: " + property.Type.Name;
-						log.Debug(msg);
-					}
+					property.LogMapped(log);
 					addToModelAction(property);
 				}
 			}			
