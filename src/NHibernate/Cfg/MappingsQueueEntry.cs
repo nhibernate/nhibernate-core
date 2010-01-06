@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Cfg
 {
@@ -8,9 +7,9 @@ namespace NHibernate.Cfg
 	/// </summary>
 	public class MappingsQueueEntry
 	{
-		private readonly HashedSet<string> containedClassNames;
+		private readonly HashSet<string> containedClassNames;
 		private readonly NamedXmlDocument document;
-		private readonly HashedSet<RequiredEntityName> requiredClassNames;
+		private readonly HashSet<RequiredEntityName> requiredClassNames;
 
 		public MappingsQueueEntry(NamedXmlDocument document, IEnumerable<ClassExtractor.ClassEntry> classEntries)
 		{
@@ -42,9 +41,9 @@ namespace NHibernate.Cfg
 			get { return containedClassNames; }
 		}
 
-		private static HashedSet<string> GetClassNames(IEnumerable<ClassExtractor.ClassEntry> classEntries)
+		private static HashSet<string> GetClassNames(IEnumerable<ClassExtractor.ClassEntry> classEntries)
 		{
-			var result = new HashedSet<string>();
+			var result = new HashSet<string>();
 
 			foreach (var ce in classEntries)
 			{
@@ -61,10 +60,10 @@ namespace NHibernate.Cfg
 			return result;
 		}
 
-		private static HashedSet<RequiredEntityName> GetRequiredClassNames(IEnumerable<ClassExtractor.ClassEntry> classEntries,
+		private static HashSet<RequiredEntityName> GetRequiredClassNames(IEnumerable<ClassExtractor.ClassEntry> classEntries,
 		                                                       ICollection<string> containedNames)
 		{
-			var result = new HashedSet<RequiredEntityName>();
+			var result = new HashSet<RequiredEntityName>();
 
 			foreach (var ce in classEntries)
 			{

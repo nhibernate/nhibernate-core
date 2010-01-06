@@ -1,7 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Iesi.Collections.Generic;
-using System.Collections.Generic;
 
 namespace NHibernate.Cfg
 {
@@ -10,17 +11,17 @@ namespace NHibernate.Cfg
 	/// </summary>
 	public class MappingsQueue
 	{
-		private readonly ISet<string> _processedClassNames = new HashedSet<string>();
+		private readonly Queue availableEntries = new Queue();
+		private readonly ISet<string> processedClassNames = new HashedSet<string>();
 
-		private readonly List<MappingsQueueEntry> _unavailableEntries = new List<MappingsQueueEntry>();
-		private readonly Queue _availableEntries = new Queue();
+		private readonly List<MappingsQueueEntry> unavailableEntries = new List<MappingsQueueEntry>();
 
 		/// <summary>
 		/// Adds the specified document to the queue.
 		/// </summary>
 		public void AddDocument(NamedXmlDocument document)
 		{
-			MappingsQueueEntry re = new MappingsQueueEntry(document, ClassExtractor.GetClassEntries(document.Document));
+			var re = new MappingsQueueEntry(document, ClassExtractor.GetClassEntries(document.Document));
 			AddEntry(re);
 		}
 
@@ -31,12 +32,12 @@ namespace NHibernate.Cfg
 		/// <returns></returns>
 		public NamedXmlDocument GetNextAvailableResource()
 		{
-			if (_availableEntries.Count == 0)
+			if (availableEntries.Count == 0)
 			{
 				return null;
 			}
 
-			MappingsQueueEntry entry = (MappingsQueueEntry)_availableEntries.Dequeue();
+			var entry = (MappingsQueueEntry) availableEntries.Dequeue();
 			AddProcessedClassNames(entry.ContainedClassNames);
 			return entry.Document;
 		}
@@ -46,15 +47,15 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public void CheckNoUnavailableEntries()
 		{
-			if (_unavailableEntries.Count > 0)
+			if (unavailableEntries.Count > 0)
 			{
-				throw new MappingException(FormatExceptionMessage(_unavailableEntries));
+				throw new MappingException(FormatExceptionMessage(unavailableEntries));
 			}
 		}
 
 		private void AddProcessedClassNames(ICollection<string> classNames)
 		{
-			_processedClassNames.AddAll(classNames);
+			processedClassNames.AddAll(classNames);
 			if (classNames.Count > 0)
 			{
 				ProcessUnavailableEntries();
@@ -65,11 +66,11 @@ namespace NHibernate.Cfg
 		{
 			if (CanProcess(re))
 			{
-				_availableEntries.Enqueue(re);
+				availableEntries.Enqueue(re);
 			}
 			else
 			{
-				_unavailableEntries.Add(re);
+				unavailableEntries.Add(re);
 			}
 		}
 
@@ -79,44 +80,31 @@ namespace NHibernate.Cfg
 
 			while ((found = FindAvailableResourceEntry()) != null)
 			{
-				_availableEntries.Enqueue(found);
-				_unavailableEntries.Remove(found);
+				availableEntries.Enqueue(found);
+				unavailableEntries.Remove(found);
 			}
 		}
 
 		private MappingsQueueEntry FindAvailableResourceEntry()
 		{
-			foreach (MappingsQueueEntry re in _unavailableEntries)
-			{
-				if (CanProcess(re))
-				{
-					return re;
-				}
-			}
-			return null;
+			return unavailableEntries.FirstOrDefault(CanProcess);
 		}
 
 		private bool CanProcess(MappingsQueueEntry ce)
 		{
-			foreach (var c in ce.RequiredClassNames)
-			{
-				if (!(_processedClassNames.Contains(c.FullClassName) || _processedClassNames.Contains(c.EntityName)))
-					return false;
-			}
-			return true;
+			return
+				ce.RequiredClassNames.All(
+					c => (processedClassNames.Contains(c.FullClassName) || processedClassNames.Contains(c.EntityName)));
 		}
 
-		private static string FormatExceptionMessage(ICollection resourceEntries)
+		private static string FormatExceptionMessage(IEnumerable<MappingsQueueEntry> resourceEntries)
 		{
-			StringBuilder message = new StringBuilder(
-				"These classes referenced by 'extends' were not found:");
-
-			foreach (MappingsQueueEntry resourceEntry in resourceEntries)
+			var message = new StringBuilder(500);
+			message.Append("These classes referenced by 'extends' were not found:");
+			foreach (MappingsQueueEntry.RequiredEntityName className in
+				resourceEntries.SelectMany(resourceEntry => resourceEntry.RequiredClassNames))
 			{
-				foreach (var className in resourceEntry.RequiredClassNames)
-				{
-					message.Append('\n').Append(className);
-				}
+				message.Append('\n').Append(className);
 			}
 
 			return message.ToString();
