@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.NH2055">
+
+	<database-object>
+    <create>
+      CREATE PROC test_proc1 
+      AS
+        SELECT 1
+      GO
+      CREATE PROC test_proc2
+      AS
+        SELECT 2
+      GO
+    </create>
+    <drop>
+      if (object_id('test_proc1') is not null )
+        DROP PROC test_proc1
+      GO
+      if (object_id('test_proc2') is not null )
+        DROP PROC test_proc2
+      GO
+    </drop>
+	</database-object>
+
+</hibernate-mapping>

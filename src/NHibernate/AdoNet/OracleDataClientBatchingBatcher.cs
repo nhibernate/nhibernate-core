@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
+using System.Text;
+using NHibernate.AdoNet.Util;
 
 namespace NHibernate.AdoNet
 {
@@ -18,20 +20,40 @@ namespace NHibernate.AdoNet
 		private IDbCommand currentBatch;
 		private IDictionary<string, List<object>> parameterValueListHashTable;
 		private IDictionary<string, bool> parameterIsAllNullsHashTable;
+        private StringBuilder currentBatchCommandsLog;
 
 
 		public OracleDataClientBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
 			: base(connectionManager, interceptor)
 		{
 			batchSize = Factory.Settings.AdoBatchSize;
-		}
+            //we always create this, because we need to deal with a scenario in which
+            //the user change the logging configuration at runtime. Trying to put this
+            //behind an if(log.IsDebugEnabled) will cause a null reference exception 
+            //at that point.
+            currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
+        }
 
 		public override void AddToBatch(IExpectation expectation)
 		{
 			bool firstOnBatch = true;
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;
-			log.Info("Adding to batch");
-			LogCommand(CurrentCommand);
+            string lineWithParameters = null;
+            var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
+            if (sqlStatementLogger.IsDebugEnabled || log.IsDebugEnabled)
+            {
+                lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(CurrentCommand);
+                var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
+                lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
+                currentBatchCommandsLog.Append("command ")
+                    .Append(countOfCommands)
+                    .Append(":")
+                    .AppendLine(lineWithParameters);
+            }
+            if (log.IsDebugEnabled)
+            {
+                log.Debug("Adding to batch:" + lineWithParameters);
+            }
 
 			if (currentBatch == null)
 			{
@@ -86,6 +108,12 @@ namespace NHibernate.AdoNet
 				log.Info("Executing batch");
 				CheckReaders();
 				Prepare(currentBatch);
+
+                if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+                {
+                    Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
+                    currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
+                }
 
 				foreach (IDataParameter currentParameter in currentBatch.Parameters)
 				{

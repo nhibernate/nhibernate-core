@@ -658,6 +658,10 @@
     <Compile Include="NHSpecificTest\NH1938\Model.cs" />
     <Compile Include="NHSpecificTest\NH1939\AuxType.cs" />
     <Compile Include="NHSpecificTest\NH1939\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2055\AuxType.cs" />
+    <Compile Include="NHSpecificTest\NH2055\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2057\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2057\Model.cs" />
     <Compile Include="NHSpecificTest\NH1941\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1941\Model.cs" />
     <Compile Include="NHSpecificTest\NH1941\SexEnumStringType.cs" />
@@ -2096,6 +2100,8 @@
     <Content Include="DynamicEntity\package.html" />
     <EmbeddedResource Include="NHSpecificTest\NH2030\Mappings.hbm.xml" />
     <EmbeddedResource Include="Linq\Mappings\Patient.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2055\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2057\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2011\Mappings.hbm.xml" />
     <EmbeddedResource Include="Linq\Mappings\Animal.hbm.xml" />
     <EmbeddedResource Include="Linq\Mappings\AnotherEntity.hbm.xml" />

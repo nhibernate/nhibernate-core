@@ -2105,5 +2105,17 @@ namespace NHibernate.Dialect
 			}
 		}
 		#endregion
+
+        /// <summary>
+        /// Supports splitting batches using GO T-SQL command
+        /// </summary>
+        /// <remarks>
+        /// Batches http://msdn.microsoft.com/en-us/library/ms175502.aspx
+        /// </remarks>
+        public virtual bool SupportsSqlBatches 
+        {
+            get { return false; }
+        }
+
 	}
 }

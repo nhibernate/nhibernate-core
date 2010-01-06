@@ -127,9 +127,7 @@ namespace NHibernate.Tool.hbm2ddl
 				}
 				if (export)
 				{
-					statement.CommandText = sql;
-					statement.CommandType = CommandType.Text;
-					statement.ExecuteNonQuery();
+                    ExecuteSql(statement, sql);
 				}
 			}
 			catch (Exception e)
@@ -142,6 +140,29 @@ namespace NHibernate.Tool.hbm2ddl
 				}
 			}
 		}
+
+        private void ExecuteSql(IDbCommand cmd, string sql)
+        {
+            if (dialect.SupportsSqlBatches)
+            {
+                var objFactory = Environment.BytecodeProvider.ObjectsFactory;
+                ScriptSplitter splitter = (ScriptSplitter)objFactory.CreateInstance(typeof(ScriptSplitter), sql);
+
+                foreach (string stmt in splitter)
+                {
+                    log.DebugFormat("SQL Batch: {0}", stmt);
+                    cmd.CommandText = stmt;
+                    cmd.CommandType = CommandType.Text;
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            else
+            {
+                cmd.CommandText = sql;
+                cmd.CommandType = CommandType.Text;
+                cmd.ExecuteNonQuery();
+            }
+        }
 
 		/// <summary>
 		/// Executes the Export of the Schema in the given connection
