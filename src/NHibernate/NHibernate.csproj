@@ -489,6 +489,7 @@
     <Compile Include="Event\IPreDatabaseOperationEventArgs.cs" />
     <Compile Include="Exceptions\AdoExceptionContextInfo.cs" />
     <Compile Include="Exceptions\ReflectionBasedSqlStateExtracter.cs" />
+    <Compile Include="Exceptions\SqlParseException.cs" />
     <Compile Include="Exceptions\SqlStateExtracter.cs" />
     <Compile Include="Exceptions\TemplatedViolatedConstraintNameExtracter.cs" />
     <Compile Include="Hql\Ast\ANTLR\ASTQueryTranslatorFactory.cs" />
@@ -614,6 +615,7 @@
     <Compile Include="Proxy\AbstractProxyFactory.cs" />
     <Compile Include="SqlCommand\InsertSelect.cs" />
     <Compile Include="Tool\hbm2ddl\SchemaMetadataUpdater.cs" />
+    <Compile Include="Tool\hbm2ddl\ScriptSplitter.cs" />
     <Compile Include="Transaction\AdoNetWithDistrubtedTransactionFactory.cs" />
     <Compile Include="Transform\ToListResultTransformer.cs" />
     <Compile Include="Type\DbTimestampType.cs" />
