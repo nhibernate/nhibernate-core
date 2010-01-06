@@ -465,14 +465,10 @@ namespace NHibernate.Impl
 
 		public IEntityPersister GetEntityPersister(string entityName)
 		{
-			try
-			{
-				return entityPersisters[entityName];
-			}
-			catch (KeyNotFoundException)
-			{
-				throw new MappingException("No persister for: " + entityName);
-			}
+		    IEntityPersister value;
+            if (entityPersisters.TryGetValue(entityName, out value) == false)
+                throw new MappingException("No persister for: " + entityName);
+            return value;
 		}
 
 		public IEntityPersister TryGetEntityPersister(string entityName)
@@ -484,14 +480,10 @@ namespace NHibernate.Impl
 
 		public ICollectionPersister GetCollectionPersister(string role)
 		{
-			try
-			{
-				return collectionPersisters[role];
-			}
-			catch (KeyNotFoundException)
-			{
+		    ICollectionPersister value;
+		    if(collectionPersisters.TryGetValue(role, out value) == false)
 				throw new MappingException("Unknown collection role: " + role);
-			}
+            return value;
 		}
 
 		public ISet<string> GetCollectionRolesByEntityParticipant(string entityName)
@@ -979,14 +971,10 @@ namespace NHibernate.Impl
 
 		public FilterDefinition GetFilterDefinition(string filterName)
 		{
-			try
-			{
-				return filters[filterName];
-			}
-			catch (KeyNotFoundException)
-			{
+		    FilterDefinition value;
+		    if(filters.TryGetValue(filterName,out value)==false)
 				throw new HibernateException("No such filter configured [" + filterName + "]");
-			}
+            return value;
 		}
 
 		public ICollection<string> DefinedFilterNames
