@@ -493,5 +493,13 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
+
+        public override bool SupportsSqlBatches
+        {
+            get
+            {
+                return true;
+            }
+        }
 	}
 }
