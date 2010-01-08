@@ -153,7 +153,7 @@ namespace NHibernate.Driver
 		public override IDbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
 		{
 			IDbCommand command = base.GenerateCommand(type, sqlString, parameterTypes);
-			if (IsPrepareSqlEnabled)
+			//if (IsPrepareSqlEnabled)
 			{
 				SetParameterSizes(command.Parameters, parameterTypes);
 			}
