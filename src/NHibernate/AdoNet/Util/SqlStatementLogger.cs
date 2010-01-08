@@ -93,14 +93,23 @@ namespace NHibernate.AdoNet.Util
 					}
 					appendComma = true;
 					p = (IDataParameter)command.Parameters[i];
-					output.Append(string.Format("{0} = {1}", p.ParameterName, GetParameterLogableValue(p)));
+					output.Append(string.Format("{0} = {1} [Type: {2}]", p.ParameterName, GetParameterLogableValue(p), GetParameterLogableType(p)));
 				}
 				outputText = output.ToString();
 			}
 			return outputText;
 		}
 
-		public string GetParameterLogableValue(IDataParameter parameter)
+	    private static string GetParameterLogableType(IDataParameter dataParameter)
+	    {
+            var p = dataParameter as IDbDataParameter;
+            if (p != null)
+                return p.DbType + " (" + p.Size + ")";
+	        return p.DbType.ToString();
+
+	    }
+
+	    public string GetParameterLogableValue(IDataParameter parameter)
 		{
 			if (parameter.Value == null || DBNull.Value.Equals(parameter.Value))
 			{
