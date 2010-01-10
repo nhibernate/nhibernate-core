@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NHibernate.Impl
 {
@@ -9,6 +10,8 @@ namespace NHibernate.Impl
 		private readonly IList<System.Type> resultTypes = new List<System.Type>();
 		private int index;
 		private IList results;
+		private bool isCacheable = true;
+		private string cacheRegion;
 
 		protected readonly SessionImpl session;
 
@@ -31,9 +34,16 @@ namespace NHibernate.Impl
 
 		public void Add<TResult>(TQueryApproach query)
 		{
+			if (queries.Count == 0)
+			{
+				cacheRegion = CacheRegion(query);
+			}
+
 			queries.Add(query);
 			resultTypes.Add(typeof(TResult));
 			index = queries.Count - 1;
+			isCacheable = isCacheable && IsQueryCacheable(query);
+			isCacheable = isCacheable && (cacheRegion == CacheRegion(query));
 		}
 
 		public void Add(TQueryApproach query)
@@ -55,7 +65,7 @@ namespace NHibernate.Impl
 
 		private void GetResults()
 		{
-			var multiApproach = CreateMultiApproach();
+			var multiApproach = CreateMultiApproach(isCacheable, cacheRegion);
 			for (int i = 0; i < queries.Count; i++)
 			{
 				AddTo(multiApproach, queries[i], resultTypes[i]);
@@ -64,14 +74,16 @@ namespace NHibernate.Impl
 			ClearCurrentFutureBatch();
 		}
 
-		private IList<TResult> GetCurrentResult<TResult>(int currentIndex)
+		private IEnumerable<TResult> GetCurrentResult<TResult>(int currentIndex)
 		{
-			return (IList<TResult>)Results[currentIndex];
+			return ((IList)Results[currentIndex]).Cast<TResult>();
 		}
 
-		protected abstract TMultiApproach CreateMultiApproach();
+		protected abstract TMultiApproach CreateMultiApproach(bool isCacheable, string cacheRegion);
 		protected abstract void AddTo(TMultiApproach multiApproach, TQueryApproach query, System.Type resultType);
 		protected abstract IList GetResultsFrom(TMultiApproach multiApproach);
 		protected abstract void ClearCurrentFutureBatch();
+		protected abstract bool IsQueryCacheable(TQueryApproach query);
+		protected abstract string CacheRegion(TQueryApproach query);
 	}
 }

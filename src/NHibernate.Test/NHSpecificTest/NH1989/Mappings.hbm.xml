@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+					 namespace="NHibernate.Test.NHSpecificTest.NH1989"
+					 assembly="NHibernate.Test">
+
+	<class name="User" table="UserTable">
+		<cache usage="read-write"/>
+		<id name="Id">
+			<generator class="guid.comb"/>
+		</id>
+		<natural-id>
+			<property name="Name" />
+		</natural-id>
+	</class>
+
+</hibernate-mapping>

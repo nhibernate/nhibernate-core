@@ -5,7 +5,7 @@ namespace NHibernate.Impl
 {
     internal class FutureValue<T> : IFutureValue<T>
     {
-        public delegate IList<T> GetResult();
+        public delegate IEnumerable<T> GetResult();
 
         private readonly GetResult getResult;
 
@@ -19,13 +19,14 @@ namespace NHibernate.Impl
             get
             {
                 var result = getResult();
+				var enumerator = result.GetEnumerator();
 
-                if (result.Count == 0)
-                {
+				if (!enumerator.MoveNext())
+				{
                     return default(T);
                 }
 
-                return result[0];
+                return enumerator.Current;
             }
         }
     }

@@ -5,7 +5,7 @@ namespace NHibernate.Impl
 {
     internal class DelayedEnumerator<T> : IEnumerable<T>
     {
-        public delegate IList<T> GetResult();
+        public delegate IEnumerable<T> GetResult();
 
         private readonly GetResult result;
 

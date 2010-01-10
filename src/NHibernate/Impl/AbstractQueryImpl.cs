@@ -56,6 +56,16 @@ namespace NHibernate.Impl
 			this.parameterMetadata = parameterMetadata;
 		}
 
+		public bool Cacheable
+		{
+			get { return cacheable; }
+		}
+
+		public string CacheRegion
+		{
+			get { return cacheRegion; }
+		}
+
 		public bool HasNamedParameters
 		{
 			get { return parameterMetadata.NamedParameterNames.Count > 0; }
