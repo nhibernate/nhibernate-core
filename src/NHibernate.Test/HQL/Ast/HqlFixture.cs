@@ -63,6 +63,16 @@ namespace NHibernate.Test.HQL.Ast
 			Check(plan.ReturnMetadata, true, false);
 		}
 
+        [Test]
+        public void OrderByPropertiesImplicitlySpecifiedInTheSelect()
+        {
+            // NH-2035 
+            using (ISession s = OpenSession())
+            {
+                s.CreateQuery("select distinct z from Animal a join a.zoo as z order by z.name").List();
+            }
+        } 
+
 		[Test]
 		public void CaseClauseInSelect()
 		{
