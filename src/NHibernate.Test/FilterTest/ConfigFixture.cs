@@ -1,6 +1,11 @@
+using System;
 using System.Collections.Generic;
+using log4net;
+using log4net.Appender;
+using log4net.Config;
 using NHibernate.Cfg;
 using NUnit.Framework;
+using System.Linq;
 
 namespace NHibernate.Test.FilterTest
 {
@@ -236,9 +241,20 @@ namespace NHibernate.Test.FilterTest
 
 			var cfg = GetConfiguration();
 			cfg.AddXmlString(filterDef);
-			var e = Assert.Throws<MappingException>(() => cfg.BuildSessionFactory());
-			Assert.That(e.Message, Text.StartsWith("filter-def for filter named"));
-			Assert.That(e.Message, Text.Contains("was never used to filter classes nor collections."));
+		    var memoryAppender = new MemoryAppender();
+		    BasicConfigurator.Configure(memoryAppender);
+            try
+			{
+			    cfg.BuildSessionFactory();
+
+                var wholeLog = String.Join("\r\n", memoryAppender.GetEvents().Select(x => x.RenderedMessage).ToArray());
+			    Assert.That(wholeLog, Text.Contains("filter-def for filter named"));
+                Assert.That(wholeLog, Text.Contains("was never used to filter classes nor collections."));
+			}
+            finally
+            {
+                LogManager.Shutdown();
+            }
 		}
 	}
 }

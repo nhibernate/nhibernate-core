@@ -965,8 +965,7 @@ namespace NHibernate.Cfg
 						// if you are going to remove this exception at least add a log.Error
 						// because the usage of filter-def, outside its scope, may cause unexpected behaviour
 						// during queries.
-						throw new MappingException("filter-def for filter named '" + filterName
-						                           + "' was never used to filter classes nor collections.");
+                        log.ErrorFormat("filter-def for filter named '{0}' was never used to filter classes nor collections.\r\nThis may result in unexpected behavior during queries", filterName);
 					}
 				}
 			}
