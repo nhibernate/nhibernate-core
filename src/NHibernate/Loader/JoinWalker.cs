@@ -667,6 +667,11 @@ namespace NHibernate.Loader
 			return buf.ToSqlString();
 		}
 
+		protected virtual string GenerateAliasForColumn(string rootAlias, string column)
+		{
+			return rootAlias;
+		}
+
 		/// <summary>
 		/// Render the where condition for a (batch) load by identifier / collection key
 		/// </summary>
@@ -676,7 +681,8 @@ namespace NHibernate.Loader
 			{
 				// if not a composite key, use "foo in (?, ?, ?)" for batching
 				// if no batch, and not a composite key, use "foo = ?"
-				InFragment inf = new InFragment().SetColumn(alias, columnNames[0]);
+				string tableAlias = GenerateAliasForColumn(alias, columnNames[0]);
+				InFragment inf = new InFragment().SetColumn(tableAlias, columnNames[0]);
 
 				for (int i = 0; i < batchSize; i++)
 					inf.AddValue(Parameter.Placeholder);

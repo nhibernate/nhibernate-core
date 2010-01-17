@@ -663,6 +663,8 @@
     <Compile Include="NHSpecificTest\NH1978\_401k.cs" />
     <Compile Include="NHSpecificTest\NH1989\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1989\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2009\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2009\Model.cs" />
     <Compile Include="NHSpecificTest\NH2044\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH2044\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH2055\AuxType.cs" />
@@ -2108,6 +2110,7 @@
     <EmbeddedResource Include="DriverTest\SqlServerCeEntity.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
     <EmbeddedResource Include="NHSpecificTest\NH2065\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2009\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1989\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1978\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2044\Mappings.hbm.xml" />

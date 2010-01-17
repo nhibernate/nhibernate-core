@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping	xmlns="urn:nhibernate-mapping-2.2" 
+					namespace="NHibernate.Test.NHSpecificTest.NH2009" 
+					assembly="NHibernate.Test">
+
+	<class name="BlogPost" table="blogpost_table">
+		<id name="ID" column="blogpost_id">
+			<generator class="native"/>
+		</id>
+		<property name="Title" column="blogpost_title"/>
+		<many-to-one name="Poster" column="poster_id" property-ref="UserName" />
+	</class>
+
+	<class name="User" table="user_table">
+		<id name="ID" column="user_id">
+			<generator class="native"/>
+		</id>
+		<property name="FullName" column="user_fullname" unique="true"/>
+		<join table="ADUser">
+			<key column="user_id"/>
+			<property name="UserName" column="aduser_username" unique="true"/>
+		</join>
+	</class>
+</hibernate-mapping>

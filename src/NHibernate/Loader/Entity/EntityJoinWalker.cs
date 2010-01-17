@@ -29,6 +29,14 @@ namespace NHibernate.Loader.Entity
 		}
 
 		/// <summary>
+		/// Override to use the persister to change the table-alias for columns in join-tables
+		/// </summary>
+		protected override string GenerateAliasForColumn(string rootAlias, string column)
+		{
+			return Persister.GenerateTableAliasForColumn(rootAlias, column);
+		}
+
+		/// <summary>
 		/// Disable outer join fetching if this loader obtains an
 		/// upgrade lock mode
 		/// </summary>

@@ -1817,6 +1817,16 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
+		public string GenerateTableAliasForColumn(string rootAlias, string column)
+		{
+			int propertyIndex = Array.IndexOf(SubclassColumnClosure, column);
+
+			if (propertyIndex < 0)
+				return rootAlias;
+
+			return GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[propertyIndex]);
+		}
+
 		public string GenerateTableAlias(string rootAlias, int tableNumber)
 		{
 			if (tableNumber == 0)

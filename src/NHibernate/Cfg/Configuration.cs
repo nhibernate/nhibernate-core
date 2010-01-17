@@ -1137,7 +1137,7 @@ namespace NHibernate.Cfg
 
 						try
 						{
-							fk.ReferencedTable = referencedClass.Table;
+							fk.AddReferencedTable(referencedClass);
 							fk.AlignColumns();
 						}
 						catch (MappingException me)

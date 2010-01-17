@@ -113,5 +113,10 @@ namespace NHibernate.Persister.Entity
 		/// Return the alised identifier column names
 		/// </summary>
 		string[] ToIdentifierColumns(string alias);
+
+		/// <summary>
+		/// Get the table alias used for the supplied column
+		/// </summary>
+		string GenerateTableAliasForColumn(string rootAlias, string column);
 	}
 }
