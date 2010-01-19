@@ -208,9 +208,9 @@ namespace NHibernate
 		IQueryOver<TRoot,TSubType> Select(params IProjection[] projections);
 
 		/// <summary>
-		/// Create a list of projections inline
+		/// Create a list of projections using a projection builder
 		/// </summary>
-		QueryOverProjectionBuilder<IQueryOver<TRoot,TSubType>, TRoot, TSubType> SelectList { get; }
+		IQueryOver<TRoot, TSubType> Select(Func<QueryOverProjectionBuilder<TSubType>, QueryOverProjectionBuilder<TSubType>> list);
 
 		/// <summary>
 		/// Add order expressed as a lambda expression

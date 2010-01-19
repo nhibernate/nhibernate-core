@@ -114,7 +114,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			Person personAgeProjectionAlias = null;
 			var actual =
 				CreateTestQueryOver<Person>(() => personAlias)
-					.SelectList
+					.Select(list => list
 						.SelectAvg(p => p.Age).WithAlias(() => personAgeProjectionAlias)
 						.Select(Projections.Avg("Age")) // allows private properties
 						.SelectAvg(() => personAlias.Age)
@@ -132,8 +132,7 @@ namespace NHibernate.Test.Criteria.Lambda
 						.Select(() => personAlias.Age)
 						.SelectSubQuery(DetachedQueryOverAge)
 						.SelectSum(p => p.Age)
-						.SelectSum(() => personAlias.Age)
-						.EndSelect;
+						.SelectSum(() => personAlias.Age));
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
