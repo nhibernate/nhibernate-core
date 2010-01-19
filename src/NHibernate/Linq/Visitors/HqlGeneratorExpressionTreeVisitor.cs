@@ -325,7 +325,7 @@ namespace NHibernate.Linq.Visitors
             switch (expression.NodeType)
             {
                 case ExpressionType.Not:
-                    return _hqlTreeBuilder.Not(VisitExpression(expression.Operand).AsBooleanExpression());
+                    return _hqlTreeBuilder.BooleanNot(VisitExpression(expression.Operand).AsBooleanExpression());
                 case ExpressionType.Convert:
                     return VisitExpression(expression.Operand);
             }
@@ -415,7 +415,7 @@ namespace NHibernate.Linq.Visitors
 
         protected HqlTreeNode VisitSubQueryExpression(SubQueryExpression expression)
         {
-            ExpressionToHqlTranslationResults query = QueryModelVisitor.GenerateHqlQuery(expression.QueryModel, _parameters, _requiredHqlParameters);
+            ExpressionToHqlTranslationResults query = QueryModelVisitor.GenerateHqlQuery(expression.QueryModel, _parameters, _requiredHqlParameters, false);
 
             return query.Statement;
         }

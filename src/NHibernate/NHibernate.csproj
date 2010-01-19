@@ -55,10 +55,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\3.5\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Remotion, Version=1.13.9.2, Culture=neutral, PublicKeyToken=cab60358ab4081ea, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\3.5\Remotion.dll</HintPath>
-    </Reference>
     <Reference Include="Remotion.Data.Linq, Version=1.13.9.2, Culture=neutral, PublicKeyToken=cab60358ab4081ea, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\3.5\Remotion.Data.Linq.dll</HintPath>

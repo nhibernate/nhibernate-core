@@ -261,7 +261,7 @@ namespace NHibernate.Hql.Ast
             return new HqlBitwiseNot(_factory);
         }
 
-        public HqlBooleanNot Not(HqlBooleanExpression operand)
+        public HqlBooleanNot BooleanNot(HqlBooleanExpression operand)
         {
             return new HqlBooleanNot(_factory, operand);
         }

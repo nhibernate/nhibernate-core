@@ -7,7 +7,6 @@ namespace NHibernate.Test.Linq
 	public class MethodCallTests : LinqTestCase
 	{
 		[Test]
-        [Ignore("Waiting for re-linq support")]
 		public void CanExecuteAny()
 		{
 			bool result = db.Users.Any();
@@ -15,7 +14,6 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-        [Ignore("Waiting for re-linq support")]
         public void CanExecuteAnyWithArguments()
 		{
 			bool result = db.Users.Any(u => u.Name == "user-does-not-exist");

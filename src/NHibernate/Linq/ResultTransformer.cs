@@ -3,7 +3,6 @@ using System.Collections;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Transform;
-using Remotion.Collections;
 
 namespace NHibernate.Linq
 {

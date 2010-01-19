@@ -75,7 +75,7 @@ namespace NHibernate.Linq.Functions
                 // All has two arguments.  Arg 1 is the source and arg 2 is the predicate
                 var predicate = (LambdaExpression)arguments[1];
 
-                return treeBuilder.Not(
+                return treeBuilder.BooleanNot(
                     treeBuilder.Exists(
                         treeBuilder.Query(
                             treeBuilder.SelectFrom(
@@ -86,7 +86,7 @@ namespace NHibernate.Linq.Functions
                                     )
                                 ),
                             treeBuilder.Where(
-                                treeBuilder.Not(visitor.Visit(arguments[1]).AsBooleanExpression())
+                                treeBuilder.BooleanNot(visitor.Visit(arguments[1]).AsBooleanExpression())
                                 )
                             )
                         )

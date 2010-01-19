@@ -21,7 +21,7 @@ namespace NHibernate.Linq.Visitors
 {
     public class QueryModelVisitor : QueryModelVisitorBase
 	{
-		public static ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters)
+		public static ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters, bool root)
 		{
             // Remove unnecessary body operators
 		    RemoveUnnecessaryBodyOperators.ReWrite(queryModel);
@@ -44,7 +44,7 @@ namespace NHibernate.Linq.Visitors
 			// Flatten pointless subqueries
 			QueryReferenceExpressionFlattener.ReWrite(queryModel);
 
-			var visitor = new QueryModelVisitor(parameters, requiredHqlParameters);
+			var visitor = new QueryModelVisitor(parameters, requiredHqlParameters, root);
 			visitor.VisitQueryModel(queryModel);
 
 			return visitor.GetTranslation();
@@ -62,26 +62,48 @@ namespace NHibernate.Linq.Visitors
 
     	private readonly IDictionary<ConstantExpression, NamedParameter> _parameters;
     	private readonly IList<NamedParameterDescriptor> _requiredHqlParameters;
+        private readonly bool _root;
         private bool _serverSide = true;
 
         private HqlTreeNode _treeNode;
+        private System.Type _resultType;
 
-        private QueryModelVisitor(IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters)
+        private QueryModelVisitor(IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters, bool root)
 		{
 			_parameters = parameters;
 			_requiredHqlParameters = requiredHqlParameters;
-			_hqlTreeBuilder = new HqlTreeBuilder();
+            _root = root;
+            _hqlTreeBuilder = new HqlTreeBuilder();
             _treeNode = _hqlTreeBuilder.Query(_hqlTreeBuilder.SelectFrom(_hqlTreeBuilder.From()));
 		}
 
         public ExpressionToHqlTranslationResults GetTranslation()
 		{
+            if (_root)
+            {
+                DetectOuterExists();
+            }
+
             return new ExpressionToHqlTranslationResults(_treeNode,
                                                          _itemTransformers,
                                                          _listTransformers,
                                                          _postExecuteTransformers,
                                                          _additionalCriteria);
 		}
+
+	    private void DetectOuterExists()
+	    {
+            if (_treeNode is HqlExists)
+            {
+                _treeNode = _treeNode.Children.First();
+
+                _additionalCriteria.Add((q, p) => q.SetMaxResults(1));
+
+                Expression<Func<IEnumerable<object>, bool>> x = l => l.Any();
+
+                _listTransformers.Add(x);
+            }
+	    }
 
         public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
 		{
@@ -194,11 +216,33 @@ namespace NHibernate.Linq.Visitors
             {
                 ProcessAggregateOperator((AggregateResultOperator)resultOperator);
             }
+            else if (resultOperator is AnyResultOperator)
+            {
+                ProcessAnyOperator((AnyResultOperator) resultOperator);
+            }
+            else if (resultOperator is AllResultOperator)
+            {
+                ProcessAllOperator((AllResultOperator) resultOperator);
+            }
             else
             {
                 throw new NotSupportedException(string.Format("The {0} result operator is not current supported",
                                                               resultOperator.GetType().Name));
             }
+        }
+
+        private void ProcessAllOperator(AllResultOperator resultOperator)
+        {
+            AddWhereClause(_hqlTreeBuilder.BooleanNot(
+                               HqlGeneratorExpressionTreeVisitor.Visit(resultOperator.Predicate, _parameters,
+                                                                       _requiredHqlParameters).AsBooleanExpression()));
+
+            _treeNode = _hqlTreeBuilder.BooleanNot(_hqlTreeBuilder.Exists((HqlQuery)_treeNode));
+        }
+
+        private void ProcessAnyOperator(AnyResultOperator anyOperator)
+        {
+            _treeNode = _hqlTreeBuilder.Exists((HqlQuery) _treeNode);
         }
 
         private void ProcessContainsOperator(ContainsResultOperator resultOperator)
