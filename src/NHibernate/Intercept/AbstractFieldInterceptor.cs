@@ -108,9 +108,14 @@ namespace NHibernate.Intercept
 			{
 				value.HibernateLazyInitializer.Initialize();
 				var association = value.HibernateLazyInitializer.GetImplementation(session);
-				var narrowedProxy = session.PersistenceContext.ProxyFor(association);
+				//var narrowedProxy = session.PersistenceContext.ProxyFor(association);
 				// we set the narrowed impl here to be able to get it back in the future
-				value.HibernateLazyInitializer.SetImplementation(narrowedProxy);
+				value.HibernateLazyInitializer.SetImplementation(association);
+				var entityPersister = session.GetEntityPersister(value.HibernateLazyInitializer.EntityName, value);
+				var key = new EntityKey(value.HibernateLazyInitializer.Identifier,
+				                              entityPersister,
+				                              session.EntityMode);
+				session.PersistenceContext.RemoveProxy(key);
 			}
 			return value.HibernateLazyInitializer.GetImplementation(session);
 		}

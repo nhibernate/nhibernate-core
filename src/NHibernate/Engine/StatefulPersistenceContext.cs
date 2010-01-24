@@ -720,6 +720,14 @@ namespace NHibernate.Engine
 			}
 		}
 
+		public void ClearProxyFor(IEntityPersister persister, EntityKey key)
+		{
+			if (!persister.HasProxy || key == null)
+				return;
+
+			proxiesByKey.Remove(key);
+		}
+
 		/// <summary> 
 		/// Return the existing proxy associated with the given <tt>EntityKey</tt>, or the
 		/// third argument (the entity associated with the key) if no proxy exists. Init

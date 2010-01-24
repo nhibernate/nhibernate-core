@@ -678,14 +678,6 @@ namespace NHibernate.Cfg.MappingSchema {
         public bool notnullSpecified;
 
 		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("force-load-on-property-access")]
-		public bool forceloadonpropertyaccess;
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute()]
-		public bool forceloadonpropertyaccessSpecified;
-
-        /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool unique;

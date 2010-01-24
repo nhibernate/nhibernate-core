@@ -107,7 +107,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					var value = new ManyToOne(table);
 					BindManyToOne(manyToOneMapping, value, propertyName, true);
 					property = CreateProperty(entityPropertyMapping, className, value, inheritedMetas);
-					property.IsGhostProperty = manyToOneMapping.ForceLoadOnPropertyAccess;
+					property.IsGhostProperty = manyToOneMapping.Lazy == HbmLaziness.NoProxy;
 					BindManyToOneProperty(manyToOneMapping, property);
 				}
 				else if ((componentMapping = entityPropertyMapping as HbmComponent) != null)

@@ -7,7 +7,7 @@
 		<id name="Id">
 			<generator class="assigned" />
 		</id>
-		<many-to-one name="Payment" force-load-on-property-access="true"/>
+		<many-to-one name="Payment" lazy="no-proxy"/>
 	</class>
 
 
