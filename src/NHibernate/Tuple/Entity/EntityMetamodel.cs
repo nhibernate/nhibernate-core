@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Engine;
@@ -229,6 +230,18 @@ namespace NHibernate.Tuple.Entity
 				else
 				{
 					log.Info("lazy property fetching available for: " + name);
+					foreach (var prop in persistentClass.PropertyClosureIterator)
+					{
+						if (prop.IsLazy == false)
+							continue;
+
+						var getter = prop.GetGetter(persistentClass.MappedClass);
+						if(getter.Method == null || 
+							getter.Method.IsDefined(typeof(CompilerGeneratedAttribute), false) == false)
+						{
+							log.ErrorFormat("Lazy property {0}.{1} is not an auto property, which may result in uninitialized property access", persistentClass.EntityName, prop.Name);	
+						}
+					}
 				}
 			}
 

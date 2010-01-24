@@ -1,6 +1,8 @@
 ﻿using System.Collections;
+using log4net.Core;
 using NHibernate.ByteCode.Castle;
 using NHibernate.Cfg;
+using NHibernate.Tuple.Entity;
 using NUnit.Framework;
 
 namespace NHibernate.Test.LazyProperty
@@ -8,6 +10,8 @@ namespace NHibernate.Test.LazyProperty
 	[TestFixture]
 	public class LazyPropertyFixture : TestCase
 	{
+		private string log;
+
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
@@ -22,6 +26,15 @@ namespace NHibernate.Test.LazyProperty
 		{
 			configuration.SetProperty(Environment.ProxyFactoryFactoryClass,
 									  typeof(ProxyFactoryFactory).AssemblyQualifiedName);
+		}
+
+		protected override void BuildSessionFactory()
+		{
+			using (var logSpy = new LogSpy(typeof(EntityMetamodel)))
+			{
+				base.BuildSessionFactory();
+				log = logSpy.GetWholeLog();
+			}
 		}
 
 		protected override void OnSetUp()
@@ -67,6 +80,12 @@ namespace NHibernate.Test.LazyProperty
 				Assert.True(NHibernateUtil.IsPropertyInitialized(book, "Name"));
 				Assert.False(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"));
 			}
+		}
+
+		[Test]
+		public void ShouldGenerateErrorForNonAutoPropLazyProp()
+		{
+			Assert.IsTrue(log.Contains("Lazy property NHibernate.Test.LazyProperty.Book.ALotOfText is not an auto property, which may result in uninitialized property access"));
 		}
 
 		[Test]
