@@ -16,6 +16,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.ByteCode.LinFu",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.ByteCode.LinFu.Tests", "NHibernate.ByteCode.LinFu.Tests\NHibernate.ByteCode.LinFu.Tests.csproj", "{94FDD99B-8275-4E51-8F43-958B2C632120}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.ByteCode.Castle", "NHibernate.ByteCode.Castle\NHibernate.ByteCode.Castle.csproj", "{31C3F0EA-0FED-4A2F-B68D-96CE29844487}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.ByteCode.Spring", "NHibernate.ByteCode.Spring\NHibernate.ByteCode.Spring.csproj", "{946BCA10-109A-4472-8521-76616174AD4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.ByteCode.Castle.Tests", "NHibernate.ByteCode.Castle.Tests\NHibernate.ByteCode.Castle.Tests.csproj", "{4972EE96-2417-4D47-9FF1-3B1D6B1D3191}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +48,18 @@ Global
 		{94FDD99B-8275-4E51-8F43-958B2C632120}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94FDD99B-8275-4E51-8F43-958B2C632120}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94FDD99B-8275-4E51-8F43-958B2C632120}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31C3F0EA-0FED-4A2F-B68D-96CE29844487}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31C3F0EA-0FED-4A2F-B68D-96CE29844487}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31C3F0EA-0FED-4A2F-B68D-96CE29844487}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31C3F0EA-0FED-4A2F-B68D-96CE29844487}.Release|Any CPU.Build.0 = Release|Any CPU
+		{946BCA10-109A-4472-8521-76616174AD4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{946BCA10-109A-4472-8521-76616174AD4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{946BCA10-109A-4472-8521-76616174AD4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{946BCA10-109A-4472-8521-76616174AD4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4972EE96-2417-4D47-9FF1-3B1D6B1D3191}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4972EE96-2417-4D47-9FF1-3B1D6B1D3191}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4972EE96-2417-4D47-9FF1-3B1D6B1D3191}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4972EE96-2417-4D47-9FF1-3B1D6B1D3191}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -74,7 +74,11 @@ namespace NHibernate.Tuple.Entity
 
 		public override bool IsInstrumented
 		{
-			get { return FieldInterceptionHelper.IsInstrumented(MappedClass); }
+			get { 
+				return
+					EntityMetamodel.HasLazyProperties && 
+					FieldInterceptionHelper.IsInstrumented(MappedClass);
+			}
 		}
 
 		public override System.Type MappedClass
@@ -97,12 +101,12 @@ namespace NHibernate.Tuple.Entity
 			if (optimizer == null)
 			{
 				log.Debug("Create Instantiator without optimizer for:" + persistentClass.MappedClass.FullName);
-				return new PocoInstantiator(persistentClass, null);
+				return new PocoInstantiator(persistentClass, null, ProxyFactory, EntityMetamodel.HasLazyProperties);
 			}
 			else
 			{
 				log.Debug("Create Instantiator using optimizer for:" + persistentClass.MappedClass.FullName);
-				return new PocoInstantiator(persistentClass, optimizer.InstantiationOptimizer);
+				return new PocoInstantiator(persistentClass, optimizer.InstantiationOptimizer, ProxyFactory, EntityMetamodel.HasLazyProperties);
 			}
 		}
 

@@ -36,5 +36,7 @@ namespace NHibernate.Bytecode
 		 */
 
 		IProxyValidator ProxyValidator { get; }
+
+		bool IsInstrumented(System.Type entityClass);
 	}
 }

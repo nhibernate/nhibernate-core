@@ -70,6 +70,11 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return name; }
 		}
 
+		public bool IsLazyProperty
+		{
+			get { return false; }
+		}
+
 		public string Access
 		{
 			get { return access; }

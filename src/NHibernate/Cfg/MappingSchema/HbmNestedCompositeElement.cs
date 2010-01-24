@@ -56,5 +56,10 @@ namespace NHibernate.Cfg.MappingSchema
 		}
 
 		#endregion
+
+		public bool IsLazyProperty
+		{
+			get { return false; }
+		}
 	}
 }

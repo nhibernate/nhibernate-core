@@ -5,7 +5,7 @@
 	
 	<class name="Book">
 		<id name="Id">
-			<generator class="native" />
+			<generator class="assigned" />
 		</id>
 		<property name="Name" />
 		<property name="ALotOfText" lazy="true" />

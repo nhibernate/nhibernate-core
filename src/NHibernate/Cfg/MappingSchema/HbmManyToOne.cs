@@ -18,6 +18,11 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return access; }
 		}
 
+		public bool IsLazyProperty
+		{
+			get { return false; }
+		}
+
 		public bool OptimisticLock
 		{
 			get { return optimisticlock; }

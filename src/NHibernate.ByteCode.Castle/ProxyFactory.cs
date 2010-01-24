@@ -43,5 +43,14 @@ namespace NHibernate.ByteCode.Castle
 				throw new HibernateException("Creating a proxy instance failed", e);
 			}
 		}
+
+
+		public override object GetFieldInterceptionProxy()
+		{
+			var proxyGenerationOptions = new ProxyGenerationOptions();
+			var interceptor = new LazyFieldInterceptor();
+			proxyGenerationOptions.AddMixinInstance(interceptor);
+			return ProxyGenerator.CreateClassProxy(PersistentClass, proxyGenerationOptions, interceptor);
+		}
 	}
 }

@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Bytecode;
 using NHibernate.Proxy;
 
@@ -20,6 +21,11 @@ namespace NHibernate.Test.Bytecode
 		public IProxyValidator ProxyValidator
 		{
 			get { throw new System.NotImplementedException(); }
+		}
+
+		public bool IsInstrumented(System.Type entityClass)
+		{
+			return false;
 		}
 
 		#endregion

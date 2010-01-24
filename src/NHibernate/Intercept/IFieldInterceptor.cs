@@ -26,5 +26,8 @@ namespace NHibernate.Intercept
 
 		/// <summary> Clear the internal dirty flag.</summary>
 		void ClearDirty();
+
+		/// <summary> Intercept field set/get </summary>
+		object Intercept(object target, string fieldName);
 	}
 }

@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 using log4net;
 using NHibernate.Bytecode;
 using NHibernate.Mapping;
+using NHibernate.Proxy;
 using NHibernate.Util;
 
 namespace NHibernate.Tuple
@@ -18,6 +19,10 @@ namespace NHibernate.Tuple
 		
 		[NonSerialized]
 		private readonly IInstantiationOptimizer optimizer;
+
+		private readonly IProxyFactory proxyFactory;
+
+		private readonly bool hasLazyProperties;
 
 		private readonly bool embeddedIdentifier;
 		
@@ -49,12 +54,14 @@ namespace NHibernate.Tuple
 			}
 		}
 
-		public PocoInstantiator(PersistentClass persistentClass, IInstantiationOptimizer optimizer)
+		public PocoInstantiator(PersistentClass persistentClass, IInstantiationOptimizer optimizer, IProxyFactory proxyFactory, bool hasLazyProperties)
 		{
 			mappedClass = persistentClass.MappedClass;
 			proxyInterface = persistentClass.ProxyInterface;
 			embeddedIdentifier = persistentClass.HasEmbeddedIdentifier;
 			this.optimizer = optimizer;
+			this.proxyFactory = proxyFactory;
+			this.hasLazyProperties = hasLazyProperties;
 
 			try
 			{
@@ -81,28 +88,29 @@ namespace NHibernate.Tuple
 			{
 				throw new InstantiationException("Cannot instantiate abstract class or interface: ", mappedClass);
 			}
-			else if (optimizer != null)
+			if (hasLazyProperties)
+			{
+				return proxyFactory.GetFieldInterceptionProxy();
+			}
+			if (optimizer != null)
 			{
 				return optimizer.CreateInstance();
 			}
-			else if (mappedClass.IsValueType)
+			if (mappedClass.IsValueType)
 			{
 				return Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(mappedClass, true);
 			}
-			else if (constructor == null)
+			if (constructor == null)
 			{
 				throw new InstantiationException("No default constructor for entity: ", mappedClass);
 			}
-			else
+			try
 			{
-				try
-				{
-					return constructor.Invoke(null);
-				}
-				catch (Exception e)
-				{
-					throw new InstantiationException("Could not instantiate entity: ", e, mappedClass);
-				}
+				return constructor.Invoke(null);
+			}
+			catch (Exception e)
+			{
+				throw new InstantiationException("Could not instantiate entity: ", e, mappedClass);
 			}
 		}
 

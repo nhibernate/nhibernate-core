@@ -1606,6 +1606,10 @@
     <None Include="NHibernate.Test.nunit" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NHibernate.ByteCode.Castle\NHibernate.ByteCode.Castle.csproj">
+      <Project>{31C3F0EA-0FED-4A2F-B68D-96CE29844487}</Project>
+      <Name>NHibernate.ByteCode.Castle</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NHibernate.ByteCode.LinFu\NHibernate.ByteCode.LinFu.csproj">
       <Project>{8289D6AD-9714-42D3-A94D-D4D9814D1281}</Project>
       <Name>NHibernate.ByteCode.LinFu</Name>

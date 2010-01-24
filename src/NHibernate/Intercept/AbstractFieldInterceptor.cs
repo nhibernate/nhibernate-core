@@ -7,6 +7,8 @@ namespace NHibernate.Intercept
 	[Serializable]
 	public abstract class AbstractFieldInterceptor : IFieldInterceptor
 	{
+		public static readonly object InvokeImplementation = new object();
+
 		[NonSerialized]
 		private ISessionImplementor session;
 		private ISet<string> uninitializedFields;
@@ -72,41 +74,34 @@ namespace NHibernate.Intercept
 			get { return initializing; }
 		}
 
-		protected internal object Intercept(object target, string fieldName, object value)
+		public object Intercept(object target, string fieldName)
 		{
-			if (initializing)
+			if (initializing ||
+				uninitializedFields == null || 
+				!uninitializedFields.Contains(fieldName))
+				return InvokeImplementation;
+
+			if (session == null)
 			{
-				return value;
+				throw new LazyInitializationException("entity with lazy properties is not associated with a session");
+			}
+			if (!session.IsOpen || !session.IsConnected)
+			{
+				throw new LazyInitializationException("session is not connected");
 			}
 
-			if (uninitializedFields != null && uninitializedFields.Contains(fieldName))
+			object result;
+			initializing = true;
+			try
 			{
-				if (session == null)
-				{
-					throw new LazyInitializationException("entity with lazy properties is not associated with a session");
-				}
-				else if (!session.IsOpen || !session.IsConnected)
-				{
-					throw new LazyInitializationException("session is not connected");
-				}
-
-				object result;
-				initializing = true;
-				try
-				{
-					result = ((ILazyPropertyInitializer)session.Factory.GetEntityPersister(entityName)).InitializeLazyProperty(fieldName, target, session);
-				}
-				finally
-				{
-					initializing = false;
-				}
-				uninitializedFields = null; //let's assume that there is only one lazy fetch group, for now!
-				return result;
+				result = ((ILazyPropertyInitializer)session.Factory.GetEntityPersister(entityName)).InitializeLazyProperty(fieldName, target, session);
 			}
-			else
+			finally
 			{
-				return value;
+				initializing = false;
 			}
+			uninitializedFields = null; //let's assume that there is only one lazy fetch group, for now!
+			return result;
 		}
 	}
 }

@@ -1245,7 +1245,7 @@ namespace NHibernate.Persister.Entity
 						// are shared PK one-to-one associations which are
 						// handled differently in the Type#nullSafeGet code...
 						ps = session.Batcher.PrepareCommand(CommandType.Text, lazySelect, IdentifierType.SqlTypes(Factory));
-						IdentifierType.NullSafeSet(ps, id, 1, session);
+						IdentifierType.NullSafeSet(ps, id, 0, session);
 						rs = session.Batcher.ExecuteReader(ps);
 						rs.Read();
 					}

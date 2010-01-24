@@ -5,5 +5,6 @@ namespace NHibernate.Cfg.MappingSchema
 		string Name { get; }
 		string Access { get; }
 		bool OptimisticLock { get; }
+		bool IsLazyProperty { get; }
 	}
 }

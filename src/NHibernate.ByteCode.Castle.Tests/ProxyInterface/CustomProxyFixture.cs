@@ -71,6 +71,11 @@ namespace NHibernate.ByteCode.Castle.Tests.ProxyInterface
 			get { return new DynProxyTypeValidator(); }
 		}
 
+		public bool IsInstrumented(System.Type entityClass)
+		{
+			return false;
+		}
+
 		#endregion
 	}
 

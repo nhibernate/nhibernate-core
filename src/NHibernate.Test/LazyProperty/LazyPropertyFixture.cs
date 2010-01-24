@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using NHibernate.ByteCode.Castle;
+using NHibernate.Cfg;
 using NUnit.Framework;
 
 namespace NHibernate.Test.LazyProperty
@@ -13,27 +15,32 @@ namespace NHibernate.Test.LazyProperty
 
 		protected override IList Mappings
 		{
-			get { return new[] {"LazyProperty.Mappings.hbm.xml"}; }
+			get { return new[] { "LazyProperty.Mappings.hbm.xml" }; }
 		}
 
-		public void LoadData()
+		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
-			Book b = new Book
-			         	{
-			         		Name = "some name",
-			         		ALotOfText = "a lot of text ..."
-			         	};
+			configuration.SetProperty(Environment.ProxyFactoryFactoryClass,
+									  typeof(ProxyFactoryFactory).AssemblyQualifiedName);
+		}
 
-			using(var s = OpenSession())
-			using(var tx = s.BeginTransaction())
+		protected override void OnSetUp()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
-				s.Persist(b);
+				s.Persist(new Book
+				{
+					Name = "some name",
+					Id = 1,
+					ALotOfText = "a lot of text ..."
+				});
 				tx.Commit();
 			}
-			
+
 		}
 
-		public void CleanUp()
+		protected override void OnTearDown()
 		{
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
@@ -43,25 +50,61 @@ namespace NHibernate.Test.LazyProperty
 			}
 		}
 
-		[Test,Ignore("Not supported yet, waiting for a field-interceptor provider, probably Linfu.")]
+		[Test]
 		public void PropertyLoadedNotInitialized()
 		{
-			LoadData();
-
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			{
 				var book = s.Load<Book>(1);
 
 				Assert.False(NHibernateUtil.IsPropertyInitialized(book, "Id"));
 				Assert.False(NHibernateUtil.IsPropertyInitialized(book, "Name"));
 				Assert.False(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"));
-				var name = book.Name;
+
+				NHibernateUtil.Initialize(book);
+
 				Assert.True(NHibernateUtil.IsPropertyInitialized(book, "Id"));
 				Assert.True(NHibernateUtil.IsPropertyInitialized(book, "Name"));
 				Assert.False(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"));
 			}
-
-			CleanUp();
 		}
+
+		[Test]
+		public void PropertyLoadedNotInitializedWhenUsingGet()
+		{
+			using (ISession s = OpenSession())
+			{
+				var book = s.Get<Book>(1);
+
+				Assert.True(NHibernateUtil.IsPropertyInitialized(book, "Id"));
+				Assert.True(NHibernateUtil.IsPropertyInitialized(book, "Name"));
+				Assert.False(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"));
+			}
+		}
+
+		[Test]
+		public void CanGetValueForLazyProperty()
+		{
+			using (ISession s = OpenSession())
+			{
+				var book = s.Get<Book>(1);
+
+				Assert.AreEqual("a lot of text ...", book.ALotOfText);
+				Assert.True(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"));
+			}
+		}
+
+		[Test]
+		public void CanGetValueForNonLazyProperty()
+		{
+			using (ISession s = OpenSession())
+			{
+				var book = s.Get<Book>(1);
+
+				Assert.AreEqual("some name", book.Name);
+				Assert.False(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"));
+			}
+		}
+
 	}
 }

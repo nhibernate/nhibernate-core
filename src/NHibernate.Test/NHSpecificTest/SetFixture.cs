@@ -129,7 +129,7 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			get
 			{
-				// TODO:  Add CollectionPersisterStub.IsLazy getter implementation
+				// TODO:  Add CollectionPersisterStub.IsLazyProperty getter implementation
 				return false;
 			}
 		}

@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
@@ -21,6 +22,11 @@ namespace NHibernate.Proxy.Map
 		public INHibernateProxy GetProxy(object id, ISessionImplementor session)
 		{
 			return new MapProxy(new MapLazyInitializer(entityName, id, session));
+		}
+
+		public object GetFieldInterceptionProxy()
+		{
+			throw new NotSupportedException();
 		}
 
 		#endregion

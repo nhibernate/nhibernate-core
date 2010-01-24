@@ -13,6 +13,11 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return name; }
 		}
 
+		public bool IsLazyProperty
+		{
+			get { return lazy; }
+		}
+
 		public string Access
 		{
 			get { return access; }
@@ -62,7 +67,7 @@ namespace NHibernate.Cfg.MappingSchema
 					unique = unique,
 					uniqueSpecified = true,
 					uniquekey = uniquekey,
-					index = index
+					index = index,
 				};
 			}
 		}

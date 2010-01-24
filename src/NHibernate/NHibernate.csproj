@@ -640,6 +640,8 @@
     <Compile Include="Hql\Ast\ANTLR\Tree\UpdateStatement.cs" />
     <Compile Include="Hql\Ast\HqlTreeBuilder.cs" />
     <Compile Include="Hql\Ast\HqlTreeNode.cs" />
+    <Compile Include="Intercept\DefaultFieldInterceptor.cs" />
+    <Compile Include="Intercept\IFieldInterceptorAccessor.cs" />
     <Compile Include="IQueryExpression.cs" />
     <Compile Include="IQueryOver.cs" />
     <Compile Include="Criterion\QueryOver.cs" />

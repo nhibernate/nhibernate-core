@@ -76,5 +76,10 @@ namespace NHibernate.Cfg.MappingSchema
 		{
 			get { return lazySpecified ? lazy : (HbmLaziness?)null; }
 		}
+
+		public bool IsLazyProperty
+		{
+			get { return Lazy == HbmLaziness.Proxy; }
+		}
 	}
 }

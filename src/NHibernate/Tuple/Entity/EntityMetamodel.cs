@@ -35,8 +35,6 @@ namespace NHibernate.Tuple.Entity
 
 		private readonly StandardProperty[] properties;
 
-		#region temporary
-
 		private readonly string[] propertyNames;
 		private readonly IType[] propertyTypes;
 		private readonly bool[] propertyLaziness;
@@ -50,12 +48,11 @@ namespace NHibernate.Tuple.Entity
 		private readonly bool[] propertyVersionability;
 		private readonly CascadeStyle[] cascadeStyles;
 
-		#endregion
-
 		private readonly IDictionary<string, int?> propertyIndexes = new Dictionary<string, int?>();
 		private readonly bool hasCollections;
 		private readonly bool hasMutableProperties;
 		private readonly bool hasLazyProperties;
+
 
 		private readonly int[] naturalIdPropertyNumbers;
 
@@ -106,8 +103,6 @@ namespace NHibernate.Tuple.Entity
 			properties = new StandardProperty[propertySpan];
 			List<int> naturalIdNumbers = new List<int>();
 
-			#region temporary
-
 			propertyNames = new string[propertySpan];
 			propertyTypes = new IType[propertySpan];
 			propertyUpdateability = new bool[propertySpan];
@@ -120,9 +115,6 @@ namespace NHibernate.Tuple.Entity
 			propertyVersionability = new bool[propertySpan];
 			propertyLaziness = new bool[propertySpan];
 			cascadeStyles = new CascadeStyle[propertySpan];
-
-			#endregion
-
 
 			int i = 0;
 			int tempVersionProperty = NoVersionIndex;
@@ -155,11 +147,11 @@ namespace NHibernate.Tuple.Entity
 					foundNonIdentifierPropertyNamedId = true;
 				}
 
-				#region temporary
-
 				bool lazyProperty = prop.IsLazy && lazyAvailable;
 				if (lazyProperty)
+				{
 					hasLazy = true;
+				}
 				propertyLaziness[i] = lazyProperty;
 
 				propertyNames[i] = properties[i].Name;
@@ -177,8 +169,6 @@ namespace NHibernate.Tuple.Entity
 				                           && ((IAssociationType) propertyTypes[i]).IsAlwaysDirtyChecked);
 
 				cascadeStyles[i] = properties[i].CascadeStyle;
-
-				#endregion
 
 				if (properties[i].IsLazy)
 				{
@@ -226,10 +216,22 @@ namespace NHibernate.Tuple.Entity
 
 			versionPropertyIndex = tempVersionProperty;
 			hasLazyProperties = hasLazy;
-			if (hasLazyProperties) log.Info("lazy property fetching available for: " + name);
-
 			lazy = persistentClass.IsLazy
 			       && (!persistentClass.HasPocoRepresentation || !ReflectHelper.IsFinalClass(persistentClass.ProxyInterface));
+
+			if (hasLazy)
+			{
+				if (lazy == false)
+				{
+					log.WarnFormat("Disabled lazy properies fetching for {0} beacuse it does not support lazy at the entity level", name);
+					hasLazyProperties = false;
+				}
+				else
+				{
+					log.Info("lazy property fetching available for: " + name);
+				}
+			}
+
 			mutable = persistentClass.IsMutable;
 
 			if (!persistentClass.IsAbstract.HasValue)

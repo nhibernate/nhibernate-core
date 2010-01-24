@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
@@ -42,5 +43,10 @@ namespace NHibernate.Proxy
 
 
 		public abstract INHibernateProxy GetProxy(object id, ISessionImplementor session);
+
+		public virtual object GetFieldInterceptionProxy()
+		{
+			throw new NotSupportedException();
+		}
 	}
 }
