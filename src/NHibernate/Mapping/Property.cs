@@ -132,10 +132,10 @@ namespace NHibernate.Mapping
 			{
 				bool[] columnUpdateability = propertyValue.ColumnUpdateability;
 				return updateable &&
-				       (
-				       	// columnUpdateability.Length == 0 ||
-				       !ArrayHelper.IsAllFalse(columnUpdateability)
-				       );
+					   (
+					// columnUpdateability.Length == 0 ||
+					   !ArrayHelper.IsAllFalse(columnUpdateability)
+					   );
 			}
 			set { updateable = value; }
 		}
@@ -146,10 +146,10 @@ namespace NHibernate.Mapping
 			{
 				bool[] columnInsertability = propertyValue.ColumnInsertability;
 				return insertable &&
-				       (
-				       	columnInsertability.Length == 0 ||
-				       	!ArrayHelper.IsAllFalse(columnInsertability)
-				       );
+					   (
+						columnInsertability.Length == 0 ||
+						!ArrayHelper.IsAllFalse(columnInsertability)
+					   );
 			}
 			set { insertable = value; }
 		}
@@ -206,7 +206,7 @@ namespace NHibernate.Mapping
 
 		public MetaAttribute GetMetaAttribute(string attributeName)
 		{
-			if(metaAttributes == null)
+			if (metaAttributes == null)
 			{
 				return null;
 			}
@@ -226,7 +226,7 @@ namespace NHibernate.Mapping
 			{
 				if (propertyValue is SimpleValue)
 				{
-					return ((SimpleValue) propertyValue).NullValue;
+					return ((SimpleValue)propertyValue).NullValue;
 				}
 				else
 					return null;
@@ -304,5 +304,7 @@ namespace NHibernate.Mapping
 			get { return nodeName; }
 			set { nodeName = value; }
 		}
+
+		public bool IsGhostProperty { get; set; }
 	}
 }

@@ -32,12 +32,15 @@ namespace NHibernate.Intercept
 			return fieldInterceptorAccessor == null ? null : fieldInterceptorAccessor.FieldInterceptor;
 		}
 
-		public static IFieldInterceptor InjectFieldInterceptor(object entity, string entityName, ISet<string> uninitializedFieldNames, ISessionImplementor session)
+		public static IFieldInterceptor InjectFieldInterceptor(object entity, string entityName, 
+			ISet<string> uninitializedFieldNames, 
+			ISet<string> uninitializedGhostFieldNames,
+			ISessionImplementor session)
 		{
 			var fieldInterceptorAccessor = entity as IFieldInterceptorAccessor;
 			if (fieldInterceptorAccessor != null)
 			{
-				var fieldInterceptorImpl = new DefaultFieldInterceptor(session, uninitializedFieldNames, entityName);
+				var fieldInterceptorImpl = new DefaultFieldInterceptor(session, uninitializedFieldNames, uninitializedGhostFieldNames, entityName);
 				fieldInterceptorAccessor.FieldInterceptor = fieldInterceptorImpl;
 				return fieldInterceptorImpl;
 			}

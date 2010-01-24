@@ -28,6 +28,6 @@ namespace NHibernate.Intercept
 		void ClearDirty();
 
 		/// <summary> Intercept field set/get </summary>
-		object Intercept(object target, string fieldName);
+		object Intercept(object target, string fieldName, object value);
 	}
 }

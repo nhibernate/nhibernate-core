@@ -153,6 +153,11 @@ namespace NHibernate.Tuple.Entity
 				{
 					hasLazy = true;
 				}
+				if (prop.IsGhostProperty)
+				{
+					hasGhostProperties = true;
+				}
+
 				propertyLaziness[i] = lazyProperty;
 
 				propertyNames[i] = properties[i].Name;
@@ -230,18 +235,21 @@ namespace NHibernate.Tuple.Entity
 				else
 				{
 					log.Info("lazy property fetching available for: " + name);
-					foreach (var prop in persistentClass.PropertyClosureIterator)
-					{
-						if (prop.IsLazy == false)
-							continue;
-
-						var getter = prop.GetGetter(persistentClass.MappedClass);
-						if(getter.Method == null || 
-							getter.Method.IsDefined(typeof(CompilerGeneratedAttribute), false) == false)
-						{
-							log.ErrorFormat("Lazy property {0}.{1} is not an auto property, which may result in uninitialized property access", persistentClass.EntityName, prop.Name);	
-						}
-					}
+					VerifyCanInterceptPropertiesForLazyOrGhostProperties(persistentClass);
+				}
+			}
+			if(hasGhostProperties)
+			{
+				if (lazy == false)
+				{
+					log.WarnFormat("Disabled ghost properies fetching for {0} beacuse it does not support lazy at the entity level", name);
+					hasGhostProperties = false;
+				}
+				else
+				{
+					log.Info("Ghost property fetching available for: " + name);
+					if (hasLazy == false) // avoid double checking
+						VerifyCanInterceptPropertiesForLazyOrGhostProperties(persistentClass);
 				}
 			}
 
@@ -289,6 +297,22 @@ namespace NHibernate.Tuple.Entity
 			subclassEntityNames.Add(name);
 
 			tuplizerMapping = new EntityEntityModeToTuplizerMapping(persistentClass, this);
+		}
+
+		private static void VerifyCanInterceptPropertiesForLazyOrGhostProperties(PersistentClass persistentClass)
+		{
+			foreach (var prop in persistentClass.PropertyClosureIterator)
+			{
+				if (prop.IsLazy == false && prop.IsGhostProperty)
+					continue;
+
+				var getter = prop.GetGetter(persistentClass.MappedClass);
+				if(getter.Method == null || 
+					getter.Method.IsDefined(typeof(CompilerGeneratedAttribute), false) == false)
+				{
+					log.ErrorFormat("Lazy or ghost property {0}.{1} is not an auto property, which may result in uninitialized property access", persistentClass.EntityName, prop.Name);	
+				}
+			}
 		}
 
 		private ValueInclusion DetermineInsertValueGenerationType(Mapping.Property mappingProperty, StandardProperty runtimeProperty)
@@ -659,6 +683,7 @@ namespace NHibernate.Tuple.Entity
 
 		#region Tuplizer
 		private readonly EntityEntityModeToTuplizerMapping tuplizerMapping;
+		private bool hasGhostProperties;
 
 		public IEntityTuplizer GetTuplizer(EntityMode entityMode)
 		{
@@ -679,6 +704,11 @@ namespace NHibernate.Tuple.Entity
 		public bool HasNaturalIdentifier
 		{
 			get { return naturalIdPropertyNumbers != null; }
+		}
+
+		public bool HasGhostProperties
+		{
+			get { return hasGhostProperties; }
 		}
 
 		public bool HasNonIdentifierPropertyNamedId

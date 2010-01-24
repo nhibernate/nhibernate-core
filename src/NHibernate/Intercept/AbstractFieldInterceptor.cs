@@ -1,6 +1,7 @@
 using System;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
+using NHibernate.Proxy;
 
 namespace NHibernate.Intercept
 {
@@ -12,16 +13,18 @@ namespace NHibernate.Intercept
 		[NonSerialized]
 		private ISessionImplementor session;
 		private ISet<string> uninitializedFields;
+		private ISet<string> uninitializedGhostFieldNames;
 		private readonly string entityName;
 
 		[NonSerialized]
 		private bool initializing;
 		private bool isDirty;
 
-		protected internal AbstractFieldInterceptor(ISessionImplementor session, ISet<string> uninitializedFields, string entityName)
+		protected internal AbstractFieldInterceptor(ISessionImplementor session, ISet<string> uninitializedFields, ISet<string> uninitializedGhostFieldNames, string entityName)
 		{
 			this.session = session;
 			this.uninitializedFields = uninitializedFields;
+			this.uninitializedGhostFieldNames = uninitializedGhostFieldNames;
 			this.entityName = entityName;
 		}
 
@@ -74,11 +77,9 @@ namespace NHibernate.Intercept
 			get { return initializing; }
 		}
 
-		public object Intercept(object target, string fieldName)
+		public object Intercept(object target, string fieldName, object value)
 		{
-			if (initializing ||
-				uninitializedFields == null || 
-				!uninitializedFields.Contains(fieldName))
+			if (initializing)
 				return InvokeImplementation;
 
 			if (session == null)
@@ -90,11 +91,38 @@ namespace NHibernate.Intercept
 				throw new LazyInitializationException("session is not connected");
 			}
 
+			if (uninitializedFields != null && uninitializedFields.Contains(fieldName))
+			{
+				return InitializeField(fieldName, target);
+			}
+			if (value is INHibernateProxy && uninitializedGhostFieldNames != null && uninitializedGhostFieldNames.Contains(fieldName))
+			{
+				return InitializeOrGetAssociation((INHibernateProxy)value);
+			}
+			return InvokeImplementation;
+		}
+
+		private object InitializeOrGetAssociation(INHibernateProxy value)
+		{
+			if(value.HibernateLazyInitializer.IsUninitialized)
+			{
+				value.HibernateLazyInitializer.Initialize();
+				var association = value.HibernateLazyInitializer.GetImplementation(session);
+				var narrowedProxy = session.PersistenceContext.ProxyFor(association);
+				// we set the narrowed impl here to be able to get it back in the future
+				value.HibernateLazyInitializer.SetImplementation(narrowedProxy);
+			}
+			return value.HibernateLazyInitializer.GetImplementation(session);
+		}
+
+		private object InitializeField(string fieldName, object target)
+		{
 			object result;
 			initializing = true;
 			try
 			{
-				result = ((ILazyPropertyInitializer)session.Factory.GetEntityPersister(entityName)).InitializeLazyProperty(fieldName, target, session);
+				var lazyPropertyInitializer = ((ILazyPropertyInitializer) session.Factory.GetEntityPersister(entityName));
+				result = lazyPropertyInitializer.InitializeLazyProperty(fieldName, target, session);
 			}
 			finally
 			{

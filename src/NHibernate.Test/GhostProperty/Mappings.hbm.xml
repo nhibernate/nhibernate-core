@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+					assembly="NHibernate.Test" 
+					namespace="NHibernate.Test.GhostProperty">
+	
+	<class name="Order" table="Orders">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+		<many-to-one name="Payment" force-load-on-property-access="true"/>
+	</class>
+
+
+	<class name="Payment" abstract="true">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+		<discriminator column="Type" type="System.String"/>
+		<subclass name="WireTransfer" discriminator-value="WT">
+			
+		</subclass>
+		<subclass name="CreditCard" discriminator-value="CC">
+
+		</subclass>
+
+	</class>
+
+</hibernate-mapping>

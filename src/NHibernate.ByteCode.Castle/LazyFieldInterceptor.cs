@@ -18,12 +18,14 @@ namespace NHibernate.ByteCode.Castle
 			{
 				if (ReflectHelper.IsPropertyGet(invocation.Method))
 				{
-					var result = FieldInterceptor.Intercept(invocation.InvocationTarget, ReflectHelper.GetPropertyName(invocation.Method));
-					if (result == AbstractFieldInterceptor.InvokeImplementation)
-					{
-						invocation.Proceed();
-					}
-					else
+					invocation.Proceed(); // get the existing value
+					
+					var result = FieldInterceptor.Intercept(
+						invocation.InvocationTarget, 
+						ReflectHelper.GetPropertyName(invocation.Method), 
+						invocation.ReturnValue);
+
+					if (result != AbstractFieldInterceptor.InvokeImplementation)
 					{
 						invocation.ReturnValue = result;
 					}
@@ -31,7 +33,7 @@ namespace NHibernate.ByteCode.Castle
 				else if (ReflectHelper.IsPropertySet(invocation.Method))
 				{
 					FieldInterceptor.MarkDirty();
-					FieldInterceptor.Intercept(invocation.InvocationTarget, ReflectHelper.GetPropertyName(invocation.Method));
+					FieldInterceptor.Intercept(invocation.InvocationTarget, ReflectHelper.GetPropertyName(invocation.Method), null);
 					invocation.Proceed();
 				}
 			}

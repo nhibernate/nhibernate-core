@@ -879,6 +879,8 @@
 			</xs:attribute>
 			<xs:attribute name="unique" default="false" type="xs:boolean">
 			</xs:attribute>
+			<xs:attribute name="force-load-on-property-access" default="false" type="xs:boolean">
+			</xs:attribute>
 			<xs:attribute name="unique-key" type="xs:string" />
 			<xs:attribute name="index" type="xs:string" />
 			<xs:attribute name="cascade" type="xs:string" />

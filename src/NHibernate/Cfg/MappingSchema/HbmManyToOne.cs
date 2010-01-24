@@ -28,6 +28,11 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return optimisticlock; }
 		}
 
+		public bool ForceLoadOnPropertyAccess
+		{
+			get { return forceloadonpropertyaccess; }
+		}
+
 		#endregion
 
 		#region Overrides of AbstractDecoratable

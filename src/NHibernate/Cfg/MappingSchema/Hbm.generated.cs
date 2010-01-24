@@ -672,11 +672,19 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute("not-null")]
         public bool notnull;
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool notnullSpecified;
-        
+
+		/// <remarks/>
+		[System.Xml.Serialization.XmlAttributeAttribute("force-load-on-property-access")]
+		public bool forceloadonpropertyaccess;
+
+		/// <remarks/>
+		[System.Xml.Serialization.XmlAttributeAttribute()]
+		public bool forceloadonpropertyaccessSpecified;
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(false)]
