@@ -708,7 +708,7 @@ namespace NHibernate.Tuple.Entity
 
 		public bool HasUnwrapProxyForProperties
 		{
-			get { return hasUnwrapProxyForProperties;c }
+			get { return hasUnwrapProxyForProperties; }
 		}
 
 		public bool HasNonIdentifierPropertyNamedId
