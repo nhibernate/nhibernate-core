@@ -13,18 +13,18 @@ namespace NHibernate.Intercept
 		[NonSerialized]
 		private ISessionImplementor session;
 		private ISet<string> uninitializedFields;
-		private ISet<string> uninitializedGhostFieldNames;
+		private ISet<string> unwrapProxyFieldNames;
 		private readonly string entityName;
 
 		[NonSerialized]
 		private bool initializing;
 		private bool isDirty;
 
-		protected internal AbstractFieldInterceptor(ISessionImplementor session, ISet<string> uninitializedFields, ISet<string> uninitializedGhostFieldNames, string entityName)
+		protected internal AbstractFieldInterceptor(ISessionImplementor session, ISet<string> uninitializedFields, ISet<string> unwrapProxyFieldNames, string entityName)
 		{
 			this.session = session;
 			this.uninitializedFields = uninitializedFields;
-			this.uninitializedGhostFieldNames = uninitializedGhostFieldNames;
+			this.unwrapProxyFieldNames = unwrapProxyFieldNames;
 			this.entityName = entityName;
 		}
 
@@ -95,7 +95,7 @@ namespace NHibernate.Intercept
 			{
 				return InitializeField(fieldName, target);
 			}
-			if (value is INHibernateProxy && uninitializedGhostFieldNames != null && uninitializedGhostFieldNames.Contains(fieldName))
+			if (value is INHibernateProxy && unwrapProxyFieldNames != null && unwrapProxyFieldNames.Contains(fieldName))
 			{
 				return InitializeOrGetAssociation((INHibernateProxy)value);
 			}

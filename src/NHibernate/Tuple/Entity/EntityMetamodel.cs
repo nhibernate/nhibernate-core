@@ -153,9 +153,9 @@ namespace NHibernate.Tuple.Entity
 				{
 					hasLazy = true;
 				}
-				if (prop.IsGhostProperty)
+				if (prop.UnwrapProxy)
 				{
-					hasGhostProperties = true;
+					hasUnwrapProxyForProperties = true;
 				}
 
 				propertyLaziness[i] = lazyProperty;
@@ -238,12 +238,12 @@ namespace NHibernate.Tuple.Entity
 					VerifyCanInterceptPropertiesForLazyOrGhostProperties(persistentClass);
 				}
 			}
-			if(hasGhostProperties)
+			if(hasUnwrapProxyForProperties)
 			{
 				if (lazy == false)
 				{
 					log.WarnFormat("Disabled ghost properies fetching for {0} beacuse it does not support lazy at the entity level", name);
-					hasGhostProperties = false;
+					hasUnwrapProxyForProperties = false;
 				}
 				else
 				{
@@ -303,7 +303,7 @@ namespace NHibernate.Tuple.Entity
 		{
 			foreach (var prop in persistentClass.PropertyClosureIterator)
 			{
-				if (prop.IsLazy == false && prop.IsGhostProperty)
+				if (prop.IsLazy == false && prop.UnwrapProxy)
 					continue;
 
 				var getter = prop.GetGetter(persistentClass.MappedClass);
@@ -683,7 +683,7 @@ namespace NHibernate.Tuple.Entity
 
 		#region Tuplizer
 		private readonly EntityEntityModeToTuplizerMapping tuplizerMapping;
-		private bool hasGhostProperties;
+		private bool hasUnwrapProxyForProperties;
 
 		public IEntityTuplizer GetTuplizer(EntityMode entityMode)
 		{
@@ -706,9 +706,9 @@ namespace NHibernate.Tuple.Entity
 			get { return naturalIdPropertyNumbers != null; }
 		}
 
-		public bool HasGhostProperties
+		public bool HasUnwrapProxyForProperties
 		{
-			get { return hasGhostProperties; }
+			get { return hasUnwrapProxyForProperties;c }
 		}
 
 		public bool HasNonIdentifierPropertyNamedId

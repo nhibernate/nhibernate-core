@@ -77,5 +77,18 @@ namespace NHibernate.Test.GhostProperty
 			}
 		}
 
+		[Test]
+		public void GhostPropertyMaintainIdentityMapUsingGet()
+		{
+			using (ISession s = OpenSession())
+			{
+				var payment = s.Load<Payment>(1);
+				var order = s.Get<Order>(1);
+
+				Assert.AreSame(order.Payment, payment);
+			}
+		}
+
+
 	}
 }

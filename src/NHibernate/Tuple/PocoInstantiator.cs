@@ -22,7 +22,7 @@ namespace NHibernate.Tuple
 
 		private readonly IProxyFactory proxyFactory;
 
-		private readonly bool hasLazyProperties;
+		private readonly bool generateFieldInterceptionProxy;
 
 		private readonly bool embeddedIdentifier;
 		
@@ -54,14 +54,14 @@ namespace NHibernate.Tuple
 			}
 		}
 
-		public PocoInstantiator(PersistentClass persistentClass, IInstantiationOptimizer optimizer, IProxyFactory proxyFactory, bool hasLazyProperties)
+		public PocoInstantiator(PersistentClass persistentClass, IInstantiationOptimizer optimizer, IProxyFactory proxyFactory, bool generateFieldInterceptionProxy)
 		{
 			mappedClass = persistentClass.MappedClass;
 			proxyInterface = persistentClass.ProxyInterface;
 			embeddedIdentifier = persistentClass.HasEmbeddedIdentifier;
 			this.optimizer = optimizer;
 			this.proxyFactory = proxyFactory;
-			this.hasLazyProperties = hasLazyProperties;
+			this.generateFieldInterceptionProxy = generateFieldInterceptionProxy;
 
 			try
 			{
@@ -88,7 +88,7 @@ namespace NHibernate.Tuple
 			{
 				throw new InstantiationException("Cannot instantiate abstract class or interface: ", mappedClass);
 			}
-			if (hasLazyProperties)
+			if (generateFieldInterceptionProxy)
 			{
 				return proxyFactory.GetFieldInterceptionProxy();
 			}

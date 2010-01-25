@@ -25,7 +25,7 @@ namespace NHibernate.Tuple.Entity
 		private readonly bool islifecycleImplementor;
 		private readonly bool isValidatableImplementor;
 		private readonly HashedSet<string> lazyPropertyNames = new HashedSet<string>();
-		private readonly HashedSet<string> ghostPropertyNames = new HashedSet<string>();
+		private readonly HashedSet<string> unwrapProxyPropertyNames = new HashedSet<string>();
 		[NonSerialized]
 		private IReflectionOptimizer optimizer;
 		private readonly IProxyValidator proxyValidator;
@@ -55,8 +55,8 @@ namespace NHibernate.Tuple.Entity
 			{
 				if (property.IsLazy)
 					lazyPropertyNames.Add(property.Name);
-				if (property.IsGhostProperty)
-					ghostPropertyNames.Add(property.Name);
+				if (property.UnwrapProxy)
+					unwrapProxyPropertyNames.Add(property.Name);
 			}
 			SetReflectionOptimizer();
 
@@ -79,7 +79,7 @@ namespace NHibernate.Tuple.Entity
 		{
 			get 
 			{ 
-				return (EntityMetamodel.HasLazyProperties || EntityMetamodel.HasGhostProperties) 
+				return (EntityMetamodel.HasLazyProperties || EntityMetamodel.HasUnwrapProxyForProperties) 
 						&& FieldInterceptionHelper.IsInstrumented(MappedClass);
 			}
 		}
@@ -104,12 +104,12 @@ namespace NHibernate.Tuple.Entity
 			if (optimizer == null)
 			{
 				log.Debug("Create Instantiator without optimizer for:" + persistentClass.MappedClass.FullName);
-				return new PocoInstantiator(persistentClass, null, ProxyFactory, EntityMetamodel.HasLazyProperties || EntityMetamodel.HasGhostProperties);
+				return new PocoInstantiator(persistentClass, null, ProxyFactory, EntityMetamodel.HasLazyProperties || EntityMetamodel.HasUnwrapProxyForProperties);
 			}
 			else
 			{
 				log.Debug("Create Instantiator using optimizer for:" + persistentClass.MappedClass.FullName);
-				return new PocoInstantiator(persistentClass, optimizer.InstantiationOptimizer, ProxyFactory, EntityMetamodel.HasLazyProperties || EntityMetamodel.HasGhostProperties);
+				return new PocoInstantiator(persistentClass, optimizer.InstantiationOptimizer, ProxyFactory, EntityMetamodel.HasLazyProperties || EntityMetamodel.HasUnwrapProxyForProperties);
 			}
 		}
 
@@ -229,7 +229,7 @@ namespace NHibernate.Tuple.Entity
 				HashedSet<string> lazyProps = lazyPropertiesAreUnfetched && EntityMetamodel.HasLazyProperties ? lazyPropertyNames : null;
 				//TODO: if we support multiple fetch groups, we would need
 				//      to clone the set of lazy properties!
-				FieldInterceptionHelper.InjectFieldInterceptor(entity, EntityName, lazyProps, ghostPropertyNames, session);
+				FieldInterceptionHelper.InjectFieldInterceptor(entity, EntityName, lazyProps, unwrapProxyPropertyNames, session);
 			}
 		}
 

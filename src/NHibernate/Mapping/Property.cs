@@ -305,6 +305,6 @@ namespace NHibernate.Mapping
 			set { nodeName = value; }
 		}
 
-		public bool IsGhostProperty { get; set; }
+		public bool UnwrapProxy { get; set; }
 	}
 }

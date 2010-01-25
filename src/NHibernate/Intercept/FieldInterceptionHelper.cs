@@ -34,13 +34,13 @@ namespace NHibernate.Intercept
 
 		public static IFieldInterceptor InjectFieldInterceptor(object entity, string entityName, 
 			ISet<string> uninitializedFieldNames, 
-			ISet<string> uninitializedGhostFieldNames,
+			ISet<string> unwrapProxyFieldNames,
 			ISessionImplementor session)
 		{
 			var fieldInterceptorAccessor = entity as IFieldInterceptorAccessor;
 			if (fieldInterceptorAccessor != null)
 			{
-				var fieldInterceptorImpl = new DefaultFieldInterceptor(session, uninitializedFieldNames, uninitializedGhostFieldNames, entityName);
+				var fieldInterceptorImpl = new DefaultFieldInterceptor(session, uninitializedFieldNames, unwrapProxyFieldNames, entityName);
 				fieldInterceptorAccessor.FieldInterceptor = fieldInterceptorImpl;
 				return fieldInterceptorImpl;
 			}

@@ -5,8 +5,8 @@ namespace NHibernate.Intercept
 {
 	public class DefaultFieldInterceptor : AbstractFieldInterceptor
 	{
-		public DefaultFieldInterceptor(ISessionImplementor session, ISet<string> uninitializedFields, ISet<string> uninitializedGhostFieldNames, string entityName)
-			: base(session, uninitializedFields, uninitializedGhostFieldNames, entityName)
+		public DefaultFieldInterceptor(ISessionImplementor session, ISet<string> uninitializedFields, ISet<string> unwrapProxyFieldNames, string entityName)
+			: base(session, uninitializedFields, unwrapProxyFieldNames, entityName)
 		{
 		}
 	}
