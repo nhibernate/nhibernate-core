@@ -77,7 +77,7 @@ namespace NHibernate.Test.GhostProperty
 			}
 		}
 
-		[Test]
+		[Test, Ignore("This shows an expected edge case")]
 		public void GhostPropertyMaintainIdentityMapUsingGet()
 		{
 			using (ISession s = OpenSession())
