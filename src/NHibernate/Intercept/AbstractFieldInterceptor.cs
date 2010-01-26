@@ -13,7 +13,8 @@ namespace NHibernate.Intercept
 		[NonSerialized]
 		private ISessionImplementor session;
 		private ISet<string> uninitializedFields;
-		private ISet<string> unwrapProxyFieldNames;
+		private readonly ISet<string> unwrapProxyFieldNames;
+		private readonly ISet<string> loadedUnwrapProxyFieldNames = new HashedSet<string>();
 		private readonly string entityName;
 
 		[NonSerialized]
@@ -47,6 +48,10 @@ namespace NHibernate.Intercept
 
 		public bool IsInitializedField(string field)
 		{
+			if (unwrapProxyFieldNames != null && unwrapProxyFieldNames.Contains(field))
+			{
+				return loadedUnwrapProxyFieldNames.Contains(field);
+			}
 			return uninitializedFields == null || !uninitializedFields.Contains(field);
 		}
 
@@ -77,6 +82,8 @@ namespace NHibernate.Intercept
 			get { return initializing; }
 		}
 
+		// NH Specific: Hibernate only deals with lazy properties here, we deal with 
+		// both lazy properties and with no-proxy. 
 		public object Intercept(object target, string fieldName, object value)
 		{
 			if (initializing)
@@ -97,25 +104,18 @@ namespace NHibernate.Intercept
 			}
 			if (value is INHibernateProxy && unwrapProxyFieldNames != null && unwrapProxyFieldNames.Contains(fieldName))
 			{
-				return InitializeOrGetAssociation((INHibernateProxy)value);
+				return InitializeOrGetAssociation((INHibernateProxy)value, fieldName);
 			}
 			return InvokeImplementation;
 		}
 
-		private object InitializeOrGetAssociation(INHibernateProxy value)
+		private object InitializeOrGetAssociation(INHibernateProxy value, string fieldName)
 		{
 			if(value.HibernateLazyInitializer.IsUninitialized)
 			{
 				value.HibernateLazyInitializer.Initialize();
-				var association = value.HibernateLazyInitializer.GetImplementation(session);
-				//var narrowedProxy = session.PersistenceContext.ProxyFor(association);
-				// we set the narrowed impl here to be able to get it back in the future
-				value.HibernateLazyInitializer.SetImplementation(association);
-				var entityPersister = session.GetEntityPersister(value.HibernateLazyInitializer.EntityName, value);
-				var key = new EntityKey(value.HibernateLazyInitializer.Identifier,
-				                              entityPersister,
-				                              session.EntityMode);
-				session.PersistenceContext.RemoveProxy(key);
+				value.HibernateLazyInitializer.Unwrap = true; // means that future Load/Get from the session will get the implementation
+				loadedUnwrapProxyFieldNames.Add(fieldName);
 			}
 			return value.HibernateLazyInitializer.GetImplementation(session);
 		}

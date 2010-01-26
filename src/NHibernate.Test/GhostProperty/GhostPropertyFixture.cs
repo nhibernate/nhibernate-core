@@ -67,6 +67,16 @@ namespace NHibernate.Test.GhostProperty
 		}
 
 		[Test]
+		public void WillNotLoadGhostPropertyByDefault()
+		{
+			using (ISession s = OpenSession())
+			{
+				var order = s.Get<Order>(1);
+				Assert.IsFalse(NHibernateUtil.IsPropertyInitialized(order, "Payment"));
+			}
+		}
+
+		[Test]
 		public void GhostPropertyMaintainIdentityMap()
 		{
 			using (ISession s = OpenSession())
