@@ -111,16 +111,10 @@ namespace NHibernate.AdoNet
 			if (Connection == null)
 				throw new ArgumentNullException(
 					"Connection was not set! You must set the connection property before calling ExecuteNonQuery()");
-			try
-			{
-				if (CountOfCommands == 0)
-					return 0;
-				return doExecuteNonQuery();
-			}
-			catch (Exception e)
-			{
-				throw new HibernateException("An exception occurred when executing batch queries", e);
-			}
+
+			if (CountOfCommands == 0)
+				return 0;
+			return doExecuteNonQuery();
 		}
 
 		public SqlConnection Connection
