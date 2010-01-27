@@ -55,6 +55,8 @@ namespace NHibernate.Dialect
 			Types.CLOB, "TEXT" );
 			*/
 
+			RegisterKeyword("top");
+			
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.ASAClientDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";
 		}

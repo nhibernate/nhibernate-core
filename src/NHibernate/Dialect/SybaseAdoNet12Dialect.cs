@@ -35,6 +35,8 @@ namespace NHibernate.Dialect
 		/// <summary></summary>
 		public SybaseAdoNet12Dialect()
 		{
+			RegisterKeyword("top");
+			
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SybaseAdoNet12ClientDriver";
 			DefaultProperties[Environment.PrepareSql] = "true";
 		}

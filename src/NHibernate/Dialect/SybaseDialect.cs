@@ -126,6 +126,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("trim", new SQLFunctionTemplate(NHibernateUtil.String, "ltrim(rtrim(?1))"));
 			RegisterFunction("locate", new CharIndexFunction());
 
+			RegisterKeyword("top");
+			
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SybaseClientDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";
 		}
