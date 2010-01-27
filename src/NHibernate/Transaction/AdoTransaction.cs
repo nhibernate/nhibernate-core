@@ -115,16 +115,16 @@ namespace NHibernate.Transaction
 				{
 					throw new TransactionException("Cannot restart transaction after failed commit");
 				}
+				
+				if (isolationLevel == IsolationLevel.Unspecified)
+				{
+					isolationLevel = session.Factory.Settings.IsolationLevel;
+				}
 
 				log.Debug(string.Format("Begin ({0})", isolationLevel));
 
 				try
 				{
-					if (isolationLevel == IsolationLevel.Unspecified)
-					{
-						isolationLevel = session.Factory.Settings.IsolationLevel;
-					}
-
 					if (isolationLevel == IsolationLevel.Unspecified)
 					{
 						trans = session.Connection.BeginTransaction();
