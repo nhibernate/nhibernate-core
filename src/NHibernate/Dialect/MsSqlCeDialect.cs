@@ -1,7 +1,9 @@
 using System.Data;
 using System.Data.Common;
+using System.Text;
 using NHibernate.Dialect.Schema;
-using Environment=NHibernate.Cfg.Environment;
+using NHibernate.Util;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
@@ -97,5 +99,51 @@ namespace NHibernate.Dialect
 		{
 			return new MsSqlCeDataBaseSchema(connection);
 		}
-	}
+
+        public override string Qualify(string catalog, string schema, string table)
+        {
+            // SQL Server Compact doesn't support Schemas. So join schema name and table name with underscores
+            // similar to the SQLLite dialect.
+            
+            var qualifiedName = new StringBuilder();
+            bool quoted = false;
+
+            if (!string.IsNullOrEmpty(catalog))
+            {
+                qualifiedName.Append(catalog).Append(StringHelper.Dot);
+            }
+
+            var tableName = new StringBuilder();
+            if (!string.IsNullOrEmpty(schema))
+            {
+                if (schema.StartsWith(OpenQuote.ToString()))
+                {
+                    schema = schema.Substring(1, schema.Length - 1);
+                    quoted = true;
+                }
+                if (schema.EndsWith(CloseQuote.ToString()))
+                {
+                    schema = schema.Substring(0, schema.Length - 1);
+                    quoted = true;
+                }
+                tableName.Append(schema).Append(StringHelper.Underscore);
+            }
+
+            if (table.StartsWith(OpenQuote.ToString()))
+            {
+                table = table.Substring(1, table.Length - 1);
+                quoted = true;
+            }
+            if (table.EndsWith(CloseQuote.ToString()))
+            {
+                table = table.Substring(0, table.Length - 1);
+                quoted = true;
+            }
+
+            string name = tableName.Append(table).ToString();
+            if (quoted)
+                name = OpenQuote + name + CloseQuote;
+            return qualifiedName.Append(name).ToString();
+        }
+    }
 }
