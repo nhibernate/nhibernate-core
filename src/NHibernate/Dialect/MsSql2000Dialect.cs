@@ -10,7 +10,7 @@ using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-using Environment=NHibernate.Cfg.Environment;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
@@ -106,7 +106,7 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "left(?1, ?2)"));
 			RegisterFunction("right", new SQLFunctionTemplate(NHibernateUtil.String, "right(?1, ?2)"));
-            RegisterFunction("locate", new StandardSQLFunction("charindex", NHibernateUtil.Int32));
+			RegisterFunction("locate", new StandardSQLFunction("charindex", NHibernateUtil.Int32));
 
 
 			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime, true));
@@ -128,7 +128,7 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
-			RegisterFunction("replace", new StandardSafeSQLFunction("replace",NHibernateUtil.String, 3));
+			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
 
 			RegisterKeyword("top");
 			RegisterKeyword("integer");
@@ -496,12 +496,17 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-        public override bool SupportsSqlBatches
-        {
-            get
-            {
-                return true;
-            }
-        }
+		public override bool SupportsSqlBatches
+		{
+			get
+			{
+				return true;
+			}
+		}
+
+		public override bool IsKnownToken(string currentToken, string nextToken)
+		{
+			return currentToken == "n" && nextToken == "'"; // unicode character 
+		}
 	}
 }

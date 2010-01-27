@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.NH2074">
+
+	<class name="Person">
+		<id name="Id">
+			<generator class="increment" />
+		</id>
+		<property name="Name"/>
+
+		<property name="CalculatedProperty" formula="(SELECT COUNT(*) FROM Person t WHERE t.Name = N'VALUE')" />
+
+	</class>
+
+</hibernate-mapping>

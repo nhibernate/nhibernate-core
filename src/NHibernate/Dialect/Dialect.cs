@@ -17,7 +17,7 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
-using Environment=NHibernate.Cfg.Environment;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
@@ -67,8 +67,8 @@ namespace NHibernate.Dialect
 		{
 			standardAggregateFunctions["count"] = new CountQueryFunctionInfo();
 			standardAggregateFunctions["avg"] = new AvgQueryFunctionInfo();
-			standardAggregateFunctions["max"] = new ClassicAggregateFunction("max",false);
-			standardAggregateFunctions["min"] = new ClassicAggregateFunction("min",false);
+			standardAggregateFunctions["max"] = new ClassicAggregateFunction("max", false);
+			standardAggregateFunctions["min"] = new ClassicAggregateFunction("min", false);
 			standardAggregateFunctions["sum"] = new SumQueryFunctionInfo();
 
 			Extracter = new NoOpViolatedConstraintNameExtracter();
@@ -151,7 +151,7 @@ namespace NHibernate.Dialect
 			{
 				dialectName = Environment.Properties[Environment.Dialect];
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				throw new HibernateException("The dialect was not set. Set the property 'dialect'.", e);
 			}
@@ -171,7 +171,7 @@ namespace NHibernate.Dialect
 				throw new ArgumentNullException("props");
 			string dialectName;
 			if (props.TryGetValue(Environment.Dialect, out dialectName) == false)
-                throw new InvalidOperationException("Could not find the dialect in the configuration");
+				throw new InvalidOperationException("Could not find the dialect in the configuration");
 			if (dialectName == null)
 			{
 				return GetDialect();
@@ -184,7 +184,7 @@ namespace NHibernate.Dialect
 		{
 			try
 			{
-				return (Dialect) Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(dialectName));
+				return (Dialect)Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(dialectName));
 			}
 			catch (Exception e)
 			{
@@ -270,7 +270,7 @@ namespace NHibernate.Dialect
 		/// <returns> The appropriate command. </returns>
 		public virtual string SelectGUIDString
 		{
-			get{throw new NotSupportedException("dialect does not support server side GUIDs generation.");}
+			get { throw new NotSupportedException("dialect does not support server side GUIDs generation."); }
 		}
 
 		/// <summary> Command used to create a table. </summary>
@@ -307,7 +307,7 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public virtual string CreateTemporaryTablePostfix
 		{
-			get{return string.Empty;}
+			get { return string.Empty; }
 		}
 
 		/// <summary> 
@@ -397,13 +397,13 @@ namespace NHibernate.Dialect
 			get { return String.Empty; }
 		}
 
-	    /// <summary>
-	    /// The keyword used to create a primary key constraint
-	    /// </summary>
-        public virtual string PrimaryKeyString
-	    {
-            get { return "primary key"; }
-	    }
+		/// <summary>
+		/// The keyword used to create a primary key constraint
+		/// </summary>
+		public virtual string PrimaryKeyString
+		{
+			get { return "primary key"; }
+		}
 
 		#region database type mapping support
 
@@ -415,7 +415,7 @@ namespace NHibernate.Dialect
 		/// <returns>The database type name used by ddl.</returns>
 		public virtual string GetTypeName(SqlType sqlType)
 		{
-            if (sqlType.LengthDefined || sqlType.PrecisionDefined)
+			if (sqlType.LengthDefined || sqlType.PrecisionDefined)
 			{
 				string resultWithLength = typeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
 				if (resultWithLength != null) return resultWithLength;
@@ -1473,7 +1473,7 @@ namespace NHibernate.Dialect
 			return (name[0] == OpenQuote && name[name.Length - 1] == CloseQuote);
 		}
 
-        public virtual string Qualify(string catalog, string schema, string table)
+		public virtual string Qualify(string catalog, string schema, string table)
 		{
 			StringBuilder qualifiedName = new StringBuilder();
 
@@ -1533,8 +1533,8 @@ namespace NHibernate.Dialect
 		public virtual string QuoteForAliasName(string aliasName)
 		{
 			return IsQuoted(aliasName) ?
-			                           	aliasName :
-			                           	          	Quote(aliasName);
+										aliasName :
+													Quote(aliasName);
 		}
 
 		/// <summary>
@@ -1554,8 +1554,8 @@ namespace NHibernate.Dialect
 		public virtual string QuoteForColumnName(string columnName)
 		{
 			return IsQuoted(columnName) ?
-			                            	columnName :
-			                            	           	Quote(columnName);
+											columnName :
+														Quote(columnName);
 		}
 
 		/// <summary>
@@ -1574,8 +1574,8 @@ namespace NHibernate.Dialect
 		public virtual string QuoteForTableName(string tableName)
 		{
 			return IsQuoted(tableName) ?
-			                           	tableName :
-			                           	          	Quote(tableName);
+										tableName :
+													Quote(tableName);
 		}
 
 		/// <summary>
@@ -1594,8 +1594,8 @@ namespace NHibernate.Dialect
 		public virtual string QuoteForSchemaName(string schemaName)
 		{
 			return IsQuoted(schemaName) ?
-			                            	schemaName :
-			                            	           	Quote(schemaName);
+											schemaName :
+														Quote(schemaName);
 		}
 
 		/// <summary>
@@ -1963,7 +1963,8 @@ namespace NHibernate.Dialect
 		[Serializable]
 		protected class CountQueryFunctionInfo : ClassicAggregateFunction
 		{
-			public CountQueryFunctionInfo() : base("count",true)
+			public CountQueryFunctionInfo()
+				: base("count", true)
 			{
 			}
 
@@ -1975,7 +1976,8 @@ namespace NHibernate.Dialect
 		[Serializable]
 		protected class AvgQueryFunctionInfo : ClassicAggregateFunction
 		{
-			public AvgQueryFunctionInfo() : base("avg",false)
+			public AvgQueryFunctionInfo()
+				: base("avg", false)
 			{
 			}
 
@@ -2002,11 +2004,12 @@ namespace NHibernate.Dialect
 				return NHibernateUtil.Double;
 			}
 		}
-		
+
 		[Serializable]
 		protected class SumQueryFunctionInfo : ClassicAggregateFunction
 		{
-			public SumQueryFunctionInfo() : base("sum",false)
+			public SumQueryFunctionInfo()
+				: base("sum", false)
 			{
 			}
 
@@ -2106,16 +2109,20 @@ namespace NHibernate.Dialect
 		}
 		#endregion
 
-        /// <summary>
-        /// Supports splitting batches using GO T-SQL command
-        /// </summary>
-        /// <remarks>
-        /// Batches http://msdn.microsoft.com/en-us/library/ms175502.aspx
-        /// </remarks>
-        public virtual bool SupportsSqlBatches 
-        {
-            get { return false; }
-        }
+		/// <summary>
+		/// Supports splitting batches using GO T-SQL command
+		/// </summary>
+		/// <remarks>
+		/// Batches http://msdn.microsoft.com/en-us/library/ms175502.aspx
+		/// </remarks>
+		public virtual bool SupportsSqlBatches
+		{
+			get { return false; }
+		}
 
+		public virtual bool IsKnownToken(string currentToken, string nextToken)
+		{
+			return false;
+		}
 	}
 }

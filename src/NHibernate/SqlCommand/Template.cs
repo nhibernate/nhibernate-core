@@ -312,6 +312,7 @@ namespace NHibernate.SqlCommand
 			       Keywords.Contains(lcToken) ||
 			       functionRegistry.HasFunction(lcToken) ||
 			       dialect.Keywords.Contains(lcToken) ||
+				   dialect.IsKnownToken(lcToken, nextToken) ||
 			       FunctionKeywords.Contains(lcToken);
 		}
 
