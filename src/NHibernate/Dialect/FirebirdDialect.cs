@@ -253,5 +253,10 @@ namespace NHibernate.Dialect
 		{
 			return new FirebirdDataBaseSchema(connection);
 		}
+
+		public override string QuerySequencesString
+		{
+			get { return "select RDB$GENERATOR_NAME from RDB$GENERATORS where (RDB$SYSTEM_FLAG is NULL) or (RDB$SYSTEM_FLAG <> 1)"; }
+		}
 	}
 }
