@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using NHibernate.ByteCode.Castle;
 using NHibernate.Cfg;
+using NHibernate.Tuple.Entity;
 using NUnit.Framework;
 
 namespace NHibernate.Test.GhostProperty
@@ -8,6 +9,8 @@ namespace NHibernate.Test.GhostProperty
 	[TestFixture]
 	public class GhostPropertyFixture : TestCase
 	{
+		private string log;
+
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
@@ -53,6 +56,21 @@ namespace NHibernate.Test.GhostProperty
 				s.Delete("from Payment");
 				tx.Commit();
 			}
+		}
+
+		protected override void BuildSessionFactory()
+		{
+			using (var logSpy = new LogSpy(typeof(EntityMetamodel)))
+			{
+				base.BuildSessionFactory();
+				log = logSpy.GetWholeLog();
+			}
+		}
+
+		[Test]
+		public void ShouldGenerateErrorForNonAutoPropGhostProp()
+		{
+			Assert.IsTrue(log.Contains("Lazy or ghost property NHibernate.Test.GhostProperty.Order.Payment is not an auto property, which may result in uninitialized property access"));
 		}
 
 		[Test]

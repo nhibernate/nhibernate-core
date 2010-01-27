@@ -3,7 +3,13 @@
 	public class Order
 	{
 		public virtual int Id { get; set; }
-		public virtual Payment Payment { get; set; }
+		private Payment payment;
+
+		public virtual Payment Payment
+		{
+			get { return payment; }
+			set { payment = value; }
+		}
 	}
 
 	public abstract class Payment

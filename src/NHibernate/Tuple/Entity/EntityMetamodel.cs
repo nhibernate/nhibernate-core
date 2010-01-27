@@ -303,7 +303,8 @@ namespace NHibernate.Tuple.Entity
 		{
 			foreach (var prop in persistentClass.PropertyClosureIterator)
 			{
-				if (prop.IsLazy == false && prop.UnwrapProxy)
+				if (prop.IsLazy == false &&
+					prop.UnwrapProxy == false)
 					continue;
 
 				var getter = prop.GetGetter(persistentClass.MappedClass);
