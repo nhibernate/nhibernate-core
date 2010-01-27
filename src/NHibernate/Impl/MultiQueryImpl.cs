@@ -38,10 +38,8 @@ namespace NHibernate.Impl
 		private readonly Dialect.Dialect dialect;
 		private bool forceCacheRefresh;
 		private QueryParameters combinedParameters;
-		private readonly List<string> namedParametersThatAreSafeToDuplicate = new List<string>();
 		private FlushMode flushMode = FlushMode.Unspecified;
 		private FlushMode sessionFlushMode = FlushMode.Unspecified;
-		private static readonly Regex parseParameterListOrignialName = new Regex(@"(?<orgname>.*?)_\d+_", RegexOptions.Compiled);
 
 		public MultiQueryImpl(ISessionImplementor session)
 		{
@@ -75,7 +73,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetParameter(string name, object val, IType type)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetParameter(name, val, type);
@@ -85,7 +82,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetParameter(string name, object val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetParameter(name, val);
@@ -95,7 +91,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetParameterList(string name, ICollection vals, IType type)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetParameterList(name, vals, type);
@@ -105,7 +100,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetParameterList(string name, ICollection vals)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetParameterList(name, vals);
@@ -115,7 +109,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetAnsiString(string name, string val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetAnsiString(name, val);
@@ -125,7 +118,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetBinary(string name, byte[] val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetBinary(name, val);
@@ -135,7 +127,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetBoolean(string name, bool val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetBoolean(name, val);
@@ -145,7 +136,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetByte(string name, byte val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetByte(name, val);
@@ -155,7 +145,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetCharacter(string name, char val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetCharacter(name, val);
@@ -165,7 +154,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetDateTime(string name, DateTime val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetDateTime(name, val);
@@ -175,7 +163,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetDecimal(string name, decimal val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetDecimal(name, val);
@@ -185,7 +172,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetDouble(string name, double val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetDouble(name, val);
@@ -195,7 +181,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetEntity(string name, object val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetEntity(name, val);
@@ -205,7 +190,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetEnum(string name, Enum val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetEnum(name, val);
@@ -215,7 +199,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetInt16(string name, short val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetInt16(name, val);
@@ -225,7 +208,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetInt32(string name, int val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetInt32(name, val);
@@ -235,7 +217,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetInt64(string name, long val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetInt64(name, val);
@@ -245,7 +226,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetSingle(string name, float val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetSingle(name, val);
@@ -255,7 +235,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetString(string name, string val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetString(name, val);
@@ -265,7 +244,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetGuid(string name, Guid val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetGuid(name, val);
@@ -275,7 +253,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetTime(string name, DateTime val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetTime(name, val);
@@ -285,7 +262,6 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetTimestamp(string name, DateTime val)
 		{
-			namedParametersThatAreSafeToDuplicate.Add(name);
 			foreach (IQuery query in queries)
 			{
 				query.SetTimestamp(name, val);
@@ -797,9 +773,14 @@ namespace NHibernate.Impl
 			combinedQueryParameters.NamedParameters = new Dictionary<string, TypedValue>();
 			ArrayList positionalParameterTypes = new ArrayList();
 			ArrayList positionalParameterValues = new ArrayList();
+			int index = 0;
 			foreach (QueryParameters queryParameters in Parameters)
 			{
-				CopyNamedParametersDictionary(combinedQueryParameters.NamedParameters, queryParameters.NamedParameters);
+				foreach (KeyValuePair<string, TypedValue> dictionaryEntry in queryParameters.NamedParameters)
+				{
+					combinedQueryParameters.NamedParameters.Add(dictionaryEntry.Key + index, dictionaryEntry.Value);
+				}
+				index += 1;
 				positionalParameterTypes.AddRange(queryParameters.PositionalParameterTypes);
 				positionalParameterValues.AddRange(queryParameters.PositionalParameterValues);
 			}
@@ -816,37 +797,6 @@ namespace NHibernate.Impl
 					AggregateQueriesInformation();
 				return parameters;
 			}
-		}
-
-		private void CopyNamedParametersDictionary(IDictionary<string, TypedValue> dest, IDictionary<string, TypedValue> src)
-		{
-			foreach (KeyValuePair<string, TypedValue> dictionaryEntry in src)
-			{
-				if (dest.ContainsKey(dictionaryEntry.Key))
-				{
-					if (IsParameterSafeToDuplicate(dictionaryEntry.Key))
-						continue; //we specify it for all the queries, so it is okay.
-
-					throw new QueryException(
-						string.Format(
-							"The named parameter {0} was used in more than one query. Either give unique names to your parameters, or use the multi query SetParameter() methods to set the named parameter",
-							dictionaryEntry.Key));
-				}
-				dest.Add(dictionaryEntry.Key, dictionaryEntry.Value);
-			}
-		}
-
-		private bool IsParameterSafeToDuplicate(string name)
-		{
-			if (namedParametersThatAreSafeToDuplicate.Contains(name))
-				return true;
-			Match match = parseParameterListOrignialName.Match(name);
-			if (match != null)
-			{
-				string originalName = match.Groups["orgname"].Value;
-				return namedParametersThatAreSafeToDuplicate.Contains(originalName);
-			}
-			return false;
 		}
 
 		private void ThrowIfKeyAlreadyExists(string key)

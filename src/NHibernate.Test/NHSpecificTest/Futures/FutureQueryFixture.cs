@@ -94,5 +94,37 @@ namespace NHibernate.Test.NHSpecificTest.Futures
                 }
             }
         }
+
+        [Test]
+        public void CanExecuteMultipleQueryWithSameParameterName()
+        {
+            using (var s = sessions.OpenSession())
+            {
+                IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+		    
+                var meContainer = s.CreateQuery("from Person p where p.Id = :personId")
+                    .SetParameter("personId", 1)
+                    .FutureValue<Person>();
+		    
+                var possiblefriends = s.CreateQuery("from Person p where p.Id != :personId")
+                    .SetParameter("personId", 2)
+                    .Future<Person>();
+
+                using (var logSpy = new SqlLogSpy())
+                {
+                    var me = meContainer.Value;
+			
+                    foreach (var person in possiblefriends)
+                    {
+                    }
+		    
+                    var events = logSpy.Appender.GetEvents();
+                    Assert.AreEqual(1, events.Length);
+                	var wholeLog = logSpy.GetWholeLog();
+                	Assert.True(wholeLog.Contains("@p0 = 1 [Type: Int32 (0)], @p1 = 2 [Type: Int32 (0)]"));
+                }
+            }
+
+        }
     }
 }
