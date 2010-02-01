@@ -102,7 +102,17 @@ namespace NHibernate.Engine.Loading
 		/// <returns> True if we currently hold state pertaining to loading collections; false otherwise. </returns>
 		public bool HasLoadingCollectionEntries
 		{
-			get { return (xrefLoadingCollectionEntries != null && !(xrefLoadingCollectionEntries.Count == 0)); }
+			get { return (collectionLoadContexts != null && collectionLoadContexts.Count != 0); }
+		}
+
+		///<summary>
+		/// Do we currently have any registered internal entries corresponding to loading
+		/// collections?
+		/// True if we currently hold state pertaining to a registered loading collections; false otherwise.
+		/// </summary>
+		public bool HasRegisteredLoadingCollectionEntries
+		{
+				get { return (xrefLoadingCollectionEntries != null && xrefLoadingCollectionEntries.Count != 0); }
 		}
 
 		/// <summary> 
@@ -200,7 +210,7 @@ namespace NHibernate.Engine.Loading
 		/// </remarks>
 		internal void UnregisterLoadingCollectionXRef(CollectionKey key)
 		{
-			if (!HasLoadingCollectionEntries)
+			if (!HasRegisteredLoadingCollectionEntries)
 			{
 				return;
 			}

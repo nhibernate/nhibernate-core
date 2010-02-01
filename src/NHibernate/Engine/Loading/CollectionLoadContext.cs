@@ -147,7 +147,7 @@ namespace NHibernate.Engine.Loading
 		/// <param name="persister">The persister for which to complete loading. </param>
 		public void EndLoadingCollections(ICollectionPersister persister)
 		{
-			if (!loadContexts.HasLoadingCollectionEntries || (localLoadingCollectionKeys.Count == 0))
+			if (!loadContexts.HasLoadingCollectionEntries && (localLoadingCollectionKeys.Count == 0))
 			{
 				return;
 			}
