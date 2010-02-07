@@ -16,6 +16,15 @@ namespace NHibernate.Criterion.Lambda
 		public QueryOverRestrictionBuilder(QueryOver<TRoot,TSubType> root, string propertyName)
 			: base(root, propertyName) { }
 
+		public QueryOverRestrictionBuilder<TRoot,TSubType> Not
+		{
+			get
+			{
+				isNot = !isNot;
+				return this;
+			}
+		}
+
 	}
 
 	public class IQueryOverRestrictionBuilder<TRoot,TSubType> : QueryOverRestrictionBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
@@ -23,6 +32,15 @@ namespace NHibernate.Criterion.Lambda
 
 		public IQueryOverRestrictionBuilder(IQueryOver<TRoot,TSubType> root, string propertyName)
 			: base(root, propertyName) { }
+
+		public IQueryOverRestrictionBuilder<TRoot,TSubType> Not
+		{
+			get
+			{
+				isNot = !isNot;
+				return this;
+			}
+		}
 
 	}
 
@@ -33,23 +51,34 @@ namespace NHibernate.Criterion.Lambda
 		{
 			private TReturn root;
 			private string propertyName;
+			private bool isNot;
 			private object lo;
 
-			public LambdaBetweenBuilder(TReturn root, string propertyName, object lo)
+			public LambdaBetweenBuilder(TReturn root, string propertyName, bool isNot, object lo)
 			{
 				this.root = root;
 				this.propertyName = propertyName;
+				this.isNot = isNot;
 				this.lo = lo;
+			}
+
+			private TReturn Add(ICriterion criterion)
+			{
+				if (isNot)
+					criterion = Restrictions.Not(criterion);
+
+				return (TReturn)root.And(criterion);
 			}
 
 			public TReturn And(object hi)
 			{
-				return (TReturn)root.And(Restrictions.Between(propertyName, lo, hi));
+				return Add(Restrictions.Between(propertyName, lo, hi));
 			}
 		}
 
 		private TReturn root;
 		private string propertyName;
+		protected bool isNot;
 
 		/// <summary>
 		/// Constructed with property name
@@ -60,12 +89,20 @@ namespace NHibernate.Criterion.Lambda
 			this.propertyName = propertyName;
 		}
 
+		private TReturn Add(ICriterion criterion)
+		{
+			if (isNot)
+				criterion = Restrictions.Not(criterion);
+
+			return (TReturn)root.And(criterion);
+		}
+
 		/// <summary>
 		/// Apply a "between" constraint to the named property
 		/// </summary>
 		public LambdaBetweenBuilder IsBetween(object lo)
 		{
-			return new LambdaBetweenBuilder(root, propertyName, lo);
+			return new LambdaBetweenBuilder(root, propertyName, isNot, lo);
 		}
 
 		/// <summary>
@@ -73,7 +110,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public TReturn IsIn(ICollection values)
 		{
-			return (TReturn)root.And(Restrictions.In(propertyName, values));
+			return Add(Restrictions.In(propertyName, values));
 		}
 
 		/// <summary>
@@ -81,7 +118,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public TReturn IsIn(object[] values)
 		{
-			return (TReturn)root.And(Restrictions.In(propertyName, values));
+			return Add(Restrictions.In(propertyName, values));
 		}
 
 		/// <summary>
@@ -89,7 +126,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public TReturn IsInG<T>(ICollection<T> values)
 		{
-			return (TReturn)root.And(Restrictions.InG(propertyName, values));
+			return Add(Restrictions.InG(propertyName, values));
 		}
 
 		/// <summary>
@@ -97,7 +134,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public TReturn IsInsensitiveLike(object value)
 		{
-			return (TReturn)root.And(Restrictions.InsensitiveLike(propertyName, value));
+			return Add(Restrictions.InsensitiveLike(propertyName, value));
 		}
 		
 		/// <summary>
@@ -105,7 +142,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public TReturn IsInsensitiveLike(string value, MatchMode matchMode)
 		{
-			return (TReturn)root.And(Restrictions.InsensitiveLike(propertyName, value, matchMode));
+			return Add(Restrictions.InsensitiveLike(propertyName, value, matchMode));
 		}
 
 		/// <summary>
@@ -113,7 +150,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public TReturn IsEmpty
 		{
-			get { return (TReturn)root.And(Restrictions.IsEmpty(propertyName)); }
+			get { return Add(Restrictions.IsEmpty(propertyName)); }
 		}
 
 		/// <summary>
@@ -121,7 +158,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public TReturn IsNotEmpty
 		{
-			get { return (TReturn)root.And(Restrictions.IsNotEmpty(propertyName)); }
+			get { return Add(Restrictions.IsNotEmpty(propertyName)); }
 		}
 
 		/// <summary>
@@ -129,7 +166,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public TReturn IsNull
 		{
-			get { return (TReturn)root.And(Restrictions.IsNull(propertyName)); }
+			get { return Add(Restrictions.IsNull(propertyName)); }
 		}
 
 		/// <summary>
@@ -137,7 +174,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public TReturn IsNotNull
 		{
-			get { return (TReturn)root.And(Restrictions.IsNotNull(propertyName)); }
+			get { return Add(Restrictions.IsNotNull(propertyName)); }
 		}
 
 		/// <summary>
@@ -145,7 +182,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public TReturn IsLike(object value)
 		{
-			return (TReturn)root.And(Restrictions.Like(propertyName, value));
+			return Add(Restrictions.Like(propertyName, value));
 		}
 		
 		/// <summary>
@@ -153,7 +190,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public TReturn IsLike(string value, MatchMode matchMode)
 		{
-			return (TReturn)root.And(Restrictions.Like(propertyName, value, matchMode));
+			return Add(Restrictions.Like(propertyName, value, matchMode));
 		}
 		
 		/// <summary>
@@ -161,7 +198,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public TReturn IsLike(string value, MatchMode matchMode, char? escapeChar)
 		{
-			return (TReturn)root.And(Restrictions.Like(propertyName, value, matchMode, escapeChar));
+			return Add(Restrictions.Like(propertyName, value, matchMode, escapeChar));
 		}
 		
 	}
