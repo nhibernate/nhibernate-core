@@ -10,16 +10,13 @@ namespace NHibernate.SqlCommand
 	[Serializable]
 	public class Parameter
 	{
-        /// <summary>
+		/// <summary>
         /// We need to know what the position of the parameter was in a query
         /// before we rearranged the query.
-        /// This is used only by dialects that rearrange the query, unfortunately, 
-        /// the MS SQL 2005 dialect have to re shuffle the query (and ruin positional parameter
-        /// support) because the SQL 2005 and 2008 SQL dialects have a completely broken
-        /// support for paging, which is just a tad less important than SELECT.
-        /// See  	 NH-1528
-        /// </summary>
-	    public int? OriginalPositionInQuery;
+		/// This is the ADO parameter position that this SqlString parameter is
+		/// bound to.  The SqlString can be safely rearranged once this is set.
+		/// </summary>
+		public int? ParameterPosition;
 
 	    /// <summary>
 	    /// Used as a placeholder when parsing HQL or SQL queries.

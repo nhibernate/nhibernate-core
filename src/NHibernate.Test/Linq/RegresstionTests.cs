@@ -1,5 +1,6 @@
 using System.Linq;
 using NUnit.Framework;
+using NHibernate.Test.Linq.Entities;
 
 namespace NHibernate.Test.Linq
 {
@@ -10,7 +11,7 @@ namespace NHibernate.Test.Linq
 		/// http://aspzone.com/tech/nhibernate-linq-troubles/
 		/// </summary>
 		[Test]
-		public void HierarchicalQueries()
+		public void HierarchicalQueries_InlineConstant()
 		{
 			var children = from s in db.Role
 						   where s.ParentRole != null
@@ -23,6 +24,33 @@ namespace NHibernate.Test.Linq
 						select s;
 
 			Assert.AreEqual(2, roots.Count());
+		}
+
+		[Test]
+		public void HierarchicalQueries_Variable()
+		{
+			Role testRole = null;
+			var children = from s in db.Role
+						   where s.ParentRole != testRole
+						   select s;
+
+			Assert.AreEqual(0, children.Count());
+
+			var roots = from s in db.Role
+						where s.ParentRole == testRole
+						select s;
+
+			Assert.AreEqual(2, roots.Count());
+		}
+		[Test]
+		public void CanUseNullConstantAndRestriction()
+		{
+			var roots = from s in db.Role
+						where s.ParentRole == null
+						&& s.Name == "Admin"
+						select s;
+
+			Assert.AreEqual(1, roots.Count());
 		}
 	}
 }

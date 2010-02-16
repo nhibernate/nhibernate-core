@@ -180,7 +180,7 @@ namespace NHibernate.Impl
 				translators.Add(translator);
 				QueryParameters queryParameters = translator.GetQueryParameters();
 				parameters.Add(queryParameters);
-				SqlCommandInfo commandInfo = loader.GetQueryStringAndTypes(session, queryParameters);
+				SqlCommandInfo commandInfo = loader.GetQueryStringAndTypes(session, queryParameters, types.Count);
 				sqlString = sqlString.Append(commandInfo.Text)
 					.Append(session.Factory.ConnectionProvider.Driver.MultipleQueriesSeparator)
 					.Append(Environment.NewLine);
@@ -339,7 +339,7 @@ namespace NHibernate.Impl
 			for (int i = 0; i < loaders.Count; i++)
 			{
 				QueryParameters parameter = parameters[i];
-				colIndex += parameter.BindParameters(command, loaders[i].GetNamedParameterLocs, colIndex, session);
+				colIndex += parameter.BindParameters(command, colIndex, session);
 			}
 			return colIndex;
 		}

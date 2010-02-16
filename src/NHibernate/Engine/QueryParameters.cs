@@ -6,6 +6,7 @@ using log4net;
 using NHibernate.Hql.Classic;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -392,31 +393,162 @@ namespace NHibernate.Engine
 			processedSQL = result.ToSqlString();
 		}
 
-		public int BindParameters(IDbCommand command, GetNamedParameterLocations getNamedParameterLocations, int start,
-		                          ISessionImplementor session)
+		private IList<Parameter> ResetParameterLocations(SqlString sqlString)
 		{
+			IList<Parameter> sqlParameters = new List<Parameter>();
+
+			foreach (object sqlParameter in sqlString.Parts)
+			{
+				if (sqlParameter is Parameter)
+				{
+					Parameter parameter = (Parameter)sqlParameter;
+					parameter.ParameterPosition = null;
+					sqlParameters.Add(parameter);
+				}
+			}
+
+			return sqlParameters;
+		}
+
+		private void SetParameterLocation(IList<Parameter> sqlParameters, int parameterIndex, int sqlLocation, int span)
+		{
+			int i = 0;
+			while (i < span)
+			{
+				sqlParameters[sqlLocation + i].ParameterPosition = parameterIndex + i;
+				i++;
+			}
+		}
+
+		private SqlType[] ConvertITypesToSqlTypes(List<IType> nhTypes, ISessionFactoryImplementor factory, int totalSpan)
+		{
+			SqlType[] result = new SqlType[totalSpan];
+
+			int index = 0;
+			foreach (IType type in nhTypes)
+			{
+				int span = type.SqlTypes(factory).Length;
+				Array.Copy(type.SqlTypes(factory), 0, result, index, span);
+				index += span;
+			}
+
+			return result;
+		}
+
+		public SqlType[] PrepareParameterTypes(SqlString sqlString, ISessionFactoryImplementor factory, GetNamedParameterLocations getNamedParameterLocations, int startParameterIndex, bool addLimit, bool addOffset)
+		{
+			List<IType> paramTypeList = new List<IType>();
+			int parameterIndex = 0;
+			int totalSpan = 0;
+
+			IList<Parameter> sqlParameters = ResetParameterLocations(sqlString);
+
+			for (int index = 0; index < PositionalParameterTypes.Length; index++)
+			{
+				IType type = PositionalParameterTypes[index];
+				ArrayHelper.SafeSetValue(paramTypeList, parameterIndex, type);
+
+				int location = PositionalParameterLocations[index];
+				location = FindAdjustedParameterLocation(location);
+				int span = type.GetColumnSpan(factory);
+				SetParameterLocation(sqlParameters, startParameterIndex + parameterIndex, location, span);
+
+				totalSpan += span;
+				parameterIndex++;
+			}
+
+			for (int index = 0; index < FilteredParameterTypes.Count; index++)
+			{
+				IType type = FilteredParameterTypes[index];
+				ArrayHelper.SafeSetValue(paramTypeList, parameterIndex, type);
+
+				int location = FilteredParameterLocations[index];
+				int span = type.GetColumnSpan(factory);
+				SetParameterLocation(sqlParameters, startParameterIndex + parameterIndex, location, span);
+
+				totalSpan += span;
+				parameterIndex++;
+			}
+
+			if (NamedParameters != null && NamedParameters.Count > 0)
+			{
+				// convert the named parameters to an array of types
+				foreach (KeyValuePair<string, TypedValue> namedParameter in NamedParameters)
+				{
+					TypedValue typedval = namedParameter.Value;
+					ArrayHelper.SafeSetValue(paramTypeList, parameterIndex, typedval.Type);
+
+					int span = typedval.Type.GetColumnSpan(factory);
+					string name = namedParameter.Key;
+					int[] locs = getNamedParameterLocations(name);
+					for (int i = 0; i < locs.Length; i++)
+					{
+						int location = locs[i];
+						location = FindAdjustedParameterLocation(location);
+
+						// can still clash with positional parameters
+						//  could consider throwing an exception to locate problem (NH-1098)
+						while ((location < sqlParameters.Count) && (sqlParameters[location].ParameterPosition != null))
+							location++;
+
+						SetParameterLocation(sqlParameters, startParameterIndex + parameterIndex, location, span);
+					}
+
+					totalSpan += span;
+					parameterIndex++;
+				}
+			}
+
+			if (addLimit && factory.Dialect.SupportsVariableLimit)
+			{
+				if (factory.Dialect.BindLimitParametersFirst)
+				{
+					paramTypeList.Insert(0, NHibernateUtil.Int32);
+					if (addOffset)
+					{
+						paramTypeList.Insert(0, NHibernateUtil.Int32);
+					}
+				}
+				else
+				{
+					paramTypeList.Add(NHibernateUtil.Int32);
+					if (addOffset)
+					{
+						paramTypeList.Add(NHibernateUtil.Int32);
+					}
+				}
+
+				totalSpan += addOffset ? 2 : 1;
+			}
+
+			return ConvertITypesToSqlTypes(paramTypeList, factory, totalSpan);
+		}
+
+		public int BindParameters(IDbCommand command, int start, ISessionImplementor session)
+		{
+			int location = 0;
 			var values = new List<object>();
 			var types = new List<IType>();
 			var sources = new List<string>();
 
 			for (int i = 0; i < _positionalParameterLocations.Length; i++)
 			{
-				int location = FindAdjustedParameterLocation(_positionalParameterLocations[i]);
 				object value = _positionalParameterValues[i];
 				IType type = _positionalParameterTypes[i];
 				ArrayHelper.SafeSetValue(values, location, value);
 				ArrayHelper.SafeSetValue(types, location, type);
 				ArrayHelper.SafeSetValue(sources, location, "Positional" + i);
+				location++;
 			}
 
 			for (int i = 0; i < filteredParameterLocations.Count; i++)
 			{
-				int location = filteredParameterLocations[i];
 				object value = filteredParameterValues[i];
 				IType type = filteredParameterTypes[i];
 				ArrayHelper.SafeSetValue(values, location, value);
 				ArrayHelper.SafeSetValue(types, location, type);
 				ArrayHelper.SafeSetValue(sources, location, "Filter" + i);
+				location++;
 			}
 
 			if ((_namedParameters != null) && (_namedParameters.Count > 0))
@@ -425,22 +557,10 @@ namespace NHibernate.Engine
 				{
 					string name = namedParameter.Key;
 					TypedValue typedval = namedParameter.Value;
-					int[] locations = getNamedParameterLocations(name);
-					for (int i = 0; i < locations.Length; i++)
-					{
-						int location = FindAdjustedParameterLocation(locations[i]);
-
-						// can still clash with positional parameters
-						//  could consider throwing an exception to locate problem (NH-1098)
-						while ((location < types.Count) && (types[location] != null))
-						{
-							location++;
-						}
-
-						ArrayHelper.SafeSetValue(values, location, typedval.Value);
-						ArrayHelper.SafeSetValue(types, location, typedval.Type);
-						ArrayHelper.SafeSetValue(sources, location, "name" + i);
-					}
+					ArrayHelper.SafeSetValue(values, location, typedval.Value);
+					ArrayHelper.SafeSetValue(types, location, typedval.Type);
+					ArrayHelper.SafeSetValue(sources, location, "name_" + name);
+					location++;
 				}
 			}
 

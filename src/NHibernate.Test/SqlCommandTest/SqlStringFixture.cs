@@ -375,8 +375,8 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.AreEqual(parameterString1, parameterString2);
 			Assert.AreNotSame(parameterString1, parameterString2);
 
-			parameters1[0].OriginalPositionInQuery = 231;
-			Assert.IsNull(parameters2[0].OriginalPositionInQuery);
+			parameters1[0].ParameterPosition = 231;
+			Assert.IsNull(parameters2[0].ParameterPosition);
 		}
 	}
 }

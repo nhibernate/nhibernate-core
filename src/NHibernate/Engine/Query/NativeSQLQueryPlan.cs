@@ -86,7 +86,7 @@ namespace NHibernate.Engine.Query
 			{
 				queryParameters.ProcessFilters(customQuery.SQL, session);
 				SqlString sql = queryParameters.FilteredSQL;
-				SqlType[] sqlTypes = GetParameterTypes(queryParameters, session);
+				SqlType[] sqlTypes = queryParameters.PrepareParameterTypes(sql, session.Factory, GetNamedParameterLocs, 0, false, false);
 				
 				IDbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTypes);
 
@@ -102,7 +102,7 @@ namespace NHibernate.Engine.Query
 					// The responsibility of parameter binding was entirely moved to QueryParameters
 					// to deal with positionslParameter+NamedParameter+ParameterOfFilters
 					
-					queryParameters.BindParameters(ps, GetNamedParameterLocs, 0, session);
+					queryParameters.BindParameters(ps, 0, session);
 					result = session.Batcher.ExecuteNonQuery(ps);
 				}
 				finally
@@ -121,53 +121,6 @@ namespace NHibernate.Engine.Query
 			{
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
 				                                 "could not execute native bulk manipulation query:" + sourceQuery);
-			}
-
-			return result;
-		}
-
-		private SqlType[] GetParameterTypes(QueryParameters parameters, ISessionImplementor session)
-		{
-			List<IType> paramTypeList = new List<IType>();
-			int span = 0;
-
-			foreach (IType type in parameters.PositionalParameterTypes)
-			{
-				paramTypeList.Add(type);
-				span += type.GetColumnSpan(session.Factory);
-			}
-
-			if (parameters.NamedParameters != null && parameters.NamedParameters.Count > 0)
-			{
-				int offset = paramTypeList.Count;
-
-				// convert the named parameters to an array of types
-				foreach (KeyValuePair<string, TypedValue> e in parameters.NamedParameters)
-				{
-					string name = e.Key;
-					TypedValue typedval = e.Value;
-					int[] locs = GetNamedParameterLocs(name);
-					span += typedval.Type.GetColumnSpan(session.Factory) * locs.Length;
-
-					for (int i = 0; i < locs.Length; i++)
-					{
-						ArrayHelper.SafeSetValue(paramTypeList, locs[i] + offset, typedval.Type);
-					}					
-				}
-			}
-			return ConvertITypesToSqlTypes(paramTypeList, span, session);
-		}
-
-		private static SqlType[] ConvertITypesToSqlTypes(IList<IType> nhTypes, int totalSpan, ISessionImplementor session)
-		{
-			SqlType[] result = new SqlType[totalSpan];
-
-			int index = 0;
-			foreach (IType type in nhTypes)
-			{
-				int span = type.SqlTypes(session.Factory).Length;
-				Array.Copy(type.SqlTypes(session.Factory), 0, result, index, span);
-				index += span;
 			}
 
 			return result;

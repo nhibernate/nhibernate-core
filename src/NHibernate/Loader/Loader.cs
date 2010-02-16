@@ -1106,6 +1106,8 @@ namespace NHibernate.Loader
 			bool useOffset = hasFirstRow && useLimit && dialect.SupportsLimitOffset;
 			// TODO NH bool callable = queryParameters.Callable;
 
+			SqlType[] parameterTypes = queryParameters.PrepareParameterTypes(sqlString, Factory, GetNamedParameterLocs, 0, useLimit, useOffset);
+
 			if (useLimit)
 			{
 				sqlString =
@@ -1116,8 +1118,7 @@ namespace NHibernate.Loader
 
 			// TODO NH: Callable for SP -> PrepareCallableQueryCommand
 			IDbCommand command =
-				session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString,
-				                                    GetParameterTypes(queryParameters, useLimit, useOffset));
+				session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString, parameterTypes);
 
 			try
 			{
@@ -1263,7 +1264,7 @@ namespace NHibernate.Loader
 			// NH Different behavior:
 			// The responsibility of parameter binding was entirely moved to QueryParameters
 			// to deal with positionslParameter+NamedParameter+ParameterOfFilters
-			return queryParameters.BindParameters(statement, GetNamedParameterLocs, 0, session);
+			return queryParameters.BindParameters(statement, 0, session);
 		}
 
 		public virtual int[] GetNamedParameterLocs(string name)
@@ -1683,7 +1684,7 @@ namespace NHibernate.Loader
 
 		#region NHibernate specific
 
-		public virtual SqlCommandInfo GetQueryStringAndTypes(ISessionImplementor session, QueryParameters parameters)
+		public virtual SqlCommandInfo GetQueryStringAndTypes(ISessionImplementor session, QueryParameters parameters, int startParameterIndex)
 		{
 			SqlString sqlString = ProcessFilters(parameters, session);
 			Dialect.Dialect dialect = session.Factory.Dialect;
@@ -1693,6 +1694,8 @@ namespace NHibernate.Loader
 			bool hasFirstRow = GetFirstRow(selection) > 0;
 			bool useOffset = hasFirstRow && useLimit && dialect.SupportsLimitOffset;
 
+			SqlType[] sqlTypes = parameters.PrepareParameterTypes(sqlString, Factory, GetNamedParameterLocs, startParameterIndex, useLimit, useOffset);
+
 			if (useLimit)
 			{
 				sqlString =
@@ -1700,95 +1703,7 @@ namespace NHibernate.Loader
 			}
 
 			sqlString = PreprocessSQL(sqlString, parameters, dialect);
-			return new SqlCommandInfo(sqlString, GetParameterTypes(parameters, useLimit, useOffset));
-		}
-
-		protected SqlType[] ConvertITypesToSqlTypes(List<IType> nhTypes, int totalSpan)
-		{
-			SqlType[] result = new SqlType[totalSpan];
-
-			int index = 0;
-			foreach (IType type in nhTypes)
-			{
-				int span = type.SqlTypes(Factory).Length;
-				Array.Copy(type.SqlTypes(Factory), 0, result, index, span);
-				index += span;
-			}
-
-			return result;
-		}
-
-		/// <returns><see cref="IList" /> of <see cref="IType" /></returns>
-		protected SqlType[] GetParameterTypes(QueryParameters parameters, bool addLimit, bool addOffset)
-		{
-			List<IType> paramTypeList = new List<IType>();
-			int span = 0;
-
-			for (int index = 0; index < parameters.PositionalParameterTypes.Length; index++)
-			{
-				int location = parameters.PositionalParameterLocations[index];
-				location = parameters.FindAdjustedParameterLocation(location);
-				IType type = parameters.PositionalParameterTypes[index];
-				ArrayHelper.SafeSetValue(paramTypeList, location, type);
-				span += type.GetColumnSpan(Factory);
-			}
-
-			for (int index = 0; index < parameters.FilteredParameterTypes.Count; index++)
-			{
-				int location = parameters.FilteredParameterLocations[index];
-				IType type = parameters.FilteredParameterTypes[index];
-				ArrayHelper.SafeSetValue(paramTypeList, location, type);
-				span += type.GetColumnSpan(Factory);
-			}
-
-			if (parameters.NamedParameters != null && parameters.NamedParameters.Count > 0)
-			{
-				// convert the named parameters to an array of types
-				foreach (KeyValuePair<string, TypedValue> namedParameter in parameters.NamedParameters)
-				{
-					string name = namedParameter.Key;
-					TypedValue typedval = namedParameter.Value;
-					int[] locs = GetNamedParameterLocs(name);
-					span += typedval.Type.GetColumnSpan(Factory) * locs.Length;
-
-					for (int i = 0; i < locs.Length; i++)
-					{
-						int location = locs[i];
-						location = parameters.FindAdjustedParameterLocation(location);
-
-						// can still clash with positional parameters
-						//  could consider throwing an exception to locate problem (NH-1098)
-						while ((location < paramTypeList.Count) && (paramTypeList[location] != null))
-							location++;
-
-						ArrayHelper.SafeSetValue(paramTypeList, location, typedval.Type);
-					}
-				}
-			}
-
-			if (addLimit && Factory.Dialect.SupportsVariableLimit)
-			{
-				if (Factory.Dialect.BindLimitParametersFirst)
-				{
-					paramTypeList.Insert(0, NHibernateUtil.Int32);
-					if (addOffset)
-					{
-						paramTypeList.Insert(0, NHibernateUtil.Int32);
-					}
-				}
-				else
-				{
-					paramTypeList.Add(NHibernateUtil.Int32);
-					if (addOffset)
-					{
-						paramTypeList.Add(NHibernateUtil.Int32);
-					}
-				}
-
-				span += addOffset ? 2 : 1;
-			}
-
-			return ConvertITypesToSqlTypes(paramTypeList, span);
+			return new SqlCommandInfo(sqlString, sqlTypes);
 		}
 
 		#endregion

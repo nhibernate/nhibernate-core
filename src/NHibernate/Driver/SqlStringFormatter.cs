@@ -56,26 +56,7 @@ namespace NHibernate.Driver
 				return;
 			}
 
-			string name;
-
-			if (queryIndexToNumberOfPreceedingParameters.Count == 0)
-			{
-				// there's only one query... no need to worry about indexes of parameters of previous queries
-				name = formatter.GetParameterName(parameter.OriginalPositionInQuery ?? parameterIndex);
-			}
-			else
-			{
-				// multiple queries... in case the parameters were switched around (for SQL paging for instance) we need
-				// to keep the number of preceeding parameters (in previous queries of the batch) into account
-				if (parameter.OriginalPositionInQuery != null)
-				{
-					name = formatter.GetParameterName(GetNumberOfPreceedingParameters() + parameter.OriginalPositionInQuery.Value);
-				}
-				else
-				{
-					name = formatter.GetParameterName(parameterIndex);
-				}
-			}
+			string name = formatter.GetParameterName(parameter.ParameterPosition ?? parameterIndex);
 
 			parameterIndex++;
 			result.Append(name);

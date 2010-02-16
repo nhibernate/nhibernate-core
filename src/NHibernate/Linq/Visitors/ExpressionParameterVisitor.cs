@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Remotion.Data.Linq.Parsing;
@@ -23,12 +24,17 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitConstantExpression(ConstantExpression expression)
 		{
-			if (!typeof(IQueryable).IsAssignableFrom(expression.Type))
+			if (!typeof(IQueryable).IsAssignableFrom(expression.Type) && !IsNullObject(expression))
 			{
 				_parameters.Add(expression, new NamedParameter("p" + (_parameters.Count + 1), expression.Value, NHibernateUtil.GuessType(expression.Type)));
 			}
 
 			return base.VisitConstantExpression(expression);
+		}
+
+		private bool IsNullObject(ConstantExpression expression)
+		{
+			return expression.Type == typeof(Object) && expression.Value == null;
 		}
 	}
 }

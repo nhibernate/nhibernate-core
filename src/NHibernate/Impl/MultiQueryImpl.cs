@@ -616,7 +616,7 @@ namespace NHibernate.Impl
 					translators.Add(translator);
 					parameters.Add(queryParameters);
 					queryParameters = GetFilteredQueryParameters(queryParameters, translator);
-					SqlCommandInfo commandInfo = translator.Loader.GetQueryStringAndTypes(session, queryParameters);
+					SqlCommandInfo commandInfo = translator.Loader.GetQueryStringAndTypes(session, queryParameters, types.Count);
 					sqlString = sqlString.Append(commandInfo.Text).Append(session.Factory.ConnectionProvider.Driver.MultipleQueriesSeparator).Append(Environment.NewLine);
 					types.AddRange(commandInfo.ParameterTypes);
 				}
@@ -668,7 +668,7 @@ namespace NHibernate.Impl
 			{
 				IQueryTranslator translator = Translators[i];
 				QueryParameters parameter = Parameters[i];
-				colIndex += parameter.BindParameters(command, translator.Loader.GetNamedParameterLocs, colIndex, session);
+				colIndex += parameter.BindParameters(command, colIndex, session);
 			}
 			return colIndex;
 		}
