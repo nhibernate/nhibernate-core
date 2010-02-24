@@ -67,24 +67,27 @@ namespace NHibernate.Linq.ReWriters
         
 		public override void VisitSelectClause(SelectClause selectClause, QueryModel queryModel)
 		{
-            selectClause.TransformExpressions(MergeAggregatingResultsInExpressionRewriter.Rewrite);
+            selectClause.TransformExpressions(e => MergeAggregatingResultsInExpressionRewriter.Rewrite(e, new NameGenerator(queryModel)));
 		}
        
         public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
         {
-            whereClause.TransformExpressions(MergeAggregatingResultsInExpressionRewriter.Rewrite);
+            whereClause.TransformExpressions(e => MergeAggregatingResultsInExpressionRewriter.Rewrite(e, new NameGenerator(queryModel)));
         }
 	}
     
 	internal class MergeAggregatingResultsInExpressionRewriter : NhExpressionTreeVisitor
 	{
-        private MergeAggregatingResultsInExpressionRewriter()
+	    private readonly NameGenerator _nameGenerator;
+
+	    private MergeAggregatingResultsInExpressionRewriter(NameGenerator nameGenerator)
         {
+            _nameGenerator = nameGenerator;
         }
 
-		public static Expression Rewrite(Expression expression)
+	    public static Expression Rewrite(Expression expression, NameGenerator nameGenerator)
 		{
-		    var visitor = new MergeAggregatingResultsInExpressionRewriter();
+            var visitor = new MergeAggregatingResultsInExpressionRewriter(nameGenerator);
 
 			return visitor.VisitExpression(expression);
 		}
@@ -131,8 +134,7 @@ namespace NHibernate.Linq.ReWriters
 
 		private Expression CreateAggregate(Expression fromClauseExpression, LambdaExpression body, Func<Expression,Expression> aggregateFactory, Func<ResultOperatorBase> resultOperatorFactory)
 		{
-            // TODO - need generated name here
-			var fromClause = new MainFromClause("x2", body.Parameters[0].Type, fromClauseExpression);
+			var fromClause = new MainFromClause(_nameGenerator.GetNewName(), body.Parameters[0].Type, fromClauseExpression);
 			var selectClause = body.Body;
 			selectClause = ReplacingExpressionTreeVisitor.Replace(body.Parameters[0],
 			                                                      new QuerySourceReferenceExpression(

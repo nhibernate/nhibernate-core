@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Expressions;
 using Remotion.Data.Linq.Parsing;
@@ -13,16 +11,14 @@ namespace NHibernate.Linq.Visitors
     {
         private HashSet<Expression> _hqlNodes;
         private readonly ParameterExpression _inputParameter;
-    	private readonly IDictionary<ConstantExpression, NamedParameter> _parameters;
-    	private readonly IList<NamedParameterDescriptor> _requiredHqlParameters;
+    	private readonly VisitorParameters _parameters;
     	private int _iColumn;
         private List<HqlExpression> _hqlTreeNodes = new List<HqlExpression>();
 
-        public SelectClauseVisitor(System.Type inputType, IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters)
+        public SelectClauseVisitor(System.Type inputType, VisitorParameters parameters)
         {
             _inputParameter = Expression.Parameter(inputType, "input");
-        	_parameters = parameters;
-			_requiredHqlParameters = requiredHqlParameters;
+            _parameters = parameters;
         }
 
         public LambdaExpression ProjectionExpression { get; private set; }
@@ -59,7 +55,7 @@ namespace NHibernate.Linq.Visitors
             if (_hqlNodes.Contains(expression))
             {
                 // Pure HQL evaluation - TODO - cache the Visitor?
-				var hqlVisitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
+				var hqlVisitor = new HqlGeneratorExpressionTreeVisitor(_parameters);
                 
                 _hqlTreeNodes.Add(hqlVisitor.Visit(expression).AsExpression());
 

@@ -28,7 +28,7 @@ namespace NHibernate.Test.Linq
         {
             var q = from o in db.Orders where o.OrderDate <= DateTime.Today.AddDays(-1) select o;
 
-            int count = q.Count();
+            var count = q.Count();
 
             Console.WriteLine(count);
         }
@@ -110,7 +110,7 @@ namespace NHibernate.Test.Linq
 
                 var l = r.ToList();
 
-                Console.WriteLine(l.Count);
+                Assert.AreEqual(hql.Count, l.Count);
             } 
         }
 	}

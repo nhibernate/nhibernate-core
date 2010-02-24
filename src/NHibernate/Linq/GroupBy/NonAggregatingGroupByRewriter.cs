@@ -96,7 +96,7 @@ namespace NHibernate.Linq.GroupBy
 		}
 	}
 
-	internal class ClientSideSelect : ClientSideTransformOperator
+    public class ClientSideSelect : ClientSideTransformOperator
 	{
 		public LambdaExpression SelectClause { get; private set; }
 

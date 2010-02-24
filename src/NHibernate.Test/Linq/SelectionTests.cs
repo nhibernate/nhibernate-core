@@ -52,7 +52,6 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-        [Ignore("Need to implement right join for drill downs")]
 		public void CanSelectNestedAnonymousType()
 		{
 			var query = from user in db.Users
@@ -74,15 +73,55 @@ namespace NHibernate.Test.Linq
 			Assert.IsTrue(list.All(u => u.RoleName == "Admin" || u.RoleName == "User" || String.IsNullOrEmpty(u.RoleName)));
 		}
 
+        [Test]
+        public void CanSelectNestedAnonymousTypeWithMultipleReferences()
+        {
+            var query = from user in db.Users
+                        select new
+                        {
+                            user.Name,
+                            Enums = new
+                            {
+                                user.Enum1,
+                                user.Enum2
+                            },
+                            RoleName = user.Role.Name,
+                            RoleIsActive = (bool?) user.Role.IsActive
+                        };
+
+            var list = query.ToList();
+            Assert.AreEqual(3, list.Count);
+
+            //assert role names -- to ensure that the correct values were used to invoke constructor
+            Assert.IsTrue(list.All(u => u.RoleName == "Admin" || u.RoleName == "User" || String.IsNullOrEmpty(u.RoleName)));
+        }
+
+        [Test]
+        public void CanSelectNestedAnonymousTypeWithComponentReference()
+        {
+            var query = from user in db.Users
+                        select new
+                        {
+                            user.Name,
+                            Enums = new
+                            {
+                                user.Enum1,
+                                user.Enum2
+                            },
+                            RoleName = user.Role.Name,
+                            ComponentProperty = user.Component.Property1
+                        };
+
+            var list = query.ToList();
+            Assert.AreEqual(3, list.Count);
+
+            //assert role names -- to ensure that the correct values were used to invoke constructor
+            Assert.IsTrue(list.All(u => u.RoleName == "Admin" || u.RoleName == "User" || String.IsNullOrEmpty(u.RoleName)));
+        }
+
 		[Test]
-        [Ignore("Need to implement right join for drill downs")]
         public void CanSelectNestedMemberInitExpression()
 		{
-            using (var s = OpenSession())
-            {
-                var x = s.CreateQuery("select u.Id, r.Name from User u left outer join u.Role r").List();
-            }
-
 			var query = from user in db.Users
 						select new UserDto(user.Id, user.Name)
 						{
@@ -103,7 +142,6 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-        [Ignore("Need to implement right join for drill downs")]
         public void CanSelectNestedMemberInitWithinNewExpression()
 		{
 			var query = from user in db.Users

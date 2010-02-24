@@ -254,7 +254,7 @@ namespace NHibernate.Test.Linq
 						{
 							user.Name,
 							RoleName = user.Role.Name,
-							Output = user.Role.Entity.Output
+                            user.Role.Entity.Output
 						};
 
 			var list = query.ToList();
@@ -262,7 +262,6 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-        [Ignore("Drill down into entity requires explicit left join")]
 		public void UsersWithoutRole()
 		{
 			var query = from user in db.Users
@@ -296,7 +295,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void UsersWithArrayContains()
 		{
-			var names = new string[] { "ayende", "rahien" };
+			var names = new[] { "ayende", "rahien" };
             
 		    var query = (from user in db.Users
 						 where names.Contains(user.Name)
@@ -308,7 +307,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void UsersWithListContains()
 		{
-			var names = new List<string>() { "ayende", "rahien" };
+			var names = new List<string> { "ayende", "rahien" };
 
 			var query = (from user in db.Users
 						 where names.Contains(user.Name)
@@ -320,7 +319,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void TimesheetsWithCollectionContains()
 		{
-			TimesheetEntry entry = session.Get<TimesheetEntry>(1);
+			var entry = session.Get<TimesheetEntry>(1);
 
 			var timesheet = (from sheet in db.Timesheets
 							 where sheet.Entries.Contains(entry)
@@ -341,7 +340,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void UsersWithArrayNotContains()
 		{
-			var names = new string[] { "ayende", "rahien" };
+			var names = new[] { "ayende", "rahien" };
 
 			var query = (from user in db.Users
 						 where !names.Contains(user.Name)
@@ -353,7 +352,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void UsersWithListNotContains()
 		{
-			var names = new List<string>() { "ayende", "rahien" };
+			var names = new List<string> { "ayende", "rahien" };
 
 			var query = (from user in db.Users
 						 where !names.Contains(user.Name)
@@ -365,7 +364,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void TimesheetsWithCollectionNotContains()
 		{
-            TimesheetEntry entry = session.Get<TimesheetEntry>(1);
+            var entry = session.Get<TimesheetEntry>(1);
 
 			var query = (from sheet in db.Timesheets
 						 where !sheet.Entries.Contains(entry)
@@ -377,7 +376,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void TimesheetsWithEnumerableContains()
 		{
-			User user = session.Get<User>(1);
+			var user = session.Get<User>(1);
 
 			var query = (from sheet in db.Timesheets
 						 where sheet.Users.Contains(user)

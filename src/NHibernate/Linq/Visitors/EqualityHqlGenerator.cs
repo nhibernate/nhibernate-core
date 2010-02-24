@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
 
 namespace NHibernate.Linq.Visitors
@@ -12,29 +10,22 @@ namespace NHibernate.Linq.Visitors
 	public class EqualityHqlGenerator 
 	{
 		private readonly HqlTreeBuilder _hqlTreeBuilder;
-		private readonly IDictionary<ConstantExpression, NamedParameter> _parameters;
-		private readonly IList<NamedParameterDescriptor> _requiredHqlParameters;
+		private readonly VisitorParameters _parameters;
 
-		public EqualityHqlGenerator(IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters)
+		public EqualityHqlGenerator(VisitorParameters parameters)
 		{
 			_parameters = parameters;
-			_requiredHqlParameters = requiredHqlParameters;
 			_hqlTreeBuilder = new HqlTreeBuilder();
 		}
 
 		public HqlBooleanExpression Visit(Expression innerKeySelector, Expression outerKeySelector)
 		{
-			if (innerKeySelector is NewExpression && outerKeySelector is NewExpression)
-			{
-				return VisitNew((NewExpression)innerKeySelector, (NewExpression)outerKeySelector);
-			}
-			else
-			{
-				return GenerateEqualityNode(innerKeySelector, outerKeySelector);
-			}
+		    return innerKeySelector is NewExpression && outerKeySelector is NewExpression
+		               ? VisitNew((NewExpression) innerKeySelector, (NewExpression) outerKeySelector)
+		               : GenerateEqualityNode(innerKeySelector, outerKeySelector);
 		}
 
-        private HqlBooleanExpression VisitNew(NewExpression innerKeySelector, NewExpression outerKeySelector)
+	    private HqlBooleanExpression VisitNew(NewExpression innerKeySelector, NewExpression outerKeySelector)
 		{
 			if (innerKeySelector.Arguments.Count != outerKeySelector.Arguments.Count)
 			{
@@ -59,8 +50,8 @@ namespace NHibernate.Linq.Visitors
 		private HqlEquality GenerateEqualityNode(Expression leftExpr, Expression rightExpr)
 		{
             // TODO - why two visitors? Can't we just reuse?
-			var left = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
-			var right = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
+			var left = new HqlGeneratorExpressionTreeVisitor(_parameters);
+			var right = new HqlGeneratorExpressionTreeVisitor(_parameters);
 
 		    return _hqlTreeBuilder.Equality(left.Visit(leftExpr).AsExpression(), right.Visit(rightExpr).AsExpression());
 		}

@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
@@ -13,21 +11,19 @@ namespace NHibernate.Linq.Visitors
     public class HqlGeneratorExpressionTreeVisitor : IHqlExpressionVisitor
     {
         private readonly HqlTreeBuilder _hqlTreeBuilder;
-    	private readonly IDictionary<ConstantExpression, NamedParameter> _parameters;
-    	private readonly IList<NamedParameterDescriptor> _requiredHqlParameters;
+        private readonly VisitorParameters _parameters;
         static private readonly FunctionRegistry FunctionRegistry = FunctionRegistry.Initialise();
 
-        public static HqlTreeNode Visit(Expression expression, IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters)
+        public static HqlTreeNode Visit(Expression expression, VisitorParameters parameters)
         {
-            var visitor = new HqlGeneratorExpressionTreeVisitor(parameters, requiredHqlParameters);
+            var visitor = new HqlGeneratorExpressionTreeVisitor(parameters);
 
             return visitor.VisitExpression(expression);
         }
 
-        public HqlGeneratorExpressionTreeVisitor(IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters)
+        public HqlGeneratorExpressionTreeVisitor(VisitorParameters parameters)
         {
-			_parameters = parameters;
-			_requiredHqlParameters = requiredHqlParameters;
+            _parameters = parameters;
 			_hqlTreeBuilder = new HqlTreeBuilder();
         }
 
@@ -184,7 +180,7 @@ namespace NHibernate.Linq.Visitors
 
         protected HqlTreeNode VisitNhDistinct(NhDistinctExpression expression)
         {
-			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters, _requiredHqlParameters);
+			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters);
 
             return _hqlTreeBuilder.DistinctHolder(
                 _hqlTreeBuilder.Distinct(),
@@ -367,9 +363,9 @@ namespace NHibernate.Linq.Visitors
 
         	NamedParameter namedParameter;
 
-			if (_parameters.TryGetValue(expression, out namedParameter))
+			if (_parameters.ConstantToParameterMap.TryGetValue(expression, out namedParameter))
 			{
-                _requiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, new[] { _requiredHqlParameters.Count + 1 }, false));
+                _parameters.RequiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, new[] { _parameters.RequiredHqlParameters.Count + 1 }, false));
                 
                 if (namedParameter.Value is bool)
                 {
@@ -415,7 +411,7 @@ namespace NHibernate.Linq.Visitors
 
         protected HqlTreeNode VisitSubQueryExpression(SubQueryExpression expression)
         {
-            ExpressionToHqlTranslationResults query = QueryModelVisitor.GenerateHqlQuery(expression.QueryModel, _parameters, _requiredHqlParameters, false);
+            ExpressionToHqlTranslationResults query = QueryModelVisitor.GenerateHqlQuery(expression.QueryModel, _parameters, false);
 
             return query.Statement;
         }

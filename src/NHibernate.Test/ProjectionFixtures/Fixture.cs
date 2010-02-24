@@ -55,7 +55,7 @@ namespace NHibernate.Test.ProjectionFixtures
             using(var s = sessions.OpenSession())
             using (var tx = s.BeginTransaction())
             {
-                s.Delete("from TreeNode");
+                s.Delete("from Root");
 
                 tx.Commit();
             }
@@ -69,9 +69,9 @@ namespace NHibernate.Test.ProjectionFixtures
         	string expectedMessage =
         		string.Format(
         			@"could not execute query
-[ SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = {0} ]
+[ SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM Root this_ WHERE this_.Id = {0} ]
 Positional parameters:  #0>2
-[SQL: SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = {1}]",
+[SQL: SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM Root this_ WHERE this_.Id = {1}]",
         			pName, pName);
 					
             DetachedCriteria projection = DetachedCriteria.For<TreeNode>("child")

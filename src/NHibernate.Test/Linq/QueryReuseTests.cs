@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Test.Linq.Entities;
 using NUnit.Framework;
@@ -18,7 +17,7 @@ namespace NHibernate.Test.Linq
             _query = db.Users;
         }
 
-        private void AssertQueryReuseable(IQueryable<User> query)
+        private void AssertQueryReuseable()
         {
             IList<User> users = _query.ToList();
             Assert.AreEqual(3, users.Count);
@@ -27,28 +26,28 @@ namespace NHibernate.Test.Linq
         [Test]
         public void CanReuseAfterFirst()
         {
-            User user = _query.First(u => u.Name == "rahien");
+            var user = _query.First(u => u.Name == "rahien");
 
             Assert.IsNotNull(user);
-            AssertQueryReuseable(_query);
+            AssertQueryReuseable();
         }
 
         [Test]
         public void CanReuseAfterFirstOrDefault()
         {
-            User user = _query.FirstOrDefault(u => u.Name == "rahien");
+            var user = _query.FirstOrDefault(u => u.Name == "rahien");
 
             Assert.IsNotNull(user);
-            AssertQueryReuseable(_query);
+            AssertQueryReuseable();
         }
 
         [Test]
         public void CanReuseAfterSingle()
         {
-            User user = _query.Single(u => u.Name == "rahien");
+            var user = _query.Single(u => u.Name == "rahien");
 
             Assert.IsNotNull(user);
-            AssertQueryReuseable(_query);
+            AssertQueryReuseable();
         }
 
         [Test]
@@ -57,7 +56,7 @@ namespace NHibernate.Test.Linq
             User user = _query.SingleOrDefault(u => u.Name == "rahien");
 
             Assert.IsNotNull(user);
-            AssertQueryReuseable(_query);
+            AssertQueryReuseable();
         }
 
         [Test]
@@ -66,7 +65,7 @@ namespace NHibernate.Test.Linq
             User user = _query.Aggregate((u1, u2) => u1);
 
             Assert.IsNotNull(user);
-            AssertQueryReuseable(_query);
+            AssertQueryReuseable();
         }
 
         [Test]
@@ -75,7 +74,7 @@ namespace NHibernate.Test.Linq
             double average = _query.Average(u => u.InvalidLoginAttempts);
 
             Assert.AreEqual(5.0, average);
-            AssertQueryReuseable(_query);
+            AssertQueryReuseable();
         }
 
         [Test]
@@ -84,7 +83,7 @@ namespace NHibernate.Test.Linq
             int totalCount = _query.Count();
 
             Assert.AreEqual(3, totalCount);
-            AssertQueryReuseable(_query);
+            AssertQueryReuseable();
         }
 
         [Test]
@@ -93,7 +92,7 @@ namespace NHibernate.Test.Linq
             int count = _query.Count(u => u.LastLoginDate != null);
 
             Assert.AreEqual(1, count);
-            AssertQueryReuseable(_query);
+            AssertQueryReuseable();
         }
 
         [Test]
@@ -102,7 +101,7 @@ namespace NHibernate.Test.Linq
             long totalCount = _query.LongCount();
 
             Assert.AreEqual(3, totalCount);
-            AssertQueryReuseable(_query);
+            AssertQueryReuseable();
         }
 
         [Test]
@@ -111,7 +110,7 @@ namespace NHibernate.Test.Linq
             long totalCount = _query.LongCount(u => u.LastLoginDate != null);
 
             Assert.AreEqual(1, totalCount);
-            AssertQueryReuseable(_query);
+            AssertQueryReuseable();
         }
 
         [Test]
@@ -120,7 +119,7 @@ namespace NHibernate.Test.Linq
             int max = _query.Max(u => u.InvalidLoginAttempts);
 
             Assert.AreEqual(6, max);
-            AssertQueryReuseable(_query);
+            AssertQueryReuseable();
         }
 
         [Test]
@@ -129,7 +128,7 @@ namespace NHibernate.Test.Linq
             int min = _query.Min(u => u.InvalidLoginAttempts);
 
             Assert.AreEqual(4, min);
-            AssertQueryReuseable(_query);
+            AssertQueryReuseable();
         }
 
         [Test]
@@ -138,7 +137,7 @@ namespace NHibernate.Test.Linq
             int sum = _query.Sum(u => u.InvalidLoginAttempts);
 
             Assert.AreEqual(4 + 5 + 6, sum);
-            AssertQueryReuseable(_query);
+            AssertQueryReuseable();
         }
     }
 }

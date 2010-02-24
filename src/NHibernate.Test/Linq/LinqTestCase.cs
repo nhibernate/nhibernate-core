@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Test.Linq.Entities;
-using NHibernate.Connection;
-using System.Data;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq

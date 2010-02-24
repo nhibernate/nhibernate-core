@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine.Query;
-using NHibernate.Hql.Ast;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Linq.ResultOperators;
 using NHibernate.Linq.Visitors;
@@ -71,8 +70,11 @@ namespace NHibernate.Linq
                 var queryModel = NhRelinqQueryParser.Parse(_expression);
 
                 ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModel,
-                                                                                       _constantToParameterMap,
-                                                                                       requiredHqlParameters, true);
+                                                                                       new VisitorParameters(
+                                                                                           sessionFactory,
+                                                                                           _constantToParameterMap,
+                                                                                           requiredHqlParameters),
+                                                                                       true);
 
                 ParameterDescriptors = requiredHqlParameters.AsReadOnly();
                 _astNode = ExpressionToHqlTranslationResults.Statement.AstNode;

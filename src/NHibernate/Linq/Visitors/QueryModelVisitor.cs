@@ -1,15 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.GroupBy;
 using NHibernate.Linq.GroupJoin;
 using NHibernate.Linq.ResultOperators;
 using NHibernate.Linq.ReWriters;
+using NHibernate.Linq.Visitors.ResultOperatorProcessors;
 using NHibernate.Type;
 using Remotion.Data.Linq;
 using Remotion.Data.Linq.Clauses;
@@ -21,7 +19,7 @@ namespace NHibernate.Linq.Visitors
 {
     public class QueryModelVisitor : QueryModelVisitorBase
 	{
-		public static ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters, bool root)
+		public static ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, VisitorParameters parameters, bool root)
 		{
             // Remove unnecessary body operators
 		    RemoveUnnecessaryBodyOperators.ReWrite(queryModel);
@@ -44,47 +42,71 @@ namespace NHibernate.Linq.Visitors
 			// Flatten pointless subqueries
 			QueryReferenceExpressionFlattener.ReWrite(queryModel);
 
-			var visitor = new QueryModelVisitor(parameters, requiredHqlParameters, root);
-			visitor.VisitQueryModel(queryModel);
+            // Add left joins for references
+		    AddLeftJoinsReWriter.ReWrite(queryModel, parameters.SessionFactory);
+
+			var visitor = new QueryModelVisitor(parameters, root, queryModel);
+			visitor.Visit();
 
 			return visitor.GetTranslation();
 		}
 
-		private readonly HqlTreeBuilder _hqlTreeBuilder;
+        private static readonly ResultOperatorMap ResultOperatorMap;
 
         private readonly List<Action<IQuery, IDictionary<string, Tuple<object, IType>>>> _additionalCriteria = new List<Action<IQuery, IDictionary<string, Tuple<object, IType>>>>();
         private readonly List<LambdaExpression> _listTransformers = new List<LambdaExpression>();
         private readonly List<LambdaExpression> _itemTransformers = new List<LambdaExpression>();
         private readonly List<LambdaExpression> _postExecuteTransformers = new List<LambdaExpression>();
-
-        private IStreamedDataInfo _previousEvaluationType;
-        private IStreamedDataInfo _currentEvaluationType;
-
-    	private readonly IDictionary<ConstantExpression, NamedParameter> _parameters;
-    	private readonly IList<NamedParameterDescriptor> _requiredHqlParameters;
         private readonly bool _root;
         private bool _serverSide = true;
 
-        private HqlTreeNode _treeNode;
-        private System.Type _resultType;
+        public HqlTreeNode Root { get; private set; }
+        public VisitorParameters VisitorParameters { get; private set; }
+        public IStreamedDataInfo CurrentEvaluationType { get; private set; }
+        public IStreamedDataInfo PreviousEvaluationType { get; private set; }
+        public HqlTreeBuilder TreeBuilder { get; private set; }
+        public QueryModel Model { get; private set; }
 
-        private QueryModelVisitor(IDictionary<ConstantExpression, NamedParameter> parameters, IList<NamedParameterDescriptor> requiredHqlParameters, bool root)
+        static QueryModelVisitor()
+        {
+            ResultOperatorMap = new ResultOperatorMap();
+
+            ResultOperatorMap.Add<AggregateResultOperator, ProcessAggregate>();
+            ResultOperatorMap.Add<FirstResultOperator, ProcessFirst>();
+            ResultOperatorMap.Add<TakeResultOperator, ProcessTake>();
+            ResultOperatorMap.Add<SkipResultOperator, ProcessSkip>();
+            ResultOperatorMap.Add<GroupResultOperator, ProcessGroupBy>();
+            ResultOperatorMap.Add<SingleResultOperator, ProcessSingle>();
+            ResultOperatorMap.Add<ContainsResultOperator, ProcessContains>();
+            ResultOperatorMap.Add<NonAggregatingGroupBy, ProcessNonAggregatingGroupBy>();
+            ResultOperatorMap.Add<ClientSideSelect, ProcessClientSideSelect>();
+            ResultOperatorMap.Add<AnyResultOperator, ProcessAny>();
+            ResultOperatorMap.Add<AllResultOperator, ProcessAll>();
+        }
+
+        private QueryModelVisitor(VisitorParameters visitorParameters, bool root, QueryModel queryModel)
 		{
-			_parameters = parameters;
-			_requiredHqlParameters = requiredHqlParameters;
+            VisitorParameters = visitorParameters;
+            Model = queryModel;
             _root = root;
-            _hqlTreeBuilder = new HqlTreeBuilder();
-            _treeNode = _hqlTreeBuilder.Query(_hqlTreeBuilder.SelectFrom(_hqlTreeBuilder.From()));
+            TreeBuilder = new HqlTreeBuilder();
+            Root = TreeBuilder.Query(TreeBuilder.SelectFrom(TreeBuilder.From()));
 		}
 
-        public ExpressionToHqlTranslationResults GetTranslation()
+        private void Visit()
+        {
+            VisitQueryModel(Model);
+        }
+
+
+        private ExpressionToHqlTranslationResults GetTranslation()
 		{
             if (_root)
             {
                 DetectOuterExists();
             }
 
-            return new ExpressionToHqlTranslationResults(_treeNode,
+            return new ExpressionToHqlTranslationResults(Root,
                                                          _itemTransformers,
                                                          _listTransformers,
                                                          _postExecuteTransformers,
@@ -93,9 +115,9 @@ namespace NHibernate.Linq.Visitors
 
 	    private void DetectOuterExists()
 	    {
-            if (_treeNode is HqlExists)
+            if (Root is HqlExists)
             {
-                _treeNode = _treeNode.Children.First();
+                Root = Root.Children.First();
 
                 _additionalCriteria.Add((q, p) => q.SetMaxResults(1));
 
@@ -107,9 +129,9 @@ namespace NHibernate.Linq.Visitors
 
         public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
 		{
-            AddFromClause(_hqlTreeBuilder.Range(
-                             HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, _parameters, _requiredHqlParameters),
-                             _hqlTreeBuilder.Alias(fromClause.ItemName)));
+            AddFromClause(TreeBuilder.Range(
+                             HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters),
+                             TreeBuilder.Alias(fromClause.ItemName)));
 
 			base.VisitMainFromClause(fromClause, queryModel);
 		}
@@ -117,56 +139,55 @@ namespace NHibernate.Linq.Visitors
 
         private void AddWhereClause(HqlBooleanExpression where)
         {
-            var currentWhere = _treeNode.NodesPreOrder.Where(n => n is HqlWhere).FirstOrDefault();
+            var currentWhere = Root.NodesPreOrder.Where(n => n is HqlWhere).FirstOrDefault();
 
             if (currentWhere == null)
             {
-                currentWhere = _hqlTreeBuilder.Where(where);
-                _treeNode.As<HqlQuery>().AddChild(currentWhere);
+                currentWhere = TreeBuilder.Where(where);
+                Root.As<HqlQuery>().AddChild(currentWhere);
             }
             else
             {
                 var currentClause = (HqlBooleanExpression)currentWhere.Children.Single();
 
                 currentWhere.ClearChildren();
-                currentWhere.AddChild(_hqlTreeBuilder.BooleanAnd(currentClause, where));
+                currentWhere.AddChild(TreeBuilder.BooleanAnd(currentClause, where));
             }
         }
 
         private void AddFromClause(HqlTreeNode from)
         {
-            _treeNode.NodesPreOrder.Where(n => n is HqlFrom).First().AddChild(from);
+            Root.NodesPreOrder.Where(n => n is HqlFrom).First().AddChild(from);
         }
 
         private void AddSelectClause(HqlTreeNode select)
         {
-            _treeNode.NodesPreOrder.Where(n => n is HqlSelectFrom).First().AddChild(select);
+            Root.NodesPreOrder.Where(n => n is HqlSelectFrom).First().AddChild(select);
         }
 
         private void AddGroupByClause(HqlGroupBy groupBy)
         {
-            _treeNode.As<HqlQuery>().AddChild(groupBy);
+            Root.As<HqlQuery>().AddChild(groupBy);
         }
 
         private void AddOrderByClause(HqlExpression orderBy, HqlDirectionStatement direction)
         {
-            var orderByRoot = _treeNode.NodesPreOrder.Where(n => n is HqlOrderBy).FirstOrDefault();
+            var orderByRoot = Root.NodesPreOrder.Where(n => n is HqlOrderBy).FirstOrDefault();
 
             if (orderByRoot == null)
             {
-                orderByRoot = _hqlTreeBuilder.OrderBy();
-                _treeNode.As<HqlQuery>().AddChild(orderByRoot);
+                orderByRoot = TreeBuilder.OrderBy();
+                Root.As<HqlQuery>().AddChild(orderByRoot);
             }
             
             orderByRoot.AddChild(orderBy);
             orderByRoot.AddChild(direction);
         }
 
-
         public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)
 		{
-		    _previousEvaluationType = _currentEvaluationType;
-            _currentEvaluationType = resultOperator.GetOutputDataInfo(_previousEvaluationType);
+		    PreviousEvaluationType = CurrentEvaluationType;
+            CurrentEvaluationType = resultOperator.GetOutputDataInfo(PreviousEvaluationType);
 
             if (resultOperator is ClientSideTransformOperator)
             {
@@ -180,269 +201,33 @@ namespace NHibernate.Linq.Visitors
                 }
             }
 
-            if (resultOperator is FirstResultOperator)
+            var results = ResultOperatorMap.Process(resultOperator, this);
+
+            if (results.AdditionalCriteria != null)
             {
-                ProcessFirstOperator((FirstResultOperator) resultOperator);
+                _additionalCriteria.Add(results.AdditionalCriteria);
             }
-            else if (resultOperator is TakeResultOperator)
+            if (results.GroupBy != null)
             {
-                ProcessTakeOperator((TakeResultOperator)resultOperator);
+                AddGroupByClause(results.GroupBy);
             }
-            else if (resultOperator is SkipResultOperator)
+            if (results.ListTransformer != null)
             {
-                ProcessSkipOperator((SkipResultOperator)resultOperator);
+                _listTransformers.Add(results.ListTransformer);
             }
-            else if (resultOperator is GroupResultOperator)
+            if (results.PostExecuteTransformer != null)
             {
-                ProcessGroupByOperator((GroupResultOperator)resultOperator);
+                _postExecuteTransformers.Add(results.PostExecuteTransformer);
             }
-            else if (resultOperator is SingleResultOperator)
+            if (results.WhereClause != null)
             {
-                ProcessSingleOperator((SingleResultOperator) resultOperator);
+                AddWhereClause(results.WhereClause);
             }
-            else if (resultOperator is ContainsResultOperator)
+            if (results.TreeNode != null)
             {
-                ProcessContainsOperator((ContainsResultOperator) resultOperator);
-            }
-            else if (resultOperator is NonAggregatingGroupBy)
-            {
-                ProcessNonAggregatingGroupBy((NonAggregatingGroupBy)resultOperator, queryModel);
-            }
-            else if (resultOperator is ClientSideSelect)
-            {
-                ProcessClientSideSelect((ClientSideSelect)resultOperator);
-            }
-            else if (resultOperator is AggregateResultOperator)
-            {
-                ProcessAggregateOperator((AggregateResultOperator)resultOperator);
-            }
-            else if (resultOperator is AnyResultOperator)
-            {
-                ProcessAnyOperator((AnyResultOperator) resultOperator);
-            }
-            else if (resultOperator is AllResultOperator)
-            {
-                ProcessAllOperator((AllResultOperator) resultOperator);
-            }
-            else
-            {
-                throw new NotSupportedException(string.Format("The {0} result operator is not current supported",
-                                                              resultOperator.GetType().Name));
+                Root = results.TreeNode;
             }
         }
-
-        private void ProcessAllOperator(AllResultOperator resultOperator)
-        {
-            AddWhereClause(_hqlTreeBuilder.BooleanNot(
-                               HqlGeneratorExpressionTreeVisitor.Visit(resultOperator.Predicate, _parameters,
-                                                                       _requiredHqlParameters).AsBooleanExpression()));
-
-            _treeNode = _hqlTreeBuilder.BooleanNot(_hqlTreeBuilder.Exists((HqlQuery)_treeNode));
-        }
-
-        private void ProcessAnyOperator(AnyResultOperator anyOperator)
-        {
-            _treeNode = _hqlTreeBuilder.Exists((HqlQuery) _treeNode);
-        }
-
-        private void ProcessContainsOperator(ContainsResultOperator resultOperator)
-        {
-            var itemExpression =
-                HqlGeneratorExpressionTreeVisitor.Visit(resultOperator.Item, _parameters, _requiredHqlParameters)
-                                                 .AsExpression();
-
-            var from = GetFromRangeClause();
-            var source = from.Children.First();
-
-            if (source is HqlParameter)
-            {
-                // This is an "in" style statement
-                _treeNode = _hqlTreeBuilder.In(itemExpression, source);
-
-            }
-            else
-            {
-                // This is an "exists" style statement
-                AddWhereClause(_hqlTreeBuilder.Equality(
-                                   _hqlTreeBuilder.Ident(GetFromAlias().AstNode.Text),
-                                   itemExpression));
-
-                _treeNode = _hqlTreeBuilder.Exists((HqlQuery)_treeNode);
-            }
-        }
-
-        private HqlAlias GetFromAlias()
-        {
-            return _treeNode.NodesPreOrder.Single(n => n is HqlRange).Children.Single(n => n is HqlAlias) as HqlAlias;
-        }
-
-        private HqlRange GetFromRangeClause()
-        {
-            return _treeNode.NodesPreOrder.Single(n => n is HqlRange).As<HqlRange>();
-        }
-
-        private void ProcessAggregateOperator(AggregateResultOperator resultOperator)
-        {
-            var inputType = resultOperator.Accumulator.Parameters[1].Type;
-            var accumulatorType = resultOperator.Accumulator.Parameters[0].Type;
-            var inputList = Expression.Parameter(typeof(IEnumerable<>).MakeGenericType(typeof(object)), "inputList");
-
-            var castToItem = EnumerableHelper.GetMethod("Cast", new[] { typeof(IEnumerable) }, new[] { inputType });
-            var castToItemExpr = Expression.Call(castToItem, inputList);
-
-            MethodCallExpression call;
-
-            if (resultOperator.ParseInfo.ParsedExpression.Arguments.Count == 2)
-            {
-                var aggregate = ReflectionHelper.GetMethod(() => Enumerable.Aggregate<object>(null, null));
-                aggregate = aggregate.GetGenericMethodDefinition().MakeGenericMethod(inputType);
-
-                call = Expression.Call(
-                    aggregate,
-                    castToItemExpr,
-                    resultOperator.Accumulator
-                    );
-                
-            }
-            else if (resultOperator.ParseInfo.ParsedExpression.Arguments.Count == 3)
-            {
-                var aggregate = ReflectionHelper.GetMethod(() => Enumerable.Aggregate<object, object>(null, null, null));
-                aggregate = aggregate.GetGenericMethodDefinition().MakeGenericMethod(inputType, accumulatorType);
-
-                call = Expression.Call(
-                    aggregate,
-                    castToItemExpr,
-                    resultOperator.OptionalSeed,
-                    resultOperator.Accumulator
-                    );
-            }
-            else
-            {
-                var selectorType = resultOperator.OptionalSelector.Type.GetGenericArguments()[2];
-                var aggregate = ReflectionHelper.GetMethod(() => Enumerable.Aggregate<object, object, object>(null, null, null, null));
-                aggregate = aggregate.GetGenericMethodDefinition().MakeGenericMethod(inputType, accumulatorType, selectorType);
-
-                call = Expression.Call(
-                    aggregate,
-                    castToItemExpr,
-                    resultOperator.OptionalSeed,
-                    resultOperator.Accumulator,
-                    resultOperator.OptionalSelector
-                    );
-            }
-
-            _listTransformers.Add(Expression.Lambda(call, inputList));
-        }
-
-        private void ProcessClientSideSelect(ClientSideSelect resultOperator)
-        {
-            var inputType = resultOperator.SelectClause.Parameters[0].Type;
-            var outputType = resultOperator.SelectClause.Type.GetGenericArguments()[1];
-
-            var inputList = Expression.Parameter(typeof (IEnumerable<>).MakeGenericType(inputType), "inputList");
-
-            var selectMethod = EnumerableHelper.GetMethod("Select", new[] { typeof(IEnumerable<>), typeof(Func<,>) }, new[] { inputType, outputType });
-            var toListMethod = EnumerableHelper.GetMethod("ToList", new[] {typeof (IEnumerable<>)}, new[] {outputType});
-
-            var lambda = Expression.Lambda(
-                            Expression.Call(toListMethod,
-                                Expression.Call(selectMethod, inputList, resultOperator.SelectClause)), 
-                            inputList);
-
-            _listTransformers.Add(lambda);
-        }
-
-        private void ProcessTakeOperator(TakeResultOperator resultOperator)
-		{
-            NamedParameter parameterName;
-
-            // TODO - very similar to ProcessSkip, plus want to investigate the scenario in the "else"
-            // clause to see if it is valid
-            if (_parameters.TryGetValue(resultOperator.Count as ConstantExpression, out parameterName))
-            {
-                _additionalCriteria.Add((q, p) => q.SetMaxResults((int) p[parameterName.Name].First));
-            }
-            else
-            {
-                _additionalCriteria.Add((q, p) => q.SetMaxResults(resultOperator.GetConstantCount()));
-            }
-		}
-
-		private void ProcessSkipOperator(SkipResultOperator resultOperator)
-		{
-            NamedParameter parameterName;
-
-            if (_parameters.TryGetValue(resultOperator.Count as ConstantExpression, out parameterName))
-            {
-                _additionalCriteria.Add((q, p) => q.SetFirstResult((int)p[parameterName.Name].First));
-            }
-            else
-            {
-                _additionalCriteria.Add((q, p) => q.SetFirstResult(resultOperator.GetConstantCount()));
-            }
-        }
-
-		private void ProcessNonAggregatingGroupBy(NonAggregatingGroupBy resultOperator, QueryModel model)
-		{
-			var tSource = model.SelectClause.Selector.Type;
-			var tKey = resultOperator.GroupBy.KeySelector.Type;
-			var tElement = resultOperator.GroupBy.ElementSelector.Type;
-
-			// Stuff in the group by that doesn't map to HQL.  Run it client-side
-			var listParameter = Expression.Parameter(typeof (IEnumerable<object>), "list");
-
-			ParameterExpression itemParam = Expression.Parameter(tSource, "item");
-			Expression keySelectorSource = itemParam;
-
-			if (tSource != SourceOf(resultOperator.GroupBy.KeySelector))
-			{
-				keySelectorSource = Expression.MakeMemberAccess(itemParam,
-																 tSource.GetMember(
-																	((QuerySourceReferenceExpression)
-																	 resultOperator.GroupBy.KeySelector).ReferencedQuerySource.
-																		ItemName)[0]);
-			}
-
-
-			Expression keySelector = new GroupByKeySelectorVisitor(keySelectorSource).Visit(resultOperator.GroupBy.KeySelector);
-
-			Expression elementSelectorSource = itemParam;
-
-			if (tSource != SourceOf(resultOperator.GroupBy.ElementSelector))
-			{
-				elementSelectorSource = Expression.MakeMemberAccess(itemParam,
-																 tSource.GetMember(
-																	((QuerySourceReferenceExpression)
-																	 resultOperator.GroupBy.ElementSelector).ReferencedQuerySource.
-																		ItemName)[0]);
-			}
-
-			Expression elementSelector = new GroupByKeySelectorVisitor(elementSelectorSource).Visit(resultOperator.GroupBy.ElementSelector);
-
-			var groupByMethod = EnumerableHelper.GetMethod("GroupBy",
-				new[] { typeof(IEnumerable<>), typeof(Func<,>), typeof(Func<,>) }, 
-				new[] { tSource, tKey, tElement });
-
-			var castToItem = EnumerableHelper.GetMethod("Cast", new[] { typeof(IEnumerable) }, new[] { tSource });
-			
-			var toList = EnumerableHelper.GetMethod("ToList", new [] { typeof(IEnumerable<>)}, new [] {resultOperator.GroupBy.ItemType});
-
-			LambdaExpression keySelectorExpr = Expression.Lambda(keySelector, itemParam);
-
-			LambdaExpression elementSelectorExpr = Expression.Lambda(elementSelector, itemParam);
-
-			Expression castToItemExpr = Expression.Call(castToItem, listParameter);
-
-			var groupByExpr = Expression.Call(groupByMethod, castToItemExpr, keySelectorExpr, elementSelectorExpr);
-
-			var toListExpr = Expression.Call(toList, groupByExpr);
-
-			var lambdaExpr = Expression.Lambda(toListExpr, listParameter);
-
-			_listTransformers.Add(lambdaExpr);
-			
-			return;
-		}
 
         private void GroupBy<TSource, TKey, TResult>(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TResult>> elementSelector)
         {
@@ -451,55 +236,11 @@ namespace NHibernate.Linq.Visitors
             var x = list.Cast<TSource>().GroupBy(keySelector, elementSelector);
         }
 
-    	private static System.Type SourceOf(Expression keySelector)
-    	{
-    		return new GroupByKeySourceFinder().Visit(keySelector).Type;
-    	}
-
-    	private void ProcessGroupByOperator(GroupResultOperator resultOperator)
-		{
-            AddGroupByClause(_hqlTreeBuilder.GroupBy(HqlGeneratorExpressionTreeVisitor.Visit(resultOperator.KeySelector, _parameters, _requiredHqlParameters).AsExpression()));
-		}
-
-		private void ProcessFirstOperator(FirstResultOperator resultOperator)
-		{
-		    var firstMethod = resultOperator.ReturnDefaultWhenEmpty
-		                          ? ReflectionHelper.GetMethod(() => Queryable.FirstOrDefault<object>(null))
-		                          : ReflectionHelper.GetMethod(() => Queryable.First<object>(null));
-
-		    ProcessFirstOrSingle(firstMethod);
-		}
-
-        private void ProcessSingleOperator(SingleResultOperator resultOperator)
-        {
-            var firstMethod = resultOperator.ReturnDefaultWhenEmpty
-                                  ? ReflectionHelper.GetMethod(() => Queryable.SingleOrDefault<object>(null))
-                                  : ReflectionHelper.GetMethod(() => Queryable.Single<object>(null));
-
-            ProcessFirstOrSingle(firstMethod);
-        }
-
-        private void ProcessFirstOrSingle(MethodInfo target)
-        {
-            target = target.MakeGenericMethod(_currentEvaluationType.DataType);
-
-            var parameter = Expression.Parameter(_previousEvaluationType.DataType, null);
-
-            var lambda = Expression.Lambda(
-                            Expression.Call(
-                                target,
-                                parameter),
-                            parameter);
-
-            _additionalCriteria.Add((q, p) => q.SetMaxResults(1));
-            _postExecuteTransformers.Add(lambda);
-        }
-
 		public override void VisitSelectClause(SelectClause selectClause, QueryModel queryModel)
 		{
-		    _currentEvaluationType = selectClause.GetOutputDataInfo();
+		    CurrentEvaluationType = selectClause.GetOutputDataInfo();
 
-            var visitor = new SelectClauseVisitor(typeof(object[]), _parameters, _requiredHqlParameters);
+            var visitor = new SelectClauseVisitor(typeof(object[]), VisitorParameters);
 
             visitor.Visit(selectClause.Selector);
 
@@ -508,7 +249,7 @@ namespace NHibernate.Linq.Visitors
                 _itemTransformers.Add(visitor.ProjectionExpression);
             }
 
-            AddSelectClause(_hqlTreeBuilder.Select(visitor.GetHqlNodes()));
+            AddSelectClause(TreeBuilder.Select(visitor.GetHqlNodes()));
 
 			base.VisitSelectClause(selectClause, queryModel);
 		}
@@ -516,43 +257,50 @@ namespace NHibernate.Linq.Visitors
 		public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
 		{
 			// Visit the predicate to build the query
-            AddWhereClause(HqlGeneratorExpressionTreeVisitor.Visit(whereClause.Predicate, _parameters, _requiredHqlParameters).AsBooleanExpression());
+            AddWhereClause(HqlGeneratorExpressionTreeVisitor.Visit(whereClause.Predicate, VisitorParameters).AsBooleanExpression());
 		}
 
 		public override void VisitOrderByClause(OrderByClause orderByClause, QueryModel queryModel, int index)
 		{
 			foreach (Ordering clause in orderByClause.Orderings)
 			{
-                AddOrderByClause(HqlGeneratorExpressionTreeVisitor.Visit(clause.Expression, _parameters, _requiredHqlParameters).AsExpression(),
+                AddOrderByClause(HqlGeneratorExpressionTreeVisitor.Visit(clause.Expression, VisitorParameters).AsExpression(),
                                 clause.OrderingDirection == OrderingDirection.Asc
-		                        	? _hqlTreeBuilder.Ascending()
-		                        	: (HqlDirectionStatement) _hqlTreeBuilder.Descending());
+		                        	? TreeBuilder.Ascending()
+		                        	: (HqlDirectionStatement) TreeBuilder.Descending());
 			}
 		}
 
 		public override void VisitJoinClause(JoinClause joinClause, QueryModel queryModel, int index)
 		{
-			var equalityVisitor = new EqualityHqlGenerator(_parameters, _requiredHqlParameters);
+			var equalityVisitor = new EqualityHqlGenerator(VisitorParameters);
 			var whereClause = equalityVisitor.Visit(joinClause.InnerKeySelector, joinClause.OuterKeySelector);
 
             AddWhereClause(whereClause);
 
-            AddFromClause(_hqlTreeBuilder.Range(HqlGeneratorExpressionTreeVisitor.Visit(joinClause.InnerSequence, _parameters, _requiredHqlParameters),
-                                                   _hqlTreeBuilder.Alias(joinClause.ItemName)));
+            AddFromClause(TreeBuilder.Range(HqlGeneratorExpressionTreeVisitor.Visit(joinClause.InnerSequence, VisitorParameters),
+                                                   TreeBuilder.Alias(joinClause.ItemName)));
 		}
 
 		public override void VisitAdditionalFromClause(AdditionalFromClause fromClause, QueryModel queryModel, int index)
 		{
-			if (fromClause.FromExpression is MemberExpression)
+            if (fromClause is LeftJoinClause)
+            {
+                // It's a left join
+                AddFromClause(TreeBuilder.LeftJoin(
+                                     HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters).AsExpression(),
+                                     TreeBuilder.Alias(fromClause.ItemName)));
+            }
+			else if (fromClause.FromExpression is MemberExpression)
 			{
 				var member = (MemberExpression) fromClause.FromExpression;
 
 				if (member.Expression is QuerySourceReferenceExpression)
 				{
 					// It's a join
-				    AddFromClause(_hqlTreeBuilder.Join(
-                                         HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, _parameters, _requiredHqlParameters).AsExpression(),
-				                         _hqlTreeBuilder.Alias(fromClause.ItemName)));
+				    AddFromClause(TreeBuilder.Join(
+                                         HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters).AsExpression(),
+				                         TreeBuilder.Alias(fromClause.ItemName)));
 				}
 				else
 				{
@@ -563,9 +311,9 @@ namespace NHibernate.Linq.Visitors
 			else
 			{
 				// TODO - exact same code as in MainFromClause; refactor this out
-				AddFromClause(_hqlTreeBuilder.Range(
-                                     HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, _parameters, _requiredHqlParameters),
-									 _hqlTreeBuilder.Alias(fromClause.ItemName)));
+				AddFromClause(TreeBuilder.Range(
+                                     HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters),
+									 TreeBuilder.Alias(fromClause.ItemName)));
 
 			}
 
@@ -575,12 +323,6 @@ namespace NHibernate.Linq.Visitors
 		public override void VisitGroupJoinClause(GroupJoinClause groupJoinClause, QueryModel queryModel, int index)
 		{
             throw new NotImplementedException();
-		}
-
-		internal enum ResultOperatorProcessingMode
-		{
-			ProcessServerSide,
-			ProcessClientSide
 		}
 	}
 }

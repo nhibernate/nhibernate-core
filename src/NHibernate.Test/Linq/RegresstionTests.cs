@@ -42,6 +42,7 @@ namespace NHibernate.Test.Linq
 
 			Assert.AreEqual(2, roots.Count());
 		}
+
 		[Test]
 		public void CanUseNullConstantAndRestriction()
 		{

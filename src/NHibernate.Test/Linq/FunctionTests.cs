@@ -39,7 +39,7 @@ namespace NHibernate.Test.Linq
                                     AfterExtension2 = e.FirstName.ReplaceExtension("An", "Zan")
 								};
 
-			string s = ObjectDumper.Write(query);
+			var s = ObjectDumper.Write(query);
 		}
 
 		[Test]

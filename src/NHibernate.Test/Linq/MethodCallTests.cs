@@ -9,14 +9,14 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void CanExecuteAny()
 		{
-			bool result = db.Users.Any();
+			var result = db.Users.Any();
 			Assert.IsTrue(result);
 		}
 
 		[Test]
         public void CanExecuteAnyWithArguments()
 		{
-			bool result = db.Users.Any(u => u.Name == "user-does-not-exist");
+			var result = db.Users.Any(u => u.Name == "user-does-not-exist");
 			Assert.IsFalse(result);
 		}
 
@@ -24,7 +24,7 @@ namespace NHibernate.Test.Linq
 		public void CanExecuteCountWithOrderByArguments()
 		{
 			var query = db.Users.OrderBy(u => u.Name);
-			int count = query.Count();
+			var count = query.Count();
 			Assert.AreEqual(3, count);
 		}
 	}

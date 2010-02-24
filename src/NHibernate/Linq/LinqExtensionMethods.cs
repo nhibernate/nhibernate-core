@@ -11,7 +11,7 @@ namespace NHibernate.Linq
             return new NhQueryable<T>(session);
         }
 
-        public static void ForEach<T>(this IEnumerable<T> query, System.Action<T> method)
+        public static void ForEach<T>(this IEnumerable<T> query, Action<T> method)
         {
             foreach (T item in query)
             {
@@ -26,12 +26,22 @@ namespace NHibernate.Linq
 
         public static bool IsNullableOrReference(this System.Type type)
         {
-            return !type.IsValueType || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
+            return !type.IsValueType || type.IsNullable();
         }
 
         public static System.Type NullableOf(this System.Type type)
         {
             return type.GetGenericArguments()[0];
+        }
+
+        public static bool IsPrimitive(this System.Type type)
+        {
+            return (type.IsValueType || type.IsNullable() || type == typeof (string));
+        }
+
+        public static bool IsNonPrimitive(this System.Type type)
+        {
+            return !type.IsPrimitive();
         }
 
         public static T As<T>(this object source)
