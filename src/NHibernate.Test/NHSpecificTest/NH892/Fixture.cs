@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH892
 			get { return "NH892"; }
 		}
 
-		[Test, Ignore("Not Fixed yet")]
+		[Test]
 		public void SelectWithWhereClause()
 		{
 			using (session = OpenSession())
@@ -44,9 +44,8 @@ namespace NHibernate.Test.NHSpecificTest.NH892
 				Assert.AreEqual(post.ID, retrievedPost.ID);
 				Assert.AreEqual(user1.ID, retrievedPost.Poster.ID);
 
-				session.Delete(post);
-				session.Delete(user1);
-				session.Delete(user2);
+				session.Delete("from BlogPost");
+				session.Delete("from User");
 				session.Flush();
 				session.Close();
 			}
