@@ -5,13 +5,13 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
     public class ProcessSingle : ProcessFirstOrSingleBase, IResultOperatorProcessor<SingleResultOperator>
     {
-        public ProcessResultOperatorReturn Process(SingleResultOperator resultOperator, QueryModelVisitor queryModelVisitor)
+        public void Process(SingleResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {
             var firstMethod = resultOperator.ReturnDefaultWhenEmpty
                                   ? ReflectionHelper.GetMethod(() => Queryable.SingleOrDefault<object>(null))
                                   : ReflectionHelper.GetMethod(() => Queryable.Single<object>(null));
 
-            return ProcessFirstOrSingle(firstMethod, queryModelVisitor);
+            ProcessFirstOrSingle(firstMethod, queryModelVisitor, tree);
         }
     }
 }

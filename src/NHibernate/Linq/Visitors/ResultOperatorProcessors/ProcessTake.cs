@@ -5,7 +5,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
     public class ProcessTake : IResultOperatorProcessor<TakeResultOperator>
     {
-        public ProcessResultOperatorReturn Process(TakeResultOperator resultOperator, QueryModelVisitor queryModelVisitor)
+        public void Process(TakeResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {
             NamedParameter parameterName;
 
@@ -13,11 +13,11 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
             // clause to see if it is valid
             if (queryModelVisitor.VisitorParameters.ConstantToParameterMap.TryGetValue(resultOperator.Count as ConstantExpression, out parameterName))
             {
-                return new ProcessResultOperatorReturn { AdditionalCriteria = (q, p) => q.SetMaxResults((int)p[parameterName.Name].First) };
+                tree.AddAdditionalCriteria((q, p) => q.SetMaxResults((int)p[parameterName.Name].First));
             }
             else
             {
-                return new ProcessResultOperatorReturn { AdditionalCriteria = (q, p) => q.SetMaxResults(resultOperator.GetConstantCount()) };
+                tree.AddAdditionalCriteria((q, p) => q.SetMaxResults(resultOperator.GetConstantCount()));
             }
         }
     }

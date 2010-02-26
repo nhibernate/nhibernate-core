@@ -45,7 +45,7 @@ namespace NHibernate.Linq.Visitors
             _hqlTreeNodes = BooleanToCaseConvertor.Convert(_hqlTreeNodes).ToList();
         }
 
-        protected override Expression VisitExpression(Expression expression)
+        public override Expression VisitExpression(Expression expression)
         {
             if (expression == null)
             {

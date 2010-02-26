@@ -48,9 +48,9 @@ namespace NHibernate.Test.Linq.Entities
             set { _address = value; }
         }
 
-        public virtual ReadOnlyCollection<Order> Orders
+        public virtual ISet<Order> Orders
         {
-            get { return new ReadOnlyCollection<Order>(new List<Order>(_orders)); }
+            get { return _orders; }
         }
 
         public virtual void AddOrder(Order order)

@@ -7,7 +7,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
     public class ProcessClientSideSelect : IResultOperatorProcessor<ClientSideSelect>
     {
-        public ProcessResultOperatorReturn Process(ClientSideSelect resultOperator, QueryModelVisitor queryModelVisitor)
+        public void Process(ClientSideSelect resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {
             var inputType = resultOperator.SelectClause.Parameters[0].Type;
             var outputType = resultOperator.SelectClause.Type.GetGenericArguments()[1];
@@ -22,7 +22,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
                                 Expression.Call(selectMethod, inputList, resultOperator.SelectClause)),
                 inputList);
 
-            return new ProcessResultOperatorReturn {ListTransformer = lambda};
+            tree.AddListTransformer(lambda);
         }
     }
 }

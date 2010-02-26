@@ -2,6 +2,6 @@
 {
     public interface IResultOperatorProcessor<T>
     {
-        ProcessResultOperatorReturn Process(T resultOperator, QueryModelVisitor queryModelVisitor);
+        void Process(T resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree);
     }
 }

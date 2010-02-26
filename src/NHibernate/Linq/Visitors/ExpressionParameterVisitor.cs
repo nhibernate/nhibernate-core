@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Remotion.Data.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
 	/// <summary>
 	/// Locates constants in the expression tree and generates parameters for each one
 	/// </summary>
-	public class ExpressionParameterVisitor : ExpressionTreeVisitor
+	public class ExpressionParameterVisitor : NhExpressionTreeVisitor
 	{
 		private readonly Dictionary<ConstantExpression, NamedParameter> _parameters = new Dictionary<ConstantExpression, NamedParameter>();
 

@@ -9,7 +9,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
     public class ProcessNonAggregatingGroupBy : IResultOperatorProcessor<NonAggregatingGroupBy>
     {
-        public ProcessResultOperatorReturn Process(NonAggregatingGroupBy resultOperator, QueryModelVisitor queryModelVisitor)
+        public void Process(NonAggregatingGroupBy resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {
             var tSource = queryModelVisitor.Model.SelectClause.Selector.Type;
             var tKey = resultOperator.GroupBy.KeySelector.Type;
@@ -66,7 +66,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
             var lambdaExpr = Expression.Lambda(toListExpr, listParameter);
 
-            return new ProcessResultOperatorReturn {ListTransformer = lambdaExpr};
+            tree.AddListTransformer(lambdaExpr);
         }
 
         private static System.Type SourceOf(Expression keySelector)

@@ -6,30 +6,27 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
     public class ProcessContains : IResultOperatorProcessor<ContainsResultOperator>
     {
-        public ProcessResultOperatorReturn Process(ContainsResultOperator resultOperator, QueryModelVisitor queryModelVisitor)
+        public void Process(ContainsResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {
             var itemExpression =
                 HqlGeneratorExpressionTreeVisitor.Visit(resultOperator.Item, queryModelVisitor.VisitorParameters)
                     .AsExpression();
 
-            var from = GetFromRangeClause(queryModelVisitor.Root);
+            var from = GetFromRangeClause(tree.Root);
             var source = from.Children.First();
 
             if (source is HqlParameter)
             {
                 // This is an "in" style statement
-                return new ProcessResultOperatorReturn {TreeNode = queryModelVisitor.TreeBuilder.In(itemExpression, source)};
+                tree.SetRoot(tree.TreeBuilder.In(itemExpression, source));
             }
             else
             {
                 // This is an "exists" style statement
-                return new ProcessResultOperatorReturn
-                           {
-                               WhereClause = queryModelVisitor.TreeBuilder.Equality(
-                                   queryModelVisitor.TreeBuilder.Ident(GetFromAlias(queryModelVisitor.Root).AstNode.Text),
-                                   itemExpression),
-                               TreeNode = queryModelVisitor.TreeBuilder.Exists((HqlQuery)queryModelVisitor.Root)
-                           };
+                tree.AddWhereClause(tree.TreeBuilder.Equality(
+                                   tree.TreeBuilder.Ident(GetFromAlias(tree.Root).AstNode.Text),
+                                   itemExpression));
+                tree.SetRoot(tree.TreeBuilder.Exists((HqlQuery)tree.Root));
             }
         }
 

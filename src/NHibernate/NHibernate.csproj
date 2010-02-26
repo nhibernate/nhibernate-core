@@ -647,6 +647,11 @@
     <Compile Include="Criterion\QueryOver.cs" />
     <Compile Include="Impl\ExpressionProcessor.cs" />
     <Compile Include="Impl\SessionIdLoggingContext.cs" />
+    <Compile Include="Linq\Expressions\AggregateExpressionNode.cs" />
+    <Compile Include="Linq\EagerFetchingExtensionMethods.cs" />
+    <Compile Include="Linq\Visitors\NameUnNamedParameters.cs" />
+    <Compile Include="Linq\NhRelinqQueryParser.cs" />
+    <Compile Include="Linq\ResultOperators\AggregateResultOperator.cs" />
     <Compile Include="Linq\Expressions\NhAggregatedExpression.cs" />
     <Compile Include="Linq\Expressions\NhAverageExpression.cs" />
     <Compile Include="Linq\Expressions\NhCountExpression.cs" />
@@ -675,6 +680,11 @@
     <Compile Include="Linq\Functions\QueryableGenerator.cs" />
     <Compile Include="Linq\ReWriters\RemoveUnnecessaryBodyOperators.cs" />
     <Compile Include="Linq\Clauses\LeftJoinClause.cs" />
+    <Compile Include="Linq\IntermediateHqlTree.cs" />
+    <Compile Include="Linq\Visitors\QuerySourceLocator.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessFetch.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessFetchMany.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessFetchOne.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ResultOperatorMap.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ResultOperatorProcessor.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ResultOperatorProcessorBase.cs" />

@@ -14,5 +14,6 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
         public LambdaExpression PostExecuteTransformer { get; set;}
         public HqlBooleanExpression WhereClause { get; set;}
         public HqlGroupBy GroupBy { get; set;}
+        public HqlTreeNode AdditionalFrom { get; set; }
     }
 }

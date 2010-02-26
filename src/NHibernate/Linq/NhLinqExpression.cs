@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast.ANTLR.Tree;
-using NHibernate.Linq.ResultOperators;
 using NHibernate.Linq.Visitors;
 using NHibernate.Type;
-using Remotion.Data.Linq;
-using Remotion.Data.Linq.Clauses;
 using Remotion.Data.Linq.Parsing.ExpressionTreeVisitors;
-using Remotion.Data.Linq.Parsing.Structure;
-using Remotion.Data.Linq.Parsing.Structure.IntermediateModel;
 
 namespace NHibernate.Linq
 {
@@ -83,118 +77,4 @@ namespace NHibernate.Linq
 	        return _astNode;
 		}
 	}
-
-    public static class NhRelinqQueryParser
-    {
-	    public static readonly MethodCallExpressionNodeTypeRegistry MethodCallRegistry =
-	        MethodCallExpressionNodeTypeRegistry.CreateDefault();
-
-        static NhRelinqQueryParser()
-        {
-            MethodCallRegistry.Register(
-                new[]
-                    {
-                        MethodCallExpressionNodeTypeRegistry.GetRegisterableMethodDefinition(ReflectionHelper.GetMethod(() => Queryable.Aggregate<object>(null, null))),
-                        MethodCallExpressionNodeTypeRegistry.GetRegisterableMethodDefinition(ReflectionHelper.GetMethod(() => Queryable.Aggregate<object, object>(null, null, null)))
-                    },
-                typeof (AggregateExpressionNode));
-
-            MethodCallRegistry.Register(
-                new []
-                    {
-                        MethodCallExpressionNodeTypeRegistry.GetRegisterableMethodDefinition(ReflectionHelper.GetMethod((List<object> l) => l.Contains(null))),
-                        
-                    },
-                typeof(ContainsExpressionNode));
-        }
-
-        public static QueryModel Parse(Expression expression)
-        {
-            return new QueryParser(new ExpressionTreeParser(MethodCallRegistry)).GetParsedQuery(expression);
-        }
-    }
-
-    public class NameUnNamedParameters : NhExpressionTreeVisitor
-    {
-        public static Expression Visit(Expression expression)
-        {
-            var visitor = new NameUnNamedParameters();
-
-            return visitor.VisitExpression(expression);
-        }
-
-        private readonly Dictionary<ParameterExpression, ParameterExpression> _renamedParameters = new Dictionary<ParameterExpression, ParameterExpression>();
-
-        protected override Expression VisitParameterExpression(ParameterExpression expression)
-        {
-            if (string.IsNullOrEmpty(expression.Name))
-            {
-                ParameterExpression renamed;
-                
-                if (_renamedParameters.TryGetValue(expression, out renamed))
-                {
-                    return renamed;
-                }
-
-                renamed = Expression.Parameter(expression.Type, Guid.NewGuid().ToString());
-
-                _renamedParameters.Add(expression, renamed);
-
-                return renamed;
-            }
-
-            return base.VisitParameterExpression(expression);
-        }
-    }
-
-    public class AggregateExpressionNode : ResultOperatorExpressionNodeBase
-    {
-        public MethodCallExpressionParseInfo ParseInfo { get; set; }
-        public Expression OptionalSeed { get; set; }
-        public LambdaExpression Accumulator { get; set; }
-        public LambdaExpression OptionalSelector { get; set; }
-
-        public AggregateExpressionNode(MethodCallExpressionParseInfo parseInfo, Expression arg1, Expression arg2, LambdaExpression optionalSelector) : base(parseInfo, null, optionalSelector)
-        {
-            ParseInfo = parseInfo;
-
-            if (arg2 != null)
-            {
-                OptionalSeed = arg1;
-                Accumulator = (LambdaExpression) arg2;
-            }
-            else
-            {
-                Accumulator = (LambdaExpression) arg1;
-            }
-
-            OptionalSelector = optionalSelector;
-        }
-
-        public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
-        {
-            return new AggregateResultOperator(ParseInfo, OptionalSeed, Accumulator, OptionalSelector);
-        }
-    }
-
-    public class AggregateResultOperator : ClientSideTransformOperator
-    {
-        public MethodCallExpressionParseInfo ParseInfo { get; set; }
-        public Expression OptionalSeed { get; set; }
-        public LambdaExpression Accumulator { get; set; }
-        public LambdaExpression OptionalSelector { get; set; }
-
-        public AggregateResultOperator(MethodCallExpressionParseInfo parseInfo, Expression optionalSeed, LambdaExpression accumulator, LambdaExpression optionalSelector)
-        {
-            ParseInfo = parseInfo;
-            OptionalSeed = optionalSeed;
-            Accumulator = accumulator;
-            OptionalSelector = optionalSelector;
-        }
-    }
 }

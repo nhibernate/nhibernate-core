@@ -12,9 +12,9 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
             _processor = processor;
         }
 
-        public override ProcessResultOperatorReturn Process(ResultOperatorBase resultOperator, QueryModelVisitor queryModel)
+        public override void Process(ResultOperatorBase resultOperator, QueryModelVisitor queryModel, IntermediateHqlTree tree)
         {
-            return _processor.Process((T)resultOperator, queryModel);
+            _processor.Process((T)resultOperator, queryModel, tree);
         }
     }
 }

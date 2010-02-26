@@ -28,7 +28,7 @@ namespace NHibernate.Linq.Visitors
             return _candidates;
         }
 
-        protected override Expression VisitExpression(Expression expression)
+        public override Expression VisitExpression(Expression expression)
         {
             if (expression != null)
             {

@@ -5,12 +5,9 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
     public class ProcessAny : IResultOperatorProcessor<AnyResultOperator>
     {
-        public ProcessResultOperatorReturn Process(AnyResultOperator anyOperator, QueryModelVisitor queryModelVisitor)
+        public void Process(AnyResultOperator anyOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {
-            return new ProcessResultOperatorReturn
-                       {
-                           TreeNode = queryModelVisitor.TreeBuilder.Exists((HqlQuery) queryModelVisitor.Root)
-                       };
+            tree.SetRoot(tree.TreeBuilder.Exists((HqlQuery) tree.Root));
         }
     }
 }

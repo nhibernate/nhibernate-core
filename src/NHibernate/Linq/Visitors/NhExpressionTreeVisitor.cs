@@ -7,7 +7,7 @@ namespace NHibernate.Linq.Visitors
 {
     public class NhExpressionTreeVisitor : ExpressionTreeVisitor
     {
-        protected override Expression VisitExpression(Expression expression)
+        public override Expression VisitExpression(Expression expression)
         {
             if (expression == null)
             {
@@ -27,7 +27,6 @@ namespace NHibernate.Linq.Visitors
                     return VisitNhNew((NhNewExpression) expression);
                 case NhExpressionType.Star:
                     return VisitNhStar((NhStarExpression) expression);
-                    
             }
 
             return base.VisitExpression(expression);
@@ -42,7 +41,7 @@ namespace NHibernate.Linq.Visitors
 
         protected virtual Expression VisitNhNew(NhNewExpression expression)
         {
-            var arguments = VisitExpressionList(expression.Arguments);
+            var arguments = VisitAndConvert(expression.Arguments, "VisitNhNew");
 
             return arguments != expression.Arguments ? new NhNewExpression(expression.Members, arguments) : expression;
         }

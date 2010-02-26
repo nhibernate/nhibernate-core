@@ -15,17 +15,19 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
             _map.Add(typeof(TOperator), new ResultOperatorProcessor<TOperator>(new TProcessor()));
         }
 
-        public ProcessResultOperatorReturn Process(ResultOperatorBase resultOperator, QueryModelVisitor queryModel)
+        public void Process(ResultOperatorBase resultOperator, QueryModelVisitor queryModel, IntermediateHqlTree tree)
         {
             ResultOperatorProcessorBase processor;
 
             if (_map.TryGetValue(resultOperator.GetType(), out processor))
             {
-                return processor.Process(resultOperator, queryModel);
+                processor.Process(resultOperator, queryModel, tree);
             }
-
-            throw new NotSupportedException(string.Format("The {0} result operator is not current supported",
+            else
+            {
+                throw new NotSupportedException(string.Format("The {0} result operator is not current supported",
                                                           resultOperator.GetType().Name));
+            }
         }
     }
 }

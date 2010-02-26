@@ -95,9 +95,9 @@ namespace NHibernate.Test.Linq.Entities
             set { _superior = value; }
         }
 
-        public virtual ReadOnlyCollection<Employee> Subordinates
+        public virtual ISet<Employee> Subordinates
         {
-            get { return new ReadOnlyCollection<Employee>(new List<Employee>(_subordinates)); }
+            get { return _subordinates; }
         }
 
         public virtual ReadOnlyCollection<Territory> Territories
@@ -105,9 +105,9 @@ namespace NHibernate.Test.Linq.Entities
             get { return new ReadOnlyCollection<Territory>(_territories); }
         }
 
-        public virtual ReadOnlyCollection<Order> Orders
+        public virtual ISet<Order> Orders
         {
-            get { return new ReadOnlyCollection<Order>(new List<Order>(_orders)); }
+            get { return _orders; }
         }
 
         public virtual void AddSubordinate(Employee subordinate)

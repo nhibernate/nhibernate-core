@@ -7,7 +7,7 @@ namespace NHibernate.Linq.Visitors
 {
     public abstract class NhThrowingExpressionTreeVisitor : ThrowingExpressionTreeVisitor
     {
-        protected override Expression VisitExpression(Expression expression)
+        public override Expression VisitExpression(Expression expression)
         {
             switch ((NhExpressionType)expression.NodeType)
             {
@@ -125,7 +125,7 @@ namespace NHibernate.Linq.Visitors
 
         protected Expression BaseVisitNhNew(NhNewExpression expression)
         {
-            var arguments = base.VisitExpressionList(expression.Arguments);
+            var arguments = base.VisitAndConvert(expression.Arguments, "BaseVisitNhNew");
 
             return arguments != expression.Arguments ? new NhNewExpression(expression.Members, arguments) : expression;
         }

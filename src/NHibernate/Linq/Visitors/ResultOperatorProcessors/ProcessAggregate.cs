@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Linq.ResultOperators;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
     public class ProcessAggregate : IResultOperatorProcessor<AggregateResultOperator>
     {
-        public ProcessResultOperatorReturn Process(AggregateResultOperator resultOperator, QueryModelVisitor queryModelVisitor)
+        public void Process(AggregateResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {
             var inputType = resultOperator.Accumulator.Parameters[1].Type;
             var accumulatorType = resultOperator.Accumulator.Parameters[0].Type;
@@ -57,7 +58,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
                     );
             }
 
-            return new ProcessResultOperatorReturn { ListTransformer = Expression.Lambda(call, inputList) };
+            tree.AddListTransformer(Expression.Lambda(call, inputList));
         }
     }
 }

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Text;
-using Remotion.Data.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -13,7 +12,7 @@ namespace NHibernate.Linq.Visitors
 	/// generate the same key as 
 	///		from c in Customers where c.City = "Madrid"
 	/// </summary>
-	public class ExpressionKeyVisitor : ExpressionTreeVisitor
+	public class ExpressionKeyVisitor : NhExpressionTreeVisitor
 	{
 		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
 		readonly StringBuilder _string = new StringBuilder();
@@ -93,21 +92,13 @@ namespace NHibernate.Linq.Visitors
 			return base.VisitElementInit(elementInit);
 		}
 
-		protected override ReadOnlyCollection<T> VisitExpressionList<T>(ReadOnlyCollection<T> expressions)
-		{
-			if (expressions.Count > 0)
-			{
-				VisitExpression(expressions[0]);
+        private T AppendCommas<T>(T expression) where T : Expression
+        {
+            VisitExpression(expression);
+            _string.Append(", ");
 
-				for (var i = 1; i < expressions.Count; i++)
-				{
-					_string.Append(", ");
-					VisitExpression(expressions[i]);
-				}
-			}
-
-			return expressions;
-		}
+            return expression;
+        }
 
 		protected override Expression VisitInvocationExpression(InvocationExpression expression)
 		{
@@ -117,7 +108,8 @@ namespace NHibernate.Linq.Visitors
 		protected override Expression VisitLambdaExpression(LambdaExpression expression)
 		{
 			_string.Append('(');
-			VisitExpressionList(expression.Parameters);
+
+		    VisitList(expression.Parameters, AppendCommas);
 			_string.Append(") => (");
 			VisitExpression(expression.Body);
 			_string.Append(')');
@@ -171,7 +163,7 @@ namespace NHibernate.Linq.Visitors
 			_string.Append('.');
 			_string.Append(expression.Method.Name);
 			_string.Append('(');
-			VisitExpressionList(expression.Arguments);
+			VisitList(expression.Arguments, AppendCommas);
 			_string.Append(')');
 
 			return expression;
@@ -187,7 +179,7 @@ namespace NHibernate.Linq.Visitors
 			_string.Append("new ");
 			_string.Append(expression.Constructor.DeclaringType.Name);
 			_string.Append('(');
-			VisitExpressionList(expression.Arguments);
+			VisitList(expression.Arguments, AppendCommas);
 			_string.Append(')');
 
 			return expression;

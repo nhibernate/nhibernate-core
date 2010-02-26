@@ -5,17 +5,17 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
     public class ProcessSkip : IResultOperatorProcessor<SkipResultOperator>
     {
-        public ProcessResultOperatorReturn Process(SkipResultOperator resultOperator, QueryModelVisitor queryModelVisitor)
+        public void Process(SkipResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {
             NamedParameter parameterName;
 
             if (queryModelVisitor.VisitorParameters.ConstantToParameterMap.TryGetValue(resultOperator.Count as ConstantExpression, out parameterName))
             {
-                return new ProcessResultOperatorReturn { AdditionalCriteria = (q, p) => q.SetFirstResult((int)p[parameterName.Name].First) };
+                tree.AddAdditionalCriteria((q, p) => q.SetFirstResult((int)p[parameterName.Name].First));
             }
             else
             {
-                return new ProcessResultOperatorReturn { AdditionalCriteria = (q, p) => q.SetFirstResult(resultOperator.GetConstantCount()) };
+                tree.AddAdditionalCriteria((q, p) => q.SetFirstResult(resultOperator.GetConstantCount()));
             }
         }
     }

@@ -3551,7 +3551,10 @@ namespace NHibernate.Test.Linq
 
         protected override void OnTearDown()
         {
-            _session.Close();
+            if (_session.IsOpen)
+            {
+                _session.Close();
+            }
         }
 
         protected Northwind db

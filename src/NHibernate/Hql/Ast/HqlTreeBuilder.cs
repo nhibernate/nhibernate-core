@@ -391,9 +391,19 @@ namespace NHibernate.Hql.Ast
             return new HqlIn(_factory, itemExpression, source);
         }
 
-        public HqlTreeNode LeftJoin(HqlExpression expression, HqlAlias @alias)
+        public HqlLeftJoin LeftJoin(HqlExpression expression, HqlAlias @alias)
         {
             return new HqlLeftJoin(_factory, expression, @alias);
+        }
+
+        public HqlFetchJoin FetchJoin(HqlExpression expression, HqlAlias @alias)
+        {
+            return new HqlFetchJoin(_factory, expression, @alias);
+        }
+
+        public HqlLeftFetchJoin LeftFetchJoin(HqlExpression expression, HqlAlias @alias)
+        {
+            return new HqlLeftFetchJoin(_factory, expression, @alias);
         }
     }
 }

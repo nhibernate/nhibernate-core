@@ -5,15 +5,13 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
     public class ProcessAll : IResultOperatorProcessor<AllResultOperator>
     {
-        public ProcessResultOperatorReturn Process(AllResultOperator resultOperator, QueryModelVisitor queryModelVisitor)
+        public void Process(AllResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {
-            return new ProcessResultOperatorReturn
-                       {
-                           WhereClause = queryModelVisitor.TreeBuilder.BooleanNot(
+            tree.AddWhereClause(tree.TreeBuilder.BooleanNot(
                                HqlGeneratorExpressionTreeVisitor.Visit(resultOperator.Predicate, queryModelVisitor.VisitorParameters).
-                                   AsBooleanExpression()),
-                           TreeNode = queryModelVisitor.TreeBuilder.BooleanNot(queryModelVisitor.TreeBuilder.Exists((HqlQuery)queryModelVisitor.Root))
-                       };
+                                   AsBooleanExpression()));
+
+            tree.SetRoot(tree.TreeBuilder.BooleanNot(tree.TreeBuilder.Exists((HqlQuery) tree.Root)));
         }
     }
 }

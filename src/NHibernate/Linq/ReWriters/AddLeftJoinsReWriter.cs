@@ -56,7 +56,7 @@ namespace NHibernate.Linq.Visitors
             return swapper.VisitExpression(expression);
         }
 
-        protected override Expression VisitExpression(Expression expression)
+        public override Expression VisitExpression(Expression expression)
         {
             if (expression == null)
             {

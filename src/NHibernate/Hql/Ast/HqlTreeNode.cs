@@ -674,6 +674,22 @@ namespace NHibernate.Hql.Ast
         }
     }
 
+    public class HqlFetchJoin : HqlTreeNode
+    {
+        public HqlFetchJoin(IASTFactory factory, HqlExpression expression, HqlAlias @alias)
+            : base(HqlSqlWalker.JOIN, "join", factory, new HqlFetch(factory), expression, @alias)
+        {
+        }
+    }
+
+    public class HqlLeftFetchJoin : HqlTreeNode
+    {
+        public HqlLeftFetchJoin(IASTFactory factory, HqlExpression expression, HqlAlias @alias)
+            : base(HqlSqlWalker.JOIN, "join", factory, new HqlLeft(factory), new HqlFetch(factory), expression, @alias)
+        {
+        }
+    }
+
     public class HqlFetch : HqlTreeNode
     {
         public HqlFetch(IASTFactory factory) : base(HqlSqlWalker.FETCH, "fetch", factory)

@@ -84,9 +84,9 @@ namespace NHibernate.Test.Linq.Entities
             set { _shippingAddress = value; }
         }
 
-        public virtual ReadOnlyCollection<OrderLine> OrderLines
+        public virtual ISet<OrderLine> OrderLines
         {
-            get { return new ReadOnlyCollection<OrderLine>(new List<OrderLine>(_orderLines)); }
+            get { return _orderLines; }
         }
 
         public virtual void AddOrderLine(OrderLine orderLine)
