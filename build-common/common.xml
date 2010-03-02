@@ -161,7 +161,7 @@
 	
 	<target name="set-release-project-configuration" description="Perform a 'release' build">
 		<property name="build.release" value="true" />
-		<property name="build.debug" value="false" />
+		<property name="build.debug" value="pdbonly" />
 		<property name="build.name" value="NHibernate-${project.version}" />
 	</target>
 
