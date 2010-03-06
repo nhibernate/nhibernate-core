@@ -460,8 +460,12 @@ namespace NHibernate.Impl
 				projection = projectionList;
 			}
 
-			projectionCriteria = this;
-			SetResultTransformer(CriteriaSpecification.Projection);
+			if (projection != null)
+			{
+				projectionCriteria = this;
+				SetResultTransformer(CriteriaSpecification.Projection);
+			}
+
 			return this;
 		}
 

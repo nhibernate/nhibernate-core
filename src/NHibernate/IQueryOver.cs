@@ -22,7 +22,7 @@ namespace NHibernate
 	///		.List();
 	/// </code>
 	/// </remarks>
-	public interface IQueryOver<TRoot>
+	public interface IQueryOver<TRoot> : ICloneable
 	{
 		/// <summary>
 		/// Access the underlying ICriteria
@@ -239,6 +239,11 @@ namespace NHibernate
 		/// <param name="path">Lambda expression</param>
 		/// <returns>criteria instance</returns>
 		IQueryOverOrderBuilder<TRoot,TSubType> ThenBy(Expression<Func<object>> path);
+
+		/// <summary>
+		/// Clear all orders from the query.
+		/// </summary>
+		IQueryOver<TRoot, TSubType> ClearOrders();
 
 		/// <summary>
 		/// Set the first result to be retrieved

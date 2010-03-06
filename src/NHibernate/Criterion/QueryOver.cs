@@ -12,7 +12,7 @@ namespace NHibernate.Criterion
 {
 
 	[Serializable]
-	public class QueryOver
+	public abstract class QueryOver
 	{
 
 		protected ICriteria criteria;
@@ -40,10 +40,12 @@ namespace NHibernate.Criterion
 			get { return new DetachedCriteria(impl, impl); }
 		}
 
+		public abstract object Clone();
+
 	}
 
 	[Serializable]
-	public class QueryOver<TRoot> : QueryOver, IQueryOver<TRoot>
+	public abstract class QueryOver<TRoot> : QueryOver, IQueryOver<TRoot>
 	{
 
 		private IList<TRoot> List()
@@ -177,6 +179,11 @@ namespace NHibernate.Criterion
 			this.criteria = criteria;
 		}
 
+		public override object Clone()
+		{
+			return new QueryOver<TRoot,TRoot>((CriteriaImpl)criteria.Clone());
+		}
+
 		public QueryOver<TRoot,TSubType> And(Expression<Func<TSubType, bool>> expression)
 		{
 			return Add(expression);
@@ -288,6 +295,12 @@ namespace NHibernate.Criterion
 		public QueryOverOrderBuilder<TRoot,TSubType> ThenBy(Expression<Func<object>> path)
 		{
 			return new QueryOverOrderBuilder<TRoot,TSubType>(this, path);
+		}
+
+		public QueryOver<TRoot,TSubType> ClearOrders()
+		{
+			criteria.ClearOrders();
+			return this;
 		}
 
 		public QueryOver<TRoot,TSubType> Skip(int firstResult)
@@ -619,6 +632,9 @@ namespace NHibernate.Criterion
 
 		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.ThenBy(Expression<Func<object>> path)
 		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path); }
+
+		IQueryOver<TRoot,TSubType> IQueryOver<TRoot, TSubType>.ClearOrders()
+		{ return ClearOrders(); }
 
 		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Skip(int firstResult)
 		{ return Skip(firstResult); }

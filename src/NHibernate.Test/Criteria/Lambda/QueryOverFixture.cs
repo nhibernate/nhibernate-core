@@ -483,6 +483,75 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertCriteriaAreEqual(expected, actual);
 		}
 
+		[Test]
+		public void CloneIQueryOver()
+		{
+			IQueryOver<Person> expected =
+				CreateTestQueryOver<Person>()
+					.Where(p => p.Name == "test")
+					.Select(p => p.Name);
+
+			IQueryOver<Person> actual = QueryOverTransformer.Clone(expected);
+
+			Assert.That(actual, Is.Not.SameAs(expected));
+			Assert.That(actual.UnderlyingCriteria, Is.Not.SameAs(expected.UnderlyingCriteria));
+			AssertCriteriaAreEqual(expected.UnderlyingCriteria, actual.UnderlyingCriteria);
+		}
+
+		[Test]
+		public void CloneIQueryOverWithSubType()
+		{
+			IQueryOver<Person,Child> expected =
+				CreateTestQueryOver<Person>()
+					.JoinQueryOver(p => p.Children);
+
+			IQueryOver<Person,Person> actual = QueryOverTransformer.Clone(expected);
+
+			ICriteria expectedCriteria = expected.UnderlyingCriteria.GetCriteriaByAlias("this");
+
+			AssertCriteriaAreEqual(expectedCriteria, actual);
+		}
+
+		[Test]
+		public void CloneQueryOver()
+		{
+			QueryOver<Person> expected =
+				QueryOver.Of<Person>()
+					.Where(p => p.Name == "test")
+					.Select(p => p.Name);
+
+			QueryOver<Person> actual = QueryOverTransformer.Clone(expected);
+
+			Assert.That(actual, Is.Not.SameAs(expected));
+			Assert.That(actual.UnderlyingCriteria, Is.Not.SameAs(expected.UnderlyingCriteria));
+			AssertCriteriaAreEqual(expected.UnderlyingCriteria, actual.UnderlyingCriteria);
+		}
+
+		[Test]
+		public void TransformQueryOverToRowCount()
+		{
+			QueryOver<Person> expected =
+				QueryOver.Of<Person>()
+					.Where(p => p.Name == "test")
+					.JoinQueryOver(p => p.Children)
+						.Where((Child c) => c.Age == 5)
+						.Select(Projections.RowCount());
+
+			QueryOver<Person> actual =
+				QueryOver.Of<Person>()
+					.Where(p => p.Name == "test")
+					.JoinQueryOver(p => p.Children)
+						.Where((Child c) => c.Age == 5)
+						.OrderBy(c => c.Age).Asc
+						.Skip(20)
+						.Take(10);
+
+			expected = QueryOverTransformer.Clone(expected);
+			actual = QueryOverTransformer.TransformToRowCount(actual);
+
+			AssertCriteriaAreEqual(expected.UnderlyingCriteria, actual);
+		}
+
 	}
 
 }
