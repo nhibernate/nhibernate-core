@@ -42,8 +42,13 @@ namespace NHibernate
 		IList<U> List<U>();
 
 		/// <summary>
-		/// Clones the QueryOver, removes orders and paging, projects the row-count
-		/// for the query and returns the Single() result
+		/// Clones the QueryOver, removes orders and paging, and projects the row-count
+		/// for the query
+		/// </summary>
+		IQueryOver<TRoot,TRoot> ToRowCountQuery();
+
+		/// <summary>
+		/// Short for ToRowCountQuery().SingleOrDefault()
 		/// </summary>
 		int RowCount();
 

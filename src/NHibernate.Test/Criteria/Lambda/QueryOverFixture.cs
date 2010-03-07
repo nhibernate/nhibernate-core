@@ -527,6 +527,31 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertCriteriaAreEqual(expected.UnderlyingCriteria, actual.UnderlyingCriteria);
 		}
 
+		[Test]
+		public void TransformQueryOverToRowCount()
+		{
+			IQueryOver<Person> expected =
+				CreateTestQueryOver<Person>()
+					.Where(p => p.Name == "test")
+					.JoinQueryOver(p => p.Children)
+						.Where((Child c) => c.Age == 5)
+						.Select(Projections.RowCount());
+
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>()
+					.Where(p => p.Name == "test")
+					.JoinQueryOver(p => p.Children)
+						.Where((Child c) => c.Age == 5)
+						.OrderBy(c => c.Age).Asc
+						.Skip(20)
+						.Take(10);
+
+			expected = expected.Clone();
+			actual = actual.ToRowCountQuery();
+
+			AssertCriteriaAreEqual(expected.UnderlyingCriteria, actual);
+		}
+
 	}
 
 }

@@ -147,6 +147,9 @@ namespace NHibernate.Criterion
 		IList<U> IQueryOver<TRoot>.List<U>()
 		{ return List<U>(); }
 
+		IQueryOver<TRoot,TRoot> IQueryOver<TRoot>.ToRowCountQuery()
+		{ return ToRowCountQuery(); }
+
 		int IQueryOver<TRoot>.RowCount()
 		{ return ToRowCountQuery().SingleOrDefault<int>(); }
 
