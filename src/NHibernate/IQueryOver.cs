@@ -22,7 +22,7 @@ namespace NHibernate
 	///		.List();
 	/// </code>
 	/// </remarks>
-	public interface IQueryOver<TRoot> : ICloneable
+	public interface IQueryOver<TRoot>
 	{
 		/// <summary>
 		/// Access the underlying ICriteria
@@ -40,6 +40,12 @@ namespace NHibernate
 		/// </summary>
 		/// <returns>The list filled with the results.</returns>
 		IList<U> List<U>();
+
+		/// <summary>
+		/// Clones the QueryOver, removes orders and paging, projects the row-count
+		/// for the query and returns the Single() result
+		/// </summary>
+		int RowCount();
 
 		/// <summary>
 		/// Convenience method to return a single instance that matches
@@ -83,6 +89,11 @@ namespace NHibernate
 		/// single roundtrip
 		/// </summary>
 		IFutureValue<U> FutureValue<U>();
+
+		/// <summary>
+		/// Creates an exact clone of the IQueryOver
+		/// </summary>
+		IQueryOver<TRoot,TRoot> Clone();
 
 	}
 

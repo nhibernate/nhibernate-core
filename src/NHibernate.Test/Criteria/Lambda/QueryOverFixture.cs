@@ -491,7 +491,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Where(p => p.Name == "test")
 					.Select(p => p.Name);
 
-			IQueryOver<Person> actual = QueryOverTransformer.Clone(expected);
+			IQueryOver<Person> actual = expected.Clone();
 
 			Assert.That(actual, Is.Not.SameAs(expected));
 			Assert.That(actual.UnderlyingCriteria, Is.Not.SameAs(expected.UnderlyingCriteria));
@@ -505,7 +505,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				CreateTestQueryOver<Person>()
 					.JoinQueryOver(p => p.Children);
 
-			IQueryOver<Person,Person> actual = QueryOverTransformer.Clone(expected);
+			IQueryOver<Person,Person> actual = expected.Clone();
 
 			ICriteria expectedCriteria = expected.UnderlyingCriteria.GetCriteriaByAlias("this");
 
@@ -520,36 +520,11 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Where(p => p.Name == "test")
 					.Select(p => p.Name);
 
-			QueryOver<Person> actual = QueryOverTransformer.Clone(expected);
+			QueryOver<Person> actual = expected.Clone();
 
 			Assert.That(actual, Is.Not.SameAs(expected));
 			Assert.That(actual.UnderlyingCriteria, Is.Not.SameAs(expected.UnderlyingCriteria));
 			AssertCriteriaAreEqual(expected.UnderlyingCriteria, actual.UnderlyingCriteria);
-		}
-
-		[Test]
-		public void TransformQueryOverToRowCount()
-		{
-			QueryOver<Person> expected =
-				QueryOver.Of<Person>()
-					.Where(p => p.Name == "test")
-					.JoinQueryOver(p => p.Children)
-						.Where((Child c) => c.Age == 5)
-						.Select(Projections.RowCount());
-
-			QueryOver<Person> actual =
-				QueryOver.Of<Person>()
-					.Where(p => p.Name == "test")
-					.JoinQueryOver(p => p.Children)
-						.Where((Child c) => c.Age == 5)
-						.OrderBy(c => c.Age).Asc
-						.Skip(20)
-						.Take(10);
-
-			expected = QueryOverTransformer.Clone(expected);
-			actual = QueryOverTransformer.TransformToRowCount(actual);
-
-			AssertCriteriaAreEqual(expected.UnderlyingCriteria, actual);
 		}
 
 	}

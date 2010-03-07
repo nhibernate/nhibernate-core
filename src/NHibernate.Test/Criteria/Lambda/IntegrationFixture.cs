@@ -262,6 +262,45 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
+		[Test]
+		public void RowCount()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new Person() { Name = "Name 1", Age = 1 }
+						.AddChild(new Child() { Nickname = "Name 1.1", Age = 1}));
+
+				s.Save(new Person() { Name = "Name 2", Age = 2 }
+						.AddChild(new Child() { Nickname = "Name 2.1", Age = 3}));
+
+				s.Save(new Person() { Name = "Name 3", Age = 3 }
+						.AddChild(new Child() { Nickname = "Name 3.1", Age = 2}));
+
+				s.Save(new Person() { Name = "Name 4", Age = 4 }
+						.AddChild(new Child() { Nickname = "Name 4.1", Age = 4}));
+
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				IQueryOver<Person> query =
+					s.QueryOver<Person>()
+						.JoinQueryOver(p => p.Children)
+						.OrderBy(c => c.Age).Desc
+						.Skip(2)
+						.Take(1);
+
+				IList<Person> results = query.List();
+				int rowCount = query.RowCount();
+
+				Assert.That(results.Count, Is.EqualTo(1));
+				Assert.That(results[0].Name, Is.EqualTo("Name 3"));
+				Assert.That(rowCount, Is.EqualTo(4));
+			}
+		}
+
 	}
 
 }

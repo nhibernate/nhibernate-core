@@ -40,8 +40,6 @@ namespace NHibernate.Criterion
 			get { return new DetachedCriteria(impl, impl); }
 		}
 
-		public abstract object Clone();
-
 	}
 
 	[Serializable]
@@ -107,6 +105,28 @@ namespace NHibernate.Criterion
 		}
 
 		/// <summary>
+		/// Clones the QueryOver, clears the orders and paging, and projects the RowCount
+		/// </summary>
+		/// <returns></returns>
+		public QueryOver<TRoot,TRoot> ToRowCountQuery()
+		{
+			return
+				Clone()
+					.ClearOrders()
+					.Skip(0)
+					.Take(RowSelection.NoValue)
+					.Select(Projections.RowCount());
+		}
+
+		/// <summary>
+		/// Creates an exact clone of the QueryOver
+		/// </summary>
+		public QueryOver<TRoot,TRoot> Clone()
+		{
+			return new QueryOver<TRoot,TRoot>((CriteriaImpl)criteria.Clone());
+		}
+
+		/// <summary>
 		/// Method to allow comparison of detached query in Lambda expression
 		/// e.g., p =&gt; p.Name == myQuery.As&lt;string&gt;
 		/// </summary>
@@ -127,6 +147,9 @@ namespace NHibernate.Criterion
 		IList<U> IQueryOver<TRoot>.List<U>()
 		{ return List<U>(); }
 
+		int IQueryOver<TRoot>.RowCount()
+		{ return ToRowCountQuery().SingleOrDefault<int>(); }
+
 		TRoot IQueryOver<TRoot>.SingleOrDefault()
 		{ return SingleOrDefault(); }
 
@@ -144,6 +167,9 @@ namespace NHibernate.Criterion
 
 		IFutureValue<U> IQueryOver<TRoot>.FutureValue<U>()
 		{ return FutureValue<U>(); }
+
+		IQueryOver<TRoot,TRoot> IQueryOver<TRoot>.Clone()
+		{ return Clone(); }
 
 	}
 
@@ -177,11 +203,6 @@ namespace NHibernate.Criterion
 		{
 			this.impl = rootImpl;
 			this.criteria = criteria;
-		}
-
-		public override object Clone()
-		{
-			return new QueryOver<TRoot,TRoot>((CriteriaImpl)criteria.Clone());
 		}
 
 		public QueryOver<TRoot,TSubType> And(Expression<Func<TSubType, bool>> expression)
