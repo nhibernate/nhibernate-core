@@ -429,6 +429,8 @@
     <Compile Include="Linq\SelectionTests.cs" />
     <Compile Include="Linq\WhereSubqueryTests.cs" />
     <Compile Include="Linq\WhereTests.cs" />
+    <Compile Include="ListIndex\SimpleOneToMany.cs" />
+    <Compile Include="ListIndex\SimpleOneToManyTest.cs" />
     <Compile Include="MappingTest\NonReflectiveBinderFixture.cs" />
     <Compile Include="MappingTest\Wicked.cs" />
     <Compile Include="NHSpecificTest\CriteriaQueryOnComponentCollection\Employee.cs" />
@@ -2126,6 +2128,7 @@
     <EmbeddedResource Include="CfgTest\Loquacious\EntityToCache.hbm.xml" />
     <EmbeddedResource Include="DriverTest\SqlServerCeEntity.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="ListIndex\SimpleOneToMany.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2113\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1981\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2074\Mappings.hbm.xml" />

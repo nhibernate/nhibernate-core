@@ -133,7 +133,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		public void BindSimpleValue(HbmListIndex listIndexMapping, string propertyPath, bool isNullable)
 		{
 			new TypeBinder(value, Mappings).Bind(NHibernateUtil.Int32.Name);
-			new ColumnsBinder(value, Mappings).Bind(listIndexMapping.Columns, false,
+			new ColumnsBinder(value, Mappings).Bind(listIndexMapping.Columns, isNullable,
 																								() =>
 																								new HbmColumn
 																								{

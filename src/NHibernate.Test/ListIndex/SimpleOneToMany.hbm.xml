@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test" 
+				   namespace="NHibernate.Test.ListIndex">
+	<class name="Image">
+		<id name="Id">
+			<generator class="hilo"/>
+		</id>
+		<property name="Path"/>
+	</class>
+
+	<class name="Galery">
+		<id name="Id">
+			<generator class="hilo"/>
+		</id>
+		<list name="Images" cascade="all">
+			<key column="img_key"/>
+			<list-index column="imgIdx"/>
+			<one-to-many class="Image"/>
+		</list>
+	</class>
+</hibernate-mapping>
