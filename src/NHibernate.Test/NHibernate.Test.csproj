@@ -382,6 +382,7 @@
     <Compile Include="Linq\BinaryBooleanExpressionTests.cs" />
     <Compile Include="Linq\BinaryExpressionOrdererTests.cs" />
     <Compile Include="Linq\CollectionAssert.cs" />
+    <Compile Include="Linq\DateTimeTests.cs" />
     <Compile Include="Linq\DynamicQueryTests.cs" />
     <Compile Include="Linq\EagerLoadTests.cs" />
     <Compile Include="Linq\Entities\Address.cs" />

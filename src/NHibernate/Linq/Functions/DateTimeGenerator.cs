@@ -25,6 +25,7 @@ namespace NHibernate.Linq.Functions
                                               ReflectionHelper.GetProperty((DateTime x) => x.Hour),
                                               ReflectionHelper.GetProperty((DateTime x) => x.Minute),
                                               ReflectionHelper.GetProperty((DateTime x) => x.Second),
+                                              ReflectionHelper.GetProperty((DateTime x) => x.Date),
                                           };
             }
 

@@ -197,7 +197,8 @@ namespace NHibernate.ByteCode.Castle.Tests
 
 		private void CreateSchema()
 		{
-			new SchemaExport(cfg).Create(OutputDdl, true);
+            new SchemaExport(cfg).Drop(OutputDdl, true);
+            new SchemaExport(cfg).Create(OutputDdl, true);
 		}
 
 		private void DropSchema()
