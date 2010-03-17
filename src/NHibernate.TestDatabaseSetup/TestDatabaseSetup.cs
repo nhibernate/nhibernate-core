@@ -1,8 +1,8 @@
 ﻿using System;
 using NUnit.Framework;
-using Sql=System.Data.SqlClient;
+using System.Data.SqlClient;
 
-namespace NHibernate.TeamCity.TestDatabaseSetup
+namespace NHibernate.TestDatabaseSetup
 {
     [TestFixture]
     public class DatabaseSetup
@@ -12,11 +12,11 @@ namespace NHibernate.TeamCity.TestDatabaseSetup
         {
             var cfg = new Cfg.Configuration();
 
-            using (var conn = new Sql.SqlConnection(cfg.Properties["connection.connection_string"]))
+            using (var conn = new SqlConnection(cfg.Properties["connection.connection_string"]))
             {
                 conn.Open();
 
-                using (var cmd = new Sql.SqlCommand("use master", conn))
+                using (var cmd = new System.Data.SqlClient.SqlCommand("use master", conn))
                 {
                     cmd.ExecuteNonQuery();
 
@@ -37,3 +37,5 @@ namespace NHibernate.TeamCity.TestDatabaseSetup
         }
     }
 }
+
+
