@@ -11,8 +11,11 @@ namespace NHibernate.TestDatabaseSetup
         public void SetupDatabase()
         {
             var cfg = new Cfg.Configuration();
+            var connStr = cfg.Properties["connection.connection_string"];
 
-            using (var conn = new SqlConnection(cfg.Properties["connection.connection_string"]))
+            Console.WriteLine("Connecting to database {0}", connStr);
+
+            using (var conn = new SqlConnection(connStr))
             {
                 conn.Open();
 
