@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using System.Linq.Expressions;
 
 namespace NHibernate.Linq
 {
@@ -11,47 +10,31 @@ namespace NHibernate.Linq
             return new NhQueryable<T>(session);
         }
 
-        public static void ForEach<T>(this IEnumerable<T> query, Action<T> method)
+        public static IQueryable<T> Cacheable<T>(this IQueryable<T> query)
         {
-            foreach (T item in query)
-            {
-                method(item);
-            }
+            var method = ReflectionHelper.GetMethod(() => Cacheable<object>(null)).MakeGenericMethod(typeof(T));
+
+            var callExpression = Expression.Call(method, query.Expression);
+
+            return new NhQueryable<T>(query.Provider, callExpression);
         }
 
-        public static bool IsEnumerableOfT(this System.Type type)
+        public static IQueryable<T> CacheMode<T>(this IQueryable<T> query, CacheMode cacheMode)
         {
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (IEnumerable<>);
+            var method = ReflectionHelper.GetMethod(() => CacheMode<object>(null, NHibernate.CacheMode.Normal)).MakeGenericMethod(typeof(T));
+
+            var callExpression = Expression.Call(method, query.Expression, Expression.Constant(cacheMode));
+
+            return new NhQueryable<T>(query.Provider, callExpression);
         }
 
-        public static bool IsNullable(this System.Type type)
+        public static IQueryable<T> CacheRegion<T>(this IQueryable<T> query, string region)
         {
-            return (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
-        }
+            var method = ReflectionHelper.GetMethod(() => CacheRegion<object>(null, null)).MakeGenericMethod(typeof(T));
 
-        public static bool IsNullableOrReference(this System.Type type)
-        {
-            return !type.IsValueType || type.IsNullable();
-        }
+            var callExpression = Expression.Call(method, query.Expression, Expression.Constant(region));
 
-        public static System.Type NullableOf(this System.Type type)
-        {
-            return type.GetGenericArguments()[0];
+            return new NhQueryable<T>(query.Provider, callExpression);
         }
-
-        public static bool IsPrimitive(this System.Type type)
-        {
-            return (type.IsValueType || type.IsNullable() || type == typeof (string));
-        }
-
-        public static bool IsNonPrimitive(this System.Type type)
-        {
-            return !type.IsPrimitive();
-        }
-
-        public static T As<T>(this object source)
-        {
-            return (T) source;
-        }
-    }
+	}
 }

@@ -62,6 +62,7 @@ namespace NHibernate.Linq.Visitors
 
         static QueryModelVisitor()
         {
+            // TODO - reflection to build map
             ResultOperatorMap = new ResultOperatorMap();
 
             ResultOperatorMap.Add<AggregateResultOperator, ProcessAggregate>();
@@ -77,6 +78,7 @@ namespace NHibernate.Linq.Visitors
             ResultOperatorMap.Add<AllResultOperator, ProcessAll>();
             ResultOperatorMap.Add<FetchOneRequest, ProcessFetchOne>();
             ResultOperatorMap.Add<FetchManyRequest, ProcessFetchMany>();
+            ResultOperatorMap.Add<CacheableResultOperator, ProcessCacheable>();
         }
 
         private QueryModelVisitor(VisitorParameters visitorParameters, bool root, QueryModel queryModel)

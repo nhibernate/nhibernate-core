@@ -649,6 +649,7 @@
     <Compile Include="Impl\SessionIdLoggingContext.cs" />
     <Compile Include="Linq\Expressions\AggregateExpressionNode.cs" />
     <Compile Include="Linq\EagerFetchingExtensionMethods.cs" />
+    <Compile Include="Linq\TypeHelperExtensionMethods.cs" />
     <Compile Include="Linq\Visitors\NameUnNamedParameters.cs" />
     <Compile Include="Linq\NhRelinqQueryParser.cs" />
     <Compile Include="Linq\ResultOperators\AggregateResultOperator.cs" />
@@ -681,6 +682,7 @@
     <Compile Include="Linq\ReWriters\RemoveUnnecessaryBodyOperators.cs" />
     <Compile Include="Linq\Clauses\LeftJoinClause.cs" />
     <Compile Include="Linq\IntermediateHqlTree.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessCacheable.cs" />
     <Compile Include="Linq\Visitors\QuerySourceLocator.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessFetch.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessFetchMany.cs" />
