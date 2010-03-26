@@ -39,6 +39,13 @@ namespace NHibernate.Impl
 				temporaryPersistenceContext = new StatefulPersistenceContext(this);
 				connectionManager = new ConnectionManager(this, connection, ConnectionReleaseMode.AfterTransaction,
 														  new EmptyInterceptor());
+
+				if (log.IsDebugEnabled)
+				{
+					log.DebugFormat("[session-id={0}] opened session for session factory: [{1}/{2}]",
+						SessionId, factory.Name, factory.Uuid);
+				}
+
 				CheckAndUpdateSessionStatus();
 			}
 		}
