@@ -171,6 +171,56 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertCriteriaAreEqual(expected, actual);
 		}
 
+		[Test]
+		public void NullRestriction()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person), "personAlias")
+					.Add(Restrictions.IsNull("Name"))
+					.Add(Restrictions.IsNull("Name"))
+					.Add(Restrictions.IsNull("Name"))
+					.Add(Restrictions.IsNull("Father"))
+					.Add(Restrictions.IsNull("Father"))
+					.Add(Restrictions.IsNull("NullableGender"))
+					.Add(Restrictions.IsNull("NullableAge"))
+					.Add(Restrictions.IsNull("NullableIsParent"))
+					.Add(Restrictions.Not(Restrictions.IsNull("Name")))
+					.Add(Restrictions.Not(Restrictions.IsNull("Name")))
+					.Add(Restrictions.Not(Restrictions.IsNull("Name")))
+					.Add(Restrictions.Not(Restrictions.IsNull("Father")))
+					.Add(Restrictions.Not(Restrictions.IsNull("Father")))
+					.Add(Restrictions.Not(Restrictions.IsNull("NullableGender")))
+					.Add(Restrictions.Not(Restrictions.IsNull("NullableAge")))
+					.Add(Restrictions.Not(Restrictions.IsNull("NullableIsParent")))
+					.Add(Restrictions.IsNull("personAlias.Name"));
+
+			Person personAlias = null;
+			CustomPerson nullPerson = null;
+			Person.StaticName = null;
+			Person emptyPerson = new Person() { Name = null };
+			var actual =
+				CreateTestQueryOver<Person>(() => personAlias)
+					.Where(p => p.Name == null)
+					.Where(p => p.Name == Person.StaticName)
+					.Where(p => p.Name == emptyPerson.Name)
+					.Where(p => p.Father == null)
+					.Where(p => p.Father == nullPerson)
+					.Where(p => p.NullableGender == null)
+					.Where(p => p.NullableAge == null)
+					.Where(p => p.NullableIsParent == null)
+					.Where(p => p.Name != null)
+					.Where(p => p.Name != Person.StaticName)
+					.Where(p => p.Name != emptyPerson.Name)
+					.Where(p => p.Father != null)
+					.Where(p => p.Father != nullPerson)
+					.Where(p => p.NullableGender != null)
+					.Where(p => p.NullableAge != null)
+					.Where(p => p.NullableIsParent != null)
+					.Where(() => personAlias.Name == null);
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
 	}
 
 }

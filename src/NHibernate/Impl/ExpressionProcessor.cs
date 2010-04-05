@@ -292,12 +292,27 @@ namespace NHibernate.Impl
 			object value = valueExpression.DynamicInvoke();
 			value = ConvertType(value, propertyType);
 
+			if (value == null)
+				return ProcessSimpleNullExpression(property, be.NodeType);
+
 			if (!_simpleExpressionCreators.ContainsKey(be.NodeType))
 				throw new Exception("Unhandled simple expression type: " + be.NodeType);
 
 			Func<string, object, ICriterion> simpleExpressionCreator = _simpleExpressionCreators[be.NodeType];
 			ICriterion criterion = simpleExpressionCreator(property, value);
 			return criterion;
+		}
+
+		private static ICriterion ProcessSimpleNullExpression(string property, ExpressionType expressionType)
+		{
+			if (expressionType == ExpressionType.Equal)
+				return Restrictions.IsNull(property);
+
+			if (expressionType == ExpressionType.NotEqual)
+				return Restrictions.Not(
+					Restrictions.IsNull(property));
+
+			throw new Exception("Cannot supply null value to operator " + expressionType);
 		}
 
 		private static ICriterion ProcessMemberExpression(BinaryExpression be)

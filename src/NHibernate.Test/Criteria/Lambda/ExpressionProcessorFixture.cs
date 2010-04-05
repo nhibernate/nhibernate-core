@@ -61,8 +61,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			Person person = new Person() { Name = null };
 			ICriterion criterion = ExpressionProcessor.ProcessExpression<Person>(p => p.Name == person.Name);
-			SimpleExpression simpleExpression = (SimpleExpression)criterion;
-			Assert.AreEqual(null, simpleExpression.Value);
+			Assert.That(criterion, Is.InstanceOfType<NullExpression>());
 		}
 
 		[Test]
