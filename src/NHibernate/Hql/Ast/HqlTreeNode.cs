@@ -697,6 +697,14 @@ namespace NHibernate.Hql.Ast
         }
     }
 
+    public class HqlClass : HqlExpression
+    {
+        public HqlClass(IASTFactory factory)
+            : base(HqlSqlWalker.CLASS, "class", factory)
+        {
+        }
+    }
+
     public class HqlLeft : HqlTreeNode
     {
         public HqlLeft(IASTFactory factory)

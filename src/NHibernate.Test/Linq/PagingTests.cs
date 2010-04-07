@@ -26,7 +26,7 @@ namespace NHibernate.Test.Linq
         }
 
         [Test]
-        [Ignore("NHibernate does not currently support subqueries in from clause")]
+        [Ignore("Multiple Takes (or Skips) not handled correctly")]
         public void CustomersChainedTake()
         {
             var q = (from c in db.Customers
@@ -41,7 +41,7 @@ namespace NHibernate.Test.Linq
         }
 
         [Test]
-        [Ignore("NHibernate does not currently support subqueries in from clause")]
+        [Ignore("Multiple Takes (or Skips) not handled correctly")]
         public void CustomersChainedSkip()
         {
             var q = (from c in db.Customers select c.CustomerId).Skip(10).Skip(5);
@@ -53,7 +53,7 @@ namespace NHibernate.Test.Linq
 
 
         [Test]
-        [Ignore("NHibernate does not currently support subqueries in from clause")]
+        [Ignore("Count with Skip or Take is incorrect (Skip / Take done on the query not the HQL, so get applied at the wrong point")]
         public void CountAfterTakeShouldReportTheCorrectNumber()
         {
             var users = db.Customers.Skip(3).Take(10);

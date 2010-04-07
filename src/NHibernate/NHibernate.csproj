@@ -682,6 +682,7 @@
     <Compile Include="Linq\ReWriters\RemoveUnnecessaryBodyOperators.cs" />
     <Compile Include="Linq\Clauses\LeftJoinClause.cs" />
     <Compile Include="Linq\IntermediateHqlTree.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessOfType.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessCacheable.cs" />
     <Compile Include="Linq\Visitors\QuerySourceLocator.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessFetch.cs" />

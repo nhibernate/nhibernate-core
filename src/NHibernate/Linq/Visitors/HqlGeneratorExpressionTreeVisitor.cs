@@ -102,8 +102,8 @@ namespace NHibernate.Linq.Visitors
                 //    return VisitListInitExpression((ListInitExpression)expression);
                 case ExpressionType.Parameter:
                     return VisitParameterExpression((ParameterExpression)expression);
-                //case ExpressionType.TypeIs:
-                //    return VisitTypeBinaryExpression((TypeBinaryExpression)expression);
+                case ExpressionType.TypeIs:
+                    return VisitTypeBinaryExpression((TypeBinaryExpression)expression);
 
                 default:
                     if (expression is SubQueryExpression)
@@ -134,6 +134,15 @@ namespace NHibernate.Linq.Visitors
 
                     throw new NotSupportedException(expression.GetType().Name);
             }
+        }
+
+        private HqlTreeNode VisitTypeBinaryExpression(TypeBinaryExpression expression)
+        {
+            return _hqlTreeBuilder.Equality(
+                _hqlTreeBuilder.Dot(
+                    Visit(expression.Expression).AsExpression(),
+                    _hqlTreeBuilder.Class()),
+                _hqlTreeBuilder.Ident(expression.TypeOperand.FullName));
         }
 
         protected HqlTreeNode VisitNhStar(NhStarExpression expression)

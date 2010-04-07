@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Linq;
 using NHibernate.Test.Linq.Entities;
 using NUnit.Framework;
 
@@ -384,5 +385,24 @@ namespace NHibernate.Test.Linq
 
 			Assert.AreEqual(2, query.Count);
 		}
-	}
+
+        [Test]
+        public void SearchOnObjectTypeWithExtensionMethod()
+        {
+            var query = (from o in session.Query<Animal>()
+                         select o).OfType<Dog>().ToList();
+
+            Assert.AreEqual(2, query.Count);
+        }
+
+        [Test]
+        public void SearchOnObjectTypeWithIsKeyword()
+        {
+            var query = (from o in session.Query<Animal>()
+                         where o is Dog
+                         select o).ToList();
+
+            Assert.AreEqual(2, query.Count);
+        }
+    }
 }
