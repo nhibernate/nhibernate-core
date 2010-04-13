@@ -1320,6 +1320,9 @@
     <Compile Include="Operations\PersonalDetails.cs" />
     <Compile Include="Operations\TimestampedEntity.cs" />
     <Compile Include="Operations\VersionedEntity.cs" />
+    <Compile Include="Pagination\CustomDialectFixture.cs" />
+    <Compile Include="Pagination\CustomMsSqlDialect.cs" />
+    <Compile Include="Pagination\CustomMsSqlDriver.cs" />
     <Compile Include="Pagination\DataPoint.cs" />
     <Compile Include="Pagination\PaginationFixture.cs" />
     <Compile Include="ProjectionFixtures\Key.cs" />

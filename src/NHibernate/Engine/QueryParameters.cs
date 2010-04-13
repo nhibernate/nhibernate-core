@@ -526,7 +526,7 @@ namespace NHibernate.Engine
 
 		public int BindParameters(IDbCommand command, int start, ISessionImplementor session)
 		{
-			int location = 0;
+			int location = start;
 			var values = new List<object>();
 			var types = new List<IType>();
 			var sources = new List<string>();
@@ -565,13 +565,14 @@ namespace NHibernate.Engine
 			}
 
 			int span = 0;
-			for (int i = 0; i < values.Count; i++)
+			for (int i = start; i < values.Count; i++)
 			{
 				IType type = types[i];
 				object value = values[i];
+				string source = sources[i];
 				if (log.IsDebugEnabled)
 				{
-					log.Debug(string.Format("BindParameters({0}:{1}) {2} -> [{3}]", "Named", type, value, i));
+					log.Debug(string.Format("BindParameters({0}:{1}) {2} -> [{3}]", source, type, value, i));
 				}
 				type.NullSafeSet(command, value, start + span, session);
 				span += type.GetColumnSpan(session.Factory);

@@ -1104,9 +1104,10 @@ namespace NHibernate.Loader
 			bool useLimit = UseLimit(selection, dialect);
 			bool hasFirstRow = GetFirstRow(selection) > 0;
 			bool useOffset = hasFirstRow && useLimit && dialect.SupportsLimitOffset;
+			int startIndex = GetFirstLimitParameterCount(dialect, useLimit, hasFirstRow, useOffset);
 			// TODO NH bool callable = queryParameters.Callable;
 
-			SqlType[] parameterTypes = queryParameters.PrepareParameterTypes(sqlString, Factory, GetNamedParameterLocs, 0, useLimit, useOffset);
+			SqlType[] parameterTypes = queryParameters.PrepareParameterTypes(sqlString, Factory, GetNamedParameterLocs, startIndex, useLimit, useOffset);
 
 			if (useLimit)
 			{
@@ -1204,6 +1205,13 @@ namespace NHibernate.Loader
 			}
 		}
 
+		private int GetFirstLimitParameterCount(Dialect.Dialect dialect, bool useLimit, bool hasFirstRow, bool useOffset)
+		{
+			if (!useLimit) return 0;
+			if (!dialect.BindLimitParametersFirst) return 0;
+			return (hasFirstRow && useOffset) ? 2 : 1;
+		}
+
 		/// <summary>
 		/// Bind parameters needed by the dialect-specific LIMIT clause
 		/// </summary>
@@ -1264,7 +1272,7 @@ namespace NHibernate.Loader
 			// NH Different behavior:
 			// The responsibility of parameter binding was entirely moved to QueryParameters
 			// to deal with positionslParameter+NamedParameter+ParameterOfFilters
-			return queryParameters.BindParameters(statement, 0, session);
+			return queryParameters.BindParameters(statement, startIndex, session);
 		}
 
 		public virtual int[] GetNamedParameterLocs(string name)
@@ -1693,8 +1701,9 @@ namespace NHibernate.Loader
 			bool useLimit = UseLimit(selection, dialect);
 			bool hasFirstRow = GetFirstRow(selection) > 0;
 			bool useOffset = hasFirstRow && useLimit && dialect.SupportsLimitOffset;
+			int limitParameterCount = GetFirstLimitParameterCount(dialect, useLimit, hasFirstRow, useOffset);
 
-			SqlType[] sqlTypes = parameters.PrepareParameterTypes(sqlString, Factory, GetNamedParameterLocs, startParameterIndex, useLimit, useOffset);
+			SqlType[] sqlTypes = parameters.PrepareParameterTypes(sqlString, Factory, GetNamedParameterLocs, startParameterIndex + limitParameterCount, useLimit, useOffset);
 
 			if (useLimit)
 			{
