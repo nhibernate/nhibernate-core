@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.SessionIdLoggingContextTest"
+				   assembly="NHibernate.Test">
+
+  <class name="ClassA">
+    <id name="Id">
+      <generator class="guid.comb"/>
+    </id>
+    <property name="Name"/>
+    <bag name="Children" cascade="all-delete-orphan">
+      <key column="Parent" />
+      <one-to-many class="ClassA"/>
+    </bag>
+
+  </class>
+
+</hibernate-mapping>

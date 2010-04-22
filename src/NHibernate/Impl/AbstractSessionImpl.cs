@@ -186,12 +186,9 @@ namespace NHibernate.Impl
 
 		protected internal virtual void CheckAndUpdateSessionStatus()
 		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				ErrorIfClosed();
-				EnlistInAmbientTransactionIfNeeded();
-			}
-		}
+			ErrorIfClosed();
+			EnlistInAmbientTransactionIfNeeded();
+	    }
 
 		protected internal virtual void ErrorIfClosed()
 		{
@@ -335,10 +332,7 @@ namespace NHibernate.Impl
 
 		protected void EnlistInAmbientTransactionIfNeeded()
 		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				factory.TransactionFactory.EnlistInDistributedTransactionIfNeeded(this);
-			}
+		    factory.TransactionFactory.EnlistInDistributedTransactionIfNeeded(this);
 		}
 	}
 }
