@@ -56,9 +56,20 @@ namespace NHibernate
 		IQueryOver<TRoot,TRoot> ToRowCountQuery();
 
 		/// <summary>
-		/// Short for ToRowCountQuery().SingleOrDefault()
+		/// Clones the QueryOver, removes orders and paging, and projects the row-count (Int64)
+		/// for the query
+		/// </summary>
+		IQueryOver<TRoot,TRoot> ToRowCountInt64Query();
+
+		/// <summary>
+		/// Short for ToRowCountQuery().SingleOrDefault&lt;int&gt;()
 		/// </summary>
 		int RowCount();
+
+		/// <summary>
+		/// Short for ToRowCountInt64Query().SingleOrDefault&lt;long&gt;()
+		/// </summary>
+		long RowCountInt64();
 
 		/// <summary>
 		/// Convenience method to return a single instance that matches

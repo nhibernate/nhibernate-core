@@ -278,10 +278,13 @@ namespace NHibernate.Test.Criteria.Lambda
 
 				IList<Person> results = query.List();
 				int rowCount = query.RowCount();
+				object bigRowCount = query.RowCountInt64();
 
 				Assert.That(results.Count, Is.EqualTo(1));
 				Assert.That(results[0].Name, Is.EqualTo("Name 3"));
 				Assert.That(rowCount, Is.EqualTo(4));
+				Assert.That(bigRowCount, Is.TypeOf<long>());
+				Assert.That(bigRowCount, Is.EqualTo(4));
 			}
 		}
 

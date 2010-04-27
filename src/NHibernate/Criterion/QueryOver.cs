@@ -124,6 +124,20 @@ namespace NHibernate.Criterion
 		}
 
 		/// <summary>
+		/// Clones the QueryOver, clears the orders and paging, and projects the RowCount (Int64)
+		/// </summary>
+		/// <returns></returns>
+		public QueryOver<TRoot,TRoot> ToRowCountInt64Query()
+		{
+			return
+				Clone()
+					.ClearOrders()
+					.Skip(0)
+					.Take(RowSelection.NoValue)
+					.Select(Projections.RowCountInt64());
+		}
+
+		/// <summary>
 		/// Creates an exact clone of the QueryOver
 		/// </summary>
 		public QueryOver<TRoot,TRoot> Clone()
@@ -152,8 +166,14 @@ namespace NHibernate.Criterion
 		IQueryOver<TRoot,TRoot> IQueryOver<TRoot>.ToRowCountQuery()
 		{ return ToRowCountQuery(); }
 
+		IQueryOver<TRoot,TRoot> IQueryOver<TRoot>.ToRowCountInt64Query()
+		{ return ToRowCountInt64Query(); }
+
 		int IQueryOver<TRoot>.RowCount()
 		{ return ToRowCountQuery().SingleOrDefault<int>(); }
+
+		long IQueryOver<TRoot>.RowCountInt64()
+		{ return ToRowCountInt64Query().SingleOrDefault<long>(); }
 
 		TRoot IQueryOver<TRoot>.SingleOrDefault()
 		{ return SingleOrDefault(); }
