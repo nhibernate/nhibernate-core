@@ -265,23 +265,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		[Test]
 		public void RowCount()
 		{
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
-			{
-				s.Save(new Person() { Name = "Name 1", Age = 1 }
-						.AddChild(new Child() { Nickname = "Name 1.1", Age = 1}));
-
-				s.Save(new Person() { Name = "Name 2", Age = 2 }
-						.AddChild(new Child() { Nickname = "Name 2.1", Age = 3}));
-
-				s.Save(new Person() { Name = "Name 3", Age = 3 }
-						.AddChild(new Child() { Nickname = "Name 3.1", Age = 2}));
-
-				s.Save(new Person() { Name = "Name 4", Age = 4 }
-						.AddChild(new Child() { Nickname = "Name 4.1", Age = 4}));
-
-				t.Commit();
-			}
+			SetupPagingData();
 
 			using (ISession s = OpenSession())
 			{
@@ -298,6 +282,79 @@ namespace NHibernate.Test.Criteria.Lambda
 				Assert.That(results.Count, Is.EqualTo(1));
 				Assert.That(results[0].Name, Is.EqualTo("Name 3"));
 				Assert.That(rowCount, Is.EqualTo(4));
+			}
+		}
+
+		[Test]
+		public void MultiCriteria()
+		{
+			SetupPagingData();
+
+			using (ISession s = OpenSession())
+			{
+				IQueryOver<Person> query =
+					s.QueryOver<Person>()
+						.JoinQueryOver(p => p.Children)
+						.OrderBy(c => c.Age).Desc
+						.Skip(2)
+						.Take(1);
+
+				var multiCriteria =
+					s.CreateMultiCriteria()
+						.Add("page", query)
+						.Add<int>("count", query.ToRowCountQuery());
+
+				var pageResults = (IList<Person>) multiCriteria.GetResult("page");
+				var countResults = (IList<int>) multiCriteria.GetResult("count");
+
+				Assert.That(pageResults.Count, Is.EqualTo(1));
+				Assert.That(pageResults[0].Name, Is.EqualTo("Name 3"));
+				Assert.That(countResults.Count, Is.EqualTo(1));
+				Assert.That(countResults[0], Is.EqualTo(4));
+			}
+
+			using (ISession s = OpenSession())
+			{
+				QueryOver<Person> query =
+					QueryOver.Of<Person>()
+						.JoinQueryOver(p => p.Children)
+						.OrderBy(c => c.Age).Desc
+						.Skip(2)
+						.Take(1);
+
+				var multiCriteria =
+					s.CreateMultiCriteria()
+						.Add("page", query)
+						.Add<int>("count", query.ToRowCountQuery());
+
+				var pageResults = (IList<Person>) multiCriteria.GetResult("page");
+				var countResults = (IList<int>) multiCriteria.GetResult("count");
+
+				Assert.That(pageResults.Count, Is.EqualTo(1));
+				Assert.That(pageResults[0].Name, Is.EqualTo("Name 3"));
+				Assert.That(countResults.Count, Is.EqualTo(1));
+				Assert.That(countResults[0], Is.EqualTo(4));
+			}
+		}
+
+		private void SetupPagingData()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new Person() { Name = "Name 1", Age = 1 }
+						.AddChild(new Child() { Nickname = "Name 1.1", Age = 1}));
+
+				s.Save(new Person() { Name = "Name 2", Age = 2 }
+						.AddChild(new Child() { Nickname = "Name 2.1", Age = 3}));
+
+				s.Save(new Person() { Name = "Name 3", Age = 3 }
+						.AddChild(new Child() { Nickname = "Name 3.1", Age = 2}));
+
+				s.Save(new Person() { Name = "Name 4", Age = 4 }
+						.AddChild(new Child() { Nickname = "Name 4.1", Age = 4}));
+
+				t.Commit();
 			}
 		}
 

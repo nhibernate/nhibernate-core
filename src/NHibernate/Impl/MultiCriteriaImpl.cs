@@ -424,6 +424,31 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		public IMultiCriteria Add(System.Type resultGenericListType, IQueryOver queryOver)
+		{
+			return Add(resultGenericListType, queryOver.RootCriteria);
+		}
+
+		public IMultiCriteria Add<T>(IQueryOver<T> queryOver)
+		{
+			return Add<T>(queryOver.RootCriteria);
+		}
+
+		public IMultiCriteria Add<U>(IQueryOver queryOver)
+		{
+			return Add<U>(queryOver.RootCriteria);
+		}
+
+		public IMultiCriteria Add<T>(string key, IQueryOver<T> queryOver)
+		{
+			return Add<T>(key, queryOver.RootCriteria);
+		}
+
+		public IMultiCriteria Add<U>(string key, IQueryOver queryOver)
+		{
+			return Add<U>(key, queryOver.RootCriteria);
+		}
+
 		public IMultiCriteria SetCacheable(bool cachable)
 		{
 			isCacheable = cachable;

@@ -10,6 +10,19 @@ using NHibernate.SqlCommand;
 namespace NHibernate
 {
 
+	public interface IQueryOver
+	{
+		/// <summary>
+		/// Access the underlying ICriteria
+		/// </summary>
+		ICriteria UnderlyingCriteria { get; }
+
+		/// <summary>
+		/// Access the root underlying ICriteria
+		/// </summary>
+		ICriteria RootCriteria { get; }
+	}
+
 	/// <summary>
 	/// QueryOver&lt;TRoot&gt; is an API for retrieving entities by composing
 	/// <see cref="Criterion.Expression" /> objects expressed using Lambda expression syntax.
@@ -22,13 +35,8 @@ namespace NHibernate
 	///		.List();
 	/// </code>
 	/// </remarks>
-	public interface IQueryOver<TRoot>
+	public interface IQueryOver<TRoot> : IQueryOver
 	{
-		/// <summary>
-		/// Access the underlying ICriteria
-		/// </summary>
-		ICriteria UnderlyingCriteria { get; }
-
 		/// <summary>
 		/// Get the results of the root type and fill the <see cref="IList&lt;T&gt;"/>
 		/// </summary>

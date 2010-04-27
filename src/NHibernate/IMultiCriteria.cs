@@ -83,6 +83,44 @@ namespace NHibernate
 		IMultiCriteria Add(string key, DetachedCriteria detachedCriteria);
 
 		/// <summary>
+		/// Adds the specified IQueryOver to the query. The result will be contained in a <see cref="System.Collections.Generic.List{resultGenericListType}"/>
+		/// </summary>
+		/// <param name="resultGenericListType">Return results in a <see cref="System.Collections.Generic.List{resultGenericListType}"/></param>
+		/// <param name="queryOver">The IQueryOver.</param>
+		/// <returns></returns>
+		IMultiCriteria Add(System.Type resultGenericListType, IQueryOver queryOver);
+
+		/// <summary>
+		/// Adds the specified IQueryOver to the query. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
+		/// </summary>
+		/// <param name="queryOver">The IQueryOver.</param>
+		/// <returns></returns>
+		IMultiCriteria Add<T>(IQueryOver<T> queryOver);
+
+		/// <summary>
+		/// Adds the specified IQueryOver to the query. The result will be contained in a <see cref="System.Collections.Generic.List{U}"/>
+		/// </summary>
+		/// <param name="queryOver">The IQueryOver.</param>
+		/// <returns></returns>
+		IMultiCriteria Add<U>(IQueryOver queryOver);
+
+		/// <summary>
+		/// Adds the specified IQueryOver to the query, and associates it with the given key. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
+		/// </summary>
+		/// <param name="key">The key</param>
+		/// <param name="queryOver">The IQueryOver</param>
+		/// <returns></returns>
+		IMultiCriteria Add<T>(string key, IQueryOver<T> queryOver);
+
+		/// <summary>
+		/// Adds the specified IQueryOver to the query, and associates it with the given key. The result will be contained in a <see cref="System.Collections.Generic.List{U}"/>
+		/// </summary>
+		/// <param name="key">The key</param>
+		/// <param name="queryOver">The IQueryOver</param>
+		/// <returns></returns>
+		IMultiCriteria Add<U>(string key, IQueryOver queryOver);
+
+		/// <summary>
 		/// Sets whatevert this criteria is cacheable.
 		/// </summary>
 		/// <param name="cachable">if set to <c>true</c> [cachable].</param>

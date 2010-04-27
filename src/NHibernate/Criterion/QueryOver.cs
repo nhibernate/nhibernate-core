@@ -35,6 +35,11 @@ namespace NHibernate.Criterion
 			get { return criteria; }
 		}
 
+		public ICriteria RootCriteria
+		{
+			get { return impl; }
+		}
+
 		public DetachedCriteria DetachedCriteria
 		{
 			get { return new DetachedCriteria(impl, impl); }
@@ -137,9 +142,6 @@ namespace NHibernate.Criterion
 			throw new HibernateException("Incorrect syntax;  .As<T> method is for use in Lambda expressions only.");
 		}
 
-
-		ICriteria IQueryOver<TRoot>.UnderlyingCriteria
-		{ get { return UnderlyingCriteria; } }
 
 		IList<TRoot> IQueryOver<TRoot>.List()
 		{ return List(); }
