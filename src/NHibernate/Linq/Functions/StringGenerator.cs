@@ -122,11 +122,11 @@ namespace NHibernate.Linq.Functions
 
                 if (((method.Name == "ToUpper") || (method.Name == "ToUpperInvariant")))
                 {
-                    methodName = "lower";
+                    methodName = "upper";
                 }
                 else
                 {
-                    methodName = "upper";
+                    methodName = "lower";
                 }
 
                 return treeBuilder.MethodCall(methodName, visitor.Visit(targetObject).AsExpression());
