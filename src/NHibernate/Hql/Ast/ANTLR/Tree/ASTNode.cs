@@ -383,7 +383,22 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		// ITree implementations
 		// //////////////////////////////////////////////////////////
 
-		void ITree.FreshenParentAndChildIndexes()
+	    public bool HasAncestor(int ttype)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public ITree GetAncestor(int ttype)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public IList GetAncestors()
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    void ITree.FreshenParentAndChildIndexes()
 		{
 			FreshenParentAndChildIndexes();
 		}

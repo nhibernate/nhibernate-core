@@ -106,6 +106,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_parseErrorHandler.ReportError(e);
 		}
 
+        protected override object RecoverFromMismatchedToken(IIntStream input, int ttype, BitSet follow)
+        {
+            throw new MismatchedTokenException(ttype, input);
+        }
+
 		public void WeakKeywords()
 		{
 			int t = input.LA(1);
