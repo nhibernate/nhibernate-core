@@ -304,7 +304,7 @@ namespace NHibernate.Engine
 
 			if (session.EnabledFilters.Count == 0 || sql.ToString().IndexOf(ParserHelper.HqlVariablePrefix) < 0)
 			{
-				processedSQL = sql;
+				processedSQL = sql.Copy();
 				return;
 			}
 
@@ -393,7 +393,7 @@ namespace NHibernate.Engine
 			processedSQL = result.ToSqlString();
 		}
 
-		private IList<Parameter> ResetParameterLocations(SqlString sqlString)
+		private IList<Parameter> FindParametersIn(SqlString sqlString)
 		{
 			IList<Parameter> sqlParameters = new List<Parameter>();
 
@@ -401,9 +401,7 @@ namespace NHibernate.Engine
 			{
 				if (sqlParameter is Parameter)
 				{
-					Parameter parameter = (Parameter)sqlParameter;
-					parameter.ParameterPosition = null;
-					sqlParameters.Add(parameter);
+					sqlParameters.Add((Parameter)sqlParameter);
 				}
 			}
 
@@ -441,7 +439,7 @@ namespace NHibernate.Engine
 			int parameterIndex = 0;
 			int totalSpan = 0;
 
-			IList<Parameter> sqlParameters = ResetParameterLocations(sqlString);
+			IList<Parameter> sqlParameters = FindParametersIn(sqlString);
 
 			for (int index = 0; index < PositionalParameterTypes.Length; index++)
 			{

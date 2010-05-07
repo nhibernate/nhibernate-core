@@ -572,6 +572,22 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
+		/// Make a copy of the SqlString, with new parameter references (Placeholders)
+		/// </summary>
+		public SqlString Copy()
+		{
+			SqlString clone = Clone();
+
+			for (int i=0; i<clone.sqlParts.Length; i++)
+			{
+				if (clone.sqlParts[i] is Parameter)
+					clone.sqlParts[i] = SqlCommand.Parameter.Placeholder;
+			}
+
+			return clone;
+		}
+
+		/// <summary>
 		/// Returns substring of this SqlString starting with the specified
 		/// <paramref name="text" />. If the text is not found, returns an
 		/// empty, not-null SqlString.
