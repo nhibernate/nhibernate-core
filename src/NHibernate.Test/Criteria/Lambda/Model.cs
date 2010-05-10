@@ -75,5 +75,11 @@ namespace NHibernate.Test.Criteria.Lambda
 
 	}
 
+	public class PersonSummary
+	{
+		public string Name { get; set; }
+		public int Count { get; set; }
+	}
+
 }
 

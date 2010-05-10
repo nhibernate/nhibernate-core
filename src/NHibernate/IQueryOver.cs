@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using NHibernate.Criterion;
 using NHibernate.Criterion.Lambda;
 using NHibernate.SqlCommand;
+using NHibernate.Transform;
 
 namespace NHibernate
 {
@@ -262,6 +263,13 @@ namespace NHibernate
 		IQueryOverOrderBuilder<TRoot,TSubType> OrderBy(Expression<Func<object>> path);
 
 		/// <summary>
+		/// Add order for an aliased projection expressed as a lambda expression
+		/// </summary>
+		/// <param name="path">Lambda expression</param>
+		/// <returns>criteria instance</returns>
+		IQueryOverOrderBuilder<TRoot,TSubType> OrderByAlias(Expression<Func<object>> path);
+
+		/// <summary>
 		/// Add order expressed as a lambda expression
 		/// </summary>
 		/// <param name="path">Lambda expression</param>
@@ -276,9 +284,21 @@ namespace NHibernate
 		IQueryOverOrderBuilder<TRoot,TSubType> ThenBy(Expression<Func<object>> path);
 
 		/// <summary>
+		/// Add order for an aliased projection expressed as a lambda expression
+		/// </summary>
+		/// <param name="path">Lambda expression</param>
+		/// <returns>criteria instance</returns>
+		IQueryOverOrderBuilder<TRoot,TSubType> ThenByAlias(Expression<Func<object>> path);
+
+		/// <summary>
 		/// Clear all orders from the query.
 		/// </summary>
 		IQueryOver<TRoot, TSubType> ClearOrders();
+
+		/// <summary>
+		/// Transform the results using the supplied IResultTransformer
+		/// </summary>
+		IQueryOver<TRoot,TSubType> TransformUsing(IResultTransformer resultTransformer);
 
 		/// <summary>
 		/// Set the first result to be retrieved

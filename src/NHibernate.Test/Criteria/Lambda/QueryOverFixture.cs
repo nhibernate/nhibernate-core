@@ -354,15 +354,20 @@ namespace NHibernate.Test.Criteria.Lambda
 					.AddOrder(Order.Asc("Name"))
 					.AddOrder(Order.Desc("Age"))
 					.AddOrder(Order.Desc("personAlias.Name"))
-					.AddOrder(Order.Asc("personAlias.Age"));
+					.AddOrder(Order.Asc("personAlias.Age"))
+					.AddOrder(Order.Asc("summary"))
+					.AddOrder(Order.Desc("Count"));
 
 			Person personAlias = null;
+			PersonSummary summary = null;
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>(() => personAlias)
 					.OrderBy(p => p.Name).Asc
 					.ThenBy(p => p.Age).Desc
 					.ThenBy(() => personAlias.Name).Desc
-					.ThenBy(() => personAlias.Age).Asc;
+					.ThenBy(() => personAlias.Age).Asc
+					.OrderByAlias(() => summary).Asc
+					.ThenByAlias(() => summary.Count).Desc;
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
@@ -449,6 +454,20 @@ namespace NHibernate.Test.Criteria.Lambda
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
 					.Lock().UpgradeNoWait;
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void ResultTransformer()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.SetResultTransformer(Transformers.AliasToBean<Person>());
+
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>()
+					.TransformUsing(Transformers.AliasToBean<Person>());
 
 			AssertCriteriaAreEqual(expected, actual);
 		}

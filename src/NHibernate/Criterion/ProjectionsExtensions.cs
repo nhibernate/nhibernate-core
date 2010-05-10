@@ -16,7 +16,7 @@ namespace NHibernate.Criterion
 		public static IProjection WithAlias(this IProjection			projection,
 											Expression<Func<object>>    alias)
 		{
-			string aliasContainer = ExpressionProcessor.FindMemberExpression(alias.Body);
+			string aliasContainer = ExpressionProcessor.FindPropertyExpression(alias.Body);
 			return Projections.Alias(projection, aliasContainer);
 		}
 	}

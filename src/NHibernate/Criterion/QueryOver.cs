@@ -7,6 +7,7 @@ using NHibernate.Criterion.Lambda;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
+using NHibernate.Transform;
 
 namespace NHibernate.Criterion
 {
@@ -330,7 +331,12 @@ namespace NHibernate.Criterion
 
 		public QueryOverOrderBuilder<TRoot,TSubType> OrderBy(Expression<Func<object>> path)
 		{
-			return new QueryOverOrderBuilder<TRoot,TSubType>(this, path);
+			return new QueryOverOrderBuilder<TRoot,TSubType>(this, path, false);
+		}
+
+		public QueryOverOrderBuilder<TRoot,TSubType> OrderByAlias(Expression<Func<object>> path)
+		{
+			return new QueryOverOrderBuilder<TRoot,TSubType>(this, path, true);
 		}
 
 		public QueryOverOrderBuilder<TRoot,TSubType> ThenBy(Expression<Func<TSubType, object>> path)
@@ -340,12 +346,23 @@ namespace NHibernate.Criterion
 
 		public QueryOverOrderBuilder<TRoot,TSubType> ThenBy(Expression<Func<object>> path)
 		{
-			return new QueryOverOrderBuilder<TRoot,TSubType>(this, path);
+			return new QueryOverOrderBuilder<TRoot,TSubType>(this, path, false);
+		}
+
+		public QueryOverOrderBuilder<TRoot,TSubType> ThenByAlias(Expression<Func<object>> path)
+		{
+			return new QueryOverOrderBuilder<TRoot,TSubType>(this, path, true);
 		}
 
 		public QueryOver<TRoot,TSubType> ClearOrders()
 		{
 			criteria.ClearOrders();
+			return this;
+		}
+
+		public QueryOver<TRoot,TSubType> TransformUsing(IResultTransformer resultTransformer)
+		{
+			criteria.SetResultTransformer(resultTransformer);
 			return this;
 		}
 
@@ -671,16 +688,25 @@ namespace NHibernate.Criterion
 		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path); }
 
 		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.OrderBy(Expression<Func<object>> path)
-		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path); }
+		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path, false); }
+
+		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.OrderByAlias(Expression<Func<object>> path)
+		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path, true); }
 
 		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.ThenBy(Expression<Func<TSubType, object>> path)
 		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path); }
 
 		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.ThenBy(Expression<Func<object>> path)
-		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path); }
+		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path, false); }
+
+		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.ThenByAlias(Expression<Func<object>> path)
+		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path, true); }
 
 		IQueryOver<TRoot,TSubType> IQueryOver<TRoot, TSubType>.ClearOrders()
 		{ return ClearOrders(); }
+
+		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.TransformUsing(IResultTransformer resultTransformer)
+		{ return TransformUsing(resultTransformer); }
 
 		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Skip(int firstResult)
 		{ return Skip(firstResult); }

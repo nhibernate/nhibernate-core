@@ -46,7 +46,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public QueryOverProjectionBuilder<T> WithAlias(Expression<Func<object>> alias)
 		{
-			string aliasContainer = ExpressionProcessor.FindMemberExpression(alias.Body);
+			string aliasContainer = ExpressionProcessor.FindPropertyExpression(alias.Body);
 			lastProjection = Projections.Alias(lastProjection, aliasContainer);
 			return this;
 		}

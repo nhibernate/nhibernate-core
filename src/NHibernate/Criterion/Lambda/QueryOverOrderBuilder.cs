@@ -15,7 +15,7 @@ namespace NHibernate.Criterion.Lambda
 		public QueryOverOrderBuilder(QueryOver<TRoot,TSubType> root, Expression<Func<TSubType, object>> path) : base(root, path)
 		{}
 
-		public QueryOverOrderBuilder(QueryOver<TRoot,TSubType> root, Expression<Func<object>> path) : base(root, path)
+		public QueryOverOrderBuilder(QueryOver<TRoot,TSubType> root, Expression<Func<object>> path, bool isAlias) : base(root, path, isAlias)
 		{}
 
 	}
@@ -26,7 +26,7 @@ namespace NHibernate.Criterion.Lambda
 		public IQueryOverOrderBuilder(IQueryOver<TRoot,TSubType> root, Expression<Func<TSubType, object>> path) : base(root, path)
 		{}
 
-		public IQueryOverOrderBuilder(IQueryOver<TRoot,TSubType> root, Expression<Func<object>> path) : base(root, path)
+		public IQueryOverOrderBuilder(IQueryOver<TRoot,TSubType> root, Expression<Func<object>> path, bool isAlias) : base(root, path, isAlias)
 		{}
 
 	}
@@ -36,24 +36,27 @@ namespace NHibernate.Criterion.Lambda
 
 		protected TReturn root;
 		protected LambdaExpression path;
+		protected bool isAlias;
 
 		protected QueryOverOrderBuilderBase(TReturn root, Expression<Func<TSubType, object>> path)
 		{
 			this.root = root;
 			this.path = path;
+			this.isAlias = false;
 		}
 
-		protected QueryOverOrderBuilderBase(TReturn root, Expression<Func<object>> path)
+		protected QueryOverOrderBuilderBase(TReturn root, Expression<Func<object>> path, bool isAlias)
 		{
 			this.root = root;
 			this.path = path;
+			this.isAlias = isAlias;
 		}
 
 		public TReturn Asc
 		{
 			get
 			{
-				this.root.UnderlyingCriteria.AddOrder(ExpressionProcessor.ProcessOrder(path, Order.Asc));
+				this.root.UnderlyingCriteria.AddOrder(ExpressionProcessor.ProcessOrder(path, Order.Asc, isAlias));
 				return this.root;
 			}
 		}
@@ -62,7 +65,7 @@ namespace NHibernate.Criterion.Lambda
 		{
 			get
 			{
-				this.root.UnderlyingCriteria.AddOrder(ExpressionProcessor.ProcessOrder(path, Order.Desc));
+				this.root.UnderlyingCriteria.AddOrder(ExpressionProcessor.ProcessOrder(path, Order.Desc, isAlias));
 				return this.root;
 			}
 		}

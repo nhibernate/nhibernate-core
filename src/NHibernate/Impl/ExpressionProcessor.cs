@@ -174,6 +174,17 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
+		/// Retrieves the name of the property from a member expression (without leading member access)
+		/// </summary>
+		public static string FindPropertyExpression(Expression expression)
+		{
+			string memberExpression = FindMemberExpression(expression);
+			int periodPosition = memberExpression.LastIndexOf('.') + 1;
+			string property = (periodPosition <= 0) ? memberExpression : memberExpression.Substring(periodPosition);
+			return property;
+		}
+
+		/// <summary>
 		/// Retrieves a detached criteria from an appropriate lambda expression
 		/// </summary>
 		/// <param name="expression">Expresson for detached criteria using .As&lt;>() extension"/></param>
@@ -458,11 +469,13 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="expression">The lambda expression to convert</param>
 		/// <param name="orderDelegate">The appropriate order delegate (order direction)</param>
+		/// <param name="isAlias">Indicates if the path is an aliased projection</param>
 		/// <returns>NHibernate Order</returns>
 		public static Order ProcessOrder(	LambdaExpression expression,
-											Func<string, Order> orderDelegate)
+											Func<string, Order> orderDelegate,
+											bool isAlias)
 		{
-			string property = FindMemberExpression(expression.Body);
+			string property = isAlias ? FindPropertyExpression(expression.Body) : FindMemberExpression(expression.Body);
 			Order order = orderDelegate(property);
 			return order;
 		}

@@ -146,6 +146,38 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void Project_TransformToDto()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new Person() { Name = "test person 1", Age = 20 });
+				s.Save(new Person() { Name = "test person 1", Age = 30 });
+				s.Save(new Person() { Name = "test person 2", Age = 40 });
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				PersonSummary summary = null;
+				var actual =
+					s.QueryOver<Person>()
+						.Select(list => list
+							.SelectGroup(p => p.Name).WithAlias(() => summary.Name)
+							.Select(Projections.RowCount()).WithAlias(() => summary.Count))
+						.OrderByAlias(() => summary.Name).Asc
+						.TransformUsing(Transformers.AliasToBean<PersonSummary>())
+						.List<PersonSummary>();
+
+				Assert.That(actual.Count, Is.EqualTo(2));
+				Assert.That(actual[0].Name, Is.EqualTo("test person 1"));
+				Assert.That(actual[0].Count, Is.EqualTo(2));
+				Assert.That(actual[1].Name, Is.EqualTo("test person 2"));
+				Assert.That(actual[1].Count, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
 		public void UniqueResult()
 		{
 			using (ISession s = OpenSession())
@@ -244,7 +276,7 @@ namespace NHibernate.Test.Criteria.Lambda
 						.Select(list => list
 							.Select(p => p.Name)
 							.SelectSubQuery(childCountQuery).WithAlias(() => childCountAlias))
-						.OrderBy(() => childCountAlias).Desc
+						.OrderByAlias(() => childCountAlias).Desc
 						.List<object[]>()
 						.Select(props => new {
 							Name = (string)props[0],

@@ -157,6 +157,13 @@ namespace NHibernate.Test.Criteria.Lambda
 				return;
 			}
 
+			if (expected is ConstructorInfo)
+			{
+				Assert.AreEqual(expected.ToString(), actual.ToString());
+				_fieldPath.Pop();
+				return;
+			}
+
 			while (expectedType != null)
 			{
 				foreach (FieldInfo fieldInfo in expectedType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
