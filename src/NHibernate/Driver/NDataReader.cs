@@ -117,6 +117,7 @@ namespace NHibernate.Driver
 		public bool NextResult()
 		{
 			currentResultIndex++;
+			currentRowIndex = -1;
 
 			if (currentResultIndex >= results.Length)
 			{

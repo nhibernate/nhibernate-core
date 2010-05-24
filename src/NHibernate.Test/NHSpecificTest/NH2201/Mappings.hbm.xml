@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.NH2201">
+
+	<class name="Parent" lazy="false">
+		<id name="Id">
+			<generator class="guid.comb" />
+		</id>
+		<discriminator />
+		<subclass name="SubClass">
+			<join table="ParentDetail" fetch="select">
+				<key column="ParentId" />
+				<property name="Name" />
+			</join>
+		</subclass>
+	</class>
+
+</hibernate-mapping>
