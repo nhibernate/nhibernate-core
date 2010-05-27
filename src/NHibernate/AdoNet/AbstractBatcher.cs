@@ -371,7 +371,17 @@ namespace NHibernate.AdoNet
 			ResultSetWrapper rsw = reader as ResultSetWrapper;
 			var actualReader = rsw == null ? reader : rsw.Target;
 			readersToClose.Remove(actualReader);
-			reader.Dispose();
+
+			try
+			{
+				reader.Dispose();
+			}
+			catch (Exception e)
+			{
+				// NH2205 - prevent exceptions when closing the reader from hiding any original exception
+				log.Warn("exception closing reader", e);
+			}
+
 			LogCloseReader();
 			
 			if (!log.IsDebugEnabled) 
