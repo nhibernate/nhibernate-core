@@ -8,17 +8,43 @@ namespace NHibernate.Linq.ReWriters
 {
 	public class QueryReferenceExpressionFlattener : NhExpressionTreeVisitor
 	{
-		private QueryReferenceExpressionFlattener()
+	    private readonly QueryModel _model;
+
+	    private QueryReferenceExpressionFlattener(QueryModel model)
 		{
+		    _model = model;
 		}
 
-		public static void ReWrite(QueryModel model)
+	    public static void ReWrite(QueryModel model)
 		{
-			var visitor = new QueryReferenceExpressionFlattener();
+			var visitor = new QueryReferenceExpressionFlattener(model);
 			model.TransformExpressions(visitor.VisitExpression);
 		}
 
-		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+        protected override Expression VisitSubQueryExpression(SubQueryExpression subQuery)
+        {
+            if ((subQuery.QueryModel.BodyClauses.Count == 0) &&
+                ((subQuery.QueryModel.ResultOperators.Count == 0) || (subQuery.QueryModel.ResultOperators.Count == 1 && subQuery.QueryModel.ResultOperators[0] is CacheableResultOperator))
+                )
+            {
+                var selectQuerySource =
+                    subQuery.QueryModel.SelectClause.Selector as QuerySourceReferenceExpression;
+
+                if (selectQuerySource != null && selectQuerySource.ReferencedQuerySource == subQuery.QueryModel.MainFromClause)
+                {
+                    if (subQuery.QueryModel.ResultOperators.Count == 1)
+                    {
+                        _model.ResultOperators.Add(subQuery.QueryModel.ResultOperators[0]);
+                    }
+
+                    return subQuery.QueryModel.MainFromClause.FromExpression;
+                }
+            }
+
+            return base.VisitSubQueryExpression(subQuery);
+        }
+
+        protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
 		{
 			var fromClauseBase = expression.ReferencedQuerySource as FromClauseBase;
 
@@ -28,10 +54,8 @@ namespace NHibernate.Linq.ReWriters
 			{
 				return fromClauseBase.FromExpression;
 			}
-			else
-			{
-				return base.VisitQuerySourceReferenceExpression(expression);
-			}
+
+		    return base.VisitQuerySourceReferenceExpression(expression);
 		}
 	}
 }

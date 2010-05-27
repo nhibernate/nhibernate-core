@@ -50,6 +50,23 @@ namespace NHibernate.Test.Linq
         }
 
         [Test]
+        public void QueryIsCacheable3()
+        {
+            Sfi.Statistics.Clear();
+            Sfi.QueryCache.Clear();
+
+            var x = (from c in db.Customers.Cacheable()
+                     select c).ToList();
+
+            var x2 = (from c in db.Customers
+                      select c).ToList();
+
+            Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2));
+            Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1));
+            Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0));
+        }
+
+        [Test]
         public void QueryIsCacheableWithRegion()
         {
             Sfi.Statistics.Clear();
