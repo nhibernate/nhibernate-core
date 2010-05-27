@@ -391,7 +391,7 @@ namespace NHibernate.DomainModel
 
 			StringDateMap = new SortedList();
 			StringDateMap.Add("now", DateTime.Now);
-			StringDateMap.Add("never", null);
+			StringDateMap.Add("never", null); // value is persisted since NH-2199
 			// according to SQL Server the big bag happened in 1753 ;)
 			StringDateMap.Add("big bang", new DateTime(1753, 01, 01));
 			//StringDateMap.Add( "millenium", new DateTime( 2000, 01, 01 ) );

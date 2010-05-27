@@ -825,7 +825,7 @@ namespace NHibernate.Test.Legacy
 
 			list = s.CreateQuery("select index(date) from Baz baz join baz.StringDateMap date").List();
 			Console.WriteLine(list);
-			Assert.AreEqual(2, list.Count);
+			Assert.AreEqual(3, list.Count);
 
 			s.CreateQuery(
 				"from foo in class Foo where foo.Integer not between 1 and 5 and foo.String not in ('cde', 'abc') and foo.String is not null and foo.Integer<=3")

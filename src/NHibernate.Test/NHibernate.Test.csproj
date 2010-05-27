@@ -126,6 +126,8 @@
     <Compile Include="Classic\Video.cs" />
     <Compile Include="CollectionTest\A.cs" />
     <Compile Include="CollectionTest\IdBagFixture.cs" />
+    <Compile Include="CollectionTest\NullableValueTypeElementMapFixture.cs" />
+    <Compile Include="CollectionTest\Parent.cs" />
     <Compile Include="CompositeCollection\BaseClassA.cs" />
     <Compile Include="CompositeCollection\BaseClassB.cs" />
     <Compile Include="CompositeCollection\ChildClassA.cs" />
@@ -2135,6 +2137,7 @@
     <EmbeddedResource Include="Criteria\Lambda\Mappings.hbm.xml" />
     <EmbeddedResource Include="CfgTest\Loquacious\EntityToCache.hbm.xml" />
     <EmbeddedResource Include="DriverTest\SqlServerCeEntity.hbm.xml" />
+    <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
     <EmbeddedResource Include="NHSpecificTest\NH2201\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2192\Mappings.hbm.xml" />

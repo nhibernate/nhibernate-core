@@ -109,11 +109,13 @@ namespace NHibernate.Collection
 			object element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
 			object index = role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session);
 
-			if (element != null)
-			{
-				map[index] = element;
-			}
+			AddDuringInitialize(index, element);
 			return element;
+		}
+
+		protected virtual void AddDuringInitialize(object index, object element)
+		{
+			map[index] = element;
 		}
 
 		public override IEnumerable Entries(ICollectionPersister persister)
@@ -158,7 +160,7 @@ namespace NHibernate.Collection
 			foreach (DictionaryEntry e in sn)
 			{
 				object key = e.Key;
-				if (e.Value != null && map[key] == null)
+				if (!map.Contains(key))
 				{
 					deletes.Add(indexIsFormula ? e.Value : key);
 				}
@@ -170,7 +172,7 @@ namespace NHibernate.Collection
 		{
 			IDictionary sn = (IDictionary) GetSnapshot();
 			DictionaryEntry e = (DictionaryEntry) entry;
-			return e.Value != null && sn[e.Key] == null;
+			return !sn.Contains(e.Key);
 		}
 
 		public override bool NeedsUpdating(object entry, int i, IType elemType)
@@ -178,7 +180,9 @@ namespace NHibernate.Collection
 			IDictionary sn = (IDictionary) GetSnapshot();
 			DictionaryEntry e = (DictionaryEntry) entry;
 			object snValue = sn[e.Key];
-			return e.Value != null && snValue != null && elemType.IsDirty(snValue, e.Value, Session);
+			bool isNew = !sn.Contains(e.Key);
+			return e.Value != null && snValue != null && elemType.IsDirty(snValue, e.Value, Session)
+				|| (!isNew && ((e.Value == null) != (snValue == null)));
 		}
 
 		public override object GetIndex(object entry, int i, ICollectionPersister persister)
@@ -216,7 +220,7 @@ namespace NHibernate.Collection
 
 		public override bool EntryExists(object entry, int i)
 		{
-			return ((DictionaryEntry) entry).Value != null;
+			return map.Contains(((DictionaryEntry) entry).Key);
 		}
 
 		#region IDictionary Members

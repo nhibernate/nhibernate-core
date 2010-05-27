@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.CollectionTest">
+	<class name="Parent">
+		<id name="Id">
+			<generator class="guid.comb" />
+		</id>
+		<map name="TypedDates">
+			<key column="ParentId" />
+			<index column="Idx" type="int" />
+			<element column="Value" />
+		</map>
+		<map name="UntypedDates">
+			<key column="ParentId" />
+			<index column="Idx" type="int" />
+			<element column="Value" type="System.Nullable`1[[System.DateTime, mscorlib]]" />
+		</map>
+	</class>
+</hibernate-mapping>

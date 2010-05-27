@@ -54,7 +54,7 @@ namespace NHibernate.Collection.Generic
 			IDictionary<TKey, TValue> sn = (IDictionary<TKey, TValue>)GetSnapshot();
 			foreach (KeyValuePair<TKey, TValue> e in sn)
 			{
-				if (e.Value != null && !gmap.ContainsKey(e.Key))
+				if (!gmap.ContainsKey(e.Key))
 				{
 					object key = e.Key;
 					deletes.Add(indexIsFormula ? e.Value : key);
@@ -67,7 +67,7 @@ namespace NHibernate.Collection.Generic
 		{
 			IDictionary sn = (IDictionary)GetSnapshot();
 			KeyValuePair<TKey, TValue> e = (KeyValuePair<TKey, TValue>)entry;
-			return e.Value != null && sn[e.Key] == null;
+			return !sn.Contains(e.Key);
 		}
 
 		public override bool NeedsUpdating(object entry, int i, IType elemType)
@@ -75,7 +75,9 @@ namespace NHibernate.Collection.Generic
 			IDictionary sn = (IDictionary)GetSnapshot();
 			KeyValuePair<TKey, TValue> e = (KeyValuePair<TKey, TValue>)entry;
 			object snValue = sn[e.Key];
-			return e.Value != null && snValue != null && elemType.IsDirty(snValue, e.Value, Session);
+			bool isNew = !sn.Contains(e.Key);
+			return e.Value != null && snValue != null && elemType.IsDirty(snValue, e.Value, Session)
+				|| (!isNew && ((e.Value == null) != (snValue == null)));
 		}
 
 		public override object GetIndex(object entry, int i, ICollectionPersister persister)
@@ -96,7 +98,12 @@ namespace NHibernate.Collection.Generic
 
 		public override bool EntryExists(object entry, int i)
 		{
-			return ((KeyValuePair<TKey, TValue>)entry).Value != null;
+			return gmap.ContainsKey(((KeyValuePair<TKey, TValue>)entry).Key);
+		}
+
+		protected override void AddDuringInitialize(object index, object element)
+		{
+			gmap[(TKey)index] = (TValue)element;
 		}
 
 		#region IDictionary<TKey,TValue> Members
