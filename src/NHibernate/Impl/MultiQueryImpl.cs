@@ -530,7 +530,7 @@ namespace NHibernate.Impl
 														   optionalObjectKey,
 														   hydratedObjects[i],
 														   keys,
-														   false);
+														   true);
 
 						tempResults.Add(result);
 

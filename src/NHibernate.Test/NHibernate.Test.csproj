@@ -437,6 +437,8 @@
     <Compile Include="NHSpecificTest\CriteriaQueryOnComponentCollection\Employee.cs" />
     <Compile Include="NHSpecificTest\CriteriaQueryOnComponentCollection\Fixture.cs" />
     <Compile Include="NHSpecificTest\CriteriaQueryOnComponentCollection\Money.cs" />
+    <Compile Include="NHSpecificTest\NH2189\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2189\Model.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\AbstractIntEnumsBagFixture.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\IntEnumsBagNoNameFixture.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\IntEnumsBagPartialNameFixture.cs" />
@@ -2139,6 +2141,7 @@
     <EmbeddedResource Include="DriverTest\SqlServerCeEntity.hbm.xml" />
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH2189\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2201\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2192\Mappings.hbm.xml" />
     <EmbeddedResource Include="ListIndex\SimpleOneToMany.hbm.xml" />

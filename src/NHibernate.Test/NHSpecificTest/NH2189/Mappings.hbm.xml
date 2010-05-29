@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+			assembly="NHibernate.Test"
+			namespace="NHibernate.Test.NHSpecificTest.NH2189">
+	
+	<class name="Policy">
+		<id name="Id">
+			<generator class="guid.comb" />
+		</id>
+		<property name="PolicyNumber" />
+		<set name="Tasks" inverse="true" cascade="save-update">
+			<key column="PolicyId" />
+			<one-to-many class="Task" />
+		</set>
+	</class>
+
+	<class name="Task">
+		<id name="Id">
+			<generator class="guid.comb" />
+		</id>
+		<property name="TaskName" />
+		<many-to-one name="Policy" column="PolicyId" />
+		<many-to-one name="TeamMember" column="TeamMemberId" />
+	</class>
+
+	<class name="TeamMember">
+		<id name="Id">
+			<generator class="guid.comb" />
+		</id>
+		<property name="Name" />
+	</class>
+
+</hibernate-mapping>
