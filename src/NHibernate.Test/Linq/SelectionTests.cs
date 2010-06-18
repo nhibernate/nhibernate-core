@@ -172,7 +172,7 @@ namespace NHibernate.Test.Linq
 						select user.RegisteredAt;
 
 			DateTime date = query.Single();
-			Assert.AreEqual(DateTime.Today, date);
+			Assert.AreEqual(new DateTime(2010, 06, 17), date);
 		}
 
 		[Test]

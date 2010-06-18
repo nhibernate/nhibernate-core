@@ -98,7 +98,7 @@ namespace NHibernate.Test.Linq
             Assert.AreEqual("rahien rahien", query[2].DoubleName);
 
 
-            Assert.AreEqual(DateTime.Today, query[0].RegisteredAt);
+						Assert.AreEqual(new DateTime(2010, 06, 17), query[0].RegisteredAt);
             Assert.AreEqual(new DateTime(2000, 1, 1), query[1].RegisteredAt);
             Assert.AreEqual(new DateTime(1998, 12, 31), query[2].RegisteredAt);
         }
@@ -116,7 +116,7 @@ namespace NHibernate.Test.Linq
             Assert.AreEqual("nhibernate", query[2].Key);
 
 
-            Assert.AreEqual(DateTime.Today, query[0].Value);
+						Assert.AreEqual(new DateTime(2010, 06, 17), query[0].Value);
             Assert.AreEqual(new DateTime(1998, 12, 31), query[1].Value);
             Assert.AreEqual(new DateTime(2000, 1, 1), query[2].Value);
         }
@@ -133,7 +133,7 @@ namespace NHibernate.Test.Linq
             Assert.AreEqual("nhibernate", query[2].Name);
 
 
-            Assert.AreEqual(DateTime.Today, query[0].RegisteredAt);
+						Assert.AreEqual(new DateTime(2010, 06, 17), query[0].RegisteredAt);
             Assert.AreEqual(new DateTime(1998, 12, 31), query[1].RegisteredAt);
             Assert.AreEqual(new DateTime(2000, 1, 1), query[2].RegisteredAt);
         }

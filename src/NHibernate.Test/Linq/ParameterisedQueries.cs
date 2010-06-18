@@ -175,16 +175,5 @@ namespace NHibernate.Test.Linq
         {
             get { return new string[0]; }
         }
-
-        protected override bool PerformDbDataSetup
-        {
-            get { return false; }
-        }
-
-        protected override bool PerformDbDataTeardown
-        {
-            get { return false; }
-        }
-         
     }
 }

@@ -413,9 +413,11 @@
     <Compile Include="Linq\ExtensionMethods.cs" />
     <Compile Include="Linq\FunctionTests.cs" />
     <Compile Include="Linq\LinqQuerySamples.cs" />
+    <Compile Include="Linq\LinqReadonlyTestsContext.cs" />
     <Compile Include="Linq\LinqTestCase.cs" />
     <Compile Include="Linq\MethodCallTests.cs" />
     <Compile Include="Linq\MiscellaneousTextFixture.cs" />
+    <Compile Include="Linq\NorthwindDbCreator.cs" />
     <Compile Include="Linq\ObjectDumper.cs" />
     <Compile Include="Linq\OrderByTests.cs" />
     <Compile Include="Linq\PagingTests.cs" />
@@ -1631,6 +1633,12 @@
     <None Include="App.config" />
     <None Include="NHibernate.Test.build" />
     <None Include="NHibernate.Test.nunit" />
+    <None Include="DbScripts\MsSql2008DialectLinqReadonlyCreateScript.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="DbScripts\MsSql2008DialectLinqReadonlyDropScript.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.ByteCode.Castle\NHibernate.ByteCode.Castle.csproj">

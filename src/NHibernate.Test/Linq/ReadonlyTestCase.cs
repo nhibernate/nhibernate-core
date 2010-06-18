@@ -7,15 +7,13 @@ using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Hql.Classic;
-using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
     public abstract class ReadonlyTestCase
     {
-        private const bool OutputDdl = false;
-        protected Configuration _cfg;
+    	protected Configuration _cfg;
         protected ISessionFactoryImplementor _sessions;
 
         private static readonly ILog log = LogManager.GetLogger(typeof(TestCase));
@@ -63,9 +61,6 @@ namespace NHibernate.Test.Linq
             get { return "NHibernate.DomainModel"; }
         }
 
-        protected abstract bool PerformDbDataSetup { get; }
-        protected abstract bool PerformDbDataTeardown { get; }
-
         static ReadonlyTestCase()
         {
             // Configure log4net here since configuration through an attribute doesn't always work.
@@ -78,38 +73,29 @@ namespace NHibernate.Test.Linq
         [TestFixtureSetUp]
         public void TestFixtureSetUp()
         {
-            try
-            {
-                Configure();
-                if (!AppliesTo(Dialect))
-                {
-                    Assert.Ignore(GetType() + " does not apply to " + Dialect);
-                }
+					try
+					{
+						Configure();
+						if (!AppliesTo(Dialect))
+						{
+							Assert.Ignore(GetType() + " does not apply to " + Dialect);
+						}
 
-                BuildSessionFactory();
+						BuildSessionFactory();
 
-                if (PerformDbDataSetup)
-                {
-                    CreateSchema();
-                }
+						if (!AppliesTo(_sessions))
+						{
+							Cleanup();
+							Assert.Ignore(GetType() + " does not apply with the current session-factory configuration");
+						}
 
-                if (!AppliesTo(_sessions))
-                {
-                    DropSchema();
-                    Cleanup();
-                    Assert.Ignore(GetType() + " does not apply with the current session-factory configuration");
-                }
-
-                if (PerformDbDataSetup)
-                {
-                    OnFixtureSetup();
-                }
-            }
-            catch (Exception e)
-            {
-                log.Error("Error while setting up the test fixture", e);
-                throw;
-            }
+						OnFixtureSetup();
+					}
+					catch (Exception e)
+					{
+						log.Error("Error while setting up the test fixture", e);
+						throw;
+					}
         }
 
         /// <summary>
@@ -125,11 +111,6 @@ namespace NHibernate.Test.Linq
         public void TestFixtureTearDown()
         {
             OnFixtureTeardown();
-
-            if (PerformDbDataTeardown)
-            {
-                DropSchema();
-            }
 
             Cleanup();
         }
@@ -217,16 +198,6 @@ namespace NHibernate.Test.Linq
             }
 
             Configure(_cfg);
-        }
-
-        protected virtual void CreateSchema()
-        {
-            new SchemaExport(_cfg).Create(OutputDdl, true);
-        }
-
-        private void DropSchema()
-        {
-            new SchemaExport(_cfg).Drop(OutputDdl, true);
         }
 
         protected virtual void BuildSessionFactory()

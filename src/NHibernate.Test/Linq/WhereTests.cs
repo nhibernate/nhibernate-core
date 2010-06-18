@@ -115,12 +115,12 @@ namespace NHibernate.Test.Linq
 		public void UsersByNameAndRegistrationDate()
 		{
 			var query = (from user in db.Users
-						 where user.Name == "ayende" && user.RegisteredAt == DateTime.Today
+									 where user.Name == "ayende" && user.RegisteredAt == new DateTime(2010, 06, 17)
 						 select user).FirstOrDefault();
 
             Assert.IsNotNull(query);
 			Assert.AreEqual("ayende", query.Name);
-			Assert.AreEqual(DateTime.Today, query.RegisteredAt);
+			Assert.AreEqual(new DateTime(2010, 06, 17), query.RegisteredAt);
 		}
 
 		[Test]
