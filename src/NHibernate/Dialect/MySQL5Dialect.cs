@@ -9,6 +9,7 @@ namespace NHibernate.Dialect
 		{
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
 			RegisterColumnType(DbType.Decimal, 19, "DECIMAL($p, $s)");
+			RegisterColumnType(DbType.Guid, "BINARY(16)");
 		}
 
 		//Reference 5.x
