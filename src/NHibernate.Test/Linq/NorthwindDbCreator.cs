@@ -8,6 +8,8 @@ namespace NHibernate.Test.Linq
 {
 	public static class NorthwindDbCreator
 	{
+		private static readonly DateTime KnownDate = new DateTime(2010, 06, 17);
+
 		public static void CreateMiscTestData(ISession session)
 		{
 			var roles = new[]
@@ -30,7 +32,7 @@ namespace NHibernate.Test.Linq
 
 			var users = new[]
         	{
-        		new User("ayende", DateTime.Today)
+        		new User("ayende", KnownDate)
                 {
                     Role = roles[0],
                     InvalidLoginAttempts = 4,
@@ -68,24 +70,24 @@ namespace NHibernate.Test.Linq
             {
                 new Timesheet
                 {
-                    SubmittedDate = DateTime.Today,
+                    SubmittedDate = KnownDate,
                     Submitted = true
                 },
                 new Timesheet
                 {
-                    SubmittedDate = DateTime.Today.AddDays(-1),
+                    SubmittedDate = KnownDate.AddDays(-1),
                     Submitted = false, 
                     Entries = new List<TimesheetEntry>
                     {
                         new TimesheetEntry
                         {
-                            EntryDate = DateTime.Today,
+                            EntryDate = KnownDate,
                             NumberOfHours = 6,
 							Comments = "testing 123"
                         },
                         new TimesheetEntry
                         {
-                            EntryDate = DateTime.Today.AddDays(1),
+                            EntryDate = KnownDate.AddDays(1),
                             NumberOfHours = 14
                         }
                     }
