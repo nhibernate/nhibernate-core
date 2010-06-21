@@ -147,5 +147,55 @@ namespace NHibernate.Test.Linq
             Assert.AreEqual(3, query.Intersect(new[] { "ayende", "rahien", "nhibernate" })
                                    .ToList().Count);
         }
+
+        [Test]
+        public void CanCallLocalMethodsInSelect()
+        {
+            var query = (
+                            from user in db.Users
+                            orderby user.Id
+                            select FormatName(user.Name, user.LastLoginDate)
+                        ).ToList();
+
+            Assert.AreEqual(3, query.Count);
+            Assert.IsTrue(query[0].StartsWith("User ayende logged in at"));
+            Assert.IsTrue(query[1].StartsWith("User rahien logged in at"));
+            Assert.IsTrue(query[2].StartsWith("User nhibernate logged in at"));
+        }
+
+        [Test]
+        public void CanCallLocalMethodsInAnonymousTypeInSelect()
+        {
+            var query = (
+                            from user in db.Users
+                            orderby user.Id
+                            select new {Title = FormatName(user.Name, user.LastLoginDate)}
+                        ).ToList();
+
+            Assert.AreEqual(3, query.Count);
+            Assert.IsTrue(query[0].Title.StartsWith("User ayende logged in at"));
+            Assert.IsTrue(query[1].Title.StartsWith("User rahien logged in at"));
+            Assert.IsTrue(query[2].Title.StartsWith("User nhibernate logged in at"));
+        }
+
+        [Test]
+        public void CanPerformStringOperationsInSelect()
+        {
+            var query = (
+                            from user in db.Users
+                            orderby user.Id
+                            select new { Title = "User " + user.Name + " logged in at " + user.LastLoginDate }
+                        ).ToList();
+
+            Assert.AreEqual(3, query.Count);
+            Assert.IsTrue(query[0].Title.StartsWith("User ayende logged in at"));
+            Assert.IsTrue(query[1].Title.StartsWith("User rahien logged in at"));
+            Assert.IsTrue(query[2].Title.StartsWith("User nhibernate logged in at"));
+        }
+
+        private string FormatName(string name, DateTime? lastLoginDate)
+        {
+            return string.Format("User {0} logged in at {1}", name, lastLoginDate);
+        }
     }
 }

@@ -3,12 +3,15 @@ using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Expressions;
+using NHibernate.Linq.Functions;
 using Remotion.Data.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
     public class SelectClauseVisitor : ExpressionTreeVisitor
     {
+        static private readonly FunctionRegistry FunctionRegistry = FunctionRegistry.Instance;
+
         private HashSet<Expression> _hqlNodes;
         private readonly ParameterExpression _inputParameter;
     	private readonly VisitorParameters _parameters;
@@ -69,7 +72,24 @@ namespace NHibernate.Linq.Visitors
 
         private static bool CanBeEvaluatedInHqlSelectStatement(Expression expression)
         {
-            return (expression.NodeType != ExpressionType.MemberInit) && (expression.NodeType != ExpressionType.New);
+            if ((expression.NodeType == ExpressionType.MemberInit) || (expression.NodeType == ExpressionType.New) || (expression.NodeType == ExpressionType.Constant))
+            {
+                // Hql can't do New or Member Init
+                return false;
+            }
+            
+            if (expression.NodeType == ExpressionType.Call)
+            {
+                // Depends if it's in the function registry
+                IHqlGeneratorForMethod methodGenerator;
+                if (!FunctionRegistry.TryGetMethodGenerator(((MethodCallExpression) expression).Method, out methodGenerator))
+                {
+                    return false;
+                }
+            }
+
+            // Assume all is good
+            return true;
         }
 
         private static bool CanBeEvaluatedInHqlStatementShortcut(Expression expression)

@@ -12,7 +12,7 @@ namespace NHibernate.Linq.Visitors
     {
         private readonly HqlTreeBuilder _hqlTreeBuilder;
         private readonly VisitorParameters _parameters;
-        static private readonly FunctionRegistry FunctionRegistry = FunctionRegistry.Initialise();
+        static private readonly FunctionRegistry FunctionRegistry = FunctionRegistry.Instance;
 
         public static HqlTreeNode Visit(Expression expression, VisitorParameters parameters)
         {
