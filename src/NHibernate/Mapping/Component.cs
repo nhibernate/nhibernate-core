@@ -16,7 +16,7 @@ namespace NHibernate.Mapping
 		private readonly List<Property> properties = new List<Property>();
 		private System.Type componentClass;
 		private bool embedded;
-		private string parentProperty;
+		private Property parentProperty;
 		private PersistentClass owner;
 		private bool dynamic;
 		private bool isKey;
@@ -165,7 +165,7 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public string ParentProperty
+		public Property ParentProperty
 		{
 			get { return parentProperty; }
 			set { parentProperty = value; }

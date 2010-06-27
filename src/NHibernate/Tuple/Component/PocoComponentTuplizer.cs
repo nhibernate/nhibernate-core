@@ -28,17 +28,16 @@ namespace NHibernate.Tuple.Component
 		{
 			componentClass = component.ComponentClass;
 
-			string parentPropertyName = component.ParentProperty;
-			if (parentPropertyName == null)
+			var parentProperty = component.ParentProperty;
+			if (parentProperty == null)
 			{
 				parentSetter = null;
 				parentGetter = null;
 			}
 			else
 			{
-				IPropertyAccessor pa = PropertyAccessorFactory.GetPropertyAccessor(null);
-				parentSetter = pa.GetSetter(componentClass, parentPropertyName);
-				parentGetter = pa.GetGetter(componentClass, parentPropertyName);
+				parentSetter = parentProperty.GetSetter(componentClass);
+				parentGetter = parentProperty.GetGetter(componentClass);
 			}
 
 			if (hasCustomAccessors || !Cfg.Environment.UseReflectionOptimizer)

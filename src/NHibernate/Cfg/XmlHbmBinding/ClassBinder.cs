@@ -305,7 +305,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			// Parent
 			if (componentMapping.Parent != null && !string.IsNullOrEmpty(componentMapping.Parent.name))
 			{
-				model.ParentProperty = componentMapping.Parent.name;
+				model.ParentProperty = new Property
+				                       	{
+				                       		Name = componentMapping.Parent.name,
+				                       		PropertyAccessorName = mappings.DefaultAccess
+				                       	}; 
 			}
 
 			new PropertiesBinder(Mappings, model, className, path, isNullable, Mappings.Dialect).Bind(
