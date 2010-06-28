@@ -1060,7 +1060,8 @@
 	<xs:element name="parent">
 		<xs:complexType>
 			<xs:attribute name="name" use="required" type="xs:string" />
-		</xs:complexType>
+      <xs:attribute name="access" type="xs:string" />
+    </xs:complexType>
 	</xs:element>
 	<xs:element name="primitive-array">
 		<xs:complexType>

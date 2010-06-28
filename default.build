@@ -331,7 +331,8 @@
 		<copy todir="${bin-pack.tests}">
 			<fileset basedir="${bin.dir}">
 				<include name="nunit*" />
-				<include name="NHibernate.Domain*" />
+        <include name="SharpTestsEx*" />
+        <include name="NHibernate.Domain*" />
 				<include name="NHibernate.Test*" />
 			</fileset>
 		</copy>

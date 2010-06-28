@@ -62,6 +62,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\3.5\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="SharpTestsEx.NUnit, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8c60d8070630b1c1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\3.5\SharpTestsEx.NUnit.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -720,6 +724,8 @@
     <Compile Include="NHSpecificTest\NH2192\Model.cs" />
     <Compile Include="NHSpecificTest\NH2201\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2201\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2230\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH2230\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH473\Child.cs" />
     <Compile Include="NHSpecificTest\NH473\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH473\Parent.cs" />
@@ -2149,6 +2155,7 @@
     <EmbeddedResource Include="DriverTest\SqlServerCeEntity.hbm.xml" />
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH2230\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2189\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2201\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2192\Mappings.hbm.xml" />

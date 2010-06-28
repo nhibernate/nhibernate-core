@@ -308,7 +308,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.ParentProperty = new Property
 				                       	{
 				                       		Name = componentMapping.Parent.name,
-				                       		PropertyAccessorName = mappings.DefaultAccess
+				                       		PropertyAccessorName = componentMapping.Parent.access ?? mappings.DefaultAccess
 				                       	}; 
 			}
 

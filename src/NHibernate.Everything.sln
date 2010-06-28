@@ -110,6 +110,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.ByteCode.Spring.Tests", "NHibernate.ByteCode.Spring.Tests\NHibernate.ByteCode.Spring.Tests.csproj", "{7EFC4549-3761-4B68-B81F-12AA51D78E92}"
 EndProject
 Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = NHibernate.vsmdi
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|.NET = Debug|.NET
 		Debug|Any CPU = Debug|Any CPU

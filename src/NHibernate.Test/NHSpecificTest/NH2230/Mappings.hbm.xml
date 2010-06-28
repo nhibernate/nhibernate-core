@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.NH2230">
+
+  <class name="MyEntity" >
+    <id type="Guid">
+      <generator class="guid.comb" />
+    </id>
+    <component name="Component" class="MyComponentWithParent">
+      <parent name="Parent" access="field.camelcase"/>
+      <property name="Something"/>
+    </component>
+    <bag name="Children">
+      <key column="MyEntityId" />
+      <composite-element class="MyComponentWithParent">
+        <parent name="Parent" access="field.camelcase"/>
+        <property name="Something"/>
+      </composite-element>
+    </bag>
+  </class>
+
+</hibernate-mapping>

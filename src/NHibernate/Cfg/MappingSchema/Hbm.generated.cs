@@ -629,6 +629,10 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string name;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string access;
     }
     
     /// <remarks/>
@@ -672,12 +676,12 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute("not-null")]
         public bool notnull;
-
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool notnullSpecified;
-
-		/// <remarks/>
+        
+        /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool unique;
