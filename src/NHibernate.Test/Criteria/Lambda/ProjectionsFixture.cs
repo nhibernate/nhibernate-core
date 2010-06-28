@@ -114,7 +114,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			Person personAgeProjectionAlias = null;
 			var actual =
 				CreateTestQueryOver<Person>(() => personAlias)
-					.Select(list => list
+				.SelectList(list => list
 						.SelectAvg(p => p.Age).WithAlias(() => personAgeProjectionAlias)
 						.Select(Projections.Avg("Age")) // allows private properties
 						.SelectAvg(() => personAlias.Age).WithAlias(() => personAlias.Age)

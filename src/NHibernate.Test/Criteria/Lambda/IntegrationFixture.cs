@@ -162,7 +162,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				PersonSummary summary = null;
 				var actual =
 					s.QueryOver<Person>()
-						.Select(list => list
+						.SelectList(list => list
 							.SelectGroup(p => p.Name).WithAlias(() => summary.Name)
 							.Select(Projections.RowCount()).WithAlias(() => summary.Count))
 						.OrderByAlias(() => summary.Name).Asc
@@ -263,7 +263,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 				QueryOver<Child> averageChildAge =
 					QueryOver.Of<Child>()
-						.Select(p => p.SelectAvg(c => c.Age));
+						.SelectList(list => list.SelectAvg(c => c.Age));
 
 				QueryOver<Child> childCountQuery =
 					QueryOver.Of<Child>()
@@ -273,7 +273,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				var nameAndChildCount =
 					s.QueryOver<Person>(() => personAlias)
 						.WithSubquery.Where(p => p.Age <= averageChildAge.As<int>())
-						.Select(list => list
+						.SelectList(list => list
 							.Select(p => p.Name)
 							.SelectSubQuery(childCountQuery).WithAlias(() => childCountAlias))
 						.OrderByAlias(() => childCountAlias).Desc
