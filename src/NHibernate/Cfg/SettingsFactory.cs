@@ -352,7 +352,7 @@ namespace NHibernate.Cfg
 		private static ITransactionFactory CreateTransactionFactory(IDictionary<string, string> properties)
 		{
 			string className = PropertiesHelper.GetString(
-				Environment.TransactionStrategy, properties, typeof(AdoNetWithDistrubtedTransactionFactory).FullName);
+				Environment.TransactionStrategy, properties, typeof(AdoNetWithDistributedTransactionFactory).FullName);
 			log.Info("Transaction factory: " + className);
 
 			try
