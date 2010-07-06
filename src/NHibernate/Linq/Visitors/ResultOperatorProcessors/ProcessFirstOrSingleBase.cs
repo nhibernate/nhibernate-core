@@ -5,7 +5,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
     public class ProcessFirstOrSingleBase
     {
-        protected static void ProcessFirstOrSingle(MethodInfo target, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
+        protected static void AddClientSideEval(MethodInfo target, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {
             target = target.MakeGenericMethod(queryModelVisitor.CurrentEvaluationType.DataType);
 
@@ -17,7 +17,6 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
                     parameter),
                 parameter);
 
-            tree.AddAdditionalCriteria((q, p) => q.SetMaxResults(1));
             tree.AddPostExecuteTransformer(lambda);
         }
     }

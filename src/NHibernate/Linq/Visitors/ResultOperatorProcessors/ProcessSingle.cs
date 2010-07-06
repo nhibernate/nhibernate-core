@@ -11,7 +11,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
                                   ? ReflectionHelper.GetMethod(() => Queryable.SingleOrDefault<object>(null))
                                   : ReflectionHelper.GetMethod(() => Queryable.Single<object>(null));
 
-            ProcessFirstOrSingle(firstMethod, queryModelVisitor, tree);
+            AddClientSideEval(firstMethod, queryModelVisitor, tree);
         }
     }
 }

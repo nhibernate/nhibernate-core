@@ -82,6 +82,14 @@ namespace NHibernate.Test.Linq
 						 select user).Single();
 		}
 
+      [Test]
+      [ExpectedException(typeof(InvalidOperationException))]
+      public void SingleElementWithQueryThatReturnsMultipleResults()
+      {
+         var query = (from user in db.Users
+                      select user).Single();
+      }
+
 		[Test]
 		public void SingleOrDefaultElementWithQueryThatReturnsNoResults()
 		{
