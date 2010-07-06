@@ -1291,7 +1291,6 @@ namespace NHibernate.Test.Linq
 
         [Category("JOIN")]
         [Test(Description = "This sample shows how to construct a join where one side is nullable and the other isn't.")]
-        [Ignore("TODO nullable join")]
         public void DLinqJoin10()
         {
             var q =
@@ -1517,7 +1516,6 @@ namespace NHibernate.Test.Linq
 
         [Category("JOIN")]
         [Test(Description = "This sample projects a 'let' expression resulting from a join.")]
-        [Ignore("TODO let expression")]
         public void DLinqJoin8()
         {
             var q =
