@@ -705,6 +705,22 @@ namespace NHibernate.Hql.Ast
         }
     }
 
+    public class HqlBitwiseOr : HqlExpression
+    {
+        public HqlBitwiseOr(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
+            : base(HqlSqlWalker.BAND, "band", factory, lhs, rhs)
+        {
+        }
+    }
+
+    public class HqlBitwiseAnd : HqlExpression
+    {
+        public HqlBitwiseAnd(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
+            : base(HqlSqlWalker.BOR, "bor", factory, lhs, rhs)
+        {
+        }
+    }
+
     public class HqlLeft : HqlTreeNode
     {
         public HqlLeft(IASTFactory factory)

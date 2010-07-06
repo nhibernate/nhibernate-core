@@ -290,10 +290,14 @@ namespace NHibernate.Linq.Visitors
                     return _hqlTreeBuilder.Inequality(lhs, rhs);
 
                 case ExpressionType.And:
+                    return _hqlTreeBuilder.BitwiseAnd(lhs, rhs);
+
                 case ExpressionType.AndAlso:
                     return _hqlTreeBuilder.BooleanAnd(lhs.AsBooleanExpression(), rhs.AsBooleanExpression());
 
                 case ExpressionType.Or:
+                    return _hqlTreeBuilder.BitwiseOr(lhs, rhs);
+
                 case ExpressionType.OrElse:
                     return _hqlTreeBuilder.BooleanOr(lhs.AsBooleanExpression(), rhs.AsBooleanExpression());
 

@@ -4,6 +4,15 @@ using NHibernate.Type;
 
 namespace NHibernate.Test.Linq.Entities
 {
+    [Flags]
+    public enum FeatureSet 
+    {
+        HasThis = 1,
+        HasThat = 2,
+        HasMore = 4,
+        HasAll = 8
+    }
+
 	public interface IUser
 	{
 		int Id { get; set; }
@@ -12,6 +21,7 @@ namespace NHibernate.Test.Linq.Entities
 		DateTime RegisteredAt { get; set; }
 		DateTime? LastLoginDate { get; set; }
 		UserComponent Component { get; set; }
+        FeatureSet Features { get; set; }
 		Role Role { get; set; }
 		EnumStoredAsString Enum1 { get; set; }
 		EnumStoredAsInt32 Enum2 { get; set; }
@@ -32,6 +42,8 @@ namespace NHibernate.Test.Linq.Entities
 		public virtual UserComponent Component { get; set; }
 
 		public virtual Role Role { get; set; }
+
+        public virtual FeatureSet Features { get; set; }
 
 		public virtual EnumStoredAsString Enum1 { get; set; }
 

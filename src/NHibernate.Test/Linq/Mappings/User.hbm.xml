@@ -18,6 +18,8 @@
 
     <property name="Enum2" not-null="true" />
 
+    <property name="Features" not-null="true" />
+
     <many-to-one name="Role" class="Role">
       <column name="RoleId" />
     </many-to-one>

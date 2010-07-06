@@ -410,5 +410,15 @@ namespace NHibernate.Hql.Ast
         {
             return new HqlClass(_factory);
         }
+
+        public HqlBitwiseAnd BitwiseAnd(HqlExpression lhs, HqlExpression rhs)
+        {
+            return new HqlBitwiseAnd(_factory, lhs, rhs);
+        }
+
+        public HqlBitwiseOr BitwiseOr(HqlExpression lhs, HqlExpression rhs)
+        {
+            return new HqlBitwiseOr(_factory, lhs, rhs);
+        }
     }
 }
