@@ -423,5 +423,28 @@ namespace NHibernate.Test.Linq
 
             Assert.IsNotNull(query);
         }
+
+        [Test]
+        public void BitwiseQuery2()
+        {
+            var featureSet = FeatureSet.HasAll;
+            var query = (from o in session.Query<User>()
+                         where (o.Features & featureSet) == featureSet
+                         select o).ToList();
+
+            Assert.AreEqual(1, query.Count);
+        }
+
+        [Test]
+        public void BitwiseQuery3()
+        {
+            var featureSet = FeatureSet.HasThat;
+            var query = (from o in session.Query<User>()
+                         where ((o.Features | featureSet) & featureSet) == featureSet
+                         select o).ToList();
+
+            Assert.AreEqual(3, query.Count);
+        }
+
     }
 }
