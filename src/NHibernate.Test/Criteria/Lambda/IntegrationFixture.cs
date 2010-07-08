@@ -238,6 +238,56 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void SubCriteriaProjections()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new Person() { Name = "Name 1", Age = 33 }
+						.AddChild(new Child() { Nickname = "Name 1.1", Age = 3}));
+
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var simpleProjection =
+					s.QueryOver<Child>()
+						.JoinQueryOver(c => c.Parent)
+							.Where(p => p.Name == "Name 1" && p.Age == 33)
+							.Select(c => c.Nickname, c => c.Age)
+							.List<object[]>()
+							.Select(props => new
+								{
+									Name = (string)props[0],
+									Age = (int)props[1],
+								});
+
+				Assert.That(simpleProjection.Count(), Is.EqualTo(1));
+				Assert.That(simpleProjection.First().Name, Is.EqualTo("Name 1.1"));
+				Assert.That(simpleProjection.First().Age, Is.EqualTo(3));
+
+				var listProjection =
+					s.QueryOver<Child>()
+						.JoinQueryOver(c => c.Parent)
+							.Where(p => p.Name == "Name 1" && p.Age == 33)
+							.SelectList(list => list
+								.Select(c => c.Nickname)
+								.Select(c => c.Age))
+							.List<object[]>()
+							.Select(props => new
+								{
+									Name = (string)props[0],
+									Age = (int)props[1],
+								});
+
+				Assert.That(listProjection.Count(), Is.EqualTo(1));
+				Assert.That(listProjection.First().Name, Is.EqualTo("Name 1.1"));
+				Assert.That(listProjection.First().Age, Is.EqualTo(3));
+			}
+		}
+
+		[Test]
 		public void SubQuery()
 		{
 			using (ISession s = OpenSession())
