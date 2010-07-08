@@ -373,6 +373,24 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void AllowSingleCallSyntax()
+		{
+			ICriteria expected = CreateTestCriteria(typeof(Person));
+			expected.Add(Restrictions.IsNotEmpty("Children"));
+			expected.AddOrder(Order.Asc("Name"));
+			expected.SetFetchMode("PersonList", FetchMode.Eager);
+			expected.SetLockMode(LockMode.UpgradeNoWait);
+
+			IQueryOver<Person,Person> actual = CreateTestQueryOver<Person>();
+			actual.WhereRestrictionOn(p => p.Children).IsNotEmpty();
+			actual.OrderBy(p => p.Name).Asc();
+			actual.Fetch(p => p.PersonList).Eager();
+			actual.Lock().UpgradeNoWait();
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
 		public void Project()
 		{
 			ICriteria expected =

@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
 
-namespace NHibernate.Criterion
+namespace NHibernate.Criterion.Lambda
 {
 
 	public class QueryOverFetchBuilder<TRoot,TSubType> : QueryOverFetchBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
