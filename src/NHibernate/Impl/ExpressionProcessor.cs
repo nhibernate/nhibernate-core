@@ -34,6 +34,7 @@ namespace NHibernate.Impl
 		private readonly static IDictionary<ExpressionType, Func<string, object, ICriterion>> _simpleExpressionCreators = null;
 		private readonly static IDictionary<ExpressionType, Func<string, string, ICriterion>> _propertyExpressionCreators = null;
 		private readonly static IDictionary<LambdaSubqueryType, IDictionary<ExpressionType, Func<string, DetachedCriteria, AbstractCriterion>>> _subqueryExpressionCreatorTypes = null;
+		private readonly static IDictionary<string, Func<MethodCallExpression, ICriterion>> _customMethodCallProcessors = null;
 
 		static ExpressionProcessor()
 		{
@@ -75,6 +76,16 @@ namespace NHibernate.Impl
 			_subqueryExpressionCreatorTypes[LambdaSubqueryType.Some][ExpressionType.GreaterThanOrEqual] = Subqueries.PropertyGeSome;
 			_subqueryExpressionCreatorTypes[LambdaSubqueryType.Some][ExpressionType.LessThan] = Subqueries.PropertyLtSome;
 			_subqueryExpressionCreatorTypes[LambdaSubqueryType.Some][ExpressionType.LessThanOrEqual] = Subqueries.PropertyLeSome;
+
+			_customMethodCallProcessors = new Dictionary<string, Func<MethodCallExpression, ICriterion>>();
+			RegisterCustomMethodCall(() => RestrictionExtensions.IsLike("", ""), RestrictionExtensions.ProcessIsLike);
+			RegisterCustomMethodCall(() => RestrictionExtensions.IsLike("", "", null), RestrictionExtensions.ProcessIsLikeMatchMode);
+			RegisterCustomMethodCall(() => RestrictionExtensions.IsLike("", "", null, null), RestrictionExtensions.ProcessIsLikeMatchModeEscapeChar);
+			RegisterCustomMethodCall(() => RestrictionExtensions.IsInsensitiveLike("", ""), RestrictionExtensions.ProcessIsInsensitiveLike);
+			RegisterCustomMethodCall(() => RestrictionExtensions.IsInsensitiveLike("", "", null), RestrictionExtensions.ProcessIsInsensitiveLikeMatchMode);
+			RegisterCustomMethodCall(() => RestrictionExtensions.IsIn(null, new object[0]), RestrictionExtensions.ProcessIsInArray);
+			RegisterCustomMethodCall(() => RestrictionExtensions.IsIn(null, new List<object>()), RestrictionExtensions.ProcessIsInCollection);
+			RegisterCustomMethodCall(() => RestrictionExtensions.IsBetween(null, null).And(null), RestrictionExtensions.ProcessIsBetween);
 		}
 
 		private static ICriterion Eq(string propertyName, object value)
@@ -107,6 +118,16 @@ namespace NHibernate.Impl
 		private static ICriterion Le(string propertyName, object value)
 		{
 			return NHibernate.Criterion.Restrictions.Le(propertyName, value);
+		}
+
+		/// <summary>
+		/// Invoke the expression to extract its runtime value
+		/// </summary>
+		public static object FindValue(Expression expression)
+		{
+			var valueExpression = Expression.Lambda(expression).Compile();
+			object value = valueExpression.DynamicInvoke();
+			return value;
 		}
 
 		/// <summary>
@@ -299,8 +320,7 @@ namespace NHibernate.Impl
 			string property = FindMemberExpression(be.Left);
 			System.Type propertyType = FindMemberType(be.Left);
 
-			var valueExpression = Expression.Lambda(be.Right).Compile();
-			object value = valueExpression.DynamicInvoke();
+			object value = FindValue(be.Right);
 			value = ConvertType(value, propertyType);
 
 			if (value == null)
@@ -395,10 +415,37 @@ namespace NHibernate.Impl
 				if (unaryExpression.NodeType != ExpressionType.Not)
 					throw new Exception("Cannot interpret member from " + expression.ToString());
 
-				return Restrictions.Eq(FindMemberExpression(unaryExpression.Operand), false);
+				if (IsMemberExpression(unaryExpression.Operand))
+					return Restrictions.Eq(FindMemberExpression(unaryExpression.Operand), false);
+				else
+					return Restrictions.Not(ProcessExpression(unaryExpression.Operand));
+			}
+
+			if (expression is MethodCallExpression)
+			{
+				MethodCallExpression methodCallExpression = (MethodCallExpression)expression;
+				return ProcessCustomMethodCall(methodCallExpression);
 			}
 
 			throw new Exception("Could not determine member type from " + expression.ToString());
+		}
+
+		private static string Signature(MethodInfo methodInfo)
+		{
+			return methodInfo.DeclaringType.FullName
+				+ ":" + methodInfo.ToString();
+		}
+
+		private static ICriterion ProcessCustomMethodCall(MethodCallExpression methodCallExpression)
+		{
+			string signature = Signature(methodCallExpression.Method);
+
+			if (!_customMethodCallProcessors.ContainsKey(signature))
+				throw new Exception("Unrecognised method call: " + signature);
+
+			Func<MethodCallExpression, ICriterion> customMethodCallProcessor = _customMethodCallProcessors[signature];
+			ICriterion criterion = customMethodCallProcessor(methodCallExpression);
+			return criterion;
 		}
 
 		private static ICriterion ProcessExpression(Expression expression)
@@ -522,6 +569,18 @@ namespace NHibernate.Impl
 			BinaryExpression be = (BinaryExpression)expression.Body;
 			AbstractCriterion criterion = ProcessSubqueryExpression(subqueryType, be);
 			return criterion;
+		}
+
+		/// <summary>
+		/// Register a custom method for use in a QueryOver expression
+		/// </summary>
+		/// <param name="function">Lambda expression demonstrating call of custom method</param>
+		/// <param name="functionProcessor">function to convert MethodCallExpression to ICriterion</param>
+		public static void RegisterCustomMethodCall(Expression<Func<bool>> function, Func<MethodCallExpression, ICriterion> functionProcessor)
+		{
+			MethodCallExpression functionExpression = (MethodCallExpression)function.Body;
+			string signature = Signature(functionExpression.Method);
+			_customMethodCallProcessors.Add(signature, functionProcessor);
 		}
 
 	}

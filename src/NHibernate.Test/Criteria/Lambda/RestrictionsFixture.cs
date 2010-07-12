@@ -221,6 +221,34 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertCriteriaAreEqual(expected, actual);
 		}
 
+		[Test]
+		public void RestrictionsExtensions()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.Add(Restrictions.Like("Name", "%test%"))
+					.Add(Restrictions.Like("Name", "test", MatchMode.End))
+					.Add(Restrictions.Like("Name", "test", MatchMode.Start, '?'))
+					.Add(Restrictions.InsensitiveLike("Name", "%test%"))
+					.Add(Restrictions.InsensitiveLike("Name", "test", MatchMode.Anywhere))
+					.Add(Restrictions.In("Name", new string[] { "name1", "name2" }))
+					.Add(Restrictions.In("Name", new ArrayList() { "name3", "name4" }))
+					.Add(Restrictions.Between("Age", 10, 20));
+
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>()
+					.Where(p => p.Name.IsLike("%test%"))
+					.And(p => p.Name.IsLike("test", MatchMode.End))
+					.And(p => p.Name.IsLike("test", MatchMode.Start, '?'))
+					.And(p => p.Name.IsInsensitiveLike("%test%"))
+					.And(p => p.Name.IsInsensitiveLike("test", MatchMode.Anywhere))
+					.And(p => p.Name.IsIn(new string[] { "name1", "name2" }))
+					.And(p => p.Name.IsIn(new ArrayList() { "name3", "name4" }))
+					.And(p => p.Age.IsBetween(10).And(20));
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
 	}
 
 }

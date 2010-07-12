@@ -147,6 +147,14 @@ namespace NHibernate.Test.Criteria.Lambda
 			Assert.AreEqual(before.ToString(), after.ToString());
 		}
 
+		[Test]
+		public void TestEvaluateRestrictionExtension()
+		{
+			ICriterion before = Restrictions.Like("Name", "%test%");
+			ICriterion after = ExpressionProcessor.ProcessExpression<Person>(p => p.Name.IsLike("%test%"));
+			Assert.AreEqual(before.ToString(), after.ToString());
+		}
+
 	}
 
 }

@@ -101,6 +101,23 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void CustomMethodExpression()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person), "personAlias")
+					.Add(Restrictions.Or(
+						Restrictions.Not(Restrictions.Eq("Name", "test name")),
+						Restrictions.Not(Restrictions.Like("personAlias.Name", "%test%"))));
+
+			Person personAlias = null;
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>(() => personAlias)
+					.Where(p => !(p.Name == "test name") || !personAlias.Name.IsLike("%test%"));
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
 		public void Negation()
 		{
 			ICriteria expected =
