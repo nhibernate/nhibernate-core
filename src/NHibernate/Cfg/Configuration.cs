@@ -655,7 +655,7 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Adds the mappings from ebedded resources of the assembly.
+		/// Adds the mappings from embedded resources of the assembly.
 		/// </summary>
 		/// <param name="paths">Paths to the resource files in the assembly.</param>
 		/// <param name="assembly">The assembly that contains the resource files.</param>
