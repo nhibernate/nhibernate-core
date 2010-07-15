@@ -19,37 +19,37 @@ namespace NHibernate.Test.DialectTest
 			SqlString str = d.GetLimitString(new SqlString("select distinct c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_ from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name"), 1, 10);
 			System.Console.WriteLine(str);
 			Assert.AreEqual(
-				"SELECT TOP 10 Contact1_19_0_, Rating2_19_0_ FROM (select distinct c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_, ROW_NUMBER() OVER(ORDER BY c.Rating DESC, c.Last_Name, c.First_Name) as __hibernate_sort_row from dbo.Contact c where COALESCE(c.Rating, 0) > 0) as query WHERE query.__hibernate_sort_row > 1 ORDER BY query.__hibernate_sort_row",
+				"SELECT TOP (?) Contact1_19_0_, Rating2_19_0_ FROM (select distinct c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_, ROW_NUMBER() OVER(ORDER BY c.Rating DESC, c.Last_Name, c.First_Name) as __hibernate_sort_row from dbo.Contact c where COALESCE(c.Rating, 0) > 0) as query WHERE query.__hibernate_sort_row > ? ORDER BY query.__hibernate_sort_row",
 				str.ToString());
 
 			str = d.GetLimitString(new SqlString("SELECT fish.id FROM fish"), 1, 10);
 			System.Console.WriteLine(str);
 			Assert.AreEqual(
-				"SELECT TOP 10 id FROM (SELECT fish.id, ROW_NUMBER() OVER(ORDER BY CURRENT_TIMESTAMP) as __hibernate_sort_row FROM fish) as query WHERE query.__hibernate_sort_row > 1 ORDER BY query.__hibernate_sort_row",
+				"SELECT TOP (?) id FROM (SELECT fish.id, ROW_NUMBER() OVER(ORDER BY CURRENT_TIMESTAMP) as __hibernate_sort_row FROM fish) as query WHERE query.__hibernate_sort_row > ? ORDER BY query.__hibernate_sort_row",
 				str.ToString());
 
 			str = d.GetLimitString(new SqlString("SELECT DISTINCT fish_.id FROM fish fish_"), 1, 10);
 			System.Console.WriteLine(str);
 			Assert.AreEqual(
-				"SELECT TOP 10 id FROM (SELECT DISTINCT fish_.id, ROW_NUMBER() OVER(ORDER BY CURRENT_TIMESTAMP) as __hibernate_sort_row FROM fish fish_) as query WHERE query.__hibernate_sort_row > 1 ORDER BY query.__hibernate_sort_row",
+				"SELECT TOP (?) id FROM (SELECT DISTINCT fish_.id, ROW_NUMBER() OVER(ORDER BY CURRENT_TIMESTAMP) as __hibernate_sort_row FROM fish fish_) as query WHERE query.__hibernate_sort_row > ? ORDER BY query.__hibernate_sort_row",
 				str.ToString());
 
 			str = d.GetLimitString(new SqlString("SELECT DISTINCT fish_.id as ixx9_ FROM fish fish_"), 1, 10);
 			System.Console.WriteLine(str);
 			Assert.AreEqual(
-				"SELECT TOP 10 ixx9_ FROM (SELECT DISTINCT fish_.id as ixx9_, ROW_NUMBER() OVER(ORDER BY CURRENT_TIMESTAMP) as __hibernate_sort_row FROM fish fish_) as query WHERE query.__hibernate_sort_row > 1 ORDER BY query.__hibernate_sort_row",
+				"SELECT TOP (?) ixx9_ FROM (SELECT DISTINCT fish_.id as ixx9_, ROW_NUMBER() OVER(ORDER BY CURRENT_TIMESTAMP) as __hibernate_sort_row FROM fish fish_) as query WHERE query.__hibernate_sort_row > ? ORDER BY query.__hibernate_sort_row",
 				str.ToString());
 
 			str = d.GetLimitString(new SqlString("SELECT * FROM fish ORDER BY name"), 5, 15);
 			System.Console.WriteLine(str);
 			Assert.AreEqual(
-				"SELECT TOP 15 * FROM (SELECT *, ROW_NUMBER() OVER(ORDER BY name) as __hibernate_sort_row FROM fish) as query WHERE query.__hibernate_sort_row > 5 ORDER BY query.__hibernate_sort_row",
+				"SELECT TOP (?) * FROM (SELECT *, ROW_NUMBER() OVER(ORDER BY name) as __hibernate_sort_row FROM fish) as query WHERE query.__hibernate_sort_row > ? ORDER BY query.__hibernate_sort_row",
 				str.ToString());
 
 			str = d.GetLimitString(new SqlString("SELECT fish.id, fish.name FROM fish ORDER BY name DESC"), 7, 28);
 			System.Console.WriteLine(str);
 			Assert.AreEqual(
-				"SELECT TOP 28 id, name FROM (SELECT fish.id, fish.name, ROW_NUMBER() OVER(ORDER BY fish.name DESC) as __hibernate_sort_row FROM fish) as query WHERE query.__hibernate_sort_row > 7 ORDER BY query.__hibernate_sort_row",
+				"SELECT TOP (?) id, name FROM (SELECT fish.id, fish.name, ROW_NUMBER() OVER(ORDER BY fish.name DESC) as __hibernate_sort_row FROM fish) as query WHERE query.__hibernate_sort_row > ? ORDER BY query.__hibernate_sort_row",
 				str.ToString());
 
 			str =
@@ -57,25 +57,25 @@ namespace NHibernate.Test.DialectTest
 					new SqlString("SELECT * FROM fish LEFT JOIN (SELECT * FROM meat ORDER BY weight) AS t ORDER BY name DESC"), 10, 20);
 			System.Console.WriteLine(str);
 			Assert.AreEqual(
-				"SELECT TOP 20 * FROM (SELECT *, ROW_NUMBER() OVER(ORDER BY name DESC) as __hibernate_sort_row FROM fish LEFT JOIN (SELECT * FROM meat ORDER BY weight) AS t) as query WHERE query.__hibernate_sort_row > 10 ORDER BY query.__hibernate_sort_row",
+				"SELECT TOP (?) * FROM (SELECT *, ROW_NUMBER() OVER(ORDER BY name DESC) as __hibernate_sort_row FROM fish LEFT JOIN (SELECT * FROM meat ORDER BY weight) AS t) as query WHERE query.__hibernate_sort_row > ? ORDER BY query.__hibernate_sort_row",
 				str.ToString());
 
 			str = d.GetLimitString(new SqlString("SELECT *, (SELECT COUNT(1) FROM fowl WHERE fish_id = fish.id) AS some_count FROM fish"), 1, 10);
 			System.Console.WriteLine(str);
 			Assert.AreEqual(
-				"SELECT TOP 10 *, some_count FROM (SELECT *, (SELECT COUNT(1) FROM fowl WHERE fish_id = fish.id) AS some_count, ROW_NUMBER() OVER(ORDER BY CURRENT_TIMESTAMP) as __hibernate_sort_row FROM fish) as query WHERE query.__hibernate_sort_row > 1 ORDER BY query.__hibernate_sort_row",
+				"SELECT TOP (?) *, some_count FROM (SELECT *, (SELECT COUNT(1) FROM fowl WHERE fish_id = fish.id) AS some_count, ROW_NUMBER() OVER(ORDER BY CURRENT_TIMESTAMP) as __hibernate_sort_row FROM fish) as query WHERE query.__hibernate_sort_row > ? ORDER BY query.__hibernate_sort_row",
 				str.ToString());
 
 			str = d.GetLimitString(new SqlString("SELECT * FROM fish WHERE scales = ", Parameter.Placeholder), 1, 10);
 			System.Console.WriteLine(str);
 			Assert.AreEqual(
-				"SELECT TOP 10 * FROM (SELECT *, ROW_NUMBER() OVER(ORDER BY CURRENT_TIMESTAMP) as __hibernate_sort_row FROM fish WHERE scales = ?) as query WHERE query.__hibernate_sort_row > 1 ORDER BY query.__hibernate_sort_row",
+				"SELECT TOP (?) * FROM (SELECT *, ROW_NUMBER() OVER(ORDER BY CURRENT_TIMESTAMP) as __hibernate_sort_row FROM fish WHERE scales = ?) as query WHERE query.__hibernate_sort_row > ? ORDER BY query.__hibernate_sort_row",
 				str.ToString());
 
 			str = d.GetLimitString(new SqlString("SELECT f.Type, COUNT(DISTINCT f.Name) AS Name FROM Fish f GROUP BY f.Type ORDER BY COUNT(DISTINCT f.Name)"), 1, 10);
 			System.Console.WriteLine(str);
 			Assert.AreEqual(
-				"SELECT TOP 10 Type, Name FROM (SELECT f.Type, COUNT(DISTINCT f.Name) AS Name, ROW_NUMBER() OVER(ORDER BY COUNT(DISTINCT f.Name)) as __hibernate_sort_row FROM Fish f GROUP BY f.Type) as query WHERE query.__hibernate_sort_row > 1 ORDER BY query.__hibernate_sort_row",
+				"SELECT TOP (?) Type, Name FROM (SELECT f.Type, COUNT(DISTINCT f.Name) AS Name, ROW_NUMBER() OVER(ORDER BY COUNT(DISTINCT f.Name)) as __hibernate_sort_row FROM Fish f GROUP BY f.Type) as query WHERE query.__hibernate_sort_row > ? ORDER BY query.__hibernate_sort_row",
 				str.ToString());
 		}
 
@@ -97,14 +97,14 @@ namespace NHibernate.Test.DialectTest
 			SqlString result =
 				d.GetLimitString(new SqlString("select concat(a.Description,', ', a.Description) as desc from Animal a"), 1, 10);
 			System.Console.WriteLine(result);
-			Assert.AreEqual("SELECT TOP 10 desc FROM (select concat(a.Description,', ', a.Description) as desc, ROW_NUMBER() OVER(ORDER BY CURRENT_TIMESTAMP) as __hibernate_sort_row from Animal a) as query WHERE query.__hibernate_sort_row > 1 ORDER BY query.__hibernate_sort_row", result.ToString());
+			Assert.AreEqual("SELECT TOP (?) desc FROM (select concat(a.Description,', ', a.Description) as desc, ROW_NUMBER() OVER(ORDER BY CURRENT_TIMESTAMP) as __hibernate_sort_row from Animal a) as query WHERE query.__hibernate_sort_row > ? ORDER BY query.__hibernate_sort_row", result.ToString());
 
 			// The test use the function "cast" because cast need the keyWork "as" too
 			SqlString str =
 				d.GetLimitString(new SqlString("SELECT fish.id, cast('astring, with,comma' as string) as bar FROM fish"), 1, 10);
 			System.Console.WriteLine(str);
 			Assert.AreEqual(
-				"SELECT TOP 10 id, bar FROM (SELECT fish.id, cast('astring, with,comma' as string) as bar, ROW_NUMBER() OVER(ORDER BY CURRENT_TIMESTAMP) as __hibernate_sort_row FROM fish) as query WHERE query.__hibernate_sort_row > 1 ORDER BY query.__hibernate_sort_row",
+				"SELECT TOP (?) id, bar FROM (SELECT fish.id, cast('astring, with,comma' as string) as bar, ROW_NUMBER() OVER(ORDER BY CURRENT_TIMESTAMP) as __hibernate_sort_row FROM fish) as query WHERE query.__hibernate_sort_row > ? ORDER BY query.__hibernate_sort_row",
 				str.ToString());
 	}
 		[Test]

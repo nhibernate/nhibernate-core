@@ -45,7 +45,7 @@ namespace NHibernate.Dialect
 		public override SqlString GetLimitString(SqlString querySqlString, int offset, int last)
 		{
 			//dont do this paging code if there is no offset, use the 
-			//sql 2000 dialect since it wont just uses a top statement
+			//sql 2000 dialect since it just uses a top statement
 			if (offset == 0)
 			{
 				return base.GetLimitString(querySqlString, offset, last);
@@ -76,11 +76,17 @@ namespace NHibernate.Dialect
 				sortExpressions = new[] {new SqlString("CURRENT_TIMESTAMP"),};
 			}
 
+			Parameter limitParameter = Parameter.Placeholder;
+			limitParameter.ParameterPosition = 0;
+			
+			Parameter offsetParameter = Parameter.Placeholder;
+			offsetParameter.ParameterPosition = 1;
+
 			SqlStringBuilder result =
 				new SqlStringBuilder()
-					.Add("SELECT TOP ")
-					.Add(last.ToString())
-					.Add(" ")
+					.Add("SELECT TOP (")
+					.Add(limitParameter)
+					.Add(") ")
 					.Add(StringHelper.Join(", ", columnsOrAliases))
 					.Add(" FROM (")
 					.Add(select)
@@ -88,10 +94,12 @@ namespace NHibernate.Dialect
 
 			AppendSortExpressions(aliasToColumn, sortExpressions, result);
 
-			result.Add(") as __hibernate_sort_row ")
-					.Add(from)
-					.Add(") as query WHERE query.__hibernate_sort_row > ")
-					.Add(offset.ToString()).Add(" ORDER BY query.__hibernate_sort_row");
+			result
+				.Add(") as __hibernate_sort_row ")
+				.Add(from)
+				.Add(") as query WHERE query.__hibernate_sort_row > ")
+				.Add(offsetParameter)
+				.Add(" ORDER BY query.__hibernate_sort_row");
 				
 			return result.ToSqlString();
 		}
@@ -106,8 +114,7 @@ namespace NHibernate.Dialect
 			return trimmedExpression.Trim();
 		}
 
-		private static void AppendSortExpressions(Dictionary<SqlString, SqlString> aliasToColumn, SqlString[] sortExpressions,
-																							SqlStringBuilder result)
+		private static void AppendSortExpressions(Dictionary<SqlString, SqlString> aliasToColumn, SqlString[] sortExpressions, SqlStringBuilder result)
 		{
 			for (int i = 0; i < sortExpressions.Length; i++)
 			{
@@ -253,6 +260,21 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <value><c>true</c></value>
 		public override bool SupportsLimitOffset
+		{
+			get { return true; }
+		}
+		
+		public override bool BindLimitParametersInReverseOrder 
+		{
+			get { return true; }
+		}
+		
+		public override bool SupportsVariableLimit 
+		{ 
+			get { return true; } 
+		}
+		
+		public override bool BindLimitParametersFirst 
 		{
 			get { return true; }
 		}
@@ -436,4 +458,3 @@ namespace NHibernate.Dialect
 		}
 	}
 }
-

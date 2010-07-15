@@ -22,11 +22,11 @@ namespace NHibernate.Test.Pagination
 				int offset = (int)((IDataParameter)command.Parameters[0]).Value;
 				int limit = (int)((IDataParameter)command.Parameters[1]).Value;
 
-				Assert.That(command.CommandText.ToLower().Contains("top " + limit),
-					"Expected string containing 'top " + limit + "', but got " + command.CommandText);
+				Assert.That(command.CommandText.ToLower().Contains("top (@p0)"),
+					"Expected string containing 'top (@p0)', but got " + command.CommandText);
 
-				Assert.That(command.CommandText.ToLower().Contains("hibernate_sort_row > " + offset),
-					"Expected string containing 'hibernate_sort_row > " + offset + "', but got " + command.CommandText);
+				Assert.That(command.CommandText.ToLower().Contains("hibernate_sort_row > @p1"),
+					"Expected string containing 'hibernate_sort_row > @p1', but got " + command.CommandText);
 			}
 
 			base.OnBeforePrepare(command);
