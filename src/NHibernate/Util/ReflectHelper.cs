@@ -476,42 +476,6 @@ namespace NHibernate.Util
             return SafeGetMethod(type, method, tps);
         }
 
-        /// <summary>
-        /// Try to find a method in a serie of given types.
-        /// </summary>
-        /// <param name="types">The serie of types where find.</param>
-        /// <param name="method">The method info.</param>
-        /// <returns>The found method or null.</returns>
-        /// <remarks>
-        /// The <paramref name="method"/>, in general, become from another <see cref="Type"/>.
-        /// </remarks>
-        public static MethodInfo TryGetMethod(IEnumerable<System.Type> types, MethodInfo method)
-        {
-            // This method will be used when we support multiple proxy interfaces.
-            if (types == null)
-            {
-                throw new ArgumentNullException("types");
-            }
-            if (method == null)
-            {
-                return null;
-            }
-
-            System.Type[] tps = GetMethodSignature(method);
-            MethodInfo result = null;
-
-            foreach (var type in types)
-            {
-                result = SafeGetMethod(type, method, tps);
-                if (result != null)
-                {
-                    return result;
-                }
-            }
-
-            return result;
-        }
-
         private static System.Type[] GetMethodSignature(MethodInfo method)
         {
             var pi = method.GetParameters();
@@ -527,14 +491,39 @@ namespace NHibernate.Util
         {
             const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
+            List<System.Type> typesToSearch = new List<System.Type>();
+            MethodInfo foundMethod = null;
+            
             try
-            {
-                return type.GetMethod(method.Name, bindingFlags, null, tps, null);
+            {            
+                typesToSearch.Add(type);
+            
+                if (type.IsInterface)
+                {
+                    // Methods on parent interfaces are not actually inherited
+                    // by child interfaces, so we have to use GetInterfaces to
+                    // identify any parent interfaces that may contain the
+                    // method implementation
+                    System.Type[] inheritedInterfaces = type.GetInterfaces();
+                    typesToSearch.AddRange(inheritedInterfaces);
+                }
+
+                foreach (System.Type typeToSearch in typesToSearch)
+                {
+                    MethodInfo result = typeToSearch.GetMethod(method.Name, bindingFlags, null, tps, null);
+                    if (result != null)
+                    {
+                        foundMethod = result;
+                        break;
+                    }
+                }
             }
             catch (Exception)
             {
-                return null;
+               throw;
             }
+            
+            return foundMethod;
         }
 
         internal static object GetConstantValue(string qualifiedName)

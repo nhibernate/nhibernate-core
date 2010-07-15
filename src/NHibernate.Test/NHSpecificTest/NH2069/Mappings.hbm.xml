@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping 
+    xmlns="urn:nhibernate-mapping-2.2" 
+    assembly="NHibernate.Test" 
+    namespace="NHibernate.Test.NHSpecificTest.NH2069" 
+    default-lazy="true">
+
+    <class name="Test" table="Test" proxy="ITest">
+        <id column="cid" name="Cid" type="Int64" >
+            <generator class="native" />
+        </id>
+        <many-to-one name="Category" class="Test2" column="Test2_Cid" not-null="true"/>
+        <property name="Description" column="Description" type="String" length="255"/>
+    </class>
+
+    <class name="Test2" table="Test2" proxy="ITest2">
+        <id column="cid" name="Cid" type="Int64">
+            <generator class="native" />
+        </id>
+        <property name="Description" column="Description" type="String" length="255"/>
+    </class>
+
+</hibernate-mapping>

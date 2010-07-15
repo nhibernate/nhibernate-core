@@ -114,32 +114,8 @@ namespace NHibernate.Test.UtilityTest
 			Assert.That(ReflectHelper.TryGetMethod(typeof(IMyBaseInterface), mng), Is.Not.Null);
 			Assert.That(ReflectHelper.TryGetMethod(typeof(IMyBaseInterface), mns), Is.Not.Null);
 
-			mig = typeof(MyImplementation).GetMethod("get_Id", bf);
-			mis = typeof(MyImplementation).GetMethod("set_Id", bf);
-			mng = typeof(MyImplementation).GetMethod("get_Name", bf);
-			mns = typeof(MyImplementation).GetMethod("set_Name", bf);
-			MethodInfo mdg = typeof(MyImplementation).GetMethod("get_Description", bf);
-			MethodInfo mds = typeof(MyImplementation).GetMethod("set_Description", bf);
-			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mig), Is.Not.Null);
-			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mis), Is.Null);
-			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mng), Is.Not.Null);
-			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mns), Is.Not.Null);
-			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mdg), Is.Not.Null);
-			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mds), Is.Null);
-
-			MethodInfo mdig = typeof(MyDerivedImplementation).GetMethod("get_Id", bf);
-			MethodInfo mdis = typeof(MyDerivedImplementation).GetMethod("set_Id", bf);
-			MethodInfo mdng = typeof(MyDerivedImplementation).GetMethod("get_Name", bf);
-			MethodInfo mdns = typeof(MyDerivedImplementation).GetMethod("set_Name", bf);
-			MethodInfo mddg = typeof(MyDerivedImplementation).GetMethod("get_Description", bf);
-			MethodInfo mdds = typeof(MyDerivedImplementation).GetMethod("set_Description", bf);
-
-			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mdig), Is.Not.Null);
-			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mdis), Is.Null);
-			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mdng), Is.Not.Null);
-			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mdns), Is.Not.Null);
-			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mddg), Is.Not.Null);
-			Assert.That(ReflectHelper.TryGetMethod(new[] { typeof(IMyBaseInterface), typeof(IMyInterface) }, mdds), Is.Null);
+			mig = typeof(IMyBaseInterface).GetMethod("get_Id", bf);
+			Assert.That(ReflectHelper.TryGetMethod(typeof(IMyInterface), mig), Is.Not.Null);
 		}
 
 		[Test]
