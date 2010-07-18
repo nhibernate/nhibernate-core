@@ -71,7 +71,7 @@ namespace NHibernate.Test.MappingTest
 			Assert.That(compimplements, Is.Not.Null);
 			Assert.That(compimplements.Value, Is.EqualTo("AnotherInterface"));
 
-			Property xp = ((Component)prop.Value).GetProperty("X");
+			Property xp = ((NHibernate.Mapping.Component)prop.Value).GetProperty("X");
 			MetaAttribute propximplements = xp.GetMetaAttribute("implements");
 			Assert.That(propximplements, Is.Not.Null);
 			Assert.That(propximplements.Value, Is.EqualTo("AnotherInterface"));
@@ -97,7 +97,7 @@ namespace NHibernate.Test.MappingTest
 			assertEquals( "wicked level", propertyAttribute.getValues().get(1) );*/
 			Assert.That(propertyAttribute.Value, Is.EqualTo("monetaryamount level"));
 
-			var component = (Component)property.Value;
+			var component = (NHibernate.Mapping.Component)property.Value;
 			property = component.GetProperty("X");
 			propertyAttribute = property.GetMetaAttribute("globalmutated");
 
@@ -126,7 +126,7 @@ namespace NHibernate.Test.MappingTest
 			Assert.That(propertyAttribute.Value, Is.EqualTo("wicked level"));
 
 			var bag = (Bag)property.Value;
-			component = (Component)bag.Element;
+			component = (NHibernate.Mapping.Component)bag.Element;
 
 			Assert.That(component.MetaAttributes.Count, Is.EqualTo(4));
 

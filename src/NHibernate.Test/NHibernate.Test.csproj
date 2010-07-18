@@ -132,6 +132,11 @@
     <Compile Include="CollectionTest\IdBagFixture.cs" />
     <Compile Include="CollectionTest\NullableValueTypeElementMapFixture.cs" />
     <Compile Include="CollectionTest\Parent.cs" />
+    <Compile Include="Component\Basic\ComponentTest.cs" />
+    <Compile Include="Component\Basic\Employee.cs" />
+    <Compile Include="Component\Basic\OptionalComponent.cs" />
+    <Compile Include="Component\Basic\Person.cs" />
+    <Compile Include="Component\Basic\User.cs" />
     <Compile Include="CompositeCollection\BaseClassA.cs" />
     <Compile Include="CompositeCollection\BaseClassB.cs" />
     <Compile Include="CompositeCollection\ChildClassA.cs" />
@@ -443,6 +448,8 @@
     <Compile Include="NHSpecificTest\CriteriaQueryOnComponentCollection\Employee.cs" />
     <Compile Include="NHSpecificTest\CriteriaQueryOnComponentCollection\Fixture.cs" />
     <Compile Include="NHSpecificTest\CriteriaQueryOnComponentCollection\Money.cs" />
+    <Compile Include="NHSpecificTest\NH2061\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2061\Model.cs" />
     <Compile Include="NHSpecificTest\NH2069\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2069\ITest.cs" />
     <Compile Include="NHSpecificTest\NH2069\ITest2.cs" />
@@ -1591,6 +1598,8 @@
     <Compile Include="VersionTest\Task.cs" />
     <Compile Include="VersionTest\Thing.cs" />
     <Compile Include="VersionTest\VersionFixture.cs" />
+    <None Include="Component\Basic\User.hbm.xml" />
+    <None Include="NHSpecificTest\NH2061\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CompositeCollection\BaseClassA.hbm.xml" />
@@ -1670,6 +1679,9 @@
       <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
       <Name>NHibernate</Name>
     </ProjectReference>
+    <Folder Include="Component" />
+    <Folder Include="Component\Basic" />
+    <Folder Include="NHSpecificTest\NH2061" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH386\Mappings.hbm.xml" />

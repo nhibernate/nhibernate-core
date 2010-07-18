@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-using NHibernate.DomainModel;
 using NHibernate.Criterion;
+using NHibernate.DomainModel;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ExpressionTest
@@ -174,7 +174,7 @@ namespace NHibernate.Test.ExpressionTest
 			Componentizable master = new Componentizable();
 			if (name != null)
 			{
-				Component masterComp = new Component();
+				NHibernate.DomainModel.Component masterComp = new NHibernate.DomainModel.Component();
 				masterComp.Name = name;
 				if (subName != null || subName1 != null)
 				{

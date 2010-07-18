@@ -457,7 +457,7 @@ namespace NHibernate.Test.Legacy
 
 			Componentizable c = new Componentizable();
 			c.NickName = "Flacky";
-			Component component = new Component();
+			NHibernate.DomainModel.Component component = new NHibernate.DomainModel.Component();
 			component.Name = "flakky comp";
 			SubComponent subComponent = new SubComponent();
 			subComponent.SubName = "subway";

@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping 
+	xmlns="urn:nhibernate-mapping-2.2" 
+	assembly="NHibernate.Test" 
+	namespace="NHibernate.Test.Component.Basic">
+
+	<class name="User" table="T_USER">
+		<id name="UserName"/>
+		<timestamp name="LastModified"/>
+		<property name="Password" not-null="true" optimistic-lock="false"/>
+		<component name="Person">
+			<property name="Name" update="false" not-null="true"/>
+			<property name="Dob" update="false" not-null="true"/>
+			<property name="Address"/>
+			<property name="PreviousAddress" insert="false"/>
+			<property name="Yob" formula="year(dob)"/>
+<!--
+			<property name="heightInches">
+				<column name="height_centimeters"
+					not-null="true" 
+					read="height_centimeters / 2.54" 
+					write="? * 2.54"/>
+			</property>	
+-->		
+			<property name="CurrentAddress"
+				column="address"
+				insert="false"
+				update="false"/>
+		</component>
+	</class>
+
+	<class name="Employee" table="T_EMP">
+		<id name="Id" type="long" column="ID">
+			<generator class="increment"/>
+		</id>
+		<property name="HireDate" type="date" column="HIRE_DATE"/>
+		<component name="Person">
+			<property name="Name" update="false" not-null="true"/>
+			<property name="Dob" update="false" not-null="true"/>
+		</component>
+		<component name="OptionalComponent">
+			<property name="Value1" not-null="false"/>
+			<property name="Value2" not-null="false"/>
+		</component>
+		<set name="DirectReports" cascade="all-delete-orphan,merge" lazy="true">
+			<key column="PARENT_ID" />
+			<one-to-many class="Employee"/>
+		</set>
+	</class>
+
+	<query name="userNameIn"><![CDATA[from User where Person.Name in (:nameList) or UserName in (:nameList)]]></query>
+
+</hibernate-mapping>
