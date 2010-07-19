@@ -1,9 +1,9 @@
 using System.Data;
+using System.Data.Common;
 using System.Text;
 using NHibernate.Dialect.Function;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
-using System.Data.Common;
 
 namespace NHibernate.Dialect
 {
@@ -114,6 +114,11 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
+		public override bool SupportsVariableLimit
+		{
+			get { return false; }
+		}
+
 		public override bool SupportsIdentityColumns
 		{
 			get { return true; }
@@ -138,19 +143,19 @@ namespace NHibernate.Dialect
 		public override string Qualify(string catalog, string schema, string table)
 		{
 			StringBuilder qualifiedName = new StringBuilder();
-		    bool quoted = false;
+			bool quoted = false;
 			
-            if (!string.IsNullOrEmpty(catalog))
+			if (!string.IsNullOrEmpty(catalog))
 			{
-                if (catalog.StartsWith(OpenQuote.ToString()))
-                {
-                    catalog = catalog.Substring(1, catalog.Length - 1);
-                    quoted = true;
-                } 
-                if (catalog.EndsWith(CloseQuote.ToString()))
+				if (catalog.StartsWith(OpenQuote.ToString()))
 				{
-				    catalog = catalog.Substring(0, catalog.Length - 1);
-				    quoted = true;
+					catalog = catalog.Substring(1, catalog.Length - 1);
+					quoted = true;
+				} 
+				if (catalog.EndsWith(CloseQuote.ToString()))
+				{
+					catalog = catalog.Substring(0, catalog.Length - 1);
+					quoted = true;
 				}
 				qualifiedName.Append(catalog).Append(StringHelper.Underscore);
 			}
@@ -158,32 +163,32 @@ namespace NHibernate.Dialect
 			{
 				if (schema.StartsWith(OpenQuote.ToString()))
 				{
-                    schema = schema.Substring(1, schema.Length - 1);
-				    quoted = true;
+					schema = schema.Substring(1, schema.Length - 1);
+					quoted = true;
 				}
-                if (schema.EndsWith(CloseQuote.ToString()))
-                {
-                    schema = schema.Substring(0, schema.Length - 1);
-                    quoted = true;
-                } 
-                qualifiedName.Append(schema).Append(StringHelper.Underscore);
+				if (schema.EndsWith(CloseQuote.ToString()))
+				{
+					schema = schema.Substring(0, schema.Length - 1);
+					quoted = true;
+				} 
+				qualifiedName.Append(schema).Append(StringHelper.Underscore);
 			}
 
 			if (table.StartsWith(OpenQuote.ToString()))
 			{
-			    table = table.Substring(1, table.Length - 1);
-			    quoted = true;
+				table = table.Substring(1, table.Length - 1);
+				quoted = true;
 			}
-            if (table.EndsWith(CloseQuote.ToString()))
-            {
-                table = table.Substring(0, table.Length - 1);
-                quoted = true;
-            }
+			if (table.EndsWith(CloseQuote.ToString()))
+			{
+				table = table.Substring(0, table.Length - 1);
+				quoted = true;
+			}
 
-		    string name = qualifiedName.Append(table).ToString();
-            if (quoted)
-                return OpenQuote + name + CloseQuote;
-		    return name;
+			string name = qualifiedName.Append(table).ToString();
+			if (quoted)
+				return OpenQuote + name + CloseQuote;
+			return name;
 
 		}
 
