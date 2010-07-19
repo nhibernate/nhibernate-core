@@ -1,0 +1,52 @@
+using NHibernate.ByteCode.Castle;
+using NHibernate.Cfg;
+using NUnit.Framework;
+using SharpTestsEx;
+
+namespace NHibernate.Test.NHSpecificTest.NH2102
+{
+	[TestFixture, Ignore("Not fixed yet.")]
+	public class Fixture : BugTestCase
+	{
+		protected override void Configure(Configuration configuration)
+		{
+			configuration.SetProperty(Environment.ProxyFactoryFactoryClass,
+										typeof(ProxyFactoryFactory).AssemblyQualifiedName);
+		}
+
+		[Test]
+		public void EntityWithConstrainedLazyLoadedOneToOneShouldNotGenerateFieldInterceptingProxy()
+		{
+			try
+			{
+				using (var s = OpenSession())
+				{
+					var person = new Person { Id = 1, Name = "Person1" };
+					var employee = new Employee { Id = 1, Name = "Emp1", Person = person };
+
+					s.Save(person);
+					s.Save(employee);
+
+					s.Flush();
+				}
+
+				using (var s = OpenSession())
+				{
+					var employee = s.Get<Employee>(1);
+
+					employee.Should().Be.OfType<Employee>();
+				}
+			}
+			finally
+			{
+				using (var s = OpenSession())
+				{
+					s.Delete("from Employee");
+					s.Delete("from Person");
+
+					s.Flush();
+				}
+			}
+		}
+	}
+}
