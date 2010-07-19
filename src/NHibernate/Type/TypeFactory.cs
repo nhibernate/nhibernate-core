@@ -1121,14 +1121,14 @@ namespace NHibernate.Type
 					// need to extract the component values and check for subtype replacements...
 					IAbstractComponentType componentType = (IAbstractComponentType)types[i];
 					IType[] subtypes = componentType.Subtypes;
-					object[] origComponentValues = original[i] == null
-																					? new object[subtypes.Length]
-																					: componentType.GetPropertyValues(original[i], session);
-					object[] targetComponentValues = componentType.GetPropertyValues(target[i], session);
-					object[] componentCopy = ReplaceAssociations(origComponentValues, targetComponentValues, subtypes, session, null, copyCache,
-															foreignKeyDirection);
-					if (!componentType.IsAnyType)
+					object[] origComponentValues = original[i] == null ? new object[subtypes.Length] : componentType.GetPropertyValues(original[i], session);
+					object[] targetComponentValues = target[i] == null ? new object[subtypes.Length] : componentType.GetPropertyValues(target[i], session);
+
+					object[] componentCopy = ReplaceAssociations(origComponentValues, targetComponentValues, subtypes, session, null, copyCache, foreignKeyDirection);
+					
+					if (!componentType.IsAnyType && target[i] != null)
 						componentType.SetPropertyValues(target[i], componentCopy, session.EntityMode);
+					
 					copied[i] = target[i];
 				}
 				else if (!types[i].IsAssociationType)
