@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Component.Basic
 {
-	[TestFixture, Ignore("Not fixed yet.")]
+	[TestFixture]
 	public class ComponentTest : TestCase 
 	{			
 		protected override string MappingsAssembly

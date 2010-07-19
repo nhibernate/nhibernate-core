@@ -1602,8 +1602,8 @@
     <Compile Include="VersionTest\Task.cs" />
     <Compile Include="VersionTest\Thing.cs" />
     <Compile Include="VersionTest\VersionFixture.cs" />
-    <None Include="Component\Basic\User.hbm.xml" />
-    <None Include="NHSpecificTest\NH2061\Mappings.hbm.xml" />
+    <EmbeddedResource Include="Component\Basic\User.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2061\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2195\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
