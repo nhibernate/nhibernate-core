@@ -107,7 +107,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					var value = new ManyToOne(table);
 					BindManyToOne(manyToOneMapping, value, propertyName, true);
 					property = CreateProperty(entityPropertyMapping, className, value, inheritedMetas);
-					property.UnwrapProxy = manyToOneMapping.Lazy == HbmLaziness.NoProxy;
 					BindManyToOneProperty(manyToOneMapping, property);
 				}
 				else if ((componentMapping = entityPropertyMapping as HbmComponent) != null)
@@ -304,6 +303,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void BindOneToOneProperty(HbmOneToOne oneToOneMapping, Property property)
 		{
 			property.Cascade = oneToOneMapping.cascade ?? mappings.DefaultCascade;
+			property.UnwrapProxy = oneToOneMapping.Lazy == HbmLaziness.NoProxy;
 			var toOne = property.Value as ToOne;
 			if (toOne != null)
 			{
@@ -329,6 +329,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void BindManyToOneProperty(HbmManyToOne manyToOneMapping, Property property)
 		{
 			property.Cascade = manyToOneMapping.cascade ?? mappings.DefaultCascade;
+			property.UnwrapProxy = manyToOneMapping.Lazy == HbmLaziness.NoProxy;
 			property.IsUpdateable = manyToOneMapping.update;
 			property.IsInsertable = manyToOneMapping.insert;
 			var toOne = property.Value as ToOne;
