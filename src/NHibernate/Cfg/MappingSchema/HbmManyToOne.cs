@@ -43,14 +43,14 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public IEnumerable<HbmColumn> Columns
 		{
-			get { return Items != null ? Items.OfType<HbmColumn>() : AsColumns(); }
+			get { return column != null ? column.OfType<HbmColumn>() : AsColumns(); }
 		}
 
 		#endregion
 
 		private IEnumerable<HbmColumn> AsColumns()
 		{
-			if (string.IsNullOrEmpty(column))
+			if (string.IsNullOrEmpty(column1))
 			{
 				yield break;
 			}
@@ -58,7 +58,7 @@ namespace NHibernate.Cfg.MappingSchema
 			{
 				yield return new HbmColumn
 				{
-					name = column,
+					name = column1,
 					notnull = notnull,
 					notnullSpecified = notnullSpecified,
 					unique = unique,
@@ -73,18 +73,18 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public IEnumerable<HbmFormula> Formulas
 		{
-			get { return Items != null ? Items.OfType<HbmFormula>() : AsFormulas(); }
+			get { return formula != null ? formula.OfType<HbmFormula>() : AsFormulas(); }
 		}
 
 		private IEnumerable<HbmFormula> AsFormulas()
 		{
-			if (string.IsNullOrEmpty(formula))
+			if (string.IsNullOrEmpty(formula1))
 			{
 				yield break;
 			}
 			else
 			{
-				yield return new HbmFormula { Text = new[] { formula } };
+				yield return new HbmFormula { Text = new[] { formula1 } };
 			}
 		}
 
