@@ -461,6 +461,8 @@
     <Compile Include="NHSpecificTest\NH2092\Model.cs" />
     <Compile Include="NHSpecificTest\NH2093\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2093\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2094\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2094\Model.cs" />
     <Compile Include="NHSpecificTest\NH2102\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2102\Model.cs" />
     <Compile Include="NHSpecificTest\NH2189\Fixture.cs" />
@@ -2185,6 +2187,7 @@
     <EmbeddedResource Include="DriverTest\SqlServerCeEntity.hbm.xml" />
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH2094\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2092\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2093\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2102\Mappings.hbm.xml" />

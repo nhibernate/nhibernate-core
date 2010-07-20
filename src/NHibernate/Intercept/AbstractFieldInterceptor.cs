@@ -96,6 +96,11 @@ namespace NHibernate.Intercept
 			if (initializing)
 				return InvokeImplementation;
 
+			if (!IsUninitializedProperty(fieldName))
+			{
+				return value;
+			}
+
 			if (session == null)
 			{
 				throw new LazyInitializationException("entity with lazy properties is not associated with a session");
@@ -105,15 +110,21 @@ namespace NHibernate.Intercept
 				throw new LazyInitializationException("session is not connected");
 			}
 
-			if (uninitializedFields != null && uninitializedFields.Contains(fieldName))
+			if (IsUninitializedProperty(fieldName))
 			{
 				return InitializeField(fieldName, target);
 			}
-			if (value is INHibernateProxy && unwrapProxyFieldNames != null && unwrapProxyFieldNames.Contains(fieldName))
+			var nhproxy = value as INHibernateProxy;
+			if (nhproxy != null && unwrapProxyFieldNames != null && unwrapProxyFieldNames.Contains(fieldName))
 			{
-				return InitializeOrGetAssociation((INHibernateProxy)value, fieldName);
+				return InitializeOrGetAssociation(nhproxy, fieldName);
 			}
 			return InvokeImplementation;
+		}
+
+		private bool IsUninitializedProperty(string fieldName)
+		{
+			return uninitializedFields != null && uninitializedFields.Contains(fieldName);
 		}
 
 		private object InitializeOrGetAssociation(INHibernateProxy value, string fieldName)
