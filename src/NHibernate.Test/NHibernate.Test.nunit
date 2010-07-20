@@ -1,9 +1,9 @@
 <NUnitProject>
-  <Settings activeconfig="Debug" />
-  <Config name="Debug" appbase="bin\Debug" configfile="NHibernate.Test.dll.config" binpathtype="Auto">
-    <assembly path="NHibernate.Test.dll" />
-  </Config>
-  <Config name="Release" appbase="bin\Release" configfile="NHibernate.Test.dll.config" binpathtype="Auto">
-    <assembly path="NHibernate.Test.dll" />
-  </Config>
+	<Settings activeconfig="Debug" />
+		<Config name="Debug" appbase="bin\Debug-2.0" configfile="NHibernate.Test.dll.config" binpathtype="Auto">
+			<assembly path="NHibernate.Test.dll" />
+		</Config>
+		<Config name="Release" appbase="bin\Release" configfile="NHibernate.Test.dll.config" binpathtype="Auto">
+			<assembly path="NHibernate.Test.dll" />
+		</Config>
 </NUnitProject>
