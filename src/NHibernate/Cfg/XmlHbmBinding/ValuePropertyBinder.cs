@@ -28,7 +28,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			var formulas = propertyMapping.Formulas.ToArray();
 			if (formulas.Length > 0)
 			{
-				BindFormula(formulas);
+				BindFormulas(formulas);
 			}
 			else
 			{
@@ -56,7 +56,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			var formulas = element.Formulas.ToArray();
 			if (formulas.Length > 0)
 			{
-				BindFormula(formulas);
+				BindFormulas(formulas);
 			}
 			else
 			{
@@ -73,14 +73,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 																									unique = element.unique,
 																									uniqueSpecified = true,
 																								});
-			}
-		}
-
-		private void BindFormula(IEnumerable<HbmFormula> formulas)
-		{
-			foreach (var hbmFormula in formulas)
-			{
-				value.AddFormula(new Formula { FormulaString = hbmFormula.Text.LinesToString() });
 			}
 		}
 
@@ -103,7 +95,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			var formulas = manyToManyMapping.Formulas.ToArray();
 			if (formulas.Length > 0)
 			{
-				BindFormula(formulas);
+				BindFormulas(formulas);
 			}
 			else
 			{
@@ -159,7 +151,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			var formulas = mapKeyMapping.Formulas.ToArray();
 			if (formulas.Length > 0)
 			{
-				BindFormula(formulas);
+				BindFormulas(formulas);
 			}
 			else
 			{
@@ -173,27 +165,28 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		public void BindSimpleValue(HbmManyToOne manyToManyMapping, string propertyPath, bool isNullable)
+		public void BindSimpleValue(HbmManyToOne manyToOneMapping, string propertyPath, bool isNullable)
 		{
-			var formulas = manyToManyMapping.Formulas.ToArray();
-			if (formulas.Length > 0)
+			ColumnsBinder binder = new ColumnsBinder(value, Mappings);
+			object[] columnsAndFormulas = manyToOneMapping.ColumnsAndFormulas.ToArray();
+			
+			if (columnsAndFormulas.Length > 0)
 			{
-				BindFormula(formulas);
+				this.AddColumnsAndOrFormulas(binder, columnsAndFormulas, isNullable);
 			}
 			else
 			{
-				new ColumnsBinder(value, Mappings).Bind(manyToManyMapping.Columns, isNullable,
-																								() =>
-																								new HbmColumn
-																								{
-																									name = mappings.NamingStrategy.PropertyToColumnName(propertyPath),
-																									notnull = manyToManyMapping.notnull,
-																									notnullSpecified = manyToManyMapping.notnullSpecified,
-																									unique = manyToManyMapping.unique,
-																									uniqueSpecified = true,
-																									uniquekey = manyToManyMapping.uniquekey,
-																									index = manyToManyMapping.index
-																								});
+				// No formulas or columns, so add default column
+				binder.Bind(new HbmColumn()
+					{
+						name = mappings.NamingStrategy.PropertyToColumnName(propertyPath),
+						notnull = manyToOneMapping.notnull,
+						notnullSpecified = manyToOneMapping.notnullSpecified,
+						unique = manyToOneMapping.unique,
+						uniqueSpecified = true,
+						uniquekey = manyToOneMapping.uniquekey,
+						index = manyToOneMapping.index
+					}, isNullable);
 			}
 		}
 
@@ -212,7 +205,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			var formulas = mapKeyManyToManyMapping.Formulas.ToArray();
 			if (formulas.Length > 0)
 			{
-				BindFormula(formulas);
+				BindFormulas(formulas);
 			}
 			else
 			{
@@ -245,5 +238,34 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			                                        new HbmColumn
 			                                        	{name = mappings.NamingStrategy.PropertyToColumnName(propertyPath),});
 		}
+		
+		/// <summary>
+		/// Bind columns and formulas in the order in which they were mapped.
+		/// </summary>
+		/// <param name="binder"></param>
+		/// <param name="columnsAndFormulas"></param>
+		/// <param name="isNullable"></param>
+		private void AddColumnsAndOrFormulas(ColumnsBinder binder, object[] columnsAndFormulas, bool isNullable)
+		{
+			foreach (object item in columnsAndFormulas)
+			{
+				if (item.GetType() == typeof(HbmFormula)) 
+					this.BindFormula((HbmFormula)item);
+				
+				if (item.GetType() == typeof(HbmColumn)) 
+					binder.Bind((HbmColumn)item, isNullable);
+			}
+		}
+		
+		private void BindFormula(HbmFormula formula)
+		{
+			value.AddFormula(new Formula { FormulaString = formula.Text.LinesToString() });
+		}
+		
+		private void BindFormulas(IEnumerable<HbmFormula> formulas)
+		{
+			foreach (var hbmFormula in formulas)
+				this.BindFormula(hbmFormula);
+		}		
 	}
 }

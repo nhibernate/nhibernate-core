@@ -15,25 +15,29 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			this.value = value;
 		}
-
+		
+		public void Bind(HbmColumn column, bool isNullable)
+		{
+			this.BindColumn(column, value.Table, isNullable);
+		}
+		
 		public void Bind(IEnumerable<HbmColumn> columns, bool isNullable, Func<HbmColumn> defaultColumnDelegate)
 		{
 			var table = value.Table;
-			int colIndex = 0;
 			foreach (var hbmColumn in columns)
 			{
-				BindColumn(hbmColumn, table, colIndex++, isNullable);
+				BindColumn(hbmColumn, table, isNullable);
 			}
 
 			if (value.ColumnSpan == 0 && defaultColumnDelegate != null)
 			{
-				BindColumn(defaultColumnDelegate(), table, colIndex, isNullable);
+				BindColumn(defaultColumnDelegate(), table, isNullable);
 			}
 		}
 
-		private void BindColumn(HbmColumn hbmColumn, Table table, int colIndex, bool isNullable)
+		private void BindColumn(HbmColumn hbmColumn, Table table, bool isNullable)
 		{
-			var col = new Column {Value = value, TypeIndex = colIndex};
+			var col = new Column {Value = value};
 			BindColumn(hbmColumn, col, isNullable);
 
 			if (table != null)

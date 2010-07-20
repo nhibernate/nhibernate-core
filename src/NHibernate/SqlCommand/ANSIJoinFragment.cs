@@ -42,10 +42,6 @@ namespace NHibernate.SqlCommand
 
 			for (int j = 0; j < fkColumns.Length; j++)
 			{
-				if (fkColumns[j].IndexOf('.') < 1)
-				{
-					throw new AssertionFailure("missing alias");
-				}
 				buffer.Add(fkColumns[j] + "=" + alias + StringHelper.Dot + pkColumns[j]);
 				if (j < fkColumns.Length - 1)
 				{

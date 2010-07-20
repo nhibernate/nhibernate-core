@@ -1487,6 +1487,10 @@
     <Compile Include="TransactionTest\TransactionNotificationFixture.cs" />
     <Compile Include="TransformTests\AliasToBeanResultTransformerFixture.cs" />
     <Compile Include="TransformTests\Simple.cs" />
+    <Compile Include="TypedManyToOne\Address.cs" />
+    <Compile Include="TypedManyToOne\AddressId.cs" />
+    <Compile Include="TypedManyToOne\Customer.cs" />
+    <Compile Include="TypedManyToOne\TypedManyToOneTest.cs" />
     <Compile Include="TypeParameters\DefaultValueIntegerType.cs" />
     <Compile Include="TypeParameters\DefinedTypeForIdFixture.cs" />
     <Compile Include="TypeParameters\EntityCustomId.cs" />
@@ -1605,6 +1609,7 @@
     <EmbeddedResource Include="Component\Basic\User.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2061\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2195\Mappings.hbm.xml" />
+    <EmbeddedResource Include="TypedManyToOne\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CompositeCollection\BaseClassA.hbm.xml" />
@@ -1688,6 +1693,7 @@
     <Folder Include="Component\Basic" />
     <Folder Include="NHSpecificTest\NH2061" />
     <Folder Include="NHSpecificTest\NH2195" />
+    <Folder Include="TypedManyToOne" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH386\Mappings.hbm.xml" />

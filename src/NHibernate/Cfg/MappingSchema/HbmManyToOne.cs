@@ -109,6 +109,14 @@ namespace NHibernate.Cfg.MappingSchema
 
 		#endregion
 
+		/// <summary>
+		/// Columns and Formulas, in declared order
+		/// </summary>
+		public IEnumerable<object> ColumnsAndFormulas
+		{
+			get { return Columns.Cast<object>().Concat(Formulas.Cast<object>()); }
+		}
+		
 		public HbmLaziness? Lazy
 		{
 			get { return lazySpecified ? lazy : (HbmLaziness?) null;}

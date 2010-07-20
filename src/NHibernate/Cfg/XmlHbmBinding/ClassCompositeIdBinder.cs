@@ -18,6 +18,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 
 			compositeId = new Component(rootClass);
+			compositeId.IsKey = true;
+			
 			rootClass.Identifier = compositeId;
 
 			if (idSchema.name == null)

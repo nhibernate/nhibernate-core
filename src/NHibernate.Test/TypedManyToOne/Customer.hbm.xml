@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+
+	Shows how to map a one-to-many relationship in the relational
+	schema to "typed" one-to-one associations in the object model.
+	We map the Address class twice, with different entity names,
+	specifying a filtering condition in each mapping. The typed
+	associations then reference the named entities.
+
+-->
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+                   namespace="NHibernate.Test.TypedManyToOne"
+                   assembly="NHibernate.Test">
+
+	<class name="Customer" 
+			select-before-update="true" 
+			dynamic-update="true">
+	
+		<id name="CustomerId">
+			<generator class="assigned"/>
+		</id>
+	
+		<property name="Name" not-null="true"/>
+		
+		<many-to-one name="BillingAddress" entity-name="BillingAddress" cascade="persist,save-update,delete" fetch="join">
+			<column name="BillingAddressId" />
+			<formula>(case when Name='blah' then 'SHIPPING' else 'BILLING' end)</formula>
+		</many-to-one>
+			
+		<many-to-one name="ShippingAddress" entity-name="ShippingAddress" cascade="persist,save-update,delete" fetch="join">
+			<column name="ShippingAddressId"/>
+			<formula>'SHIPPING'</formula>
+		</many-to-one>
+			
+	</class>
+	
+	<class name="Address"
+		table="Address"
+		entity-name="BillingAddress" 
+		where="add_type='BILLING'" 
+		check="add_type in ('BILLING', 'SHIPPING')"
+		select-before-update="true" 
+		dynamic-update="true">
+	
+		<composite-id name="AddressId" class="AddressId"> 
+			<key-property name="Id"/>
+			<key-property name="Type" column="add_type" />
+		</composite-id>
+		
+		<property name="Street" not-null="true"/>
+		<property name="City" not-null="true"/>
+		<property name="State" not-null="true"/>
+		<property name="Zip" not-null="true"/>
+						
+	</class>
+
+	<class name="Address" 
+		table="Address"
+		entity-name="ShippingAddress"
+		where="add_type='SHIPPING'" 
+		check="add_type in ('BILLING', 'SHIPPING')"	       
+		select-before-update="true" 
+		dynamic-update="true">
+	
+		<composite-id name="AddressId" class="AddressId">
+			<key-property name="Id"/>
+			<key-property name="Type" column="add_type" />
+		</composite-id>
+		
+		<property name="Street" not-null="true"/>
+		<property name="City" not-null="true"/>
+		<property name="State" not-null="true"/>
+		<property name="Zip" not-null="true"/>
+						
+	</class>
+
+</hibernate-mapping>

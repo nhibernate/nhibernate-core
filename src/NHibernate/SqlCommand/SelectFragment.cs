@@ -75,7 +75,8 @@ namespace NHibernate.SqlCommand
 		{
 			for (int i = 0; i < columnNames.Length; i++)
 			{
-				AddColumn(tableAlias, columnNames[i]);
+				if (columnNames[i] != null)
+					AddColumn(tableAlias, columnNames[i]);
 			}
 			return this;
 		}
@@ -84,7 +85,8 @@ namespace NHibernate.SqlCommand
 		{
 			for (int i = 0; i < columnNames.Length; i++)
 			{
-				AddColumn(tableAlias, columnNames[i], columnAliases[i]);
+				if (columnNames[i] != null)
+					AddColumn(tableAlias, columnNames[i], columnAliases[i]);
 			}
 			return this;
 		}
@@ -93,7 +95,8 @@ namespace NHibernate.SqlCommand
 		{
 			for (int i = 0; i < formulas.Length; i++)
 			{
-				AddFormula(tableAlias, formulas[i], formulaAliases[i]);
+				if (formulas[i] != null)
+					AddFormula(tableAlias, formulas[i], formulaAliases[i]);
 			}
 
 			return this;
