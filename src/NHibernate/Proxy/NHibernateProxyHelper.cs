@@ -1,3 +1,4 @@
+using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Proxy
@@ -44,7 +45,7 @@ namespace NHibernate.Proxy
 		/// </remarks>
 		public static System.Type GuessClass(object entity)
 		{
-			INHibernateProxy proxy = entity as INHibernateProxy;
+			var proxy = entity as INHibernateProxy;
 			if (proxy != null)
 			{
 				ILazyInitializer li = proxy.HibernateLazyInitializer;
@@ -52,15 +53,15 @@ namespace NHibernate.Proxy
 				{
 					return li.PersistentClass;
 				}
-				else
-				{
-					return li.GetImplementation().GetType();
-				}
+				return li.GetImplementation().GetType();
 			}
-			else
+			var fieldInterceptorAccessor = entity as IFieldInterceptorAccessor;
+			if (fieldInterceptorAccessor != null)
 			{
-				return entity.GetType();
+				var fieldInterceptor = fieldInterceptorAccessor.FieldInterceptor;
+				return fieldInterceptor.MappedClass;
 			}
+			return entity.GetType();
 		}
 	}
 }

@@ -33,6 +33,7 @@ namespace NHibernate.Intercept
 		}
 
 		public static IFieldInterceptor InjectFieldInterceptor(object entity, string entityName, 
+			System.Type mappedClass,
 			ISet<string> uninitializedFieldNames, 
 			ISet<string> unwrapProxyFieldNames,
 			ISessionImplementor session)
@@ -40,7 +41,7 @@ namespace NHibernate.Intercept
 			var fieldInterceptorAccessor = entity as IFieldInterceptorAccessor;
 			if (fieldInterceptorAccessor != null)
 			{
-				var fieldInterceptorImpl = new DefaultFieldInterceptor(session, uninitializedFieldNames, unwrapProxyFieldNames, entityName);
+				var fieldInterceptorImpl = new DefaultFieldInterceptor(session, uninitializedFieldNames, unwrapProxyFieldNames, entityName, mappedClass);
 				fieldInterceptorAccessor.FieldInterceptor = fieldInterceptorImpl;
 				return fieldInterceptorImpl;
 			}

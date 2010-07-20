@@ -3615,7 +3615,7 @@ namespace NHibernate.Persister.Entity
 				}
 				else
 				{
-					IFieldInterceptor fieldInterceptor = FieldInterceptionHelper.InjectFieldInterceptor(entity, EntityName, null, null, session);
+					IFieldInterceptor fieldInterceptor = FieldInterceptionHelper.InjectFieldInterceptor(entity, EntityName, GetMappedClass(session.EntityMode), null, null, session);
 					fieldInterceptor.MarkDirty();
 				}
 			}

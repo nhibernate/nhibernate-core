@@ -229,7 +229,7 @@ namespace NHibernate.Tuple.Entity
 				HashedSet<string> lazyProps = lazyPropertiesAreUnfetched && EntityMetamodel.HasLazyProperties ? lazyPropertyNames : null;
 				//TODO: if we support multiple fetch groups, we would need
 				//      to clone the set of lazy properties!
-				FieldInterceptionHelper.InjectFieldInterceptor(entity, EntityName, lazyProps, unwrapProxyPropertyNames, session);
+				FieldInterceptionHelper.InjectFieldInterceptor(entity, EntityName, this.MappedClass ,lazyProps, unwrapProxyPropertyNames, session);
 			}
 		}
 

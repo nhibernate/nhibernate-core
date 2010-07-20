@@ -292,7 +292,7 @@ namespace NHibernate.Event.Default
 		{
 			if (FieldInterceptionHelper.IsInstrumented(entity))
 			{
-				IFieldInterceptor interceptor = FieldInterceptionHelper.InjectFieldInterceptor(entity, persister.EntityName, null, null, source);
+				IFieldInterceptor interceptor = FieldInterceptionHelper.InjectFieldInterceptor(entity, persister.EntityName, persister.GetMappedClass(source.EntityMode), null, null, source);
 				interceptor.MarkDirty();
 			}
 		}
