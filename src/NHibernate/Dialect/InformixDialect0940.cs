@@ -80,7 +80,7 @@ namespace NHibernate.Dialect
         /// <remarks>This should be a "stand alone" select statement.</remarks>
         public override string GetSequenceNextValString(string sequenceName)
         {
-            return "select " + sequenceName + ".nextval from systables";
+					return "select " + GetSelectSequenceNextValString(sequenceName) + " from systables where tabid=1";
         }
 
         public override string GetDropSequenceString(string sequenceName)
