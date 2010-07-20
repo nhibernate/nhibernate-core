@@ -294,5 +294,10 @@ namespace NHibernate.Mapping
 		// true here for the case of many-to-one and one-to-one
 		// with lazy="no-proxy"
 		public bool UnwrapProxy { get; set; }
+
+		public bool IsEntityRelation
+		{
+			get { return (Value as ToOne) != null; }
+		}
 	}
 }

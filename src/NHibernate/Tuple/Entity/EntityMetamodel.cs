@@ -128,14 +128,17 @@ namespace NHibernate.Tuple.Entity
 
 			foreach (Mapping.Property prop in persistentClass.PropertyClosureIterator)
 			{
+				// NH: A lazy property is a simple property marked with lazy=true or a relation (in this case many-to-one or one-to-one marked as "no-proxy")
+				bool lazyProperty = prop.IsLazy && lazyAvailable && (!prop.IsEntityRelation || prop.UnwrapProxy);
+
 				if (prop == persistentClass.Version)
 				{
 					tempVersionProperty = i;
-					properties[i] = PropertyFactory.BuildVersionProperty(prop, lazyAvailable);
+					properties[i] = PropertyFactory.BuildVersionProperty(prop, lazyProperty);
 				}
 				else
 				{
-					properties[i] = PropertyFactory.BuildStandardProperty(prop, lazyAvailable);
+					properties[i] = PropertyFactory.BuildStandardProperty(prop, lazyProperty);
 				}
 
 				if (prop.IsNaturalIdentifier)
@@ -148,7 +151,6 @@ namespace NHibernate.Tuple.Entity
 					foundNonIdentifierPropertyNamedId = true;
 				}
 
-				bool lazyProperty = prop.IsLazy && lazyAvailable;
 				if (lazyProperty)
 				{
 					hasLazy = true;
