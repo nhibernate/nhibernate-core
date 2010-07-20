@@ -103,11 +103,11 @@ namespace NHibernate.Intercept
 
 			if (session == null)
 			{
-				throw new LazyInitializationException("entity with lazy properties is not associated with a session");
+				throw new LazyInitializationException(EntityName, null, string.Format("entity with lazy properties is not associated with a session. entity-name:'{0}' property:'{1}'", EntityName, fieldName));
 			}
 			if (!session.IsOpen || !session.IsConnected)
 			{
-				throw new LazyInitializationException("session is not connected");
+				throw new LazyInitializationException(EntityName, null, string.Format("session is not connected. entity-name:'{0}' property:'{1}'", EntityName, fieldName));
 			}
 
 			if (IsUninitializedProperty(fieldName))
