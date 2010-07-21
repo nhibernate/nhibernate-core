@@ -43,14 +43,14 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public IEnumerable<HbmColumn> Columns
 		{
-			get { return column != null ? column.OfType<HbmColumn>() : AsColumns(); }
+			get { return Items != null ? Items.OfType<HbmColumn>() : AsColumns(); }
 		}
 
 		#endregion
 
 		private IEnumerable<HbmColumn> AsColumns()
 		{
-			if (string.IsNullOrEmpty(column1))
+			if (string.IsNullOrEmpty(column))
 			{
 				yield break;
 			}
@@ -58,7 +58,7 @@ namespace NHibernate.Cfg.MappingSchema
 			{
 				yield return new HbmColumn
 				{
-					name = column1,
+					name = column,
 					notnull = notnull,
 					notnullSpecified = notnullSpecified,
 					unique = unique,
@@ -73,18 +73,18 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public IEnumerable<HbmFormula> Formulas
 		{
-			get { return formula != null ? formula.OfType<HbmFormula>() : AsFormulas(); }
+			get { return Items != null ? Items.OfType<HbmFormula>() : AsFormulas(); }
 		}
 
 		private IEnumerable<HbmFormula> AsFormulas()
 		{
-			if (string.IsNullOrEmpty(formula1))
+			if (string.IsNullOrEmpty(formula))
 			{
 				yield break;
 			}
 			else
 			{
-				yield return new HbmFormula { Text = new[] { formula1 } };
+				yield return new HbmFormula { Text = new[] { formula } };
 			}
 		}
 
@@ -114,7 +114,11 @@ namespace NHibernate.Cfg.MappingSchema
 		/// </summary>
 		public IEnumerable<object> ColumnsAndFormulas
 		{
-			get { return Columns.Cast<object>().Concat(Formulas.Cast<object>()); }
+			// when Items is empty the column attribute AND formula attribute will be used
+			// and it may cause an issue (breaking change)
+			// On the other hand it work properly when a mixing between <formula> and <column> tags are used
+			// respecting the order used in the mapping to map multi-columns id.
+			get { return Items ?? Columns.Cast<object>().Concat(Formulas.Cast<object>()); }
 		}
 		
 		public HbmLaziness? Lazy

@@ -649,12 +649,9 @@ namespace NHibernate.Cfg.MappingSchema {
         public HbmMeta[] meta;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("column")]
-        public HbmColumn[] column;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("formula")]
-        public HbmFormula[] formula;
+        [System.Xml.Serialization.XmlElementAttribute("column", typeof(HbmColumn))]
+        [System.Xml.Serialization.XmlElementAttribute("formula", typeof(HbmFormula))]
+        public object[] Items;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -673,8 +670,8 @@ namespace NHibernate.Cfg.MappingSchema {
         public string entityname;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute("column")]
-        public string column1;
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string column;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute("not-null")]
@@ -741,8 +738,8 @@ namespace NHibernate.Cfg.MappingSchema {
         public string propertyref;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute("formula")]
-        public string formula1;
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string formula;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
