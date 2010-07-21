@@ -200,6 +200,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			// KEY
 			SimpleValue key = new DependantValue(table, persistentClass.Identifier);
+			key.ForeignKeyName = joinMapping.key.foreignkey;
 			join.Key = key;
 			key.IsCascadeDeleteEnabled = joinMapping.key.ondelete == HbmOndelete.Cascade;
 			new ValuePropertyBinder(key, Mappings).BindSimpleValue(joinMapping.key, persistentClass.EntityName, false);
