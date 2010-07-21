@@ -95,6 +95,7 @@ namespace NHibernate.SqlCommand
 			IEnumerator<string> tokensEnum = tokens.GetEnumerator();
 			bool hasMore = tokensEnum.MoveNext();
 			string nextToken = hasMore ? tokensEnum.Current : null;
+			string lastToken = string.Empty;
 			while (hasMore)
 			{
 				string token = nextToken;
@@ -139,7 +140,7 @@ namespace NHibernate.SqlCommand
 						isOpenQuote = false;
 					}
 
-					if (isOpenQuote && !inFromClause)
+					if (isOpenQuote && !inFromClause && !lastToken.EndsWith("."))
 					{
 						result.Append(placeholder).Append('.');
 					}
@@ -201,6 +202,7 @@ namespace NHibernate.SqlCommand
 				{
 					inFromClause = false;
 				}
+				lastToken = token;
 			}
 			return result.ToString();
 		}

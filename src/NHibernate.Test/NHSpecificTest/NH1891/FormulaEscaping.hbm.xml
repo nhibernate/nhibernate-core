@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH1891">
+  <class name="A" table="a" lazy="false">
+    <id name="Id" column="id">
+      <generator class="guid.comb" />
+    </id>
+    <property name="FormulaCount" formula="(select count(*) from b where b.`Name` = FormulaConstraint)" type="Int32" />
+    <property name="FormulaConstraint" />
+  </class>
+
+  <class name="B" table="b">
+    <id name="Id" column="id">
+      <generator class="guid.comb" />
+    </id>
+    <property name="Name" />
+  </class>
+</hibernate-mapping>

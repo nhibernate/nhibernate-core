@@ -448,6 +448,9 @@
     <Compile Include="NHSpecificTest\CriteriaQueryOnComponentCollection\Employee.cs" />
     <Compile Include="NHSpecificTest\CriteriaQueryOnComponentCollection\Fixture.cs" />
     <Compile Include="NHSpecificTest\CriteriaQueryOnComponentCollection\Money.cs" />
+    <Compile Include="NHSpecificTest\NH1891\A.cs" />
+    <Compile Include="NHSpecificTest\NH1891\B.cs" />
+    <Compile Include="NHSpecificTest\NH1891\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2061\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2061\Model.cs" />
     <Compile Include="NHSpecificTest\NH2069\Fixture.cs" />
@@ -2192,6 +2195,7 @@
     <EmbeddedResource Include="DriverTest\SqlServerCeEntity.hbm.xml" />
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1891\FormulaEscaping.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2242\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2234\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2094\Mappings.hbm.xml" />
