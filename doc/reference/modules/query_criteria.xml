@@ -131,13 +131,13 @@ List cats = crit.List();]]></programlisting>
             Note that the kittens collections held by the <literal>Cat</literal> instances
             returned by the previous two queries are <emphasis>not</emphasis> pre-filtered
             by the criteria! If you wish to retrieve just the kittens that match the
-            criteria, you must use <literal>SetResultTransformer(CriteriaUtil.AliasToEntityMap)</literal>.
+            criteria, you must use <literal>SetResultTransformer(Transformers.AliasToEntityMap)</literal>.
         </para>
 
         <programlisting><![CDATA[IList cats = sess.CreateCriteria(typeof(Cat))
     .CreateCriteria("Kittens", "kt")
         .Add( Expression.Eq("Name", "F%") )
-    .SetResultTransformer(CriteriaUtil.AliasToEntityMap)
+    .SetResultTransformer(Transformers.AliasToEntityMap)
     .List();
 foreach ( IDictionary map in cats )
 {
