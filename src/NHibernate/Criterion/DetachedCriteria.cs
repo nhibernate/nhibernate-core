@@ -170,6 +170,18 @@ namespace NHibernate.Criterion
 			return this;
 		}
 
+		public DetachedCriteria SetLockMode(LockMode lockMode)
+		{
+			criteria.SetLockMode(lockMode);
+			return this;
+		}
+
+		public DetachedCriteria SetLockMode(string alias, LockMode lockMode)
+		{
+			criteria.SetLockMode(alias, lockMode);
+			return this;
+		}
+
 		public DetachedCriteria SetCacheMode(CacheMode cacheMode)
 		{
 			criteria.SetCacheMode(cacheMode);
