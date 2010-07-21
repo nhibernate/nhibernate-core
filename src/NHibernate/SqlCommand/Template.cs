@@ -139,7 +139,7 @@ namespace NHibernate.SqlCommand
 						isOpenQuote = false;
 					}
 
-					if (isOpenQuote)
+					if (isOpenQuote && !inFromClause)
 					{
 						result.Append(placeholder).Append('.');
 					}

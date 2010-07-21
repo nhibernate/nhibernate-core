@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH2242" default-access="field.camelcase"
+                   default-lazy="false">
+  <class name="EscapedFormulaDomainClass">
+    <id name="Id">
+      <generator class="assigned" />
+    </id>
+    <property name="Formula" formula="(SELECT COUNT(*) FROM [EscapedFormulaDomainClass])" />
+  </class>
+  <class name="UnescapedFormulaDomainClass">
+    <id name="Id">
+      <generator class="assigned" />
+    </id>
+    <property name="Formula" formula="(SELECT COUNT(*) FROM UnescapedFormulaDomainClass)" />
+  </class>
+</hibernate-mapping>

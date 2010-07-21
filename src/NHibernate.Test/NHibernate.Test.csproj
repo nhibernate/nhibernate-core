@@ -752,6 +752,9 @@
     <Compile Include="NHSpecificTest\NH2230\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2234\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2234\MyType.cs" />
+    <Compile Include="NHSpecificTest\NH2242\EscapedFormulaDomainClass.cs" />
+    <Compile Include="NHSpecificTest\NH2242\FormulaTest.cs" />
+    <Compile Include="NHSpecificTest\NH2242\UnescapedFormulaDomainClass.cs" />
     <Compile Include="NHSpecificTest\NH473\Child.cs" />
     <Compile Include="NHSpecificTest\NH473\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH473\Parent.cs" />
@@ -2189,6 +2192,7 @@
     <EmbeddedResource Include="DriverTest\SqlServerCeEntity.hbm.xml" />
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH2242\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2234\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2094\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2092\Mappings.hbm.xml" />
