@@ -6,6 +6,7 @@ using NHibernate.Engine;
 namespace NHibernate.Properties
 {
 	/// <summary> Represents a "back-reference" to the id of a collection owner. </summary>
+	[Serializable]
 	public class BackrefPropertyAccessor : IPropertyAccessor
 	{
 		public static readonly object Unknown = new object();

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Reflection;
 using NHibernate.Engine;
@@ -5,6 +6,7 @@ using NHibernate.Engine;
 namespace NHibernate.Properties
 {
 	/// <summary> Used to declare properties not represented at the pojo level </summary>
+	[Serializable]
 	public class NoopAccessor : IPropertyAccessor
 	{
 		#region IPropertyAccessor Members
@@ -27,6 +29,7 @@ namespace NHibernate.Properties
 		#endregion
 
 		/// <summary> A Getter which will always return null. It should not be called anyway.</summary>
+		[Serializable]
 		private class NoopGetter : IGetter
 		{
 			#region IGetter Members
@@ -60,6 +63,7 @@ namespace NHibernate.Properties
 		}
 
 		/// <summary> A Setter which will just do nothing.</summary>
+		[Serializable]
 		private class NoopSetter : ISetter
 		{
 			#region ISetter Members

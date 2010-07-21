@@ -11,6 +11,7 @@ namespace NHibernate.Properties
 	/// Responsible for accessing property values represented as a XmlElement
 	/// or XmlAttribute. 
 	/// </summary>
+	[Serializable]
 	public class XmlAccessor : IPropertyAccessor
 	{
 		private readonly ISessionFactoryImplementor factory;

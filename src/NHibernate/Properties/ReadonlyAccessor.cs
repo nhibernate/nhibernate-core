@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 
 namespace NHibernate.Properties
@@ -10,6 +11,7 @@ namespace NHibernate.Properties
 	/// This is useful to allow calculated properties in the domain that will never
 	/// be recovered from the DB but can be used for querying.
 	/// </remarks>
+	[Serializable]
 	public class ReadOnlyAccessor : IPropertyAccessor
 	{
 		/// <summary>
@@ -64,6 +66,7 @@ namespace NHibernate.Properties
 
 		#endregion
 
+		[Serializable]
 		private class NoopSetter : ISetter
 		{
 			public void Set(object target, object value) {}

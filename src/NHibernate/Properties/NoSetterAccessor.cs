@@ -1,3 +1,5 @@
+using System;
+
 namespace NHibernate.Properties
 {
 	/// <summary>
@@ -9,6 +11,7 @@ namespace NHibernate.Properties
 	/// that is the <c>&lt;id&gt;</c> but tell NHibernate there is no setter for the Property
 	/// so the value should be written directly to the field.
 	/// </remarks>
+	[Serializable]
 	public class NoSetterAccessor : IPropertyAccessor
 	{
 		private readonly IFieldNamingStrategy namingStrategy;

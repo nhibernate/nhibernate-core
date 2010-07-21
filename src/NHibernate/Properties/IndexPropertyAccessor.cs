@@ -6,6 +6,7 @@ using NHibernate.Engine;
 namespace NHibernate.Properties
 {
 	/// <summary> Represents a "back-reference" to the index of a collection. </summary>
+	[Serializable]
 	public class IndexPropertyAccessor : IPropertyAccessor
 	{
 		private readonly string propertyName;
@@ -40,6 +41,7 @@ namespace NHibernate.Properties
 		#endregion
 
 		/// <summary> The Setter implementation for index backrefs.</summary>
+		[Serializable]
 		public sealed class IndexSetter : ISetter
 		{
 			#region ISetter Members
@@ -62,6 +64,7 @@ namespace NHibernate.Properties
 		}
 
 		/// <summary> The Getter implementation for index backrefs.</summary>
+		[Serializable]
 		public class IndexGetter : IGetter
 		{
 			private readonly IndexPropertyAccessor encloser;

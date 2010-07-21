@@ -5,6 +5,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Properties
 {
+	[Serializable]
 	public class EmbeddedPropertyAccessor : IPropertyAccessor
 	{
 		#region IPropertyAccessor Members

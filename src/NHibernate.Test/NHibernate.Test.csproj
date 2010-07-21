@@ -108,6 +108,7 @@
     <Compile Include="Cascade\Job.cs" />
     <Compile Include="Cascade\JobBatch.cs" />
     <Compile Include="Cascade\RefreshFixture.cs" />
+    <Compile Include="CfgTest\AccessorsSerializableTest.cs" />
     <Compile Include="CfgTest\ConfigurationFixture.cs" />
     <Compile Include="CfgTest\ConfigurationSchemaFixture.cs" />
     <Compile Include="CfgTest\ConfigurationSerializationTests.cs" />

@@ -4,6 +4,7 @@ using NHibernate.Engine;
 using System;
 namespace NHibernate.Properties
 {
+	[Serializable]
 	public class MapAccessor : IPropertyAccessor
 	{
 		#region IPropertyAccessor Members
