@@ -752,6 +752,8 @@
     <Compile Include="NHSpecificTest\NH2195\SQLiteMultiCriteriaTest.cs" />
     <Compile Include="NHSpecificTest\NH2201\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2201\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2207\DomainClass.cs" />
+    <Compile Include="NHSpecificTest\NH2207\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH2230\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2230\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2234\Fixture.cs" />
@@ -2198,6 +2200,7 @@
     <EmbeddedResource Include="DriverTest\SqlServerCeEntity.hbm.xml" />
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH2207\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2243\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1891\FormulaEscaping.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2242\Mappings.hbm.xml" />
