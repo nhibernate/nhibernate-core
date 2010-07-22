@@ -221,6 +221,18 @@ namespace NHibernate.Type
 	[Serializable]
 	public class EnumStringType<T> : EnumStringType
 	{
-		public EnumStringType() : base(typeof (T)) {}
+		private readonly string typeName;
+
+		public EnumStringType()
+			: base(typeof (T))
+		{
+			System.Type type = GetType();
+			typeName = type.FullName + ", " + type.Assembly.GetName().Name;
+		}
+
+		public override string Name
+		{
+			get { return typeName; }
+		}
 	}
 }
