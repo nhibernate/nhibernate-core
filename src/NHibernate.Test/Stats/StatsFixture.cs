@@ -158,7 +158,7 @@ namespace NHibernate.Test.Stats
 			Assert.AreEqual(results, continentStats.ExecutionRowCount, "unexpected row count");
 			var maxTime = continentStats.ExecutionMaxTime;
 			Assert.AreEqual(maxTime, stats.QueryExecutionMaxTime);
-			//Assert.AreEqual( continents, stats.QueryExecutionMaxTimeQueryString );
+			Assert.AreEqual( continents, stats.QueryExecutionMaxTimeQueryString );
 
 			IEnumerable itr = s.CreateQuery(continents).Enumerable();
 			// Enumerable() should increment the execution count
@@ -183,7 +183,7 @@ namespace NHibernate.Test.Stats
 			Assert.AreEqual(results, localityStats.ExecutionRowCount, "unexpected row count");
 			maxTime = localityStats.ExecutionMaxTime;
 			Assert.AreEqual(maxTime, stats.QueryExecutionMaxTime);
-			//		Assert.AreEqual( localities, stats.QueryExecutionMaxTimeQueryString );
+			Assert.AreEqual( localities, stats.QueryExecutionMaxTimeQueryString );
 			tx.Commit();
 			s.Close();
 			Assert.IsFalse(s.IsOpen);
@@ -200,7 +200,7 @@ namespace NHibernate.Test.Stats
 			Assert.AreEqual(results, sqlStats.ExecutionRowCount, "unexpected row count");
 			maxTime = sqlStats.ExecutionMaxTime;
 			Assert.AreEqual(maxTime, stats.QueryExecutionMaxTime);
-			//		Assert.AreEqual( sql, stats.QueryExecutionMaxTimeQueryString);
+			Assert.AreEqual( sql, stats.QueryExecutionMaxTimeQueryString);
 			tx.Commit();
 			s.Close();
 
