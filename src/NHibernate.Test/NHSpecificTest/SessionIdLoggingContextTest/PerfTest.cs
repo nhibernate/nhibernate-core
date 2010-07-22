@@ -7,7 +7,7 @@ using NHibernate.Transaction;
 
 namespace NHibernate.Test.NHSpecificTest.SessionIdLoggingContextTest
 {
-    [TestFixture]
+    [TestFixture, Explicit("This is a performance test and take a while.")]
     public class PerfTest : BugTestCase
     {
         const int noOfParents = 1000;
