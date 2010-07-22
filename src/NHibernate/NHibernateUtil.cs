@@ -51,7 +51,7 @@ namespace NHibernate
 		/// <returns></returns>
 		public static IType GuessType(System.Type type)
 		{
-			if(type.FullName.StartsWith(typeof(Nullable<>).FullName))
+			if(type.IsGenericType && typeof(Nullable<>).Equals(type.GetGenericTypeDefinition()))
 			{
 				type = type.GetGenericArguments()[0];
 			}
@@ -61,7 +61,7 @@ namespace NHibernate
 			}
 			else if (type.IsEnum)
 			{
-				return Enum(type);
+				return (IType) Activator.CreateInstance(typeof (EnumType<>).MakeGenericType(type));
 			}
 			else if (
 				typeof(IUserType).IsAssignableFrom(type) ||
