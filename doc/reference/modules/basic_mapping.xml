@@ -102,13 +102,18 @@
                      <area id="hm3" coords="4 55"/>
                      <area id="hm4" coords="5 55"/>
                      <area id="hm5" coords="6 55"/>
+                   <area id="hm6" coords="7 55"/>
+                   <area id="hm7" coords="8 55"/>
                  </areaspec>   
-                 <programlisting><![CDATA[<hibernate-mapping
+                 <programlisting>
+           <![CDATA[<hibernate-mapping
          schema="schemaName"
          default-cascade="none|save-update"
          auto-import="true|false"
          assembly="Eg"
          namespace="Eg"
+         default-access="field|property|field.camecase..."
+         default-lazy="true|false"
  />]]></programlisting>
                  <calloutlist>
                      <callout arearefs="hm1">
@@ -136,6 +141,18 @@
                              document.
                          </para>
                      </callout>
+                   <callout arearefs="hm6">
+                     <para>
+                       <literal>default-access</literal> (optional - defaults to property): 
+                       The strategy NHibernate should use for accessing a property value
+                     </para>
+                   </callout>
+                   <callout arearefs="hm7">
+                     <para>
+                       <literal>default-lazy</literal> (optional - defaults to <literal>true</literal>):
+                       Lazy fetching may be completely disabled by setting default-lazy="false".
+                     </para>
+                   </callout>
                  </calloutlist>
              </programlistingco>
              
