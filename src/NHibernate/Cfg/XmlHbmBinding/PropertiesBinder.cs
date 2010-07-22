@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using System;
@@ -117,7 +118,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					System.Type reflectedClass = mappedClass == null ? null : GetPropertyType(componentMapping.Class, mappedClass, propertyName, componentMapping.Access);
 					BindComponent(componentMapping, value, reflectedClass, entityName, subpath, componetDefaultNullable, inheritedMetas);
 					property = CreateProperty(entityPropertyMapping, className, value, inheritedMetas);
-					BindComponentProperty(componentMapping, property);
+					BindComponentProperty(componentMapping, property, value);
 				}
 				else if ((oneToOneMapping = entityPropertyMapping as HbmOneToOne) != null)
 				{
@@ -134,7 +135,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					System.Type reflectedClass = mappedClass == null ? null : GetPropertyType(dynamicComponentMapping.Class, mappedClass, propertyName, dynamicComponentMapping.Access);
 					BindComponent(dynamicComponentMapping, value, reflectedClass, entityName, subpath, componetDefaultNullable, inheritedMetas);
 					property = CreateProperty(entityPropertyMapping, className, value, inheritedMetas);
-					BindComponentProperty(dynamicComponentMapping, property);
+					BindComponentProperty(dynamicComponentMapping, property, value);
 				}
 				else if ((anyMapping = entityPropertyMapping as HbmAny) != null)
 				{
@@ -314,16 +315,24 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		private void BindComponentProperty(HbmDynamicComponent dynamicComponentMapping, Property property)
+		private void BindComponentProperty(HbmDynamicComponent dynamicComponentMapping, Property property, Component model)
 		{
 			property.IsUpdateable = dynamicComponentMapping.update;
 			property.IsInsertable = dynamicComponentMapping.insert;
+			if (dynamicComponentMapping.unique)
+			{
+				model.Owner.Table.CreateUniqueKey(model.ColumnIterator.OfType<Column>().ToList());
+			}
 		}
 
-		private void BindComponentProperty(HbmComponent componentMapping, Property property)
+		private void BindComponentProperty(HbmComponent componentMapping, Property property, Component model)
 		{
 			property.IsUpdateable = componentMapping.update;
 			property.IsInsertable = componentMapping.insert;
+			if (componentMapping.unique)
+			{
+				model.Owner.Table.CreateUniqueKey(model.ColumnIterator.OfType<Column>().ToList());
+			}
 		}
 
 		private void BindManyToOneProperty(HbmManyToOne manyToOneMapping, Property property)
