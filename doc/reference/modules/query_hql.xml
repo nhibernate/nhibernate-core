@@ -137,9 +137,7 @@ from Formula form full join form.Parameter param]]></programlisting>
     left join fetch cat.Kittens]]></programlisting>
     
         <para>
-            A fetch join does not usually need to assign an alias, because the associated objects 
-            should not be used in the <literal>where</literal> clause (or any other clause). Also, 
-            the associated objects are not returned directly in the query results. Instead, they may 
+            The associated objects are not returned directly in the query results. Instead, they may 
             be accessed via the parent object.
         </para>
 
