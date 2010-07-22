@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{593DCEA7-C933-46F3-939F-D8172399AB05}"
 	ProjectSection(SolutionItems) = preProject
 		..\default.build = ..\default.build
-		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
-		NHibernate.vsmdi = NHibernate.vsmdi
 		..\releasenotes.txt = ..\releasenotes.txt
 	EndProjectSection
 EndProject
@@ -20,16 +18,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.ByteCode.LinFu.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.ByteCode.Castle", "NHibernate.ByteCode.Castle\NHibernate.ByteCode.Castle.csproj", "{31C3F0EA-0FED-4A2F-B68D-96CE29844487}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.ByteCode.Spring", "NHibernate.ByteCode.Spring\NHibernate.ByteCode.Spring.csproj", "{946BCA10-109A-4472-8521-76616174AD4D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.ByteCode.Castle.Tests", "NHibernate.ByteCode.Castle.Tests\NHibernate.ByteCode.Castle.Tests.csproj", "{4972EE96-2417-4D47-9FF1-3B1D6B1D3191}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.TestDatabaseSetup", "NHibernate.TestDatabaseSetup\NHibernate.TestDatabaseSetup.csproj", "{BEEC1564-6FB6-49F7-BBE5-8EBD2F0F6E8A}"
 EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = NHibernate.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -59,10 +52,6 @@ Global
 		{31C3F0EA-0FED-4A2F-B68D-96CE29844487}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31C3F0EA-0FED-4A2F-B68D-96CE29844487}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31C3F0EA-0FED-4A2F-B68D-96CE29844487}.Release|Any CPU.Build.0 = Release|Any CPU
-		{946BCA10-109A-4472-8521-76616174AD4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{946BCA10-109A-4472-8521-76616174AD4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{946BCA10-109A-4472-8521-76616174AD4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{946BCA10-109A-4472-8521-76616174AD4D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4972EE96-2417-4D47-9FF1-3B1D6B1D3191}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4972EE96-2417-4D47-9FF1-3B1D6B1D3191}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4972EE96-2417-4D47-9FF1-3B1D6B1D3191}.Release|Any CPU.ActiveCfg = Release|Any CPU
