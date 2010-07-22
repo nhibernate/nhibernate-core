@@ -6,6 +6,7 @@ using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Id;
 using NHibernate.Persister.Entity;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace NHibernate.Test.HQL.Ast
 {
@@ -604,6 +605,37 @@ namespace NHibernate.Test.HQL.Ast
 
 			t.Commit();
 			s.Close();
+
+			data.Cleanup();
+		}
+
+		[Test]
+		public void UpdateMultiplePropertyOnAnimal()
+		{
+			var data = new TestData(this);
+			data.Prepare();
+
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				int count =
+					s.CreateQuery("update Animal set description = :newDesc, bodyWeight = :w1 where description = :desc")
+						.SetString("desc", data.Polliwog.Description)
+						.SetString("newDesc", "Tadpole")
+						.SetDouble("w1", 3)
+						.ExecuteUpdate();
+				
+				count.Should().Be(1);
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var tadpole = s.Get<Animal>(data.Polliwog.Id);
+				tadpole.Description.Should().Be("Tadpole");
+				tadpole.BodyWeight.Should().Be(3);
+			}
 
 			data.Cleanup();
 		}
