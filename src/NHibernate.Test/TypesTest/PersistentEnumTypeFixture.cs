@@ -1,6 +1,7 @@
 using System;
 using NHibernate.Type;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -113,6 +114,36 @@ namespace NHibernate.Test.TypesTest
 				s2.Flush();
 				s2.Close();
 			}
+		}
+
+		[Test]
+		public void CanWriteAndReadUsingBothHeuristicAndExplicitGenericDeclaration()
+		{
+			var persistentEnumClass = new PersistentEnumClass {Id = 1, A = A.Two, B = B.One};
+			using (ISession s = OpenSession())
+			{
+				s.Save(persistentEnumClass);
+				s.Flush();
+			}
+
+			using (ISession s = sessions.OpenSession())
+			{
+				var saved = s.Get<PersistentEnumClass>(1);
+				saved.A.Should().Be(A.Two);
+				saved.B.Should().Be(B.One);
+				s.Delete(saved);
+				s.Flush();
+			}
+		}
+	}
+
+	public class GenericEnumTypeTest
+	{
+		[Test]
+		public void TheNameShouldBeFullNameAndAssembly()
+		{
+			var enumType = new EnumType<B>();
+			enumType.Name.Should().Be(typeof(EnumType<B>).FullName + ", NHibernate");
 		}
 	}
 }

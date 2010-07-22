@@ -279,6 +279,22 @@ namespace NHibernate.Type
 		{
 			return ReturnedClass.GetHashCode();
 		}
+	}
 
+	[Serializable]
+	public class EnumType<T> : PersistentEnumType
+	{
+		private readonly string typeName;
+
+		public EnumType() : base(typeof (T))
+		{
+			System.Type type = GetType();
+			typeName = type.FullName + ", " + type.Assembly.GetName().Name;
+		}
+
+		public override string Name
+		{
+			get { return typeName; }
+		}
 	}
 }

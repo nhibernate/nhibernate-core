@@ -3,6 +3,7 @@ using log4net;
 using log4net.Repository.Hierarchy;
 using NHibernate.Type;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -137,6 +138,25 @@ namespace NHibernate.Test.TypesTest
 
 			Assert.That(singleType, Is.SameAs(TypeFactory.Basic("Single(10,5)")));
 			Assert.That(singleType, Is.Not.SameAs(TypeFactory.Basic("Single(11,5)")));
+		}
+
+		public enum MyEnum
+		{
+			One
+		}
+
+		[Test]
+		public void WhenUseEnumThenReturnGenericEnumType()
+		{
+			var iType = TypeFactory.HeuristicType(typeof (MyEnum).AssemblyQualifiedName);
+			iType.Should().Be.OfType<EnumType<MyEnum>>();
+		}
+
+		[Test]
+		public void WhenUseNullableEnumThenReturnGenericEnumType()
+		{
+			var iType = TypeFactory.HeuristicType(typeof(MyEnum?).AssemblyQualifiedName);
+			iType.Should().Be.OfType<EnumType<MyEnum>>();
 		}
 	}
 }

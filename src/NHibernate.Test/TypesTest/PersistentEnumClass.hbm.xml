@@ -12,6 +12,6 @@
 		</id>
 		
 		<property name="A" />
-		<property name="B" />
+		<property name="B" type="NHibernate.Type.EnumType`1[[NHibernate.Test.TypesTest.B, NHibernate.Test]], NHibernate" />
 	</class>
 </hibernate-mapping>

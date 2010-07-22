@@ -4,6 +4,7 @@ using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace NHibernate.Test.GenericTest.EnumGeneric
 {
@@ -44,7 +45,7 @@ namespace NHibernate.Test.GenericTest.EnumGeneric
 
 				if (index == -1) Assert.Fail("Property NullableValue not found.");
 
-				Assert.AreEqual(typeof (PersistentEnumType), persister.PropertyTypes[index].GetType());
+				persister.PropertyTypes[index].Should().Be.AssignableTo<PersistentEnumType>();
 			}
 		}
 

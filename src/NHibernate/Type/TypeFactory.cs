@@ -498,11 +498,11 @@ namespace NHibernate.Type
 					}
 					else if (typeClass.IsEnum)
 					{
-						type = NHibernateUtil.Enum(typeClass);
+						type = (IType) Activator.CreateInstance(typeof (EnumType<>).MakeGenericType(typeClass));
 					}
 					else if (IsNullableEnum(typeClass))
 					{
-						type = NHibernateUtil.Enum(typeClass.GetGenericArguments()[0]);
+						type = (IType)Activator.CreateInstance(typeof(EnumType<>).MakeGenericType(typeClass.GetGenericArguments()[0]));
 					}
 					else if (typeClass.IsSerializable)
 					{
