@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using NHibernate.SqlTypes;
+using NHibernate.UserTypes;
 
 namespace NHibernate.Type
 {
@@ -9,12 +11,14 @@ namespace NHibernate.Type
 	/// <see cref="DbType.Date"/> column
 	/// </summary>
 	[Serializable]
-	public class DateType : PrimitiveType, IIdentifierType, ILiteralType
+	public class DateType : PrimitiveType, IIdentifierType, ILiteralType, IParameterizedType
 	{
-		private static readonly DateTime BaseDateValue = new DateTime(1753, 01, 01);
+		public const string BaseValueParameterName = "BaseValue";
+		public static readonly DateTime BaseDateValue = new DateTime(1753, 01, 01);
+		private DateTime customBaseDate = BaseDateValue;
 
 		/// <summary></summary>
-		internal DateType() : base(SqlTypeFactory.Date)
+		public DateType() : base(SqlTypeFactory.Date)
 		{
 		}
 
@@ -29,7 +33,7 @@ namespace NHibernate.Type
 			try
 			{
 				DateTime dbValue = Convert.ToDateTime(rs[index]);
-				return new DateTime(dbValue.Year, dbValue.Month, dbValue.Day);
+				return dbValue.Date;
 			}
 			catch (Exception ex)
 			{
@@ -51,7 +55,7 @@ namespace NHibernate.Type
 		{
 			var parm = st.Parameters[index] as IDataParameter;
 			var dateTime = (DateTime)value;
-			if (dateTime < BaseDateValue)
+			if (dateTime < customBaseDate)
 			{
 				parm.Value = DBNull.Value;
 			}
@@ -118,12 +122,25 @@ namespace NHibernate.Type
 
 		public override object DefaultValue
 		{
-			get { return BaseDateValue; }
+			get { return customBaseDate; }
 		}
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
 			return '\'' + ((DateTime)value).ToShortDateString() + '\'';
+		}
+
+		public void SetParameterValues(IDictionary<string, string> parameters)
+		{
+			if(parameters == null)
+			{
+				return;
+			}
+			string value;
+			if (parameters.TryGetValue(BaseValueParameterName, out value))
+			{
+				customBaseDate = DateTime.Parse(value);
+			}
 		}
 	}
 }

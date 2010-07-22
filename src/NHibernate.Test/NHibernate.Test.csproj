@@ -1525,6 +1525,8 @@
     <Compile Include="TypesTest\ByteTypeFixture.cs" />
     <Compile Include="TypesTest\CurrencyClass.cs" />
     <Compile Include="TypesTest\CurrencyTypeFixture.cs" />
+    <Compile Include="TypesTest\DateClass.cs" />
+    <Compile Include="TypesTest\DateTypeTest.cs" />
     <Compile Include="TypesTest\TimeAsTimeSpanClass.cs" />
     <Compile Include="TypesTest\TimeAsTimeSpanTypeFixture.cs" />
     <Compile Include="TypesTest\TimeSpanClass.cs" />
@@ -2200,6 +2202,7 @@
     <EmbeddedResource Include="DriverTest\SqlServerCeEntity.hbm.xml" />
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="TypesTest\DateClass.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2207\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2243\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1891\FormulaEscaping.hbm.xml" />
