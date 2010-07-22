@@ -4,6 +4,7 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using System;
 using NHibernate.Util;
+using Array = System.Array;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -332,6 +333,16 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (componentMapping.unique)
 			{
 				model.Owner.Table.CreateUniqueKey(model.ColumnIterator.OfType<Column>().ToList());
+			}
+			HbmTuplizer[] tuplizers = componentMapping.tuplizer;
+			if (tuplizers != null)
+			{
+				Array.ForEach(tuplizers.Select(tuplizer => new
+				                                           	{
+				                                           		TuplizerClassName = FullQualifiedClassName(tuplizer.@class, mappings),
+				                                           		Mode = tuplizer.entitymode.ToEntityMode()
+				                                           	}).ToArray(),
+				              x => model.AddTuplizer(x.Mode, x.TuplizerClassName));
 			}
 		}
 
