@@ -6,7 +6,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2251
 {
 	public class Fixture : BugTestCase
 	{
-		[Test, Ignore("Changing the original query parameters after FutureValue cause the mix of parameters in SQL.")]
+		[Test, Ignore("Executing FutureValue before Future cause the mix of parameters in SQL.")]
 		public void WhenUseFutureSkipTakeThenNotThrow()
 		{
 			using (var session = OpenSession())
