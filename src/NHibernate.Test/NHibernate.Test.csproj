@@ -1610,6 +1610,7 @@
     <Compile Include="UtilityTest\JoinedEnumerableGenericFixture.cs" />
     <Compile Include="UtilityTest\LinkedHashMapFixture.cs" />
     <Compile Include="UtilityTest\LRUMapFixture.cs" />
+    <Compile Include="UtilityTest\PropertiesHelperTest.cs" />
     <Compile Include="UtilityTest\ReflectHelperFixture.cs" />
     <Compile Include="UtilityTest\SafetyEnumerableFixture.cs" />
     <Compile Include="UtilityTest\SequencedHashMapFixture.cs" />
