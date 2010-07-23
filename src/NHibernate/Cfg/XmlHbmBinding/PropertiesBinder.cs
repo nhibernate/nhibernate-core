@@ -114,7 +114,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				else if ((componentMapping = entityPropertyMapping as HbmComponent) != null)
 				{
 					string subpath = propertyName == null ? null : StringHelper.Qualify(propertyBasePath, propertyName);
-					var value = CreateNewComponent();
+					var value = CreateNewComponent(table);
 					// NH: Modified from H2.1 to allow specifying the type explicitly using class attribute
 					System.Type reflectedClass = mappedClass == null ? null : GetPropertyType(componentMapping.Class, mappedClass, propertyName, componentMapping.Access);
 					BindComponent(componentMapping, value, reflectedClass, entityName, subpath, componetDefaultNullable, inheritedMetas);
@@ -131,7 +131,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				else if ((dynamicComponentMapping = entityPropertyMapping as HbmDynamicComponent) != null)
 				{
 					string subpath = propertyName == null ? null : StringHelper.Qualify(propertyBasePath, propertyName);
-					var value = CreateNewComponent();
+					var value = CreateNewComponent(table);
 					// NH: Modified from H2.1 to allow specifying the type explicitly using class attribute
 					System.Type reflectedClass = mappedClass == null ? null : GetPropertyType(dynamicComponentMapping.Class, mappedClass, propertyName, dynamicComponentMapping.Access);
 					BindComponent(dynamicComponentMapping, value, reflectedClass, entityName, subpath, componetDefaultNullable, inheritedMetas);
@@ -152,7 +152,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 						throw new AssertionFailure("Nested Composite Element without a owner component.");
 					}
 					string subpath = propertyName == null ? null : StringHelper.Qualify(propertyBasePath, propertyName);
-					var value = CreateNewComponent();
+					var value = CreateNewComponent(table);
 					// NH: Modified from H2.1 to allow specifying the type explicitly using class attribute
 					System.Type reflectedClass = mappedClass == null ? null : GetPropertyType(nestedCompositeElementMapping.Class, mappedClass, propertyName, nestedCompositeElementMapping.access);
 					BindComponent(nestedCompositeElementMapping, value, reflectedClass, entityName, subpath, componetDefaultNullable, inheritedMetas);
@@ -180,10 +180,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}			
 		}
 
-		private Component CreateNewComponent()
+		private Component CreateNewComponent(Table table)
 		{
 			// Manage nested components
-			return component != null ? new Component(component) : new Component(persistentClass);
+			return component != null ? new Component(component) : new Component(table, persistentClass);
 		}
 
 		private System.Type GetPropertyType(string classMapping, System.Type containingType, string propertyName, string propertyAccess)

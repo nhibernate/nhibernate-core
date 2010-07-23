@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+					 namespace="NHibernate.Test.NHSpecificTest.NH2041"
+					 assembly="NHibernate.Test">
+
+  <class name="MyClass">
+    <id type="int">
+      <generator class="hilo" />
+    </id>
+    <join table="Locations">
+      <key column="myclassId"/>
+      <component name="Location">
+        <property name="Latitude" column="latitudecol"/>
+        <property name="Longitude" column="longitudecol"/>
+      </component>
+    </join>
+  </class>
+</hibernate-mapping>

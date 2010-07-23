@@ -92,16 +92,16 @@ namespace NHibernate.Mapping
 			this.owner = owner;
 		}
 
+		public Component(Table table, PersistentClass owner)
+			: base(table)
+		{
+			this.owner = owner;
+		}
+
 		public Component(Collection collection)
 			: base(collection.CollectionTable)
 		{
 			owner = collection.Owner;
-		}
-
-		public Component(Join join)
-			: base(join.Table)
-		{
-			owner = join.PersistentClass;
 		}
 
 		public Component(Component component)
