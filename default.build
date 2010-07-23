@@ -300,7 +300,8 @@
 				<include name="Antlr3.Runtime.dll" />
 				<include name="Iesi.Collections.???" />
 				<include name="log4net*" />
-				<include name="NHibernate.???" />
+        <include name="Remotion.Data.Linq.dll" />
+        <include name="NHibernate.???" />
 			</fileset>
 		</copy>
 		<!--Required Bins for lazy loading NHibernate.ByteCode.Castle.dll-->
