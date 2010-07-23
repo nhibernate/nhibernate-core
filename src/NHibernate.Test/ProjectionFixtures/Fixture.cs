@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Criterion;
 using NHibernate.Driver;
 using NUnit.Framework;
@@ -93,7 +94,7 @@ Positional parameters:  #0>2
             }
         		Assert.Fail();
         	}
-					catch (ADOException e)
+					catch (Exception e)
         	{
         		if(e.Message != expectedMessage)
         			throw;

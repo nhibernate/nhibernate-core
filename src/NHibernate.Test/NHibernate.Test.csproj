@@ -470,6 +470,7 @@
     <Compile Include="NHSpecificTest\NH2094\Model.cs" />
     <Compile Include="NHSpecificTest\NH2102\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2102\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2166\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2189\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2189\Model.cs" />
     <Compile Include="NHSpecificTest\ElementsEnums\AbstractIntEnumsBagFixture.cs" />

@@ -55,13 +55,13 @@ namespace NHibernate.Exceptions
 			return Convert(converter, new AdoExceptionContextInfo {SqlException = sqlException, Message = message, Sql = sql});
 		}
 
-		public static ADOException Convert(ISQLExceptionConverter converter, Exception sqle, string message, SqlString sql,
+		public static Exception Convert(ISQLExceptionConverter converter, Exception sqle, string message, SqlString sql,
 		                                   object[] parameterValues, IDictionary<string, TypedValue> namedParameters)
 		{
 			sql = TryGetActualSqlQuery(sqle, sql);
 			string extendMessage = ExtendMessage(message, sql != null ? sql.ToString() : null, parameterValues, namedParameters);
 			ADOExceptionReporter.LogExceptions(sqle, extendMessage);
-			return new ADOException(extendMessage, sqle, sql != null ? sql.ToString() : SQLNotAvailable);
+			return Convert(converter, sqle, extendMessage, sql);
 		}
 
 		/// <summary> For the given <see cref="Exception"/>, locates the <see cref="System.Data.Common.DbException"/>. </summary>
