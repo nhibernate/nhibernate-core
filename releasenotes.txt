@@ -4,6 +4,100 @@ Build 3.0.0.Alpha1
 	##### Run time #####
 		* (NH-2199) - null values in maps/dictionaries are no longer silenty ignored/deleted
 
+Build 3.0.0.Alpha1 (rev5056)
+=============================
+
+** Sub-task
+    * [NH-2045] - NH 2044 Fixed
+
+** Bug
+    * [NH-892] - <many-to-one> associated by property-ref generates wrong SQL
+    * [NH-1849] - Using custom sql function "contains" causes an Antlr exception
+    * [NH-1891] - Formula - Escape characters break formula
+    * [NH-1899] - SaveOrUpdateCopy throws InvalidCastException
+    * [NH-1902] - QBE don't set the '%' wildcards when using an other matchmode than Matchmode.Exact
+    * [NH-1975] - QueryOver() on char Property yields exception
+    * [NH-1981] - Multiple SQL parameters generated for same HQL parameter
+    * [NH-1989] - Future query does not use second level cache
+    * [NH-2009] - Many-to-one fails when using property-ref against a joined property
+    * [NH-2020] - ISQLExceptionConverter does not get called if batch size enabled
+    * [NH-2027] - NH sql-query does not support calling Stored Procedures in Packages
+    * [NH-2030] - NHibernate.SqlTypes.SqlTypeFactory is not threadsafe
+    * [NH-2035] - Wrong error "ORDER BY items must appear in the select list if SELECT DISTINCT is specified."
+    * [NH-2044] - NHibernate.Criterion.Expression.Eq with chartype has a bug
+    * [NH-2047] - OracleDataClientBatchingBatcher writes misleading log messages in a different format than SqlClientBatchingBatcher
+    * [NH-2052] - CLONE -Getting identifier on a proxied class initializes it when identifier is defined in parent class
+    * [NH-2064] - Filter definitions should not be mandatory to be used
+    * [NH-2069] - When touching the identifier of a proxy object a call to the database is executed. 
+    * [NH-2074] - SQL Server Dialect: unicode literals in formula results in incorrect SQL
+    * [NH-2086] - MsSqlCeDialect fails when mapping contains schemas
+    * [NH-2090] - ShemaValidator + Firebird
+    * [NH-2092] - Constrained lazy loaded one to one relations using Castle DynamicProxy throws ArgumentNullException
+    * [NH-2093] - When using Castle:s FieldInterceptionProxy, NHibernateProxyHelper.GuessClass() cannot guess the correct entity type.
+    * [NH-2094] - When using Castle:s FieldInterceptorProxy, accessing an initialized property (even nonlazy) throws LazyInitializationException
+    * [NH-2102] - Entity with constrained, lazy one-to-one relation should not generate field intercepting proxy
+    * [NH-2113] - NH force eager loading of key-many-to-one entity with overriden GetHashCode
+    * [NH-2122] - Nhibernate documentation refers to CriteriaUtil whitch is removed from 2.1
+    * [NH-2129] - FutureValue Parameters Missing Quotes
+    * [NH-2137] - list-index with one-to-many does not work
+    * [NH-2155] - NHibernate project files contain reference to missing AssemblyInfo.cs file
+    * [NH-2166] - Custom ISQLExceptionConverter is not called in the case when using query.UniqueResult<T>()
+    * [NH-2168] - Statistics.QueryExecutionMaxTimeQueryString is empty
+    * [NH-2173] - SetMaxResults fails when Dialect has BindLimitParametersFirst == true
+    * [NH-2175] - Cannot Cache NHibernate Future Criteria Results
+    * [NH-2189] - Fetch Join Not Consistently Working With Future
+    * [NH-2192] - Thread safety issue with QueryParameters.PrepareParameterTypes
+    * [NH-2199] - Map with element doesn't support nullable types
+    * [NH-2205] - NHibernate.Loader.Loader.DoQuery can hide exceptions
+    * [NH-2210] - Problem with merging detached entities with components
+    * [NH-2219] - HQL Update of multiple columns only updates the first column
+    * [NH-2221] - The tuplizer value specified for a component within a HBM file is ignored
+    * [NH-2225] - New Embedded LINQ Provider & Bitwise Queries
+    * [NH-2235] - IQueryOver.SelectList uses sub-type type instead of root type
+    * [NH-2242] - Formula - Escape characters break formula
+
+** Improvement
+    * [NH-1248] - Check if result of Subquery is null with Criteria API
+    * [NH-1838] - Guid support in MySql dialect
+    * [NH-1850] - NHibernate should log query duration
+    * [NH-1862] - Strongly typed configuration of SessionFactory properties 
+    * [NH-1877] - Support for Projections.GroupBy(IProjection projection) 
+    * [NH-1892] - Programatic configuration of Cache
+    * [NH-1935] - Add new WcfSessionContext to the already available ICurrentSessionContext implementations
+    * [NH-2021] - Exceptions serialization
+    * [NH-2055] - hbm2ddl SchemaExport support batching (GO in ddl)
+    * [NH-2065] - provide better exception details
+    * [NH-2083] - Undocumented attributes on hibernate-mapping element
+    * [NH-2150] - CreateCriteria / QueryOver inconsistency
+    * [NH-2186] - Allow MultiCriteria to directly add IQueryOver
+    * [NH-2215] - MsSql2005Dialect does not use parameters for paging parameters
+    * [NH-2216] - EnumType<T> as IType
+    * [NH-2230] - <parent> tag does not allow any accessor
+    * [NH-2249] - DateType as IParameterizedType to customize the BaseDateValue for null
+
+** New Feature
+    * [NH-429] - Lazy load columns
+    * [NH-1922] - Allow DetachedCriteria To Work with IStatelessSession
+    * [NH-1978] - Add ability to delimit aliases in generated SQL
+    * [NH-2152] - QueryOver equality to null should generate (x is null or x == value)
+
+** Patch
+    * [NH-2031] - Mod function in SqlDialect is broken
+    * [NH-2041] - SchemaExport does not export Components in Joined tables properly
+    * [NH-2046] - Release builds do not include PDB files
+    * [NH-2101] - Missing IsNotIn for WhereRestrictionOn
+    * [NH-2106] - DetachedCriteria.SetLockMode() is missing
+    * [NH-2131] - SessionIdLoggingContext perf patch
+    * [NH-2169] - ToUpper and ToLower functions are inverted in the new Linq provider
+    * [NH-2194] - NHibernate.Util.PropertiesHelper class throwing FormatException when property values are in-compatible with the expected type
+    * [NH-2201] - NDataReader doesn't reset the currentrow index when a move to NextResult is executed
+    * [NH-2227] - Missing [Serializable] attribute on ReadOnlyAccessor
+    * [NH-2236] - GetSequenceNextValString for Informix is wrong
+    * [NH-2243] - 'foreign-key' ignored in join/key
+
+** Task
+    * [NH-2013] - HQL breaking change
+    * [NH-2247] - Update FlushMode Documentation
 
 Build 2.1.1.GA (rev4814)
 =============================
