@@ -48,6 +48,13 @@ namespace NHibernate.Mapping
 			}
 		}
 
+        public void ResetCachedType()
+        {
+            // this is required if the user is programatically modifying the Any instance
+            // and need to reset the cached type instance;
+            type = null;
+        }
+
 		public override void SetTypeUsingReflection(string className, string propertyName, string access)
 		{
 		}
