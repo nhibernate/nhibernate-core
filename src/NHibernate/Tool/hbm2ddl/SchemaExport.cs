@@ -21,13 +21,15 @@ namespace NHibernate.Tool.hbm2ddl
 	public class SchemaExport
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof (SchemaExport));
+		private bool wasInitialized;
+		private readonly Configuration cfg;
 		private readonly IDictionary<string, string> configProperties;
-		private readonly string[] createSQL;
-		private readonly Dialect.Dialect dialect;
-		private readonly string[] dropSQL;
+		private string[] createSQL;
+		private Dialect.Dialect dialect;
+		private string[] dropSQL;
+		private IFormatter formatter;
 		private string delimiter;
 		private string outputFile;
-		private readonly IFormatter formatter;
 
 		/// <summary>
 		/// Create a schema exported for a given Configuration
@@ -43,11 +45,21 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <param name="configProperties">The Properties to use when connecting to the Database.</param>
 		public SchemaExport(Configuration cfg, IDictionary<string, string> configProperties)
 		{
+			this.cfg = cfg;
 			this.configProperties = configProperties;
+		}
+
+		private void Initialize()
+		{
+			if(wasInitialized)
+			{
+				return;
+			}
 			dialect = Dialect.Dialect.GetDialect(configProperties);
 			dropSQL = cfg.GenerateDropSchemaScript(dialect);
 			createSQL = cfg.GenerateSchemaCreationScript(dialect);
 			formatter = (PropertiesHelper.GetBoolean(Environment.FormatSql, configProperties, true) ? FormatStyle.Ddl : FormatStyle.None).Formatter;
+			wasInitialized = true;
 		}
 
 		/// <summary>
@@ -108,6 +120,7 @@ namespace NHibernate.Tool.hbm2ddl
 		private void Execute(Action<string> scriptAction, bool export, bool throwOnError, TextWriter exportOutput,
 		                     IDbCommand statement, string sql)
 		{
+			Initialize();
 			try
 			{
 				string formatted = formatter.Format(sql);
@@ -196,6 +209,7 @@ namespace NHibernate.Tool.hbm2ddl
 		public void Execute(Action<string> scriptAction, bool export, bool justDrop, IDbConnection connection,
 		                    TextWriter exportOutput)
 		{
+			Initialize();
 			IDbCommand statement = null;
 
 			if (export && connection == null)
@@ -272,6 +286,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 		public void Execute(Action<string> scriptAction, bool export, bool justDrop)
 		{
+			Initialize();
 			IDbConnection connection = null;
 			StreamWriter fileOutput = null;
 			IConnectionProvider connectionProvider = null;
