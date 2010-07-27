@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"                     
+                   assembly="NHibernate.Test" 
+                   namespace="NHibernate.Test.NHSpecificTest.NH2208">
+
+  <class name="E1" table="E1" >
+    <id name="Id"  type="Int32">
+      <generator class="native"/>
+    </id>
+    <property name="P1" type="String"/>
+    <many-to-one class="SubOfReferred" name="BO"/>
+    <filter name="myfilter"/>
+  </class>
+
+  <class name="Referred" table="Referred" >
+    <id name="Id"  type="Int32">
+      <generator class="native"/>
+    </id>
+    <property name="P1" type="String"></property>
+    <joined-subclass name="SubOfReferred" table="SubT1">
+      <key column="k1"/>
+      <property name="XX" type="String"/>
+    </joined-subclass>
+    <filter name="myfilter"/>
+  </class>
+  <filter-def name="myfilter" condition="P1 like '%doesnotmatter%'"/>
+</hibernate-mapping>

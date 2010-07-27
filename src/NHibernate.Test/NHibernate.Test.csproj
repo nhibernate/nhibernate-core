@@ -758,6 +758,10 @@
     <Compile Include="NHSpecificTest\NH2201\Model.cs" />
     <Compile Include="NHSpecificTest\NH2207\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH2207\SampleTest.cs" />
+    <Compile Include="NHSpecificTest\NH2208\E1.generated.cs" />
+    <Compile Include="NHSpecificTest\NH2208\Filter.cs" />
+    <Compile Include="NHSpecificTest\NH2208\Referred.generated.cs" />
+    <Compile Include="NHSpecificTest\NH2208\SubOfReferred.generated.cs" />
     <Compile Include="NHSpecificTest\NH2230\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2230\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2234\Fixture.cs" />
@@ -2210,6 +2214,7 @@
     <EmbeddedResource Include="DriverTest\SqlServerCeEntity.hbm.xml" />
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH2208\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2251\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2041\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2031\Mappings.hbm.xml" />
