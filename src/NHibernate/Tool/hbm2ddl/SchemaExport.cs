@@ -55,6 +55,13 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				return;
 			}
+			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, configProperties, "not-defined");
+			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
+			if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
+			{
+				SchemaMetadataUpdater.QuoteTableAndColumns(cfg);
+			}
+
 			dialect = Dialect.Dialect.GetDialect(configProperties);
 			dropSQL = cfg.GenerateDropSchemaScript(dialect);
 			createSQL = cfg.GenerateSchemaCreationScript(dialect);

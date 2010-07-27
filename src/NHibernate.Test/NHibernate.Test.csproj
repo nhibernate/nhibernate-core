@@ -1434,6 +1434,7 @@
     <Compile Include="SqlTest\SqlTypeFactoryFixture.cs" />
     <Compile Include="Stateless\Naturalness.cs" />
     <Compile Include="Stateless\StatelessWithRelationsFixture.cs" />
+    <Compile Include="Tools\hbm2ddl\SchemaExportTests\AutoQuoteFixture.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaExportTests\WithColumnTag.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaExportTests\WithColumnTagFixture.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaMetadataUpdaterTest\HeavyEntity.cs" />
