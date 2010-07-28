@@ -655,6 +655,7 @@
     <Compile Include="Linq\Expressions\AggregateExpressionNode.cs" />
     <Compile Include="Linq\EagerFetchingExtensionMethods.cs" />
     <Compile Include="Linq\Functions\ILinqToHqlGeneratorsRegistry.cs" />
+    <Compile Include="Linq\Functions\LinqToHqlGeneratorsRegistryFactory.cs" />
     <Compile Include="Linq\LinqExtensionMethodAttribute.cs" />
     <Compile Include="Linq\TypeHelperExtensionMethods.cs" />
     <Compile Include="Linq\Visitors\NameUnNamedParameters.cs" />
