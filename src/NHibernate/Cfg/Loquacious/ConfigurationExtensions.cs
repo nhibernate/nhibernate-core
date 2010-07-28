@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Hql;
+using NHibernate.Linq.Functions;
 using NHibernate.Util;
 
 namespace NHibernate.Cfg.Loquacious
@@ -39,6 +40,12 @@ namespace NHibernate.Cfg.Loquacious
 		public static Configuration HqlQueryTranslator<TQueryTranslator>(this Configuration configuration) where TQueryTranslator : IQueryTranslatorFactory
 		{
 			configuration.SetProperty(Environment.QueryTranslator, typeof(TQueryTranslator).AssemblyQualifiedName);
+			return configuration;
+		}
+
+		public static Configuration LinqToHqlGeneratorsRegistry<TLinqToHqlGeneratorsRegistry>(this Configuration configuration) where TLinqToHqlGeneratorsRegistry : ILinqToHqlGeneratorsRegistry
+		{
+			configuration.SetProperty(Environment.LinqToHqlGeneratorsRegistry, typeof(TLinqToHqlGeneratorsRegistry).AssemblyQualifiedName);
 			return configuration;
 		}
 
