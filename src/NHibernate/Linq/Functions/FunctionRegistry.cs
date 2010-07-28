@@ -7,23 +7,6 @@ using System.Reflection;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Visitors;
 
-namespace NHibernate.Linq
-{
-    public class LinqExtensionMethodAttribute : Attribute
-    {
-        public string Name { get; private set; }
-
-        public LinqExtensionMethodAttribute()
-        {
-        }
-
-        public LinqExtensionMethodAttribute(string name)
-        {
-            Name = name;
-        }
-    }
-}
-
 namespace NHibernate.Linq.Functions
 {
     public class FunctionRegistry

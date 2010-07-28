@@ -654,6 +654,7 @@
     <Compile Include="Impl\SessionIdLoggingContext.cs" />
     <Compile Include="Linq\Expressions\AggregateExpressionNode.cs" />
     <Compile Include="Linq\EagerFetchingExtensionMethods.cs" />
+    <Compile Include="Linq\LinqExtensionMethodAttribute.cs" />
     <Compile Include="Linq\TypeHelperExtensionMethods.cs" />
     <Compile Include="Linq\Visitors\NameUnNamedParameters.cs" />
     <Compile Include="Linq\NhRelinqQueryParser.cs" />
