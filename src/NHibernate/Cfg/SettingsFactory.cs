@@ -52,7 +52,7 @@ namespace NHibernate.Cfg
 			}
 			settings.Dialect = dialect;
 
-			settings.LinqToHqlGeneratorsRegistry = new FunctionRegistry();
+			settings.LinqToHqlGeneratorsRegistry = LinqToHqlGeneratorsRegistryFactory.CreateGeneratorsRegistry(properties);
 
 			#region SQL Exception converter
 
