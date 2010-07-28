@@ -17,6 +17,7 @@ namespace NHibernate.Linq.Functions
 		public DefaultLinqToHqlGeneratorsRegistry()
 		{
 			// TODO - could use reflection here
+			Register(new StandardLinqExtensionMethodGenerator());
 			Register(new QueryableGenerator());
 			Register(new StringGenerator());
 			Register(new DateTimeGenerator());
@@ -30,21 +31,6 @@ namespace NHibernate.Linq.Functions
 			foreach (var typeGenerator in typeGenerators.Where(typeGenerator => typeGenerator.SupportsMethod(method)))
 			{
 				methodGenerator = typeGenerator.GetMethodGenerator(method);
-				return true;
-			}
-			return false;
-		}
-
-		protected bool GetStandardLinqExtensionMethodGenerator(MethodInfo method, out IHqlGeneratorForMethod methodGenerator)
-		{
-			methodGenerator = null;
-
-			var attr = method.GetCustomAttributes(typeof(LinqExtensionMethodAttribute), false);
-
-			if (attr.Length == 1)
-			{
-				// It is
-				methodGenerator = new HqlGeneratorForExtensionMethod((LinqExtensionMethodAttribute)attr[0], method);
 				return true;
 			}
 			return false;
@@ -67,9 +53,6 @@ namespace NHibernate.Linq.Functions
 			}
 
 			if (GetRegisteredMethodGenerator(method, out generator)) return true;
-
-			// No method generator registered.  Look to see if it's a standard LinqExtensionMethod
-			if (GetStandardLinqExtensionMethodGenerator(method, out generator)) return true;
 
 			// Not that either.  Let's query each type generator to see if it can handle it
 			if (GetMethodGeneratorForType(method, out generator)) return true;
@@ -98,36 +81,4 @@ namespace NHibernate.Linq.Functions
 			typeMethodGenerator.Register(this);
 		}
 	}
-
-    public class HqlGeneratorForExtensionMethod : BaseHqlGeneratorForMethod
-    {
-        private readonly string _name;
-
-        public HqlGeneratorForExtensionMethod(LinqExtensionMethodAttribute attribute, MethodInfo method)
-        {
-            _name = string.IsNullOrEmpty(attribute.Name) ? method.Name : attribute.Name;
-        }
-
-        public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
-        {
-            var args = visitor.Visit(targetObject)
-                              .Union(arguments.Select(a => visitor.Visit(a)))
-                              .Cast<HqlExpression>();
-
-            return treeBuilder.MethodCall(_name, args);
-        }
-    }
-
-    static class UnionExtension
-    {
-        public static IEnumerable<HqlTreeNode> Union(this HqlTreeNode first, IEnumerable<HqlTreeNode> rest)
-        {
-            yield return first;
-
-            foreach (var x in rest)
-            {
-                yield return x;
-            }
-        }
-    }
 }
