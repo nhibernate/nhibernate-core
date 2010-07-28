@@ -1,42 +1,45 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq.Functions
 {
-    abstract public class BaseHqlGeneratorForType : IHqlGeneratorForType
-    {
-        protected readonly List<IHqlGeneratorForMethod> MethodRegistry = new List<IHqlGeneratorForMethod>();
-        protected readonly List<IHqlGeneratorForProperty> PropertyRegistry = new List<IHqlGeneratorForProperty>();
+	public abstract class BaseHqlGeneratorForType : IHqlGeneratorForType
+	{
+		protected readonly List<IHqlGeneratorForMethod> MethodRegistry = new List<IHqlGeneratorForMethod>();
+		protected readonly List<IHqlGeneratorForProperty> PropertyRegistry = new List<IHqlGeneratorForProperty>();
 
-        public void Register(DefaultLinqToHqlGeneratorsRegistry functionRegistry)
-        {
-            foreach (var generator in MethodRegistry)
-            {
-                foreach (var method in generator.SupportedMethods)
-                {
-                    functionRegistry.RegisterGenerator(method, generator);
-                }
-            }
+		#region IHqlGeneratorForType Members
 
-            foreach (var generator in PropertyRegistry)
-            {
-                foreach (var property in generator.SupportedProperties)
-                {
-                    functionRegistry.RegisterGenerator(property, generator);
-                }
-            }
-        }
+		public void Register(ILinqToHqlGeneratorsRegistry functionRegistry)
+		{
+			foreach (IHqlGeneratorForMethod generator in MethodRegistry)
+			{
+				foreach (MethodInfo method in generator.SupportedMethods)
+				{
+					functionRegistry.RegisterGenerator(method, generator);
+				}
+			}
 
-        public virtual bool SupportsMethod(MethodInfo method)
-        {
-            return false;
-        }
+			foreach (IHqlGeneratorForProperty generator in PropertyRegistry)
+			{
+				foreach (MemberInfo property in generator.SupportedProperties)
+				{
+					functionRegistry.RegisterGenerator(property, generator);
+				}
+			}
+		}
 
-        public virtual IHqlGeneratorForMethod GetMethodGenerator(MethodInfo method)
-        {
-            throw new NotSupportedException();
-        }
-    }
+		public virtual bool SupportsMethod(MethodInfo method)
+		{
+			return false;
+		}
+
+		public virtual IHqlGeneratorForMethod GetMethodGenerator(MethodInfo method)
+		{
+			throw new NotSupportedException();
+		}
+
+		#endregion
+	}
 }
