@@ -71,7 +71,7 @@ namespace NHibernate.Linq.Visitors
             return base.VisitExpression(expression);
         }
 
-        private static bool CanBeEvaluatedInHqlSelectStatement(Expression expression)
+        private bool CanBeEvaluatedInHqlSelectStatement(Expression expression)
         {
             if ((expression.NodeType == ExpressionType.MemberInit) || (expression.NodeType == ExpressionType.New) || (expression.NodeType == ExpressionType.Constant))
             {
