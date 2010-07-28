@@ -13,9 +13,9 @@ namespace NHibernate.Linq.Functions
     {
         public static readonly FunctionRegistry Instance = new FunctionRegistry();
 
-        private readonly Dictionary<MethodInfo, IHqlGeneratorForMethod> _registeredMethods = new Dictionary<MethodInfo, IHqlGeneratorForMethod>();
-        private readonly Dictionary<MemberInfo, IHqlGeneratorForProperty> _registeredProperties = new Dictionary<MemberInfo, IHqlGeneratorForProperty>();
-        private readonly List<IHqlGeneratorForType> _typeGenerators = new List<IHqlGeneratorForType>();
+        private readonly Dictionary<MethodInfo, IHqlGeneratorForMethod> registeredMethods = new Dictionary<MethodInfo, IHqlGeneratorForMethod>();
+        private readonly Dictionary<MemberInfo, IHqlGeneratorForProperty> registeredProperties = new Dictionary<MemberInfo, IHqlGeneratorForProperty>();
+        private readonly List<IHqlGeneratorForType> typeGenerators = new List<IHqlGeneratorForType>();
 
         private FunctionRegistry()
         {
@@ -26,7 +26,7 @@ namespace NHibernate.Linq.Functions
             Register(new ICollectionGenerator());
         }
 
-        public IHqlGeneratorForMethod GetMethodGenerator(MethodInfo method)
+        public IHqlGeneratorForMethod GetGenerator(MethodInfo method)
         {
             IHqlGeneratorForMethod methodGenerator;
 
@@ -60,7 +60,7 @@ namespace NHibernate.Linq.Functions
         {
             methodGenerator = null;
 
-            foreach (var typeGenerator in _typeGenerators.Where(typeGenerator => typeGenerator.SupportsMethod(method)))
+            foreach (var typeGenerator in typeGenerators.Where(typeGenerator => typeGenerator.SupportsMethod(method)))
             {
                 methodGenerator = typeGenerator.GetMethodGenerator(method);
                 return true;
@@ -85,18 +85,18 @@ namespace NHibernate.Linq.Functions
 
         private bool GetRegisteredMethodGenerator(MethodInfo method, out IHqlGeneratorForMethod methodGenerator)
         {
-            if (_registeredMethods.TryGetValue(method, out methodGenerator))
+            if (registeredMethods.TryGetValue(method, out methodGenerator))
             {
                 return true;
             }
             return false;
         }
 
-        public IHqlGeneratorForProperty GetPropertyGenerator(MemberInfo member)
+        public IHqlGeneratorForProperty GetGenerator(MemberInfo member)
         {
             IHqlGeneratorForProperty propertyGenerator;
 
-            if (_registeredProperties.TryGetValue(member, out propertyGenerator))
+            if (registeredProperties.TryGetValue(member, out propertyGenerator))
             {
                 return propertyGenerator;
             }
@@ -105,19 +105,19 @@ namespace NHibernate.Linq.Functions
             return null;
         }
 
-        public void RegisterMethodGenerator(MethodInfo method, IHqlGeneratorForMethod generator)
+        public void RegisterGenerator(MethodInfo method, IHqlGeneratorForMethod generator)
         {
-            _registeredMethods.Add(method, generator);
+            registeredMethods.Add(method, generator);
         }
 
-        public void RegisterPropertyGenerator(MemberInfo property, IHqlGeneratorForProperty generator)
+        public void RegisterGenerator(MemberInfo property, IHqlGeneratorForProperty generator)
         {
-            _registeredProperties.Add(property, generator);
+            registeredProperties.Add(property, generator);
         }
 
         private void Register(IHqlGeneratorForType typeMethodGenerator)
         {
-            _typeGenerators.Add(typeMethodGenerator);
+            typeGenerators.Add(typeMethodGenerator);
             typeMethodGenerator.Register(this);
         }
     }

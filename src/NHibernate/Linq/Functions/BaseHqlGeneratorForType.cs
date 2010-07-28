@@ -16,7 +16,7 @@ namespace NHibernate.Linq.Functions
             {
                 foreach (var method in generator.SupportedMethods)
                 {
-                    functionRegistry.RegisterMethodGenerator(method, generator);
+                    functionRegistry.RegisterGenerator(method, generator);
                 }
             }
 
@@ -24,7 +24,7 @@ namespace NHibernate.Linq.Functions
             {
                 foreach (var property in generator.SupportedProperties)
                 {
-                    functionRegistry.RegisterPropertyGenerator(property, generator);
+                    functionRegistry.RegisterGenerator(property, generator);
                 }
             }
         }
