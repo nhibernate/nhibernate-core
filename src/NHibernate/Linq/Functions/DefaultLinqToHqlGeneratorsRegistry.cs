@@ -12,7 +12,6 @@ namespace NHibernate.Linq.Functions
 
 		public DefaultLinqToHqlGeneratorsRegistry()
 		{
-			// TODO - could use reflection here
 			Register(new StandardLinqExtensionMethodGenerator());
 			Register(new QueryableGenerator());
 			Register(new StringGenerator());
@@ -32,15 +31,6 @@ namespace NHibernate.Linq.Functions
 			return false;
 		}
 
-		protected bool GetRegisteredMethodGenerator(MethodInfo method, out IHqlGeneratorForMethod methodGenerator)
-		{
-			if (registeredMethods.TryGetValue(method, out methodGenerator))
-			{
-				return true;
-			}
-			return false;
-		}
-
 		public virtual bool TryGetGenerator(MethodInfo method, out IHqlGeneratorForMethod generator)
 		{
 			if (method.IsGenericMethod)
@@ -48,7 +38,7 @@ namespace NHibernate.Linq.Functions
 				method = method.GetGenericMethodDefinition();
 			}
 
-			if (GetRegisteredMethodGenerator(method, out generator)) return true;
+			if (registeredMethods.TryGetValue(method, out generator)) return true;
 
 			// Not that either.  Let's query each type generator to see if it can handle it
 			if (GetMethodGeneratorForType(method, out generator)) return true;
