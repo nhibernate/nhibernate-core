@@ -1,10 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using NHibernate.Hql.Ast;
-using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq.Functions
 {
