@@ -222,6 +222,11 @@ namespace NHibernate.AdoNet
 		    }
 		}
 
+		public void ExpandQueryParameters(IDbCommand cmd, SqlString sqlString)
+		{
+			Driver.ExpandQueryParameters(cmd, sqlString);
+		}
+
 		public IDataReader ExecuteReader(IDbCommand cmd)
 		{
 			CheckReaders();

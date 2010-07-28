@@ -208,6 +208,36 @@ namespace NHibernate.Driver
 			return dbParam;
 		}
 
+		public virtual void ExpandQueryParameters(IDbCommand cmd, SqlString sqlString)
+		{
+			if (UseNamedPrefixInSql)
+				return;  // named parameters are ok
+
+			var expandedParameters = new List<IDbDataParameter>();
+			foreach (object part in sqlString.Parts)
+			{
+				if (part is Parameter)
+				{
+					var parameter = (Parameter)part;
+					var originalParameter = (IDbDataParameter)cmd.Parameters[parameter.ParameterPosition.Value];
+					expandedParameters.Add(CloneParameter(cmd, originalParameter));
+				}
+			}
+
+			cmd.Parameters.Clear();
+			foreach (var parameter in expandedParameters)
+				cmd.Parameters.Add(parameter);
+		}
+
+		protected virtual IDbDataParameter CloneParameter(IDbCommand cmd, IDbDataParameter originalParameter)
+		{
+			var clone = cmd.CreateParameter();
+			clone.DbType = originalParameter.DbType;
+			clone.ParameterName = originalParameter.ParameterName;
+			clone.Value = originalParameter.Value;
+			return clone;
+		}
+
 		public void PrepareCommand(IDbCommand command)
 		{
 			OnBeforePrepare(command);

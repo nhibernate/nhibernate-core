@@ -1148,6 +1148,8 @@ namespace NHibernate.Loader
 					BindLimitParameters(command, colIndex, selection, session);
 				}
 
+				session.Batcher.ExpandQueryParameters(command, sqlString);
+
 				if (!useLimit)
 				{
 					SetMaxRows(command, selection);

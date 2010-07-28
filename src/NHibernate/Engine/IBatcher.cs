@@ -132,6 +132,17 @@ namespace NHibernate.Engine
 		int ExecuteNonQuery(IDbCommand cmd);
 
 		/// <summary>
+		/// Expand the parameters of the cmd to have a single parameter for each parameter in the
+		/// sql string
+		/// </summary>
+		/// <remarks>
+		/// This is for databases that do not support named parameters.  So, instead of a single parameter
+		/// for 'select ... from MyTable t where t.Col1 = @p0 and t.Col2 = @p0' we can issue
+		/// 'select ... from MyTable t where t.Col1 = ? and t.Col2 = ?'
+		/// </remarks>
+		void ExpandQueryParameters(IDbCommand cmd, SqlString sqlString);
+
+		/// <summary>
 		/// Must be called when an exception occurs.
 		/// </summary>
 		/// <param name="e"></param>

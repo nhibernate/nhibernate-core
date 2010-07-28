@@ -95,5 +95,16 @@ namespace NHibernate.Driver
 		/// <param name="sqlType">The SqlType to set for IDbDataParameter.</param>
 		/// <returns>An IDbDataParameter ready to be added to an IDbCommand.</returns>
 		IDbDataParameter GenerateParameter(IDbCommand command, string name, SqlType sqlType);
+
+		/// <summary>
+		/// Expand the parameters of the cmd to have a single parameter for each parameter in the
+		/// sql string
+		/// </summary>
+		/// <remarks>
+		/// This is for databases that do not support named parameters.  So, instead of a single parameter
+		/// for 'select ... from MyTable t where t.Col1 = @p0 and t.Col2 = @p0' we can issue
+		/// 'select ... from MyTable t where t.Col1 = ? and t.Col2 = ?'
+		/// </remarks>
+		void ExpandQueryParameters(IDbCommand cmd, SqlString sqlString);
 	}
 }
