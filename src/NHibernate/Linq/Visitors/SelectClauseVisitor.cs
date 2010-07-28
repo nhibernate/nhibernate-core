@@ -10,7 +10,7 @@ namespace NHibernate.Linq.Visitors
 {
     public class SelectClauseVisitor : ExpressionTreeVisitor
     {
-        static private readonly FunctionRegistry FunctionRegistry = FunctionRegistry.Instance;
+			private readonly ILinqToHqlGeneratorsRegistry functionRegistry;
 
         private HashSet<Expression> _hqlNodes;
         private readonly ParameterExpression _inputParameter;
@@ -20,7 +20,8 @@ namespace NHibernate.Linq.Visitors
 
         public SelectClauseVisitor(System.Type inputType, VisitorParameters parameters)
         {
-            _inputParameter = Expression.Parameter(inputType, "input");
+        	functionRegistry = FunctionRegistry.Instance;
+        	_inputParameter = Expression.Parameter(inputType, "input");
             _parameters = parameters;
         }
 
@@ -82,7 +83,7 @@ namespace NHibernate.Linq.Visitors
             {
                 // Depends if it's in the function registry
                 IHqlGeneratorForMethod methodGenerator;
-                if (!FunctionRegistry.TryGetGenerator(((MethodCallExpression) expression).Method, out methodGenerator))
+                if (!functionRegistry.TryGetGenerator(((MethodCallExpression) expression).Method, out methodGenerator))
                 {
                     return false;
                 }

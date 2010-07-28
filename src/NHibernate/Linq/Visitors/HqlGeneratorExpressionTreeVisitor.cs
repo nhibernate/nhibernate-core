@@ -12,7 +12,7 @@ namespace NHibernate.Linq.Visitors
     {
         private readonly HqlTreeBuilder _hqlTreeBuilder;
         private readonly VisitorParameters _parameters;
-        static private readonly FunctionRegistry FunctionRegistry = FunctionRegistry.Instance;
+				private readonly ILinqToHqlGeneratorsRegistry functionRegistry;
 
         public static HqlTreeNode Visit(Expression expression, VisitorParameters parameters)
         {
@@ -23,7 +23,8 @@ namespace NHibernate.Linq.Visitors
 
         public HqlGeneratorExpressionTreeVisitor(VisitorParameters parameters)
         {
-            _parameters = parameters;
+        	functionRegistry = FunctionRegistry.Instance;
+        	_parameters = parameters;
 			_hqlTreeBuilder = new HqlTreeBuilder();
         }
 
@@ -352,9 +353,8 @@ namespace NHibernate.Linq.Visitors
 
             // Look for "special" properties (DateTime.Month etc)
             IHqlGeneratorForProperty generator;
-        	generator = FunctionRegistry.GetGenerator(expression.Member);
 
-        	if (generator != null)
+					if (functionRegistry.TryGetGenerator(expression.Member, out generator))
             {
                 return generator.BuildHql(expression.Member, expression.Expression, _hqlTreeBuilder, this);
             }
@@ -398,7 +398,7 @@ namespace NHibernate.Linq.Visitors
 					IHqlGeneratorForMethod generator;
 
         	var method = expression.Method;
-        	if (!FunctionRegistry.TryGetGenerator(method, out generator))
+        	if (!functionRegistry.TryGetGenerator(method, out generator))
 					{
 						throw new NotSupportedException(method.ToString());
 					}
