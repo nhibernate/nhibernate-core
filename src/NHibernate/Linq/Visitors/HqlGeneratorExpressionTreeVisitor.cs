@@ -351,9 +351,10 @@ namespace NHibernate.Linq.Visitors
             }
 
             // Look for "special" properties (DateTime.Month etc)
-            var generator = FunctionRegistry.GetGenerator(expression.Member);
+            IHqlGeneratorForProperty generator;
+        	generator = FunctionRegistry.GetGenerator(expression.Member);
 
-            if (generator != null)
+        	if (generator != null)
             {
                 return generator.BuildHql(expression.Member, expression.Expression, _hqlTreeBuilder, this);
             }
@@ -394,9 +395,15 @@ namespace NHibernate.Linq.Visitors
 
         protected HqlTreeNode VisitMethodCallExpression(MethodCallExpression expression)
         {
-            var generator = FunctionRegistry.GetGenerator(expression.Method);
+					IHqlGeneratorForMethod generator;
 
-            return generator.BuildHql(expression.Method, expression.Object, expression.Arguments, _hqlTreeBuilder, this);
+        	var method = expression.Method;
+        	if (!FunctionRegistry.TryGetGenerator(method, out generator))
+					{
+						throw new NotSupportedException(method.ToString());
+					}
+
+            return generator.BuildHql(method, expression.Object, expression.Arguments, _hqlTreeBuilder, this);
         }
 
         protected HqlTreeNode VisitLambdaExpression(LambdaExpression expression)

@@ -82,7 +82,7 @@ namespace NHibernate.Linq.Visitors
             {
                 // Depends if it's in the function registry
                 IHqlGeneratorForMethod methodGenerator;
-                if (!FunctionRegistry.TryGetMethodGenerator(((MethodCallExpression) expression).Method, out methodGenerator))
+                if (!FunctionRegistry.TryGetGenerator(((MethodCallExpression) expression).Method, out methodGenerator))
                 {
                     return false;
                 }

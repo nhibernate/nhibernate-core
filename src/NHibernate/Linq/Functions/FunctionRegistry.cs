@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,8 +8,8 @@ using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq.Functions
 {
-    public class FunctionRegistry
-    {
+	public class FunctionRegistry : ILinqToHqlGeneratorsRegistry
+	{
         public static readonly FunctionRegistry Instance = new FunctionRegistry();
 
         private readonly Dictionary<MethodInfo, IHqlGeneratorForMethod> registeredMethods = new Dictionary<MethodInfo, IHqlGeneratorForMethod>();
@@ -24,36 +23,6 @@ namespace NHibernate.Linq.Functions
             Register(new StringGenerator());
             Register(new DateTimeGenerator());
             Register(new ICollectionGenerator());
-        }
-
-        public IHqlGeneratorForMethod GetGenerator(MethodInfo method)
-        {
-            IHqlGeneratorForMethod methodGenerator;
-
-            if (!TryGetMethodGenerator(method, out methodGenerator))
-            {
-                throw new NotSupportedException(method.ToString());
-            }
-
-            return methodGenerator;
-        }
-
-        public bool TryGetMethodGenerator(MethodInfo method, out IHqlGeneratorForMethod methodGenerator)
-        {
-            if (method.IsGenericMethod)
-            {
-                method = method.GetGenericMethodDefinition();
-            }
-
-            if (GetRegisteredMethodGenerator(method, out methodGenerator)) return true;
-
-            // No method generator registered.  Look to see if it's a standard LinqExtensionMethod
-            if (GetStandardLinqExtensionMethodGenerator(method, out methodGenerator)) return true;
-
-            // Not that either.  Let's query each type generator to see if it can handle it
-            if (GetMethodGeneratorForType(method, out methodGenerator)) return true;
-
-            return false;
         }
 
         private bool GetMethodGeneratorForType(MethodInfo method, out IHqlGeneratorForMethod methodGenerator)
@@ -105,7 +74,30 @@ namespace NHibernate.Linq.Functions
             return null;
         }
 
-        public void RegisterGenerator(MethodInfo method, IHqlGeneratorForMethod generator)
+		public bool TryGetGenerator(MethodInfo method, out IHqlGeneratorForMethod generator)
+		{
+			if (method.IsGenericMethod)
+			{
+				method = method.GetGenericMethodDefinition();
+			}
+
+			if (GetRegisteredMethodGenerator(method, out generator)) return true;
+
+			// No method generator registered.  Look to see if it's a standard LinqExtensionMethod
+			if (GetStandardLinqExtensionMethodGenerator(method, out generator)) return true;
+
+			// Not that either.  Let's query each type generator to see if it can handle it
+			if (GetMethodGeneratorForType(method, out generator)) return true;
+
+			return false;
+		}
+
+		public bool TryGetGenerator(MemberInfo property, out IHqlGeneratorForProperty generator)
+		{
+			return registeredProperties.TryGetValue(property, out generator);
+		}
+
+		public void RegisterGenerator(MethodInfo method, IHqlGeneratorForMethod generator)
         {
             registeredMethods.Add(method, generator);
         }
