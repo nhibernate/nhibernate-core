@@ -678,7 +678,7 @@
     <Compile Include="Linq\GroupJoin\LocateGroupJoinQuerySource.cs" />
     <Compile Include="Linq\GroupJoin\NonAggregatingGroupJoinRewriter.cs" />
     <Compile Include="Linq\Functions\BaseHqlGeneratorForProperty.cs" />
-    <Compile Include="Linq\Functions\FunctionRegistry.cs" />
+    <Compile Include="Linq\Functions\DefaultLinqToHqlGeneratorsRegistry.cs" />
     <Compile Include="Linq\Functions\IHqlGeneratorForMethod.cs" />
     <Compile Include="Linq\Functions\IHqlGeneratorForProperty.cs" />
     <Compile Include="Linq\Functions\BaseHqlGeneratorForMethod.cs" />

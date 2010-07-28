@@ -26,7 +26,7 @@ namespace NHibernate.Linq.Functions
 					throw new HibernateException("Could not instantiate LinqToHqlGeneratorsRegistry: " + registry, e);
 				}
 			}
-			return new FunctionRegistry();
+			return new DefaultLinqToHqlGeneratorsRegistry();
 		}
 	}
 }

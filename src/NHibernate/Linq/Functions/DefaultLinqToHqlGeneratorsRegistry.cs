@@ -8,13 +8,13 @@ using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq.Functions
 {
-	public class FunctionRegistry : ILinqToHqlGeneratorsRegistry
+	public class DefaultLinqToHqlGeneratorsRegistry : ILinqToHqlGeneratorsRegistry
 	{
 		private readonly Dictionary<MethodInfo, IHqlGeneratorForMethod> registeredMethods = new Dictionary<MethodInfo, IHqlGeneratorForMethod>();
 		private readonly Dictionary<MemberInfo, IHqlGeneratorForProperty> registeredProperties = new Dictionary<MemberInfo, IHqlGeneratorForProperty>();
 		private readonly List<IHqlGeneratorForType> typeGenerators = new List<IHqlGeneratorForType>();
 
-		public FunctionRegistry()
+		public DefaultLinqToHqlGeneratorsRegistry()
 		{
 			// TODO - could use reflection here
 			Register(new QueryableGenerator());

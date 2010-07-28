@@ -32,7 +32,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 												});
 			configure.CollectionTypeFactory<DefaultCollectionTypeFactory>();
 			configure.HqlQueryTranslator<ClassicQueryTranslatorFactory>();
-			configure.LinqToHqlGeneratorsRegistry<FunctionRegistry>();
+			configure.LinqToHqlGeneratorsRegistry<DefaultLinqToHqlGeneratorsRegistry>();
 			configure.Proxy(p =>
 												{
 													p.Validation = false;
@@ -102,7 +102,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Assert.That(configure.Properties[Environment.MaxFetchDepth], Is.EqualTo("11"));
 			Assert.That(configure.Properties[Environment.QuerySubstitutions], Is.EqualTo("true 1, false 0, yes 'Y', no 'N'"));
 			Assert.That(configure.Properties[Environment.Hbm2ddlAuto], Is.EqualTo("validate"));
-			configure.Properties[Environment.LinqToHqlGeneratorsRegistry].Should().Be(typeof(FunctionRegistry).AssemblyQualifiedName);
+			configure.Properties[Environment.LinqToHqlGeneratorsRegistry].Should().Be(typeof(DefaultLinqToHqlGeneratorsRegistry).AssemblyQualifiedName);
 		}
 	}
 }

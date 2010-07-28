@@ -15,7 +15,7 @@ namespace NHibernate.Test.Linq
 		{
 			var registry = LinqToHqlGeneratorsRegistryFactory.CreateGeneratorsRegistry(new Dictionary<string, string>());
 			registry.Should().Not.Be.Null();
-			registry.Should().Be.OfType<FunctionRegistry>();
+			registry.Should().Be.OfType<DefaultLinqToHqlGeneratorsRegistry>();
 		}
 
 		[Test]
