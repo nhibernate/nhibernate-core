@@ -10,13 +10,11 @@ namespace NHibernate.Linq.Functions
 {
 	public class FunctionRegistry : ILinqToHqlGeneratorsRegistry
 	{
-		public static readonly ILinqToHqlGeneratorsRegistry Instance = new FunctionRegistry();
-
 		private readonly Dictionary<MethodInfo, IHqlGeneratorForMethod> registeredMethods = new Dictionary<MethodInfo, IHqlGeneratorForMethod>();
 		private readonly Dictionary<MemberInfo, IHqlGeneratorForProperty> registeredProperties = new Dictionary<MemberInfo, IHqlGeneratorForProperty>();
 		private readonly List<IHqlGeneratorForType> typeGenerators = new List<IHqlGeneratorForType>();
 
-		private FunctionRegistry()
+		public FunctionRegistry()
 		{
 			// TODO - could use reflection here
 			Register(new QueryableGenerator());

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Linq.Visitors;
@@ -54,7 +55,7 @@ namespace NHibernate.Linq
 			}
 		}
 
-	    public IASTNode Translate(ISessionFactory sessionFactory)
+	    public IASTNode Translate(ISessionFactoryImplementor sessionFactory)
 		{
             //if (_astNode == null)
             {

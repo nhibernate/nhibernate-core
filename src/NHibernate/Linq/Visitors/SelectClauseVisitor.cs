@@ -20,7 +20,7 @@ namespace NHibernate.Linq.Visitors
 
         public SelectClauseVisitor(System.Type inputType, VisitorParameters parameters)
         {
-        	functionRegistry = FunctionRegistry.Instance;
+        	functionRegistry = parameters.SessionFactory.Settings.LinqToHqlGeneratorsRegistry;
         	_inputParameter = Expression.Parameter(inputType, "input");
             _parameters = parameters;
         }

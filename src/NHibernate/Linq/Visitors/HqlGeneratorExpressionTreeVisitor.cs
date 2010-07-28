@@ -23,7 +23,7 @@ namespace NHibernate.Linq.Visitors
 
         public HqlGeneratorExpressionTreeVisitor(VisitorParameters parameters)
         {
-        	functionRegistry = FunctionRegistry.Instance;
+					functionRegistry = parameters.SessionFactory.Settings.LinqToHqlGeneratorsRegistry;
         	_parameters = parameters;
 			_hqlTreeBuilder = new HqlTreeBuilder();
         }

@@ -10,6 +10,7 @@ using NHibernate.Connection;
 using NHibernate.Dialect;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
+using NHibernate.Linq.Functions;
 using NHibernate.Transaction;
 using NHibernate.Util;
 
@@ -50,6 +51,8 @@ namespace NHibernate.Cfg
 				dialect = new GenericDialect();
 			}
 			settings.Dialect = dialect;
+
+			settings.LinqToHqlGeneratorsRegistry = new FunctionRegistry();
 
 			#region SQL Exception converter
 

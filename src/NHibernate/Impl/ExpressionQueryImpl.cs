@@ -150,7 +150,7 @@ namespace NHibernate.Impl
             ParameterDescriptors = queryExpression.ParameterDescriptors;
         }
 
-        public IASTNode Translate(ISessionFactory sessionFactory)
+        public IASTNode Translate(ISessionFactoryImplementor sessionFactory)
         {
             return _tree;
         }

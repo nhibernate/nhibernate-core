@@ -6,6 +6,7 @@ using NHibernate.Cache;
 using NHibernate.Connection;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
+using NHibernate.Linq.Functions;
 using NHibernate.Transaction;
 
 namespace NHibernate.Cfg
@@ -118,6 +119,11 @@ namespace NHibernate.Cfg
 		public IsolationLevel IsolationLevel { get; internal set; }
 
 		public bool IsOuterJoinFetchEnabled { get; internal set; }
+
+		/// <summary>
+		/// Get the registry to provide Hql-Generators for known properties/methods.
+		/// </summary>
+		public ILinqToHqlGeneratorsRegistry LinqToHqlGeneratorsRegistry { get; internal set; }
 
 		#endregion
 	}
