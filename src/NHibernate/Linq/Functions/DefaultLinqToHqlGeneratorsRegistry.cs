@@ -23,7 +23,7 @@ namespace NHibernate.Linq.Functions
 			Register(new ICollectionGenerator());
 		}
 
-		private bool GetMethodGeneratorForType(MethodInfo method, out IHqlGeneratorForMethod methodGenerator)
+		protected bool GetMethodGeneratorForType(MethodInfo method, out IHqlGeneratorForMethod methodGenerator)
 		{
 			methodGenerator = null;
 
@@ -35,7 +35,7 @@ namespace NHibernate.Linq.Functions
 			return false;
 		}
 
-		private bool GetStandardLinqExtensionMethodGenerator(MethodInfo method, out IHqlGeneratorForMethod methodGenerator)
+		protected bool GetStandardLinqExtensionMethodGenerator(MethodInfo method, out IHqlGeneratorForMethod methodGenerator)
 		{
 			methodGenerator = null;
 
@@ -50,7 +50,7 @@ namespace NHibernate.Linq.Functions
 			return false;
 		}
 
-		private bool GetRegisteredMethodGenerator(MethodInfo method, out IHqlGeneratorForMethod methodGenerator)
+		protected bool GetRegisteredMethodGenerator(MethodInfo method, out IHqlGeneratorForMethod methodGenerator)
 		{
 			if (registeredMethods.TryGetValue(method, out methodGenerator))
 			{
@@ -59,7 +59,7 @@ namespace NHibernate.Linq.Functions
 			return false;
 		}
 
-		public bool TryGetGenerator(MethodInfo method, out IHqlGeneratorForMethod generator)
+		public virtual bool TryGetGenerator(MethodInfo method, out IHqlGeneratorForMethod generator)
 		{
 			if (method.IsGenericMethod)
 			{
@@ -77,22 +77,22 @@ namespace NHibernate.Linq.Functions
 			return false;
 		}
 
-		public bool TryGetGenerator(MemberInfo property, out IHqlGeneratorForProperty generator)
+		public virtual bool TryGetGenerator(MemberInfo property, out IHqlGeneratorForProperty generator)
 		{
 			return registeredProperties.TryGetValue(property, out generator);
 		}
 
-		public void RegisterGenerator(MethodInfo method, IHqlGeneratorForMethod generator)
+		public virtual void RegisterGenerator(MethodInfo method, IHqlGeneratorForMethod generator)
 		{
 			registeredMethods.Add(method, generator);
 		}
 
-		public void RegisterGenerator(MemberInfo property, IHqlGeneratorForProperty generator)
+		public virtual void RegisterGenerator(MemberInfo property, IHqlGeneratorForProperty generator)
 		{
 			registeredProperties.Add(property, generator);
 		}
 
-		private void Register(IHqlGeneratorForType typeMethodGenerator)
+		protected void Register(IHqlGeneratorForType typeMethodGenerator)
 		{
 			typeGenerators.Add(typeMethodGenerator);
 			typeMethodGenerator.Register(this);
