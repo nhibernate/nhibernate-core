@@ -395,6 +395,7 @@
     <Compile Include="Linq\BinaryExpressionOrdererTests.cs" />
     <Compile Include="Linq\CasingTest.cs" />
     <Compile Include="Linq\CollectionAssert.cs" />
+    <Compile Include="Linq\CustomExtensionsExample.cs" />
     <Compile Include="Linq\DateTimeTests.cs" />
     <Compile Include="Linq\DynamicQueryTests.cs" />
     <Compile Include="Linq\EagerLoadTests.cs" />
