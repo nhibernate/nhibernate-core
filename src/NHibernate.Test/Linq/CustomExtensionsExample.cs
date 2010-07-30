@@ -29,7 +29,7 @@ namespace NHibernate.Test.Linq
 	{
 		public MyLinqToHqlGeneratorsRegistry():base()
 		{
-			RegisterGenerator(ReflectionHelper.GetMethod(() => MyLinqExtensions.IsLike(null, null)),
+			RegisterGenerator(ReflectionHelper.GetMethodDefinition(() => MyLinqExtensions.IsLike(null, null)),
 			                  new IsLikeGenerator());
 		}
 	}
@@ -38,7 +38,7 @@ namespace NHibernate.Test.Linq
 	{
 		public IsLikeGenerator()
 		{
-			SupportedMethods = new[] {ReflectionHelper.GetMethod(() => MyLinqExtensions.IsLike(null, null))};
+			SupportedMethods = new[] {ReflectionHelper.GetMethodDefinition(() => MyLinqExtensions.IsLike(null, null))};
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, 

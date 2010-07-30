@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Hql.Ast;
@@ -40,7 +40,7 @@ namespace NHibernate.Linq.Functions
         {
             public StartsWithGenerator()
             {
-                SupportedMethods = new[] { ReflectionHelper.GetMethod<string>(x => x.StartsWith(null)) };
+                SupportedMethods = new[] { ReflectionHelper.GetMethodDefinition<string>(x => x.StartsWith(null)) };
             }
 
             public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
@@ -57,7 +57,7 @@ namespace NHibernate.Linq.Functions
         {
             public EndsWithGenerator()
             {
-                SupportedMethods = new[] { ReflectionHelper.GetMethod<string>(x => x.EndsWith(null)) };
+                SupportedMethods = new[] { ReflectionHelper.GetMethodDefinition<string>(x => x.EndsWith(null)) };
             }
 
             public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
@@ -74,7 +74,7 @@ namespace NHibernate.Linq.Functions
         {
             public ContainsGenerator()
             {
-                SupportedMethods = new[] { ReflectionHelper.GetMethod<string>(x => x.Contains(null)) };
+                SupportedMethods = new[] { ReflectionHelper.GetMethodDefinition<string>(x => x.Contains(null)) };
             }
 
             public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
@@ -92,7 +92,7 @@ namespace NHibernate.Linq.Functions
         {
             public EqualsGenerator()
             {
-                SupportedMethods = new[] { ReflectionHelper.GetMethod<string>(x => x.Equals((string)null)) };
+                SupportedMethods = new[] { ReflectionHelper.GetMethodDefinition<string>(x => x.Equals((string)null)) };
             }
 
             public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
@@ -109,10 +109,10 @@ namespace NHibernate.Linq.Functions
             {
                 SupportedMethods = new[]
                                        {
-                                           ReflectionHelper.GetMethod<string>(x => x.ToUpper()),
-                                           ReflectionHelper.GetMethod<string>(x => x.ToUpperInvariant()),
-                                           ReflectionHelper.GetMethod<string>(x => x.ToLower()),
-                                           ReflectionHelper.GetMethod<string>(x => x.ToLowerInvariant())
+                                           ReflectionHelper.GetMethodDefinition<string>(x => x.ToUpper()),
+                                           ReflectionHelper.GetMethodDefinition<string>(x => x.ToUpperInvariant()),
+                                           ReflectionHelper.GetMethodDefinition<string>(x => x.ToLower()),
+                                           ReflectionHelper.GetMethodDefinition<string>(x => x.ToLowerInvariant())
                                        };
             }
 
@@ -139,8 +139,8 @@ namespace NHibernate.Linq.Functions
             {
                 SupportedMethods = new[]
                                        {
-                                           ReflectionHelper.GetMethod<string>(s => s.Substring(0)),
-                                           ReflectionHelper.GetMethod<string>(s => s.Substring(0, 0))
+                                           ReflectionHelper.GetMethodDefinition<string>(s => s.Substring(0)),
+                                           ReflectionHelper.GetMethodDefinition<string>(s => s.Substring(0, 0))
                                        };
             }
             public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
@@ -164,10 +164,10 @@ namespace NHibernate.Linq.Functions
             {
                 SupportedMethods = new[]
                                        {
-                                           ReflectionHelper.GetMethod<string>(s => s.IndexOf(' ')),
-                                           ReflectionHelper.GetMethod<string>(s => s.IndexOf(" ")),
-                                           ReflectionHelper.GetMethod<string>(s => s.IndexOf(' ', 0)),
-                                           ReflectionHelper.GetMethod<string>(s => s.IndexOf(" ", 0))
+                                           ReflectionHelper.GetMethodDefinition<string>(s => s.IndexOf(' ')),
+                                           ReflectionHelper.GetMethodDefinition<string>(s => s.IndexOf(" ")),
+                                           ReflectionHelper.GetMethodDefinition<string>(s => s.IndexOf(' ', 0)),
+                                           ReflectionHelper.GetMethodDefinition<string>(s => s.IndexOf(" ", 0))
                                        };
             }
             public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
@@ -192,8 +192,8 @@ namespace NHibernate.Linq.Functions
             {
                 SupportedMethods = new[]
                                        {
-                                           ReflectionHelper.GetMethod<string>(s => s.Replace(' ', ' ')),
-                                           ReflectionHelper.GetMethod<string>(s => s.Replace("", ""))
+                                           ReflectionHelper.GetMethodDefinition<string>(s => s.Replace(' ', ' ')),
+                                           ReflectionHelper.GetMethodDefinition<string>(s => s.Replace("", ""))
                                        };
             }
 

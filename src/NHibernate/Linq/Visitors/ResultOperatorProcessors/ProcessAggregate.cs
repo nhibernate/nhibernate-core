@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -21,7 +21,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
             if (resultOperator.ParseInfo.ParsedExpression.Arguments.Count == 2)
             {
-                var aggregate = ReflectionHelper.GetMethod(() => Enumerable.Aggregate<object>(null, null));
+                var aggregate = ReflectionHelper.GetMethodDefinition(() => Enumerable.Aggregate<object>(null, null));
                 aggregate = aggregate.GetGenericMethodDefinition().MakeGenericMethod(inputType);
 
                 call = Expression.Call(
@@ -33,7 +33,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
             }
             else if (resultOperator.ParseInfo.ParsedExpression.Arguments.Count == 3)
             {
-                var aggregate = ReflectionHelper.GetMethod(() => Enumerable.Aggregate<object, object>(null, null, null));
+                var aggregate = ReflectionHelper.GetMethodDefinition(() => Enumerable.Aggregate<object, object>(null, null, null));
                 aggregate = aggregate.GetGenericMethodDefinition().MakeGenericMethod(inputType, accumulatorType);
 
                 call = Expression.Call(
@@ -46,7 +46,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
             else
             {
                 var selectorType = resultOperator.OptionalSelector.Type.GetGenericArguments()[2];
-                var aggregate = ReflectionHelper.GetMethod(() => Enumerable.Aggregate<object, object, object>(null, null, null, null));
+                var aggregate = ReflectionHelper.GetMethodDefinition(() => Enumerable.Aggregate<object, object, object>(null, null, null, null));
                 aggregate = aggregate.GetGenericMethodDefinition().MakeGenericMethod(inputType, accumulatorType, selectorType);
 
                 call = Expression.Call(

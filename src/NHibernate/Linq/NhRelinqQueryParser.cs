@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -23,9 +23,9 @@ namespace NHibernate.Linq
                 new[]
                     {
                         MethodCallExpressionNodeTypeRegistry.GetRegisterableMethodDefinition(
-                            ReflectionHelper.GetMethod(() => Queryable.Aggregate<object>(null, null))),
+                            ReflectionHelper.GetMethodDefinition(() => Queryable.Aggregate<object>(null, null))),
                         MethodCallExpressionNodeTypeRegistry.GetRegisterableMethodDefinition(
-                            ReflectionHelper.GetMethod(() => Queryable.Aggregate<object, object>(null, null, null)))
+                            ReflectionHelper.GetMethodDefinition(() => Queryable.Aggregate<object, object>(null, null, null)))
                     },
                 typeof (AggregateExpressionNode));
 
@@ -33,7 +33,7 @@ namespace NHibernate.Linq
                 new[]
                     {
                         MethodCallExpressionNodeTypeRegistry.GetRegisterableMethodDefinition(
-                            ReflectionHelper.GetMethod((List<object> l) => l.Contains(null))),
+                            ReflectionHelper.GetMethodDefinition((List<object> l) => l.Contains(null))),
 
                     },
                 typeof (ContainsExpressionNode));

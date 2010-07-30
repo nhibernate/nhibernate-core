@@ -26,10 +26,10 @@ namespace NHibernate.Linq.Functions
             {
                 SupportedMethods = new[]
                                        {
-                                           ReflectionHelper.GetMethod(() => Queryable.Any<object>(null)),
-                                           ReflectionHelper.GetMethod(() => Queryable.Any<object>(null, null)),
-                                           ReflectionHelper.GetMethod(() => Enumerable.Any<object>(null)),
-                                           ReflectionHelper.GetMethod(() => Enumerable.Any<object>(null, null))
+                                           ReflectionHelper.GetMethodDefinition(() => Queryable.Any<object>(null)),
+                                           ReflectionHelper.GetMethodDefinition(() => Queryable.Any<object>(null, null)),
+                                           ReflectionHelper.GetMethodDefinition(() => Enumerable.Any<object>(null)),
+                                           ReflectionHelper.GetMethodDefinition(() => Enumerable.Any<object>(null, null))
                                        };
             }
 
@@ -65,8 +65,8 @@ namespace NHibernate.Linq.Functions
             {
                 SupportedMethods = new[]
                                        {
-                                           ReflectionHelper.GetMethod(() => Queryable.All<object>(null, null)),
-                                           ReflectionHelper.GetMethod(() => Enumerable.All<object>(null, null))
+                                           ReflectionHelper.GetMethodDefinition(() => Queryable.All<object>(null, null)),
+                                           ReflectionHelper.GetMethodDefinition(() => Enumerable.All<object>(null, null))
                                        };
             }
 
@@ -100,8 +100,8 @@ namespace NHibernate.Linq.Functions
             {
                 SupportedMethods = new[]
                                        {
-                                           ReflectionHelper.GetMethod(() => Queryable.Min<object>(null)),
-                                           ReflectionHelper.GetMethod(() => Enumerable.Min<object>(null))
+                                           ReflectionHelper.GetMethodDefinition(() => Queryable.Min<object>(null)),
+                                           ReflectionHelper.GetMethodDefinition(() => Enumerable.Min<object>(null))
                                        };
             }
 
@@ -117,8 +117,8 @@ namespace NHibernate.Linq.Functions
             {
                 SupportedMethods = new[]
                                        {
-                                           ReflectionHelper.GetMethod(() => Queryable.Max<object>(null)),
-                                           ReflectionHelper.GetMethod(() => Enumerable.Max<object>(null))
+                                           ReflectionHelper.GetMethodDefinition(() => Queryable.Max<object>(null)),
+                                           ReflectionHelper.GetMethodDefinition(() => Enumerable.Max<object>(null))
                                        };
             }
 

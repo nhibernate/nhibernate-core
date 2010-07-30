@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -57,7 +57,7 @@ namespace NHibernate.Linq
 
 		public IQueryable CreateQuery(Expression expression)
 		{
-		    var m = ReflectionHelper.GetMethod((NhQueryProvider p) => p.CreateQuery<object>(null)).MakeGenericMethod(expression.Type.GetGenericArguments()[0]);
+		    var m = ReflectionHelper.GetMethodDefinition((NhQueryProvider p) => p.CreateQuery<object>(null)).MakeGenericMethod(expression.Type.GetGenericArguments()[0]);
 
 		    return (IQueryable) m.Invoke(this, new[] {expression});
 		}

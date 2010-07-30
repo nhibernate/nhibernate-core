@@ -5,27 +5,57 @@ using System.Reflection;
 
 namespace NHibernate.Linq
 {
-    public static class ReflectionHelper
-    {
-        public delegate void Action();
+	public static class ReflectionHelper
+	{
+		/// <summary>
+		/// Extract the <see cref="MethodInfo"/> from a given expression.
+		/// </summary>
+		/// <typeparam name="TSource">The declaring-type of the method.</typeparam>
+		/// <param name="method">The method.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the no-generic method or the generic-definition for a generic-method.</returns>
+		/// <seealso cref="MethodInfo.GetGenericMethodDefinition"/>
+		public static MethodInfo GetMethodDefinition<TSource>(Expression<Action<TSource>> method)
+		{
+			if (method == null)
+			{
+				throw new ArgumentNullException("method");
+			}
+			MethodInfo methodInfo = ((MethodCallExpression) method.Body).Method;
+			return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
+		}
 
-        public static MethodInfo GetMethod<TSource>(Expression<Action<TSource>> method)
-        {
-            var methodInfo = ((MethodCallExpression) method.Body).Method;
-            return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
-        }
+		/// <summary>
+		/// Extract the <see cref="MethodInfo"/> from a given expression.
+		/// </summary>
+		/// <param name="method">The method.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the no-generic method or the generic-definition for a generic-method.</returns>
+		/// <seealso cref="MethodInfo.GetGenericMethodDefinition"/>
+		public static MethodInfo GetMethodDefinition(Expression<System.Action> method)
+		{
+			if (method == null)
+			{
+				throw new ArgumentNullException("method");
+			}
+			var methodInfo = ((MethodCallExpression)method.Body).Method;
+			return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
+		}
 
-        public static MethodInfo GetMethod(Expression<Action> method)
-        {
-            var methodInfo = ((MethodCallExpression)method.Body).Method;
-            return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
-        }
-
-        public static MemberInfo GetProperty<TSource, TResult>(Expression<Func<TSource, TResult>> property)
-        {
-            return ((MemberExpression) property.Body).Member;
-        }
-    }
+		/// <summary>
+		/// Gets the field or property to be accessed.
+		/// </summary>
+		/// <typeparam name="TSource">The declaring-type of the property.</typeparam>
+		/// <typeparam name="TResult">The type of the property.</typeparam>
+		/// <param name="property">The expression representing the property getter.</param>
+		/// <returns>The <see cref="MemberInfo"/> of the property.</returns>
+		public static MemberInfo GetProperty<TSource, TResult>(Expression<Func<TSource, TResult>> property)
+		{
+			if (property == null)
+			{
+				throw new ArgumentNullException("property");
+			}
+			return ((MemberExpression)property.Body).Member;
+		}
+	}
 
     // TODO rename / remove - reflection helper above is better
     public static class EnumerableHelper

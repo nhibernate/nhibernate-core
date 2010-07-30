@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Remotion.Data.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
@@ -8,8 +8,8 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
         public void Process(SingleResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {
             var firstMethod = resultOperator.ReturnDefaultWhenEmpty
-                                  ? ReflectionHelper.GetMethod(() => Queryable.SingleOrDefault<object>(null))
-                                  : ReflectionHelper.GetMethod(() => Queryable.Single<object>(null));
+                                  ? ReflectionHelper.GetMethodDefinition(() => Queryable.SingleOrDefault<object>(null))
+                                  : ReflectionHelper.GetMethodDefinition(() => Queryable.Single<object>(null));
 
             AddClientSideEval(firstMethod, queryModelVisitor, tree);
         }

@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace NHibernate.Linq
@@ -12,7 +12,7 @@ namespace NHibernate.Linq
 
         public static IQueryable<T> Cacheable<T>(this IQueryable<T> query)
         {
-            var method = ReflectionHelper.GetMethod(() => Cacheable<object>(null)).MakeGenericMethod(typeof(T));
+            var method = ReflectionHelper.GetMethodDefinition(() => Cacheable<object>(null)).MakeGenericMethod(typeof(T));
 
             var callExpression = Expression.Call(method, query.Expression);
 
@@ -21,7 +21,7 @@ namespace NHibernate.Linq
 
         public static IQueryable<T> CacheMode<T>(this IQueryable<T> query, CacheMode cacheMode)
         {
-            var method = ReflectionHelper.GetMethod(() => CacheMode<object>(null, NHibernate.CacheMode.Normal)).MakeGenericMethod(typeof(T));
+            var method = ReflectionHelper.GetMethodDefinition(() => CacheMode<object>(null, NHibernate.CacheMode.Normal)).MakeGenericMethod(typeof(T));
 
             var callExpression = Expression.Call(method, query.Expression, Expression.Constant(cacheMode));
 
@@ -30,7 +30,7 @@ namespace NHibernate.Linq
 
         public static IQueryable<T> CacheRegion<T>(this IQueryable<T> query, string region)
         {
-            var method = ReflectionHelper.GetMethod(() => CacheRegion<object>(null, null)).MakeGenericMethod(typeof(T));
+            var method = ReflectionHelper.GetMethodDefinition(() => CacheRegion<object>(null, null)).MakeGenericMethod(typeof(T));
 
             var callExpression = Expression.Call(method, query.Expression, Expression.Constant(region));
 
