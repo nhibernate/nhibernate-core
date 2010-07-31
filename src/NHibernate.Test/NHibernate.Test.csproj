@@ -440,6 +440,7 @@
     <Compile Include="Linq\QueryCacheableTests.cs" />
     <Compile Include="Linq\QueryReuseTests.cs" />
     <Compile Include="Linq\ReadonlyTestCase.cs" />
+    <Compile Include="UtilityTest\ReflectionHelperIsMethodOfTests.cs" />
     <Compile Include="UtilityTest\ReflectionHelperTest.cs" />
     <Compile Include="Linq\RegresstionTests.cs" />
     <Compile Include="Linq\SelectionTests.cs" />
