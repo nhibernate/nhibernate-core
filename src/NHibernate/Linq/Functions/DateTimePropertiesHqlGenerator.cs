@@ -33,7 +33,7 @@ namespace NHibernate.Linq.Functions
 			}
 		}
 
-		public HqlTreeNode BuildHql(MemberInfo member, Expression expression, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
+		public virtual HqlTreeNode BuildHql(MemberInfo member, Expression expression, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			return treeBuilder.MethodCall(member.Name.ToLowerInvariant(),
 			                              visitor.Visit(expression).AsExpression());

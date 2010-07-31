@@ -86,14 +86,12 @@ namespace NHibernate.Linq.Functions
 			}
 		}
 
-		public class ToUpperLowerGenerator : BaseHqlGeneratorForMethod
+		public class ToLowerGenerator : BaseHqlGeneratorForMethod
 		{
-			public ToUpperLowerGenerator()
+			public ToLowerGenerator()
 			{
 				SupportedMethods = new[]
                                        {
-                                           ReflectionHelper.GetMethodDefinition<string>(x => x.ToUpper()),
-                                           ReflectionHelper.GetMethodDefinition<string>(x => x.ToUpperInvariant()),
                                            ReflectionHelper.GetMethodDefinition<string>(x => x.ToLower()),
                                            ReflectionHelper.GetMethodDefinition<string>(x => x.ToLowerInvariant())
                                        };
@@ -101,18 +99,24 @@ namespace NHibernate.Linq.Functions
 
 			public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 			{
-				string methodName;
+				return treeBuilder.MethodCall("lower", visitor.Visit(targetObject).AsExpression());
+			}
+		}
 
-				if (((method.Name == "ToUpper") || (method.Name == "ToUpperInvariant")))
-				{
-					methodName = "upper";
-				}
-				else
-				{
-					methodName = "lower";
-				}
+		public class ToUpperGenerator : BaseHqlGeneratorForMethod
+		{
+			public ToUpperGenerator()
+			{
+				SupportedMethods = new[]
+                                       {
+                                           ReflectionHelper.GetMethodDefinition<string>(x => x.ToUpper()),
+                                           ReflectionHelper.GetMethodDefinition<string>(x => x.ToUpperInvariant()),
+                                       };
+			}
 
-				return treeBuilder.MethodCall(methodName, visitor.Visit(targetObject).AsExpression());
+			public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
+			{
+				return treeBuilder.MethodCall("upper", visitor.Visit(targetObject).AsExpression());
 			}
 		}
 
