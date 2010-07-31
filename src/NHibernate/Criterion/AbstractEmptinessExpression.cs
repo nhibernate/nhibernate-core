@@ -10,7 +10,7 @@ using NHibernate.Type;
 namespace NHibernate.Criterion
 {
 	[Serializable]
-	public abstract class AbstractEmptinessExpression : ICriterion
+	public abstract class AbstractEmptinessExpression : AbstractCriterion
 	{
 		private readonly TypedValue[] NO_VALUES = new TypedValue[0];
 		private readonly string propertyName;
@@ -23,19 +23,17 @@ namespace NHibernate.Criterion
 			this.propertyName = propertyName;
 		}
 
-		public TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			return NO_VALUES;
 		}
-
-		public abstract IProjection[] GetProjections();
 
 		public override sealed string ToString()
 		{
 			return propertyName + (ExcludeEmpty ? " is not empty" : " is empty");
 		}
 
-		public SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			string entityName = criteriaQuery.GetEntityName(criteria, propertyName);
 			string actualPropertyName = criteriaQuery.GetPropertyName(propertyName);
@@ -92,54 +90,5 @@ namespace NHibernate.Criterion
 				throw new QueryException("collection role not found: " + role, e);
 			}
 		}
-
-		#region Operator Overloading
-
-		public static AbstractCriterion operator &(AbstractEmptinessExpression lhs, AbstractEmptinessExpression rhs)
-		{
-			return new AndExpression(lhs, rhs);
-		}
-
-		public static AbstractCriterion operator |(AbstractEmptinessExpression lhs, AbstractEmptinessExpression rhs)
-		{
-			return new OrExpression(lhs, rhs);
-		}
-
-
-		public static AbstractCriterion operator &(AbstractEmptinessExpression lhs, AbstractCriterion rhs)
-		{
-			return new AndExpression(lhs, rhs);
-		}
-
-		public static AbstractCriterion operator |(AbstractEmptinessExpression lhs, AbstractCriterion rhs)
-		{
-			return new OrExpression(lhs, rhs);
-		}
-
-
-		public static AbstractCriterion operator !(AbstractEmptinessExpression crit)
-		{
-			return new NotExpression(crit);
-		}
-
-		/// <summary>
-		/// See here for details:
-		/// http://steve.emxsoftware.com/NET/Overloading+the++and++operators
-		/// </summary>
-		public static bool operator false(AbstractEmptinessExpression criteria)
-		{
-			return false;
-		}
-
-		/// <summary>
-		/// See here for details:
-		/// http://steve.emxsoftware.com/NET/Overloading+the++and++operators
-		/// </summary>
-		public static bool operator true(AbstractEmptinessExpression criteria)
-		{
-			return false;
-		}
-
-		#endregion
 	}
 }

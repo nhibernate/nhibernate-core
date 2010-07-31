@@ -37,7 +37,7 @@ namespace NHibernate.Criterion.Lambda
 		private string propertyName;
 		private bool isNot;
 
-		private ICriterion Process(ICriterion criterion)
+		private AbstractCriterion Process(AbstractCriterion criterion)
 		{
 			if (isNot)
 				return Restrictions.Not(criterion);
@@ -73,7 +73,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// Apply an "in" constraint to the named property
 		/// </summary>
-		public ICriterion IsIn(ICollection values)
+		public AbstractCriterion IsIn(ICollection values)
 		{
 			return Process(Restrictions.In(propertyName, values));
 		}
@@ -81,7 +81,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// Apply an "in" constraint to the named property
 		/// </summary>
-		public ICriterion IsIn(object[] values)
+		public AbstractCriterion IsIn(object[] values)
 		{
 			return Process(Restrictions.In(propertyName, values));
 		}
@@ -89,7 +89,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// Apply an "in" constraint to the named property
 		/// </summary>
-		public ICriterion IsInG<T>(ICollection<T> values)
+		public AbstractCriterion IsInG<T>(ICollection<T> values)
 		{
 			return Process(Restrictions.InG(propertyName, values));
 		}
@@ -97,7 +97,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// A case-insensitive "like", similar to Postgres "ilike" operator
 		/// </summary>
-		public ICriterion IsInsensitiveLike(object value)
+		public AbstractCriterion IsInsensitiveLike(object value)
 		{
 			return Process(Restrictions.InsensitiveLike(propertyName, value));
 		}
@@ -105,7 +105,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// A case-insensitive "like", similar to Postgres "ilike" operator
 		/// </summary>
-		public ICriterion IsInsensitiveLike(string value, MatchMode matchMode)
+		public AbstractCriterion IsInsensitiveLike(string value, MatchMode matchMode)
 		{
 			return Process(Restrictions.InsensitiveLike(propertyName, value, matchMode));
 		}
@@ -113,7 +113,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// Apply an "is empty" constraint to the named property
 		/// </summary>
-		public ICriterion IsEmpty
+		public AbstractCriterion IsEmpty
 		{
 			get { return Process(Restrictions.IsEmpty(propertyName)); }
 		}
@@ -121,7 +121,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// Apply a "not is empty" constraint to the named property
 		/// </summary>
-		public ICriterion IsNotEmpty
+		public AbstractCriterion IsNotEmpty
 		{
 			get { return Process(Restrictions.IsNotEmpty(propertyName)); }
 		}
@@ -129,7 +129,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// Apply an "is null" constraint to the named property
 		/// </summary>
-		public ICriterion IsNull
+		public AbstractCriterion IsNull
 		{
 			get { return Process(Restrictions.IsNull(propertyName)); }
 		}
@@ -137,7 +137,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// Apply an "not is null" constraint to the named property
 		/// </summary>
-		public ICriterion IsNotNull
+		public AbstractCriterion IsNotNull
 		{
 			get { return Process(Restrictions.IsNotNull(propertyName)); }
 		}
@@ -145,7 +145,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// Apply a "like" constraint to the named property
 		/// </summary>
-		public ICriterion IsLike(object value)
+		public AbstractCriterion IsLike(object value)
 		{
 			return Process(Restrictions.Like(propertyName, value));
 		}
@@ -153,7 +153,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// Apply a "like" constraint to the named property
 		/// </summary>
-		public ICriterion IsLike(string value, MatchMode matchMode)
+		public AbstractCriterion IsLike(string value, MatchMode matchMode)
 		{
 			return Process(Restrictions.Like(propertyName, value, matchMode));
 		}
@@ -161,7 +161,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// Apply a "like" constraint to the named property
 		/// </summary>
-		public ICriterion IsLike(string value, MatchMode matchMode, char? escapeChar)
+		public AbstractCriterion IsLike(string value, MatchMode matchMode, char? escapeChar)
 		{
 			return Process(Restrictions.Like(propertyName, value, matchMode, escapeChar));
 		}
