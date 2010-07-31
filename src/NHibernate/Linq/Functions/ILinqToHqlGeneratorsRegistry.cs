@@ -8,5 +8,6 @@ namespace NHibernate.Linq.Functions
 		bool TryGetGenerator(MemberInfo property, out IHqlGeneratorForProperty generator);
 		void RegisterGenerator(MethodInfo method, IHqlGeneratorForMethod generator);
 		void RegisterGenerator(MemberInfo property, IHqlGeneratorForProperty generator);
+		void RegisterGenerator(IRuntimeMethodHqlGenerator generator);
 	}
 }

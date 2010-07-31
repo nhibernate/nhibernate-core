@@ -8,22 +8,37 @@ namespace NHibernate.Linq.Functions
 	{
 		private readonly Dictionary<MethodInfo, IHqlGeneratorForMethod> registeredMethods = new Dictionary<MethodInfo, IHqlGeneratorForMethod>();
 		private readonly Dictionary<MemberInfo, IHqlGeneratorForProperty> registeredProperties = new Dictionary<MemberInfo, IHqlGeneratorForProperty>();
-		private readonly List<IHqlGeneratorForType> typeGenerators = new List<IHqlGeneratorForType>();
+		private readonly List<IRuntimeMethodHqlGenerator> runtimeMethodHqlGenerators = new List<IRuntimeMethodHqlGenerator>();
 
 		public DefaultLinqToHqlGeneratorsRegistry()
 		{
-			Register(new StandardLinqExtensionMethodGenerator());
-			Register(new QueryableGenerator());
-			Register(new StringGenerator());
-			Register(new DateTimeGenerator());
-			Register(new ICollectionGenerator());
+			RegisterGenerator(new StandardLinqExtensionMethodGenerator());
+			RegisterGenerator(new CollectionContainsRuntimeHqlGenerator());
+
+			this.Merge(new StartsWithGenerator());
+			this.Merge(new EndsWithGenerator());
+			this.Merge(new ContainsGenerator());
+			this.Merge(new EqualsGenerator());
+			this.Merge(new ToUpperLowerGenerator());
+			this.Merge(new SubStringGenerator());
+			this.Merge(new IndexOfGenerator());
+			this.Merge(new ReplaceGenerator());
+			this.Merge(new LengthGenerator());
+
+			this.Merge(new AnyHqlGenerator());
+			this.Merge(new AllHqlGenerator());
+			this.Merge(new MinHqlGenerator());
+			this.Merge(new MaxHqlGenerator());
+			this.Merge(new CollectionContainsGenerator());
+
+			this.Merge(new DateTimePropertiesHqlGenerator());
 		}
 
-		protected bool GetMethodGeneratorForType(MethodInfo method, out IHqlGeneratorForMethod methodGenerator)
+		protected bool GetRuntimeMethodGenerator(MethodInfo method, out IHqlGeneratorForMethod methodGenerator)
 		{
 			methodGenerator = null;
 
-			foreach (var typeGenerator in typeGenerators.Where(typeGenerator => typeGenerator.SupportsMethod(method)))
+			foreach (var typeGenerator in runtimeMethodHqlGenerators.Where(typeGenerator => typeGenerator.SupportsMethod(method)))
 			{
 				methodGenerator = typeGenerator.GetMethodGenerator(method);
 				return true;
@@ -41,7 +56,7 @@ namespace NHibernate.Linq.Functions
 			if (registeredMethods.TryGetValue(method, out generator)) return true;
 
 			// Not that either.  Let's query each type generator to see if it can handle it
-			if (GetMethodGeneratorForType(method, out generator)) return true;
+			if (GetRuntimeMethodGenerator(method, out generator)) return true;
 
 			return false;
 		}
@@ -61,10 +76,9 @@ namespace NHibernate.Linq.Functions
 			registeredProperties.Add(property, generator);
 		}
 
-		protected void Register(IHqlGeneratorForType typeMethodGenerator)
+		public void RegisterGenerator(IRuntimeMethodHqlGenerator generator)
 		{
-			typeGenerators.Add(typeMethodGenerator);
-			typeMethodGenerator.Register(this);
+			runtimeMethodHqlGenerators.Add(generator);
 		}
 	}
 }

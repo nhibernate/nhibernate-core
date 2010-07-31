@@ -48,6 +48,11 @@ namespace NHibernate.Test.Linq
 			{
 				throw new NotImplementedException();
 			}
+
+			public void RegisterGenerator(IRuntimeMethodHqlGenerator generator)
+			{
+				throw new NotImplementedException();
+			}
 		}
 	}
 }

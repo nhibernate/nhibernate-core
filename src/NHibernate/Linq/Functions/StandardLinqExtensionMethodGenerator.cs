@@ -8,14 +8,9 @@ using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq.Functions
 {
-	public class StandardLinqExtensionMethodGenerator : IHqlGeneratorForType
+	public class StandardLinqExtensionMethodGenerator : IRuntimeMethodHqlGenerator
 	{
-		#region IHqlGeneratorForType Members
-
-		public void Register(ILinqToHqlGeneratorsRegistry functionRegistry)
-		{
-			// nothing to do
-		}
+		#region IRuntimeMethodHqlGenerator Members
 
 		public bool SupportsMethod(MethodInfo method)
 		{
@@ -41,21 +36,21 @@ namespace NHibernate.Linq.Functions
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
-			var args = visitor.Visit(targetObject)
-												.Union(arguments.Select(a => visitor.Visit(a)))
-												.Cast<HqlExpression>();
+			IEnumerable<HqlExpression> args = visitor.Visit(targetObject)
+				.Union(arguments.Select(a => visitor.Visit(a)))
+				.Cast<HqlExpression>();
 
 			return treeBuilder.MethodCall(_name, args);
 		}
 	}
 
-	static class UnionExtension
+	internal static class UnionExtension
 	{
 		public static IEnumerable<HqlTreeNode> Union(this HqlTreeNode first, IEnumerable<HqlTreeNode> rest)
 		{
 			yield return first;
 
-			foreach (var x in rest)
+			foreach (HqlTreeNode x in rest)
 			{
 				yield return x;
 			}

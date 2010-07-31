@@ -655,6 +655,10 @@
     <Compile Include="Linq\Expressions\AggregateExpressionNode.cs" />
     <Compile Include="Linq\EagerFetchingExtensionMethods.cs" />
     <Compile Include="Linq\Functions\ILinqToHqlGeneratorsRegistry.cs" />
+    <Compile Include="Linq\Functions\IRuntimeMethodHqlGenerator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Linq\Functions\LinqToHqlGeneratorsRegistryExtensions.cs" />
     <Compile Include="Linq\Functions\LinqToHqlGeneratorsRegistryFactory.cs" />
     <Compile Include="Linq\Functions\StandardLinqExtensionMethodGenerator.cs" />
     <Compile Include="Linq\LinqExtensionMethodAttribute.cs" />
@@ -683,9 +687,7 @@
     <Compile Include="Linq\Functions\IHqlGeneratorForMethod.cs" />
     <Compile Include="Linq\Functions\IHqlGeneratorForProperty.cs" />
     <Compile Include="Linq\Functions\BaseHqlGeneratorForMethod.cs" />
-    <Compile Include="Linq\Functions\BaseHqlGeneratorForType.cs" />
-    <Compile Include="Linq\Functions\IHqlGeneratorForType.cs" />
-    <Compile Include="Linq\Functions\DateTimeGenerator.cs" />
+    <Compile Include="Linq\Functions\DateTimePropertiesHqlGenerator.cs" />
     <Compile Include="Linq\Functions\StringGenerator.cs" />
     <Compile Include="Linq\Functions\QueryableGenerator.cs" />
     <Compile Include="Linq\ReWriters\RemoveUnnecessaryBodyOperators.cs" />
