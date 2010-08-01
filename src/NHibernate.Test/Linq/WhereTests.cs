@@ -403,6 +403,24 @@ namespace NHibernate.Test.Linq
             Assert.AreEqual(2, query.Count);
         }
 
+				[Test(Description = "Reported as bug NH-2206"), Ignore("Not fixed yet")]
+				public void SearchOnObjectTypeUpCastWithExtensionMethod()
+				{
+					var query = (from o in session.Query<Dog>()
+											 select o).Cast<Animal>().ToList();
+
+					Assert.AreEqual(2, query.Count);
+				}
+
+				[Test(Description = "Reported as bug NH-2206"), Ignore("Not fixed yet")]
+				public void SearchOnObjectTypeCast()
+				{
+					var query = (from Dog o in session.Query<Dog>()
+											 select o).ToList();
+
+					Assert.AreEqual(2, query.Count);
+				}
+
         [Test]
         public void SearchOnObjectTypeWithIsKeyword()
         {
