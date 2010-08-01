@@ -440,6 +440,8 @@
     <Compile Include="Linq\QueryCacheableTests.cs" />
     <Compile Include="Linq\QueryReuseTests.cs" />
     <Compile Include="Linq\ReadonlyTestCase.cs" />
+    <Compile Include="NHSpecificTest\NH2245\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2245\Model.cs" />
     <Compile Include="UtilityTest\ReflectionHelperIsMethodOfTests.cs" />
     <Compile Include="UtilityTest\ReflectionHelperTest.cs" />
     <Compile Include="Linq\RegresstionTests.cs" />
@@ -2220,6 +2222,7 @@
     <EmbeddedResource Include="DriverTest\SqlServerCeEntity.hbm.xml" />
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH2245\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2257\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2208\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2251\Mappings.hbm.xml" />

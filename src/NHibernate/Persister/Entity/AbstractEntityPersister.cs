@@ -2367,7 +2367,8 @@ namespace NHibernate.Persister.Entity
 				.SetTableName(GetTableName(j))
 				.SetIdentityColumn(GetKeyColumns(j), IdentifierType);
 
-			if (j == 0 && IsVersioned)
+			// NH: Only add version to where clause if optimistic lock mode is Version
+			if (j == 0 && IsVersioned && entityMetamodel.OptimisticLockMode == Versioning.OptimisticLock.Version)
 			{
 				deleteBuilder.SetVersionColumn(new[] { VersionColumnName }, VersionType);
 			}
@@ -2811,7 +2812,9 @@ namespace NHibernate.Persister.Entity
 				return;
 			}
 
-			bool useVersion = j == 0 && IsVersioned;
+			// NH : Only use version if lock mode is Version
+			bool useVersion = j == 0 && IsVersioned && Versioning.OptimisticLock.Version == entityMetamodel.OptimisticLockMode;
+
 			//bool callable = IsDeleteCallable(j);
 			IExpectation expectation = Expectations.AppropriateExpectation(deleteResultCheckStyles[j]);
 			bool useBatch = j == 0 && expectation.CanBeBatched && IsBatchable;
