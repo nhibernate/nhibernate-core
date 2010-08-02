@@ -95,6 +95,8 @@ namespace NHibernate.Driver
 		private const int MaxStringClobSize = MaxBinaryBlobSize / 2;
 		private const byte MaxPrecision = 28;
 		private const byte MaxScale = 5;
+		private const byte MaxDateTime2 = 8;
+		private const byte MaxDateTimeOffset = 10;
 
 		private static void SetDefaultParameterSize(IDbDataParameter dbParam, SqlType sqlType)
 		{
@@ -129,6 +131,12 @@ namespace NHibernate.Driver
 					{
 						dbParam.Size = MaxStringSize;
 					}
+					break;
+				case DbType.DateTime2:
+					dbParam.Size = MaxDateTime2;
+					break;
+				case DbType.DateTimeOffset:
+					dbParam.Size = MaxDateTimeOffset;
 					break;
 			}
 		}

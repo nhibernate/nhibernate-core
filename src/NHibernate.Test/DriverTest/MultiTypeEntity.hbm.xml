@@ -16,5 +16,6 @@
 		<property name="BinaryBlob" type="BinaryBlob"/>
 		<property name="Binary" type="Byte[]"/>
 		<property name="StringClob" type="StringClob"/>
-	</class>
+    <property name="DateTimeProp" type="DateTime"/>
+  </class>
 </hibernate-mapping>

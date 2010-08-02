@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
@@ -8,6 +9,10 @@ namespace NHibernate.Test.DriverTest
 {
 	public class MultiTypeEntity
 	{
+		public MultiTypeEntity()
+		{
+			DateTimeProp = DateTime.Now;
+		}
 		public virtual int Id { get; set; }
 		public virtual string StringProp { get; set; }
 		public virtual string AnsiStringProp { get; set; }
@@ -18,6 +23,7 @@ namespace NHibernate.Test.DriverTest
 		public virtual byte[] BinaryBlob { get; set; }
 		public virtual byte[] Binary { get; set; }
 		public virtual string StringClob { get; set; }
+		public virtual DateTime DateTimeProp { get; set; }
 	}
 
 	[TestFixture]
