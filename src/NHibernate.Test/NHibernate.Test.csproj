@@ -177,6 +177,7 @@
     <Compile Include="Criteria\MaterialResource.cs" />
     <Compile Include="Criteria\ProjectionsTest.cs" />
     <Compile Include="Criteria\Reptile.cs" />
+    <Compile Include="DialectTest\MsSqlCe40DialectFixture.cs" />
     <Compile Include="DriverTest\SqlClientDriverFixture.cs" />
     <Compile Include="DriverTest\SqlServerCeDriverFixture.cs" />
     <Compile Include="EngineTest\CallableParserFixture.cs" />
