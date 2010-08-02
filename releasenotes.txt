@@ -3,6 +3,8 @@ Build 3.0.0.Alpha1
 ** Known BREAKING CHANGES from NH2.1.1.GA to NH3.0.0.Alpha1
 	##### Run time #####
 		* (NH-2199) - null values in maps/dictionaries are no longer silenty ignored/deleted
+		* (NH-2263) - removed the reference to System.Data.OracleClient, now you have to configure the assemblyBinding to resolve the partial name 
+					(example available in App.conf of out NHibernate.Test project)
 
 Build 3.0.0.Alpha1 (rev5056)
 =============================
