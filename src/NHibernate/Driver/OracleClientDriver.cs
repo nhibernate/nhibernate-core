@@ -1,5 +1,4 @@
 using System.Data;
-using System.Data.OracleClient;
 using NHibernate.Engine.Query;
 using NHibernate.SqlTypes;
 
@@ -8,19 +7,12 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// A NHibernate Driver for using the Oracle DataProvider.
 	/// </summary>
-	public class OracleClientDriver : DriverBase
+	public class OracleClientDriver : ReflectionBasedDriver
 	{
 		private static readonly SqlType GuidSqlType = new SqlType(DbType.Binary, 16);
 
-		public override IDbConnection CreateConnection()
-		{
-			return new OracleConnection();
-		}
-
-		public override IDbCommand CreateCommand()
-		{
-			return new OracleCommand();
-		}
+		public OracleClientDriver() :
+			base("System.Data.OracleClient", "System.Data.OracleClient.OracleConnection", "System.Data.OracleClient.OracleCommand") { }
 
 		public override bool UseNamedPrefixInSql
 		{
