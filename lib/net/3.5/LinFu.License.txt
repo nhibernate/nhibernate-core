@@ -1,4 +1,4 @@
-The LinFu Library, (c) 2007 Philip Laureano, is subject to the terms of the following license:
+The LinFu Library, (c) 2007-2009 Philip Laureano, is subject to the terms of the following license:
 
 		   GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
