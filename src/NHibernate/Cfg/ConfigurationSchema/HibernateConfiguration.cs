@@ -96,7 +96,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 				if (fromAppConfig)
 				{
 					xpn.MoveToFirstAttribute();
-					byteCodeProviderType = CfgXmlHelper.ByteCodeProviderConvertFrom(xpn.Value);
+					byteCodeProviderType = xpn.Value;
 				}
 				else
 				{
@@ -128,12 +128,12 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			}
 		}
 
-		private BytecodeProviderType byteCodeProviderType = BytecodeProviderType.Lcg;
+		private string byteCodeProviderType = BytecodeProviderType.Lcg.ToConfigurationString();
 		/// <summary>
 		/// Value for bytecode-provider system property.
 		/// </summary>
 		/// <remarks>Default value <see cref="BytecodeProviderType.Lcg"/>.</remarks>
-		public BytecodeProviderType ByteCodeProviderType
+		public string ByteCodeProviderType
 		{
 			get { return byteCodeProviderType; }
 		}

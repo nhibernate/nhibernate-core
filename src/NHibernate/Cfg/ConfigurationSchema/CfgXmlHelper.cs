@@ -64,33 +64,9 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		/// <summary>XPath expression for session-factory.listener nodes</summary>
 		public static readonly XPathExpression SessionFactoryListenersExpression;
 
-		/// <summary>
-		/// Convert a string to <see cref="BytecodeProviderType"/>.
-		/// </summary>
-		/// <param name="byteCodeProvider">The string that represent <see cref="BytecodeProviderType"/>.</param>
-		/// <returns>
-		/// The <paramref name="byteCodeProvider"/> converted to <see cref="BytecodeProviderType"/>.
-		/// <see cref="BytecodeProviderType.Null"/> for invalid values.
-		/// </returns>
-		/// <remarks>
-		/// See <see cref="BytecodeProviderType"/> for allowed values.
-		/// </remarks>
-		public static BytecodeProviderType ByteCodeProviderConvertFrom(string byteCodeProvider)
+		internal static string ToConfigurationString(this BytecodeProviderType source)
 		{
-			switch (byteCodeProvider)
-			{
-				case "codedom":
-					return BytecodeProviderType.Codedom;
-				case "lcg":
-					return BytecodeProviderType.Lcg;
-				default:
-					return BytecodeProviderType.Null;
-			}
-		}
-
-		internal static string ByteCodeProviderToString(BytecodeProviderType byteCodeProvider)
-		{
-			switch (byteCodeProvider)
+			switch (source)
 			{
 				case BytecodeProviderType.Codedom:
 					return "codedom";

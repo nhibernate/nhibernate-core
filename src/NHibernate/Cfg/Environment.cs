@@ -1,9 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Reflection;
 using log4net;
 using NHibernate.Bytecode;
-using NHibernate.Bytecode.CodeDom;
 using NHibernate.Cfg.ConfigurationSchema;
 using NHibernate.Util;
 
@@ -218,7 +218,7 @@ namespace NHibernate.Cfg
 				return;
 			}
 
-			GlobalProperties[PropertyBytecodeProvider] = CfgXmlHelper.ByteCodeProviderToString(nhConfig.ByteCodeProviderType);
+			GlobalProperties[PropertyBytecodeProvider] = nhConfig.ByteCodeProviderType;
 			GlobalProperties[PropertyUseReflectionOptimizer] = nhConfig.UseReflectionOptimizer.ToString();
 			if (nhConfig.SessionFactory != null)
 			{
@@ -317,14 +317,42 @@ namespace NHibernate.Cfg
 			switch (providerName)
 			{
 				case "codedom":
-					return new BytecodeProviderImpl();
+					return new Bytecode.CodeDom.BytecodeProviderImpl();
 				case "lcg":
 					return new Bytecode.Lightweight.BytecodeProviderImpl();
 				case "null":
 					return new NullBytecodeProvider();
 				default:
-					log.Warn("unrecognized bytecode provider [" + providerName + "], using null by default");
-					return new NullBytecodeProvider();
+					log.Info("custom bytecode provider [" + providerName + "]");
+					return CreateCustomBytecodeProvider(providerName);
+			}
+		}
+
+		private static IBytecodeProvider CreateCustomBytecodeProvider(string assemblyQualifiedName)
+		{
+			try
+			{
+				var type = ReflectHelper.ClassForName(assemblyQualifiedName);
+				try
+				{
+					return (IBytecodeProvider)Activator.CreateInstance(type);
+				}
+				catch (MissingMethodException ex)
+				{
+					throw new HibernateByteCodeException("Public constructor was not found for " + type, ex);
+				}
+				catch (InvalidCastException ex)
+				{
+					throw new HibernateByteCodeException(type + "Type does not implement " + typeof(IBytecodeProvider), ex);
+				}
+				catch (Exception ex)
+				{
+					throw new HibernateByteCodeException("Unable to instantiate: " + type, ex);
+				}
+			}
+			catch (Exception e)
+			{
+				throw new HibernateByteCodeException("Unable to create the instance of Bytecode provider; check inner exception for detail", e);
 			}
 		}
 	}

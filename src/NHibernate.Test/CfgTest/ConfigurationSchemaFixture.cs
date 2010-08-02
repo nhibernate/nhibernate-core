@@ -5,6 +5,7 @@ using NUnit.Framework;
 using NHibernate.Cfg;
 using NHibernate.Cfg.ConfigurationSchema;
 using System.Xml;
+using SharpTestsEx;
 
 namespace NHibernate.Test.CfgTest
 {
@@ -28,7 +29,7 @@ namespace NHibernate.Test.CfgTest
 		public void FromAppConfigTest()
 		{
 			IHibernateConfiguration hc = ConfigurationManager.GetSection("hibernate-configuration") as IHibernateConfiguration;
-			Assert.AreEqual(BytecodeProviderType.Lcg, hc.ByteCodeProviderType);
+			hc.ByteCodeProviderType.Should().Be("lcg");
 			Assert.IsTrue(hc.UseReflectionOptimizer);
 			Assert.AreEqual("NHibernate.Test", hc.SessionFactory.Name);
 		}

@@ -1,10 +1,8 @@
-﻿using NHibernate.Cfg.ConfigurationSchema;
-
-namespace NHibernate.Cfg
+﻿namespace NHibernate.Cfg
 {
 	public interface IHibernateConfiguration
 	{
-		BytecodeProviderType ByteCodeProviderType { get; }
+		string ByteCodeProviderType { get; }
 		bool UseReflectionOptimizer { get; }
 		ISessionFactoryConfiguration SessionFactory { get; }
 	}
