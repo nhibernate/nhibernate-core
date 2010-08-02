@@ -3154,7 +3154,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
+		public virtual string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
 		{
 			StringBuilder sessionFilterFragment = new StringBuilder();
 			filterHelper.Render(sessionFilterFragment, GenerateFilterConditionAlias(alias), enabledFilters);
