@@ -39,6 +39,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly IDictionary<string, ICriteria> aliasCriteriaMap = new Dictionary<string, ICriteria>();
 		private readonly IDictionary<string, ICriteria> associationPathCriteriaMap = new LinkedHashMap<string, ICriteria>();
 		private readonly IDictionary<string, JoinType> associationPathJoinTypesMap = new LinkedHashMap<string, JoinType>();
+		private readonly IDictionary<string, ICriterion> withClauseMap = new Dictionary<string, ICriterion>();
 
 		private readonly ISessionFactoryImplementor sessionFactory;
 		private int indexForAlias = 0;
@@ -295,6 +296,18 @@ namespace NHibernate.Loader.Criteria
 				try
 				{
 					associationPathJoinTypesMap.Add(wholeAssociationPath, crit.JoinType);
+				}
+				catch (ArgumentException ae)
+				{
+					throw new QueryException("duplicate association path: " + wholeAssociationPath, ae);
+				}
+
+				try
+				{
+					if (crit.WithClause != null)
+					{
+						withClauseMap.Add(wholeAssociationPath, crit.WithClause);
+					}
 				}
 				catch (ArgumentException ae)
 				{
@@ -683,6 +696,16 @@ namespace NHibernate.Loader.Criteria
 				}
 			}
 			return propertyName;
+		}
+
+		public SqlString GetWithClause(string path, IDictionary<string, IFilter> enabledFilters)
+		{
+			if (withClauseMap.ContainsKey(path))
+			{
+				ICriterion crit = (ICriterion)withClauseMap[path];
+				return crit == null ? null : crit.ToSqlString(GetCriteria(path), this, enabledFilters);
+			}
+			return null;
 		}
 
 		#region NH specific

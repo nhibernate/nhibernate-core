@@ -29,7 +29,7 @@ namespace NHibernate.Loader.Collection
 
 			// NH Different behavior : passing enabledFilters instead empty-filter
 			allAssociations.Add(
-				new OuterJoinableAssociation(collectionPersister.CollectionType, null, null, alias, JoinType.LeftOuterJoin, Factory,
+				new OuterJoinableAssociation(collectionPersister.CollectionType, null, null, alias, JoinType.LeftOuterJoin, null, Factory,
 				                             enabledFilters));
 
 			InitPersisters(allAssociations, LockMode.None);

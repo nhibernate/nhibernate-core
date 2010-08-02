@@ -129,6 +129,12 @@ namespace NHibernate.Criterion
 			return this;
 		}
 
+		public DetachedCriteria CreateAlias(string associationPath, string alias, JoinType joinType, ICriterion withClause)
+		{
+			criteria.CreateAlias(associationPath, alias, joinType, withClause);
+			return this;
+		}
+
 		public DetachedCriteria CreateCriteria(string associationPath, string alias)
 		{
 			return new DetachedCriteria(impl, criteria.CreateCriteria(associationPath, alias));

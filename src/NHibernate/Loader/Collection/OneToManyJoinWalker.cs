@@ -35,7 +35,7 @@ namespace NHibernate.Loader.Collection
 
 			IList<OuterJoinableAssociation> allAssociations = new List<OuterJoinableAssociation>(associations);
 			allAssociations.Add(
-				new OuterJoinableAssociation(oneToManyPersister.CollectionType, null, null, alias, JoinType.LeftOuterJoin, Factory,
+				new OuterJoinableAssociation(oneToManyPersister.CollectionType, null, null, alias, JoinType.LeftOuterJoin, null, Factory,
 				                             new CollectionHelper.EmptyMapClass<string, IFilter>()));
 
 			InitPersisters(allAssociations, LockMode.None);

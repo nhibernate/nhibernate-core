@@ -20,7 +20,7 @@ namespace NHibernate.SqlCommand
 		public abstract void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType);
 
 		public abstract void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType,
-		                             string on);
+		                             SqlString on);
 
 		public abstract void AddCrossJoin(string tableName, string alias);
 

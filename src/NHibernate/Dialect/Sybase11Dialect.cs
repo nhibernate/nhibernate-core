@@ -69,7 +69,7 @@ namespace NHibernate.Dialect
 		}
 
 		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType,
-		                             string on)
+		                             SqlString on)
 		{
 			AddJoin(tableName, alias, fkColumns, pkColumns, joinType);
 			AddCondition(on);  

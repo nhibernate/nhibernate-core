@@ -203,7 +203,7 @@ namespace NHibernate.Engine
 					join.LHSColumns,
 					JoinHelper.GetRHSColumnNames(join.AssociationType, factory),
 					join.JoinType,
-					condition
+					new SqlString(condition)
 					);
 				if (includeExtraJoins)
 				{

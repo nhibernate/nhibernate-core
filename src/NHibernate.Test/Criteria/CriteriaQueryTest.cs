@@ -1849,5 +1849,111 @@ namespace NHibernate.Test.Criteria
 				criteria.List();
 			}
 		}
+
+        
+		[Test]
+		public void AliasJoinCriterion()
+		{
+			using (ISession session = this.OpenSession())
+			{
+				using (ITransaction t = session.BeginTransaction())
+				{
+					Course courseA = new Course();
+					courseA.CourseCode = "HIB-A";
+					courseA.Description = "Hibernate Training A";
+					session.Persist(courseA);
+					
+					Course courseB = new Course();
+					courseB.CourseCode = "HIB-B";
+					courseB.Description = "Hibernate Training B";
+					session.Persist(courseB);
+
+					Student gavin = new Student();
+					gavin.Name = "Gavin King";
+					gavin.StudentNumber = 232;
+					gavin.PreferredCourse = courseA;
+					session.Persist(gavin);
+
+					Student leonardo = new Student();
+					leonardo.Name = "Leonardo Quijano";
+					leonardo.StudentNumber = 233;
+					leonardo.PreferredCourse = courseB;
+					session.Persist(leonardo);
+
+					Student johnDoe = new Student();
+					johnDoe.Name = "John Doe";
+					johnDoe.StudentNumber = 235;
+					johnDoe.PreferredCourse = null;
+					session.Persist(johnDoe);
+
+					// test == on one value exists
+					IList<string> result = session.CreateCriteria<Student>()
+						.CreateAlias("PreferredCourse", "pc", JoinType.LeftOuterJoin,
+							Restrictions.Eq("pc.CourseCode", "HIB-A"))
+						.SetProjection(Property.ForName("pc.CourseCode"))
+						.AddOrder(Order.Asc("pc.CourseCode"))
+						.List<string>();
+					
+					// can't be sure of NULL comparison ordering aside from they should
+					// either come first or last
+					if (result[0] == null)
+					{
+						Assert.IsNull(result[1]);
+						Assert.AreEqual("HIB-A", result[2]);
+					}
+					else
+					{
+						Assert.IsNull(result[2]);
+						Assert.IsNull(result[1]);
+						Assert.AreEqual("HIB-A", result[0]);
+					}
+
+					// test == on non existent value
+					result = session.CreateCriteria<Student>()
+						.CreateAlias("PreferredCourse", "pc", JoinType.LeftOuterJoin,
+							Restrictions.Eq("pc.CourseCode", "HIB-R"))
+						.SetProjection(Property.ForName("pc.CourseCode"))
+						.AddOrder(Order.Asc("pc.CourseCode"))
+						.List<string>();
+
+					Assert.AreEqual(3, result.Count);
+					Assert.IsNull(result[2]);
+					Assert.IsNull(result[1]);
+					Assert.IsNull(result[0]);
+
+					// test != on one existing value
+					result = session.CreateCriteria<Student>()
+						.CreateAlias("PreferredCourse", "pc", JoinType.LeftOuterJoin,
+							Restrictions.Not(Restrictions.Eq("pc.CourseCode", "HIB-A")))
+						.SetProjection(Property.ForName("pc.CourseCode"))
+						.AddOrder(Order.Asc("pc.CourseCode"))
+						.List<string>();
+
+					Assert.AreEqual(3, result.Count);
+
+					// can't be sure of NULL comparison ordering aside from they should
+					// either come first or last
+					if (result[0] == null)
+					{
+						Assert.IsNull(result[1]);
+						Assert.AreEqual("HIB-B", result[2]);
+					}
+					else
+					{
+						Assert.AreEqual("HIB-B", result[0]);
+						Assert.IsNull(result[1]);
+						Assert.IsNull(result[2]);
+					}
+					
+					session.Delete(gavin);
+					session.Delete(leonardo);
+					session.Delete(johnDoe);
+					session.Delete(courseA);
+					session.Delete(courseB);
+
+					t.Commit();
+				}
+			}
+		}
 	}
 }

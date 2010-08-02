@@ -130,6 +130,11 @@ namespace NHibernate.Loader
 			}
 		}
 
+		protected virtual SqlString GetWithClause(string path)
+		{
+			return SqlString.Empty;
+		}
+
 		/// <summary>
 		/// Add on association (one-to-one, many-to-one, or a collection) to a list
 		/// of associations to be fetched by outerjoin
@@ -142,7 +147,7 @@ namespace NHibernate.Loader
 			string subalias = GenerateTableAlias(associations.Count + 1, path, joinable);
 
 			OuterJoinableAssociation assoc =
-				new OuterJoinableAssociation(type, alias, aliasedLhsColumns, subalias, joinType, Factory, enabledFilters);
+				new OuterJoinableAssociation(type, alias, aliasedLhsColumns, subalias, joinType, GetWithClause(path), Factory, enabledFilters);
 			assoc.ValidateJoin(path);
 			associations.Add(assoc);
 

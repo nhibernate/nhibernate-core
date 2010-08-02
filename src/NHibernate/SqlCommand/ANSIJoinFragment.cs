@@ -17,7 +17,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType,
-		                             string on)
+		                             SqlString on)
 		{
 			string joinString;
 			switch (joinType)

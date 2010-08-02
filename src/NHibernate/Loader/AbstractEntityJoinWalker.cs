@@ -4,6 +4,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
+using NHibernate.Loader.Criteria;
 
 namespace NHibernate.Loader
 {
@@ -33,19 +34,27 @@ namespace NHibernate.Loader
 			WalkEntityTree(persister, Alias);
 			IList<OuterJoinableAssociation> allAssociations = new List<OuterJoinableAssociation>(associations);
 			allAssociations.Add(
-				new OuterJoinableAssociation(persister.EntityType, null, null, alias, JoinType.LeftOuterJoin, Factory,
+				new OuterJoinableAssociation(persister.EntityType, null, null, alias, JoinType.LeftOuterJoin, null, Factory,
 				                             new CollectionHelper.EmptyMapClass<string, IFilter>()));
 
 			InitPersisters(allAssociations, lockMode);
 			InitStatementString(whereString, orderByString, lockMode);
 		}
 
-		protected void InitProjection(SqlString projectionString, SqlString whereString,
-			SqlString orderByString, string groupByString, SqlString havingString, LockMode lockMode)
+		protected void InitProjection(CriteriaQueryTranslator translator, 
+			IDictionary<string, IFilter> enabledFilters, LockMode lockMode)
 		{
+			// the order of the calls here is important, as the join clauses can contain parameter bindings
+			SqlString projectionString = translator.GetSelect(enabledFilters);
 			WalkEntityTree(persister, Alias);
+			SqlString whereString = translator.GetWhereCondition(enabledFilters);
+			SqlString orderByString = translator.GetOrderBy();
+			SqlString groupByString = translator.GetGroupBy();
+			SqlString havingString = translator.GetHavingCondition(enabledFilters);
+			
 			Persisters = new ILoadable[0];
-			InitStatementString(projectionString, whereString, orderByString, groupByString, havingString, lockMode);
+			InitStatementString(projectionString, whereString, orderByString, groupByString.ToString(), 
+                havingString, lockMode);
 		}
 
 		private void InitStatementString(SqlString condition, SqlString orderBy, LockMode lockMode)

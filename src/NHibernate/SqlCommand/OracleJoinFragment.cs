@@ -36,7 +36,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType,
-		                             string on)
+		                             SqlString on)
 		{
 			//arbitrary on clause ignored!!
 			AddJoin(tableName, alias, fkColumns, pkColumns, joinType);
@@ -62,9 +62,9 @@ namespace NHibernate.SqlCommand
 		/// was a normal join condition, but is natural
 		/// for a filter.
 		/// </summary>
-		private void AddLeftOuterJoinCondition(string on)
+		private void AddLeftOuterJoinCondition(SqlString on)
 		{
-			StringBuilder buf = new StringBuilder(on);
+			StringBuilder buf = new StringBuilder(on.ToString());
 			for (int i = 0; i < buf.Length; i++)
 			{
 				char character = buf[i];
@@ -76,7 +76,7 @@ namespace NHibernate.SqlCommand
 					i += 3;
 				}
 			}
-			AddCondition(buf.ToString());
+			AddCondition(SqlString.Parse(buf.ToString()));
 		}
 
 		private static readonly ISet Operators = new HashedSet();

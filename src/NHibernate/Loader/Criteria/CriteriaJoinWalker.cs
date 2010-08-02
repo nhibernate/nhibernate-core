@@ -42,9 +42,7 @@ namespace NHibernate.Loader.Criteria
 			{
 				resultTypes = translator.ProjectedTypes;
 
-				InitProjection(translator.GetSelect(enabledFilters), translator.GetWhereCondition(enabledFilters),
-				               translator.GetOrderBy(), translator.GetGroupBy().ToString(),
-				               translator.GetHavingCondition(enabledFilters), LockMode.None);
+                InitProjection(translator, enabledFilters, LockMode.None);
 			}
 			else
 			{
@@ -174,6 +172,11 @@ namespace NHibernate.Loader.Criteria
 		{
 			return CriteriaQueryTranslator.RootSqlAlias;
 			// NH: really not used (we are using a different ctor to support SubQueryCriteria)
+		}
+
+		protected override SqlString GetWithClause(string path)
+		{
+			return translator.GetWithClause(path, EnabledFilters);
 		}
 	}
 }

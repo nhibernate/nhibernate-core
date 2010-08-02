@@ -345,6 +345,12 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		public ICriteria CreateAlias(string associationPath, string alias, JoinType joinType, ICriterion withClause)
+		{
+			new Subcriteria(this, this, associationPath, alias, joinType, withClause);
+			return this;
+		}
+
 		public ICriteria Add(ICriteria criteriaInst, ICriterion expression)
 		{
 			criteria.Add(new CriterionEntry(expression, criteriaInst));
@@ -369,6 +375,11 @@ namespace NHibernate.Impl
 		public ICriteria CreateCriteria(string associationPath, string alias, JoinType joinType)
 		{
 			return new Subcriteria(this, this, associationPath, alias, joinType);
+		}
+
+		public ICriteria CreateCriteria(string associationPath, string alias, JoinType joinType, ICriterion withClause)
+		{
+			return new Subcriteria(this, this, associationPath, alias, joinType, withClause);
 		}
 
 		public IFutureValue<T> FutureValue<T>()
@@ -607,14 +618,16 @@ namespace NHibernate.Impl
 			private readonly string path;
 			private LockMode lockMode;
 			private readonly JoinType joinType;
+			private ICriterion withClause;
 
-			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, string alias, JoinType joinType)
+			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, string alias, JoinType joinType, ICriterion withClause)
 			{
 				this.root = root;
 				this.parent = parent;
 				this.alias = alias;
 				this.path = path;
 				this.joinType = joinType;
+				this.withClause = withClause;
 
 				root.subcriteriaList.Add(this);
 
@@ -625,8 +638,16 @@ namespace NHibernate.Impl
 				}
 			}
 
+			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, string alias, JoinType joinType)
+				: this(root, parent, path, alias, joinType, null) {}
+
 			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, JoinType joinType)
-				: this(root, parent, path, null, joinType) {}
+				: this(root, parent, path, null, joinType) { }
+
+			public ICriterion WithClause
+			{
+				get { return withClause; }
+			}
 
 			public string Path
 			{
@@ -688,6 +709,12 @@ namespace NHibernate.Impl
 				return this;
 			}
 
+			public ICriteria CreateAlias(string associationPath, string alias, JoinType joinType, ICriterion withClause)
+			{
+				new Subcriteria(root, this, associationPath, alias, joinType, withClause);
+				return this;
+			}
+
 			public ICriteria CreateCriteria(string associationPath)
 			{
 				return CreateCriteria(associationPath, JoinType.InnerJoin);
@@ -706,6 +733,11 @@ namespace NHibernate.Impl
 			public ICriteria CreateCriteria(string associationPath, string alias, JoinType joinType)
 			{
 				return new Subcriteria(root, this, associationPath, alias, joinType);
+			}
+
+			public ICriteria CreateCriteria(string associationPath, string alias, JoinType joinType, ICriterion withClause)
+			{
+				return new Subcriteria(root, this, associationPath, alias, joinType, withClause);
 			}
 
 			public ICriteria SetCacheable(bool cacheable)

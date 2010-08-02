@@ -5,6 +5,7 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Loader
 {
@@ -17,11 +18,11 @@ namespace NHibernate.Loader
 		private readonly string rhsAlias;
 		private readonly string[] rhsColumns;
 		private readonly JoinType joinType;
-		private readonly string on;
+		private readonly SqlString on;
 		private readonly IDictionary<string, IFilter> enabledFilters;
 
 		public OuterJoinableAssociation(IAssociationType joinableType, String lhsAlias, String[] lhsColumns, String rhsAlias,
-		                                JoinType joinType, ISessionFactoryImplementor factory,
+		                                JoinType joinType, SqlString withClause, ISessionFactoryImplementor factory,
 		                                IDictionary<string, IFilter> enabledFilters)
 		{
 			this.joinableType = joinableType;
@@ -31,7 +32,9 @@ namespace NHibernate.Loader
 			this.joinType = joinType;
 			joinable = joinableType.GetAssociatedJoinable(factory);
 			rhsColumns = JoinHelper.GetRHSColumnNames(joinableType, factory);
-			on = joinableType.GetOnCondition(rhsAlias, factory, enabledFilters);
+			on = new SqlString(joinableType.GetOnCondition(rhsAlias, factory, enabledFilters));
+			if (StringHelper.IsNotEmpty(withClause))
+				on = on.Append(" and ( ").Append(withClause).Append(" )");
 			this.enabledFilters = enabledFilters; // needed later for many-to-many/filter application
 		}
 
@@ -146,9 +149,10 @@ namespace NHibernate.Loader
 		public void AddManyToManyJoin(JoinFragment outerjoin, IQueryableCollection collection)
 		{
 			string manyToManyFilter = collection.GetManyToManyFilterFragment(rhsAlias, enabledFilters);
-			string condition = string.Empty.Equals(manyToManyFilter)
+			SqlString condition = string.Empty.Equals(manyToManyFilter)
 			                   	? on
-			                   	: string.Empty.Equals(on) ? manyToManyFilter : on + " and " + manyToManyFilter;
+			                   	: StringHelper.IsEmpty(on) ? new SqlString(manyToManyFilter) : 
+									on.Append(" and ").Append(manyToManyFilter);
 
 			outerjoin.AddJoin(joinable.TableName, rhsAlias, lhsColumns, rhsColumns, joinType, condition);
 			outerjoin.AddJoins(joinable.FromJoinFragment(rhsAlias, false, true),
