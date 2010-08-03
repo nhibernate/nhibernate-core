@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.Text;
+using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -103,6 +104,9 @@ namespace NHibernate.Dialect
 
 			//special:
 			RegisterColumnType(DbType.Guid, "VARCHAR(40)");
+
+			//functions:
+			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "concat(", ",", ")"));
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.MySqlDataDriver";
 		}
