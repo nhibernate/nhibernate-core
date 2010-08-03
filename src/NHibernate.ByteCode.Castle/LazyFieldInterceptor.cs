@@ -36,6 +36,10 @@ namespace NHibernate.ByteCode.Castle
 					FieldInterceptor.Intercept(invocation.InvocationTarget, ReflectHelper.GetPropertyName(invocation.Method), null);
 					invocation.Proceed();
 				}
+				else
+				{
+					invocation.Proceed();					
+				}
 			}
 			else
 			{
