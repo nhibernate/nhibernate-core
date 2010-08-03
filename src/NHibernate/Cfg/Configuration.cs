@@ -496,6 +496,9 @@ namespace NHibernate.Cfg
 			AddDeserializedMapping(doc.Document, doc.Name);
 		}
 
+		public event EventHandler<BindMappingEventArgs> BeforeBindMapping;
+		public event EventHandler<BindMappingEventArgs> AfterBindMapping;
+
 		/// <summary>
 		/// Add mapping data using deserialized class.
 		/// </summary>
@@ -510,9 +513,11 @@ namespace NHibernate.Cfg
 			try
 			{
 				Dialect.Dialect dialect = Dialect.Dialect.GetDialect(properties);
+				OnBeforeBindMapping(new BindMappingEventArgs(dialect, mappingDocument, documentFileName));
 				Mappings mappings = CreateMappings(dialect);
 
 				new MappingRootBinder(mappings, dialect).Bind(mappingDocument);
+				OnAfterBindMapping(new BindMappingEventArgs(dialect, mappingDocument, documentFileName));
 			}
 			catch (Exception e)
 			{
@@ -520,6 +525,24 @@ namespace NHibernate.Cfg
 								? "Could not compile deserialized mapping document."
 								: "Could not compile the mapping document: " + documentFileName;
 				LogAndThrow(new MappingException(message, e));
+			}
+		}
+
+		private void OnAfterBindMapping(BindMappingEventArgs bindMappingEventArgs)
+		{
+			var handler = AfterBindMapping;
+			if (handler != null)
+			{
+				handler(this, bindMappingEventArgs);
+			}
+		}
+
+		private void OnBeforeBindMapping(BindMappingEventArgs bindMappingEventArgs)
+		{
+			var handler = BeforeBindMapping;
+			if(handler != null)
+			{
+				handler(this, bindMappingEventArgs);
 			}
 		}
 

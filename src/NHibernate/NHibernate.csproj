@@ -467,6 +467,7 @@
     <Compile Include="Bytecode\ProxyFactoryFactoryNotConfiguredException.cs" />
     <Compile Include="Bytecode\UnableToLoadProxyFactoryFactoryException.cs" />
     <Compile Include="Cache\FakeCache.cs" />
+    <Compile Include="Cfg\BindMappingEventArgs.cs" />
     <Compile Include="Cfg\EntityCacheUsage.cs" />
     <Compile Include="Cfg\FilterSecondPassArgs.cs" />
     <Compile Include="Cfg\Hbm2ddlKeyWords.cs" />
