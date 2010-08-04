@@ -1,9 +1,12 @@
 using System.Data;
 using System.Data.Common;
+using System.Text;
 using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
+using NHibernate.Util;
+
 //using NHibernate.Dialect.Schema;
 
 namespace NHibernate.Dialect
@@ -445,6 +448,29 @@ namespace NHibernate.Dialect
 			}
 
 			return -1;
+		}
+
+		public override string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey, string referencedTable, string[] primaryKey, bool referencesPrimaryKey)
+		{
+			// NH-2026
+			var res = new StringBuilder(200);
+
+			res.Append(" add constraint foreign key (")
+				.Append(StringHelper.Join(StringHelper.CommaSpace, foreignKey))
+				.Append(") references ")
+				.Append(referencedTable);
+
+			if (!referencesPrimaryKey)
+			{
+				res.Append(" (")
+					.Append(StringHelper.Join(StringHelper.CommaSpace, primaryKey))
+					.Append(')');
+			}
+
+			res.Append(" constraint ")
+				.Append(constraintName);
+
+			return res.ToString();
 		}
 	}
 
