@@ -596,6 +596,7 @@
     <Compile Include="Dialect\Schema\SybaseAnywhereMetaData.cs" />
     <Compile Include="Dialect\SybaseASA10Dialect.cs" />
     <Compile Include="Dialect\SybaseASA9Dialect.cs" />
+    <Compile Include="Driver\CsharpSqliteDriver.cs" />
     <Compile Include="Driver\IfxDriver.cs" />
     <Compile Include="Driver\OracleLiteDataClientDriver.cs" />
     <Compile Include="Engine\Query\CallableParser.cs" />
