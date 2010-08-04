@@ -58,10 +58,8 @@ namespace NHibernate.Driver
 
 		protected override bool SupportsPreparingCommands
 		{
-			// NOTE: Npgsql1.0 and 2.0-preview apparently doesn't correctly  support prepared commands.
-			// The following exception is thrown on insert statements:
-			// Npgsql.NpgsqlException : ERROR: 42601: cannot insert multiple commands into a prepared statement
-			get { return false; }
+			// NH-2267 Patrick Earl
+			get { return true; }
 		}
 
 		public override bool SupportsMultipleQueries
