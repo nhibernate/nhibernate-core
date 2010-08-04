@@ -373,6 +373,7 @@
     <Compile Include="HQL\Ast\Mammal.cs" />
     <Compile Include="HQL\Ast\Name.cs" />
     <Compile Include="HQL\Ast\ParsingFixture.cs" />
+    <Compile Include="HQL\Ast\QuerySubstitutionTest.cs" />
     <Compile Include="HQL\Ast\Reptile.cs" />
     <Compile Include="HQL\Ast\SimpleAssociatedEntity.cs" />
     <Compile Include="HQL\Ast\SimpleClass.cs" />
