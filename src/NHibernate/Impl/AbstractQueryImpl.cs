@@ -657,6 +657,14 @@ namespace NHibernate.Impl
 
 				throw new ArgumentException("Parameter " + name + " does not exist as a named parameter in [" + QueryString + "]");
 			}
+			if (type == null)
+			{
+				throw new ArgumentNullException("type","Can't determine the type of parameter-list elements.");
+			}
+			if(vals.Count == 0)
+			{
+				throw new QueryException(string.Format("An empty parameter-list generate wrong SQL; parameter name '{0}'", name));
+			}
 			namedParameterLists[name] = new TypedValue(type, vals, session.EntityMode);
 			return this;
 		}
@@ -665,7 +673,7 @@ namespace NHibernate.Impl
 		{
 			if (vals == null)
 			{
-				throw new QueryException("Collection must be not null!");
+				throw new ArgumentNullException("vals");
 			}
 
 			if (!parameterMetadata.NamedParameterNames.Contains(name))
@@ -676,7 +684,7 @@ namespace NHibernate.Impl
 
 			if (vals.Count == 0)
 			{
-				SetParameterList(name, vals, null);
+				SetParameterList(name, vals, GuessType(vals.GetCollectionElementType()));
 			}
 			else
 			{
@@ -690,12 +698,12 @@ namespace NHibernate.Impl
 
 		public IQuery SetParameterList(string name, object[] vals, IType type)
 		{
-			return SetParameterList(name, new ArrayList(vals), type);
+			return SetParameterList(name, vals as ICollection, type);
 		}
 
 		public IQuery SetParameterList(string name, object[] vals)
 		{
-			return SetParameterList(name, new ArrayList(vals));
+			return SetParameterList(name, vals as ICollection);
 		}
 
 		#endregion

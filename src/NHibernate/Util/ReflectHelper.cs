@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using log4net;
@@ -621,5 +623,41 @@ namespace NHibernate.Util
         {
             return method.Name.Substring(4);
         }
+
+    	public static System.Type GetCollectionElementType(this IEnumerable collectionInstance)
+    	{
+    		if (collectionInstance == null)
+    		{
+    			throw new ArgumentNullException("collectionInstance");
+    		}
+    		var collectionType = collectionInstance.GetType();
+				return GetCollectionElementType(collectionType);
+    	}
+
+			public static System.Type GetCollectionElementType(System.Type collectionType)
+			{
+				if (collectionType == null)
+				{
+					throw new ArgumentNullException("collectionType");
+				}
+				if (collectionType.IsArray)
+				{
+					return collectionType.GetElementType();
+				}
+				if (collectionType.IsGenericType)
+				{
+					List<System.Type> interfaces = collectionType.GetInterfaces().Where(t => t.IsGenericType).ToList();
+					if (collectionType.IsInterface)
+					{
+						interfaces.Add(collectionType);
+					}
+					var enumerableInterface = interfaces.FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof (IEnumerable<>));
+					if (enumerableInterface != null)
+					{
+						return enumerableInterface.GetGenericArguments()[0];
+					}
+				}
+				return null;
+			}
     }
 }
