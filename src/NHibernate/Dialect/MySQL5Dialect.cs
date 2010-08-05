@@ -12,6 +12,15 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Guid, "BINARY(16)");
 		}
 
+		protected override void RegisterCastTypes() {
+			base.RegisterCastTypes();
+			// MySql 5 also supports DECIMAL as a cast type target
+			// http://dev.mysql.com/doc/refman/5.5/en/cast-functions.html
+			RegisterCastType(DbType.Decimal, "DECIMAL");
+			RegisterCastType(DbType.Double, "DECIMAL");
+			RegisterCastType(DbType.Single, "DECIMAL");
+		}
+
 		//Reference 5.x
 		//Numeric:
 		//http://dev.mysql.com/doc/refman/5.0/en/numeric-type-overview.html
