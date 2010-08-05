@@ -8,6 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.ExpressionTest.Projection
 {
 	using Util;
+    using NHibernate.Dialect.Function;
 
 	[TestFixture]
 	public class ProjectionFixture : BaseExpressionFixture
@@ -83,6 +84,19 @@ namespace NHibernate.Test.ExpressionTest.Projection
 			CreateObjects(typeof(Simple), session);
 			SqlString sqlString = expression.ToSqlString(criteria, 0, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
 			string expectedSql = "count(distinct sql_alias.Pay) as y0_";
+			CompareSqlStrings(sqlString, expectedSql, 0);
+			session.Close();
+		}
+
+		[Test]
+		public void NvlTest()
+		{
+			ISession session = factory.OpenSession();
+			IProjection expression = Projections.SqlFunction(new NvlFunction(),
+			                                                 NHibernateUtil.String, Projections.Property("Name"), Projections.Property("Address"));
+			CreateObjects(typeof (Simple), session);
+			SqlString sqlString = expression.ToSqlString(criteria, 0, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
+			string expectedSql = "nvl(sql_alias.Name, sql_alias.address) as y0_";
 			CompareSqlStrings(sqlString, expectedSql, 0);
 			session.Close();
 		}

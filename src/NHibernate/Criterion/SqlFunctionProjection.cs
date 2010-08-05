@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
@@ -72,7 +73,7 @@ namespace NHibernate.Criterion
 		                                      IDictionary<string, IFilter> enabledFilters)
 		{
 			ISQLFunction sqlFunction = GetFunction(criteriaQuery);
-			List<string> tokens = new List<string>();
+			var tokens = new ArrayList();
 			string replacemenToken = Guid.NewGuid().ToString("n");
 			for (int i = 0; i < args.Length; i++)
 			{
