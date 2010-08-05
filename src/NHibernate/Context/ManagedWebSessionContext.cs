@@ -1,13 +1,12 @@
 using System;
 using System.Collections;
-using System.Web;
 using NHibernate.Engine;
 
 namespace NHibernate.Context
 {
 	/// <summary>
 	/// Provides a <see cref="ISessionFactory.GetCurrentSession()">current session</see>
-	/// for each <see cref="System.Web.HttpContext"/>.
+	/// for each System.Web.HttpContext.
 	/// Works only with Web Applications.
 	/// </summary>
 	[Serializable]
@@ -23,7 +22,7 @@ namespace NHibernate.Context
 
 		public ISession CurrentSession()
 		{
-			ISession currentSession = GetExistingSession(HttpContext.Current, factory);
+			ISession currentSession = GetExistingSession(ReflectiveHttpContext.HttpContextCurrentGetter(), factory);
 			if (currentSession == null)
 			{
 				throw new HibernateException("No session bound to the current HttpContext");
@@ -33,20 +32,20 @@ namespace NHibernate.Context
 
 		#region Static API
 
-		public static void Bind(HttpContext context, ISession session)
+		public static void Bind(object httpContext, ISession session)
 		{
-			GetSessionMap(context, true)[((ISessionImplementor) session).Factory] = session;
+			GetSessionMap(httpContext, true)[((ISessionImplementor) session).Factory] = session;
 		}
 
-		public static bool HasBind(HttpContext context, ISessionFactory factory)
+		public static bool HasBind(object httpContext, ISessionFactory factory)
 		{
-			return GetExistingSession(context, factory) != null;
+			return GetExistingSession(httpContext, factory) != null;
 		}
 
-		public static ISession Unbind(HttpContext context, ISessionFactory factory)
+		public static ISession Unbind(object httpContext, ISessionFactory factory)
 		{
 			ISession result = null;
-			IDictionary sessionMap = GetSessionMap(context, false);
+			IDictionary sessionMap = GetSessionMap(httpContext, false);
 			if (sessionMap != null)
 			{
 				result = sessionMap[factory] as ISession;
@@ -57,9 +56,9 @@ namespace NHibernate.Context
 
 		#endregion
 
-		private static ISession GetExistingSession(HttpContext context, ISessionFactory factory)
+		private static ISession GetExistingSession(object httpContext, ISessionFactory factory)
 		{
-			IDictionary sessionMap = GetSessionMap(context, false);
+			IDictionary sessionMap = GetSessionMap(httpContext, false);
 			if (sessionMap == null)
 			{
 				return null;
@@ -68,13 +67,14 @@ namespace NHibernate.Context
 			return sessionMap[factory] as ISession;
 		}
 
-		private static IDictionary GetSessionMap(HttpContext context, bool create)
+		private static IDictionary GetSessionMap(object httpContext, bool create)
 		{
-			IDictionary map = context.Items[SessionFactoryMapKey] as IDictionary;
+			IDictionary httpContextItems = ReflectiveHttpContext.HttpContextItemsGetter(httpContext);
+			var map = httpContextItems[SessionFactoryMapKey] as IDictionary;
 			if (map == null && create)
 			{
 				map = new Hashtable();
-				context.Items[SessionFactoryMapKey] = map;
+				httpContextItems[SessionFactoryMapKey] = map;
 			}
 			return map;
 		}

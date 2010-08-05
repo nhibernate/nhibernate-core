@@ -53,7 +53,6 @@
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Transactions" />
-    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="Antlr3.Runtime, Version=3.1.0.39271, Culture=neutral, PublicKeyToken=3a9cab8f8d22bfb7">
       <SpecificVersion>False</SpecificVersion>
@@ -564,6 +563,7 @@
     </Compile>
     <Compile Include="Cfg\XmlHbmBinding\TypeBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\ValuePropertyBinder.cs" />
+    <Compile Include="Context\ReflectiveHttpContext.cs" />
     <Compile Include="Context\WcfOperationSessionContext.cs" />
     <Compile Include="Criterion\GroupedProjection.cs" />
     <Compile Include="Criterion\IPropertyProjection.cs" />
