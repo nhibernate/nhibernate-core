@@ -16,38 +16,20 @@ namespace NHibernate.AdoNet
 		private int totalExpectedRowsAffected;
 		private SqlClientSqlCommandSet currentBatch;
 		private StringBuilder currentBatchCommandsLog;
+		private readonly int defaultTimeout;
 
 		public SqlClientBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
 			: base(connectionManager, interceptor)
 		{
 			batchSize = Factory.Settings.AdoBatchSize;
-			currentBatch = new SqlClientSqlCommandSet();
-			SetCommandTimeout();
+			defaultTimeout = PropertiesHelper.GetInt32(Cfg.Environment.CommandTimeout, Cfg.Environment.Properties, -1);
+
+			currentBatch = CreateConfiguredBatch();
 			//we always create this, because we need to deal with a scenario in which
 			//the user change the logging configuration at runtime. Trying to put this
 			//behind an if(log.IsDebugEnabled) will cause a null reference exception 
 			//at that point.
 			currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
-		}
-
-		private void SetCommandTimeout()
-		{
-			int timeout = PropertiesHelper.GetInt32(Cfg.Environment.CommandTimeout, Cfg.Environment.Properties, -1);
-
-			if (timeout > 0)
-			{
-				try
-				{
-					currentBatch.CommandTimeout = timeout;
-				}
-				catch (Exception e)
-				{
-					if (log.IsWarnEnabled)
-					{
-						log.Warn(e.ToString());
-					}
-				}
-			}
 		}
 
 		public override int BatchSize
@@ -107,7 +89,28 @@ namespace NHibernate.AdoNet
 
 			currentBatch.Dispose();
 			totalExpectedRowsAffected = 0;
-			currentBatch = new SqlClientSqlCommandSet();
+			currentBatch = CreateConfiguredBatch();
+		}
+
+		private SqlClientSqlCommandSet CreateConfiguredBatch()
+		{
+			var result = new SqlClientSqlCommandSet();
+			if (defaultTimeout > 0)
+			{
+				try
+				{
+					result.CommandTimeout = defaultTimeout;
+				}
+				catch (Exception e)
+				{
+					if (log.IsWarnEnabled)
+					{
+						log.Warn(e.ToString());
+					}
+				}
+			}
+
+			return result;
 		}
 	}
 }
