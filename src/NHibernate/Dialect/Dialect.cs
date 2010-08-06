@@ -1409,6 +1409,25 @@ namespace NHibernate.Dialect
 
 		/// <summary>
 		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
+		/// when the dialect supports variable limits (i.e., parameters for the limit constraints)
+		/// </summary>
+		/// <param name="querySqlString">A Query in the form of a SqlString.</param>
+		/// <param name="offset">Offset of the first row to be returned by the query (zero-based)</param>
+		/// <param name="limit">Maximum number of rows to be returned by the query</param>
+		/// <returns>A new SqlString that contains the <c>LIMIT</c> clause.</returns>
+		public virtual SqlString GetLimitString(SqlString querySqlString, int offset, int limit, int? offsetParameterIndex, int? limitParameterIndex)
+		{
+			if (!SupportsVariableLimit)
+				return GetLimitString(querySqlString, offset, limit);
+
+			if ((offsetParameterIndex == null) && (limitParameterIndex == null))
+				return GetLimitString(querySqlString, offset, limit);
+
+			throw new NotSupportedException("Override to support limits passed as parameters");
+		}
+
+		/// <summary>
+		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
 		/// </summary>
 		/// <param name="querySqlString">A Query in the form of a SqlString.</param>
 		/// <param name="offset">Offset of the first row to be returned by the query (zero-based)</param>

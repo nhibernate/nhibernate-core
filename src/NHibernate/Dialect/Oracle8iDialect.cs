@@ -248,9 +248,10 @@ namespace NHibernate.Dialect
 			return new DecodeCaseFragment(this);
 		}
 
-		public override SqlString GetLimitString(SqlString sql, bool hasOffset)
+		public override SqlString GetLimitString(SqlString sql, int offset, int limit, int? offsetParameterIndex, int? limitParameterIndex)
 		{
 			sql = sql.Trim();
+			bool hasOffset = offset > 0;
 			bool isForUpdate = false;
 			if (sql.EndsWithCaseInsensitive(" for update"))
 			{
@@ -270,11 +271,11 @@ namespace NHibernate.Dialect
 			pagingSelect.Add(sql);
 			if (hasOffset)
 			{
-				pagingSelect.Add(" ) row_ where rownum <=").AddParameter().Add(") where rownum_ >").AddParameter();
+				pagingSelect.Add(" ) row_ where rownum <=").AddParameter(limitParameterIndex.Value).Add(") where rownum_ >").AddParameter(offsetParameterIndex.Value);
 			}
 			else
 			{
-				pagingSelect.Add(" ) where rownum <=").AddParameter();
+				pagingSelect.Add(" ) where rownum <=").AddParameter(limitParameterIndex.Value);
 			}
 
 			if (isForUpdate)

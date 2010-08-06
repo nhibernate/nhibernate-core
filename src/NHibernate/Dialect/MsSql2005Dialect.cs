@@ -42,7 +42,7 @@ namespace NHibernate.Dialect
 		/// Note that we need to add explicitly specify the columns, because we need to be able to use them
 		/// in a paged subselect. NH-1155
 		/// </remarks>
-		public override SqlString GetLimitString(SqlString querySqlString, int offset, int last)
+		public override SqlString GetLimitString(SqlString querySqlString, int offset, int last, int? offsetParameterIndex, int? limitParameterIndex)
 		{
 			//dont do this paging code if there is no offset, use the 
 			//sql 2000 dialect since it just uses a top statement
@@ -76,16 +76,10 @@ namespace NHibernate.Dialect
 				sortExpressions = new[] {new SqlString("CURRENT_TIMESTAMP"),};
 			}
 
-			Parameter limitParameter = Parameter.Placeholder;
-			limitParameter.ParameterPosition = 0;
-			
-			Parameter offsetParameter = Parameter.Placeholder;
-			offsetParameter.ParameterPosition = 1;
-
 			SqlStringBuilder result =
 				new SqlStringBuilder()
 					.Add("SELECT TOP (")
-					.Add(limitParameter)
+					.Add(Parameter.WithIndex(limitParameterIndex.Value))
 					.Add(") ")
 					.Add(StringHelper.Join(", ", columnsOrAliases))
 					.Add(" FROM (")
@@ -98,7 +92,7 @@ namespace NHibernate.Dialect
 				.Add(") as __hibernate_sort_row ")
 				.Add(from)
 				.Add(") as query WHERE query.__hibernate_sort_row > ")
-				.Add(offsetParameter)
+				.Add(Parameter.WithIndex(offsetParameterIndex.Value))
 				.Add(" ORDER BY query.__hibernate_sort_row");
 				
 			return result.ToSqlString();

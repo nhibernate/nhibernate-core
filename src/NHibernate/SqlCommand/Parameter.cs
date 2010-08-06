@@ -26,6 +26,14 @@ namespace NHibernate.SqlCommand
             get { return new Parameter(); }
 	    }
 
+		/// <summary>
+		/// Create a parameter with the specified position
+		/// </summary>
+		public static Parameter WithIndex(int position)
+		{
+			return new Parameter() { ParameterPosition = position };
+		}
+
 		private Parameter()
 		{
 		}

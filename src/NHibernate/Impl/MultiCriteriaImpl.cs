@@ -315,47 +315,41 @@ namespace NHibernate.Impl
 		{
 			int colIndex = 0;
 
-			colIndex = BindLimitParametersFirstIfNeccesary(command, colIndex);
-			colIndex = BindQueryParameters(command, colIndex);
-
-			BindLimitParametersLastIfNeccesary(command, colIndex);
-		}
-
-		private void BindLimitParametersLastIfNeccesary(IDbCommand command, int colIndex)
-		{
-			for (int i = 0; i < loaders.Count; i++)
+			for (int queryIndex = 0; queryIndex < loaders.Count; queryIndex++)
 			{
-				QueryParameters parameter = parameters[i];
-				RowSelection selection = parameter.RowSelection;
-				if (Loader.Loader.UseLimit(selection, dialect) && !dialect.BindLimitParametersFirst)
-				{
-					colIndex += Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
-				}
+				int limitParameterSpan = BindLimitParametersFirstIfNeccesary(command, queryIndex, colIndex);
+				colIndex = BindQueryParameters(command, queryIndex, colIndex + limitParameterSpan);
+				BindLimitParametersLastIfNeccesary(command, queryIndex, colIndex);
 			}
 		}
 
-		private int BindQueryParameters(IDbCommand command, int colIndex)
+		private void BindLimitParametersLastIfNeccesary(IDbCommand command, int queryIndex, int colIndex)
 		{
-			for (int i = 0; i < loaders.Count; i++)
+			QueryParameters parameter = parameters[queryIndex];
+			RowSelection selection = parameter.RowSelection;
+			if (Loader.Loader.UseLimit(selection, dialect) && !dialect.BindLimitParametersFirst)
 			{
-				QueryParameters parameter = parameters[i];
-				colIndex += parameter.BindParameters(command, colIndex, session);
+				Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
 			}
+		}
+
+		private int BindQueryParameters(IDbCommand command, int queryIndex, int colIndex)
+		{
+			QueryParameters parameter = parameters[queryIndex];
+			colIndex += parameter.BindParameters(command, colIndex, session);
 			return colIndex;
 		}
 
-		private int BindLimitParametersFirstIfNeccesary(IDbCommand command, int colIndex)
+		private int BindLimitParametersFirstIfNeccesary(IDbCommand command, int queryIndex, int colIndex)
 		{
-			for (int i = 0; i < loaders.Count; i++)
+			int limitParametersSpan = 0;
+			QueryParameters parameter = parameters[queryIndex];
+			RowSelection selection = parameter.RowSelection;
+			if (Loader.Loader.UseLimit(selection, dialect) && dialect.BindLimitParametersFirst)
 			{
-				QueryParameters parameter = parameters[i];
-				RowSelection selection = parameter.RowSelection;
-				if (Loader.Loader.UseLimit(selection, dialect) && dialect.BindLimitParametersFirst)
-				{
-					colIndex += Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
-				}
+				limitParametersSpan += Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
 			}
-			return colIndex;
+			return limitParametersSpan;
 		}
 
 		public IMultiCriteria Add(System.Type resultGenericListType, ICriteria criteria)

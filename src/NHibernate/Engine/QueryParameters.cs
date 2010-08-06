@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using log4net;
 using NHibernate.Hql.Classic;
 using NHibernate.Impl;
@@ -40,7 +41,12 @@ namespace NHibernate.Engine
 		private object _optionalId;
 		private string _comment;
 		private bool _readOnly;
+		private int? limitParameterIndex = null;
+		private int? offsetParameterIndex = null;
+		private int wildcardSubqueryLimitParameterIndex = -1;
 		private IDictionary<int, int> _adjustedParameterLocations;
+		private IDictionary<int, int> _tempPagingParameterIndexes;
+		private IDictionary<int, int> _pagingParameterIndexMap;
 
 		private SqlString processedSQL;
 
@@ -61,7 +67,7 @@ namespace NHibernate.Engine
 		}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues)
-			: this(positionalParameterTypes, postionalParameterValues, null, null, false, null, null, false, null) {}
+			: this(positionalParameterTypes, postionalParameterValues, null, null, false, null, null, false, null, null) {}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, object[] collectionKeys)
 			: this(positionalParameterTypes, postionalParameterValues, null, collectionKeys) {}
@@ -74,12 +80,13 @@ namespace NHibernate.Engine
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues,
 		                       IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool cacheable,
-		                       string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
+		                       string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer, IDictionary<int,int> tempPagingParameterIndexes)
 			: this(
 				positionalParameterTypes, positionalParameterValues, null, lockModes, rowSelection, false, cacheable, cacheRegion,
 				comment, null, transformer)
 		{
 			NaturalKeyLookup = isLookupByNaturalKey;
+			_tempPagingParameterIndexes = tempPagingParameterIndexes;
 		}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues,
@@ -123,6 +130,16 @@ namespace NHibernate.Engine
 		public bool HasRowSelection
 		{
 			get { return _rowSelection != null; }
+		}
+
+		public int? LimitParameterIndex
+		{
+			get { return limitParameterIndex; }
+		}
+
+		public int? OffsetParameterIndex
+		{
+			get { return offsetParameterIndex; }
 		}
 
 		/// <summary>
@@ -401,7 +418,11 @@ namespace NHibernate.Engine
 			{
 				if (sqlParameter is Parameter)
 				{
-					sqlParameters.Add((Parameter)sqlParameter);
+					var parameter = (Parameter) sqlParameter;
+					if (!parameter.ParameterPosition.HasValue || (parameter.ParameterPosition >= 0))
+					{
+						sqlParameters.Add(parameter);
+					}
 				}
 			}
 
@@ -497,23 +518,59 @@ namespace NHibernate.Engine
 				}
 			}
 
+			if (_tempPagingParameterIndexes != null)
+			{
+				_pagingParameterIndexMap = new Dictionary<int, int>();
+
+				var pagingParameters =
+					sqlString.Parts
+						.Cast<object>()
+						.Where(p => p is Parameter)
+						.Cast<Parameter>()
+						.Where(p => p.ParameterPosition.HasValue && p.ParameterPosition < 0)
+						.ToList();
+
+				foreach (Parameter pagingParameter in pagingParameters)
+				{
+					int pagingValue = _tempPagingParameterIndexes[pagingParameter.ParameterPosition.Value];
+					int position = parameterIndex + startParameterIndex;
+					_pagingParameterIndexMap.Add(position, pagingValue);
+					pagingParameter.ParameterPosition = position;
+					paramTypeList.Add(NHibernateUtil.Int32);
+					parameterIndex++;
+					totalSpan++;
+				}
+			}
+
 			if (addLimit && factory.Dialect.SupportsVariableLimit)
 			{
 				if (factory.Dialect.BindLimitParametersFirst)
 				{
 					paramTypeList.Insert(0, NHibernateUtil.Int32);
+					limitParameterIndex = startParameterIndex - 1;
 					if (addOffset)
 					{
 						paramTypeList.Insert(0, NHibernateUtil.Int32);
+						offsetParameterIndex = startParameterIndex - 2;
 					}
 				}
 				else
 				{
 					paramTypeList.Add(NHibernateUtil.Int32);
+					limitParameterIndex = totalSpan;
 					if (addOffset)
 					{
 						paramTypeList.Add(NHibernateUtil.Int32);
+						offsetParameterIndex = totalSpan;
+						limitParameterIndex = totalSpan + 1;
 					}
+				}
+
+				if (addOffset && factory.Dialect.BindLimitParametersInReverseOrder)
+				{
+					int? temp = limitParameterIndex;
+					limitParameterIndex = offsetParameterIndex;
+					offsetParameterIndex = temp;
 				}
 
 				totalSpan += addOffset ? 2 : 1;
@@ -559,6 +616,16 @@ namespace NHibernate.Engine
 					ArrayHelper.SafeSetValue(types, location, typedval.Type);
 					ArrayHelper.SafeSetValue(sources, location, "name_" + name);
 					location++;
+				}
+			}
+
+			if (_pagingParameterIndexMap != null)
+			{
+				foreach (int pagingParameterIndex in _pagingParameterIndexMap.Keys)
+				{
+					ArrayHelper.SafeSetValue(values, pagingParameterIndex, _pagingParameterIndexMap[pagingParameterIndex]);
+					ArrayHelper.SafeSetValue(types, pagingParameterIndex, NHibernateUtil.Int32);
+					ArrayHelper.SafeSetValue(sources, pagingParameterIndex, "limit_" + pagingParameterIndex);
 				}
 			}
 

@@ -68,5 +68,11 @@ namespace NHibernate.Criterion
 		/// Do not report the same item multiple times as it will be assumed to be a separate parameter.
 		/// </summary>
 		void AddUsedTypedValues(TypedValue [] values);
+
+		/// <summary>
+		/// Creates a dummy parameter index for the supplied paged value.
+		/// Returns null if the Dialect does not support limit parameters
+		/// </summary>
+		int? CreatePagingParameter(int value);
 	}
 }

@@ -1112,7 +1112,12 @@ namespace NHibernate.Loader
 			if (useLimit)
 			{
 				sqlString =
-					dialect.GetLimitString(sqlString.Trim(), useOffset ? GetFirstRow(selection) : 0, GetMaxOrLimit(dialect, selection));
+					dialect.GetLimitString(
+						sqlString.Trim(),
+						useOffset ? GetFirstRow(selection) : 0,
+						GetMaxOrLimit(dialect, selection),
+						queryParameters.OffsetParameterIndex,
+						queryParameters.LimitParameterIndex);
 			}
 
 			sqlString = PreprocessSQL(sqlString, queryParameters, dialect);
@@ -1710,7 +1715,12 @@ namespace NHibernate.Loader
 			if (useLimit)
 			{
 				sqlString =
-					dialect.GetLimitString(sqlString.Trim(), useOffset ? GetFirstRow(selection) : 0, GetMaxOrLimit(dialect, selection));
+					dialect.GetLimitString(
+						sqlString.Trim(),
+						useOffset ? GetFirstRow(selection) : 0,
+						GetMaxOrLimit(dialect, selection),
+						parameters.OffsetParameterIndex,
+						parameters.LimitParameterIndex);
 			}
 
 			sqlString = PreprocessSQL(sqlString, parameters, dialect);

@@ -26,6 +26,8 @@ namespace NHibernate.Loader.Criteria
 		private readonly string rootEntityName;
 		private readonly string rootSQLAlias;
 		private const int aliasCount = 0;
+		private int _tempPagingParameterIndex = -1;
+		private IDictionary<int, int> _tempPagingParameterIndexes = new Dictionary<int, int>();
 
 		private readonly IDictionary<ICriteria, ICriteriaInfoProvider> criteriaInfoMap =
 			new Dictionary<ICriteria, ICriteriaInfoProvider>();
@@ -141,7 +143,7 @@ namespace NHibernate.Loader.Criteria
 
 			return
 				new QueryParameters(typeArray, valueArray, lockModes, selection, rootCriteria.Cacheable, rootCriteria.CacheRegion,
-									rootCriteria.Comment, rootCriteria.LookupByNaturalKey, rootCriteria.ResultTransformer);
+									rootCriteria.Comment, rootCriteria.LookupByNaturalKey, rootCriteria.ResultTransformer, _tempPagingParameterIndexes);
 		}
 
 		public SqlString GetGroupBy()
@@ -730,6 +732,14 @@ namespace NHibernate.Loader.Criteria
 			}
 		}
 
+		public int? CreatePagingParameter(int value)
+		{
+			if (!Factory.Dialect.SupportsVariableLimit)
+				return null;
+
+			_tempPagingParameterIndexes.Add(_tempPagingParameterIndex, value);
+			return _tempPagingParameterIndex--;
+		}
 
 		public SqlString GetHavingCondition(IDictionary<string, IFilter> enabledFilters)
 		{

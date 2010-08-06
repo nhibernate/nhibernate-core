@@ -68,7 +68,9 @@ namespace NHibernate.Criterion
 
 			if (criteriaImpl.FirstResult != 0 || criteriaImpl.MaxResults != RowSelection.NoValue)
 			{
-				sql = factory.Dialect.GetLimitString(sql, criteriaImpl.FirstResult, criteriaImpl.MaxResults);
+				int? offsetParameterIndex = criteriaQuery.CreatePagingParameter(criteriaImpl.FirstResult);
+				int? limitParameterIndex = criteriaQuery.CreatePagingParameter(criteriaImpl.MaxResults);
+				sql = factory.Dialect.GetLimitString(sql, criteriaImpl.FirstResult, criteriaImpl.MaxResults, offsetParameterIndex, limitParameterIndex);
 			}
 
 			if (op != null)

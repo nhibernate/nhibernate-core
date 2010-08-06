@@ -581,7 +581,18 @@ namespace NHibernate.SqlCommand
 			for (int i=0; i<clone.sqlParts.Length; i++)
 			{
 				if (clone.sqlParts[i] is Parameter)
-					clone.sqlParts[i] = SqlCommand.Parameter.Placeholder;
+				{
+					var originalParameter = (Parameter)clone.sqlParts[i];
+					var copyParameter = SqlCommand.Parameter.Placeholder;
+
+					if (originalParameter.ParameterPosition < 0)
+					{
+						// placeholder for sub-query parameter
+						copyParameter.ParameterPosition = originalParameter.ParameterPosition;
+					}
+
+					clone.sqlParts[i] = copyParameter;
+				}
 			}
 
 			return clone;

@@ -212,7 +212,7 @@ namespace NHibernate.Dialect
 		/// <param name="querySqlString">A Query in the form of a SqlString.</param>
 		/// <param name="hasOffset">Offset of the first row is not zero</param>
 		/// <returns>A new SqlString that contains the <c>LIMIT</c> clause.</returns>
-		public override SqlString GetLimitString(SqlString querySqlString, bool hasOffset)
+		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit, int? offsetParameterIndex, int? limitParameterIndex)
 		{
 			/*
 		     * "select * from (select row_number() over(orderby_clause) as rownum, "
@@ -228,19 +228,19 @@ namespace NHibernate.Dialect
 				.Add(querySqlString.Substring(7))
 				.Add(") as tempresult where rownum ");
 
-			if (hasOffset)
+			if (offset > 0)
 			{
 				pagingBuilder
 					.Add("between ")
-					.Add(Parameter.Placeholder)
+					.Add(Parameter.WithIndex(offsetParameterIndex.Value))
 					.Add("+1 and ")
-					.Add(Parameter.Placeholder);
+					.Add(Parameter.WithIndex(limitParameterIndex.Value));
 			}
 			else
 			{
 				pagingBuilder
 					.Add("<= ")
-					.Add(Parameter.Placeholder);
+					.Add(Parameter.WithIndex(limitParameterIndex.Value));
 			}
 
 			return pagingBuilder.ToSqlString();

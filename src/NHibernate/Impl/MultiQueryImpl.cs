@@ -643,33 +643,29 @@ namespace NHibernate.Impl
 		{
 			int colIndex = 0;
 
-			colIndex = BindLimitParametersFirstIfNeccesary(command, colIndex);
-			colIndex = BindQueryParameters(command, colIndex);
-
-			BindLimitParametersLastIfNeccesary(command, colIndex);
-		}
-
-		private void BindLimitParametersLastIfNeccesary(IDbCommand command, int colIndex)
-		{
-			for (int i = 0; i < queries.Count; i++)
+			for (int queryIndex = 0; queryIndex < queries.Count; queryIndex++)
 			{
-				QueryParameters parameter = parameters[i];
-				RowSelection selection = parameter.RowSelection;
-				if (Loader.Loader.UseLimit(selection, dialect) && !dialect.BindLimitParametersFirst)
-				{
-					colIndex += Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
-				}
+				int limitParameterSpan = BindLimitParametersFirstIfNeccesary(command, queryIndex, colIndex);
+				colIndex = BindQueryParameters(command, queryIndex, colIndex + limitParameterSpan);
+				BindLimitParametersLastIfNeccesary(command, queryIndex, colIndex);
 			}
 		}
 
-		private int BindQueryParameters(IDbCommand command, int colIndex)
+		private void BindLimitParametersLastIfNeccesary(IDbCommand command, int queryIndex, int colIndex)
 		{
-			for (int i = 0; i < queries.Count; i++)
+			QueryParameters parameter = parameters[queryIndex];
+			RowSelection selection = parameter.RowSelection;
+			if (Loader.Loader.UseLimit(selection, dialect) && !dialect.BindLimitParametersFirst)
 			{
-				IQueryTranslator translator = Translators[i];
-				QueryParameters parameter = Parameters[i];
-				colIndex += parameter.BindParameters(command, colIndex, session);
+				Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
 			}
+		}
+
+		private int BindQueryParameters(IDbCommand command, int queryIndex, int colIndex)
+		{
+			IQueryTranslator translator = Translators[queryIndex];
+			QueryParameters parameter = Parameters[queryIndex];
+			colIndex += parameter.BindParameters(command, colIndex, session);
 			return colIndex;
 		}
 
@@ -688,18 +684,16 @@ namespace NHibernate.Impl
 			return queryResults[criteriaResultPositions[key]];
 		}
 
-		private int BindLimitParametersFirstIfNeccesary(IDbCommand command, int colIndex)
+		private int BindLimitParametersFirstIfNeccesary(IDbCommand command, int queryIndex, int colIndex)
 		{
-			for (int i = 0; i < queries.Count; i++)
+			int limitParameterSpan = 0;
+			QueryParameters parameter = Parameters[queryIndex];
+			RowSelection selection = parameter.RowSelection;
+			if (Loader.Loader.UseLimit(selection, dialect) && dialect.BindLimitParametersFirst)
 			{
-				QueryParameters parameter = Parameters[i];
-				RowSelection selection = parameter.RowSelection;
-				if (Loader.Loader.UseLimit(selection, dialect) && dialect.BindLimitParametersFirst)
-				{
-					colIndex += Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
-				}
+				limitParameterSpan += Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
 			}
-			return colIndex;
+			return limitParameterSpan;
 		}
 
 		public override string ToString()
