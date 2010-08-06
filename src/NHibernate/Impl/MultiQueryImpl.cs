@@ -26,7 +26,7 @@ namespace NHibernate.Impl
 		private readonly IList<System.Type> resultCollectionGenericType = new List<System.Type>(); 
 		private readonly List<QueryParameters> parameters = new List<QueryParameters>(); 
 		private IList queryResults;
-		private readonly Dictionary<string, int> criteriaResultPositions = new Dictionary<string, int>();
+		private readonly Dictionary<string, int> queryResultPositions = new Dictionary<string, int>();
 		private string cacheRegion;
 		private int commandTimeout = RowSelection.NoValue;
 		private bool isCacheable;
@@ -320,7 +320,7 @@ namespace NHibernate.Impl
 		public IMultiQuery Add<T>(string key, IQuery query)
 		{
 			ThrowIfKeyAlreadyExists(key);
-			criteriaResultPositions.Add(key, AddQueryForLaterExecutionAndReturnIndexOfQuery(typeof(T), query));
+			queryResultPositions.Add(key, AddQueryForLaterExecutionAndReturnIndexOfQuery(typeof(T), query));
 			return this;
 		}
 
@@ -682,12 +682,12 @@ namespace NHibernate.Impl
 				queryResults = List();
 			}
 
-			if (!criteriaResultPositions.ContainsKey(key))
+			if (!queryResultPositions.ContainsKey(key))
 			{
 				throw new InvalidOperationException(String.Format("The key '{0}' is unknown", key));
 			}
 
-			return queryResults[criteriaResultPositions[key]];
+			return queryResults[queryResultPositions[key]];
 		}
 
 		private int BindLimitParametersFirstIfNeccesary(IDbCommand command, int queryIndex, int colIndex)
@@ -801,7 +801,7 @@ namespace NHibernate.Impl
 
 		private void ThrowIfKeyAlreadyExists(string key)
 		{
-			if (criteriaResultPositions.ContainsKey(key))
+			if (queryResultPositions.ContainsKey(key))
 			{
 				throw new InvalidOperationException(String.Format("The key '{0}' already exists", key));
 			}
