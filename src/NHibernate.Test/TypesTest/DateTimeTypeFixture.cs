@@ -1,6 +1,7 @@
 using System;
 using NHibernate.Type;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -42,6 +43,16 @@ namespace NHibernate.Test.TypesTest
 
 			value2 = ((DateTime)value2).AddHours(2);
 			Assert.IsFalse(value1 == value2, "value2 was changed, value1 should not have changed also.");
+		}
+
+		[Test]
+		public void EqualityShouldIgnoreKindAndMillisecond()
+		{
+			var type = (DateTimeType)NHibernateUtil.DateTime;
+			var localTime = DateTime.Now;
+			var unspecifiedKid = new DateTime(localTime.Year, localTime.Month, localTime.Day, localTime.Hour, localTime.Minute, localTime.Second, 0, DateTimeKind.Unspecified);
+			type.Satisfy(t => t.IsEqual(localTime, unspecifiedKid));
+			type.Satisfy(t => t.IsEqual(localTime, unspecifiedKid, EntityMode.Poco));
 		}
 	}
 }

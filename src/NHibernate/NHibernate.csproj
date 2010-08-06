@@ -851,9 +851,12 @@
     <Compile Include="Tool\hbm2ddl\ScriptSplitter.cs" />
     <Compile Include="Transaction\AdoNetWithDistrubtedTransactionFactory.cs" />
     <Compile Include="Transform\ToListResultTransformer.cs" />
+    <Compile Include="Type\AbstractDateTimeSpecificKindType.cs" />
     <Compile Include="Type\DbTimestampType.cs" />
     <Compile Include="Type\DefaultCollectionTypeFactory.cs" />
     <Compile Include="Bytecode\ICollectionTypeFactory.cs" />
+    <Compile Include="Type\LocalDateTimeType.cs" />
+    <Compile Include="Type\UtcDateTimeType.cs" />
     <Compile Include="Util\ExpressionsHelper.cs" />
     <Compile Include="Util\NullableDictionary.cs" />
     <Compile Include="Hql\Ast\ANTLR\Util\PathHelper.cs" />

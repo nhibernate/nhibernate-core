@@ -451,6 +451,9 @@
     <Compile Include="NHSpecificTest\NH2148\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2245\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2245\Model.cs" />
+    <Compile Include="TypesTest\DateTimeClass.cs" />
+    <Compile Include="TypesTest\LocalDateTimeTypeFixture.cs" />
+    <Compile Include="TypesTest\UtcDateTimeTypeFixture.cs" />
     <Compile Include="UtilityTest\ReflectionHelperIsMethodOfTests.cs" />
     <Compile Include="UtilityTest\ReflectionHelperTest.cs" />
     <Compile Include="Linq\RegresstionTests.cs" />
@@ -2232,6 +2235,7 @@
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <EmbeddedResource Include="DriverTest\EntityForMs2008.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="TypesTest\DateTimeClass.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1421\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2148\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2245\Mappings.hbm.xml" />

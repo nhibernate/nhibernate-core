@@ -238,6 +238,8 @@ namespace NHibernate.Type
 			RegisterType(NHibernateUtil.YesNo, new[] { "yes_no" });
 			RegisterType(NHibernateUtil.Ticks, new[] { "ticks" });
 			RegisterType(NHibernateUtil.TimeAsTimeSpan, EmptyAliases);
+			RegisterType(NHibernateUtil.LocalDateTime, new[] { "localdatetime" });
+			RegisterType(NHibernateUtil.UtcDateTime, new[] { "utcdatetime" });
 			
 			RegisterType(NHibernateUtil.Currency, new[] { "currency" },
 				(p, s) => GetType(NHibernateUtil.Currency, p, s, st => new CurrencyType(st)));

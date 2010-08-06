@@ -2283,7 +2283,19 @@
                             <entry><literal>DbType.DateTime</literal> - ignores the milliseconds</entry>
                             <entry>Default when no <literal>type</literal> attribute specified.</entry>
                         </row>
-                        <row>
+                      <row>
+                        <entry><literal>LocalDateTime</literal></entry>
+                        <entry><literal>System.DateTime</literal></entry>
+                        <entry><literal>DbType.DateTime</literal> - ignores the milliseconds</entry>
+                        <entry>Ensures the <literal>DateTimeKind</literal> is set to <literal>DateTimeKind.Local</literal></entry>
+                      </row>
+                      <row>
+                        <entry><literal>UtcDateTime</literal></entry>
+                        <entry><literal>System.DateTime</literal></entry>
+                        <entry><literal>DbType.DateTime</literal> - ignores the milliseconds</entry>
+                        <entry>Ensures the <literal>DateTimeKind</literal> is set to <literal>DateTimeKind.Utc</literal></entry>
+                      </row>
+                      <row>
                             <entry><literal>Decimal</literal></entry>
                             <entry><literal>System.Decimal</literal></entry>
                             <entry><literal>DbType.Decimal</literal></entry>
