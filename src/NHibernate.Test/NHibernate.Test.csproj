@@ -447,6 +447,9 @@
     <Compile Include="Linq\ReadonlyTestCase.cs" />
     <Compile Include="NHSpecificTest\NH1421\AnEntity.cs" />
     <Compile Include="NHSpecificTest\NH1421\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1836\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH1836\EntityDTO.cs" />
+    <Compile Include="NHSpecificTest\NH1836\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2148\BugFixture.cs" />
     <Compile Include="NHSpecificTest\NH2148\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2245\Fixture.cs" />
@@ -2235,6 +2238,7 @@
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <EmbeddedResource Include="DriverTest\EntityForMs2008.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH1836\Mappings.hbm.xml" />
     <EmbeddedResource Include="TypesTest\DateTimeClass.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1421\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2148\Mappings.hbm.xml" />

@@ -314,6 +314,9 @@ namespace NHibernate
 		/// Set a strategy for handling the query results. This can be used to change
 		/// "shape" of the query result.
 		/// </summary>
+		/// <remarks>
+		/// The <param name="transformer"/> will be applied after the transformer of each single query.
+		/// </remarks>
 		IMultiQuery SetResultTransformer(IResultTransformer transformer);
 
 		/// <summary>

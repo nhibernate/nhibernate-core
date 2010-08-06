@@ -410,44 +410,51 @@ namespace NHibernate.Impl
 
 		protected virtual IList GetResultList(IList results)
 		{
-			for (int i = 0, len = results.Count; i < len; ++i)
+			var multiqueryHolderInstatiator = GetMultiQueryHolderInstatiator();
+			int len = results.Count;
+			for (int i = 0; i < len; ++i)
 			{
-				IList subList = (IList)results[i];
-				QueryParameters parameter = Parameters[i];
-				HolderInstantiator holderInstantiator = GetHolderInstantiator(parameter);
-				if (holderInstantiator.IsRequired)
-				{
-					for (int j = 0; j < subList.Count; j++)
-					{
-						object[] row = subList[j] as object[] ?? new[] { subList[j] };
-						subList[j] = holderInstantiator.Instantiate(row);
-					}
-
-					IResultTransformer transformer =
-						holderInstantiator.ResultTransformer;
-					if (transformer != null)
-					{
-						results[i] = transformer.TransformList(subList);
-					}
-				}
+				// First use the transformer of each query transformig each row and then the list
+				results[i] = GetTransformedResults((IList)results[i], GetQueryHolderInstantiator(i));
+				// then use the MultiQueryTransformer (if it has some sense...) using, as source, the transformed result.
+				results[i] = GetTransformedResults((IList)results[i], multiqueryHolderInstatiator);
 			}
 			return results;
 		}
 
-		private HolderInstantiator GetHolderInstantiator(QueryParameters parameter)
+		private IList GetTransformedResults(IList source, HolderInstantiator holderInstantiator)
 		{
-			//if multi query has result transformer, then this will override IQuery transformations
-			if (resultTransformer != null)
+			if (!holderInstantiator.IsRequired)
 			{
-				return new HolderInstantiator(resultTransformer, null);
+				return source;
 			}
-			if (parameter.ResultTransformer != null)
+			for (int j = 0; j < source.Count; j++)
 			{
-				return new HolderInstantiator(parameter.ResultTransformer, null);
+				object[] row = source[j] as object[] ?? new[] { source[j] };
+				source[j] = holderInstantiator.Instantiate(row);
 			}
-			return HolderInstantiator.NoopInstantiator;
+
+			return holderInstantiator.ResultTransformer.TransformList(source);
 		}
 
+		private HolderInstantiator GetQueryHolderInstantiator(int queryPosition)
+		{
+			// TODO : we need a test to check the behavior when the query has a 'new' istead a trasformer
+			// we should take the HolderInstantiator directly from QueryTranslator... taking care with Parameters.
+			return Parameters[queryPosition].ResultTransformer != null ? 
+				new HolderInstantiator(Parameters[queryPosition].ResultTransformer, translators[queryPosition].ReturnAliases) 
+				: HolderInstantiator.NoopInstantiator;
+		}
+
+		private HolderInstantiator GetMultiQueryHolderInstatiator()
+		{
+			return HasMultiQueryResultTrasformer() ? new HolderInstantiator(resultTransformer, null) : HolderInstantiator.NoopInstantiator;
+		}
+
+		private bool HasMultiQueryResultTrasformer()
+		{
+			return resultTransformer != null;
+		}
 
 		protected ArrayList DoList()
 		{

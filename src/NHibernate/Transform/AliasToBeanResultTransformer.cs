@@ -61,6 +61,10 @@ namespace NHibernate.Transform
 
 		public object TransformTuple(object[] tuple, String[] aliases)
 		{
+			if (aliases == null)
+			{
+				throw new ArgumentNullException("aliases");
+			}
 			object result;
 
 			try
