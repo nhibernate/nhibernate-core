@@ -13,103 +13,124 @@ namespace NHibernate
 		/// <summary>
 		/// Get all the results
 		/// </summary>
+		/// <remarks>
+		/// The result is a IList of IList.
+		/// </remarks>
 		IList List();
 
 		/// <summary>
-		/// Adds the specified criteria to the query. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
+		/// Adds the specified query to the query. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
 		/// </summary>
 		/// <param name="resultGenericListType">Return results in a <see cref="System.Collections.Generic.List{resultGenericListType}"/></param>
-		/// <param name="criteria">The criteria.</param>
-		/// <returns></returns>
-		IMultiQuery Add(System.Type resultGenericListType, IQuery criteria);
+		/// <param name="query">The query.</param>
+		/// <returns>The instance for method chain.</returns>
+		IMultiQuery Add(System.Type resultGenericListType, IQuery query);
 
 		/// <summary>
 		/// Add the specified HQL query to the multi query. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
 		/// </summary>
+		/// <param name="query">The query</param>
 		IMultiQuery Add<T>(IQuery query);
-		
+
 		/// <summary>
-        /// Add the specified HQL query to the multi query, and associate it with the given key. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        IMultiQuery Add<T>(string key, IQuery query);
-        
-        /// <summary>
-        /// Add the specified HQL Query to the multi query, and associate it with the given key. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="hql"></param>
-        /// <returns></returns>
-        IMultiQuery Add<T>(string key, string hql);
+		/// Add the specified HQL query to the multi query, and associate it with the given key. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
+		/// </summary>
+		/// <param name="key">The key to get results of the specific query.</param>
+		/// <param name="query">The query</param>
+		/// <returns>The instance for method chain.</returns>
+		/// <seealso cref="GetResult(string)"/>
+		IMultiQuery Add<T>(string key, IQuery query);
 
-        /// <summary>
-        /// Add the specified HQL query to the multi query. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
-        /// </summary>
-        IMultiQuery Add<T>(string hql);
+		/// <summary>
+		/// Add the specified HQL Query to the multi query, and associate it with the given key. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
+		/// </summary>
+		/// <param name="key">The key to get results of the specific query.</param>
+		/// <param name="hql">The query</param>
+		/// <returns>The instance for method chain.</returns>
+		/// <seealso cref="GetResult(string)"/>
+		IMultiQuery Add<T>(string key, string hql);
 
-        /// <summary>
-        /// Add a named query to the multi query. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
-        /// </summary>
-        IMultiQuery AddNamedQuery<T>(string namedQuery);
+		/// <summary>
+		/// Add the specified HQL query to the multi query. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
+		/// </summary>
+		/// <param name="hql">The query</param>
+		/// <returns>The instance for method chain.</returns>
+		IMultiQuery Add<T>(string hql);
 
-        /// <summary>
-        /// Add a named query to the multi query, and associate it with the given key. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="namedKey"></param>
-        /// <returns></returns>
-        IMultiQuery AddNamedQuery<T>(string key, string namedKey);
+		/// <summary>
+		/// Add a named query to the multi query. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
+		/// </summary>
+		/// <param name="queryName">The query</param>
+		/// <returns>The instance for method chain.</returns>
+		IMultiQuery AddNamedQuery<T>(string queryName);
+
+		/// <summary>
+		/// Add a named query to the multi query, and associate it with the given key. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>
+		/// </summary>
+		/// <param name="key">The key to get results of the specific query.</param>
+		/// <param name="queryName">The query</param>
+		/// <returns>The instance for method chain.</returns>
+		/// <seealso cref="GetResult(string)"/>
+		IMultiQuery AddNamedQuery<T>(string key, string queryName);
 
 		/// <summary>
 		/// Add the specified HQL query to the multi query, and associate it with the given key
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="query"></param>
-		/// <returns></returns>
+		/// <param name="key">The key to get results of the specific query.</param>
+		/// <param name="query">The query</param>
+		/// <returns>The instance for method chain.</returns>
+		/// <seealso cref="GetResult(string)"/>
 		IMultiQuery Add(string key, IQuery query);
 
 		/// <summary>
-	 	/// Add the specified HQL query to the multi query
+		/// Add the specified HQL query to the multi query
 		/// </summary>
+		/// <param name="query">The query</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery Add(IQuery query);
 
 		/// <summary>
 		/// Add the specified HQL Query to the multi query, and associate it with the given key
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="hql"></param>
-		/// <returns></returns>
+		/// <param name="key">The key to get results of the specific query.</param>
+		/// <param name="hql">The query</param>
+		/// <returns>The instance for method chain.</returns>
+		/// <seealso cref="GetResult(string)"/>
 		IMultiQuery Add(string key, string hql);
 
 		/// <summary>
 		/// Add the specified HQL query to the multi query
 		/// </summary>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery Add(string hql);
 
 		/// <summary>
 		/// Add a named query to the multi query
 		/// </summary>
-		IMultiQuery AddNamedQuery(string namedQuery);
+		/// <param name="queryName">The query</param>
+		/// <returns>The instance for method chain.</returns>
+		IMultiQuery AddNamedQuery(string queryName);
 
 		/// <summary>
 		/// Add a named query to the multi query, and associate it with the given key
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="namedKey"></param>
-		/// <returns></returns>
-		IMultiQuery AddNamedQuery(string key, string namedKey);
+		/// <param name="key">The key to get results of the specific query.</param>
+		/// <param name="queryName">The query</param>
+		/// <returns>The instance for method chain.</returns>
+		/// <seealso cref="GetResult(string)"/>
+		IMultiQuery AddNamedQuery(string key, string queryName);
 
 		/// <summary>
 		/// Enable caching of this query result set.
 		/// </summary>
 		/// <param name="cacheable">Should the query results be cacheable?</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetCacheable(bool cacheable);
 
 		/// Set the name of the cache region.
 		/// <param name="region">The name of a query cache region, or <see langword="null" />
 		/// for the default query cache</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetCacheRegion(string region);
 
 		/// Should the query force a refresh of the specified query cache region?
@@ -119,12 +140,14 @@ namespace NHibernate
 		/// based on its knowledge of those events.
 		/// <param name="forceCacheRefresh">Should the query result in a forcible refresh of
 		/// the query cache?</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetForceCacheRefresh(bool forceCacheRefresh);
 
 		/// <summary>
 		/// The timeout for the underlying ADO query
 		/// </summary>
 		/// <param name="timeout"></param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetTimeout(int timeout);
 
 		/// <summary>
@@ -133,6 +156,7 @@ namespace NHibernate
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">The possibly null parameter value</param>
 		/// <param name="type">The NHibernate <see cref="IType"/>.</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetParameter(string name, object val, IType type);
 
 
@@ -142,6 +166,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">The non-null parameter value</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetParameter(string name, object val);
 
 		/// <summary>
@@ -151,6 +176,7 @@ namespace NHibernate
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="vals">A collection of values to list</param>
 		/// <param name="type">The Hibernate type of the values</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetParameterList(string name, ICollection vals, IType type);
 
 		/// <summary>
@@ -160,46 +186,52 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="vals">A collection of values to list</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetParameterList(string name, ICollection vals);
 
 		/// <summary>
-		/// Bind an instance of a <see cref="String" /> to a named parameter
+		/// Bind an instance of a <see cref="string" /> to a named parameter
 		/// using an NHibernate <see cref="AnsiStringType"/>.
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
-		/// <param name="val">A non-null instance of a <see cref="String"/>.</param>
+		/// <param name="val">A non-null instance of a <see cref="string"/>.</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetAnsiString(string name, string val);
 
 		/// <summary>
-		/// Bind an instance of a <see cref="Byte" /> array to a named parameter
+		/// Bind an instance of a <see cref="byte" /> array to a named parameter
 		/// using an NHibernate <see cref="BinaryType"/>.
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
-		/// <param name="val">A non-null instance of a <see cref="Byte"/> array.</param>
+		/// <param name="val">A non-null instance of a <see cref="byte"/> array.</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetBinary(string name, byte[] val);
 
 		/// <summary>
-		/// Bind an instance of a <see cref="Boolean" /> to a named parameter
+		/// Bind an instance of a <see cref="bool" /> to a named parameter
 		/// using an NHibernate <see cref="BooleanType"/>.
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
-		/// <param name="val">A non-null instance of a <see cref="Boolean"/>.</param>
+		/// <param name="val">A non-null instance of a <see cref="bool"/>.</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetBoolean(string name, bool val);
 
 		/// <summary>
-		/// Bind an instance of a <see cref="Byte" /> to a named parameter
+		/// Bind an instance of a <see cref="byte" /> to a named parameter
 		/// using an NHibernate <see cref="ByteType"/>.
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
-		/// <param name="val">A non-null instance of a <see cref="Byte"/>.</param>
+		/// <param name="val">A non-null instance of a <see cref="byte"/>.</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetByte(string name, byte val);
 
 		/// <summary>
-		/// Bind an instance of a <see cref="Char" /> to a named parameter
+		/// Bind an instance of a <see cref="char" /> to a named parameter
 		/// using an NHibernate <see cref="CharType"/>.
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
-		/// <param name="val">A non-null instance of a <see cref="Char"/>.</param>
+		/// <param name="val">A non-null instance of a <see cref="char"/>.</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetCharacter(string name, char val);
 
 		/// <summary>
@@ -208,6 +240,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
 		/// <param name="name">The name of the parameter</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetDateTime(string name, DateTime val);
 
 		/// <summary>
@@ -216,6 +249,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="Decimal"/>.</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetDecimal(string name, decimal val);
 
 		/// <summary>
@@ -224,6 +258,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="Double"/>.</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetDouble(string name, double val);
 
 		/// <summary>
@@ -231,6 +266,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a persistent class</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetEntity(string name, object val);
 
 		/// <summary>
@@ -239,6 +275,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a persistent enumeration</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetEnum(string name, Enum val);
 
 		/// <summary>
@@ -247,6 +284,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="Int16"/>.</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetInt16(string name, short val);
 
 		/// <summary>
@@ -255,6 +293,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="Int32"/>.</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetInt32(string name, int val);
 
 		/// <summary>
@@ -263,6 +302,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="Int64"/>.</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetInt64(string name, long val);
 
 		/// <summary>
@@ -271,6 +311,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="Single"/>.</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetSingle(string name, float val);
 
 		/// <summary>
@@ -279,6 +320,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="String"/>.</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetString(string name, string val);
 
 		/// <summary>
@@ -287,6 +329,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">An instance of a <see cref="Guid"/>.</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetGuid(string name, Guid val);
 
 		/// <summary>
@@ -295,6 +338,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetTime(string name, DateTime val);
 
 		/// <summary>
@@ -303,11 +347,13 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetTimestamp(string name, DateTime val);
 
 		/// <summary>
 		/// Override the current session flush mode, just for this query.
 		/// </summary>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetFlushMode(FlushMode mode);
 
 		/// <summary>
@@ -317,13 +363,14 @@ namespace NHibernate
 		/// <remarks>
 		/// The <param name="transformer"/> will be applied after the transformer of each single query.
 		/// </remarks>
+		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetResultTransformer(IResultTransformer transformer);
 
 		/// <summary>
-		/// Returns the result of one of the Criteria based on the key
+		/// Returns the result of one of the query based on the key
 		/// </summary>
 		/// <param name="key">The key</param>
-		/// <returns></returns>
+		/// <returns>The instance for method chain.</returns>
 		object GetResult(string key);
 	}
 }

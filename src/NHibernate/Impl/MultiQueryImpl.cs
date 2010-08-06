@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using Iesi.Collections;
 using log4net;
 using NHibernate.Cache;
@@ -302,9 +301,9 @@ namespace NHibernate.Impl
 			return Add<object>(hql);
 		}
 
-		public IMultiQuery AddNamedQuery(string namedQuery)
+		public IMultiQuery AddNamedQuery(string queryName)
 		{
-			return AddNamedQuery<object>(namedQuery);
+			return AddNamedQuery<object>(queryName);
 		}
 
 		public IMultiQuery AddNamedQuery(string key, string namedQuery)
@@ -336,9 +335,9 @@ namespace NHibernate.Impl
 			return Add<T>(key, ((ISession)session).CreateQuery(hql));
 		}
 
-		public IMultiQuery AddNamedQuery<T>(string namedQuery)
+		public IMultiQuery AddNamedQuery<T>(string queryName)
 		{
-			return Add<T>(session.GetNamedQuery(namedQuery));
+			return Add<T>(session.GetNamedQuery(queryName));
 		}
 
 		public IMultiQuery SetCacheable(bool cacheable)
