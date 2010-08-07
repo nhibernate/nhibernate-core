@@ -669,7 +669,6 @@ namespace NHibernate.Impl
 
 		private int BindQueryParameters(IDbCommand command, int queryIndex, int colIndex)
 		{
-			IQueryTranslator translator = Translators[queryIndex];
 			QueryParameters parameter = Parameters[queryIndex];
 			colIndex += parameter.BindParameters(command, colIndex, session);
 			return colIndex;
