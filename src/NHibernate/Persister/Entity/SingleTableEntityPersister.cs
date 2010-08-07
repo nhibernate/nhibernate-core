@@ -527,6 +527,12 @@ namespace NHibernate.Persister.Entity
 
 		private string DiscriminatorFilterFragment(string alias)
 		{
+			const string abstractClassWithNoSubclassExceptionMessageTemplate = 
+@"The class {0} can't be instatiated and does not have mapped subclasses; 
+possible solutions:
+- don't map the abstract class
+- map the its subclasses.";
+
 			if (NeedsDiscriminator)
 			{
 				InFragment frag = new InFragment();
@@ -541,13 +547,20 @@ namespace NHibernate.Persister.Entity
 				}
 
 				string[] subclasses = SubclassClosure;
-				for (int i = 0; i < subclasses.Length; i++)
+				int validValuesForInFragment = 0;
+				foreach (string t in subclasses)
 				{
-					IQueryable queryable = (IQueryable)Factory.GetEntityPersister(subclasses[i]);
+					var queryable = (IQueryable) Factory.GetEntityPersister(t);
 					if (!queryable.IsAbstract)
+					{
 						frag.AddValue(queryable.DiscriminatorSQLValue);
+						validValuesForInFragment++;
+					}
 				}
-
+				if(validValuesForInFragment == 0)
+				{
+					throw new NotSupportedException(string.Format(abstractClassWithNoSubclassExceptionMessageTemplate, subclasses[0]));
+				}
 				StringBuilder buf = new StringBuilder(50).Append(" and ").Append(frag.ToFragmentString().ToString());
 
 				return buf.ToString();
