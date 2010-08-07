@@ -219,5 +219,20 @@ namespace NHibernate.Dialect
 
 			return pagingBuilder.ToSqlString();
 		}
+
+		public override bool SupportsTemporaryTables
+		{
+			get { return true; }
+		}
+
+		public override string CreateTemporaryTableString
+		{
+			get { return "create temp table"; }
+		}
+
+		public override bool DropTemporaryTableAfterUse()
+		{
+			return true;
+		}
 	}
 }
