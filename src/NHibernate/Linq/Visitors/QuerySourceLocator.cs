@@ -24,7 +24,7 @@ namespace NHibernate.Linq.Visitors
 
         public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
         {
-            if (_type == fromClause.ItemType)
+            if (_type.IsAssignableFrom(fromClause.ItemType))
             {
                 _querySource = fromClause;
             }

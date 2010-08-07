@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using NHibernate.Linq;
+using NHibernate.Test.Linq.Entities;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace NHibernate.Test.Linq
 {
@@ -53,5 +55,13 @@ namespace NHibernate.Test.Linq
             Assert.IsTrue(NHibernateUtil.IsInitialized(x[0].Orders));
             Assert.IsTrue(NHibernateUtil.IsInitialized(x[0].Orders.First().OrderLines));
         }
+
+				[Test]
+				public void WhenFetchSuperclassCollectionThenNotThrows()
+				{
+					// NH-2277
+					session.Executing(s => s.Query<Lizard>().Fetch(x => x.Children).ToList()).NotThrows();
+					session.Close();
+				} 
     }
 }
