@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Text;
-using log4net;
+
 using NHibernate.Mapping;
 using NHibernate.Properties;
 using NHibernate.Proxy;
@@ -11,7 +11,7 @@ namespace NHibernate.Tuple.Entity
 {
 	public class DynamicMapEntityTuplizer : AbstractEntityTuplizer
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(PocoEntityTuplizer));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(PocoEntityTuplizer));
 
 		internal DynamicMapEntityTuplizer(EntityMetamodel entityMetamodel, PersistentClass mappingInfo)
 			: base(entityMetamodel, mappingInfo)

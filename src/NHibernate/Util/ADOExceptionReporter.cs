@@ -1,11 +1,11 @@
 using System;
-using log4net;
+
 
 namespace NHibernate.Util
 {
 	public class ADOExceptionReporter
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(ADOExceptionReporter));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(ADOExceptionReporter));
 		public const string DefaultExceptionMsg = "SQL Exception";
 
 		private ADOExceptionReporter()

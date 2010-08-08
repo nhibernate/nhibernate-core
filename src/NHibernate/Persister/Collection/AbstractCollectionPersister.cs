@@ -5,7 +5,7 @@ using System.Data;
 using System.Data.Common;
 using System.Text;
 using Iesi.Collections;
-using log4net;
+
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -163,7 +163,7 @@ namespace NHibernate.Persister.Collection
 		private readonly IDictionary<string, object> collectionPropertyColumnAliases = new Dictionary<string, object>();
 		private readonly IDictionary<string, object> collectionPropertyColumnNames = new Dictionary<string, object>();
 
-		private static readonly ILog log = LogManager.GetLogger(typeof (ICollectionPersister));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (ICollectionPersister));
 
 		public AbstractCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, Configuration cfg,
 		                                   ISessionFactoryImplementor factory)

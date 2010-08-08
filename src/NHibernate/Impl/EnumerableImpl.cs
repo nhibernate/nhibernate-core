@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Data.Common;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
@@ -19,7 +19,7 @@ namespace NHibernate.Impl
 	/// </remarks>
 	public class EnumerableImpl : IEnumerable, IEnumerator, IDisposable
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(EnumerableImpl));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(EnumerableImpl));
 
 		private IDataReader _reader;
 		private ISessionImplementor _sess;

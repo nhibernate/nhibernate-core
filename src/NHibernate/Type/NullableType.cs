@@ -1,7 +1,7 @@
 using System;
 using System.Data;
 using System.Xml;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -24,12 +24,12 @@ namespace NHibernate.Type
 		static NullableType()
 		{
 			//cache this, because it was a significant performance cost
-			IsDebugEnabled = LogManager.GetLogger(typeof(IType).Namespace).IsDebugEnabled;
+			IsDebugEnabled = LogggerProvider.LoggerFor(typeof(IType).Namespace).IsDebugEnabled;
 		}
 
-		private ILog Log
+		private ILogger Log
 		{
-			get { return LogManager.GetLogger(GetType()); }
+			get { return LogggerProvider.LoggerFor(GetType()); }
 		}
 
 		private readonly SqlType _sqlType;

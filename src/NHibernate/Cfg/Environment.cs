@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Reflection;
-using log4net;
+
 using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
 using NHibernate.Util;
@@ -167,7 +167,7 @@ namespace NHibernate.Cfg
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;
 
-		private static readonly ILog log = LogManager.GetLogger(typeof (Environment));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (Environment));
 
 		/// <summary>
 		/// Issue warnings to user when any obsolete property names are used.

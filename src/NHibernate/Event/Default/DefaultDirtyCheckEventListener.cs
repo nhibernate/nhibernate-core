@@ -1,5 +1,5 @@
 using System;
-using log4net;
+
 
 namespace NHibernate.Event.Default
 {
@@ -10,7 +10,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultDirtyCheckEventListener : AbstractFlushingEventListener, IDirtyCheckEventListener
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultDirtyCheckEventListener));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(DefaultDirtyCheckEventListener));
 
 		public virtual void OnDirtyCheck(DirtyCheckEvent @event)
 		{

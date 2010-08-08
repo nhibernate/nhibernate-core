@@ -1,6 +1,6 @@
 using System;
 using System.Runtime.Serialization;
-using log4net;
+
 
 namespace NHibernate
 {
@@ -19,7 +19,7 @@ namespace NHibernate
 		public NonUniqueResultException(int resultCount)
 			: base("query did not return a unique result: " + resultCount.ToString())
 		{
-			LogManager.GetLogger(typeof(NonUniqueResultException)).Error("query did not return a unique result: " +
+			LogggerProvider.LoggerFor(typeof(NonUniqueResultException)).Error("query did not return a unique result: " +
 			                                                             resultCount.ToString());
 		}
 

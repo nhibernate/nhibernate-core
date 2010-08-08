@@ -8,7 +8,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 	/// </summary>
 	public class SessionFactoryConfiguration : SessionFactoryConfigurationBase
 	{
-		//private static readonly ILog log = LogManager.GetLogger(typeof(SessionFactoryConfiguration));
+		//private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(SessionFactoryConfiguration));
 
 		internal SessionFactoryConfiguration(XPathNavigator hbConfigurationSection)
 		{

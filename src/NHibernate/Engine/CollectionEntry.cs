@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using log4net;
+
 using NHibernate.Collection;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
@@ -14,7 +14,7 @@ namespace NHibernate.Engine
 	[Serializable]
 	public class CollectionEntry
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (CollectionEntry));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (CollectionEntry));
 
 		/// <summary>session-start/post-flush persistent state</summary>
 		private object snapshot;

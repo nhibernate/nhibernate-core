@@ -1,7 +1,7 @@
 using System;
 using System.Data;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
@@ -21,7 +21,7 @@ namespace NHibernate.AdoNet
 	/// </summary>
 	public abstract class AbstractBatcher : IBatcher
 	{
-		protected static readonly ILog log = LogManager.GetLogger(typeof(AbstractBatcher));
+		protected static readonly ILogger log = LogggerProvider.LoggerFor(typeof(AbstractBatcher));
 
 		private static int openCommandCount;
 		private static int openReaderCount;

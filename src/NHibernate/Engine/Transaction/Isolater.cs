@@ -1,7 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using log4net;
+
 using NHibernate.Dialect;
 using NHibernate.Exceptions;
 
@@ -28,7 +28,7 @@ namespace NHibernate.Engine.Transaction
 	/// </remarks>
 	public class Isolater
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(Isolater));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(Isolater));
 
 		/// <summary> 
 		/// Ensures that all processing actually performed by the given work will

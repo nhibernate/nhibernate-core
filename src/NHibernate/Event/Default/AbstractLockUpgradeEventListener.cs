@@ -1,5 +1,5 @@
 using System;
-using log4net;
+
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -15,7 +15,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class AbstractLockUpgradeEventListener : AbstractReassociateEventListener
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(AbstractLockUpgradeEventListener));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(AbstractLockUpgradeEventListener));
 
 		/// <summary> 
 		/// Performs a pessimistic lock upgrade on a given entity, if needed. 

@@ -1,6 +1,6 @@
 ﻿using System;
 using Antlr.Runtime;
-using log4net;
+
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Type;
 
@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class QueryNode : AbstractRestrictableStatement, ISelectExpression
 	{
-		private static readonly ILog Log = LogManager.GetLogger(typeof(QueryNode));
+		private static readonly ILogger Log = LogggerProvider.LoggerFor(typeof(QueryNode));
 
 		private OrderByClause _orderByClause;
 
@@ -17,7 +17,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 		}
 
-		protected override ILog GetLog()
+		protected override ILogger GetLog()
 		{
 			return Log;
 		}

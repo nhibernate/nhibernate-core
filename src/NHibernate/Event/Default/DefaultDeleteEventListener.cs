@@ -1,6 +1,6 @@
 using System;
 using Iesi.Collections;
-using log4net;
+
 using NHibernate.Action;
 using NHibernate.Classic;
 using NHibernate.Engine;
@@ -19,7 +19,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultDeleteEventListener : IDeleteEventListener
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultDeleteEventListener));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(DefaultDeleteEventListener));
 
 		#region IDeleteEventListener Members
 

@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Bytecode;
 using NHibernate.Classic;
 using NHibernate.Engine;
@@ -19,7 +19,7 @@ namespace NHibernate.Tuple.Entity
 	/// <summary> An <see cref="IEntityTuplizer"/> specific to the POCO entity mode. </summary>
 	public class PocoEntityTuplizer : AbstractEntityTuplizer
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(PocoEntityTuplizer));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(PocoEntityTuplizer));
 		private readonly System.Type mappedClass;
 		private readonly System.Type proxyInterface;
 		private readonly bool islifecycleImplementor;

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Ast.ANTLR.Tree;
@@ -17,7 +17,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 	[CLSCompliant(false)]
 	public class MultiTableDeleteExecutor : AbstractStatementExecutor
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(MultiTableDeleteExecutor));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(MultiTableDeleteExecutor));
 		private readonly IQueryable persister;
 		private readonly SqlString idInsertSelect;
 		private readonly SqlString[] deletes;

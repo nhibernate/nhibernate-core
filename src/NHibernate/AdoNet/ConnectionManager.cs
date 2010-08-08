@@ -2,7 +2,7 @@ using System;
 using System.Data;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using log4net;
+
 using NHibernate.Engine;
 
 namespace NHibernate.AdoNet
@@ -17,7 +17,7 @@ namespace NHibernate.AdoNet
 	[Serializable]
 	public class ConnectionManager : ISerializable, IDeserializationCallback
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(ConnectionManager));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(ConnectionManager));
 
 		public interface Callback
 		{

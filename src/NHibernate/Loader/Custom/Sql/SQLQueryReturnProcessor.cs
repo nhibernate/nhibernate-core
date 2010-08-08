@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Persister.Collection;
@@ -11,7 +11,7 @@ namespace NHibernate.Loader.Custom.Sql
 {
 	public class SQLQueryReturnProcessor
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (SQLQueryReturnProcessor));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (SQLQueryReturnProcessor));
 
 		private readonly INativeSQLQueryReturn[] queryReturns;
 

@@ -1,6 +1,6 @@
 using System;
 using Antlr.Runtime;
-using log4net;
+
 using NHibernate.Hql.Ast.ANTLR.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
@@ -12,7 +12,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class UpdateStatement : AbstractRestrictableStatement
 	{
-		private static readonly ILog Log = LogManager.GetLogger(typeof (UpdateStatement));
+		private static readonly ILogger Log = LogggerProvider.LoggerFor(typeof (UpdateStatement));
 
 		public UpdateStatement(IToken token) : base(token) {}
 
@@ -31,7 +31,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			get { return ASTUtil.FindTypeInChildren(this, HqlSqlWalker.SET); }
 		}
 
-		protected override ILog GetLog()
+		protected override ILogger GetLog()
 		{
 			return Log;
 		}

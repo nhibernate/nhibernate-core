@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using log4net;
+
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -17,7 +17,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultRefreshEventListener : IRefreshEventListener
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultRefreshEventListener));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(DefaultRefreshEventListener));
 
 		public virtual void OnRefresh(RefreshEvent @event)
 		{

@@ -1,6 +1,6 @@
 using System;
 using System.Data;
-using log4net;
+
 
 namespace NHibernate.Connection
 {
@@ -9,7 +9,7 @@ namespace NHibernate.Connection
 	/// </summary>
 	public class DriverConnectionProvider : ConnectionProvider
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(DriverConnectionProvider));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(DriverConnectionProvider));
 
 		/// <summary>
 		/// Closes and Disposes of the <see cref="IDbConnection"/>.

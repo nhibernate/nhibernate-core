@@ -1,4 +1,4 @@
-using log4net;
+
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -12,7 +12,7 @@ namespace NHibernate.Event.Default
 	/// </summary>
 	public class WrapVisitor : ProxyVisitor
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(WrapVisitor));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(WrapVisitor));
 		private bool substitute = false;
 
 		public WrapVisitor(IEventSource session) : base(session) { }

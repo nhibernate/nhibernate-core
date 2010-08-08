@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using log4net;
+
 using NHibernate.Hql.Classic;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
@@ -22,7 +22,7 @@ namespace NHibernate.Engine
 	{
 		public delegate int[] GetNamedParameterLocations(string parameterName);
 
-		private static readonly ILog log = LogManager.GetLogger(typeof (QueryParameters));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (QueryParameters));
 
 		private IType[] _positionalParameterTypes;
 		private object[] _positionalParameterValues;

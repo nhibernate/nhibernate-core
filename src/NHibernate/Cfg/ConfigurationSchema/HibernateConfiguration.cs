@@ -1,7 +1,7 @@
 using System;
 using System.Xml;
 using System.Xml.XPath;
-using log4net;
+
 
 namespace NHibernate.Cfg.ConfigurationSchema
 {
@@ -23,7 +23,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 	/// </summary>
 	public class HibernateConfiguration : IHibernateConfiguration
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(HibernateConfiguration));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(HibernateConfiguration));
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HibernateConfiguration"/> class.

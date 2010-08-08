@@ -1,6 +1,6 @@
 using System;
 using System.Data;
-using log4net;
+
 
 namespace NHibernate.Driver
 {
@@ -22,7 +22,7 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public class NHybridDataReader : IDataReader
 	{
-		private ILog log = LogManager.GetLogger(typeof(NHybridDataReader));
+		private ILogger log = LogggerProvider.LoggerFor(typeof(NHybridDataReader));
 
 		private IDataReader _reader;
 		private bool _isMidstream = false;

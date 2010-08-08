@@ -1,5 +1,5 @@
 ﻿using System;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Persister.Collection;
@@ -13,7 +13,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class FromElementFactory
 	{
-		private static readonly ILog Log = LogManager.GetLogger(typeof(FromElementFactory));
+		private static readonly ILogger Log = LogggerProvider.LoggerFor(typeof(FromElementFactory));
 
 		private readonly FromClause _fromClause;
 		private readonly FromElement _origin;

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -35,7 +35,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class SequenceHiLoGenerator : SequenceGenerator
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(SequenceHiLoGenerator));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(SequenceHiLoGenerator));
 
 		/// <summary>
 		/// The name of the maximum low value parameter.

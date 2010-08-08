@@ -1,6 +1,6 @@
 ﻿using System;
 using Antlr.Runtime;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Persister.Collection;
@@ -20,7 +20,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class DotNode : FromReferenceNode, ISelectExpression 
 	{
-		private static readonly ILog Log = LogManager.GetLogger(typeof(DotNode));
+		private static readonly ILogger Log = LogggerProvider.LoggerFor(typeof(DotNode));
 
 		private const int DerefUnknown = 0;
 		private const int DerefEntity = 1;

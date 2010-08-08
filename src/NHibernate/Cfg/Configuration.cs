@@ -10,7 +10,7 @@ using System.Xml;
 using System.Xml.Schema;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
 using NHibernate.Cfg.MappingSchema;
@@ -75,7 +75,7 @@ namespace NHibernate.Cfg
 		protected IDictionary<string, Mappings.TableDescription> tableNameBinding;
 		protected IDictionary<Table, Mappings.ColumnNames> columnNameBindingPerTable;
 
-		private static readonly ILog log = LogManager.GetLogger(typeof(Configuration));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(Configuration));
 
 
 		protected internal SettingsFactory settingsFactory;

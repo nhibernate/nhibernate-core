@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
@@ -16,7 +16,7 @@ namespace NHibernate.Loader.Collection
 	/// <seealso cref="BasicCollectionLoader"/>
 	public class OneToManyLoader : CollectionLoader
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (OneToManyLoader));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (OneToManyLoader));
 
 		public OneToManyLoader(IQueryableCollection oneToManyPersister, ISessionFactoryImplementor session,
 		                       IDictionary<string, IFilter> enabledFilters)

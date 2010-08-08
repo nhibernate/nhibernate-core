@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using log4net;
+
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -25,7 +25,7 @@ namespace NHibernate.Impl
 	[Serializable]
 	public class StatelessSessionImpl : AbstractSessionImpl, IStatelessSession
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(StatelessSessionImpl));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(StatelessSessionImpl));
 		[NonSerialized]
 		private readonly ConnectionManager connectionManager;
 		[NonSerialized]

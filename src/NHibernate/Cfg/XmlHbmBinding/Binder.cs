@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using log4net;
+
 using NHibernate.Mapping;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -10,7 +10,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public abstract class Binder
 	{
-		protected static readonly ILog log = LogManager.GetLogger(typeof (Binder));
+		protected static readonly ILogger log = LogggerProvider.LoggerFor(typeof (Binder));
 
 		protected static readonly IDictionary<string, MetaAttribute> EmptyMeta =
 			new CollectionHelper.EmptyMapClass<string, MetaAttribute>();

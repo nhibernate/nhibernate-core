@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Impl;
 
@@ -13,7 +13,7 @@ namespace NHibernate.Transaction
 	/// </summary>
 	public class AdoTransaction : ITransaction
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(AdoTransaction));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(AdoTransaction));
 		private ISessionImplementor session;
 		private IDbTransaction trans;
 		private bool begun;

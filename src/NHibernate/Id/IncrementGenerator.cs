@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Runtime.CompilerServices;
 using System.Text;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Type;
@@ -27,7 +27,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class IncrementGenerator : IIdentifierGenerator, IConfigurable
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(IncrementGenerator));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(IncrementGenerator));
 
 		private long next;
 		private string sql;

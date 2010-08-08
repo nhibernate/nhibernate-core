@@ -1,5 +1,5 @@
 using System;
-using log4net;
+
 using NHibernate.Id;
 
 namespace NHibernate.Engine
@@ -11,7 +11,7 @@ namespace NHibernate.Engine
 	/// </summary>
 	public class VersionValue
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(VersionValue));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(VersionValue));
 
 		private readonly object value;
 

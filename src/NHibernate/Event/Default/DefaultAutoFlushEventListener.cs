@@ -1,5 +1,5 @@
 using System;
-using log4net;
+
 using NHibernate.Engine;
 
 namespace NHibernate.Event.Default
@@ -11,7 +11,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultAutoFlushEventListener : AbstractFlushingEventListener, IAutoFlushEventListener
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultAutoFlushEventListener));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(DefaultAutoFlushEventListener));
 
 		#region IAutoFlushEventListener Members
 

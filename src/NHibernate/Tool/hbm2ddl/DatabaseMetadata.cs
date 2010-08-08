@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Dialect.Schema;
 using NHibernate.Exceptions;
 using NHibernate.Mapping;
@@ -14,7 +14,7 @@ namespace NHibernate.Tool.hbm2ddl
 {
 	public class DatabaseMetadata
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (DatabaseMetadata));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (DatabaseMetadata));
 
 		private readonly IDictionary<string, ITableMetadata> tables = new Dictionary<string, ITableMetadata>();
 		private readonly ISet<string> sequences = new HashedSet<string>();

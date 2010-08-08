@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using log4net;
+
 
 namespace NHibernate.Cache
 {
@@ -9,7 +9,7 @@ namespace NHibernate.Cache
 	/// </summary>
 	public class NoCacheProvider : ICacheProvider
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(NoCacheProvider));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(NoCacheProvider));
 
 		public const string WarnMessage = "Second-level cache is enabled in a class, but no cache provider was selected. Fake cache used.";
 

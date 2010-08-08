@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -12,7 +12,7 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class SqlDeleteBuilder : SqlBaseBuilder, ISqlStringBuilder
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(SqlDeleteBuilder));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(SqlDeleteBuilder));
 		private string tableName;
 
 		private List<SqlString> whereStrings = new List<SqlString>();

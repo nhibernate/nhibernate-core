@@ -1,6 +1,6 @@
 using System;
 using System.Data;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
@@ -14,7 +14,7 @@ namespace NHibernate.Id
 	/// </summary>
 	public class NativeGuidGenerator : IIdentifierGenerator
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(NativeGuidGenerator));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(NativeGuidGenerator));
 		private readonly IType identifierType = new GuidType();
 
 		#region Implementation of IIdentifierGenerator

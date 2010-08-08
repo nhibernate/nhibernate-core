@@ -3,7 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Reflection;
 using System.Xml;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
@@ -65,7 +65,7 @@ namespace NHibernate.Type
 			sqlTypes = userType.SqlTypes;
 			if (!userType.ReturnedType.IsSerializable)
 			{
-				LogManager.GetLogger(typeof(CustomType)).Warn("custom type is not Serializable: " + userTypeClass);
+				LogggerProvider.LoggerFor(typeof(CustomType)).Warn("custom type is not Serializable: " + userTypeClass);
 			}
 		}
 

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using log4net;
+
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
 
@@ -8,7 +8,7 @@ namespace NHibernate.Linq.Functions
 {
 	public sealed class LinqToHqlGeneratorsRegistryFactory
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (LinqToHqlGeneratorsRegistryFactory));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (LinqToHqlGeneratorsRegistryFactory));
 
 		public static ILinqToHqlGeneratorsRegistry CreateGeneratorsRegistry(IDictionary<string, string> properties)
 		{

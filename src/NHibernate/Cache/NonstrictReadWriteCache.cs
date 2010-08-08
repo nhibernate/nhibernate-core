@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using log4net;
+
 
 namespace NHibernate.Cache
 {
@@ -16,7 +16,7 @@ namespace NHibernate.Cache
 	{
 		private ICache cache;
 
-		private static readonly ILog log = LogManager.GetLogger(typeof(NonstrictReadWriteCache));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(NonstrictReadWriteCache));
 
 		/// <summary>
 		/// Gets the cache region name.

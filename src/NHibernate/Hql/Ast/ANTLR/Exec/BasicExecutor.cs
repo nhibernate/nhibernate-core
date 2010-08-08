@@ -4,7 +4,7 @@ using System.Data;
 using System.Data.Common;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Ast.ANTLR.Tree;
@@ -19,7 +19,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 	public class BasicExecutor : AbstractStatementExecutor
 	{
 		private readonly IQueryable persister;
-		private static readonly ILog log = LogManager.GetLogger(typeof(BasicExecutor));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(BasicExecutor));
 		private readonly SqlString sql;
 
 		public BasicExecutor(IStatement statement, IQueryable persister)

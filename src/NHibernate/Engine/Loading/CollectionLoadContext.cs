@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Collection;
@@ -22,7 +22,7 @@ namespace NHibernate.Engine.Loading
 	/// </remarks>
 	public class CollectionLoadContext
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(CollectionLoadContext));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(CollectionLoadContext));
 		private readonly LoadContexts loadContexts;
 		private readonly IDataReader resultSet;
 		private readonly ISet<CollectionKey> localLoadingCollectionKeys = new HashedSet<CollectionKey>();

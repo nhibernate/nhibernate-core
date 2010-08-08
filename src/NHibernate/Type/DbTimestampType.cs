@@ -1,7 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Impl;
@@ -21,7 +21,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public class DbTimestampType : TimestampType, IVersionType
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (DbTimestampType));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (DbTimestampType));
 		private static readonly SqlType[] EmptyParams = new SqlType[0];
 
 		public override string Name

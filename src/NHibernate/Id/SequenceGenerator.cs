@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
@@ -34,7 +34,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class SequenceGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(SequenceGenerator));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(SequenceGenerator));
 
 		/// <summary>
 		/// The name of the sequence parameter.

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 using Iesi.Collections;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Hql.Classic;
 using NHibernate.Hql.Util;
@@ -12,7 +12,7 @@ namespace NHibernate.Hql
 {
 	public class QuerySplitter
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(QuerySplitter));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(QuerySplitter));
 
 		private static readonly ISet beforeClassTokens = new HashedSet();
 		private static readonly ISet notAfterClassTokens = new HashedSet();

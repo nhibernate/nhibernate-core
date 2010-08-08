@@ -1,6 +1,6 @@
 using System;
 using System.Runtime.Serialization;
-using log4net;
+
 
 namespace NHibernate
 {
@@ -17,7 +17,7 @@ namespace NHibernate
 		/// </summary>
 		public AssertionFailure() : base(String.Empty)
 		{
-			LogManager.GetLogger(typeof(AssertionFailure)).Error(DefaultMessage);
+			LogggerProvider.LoggerFor(typeof(AssertionFailure)).Error(DefaultMessage);
 		}
 
 		/// <summary>
@@ -26,7 +26,7 @@ namespace NHibernate
 		/// <param name="message">The message that describes the error. </param>
 		public AssertionFailure(string message) : base(message)
 		{
-			LogManager.GetLogger(typeof(AssertionFailure)).Error(DefaultMessage, this);
+			LogggerProvider.LoggerFor(typeof(AssertionFailure)).Error(DefaultMessage, this);
 		}
 
 		/// <summary>
@@ -40,7 +40,7 @@ namespace NHibernate
 		/// </param>
 		public AssertionFailure(string message, Exception innerException) : base(message, innerException)
 		{
-			LogManager.GetLogger(typeof(AssertionFailure)).Error(DefaultMessage, innerException);
+			LogggerProvider.LoggerFor(typeof(AssertionFailure)).Error(DefaultMessage, innerException);
 		}
 
 		/// <summary>

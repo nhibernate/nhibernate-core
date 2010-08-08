@@ -3,7 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Diagnostics;
 using Iesi.Collections;
-using log4net;
+
 using NHibernate.Cache;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -19,7 +19,7 @@ namespace NHibernate.Impl
 {
 	public class MultiQueryImpl : IMultiQuery
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(MultiQueryImpl));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(MultiQueryImpl));
 
 		private readonly List<IQuery> queries = new List<IQuery>();
 		private readonly List<IQueryTranslator> translators = new List<IQueryTranslator>(); 

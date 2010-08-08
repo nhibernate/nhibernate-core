@@ -1,4 +1,4 @@
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader.Collection;
@@ -10,7 +10,7 @@ namespace NHibernate.Persister.Collection
 		private readonly string queryName;
 		private readonly ICollectionPersister persister;
 
-		private static readonly ILog log = LogManager.GetLogger(typeof(NamedQueryCollectionInitializer));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(NamedQueryCollectionInitializer));
 
 		public NamedQueryCollectionInitializer(string queryName, ICollectionPersister persister)
 		{

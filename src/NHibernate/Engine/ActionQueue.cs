@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Action;
 using NHibernate.Cache;
 
@@ -20,7 +20,7 @@ namespace NHibernate.Engine
 	[Serializable]
 	public class ActionQueue
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(ActionQueue));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(ActionQueue));
 		private const int InitQueueListSize = 5;
 
 		private ISessionImplementor session;

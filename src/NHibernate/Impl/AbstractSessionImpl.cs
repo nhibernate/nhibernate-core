@@ -17,7 +17,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Impl
 {
-	using log4net;
+	
 
 	/// <summary> Functionality common to stateless and stateful sessions </summary>
 	[Serializable]
@@ -36,7 +36,7 @@ namespace NHibernate.Impl
 
 		private bool isAlreadyDisposed;
 
-		private static readonly ILog logger = LogManager.GetLogger(typeof(AbstractSessionImpl));
+		private static readonly ILogger logger = LogggerProvider.LoggerFor(typeof(AbstractSessionImpl));
 
 		public Guid SessionId
 		{

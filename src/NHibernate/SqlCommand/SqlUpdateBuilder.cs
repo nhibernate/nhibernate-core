@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -12,7 +12,7 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class SqlUpdateBuilder : SqlBaseBuilder, ISqlStringBuilder
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(SqlUpdateBuilder));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(SqlUpdateBuilder));
 
 		private string tableName;
 		private string comment;

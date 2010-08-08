@@ -1,4 +1,4 @@
-using log4net;
+
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -13,7 +13,7 @@ namespace NHibernate.Event.Default
 	/// </summary>
 	public class EvictVisitor : AbstractVisitor
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(EvictVisitor));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(EvictVisitor));
 
 		public EvictVisitor(IEventSource session) : base(session) { }
 

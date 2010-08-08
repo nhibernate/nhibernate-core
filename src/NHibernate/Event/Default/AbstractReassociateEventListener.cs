@@ -1,5 +1,5 @@
 using System;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
@@ -15,7 +15,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class AbstractReassociateEventListener
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(AbstractReassociateEventListener));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(AbstractReassociateEventListener));
 
 		/// <summary> 
 		/// Associates a given entity (either transient or associated with another session) to the given session. 

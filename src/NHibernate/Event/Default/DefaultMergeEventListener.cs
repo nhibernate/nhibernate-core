@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using log4net;
+
 using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.Intercept;
@@ -18,7 +18,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultMergeEventListener : AbstractSaveEventListener, IMergeEventListener
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultMergeEventListener));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(DefaultMergeEventListener));
 
 		protected override CascadingAction CascadeAction
 		{

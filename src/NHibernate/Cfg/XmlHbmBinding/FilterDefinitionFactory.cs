@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using log4net;
+
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -8,7 +8,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class FilterDefinitionFactory
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (FilterDefinitionFactory));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (FilterDefinitionFactory));
 
 		public static FilterDefinition CreateFilterDefinition(HbmFilterDef filterDefSchema)
 		{

@@ -1,5 +1,5 @@
 using System;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Properties;
 
@@ -9,7 +9,7 @@ namespace NHibernate.Tuple.Component
 	[Serializable]
 	public abstract class AbstractComponentTuplizer : IComponentTuplizer
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(AbstractComponentTuplizer));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(AbstractComponentTuplizer));
 
 		protected internal int propertySpan;
 		protected internal IGetter[] getters;

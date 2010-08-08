@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Transform;
@@ -14,7 +14,7 @@ namespace NHibernate.Loader.Entity
 	/// </summary>
 	public abstract class AbstractEntityLoader : OuterJoinLoader, IUniqueEntityLoader
 	{
-		protected static readonly ILog log = LogManager.GetLogger(typeof (AbstractEntityLoader));
+		protected static readonly ILogger log = LogggerProvider.LoggerFor(typeof (AbstractEntityLoader));
 		protected readonly IOuterJoinLoadable persister;
 		protected readonly IType uniqueKeyType;
 		protected readonly string entityName;

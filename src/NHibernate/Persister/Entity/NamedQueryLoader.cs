@@ -1,4 +1,4 @@
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader.Entity;
@@ -13,7 +13,7 @@ namespace NHibernate.Persister.Entity
 		private readonly string queryName;
 		private readonly IEntityPersister persister;
 
-		private static readonly ILog log = LogManager.GetLogger(typeof(NamedQueryLoader));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(NamedQueryLoader));
 
 		public NamedQueryLoader(string queryName, IEntityPersister persister)
 		{

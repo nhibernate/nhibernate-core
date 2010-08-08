@@ -1,4 +1,4 @@
-using log4net;
+
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
@@ -17,7 +17,7 @@ namespace NHibernate.Engine
 			All = 2
 		}
 
-		private static readonly ILog log = LogManager.GetLogger(typeof(Versioning));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(Versioning));
 
 		/// <summary>
 		/// Increment the given version number

@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
-using log4net;
+
 using Iesi.Collections.Generic;
 
 namespace NHibernate.Transform
@@ -9,7 +9,7 @@ namespace NHibernate.Transform
 	[Serializable]
 	public class DistinctRootEntityResultTransformer : IResultTransformer
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(DistinctRootEntityResultTransformer));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(DistinctRootEntityResultTransformer));
 
 		internal sealed class Identity
 		{

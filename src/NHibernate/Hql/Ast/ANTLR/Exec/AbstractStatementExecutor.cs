@@ -8,7 +8,7 @@ using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
-using log4net;
+
 using Antlr.Runtime;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -19,9 +19,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 	[CLSCompliant(false)]
 	public abstract class AbstractStatementExecutor : IStatementExecutor
 	{
-		private readonly ILog log;
+		private readonly ILogger log;
 
-		protected AbstractStatementExecutor(IStatement statement, ILog log)
+		protected AbstractStatementExecutor(IStatement statement, ILogger log)
 		{
 			Statement = statement;
 			Walker = statement.Walker;
@@ -209,10 +209,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		private class TmpIdTableCreationIsolatedWork : IIsolatedWork
 		{
 			private readonly IQueryable persister;
-			private readonly ILog log;
+			private readonly ILogger log;
 			private readonly ISessionImplementor session;
 
-			public TmpIdTableCreationIsolatedWork(IQueryable persister, ILog log, ISessionImplementor session)
+			public TmpIdTableCreationIsolatedWork(IQueryable persister, ILogger log, ISessionImplementor session)
 			{
 				this.persister = persister;
 				this.log = log;
@@ -252,7 +252,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 		private class TmpIdTableDropIsolatedWork : IIsolatedWork
 		{
-			public TmpIdTableDropIsolatedWork(IQueryable persister, ILog log, ISessionImplementor session)
+			public TmpIdTableDropIsolatedWork(IQueryable persister, ILogger log, ISessionImplementor session)
 			{
 				this.persister = persister;
 				this.log = log;
@@ -260,7 +260,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 
 			private readonly IQueryable persister;
-			private readonly ILog log;
+			private readonly ILogger log;
 			private readonly ISessionImplementor session;
 
 			public void DoWork(IDbConnection connection, IDbTransaction transaction)

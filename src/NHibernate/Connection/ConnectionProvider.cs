@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Configuration;
 using System.Data;
-using log4net;
+
 using NHibernate.Driver;
 using NHibernate.Util;
 using Environment=NHibernate.Cfg.Environment;
@@ -15,7 +15,7 @@ namespace NHibernate.Connection
 	/// </summary>
 	public abstract class ConnectionProvider : IConnectionProvider
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(ConnectionProvider));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(ConnectionProvider));
 		private string connString;
 		private IDriver driver;
 

@@ -1,5 +1,5 @@
 using System;
-using log4net;
+
 using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -14,7 +14,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultSaveOrUpdateEventListener : AbstractSaveEventListener, ISaveOrUpdateEventListener
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultSaveOrUpdateEventListener));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(DefaultSaveOrUpdateEventListener));
 
 		protected override CascadingAction CascadeAction
 		{

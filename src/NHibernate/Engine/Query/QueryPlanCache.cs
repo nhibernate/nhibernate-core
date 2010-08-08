@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Util;
 
@@ -11,7 +11,7 @@ namespace NHibernate.Engine.Query
 	[Serializable]
 	public class QueryPlanCache
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(QueryPlanCache));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(QueryPlanCache));
 
 		private readonly ISessionFactoryImplementor factory;
 

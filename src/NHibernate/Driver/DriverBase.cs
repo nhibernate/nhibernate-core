@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using log4net;
+
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -14,7 +14,7 @@ namespace NHibernate.Driver
 	/// </summary>
 	public abstract class DriverBase : IDriver, ISqlParameterFormatter
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(DriverBase));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(DriverBase));
 
 		private int commandTimeout;
 		private bool prepareSql;

@@ -1,4 +1,4 @@
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -10,7 +10,7 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class SqlSelectBuilder : SqlBaseBuilder, ISqlStringBuilder
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(SqlSelectBuilder));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(SqlSelectBuilder));
 
 		private SqlString selectClause;
 		private string fromClause;

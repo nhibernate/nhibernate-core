@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using log4net;
+
 using System.Collections.Generic;
 
 namespace NHibernate.Util
@@ -10,7 +10,7 @@ namespace NHibernate.Util
 	/// </summary>
 	public class JoinedEnumerable : IEnumerable, IEnumerator, IDisposable
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(JoinedEnumerable));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(JoinedEnumerable));
 
 		private readonly IEnumerator[] _enumerators;
 		private int _current;

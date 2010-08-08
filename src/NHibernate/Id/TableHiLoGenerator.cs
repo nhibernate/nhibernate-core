@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -39,7 +39,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class TableHiLoGenerator : TableGenerator
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(TableHiLoGenerator));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(TableHiLoGenerator));
 
 		/// <summary>
 		/// The name of the max lo parameter.

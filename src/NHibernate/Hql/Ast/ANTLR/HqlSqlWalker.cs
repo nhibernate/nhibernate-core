@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Hql.Ast.ANTLR.Util;
@@ -21,7 +21,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	[CLSCompliant(false)]
 	public partial class HqlSqlWalker
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(HqlSqlWalker));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(HqlSqlWalker));
 
 		// Fields
 		private readonly string _collectionFilterRole;

@@ -1,14 +1,14 @@
 using System;
 using System.Data;
 using System.Text;
-using log4net;
+
 
 namespace NHibernate.AdoNet.Util
 {
 	/// <summary> Centralize logging handling for SQL statements. </summary>
 	public class SqlStatementLogger
 	{
-		private static readonly ILog log = LogManager.GetLogger("NHibernate.SQL");
+		private static readonly ILogger log = LogggerProvider.LoggerFor("NHibernate.SQL");
 
 		/// <summary> Constructs a new SqlStatementLogger instance.</summary>
 		public SqlStatementLogger() : this(false, false) { }

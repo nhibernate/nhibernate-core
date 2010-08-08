@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
-using log4net;
+
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Util;
@@ -14,7 +14,7 @@ namespace NHibernate.Stat
 	{
 		private object _syncRoot;
 
-		private static readonly ILog log = LogManager.GetLogger(typeof(StatisticsImpl));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(StatisticsImpl));
 		private readonly ISessionFactoryImplementor sessionFactory;
 		private long entityDeleteCount;
 		private long entityInsertCount;

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using log4net;
+
 using NHibernate.Collection;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
@@ -26,7 +26,7 @@ namespace NHibernate.Engine.Loading
 	/// </remarks>
 	public class LoadContexts
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(LoadContexts));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(LoadContexts));
 
 		[NonSerialized]
 		private readonly IPersistenceContext persistenceContext;

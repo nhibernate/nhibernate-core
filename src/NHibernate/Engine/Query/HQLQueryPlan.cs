@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Event;
 using NHibernate.Hql;
 using NHibernate.Type;
@@ -31,7 +31,7 @@ namespace NHibernate.Engine.Query
 	[Serializable]
 	public class HQLQueryPlan : IQueryPlan
 	{
-		protected static readonly ILog Log = LogManager.GetLogger(typeof(HQLQueryPlan));
+		protected static readonly ILogger Log = LogggerProvider.LoggerFor(typeof(HQLQueryPlan));
 
 		private readonly string _sourceQuery;
 

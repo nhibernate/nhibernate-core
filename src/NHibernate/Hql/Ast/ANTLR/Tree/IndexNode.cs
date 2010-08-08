@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Param;
 using NHibernate.Persister.Collection;
@@ -19,7 +19,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class IndexNode : FromReferenceNode
 	{
-		private static readonly ILog Log = LogManager.GetLogger(typeof(IndexNode));
+		private static readonly ILogger Log = LogggerProvider.LoggerFor(typeof(IndexNode));
 
 		public IndexNode(IToken token) : base(token)
 		{

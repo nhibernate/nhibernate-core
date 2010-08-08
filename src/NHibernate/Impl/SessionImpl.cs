@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using Iesi.Collections;
-using log4net;
+
 using NHibernate.AdoNet;
 using NHibernate.Collection;
 using NHibernate.Criterion;
@@ -40,7 +40,7 @@ namespace NHibernate.Impl
 	[Serializable]
 	public sealed class SessionImpl : AbstractSessionImpl, IEventSource, ISerializable, IDeserializationCallback
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(SessionImpl));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(SessionImpl));
 
 		private readonly long timestamp;
 

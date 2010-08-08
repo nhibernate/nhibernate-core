@@ -6,7 +6,7 @@ using System.Data.Common;
 using System.Text;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -113,7 +113,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		private static readonly ILog log = LogManager.GetLogger(typeof(AbstractEntityPersister));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(AbstractEntityPersister));
 		public const string EntityClass = "class";
 		protected const string Discriminator_Alias = "clazz_";
 

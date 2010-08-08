@@ -1,6 +1,6 @@
 ﻿using System;
 using Antlr.Runtime;
-using log4net;
+
 using NHibernate.Dialect.Function;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Persister.Collection;
@@ -16,7 +16,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class MethodNode : AbstractSelectExpression, ISelectExpression 
 	{
-		private static readonly ILog Log = LogManager.GetLogger(typeof(MethodNode));
+		private static readonly ILogger Log = LogggerProvider.LoggerFor(typeof(MethodNode));
 
 		private string[] _selectColumns;
 		private string _methodName;

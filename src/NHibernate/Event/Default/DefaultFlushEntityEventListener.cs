@@ -1,5 +1,5 @@
 using System;
-using log4net;
+
 using NHibernate.Action;
 using NHibernate.Classic;
 using NHibernate.Engine;
@@ -16,7 +16,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultFlushEntityEventListener : IFlushEntityEventListener
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultFlushEntityEventListener));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(DefaultFlushEntityEventListener));
 
 		/// <summary> 
 		/// Flushes a single entity's state to the database, by scheduling an update action, if necessary

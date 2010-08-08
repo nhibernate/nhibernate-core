@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using log4net;
+
 using NHibernate.Action;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
@@ -19,7 +19,7 @@ namespace NHibernate.Engine.Query
 	[Serializable]
 	public class NativeSQLQueryPlan
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(NativeSQLQueryPlan));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(NativeSQLQueryPlan));
 
 		private readonly string sourceQuery;
 		private readonly SQLCustomQuery customQuery;

@@ -1,6 +1,6 @@
 using System;
 using System.Data;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Impl;
@@ -15,7 +15,7 @@ namespace NHibernate.Dialect.Lock
 	/// <remarks> This strategy is not valid for read style locks. </remarks>
 	public class UpdateLockingStrategy : ILockingStrategy
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(UpdateLockingStrategy));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(UpdateLockingStrategy));
 		private readonly ILockable lockable;
 		private readonly LockMode lockMode;
 		private readonly SqlString sql;

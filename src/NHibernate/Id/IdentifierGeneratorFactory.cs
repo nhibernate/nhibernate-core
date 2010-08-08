@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -79,7 +79,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public sealed class IdentifierGeneratorFactory
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (IdentifierGeneratorFactory));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (IdentifierGeneratorFactory));
 
 		/// <summary> Get the generated identifier when using identity columns</summary>
 		/// <param name="rs">The <see cref="IDataReader"/> to read the identifier value from.</param>

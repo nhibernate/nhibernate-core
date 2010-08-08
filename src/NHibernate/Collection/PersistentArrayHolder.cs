@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using log4net;
+
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Loader;
@@ -20,7 +20,7 @@ namespace NHibernate.Collection
 	[DebuggerTypeProxy(typeof (CollectionProxy))]
 	public class PersistentArrayHolder : AbstractPersistentCollection, ICollection
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (PersistentArrayHolder));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (PersistentArrayHolder));
 
 		private Array array;
 

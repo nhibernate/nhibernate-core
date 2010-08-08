@@ -1,6 +1,6 @@
 using System;
 using System.Reflection;
-using log4net;
+
 using NHibernate.Util;
 
 namespace NHibernate.Id.Enhanced
@@ -11,7 +11,7 @@ namespace NHibernate.Id.Enhanced
 		public const string None = "none";
 		public const string Pool = "pooled";
 		private static readonly System.Type[] CtorSignature = new[] {typeof (System.Type), typeof (int)};
-		private static readonly ILog log = LogManager.GetLogger(typeof (OptimizerFactory));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (OptimizerFactory));
 
 		public static IOptimizer BuildOptimizer(string type, System.Type returnClass, int incrementSize)
 		{

@@ -1,6 +1,6 @@
 using System;
 using Antlr.Runtime;
-using log4net;
+
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
@@ -11,7 +11,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class DeleteStatement : AbstractRestrictableStatement
 	{
-		private static readonly ILog Log = LogManager.GetLogger(typeof(DeleteStatement));
+		private static readonly ILogger Log = LogggerProvider.LoggerFor(typeof(DeleteStatement));
 
 		public DeleteStatement(IToken token) : base(token) {}
 
@@ -25,7 +25,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			get { return HqlSqlWalker.DELETE; }
 		}
 
-		protected override ILog GetLog()
+		protected override ILogger GetLog()
 		{
 			return Log;
 		}

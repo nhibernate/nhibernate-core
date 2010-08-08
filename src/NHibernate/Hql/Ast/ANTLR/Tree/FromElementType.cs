@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Param;
 using NHibernate.Persister.Collection;
@@ -19,7 +19,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class FromElementType
 	{
-		private static readonly ILog Log = LogManager.GetLogger(typeof(FromElementType));
+		private static readonly ILogger Log = LogggerProvider.LoggerFor(typeof(FromElementType));
 
 		private readonly FromElement _fromElement;
 		private readonly IEntityPersister _persister;

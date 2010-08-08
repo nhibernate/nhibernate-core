@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using log4net;
+
 
 namespace NHibernate.Cache
 {
@@ -10,7 +10,7 @@ namespace NHibernate.Cache
 	public class ReadOnlyCache : ICacheConcurrencyStrategy
 	{
 		private ICache cache;
-		private static readonly ILog log = LogManager.GetLogger(typeof(ReadOnlyCache));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(ReadOnlyCache));
 
 		/// <summary>
 		/// Gets the cache region name.

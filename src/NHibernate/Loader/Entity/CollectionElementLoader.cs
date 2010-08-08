@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -13,7 +13,7 @@ namespace NHibernate.Loader.Entity
 {
 	public class CollectionElementLoader : OuterJoinLoader
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (CollectionElementLoader));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (CollectionElementLoader));
 
 		private readonly IOuterJoinLoadable persister;
 		private readonly IType keyType;

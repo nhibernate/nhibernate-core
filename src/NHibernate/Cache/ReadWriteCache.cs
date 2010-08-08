@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using log4net;
+
 
 namespace NHibernate.Cache
 {
@@ -30,7 +30,7 @@ namespace NHibernate.Cache
 			bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator);
 		}
 
-		private static readonly ILog log = LogManager.GetLogger(typeof(ReadWriteCache));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(ReadWriteCache));
 
 		private readonly object _lockObject = new object();
 		private ICache cache;

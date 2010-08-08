@@ -1,4 +1,4 @@
-using log4net;
+
 
 namespace NHibernate.Engine
 {
@@ -9,7 +9,7 @@ namespace NHibernate.Engine
 	/// </summary>
 	public class IdentifierValue
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(IdentifierValue));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(IdentifierValue));
 
 		private readonly object value;
 

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using log4net;
+
 
 namespace NHibernate.Connection
 {
@@ -14,7 +14,7 @@ namespace NHibernate.Connection
 	/// </remarks>
 	public class UserSuppliedConnectionProvider : ConnectionProvider
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(UserSuppliedConnectionProvider));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(UserSuppliedConnectionProvider));
 
 		/// <summary>
 		/// Throws an <see cref="InvalidOperationException"/> if this method is called

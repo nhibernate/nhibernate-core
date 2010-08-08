@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using log4net;
+
 using NHibernate.AdoNet.Util;
 using NHibernate.Cfg;
 using NHibernate.Connection;
@@ -20,7 +20,7 @@ namespace NHibernate.Tool.hbm2ddl
 	/// </remarks>
 	public class SchemaExport
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (SchemaExport));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (SchemaExport));
 		private bool wasInitialized;
 		private readonly Configuration cfg;
 		private readonly IDictionary<string, string> configProperties;

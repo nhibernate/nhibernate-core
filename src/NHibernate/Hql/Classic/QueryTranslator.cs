@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
-using log4net;
+
 
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
@@ -227,7 +227,7 @@ namespace NHibernate.Hql.Classic
 
 		private IDictionary<string, IFilter> enabledFilters;
 
-		private static readonly ILog log = LogManager.GetLogger(typeof(QueryTranslator));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(QueryTranslator));
 
 		/// <summary> Construct a query translator </summary>
 		/// <param name="queryIdentifier">

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Data.Common;
-using log4net;
+
 using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;
@@ -13,7 +13,7 @@ namespace NHibernate.Transaction
 {
 	public class AdoNetTransactionFactory : ITransactionFactory
 	{
-		private readonly ILog isolaterLog = LogManager.GetLogger(typeof(Isolater));
+		private readonly ILogger isolaterLog = LogggerProvider.LoggerFor(typeof(Isolater));
 
 		public ITransaction CreateTransaction(ISessionImplementor session)
 		{

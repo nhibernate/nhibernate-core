@@ -1,11 +1,11 @@
 using System.Linq;
-using log4net;
+
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public static class MappingLogExtensions
 	{
-		public static void LogMapped(this Mapping.Property property, ILog log)
+		public static void LogMapped(this Mapping.Property property, ILogger log)
 		{
 			if (log.IsDebugEnabled)
 			{

@@ -4,7 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Text;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Lock;
 using NHibernate.Dialect.Schema;
@@ -31,7 +31,7 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public abstract class Dialect
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(Dialect));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(Dialect));
 
 		private readonly TypeNames typeNames = new TypeNames();
 		private readonly TypeNames hibernateTypeNames = new TypeNames();

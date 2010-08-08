@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using log4net;
+
 using NHibernate.Util;
 
 namespace NHibernate.Exceptions
@@ -9,7 +9,7 @@ namespace NHibernate.Exceptions
 	/// <summary> A factory for building SQLExceptionConverter instances. </summary>
 	public static class SQLExceptionConverterFactory
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(SQLExceptionConverterFactory));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(SQLExceptionConverterFactory));
 
 		private class MinimalSQLExceptionConverter : ISQLExceptionConverter
 		{

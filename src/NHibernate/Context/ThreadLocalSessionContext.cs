@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using log4net;
+
 using NHibernate;
 using NHibernate.Engine;
 
@@ -30,7 +30,7 @@ namespace NHibernate.Context
 	[Serializable]
 	public class ThreadLocalSessionContext : ICurrentSessionContext
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(ThreadLocalSessionContext));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(ThreadLocalSessionContext));
 
 		[ThreadStatic]
 		protected static IDictionary<ISessionFactory, ISession> context;

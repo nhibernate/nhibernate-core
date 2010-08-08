@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Hql.Classic;
@@ -24,7 +24,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	[CLSCompliant(false)]
 	public class JoinProcessor
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(JoinProcessor));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(JoinProcessor));
 
 		private readonly HqlSqlWalker _walker;
 		private readonly SyntheticAndFactory _syntheticAndFactory;

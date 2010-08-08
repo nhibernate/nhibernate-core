@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Text;
 using Antlr.Runtime;
-using log4net;
+
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
 	public abstract class FromReferenceNode : AbstractSelectExpression, IResolvableNode, IDisplayableNode, IPathNode
 	{
-		private static readonly ILog Log = LogManager.GetLogger(typeof(FromReferenceNode));
+		private static readonly ILogger Log = LogggerProvider.LoggerFor(typeof(FromReferenceNode));
 
 		public const int RootLevel = 0;
 		private FromElement _fromElement;

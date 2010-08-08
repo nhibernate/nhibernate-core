@@ -1,6 +1,6 @@
 ﻿using System;
 using Antlr.Runtime;
-using log4net;
+
 using NHibernate.Hql.Ast.ANTLR.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
@@ -15,7 +15,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 		}
 
-		protected abstract ILog GetLog();
+		protected abstract ILogger GetLog();
 		protected abstract int GetWhereClauseParentTokenType();
 
 		public FromClause FromClause

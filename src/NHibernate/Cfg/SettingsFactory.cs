@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using log4net;
+
 using NHibernate.AdoNet;
 using NHibernate.AdoNet.Util;
 using NHibernate.Cache;
@@ -22,7 +22,7 @@ namespace NHibernate.Cfg
 	[Serializable]
 	public sealed class SettingsFactory
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(SettingsFactory));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(SettingsFactory));
 		private static readonly string DefaultCacheProvider = typeof(NoCacheProvider).AssemblyQualifiedName;
 
 		public Settings BuildSettings(IDictionary<string, string> properties)

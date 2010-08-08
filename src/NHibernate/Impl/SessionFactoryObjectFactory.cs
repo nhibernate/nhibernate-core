@@ -1,5 +1,5 @@
 using System.Collections;
-using log4net;
+
 using System.Collections.Generic;
 
 namespace NHibernate.Impl
@@ -20,7 +20,7 @@ namespace NHibernate.Impl
 	/// </remarks>
 	public static class SessionFactoryObjectFactory
 	{
-		private static readonly ILog log;
+		private static readonly ILogger log;
 
 		private static readonly IDictionary<string, ISessionFactory> Instances = new Dictionary<string, ISessionFactory>();
 		private static readonly IDictionary<string, ISessionFactory> NamedInstances = new Dictionary<string, ISessionFactory>();
@@ -28,7 +28,7 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		static SessionFactoryObjectFactory()
 		{
-			log = LogManager.GetLogger(typeof(SessionFactoryObjectFactory));
+			log = LogggerProvider.LoggerFor(typeof(SessionFactoryObjectFactory));
 			log.Debug("initializing class SessionFactoryObjectFactory");
 		}
 

@@ -4,7 +4,7 @@ using System.Data;
 using System.Runtime.Serialization;
 using System.Text;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Connection;
@@ -87,7 +87,7 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		private static readonly ILog log = LogManager.GetLogger(typeof (SessionFactoryImpl));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (SessionFactoryImpl));
 		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
 
 		[NonSerialized] private readonly ThreadSafeDictionary<string, ICache> allCacheRegions =

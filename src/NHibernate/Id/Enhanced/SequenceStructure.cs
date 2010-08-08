@@ -1,7 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
@@ -14,7 +14,7 @@ namespace NHibernate.Id.Enhanced
 	/// </summary>
 	public class SequenceStructure : IDatabaseStructure
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (SequenceStructure));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (SequenceStructure));
 		private readonly int incrementSize;
 		private readonly int initialValue;
 		private readonly string sequenceName;

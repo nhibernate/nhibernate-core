@@ -1,4 +1,4 @@
-using log4net;
+
 using NHibernate.Cfg;
 using System.Collections.Generic;
 
@@ -9,7 +9,7 @@ namespace NHibernate.Cache
 	/// </summary>
 	public static class CacheFactory
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(CacheFactory));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(CacheFactory));
 
 		public const string ReadOnly = "read-only";
 		public const string ReadWrite = "read-write";

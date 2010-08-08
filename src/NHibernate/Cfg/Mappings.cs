@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Mapping;
 
@@ -47,7 +47,7 @@ namespace NHibernate.Cfg
 
 		#endregion
 
-		private static readonly ILog log = LogManager.GetLogger(typeof(Mappings));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(Mappings));
 
 		private readonly IDictionary<string, PersistentClass> classes;
 		private readonly IDictionary<string, Mapping.Collection> collections;

@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Metadata;
 using NHibernate.Type;
@@ -11,7 +11,7 @@ namespace NHibernate.Impl
 	public sealed class Printer
 	{
 		private readonly ISessionFactoryImplementor _factory;
-		private static readonly ILog log = LogManager.GetLogger(typeof(Printer));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(Printer));
 
 		/// <summary>
 		/// 

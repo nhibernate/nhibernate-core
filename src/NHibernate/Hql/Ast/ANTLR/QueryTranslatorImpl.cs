@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast.ANTLR.Exec;
@@ -22,7 +22,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	[CLSCompliant(false)]
 	public class QueryTranslatorImpl : IFilterTranslator
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(QueryTranslatorImpl));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(QueryTranslatorImpl));
 
         private readonly string _queryIdentifier;
         private readonly IASTNode _stageOneAst;
@@ -461,7 +461,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
     public class HqlParseEngine
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(HqlParseEngine));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(HqlParseEngine));
 
 		private readonly string _hql;
 		private CommonTokenStream _tokens;
@@ -600,7 +600,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 	internal class HqlSqlGenerator
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(HqlSqlGenerator));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(HqlSqlGenerator));
 
 		private readonly IASTNode _ast;
 		private readonly ISessionFactoryImplementor _sfi;

@@ -1,5 +1,5 @@
 using System;
-using log4net;
+
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Param;
 using NHibernate.SqlCommand;
@@ -18,7 +18,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	[CLSCompliant(false)]
 	public class SyntheticAndFactory
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(SyntheticAndFactory));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(SyntheticAndFactory));
 		private readonly HqlSqlWalker _hqlSqlWalker;
 		private IASTNode _filters;
 		private IASTNode _thetaJoins;

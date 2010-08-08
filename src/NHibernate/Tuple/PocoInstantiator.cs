@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 using System.Runtime.Serialization;
-using log4net;
+
 using NHibernate.Bytecode;
 using NHibernate.Mapping;
 using NHibernate.Proxy;
@@ -13,7 +13,7 @@ namespace NHibernate.Tuple
 	[Serializable]
 	public class PocoInstantiator : IInstantiator, IDeserializationCallback
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(PocoInstantiator));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(PocoInstantiator));
 		
 		private readonly System.Type mappedClass;
 		

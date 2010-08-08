@@ -1,4 +1,4 @@
-using log4net;
+
 using NHibernate.Collection;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
@@ -8,7 +8,7 @@ namespace NHibernate.Engine
 {
 	public static class Collections
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(Collections));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(Collections));
 
 		/// <summary> 
 		/// Record the fact that this collection was dereferenced 

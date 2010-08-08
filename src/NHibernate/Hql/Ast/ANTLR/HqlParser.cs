@@ -1,6 +1,6 @@
 ﻿using System;
 using Antlr.Runtime;
-using log4net;
+
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using IToken = Antlr.Runtime.IToken;
 using RecognitionException = Antlr.Runtime.RecognitionException;
@@ -10,7 +10,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	[CLSCompliant(false)]
 	public partial class HqlParser
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(HqlParser));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(HqlParser));
 
 		internal static readonly bool[] possibleIds;
 

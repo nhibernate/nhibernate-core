@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Type;
@@ -9,7 +9,7 @@ namespace NHibernate.Id.Enhanced
 {
 	public class SequenceStyleGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(SequenceStyleGenerator));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(SequenceStyleGenerator));
 
 		#region General purpose parameters
 

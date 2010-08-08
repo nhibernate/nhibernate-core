@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using log4net;
+
 
 namespace NHibernate.Util
 {
@@ -27,7 +27,7 @@ namespace NHibernate.Util
 	[Serializable]
 	public sealed class IdentityMap : IDictionary
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(IdentityMap));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(IdentityMap));
 
 		// key = IdentityKey of the passed in Key
 		// value = object passed in

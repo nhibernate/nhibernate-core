@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -15,7 +15,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultPersistEventListener : AbstractSaveEventListener, IPersistEventListener
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultPersistEventListener));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(DefaultPersistEventListener));
 
 		protected override CascadingAction CascadeAction
 		{

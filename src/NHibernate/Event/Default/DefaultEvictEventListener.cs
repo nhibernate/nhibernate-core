@@ -1,5 +1,5 @@
 using System;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
@@ -16,7 +16,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultEvictEventListener : IEvictEventListener
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultEvictEventListener));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(DefaultEvictEventListener));
 
 		public virtual void OnEvict(EvictEvent @event)
 		{

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using log4net;
+
 using NHibernate.Action;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -18,7 +18,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public abstract class AbstractFlushingEventListener
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (AbstractFlushingEventListener));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (AbstractFlushingEventListener));
 
 		protected virtual object Anything
 		{

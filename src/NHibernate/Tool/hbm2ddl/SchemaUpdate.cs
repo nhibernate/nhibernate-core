@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using log4net;
+
 using NHibernate.Cfg;
 using NHibernate.Util;
 using Environment=NHibernate.Cfg.Environment;
@@ -12,7 +12,7 @@ namespace NHibernate.Tool.hbm2ddl
 {
 	public class SchemaUpdate
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (SchemaUpdate));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (SchemaUpdate));
 		private readonly Configuration configuration;
 		private readonly IConnectionHelper connectionHelper;
 		private readonly Dialect.Dialect dialect;

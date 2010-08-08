@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Antlr.Runtime;
-using log4net;
+
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
@@ -11,8 +11,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 	/// </summary>
 	internal class ErrorCounter : IParseErrorHandler 
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(ErrorCounter));
-		private static readonly ILog hqlLog = LogManager.GetLogger("NHibernate.Hql.Parser");
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(ErrorCounter));
+		private static readonly ILogger hqlLog = LogggerProvider.LoggerFor("NHibernate.Hql.Parser");
 
 		private readonly List<string> _errorList = new List<string>();
 		private readonly List<string> _warningList = new List<string>();

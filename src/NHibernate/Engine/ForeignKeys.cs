@@ -1,4 +1,4 @@
-using log4net;
+
 using NHibernate.Id;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -9,7 +9,7 @@ namespace NHibernate.Engine
 	/// <summary> Algorithms related to foreign key constraint transparency </summary>
 	public static class ForeignKeys
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(ForeignKeys));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(ForeignKeys));
 
 		public class Nullifier
 		{

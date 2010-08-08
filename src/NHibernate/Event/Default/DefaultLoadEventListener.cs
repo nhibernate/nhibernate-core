@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics;
-using log4net;
+
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Engine;
@@ -18,7 +18,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultLoadEventListener : AbstractLockUpgradeEventListener, ILoadEventListener
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultLoadEventListener));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(DefaultLoadEventListener));
 		public static readonly object RemovedEntityMarker = new object();
 		public static readonly object InconsistentRTNClassMarker= new object();
 		public static readonly LockMode DefaultLockMode = LockMode.None;

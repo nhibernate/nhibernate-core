@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using log4net;
+
 using NHibernate.Action;
 using NHibernate.Classic;
 using NHibernate.Engine;
@@ -28,7 +28,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public abstract class AbstractSaveEventListener : AbstractReassociateEventListener
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(AbstractSaveEventListener));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(AbstractSaveEventListener));
 
 		protected virtual bool? AssumedUnsaved
 		{

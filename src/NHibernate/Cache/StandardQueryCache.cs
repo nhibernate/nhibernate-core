@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -18,7 +18,7 @@ namespace NHibernate.Cache
 	/// </summary>
 	public class StandardQueryCache : IQueryCache
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (StandardQueryCache));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (StandardQueryCache));
 		private readonly ICache queryCache;
 		private readonly string regionName;
 		private readonly UpdateTimestampsCache updateTimestampsCache;

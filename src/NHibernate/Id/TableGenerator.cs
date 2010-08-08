@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Runtime.CompilerServices;
-using log4net;
+
 using NHibernate.AdoNet.Util;
 using NHibernate.Dialect;
 using NHibernate.Engine;
@@ -35,7 +35,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (TableGenerator));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (TableGenerator));
 
 		/// <summary>
 		/// An additional where clause that is added to 

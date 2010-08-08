@@ -2,7 +2,7 @@ using System;
 using System.CodeDom.Compiler;
 using System.Reflection;
 using System.Text;
-using log4net;
+
 using Microsoft.CSharp;
 using NHibernate.Properties;
 
@@ -13,7 +13,7 @@ namespace NHibernate.Bytecode.CodeDom
 	/// </summary>
 	public class BytecodeProviderImpl : AbstractBytecodeProvider
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (BytecodeProviderImpl));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (BytecodeProviderImpl));
 
 		#region IBytecodeProvider Members
 

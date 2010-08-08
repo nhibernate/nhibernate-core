@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using log4net;
+
 using NHibernate.Util;
 using Environment=NHibernate.Cfg.Environment;
 
@@ -11,7 +11,7 @@ namespace NHibernate.Connection
 	/// </summary>
 	public sealed class ConnectionProviderFactory
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(ConnectionProviderFactory));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(ConnectionProviderFactory));
 
 		// cannot be instantiated
 		private ConnectionProviderFactory()

@@ -6,7 +6,7 @@ using System.Security.Permissions;
 using System.Text;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
 using NHibernate.Impl;
@@ -32,8 +32,8 @@ namespace NHibernate.Engine
 	public class StatefulPersistenceContext : IPersistenceContext, ISerializable, IDeserializationCallback
 	{
 		private const int InitCollectionSize = 8;
-		private static readonly ILog log = LogManager.GetLogger(typeof(StatefulPersistenceContext));
-		private static readonly ILog ProxyWarnLog = LogManager.GetLogger(typeof(StatefulPersistenceContext).FullName + ".ProxyWarnLog");
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(StatefulPersistenceContext));
+		private static readonly ILogger ProxyWarnLog = LogggerProvider.LoggerFor(typeof(StatefulPersistenceContext).FullName + ".ProxyWarnLog");
 
 		public static readonly object NoRow = new object();
 

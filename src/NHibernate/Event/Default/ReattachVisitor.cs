@@ -1,4 +1,4 @@
-using log4net;
+
 using NHibernate.Action;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
@@ -13,7 +13,7 @@ namespace NHibernate.Event.Default
 	{
 		private readonly object ownerIdentifier;
 		private readonly object owner;
-		private static readonly ILog log = LogManager.GetLogger(typeof(AbstractFlushingEventListener));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(AbstractFlushingEventListener));
 
 		protected ReattachVisitor(IEventSource session, object ownerIdentifier, object owner)
 			: base(session)

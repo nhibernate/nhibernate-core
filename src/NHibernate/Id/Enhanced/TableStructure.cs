@@ -1,7 +1,7 @@
 using System;
 using System.Data;
 using System.Text;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -13,8 +13,8 @@ namespace NHibernate.Id.Enhanced
 	/// </summary>
 	public class TableStructure : TransactionHelper, IDatabaseStructure
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (IDatabaseStructure));
-		private static readonly ILog SqlLog = LogManager.GetLogger("NHibernate.SQL");
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (IDatabaseStructure));
+		private static readonly ILogger SqlLog = LogggerProvider.LoggerFor("NHibernate.SQL");
 		private readonly int incrementSize;
 		private readonly int initialValue;
 		private readonly string tableName;

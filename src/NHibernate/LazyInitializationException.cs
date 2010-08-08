@@ -1,6 +1,6 @@
 using System;
 using System.Runtime.Serialization;
-using log4net;
+
 
 namespace NHibernate
 {
@@ -60,7 +60,7 @@ namespace NHibernate
 		/// </param>
 		public LazyInitializationException(string message, Exception innerException) : base(message, innerException)
 		{
-			LogManager.GetLogger(typeof(LazyInitializationException)).Error(message, this);
+			LogggerProvider.LoggerFor(typeof(LazyInitializationException)).Error(message, this);
 		}
 
 		/// <summary>

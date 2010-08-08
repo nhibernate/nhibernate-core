@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -45,7 +45,7 @@ namespace NHibernate.Loader
 	/// <seealso cref="NHibernate.Persister.Entity.ILoadable"/>
 	public abstract class Loader
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (Loader));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (Loader));
 
 		private readonly ISessionFactoryImplementor factory;
 		private ColumnNameCache columnNameCache;

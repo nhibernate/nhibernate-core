@@ -1,5 +1,5 @@
 using System;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
@@ -13,7 +13,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultReplicateEventListener : AbstractSaveEventListener, IReplicateEventListener
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(DefaultReplicateEventListener));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(DefaultReplicateEventListener));
 
 		public virtual void OnReplicate(ReplicateEvent @event)
 		{

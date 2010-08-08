@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Persister.Collection;
@@ -14,7 +14,7 @@ namespace NHibernate.Loader.Custom.Sql
 	///<remarks>This support is built on top of the notion of "custom queries"...</remarks>
 	public class SQLCustomQuery : ICustomQuery
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (SQLCustomQuery));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (SQLCustomQuery));
 
 		private readonly List<IReturn> customQueryReturns = new List<IReturn>();
 		private readonly Dictionary<string, object> namedParameterBindPoints = new Dictionary<string, object>();

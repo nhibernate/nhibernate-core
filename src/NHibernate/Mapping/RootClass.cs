@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Util;
 
@@ -16,7 +16,7 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public class RootClass : PersistentClass, ITableOwner
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(RootClass));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(RootClass));
 
 		/// <summary>
 		/// The default name of the column for the Identifier

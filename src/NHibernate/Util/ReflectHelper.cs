@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using log4net;
+
 using NHibernate.Properties;
 using NHibernate.Type;
 using NHibernate.Engine;
@@ -16,7 +16,7 @@ namespace NHibernate.Util
     /// </summary>
     public static class ReflectHelper
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(ReflectHelper));
+        private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(ReflectHelper));
 
         public const BindingFlags AnyVisibilityInstance = BindingFlags.Instance | BindingFlags.Public |
                                                            BindingFlags.NonPublic;

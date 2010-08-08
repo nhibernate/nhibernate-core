@@ -1,6 +1,6 @@
 using System.Collections;
 using Iesi.Collections;
-using log4net;
+
 using NHibernate.Collection;
 using NHibernate.Event;
 using NHibernate.Persister.Entity;
@@ -14,7 +14,7 @@ namespace NHibernate.Engine
 	/// </summary>
 	public abstract class CascadingAction
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(CascadingAction));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(CascadingAction));
 
 		#region The CascadingAction contract
 

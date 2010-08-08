@@ -1,5 +1,5 @@
 using System.Collections;
-using log4net;
+
 using NHibernate.Collection;
 using NHibernate.Event;
 using NHibernate.Persister.Collection;
@@ -70,7 +70,7 @@ namespace NHibernate.Engine
 	/// </summary>
 	public sealed class Cascade
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(Cascade));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(Cascade));
 
 		private CascadePoint point;
 		private readonly IEventSource eventSource;

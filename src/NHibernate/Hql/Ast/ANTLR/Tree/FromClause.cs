@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Antlr.Runtime;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Util;
 
@@ -16,7 +16,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class FromClause : HqlSqlWalkerNode, IDisplayableNode
 	{
-		private static readonly ILog Log = LogManager.GetLogger(typeof(FromClause));
+		private static readonly ILogger Log = LogggerProvider.LoggerFor(typeof(FromClause));
 		private const int RootLevel = 1;
 
 		private int _level = RootLevel;

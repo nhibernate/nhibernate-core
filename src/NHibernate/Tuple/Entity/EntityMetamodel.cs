@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Intercept;
 using NHibernate.Mapping;
@@ -14,7 +14,7 @@ namespace NHibernate.Tuple.Entity
 	[Serializable]
 	public class EntityMetamodel
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(EntityMetamodel));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(EntityMetamodel));
 
 		private const int NoVersionIndex = -66;
 

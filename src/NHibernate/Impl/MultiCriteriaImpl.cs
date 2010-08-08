@@ -5,7 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Cache;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -20,7 +20,7 @@ namespace NHibernate.Impl
 {
 	public class MultiCriteriaImpl : IMultiCriteria
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(MultiCriteriaImpl));
+		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(MultiCriteriaImpl));
 		private readonly IList<ICriteria> criteriaQueries = new List<ICriteria>();
 		private readonly IList<System.Type> resultCollectionGenericType = new List<System.Type>();
 
