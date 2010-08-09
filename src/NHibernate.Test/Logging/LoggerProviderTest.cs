@@ -9,7 +9,13 @@ namespace NHibernate.Test.Logging
 		public void LoggerProviderCanCreateLoggers()
 		{
 			LoggerProvider.LoggerFor("pizza").Should().Not.Be.Null();
-			LoggerProvider.LoggerFor(typeof(LoggerProviderTest)).Should().Not.Be.Null();
+			LoggerProvider.LoggerFor(typeof (LoggerProviderTest)).Should().Not.Be.Null();
+		}
+
+		[Test]
+		public void WhenNotConfiguredAndLog4NetExistsThenUseLog4NetFactory()
+		{
+			LoggerProvider.LoggerFor("pizza").Should().Be.InstanceOf<Log4NetLogger>();
 		}
 	}
 }

@@ -1,4 +1,7 @@
 using System;
+using System.Configuration;
+using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace NHibernate
@@ -38,12 +41,62 @@ namespace NHibernate
 
 	public class LoggerProvider
 	{
+		private const string NhibernateLoggerConfKey = "nhibernate-logger";
 		private readonly ILoggerFactory loggerFactory;
 		private static LoggerProvider instance;
 
 		static LoggerProvider()
 		{
-			SetLoggersFactory(new Log4NetLoggerFactory());
+			string nhibernateLoggerClass = GetNhibernateLoggerClass();
+			ILoggerFactory loggerFactory = string.IsNullOrEmpty(nhibernateLoggerClass) ? new NoLoggingLoggerFactory() : GetLoggerFactory(nhibernateLoggerClass);
+			SetLoggersFactory(loggerFactory);
+		}
+
+		private static ILoggerFactory GetLoggerFactory(string nhibernateLoggerClass)
+		{
+			ILoggerFactory loggerFactory;
+			var loggerFactoryType = System.Type.GetType(nhibernateLoggerClass);
+			try
+			{
+				loggerFactory = (ILoggerFactory) Activator.CreateInstance(loggerFactoryType);
+			}
+			catch (MissingMethodException ex)
+			{
+				throw new ApplicationException("Public constructor was not found for " + loggerFactoryType, ex);
+			}
+			catch (InvalidCastException ex)
+			{
+				throw new ApplicationException(loggerFactoryType + "Type does not implement " + typeof (ILoggerFactory), ex);
+			}
+			catch (Exception ex)
+			{
+				throw new ApplicationException("Unable to instantiate: " + loggerFactoryType, ex);
+			}
+			return loggerFactory;
+		}
+
+		private static string GetNhibernateLoggerClass()
+		{
+			var nhibernateLogger = ConfigurationManager.AppSettings.Keys.Cast<string>().FirstOrDefault(k => NhibernateLoggerConfKey.Equals(k.ToLowerInvariant()));
+			string nhibernateLoggerClass = null;
+			if (string.IsNullOrEmpty(nhibernateLogger))
+			{
+				// look for log4net.dll
+				string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+				string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
+				string binPath = relativeSearchPath == null ? baseDir : Path.Combine(baseDir, relativeSearchPath);
+				var log4NetDllPath = Path.Combine(binPath, "log4net.dll");
+
+				if (File.Exists(log4NetDllPath))
+				{
+					nhibernateLoggerClass = typeof (Log4NetLoggerFactory).AssemblyQualifiedName;
+				}
+			}
+			else
+			{
+				nhibernateLoggerClass = ConfigurationManager.AppSettings[nhibernateLogger];
+			}
+			return nhibernateLoggerClass;
 		}
 
 		public static void SetLoggersFactory(ILoggerFactory loggerFactory)
@@ -64,6 +117,104 @@ namespace NHibernate
 		public static ILogger LoggerFor(System.Type type)
 		{
 			return instance.loggerFactory.LoggerFor(type);
+		}
+	}
+
+	public class NoLoggingLoggerFactory: ILoggerFactory
+	{
+		private static readonly ILogger Nologging = new NoLoggingLogger();
+		public ILogger LoggerFor(string keyName)
+		{
+			return Nologging;
+		}
+
+		public ILogger LoggerFor(System.Type type)
+		{
+			return Nologging;
+		}
+	}
+
+	public class NoLoggingLogger: ILogger
+	{
+		public bool IsErrorEnabled
+		{
+			get { return false;}
+		}
+
+		public bool IsFatalEnabled
+		{
+			get { return false; }
+		}
+
+		public bool IsDebugEnabled
+		{
+			get { return false; }
+		}
+
+		public bool IsInfoEnabled
+		{
+			get { return false; }
+		}
+
+		public bool IsWarnEnabled
+		{
+			get { return false; }
+		}
+
+		public void Error(object message)
+		{
+		}
+
+		public void Error(object message, Exception exception)
+		{
+		}
+
+		public void ErrorFormat(string format, params object[] args)
+		{
+		}
+
+		public void Fatal(object message)
+		{
+		}
+
+		public void Fatal(object message, Exception exception)
+		{
+		}
+
+		public void Debug(object message)
+		{
+		}
+
+		public void Debug(object message, Exception exception)
+		{
+		}
+
+		public void DebugFormat(string format, params object[] args)
+		{
+		}
+
+		public void Info(object message)
+		{
+		}
+
+		public void Info(object message, Exception exception)
+		{
+		}
+
+		public void InfoFormat(string format, params object[] args)
+		{
+		}
+
+		public void Warn(object message)
+		{
+		}
+
+		public void Warn(object message, Exception exception)
+		{
+		}
+
+		public void WarnFormat(string format, params object[] args)
+		{
 		}
 	}
 
