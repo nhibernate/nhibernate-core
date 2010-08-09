@@ -1,6 +1,5 @@
 using System;
 using System.Linq.Expressions;
-using log4net;
 
 namespace NHibernate
 {
@@ -31,35 +30,70 @@ namespace NHibernate
 		void WarnFormat(string format, params object[] args);
 	}
 
+	public interface ILoggerFactory
+	{
+		ILogger LoggerFor(string keyName);
+		ILogger LoggerFor(System.Type type);
+	}
+
 	public class LogggerProvider
 	{
-		private readonly Func<string, ILogger> loggerByKeyGetter;
-		private readonly Func<System.Type, ILogger> loggerByTypeGetter;
+		private readonly ILoggerFactory loggerFactory;
 		private static LogggerProvider instance;
+
 		static LogggerProvider()
 		{
-			SetLoggersFactoryDelegates(key => new Log4NetLogger(LogManager.GetLogger(key)), type => new Log4NetLogger(LogManager.GetLogger(type)));
+			SetLoggersFactory(new Log4NetLoggerFactory());
 		}
 
-		public static void SetLoggersFactoryDelegates(Func<string, ILogger> loggerByKeyGetter, Func<System.Type, ILogger> loggerByTypeGetter)
+		public static void SetLoggersFactory(ILoggerFactory loggerFactory)
 		{
-			instance = new LogggerProvider(loggerByKeyGetter, loggerByTypeGetter);
+			instance = new LogggerProvider(loggerFactory);
 		}
 
-		private LogggerProvider(Func<string, ILogger> loggerByKeyGetter, Func<System.Type, ILogger> loggerByTypeGetter)
+		private LogggerProvider(ILoggerFactory loggerFactory)
 		{
-			this.loggerByKeyGetter = loggerByKeyGetter;
-			this.loggerByTypeGetter = loggerByTypeGetter;
+			this.loggerFactory = loggerFactory;
 		}
 
 		public static ILogger LoggerFor(string keyName)
 		{
-			return instance.loggerByKeyGetter(keyName);
+			return instance.loggerFactory.LoggerFor(keyName);
 		}
 
 		public static ILogger LoggerFor(System.Type type)
 		{
-			return instance.loggerByTypeGetter(type);
+			return instance.loggerFactory.LoggerFor(type);
+		}
+	}
+
+	public class Log4NetLoggerFactory: ILoggerFactory
+	{
+		private static readonly System.Type LogManagerType = System.Type.GetType("log4net.LogManager, log4net");
+		private static readonly Func<string, object> GetLoggerByNameDelegate;
+		private static readonly Func<System.Type, object> GetLoggerByTypeDelegate;
+		static Log4NetLoggerFactory()
+		{
+			GetLoggerByNameDelegate = GetGetLoggerMethodCall<string>();
+			GetLoggerByTypeDelegate = GetGetLoggerMethodCall<System.Type>();
+		}
+		public ILogger LoggerFor(string keyName)
+		{
+			return new Log4NetLogger(GetLoggerByNameDelegate(keyName));
+		}
+
+		public ILogger LoggerFor(System.Type type)
+		{
+			return new Log4NetLogger(GetLoggerByTypeDelegate(type));
+		}
+
+		private static Func<TParameter, object> GetGetLoggerMethodCall<TParameter>()
+		{
+			var method = LogManagerType.GetMethod("GetLogger", new[] { typeof(TParameter) });
+			ParameterExpression resultValue;
+			ParameterExpression keyParam = Expression.Parameter(typeof(TParameter), "key");
+			MethodCallExpression methodCall = Expression.Call(null, method, new Expression[] { resultValue = keyParam });
+			return Expression.Lambda<Func<TParameter, object>>(methodCall, new[] { resultValue }).Compile();
 		}
 	}
 

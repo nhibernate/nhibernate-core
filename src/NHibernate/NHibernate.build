@@ -23,7 +23,6 @@
 			<include name="System.Data.OracleClient" />
 			<include name="System.Web.dll" />
 			<include name="Iesi.Collections.dll" />
-			<include name="log4net.dll" />
 			<include name="Antlr3.Runtime.dll" />
 			<include name="Remotion.dll" />
 			<include name="Remotion.Data.Linq.dll" />
