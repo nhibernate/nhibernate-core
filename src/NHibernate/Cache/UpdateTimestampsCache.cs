@@ -16,7 +16,7 @@ namespace NHibernate.Cache
 	/// </summary>
 	public class UpdateTimestampsCache
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(UpdateTimestampsCache));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(UpdateTimestampsCache));
 		private ICache updateTimestamps;
 
 		private readonly string regionName = typeof(UpdateTimestampsCache).Name;

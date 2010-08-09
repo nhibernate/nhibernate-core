@@ -14,7 +14,7 @@ namespace NHibernate.Loader.Entity
 	/// </summary>
 	public abstract class AbstractEntityLoader : OuterJoinLoader, IUniqueEntityLoader
 	{
-		protected static readonly ILogger log = LogggerProvider.LoggerFor(typeof (AbstractEntityLoader));
+		protected static readonly ILogger log = LoggerProvider.LoggerFor(typeof (AbstractEntityLoader));
 		protected readonly IOuterJoinLoadable persister;
 		protected readonly IType uniqueKeyType;
 		protected readonly string entityName;

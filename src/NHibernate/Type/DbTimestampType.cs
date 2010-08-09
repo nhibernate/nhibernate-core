@@ -21,7 +21,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public class DbTimestampType : TimestampType, IVersionType
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (DbTimestampType));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (DbTimestampType));
 		private static readonly SqlType[] EmptyParams = new SqlType[0];
 
 		public override string Name

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -12,7 +12,7 @@ namespace NHibernate.Tool.hbm2ddl
 {
 	public class SchemaUpdate
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (SchemaUpdate));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (SchemaUpdate));
 		private readonly Configuration configuration;
 		private readonly IConnectionHelper connectionHelper;
 		private readonly Dialect.Dialect dialect;

@@ -35,7 +35,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (TableGenerator));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (TableGenerator));
 
 		/// <summary>
 		/// An additional where clause that is added to 

@@ -27,7 +27,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly string[] userAliases;
 		private readonly IList<string> userAliasList = new List<string>();
 
-		private static readonly ILogger logger = LogggerProvider.LoggerFor(typeof(CriteriaJoinWalker));
+		private static readonly ILogger logger = LoggerProvider.LoggerFor(typeof(CriteriaJoinWalker));
 
 		public CriteriaJoinWalker(IOuterJoinLoadable persister, CriteriaQueryTranslator translator,
 		                          ISessionFactoryImplementor factory, ICriteria criteria, string rootEntityName,

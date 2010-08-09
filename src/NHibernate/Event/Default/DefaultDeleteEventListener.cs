@@ -19,7 +19,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultDeleteEventListener : IDeleteEventListener
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(DefaultDeleteEventListener));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(DefaultDeleteEventListener));
 
 		#region IDeleteEventListener Members
 

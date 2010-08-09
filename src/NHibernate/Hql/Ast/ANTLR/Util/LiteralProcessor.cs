@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 
 using NHibernate.Hql.Ast.ANTLR.Tree;
@@ -17,7 +17,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 		public const string ErrorCannotDetermineType = "Could not determine type of: ";
 		public const string ErrorCannotFormatLiteral = "Could not format constant value to SQL literal: ";
 
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(LiteralProcessor));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(LiteralProcessor));
 
 		private readonly HqlSqlWalker _walker;
 		private static readonly IDecimalFormatter[] _formatters = new IDecimalFormatter[] {

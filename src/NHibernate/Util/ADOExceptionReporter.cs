@@ -5,7 +5,7 @@ namespace NHibernate.Util
 {
 	public class ADOExceptionReporter
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(ADOExceptionReporter));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(ADOExceptionReporter));
 		public const string DefaultExceptionMsg = "SQL Exception";
 
 		private ADOExceptionReporter()

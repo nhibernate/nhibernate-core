@@ -24,7 +24,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	[CLSCompliant(false)]
 	public class JoinProcessor
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(JoinProcessor));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(JoinProcessor));
 
 		private readonly HqlSqlWalker _walker;
 		private readonly SyntheticAndFactory _syntheticAndFactory;

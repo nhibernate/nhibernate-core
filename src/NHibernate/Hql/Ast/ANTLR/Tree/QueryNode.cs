@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Antlr.Runtime;
 
 using NHibernate.Hql.Ast.ANTLR.Util;
@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class QueryNode : AbstractRestrictableStatement, ISelectExpression
 	{
-		private static readonly ILogger Log = LogggerProvider.LoggerFor(typeof(QueryNode));
+		private static readonly ILogger Log = LoggerProvider.LoggerFor(typeof(QueryNode));
 
 		private OrderByClause _orderByClause;
 

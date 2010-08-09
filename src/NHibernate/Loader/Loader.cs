@@ -45,7 +45,7 @@ namespace NHibernate.Loader
 	/// <seealso cref="NHibernate.Persister.Entity.ILoadable"/>
 	public abstract class Loader
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (Loader));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (Loader));
 
 		private readonly ISessionFactoryImplementor factory;
 		private ColumnNameCache columnNameCache;

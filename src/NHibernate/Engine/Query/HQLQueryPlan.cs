@@ -31,7 +31,7 @@ namespace NHibernate.Engine.Query
 	[Serializable]
 	public class HQLQueryPlan : IQueryPlan
 	{
-		protected static readonly ILogger Log = LogggerProvider.LoggerFor(typeof(HQLQueryPlan));
+		protected static readonly ILogger Log = LoggerProvider.LoggerFor(typeof(HQLQueryPlan));
 
 		private readonly string _sourceQuery;
 

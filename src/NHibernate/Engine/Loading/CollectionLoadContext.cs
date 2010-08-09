@@ -22,7 +22,7 @@ namespace NHibernate.Engine.Loading
 	/// </remarks>
 	public class CollectionLoadContext
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(CollectionLoadContext));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(CollectionLoadContext));
 		private readonly LoadContexts loadContexts;
 		private readonly IDataReader resultSet;
 		private readonly ISet<CollectionKey> localLoadingCollectionKeys = new HashedSet<CollectionKey>();

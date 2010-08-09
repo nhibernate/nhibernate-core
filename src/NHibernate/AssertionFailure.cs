@@ -17,7 +17,7 @@ namespace NHibernate
 		/// </summary>
 		public AssertionFailure() : base(String.Empty)
 		{
-			LogggerProvider.LoggerFor(typeof(AssertionFailure)).Error(DefaultMessage);
+			LoggerProvider.LoggerFor(typeof(AssertionFailure)).Error(DefaultMessage);
 		}
 
 		/// <summary>
@@ -26,7 +26,7 @@ namespace NHibernate
 		/// <param name="message">The message that describes the error. </param>
 		public AssertionFailure(string message) : base(message)
 		{
-			LogggerProvider.LoggerFor(typeof(AssertionFailure)).Error(DefaultMessage, this);
+			LoggerProvider.LoggerFor(typeof(AssertionFailure)).Error(DefaultMessage, this);
 		}
 
 		/// <summary>
@@ -40,7 +40,7 @@ namespace NHibernate
 		/// </param>
 		public AssertionFailure(string message, Exception innerException) : base(message, innerException)
 		{
-			LogggerProvider.LoggerFor(typeof(AssertionFailure)).Error(DefaultMessage, innerException);
+			LoggerProvider.LoggerFor(typeof(AssertionFailure)).Error(DefaultMessage, innerException);
 		}
 
 		/// <summary>

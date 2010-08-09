@@ -40,7 +40,7 @@ namespace NHibernate.Impl
 	[Serializable]
 	public sealed class SessionImpl : AbstractSessionImpl, IEventSource, ISerializable, IDeserializationCallback
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(SessionImpl));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(SessionImpl));
 
 		private readonly long timestamp;
 

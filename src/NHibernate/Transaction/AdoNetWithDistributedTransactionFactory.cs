@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Transactions;
 
@@ -10,7 +10,7 @@ namespace NHibernate.Transaction
 {
 	public class AdoNetWithDistributedTransactionFactory : ITransactionFactory
 	{
-		private static readonly ILogger logger = LogggerProvider.LoggerFor(typeof(AbstractSessionImpl));
+		private static readonly ILogger logger = LoggerProvider.LoggerFor(typeof(AbstractSessionImpl));
 
 		private readonly AdoNetTransactionFactory adoNetTransactionFactory = new AdoNetTransactionFactory();
 

@@ -18,7 +18,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	[CLSCompliant(false)]
 	public class SyntheticAndFactory
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(SyntheticAndFactory));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(SyntheticAndFactory));
 		private readonly HqlSqlWalker _hqlSqlWalker;
 		private IASTNode _filters;
 		private IASTNode _thetaJoins;

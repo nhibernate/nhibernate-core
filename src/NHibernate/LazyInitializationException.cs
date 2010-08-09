@@ -60,7 +60,7 @@ namespace NHibernate
 		/// </param>
 		public LazyInitializationException(string message, Exception innerException) : base(message, innerException)
 		{
-			LogggerProvider.LoggerFor(typeof(LazyInitializationException)).Error(message, this);
+			LoggerProvider.LoggerFor(typeof(LazyInitializationException)).Error(message, this);
 		}
 
 		/// <summary>

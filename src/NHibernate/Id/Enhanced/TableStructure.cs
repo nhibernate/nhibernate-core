@@ -13,8 +13,8 @@ namespace NHibernate.Id.Enhanced
 	/// </summary>
 	public class TableStructure : TransactionHelper, IDatabaseStructure
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (IDatabaseStructure));
-		private static readonly ILogger SqlLog = LogggerProvider.LoggerFor("NHibernate.SQL");
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (IDatabaseStructure));
+		private static readonly ILogger SqlLog = LoggerProvider.LoggerFor("NHibernate.SQL");
 		private readonly int incrementSize;
 		private readonly int initialValue;
 		private readonly string tableName;

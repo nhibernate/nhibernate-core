@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Antlr.Runtime;
 
 using NHibernate.Dialect.Function;
@@ -16,7 +16,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class MethodNode : AbstractSelectExpression, ISelectExpression 
 	{
-		private static readonly ILogger Log = LogggerProvider.LoggerFor(typeof(MethodNode));
+		private static readonly ILogger Log = LoggerProvider.LoggerFor(typeof(MethodNode));
 
 		private string[] _selectColumns;
 		private string _methodName;

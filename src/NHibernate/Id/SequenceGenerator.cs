@@ -34,7 +34,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class SequenceGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(SequenceGenerator));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(SequenceGenerator));
 
 		/// <summary>
 		/// The name of the sequence parameter.

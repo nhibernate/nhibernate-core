@@ -25,7 +25,7 @@ namespace NHibernate.Impl
 	[Serializable]
 	public class StatelessSessionImpl : AbstractSessionImpl, IStatelessSession
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(StatelessSessionImpl));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(StatelessSessionImpl));
 		[NonSerialized]
 		private readonly ConnectionManager connectionManager;
 		[NonSerialized]

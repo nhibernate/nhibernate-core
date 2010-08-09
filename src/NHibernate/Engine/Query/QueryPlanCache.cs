@@ -11,7 +11,7 @@ namespace NHibernate.Engine.Query
 	[Serializable]
 	public class QueryPlanCache
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(QueryPlanCache));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(QueryPlanCache));
 
 		private readonly ISessionFactoryImplementor factory;
 

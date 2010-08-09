@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Antlr.Runtime;
 
 using NHibernate.Hql.Ast.ANTLR.Tree;
@@ -10,7 +10,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	[CLSCompliant(false)]
 	public partial class HqlParser
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(HqlParser));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(HqlParser));
 
 		internal static readonly bool[] possibleIds;
 

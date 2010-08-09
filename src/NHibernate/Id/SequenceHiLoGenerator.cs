@@ -35,7 +35,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class SequenceHiLoGenerator : SequenceGenerator
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(SequenceHiLoGenerator));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(SequenceHiLoGenerator));
 
 		/// <summary>
 		/// The name of the maximum low value parameter.

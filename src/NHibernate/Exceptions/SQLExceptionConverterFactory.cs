@@ -9,7 +9,7 @@ namespace NHibernate.Exceptions
 	/// <summary> A factory for building SQLExceptionConverter instances. </summary>
 	public static class SQLExceptionConverterFactory
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(SQLExceptionConverterFactory));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(SQLExceptionConverterFactory));
 
 		private class MinimalSQLExceptionConverter : ISQLExceptionConverter
 		{

@@ -36,22 +36,22 @@ namespace NHibernate
 		ILogger LoggerFor(System.Type type);
 	}
 
-	public class LogggerProvider
+	public class LoggerProvider
 	{
 		private readonly ILoggerFactory loggerFactory;
-		private static LogggerProvider instance;
+		private static LoggerProvider instance;
 
-		static LogggerProvider()
+		static LoggerProvider()
 		{
 			SetLoggersFactory(new Log4NetLoggerFactory());
 		}
 
 		public static void SetLoggersFactory(ILoggerFactory loggerFactory)
 		{
-			instance = new LogggerProvider(loggerFactory);
+			instance = new LoggerProvider(loggerFactory);
 		}
 
-		private LogggerProvider(ILoggerFactory loggerFactory)
+		private LoggerProvider(ILoggerFactory loggerFactory)
 		{
 			this.loggerFactory = loggerFactory;
 		}

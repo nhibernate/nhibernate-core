@@ -16,7 +16,7 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public class RootClass : PersistentClass, ITableOwner
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(RootClass));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(RootClass));
 
 		/// <summary>
 		/// The default name of the column for the Identifier

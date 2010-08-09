@@ -14,7 +14,7 @@ namespace NHibernate.Connection
 	/// </remarks>
 	public class UserSuppliedConnectionProvider : ConnectionProvider
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(UserSuppliedConnectionProvider));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(UserSuppliedConnectionProvider));
 
 		/// <summary>
 		/// Throws an <see cref="InvalidOperationException"/> if this method is called

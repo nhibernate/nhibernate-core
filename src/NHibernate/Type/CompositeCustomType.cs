@@ -47,7 +47,7 @@ namespace NHibernate.Type
 			TypeFactory.InjectParameters(userType, parameters);
 			if (!userType.ReturnedClass.IsSerializable)
 			{
-				LogggerProvider.LoggerFor(typeof(CustomType)).Warn("custom type is not Serializable: " + userTypeClass);
+				LoggerProvider.LoggerFor(typeof(CustomType)).Warn("custom type is not Serializable: " + userTypeClass);
 			}
 		}
 

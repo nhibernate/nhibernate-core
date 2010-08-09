@@ -22,7 +22,7 @@ namespace NHibernate.Engine
 	{
 		public delegate int[] GetNamedParameterLocations(string parameterName);
 
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (QueryParameters));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (QueryParameters));
 
 		private IType[] _positionalParameterTypes;
 		private object[] _positionalParameterValues;

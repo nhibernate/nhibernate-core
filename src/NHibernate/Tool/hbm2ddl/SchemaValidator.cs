@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 
@@ -9,7 +9,7 @@ namespace NHibernate.Tool.hbm2ddl
 {
 	public class SchemaValidator
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (SchemaValidator));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (SchemaValidator));
 		private readonly Configuration configuration;
 		private readonly IConnectionHelper connectionHelper;
 		private readonly Dialect.Dialect dialect;

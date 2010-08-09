@@ -15,7 +15,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultPersistEventListener : AbstractSaveEventListener, IPersistEventListener
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(DefaultPersistEventListener));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(DefaultPersistEventListener));
 
 		protected override CascadingAction CascadeAction
 		{

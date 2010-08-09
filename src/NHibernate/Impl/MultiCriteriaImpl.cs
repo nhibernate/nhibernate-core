@@ -20,7 +20,7 @@ namespace NHibernate.Impl
 {
 	public class MultiCriteriaImpl : IMultiCriteria
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(MultiCriteriaImpl));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(MultiCriteriaImpl));
 		private readonly IList<ICriteria> criteriaQueries = new List<ICriteria>();
 		private readonly IList<System.Type> resultCollectionGenericType = new List<System.Type>();
 

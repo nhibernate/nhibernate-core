@@ -30,7 +30,7 @@ namespace NHibernate.Context
 	[Serializable]
 	public class ThreadLocalSessionContext : ICurrentSessionContext
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(ThreadLocalSessionContext));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(ThreadLocalSessionContext));
 
 		[ThreadStatic]
 		protected static IDictionary<ISessionFactory, ISession> context;

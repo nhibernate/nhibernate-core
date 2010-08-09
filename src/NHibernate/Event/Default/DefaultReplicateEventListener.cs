@@ -13,7 +13,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultReplicateEventListener : AbstractSaveEventListener, IReplicateEventListener
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(DefaultReplicateEventListener));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(DefaultReplicateEventListener));
 
 		public virtual void OnReplicate(ReplicateEvent @event)
 		{

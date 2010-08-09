@@ -11,7 +11,7 @@ namespace NHibernate.Impl
 	public sealed class Printer
 	{
 		private readonly ISessionFactoryImplementor _factory;
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(Printer));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(Printer));
 
 		/// <summary>
 		/// 

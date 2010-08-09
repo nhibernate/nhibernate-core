@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Util;
@@ -13,7 +13,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class FromElementFactory
 	{
-		private static readonly ILogger Log = LogggerProvider.LoggerFor(typeof(FromElementFactory));
+		private static readonly ILogger Log = LoggerProvider.LoggerFor(typeof(FromElementFactory));
 
 		private readonly FromClause _fromClause;
 		private readonly FromElement _origin;

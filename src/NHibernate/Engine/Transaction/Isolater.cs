@@ -28,7 +28,7 @@ namespace NHibernate.Engine.Transaction
 	/// </remarks>
 	public class Isolater
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(Isolater));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(Isolater));
 
 		/// <summary> 
 		/// Ensures that all processing actually performed by the given work will

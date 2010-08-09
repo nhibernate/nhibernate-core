@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Util;
@@ -8,7 +8,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	[CLSCompliant(false)]
 	public static class PathHelper
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(PathHelper));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(PathHelper));
 
 		/// <summary>
 		/// Turns a path into an AST.

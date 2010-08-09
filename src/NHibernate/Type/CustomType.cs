@@ -65,7 +65,7 @@ namespace NHibernate.Type
 			sqlTypes = userType.SqlTypes;
 			if (!userType.ReturnedType.IsSerializable)
 			{
-				LogggerProvider.LoggerFor(typeof(CustomType)).Warn("custom type is not Serializable: " + userTypeClass);
+				LoggerProvider.LoggerFor(typeof(CustomType)).Warn("custom type is not Serializable: " + userTypeClass);
 			}
 		}
 

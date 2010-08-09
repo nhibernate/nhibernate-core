@@ -32,8 +32,8 @@ namespace NHibernate.Engine
 	public class StatefulPersistenceContext : IPersistenceContext, ISerializable, IDeserializationCallback
 	{
 		private const int InitCollectionSize = 8;
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(StatefulPersistenceContext));
-		private static readonly ILogger ProxyWarnLog = LogggerProvider.LoggerFor(typeof(StatefulPersistenceContext).FullName + ".ProxyWarnLog");
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(StatefulPersistenceContext));
+		private static readonly ILogger ProxyWarnLog = LoggerProvider.LoggerFor(typeof(StatefulPersistenceContext).FullName + ".ProxyWarnLog");
 
 		public static readonly object NoRow = new object();
 

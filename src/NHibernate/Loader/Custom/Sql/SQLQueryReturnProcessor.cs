@@ -11,7 +11,7 @@ namespace NHibernate.Loader.Custom.Sql
 {
 	public class SQLQueryReturnProcessor
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof (SQLQueryReturnProcessor));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (SQLQueryReturnProcessor));
 
 		private readonly INativeSQLQueryReturn[] queryReturns;
 

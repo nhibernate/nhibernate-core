@@ -36,7 +36,7 @@ namespace NHibernate.Impl
 
 		private bool isAlreadyDisposed;
 
-		private static readonly ILogger logger = LogggerProvider.LoggerFor(typeof(AbstractSessionImpl));
+		private static readonly ILogger logger = LoggerProvider.LoggerFor(typeof(AbstractSessionImpl));
 
 		public Guid SessionId
 		{

@@ -15,7 +15,7 @@ namespace NHibernate.Connection
 	/// </summary>
 	public abstract class ConnectionProvider : IConnectionProvider
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(ConnectionProvider));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(ConnectionProvider));
 		private string connString;
 		private IDriver driver;
 

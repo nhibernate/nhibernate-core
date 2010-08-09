@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -19,7 +19,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class FromElementType
 	{
-		private static readonly ILogger Log = LogggerProvider.LoggerFor(typeof(FromElementType));
+		private static readonly ILogger Log = LoggerProvider.LoggerFor(typeof(FromElementType));
 
 		private readonly FromElement _fromElement;
 		private readonly IEntityPersister _persister;

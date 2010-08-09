@@ -70,7 +70,7 @@ namespace NHibernate.Engine
 	/// </summary>
 	public sealed class Cascade
 	{
-		private static readonly ILogger log = LogggerProvider.LoggerFor(typeof(Cascade));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(Cascade));
 
 		private CascadePoint point;
 		private readonly IEventSource eventSource;
