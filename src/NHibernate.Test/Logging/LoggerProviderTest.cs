@@ -6,7 +6,7 @@ namespace NHibernate.Test.Logging
 	public class LoggerProviderTest
 	{
 		[Test]
-		public void LogggerProviderCanCreateLobbers()
+		public void LoggerProviderCanCreateLoggers()
 		{
 			LoggerProvider.LoggerFor("pizza").Should().Not.Be.Null();
 			LoggerProvider.LoggerFor(typeof(LoggerProviderTest)).Should().Not.Be.Null();
