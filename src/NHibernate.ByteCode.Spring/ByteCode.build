@@ -25,7 +25,6 @@
 			<include name="System.Core.dll" />
 			<include name="Common.Logging.dll" />
 			<include name="Iesi.Collections.dll" />
-			<include name="log4net.dll" />
 			<include name="antlr.runtime.dll" />
 			<include name="Spring.Aop.dll" />
 			<include name="Spring.Core.dll" />

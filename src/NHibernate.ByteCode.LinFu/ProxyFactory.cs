@@ -1,5 +1,4 @@
 using System;
-using log4net;
 using NHibernate.Engine;
 using NHibernate.Proxy;
 
@@ -8,7 +7,7 @@ namespace NHibernate.ByteCode.LinFu
 	public class ProxyFactory : AbstractProxyFactory
 	{
 		private static readonly global::LinFu.DynamicProxy.ProxyFactory factory = new global::LinFu.DynamicProxy.ProxyFactory();
-		protected static readonly ILog log = LogManager.GetLogger(typeof (ProxyFactory));
+		protected static readonly ILogger log = LoggerProvider.LoggerFor(typeof (ProxyFactory));
 
 		#region IProxyFactory Members
 

@@ -23,7 +23,6 @@
 		<assemblyfileset basedir="${bin.dir}" id="project.references">
 			<include name="System.dll" />
 			<include name="Iesi.Collections.dll" />
-			<include name="log4net.dll" />
 			<include name="LinFu.DynamicProxy.dll" />
 			<include name="NHibernate.dll" />
 		</assemblyfileset>
