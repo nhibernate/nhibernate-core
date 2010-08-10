@@ -23,78 +23,74 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="querySqlString">The <see cref="SqlString"/> to base the limit query off of.</param>
 		/// <param name="offset">Offset of the first row to be returned by the query (zero-based)</param>
-		/// <param name="last">Maximum number of rows to be returned by the query</param>
+		/// <param name="limit">Maximum number of rows to be returned by the query</param>
+		/// <param name="offsetParameterIndex">Optionally, the Offset parameter index</param>
+		/// <param name="limitParameterIndex">Optionally, the Limit parameter index</param>
 		/// <returns>A new <see cref="SqlString"/> with the <c>LIMIT</c> clause applied.</returns>
 		/// <remarks>
-		/// The <c>LIMIT</c> SQL will look like
-		/// <code>
-		/// 
-		/// SELECT
-		///		TOP last (columns)
-		///	FROM
-		///		(SELECT (columns), ROW_NUMBER() OVER(ORDER BY {original order by, with un-aliased column names) as __hibernate_sort_row
-		///		{original from}) as query
-		/// WHERE query.__hibernate_sort_row > offset
-		/// ORDER BY query.__hibernate_sort_row
-		/// 
-		/// </code>
-		/// 
-		/// Note that we need to add explicitly specify the columns, because we need to be able to use them
-		/// in a paged subselect. NH-1155
+		/// Note that we need to explicitly specify the columns, because we need to be able to use them in a paged subselect [NH-1155]
 		/// </remarks>
-		public override SqlString GetLimitString(SqlString querySqlString, int offset, int last, int? offsetParameterIndex, int? limitParameterIndex)
+		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit, int? offsetParameterIndex, int? limitParameterIndex)
 		{
-			//dont do this paging code if there is no offset, use the 
-			//sql 2000 dialect since it just uses a top statement
+			SqlStringBuilder result = new SqlStringBuilder();
+						
 			if (offset == 0)
 			{
-				return base.GetLimitString(querySqlString, offset, last);
+				int insertPoint = this.GetAfterSelectInsertPoint(querySqlString);
+				
+				return result
+					.Add(querySqlString.Substring(0, insertPoint))
+					.Add(" TOP (")
+					.Add(limitParameterIndex == null ? Parameter.Placeholder : Parameter.WithIndex(limitParameterIndex.Value))
+					.Add(")")
+					.Add(querySqlString.Substring(insertPoint))
+					.ToSqlString();
 			}
 
 			int fromIndex = GetFromIndex(querySqlString);
 			SqlString select = querySqlString.Substring(0, fromIndex);
+
 			List<SqlString> columnsOrAliases;
 			Dictionary<SqlString, SqlString> aliasToColumn;
 			ExtractColumnOrAliasNames(select, out columnsOrAliases, out aliasToColumn);
-
+		
 			int orderIndex = querySqlString.LastIndexOfCaseInsensitive(" order by ");
-			SqlString from;
+			SqlString fromAndWhere;
 			SqlString[] sortExpressions;
 
 			//don't use the order index if it is contained within a larger statement(assuming 
 			//a statement with non matching parenthesis is part of a larger block)
 			if (orderIndex > 0 && HasMatchingParens(querySqlString.Substring(orderIndex).ToString()))
 			{
-				from = querySqlString.Substring(fromIndex, orderIndex - fromIndex).Trim();
+				fromAndWhere = querySqlString.Substring(fromIndex, orderIndex - fromIndex).Trim();
 				SqlString orderBy = querySqlString.Substring(orderIndex).Trim();
 				sortExpressions = orderBy.Substring(9).Split(",");
 			}
 			else
 			{
-				from = querySqlString.Substring(fromIndex).Trim();
+				fromAndWhere = querySqlString.Substring(fromIndex).Trim();
 				// Use dummy sort to avoid errors
 				sortExpressions = new[] {new SqlString("CURRENT_TIMESTAMP"),};
-			}
-
-			SqlStringBuilder result =
-				new SqlStringBuilder()
-					.Add("SELECT TOP (")
-					.Add(Parameter.WithIndex(limitParameterIndex.Value))
-					.Add(") ")
-					.Add(StringHelper.Join(", ", columnsOrAliases))
-					.Add(" FROM (")
-					.Add(select)
-					.Add(", ROW_NUMBER() OVER(ORDER BY ");
-
+			}				
+				
+			result
+				.Add("SELECT TOP (")
+				.Add(limitParameterIndex == null ? Parameter.Placeholder : Parameter.WithIndex(limitParameterIndex.Value))
+				.Add(") ")
+				.Add(StringHelper.Join(", ", columnsOrAliases))
+				.Add(" FROM (")
+				.Add(select)
+				.Add(", ROW_NUMBER() OVER(ORDER BY ");
+			
 			AppendSortExpressions(aliasToColumn, sortExpressions, result);
 
 			result
 				.Add(") as __hibernate_sort_row ")
-				.Add(from)
+				.Add(fromAndWhere)
 				.Add(") as query WHERE query.__hibernate_sort_row > ")
-				.Add(Parameter.WithIndex(offsetParameterIndex.Value))
+				.Add(offsetParameterIndex == null ? Parameter.Placeholder : Parameter.WithIndex(offsetParameterIndex.Value))
 				.Add(" ORDER BY query.__hibernate_sort_row");
-				
+			
 			return result.ToSqlString();
 		}
 
@@ -143,6 +139,19 @@ namespace NHibernate.Dialect
 			}
 			return fromIndex;
 		}
+		
+		private int GetAfterSelectInsertPoint(SqlString sql)
+		{
+			if (sql.StartsWithCaseInsensitive("select distinct"))
+			{
+				return 15;
+			}
+			else if (sql.StartsWithCaseInsensitive("select"))
+			{
+				return 6;
+			}
+			throw new NotSupportedException("The query should start with 'SELECT' or 'SELECT DISTINCT'");
+		}		
 
 		private static void ExtractColumnOrAliasNames(SqlString select, out List<SqlString> columnsOrAliases,
 				out Dictionary<SqlString, SqlString> aliasToColumn)
