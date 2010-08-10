@@ -299,7 +299,6 @@
 			<fileset basedir="${bin.dir}">
 				<include name="Antlr3.Runtime.dll" />
 				<include name="Iesi.Collections.???" />
-				<include name="log4net*" />
         <include name="Remotion.Data.Linq.dll" />
         <include name="NHibernate.???" />
 			</fileset>
@@ -329,13 +328,19 @@
 		<!-- Tests -->
 		<copy file="${bin.dir}/TestEnbeddedConfig.cfg.xml" todir="${bin-pack.tests}"/>
 		<copy file="${bin.dir}/ABC.hbm.xml" todir="${bin-pack.tests}"/>
-		<copy todir="${bin-pack.tests}">
+    <copy todir="${bin-pack.tests}/DbScripts">
+      <fileset basedir="${root.dir}/src/NHibernate.Test/DbScripts">
+        <include name="*.sql" />
+      </fileset>
+    </copy>
+    <copy todir="${bin-pack.tests}">
 			<fileset basedir="${bin.dir}">
 				<include name="nunit*" />
         <include name="SharpTestsEx*" />
         <include name="NHibernate.Domain*" />
 				<include name="NHibernate.Test*" />
-			</fileset>
+        <include name="log4net*" />
+      </fileset>
 		</copy>
 	</target>
 	
