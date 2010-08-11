@@ -17,7 +17,7 @@ namespace NHibernate.Driver
 	/// Please check <a href="http://www.sqlite.org/"> http://www.sqlite.org/ </a> for more information regarding SQLite.
 	/// </p>
 	/// </remarks>
-	[Obsolete("Use NHibernate.Driver.SQLite20Driver"]
+	[Obsolete("Use NHibernate.Driver.SQLite20Driver")]
 	public class SQLiteDriver : ReflectionBasedDriver
 	{
 		/// <summary>
