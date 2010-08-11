@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -454,6 +455,8 @@
     <Compile Include="NHSpecificTest\NH1836\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2148\BugFixture.cs" />
     <Compile Include="NHSpecificTest\NH2148\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH2224\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH2224\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2245\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2245\Model.cs" />
     <Compile Include="NHSpecificTest\NH2266\Domain.cs" />
@@ -1733,6 +1736,7 @@
     <None Include="DbScripts\MsSql2008DialectLinqReadonlyDropScript.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <EmbeddedResource Include="NHSpecificTest\NH2224\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.ByteCode.Castle\NHibernate.ByteCode.Castle.csproj">
@@ -2574,6 +2578,7 @@
     <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="NHSpecificTest\NH2224" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

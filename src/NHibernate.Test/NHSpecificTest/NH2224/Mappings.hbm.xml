@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	namespace="NHibernate.Test.NHSpecificTest.NH2224"
+	assembly="NHibernate.Test"
+	default-access="field.camelcase-underscore">
+
+	<class name="Class1">
+		<id name="Number">
+			<generator class="native" />
+		</id>
+		<property name="DateOfChange" not-null="true" />
+	</class>
+</hibernate-mapping>
