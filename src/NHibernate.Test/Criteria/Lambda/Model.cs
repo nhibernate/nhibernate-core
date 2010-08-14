@@ -81,5 +81,28 @@ namespace NHibernate.Test.Criteria.Lambda
 		public int Count { get; set; }
 	}
 
+	public class Parent
+	{
+		public Parent()
+		{
+			Children = new List<JoinedChild>();
+		}
+
+		public virtual int						Id			{ get; set; }
+		public virtual IEnumerable<JoinedChild>	Children	{ get; set; }
+
+		public virtual Parent AddChild(JoinedChild child)
+		{
+			child.Parent = this;
+			(Children as IList<JoinedChild>).Add(child);
+			return this;
+		}
+	}
+
+	public class JoinedChild
+	{
+		public virtual int		Id			{ get; set; }
+		public virtual Parent	Parent		{ get; set; }
+	}
 }
 

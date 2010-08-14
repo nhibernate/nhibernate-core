@@ -25,4 +25,21 @@
 		<many-to-one name="Parent" class="Person" />
 	</class>
 
+	<class name="Parent">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<bag name="Children" fetch="join" inverse="true" cascade="all-delete-orphan">
+			<key column="Parent" />
+			<one-to-many class="JoinedChild" />
+		</bag>
+	</class>
+
+	<class name="JoinedChild">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<many-to-one name="Parent" class="Parent" />
+	</class>
+
 </hibernate-mapping>

@@ -39,6 +39,8 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				s.CreateQuery("delete from Child").ExecuteUpdate();
 				s.CreateQuery("delete from Person").ExecuteUpdate();
+				s.CreateQuery("delete from JoinedChild").ExecuteUpdate();
+				s.CreateQuery("delete from Parent").ExecuteUpdate();
 				t.Commit();
 			}
 		}
@@ -341,6 +343,40 @@ namespace NHibernate.Test.Criteria.Lambda
 
 				Assert.That(nameAndChildCount[1].Name, Is.EqualTo("Name 1"));
 				Assert.That(nameAndChildCount[1].ChildCount, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public void OverrideEagerJoin()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new Parent()
+						.AddChild(new JoinedChild())
+						.AddChild(new JoinedChild()));
+
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var persons =
+					s.QueryOver<Parent>()
+						.List();
+
+				Assert.That(NHibernateUtil.IsInitialized(persons[0].Children), "Default query did not eagerly load children");
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var persons =
+					s.QueryOver<Parent>()
+						.Fetch(p => p.Children).Lazy
+						.List();
+
+				Assert.That(persons.Count, Is.EqualTo(1));
+				Assert.That(!NHibernateUtil.IsInitialized(persons[0].Children), "Children not lazy loaded");
 			}
 		}
 
