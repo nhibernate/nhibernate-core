@@ -31,6 +31,7 @@ namespace NHibernate.Driver
 		/// </exception>
 		public NpgsqlDriver() : base(
 			"Npgsql",
+			"Npgsql",
 			"Npgsql.NpgsqlConnection",
 			"Npgsql.NpgsqlCommand")
 		{
