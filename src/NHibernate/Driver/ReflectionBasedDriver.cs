@@ -5,6 +5,11 @@ namespace NHibernate.Driver
 {
 	public abstract class ReflectionBasedDriver : DriverBase
 	{
+		protected const string ReflectionTypedProviderExceptionMessageTemplate = "The IDbCommand and IDbConnection implementation in the assembly {0} could not be found. "
+		                                                                       + "Ensure that the assembly {0} is located in the application directory or in the Global "
+		                                                                       + "Assembly Cache. If the assembly is in the GAC, use <qualifyAssembly/> element in the "
+		                                                                       + "application configuration file to specify the full name of the assembly.";
+
 		private readonly IDriveConnectionCommandProvider connectionCommandProvider;
 
 		/// <summary>
@@ -22,13 +27,7 @@ namespace NHibernate.Driver
 
 			if (connectionType == null || commandType == null)
 			{
-				throw new HibernateException(
-					string.Format(
-						"The IDbCommand and IDbConnection implementation in the assembly {0} could not be found. "
-						+ "Ensure that the assembly {0} is located in the application directory or in the Global "
-						+ "Assembly Cache. If the assembly is in the GAC, use <qualifyAssembly/> element in the "
-						+ "application configuration file to specify the full name of the assembly.",
-						driverAssemblyName));
+				throw new HibernateException(string.Format(ReflectionTypedProviderExceptionMessageTemplate, driverAssemblyName));
 			}
 			connectionCommandProvider = new ReflectionDriveConnectionCommandProvider(connectionType, commandType);
 		}
