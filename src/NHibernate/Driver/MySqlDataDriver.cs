@@ -25,6 +25,7 @@ namespace NHibernate.Driver
 		/// Thrown when the <c>MySql.Data</c> assembly can not be loaded.
 		/// </exception>
 		public MySqlDataDriver() : base(
+			"MySql.Data.MySqlClient",
 			"MySql.Data",
 			"MySql.Data.MySqlClient.MySqlConnection",
 			"MySql.Data.MySqlClient.MySqlCommand")
