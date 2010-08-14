@@ -593,6 +593,7 @@
     <Compile Include="Dialect\SybaseASA10Dialect.cs" />
     <Compile Include="Dialect\SybaseASA9Dialect.cs" />
     <Compile Include="Driver\CsharpSqliteDriver.cs" />
+    <Compile Include="Driver\DbProviderFactoryDriveConnectionCommandProvider.cs" />
     <Compile Include="Driver\IDriveConnectionCommandProvider.cs" />
     <Compile Include="Driver\IfxDriver.cs" />
     <Compile Include="Driver\OracleLiteDataClientDriver.cs" />
