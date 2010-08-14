@@ -27,6 +27,7 @@ namespace NHibernate.Driver
 		/// Thrown when the <c>SQLite.NET</c> assembly can not be loaded.
 		/// </exception>
 		public SQLiteDriver() : base(
+			"System.Data.SQLite",
 			"SQLite.NET",
 			"Finisar.SQLite.SQLiteConnection",
 			"Finisar.SQLite.SQLiteCommand")

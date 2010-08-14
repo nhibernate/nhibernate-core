@@ -27,6 +27,7 @@ namespace NHibernate.Driver
 		/// </exception>
 		public SQLite20Driver() : base(
 			"System.Data.SQLite",
+			"System.Data.SQLite",
 			"System.Data.SQLite.SQLiteConnection",
 			"System.Data.SQLite.SQLiteCommand")
 		{
