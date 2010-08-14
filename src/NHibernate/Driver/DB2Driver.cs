@@ -15,6 +15,7 @@ namespace NHibernate.Driver
 		/// </exception>
 		public DB2Driver() : base(
 			"IBM.Data.DB2",
+			"IBM.Data.DB2",
 			"IBM.Data.DB2.DB2Connection",
 			"IBM.Data.DB2.DB2Command")
 		{
