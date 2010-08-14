@@ -16,6 +16,7 @@ namespace NHibernate.Driver
 		/// </exception>
 		public SybaseAdoNet12ClientDriver()
 			: base(
+					"Sybase.Data.AseClient",
 					"Sybase.AdoNet2.AseClient",
 					"Sybase.Data.AseClient.AseConnection",
 					"Sybase.Data.AseClient.AseCommand")
