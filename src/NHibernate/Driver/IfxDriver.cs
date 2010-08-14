@@ -14,6 +14,7 @@ namespace NHibernate.Driver
 		public IfxDriver()
 			: base(
 				"IBM.Data.Informix",
+				"IBM.Data.Informix",
 				"IBM.Data.Informix.IfxConnection",
 				"IBM.Data.Informix.IfxCommand")
 		{
