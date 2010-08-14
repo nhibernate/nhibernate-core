@@ -32,6 +32,7 @@ namespace NHibernate.Driver
 		/// </exception>
 		public OracleDataClientDriver()
 			: base(
+			"Oracle.DataAccess.Client",
 			driverAssemblyName,
 			connectionTypeName,
 			commandTypeName)
