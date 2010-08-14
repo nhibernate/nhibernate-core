@@ -72,5 +72,43 @@ namespace NHibernate.Test.Pagination
 				t.Commit();
 			}
 		}
+
+		[Test]
+		public void PagingWithLock_NH2255()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new DataPoint() { X = 4 });
+				s.Save(new DataPoint() { X = 5 });
+				s.Save(new DataPoint() { X = 6 });
+				s.Save(new DataPoint() { X = 7 });
+				s.Save(new DataPoint() { X = 8 });
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var points =
+					s.CreateCriteria<DataPoint>()
+						.Add(Restrictions.Gt("X", 4.1d))
+						.AddOrder(Order.Asc("X"))
+						.SetLockMode(LockMode.Upgrade)
+						.SetFirstResult(1)
+						.SetMaxResults(2)
+						.List<DataPoint>();
+
+				Assert.That(points.Count, Is.EqualTo(2));
+				Assert.That(points[0].X, Is.EqualTo(6d));
+				Assert.That(points[1].X, Is.EqualTo(7d));
+			}
+
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.CreateQuery("delete from DataPoint").ExecuteUpdate();
+				t.Commit();
+			}
+		}
 	}
 }

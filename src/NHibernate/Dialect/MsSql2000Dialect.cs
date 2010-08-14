@@ -426,7 +426,7 @@ namespace NHibernate.Dialect
 			{
 				if (part == Parameter.Placeholder)
 				{
-					result.AddParameter();
+					result.Add((Parameter)part);
 					continue;
 				}
 
