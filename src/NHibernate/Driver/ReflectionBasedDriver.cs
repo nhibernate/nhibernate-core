@@ -1,4 +1,5 @@
 using System.Data;
+using System.Data.Common;
 using NHibernate.Util;
 
 namespace NHibernate.Driver
@@ -20,6 +21,20 @@ namespace NHibernate.Driver
 		/// <param name="connectionTypeName">Connection type name.</param>
 		/// <param name="commandTypeName">Command type name.</param>
 		protected ReflectionBasedDriver(string driverAssemblyName, string connectionTypeName, string commandTypeName)
+			: this(null, driverAssemblyName, connectionTypeName, commandTypeName)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of <see cref="ReflectionBasedDriver" /> with
+		/// type names that are loaded from the specified assembly.
+		/// </summary>
+		/// <param name="providerInvariantName">The Invariant name of a provider.</param>
+		/// <param name="driverAssemblyName">Assembly to load the types from.</param>
+		/// <param name="connectionTypeName">Connection type name.</param>
+		/// <param name="commandTypeName">Command type name.</param>
+		/// <seealso cref="DbProviderFactories.GetFactory(string)"/>
+		protected ReflectionBasedDriver(string providerInvariantName, string driverAssemblyName, string connectionTypeName, string commandTypeName)
 		{
 			// Try to get the types from an already loaded assembly
 			var connectionType = ReflectHelper.TypeFromAssembly(connectionTypeName, driverAssemblyName, false);
@@ -27,9 +42,17 @@ namespace NHibernate.Driver
 
 			if (connectionType == null || commandType == null)
 			{
-				throw new HibernateException(string.Format(ReflectionTypedProviderExceptionMessageTemplate, driverAssemblyName));
+				if (string.IsNullOrEmpty(providerInvariantName))
+				{
+					throw new HibernateException(string.Format(ReflectionTypedProviderExceptionMessageTemplate, driverAssemblyName));
+				}
+				var factory = DbProviderFactories.GetFactory(providerInvariantName);
+				connectionCommandProvider = new DbProviderFactoryDriveConnectionCommandProvider(factory);
 			}
-			connectionCommandProvider = new ReflectionDriveConnectionCommandProvider(connectionType, commandType);
+			else
+			{
+				connectionCommandProvider = new ReflectionDriveConnectionCommandProvider(connectionType, commandType);
+			}
 		}
 
 		public override IDbConnection CreateConnection()

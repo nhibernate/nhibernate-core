@@ -182,6 +182,7 @@
     <Compile Include="Criteria\Reptile.cs" />
     <Compile Include="DialectTest\MsSqlCe40DialectFixture.cs" />
     <Compile Include="DriverTest\DbProviderFactoryDriveConnectionCommandProviderTest.cs" />
+    <Compile Include="DriverTest\ReflectionBasedDriverTest.cs" />
     <Compile Include="DriverTest\Sql2008DateTime2Test.cs" />
     <Compile Include="DriverTest\SqlClientDriverFixture.cs" />
     <Compile Include="DriverTest\SqlServerCeDriverFixture.cs" />
