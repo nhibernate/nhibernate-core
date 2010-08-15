@@ -323,8 +323,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if (input.LA(1) == DOT && input.LA(2) != IDENT)
 			{
 				// See if the second lookahed token can be an identifier.
-				HqlToken t = (HqlToken)input.LT(2);
-				if (t.PossibleId)
+				HqlToken t = input.LT(2) as HqlToken;
+				if (t != null && t.PossibleId)
 				{
 					// Set it!
 					input.LT(2).Type = IDENT;
