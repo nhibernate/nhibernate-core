@@ -6,7 +6,57 @@ Build 3.0.0.Alpha2
 
 	##### Possible Breaking Changes #####
 		* (NH-2251) - Signature change for GetLimitString in Dialect
-	
+
+Build 3.0.0.Alpha2 (rev5159)
+=============================
+
+** Bug
+    * [NH-1653] - SubqueryExpression don't support Dialect with VariableLimit
+    * [NH-1836] - AliasToBean transformer doesn't work correctly with MultiQuery
+    * [NH-2133] - Incorrect number of command parameters
+    * [NH-2148] - Not possible to call methods on Proxy for lazy-property
+    * [NH-2149] - CAST() statements fail in MySql due to invalid type parameters
+    * [NH-2158] - NVL Sql Function is broken
+    * [NH-2160] - MSSql DateTime2 type is not supported when preparing
+    * [NH-2162] - Formulas containing a DateTime data type incorrectly have that data type aliased with the outer entity alias
+    * [NH-2224] - SQLite 'In'-Restriction with year function
+    * [NH-2245] - AbstractEntityPersister ignores optimistic-lock when generating delete SQL on versioned objects
+    * [NH-2251] - System.FormatException mixing Future and Skip/Take
+    * [NH-2253] - SchemaExport/SchemaUpdate should take in account hbm2ddl.keywords
+    * [NH-2257] - Parameter ordering not working when driver does not support Named Parameters
+    * [NH-2261] - Linq Count function fails with MySQL Dialect
+    * [NH-2273] - SqlClientBatchingBatcher doesn't set timeout on batches after the first
+    * [NH-2277] - NHibernate.Linq  - Eager Fetching Superclass Collection Throws  NullReferenceException.
+
+** Improvement
+    * [NH-1378] - New Drivers using ADO.NET's DbProviderFactories
+    * [NH-1421] - Better exception message for Invalid handling of empty parameter lists
+    * [NH-2103] - Expose hbm mappings
+    * [NH-2117] - many-to-one mapping with composite-id formula fails
+    * [NH-2191] - Make a method FilterFragment of class AbstractEntityPersister a virtual
+    * [NH-2217] - LinFu version 1.0.3 used is not thread-safe. (new LinFu1.0.4 available)
+    * [NH-2220] - Support temporary tables within SQLite Dialect
+    * [NH-2226] - Set custom bytecode provider type in app.config
+    * [NH-2263] - Client Profile Support
+    * [NH-2266] - better exception if no concrete subclasses exist
+    * [NH-2267] - Prepared statements should be enabled for PostgreSQL
+    * [NH-2268] - Substring and Replace functions for PostgreSQLDialect
+    * [NH-2287] - Wrong HQL should throws QuerySyntaxException
+
+** New Feature
+    * [NH-1135] - Local & Utc DateTime Type
+    * [NH-1554] - Logging Abstraction
+    * [NH-1946] - Criteria API support for HQL 'with' clause
+    * [NH-2256] - Add support for user-provided extensions to the Linq provider
+    * [NH-2259] - Add a way to reset the Any cached type
+
+** Patch
+    * [NH-2026] - Fix: SchemaExport fails with foreign key constraints on Informix
+    * [NH-2120] - CsharpSqlite managed/embedded SQL database driver
+    * [NH-2142] - Register function Concat fo MySql to avoid null problem
+    * [NH-2190] - Criteria Join Restrictions Support (HHH-2308 Port)
+    * [NH-2252] - Added paging support for SQL CE 4
+    * [NH-2255] - MsSql2005Dialect resets parameters' positions(for paging parameters) when lock in use.
 
 Build 3.0.0.Alpha1 (rev5056)
 =============================
