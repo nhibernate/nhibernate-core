@@ -159,63 +159,65 @@ namespace NHibernate.Dialect
 			columnsOrAliases = new List<SqlString>();
 			aliasToColumn = new Dictionary<SqlString, SqlString>();
 
-			IList<string> tokens = new QuotedAndParenthesisStringTokenizer(select.ToString()).GetTokens();
+			IList<SqlString> tokens = new QuotedAndParenthesisStringTokenizer(select).GetTokens();
 			int index = 0;
 			while (index < tokens.Count)
 			{
-				string token = tokens[index];
-				index += 1;
+				SqlString token = tokens[index];
+				
+				int nextTokenIndex = index += 1;
+				
+				if (token.StartsWithCaseInsensitive("select"))
+					continue;
 
-				if ("select".Equals(token, StringComparison.InvariantCultureIgnoreCase))
-				{
+				if (token.StartsWithCaseInsensitive("distinct"))
 					continue;
-				}
-				if ("distinct".Equals(token, StringComparison.InvariantCultureIgnoreCase))
-				{
-					continue;
-				}
-				if ("," == token)
-				{
-					continue;
-				}
 
-				if ("from".Equals(token, StringComparison.InvariantCultureIgnoreCase))
-				{
+				if (token.StartsWithCaseInsensitive(","))
+					continue;
+
+				if (token.StartsWithCaseInsensitive("from"))
 					break;
-				}
 
-				//handle composite expressions like 2 * 4 as foo
-				while (index < tokens.Count && "as".Equals(tokens[index], StringComparison.InvariantCultureIgnoreCase) == false
-							 && "," != tokens[index])
+				// handle composite expressions like "2 * 4 as foo"
+				while ((nextTokenIndex < tokens.Count) && (tokens[nextTokenIndex].StartsWithCaseInsensitive("as") == false && tokens[nextTokenIndex].StartsWithCaseInsensitive(",") == false))
 				{
-					token = token + " " + tokens[index];
-					index += 1;
+					SqlString nextToken = tokens[nextTokenIndex];
+					token = token.Append(nextToken);
+					nextTokenIndex = index += 1;
 				}
 
-				string alias = token;
+				// if there is no alias, the token and the alias will be the same
+				SqlString alias = token;
 
-				bool isFunctionCallOrQuotedString = token.Contains("'") || token.Contains("(");
+				bool isFunctionCallOrQuotedString = token.IndexOfCaseInsensitive("'") >= 0 || token.IndexOfCaseInsensitive("(") >= 0;
+				
 				// this is heuristic guess, if the expression contains ' or (, it is probably
 				// not appropriate to just slice parts off of it
 				if (isFunctionCallOrQuotedString == false)
 				{
-					int dot = token.IndexOf('.');
+					// its a simple column reference, so lets set the alias to the
+					// column name minus the table qualifier if it exists
+					int dot = token.IndexOfCaseInsensitive(".");
 					if (dot != -1)
-					{
 						alias = token.Substring(dot + 1);
-					}
 				}
 
 				// notice! we are checking here the existence of "as" "alias", two
 				// tokens from the current one
-				if (index + 1 < tokens.Count && "as".Equals(tokens[index], StringComparison.InvariantCultureIgnoreCase))
+				if (nextTokenIndex + 1 < tokens.Count)
 				{
-					alias = tokens[index + 1];
-					index += 2; //skip the "as" and the alias	\
+					SqlString nextToken = tokens[nextTokenIndex];
+					if (nextToken.IndexOfCaseInsensitive("as") >= 0)
+					{
+						SqlString tokenAfterNext = tokens[nextTokenIndex + 1];	
+						alias = tokenAfterNext;
+						index += 2; //skip the "as" and the alias
+					}
 				}
 
-				columnsOrAliases.Add(new SqlString(alias));
-				aliasToColumn[SqlString.Parse(alias)] = SqlString.Parse(token);
+				columnsOrAliases.Add(alias);
+				aliasToColumn[alias] = token;
 			}
 		}
 
@@ -313,137 +315,144 @@ namespace NHibernate.Dialect
 		/// Notice that we aren't differenciating between [ ) and ( ] on purpose, it would complicate
 		/// the code and it is not legal at any rate.
 		/// </summary>
-		public class QuotedAndParenthesisStringTokenizer : IEnumerable<String>
+		public class QuotedAndParenthesisStringTokenizer : IEnumerable<SqlString>
 		{
-			private readonly string original;
+			private readonly SqlString original;
 
-			public QuotedAndParenthesisStringTokenizer(string original)
+			public QuotedAndParenthesisStringTokenizer(SqlString original)
 			{
 				this.original = original;
 			}
 
-			IEnumerator<string> IEnumerable<string>.GetEnumerator()
+			IEnumerator<SqlString> IEnumerable<SqlString>.GetEnumerator()
 			{
-				StringBuilder currentToken = new StringBuilder();
 				TokenizerState state = TokenizerState.WhiteSpace;
 				int parenthesisCount = 0;
 				bool escapeQuote = false;
-				for (int i = 0; i < original.Length; i++)
+				int tokenStart = 0;
+				int tokenLength = 0;
+				string originalString = original.ToString();
+
+				for (int i = 0; i < originalString.Length; i++)
 				{
-					char ch = original[i];
+					char ch = originalString[i];
 					switch (state)
 					{
 						case TokenizerState.WhiteSpace:
 							if (ch == '\'')
 							{
 								state = TokenizerState.Quoted;
-								currentToken.Append(ch);
+								tokenLength += 1;
 							}
 							else if (ch == ',')
 							{
-								yield return ",";
+								yield return new SqlString(",");
+								//tokenLength += 1?
 							}
 							else if (ch == '(' || ch == '[')
 							{
 								state = TokenizerState.InParenthesis;
-								currentToken.Append(ch);
+								tokenLength += 1;
 								parenthesisCount = 1;
 							}
 							else if (char.IsWhiteSpace(ch) == false)
 							{
 								state = TokenizerState.Token;
-								currentToken.Append(ch);
+								tokenLength += 1;
 							}
 							break;
 						case TokenizerState.Quoted:
 							if (escapeQuote)
 							{
 								escapeQuote = false;
-								currentToken.Append(ch);
+								tokenLength += 1;
 							}
 							// handle escaping of ' by using '' or \'
-							else if (ch == '\\' || (ch == '\'' && i + 1 < original.Length && original[i + 1] == '\''))
+							else if (ch == '\\' || (ch == '\'' && i + 1 < originalString.Length && originalString[i + 1] == '\''))
 							{
 								escapeQuote = true;
-								currentToken.Append(ch);
+								tokenLength += 1;
 							}
 							else if (ch == '\'')
 							{
-								currentToken.Append(ch);
-								yield return currentToken.ToString();
+								yield return original.Substring(tokenStart, tokenLength);
+								tokenStart += tokenLength + 1;
+								tokenLength = 0;
 								state = TokenizerState.WhiteSpace;
-								currentToken.Length = 0;
 							}
 							else
 							{
-								currentToken.Append(ch);
+								tokenLength += 1;
 							}
 							break;
 						case TokenizerState.InParenthesis:
 							if (ch == ')' || ch == ']')
 							{
-								currentToken.Append(ch);
+								tokenLength += 1;
 								parenthesisCount -= 1;
 								if (parenthesisCount == 0)
 								{
-									yield return currentToken.ToString();
-									currentToken.Length = 0;
+									yield return original.Substring(tokenStart, tokenLength);
+									tokenStart += tokenLength + 1;
+									tokenLength = 0;
 									state = TokenizerState.WhiteSpace;
 								}
 							}
 							else if (ch == '(' || ch == '[')
 							{
-								currentToken.Append(ch);
+								tokenLength += 1;
 								parenthesisCount += 1;
 							}
 							else
 							{
-								currentToken.Append(ch);
+								tokenLength += 1;
 							}
 							break;
 						case TokenizerState.Token:
 							if (char.IsWhiteSpace(ch))
 							{
-								yield return currentToken.ToString();
-								currentToken.Length = 0;
+								yield return original.Substring(tokenStart, tokenLength);
+								tokenStart += tokenLength + 1;
+								tokenLength = 0;
 								state = TokenizerState.WhiteSpace;
 							}
 							else if (ch == ',') // stop current token, and send the , as well
 							{
-								yield return currentToken.ToString();
-								currentToken.Length = 0;
-								yield return ",";
+								yield return original.Substring(tokenStart, tokenLength);
+								yield return new SqlString(",");
+								tokenStart += tokenLength + 2;
+								tokenLength = 0;
 								state = TokenizerState.WhiteSpace;
 							}
 							else if (ch == '(' || ch == '[')
 							{
 								state = TokenizerState.InParenthesis;
 								parenthesisCount = 1;
-								currentToken.Append(ch);
+								tokenLength += 1;
 							}
 							else if (ch == '\'')
 							{
 								state = TokenizerState.Quoted;
-								currentToken.Append(ch);
+								tokenLength += 1;
 							}
 							else
 							{
-								currentToken.Append(ch);
+								tokenLength += 1;
 							}
 							break;
 						default:
 							throw new InvalidExpressionException("Could not understand the string " + original);
 					}
 				}
-				if (currentToken.Length > 0)
+				if (tokenLength > 0)
 				{
-					yield return currentToken.ToString();
+					yield return original.Substring(tokenStart, tokenLength);
 				}
 			}
 
 			public IEnumerator GetEnumerator()
 			{
-				return ((IEnumerable<string>)this).GetEnumerator();
+				return ((IEnumerable<SqlString>)this).GetEnumerator();
 			}
 
 			public enum TokenizerState
@@ -454,9 +463,9 @@ namespace NHibernate.Dialect
 				Token
 			}
 
-			public IList<string> GetTokens()
+			public IList<SqlString> GetTokens()
 			{
-				return new List<string>(this);
+				return new List<SqlString>(this);
 			}
 		}
 	}

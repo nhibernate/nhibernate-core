@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Dialect;
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
@@ -10,8 +11,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Criteria
 {
-	using System.Collections.Generic;
-
 	[TestFixture]
 	public class CriteriaQueryTest : TestCase
 	{
@@ -127,32 +126,32 @@ namespace NHibernate.Test.Criteria
 			}
 		}
 
-        [Test]
-        public void TestSubcriteriaBeingNull()
-        {
-            ISession session = OpenSession();
-            ITransaction t = session.BeginTransaction();
+		[Test]
+		public void TestSubcriteriaBeingNull()
+		{
+			ISession session = OpenSession();
+			ITransaction t = session.BeginTransaction();
 
-            Course hibernateCourse = new Course();
-            hibernateCourse.CourseCode = "HIB";
-            hibernateCourse.Description = "Hibernate Training";
-            session.Save(hibernateCourse);
+			Course hibernateCourse = new Course();
+			hibernateCourse.CourseCode = "HIB";
+			hibernateCourse.Description = "Hibernate Training";
+			session.Save(hibernateCourse);
 
-            DetachedCriteria subcriteria = DetachedCriteria.For<Enrolment>("e");
-            subcriteria.Add(Expression.EqProperty("e.CourseCode", "c.CourseCode"));
-            subcriteria.SetProjection(Projections.Avg("Semester"));
+			DetachedCriteria subcriteria = DetachedCriteria.For<Enrolment>("e");
+			subcriteria.Add(Expression.EqProperty("e.CourseCode", "c.CourseCode"));
+			subcriteria.SetProjection(Projections.Avg("Semester"));
 
-            DetachedCriteria criteria = DetachedCriteria.For<Course>("c");
-            criteria.SetProjection(Projections.Count("id"));
-            criteria.Add(Expression.Or(Subqueries.Le(5, subcriteria), Subqueries.IsNull(subcriteria)));
+			DetachedCriteria criteria = DetachedCriteria.For<Course>("c");
+			criteria.SetProjection(Projections.Count("id"));
+			criteria.Add(Expression.Or(Subqueries.Le(5, subcriteria), Subqueries.IsNull(subcriteria)));
 
-            object o = criteria.GetExecutableCriteria(session).UniqueResult();
-            Assert.AreEqual(1, o);
+			object o = criteria.GetExecutableCriteria(session).UniqueResult();
+			Assert.AreEqual(1, o);
 
-            session.Delete(hibernateCourse);
-            t.Commit();
-            session.Close();
-        }
+			session.Delete(hibernateCourse);
+			t.Commit();
+			session.Close();
+		}
 
 		[Test]
 		public void Subselect()
@@ -571,7 +570,6 @@ namespace NHibernate.Test.Criteria
 				//it should not be already loaded
 				Enrolment shouldNotBeLoaded = (Enrolment)s.Load(typeof(Enrolment), key);
 				Assert.IsFalse(NHibernateUtil.IsInitialized(shouldNotBeLoaded));
-
 			}
 
 			using (ISession s = OpenSession())
@@ -1567,7 +1565,6 @@ namespace NHibernate.Test.Criteria
 			}
 		}
 
-
 		[Test]
 		public void DetachedCriteriaInspection()
 		{
@@ -1645,15 +1642,16 @@ namespace NHibernate.Test.Criteria
 				.SetMaxResults(3)
 				.List();
 
-			Assert.AreEqual(2, result.Count);
-			Assert.IsInstanceOfType(typeof(Student), result[0]);
-			Assert.IsInstanceOfType(typeof(Student), result[1]);
+			Assert.That(result.Count, Is.EqualTo(2));
+			Assert.That(result[0], Is.InstanceOf(typeof(Student)));
+			Assert.That(result[1], Is.InstanceOf(typeof(Student)));
 
 			session.Delete(gavin);
 			session.Delete(bizarroGavin);
 			t.Commit();
 			session.Close();
 		}
+		
 		[Test]
 		public void CacheDetachedCriteria()
 		{
@@ -1681,8 +1679,8 @@ namespace NHibernate.Test.Criteria
 				Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(1));
 				sessions.Statistics.IsStatisticsEnabled = false;
 			}
-
 		}
+		
 		[Test]
 		public void PropertyWithFormulaAndPagingTest()
 		{
@@ -1749,7 +1747,6 @@ namespace NHibernate.Test.Criteria
 			}
 		}
 
-
 		[Test]
 		public void TransformToRowCountTest()
 		{
@@ -1776,16 +1773,65 @@ namespace NHibernate.Test.Criteria
 			{
 				ICriteria criteria = session.CreateCriteria(typeof(Student), "c");
 
-				criteria
-					.AddOrder(Order.Asc(
-											Projections.Conditional(
-												Restrictions.Eq("StudentNumber", (long)1),
-												Projections.Constant(0),
-												Projections.Constant(1)
-												)));
+				criteria.AddOrder(
+					Order.Asc(
+						Projections.Conditional(
+							Restrictions.Eq("StudentNumber", (long)1),
+							Projections.Constant(0),
+							Projections.Constant(1))));
 
 				criteria.List();
 			}
+		}
+
+		[Test]
+		public void OrderProjectionAliasedTest() 
+		{ 
+			ISession session = OpenSession(); 
+			ITransaction t = session.BeginTransaction(); 
+
+			Course courseA = new Course(); 
+			courseA.CourseCode = "HIB-A"; 
+			courseA.Description = "Hibernate Training A"; 
+			session.Save(courseA); 
+			
+			Student gavin = new Student(); 
+			gavin.Name = "Gavin King"; 
+			gavin.StudentNumber = 232; 
+			gavin.PreferredCourse = courseA; 
+			session.Save(gavin); 
+			
+			Student leonardo = new Student(); 
+			leonardo.Name = "Leonardo Quijano"; 
+			leonardo.StudentNumber = 233; 
+			leonardo.PreferredCourse = courseA; 
+			session.Save(leonardo); 
+			
+			Student johnDoe = new Student(); 
+			johnDoe.Name = "John Doe"; 
+			johnDoe.StudentNumber = 235; 
+			johnDoe.PreferredCourse = null; 
+			session.Save(johnDoe); 
+			
+			IProjection conditional = 
+				Projections.Conditional(
+					Restrictions.Eq("Name", "Gavin King"), 
+					Projections.Constant("Name"), 
+					Projections.Constant("AnotherName"));
+
+			ICriteria criteria = session.CreateCriteria(typeof(Student)); 
+			criteria.SetMaxResults(1); 
+			criteria.SetFirstResult(1); 
+			IList result = criteria.SetProjection(Projections.Alias(conditional, "CheckName")) 
+			.AddOrder(Order.Asc("CheckName")) 
+			.List(); 
+	
+			session.Delete(gavin); 	
+			session.Delete(leonardo); 
+			session.Delete(johnDoe); 
+			session.Delete(courseA); 
+			t.Commit(); 
+			session.Close(); 
 		}
 
 		[Test]
@@ -1797,7 +1843,6 @@ namespace NHibernate.Test.Criteria
 				session.Save(john);
 				session.Flush();
 			}
-
 
 			using (ISession session = this.OpenSession())
 			{
@@ -1850,7 +1895,6 @@ namespace NHibernate.Test.Criteria
 			}
 		}
 
-        
 		[Test]
 		public void AliasJoinCriterion()
 		{

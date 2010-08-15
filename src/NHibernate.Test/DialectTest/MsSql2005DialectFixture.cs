@@ -112,7 +112,7 @@ namespace NHibernate.Test.DialectTest
 		{
 			MsSql2005Dialect.QuotedAndParenthesisStringTokenizer tokenizier =
 				new MsSql2005Dialect.QuotedAndParenthesisStringTokenizer(
-					"select concat(a.Description,', ', a.Description) from Animal a");
+					new SqlString("select concat(a.Description,', ', a.Description) from Animal a"));
 			string[] expected = new string[]
 				{
 					"select",
@@ -122,9 +122,9 @@ namespace NHibernate.Test.DialectTest
 					"a"
 				};
 			int current = 0;
-			foreach (string token in tokenizier)
+			foreach (SqlString token in tokenizier)
 			{
-				Assert.AreEqual(expected[current], token);
+				Assert.AreEqual(expected[current], token.ToString());
 				current += 1;
 			}
 			Assert.AreEqual(current, expected.Length);
@@ -135,7 +135,7 @@ namespace NHibernate.Test.DialectTest
 		{
 			MsSql2005Dialect.QuotedAndParenthesisStringTokenizer tokenizier =
 				new MsSql2005Dialect.QuotedAndParenthesisStringTokenizer(
-					"SELECT fish.id, cast('astring, with,comma' as string) as bar, f FROM fish");
+					new SqlString("SELECT fish.id, cast('astring, with,comma' as string) as bar, f FROM fish"));
 			string[] expected = new string[]
 				{
 					"SELECT",
@@ -150,10 +150,10 @@ namespace NHibernate.Test.DialectTest
 					"fish"
 				};
 			int current = 0;
-			IList<string> tokens = tokenizier.GetTokens();
-			foreach (string token in tokens)
+			IList<SqlString> tokens = tokenizier.GetTokens();
+			foreach (SqlString token in tokens)
 			{
-				Assert.AreEqual(expected[current], token);
+				Assert.AreEqual(expected[current], token.ToString());
 				current += 1;
 			}
 			Assert.AreEqual(current, expected.Length);
