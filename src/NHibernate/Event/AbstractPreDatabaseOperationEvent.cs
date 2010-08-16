@@ -33,11 +33,5 @@ namespace NHibernate.Event
 		/// The persister for the <see cref="Entity"/>. 
 		/// </summary>
 		public IEntityPersister Persister { get; private set; }
-
-		[Obsolete("Use Session property instead")]
-		public ISessionImplementor Source
-		{
-			get { return Session; }
-		}
 	}
 }

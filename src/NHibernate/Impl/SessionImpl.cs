@@ -559,28 +559,7 @@ namespace NHibernate.Impl
 		private static readonly object[] NoArgs = new object[0];
 		private static readonly IType[] NoTypes = new IType[0];
 
-		/// <summary>
-		/// Retrieve a list of persistent objects using a Hibernate query
-		/// </summary>
-		/// <param name="query"></param>
-		/// <returns></returns>
-		public IList Find(string query)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				return List(query, new QueryParameters());
-			}
-		}
-
-		public IList Find(string query, object value, IType type)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				return List(query, new QueryParameters(type, value));
-			}
-		}
-
-		public IList Find(string query, object[] values, IType[] types)
+		IList Find(string query, object[] values, IType[] types)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -697,30 +676,6 @@ namespace NHibernate.Impl
 				var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, enabledFilters);
 				AutoFlushIfRequired(plan.QuerySpaces);
 				return plan.Translators;
-			}
-		}
-
-		public IEnumerable Enumerable(string query)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				return Enumerable(query, NoArgs, NoTypes);
-			}
-		}
-
-		public IEnumerable Enumerable(string query, object value, IType type)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				return Enumerable(query, new[] { value }, new[] { type });
-			}
-		}
-
-		public IEnumerable Enumerable(string query, object[] values, IType[] types)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				return Enumerable(query, new QueryParameters(types, values));
 			}
 		}
 
@@ -1760,39 +1715,6 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		public ICollection Filter(object collection, string filter)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				QueryParameters qp = new QueryParameters(new IType[1], new object[1]);
-				return ListFilter(collection, filter, qp);
-			}
-		}
-
-		public ICollection Filter(object collection, string filter, object value, IType type)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				QueryParameters qp = new QueryParameters(new IType[] { null, type }, new object[] { null, value });
-				return ListFilter(collection, filter, qp);
-			}
-		}
-
-		public ICollection Filter(object collection, string filter, object[] values, IType[] types)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				CheckAndUpdateSessionStatus();
-
-				object[] vals = new object[values.Length + 1];
-				IType[] typs = new IType[values.Length + 1];
-				Array.Copy(values, 0, vals, 1, values.Length);
-				Array.Copy(types, 0, typs, 1, types.Length);
-				QueryParameters qp = new QueryParameters(typs, vals);
-				return ListFilter(collection, filter, qp);
-			}
-		}
-
 		private void Filter(object collection, string filter, QueryParameters queryParameters, IList results)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -2080,26 +2002,6 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				return base.CreateSQLQuery(sql);
-			}
-		}
-
-		public IQuery CreateSQLQuery(string sql, string returnAlias, System.Type returnClass)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				CheckAndUpdateSessionStatus();
-				return new SqlQueryImpl(sql, new[] { returnAlias }, new[] { returnClass }, this,
-										Factory.QueryPlanCache.GetSQLParameterMetadata(sql));
-			}
-		}
-
-		public IQuery CreateSQLQuery(string sql, string[] returnAliases, System.Type[] returnClasses)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				CheckAndUpdateSessionStatus();
-				return new SqlQueryImpl(sql, returnAliases, returnClasses, this,
-										Factory.QueryPlanCache.GetSQLParameterMetadata(sql));
 			}
 		}
 

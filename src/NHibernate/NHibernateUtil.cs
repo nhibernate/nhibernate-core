@@ -317,18 +317,6 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="persistentClass">a mapped entity class</param>
 		/// <returns></returns>
-		[Obsolete("use NHibernate.Entity instead")]
-		public static IType Association(System.Type persistentClass)
-		{
-			// not really a many-to-one association *necessarily*
-			return new ManyToOneType(persistentClass.FullName);
-		}
-
-		/// <summary>
-		/// A NHibernate persistent object (entity) type
-		/// </summary>
-		/// <param name="persistentClass">a mapped entity class</param>
-		/// <returns></returns>
 		public static IType Entity(System.Type persistentClass)
 		{
 			// not really a many-to-one association *necessarily*
