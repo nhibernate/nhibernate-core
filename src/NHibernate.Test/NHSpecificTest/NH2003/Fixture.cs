@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2003
 			new SchemaExport(cfg).Execute(s => script.AppendLine(s), false, false);
 
 			string wholeScript = script.ToString();
-			Assert.That(wholeScript.ToLower(), Text.Contains("not null"));
+			Assert.That(wholeScript.ToLower(), Is.StringContaining("not null"));
 		}
 	}
 }

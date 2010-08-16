@@ -45,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1635
 		{
 			var script = new StringBuilder();
 			new SchemaExport(cfg).Create(sl=> script.Append(sl) , true);
-			Assert.That(script.ToString(), Text.DoesNotContain("LatestMessage"));
+			Assert.That(script.ToString(), Is.Not.StringContaining("LatestMessage"));
 		}
 
 		[Test]

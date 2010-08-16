@@ -22,8 +22,8 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 			new SchemaExport(cfg).Execute(s => script.AppendLine(s), false, false);
 
 			string wholeScript = script.ToString();
-			Assert.That(wholeScript, Text.Contains("default SYSTEM_USER"));
-			Assert.That(wholeScript, Text.Contains("default 77"));
+			Assert.That(wholeScript, Is.StringContaining("default SYSTEM_USER"));
+			Assert.That(wholeScript, Is.StringContaining("default 77"));
 		}
 	}
 }

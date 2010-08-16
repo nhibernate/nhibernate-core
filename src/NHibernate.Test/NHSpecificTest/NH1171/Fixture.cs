@@ -52,8 +52,8 @@ ORDER BY Name
 					q.List();
 				}
 				string message = ls.GetWholeLog();
-				Assert.That(message, Text.Contains("-- Comment with ' number 1"));
-				Assert.That(message, Text.Contains("/* Comment with ' number 2 */"));
+				Assert.That(message, Is.StringContaining("-- Comment with ' number 1"));
+				Assert.That(message, Is.StringContaining("/* Comment with ' number 2 */"));
 			}
 		}
 	}

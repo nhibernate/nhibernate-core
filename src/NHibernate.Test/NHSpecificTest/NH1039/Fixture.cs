@@ -50,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1039
 				Assert.AreEqual("1", person.ID);
 				Assert.AreEqual("John Doe", person.Name);
 				Assert.AreEqual(1, person.Properties.Count);
-				Assert.IsInstanceOfType(typeof(ISet), person.Properties["Phones"]);
+				Assert.That(person.Properties["Phones"], Is.InstanceOf<ISet>());
 				Assert.IsTrue((person.Properties["Phones"] as ISet).Contains("555-1234"));
 				Assert.IsTrue((person.Properties["Phones"] as ISet).Contains("555-4321"));
 			}

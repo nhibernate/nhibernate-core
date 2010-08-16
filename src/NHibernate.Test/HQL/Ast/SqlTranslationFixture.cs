@@ -10,7 +10,7 @@ namespace NHibernate.Test.HQL.Ast
 		{
 			const string query = "select 123.5, s from SimpleClass s";
 
-			Assert.That(GetSql(query), Text.StartsWith("select 123.5"));
+			Assert.That(GetSql(query), Is.StringStarting("select 123.5"));
 		}
 
 		[Test]

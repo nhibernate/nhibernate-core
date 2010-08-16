@@ -37,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1710
 		{
 			var script = new StringBuilder();
 			new SchemaExport(cfg).Create(sl => script.AppendLine(sl), true);
-			Assert.That(script.ToString(), Text.Contains(expectedExportString));
+			Assert.That(script.ToString(), Is.StringContaining(expectedExportString));
 			new SchemaExport(cfg).Drop(false, true);
 		}
 

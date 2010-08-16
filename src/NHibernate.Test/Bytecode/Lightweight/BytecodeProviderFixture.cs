@@ -20,8 +20,8 @@ namespace NHibernate.Test.Bytecode.Lightweight
 			}
 			catch (HibernateByteCodeException e)
 			{
-				Assert.That(e.Message, Text.StartsWith("The ProxyFactoryFactory was not configured"));
-				Assert.That(e.Message, Text.Contains("Example"));
+				Assert.That(e.Message, Is.StringStarting("The ProxyFactoryFactory was not configured"));
+				Assert.That(e.Message, Is.StringContaining("Example"));
 			}			
 		}
 
@@ -36,9 +36,9 @@ namespace NHibernate.Test.Bytecode.Lightweight
 			}
 			catch (HibernateByteCodeException e)
 			{
-				Assert.That(e.Message, Text.StartsWith("Unable to load type"));
-				Assert.That(e.Message, Text.Contains("Possible causes"));
-				Assert.That(e.Message, Text.Contains("Confirm that your deployment folder contains"));
+				Assert.That(e.Message, Is.StringStarting("Unable to load type"));
+				Assert.That(e.Message, Is.StringContaining("Possible causes"));
+				Assert.That(e.Message, Is.StringContaining("Confirm that your deployment folder contains"));
 			}
 		}
 
@@ -70,7 +70,7 @@ namespace NHibernate.Test.Bytecode.Lightweight
 			}
 			catch (HibernateByteCodeException e)
 			{
-				Assert.That(e.Message,Text.StartsWith("Failed to create an instance of"));
+				Assert.That(e.Message,Is.StringStarting("Failed to create an instance of"));
 			}
 		}
 

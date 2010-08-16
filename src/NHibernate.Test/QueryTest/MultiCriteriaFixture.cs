@@ -506,23 +506,23 @@ namespace NHibernate.Test.QueryTest
 			}
 		}
 
-        [Test]
-        public void CanGetResultInAGenericList()
-        {
-            using (ISession s = OpenSession())
-            {
-                ICriteria getItems = s.CreateCriteria(typeof(Item));
-                ICriteria countItems = s.CreateCriteria(typeof(Item))
-                    .SetProjection(Projections.RowCount());
+		[Test]
+		public void CanGetResultInAGenericList()
+		{
+			using (ISession s = OpenSession())
+			{
+				ICriteria getItems = s.CreateCriteria(typeof(Item));
+				ICriteria countItems = s.CreateCriteria(typeof(Item))
+					.SetProjection(Projections.RowCount());
 
-                IMultiCriteria multiCriteria = s.CreateMultiCriteria()
-                    .Add(getItems) // we expect a non-generic result from this (ArrayList)
-                    .Add<int>(countItems); // we expect a generic result from this (List<int>)
-                IList results = multiCriteria.List();
+				IMultiCriteria multiCriteria = s.CreateMultiCriteria()
+					.Add(getItems) // we expect a non-generic result from this (ArrayList)
+					.Add<int>(countItems); // we expect a generic result from this (List<int>)
+				IList results = multiCriteria.List();
 
-                Assert.IsInstanceOfType(typeof(ArrayList), results[0]);
-                Assert.IsInstanceOfType(typeof(List<int>), results[1]);
-            }
-        }
+				Assert.That(results[0], Is.InstanceOf<ArrayList>());
+				Assert.That(results[1], Is.InstanceOf<List<int>>());
+			}
+		}
 	}
 }

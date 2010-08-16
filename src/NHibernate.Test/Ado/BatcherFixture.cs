@@ -177,9 +177,9 @@ namespace NHibernate.Test.Ado
 					sessions.Statistics.Clear();
 					FillDb();
 					string logs = sl.GetWholeLog();
-					Assert.That(logs, Text.DoesNotContain("Adding to batch").IgnoreCase);
-					Assert.That(logs, Text.Contains("Batch command").IgnoreCase);
-					Assert.That(logs, Text.Contains("INSERT").IgnoreCase);
+					Assert.That(logs, Is.Not.StringContaining("Adding to batch").IgnoreCase);
+					Assert.That(logs, Is.StringContaining("Batch command").IgnoreCase);
+					Assert.That(logs, Is.StringContaining("INSERT").IgnoreCase);
 				}
 			}
 
@@ -201,13 +201,13 @@ namespace NHibernate.Test.Ado
 					sessions.Statistics.Clear();
 					FillDb();
 					string logs = sl.GetWholeLog();
-					Assert.That(logs, Text.Contains("batch").IgnoreCase);
+					Assert.That(logs, Is.StringContaining("batch").IgnoreCase);
 					foreach (var loggingEvent in sl.Appender.GetEvents())
 					{
 						string message = loggingEvent.RenderedMessage;
 						if(message.ToLowerInvariant().Contains("insert"))
 						{
-							Assert.That(message, Text.Contains("batch").IgnoreCase);
+							Assert.That(message, Is.StringContaining("batch").IgnoreCase);
 						}
 					}
 				}
@@ -227,7 +227,7 @@ namespace NHibernate.Test.Ado
 					sessions.Statistics.Clear();
 					FillDb();
 					string logs = sl.GetWholeLog();
-					Assert.That(logs, Text.Contains("Batch commands:").IgnoreCase);
+					Assert.That(logs, Is.StringContaining("Batch commands:").IgnoreCase);
 				}
 			}
 
@@ -257,8 +257,8 @@ namespace NHibernate.Test.Ado
 							{
 								if(sqlLine.Contains("p0"))
 								{
-									Assert.That(sqlLine, Text.Contains("p1"));
-									Assert.That(sqlLine, Text.Contains("p2"));
+									Assert.That(sqlLine, Is.StringContaining("p1"));
+									Assert.That(sqlLine, Is.StringContaining("p2"));
 								}
 							}
 						}

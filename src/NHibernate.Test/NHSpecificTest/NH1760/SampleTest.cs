@@ -71,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1760
 				{
 					ICriteria c = session.CreateCriteria(typeof(TestClass));
 					IList<TestClass> retvalue = c.List<TestClass>();
-					Assert.That(ls.GetWholeLog(), Text.DoesNotContain("join"));
+					Assert.That(ls.GetWholeLog(), Is.Not.StringContaining("join"));
 					criteriaCount = retvalue.Count;
 				}
 			}

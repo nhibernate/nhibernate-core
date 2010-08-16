@@ -485,23 +485,23 @@ namespace NHibernate.Test.QueryTest
 			RemoveAllItems();
 		}
 
-        [Test]
-        public void CanGetResultsInAGenericList()
-        {
-            using (ISession s = OpenSession())
-            {
-                IQuery getItems = s.CreateQuery("from Item");
-                IQuery countItems = s.CreateQuery("select count(*) from Item");
+		[Test]
+		public void CanGetResultsInAGenericList()
+		{
+			using (ISession s = OpenSession())
+			{
+				IQuery getItems = s.CreateQuery("from Item");
+				IQuery countItems = s.CreateQuery("select count(*) from Item");
 
-                IList results = s.CreateMultiQuery()
-                    .Add(getItems)
-                    .Add<long>(countItems)
-                    .List();
+				IList results = s.CreateMultiQuery()
+					.Add(getItems)
+					.Add<long>(countItems)
+					.List();
 
-                Assert.IsInstanceOfType(typeof(ArrayList), results[0]);
-                Assert.IsInstanceOfType(typeof(List<long>), results[1]);
-            }
-        }
+				Assert.That(results[0], Is.InstanceOf<ArrayList>());
+				Assert.That(results[1], Is.InstanceOf<List<long>>());
+			}
+		}
 
 		public class ResultTransformerStub : IResultTransformer
 		{

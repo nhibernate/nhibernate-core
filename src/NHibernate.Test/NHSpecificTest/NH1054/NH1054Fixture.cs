@@ -17,8 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1054
 
 			ISessionFactoryImplementor sessionFactory = (ISessionFactoryImplementor)configuration.BuildSessionFactory();
 
-			Assert.IsInstanceOfType(typeof(DummyTransactionFactory), 
-				sessionFactory.Settings.TransactionFactory);
+			Assert.That(sessionFactory.Settings.TransactionFactory, Is.InstanceOf<DummyTransactionFactory>());
 		}
 
 		[Test]
@@ -27,8 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1054
 			Configuration configuration = new Configuration();
 			ISessionFactoryImplementor sessionFactory = (ISessionFactoryImplementor)configuration.BuildSessionFactory();
 
-			Assert.IsInstanceOfType(typeof(NHibernate.Transaction.AdoNetWithDistributedTransactionFactory), 
-				sessionFactory.Settings.TransactionFactory);
+			Assert.That(sessionFactory.Settings.TransactionFactory, Is.InstanceOf<NHibernate.Transaction.AdoNetWithDistributedTransactionFactory>());
 		}
 	}
 }

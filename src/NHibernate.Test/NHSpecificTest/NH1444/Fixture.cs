@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1444
 						.SetParameter("filternull", !filter.HasValue)
 						.SetParameter("filterval", filter.HasValue ? filter.Value : 0).List<xchild>();
 					var message = ls.GetWholeLog();
-					Assert.That(message, Text.Contains("xchild0_.ParentId=xparent1_.Id and (@p0=1 or xparent1_.A<@p1)"));
+					Assert.That(message, Is.StringContaining("xchild0_.ParentId=xparent1_.Id and (@p0=1 or xparent1_.A<@p1)"));
 				}
 			}
 		}

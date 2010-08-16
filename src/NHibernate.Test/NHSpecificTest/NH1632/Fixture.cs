@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			using (var tx = new TransactionScope())
 			{
 				var generator = sessions.GetIdentifierGenerator(typeof(Person).FullName);
-				Assert.IsInstanceOfType(typeof(TableHiLoGenerator), generator);
+				Assert.That(generator, Is.InstanceOf<TableHiLoGenerator>());
 
 				using(var session = sessions.OpenSession())
 				{
