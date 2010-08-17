@@ -21,6 +21,7 @@ namespace NHibernate.Driver
 		private const string connectionTypeName = "Oracle.DataAccess.Client.OracleConnection";
 		private const string commandTypeName = "Oracle.DataAccess.Client.OracleCommand";
 		private static readonly SqlType GuidSqlType = new SqlType(DbType.Binary, 16);
+		private readonly PropertyInfo oracleCommandBindByName;
 		private readonly PropertyInfo oracleDbType;
 		private readonly object oracleDbTypeRefCursor;
 
@@ -37,6 +38,9 @@ namespace NHibernate.Driver
 			connectionTypeName,
 			commandTypeName)
 		{
+			System.Type oracleCommandType = ReflectHelper.TypeFromAssembly("Oracle.DataAccess.Client.OracleCommand", driverAssemblyName, false);
+			oracleCommandBindByName = oracleCommandType.GetProperty("BindByName");
+
 			System.Type parameterType = ReflectHelper.TypeFromAssembly("Oracle.DataAccess.Client.OracleParameter", driverAssemblyName, false);
 			oracleDbType = parameterType.GetProperty("OracleDbType");
 
@@ -87,6 +91,10 @@ namespace NHibernate.Driver
 		protected override void OnBeforePrepare(IDbCommand command)
 		{
 			base.OnBeforePrepare(command);
+
+			// need to explicitly turn on named parameter binding
+			// http://tgaw.wordpress.com/2006/03/03/ora-01722-with-odp-and-command-parameters/
+			oracleCommandBindByName.SetValue(command, true, null);
 
 			CallableParser.Detail detail = CallableParser.Parse(command.CommandText);
 
