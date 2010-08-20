@@ -103,6 +103,7 @@ namespace NHibernate.Driver
 
 			command.CommandType = CommandType.StoredProcedure;
 			command.CommandText = detail.FunctionName;
+			oracleCommandBindByName.SetValue(command, false, null);
 
 			IDbDataParameter outCursor = command.CreateParameter();
 			oracleDbType.SetValue(outCursor, oracleDbTypeRefCursor, null);
