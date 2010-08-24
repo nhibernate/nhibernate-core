@@ -465,6 +465,7 @@
     <Compile Include="NHSpecificTest\NH2266\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2287\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2287\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2294\Fixture.cs" />
     <Compile Include="TypesTest\CharClass.cs" />
     <Compile Include="TypesTest\CharClassFixture.cs" />
     <Compile Include="TypesTest\DateTimeClass.cs" />
