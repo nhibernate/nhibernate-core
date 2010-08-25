@@ -1,10 +1,10 @@
-using Castle.Core.Interceptor;
+using Castle.DynamicProxy;
 using NHibernate.Intercept;
 using NHibernate.Util;
 
 namespace NHibernate.ByteCode.Castle
 {
-	public class LazyFieldInterceptor : IFieldInterceptorAccessor, global::Castle.Core.Interceptor.IInterceptor
+	public class LazyFieldInterceptor : IFieldInterceptorAccessor, global::Castle.DynamicProxy.IInterceptor
 	{
 		public IFieldInterceptor FieldInterceptor
 		{

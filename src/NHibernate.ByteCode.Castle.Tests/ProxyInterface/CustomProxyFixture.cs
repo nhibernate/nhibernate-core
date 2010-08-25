@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Reflection;
-using Castle.Core.Interceptor;
 using Castle.DynamicProxy;
 using NHibernate.Bytecode;
 using NHibernate.Cfg;

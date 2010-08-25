@@ -1,6 +1,6 @@
 using System;
 using System.Reflection;
-using Castle.Core.Interceptor;
+using Castle.DynamicProxy;
 using NHibernate.Proxy;
 using NHibernate.Proxy.Poco;
 using NHibernate.Type;
@@ -13,7 +13,7 @@ namespace NHibernate.ByteCode.Castle
 	/// </summary>
 	[Serializable]
 	[CLSCompliant(false)]
-	public class LazyInitializer : BasicLazyInitializer, global::Castle.Core.Interceptor.IInterceptor
+	public class LazyInitializer : BasicLazyInitializer, global::Castle.DynamicProxy.IInterceptor
 	{
 		private static readonly MethodInfo Exception_InternalPreserveStackTrace =
 	typeof(Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic);
