@@ -26,7 +26,6 @@
 			<include name="Iesi.Collections.dll" />
 			<include name="log4net.dll" />
 			<include name="Castle.Core.dll" />
-			<include name="Castle.DynamicProxy2.dll" />
 			<include name="NHibernate.dll" />
 			<include name="NHibernate.ByteCode.Castle.dll" />
 			<include name="nunit.framework.dll"/>
