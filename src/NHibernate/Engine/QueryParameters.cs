@@ -105,11 +105,6 @@ namespace NHibernate.Engine
 			_collectionKeys = collectionKeys;
 			_readOnly = readOnly;
 			_resultTransformer = transformer;
-
-			if (_positionalParameterLocations == null)
-			{
-				CreatePositionalParameterLocations();
-			}
 		}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues,
@@ -196,15 +191,15 @@ namespace NHibernate.Engine
 			set { _lockModes = value; }
 		}
 
-		private void CreatePositionalParameterLocations()
+		private void CreatePositionalParameterLocations(ISessionFactoryImplementor factory)
 		{
-			if (_positionalParameterTypes != null)
+			_positionalParameterLocations = new int[_positionalParameterTypes.Length];
+			int location = 0;
+			for (int i = 0; i < _positionalParameterLocations.Length; i++)
 			{
-				_positionalParameterLocations = new int[_positionalParameterTypes.Length];
-				for (int i = 0; i < _positionalParameterLocations.Length; i++)
-				{
-					_positionalParameterLocations[i] = i;
-				}
+				var span = _positionalParameterTypes[i].GetColumnSpan(factory);
+				_positionalParameterLocations[i] = location;
+				location += span;
 			}
 		}
 
@@ -460,6 +455,8 @@ namespace NHibernate.Engine
 			int parameterIndex = 0;
 			int totalSpan = 0;
 
+			CreatePositionalParameterLocations(factory);
+
 			IList<Parameter> sqlParameters = FindParametersIn(sqlString);
 
 			for (int index = 0; index < PositionalParameterTypes.Length; index++)
@@ -470,7 +467,7 @@ namespace NHibernate.Engine
 				int location = PositionalParameterLocations[index];
 				location = FindAdjustedParameterLocation(location);
 				int span = type.GetColumnSpan(factory);
-				SetParameterLocation(sqlParameters, startParameterIndex + parameterIndex, location, span);
+				SetParameterLocation(sqlParameters, startParameterIndex + totalSpan, location, span);
 
 				totalSpan += span;
 				parameterIndex++;
@@ -483,7 +480,7 @@ namespace NHibernate.Engine
 
 				int location = FilteredParameterLocations[index];
 				int span = type.GetColumnSpan(factory);
-				SetParameterLocation(sqlParameters, startParameterIndex + parameterIndex, location, span);
+				SetParameterLocation(sqlParameters, startParameterIndex + totalSpan, location, span);
 
 				totalSpan += span;
 				parameterIndex++;
@@ -510,7 +507,7 @@ namespace NHibernate.Engine
 						while ((location < sqlParameters.Count) && (sqlParameters[location].ParameterPosition != null))
 							location++;
 
-						SetParameterLocation(sqlParameters, startParameterIndex + parameterIndex, location, span);
+						SetParameterLocation(sqlParameters, startParameterIndex + totalSpan, location, span);
 					}
 
 					totalSpan += span;
