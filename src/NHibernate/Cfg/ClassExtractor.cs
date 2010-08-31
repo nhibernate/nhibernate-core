@@ -1,5 +1,4 @@
 using System.Xml;
-using System.Linq;
 using NHibernate.Util;
 using System.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
@@ -95,12 +94,77 @@ namespace NHibernate.Cfg
 			string assembly = document.assembly;
 			string @namespace = document.@namespace;
 
-			classEntries.UnionWith(document.RootClasses.Select(c=> new ClassEntry(null, c.Name, c.EntityName, assembly, @namespace)));
-			classEntries.UnionWith(document.SubClasses.Select(c => new ClassEntry(c.extends, c.Name, c.EntityName, assembly, @namespace)));
-			classEntries.UnionWith(document.JoinedSubclasses.Select(c => new ClassEntry(c.extends, c.Name, c.EntityName, assembly, @namespace)));
-			classEntries.UnionWith(document.UnionSubclasses.Select(c => new ClassEntry(c.extends, c.Name, c.EntityName, assembly, @namespace)));
+			classEntries.UnionWith(GetRootClassesEntries(assembly, @namespace, document.RootClasses));
+			classEntries.UnionWith(GetSubclassesEntries(assembly, @namespace, null, document.SubClasses));
+			classEntries.UnionWith(GetJoinedSubclassesEntries(assembly, @namespace, null, document.JoinedSubclasses));
+			classEntries.UnionWith(GetUnionSubclassesEntries(assembly, @namespace, null, document.UnionSubclasses));
 
 			return classEntries;
+		}
+
+		private static IEnumerable<ClassEntry> GetRootClassesEntries(string assembly, string @namespace,IEnumerable<HbmClass> rootClasses)
+		{
+			foreach (var rootClass in rootClasses)
+			{
+				string entityName = rootClass.EntityName;
+				yield return new ClassEntry(null, rootClass.Name, entityName, assembly, @namespace);
+				foreach (var classEntry in GetSubclassesEntries(assembly, @namespace, entityName, rootClass.Subclasses))
+				{
+					yield return classEntry;
+				}
+				foreach (var classEntry in GetJoinedSubclassesEntries(assembly, @namespace, entityName, rootClass.JoinedSubclasses))
+				{
+					yield return classEntry;
+				}
+				foreach (var classEntry in GetUnionSubclassesEntries(assembly, @namespace, entityName, rootClass.UnionSubclasses))
+				{
+					yield return classEntry;
+				}
+			}
+		}
+
+		private static IEnumerable<ClassEntry> GetSubclassesEntries(string assembly, string @namespace, string defaultExtends,
+		                                                            IEnumerable<HbmSubclass> hbmSubclasses)
+		{
+			foreach (HbmSubclass subclass in hbmSubclasses)
+			{
+				string extends = subclass.extends ?? defaultExtends;
+				yield return new ClassEntry(extends, subclass.Name, subclass.EntityName, assembly, @namespace);
+				foreach (ClassEntry classEntry in GetSubclassesEntries(assembly, @namespace, subclass.EntityName,subclass.Subclasses))
+				{
+					yield return classEntry;
+				}
+			}
+		}
+
+		private static IEnumerable<ClassEntry> GetJoinedSubclassesEntries(string assembly, string @namespace,
+		                                                                  string defaultExtends,
+		                                                                  IEnumerable<HbmJoinedSubclass> hbmJoinedSubclasses)
+		{
+			foreach (HbmJoinedSubclass subclass in hbmJoinedSubclasses)
+			{
+				string extends = subclass.extends ?? defaultExtends;
+				yield return new ClassEntry(extends, subclass.Name, subclass.EntityName, assembly, @namespace);
+				foreach (ClassEntry classEntry in GetJoinedSubclassesEntries(assembly, @namespace, subclass.EntityName, subclass.JoinedSubclasses))
+				{
+					yield return classEntry;
+				}
+			}
+		}
+
+		private static IEnumerable<ClassEntry> GetUnionSubclassesEntries(string assembly, string @namespace,
+		                                                                 string defaultExtends,
+		                                                                 IEnumerable<HbmUnionSubclass> hbmUnionSubclasses)
+		{
+			foreach (HbmUnionSubclass subclass in hbmUnionSubclasses)
+			{
+				string extends = subclass.extends ?? defaultExtends;
+				yield return new ClassEntry(extends, subclass.Name, subclass.EntityName, assembly, @namespace);
+				foreach (ClassEntry classEntry in GetUnionSubclassesEntries(assembly, @namespace, subclass.EntityName,subclass.UnionSubclasses))
+				{
+					yield return classEntry;
+				}
+			}
 		}
 	}
 }
