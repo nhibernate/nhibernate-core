@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace NHibernate.Cfg.MappingSchema
 {
@@ -8,6 +9,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		#region Implementation of IColumnsMapping
 
+		[XmlIgnore]
 		public IEnumerable<HbmColumn> Columns
 		{
 			get { return column ?? AsColumns(); }

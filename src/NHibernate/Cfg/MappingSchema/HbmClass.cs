@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Serialization;
 
 namespace NHibernate.Cfg.MappingSchema
 {
@@ -26,21 +27,25 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return Item1 as HbmTimestamp; }
 		}
 
+		[XmlIgnore]
 		public IEnumerable<HbmJoin> Joins
 		{
 			get { return Items1 != null ? Items1.OfType<HbmJoin>(): new HbmJoin[0]; }
 		}
 
+		[XmlIgnore]
 		public IEnumerable<HbmSubclass> Subclasses
 		{
 			get { return Items1 != null ? Items1.OfType<HbmSubclass>() : new HbmSubclass[0]; }
 		}
 
+		[XmlIgnore]
 		public IEnumerable<HbmJoinedSubclass> JoinedSubclasses
 		{
 			get { return Items1 != null ? Items1.OfType<HbmJoinedSubclass>() : new HbmJoinedSubclass[0]; }
 		}
 
+		[XmlIgnore]
 		public IEnumerable<HbmUnionSubclass> UnionSubclasses
 		{
 			get { return Items1 != null ? Items1.OfType<HbmUnionSubclass>() : new HbmUnionSubclass[0]; }
@@ -155,6 +160,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		#region Implementation of IPropertiesContainerMapping
 
+		[XmlIgnore]
 		public IEnumerable<IEntityPropertyMapping> Properties
 		{
 			get { return Items != null ? Items.Cast<IEntityPropertyMapping>(): new IEntityPropertyMapping[0]; }

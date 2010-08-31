@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Serialization;
 
 namespace NHibernate.Cfg.MappingSchema
 {
@@ -41,6 +42,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		#region Implementation of IColumnsMapping
 
+		[XmlIgnore]
 		public IEnumerable<HbmColumn> Columns
 		{
 			get { return Items != null ? Items.OfType<HbmColumn>() : AsColumns(); }
@@ -71,6 +73,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		#region Implementation of IFormulasMapping
 
+		[XmlIgnore]
 		public IEnumerable<HbmFormula> Formulas
 		{
 			get { return Items != null ? Items.OfType<HbmFormula>() : AsFormulas(); }
@@ -112,6 +115,7 @@ namespace NHibernate.Cfg.MappingSchema
 		/// <summary>
 		/// Columns and Formulas, in declared order
 		/// </summary>
+		[XmlIgnore]
 		public IEnumerable<object> ColumnsAndFormulas
 		{
 			// when Items is empty the column attribute AND formula attribute will be used

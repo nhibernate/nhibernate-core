@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Serialization;
 
 namespace NHibernate.Cfg.MappingSchema
 {
 	public partial class HbmJoinedSubclass : AbstractDecoratable, IEntityMapping
 	{
+		[XmlIgnore]
 		public IEnumerable<HbmJoinedSubclass> JoinedSubclasses
 		{
 			get { return joinedsubclass1 ?? new HbmJoinedSubclass[0]; }
@@ -113,6 +115,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		#region Implementation of IPropertiesContainerMapping
 
+		[XmlIgnore]
 		public IEnumerable<IEntityPropertyMapping> Properties
 		{
 			get { return Items != null ? Items.Cast<IEntityPropertyMapping>() : new IEntityPropertyMapping[0]; }

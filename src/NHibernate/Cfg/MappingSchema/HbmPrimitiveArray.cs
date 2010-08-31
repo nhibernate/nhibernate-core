@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace NHibernate.Cfg.MappingSchema
 {
@@ -162,6 +163,7 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return null; }
 		}
 
+		[XmlIgnore]
 		public IEnumerable<HbmFilter> Filters
 		{
 			get { yield break; }

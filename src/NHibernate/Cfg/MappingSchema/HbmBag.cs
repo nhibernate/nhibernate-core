@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace NHibernate.Cfg.MappingSchema
 {
@@ -163,6 +164,7 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return genericSpecified ? generic: (bool?) null; }
 		}
 
+		[XmlIgnore]
 		public IEnumerable<HbmFilter> Filters
 		{
 			get { return filter ?? new HbmFilter[0]; }
