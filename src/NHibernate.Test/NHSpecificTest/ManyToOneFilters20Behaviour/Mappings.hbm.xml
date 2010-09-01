@@ -9,6 +9,7 @@
     </id>
 
     <many-to-one name="Child" class="Child" cascade="all" not-null="true"/>
+    <property name="ParentString"/>
   </class>
 
   <class name="Child">
@@ -17,6 +18,7 @@
     </id>
     <property name="IsActive"/>
     <property name="Always"/>
+    <property name="ChildString"/>
     <filter name="activeChild" condition=":active = IsActive" />
     <filter name="alwaysValid" condition=":always = Always" />
   </class>

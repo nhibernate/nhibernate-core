@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using NHibernate.Criterion;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
@@ -93,5 +94,40 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 				Assert.IsNotNull(resHql[0].Child);
 			}
 		}
+
+	    [Test]
+	    public void VerifyQueryWithWhereClause()
+	    {
+            using (ISession s = OpenSession())
+            {
+                using (ITransaction tx = s.BeginTransaction())
+                {
+                    var p = createParent();
+                    p.ParentString = "a";
+                    p.Child.ChildString = "b";
+                    s.Save(p);
+                    tx.Commit();
+                }
+            }
+	        IList<Parent> resCriteria;
+	        IList<Parent> resHql;
+            using (ISession s = OpenSession())
+            {
+                enableFilters(s);
+                resCriteria = s.CreateCriteria(typeof(Parent), "p")
+                                .CreateCriteria("Child", "c")
+                                .SetFetchMode("Child", FetchMode.Join)
+                                .Add(Restrictions.Eq("p.ParentString", "a"))
+                                .Add(Restrictions.Eq("c.ChildString", "b"))
+                                .List<Parent>();
+                resHql = s.CreateQuery(@"select p from Parent p
+                                                        join fetch p.Child c
+                                                    where p.ParentString='a' and c.ChildString='b'").List<Parent>();
+            }
+            Assert.AreEqual(1, resCriteria.Count);
+            Assert.IsNotNull(resCriteria[0].Child); 
+            Assert.AreEqual(1, resHql.Count);
+            Assert.IsNotNull(resHql[0].Child);
+	    }
 	}
 }
