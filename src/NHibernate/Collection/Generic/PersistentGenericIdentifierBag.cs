@@ -78,7 +78,7 @@ namespace NHibernate.Collection.Generic
 		void IList<T>.Insert(int index, T item)
 		{
 			Write();
-			BeforeAdd(index);
+			BeforeInsert(index);
 			gvalues.Insert(index, item);
 		}
 

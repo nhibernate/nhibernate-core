@@ -77,7 +77,7 @@ namespace NHibernate.Collection
 		private object GetIdentifier(int index)
 		{
 			// NH specific : To emulate IDictionary behavior but using Dictionary<int, object> (without boxing/unboxing for index)
-			object result;
+			object result = null;
 			identifiers.TryGetValue(index, out result);
 			return result;
 		}
@@ -217,16 +217,14 @@ namespace NHibernate.Collection
 			return old != null && elemType.IsDirty(old, entry, Session);
 		}
 
-		public override object ReadFrom(IDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor,
-		                                object owner)
+		public override object ReadFrom(IDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor, object owner)
 		{
 			object element = persister.ReadElement(reader, owner, descriptor.SuffixedElementAliases, Session);
-			object tempObject = GetIdentifier(values.Count);
-			identifiers[values.Count] = persister.ReadIdentifier(reader, descriptor.SuffixedIdentifierAlias, Session);
-			object old = tempObject;
-			if (old == null)
+			object id = persister.ReadIdentifier(reader, descriptor.SuffixedIdentifierAlias, Session);
+			if (!identifiers.ContainsValue(id))
 			{
-				values.Add(element); //maintain correct duplication if loaded in a cartesian product			
+				identifiers[values.Count] = id;
+				values.Add(element);
 			}
 			return element;
 		}
@@ -290,11 +288,6 @@ namespace NHibernate.Collection
 
 		protected void BeforeRemove(int index)
 		{
-			if (!identifiers.ContainsKey(index))
-				return; // index not previously persisted, nothing to do
-
-			// Move the identifier being removed to the end of the list (i.e. it isn't actually removed).
-			object removedId = identifiers[index];
 			int last = values.Count - 1;
 			for (int i = index; i < last; i++)
 			{
@@ -308,14 +301,22 @@ namespace NHibernate.Collection
 					identifiers[i] = id;
 				}
 			}
-			identifiers[last] = removedId;
+			identifiers.Remove(last);
 		}
 
-		protected void BeforeAdd(int index)
+		protected void BeforeInsert(int index)
 		{
-			for (int i = index; i < values.Count; i++)
+			for (int i = values.Count - 1; i >= index; i--)
 			{
-				identifiers[i + 1] = identifiers[i];
+				object id = GetIdentifier(i);
+				if (id == null)
+				{
+					identifiers.Remove(i + 1);
+				}
+				else
+				{
+					identifiers[i + 1] = id;
+				}
 			}
 			identifiers.Remove(index);
 		}
@@ -354,6 +355,7 @@ namespace NHibernate.Collection
 			set
 			{
 				Write();
+				identifiers.Remove(index);
 				values[index] = value;
 			}
 		}
@@ -361,7 +363,7 @@ namespace NHibernate.Collection
 		public void Insert(int index, object value)
 		{
 			Write();
-			BeforeAdd(index);
+			BeforeInsert(index);
 			values.Insert(index, value);
 		}
 
@@ -425,7 +427,7 @@ namespace NHibernate.Collection
 
 		public object SyncRoot
 		{
-			get { return values.SyncRoot; }
+			get { return this; }
 		}
 
 		#endregion
