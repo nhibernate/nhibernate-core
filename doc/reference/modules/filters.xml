@@ -124,6 +124,14 @@ IList results = session.CreateQuery("from Employee as e where e.Salary > :target
             the operator.
         </para>
 
+        <para>
+            Default all filter definitions are applied to <literal>&lt;many-to-one/&gt;</literal> and 
+            <literal>&lt;one-to-one/&gt;</literal> elements. You can turn off this behaviour by
+            using <literal>use-many-to-one</literal> attribute on <literal>&lt;filter-def/&gt;</literal>
+            element.
+        </para>
+      <programlisting><![CDATA[<filter-def name="effectiveDate" use-many-to-one="false"/>]]></programlisting>
+
     </sect1>
 
 </chapter>
