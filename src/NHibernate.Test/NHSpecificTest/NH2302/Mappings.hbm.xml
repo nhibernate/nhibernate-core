@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false" default-cascade="all-delete-orphan">
+  <class name="NHibernate.Test.NHSpecificTest.NH2302.StringLengthEntity, NHibernate.Test" table="StringLengthEntity"
+		lazy="false">
+    <id name="ID" access="nosetter.pascalcase-m" column="ID" type="Int32" >
+      <generator class="native" />
+    </id>
+    <!-- this generates an nvarchar(255) -->
+    <property name="StringDefault" column="StringDefault" type="string" />
+    <!-- this generates an nvarchar(50) -->
+    <property name="StringFixedLength" column="StringFixedLength" type="string" length="50" />
+    <!-- this generates an nvarchar(max) but it operate a truncation on reading and writing, in NHib 2.1 this was -->
+    <property name="StringHugeLength" column="StringHugeLength" type="string" length="10000" />
+    <!-- this generates an nvarchar(max) but it operate a truncation reading and writing to the default string length (4000) -->
+    <property name="StringSqlType" type="string">
+      <column name="StringSqlType" sql-type="nvarchar(max)" />
+    </property>
+    <!-- this generates an nvarchar(255) otherwise reading and writing seem to be ok -->
+    <property name="Blob" column="Blob" type="StringClob" />
+    <!-- this generates an nvarchar(max) but it operate a truncation on reading and writing (same as StringHugeLength) -->
+    <property name="BlobLength" column="BlobLength" type="StringClob" length="15000" />
+    <!-- this mapping works! for generation, writing and reading -->
+    <property name="BlobSqlType" type="StringClob" >
+      <column name="BlobSqlType" sql-type="nvarchar(max)" />
+    </property>
+  </class>
+</hibernate-mapping>

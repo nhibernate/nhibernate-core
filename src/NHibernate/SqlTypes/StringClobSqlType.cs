@@ -26,7 +26,8 @@ namespace NHibernate.SqlTypes
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StringClobSqlType"/> class.
 		/// </summary>
-		public StringClobSqlType() : base()
+		public StringClobSqlType()
+			: base(int.MaxValue / 2)
 		{
 		}
 

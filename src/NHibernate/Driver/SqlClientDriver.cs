@@ -1,6 +1,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using NHibernate.AdoNet;
+using NHibernate.Dialect;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
@@ -123,14 +124,7 @@ namespace NHibernate.Driver
 					break;
 				case DbType.String:
 				case DbType.StringFixedLength:
-					if (sqlType is StringClobSqlType)
-					{
-						dbParam.Size = MaxStringClobSize;
-					}
-					else
-					{
-						dbParam.Size = MaxStringSize;
-					}
+					dbParam.Size = IsText(dbParam, sqlType) ? MaxStringClobSize : MaxStringSize;
 					break;
 				case DbType.DateTime2:
 					dbParam.Size = MaxDateTime2;
@@ -141,12 +135,18 @@ namespace NHibernate.Driver
 			}
 		}
 
+		private static bool IsText(IDbDataParameter dbParam, SqlType sqlType)
+		{
+			return (sqlType is StringClobSqlType) || (sqlType.LengthDefined && sqlType.Length > MsSql2000Dialect.MaxSizeForLengthLimitedStrings &&
+				(DbType.String == dbParam.DbType || DbType.StringFixedLength == dbParam.DbType));
+		}
+
 		private static void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
 		{
 			SetDefaultParameterSize(dbParam, sqlType);
 
 			// Override the defaults using data from SqlType.
-			if (sqlType.LengthDefined)
+			if (sqlType.LengthDefined && !IsText(dbParam, sqlType))
 			{
 				dbParam.Size = sqlType.Length;
 			}

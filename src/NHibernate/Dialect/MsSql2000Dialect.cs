@@ -40,6 +40,7 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class MsSql2000Dialect : Dialect
 	{
+		public const int MaxSizeForLengthLimitedStrings = 4000;
 		/// <summary></summary>
 		public MsSql2000Dialect()
 		{
@@ -65,9 +66,9 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Int64, "BIGINT");
 			RegisterColumnType(DbType.Single, "REAL"); //synonym for FLOAT(24) 
 			RegisterColumnType(DbType.StringFixedLength, "NCHAR(255)");
-			RegisterColumnType(DbType.StringFixedLength, 4000, "NCHAR($l)");
+			RegisterColumnType(DbType.StringFixedLength, MaxSizeForLengthLimitedStrings, "NCHAR($l)");
 			RegisterColumnType(DbType.String, "NVARCHAR(255)");
-			RegisterColumnType(DbType.String, 4000, "NVARCHAR($l)");
+			RegisterColumnType(DbType.String, MaxSizeForLengthLimitedStrings, "NVARCHAR($l)");
 			RegisterColumnType(DbType.String, 1073741823, "NTEXT");
 			RegisterColumnType(DbType.Time, "DATETIME");
 

@@ -471,6 +471,8 @@
     <Compile Include="NHSpecificTest\NH2287\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2293\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2294\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2302\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2302\StringLengthEntity.cs" />
     <Compile Include="NHSpecificTest\NH2303\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2303\Model.cs" />
     <Compile Include="TypesTest\CharClass.cs" />
@@ -2261,6 +2263,7 @@
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <EmbeddedResource Include="DriverTest\EntityForMs2008.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH2302\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2303\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2287\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2266\Mappings.hbm.xml" />
