@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Context;
 using NHibernate.Hql;
 using NHibernate.Linq.Functions;
 using NHibernate.Util;
@@ -46,6 +47,12 @@ namespace NHibernate.Cfg.Loquacious
 		public static Configuration LinqToHqlGeneratorsRegistry<TLinqToHqlGeneratorsRegistry>(this Configuration configuration) where TLinqToHqlGeneratorsRegistry : ILinqToHqlGeneratorsRegistry
 		{
 			configuration.SetProperty(Environment.LinqToHqlGeneratorsRegistry, typeof(TLinqToHqlGeneratorsRegistry).AssemblyQualifiedName);
+			return configuration;
+		}
+
+		public static Configuration CurrentSessionContext<TCurrentSessionContext>(this Configuration configuration) where TCurrentSessionContext : ICurrentSessionContext
+		{
+			configuration.SetProperty(Environment.CurrentSessionContextClass, typeof(TCurrentSessionContext).AssemblyQualifiedName);
 			return configuration;
 		}
 
