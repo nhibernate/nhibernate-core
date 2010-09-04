@@ -1058,6 +1058,11 @@ namespace NHibernate.Loader
 			return selection != null && selection.MaxRows != RowSelection.NoValue;
 		}
 
+		private static bool HasOffset(RowSelection selection)
+		{
+			return selection != null && selection.MaxRows != RowSelection.NoValue;
+		}
+
 		internal static int GetFirstRow(RowSelection selection)
 		{
 			if (selection == null || !selection.DefinesLimits)
@@ -1079,7 +1084,7 @@ namespace NHibernate.Loader
 		/// <returns></returns>
 		internal static bool UseLimit(RowSelection selection, Dialect.Dialect dialect)
 		{
-			return dialect.SupportsLimit && HasMaxRows(selection);
+			return dialect.SupportsLimit && (HasMaxRows(selection) || HasOffset(selection));
 		}
 
 		/// <summary>
@@ -1202,6 +1207,9 @@ namespace NHibernate.Loader
 			int firstRow = GetFirstRow(selection);
 			int lastRow = selection.MaxRows;
 
+			if (lastRow == RowSelection.NoValue)
+				return int.MaxValue;
+
 			if (dialect.UseMaxForLimit)
 			{
 				return lastRow + firstRow;
@@ -1230,10 +1238,7 @@ namespace NHibernate.Loader
 			{
 				return 0;
 			}
-			if (!HasMaxRows(selection))
-			{
-				throw new AssertionFailure("max results not set");
-			}
+
 			int firstRow = GetFirstRow(selection);
 			int lastRow = GetMaxOrLimit(dialect, selection);
 
