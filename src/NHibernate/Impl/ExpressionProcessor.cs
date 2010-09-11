@@ -175,12 +175,7 @@ namespace NHibernate.Impl
 				MethodCallExpression methodCallExpression = (MethodCallExpression)expression;
 
 				if (methodCallExpression.Method.Name == "GetType")
-				{
-					if (methodCallExpression.Object.NodeType == ExpressionType.MemberAccess)
-						return FindMemberExpression(methodCallExpression.Object) + ".class";
-					else
-						return "class";
-				}
+					return ClassMember(methodCallExpression.Object);
 
 				if (methodCallExpression.Method.Name == "get_Item")
 					return FindMemberExpression(methodCallExpression.Object);
@@ -427,7 +422,21 @@ namespace NHibernate.Impl
 				return ProcessCustomMethodCall(methodCallExpression);
 			}
 
-			throw new Exception("Could not determine member type from " + expression.ToString());
+			if (expression is TypeBinaryExpression)
+			{
+				TypeBinaryExpression typeBinaryExpression = (TypeBinaryExpression)expression;
+				return Restrictions.Eq(ClassMember(typeBinaryExpression.Expression), typeBinaryExpression.TypeOperand);
+			}
+
+			throw new Exception("Could not determine member type from " + expression.NodeType + ", " + expression.ToString() + ", " + expression.GetType());
+		}
+
+		private static string ClassMember(Expression expression)
+		{
+			if (expression.NodeType == ExpressionType.MemberAccess)
+				return FindMemberExpression(expression) + ".class";
+			else
+				return "class";
 		}
 
 		private static string Signature(MethodInfo methodInfo)
