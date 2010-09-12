@@ -26,30 +26,34 @@
         <member name="T:Spring.Aop.Config.AopNamespaceUtils">
             <summary>
             Utility class for handling registration of auto-proxy creators used internally by the
-            <code>aop</code> namespace tags.
+            <code>aop</code> and <code>tx</code> namespace tags.
             </summary>
             <author>Rob Harrop</author>
             <author>Juergen Hoeller</author>
             <author>Mark Pollack (.NET)</author>
+            <author>Erich Eichinger (.NET)</author>
         </member>
         <member name="F:Spring.Aop.Config.AopNamespaceUtils.AUTO_PROXY_CREATOR_OBJECT_NAME">
             <summary>
              The object name of the internally managed auto-proxy creator.
             </summary>
         </member>
+        <member name="F:Spring.Aop.Config.AopNamespaceUtils.InfrastructureAutoProxyCreatorType">
+            <summary>
+            The type of the APC that handles advisors with object role <see cref="F:Spring.Objects.Factory.Config.ObjectRole.ROLE_INFRASTRUCTURE"/>.
+            </summary>
+        </member>
         <member name="M:Spring.Aop.Config.AopNamespaceUtils.RegisterAutoProxyCreatorIfNecessary(Spring.Objects.Factory.Xml.ParserContext,System.Xml.XmlElement)">
             <summary>
-            Registers the auto proxy creator if necessary.
+            Registers the internal auto proxy creator if necessary.
             </summary>
             <param name="parserContext">The parser context.</param>
             <param name="sourceElement">The source element.</param>
         </member>
-        <member name="M:Spring.Aop.Config.AopNamespaceUtils.RegisterApcAsRequired(System.Type,Spring.Objects.Factory.Xml.ParserContext)">
+        <member name="M:Spring.Aop.Config.AopNamespaceUtils.RegisterAutoProxyCreatorIfNecessary(Spring.Objects.Factory.Support.IObjectDefinitionRegistry)">
             <summary>
-            Registries the or escalate apc as required.
+            Registers the internal auto proxy creator if necessary.
             </summary>
-            <param name="type">The type.</param>
-            <param name="parserContext">The parser context.</param>
         </member>
         <member name="M:Spring.Aop.Config.AopNamespaceUtils.ForceAutoProxyCreatorToUseDecoratorProxy(Spring.Objects.Factory.Support.IObjectDefinitionRegistry)">
             <summary>
@@ -965,15 +969,15 @@
         </member>
         <member name="T:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator">
             <summary>
-            Abstract IOBjectPostProcessor implementation that creates AOP proxies.
+            Abstract IObjectPostProcessor implementation that creates AOP proxies.
             This class is completely generic; it contains no special code to handle
             any particular aspects, such as pooling aspects.
             </summary>
             <remarks>
-            <p>Subclasses must implement the abstract findCandidateAdvisors() method
+            <p>Subclasses must implement the abstract FindCandidateAdvisors() method
             to return a list of Advisors applying to any object. Subclasses can also
-            override the inherited shouldSkip() method to exclude certain objects
-            from autoproxying, but they must be careful to invoke the shouldSkip()
+            override the inherited ShouldSkip() method to exclude certain objects
+            from autoproxying, but they must be careful to invoke the ShouldSkip()
             method of this class, which tries to avoid circular reference problems
             and infinite loops.</p>
             <p>Advisors or advices requiring ordering should implement the Ordered interface.
@@ -981,9 +985,10 @@
             the Ordered interface will be considered to be unordered, and will appear
             at the end of the advisor chain in undefined order.</p>
             </remarks>
-            <seealso cref="M:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.FindCandidateAdvisors"/>
+            <seealso cref="M:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.FindCandidateAdvisors(System.Type,System.String)"/>
             <author>Rod Johnson</author>
             <author>Adhari C Mahendra (.NET)</author>
+            <author>Erich Eichinger</author>
         </member>
         <member name="T:Spring.Aop.Framework.AutoProxy.AbstractAutoProxyCreator">
             <summary>
@@ -1171,8 +1176,12 @@
         </member>
         <member name="F:Spring.Aop.Framework.AutoProxy.AbstractAutoProxyCreator.freezeProxy">
             <summary>
-            
+            Indicates whether to mark the create proxy as immutable.
             </summary>
+            <remarks>
+            Setting this to true effectively disables  modifying the generated 
+            proxy's advisor configuration
+            </remarks>
         </member>
         <member name="F:Spring.Aop.Framework.AutoProxy.AbstractAutoProxyCreator.interceptorNames">
             <summary>
@@ -1187,6 +1196,11 @@
             Set of object type + name strings, referring to all objects that this auto-proxy
             creator created a custom TargetSource for.  Used to detect own pre-built proxies
             (from "PostProcessBeforeInstantiation") in the "PostProcessAfterInitialization" method.
+            </summary>
+        </member>
+        <member name="M:Spring.Aop.Framework.AutoProxy.AbstractAutoProxyCreator.#ctor">
+            <summary>
+            Create a new instance of this AutoProxyCreator
             </summary>
         </member>
         <member name="M:Spring.Aop.Framework.AutoProxy.AbstractAutoProxyCreator.PostProcessAfterInitialization(System.Object,System.String)">
@@ -1210,8 +1224,8 @@
             Sometimes we need to be able to avoid this happening if it will lead to
             a circular reference. This implementation returns false.
             </summary>
-            <param name="objectType">the type of the object</param>
-            <param name="objectName">the name of the object</param>
+            <param name="targetType">the type of the object</param>
+            <param name="targetName">the name of the object</param>
             <returns>if remarkable to skip</returns>
         </member>
         <member name="M:Spring.Aop.Framework.AutoProxy.AbstractAutoProxyCreator.CustomizeProxyFactory(Spring.Aop.Framework.ProxyFactory)">
@@ -1252,15 +1266,15 @@
             advices (e.g. AOP Alliance interceptors) and advisors to apply.
             </summary>
             <remarks>
-            <p>The previous name of this method was "GetInterceptorAndAdvisorForObject".
+            <p>The previous targetName of this method was "GetInterceptorAndAdvisorForObject".
             It has been renamed in the course of general terminology clarification
             in Spring 1.1. An AOP Alliance Interceptor is just a special form of
             Advice, so the generic Advice term is preferred now.</p>
             <p>The third parameter, customTargetSource, is new in Spring 1.1;
             add it to existing implementations of this method.</p>
             </remarks>
-            <param name="objType">the new object instance</param>
-            <param name="name">the name of the object</param>
+            <param name="targetType">the new object instance</param>
+            <param name="targetName">the name of the object</param>
             <param name="customTargetSource">targetSource returned by TargetSource property:
             may be ignored. Will be null unless a custom target source is in use.</param>
             <returns>an array of additional interceptors for the particular object;
@@ -1271,8 +1285,8 @@
             <summary>
             Create an AOP proxy for the given object.
             </summary>
-            <param name="objectType">Type of the object.</param>
-            <param name="objectName">The name of the object.</param>
+            <param name="targetType">Type of the object.</param>
+            <param name="targetName">The name of the object.</param>
             <param name="specificInterceptors">The set of interceptors that is specific to this
             object (may be empty but not null)</param>
             <param name="targetSource">The target source for the proxy, already pre-configured to access the object.</param>
@@ -1289,7 +1303,7 @@
             Determines the advisors for the given object, including the specific interceptors
             as well as the common interceptor, all adapted to the Advisor interface.
             </summary>
-            <param name="objectName">The name of the object.</param>
+            <param name="targetName">The name of the object.</param>
             <param name="specificInterceptors">The set of interceptors that is specific to this
             object (may be empty, but not null)</param>
             <returns>The list of Advisors for the given object</returns>
@@ -1423,13 +1437,44 @@
             Default value is int.MaxValue, meaning that it's non-ordered.
             </remarks>
         </member>
+        <member name="M:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.#ctor">
+            <summary>
+            Initialize 
+            </summary>
+        </member>
+        <member name="M:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.InitObjectFactory(Spring.Objects.Factory.Config.IConfigurableListableObjectFactory)">
+            <summary>
+            An new <see cref="T:Spring.Objects.Factory.Config.IConfigurableListableObjectFactory"/> was set. Initialize this creator instance
+            according to the specified object factory.
+            </summary>
+            <param name="objectFactory"></param>
+        </member>
+        <member name="M:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.CreateAdvisorRetrievalHelper(Spring.Objects.Factory.Config.IConfigurableListableObjectFactory)">
+            <summary>
+            Create the <see cref="T:Spring.Aop.Framework.AutoProxy.IAdvisorRetrievalHelper"/> for retrieving the list of
+            applicable advisor objects. The default implementation calls back into
+            <see cref="M:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.IsEligibleAdvisorObject(System.String,System.Type,System.String)"/> thus it usually is sufficient to just
+            override <see cref="M:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.IsEligibleAdvisorObject(System.String,System.Type,System.String)"/>. Override <see cref="M:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.CreateAdvisorRetrievalHelper(Spring.Objects.Factory.Config.IConfigurableListableObjectFactory)"/>
+            only if you know what you are doing!
+            </summary>
+            <param name="objectFactory"></param>
+            <returns></returns>
+        </member>
         <member name="M:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.GetAdvicesAndAdvisorsForObject(System.Type,System.String,Spring.Aop.ITargetSource)">
             <summary>
             Return whether the given object is to be proxied, what additional
             advices (e.g. AOP Alliance interceptors) and advisors to apply.
             </summary>
-            <param name="objType">the new object instance</param>
-            <param name="name">the name of the object</param>
+            <remarks>
+            	<p>The previous targetName of this method was "GetInterceptorAndAdvisorForObject".
+            It has been renamed in the course of general terminology clarification
+            in Spring 1.1. An AOP Alliance Interceptor is just a special form of
+            Advice, so the generic Advice term is preferred now.</p>
+            	<p>The third parameter, customTargetSource, is new in Spring 1.1;
+            add it to existing implementations of this method.</p>
+            </remarks>
+            <param name="targetType">the type of the target object</param>
+            <param name="targetName">the name of the target object</param>
             <param name="customTargetSource">targetSource returned by TargetSource property:
             may be ignored. Will be null unless a custom target source is in use.</param>
             <returns>
@@ -1437,21 +1482,35 @@
             or an empty array if no additional interceptors but just the common ones;
             or null if no proxy at all, not even with the common interceptors.
             </returns>
-            <remarks>
-            	<p>The previous name of this method was "GetInterceptorAndAdvisorForObject".
-            It has been renamed in the course of general terminology clarification
-            in Spring 1.1. An AOP Alliance Interceptor is just a special form of
-            Advice, so the generic Advice term is preferred now.</p>
-            	<p>The third parameter, customTargetSource, is new in Spring 1.1;
-            add it to existing implementations of this method.</p>
-            </remarks>
         </member>
-        <member name="M:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.FindEligibleAdvisors(System.Type)">
+        <member name="M:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.FindEligibleAdvisors(System.Type,System.String)">
             <summary>
             Find all eligible advices and for autoproxying this class.
             </summary>
-            <param name="type"></param>
-            <returns>the empty list, not null, if there are no pointcuts or interceptors</returns>
+            <param name="targetType">the type of the object to be advised</param>
+            <param name="targetName">the name of the object to be advised</param>
+            <returns>
+            the empty list, not null, if there are no pointcuts or interceptors. 
+            The by-order sorted list of advisors otherwise
+            </returns>
+        </member>
+        <member name="M:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.FindCandidateAdvisors(System.Type,System.String)">
+            <summary>
+            Find all possible advisor candidates to use in auto-proxying
+            </summary>
+            <param name="targetType">the type of the object to be advised</param>
+            <param name="targetName">the name of the object to be advised</param>
+            <returns>the list of candidate advisors</returns>
+        </member>
+        <member name="M:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.FindAdvisorsThatCanApply(System.Collections.IList,System.Type,System.String)">
+            <summary>
+            From the given list of candidate advisors, select the ones that are applicable 
+            to the given target specified by targetType and name.
+            </summary>
+            <param name="candidateAdvisors">the list of candidate advisors to date</param>
+            <param name="targetType">the target object's type</param>
+            <param name="targetName">the target object's name</param>
+            <returns>the list of applicable advisors</returns>
         </member>
         <member name="M:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.SortAdvisors(System.Collections.IList)">
             <summary>
@@ -1460,17 +1519,97 @@
             <param name="advisors">The advisors.</param>
             <returns></returns>
         </member>
-        <member name="M:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.FindCandidateAdvisors">
+        <member name="M:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.ExtendAdvisors(System.Collections.IList,System.Type,System.String)">
             <summary>
-            Find all candidate advisors to use in auto-proxying.
+            Extension hook that subclasses can override to add additional advisors for the given object,
+            given the sorted advisors obtained to date.<br/>
+            The default implementation does nothing.<br/>
+            Typically used to add advisors that expose contextual information required by some of the later advisors.
             </summary>
-            <returns>list of Advisors</returns>
+            <remarks>
+            The advisor list passed into this method is already reduced to advisors applying to this particular object.
+            If you want to register additional common advisor candidates, override <see cref="M:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.FindCandidateAdvisors(System.Type,System.String)"/>.
+            </remarks>
+            <param name="advisors">Advisors that have already been identified as applying to a given object</param>
+            <param name="objectType">the type of the object to be advised</param>
+            <param name="objectName">the name of the object to be advised</param>
+        </member>
+        <member name="M:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.IsEligibleAdvisorObject(System.String,System.Type,System.String)">
+            <summary>
+            Whether the given advisor is eligible for the specified target. The default implementation
+            always returns true.
+            </summary>
+            <param name="advisorName">the advisor name</param>
+            <param name="targetType">the target object's type</param>
+            <param name="targetName">the target object's name</param>
         </member>
         <member name="P:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator.ObjectFactory">
             <summary>
             We override this method to ensure that all candidate advisors are materialized
             under a stack trace including this object. Otherwise, the dependencies won't
             be apparent to the circular-reference prevention strategy in AbstractObjectFactory.
+            </summary>
+        </member>
+        <member name="T:Spring.Aop.Framework.AutoProxy.ObjectFactoryAdvisorRetrievalHelper">
+            <summary>
+            Helper for retrieving standard Spring advisors from an <see cref="T:Spring.Objects.Factory.IObjectFactory"/> for
+            use with auto-proxying.
+            </summary>
+            <author>Erich Eichinger</author>
+        </member>
+        <member name="T:Spring.Aop.Framework.AutoProxy.IAdvisorRetrievalHelper">
+            <summary>
+            Interface encapsulating the advisor retrieval strategy used by 
+            an <see cref="T:Spring.Aop.Framework.AutoProxy.AbstractAdvisorAutoProxyCreator"/> to retrieve the 
+            applicable list of advisor objects.
+            </summary>
+        </member>
+        <member name="M:Spring.Aop.Framework.AutoProxy.IAdvisorRetrievalHelper.FindAdvisorObjects(System.Type,System.String)">
+            <summary>
+            Get the list of advisor objects to apply on the target.
+            </summary>
+        </member>
+        <member name="M:Spring.Aop.Framework.AutoProxy.ObjectFactoryAdvisorRetrievalHelper.#ctor(Spring.Objects.Factory.Config.IConfigurableListableObjectFactory)">
+            <summary>
+            Create a new helper for the specified <paramref name="objectFactory"/>.
+            </summary>
+        </member>
+        <member name="M:Spring.Aop.Framework.AutoProxy.ObjectFactoryAdvisorRetrievalHelper.FindAdvisorObjects(System.Type,System.String)">
+            <summary>
+            Find all all eligible advisor objects in the current object factory.
+            </summary>
+            <param name="targetType">the type of the object to be advised</param>
+            <param name="targetName">the name of the object to be advised</param>
+            <returns>A list of eligible <see cref="T:Spring.Aop.IAdvisor"/> instances</returns>
+        </member>
+        <member name="M:Spring.Aop.Framework.AutoProxy.ObjectFactoryAdvisorRetrievalHelper.AddAdvisorCandidate(System.Collections.ArrayList,System.String)">
+            <summary>
+            Add the named advisor instance to the list of advisors.
+            </summary>
+            <param name="advisors">the advisor list</param>
+            <param name="advisorName">the object name of the advisor to add</param>
+        </member>
+        <member name="M:Spring.Aop.Framework.AutoProxy.ObjectFactoryAdvisorRetrievalHelper.GetAdvisorCandidateNames(System.Type,System.String)">
+            <summary>
+            Gets the names of advisor candidates
+            </summary>
+            <param name="targetType">the type of the object to be advised</param>
+            <param name="targetName">the name of the object to be advised</param>
+            <returns>a non-null string array of advisor candidate names</returns>
+        </member>
+        <member name="M:Spring.Aop.Framework.AutoProxy.ObjectFactoryAdvisorRetrievalHelper.IsEligibleObject(System.String,System.Type,System.String)">
+            <summary>
+            Determine, whether the specified aspect object is eligible.
+            The default implementation accepts all except for advisors that are 
+            part of the internal infrastructure.
+            </summary>
+            <param name="advisorName">the name of the candidate advisor</param>
+            <param name="objectType">the type of the object to be advised</param>
+            <param name="objectName">the name of the object to be advised</param>
+        </member>
+        <member name="P:Spring.Aop.Framework.AutoProxy.ObjectFactoryAdvisorRetrievalHelper.ObjectFactory">
+            <summary>
+            The object factory to lookup advisors from
             </summary>
         </member>
         <member name="T:Spring.Aop.Framework.AutoProxy.AbstractFilteringAutoProxyCreator">
@@ -1484,8 +1623,8 @@
              <summary>
             Overridden to call <see cref="M:Spring.Aop.Framework.AutoProxy.AbstractFilteringAutoProxyCreator.IsEligibleForProxying(System.Type,System.String)"/>.
              </summary>
-             <param name="objectType">the type of the object</param>
-             <param name="objectName">the name of the object</param>
+             <param name="targetType">the type of the object</param>
+             <param name="targetName">the name of the object</param>
              <returns>if remarkable to skip</returns>
         </member>
         <member name="M:Spring.Aop.Framework.AutoProxy.AbstractFilteringAutoProxyCreator.GetAdvicesAndAdvisorsForObject(System.Type,System.String,Spring.Aop.ITargetSource)">
@@ -1495,8 +1634,8 @@
             <remarks>
             Whether an object shall be proxied or not is determined by the result of <see cref="M:Spring.Aop.Framework.AutoProxy.AbstractFilteringAutoProxyCreator.IsEligibleForProxying(System.Type,System.String)"/>.
             </remarks>
-            <param name="objType">ingored</param>
-            <param name="name">ignored</param>
+            <param name="targetType">ingored</param>
+            <param name="targetName">ignored</param>
             <param name="customTargetSource">ignored</param>
             <returns>
             Always <see cref="F:Spring.Aop.Framework.AutoProxy.AbstractAutoProxyCreator.PROXY_WITHOUT_ADDITIONAL_INTERCEPTORS"/> to indicate, that the object shall be proxied.
@@ -1510,8 +1649,8 @@
             <remarks>
             Override this method to allow or reject proxying for the given object.
             </remarks>
-            <param name="objType">the object's type</param>
-            <param name="name">the name of the object</param>
+            <param name="targetType">the object's type</param>
+            <param name="targetName">the name of the object</param>
             <seealso cref="M:Spring.Aop.Framework.AutoProxy.AbstractAutoProxyCreator.ShouldSkip(System.Type,System.String)"/>        
             <returns>whether the given object shall be proxied.</returns>
         </member>
@@ -1523,10 +1662,10 @@
         </member>
         <member name="M:Spring.Aop.Framework.AutoProxy.AttributeAutoProxyCreator.IsEligibleForProxying(System.Type,System.String)">
             <summary>
-            Determines, whether the given object shall be proxied by matching <paramref name="objType"/> against <see cref="P:Spring.Aop.Framework.AutoProxy.AttributeAutoProxyCreator.AttributeTypes"/>.
+            Determines, whether the given object shall be proxied by matching <paramref name="targetType"/> against <see cref="P:Spring.Aop.Framework.AutoProxy.AttributeAutoProxyCreator.AttributeTypes"/>.
             </summary>
-            <param name="objType">the object's type</param>
-            <param name="name">the name of the object</param>
+            <param name="targetType">the object's type</param>
+            <param name="targetName">the name of the object</param>
         </member>
         <member name="M:Spring.Aop.Framework.AutoProxy.AttributeAutoProxyCreator.IsAnnotatedWithAnyOfAttribute(System.Type,System.Type[],System.Boolean)">
             <summary>
@@ -1564,22 +1703,32 @@
             </summary>
             <author>Rod Johnson</author>
             <author>Adhari C Mahendra (.NET)</author>
+            <author>Erich Eichinger (.NET)</author>
         </member>
         <member name="F:Spring.Aop.Framework.AutoProxy.DefaultAdvisorAutoProxyCreator.SEPARATOR">
             <summary>
             Separator between prefix and remainder of object name
             </summary>
         </member>
-        <member name="M:Spring.Aop.Framework.AutoProxy.DefaultAdvisorAutoProxyCreator.FindCandidateAdvisors">
+        <member name="M:Spring.Aop.Framework.AutoProxy.DefaultAdvisorAutoProxyCreator.FindCandidateAdvisors(System.Type,System.String)">
             <summary>
-            Find all candidate advices to use in auto proxying.
+            Find all possible advisor candidates to use in auto-proxying
             </summary>
-            <returns>list of Advice</returns>
+            <param name="targetType">the type of the object to be advised</param>
+            <param name="targetName">the name of the object to be advised</param>
+            <returns>the list of candidate advisors</returns>
+        </member>
+        <member name="M:Spring.Aop.Framework.AutoProxy.DefaultAdvisorAutoProxyCreator.IsEligibleAdvisorObject(System.String,System.Type,System.String)">
+            <summary>
+            Whether the given advisor is eligible for the specified target.
+            </summary>
+            <param name="advisorName">the advisor name</param>
+            <param name="targetType">the target object's type</param>
+            <param name="targetName">the target object's name</param>
         </member>
         <member name="M:Spring.Aop.Framework.AutoProxy.DefaultAdvisorAutoProxyCreator.AfterPropertiesSet">
             <summary>
-            Invoked by an <see cref="T:Spring.Objects.Factory.IObjectFactory"/>
-            after it has injected all of an object's dependencies.
+            Validate configuration
             </summary>
         </member>
         <member name="P:Spring.Aop.Framework.AutoProxy.DefaultAdvisorAutoProxyCreator.UsePrefix">
@@ -1610,6 +1759,21 @@
             method or a custom init-method.
             </p>
             </remarks>
+        </member>
+        <member name="T:Spring.Aop.Framework.AutoProxy.InfrastructureAdvisorAutoProxyCreator">
+            <summary>
+            A special version of an APC that explicitely cares for infrastructure (=internal)
+            advisors only
+            </summary>
+            <author>Erich Eichinger</author>
+        </member>
+        <member name="M:Spring.Aop.Framework.AutoProxy.InfrastructureAdvisorAutoProxyCreator.CreateAdvisorRetrievalHelper(Spring.Objects.Factory.Config.IConfigurableListableObjectFactory)">
+            <summary>
+            Overridden to create a special version of an <see cref="T:Spring.Aop.Framework.AutoProxy.IAdvisorRetrievalHelper"/>
+            that accepts only infrastructure advisor definitions
+            </summary>
+            <param name="objectFactory"></param>
+            <returns></returns>
         </member>
         <member name="T:Spring.Aop.Framework.AutoProxy.InheritanceBasedAopConfigurer">
             <summary>
@@ -1816,6 +1980,7 @@
             <seealso cref="M:Spring.Aop.Framework.AutoProxy.ObjectNameAutoProxyCreator.IsMatch(System.String,System.String)"/>
             <author>Juergen Hoeller</author>
             <author>Adhari C Mahendra (.NET)</author>
+            <author>Erich Eichinger</author>
         </member>
         <member name="M:Spring.Aop.Framework.AutoProxy.ObjectNameAutoProxyCreator.#ctor">
             <summary>
@@ -1840,6 +2005,18 @@
             <param name="objectName">the object name to check</param>
             <param name="mappedName">the name in the configured list of names</param>
             <returns>if the names match</returns>
+        </member>
+        <member name="M:Spring.Aop.Framework.AutoProxy.ObjectNameAutoProxyCreator.IsObjectNameMatch(System.Type,System.String,System.Collections.IList)">
+            <summary>
+            Convenience method that may be used by derived classes. Iterates over the list of <paramref name="objectNamePatterns"/> to match <paramref name="objectName"/> against.
+            </summary>
+            <param name="objType">the object's type. Must not be <c>null</c>.</param>
+            <param name="objectName">the name of the object Must not be <c>null</c>.</param>
+            <param name="objectNamePatterns">the list of patterns, that <paramref name="objectName"/> shall be matched against. Must not be <c>null</c>.</param>        
+            <returns>
+            If <paramref name="objectNamePatterns"/> is <c>null</c>, will always return <c>true</c>, otherwise
+            if <paramref name="objectName"/> matches any of the patterns specified in <paramref name="objectNamePatterns"/>. 
+            </returns>
         </member>
         <member name="P:Spring.Aop.Framework.AutoProxy.ObjectNameAutoProxyCreator.ObjectNames">
             <summary>
@@ -1878,8 +2055,8 @@
             <remarks>
             Override this method to allow or reject proxying for the given object.
             </remarks>
-            <param name="objType">the object's type</param>
-            <param name="name">the name of the object</param>
+            <param name="targetType">the object's type</param>
+            <param name="targetName">the name of the object</param>
             <seealso cref="M:Spring.Aop.Framework.AutoProxy.AbstractAutoProxyCreator.ShouldSkip(System.Type,System.String)"/>        
             <returns>whether the given object shall be proxied.</returns>
         </member>
@@ -1887,6 +2064,65 @@
             <summary>
              The list of patterns to match <see cref="P:System.Type.FullName"/> against. For pattern syntax, see <see cref="T:Spring.Aop.Support.TypeNameTypeFilter"/>
             </summary>
+        </member>
+        <member name="T:Spring.Aop.Framework.DynamicProxy.AbstractAopProxyFactory">
+            <summary>
+            A reusable base implementation of <see cref="T:Spring.Aop.Framework.IAopProxyFactory"/>, providing
+            some useful default implementations
+            </summary>
+            <author>Erich Eichinger</author>
+        </member>
+        <member name="T:Spring.Aop.Framework.IAopProxyFactory">
+            <summary> 
+            Factory interface for the creation of AOP proxies based on
+            <see cref="T:Spring.Aop.Framework.AdvisedSupport"/> configuration
+            objects.
+            </summary>
+            <author>Rod Johnson</author>
+            <author>Aleksandar Seovic (.NET)</author>
+        </member>
+        <member name="M:Spring.Aop.Framework.IAopProxyFactory.CreateAopProxy(Spring.Aop.Framework.AdvisedSupport)">
+            <summary>
+            Creates an <see cref="T:Spring.Aop.Framework.IAopProxy"/> for the
+            supplied <paramref name="advisedSupport"/> configuration.
+            </summary>
+            <param name="advisedSupport">The AOP configuration.</param>
+            <returns>An <see cref="T:Spring.Aop.Framework.IAopProxy"/>.</returns>
+            <exception cref="T:Spring.Aop.Framework.AopConfigException">
+            If the supplied <paramref name="advisedSupport"/> configuration is
+            invalid.
+            </exception>
+        </member>
+        <member name="M:Spring.Aop.Framework.DynamicProxy.AbstractAopProxyFactory.CreateAopProxy(Spring.Aop.Framework.AdvisedSupport)">
+            <summary>
+            Creates an <see cref="T:Spring.Aop.Framework.IAopProxy"/> for the
+            supplied <paramref name="advisedSupport"/> configuration.
+            </summary>
+            <param name="advisedSupport">The AOP configuration.</param>
+            <returns>An <see cref="T:Spring.Aop.Framework.IAopProxy"/>.</returns>
+            <exception cref="T:Spring.Aop.Framework.AopConfigException">
+            If the supplied <paramref name="advisedSupport"/> configuration is
+            invalid.
+            </exception>
+            <seealso cref="M:Spring.Aop.Framework.IAopProxyFactory.CreateAopProxy(Spring.Aop.Framework.AdvisedSupport)"/>
+        </member>
+        <member name="M:Spring.Aop.Framework.DynamicProxy.AbstractAopProxyFactory.DoCreateAopProxyInstance(Spring.Aop.Framework.AdvisedSupport)">
+            <summary>
+            Actually creates the proxy instance based on the supplied <see cref="T:Spring.Aop.Framework.AdvisedSupport"/>.
+            </summary>
+            <returns>the proxy instance described by <paramref name="advisedSupport"/>. Must not be <c>null</c></returns>
+        </member>
+        <member name="M:Spring.Aop.Framework.DynamicProxy.AbstractAopProxyFactory.EliminateDuplicateAdvisors(Spring.Aop.Framework.AdvisedSupport)">
+            <summary>
+            If possible, checks for advisor duplicates on the supplied <paramref name="advisedSupport"/> and 
+            eliminates them.
+            </summary>
+        </member>
+        <member name="M:Spring.Aop.Framework.DynamicProxy.AbstractAopProxyFactory.IsAopProxyType(Spring.Aop.ITargetSource)">
+            <summary>
+            Checks, if the given <paramref name="targetSource"/> holds a proxy generated by this factory.
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:Spring.Aop.Framework.DynamicProxy.AbstractAopProxyMethodBuilder">
             <summary>
@@ -2952,46 +3188,20 @@
             <author>Rod Johnson</author>
             <author>Aleksandar Seovic (.NET)</author>
             <author>Bruno Baia (.NET)</author>
+            <author>Erich Eichinger (.NET)</author>
             <seealso cref="T:Spring.Aop.Framework.IAopProxyFactory"/>
-        </member>
-        <member name="T:Spring.Aop.Framework.IAopProxyFactory">
-            <summary> 
-            Factory interface for the creation of AOP proxies based on
-            <see cref="T:Spring.Aop.Framework.AdvisedSupport"/> configuration
-            objects.
-            </summary>
-            <author>Rod Johnson</author>
-            <author>Aleksandar Seovic (.NET)</author>
-        </member>
-        <member name="M:Spring.Aop.Framework.IAopProxyFactory.CreateAopProxy(Spring.Aop.Framework.AdvisedSupport)">
-            <summary>
-            Creates an <see cref="T:Spring.Aop.Framework.IAopProxy"/> for the
-            supplied <paramref name="advisedSupport"/> configuration.
-            </summary>
-            <param name="advisedSupport">The AOP configuration.</param>
-            <returns>An <see cref="T:Spring.Aop.Framework.IAopProxy"/>.</returns>
-            <exception cref="T:Spring.Aop.Framework.AopConfigException">
-            If the supplied <paramref name="advisedSupport"/> configuration is
-            invalid.
-            </exception>
         </member>
         <member name="M:Spring.Aop.Framework.DynamicProxy.DefaultAopProxyFactory.#cctor">
             <summary>
             Force transient assemblies to be resolvable by <see cref="M:System.Reflection.Assembly.Load(System.String)"/>.
             </summary>
         </member>
-        <member name="M:Spring.Aop.Framework.DynamicProxy.DefaultAopProxyFactory.CreateAopProxy(Spring.Aop.Framework.AdvisedSupport)">
+        <member name="M:Spring.Aop.Framework.DynamicProxy.DefaultAopProxyFactory.DoCreateAopProxyInstance(Spring.Aop.Framework.AdvisedSupport)">
             <summary>
-            Creates an <see cref="T:Spring.Aop.Framework.IAopProxy"/> for the
-            supplied <paramref name="advisedSupport"/> configuration.
+            Creates an actual proxy instance based on the supplied <paramref name="advisedSupport"/>
             </summary>
-            <param name="advisedSupport">The AOP configuration.</param>
-            <returns>An <see cref="T:Spring.Aop.Framework.IAopProxy"/>.</returns>
-            <exception cref="T:Spring.Aop.Framework.AopConfigException">
-            If the supplied <paramref name="advisedSupport"/> configuration is
-            invalid.
-            </exception>
-            <seealso cref="M:Spring.Aop.Framework.IAopProxyFactory.CreateAopProxy(Spring.Aop.Framework.AdvisedSupport)"/>
+            <param name="advisedSupport"></param>
+            <returns></returns>
         </member>
         <member name="M:Spring.Aop.Framework.DynamicProxy.DefaultAopProxyFactory.BuildProxyType(Spring.Proxy.IProxyTypeBuilder)">
             <summary>
@@ -3007,6 +3217,16 @@
             The shared <see cref="T:Common.Logging.ILog"/> instance for this class.
             </summary>
         </member>
+        <member name="M:Spring.Aop.Framework.DynamicProxy.CachedAopProxyFactory.ClearCache">
+            <summary>
+            Clears the type cache
+            </summary>
+        </member>
+        <member name="M:Spring.Aop.Framework.DynamicProxy.CachedAopProxyFactory.#ctor">
+            <summary>
+            Creates a new instance
+            </summary>
+        </member>
         <member name="M:Spring.Aop.Framework.DynamicProxy.CachedAopProxyFactory.BuildProxyType(Spring.Proxy.IProxyTypeBuilder)">
             <summary>
             Generates the proxy type and caches the <see cref="T:System.Type"/>
@@ -3016,6 +3236,11 @@
             The <see cref="T:Spring.Proxy.IProxyTypeBuilder"/> to use
             </param>
             <returns>The generated or cached proxy class.</returns>
+        </member>
+        <member name="P:Spring.Aop.Framework.DynamicProxy.CachedAopProxyFactory.CountCachedTypes">
+            <summary>
+            Returns the number of proxy types in the cache
+            </summary>
         </member>
         <member name="T:Spring.Aop.Framework.DynamicProxy.CachedAopProxyFactory.ProxyTypeCacheKey">
             <summary>
@@ -3832,12 +4057,6 @@
             List of introductions. 
             </summary>
         </member>
-        <member name="F:Spring.Aop.Framework.AdvisedSupport._introductionsArray">
-            <summary> 
-            Array updated on changes to the advisors list, which is easier to
-            manipulate internally
-            </summary>
-        </member>
         <member name="F:Spring.Aop.Framework.AdvisedSupport.interfaceMap">
             <summary>
             Interface map specifying which object should interface methods be
@@ -3872,6 +4091,12 @@
             The advisor chain factory.
             </summary>
         </member>
+        <member name="F:Spring.Aop.Framework.AdvisedSupport.autoDetectInterfaces">
+            <summary>
+            If no explicit interfaces are specified, interfaces will be automatically determined 
+            from the target type
+            </summary>
+        </member>
         <member name="M:Spring.Aop.Framework.AdvisedSupport.#ctor">
             <summary>
             Creates a new instance of the
@@ -3888,6 +4113,33 @@
             <exception cref="T:Spring.Aop.Framework.AopConfigException">
             If this 
             </exception>
+        </member>
+        <member name="M:Spring.Aop.Framework.AdvisedSupport.#ctor(System.Object)">
+            <summary>
+            Creates a new instance of the <see cref="T:Spring.Aop.Framework.ProxyFactory"/>
+            class that proxys all of the interfaces exposed by the supplied
+            <paramref name="target"/>.
+            </summary>
+            <param name="target">The object to proxy.</param>
+            <exception cref="T:Spring.Aop.Framework.AopConfigException">
+            If the <paramref name="target"/> is <cref lang="null"/>.
+            </exception>
+        </member>
+        <member name="M:Spring.Aop.Framework.AdvisedSupport.#ctor(Spring.Aop.ITargetSource)">
+            <summary>
+            Creates a new instance of the <see cref="T:Spring.Aop.Framework.ProxyFactory"/>
+            class that proxys all of the interfaces exposed by the supplied
+            <paramref name="targetSource"/>'s target.
+            </summary>
+            <param name="targetSource">The <see cref="T:Spring.Aop.ITargetSource"/> providing access to the object to proxy.</param>
+            <exception cref="T:Spring.Aop.Framework.AopConfigException">
+            If the <paramref name="targetSource"/> is <cref lang="null"/>.
+            </exception>
+        </member>
+        <member name="M:Spring.Aop.Framework.AdvisedSupport.SetInterfacesInternal(System.Type[])">
+            <summary>
+            Set interfaces to be proxied, bypassing locking and <see cref="P:Spring.Aop.Framework.ProxyConfig.IsFrozen"/>
+            </summary>
         </member>
         <member name="M:Spring.Aop.Framework.AdvisedSupport.IsInterfaceProxied(System.Type)">
             <summary>
@@ -4179,9 +4431,16 @@
             to the advised target, this method returns the <see cref="M:System.Object.ToString"/>
             equivalent for the AOP proxy itself.
             </summary>
+            <remarks>To override this format, override <see cref="M:Spring.Aop.Framework.AdvisedSupport.ToProxyConfigStringInternal"/></remarks>
             <returns>
             A <see cref="T:System.String"/> description of the proxy configuration.
             </returns>
+        </member>
+        <member name="M:Spring.Aop.Framework.AdvisedSupport.ToProxyConfigStringInternal">
+            <summary>
+            Returns textual information about this configuration object
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:Spring.Aop.Framework.AdvisedSupport.AddListener(Spring.Aop.Framework.IAdvisedSupportListener)">
             <summary>
@@ -4392,11 +4651,6 @@
             Bring the advisors array up to date with the list.
             </summary>
         </member>
-        <member name="M:Spring.Aop.Framework.AdvisedSupport.UpdateIntroductionsArray">
-            <summary>
-            Bring the introductions array up to date with the list.
-            </summary>
-        </member>
         <member name="M:Spring.Aop.Framework.AdvisedSupport.InterfacesChanged">
             <summary>
             Callback method that is invoked when the list of proxied interfaces
@@ -4412,7 +4666,7 @@
             </p>
             </remarks>
         </member>
-        <member name="M:Spring.Aop.Framework.AdvisedSupport.InterceptorsChanged">
+        <member name="M:Spring.Aop.Framework.AdvisedSupport.AdviceChanged">
             <summary>
             Callback method that is invoked when the interceptor list has changed.
             </summary>
@@ -4436,6 +4690,11 @@
             </remarks>
             <seealso cref="M:Spring.Aop.Framework.IAopProxyFactory.CreateAopProxy(Spring.Aop.Framework.AdvisedSupport)"/>
         </member>
+        <member name="M:Spring.Aop.Framework.AdvisedSupport.CountNonIntroductionInterfaces">
+            <summary>
+            Calculates the number of <see cref="P:Spring.Aop.Framework.AdvisedSupport.Interfaces"/> not delegating to one of the <see cref="P:Spring.Aop.Framework.AdvisedSupport.Introductions"/>.
+            </summary>
+        </member>
         <member name="M:Spring.Aop.Framework.AdvisedSupport.CopyConfigurationFrom(Spring.Aop.Framework.AdvisedSupport)">
             <summary>
             Copies the configuration from the supplied other
@@ -4455,17 +4714,29 @@
             instance.
             </param>
         </member>
-        <member name="M:Spring.Aop.Framework.AdvisedSupport.ToString">
+        <member name="M:Spring.Aop.Framework.AdvisedSupport.CopyConfigurationFrom(Spring.Aop.Framework.AdvisedSupport,Spring.Aop.ITargetSource,System.Collections.IList,System.Collections.IList)">
             <summary>
-            A <see cref="T:System.String"/> that represents the current
-            <see cref="T:Spring.Aop.Framework.ProxyConfig"/> configuration.
+            Copies the configuration from the supplied other
+            <see cref="T:Spring.Aop.Framework.AdvisedSupport"/> into this instance.
             </summary>
-            <returns>
-            A <see cref="T:System.String"/> that represents the current
-            <see cref="T:Spring.Aop.Framework.ProxyConfig"/> configuration.
-            </returns>
+            <remarks>
+            <p>
+            Useful when this instance has been created using the no-argument
+            constructor, and needs to get all of its confiuration data from
+            another <see cref="T:Spring.Aop.Framework.AdvisedSupport"/> (most
+            usually to have an independant copy of said configuration data).
+            </p>
+            </remarks>
+            <param name="other">
+            The <see cref="T:Spring.Aop.Framework.AdvisedSupport"/> instance
+            containing the configiration data that is to be copied into this
+            instance.
+            </param>
+            <param name="targetSource">the new target source</param>
+            <param name="advisors">the advisors for the chain</param>
+            <param name="introductions">the introductions for the chain</param>
         </member>
-        <member name="M:Spring.Aop.Framework.AdvisedSupport.ToStringInternal">
+        <member name="M:Spring.Aop.Framework.AdvisedSupport.ToString">
             <summary>
             A <see cref="T:System.String"/> that represents the current
             <see cref="T:Spring.Aop.Framework.ProxyConfig"/> configuration.
@@ -4605,6 +4876,12 @@
             Ttypically a proxy configuration or an actual proxy.
             </summary>
             <value>The type of the target or null if not known.</value>
+        </member>
+        <member name="P:Spring.Aop.Framework.AdvisedSupport.AutoDetectInterfaces">
+            <summary>
+            If no explicit interfaces are specified, interfaces will be automatically determined 
+            from the target type on proxy creation. Defaults to true
+            </summary>
         </member>
         <member name="P:Spring.Aop.Framework.AdvisedSupport.Target">
             <summary>
@@ -4868,6 +5145,16 @@
             <author>Juergen Hoeller</author>
             <author>Aleksandar Seovic (.NET)</author>
         </member>
+        <member name="M:Spring.Aop.Framework.AopUtils.IsAopProxyType(System.Type)">
+            <summary>
+            Is the supplied <paramref name="objectType"/> an AOP proxy?
+            </summary>
+            <remarks>
+            Return whether the given type is either a composition-based or a decorator-based proxy type.
+            </remarks>
+            <param name="objectType">The type to be checked.</param>
+            <returns><see langword="true"/> if the supplied <paramref name="objectType"/> is an AOP proxy type.</returns>
+        </member>
         <member name="M:Spring.Aop.Framework.AopUtils.IsAopProxy(System.Object)">
             <summary>
             Is the supplied <paramref name="instance"/> an AOP proxy?
@@ -4892,6 +5179,16 @@
             an composition-based AOP proxy.
             </returns>
         </member>
+        <member name="M:Spring.Aop.Framework.AopUtils.IsCompositionAopProxyType(System.Type)">
+            <summary>
+            Is the supplied <paramref name="objectType"/> a composition based AOP proxy type?
+            </summary>
+            <remarks>
+            Return whether the given type is a composition-based proxy type.
+            </remarks>
+            <param name="objectType">The type to be checked.</param>
+            <returns><see langword="true"/> if the supplied <paramref name="objectType"/> is a composition based AOP proxy type.</returns>
+        </member>
         <member name="M:Spring.Aop.Framework.AopUtils.IsDecoratorAopProxy(System.Object)">
             <summary>
             Is the supplied <paramref name="instance"/> a decorator-based AOP proxy?
@@ -4901,6 +5198,16 @@
             <see langword="true"/> if the supplied <paramref name="instance"/> is
             an decorator-based AOP proxy.
             </returns>
+        </member>
+        <member name="M:Spring.Aop.Framework.AopUtils.IsDecoratorAopProxyType(System.Type)">
+            <summary>
+            Is the supplied <paramref name="objectType"/> a composition based AOP proxy type?
+            </summary>
+            <remarks>
+            Return whether the given type is a composition-based proxy type.
+            </remarks>
+            <param name="objectType">The type to be checked.</param>
+            <returns><see langword="true"/> if the supplied <paramref name="objectType"/> is a composition based AOP proxy type.</returns>
         </member>
         <member name="M:Spring.Aop.Framework.AopUtils.GetAllInterfaces(System.Object)">
             <summary>
@@ -4963,6 +5270,33 @@
             <see langword="true"/> if the pointcut can apply on any method.
             </returns>
         </member>
+        <member name="M:Spring.Aop.Framework.AopUtils.CanApply(Spring.Aop.IPointcut,System.Type,System.Type[],System.Boolean)">
+            <summary> 
+            Can the supplied <paramref name="pointcut"/> apply at all on the
+            supplied <paramref name="targetType"/>?
+            </summary>
+            <remarks>
+            <p>
+            This is an important test as it can be used to optimize out a
+            pointcut for a class.
+            </p>
+            <p>
+            Invoking this method with a <paramref name="targetType"/> that is
+            an interface type will always yield a <see langword="false"/>
+            return value.
+            </p>
+            </remarks>
+            <param name="pointcut">The pointcut being tested.</param>
+            <param name="targetType">The class being tested.</param>
+            <param name="proxyInterfaces">
+            The interfaces being proxied. If <see langword="null"/>, all
+            methods on a class may be proxied.
+            </param>
+            <param name="hasIntroductions">whether or not the advisor chain for the target object includes any introductions.</param>
+            <returns>
+            <see langword="true"/> if the pointcut can apply on any method.
+            </returns>
+        </member>
         <member name="M:Spring.Aop.Framework.AopUtils.CanApply(Spring.Aop.IAdvisor,System.Type,System.Type[])">
             <summary> 
             Can the supplied <paramref name="advisor"/> apply at all on the
@@ -4980,6 +5314,28 @@
             The interfaces being proxied. If <see langword="null"/>, all
             methods on a class may be proxied.
             </param>
+            <returns>
+            <see langword="true"/> if the advisor can apply on any method.
+            </returns>
+        </member>
+        <member name="M:Spring.Aop.Framework.AopUtils.CanApply(Spring.Aop.IAdvisor,System.Type,System.Type[],System.Boolean)">
+            <summary> 
+            Can the supplied <paramref name="advisor"/> apply at all on the
+            supplied <paramref name="targetType"/>?
+            </summary>
+            <remarks>
+            <p>
+            This is an important test as it can be used to optimize out an
+            advisor for a class.
+            </p>
+            </remarks>
+            <param name="advisor">The advisor to check.</param>
+            <param name="targetType">The class being tested.</param>
+            <param name="proxyInterfaces">
+            The interfaces being proxied. If <see langword="null"/>, all
+            methods on a class may be proxied.
+            </param>
+            <param name="hasIntroductions">whether or not the advisor chain for the target object includes any introductions.</param>
             <returns>
             <see langword="true"/> if the advisor can apply on any method.
             </returns>
@@ -5306,6 +5662,26 @@
             </remarks>
             <param name="interfaces">The interfaces to implement.</param>
         </member>
+        <member name="M:Spring.Aop.Framework.ProxyFactory.#ctor(System.Type,AopAlliance.Intercept.IInterceptor)">
+            <summary>
+            Creates a new instance of the <see cref="T:Spring.Aop.Framework.ProxyFactory"/> class for the 
+            given interface and interceptor.
+            </summary>
+            <remarks>Convenience method for creating a proxy for a single interceptor
+            , assuming that the interceptor handles all calls itself rather than delegating
+            to a target, like in the case of remoting proxies.</remarks>
+            <param name="proxyInterface">The interface that the proxy should implement.</param>
+            <param name="interceptor">The interceptor that the proxy should invoke.</param>
+        </member>
+        <member name="M:Spring.Aop.Framework.ProxyFactory.#ctor(System.Type,Spring.Aop.ITargetSource)">
+            <summary>
+            Create a new instance of the <see cref="T:Spring.Aop.Framework.ProxyFactory"/> class for the specified
+            <see cref="T:Spring.Aop.ITargetSource"/> making the proxy implement the specified interface.
+            </summary>
+            <remarks></remarks>
+            <param name="proxyInterface">The interface that the proxy should implement.</param>
+            <param name="targetSource">The target source that the proxy should invoek.</param>
+        </member>
         <member name="M:Spring.Aop.Framework.ProxyFactory.GetProxy">
             <summary>
             Creates a new proxy according to the settings in this factory.
@@ -5395,19 +5771,19 @@
             <seealso cref="T:Spring.Aop.IAdvisor"/>
             <seealso cref="T:Spring.Aop.Target.SingletonTargetSource"/>
         </member>
-        <member name="F:Spring.Aop.Framework.ProxyFactoryObject.GlobalInterceptorSuffix">
-            <summary>
-            This suffix in a value in an interceptor list indicates to expand globals.
-            </summary>
-        </member>
         <member name="F:Spring.Aop.Framework.ProxyFactoryObject.logger">
             <summary>
-            The shared <see cref="T:Common.Logging.ILog"/> instance for this class.
+            The <see cref="T:Common.Logging.ILog"/> instance for this class.
             </summary>
         </member>
         <member name="F:Spring.Aop.Framework.ProxyFactoryObject.singleton">
             <summary>
             Is the object managed by this factory a singleton or a prototype?
+            </summary>
+        </member>
+        <member name="F:Spring.Aop.Framework.ProxyFactoryObject.GlobalInterceptorSuffix">
+            <summary>
+            This suffix in a value in an interceptor list indicates to expand globals.
             </summary>
         </member>
         <member name="F:Spring.Aop.Framework.ProxyFactoryObject.singletonInstance">
@@ -5420,18 +5796,10 @@
             The owning object factory (which cannot be changed after this object is initialized).
             </summary>
         </member>
-        <member name="F:Spring.Aop.Framework.ProxyFactoryObject.sourceDictionary">
-            <summary> 
-            The mapping from an <see cref="T:Spring.Aop.IPointcut"/> or interceptor
-            to an object name (or <see lang="null"/>), depending on where it was
-            sourced from.
+        <member name="F:Spring.Aop.Framework.ProxyFactoryObject.advisorAdapterRegistry">
+            <summary>
+            The advisor adapter registry for wrapping pure advices and pointcuts according to needs
             </summary>
-            <remarks>
-            <p>
-            If it's sourced from object name, it will need to be
-            refreshed each time a new prototype instance is created.
-            </p>
-            </remarks>
         </member>
         <member name="F:Spring.Aop.Framework.ProxyFactoryObject.interceptorNames">
             <summary>
@@ -5459,6 +5827,22 @@
             <see cref="T:Spring.Objects.Factory.IObjectFactory"/>).
             </summary>
         </member>
+        <member name="F:Spring.Aop.Framework.ProxyFactoryObject.initialized">
+            <summary>
+            Indicates if the advisor chain has already been initialized
+            </summary>
+        </member>
+        <member name="F:Spring.Aop.Framework.ProxyFactoryObject.freezeProxy">
+            <summary>
+            Indicate whether this config shall be frozen upon creation 
+            of the first proxy instance
+            </summary>
+        </member>
+        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.#ctor">
+            <summary>
+            Creates a new instance of ProxyFactoryObject
+            </summary>
+        </member>
         <member name="M:Spring.Aop.Framework.ProxyFactoryObject.GetObject">
             <summary> 
             Creates an instance of the AOP proxy to be returned by this factory
@@ -5476,7 +5860,12 @@
             </returns>
             <seealso cref="M:Spring.Objects.Factory.IFactoryObject.GetObject"/>
         </member>
-        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.ConfigureAdvisorChain">
+        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.Initialize">
+            <summary>
+            Initialize this proxy factory - usually called after all properties are set
+            </summary>
+        </member>
+        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.InitializeAdvisorChain">
             <summary>Create the advisor (interceptor) chain.</summary>
             <remarks>
             The advisors that are sourced from an ObjectFactory will be refreshed each time
@@ -5484,23 +5873,18 @@
             the factory API are unaffected by such changes.
             </remarks>
         </member>
-        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.ConfigureIntroductions">
+        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.AddGlobalAdvisor(Spring.Objects.Factory.IListableObjectFactory,System.String)">
+            <summary> Add all global interceptors and pointcuts.</summary>
+        </member>
+        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.InitializeIntroductionChain">
             <summary>
             Configures introductions for this proxy.
             </summary>
         </member>
-        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.AddGlobalAdvisor(Spring.Objects.Factory.IListableObjectFactory,System.String)">
-            <summary> Add all global interceptors and pointcuts.</summary>
-        </member>
         <member name="M:Spring.Aop.Framework.ProxyFactoryObject.AddGlobalIntroduction(Spring.Objects.Factory.IListableObjectFactory,System.String)">
             <summary> Add all global introductions.</summary>
         </member>
-        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.AddAdvisor(System.Object,System.String)">
-            <summary> Add the given interceptor or pointcut to the interceptor list.</summary>
-            <param name="next">interceptor or pointcut to add</param>
-            <param name="name">object name from which we obtained this object in our owning object factory</param>
-        </member>
-        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.AddIntroduction(System.Object,System.String)">
+        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.AddIntroductionOnChainCreation(System.Object,System.String)">
             <summary>Add the introduction to the introduction list.</summary>
             <remarks>
             If specified parameter is IIntroducionAdvisor it is added directly, otherwise it is wrapped
@@ -5509,50 +5893,79 @@
             <param name="introduction">introducion to add</param>
             <param name="name">object name from which we obtained this object in our owning object factory</param>
         </member>
-        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.RefreshAdvisorChain">
-            <summary> Refresh named objects from the interceptor chain.
-            We need to do this every time a new prototype instance is returned,
-            to return distinct instances of prototype interfaces and pointcuts.
-            </summary>
-        </member>
-        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.RefreshTarget">
+        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.FreshTargetSource">
             <summary>
             Refreshes target object for prototype instances.
             </summary>
         </member>
-        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.RefreshIntroductions">
+        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.FreshAdvisorChain">
             <summary> Refresh named objects from the interceptor chain.
             We need to do this every time a new prototype instance is returned,
             to return distinct instances of prototype interfaces and pointcuts.
             </summary>
         </member>
-        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.NamedObjectToAdvisor(System.Object)">
-            <summary>Wraps pointcut or interceptor with appropriate advisor</summary>
-            <param name="next">pointcut or interceptor that needs to be wrapped with advisor</param>
-            <returns>Advisor</returns>
+        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.FreshIntroductionChain">
+            <summary> Refresh named objects from the interceptor chain.
+            We need to do this every time a new prototype instance is returned,
+            to return distinct instances of prototype interfaces and pointcuts.
+            </summary>
         </member>
         <member name="M:Spring.Aop.Framework.ProxyFactoryObject.NamedObjectToTargetSource(System.Object)">
             <summary>Wraps target with SingletonTargetSource if necessary</summary>
             <param name="target">target or target source object</param>
             <returns>target source passed or target wrapped with SingletonTargetSource</returns>
         </member>
-        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.NamedObjectToIntroduction(System.Object)">
+        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.NamedObjectToAdvisor(System.Object)">
             <summary>Wraps introduction with IIntroductionAdvisor if necessary</summary>
+            <summary>Wraps pointcut or interceptor with appropriate advisor</summary>
+            <param name="next">pointcut or interceptor that needs to be wrapped with advisor</param>
+            <returns>Advisor</returns>
+        </member>
+        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.NamedObjectToIntroduction(System.Object)">
             <param name="introduction">object to wrap</param>
             <returns>Introduction advisor</returns>
         </member>
-        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.Activated(Spring.Aop.Framework.AdvisedSupport)">
-            <seealso cref="M:Spring.Aop.Framework.IAdvisedSupportListener.Activated(Spring.Aop.Framework.AdvisedSupport)">
-            </seealso>
+        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.InterfacesChanged">
+            <summary>
+            Callback method that is invoked when the list of proxied interfaces
+            has changed.
+            </summary>
+            <remarks>
+            <p>
+            An example of such a change would be when a new introduction is
+            added. Resetting
+            <see cref="P:Spring.Aop.Framework.AdvisedSupport.ProxyType"/> to
+            <cref lang="null"/> will cause a new proxy <see cref="T:System.Type"/>
+            to be generated on the next call to get a proxy.
+            </p>
+            </remarks>
         </member>
-        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.AdviceChanged(Spring.Aop.Framework.AdvisedSupport)">
-            <summary> No need to do anything when advice change, proxy can handle those changes by itself.</summary>
-            <seealso cref="M:Spring.Aop.Framework.IAdvisedSupportListener.AdviceChanged(Spring.Aop.Framework.AdvisedSupport)">
-            </seealso>
+        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.ToProxyConfigStringInternal">
+            <summary>
+            Returns textual information about this configuration object
+            </summary>
         </member>
-        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.InterfacesChanged(Spring.Aop.Framework.AdvisedSupport)">
-            <summary>Implementation of listener for AdvisedSupport.InterfacesChanged event</summary>
-            <param name="advisedSupport">event source</param>
+        <member name="M:Spring.Aop.Framework.ProxyFactoryObject.CheckInterceptorNames">
+            <summary>
+            Check the interceptorNames list whether it contains a target name as final element.
+            If found, remove the final name from the list and set it as targetName.
+            </summary>
+        </member>
+        <member name="P:Spring.Aop.Framework.ProxyFactoryObject.FreezeProxy">
+            <summary>
+            Indicate whether this config shall be frozen upon creation 
+            of the first proxy instance
+            </summary>
+        </member>
+        <member name="P:Spring.Aop.Framework.ProxyFactoryObject.IsFrozen">
+            <summary>
+            If set true, any attempt to modify this proxy configuration will raise an exception
+            </summary>
+        </member>
+        <member name="P:Spring.Aop.Framework.ProxyFactoryObject.AdvisorAdapterRegistry">
+            <summary>
+            Specify the AdvisorAdapterRegistry to use. Default is the <see cref="P:Spring.Aop.Framework.Adapter.GlobalAdvisorAdapterRegistry.Instance"/>
+            </summary>
         </member>
         <member name="P:Spring.Aop.Framework.ProxyFactoryObject.ProxyInterfaces">
             <summary>
@@ -5654,6 +6067,134 @@
             <summary>
             Is the object managed by this factory a singleton or a prototype?
             </summary>
+        </member>
+        <member name="T:Spring.Aop.IIntroductionAdvisor">
+            <summary>
+            Superinterface for advisors that perform one or more AOP
+            <b>introductions</b>.
+            </summary>
+            <remarks>
+            <p>
+            This interface cannot be implemented directly; subinterfaces must
+            provide the advice type implementing the introduction.
+            </p>
+            <p>
+            Introduction is the implementation of additional interfaces (not
+            implemented by a target) via AOP advice.
+            </p>
+            </remarks>
+            <seealso cref="T:Spring.Aop.IIntroductionInterceptor"/>
+            <author>Rod Johnson</author>
+            <author>Aleksandar Seovic (.NET)</author>
+        </member>
+        <member name="T:Spring.Aop.IAdvisor">
+            <summary>
+            Base interface holding AOP advice and a filter determining the
+            applicability of the advice (such as a pointcut).
+            </summary>
+            <remarks>
+            <note>
+            This interface is not for use by Spring.NET users, but exists rather to
+            allow for commonality in the support for different types of advice
+            within the framework.
+            </note>
+            <p>
+            Spring.NET AOP is centered on <b>around advice</b> delivered via method
+            <b>interception</b>, compliant with the AOP Alliance interception API. 
+            The <see cref="T:Spring.Aop.IAdvisor"/> interface allows support for
+            different types of advice, such as <b>before</b> and <b>after</b>
+            advice, which need not be implemented using interception.
+            </p>
+            </remarks>
+            <author>Rod Johnson</author>
+            <author>Aleksandar Seovic (.NET)</author>
+            <seealso cref="T:Spring.Aop.IMethodBeforeAdvice"/>
+            <seealso cref="T:Spring.Aop.IAfterReturningAdvice"/>
+            <seealso cref="T:Spring.Aop.IThrowsAdvice"/>
+            <seealso cref="T:AopAlliance.Intercept.IMethodInterceptor"/>
+        </member>
+        <member name="P:Spring.Aop.IAdvisor.IsPerInstance">
+            <summary>
+            Is this advice associated with a particular instance?
+            </summary>
+            <remarks>
+            <p>
+            An advisor that was creating a mixin would be a per instance
+            operation and would thus return <see langword="true"/>. If the
+            advisor is not per instance, it is shared with all instances of the
+            advised class obtained from the same Spring.NET IoC container.
+            </p>
+            <p>
+            Use <c>singleton</c> and <c>prototype</c> object definitions or
+            appropriate programmatic proxy creation to ensure that
+            <see cref="T:Spring.Aop.IAdvisor"/>s have the correct lifecycle model. 
+            </p>
+            <note>
+            This method is not currently used by the framework.
+            </note>
+            </remarks>
+            <value>
+            <see langword="true"/> if this advice is associated with a
+            particular instance.
+            </value>
+        </member>
+        <member name="P:Spring.Aop.IAdvisor.Advice">
+            <summary>
+            Return the advice part of this aspect.
+            </summary>
+            <remarks>
+            <p>
+            An advice may be an interceptor, a throws advice, before advice,
+            introduction etc.
+            </p>
+            </remarks>
+            <returns>
+            The advice that should apply if the pointcut matches.
+            </returns>
+        </member>
+        <member name="M:Spring.Aop.IIntroductionAdvisor.ValidateInterfaces">
+            <summary>
+            Can the advised interfaces be implemented by the introduction
+            advice?
+            </summary>
+            <remarks>
+            <p>
+            Invoked <b>before</b> adding an
+            <seealso cref="T:Spring.Aop.IIntroductionAdvisor"/>.
+            </p>
+            </remarks>
+            <exception cref="T:System.ArgumentException">
+            If the advised interfaces cannot be implemented by the introduction
+            advice.
+            </exception>
+            <seealso cref="P:Spring.Aop.IIntroductionAdvisor.Interfaces"/>
+        </member>
+        <member name="P:Spring.Aop.IIntroductionAdvisor.TypeFilter">
+            <summary>
+            Returns the filter determining which target classes this
+            introduction should apply to. 
+            </summary>
+            <remarks>
+            <p>
+            This is the <see cref="T:System.Type"/> part of a pointcut.
+            Be advised that method matching doesn't make sense in the context
+            of introductions.
+            </p>
+            </remarks>
+            <value>
+            The filter determining which target classes this introduction
+            should apply to. 
+            </value>
+        </member>
+        <member name="P:Spring.Aop.IIntroductionAdvisor.Interfaces">
+            <summary>
+            Gets the interfaces introduced by this
+            <see cref="T:Spring.Aop.IAdvisor"/>.
+            </summary>
+            <value>
+            The interfaces introduced by this
+            <see cref="T:Spring.Aop.IAdvisor"/>.
+            </value>
         </member>
         <member name="T:Spring.Aop.Framework.ReflectiveMethodInvocation">
             <summary>
@@ -5797,71 +6338,6 @@
             <author>Aleksandar Seovic (.NET)</author>
             <seealso cref="T:Spring.Aop.IIntroductionAdvisor"/>
         </member>
-        <member name="T:Spring.Aop.IAdvisor">
-            <summary>
-            Base interface holding AOP advice and a filter determining the
-            applicability of the advice (such as a pointcut).
-            </summary>
-            <remarks>
-            <note>
-            This interface is not for use by Spring.NET users, but exists rather to
-            allow for commonality in the support for different types of advice
-            within the framework.
-            </note>
-            <p>
-            Spring.NET AOP is centered on <b>around advice</b> delivered via method
-            <b>interception</b>, compliant with the AOP Alliance interception API. 
-            The <see cref="T:Spring.Aop.IAdvisor"/> interface allows support for
-            different types of advice, such as <b>before</b> and <b>after</b>
-            advice, which need not be implemented using interception.
-            </p>
-            </remarks>
-            <author>Rod Johnson</author>
-            <author>Aleksandar Seovic (.NET)</author>
-            <seealso cref="T:Spring.Aop.IMethodBeforeAdvice"/>
-            <seealso cref="T:Spring.Aop.IAfterReturningAdvice"/>
-            <seealso cref="T:Spring.Aop.IThrowsAdvice"/>
-            <seealso cref="T:AopAlliance.Intercept.IMethodInterceptor"/>
-        </member>
-        <member name="P:Spring.Aop.IAdvisor.IsPerInstance">
-            <summary>
-            Is this advice associated with a particular instance?
-            </summary>
-            <remarks>
-            <p>
-            An advisor that was creating a mixin would be a per instance
-            operation and would thus return <see langword="true"/>. If the
-            advisor is not per instance, it is shared with all instances of the
-            advised class obtained from the same Spring.NET IoC container.
-            </p>
-            <p>
-            Use <c>singleton</c> and <c>prototype</c> object definitions or
-            appropriate programmatic proxy creation to ensure that
-            <see cref="T:Spring.Aop.IAdvisor"/>s have the correct lifecycle model. 
-            </p>
-            <note>
-            This method is not currently used by the framework.
-            </note>
-            </remarks>
-            <value>
-            <see langword="true"/> if this advice is associated with a
-            particular instance.
-            </value>
-        </member>
-        <member name="P:Spring.Aop.IAdvisor.Advice">
-            <summary>
-            Return the advice part of this aspect.
-            </summary>
-            <remarks>
-            <p>
-            An advice may be an interceptor, a throws advice, before advice,
-            introduction etc.
-            </p>
-            </remarks>
-            <returns>
-            The advice that should apply if the pointcut matches.
-            </returns>
-        </member>
         <member name="P:Spring.Aop.IPointcutAdvisor.Pointcut">
             <summary>
             The <see cref="T:Spring.Aop.IPointcut"/> that drives this advisor.
@@ -5930,6 +6406,18 @@
         <member name="P:Spring.Aop.Support.AbstractPointcutAdvisor.Pointcut">
             <summary>
             The <see cref="T:Spring.Aop.IPointcut"/> that drives this advisor.
+            </summary>
+        </member>
+        <member name="M:Spring.Aop.Support.AbstractGenericPointcutAdvisor.Equals(System.Object)">
+            <summary>
+             2 <see cref="T:Spring.Aop.Support.AbstractGenericPointcutAdvisor"/>s are considered equals, if 
+             a) their pointcuts are equal
+             b) their advices are equal
+            </summary>
+        </member>
+        <member name="M:Spring.Aop.Support.AbstractGenericPointcutAdvisor.GetHashCode">
+            <summary>
+            Calculates a unique hashcode based on advice + pointcut
             </summary>
         </member>
         <member name="M:Spring.Aop.Support.AbstractGenericPointcutAdvisor.ToString">
@@ -6647,7 +7135,22 @@
             <see cref="T:Spring.Aop.Support.AttributeMatchMethodPointcutAdvisor"/> class
             for the supplied <paramref name="advice"/>.
             </summary>
-            <param name="advice"></param>
+            <param name="advice">the advice to apply if the pointcut matches</param>
+        </member>
+        <member name="M:Spring.Aop.Support.AttributeMatchMethodPointcutAdvisor.#ctor(System.Type,System.Boolean,AopAlliance.Aop.IAdvice)">
+            <summary>
+            Creates a new instance of the
+            <see cref="T:Spring.Aop.Support.AttributeMatchMethodPointcutAdvisor"/> class
+            for the supplied <paramref name="advice"/>.
+            </summary>
+            <param name="attribute">
+            The <see cref="T:System.Attribute"/> to match.
+            </param>
+            <param name="inherit">
+            Flag that controls whether or not the inheritance tree of the
+            method to be included in the search for the <see cref="T:System.Attribute"/>?
+            </param>
+            <param name="advice">the advice to apply if the pointcut matches</param>
         </member>
         <member name="P:Spring.Aop.Support.AttributeMatchMethodPointcutAdvisor.IsPerInstance">
             <summary>
@@ -7037,69 +7540,6 @@
             <author>Rod Johnson</author>
             <author>Aleksandar Seovic (.NET)</author>
         </member>
-        <member name="T:Spring.Aop.IIntroductionAdvisor">
-            <summary>
-            Superinterface for advisors that perform one or more AOP
-            <b>introductions</b>.
-            </summary>
-            <remarks>
-            <p>
-            This interface cannot be implemented directly; subinterfaces must
-            provide the advice type implementing the introduction.
-            </p>
-            <p>
-            Introduction is the implementation of additional interfaces (not
-            implemented by a target) via AOP advice.
-            </p>
-            </remarks>
-            <seealso cref="T:Spring.Aop.IIntroductionInterceptor"/>
-            <author>Rod Johnson</author>
-            <author>Aleksandar Seovic (.NET)</author>
-        </member>
-        <member name="M:Spring.Aop.IIntroductionAdvisor.ValidateInterfaces">
-            <summary>
-            Can the advised interfaces be implemented by the introduction
-            advice?
-            </summary>
-            <remarks>
-            <p>
-            Invoked <b>before</b> adding an
-            <seealso cref="T:Spring.Aop.IIntroductionAdvisor"/>.
-            </p>
-            </remarks>
-            <exception cref="T:System.ArgumentException">
-            If the advised interfaces cannot be implemented by the introduction
-            advice.
-            </exception>
-            <seealso cref="P:Spring.Aop.IIntroductionAdvisor.Interfaces"/>
-        </member>
-        <member name="P:Spring.Aop.IIntroductionAdvisor.TypeFilter">
-            <summary>
-            Returns the filter determining which target classes this
-            introduction should apply to. 
-            </summary>
-            <remarks>
-            <p>
-            This is the <see cref="T:System.Type"/> part of a pointcut.
-            Be advised that method matching doesn't make sense in the context
-            of introductions.
-            </p>
-            </remarks>
-            <value>
-            The filter determining which target classes this introduction
-            should apply to. 
-            </value>
-        </member>
-        <member name="P:Spring.Aop.IIntroductionAdvisor.Interfaces">
-            <summary>
-            Gets the interfaces introduced by this
-            <see cref="T:Spring.Aop.IAdvisor"/>.
-            </summary>
-            <value>
-            The interfaces introduced by this
-            <see cref="T:Spring.Aop.IAdvisor"/>.
-            </value>
-        </member>
         <member name="M:Spring.Aop.Support.DefaultIntroductionAdvisor.#ctor(AopAlliance.Aop.IAdvice)">
             <summary>
             Creates a new instance of the
@@ -7188,6 +7628,30 @@
             <exception cref="T:System.ArgumentException">
             If any of the <see cref="P:Spring.Aop.Support.DefaultIntroductionAdvisor.Interfaces"/> are not interface <see cref="T:System.Type"/>.
             </exception>
+        </member>
+        <member name="M:Spring.Aop.Support.DefaultIntroductionAdvisor.Equals(Spring.Aop.Support.DefaultIntroductionAdvisor)">
+            <summary>
+            2 IntroductionAdvisors are considered equal if
+            a) they are of the same type
+            b) their introduction advices are equal
+            c) they introduce the same interfaces
+            </summary>
+        </member>
+        <member name="M:Spring.Aop.Support.DefaultIntroductionAdvisor.Equals(System.Object)">
+            <summary>
+            2 IntroductionAdvisors are considered equal if
+            a) they are of the same type
+            b) their introduction advices are equal
+            c) they introduce the same interfaces
+            </summary>
+        </member>
+        <member name="M:Spring.Aop.Support.DefaultIntroductionAdvisor.GetHashCode">
+            <summary>
+            2 IntroductionAdvisors are considered equal if
+            a) they are of the same type
+            b) their introduction advices are equal
+            c) they introduce the same interfaces
+            </summary>
         </member>
         <member name="P:Spring.Aop.Support.DefaultIntroductionAdvisor.TypeFilter">
             <summary>
@@ -7299,6 +7763,18 @@
             <param name="pointcut">
             The pointcut to use.
             </param>
+        </member>
+        <member name="M:Spring.Aop.Support.DefaultPointcutAdvisor.Equals(System.Object)">
+            <summary>
+             2 <see cref="T:Spring.Aop.Support.DefaultPointcutAdvisor"/>s are considered equal, if 
+             a) their pointcuts are equal
+             b) their advices are equal
+            </summary>
+        </member>
+        <member name="M:Spring.Aop.Support.DefaultPointcutAdvisor.GetHashCode">
+            <summary>
+            Calculates a unique hashcode based on advice + pointcut
+            </summary>
         </member>
         <member name="M:Spring.Aop.Support.DefaultPointcutAdvisor.ToString">
             <summary>
@@ -8287,6 +8763,17 @@
             property) or if initialization fails.
             </exception>
             <seealso cref="M:Spring.Objects.Factory.IInitializingObject.AfterPropertiesSet"/>
+        </member>
+        <member name="M:Spring.Aop.Target.AbstractPrototypeTargetSource.ToString">
+            <summary>
+            Returns a textual representation of this target source instance.
+            This implementation returns <see cref="M:Spring.Aop.Target.AbstractPrototypeTargetSource.GetDescription"/>
+            </summary>
+        </member>
+        <member name="M:Spring.Aop.Target.AbstractPrototypeTargetSource.GetDescription">
+            <summary>
+            Returns a textual representation of this target source instance
+            </summary>
         </member>
         <member name="F:Spring.Aop.Target.AbstractPrototypeTargetSource.logger">
             <summary>
@@ -9578,6 +10065,16 @@
             </summary>
             <author>Aleksandar Seovic</author>
         </member>
+        <member name="F:Spring.Aspects.Cache.BaseCacheAdvice.logger">
+            <summary>
+            Shared logger instance
+            </summary>
+        </member>
+        <member name="M:Spring.Aspects.Cache.BaseCacheAdvice.#ctor">
+            <summary>
+            Create a new default instance.
+            </summary>
+        </member>
         <member name="M:Spring.Aspects.Cache.BaseCacheAdvice.GetCache(System.String)">
             <summary>
             Returns an <see cref="T:Spring.Caching.ICache"/> instance based on the cache name.
@@ -9587,6 +10084,15 @@
             Cache instance for the specified <paramref name="name"/> if one
             is registered in the application context, or <c>null</c> if it isn't.
             </returns>
+            <exception cref="T:Spring.Objects.Factory.NoSuchObjectDefinitionException">
+            If there's no cache instance registered for the specified <paramref name="name"/>.
+            </exception>
+            <exception cref="T:Spring.Objects.ObjectsException">
+            If the cache instance could not be created.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            If the cache instance registered does not implement the <see cref="T:Spring.Caching.ICache"/> interface.
+            </exception>
         </member>
         <member name="M:Spring.Aspects.Cache.BaseCacheAdvice.PrepareVariables(System.Reflection.MethodInfo,System.Object[])">
             <summary>
@@ -9626,12 +10132,26 @@
             If the SpEL expression could not be successfuly resolved to a boolean.
             </exception>
         </member>
-        <member name="M:Spring.Aspects.Cache.BaseCacheAdvice.GetCustomAttribute(System.Reflection.MethodInfo,System.Type)">
+        <member name="M:Spring.Aspects.Cache.BaseCacheAdvice.GetCustomAttribute(System.Reflection.ICustomAttributeProvider,System.Type)">
             <summary>
             Retrieves custom attribute for the specified attribute type.
             </summary>
-            <param name="method">
-            Method to get attribute from.
+            <param name="attributeProvider">
+            Method/Parameter to get attribute from.
+            </param>
+            <param name="attributeType">
+            Attribute type.
+            </param>
+            <returns>
+            Attribute instance if one is found, <c>null</c> otherwise.
+            </returns>
+        </member>
+        <member name="M:Spring.Aspects.Cache.BaseCacheAdvice.GetCustomAttributes(System.Reflection.ICustomAttributeProvider,System.Type)">
+            <summary>
+            Retrieves custom attribute for the specified attribute type.
+            </summary>
+            <param name="attributeProvider">
+            Method/Parameter to get attribute from.
             </param>
             <param name="attributeType">
             Attribute type.
@@ -9849,7 +10369,7 @@
             throws an exception.
             </exception>
         </member>
-        <member name="M:Spring.Aspects.Cache.CacheResultAdvice.GetReturnValue(AopAlliance.Intercept.IMethodInvocation,Spring.Caching.CacheResultAttribute,System.Boolean@)">
+        <member name="M:Spring.Aspects.Cache.CacheResultAdvice.GetReturnValue(AopAlliance.Intercept.IMethodInvocation,Spring.Caching.CacheResultAttribute,System.Collections.IDictionary,System.Boolean@)">
             <summary>
             Obtains return value either from cache or by invoking target method
             and caches it if necessary.
@@ -9862,6 +10382,9 @@
             in which case no caching of the result as a whole will be performed 
             (if the result is collection, individual items could still be cached separately).
             </param>
+            <param name="vars">
+            Variables for expression evaluation.
+            </param>
             <param name="cacheHit">
             Returns <c>true</c> if the return value was found in cache, <c>false</c> otherwise.
             </param>
@@ -9869,7 +10392,7 @@
             Return value for the specified <paramref name="invocation"/>.
             </returns>
         </member>
-        <member name="M:Spring.Aspects.Cache.CacheResultAdvice.CacheResultItems(System.Collections.IEnumerable,Spring.Caching.CacheResultItemsAttribute[])">
+        <member name="M:Spring.Aspects.Cache.CacheResultAdvice.CacheResultItems(System.Collections.IEnumerable,Spring.Caching.CacheResultItemsAttribute[],System.Collections.IDictionary)">
             <summary>
             Caches each item from the collection returned by target method.
             </summary>
@@ -9878,6 +10401,9 @@
             </param>
             <param name="itemInfoArray">
             Attributes specifying where and how to cache each item from the collection.
+            </param>
+            <param name="vars">
+            Variables for expression evaluation.
             </param>
         </member>
         <member name="T:Spring.Aspects.Cache.CacheResultAdvisor">
@@ -10649,6 +11175,11 @@
             Creates a new advice instance using this advice type's name for logging by default.
             </summary>
         </member>
+        <member name="M:Spring.Aspects.Logging.AbstractLoggingAdvice.#ctor(Common.Logging.ILog)">
+            <summary>
+            Creates a new advice instance using the given logger by default.
+            </summary>
+        </member>
         <member name="M:Spring.Aspects.Logging.AbstractLoggingAdvice.Invoke(AopAlliance.Intercept.IMethodInvocation)">
             <summary>
             Adds logging to the method invocation.  
@@ -10837,6 +11368,12 @@
             </summary>
             <param name="useDynamicLogger">if set to <c>true</c> to use dynamic logger, if
             <c>false</c> use static logger.</param>
+        </member>
+        <member name="M:Spring.Aspects.Logging.SimpleLoggingAdvice.#ctor(Common.Logging.ILog)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Spring.Aspects.Logging.SimpleLoggingAdvice"/> class.
+            </summary>
+            <param name="defaultLogger">the default logger to use</param>
         </member>
         <member name="M:Spring.Aspects.Logging.SimpleLoggingAdvice.InvokeUnderLog(AopAlliance.Intercept.IMethodInvocation,Common.Logging.ILog)">
             <summary>
@@ -11128,6 +11665,16 @@
              </remarks>
              <author>Mark Pollack</author>
         </member>
+        <member name="M:Spring.Aspects.RetryAdvice.#ctor">
+            <summary>
+            Creates a new RetryAdvice instance, using <see cref="M:System.Threading.Thread.Sleep(System.TimeSpan)"/> for delaying retries
+            </summary>
+        </member>
+        <member name="M:Spring.Aspects.RetryAdvice.#ctor(Spring.Aspects.RetryAdvice.SleepHandler)">
+            <summary>
+            Creates a new RetryAdvice instance, using any arbitrary callback for delaying retries
+            </summary>
+        </member>
         <member name="M:Spring.Aspects.RetryAdvice.Invoke(AopAlliance.Intercept.IMethodInvocation)">
             <summary>
             Implement this method to perform extra treatments before and after
@@ -11216,6 +11763,11 @@
             Gets or sets the Regex string used to parse advice expressions starting with 'on exception (constraint)' and exception handling actions.
             </summary>
             <value>The regex string to parse advice expressions starting with 'on exception (constraint)' and exception handling actions.</value>
+        </member>
+        <member name="T:Spring.Aspects.RetryAdvice.SleepHandler">
+            <summary>
+            The type of the callback that is called for delaying retries.
+            </summary>
         </member>
         <member name="T:Spring.Aspects.RetryExceptionHandler">
              <summary>
