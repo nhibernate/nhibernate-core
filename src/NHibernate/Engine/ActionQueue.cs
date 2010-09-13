@@ -109,8 +109,9 @@ namespace NHibernate.Engine
 
 		private void ExecuteActions(IList list)
 		{
-			foreach (IExecutable executable in list)
-				Execute(executable);
+			int size = list.Count;
+			for (int i = 0; i < size; i++)
+				Execute((IExecutable)list[i]);
 
 			list.Clear();
 			session.Batcher.ExecuteBatch();
