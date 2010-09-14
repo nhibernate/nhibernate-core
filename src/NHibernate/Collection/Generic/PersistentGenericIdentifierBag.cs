@@ -37,7 +37,9 @@ namespace NHibernate.Collection.Generic
 		 * from the better performance the use of generic implementation have.
 		 */
 		private IList<T> gvalues;
+		
 		public PersistentIdentifierBag() {}
+		
 		public PersistentIdentifierBag(ISessionImplementor session) : base(session) {}
 
 		public PersistentIdentifierBag(ISessionImplementor session, ICollection<T> coll) : base(session, coll as ICollection)
@@ -64,7 +66,7 @@ namespace NHibernate.Collection.Generic
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
 			identifiers = anticipatedSize <= 0 ? new Dictionary<int, object>() : new Dictionary<int, object>(anticipatedSize + 1);
-			InternalValues = anticipatedSize <= 0 ? new List<T>() : new List<T>(anticipatedSize);
+			InternalValues = (IList<T>)persister.CollectionType.Instantiate(anticipatedSize);
 		}
 
 		#region IList<T> Members

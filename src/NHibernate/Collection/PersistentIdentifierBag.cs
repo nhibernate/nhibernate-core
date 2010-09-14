@@ -221,6 +221,8 @@ namespace NHibernate.Collection
 		{
 			object element = persister.ReadElement(reader, owner, descriptor.SuffixedElementAliases, Session);
 			object id = persister.ReadIdentifier(reader, descriptor.SuffixedIdentifierAlias, Session);
+			
+			// eliminate duplication if loaded in a cartesian product
 			if (!identifiers.ContainsValue(id))
 			{
 				identifiers[values.Count] = id;
