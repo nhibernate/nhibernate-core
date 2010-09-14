@@ -666,7 +666,7 @@ namespace NHibernate
 		
         /// <summary>
         /// Create a new instance of <c>Query</c> for the given query expression
-        /// <param name="queryExpression"/>A hibernate query expression</param>
+        /// <param name="queryExpression">A hibernate query expression</param>
         /// <returns>The query</returns>
         /// </summary>
         IQuery CreateQuery(IQueryExpression queryExpression);

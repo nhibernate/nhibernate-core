@@ -3,7 +3,7 @@ namespace NHibernate.Cfg.Loquacious
 	/// <summary>
 	/// Properties of TypeDef configuration.
 	/// </summary>
-	/// <seealso cref="ConfigurationExtensions.TypeDefinition{TDef}<>"/>
+	/// <seealso cref="ConfigurationExtensions.TypeDefinition{TDef}"/>
 	public interface ITypeDefConfigurationProperties
 	{
 		/// <summary>
@@ -19,7 +19,7 @@ namespace NHibernate.Cfg.Loquacious
 		/// <example>
 		/// As <paramref name="value"/> an anonimous object can be used:
 		/// <code>
-		///	configure.TypeDefinition<TableHiLoGenerator>(c=>
+		///	configure.TypeDefinition&lt;TableHiLoGenerator&gt;(c=>
 		///	                                             	{
 		///	                                             		c.Alias = "HighLow";
 		///	                                             		c.Properties = new {max_lo = 99};

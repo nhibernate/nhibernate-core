@@ -181,11 +181,14 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// 
+		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
 		/// </summary>
-		/// <param name="querySqlString"></param>
-		/// <param name="hasOffset"></param>
-		/// <returns></returns>
+		/// <param name="querySqlString">The <see cref="SqlString"/> to base the limit query off.</param>
+		/// <param name="offset">Offset of the first row to be returned by the query (zero-based)</param>
+		/// <param name="limit">Maximum number of rows to be returned by the query</param>
+		/// <param name="offsetParameterIndex">Optionally, the Offset parameter index</param>
+		/// <param name="limitParameterIndex">Optionally, the Limit parameter index</param>
+		/// <returns>A new <see cref="SqlString"/> that contains the <c>LIMIT</c> clause.</returns>
 		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit, int? offsetParameterIndex, int? limitParameterIndex)
 		{
 			var pagingBuilder = new SqlStringBuilder();

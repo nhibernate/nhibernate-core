@@ -21,7 +21,7 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
 		/// </summary>
-		/// <param name="querySqlString">The <see cref="SqlString"/> to base the limit query off of.</param>
+		/// <param name="querySqlString">The <see cref="SqlString"/> to base the limit query off.</param>
 		/// <param name="offset">Offset of the first row to be returned by the query (zero-based)</param>
 		/// <param name="limit">Maximum number of rows to be returned by the query</param>
 		/// <param name="offsetParameterIndex">Optionally, the Offset parameter index</param>
