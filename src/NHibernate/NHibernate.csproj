@@ -119,6 +119,8 @@
     <Compile Include="Dialect\PostgreSQLDialect.cs" />
     <Compile Include="Dialect\SQLiteDialect.cs" />
     <Compile Include="Dialect\SybaseDialect.cs" />
+    <Compile Include="Dialect\SybaseSQLAnywhere10Dialect.cs" />
+    <Compile Include="Dialect\SybaseSQLAnywhere11Dialect.cs" />
     <Compile Include="Dialect\TypeNames.cs" />
     <Compile Include="Driver\DB2Driver.cs" />
     <Compile Include="Driver\DriverBase.cs" />
