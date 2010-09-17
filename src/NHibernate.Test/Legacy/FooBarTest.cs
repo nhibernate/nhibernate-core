@@ -473,7 +473,7 @@ namespace NHibernate.Test.Legacy
 					.List();
 			}
 
-			if ((Dialect is SybaseDialect) || (Dialect is MsSql2000Dialect))
+			if (Dialect is MsSql2000Dialect)
 			{
 				s.CreateQuery("select baz from Baz as baz join baz.FooArray foo group by baz order by sum(foo.Float)").Enumerable();
 			}

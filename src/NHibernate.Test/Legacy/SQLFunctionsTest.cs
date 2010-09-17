@@ -434,19 +434,12 @@ namespace NHibernate.Test.Legacy
 				                	"from s in class Simple where not( upper(s.Name)='yada' or 1=2 or 'foo'='bar' or not('foo'='foo') or 'foo' like 'bar')")
 				                	.List().Count);
 
-				if (!(Dialect is MySQLDialect) && !(Dialect is SybaseDialect) && !(Dialect is MsSql2000Dialect))
+				if (!(Dialect is MySQLDialect) && !(Dialect is MsSql2000Dialect))
 				{
 					// Dialect.MckoiDialect and Dialect.InterbaseDialect also included
 					// My Sql has a funny concatenation operator
 					Assert.AreEqual(1,
 					                s.CreateQuery("from s in class Simple where lower(s.Name || ' foo')='simple 1 foo'").List().Count);
-				}
-
-				if ((Dialect is SybaseDialect))
-				{
-					Assert.AreEqual(1,
-					                s.CreateQuery("from s in class Simple where lower( concat(s.Name, ' foo') ) = 'simple 1 foo'").List
-					                	().Count);
 				}
 
 				if ((Dialect is MsSql2000Dialect))

@@ -1,15 +1,44 @@
 ﻿using System.Data;
 using System.Data.Common;
+
+using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
 {
-	public class SybaseASA9Dialect : SybaseAnywhereDialect
+	/// <summary>
+	/// An SQL dialect for Sybase Adaptive Server Anywhere 9.0
+	/// </summary>
+	/// <remarks>
+	/// <p>
+	/// This dialect probably will not work with schema-export.  If anyone out there
+	/// can fill in the ctor with DbTypes to Strings that would be helpful.
+	/// </p>
+	/// The dialect defaults the following configuration properties:
+	/// <list type="table">
+	///	<listheader>
+	///		<term>Property</term>
+	///		<description>Default Value</description>
+	///	</listheader>
+	///	<item>
+	///		<term>connection.driver_class</term>
+	///		<description><see cref="NHibernate.Driver.ASAClientDriver" /></description>
+	///	</item>
+	///	<item>
+	///		<term>prepare_sql</term>
+	///		<description><see langword="false" /></description>
+	///	</item>
+	/// </list>
+	/// </remarks>
+	public class SybaseASA9Dialect : Dialect
 	{
 		public SybaseASA9Dialect()
 		{
+			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.ASAClientDriver";
+			DefaultProperties[Environment.PrepareSql] = "false";
+			
 			RegisterColumnType(DbType.AnsiStringFixedLength, 255, "CHAR($l)");
 			RegisterColumnType(DbType.AnsiString, "VARCHAR(255)");
 			RegisterColumnType(DbType.AnsiString, 255, "VARCHAR($l)");
@@ -48,8 +77,10 @@ namespace NHibernate.Dialect
 			RegisterFunction("nullif", new StandardSafeSQLFunction("nullif", 2));
 			RegisterFunction("lower", new StandardSafeSQLFunction("lower", NHibernateUtil.String, 1));
 			RegisterFunction("upper", new StandardSafeSQLFunction("upper", NHibernateUtil.String, 1));
-			;
+
 			RegisterFunction("now", new StandardSQLFunction("now"));
+			
+			RegisterKeyword("top");
 		}
 
 		public override bool SupportsLimit
@@ -72,6 +103,58 @@ namespace NHibernate.Dialect
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new SybaseAnywhereDataBaseMetaData(connection);
+		}
+		
+		public override string AddColumnString
+		{
+			get { return "add"; }
+		}
+
+		public override string NullColumnString
+		{
+			get { return " null"; }
+		}
+
+		public override bool QualifyIndexName
+		{
+			get { return false; }
+		}
+
+		public override string ForUpdateString
+		{
+			get { return string.Empty; }
+		}
+
+		public override bool SupportsIdentityColumns
+		{
+			get { return true; }
+		}
+
+		public override string IdentitySelectString
+		{
+			get { return "select @@identity"; }
+		}
+
+		/// <summary></summary>
+		public override string IdentityColumnString
+		{
+			get { return "IDENTITY NOT NULL"; }
+		}
+
+		/// <summary></summary>
+		public override string NoColumnsInsertString
+		{
+			get { return "DEFAULT VALUES"; }
+		}
+
+		/// <summary>
+		/// ASA does not require to drop constraint before dropping tables, and DROP statement
+		/// syntax used by Hibernate to drop constraint is not compatible with ASA, so disable it.
+		/// Comments matchs SybaseAnywhereDialect from Hibernate-3.1 src
+		/// </summary>
+		public override bool DropConstraints
+		{
+			get { return false; }
 		}
 
 		private static int GetAfterSelectInsertPoint(SqlString sql)

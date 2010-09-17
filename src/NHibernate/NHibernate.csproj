@@ -118,7 +118,6 @@
     <Compile Include="Dialect\MySQLDialect.cs" />
     <Compile Include="Dialect\PostgreSQLDialect.cs" />
     <Compile Include="Dialect\SQLiteDialect.cs" />
-    <Compile Include="Dialect\SybaseDialect.cs" />
     <Compile Include="Dialect\SybaseSQLAnywhere10Dialect.cs" />
     <Compile Include="Dialect\SybaseSQLAnywhere11Dialect.cs" />
     <Compile Include="Dialect\TypeNames.cs" />
@@ -136,7 +135,6 @@
     <Compile Include="Driver\OracleDataClientDriver.cs" />
     <Compile Include="Driver\SqlClientDriver.cs" />
     <Compile Include="Driver\SQLiteDriver.cs" />
-    <Compile Include="Driver\SybaseClientDriver.cs" />
     <Compile Include="Engine\Cascade.cs" />
     <Compile Include="Engine\IBatcher.cs" />
     <Compile Include="Engine\IMapping.cs" />
@@ -1022,13 +1020,10 @@
     <Compile Include="Dialect\Schema\ITableMetadata.cs" />
     <Compile Include="Dialect\Schema\MsSqlMetaData.cs" />
     <Compile Include="Dialect\Schema\OracleMetaData.cs" />
-    <Compile Include="Dialect\Sybase11Dialect.cs" />
-    <Compile Include="Dialect\SybaseAdoNet12Dialect.cs" />
     <Compile Include="Driver\ASA10ClientDriver.cs" />
     <Compile Include="Driver\ISqlParameterFormatter.cs" />
     <Compile Include="Driver\SqlStringFormatter.cs" />
     <Compile Include="Criterion\SubqueryProjection.cs" />
-    <Compile Include="Driver\SybaseAdoNet12ClientDriver.cs" />
     <Compile Include="EmptyInterceptor.cs" />
     <Compile Include="Engine\ActionQueue.cs" />
     <Compile Include="Engine\AssociationKey.cs" />
@@ -1290,7 +1285,6 @@
     <Compile Include="Dialect\IngresDialect.cs" />
     <Compile Include="Dialect\MsSql2005Dialect.cs" />
     <Compile Include="Dialect\PostgreSQL81Dialect.cs" />
-    <Compile Include="Dialect\SybaseAnywhereDialect.cs" />
     <Compile Include="Driver\ASAClientDriver.cs" />
     <Compile Include="Driver\DB2400Driver.cs" />
     <Compile Include="Driver\FirebirdClientDriver.cs" />

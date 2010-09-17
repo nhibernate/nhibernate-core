@@ -656,7 +656,7 @@ namespace NHibernate.Test.Legacy
 			d2.Master = (m);
 			m.AddDetail(d1);
 			m.AddDetail(d2);
-			if ((Dialect is SybaseDialect) || (Dialect is MsSql2000Dialect))
+			if (Dialect is MsSql2000Dialect)
 			{
 				s.Save(d1);
 			}
@@ -748,7 +748,7 @@ namespace NHibernate.Test.Legacy
 			d2.Master = m;
 			m.AddDetail(d1);
 			m.AddDetail(d2);
-			if ((Dialect is SybaseDialect) || (Dialect is MsSql2000Dialect))
+			if (Dialect is MsSql2000Dialect)
 			{
 				s.Save(d1);
 				s.Save(d2);

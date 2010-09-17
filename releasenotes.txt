@@ -1,8 +1,9 @@
-Build 3.0.0.Alpha2
+Build 3.0.0.Alpha3
 =============================
-** Known BREAKING CHANGES from NH2.1.1.GA to NH3.0.0.Alpha2
+** Known BREAKING CHANGES from NH2.1.1.GA to NH3.0.0.Alpha3
 	##### Run time #####
 		* (NH-2199) - null values in maps/dictionaries are no longer silenty ignored/deleted
+		* (NH-1894) - SybaseAnywhereDialect has been removed, and replaced with SybaseASA9Dialect
 
 	##### Possible Breaking Changes #####
 		* (NH-2251) - Signature change for GetLimitString in Dialect
