@@ -25,16 +25,12 @@ namespace NHibernate.Dialect
 	///
 	/// </summary>
 	/// <remarks>
-	/// The SybaseSQLAnywhere11Dialect defaults the following configuration properties:
+	/// The dialect defaults the following configuration properties:
 	/// <list type="table">
 	///		<listheader>
 	///			<term>Property</term>
 	///			<description>Default Value</description>
 	///		</listheader>
-	///		<item>
-	///			<term>use_outer_join</term>
-	///			<description><see langword="true" /></description>
-	///		</item>
 	///		<item>
 	///			<term>connection.driver_class</term>
 	///			<description><see cref="NHibernate.Driver.ASA10ClientDriver" /></description>

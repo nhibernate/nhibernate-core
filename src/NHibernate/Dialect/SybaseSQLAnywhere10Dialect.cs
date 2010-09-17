@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Lock;
+using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Mapping;
@@ -40,16 +41,12 @@ namespace NHibernate.Dialect
 	///
 	/// </summary>
 	/// <remarks>
-	/// The SybaseSQLAnywhere10Dialect defaults the following configuration properties:
+	/// The dialect defaults the following configuration properties:
 	/// <list type="table">
 	///		<listheader>
 	///			<term>Property</term>
 	///			<description>Default Value</description>
 	///		</listheader>
-	///		<item>
-	///			<term>use_outer_join</term>
-	///			<description><see langword="true" /></description>
-	///		</item>
 	///		<item>
 	///			<term>connection.driver_class</term>
 	///			<description><see cref="NHibernate.Driver.ASA10ClientDriver" /></description>
@@ -882,5 +879,10 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
+		
+		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
+		{
+			return new SybaseAnywhereDataBaseMetaData(connection);
+		}		
 	}
 }
