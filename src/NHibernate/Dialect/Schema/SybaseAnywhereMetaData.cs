@@ -2,6 +2,8 @@
 using System.Data;
 using System.Data.Common;
 
+using Iesi.Collections.Generic;
+
 namespace NHibernate.Dialect.Schema
 {
 	// Metadata for connections using the iAnywhere.Data.SQLAnywhere ADO.NET provider
@@ -14,6 +16,17 @@ namespace NHibernate.Dialect.Schema
 			return new SybaseAnywhereTableMetaData(rs, this, extras);
 		}
 
+		public override ISet<string> GetReservedWords()
+		{
+			var result = new HashedSet<string>();
+			DataTable dtReservedWords = Connection.GetSchema(DbMetaDataCollectionNames.ReservedWords);
+			foreach (DataRow row in dtReservedWords.Rows)
+			{
+				result.Add(row["reserved_word"].ToString());
+			}
+			return result;
+		}
+		
 		public override DataTable GetTables(string catalog, string schemaPattern, string tableNamePattern, string[] types)
 		{
 			var restrictions = new[] {schemaPattern, tableNamePattern, null};
@@ -36,7 +49,7 @@ namespace NHibernate.Dialect.Schema
 		}
 
 		public override DataTable GetColumns(string catalog, string schemaPattern, string tableNamePattern,
-		                                     string columnNamePattern)
+												string columnNamePattern)
 		{
 			var restrictions = new[] {schemaPattern, tableNamePattern, null};
 			DataTable objTbl = Connection.GetSchema("Columns", restrictions);
