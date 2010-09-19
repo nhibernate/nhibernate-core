@@ -18,6 +18,11 @@ namespace NHibernate.Cfg.Loquacious
 			set { cfg.SetProperty(Environment.UseMinimalPuts, value.ToString().ToLowerInvariant()); }
 		}
 
+		public bool UseQueryCache
+		{
+			set { cfg.SetProperty(Environment.UseQueryCache, value.ToString().ToLowerInvariant()); }
+		}
+
 		public string RegionsPrefix
 		{
 			set { cfg.SetProperty(Environment.CacheRegionPrefix, value); }
@@ -35,7 +40,8 @@ namespace NHibernate.Cfg.Loquacious
 
 		public void QueryCache<TFactory>() where TFactory : IQueryCache
 		{
-			cfg.SetProperty(Environment.QueryCacheFactory, typeof (TFactory).AssemblyQualifiedName);
+			UseQueryCache = true;
+			cfg.SetProperty(Environment.QueryCacheFactory, typeof(TFactory).AssemblyQualifiedName);
 		}
 
 		#endregion

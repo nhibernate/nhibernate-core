@@ -13,6 +13,7 @@ namespace NHibernate.Cfg.Loquacious
 	public interface ICacheConfigurationProperties
 	{
 		bool UseMinimalPuts { set; }
+		bool UseQueryCache { set; }
 		string RegionsPrefix { set; }
 		byte DefaultExpiration { set; }
 		void Provider<TProvider>() where TProvider : ICacheProvider;
