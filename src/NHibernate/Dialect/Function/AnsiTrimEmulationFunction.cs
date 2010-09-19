@@ -31,11 +31,11 @@ namespace NHibernate.Dialect.Function
 
 		private static readonly ISQLFunction LeadingTrim =
 			new SQLFunctionTemplate(NHibernateUtil.String,
-			                        "replace( replace( rtrim( replace( replace( ?1, ' ', '${space}$' ), ?2, ' ' ) ), ' ', ?2 ), '${space}$', ' ' )");
+			                        "replace( replace( ltrim( replace( replace( ?1, ' ', '${space}$' ), ?2, ' ' ) ), ' ', ?2 ), '${space}$', ' ' )");
 
 		private static readonly ISQLFunction TrailingTrim =
 			new SQLFunctionTemplate(NHibernateUtil.String,
-			                        "replace( replace( ltrim( replace( replace( ?1, ' ', '${space}$' ), ?2, ' ' ) ), ' ', ?2 ), '${space}$', ' ' )");
+			                        "replace( replace( rtrim( replace( replace( ?1, ' ', '${space}$' ), ?2, ' ' ) ), ' ', ?2 ), '${space}$', ' ' )");
 
 		private static readonly ISQLFunction BothTrim =
 			new SQLFunctionTemplate(NHibernateUtil.String,
