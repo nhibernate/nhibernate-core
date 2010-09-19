@@ -28,7 +28,11 @@ namespace NHibernate.Context
 
 		private static System.Type HttpContextType
 		{
-			get { return System.Type.GetType("System.Web.HttpContext, System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"); }
+			get
+			{
+				string mscorlibVersion = typeof(object).Assembly.GetName().Version.ToString();
+				return System.Type.GetType("System.Web.HttpContext, System.Web, Version=" + mscorlibVersion + ", Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
+			}
 		}
 
 		private static void CreateCurrentHttpContextGetter()
