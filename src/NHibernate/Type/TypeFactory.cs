@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
+using System.Xml;
 using NHibernate.Bytecode;
 using NHibernate.Classic;
 using NHibernate.Engine;
@@ -205,6 +206,9 @@ namespace NHibernate.Type
 			RegisterType(typeof (UInt16), NHibernateUtil.UInt16, new[] {"ushort"});
 			RegisterType(typeof (UInt32), NHibernateUtil.UInt32, new[] {"uint"});
 			RegisterType(typeof (UInt64), NHibernateUtil.UInt64, new[] {"ulong"});
+
+			RegisterType(typeof (XmlDocument), NHibernateUtil.XmlDoc, new[] {"xmldoc", "xmldocument", "xml"});
+
 			// object needs to have both class and serializable setup before it can
 			// be created.
 			RegisterType(typeof (Object), NHibernateUtil.Object, new[] {"object"});

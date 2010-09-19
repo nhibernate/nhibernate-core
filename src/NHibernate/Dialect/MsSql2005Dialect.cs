@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -16,6 +15,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 1073741823, "NVARCHAR(MAX)");
 			RegisterColumnType(DbType.AnsiString, 2147483647, "VARCHAR(MAX)");
 			RegisterColumnType(DbType.Binary, 2147483647, "VARBINARY(MAX)");
+			RegisterColumnType(DbType.Xml, "XML");
 		}
 
 		/// <summary>

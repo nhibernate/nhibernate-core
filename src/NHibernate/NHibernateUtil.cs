@@ -281,6 +281,8 @@ namespace NHibernate
 
 		public static readonly NullableType AnsiChar = new AnsiCharType();
 
+		public static readonly NullableType XmlDoc = new XmlDocType();
+
 		/// <summary>
 		/// A NHibernate persistent enum type
 		/// </summary>

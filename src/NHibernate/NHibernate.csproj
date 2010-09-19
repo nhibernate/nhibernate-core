@@ -847,6 +847,7 @@
     <Compile Include="Param\VersionTypeSeedParameterSpecification.cs" />
     <Compile Include="Proxy\AbstractProxyFactory.cs" />
     <Compile Include="SqlCommand\InsertSelect.cs" />
+    <Compile Include="SqlTypes\XmlSqlType.cs" />
     <Compile Include="Tool\hbm2ddl\SchemaMetadataUpdater.cs" />
     <Compile Include="Tool\hbm2ddl\ScriptSplitter.cs" />
     <Compile Include="Transaction\AdoNetWithDistrubtedTransactionFactory.cs" />
@@ -857,6 +858,7 @@
     <Compile Include="Bytecode\ICollectionTypeFactory.cs" />
     <Compile Include="Type\LocalDateTimeType.cs" />
     <Compile Include="Type\UtcDateTimeType.cs" />
+    <Compile Include="Type\XmlDocType.cs" />
     <Compile Include="Util\ExpressionsHelper.cs" />
     <Compile Include="Util\NullableDictionary.cs" />
     <Compile Include="Hql\Ast\ANTLR\Util\PathHelper.cs" />
