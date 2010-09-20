@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using NHibernate.Linq;
 using NHibernate.Test.Linq.Entities;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace NHibernate.Test.Linq
 {
@@ -323,6 +324,19 @@ namespace NHibernate.Test.Linq
 						 select user).ToList();
 
 			Assert.AreEqual(2, query.Count);
+		}
+
+		[Test, Ignore("Not fixed yet NH-2289")]
+		public void WhenTheSourceOfConstantIsICollectionThenNoThrows()
+		{
+			ICollection<string> names = new List<string> {"ayende", "rahien"};
+
+			var query = (from user in db.Users
+			                 where names.Contains(user.Name)
+			                 select user);
+			List<User> result = null;
+			Executing.This(() => result = query.ToList()).Should().NotThrow();
+			result.Count.Should().Be(2);
 		}
 
 		[Test]
