@@ -39,8 +39,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1136
 				person1.AddPercentageToFeeMatrix(0, .20m);
 				person1.AddPercentageToFeeMatrix(50, .15m);
 				person1.AddPercentageToFeeMatrix(100, .1m);
-				person1.RegisterChangeOfAddress(DateTime.Parse("15/04/2005"), address1);
-				person1.RegisterChangeOfAddress(DateTime.Parse("29/05/2007"), address2);
+				person1.RegisterChangeOfAddress(new DateTime(2005, 4, 15), address1);
+				person1.RegisterChangeOfAddress(new DateTime(2007, 5, 29), address2);
 				
 				s.Save(person1);
 				s.Flush();
@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1136
 			using (ISession s = OpenSession())
 			{
 				var person1 = s.Load<Person>(id);
-				person1.RegisterChangeOfAddress(DateTime.Parse("23/03/2008"), new Address("8", "SS7 1TT"));
+				person1.RegisterChangeOfAddress(new DateTime(2008, 3, 23), new Address("8", "SS7 1TT"));
 				s.Save(person1);
 				s.Flush();
 			}
