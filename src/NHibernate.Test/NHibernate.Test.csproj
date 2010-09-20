@@ -450,6 +450,16 @@
     <Compile Include="Linq\ReadonlyTestCase.cs" />
     <Compile Include="Logging\Log4NetLoggerTest.cs" />
     <Compile Include="Logging\LoggerProviderTest.cs" />
+    <Compile Include="NHSpecificTest\NH1136\Address.cs" />
+    <Compile Include="NHSpecificTest\NH1136\FeeMatrixType.cs" />
+    <Compile Include="NHSpecificTest\NH1136\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1136\IMilestoneCollection.cs" />
+    <Compile Include="NHSpecificTest\NH1136\MilestoneCollection.cs" />
+    <Compile Include="NHSpecificTest\NH1136\MilestoneCollectionType.cs" />
+    <Compile Include="NHSpecificTest\NH1136\PersistentMilestoneCollection.cs" />
+    <Compile Include="NHSpecificTest\NH1136\Person.cs" />
+    <Compile Include="NHSpecificTest\NH1136\ReverseSortComparer.cs" />
+    <Compile Include="NHSpecificTest\NH1136\TemporalAddressType.cs" />
     <Compile Include="NHSpecificTest\NH1421\AnEntity.cs" />
     <Compile Include="NHSpecificTest\NH1421\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1836\Entity.cs" />
@@ -1768,6 +1778,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH2111\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2322\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2278\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1136\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.ByteCode.Castle\NHibernate.ByteCode.Castle.csproj">
@@ -2613,6 +2624,7 @@
     <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="NHSpecificTest\NH1136" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

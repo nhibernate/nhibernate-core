@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH1136">
+
+	<class name ="Person" table="PERSON" lazy="false">
+
+		<id name="_id" column="PERSON_ID" access="field">
+			<generator class="identity"/>
+		</id>
+
+		<version name="_version" column ="VERSION" access="field"/>
+
+		<property name="Name" column="NAME" access="nosetter.camelcase-underscore" />
+
+		<map 
+			name="_feeMatrix" 
+			access="field" 
+			generic="true" 
+			cascade="all-delete-orphan" 
+			lazy="true" 
+			table="FEE_MATRIX"
+			collection-type="FeeMatrixType, NHibernate.Test">
+		
+			<key column="PERSON_ID"/>
+			<index column="MILESTONE" type="System.Int32"/>
+			<element column="PERCENTAGE" type="System.Decimal" not-null="true"/>
+		</map>
+
+		<map 
+			name="_historyOfAddresses" 
+			access="field" 
+			generic="true" 
+			cascade="all-delete-orphan" 
+			lazy="true"
+			table="PERSON_ADDRESS_ASSOCIATION"
+			collection-type="TemporalAddressesType, NHibernate.Test">
+
+			<key column="PERSON_ID" />
+			<index column="MOVED_IN_ON" type="System.DateTime"/>
+			<many-to-many class="Address" column="ADDRESS_ID" />
+		</map>
+
+	</class>
+	
+	<class name ="Address" table="ADDRESS" lazy="false">
+
+		<id name="_id" column="ADDRESS_ID" access="field">
+			<generator class="identity"/>
+		</id>
+	
+		<version name="_version" column ="VERSION" access="field"/>
+
+		<property name="Number" column="HOUSE_NUMBER" access="nosetter.camelcase-underscore" />
+	
+		<property name="Postcode" column="POSTCODE" access="nosetter.camelcase-underscore" />
+
+	</class>
+
+</hibernate-mapping>
