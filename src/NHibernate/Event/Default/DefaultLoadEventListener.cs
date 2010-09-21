@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 
 using NHibernate.Cache;
+using NHibernate.Cache.Access;
 using NHibernate.Cache.Entry;
 using NHibernate.Engine;
 using NHibernate.Impl;

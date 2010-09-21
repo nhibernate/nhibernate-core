@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using NHibernate.Cache;
+using NHibernate.Cache.Access;
 using NUnit.Framework;
 
 namespace NHibernate.Test.CacheTest

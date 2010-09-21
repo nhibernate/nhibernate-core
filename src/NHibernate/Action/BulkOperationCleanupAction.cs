@@ -112,15 +112,24 @@ namespace NHibernate.Action
 			// nothing to do
 		}
 
-		public bool HasAfterTransactionCompletion()
+		public BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess
 		{
-			return true;
+			get 
+			{ 
+				return null;
+			}
 		}
 
-		public void AfterTransactionCompletion(bool success)
+		public AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess
 		{
-			EvictEntityRegions();
-			EvictCollectionRegions();
+			get
+			{
+				return new AfterTransactionCompletionProcessDelegate((success) =>
+				{
+					this.EvictEntityRegions();
+					this.EvictCollectionRegions();
+				});
+			}
 		}
 
 		private void EvictCollectionRegions()
@@ -136,7 +145,7 @@ namespace NHibernate.Action
 
 		private void EvictEntityRegions()
 		{
-			if(affectedEntityNames!=null)
+			if (affectedEntityNames != null)
 			{
 				foreach (string entityName in affectedEntityNames)
 				{

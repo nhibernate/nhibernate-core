@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Iesi.Collections.Generic;
 
@@ -39,7 +40,8 @@ namespace NHibernate.Engine
 		private readonly List<CollectionUpdateAction> collectionUpdates;
 		private readonly List<CollectionRemoveAction> collectionRemovals;
 
-		private readonly List<IExecutable> executions;
+		private readonly AfterTransactionCompletionProcessQueue afterTransactionProcesses;
+		private readonly BeforeTransactionCompletionProcessQueue beforeTransactionProcesses;
 
 		public ActionQueue(ISessionImplementor session)
 		{
@@ -52,7 +54,8 @@ namespace NHibernate.Engine
 			collectionUpdates = new List<CollectionUpdateAction>(InitQueueListSize);
 			collectionRemovals = new List<CollectionRemoveAction>(InitQueueListSize);
 
-			executions = new List<IExecutable>(InitQueueListSize * 3);
+			afterTransactionProcesses = new AfterTransactionCompletionProcessQueue(session);
+			beforeTransactionProcesses = new BeforeTransactionCompletionProcessQueue(session);
 		}
 
 		public virtual void Clear()
@@ -103,10 +106,19 @@ namespace NHibernate.Engine
 
 		public void AddAction(BulkOperationCleanupAction cleanupAction)
 		{
-			// Add these directly to the executions queue
-			executions.Add(cleanupAction);
+			RegisterCleanupActions(cleanupAction);
 		}
-
+		
+		public void RegisterProcess(AfterTransactionCompletionProcessDelegate process)
+		{
+			afterTransactionProcesses.Register(process);
+		}
+	
+		public void RegisterProcess(BeforeTransactionCompletionProcessDelegate process)
+		{
+			beforeTransactionProcesses.Register(process);
+		}
+	
 		private void ExecuteActions(IList list)
 		{
 			int size = list.Count;
@@ -119,16 +131,26 @@ namespace NHibernate.Engine
 
 		public void Execute(IExecutable executable)
 		{
-			bool lockQueryCache = session.Factory.Settings.IsQueryCacheEnabled;
-			if (executable.HasAfterTransactionCompletion() || lockQueryCache)
+			try
 			{
-				executions.Add(executable);
+				executable.Execute();
 			}
-			if (lockQueryCache)
+			finally
 			{
-				session.Factory.UpdateTimestampsCache.PreInvalidate(executable.PropertySpaces);
+				RegisterCleanupActions(executable);
 			}
-			executable.Execute();
+		}
+		
+		private void RegisterCleanupActions(IExecutable executable)
+		{
+			beforeTransactionProcesses.Register(executable.BeforeTransactionCompletionProcess);
+			if (session.Factory.Settings.IsQueryCacheEnabled)
+			{
+				string[] spaces = executable.PropertySpaces;
+				afterTransactionProcesses.AddSpacesToInvalidate(spaces);
+				session.Factory.UpdateTimestampsCache.PreInvalidate(spaces);
+			}
+			afterTransactionProcesses.Register(executable.AfterTransactionCompletionProcess);
 		}
 
 		/// <summary> 
@@ -168,42 +190,23 @@ namespace NHibernate.Engine
 			PrepareActions(collectionCreations);
 		}
 
+		/// <summary>
+		/// Execute any registered <see cref="BeforeTransactionCompletionProcessDelegate" />
+		/// </summary>
+		public void BeforeTransactionCompletion() 
+		{
+			beforeTransactionProcesses.BeforeTransactionCompletion();
+		}
+		
 		/// <summary> 
 		/// Performs cleanup of any held cache softlocks.
 		/// </summary>
 		/// <param name="success">Was the transaction successful.</param>
 		public void AfterTransactionCompletion(bool success)
 		{
-			bool invalidateQueryCache = session.Factory.Settings.IsQueryCacheEnabled;
-			foreach (IExecutable exec in executions)
-			{
-				try
-				{
-					try
-					{
-						exec.AfterTransactionCompletion(success);
-					}
-					finally
-					{
-						if (invalidateQueryCache)
-						{
-							session.Factory.UpdateTimestampsCache.Invalidate(exec.PropertySpaces);
-						}
-					}
-				}
-				catch (CacheException ce)
-				{
-					log.Error("could not release a cache lock", ce);
-					// continue loop
-				}
-				catch (Exception e)
-				{
-					throw new HibernateException("Exception releasing cache locks", e);
-				}
-			}
-			executions.Clear();
+			afterTransactionProcesses.AfterTransactionCompletion(success);
 		}
-
+		
 		/// <summary> 
 		/// Check whether the given tables/query-spaces are to be executed against
 		/// given the currently queued actions. 
@@ -212,12 +215,13 @@ namespace NHibernate.Engine
 		/// <returns> True if we contain pending actions against any of the given tables; false otherwise.</returns>
 		public virtual bool AreTablesToBeUpdated(ISet<string> tables)
 		{
-			return AreTablesToUpdated(updates, tables) || 
-				AreTablesToUpdated(insertions, tables) || 
-				AreTablesToUpdated(deletions, tables) || 
-				AreTablesToUpdated(collectionUpdates, tables) || 
-				AreTablesToUpdated(collectionCreations, tables) || 
-				AreTablesToUpdated(collectionRemovals, tables);
+			return 
+				AreTablesToUpdated(updates, tables) 
+				|| AreTablesToUpdated(insertions, tables) 
+				|| AreTablesToUpdated(deletions, tables) 
+				|| AreTablesToUpdated(collectionUpdates, tables) 
+				|| AreTablesToUpdated(collectionCreations, tables) 
+				|| AreTablesToUpdated(collectionRemovals, tables);
 		}
 
 		/// <summary> 
@@ -407,13 +411,27 @@ loopInsertion: ;
 			}
 		}
 
+		public bool HasBeforeTransactionActions() 
+		{
+			return beforeTransactionProcesses.HasActions;
+		}
+		
+		public bool HasAfterTransactionActions() 
+		{
+			return afterTransactionProcesses.HasActions;
+		}
+		
 		public bool HasAnyQueuedActions
 		{
 			get
 			{
 				return
-					updates.Count > 0 || insertions.Count > 0 || deletions.Count > 0 || collectionUpdates.Count > 0
-					|| collectionRemovals.Count > 0 || collectionCreations.Count > 0;
+					updates.Count > 0 
+					|| insertions.Count > 0 
+					|| deletions.Count > 0 
+					|| collectionUpdates.Count > 0
+					|| collectionRemovals.Count > 0
+					|| collectionCreations.Count > 0;
 			}
 		}
 
@@ -434,6 +452,128 @@ loopInsertion: ;
 				.Append(" collectionUpdates=")
 				.Append(collectionUpdates)
 				.Append("]").ToString();
+		}
+		
+		[Serializable]
+		private class BeforeTransactionCompletionProcessQueue 
+		{
+			private ISessionImplementor session;
+			private IList<BeforeTransactionCompletionProcessDelegate> processes = new List<BeforeTransactionCompletionProcessDelegate>();
+
+			public bool HasActions
+			{
+				get { return processes.Count > 0; }
+			}
+
+			public BeforeTransactionCompletionProcessQueue(ISessionImplementor session) 
+			{
+				this.session = session;
+			}
+	
+			public void Register(BeforeTransactionCompletionProcessDelegate process) 
+			{
+				if (process == null) 
+				{
+					return;
+				}
+				processes.Add(process);
+			}
+	
+			public void BeforeTransactionCompletion() 
+			{
+				int size = processes.Count;
+				for (int i = 0; i < size; i++)
+				{
+					try 
+					{
+						BeforeTransactionCompletionProcessDelegate process = processes[i];
+						process();
+					}
+					catch (HibernateException e)
+					{
+						throw e;
+					}
+					catch (Exception e) 
+					{
+						throw new AssertionFailure("Unable to perform BeforeTransactionCompletion callback", e);
+					}
+				}
+				processes.Clear();
+			}
+		}
+
+		[Serializable]
+		private class AfterTransactionCompletionProcessQueue 
+		{
+			private ISessionImplementor session;
+			private ISet<string> querySpacesToInvalidate = new HashedSet<string>();
+			private IList<AfterTransactionCompletionProcessDelegate> processes = new List<AfterTransactionCompletionProcessDelegate>(InitQueueListSize * 3);
+
+			public bool HasActions
+			{
+				get { return processes.Count > 0; }
+			}
+			
+			public AfterTransactionCompletionProcessQueue(ISessionImplementor session)
+			{
+				this.session = session;
+			}
+	
+			public void AddSpacesToInvalidate(string[] spaces)
+			{
+				if (spaces == null)
+				{
+					return;
+				}
+				for (int i = 0, max = spaces.Length; i < max; i++)
+				{
+					this.AddSpaceToInvalidate(spaces[i]);
+				}
+			}
+	
+			public void AddSpaceToInvalidate(string space) 
+			{
+				querySpacesToInvalidate.Add(space);
+			}
+	
+			public void Register(AfterTransactionCompletionProcessDelegate process)
+			{
+				if (process == null) 
+				{
+					return;
+				}
+				processes.Add(process);
+			}
+	
+			public void AfterTransactionCompletion(bool success) 
+			{
+				int size = processes.Count;
+				
+				for (int i = 0; i < size; i++)
+				{
+					try
+					{
+						AfterTransactionCompletionProcessDelegate process = processes[i];
+						process(success);
+					}
+					catch (CacheException e)
+					{
+						log.Error( "could not release a cache lock", e);
+						// continue loop
+					}
+					catch (Exception e)
+					{
+						throw new AssertionFailure("Exception releasing cache locks", e);
+					}
+				}
+				processes.Clear();
+	
+				if (session.Factory.Settings.IsQueryCacheEnabled) 
+				{
+					session.Factory.UpdateTimestampsCache.Invalidate(querySpacesToInvalidate.ToArray());
+				}
+				querySpacesToInvalidate.Clear();
+			}
 		}
 	}
 }

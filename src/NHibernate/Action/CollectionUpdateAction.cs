@@ -113,32 +113,46 @@ namespace NHibernate.Action
 			}
 		}
 
-		public override void AfterTransactionCompletion(bool success)
+		public override BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess
 		{
-			// NH Different behavior: to support unlocking collections from the cache.(r3260)
-			if (Persister.HasCache)
+			get 
+			{ 
+				return null; 
+			}
+		}
+
+		public override AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess
+		{
+			get
 			{
-				CacheKey ck = new CacheKey(Key, Persister.KeyType, Persister.Role, Session.EntityMode, Session.Factory);
-
-				if (success)
+				return new AfterTransactionCompletionProcessDelegate((success) =>
 				{
-					// we can't disassemble a collection if it was uninitialized 
-					// or detached from the session
-					if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
+					// NH Different behavior: to support unlocking collections from the cache.(r3260)
+					if (Persister.HasCache)
 					{
-						CollectionCacheEntry entry = new CollectionCacheEntry(Collection, Persister);
-						bool put = Persister.Cache.AfterUpdate(ck, entry, null, Lock);
+						CacheKey ck = new CacheKey(Key, Persister.KeyType, Persister.Role, Session.EntityMode, Session.Factory);
 
-						if (put && Session.Factory.Statistics.IsStatisticsEnabled)
+						if (success)
 						{
-							Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+							// we can't disassemble a collection if it was uninitialized 
+							// or detached from the session
+							if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
+							{
+								CollectionCacheEntry entry = new CollectionCacheEntry(Collection, Persister);
+								bool put = Persister.Cache.AfterUpdate(ck, entry, null, Lock);
+		
+								if (put && Session.Factory.Statistics.IsStatisticsEnabled)
+								{
+									Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+								}
+							}
+						}
+						else
+						{
+							Persister.Cache.Release(ck, Lock);
 						}
 					}
-				}
-				else
-				{
-					Persister.Cache.Release(ck, Lock);
-				}
+				});
 			}
 		}
 	}

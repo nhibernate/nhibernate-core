@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using NHibernate.Cache;
+using NHibernate.Cache.Access;
 using NHibernate.Cache.Entry;
 using NHibernate.Engine;
 using NHibernate.Event;
@@ -134,7 +135,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		public override void AfterTransactionCompletion(bool success)
+		protected override void AfterTransactionCompletionProcessImpl(bool success)
 		{
 			IEntityPersister persister = Persister;
 			if (persister.HasCache)
@@ -160,7 +161,7 @@ namespace NHibernate.Action
 				PostCommitUpdate();
 			}
 		}
-
+		
 		private void PostUpdate()
 		{
 			IPostUpdateEventListener[] postListeners = Session.Listeners.PostUpdateEventListeners;

@@ -1,4 +1,5 @@
 using System.Collections;
+using NHibernate.Cache.Access;
 using NHibernate.Cache.Entry;
 
 namespace NHibernate.Cache

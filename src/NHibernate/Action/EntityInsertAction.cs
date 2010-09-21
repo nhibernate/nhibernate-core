@@ -102,7 +102,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		public override void AfterTransactionCompletion(bool success)
+		protected override void AfterTransactionCompletionProcessImpl(bool success)
 		{
 			//Make 100% certain that this is called before any subsequent ScheduledUpdate.afterTransactionCompletion()!!
 			IEntityPersister persister = Persister;

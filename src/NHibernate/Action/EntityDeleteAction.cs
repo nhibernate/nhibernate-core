@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using NHibernate.Cache;
+using NHibernate.Cache.Access;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Persister.Entity;
@@ -125,8 +126,8 @@ namespace NHibernate.Action
 			}
 			return veto;
 		}
-
-		public override void AfterTransactionCompletion(bool success)
+		
+		protected override void AfterTransactionCompletionProcessImpl(bool success)
 		{
 			if (Persister.HasCache)
 			{

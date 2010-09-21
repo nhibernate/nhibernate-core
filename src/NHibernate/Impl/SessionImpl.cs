@@ -2278,6 +2278,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				log.Debug("before transaction completion");
+				actionQueue.BeforeTransactionCompletion();
 				if (rootSession == null)
 				{
 					try

@@ -72,6 +72,7 @@
     <Compile Include="ADOException.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AssertionFailure.cs" />
+    <Compile Include="Cache\Access\ISoftLock.cs" />
     <Compile Include="Cache\CachedItem.cs" />
     <Compile Include="Cache\CacheException.cs" />
     <Compile Include="Cache\CacheFactory.cs" />
@@ -83,7 +84,6 @@
     <Compile Include="Cache\ICacheProvider.cs" />
     <Compile Include="Cache\IQueryCache.cs" />
     <Compile Include="Cache\IQueryCacheFactory.cs" />
-    <Compile Include="Cache\ISoftLock.cs" />
     <Compile Include="Cache\NonstrictReadWriteCache.cs" />
     <Compile Include="Cache\QueryKey.cs" />
     <Compile Include="Cache\ReadOnlyCache.cs" />
@@ -1553,6 +1553,9 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Cache\Access" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

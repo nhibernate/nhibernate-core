@@ -102,12 +102,36 @@ namespace NHibernate.Action
 
 		public abstract void Execute();
 
-		public bool HasAfterTransactionCompletion()
+		public virtual BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess
+		{
+			get
+			{
+				return new BeforeTransactionCompletionProcessDelegate(BeforeTransactionCompletionProcessImpl);
+			}
+		}
+		
+		public virtual AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess
+		{
+			get
+			{
+				return NeedsAfterTransactionCompletion()
+					? new AfterTransactionCompletionProcessDelegate(AfterTransactionCompletionProcessImpl)
+					: null;
+			}
+		}
+		
+		private bool NeedsAfterTransactionCompletion()
 		{
 			return persister.HasCache || HasPostCommitEventListeners;
 		}
-
-		public abstract void AfterTransactionCompletion(bool success);
+		
+		protected virtual void BeforeTransactionCompletionProcessImpl()
+		{
+		}
+		
+		protected virtual void AfterTransactionCompletionProcessImpl(bool success)
+		{
+		}
 
 		#endregion
 

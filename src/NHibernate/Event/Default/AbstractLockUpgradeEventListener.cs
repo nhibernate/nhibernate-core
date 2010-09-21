@@ -1,6 +1,7 @@
 using System;
 
 using NHibernate.Cache;
+using NHibernate.Cache.Access;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;

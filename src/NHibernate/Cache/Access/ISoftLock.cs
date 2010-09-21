@@ -1,6 +1,6 @@
 using System;
 
-namespace NHibernate.Cache
+namespace NHibernate.Cache.Access
 {
 	/// <summary>
 	/// Marker interface, denoting a client-visible "soft lock" on a cached item.

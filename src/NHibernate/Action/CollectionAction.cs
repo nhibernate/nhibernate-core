@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 using NHibernate.Cache;
+using NHibernate.Cache.Access;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -100,30 +101,32 @@ namespace NHibernate.Action
 			}
 		}
 
-		/// <summary> Execute this action</summary>
+		/// <summary>Execute this action</summary>
 		public abstract void Execute();
 
-		/// <summary> 
-		/// Do we need to retain this instance until after the transaction completes?
-		/// </summary>
-		/// <returns>
-		/// False if this class defines a no-op	has after transaction completion.
-		/// </returns>
-		public bool HasAfterTransactionCompletion()
+		public virtual BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess
 		{
-			return persister.HasCache;
-		}
-
-		/// <summary> Called after the transaction completes</summary>
-		public virtual void AfterTransactionCompletion(bool success)
-		{
-			if (persister.HasCache)
-			{
-				CacheKey ck = new CacheKey(key, persister.KeyType, persister.Role, session.EntityMode, session.Factory);
-				persister.Cache.Release(ck, softLock);
+			get 
+			{ 
+				return null; 
 			}
 		}
 
+		public virtual AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess
+		{
+			get
+			{
+				return new AfterTransactionCompletionProcessDelegate((success) =>
+				{
+					if (persister.HasCache)
+					{
+						CacheKey ck = new CacheKey(key, persister.KeyType, persister.Role, Session.EntityMode, Session.Factory);
+						persister.Cache.Release(ck, softLock);
+					}
+				});
+			}
+		}
+		
 		#endregion
 
 		public ISoftLock Lock
