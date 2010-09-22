@@ -30,8 +30,11 @@ namespace NHibernate.Context
 		{
 			get
 			{
-				string mscorlibVersion = typeof(object).Assembly.GetName().Version.ToString();
-				return System.Type.GetType("System.Web.HttpContext, System.Web, Version=" + mscorlibVersion + ", Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
+				return
+					System.Type.GetType(
+						string.Format(
+							"System.Web.HttpContext, System.Web, Version={0}, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
+							Environment.Version));
 			}
 		}
 
