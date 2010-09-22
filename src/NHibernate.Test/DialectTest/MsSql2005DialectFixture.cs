@@ -159,6 +159,35 @@ namespace NHibernate.Test.DialectTest
 			Assert.AreEqual(current, expected.Length);
 		}
 
+		[Test]
+		public void QuotedStringTokenizerTests()
+		{
+			MsSql2005Dialect.QuotedAndParenthesisStringTokenizer tokenizier =
+				new MsSql2005Dialect.QuotedAndParenthesisStringTokenizer(
+					new SqlString("SELECT fish.\"id column\", fish.'fish name' as 'bar\\' column', f FROM fish"));
+			string[] expected = new string[]
+				{
+					"SELECT",
+					"fish.\"id column\"",
+					",",
+					"fish.'fish name'",
+					"as",
+					"'bar\\' column'",
+					",",
+					"f",
+					"FROM",
+					"fish"
+				};
+			int current = 0;
+			IList<SqlString> tokens = tokenizier.GetTokens();
+			foreach (SqlString token in tokens)
+			{
+				Assert.AreEqual(expected[current], token.ToString());
+				current += 1;
+			}
+			Assert.AreEqual(current, expected.Length);
+		}
+
 	    [Test]
 	    public void GetIfExistsDropConstraintTest_without_schema()
 	    {

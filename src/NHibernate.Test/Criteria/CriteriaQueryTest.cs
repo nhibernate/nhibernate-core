@@ -378,6 +378,7 @@ namespace NHibernate.Test.Criteria
 
 				var result = session.CreateCriteria(typeof(Student))
 					.Add(Subqueries.PropertyIn("Name", dc))
+					.AddOrder(Order.Asc("StudentNumber"))
 					.List<Student>();
 
 				Assert.That(result.Count, Is.EqualTo(2));

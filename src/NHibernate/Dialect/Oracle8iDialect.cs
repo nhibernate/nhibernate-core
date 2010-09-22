@@ -1,14 +1,16 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
-using Environment=NHibernate.Cfg.Environment;
-using System.Data.Common;
+using NHibernate.Util;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
@@ -259,14 +261,16 @@ namespace NHibernate.Dialect
 				isForUpdate = true;
 			}
 
+			string selectColumns = ExtractColumnOrAliasNames(sql);
+
 			var pagingSelect = new SqlStringBuilder(sql.Parts.Count + 10);
 			if (hasOffset)
 			{
-				pagingSelect.Add("select * from ( select row_.*, rownum rownum_ from ( ");
+				pagingSelect.Add("select " + selectColumns + " from ( select row_.*, rownum rownum_ from ( ");
 			}
 			else
 			{
-				pagingSelect.Add("select * from ( ");
+				pagingSelect.Add("select " + selectColumns + " from ( ");
 			}
 			pagingSelect.Add(sql);
 			if (hasOffset)
@@ -284,6 +288,15 @@ namespace NHibernate.Dialect
 			}
 
 			return pagingSelect.ToSqlString();
+		}
+
+		private string ExtractColumnOrAliasNames(SqlString select)
+		{
+			List<SqlString> columnsOrAliases;
+			Dictionary<SqlString, SqlString> aliasToColumn;
+			ExtractColumnOrAliasNames(select, out columnsOrAliases, out aliasToColumn);
+
+			return StringHelper.Join(",", columnsOrAliases);
 		}
 
 		/// <summary> 
