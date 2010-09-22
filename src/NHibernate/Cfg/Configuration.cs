@@ -552,11 +552,14 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public Mappings CreateMappings(Dialect.Dialect dialect)
 		{
+			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
+			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
+
 			ProcessPreMappingBuildProperties();
 			return new Mappings(classes, collections, tables, NamedQueries, NamedSQLQueries, SqlResultSetMappings, Imports,
 								secondPasses, filtersSecondPasses, propertyReferences, namingStrategy, typeDefs, FilterDefinitions, extendsQueue,
 								auxiliaryDatabaseObjects, tableNameBinding, columnNameBindingPerTable, defaultAssembly,
-								defaultNamespace, dialect);
+								defaultNamespace, defaultCatalog, defaultSchema, dialect);
 		}
 
 		private void ProcessPreMappingBuildProperties()

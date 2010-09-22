@@ -110,6 +110,8 @@ namespace NHibernate.Cfg
 			IDictionary<Table, ColumnNames> columnNameBindingPerTable,
 			string defaultAssembly,
 			string defaultNamespace,
+			string defaultCatalog,
+			string defaultSchema,
 			Dialect.Dialect dialect)
 		{
 			this.classes = classes;
@@ -130,6 +132,8 @@ namespace NHibernate.Cfg
 			this.columnNameBindingPerTable = columnNameBindingPerTable;
 			this.defaultAssembly = defaultAssembly;
 			this.defaultNamespace = defaultNamespace;
+			DefaultCatalog = defaultCatalog;
+			DefaultSchema = defaultSchema;
 			this.dialect = dialect;
 			this.filtersSecondPasses = filtersSecondPasses;
 		}
@@ -208,6 +212,9 @@ namespace NHibernate.Cfg
 			get { return defaultAssembly; }
 			set { defaultAssembly = value; }
 		}
+
+		public string DefaultCatalog { get; set; }
+		public string DefaultSchema { get; set; }
 
 		public Mapping.Collection GetCollection(string role)
 		{

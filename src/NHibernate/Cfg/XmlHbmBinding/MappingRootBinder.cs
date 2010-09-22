@@ -57,8 +57,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void SetMappingsProperties(HbmMapping mappingSchema)
 		{
-			mappings.SchemaName = mappingSchema.schema;
-			mappings.CatalogName = mappingSchema.catalog;
+			mappings.SchemaName = mappingSchema.schema ?? mappings.DefaultSchema;
+			mappings.CatalogName = mappingSchema.catalog ?? mappings.DefaultCatalog;
 			mappings.DefaultCascade = mappingSchema.defaultcascade;
 			mappings.DefaultAccess = mappingSchema.defaultaccess;
 			mappings.DefaultLazy = mappingSchema.defaultlazy;
