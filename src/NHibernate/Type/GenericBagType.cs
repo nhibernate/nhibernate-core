@@ -40,7 +40,7 @@ namespace NHibernate.Type
 
 		public override System.Type ReturnedClass
 		{
-			get { return typeof(IList<T>); }
+			get { return typeof(ICollection<T>); }
 		}
 
 		/// <summary>
@@ -53,15 +53,18 @@ namespace NHibernate.Type
 		/// </returns>
 		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new PersistentGenericBag<T>(session, (IList<T>) collection);
+			return new PersistentGenericBag<T>(session, (ICollection<T>) collection);
 		}
 
-		//TODO: Add() & Clear() methods - need to see if these should be refactored back into
-		// their own version of Copy or a DoCopy.  The Copy() method used to be spread out amongst
-		// the various collections, but since they all had common code Add() and Clear() were made
-		// virtual since that was where most of the logic was.  A different/better way might be to
-		// have a Copy on the base collection that handles the standard checks and then a DoCopy
-		// that performs the actual copy.
+		protected override void Add(object collection, object element)
+		{
+			((ICollection<T>) collection).Add((T) element);
+		}
+
+		protected override void Clear(object collection)
+		{
+			((ICollection<T>)collection).Clear();
+		}
 
 		public override object Instantiate(int anticipatedSize)
 		{
