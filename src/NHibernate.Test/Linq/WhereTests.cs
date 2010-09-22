@@ -326,7 +326,7 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(2, query.Count);
 		}
 
-		[Test, Ignore("Not fixed yet NH-2289")]
+		[Test]
 		public void WhenTheSourceOfConstantIsICollectionThenNoThrows()
 		{
 			ICollection<string> names = new List<string> {"ayende", "rahien"};
@@ -334,6 +334,19 @@ namespace NHibernate.Test.Linq
 			var query = (from user in db.Users
 			                 where names.Contains(user.Name)
 			                 select user);
+			List<User> result = null;
+			Executing.This(() => result = query.ToList()).Should().NotThrow();
+			result.Count.Should().Be(2);
+		}
+
+		[Test]
+		public void WhenTheSourceOfConstantIsIListThenNoThrows()
+		{
+			IList<string> names = new List<string> { "ayende", "rahien" };
+
+			var query = (from user in db.Users
+									 where names.Contains(user.Name)
+									 select user);
 			List<User> result = null;
 			Executing.This(() => result = query.ToList()).Should().NotThrow();
 			result.Count.Should().Be(2);

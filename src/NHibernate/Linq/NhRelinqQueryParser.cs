@@ -29,14 +29,16 @@ namespace NHibernate.Linq
                     },
                 typeof (AggregateExpressionNode));
 
-            MethodCallRegistry.Register(
-                new[]
-                    {
-                        MethodCallExpressionNodeTypeRegistry.GetRegisterableMethodDefinition(
-                            ReflectionHelper.GetMethodDefinition((List<object> l) => l.Contains(null))),
-
-                    },
-                typeof (ContainsExpressionNode));
+					// Here would be useful to have something like our ReflectionHelper.IsMethodOf because it is impossible to know
+					// which is the implementation of ICollection<T> used by our user. Reported to Stefan Wenig as possible (via mail instead of their JIAR)
+        	MethodCallRegistry.Register(
+        		new[]
+        			{
+								MethodCallExpressionNodeTypeRegistry.GetRegisterableMethodDefinition(
+								  ReflectionHelper.GetMethodDefinition((List<object> l) => l.Contains(null))),
+								typeof (ICollection<>).GetMethod("Contains"),
+        			},
+        		typeof (ContainsExpressionNode));
 
             MethodCallRegistry.Register(new[] { typeof(EagerFetchingExtensionMethods).GetMethod("Fetch") }, typeof(FetchOneExpressionNode));
             MethodCallRegistry.Register(new[] { typeof(EagerFetchingExtensionMethods).GetMethod("FetchMany") }, typeof(FetchManyExpressionNode));
