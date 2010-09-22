@@ -694,6 +694,7 @@
     <Compile Include="Linq\ReWriters\RemoveUnnecessaryBodyOperators.cs" />
     <Compile Include="Linq\Clauses\LeftJoinClause.cs" />
     <Compile Include="Linq\IntermediateHqlTree.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessCast.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessOfType.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessCacheable.cs" />
     <Compile Include="Linq\Visitors\QuerySourceLocator.cs" />
@@ -1553,9 +1554,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Cache\Access" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

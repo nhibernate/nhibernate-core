@@ -80,7 +80,8 @@ namespace NHibernate.Linq.Visitors
             ResultOperatorMap.Add<FetchManyRequest, ProcessFetchMany>();
             ResultOperatorMap.Add<CacheableResultOperator, ProcessCacheable>();
             ResultOperatorMap.Add<OfTypeResultOperator, ProcessOfType>();
-        }
+						ResultOperatorMap.Add<CastResultOperator, ProcessCast>();
+				}
 
         private QueryModelVisitor(VisitorParameters visitorParameters, bool root, QueryModel queryModel)
 		{

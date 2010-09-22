@@ -430,7 +430,7 @@ namespace NHibernate.Test.Linq
             Assert.AreEqual(2, query.Count);
         }
 
-				[Test(Description = "Reported as bug NH-2206"), Ignore("Not fixed yet")]
+				[Test(Description = "Reported as bug NH-2206")]
 				public void SearchOnObjectTypeUpCastWithExtensionMethod()
 				{
 					var query = (from o in session.Query<Dog>()
