@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2">
+
+	<class entity-name="Coder" table="persons">
+		<id type="int">
+			<generator class="increment" />
+		</id>
+		<property name="Name" type="string"/>
+	</class>
+
+  <sql-query name="AllCoders">
+    <return entity-name="Coder" alias="c" />
+    SELECT {c.*}
+    FROM   persons c
+  </sql-query>
+</hibernate-mapping>

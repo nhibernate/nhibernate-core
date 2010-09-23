@@ -98,10 +98,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (StringHelper.IsEmpty(alias))
 				alias = "alias_" + count; // hack/workaround as sqlquery impl depend on having a key.
 
-			string entityName = GetClassName(returnSchema.@class, mappings);
-
-			if (entityName == null)
+			if (string.IsNullOrEmpty(returnSchema.@class) && string.IsNullOrEmpty(returnSchema.entityname))
 				throw new MappingException("<return alias='" + alias + "'> must specify either a class or entity-name");
+
+			string entityName = returnSchema.entityname ??  GetClassName(returnSchema.@class, mappings);
 
 			LockMode lockMode = GetLockMode(returnSchema.lockmode);
 
