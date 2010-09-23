@@ -278,11 +278,8 @@ namespace NHibernate.Persister.Entity
 					entityNameBySubclass[subclass.MappedClass] = subclass.EntityName;
 				}
 			}
-			int batch = persistentClass.BatchSize;
-			if (batch == -1)
-				batch = factory.Settings.DefaultBatchFetchSize;
 
-			batchSize = batch;
+			batchSize = persistentClass.BatchSize.HasValue ? persistentClass.BatchSize.Value : factory.Settings.DefaultBatchFetchSize;
 			hasSubselectLoadableCollections = persistentClass.HasSubselectLoadableCollections;
 
 			propertyMapping = new BasicEntityPropertyMapping(this);

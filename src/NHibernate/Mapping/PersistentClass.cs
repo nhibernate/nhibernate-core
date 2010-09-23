@@ -36,7 +36,7 @@ namespace NHibernate.Mapping
 		private readonly List<Table> subclassTables = new List<Table>();
 		private bool dynamicInsert;
 		private bool dynamicUpdate;
-		private int batchSize = 1;
+		private int? batchSize;
 		private bool selectBeforeUpdate;
 		private IDictionary<string, MetaAttribute> metaAttributes;
 		private readonly List<Join> joins = new List<Join>();
@@ -372,7 +372,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// 
 		/// </summary>
-		public int BatchSize
+		public int? BatchSize
 		{
 			get { return batchSize; }
 			set { batchSize = value; }
