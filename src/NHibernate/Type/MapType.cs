@@ -89,6 +89,14 @@ namespace NHibernate.Type
 				result[key] = value;
 			}
 
+			var originalPc = original as IPersistentCollection;
+			var resultPc = result as IPersistentCollection;
+			if (originalPc != null && resultPc != null)
+			{
+				if (!originalPc.IsDirty)
+					resultPc.ClearDirty();
+			}
+
 			return result;
 		}
 

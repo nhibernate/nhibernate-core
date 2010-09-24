@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH2112"
+				   assembly="NHibernate.Test">
+
+  <class name="A" table="TableA">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <version name="Version" column="Version"/>
+    <property name="Name"/>
+    <map name="Map" table ="AMapB"  cascade="all-delete-orphan" lazy="true">
+      <key column="AId"/>
+      <index-many-to-many class="B" column="BId"/>
+      <element column="Text" type="System.String"/>
+    </map>
+  </class>
+
+  <class name="B" table="TableB">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="Name"/>
+  </class>
+</hibernate-mapping>
