@@ -325,6 +325,9 @@ namespace NHibernate.Linq.Visitors
 
                 case ExpressionType.GreaterThanOrEqual:
                     return _hqlTreeBuilder.GreaterThanOrEqual(lhs, rhs);
+
+				case ExpressionType.Coalesce:
+            		return _hqlTreeBuilder.Coalesce(lhs, rhs);
             }
 
             throw new InvalidOperationException();

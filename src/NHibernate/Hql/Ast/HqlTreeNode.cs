@@ -595,6 +595,16 @@ namespace NHibernate.Hql.Ast
         }
     }
 
+	public class HqlCoalesce : HqlExpression
+	{
+		public HqlCoalesce(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
+			: base(HqlSqlWalker.METHOD_CALL, "coalesce", factory)
+		{
+			AddChild(new HqlIdent(factory, "coalesce"));
+			AddChild(new HqlExpressionList(factory, lhs, rhs));
+		}
+	}
+
     public class HqlExpressionList : HqlStatement
     {
         public HqlExpressionList(IASTFactory factory, params HqlExpression[] expressions)

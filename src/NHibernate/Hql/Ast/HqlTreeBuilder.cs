@@ -420,5 +420,10 @@ namespace NHibernate.Hql.Ast
         {
             return new HqlBitwiseOr(_factory, lhs, rhs);
         }
+
+    	public HqlTreeNode Coalesce(HqlExpression lhs, HqlExpression rhs)
+    	{
+    		return new HqlCoalesce(_factory, lhs, rhs);
+    	}
     }
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH2344">
+
+	<class name="Person">
+		<id name="Id">
+			<generator class="hilo" />
+		</id>
+		<property name="Name"/>
+	</class>
+
+</hibernate-mapping>
