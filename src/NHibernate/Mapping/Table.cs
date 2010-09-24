@@ -433,6 +433,7 @@ namespace NHibernate.Mapping
 			{
 				buf.Append(dialect.GetTableComment(comment));
 			}
+			buf.Append(dialect.TableTypeString);
 
 			return buf.ToString();
 		}
