@@ -230,6 +230,7 @@ Build 2.1.0
 		* Antlr3.Runtime.dll is required
 		* the syntax foo.bar.baz.elements or foo.bar.baz.indices is not longer supported.  Use the alternative syntax of elements(foo.bar.baz) or indices(foo.bar.baz) instead
 			Note: in some case, where a sub-select is needed, the collection is enough example: FROM m IN CLASS Master WHERE NOT EXISTS( FROM m.Details d WHERE NOT d.I=5 )
+		* INamingStrategy.PropertyToColumnName does not include the component property path
 
 	##### Possible Breaking Changes #####
 		* ISession interface has additional methods
