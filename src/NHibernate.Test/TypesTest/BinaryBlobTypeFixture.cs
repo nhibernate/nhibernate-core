@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -49,6 +50,27 @@ namespace NHibernate.Test.TypesTest
 			s.Delete(b);
 			s.Flush();
 			s.Close();
+		}
+
+		[Test]
+		public void ReadWriteZeroLen()
+		{
+			object savedId;
+			using (ISession s = OpenSession())
+			{
+				BinaryBlobClass b = new BinaryBlobClass();
+				b.BinaryBlob = new byte[0];
+				savedId = s.Save(b);
+				s.Flush();
+			}
+
+			using (var s = OpenSession())
+			{
+				var b = s.Get<BinaryBlobClass>(savedId);
+				b.BinaryBlob.Should().Not.Be.Null().And.Have.Count.EqualTo(0);
+				s.Delete(b);
+				s.Flush();
+			}
 		}
 	}
 }

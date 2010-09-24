@@ -83,7 +83,11 @@ namespace NHibernate.Type
 		{
 			int length = (int)rs.GetBytes(index, 0, null, 0, 0);
 			byte[] buffer = new byte[length];
-			rs.GetBytes(index, 0, buffer, 0, length);
+			if (length > 0)
+			{
+				// The "if" is to make happy MySQL NH-2096
+				rs.GetBytes(index, 0, buffer, 0, length);
+			}
 			return ToExternalFormat(buffer);
 		}
 
