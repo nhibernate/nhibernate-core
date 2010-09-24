@@ -49,7 +49,7 @@ namespace NHibernate.Proxy
 		/// <exception cref="HibernateException">
 		/// Thrown when the Proxy has no Session or the Session is closed or disconnected.
 		/// </exception>
-		public void Initialize()
+		public virtual void Initialize()
 		{
 			if (!initialized)
 			{
