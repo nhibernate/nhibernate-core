@@ -72,11 +72,13 @@
             
             <para><emphasis>
                 Tip: to enable IntelliSense for mapping and configuration files, copy the appropriate
-                <literal>.xsd</literal> files to
-                <literal>&lt;VS.NET installation directory&gt;\Common7\Packages\schemas\xml</literal>
-                if you are using Visual Studio .NET 2003, or to
-                <literal>&lt;VS 2005 installation directory&gt;\Xml\Schemas</literal> for Visual Studio 2005.
-            </emphasis></para>
+                <literal>.xsd</literal> files as part of any project in your solution,
+                (<literal>Build Action</literal> can be "None") or as "Solution Files" or in your
+              <literal>"Lib"</literal> folder and then add it to the <literal>Schemas</literal> property of the xml file.
+              You can copy it in <literal>&lt;VS installation directory&gt;\Xml\Schemas</literal>, take care because you will have to deal
+              with different version of the xsd for different versions of NHibernate.
+            </emphasis>
+            </para>
             
         </sect2>
 
