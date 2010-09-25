@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   namespace="NHibernate.Test.NHSpecificTest.NH2324"
+                   assembly="NHibernate.Test">
+
+  <class name="Entity">
+    <id name="Id">
+      <generator class="hilo" >
+        <param name="max_lo">100</param>
+      </generator>
+    </id>
+
+    <property name="Data" type="CompositeUserType">
+      <column name="DataA"/>
+      <column name="DataB"/>
+    </property>
+  </class>
+  
+</hibernate-mapping>
