@@ -21,14 +21,12 @@ namespace NHibernate.Type
 		public override object Get(IDataReader rs, int index)
 		{
 			string dbValue = Convert.ToString(rs[index]);
-			if (dbValue == null)
-			{
-				return null;
-			}
-			else
+			// The check of the Length is a workaround see NH-2340
+			if (dbValue.Length > 0)
 			{
 				return dbValue[0];
 			}
+			return '\0'; // This line should never be executed
 		}
 
 		public override object Get(IDataReader rs, string name)
