@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml;
@@ -1837,11 +1838,11 @@ namespace NHibernate.Cfg
 			LogAndThrow(new MappingException(message, args.Exception));
 		}
 
-		private static string GetDefaultConfigurationFilePath()
+		protected virtual string GetDefaultConfigurationFilePath()
 		{
 			string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-			string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
-			string binPath = relativeSearchPath == null ? baseDir : Path.Combine(baseDir, relativeSearchPath);
+			string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath.Split(';').First();
+			string binPath = Path.Combine(baseDir, relativeSearchPath);
 			return Path.Combine(binPath, DefaultHibernateCfgFileName);
 		}
 

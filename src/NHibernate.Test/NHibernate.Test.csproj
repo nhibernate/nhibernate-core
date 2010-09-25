@@ -473,6 +473,7 @@
     <Compile Include="NHSpecificTest\NH2147\DefaultBatchSize.cs" />
     <Compile Include="NHSpecificTest\NH2148\BugFixture.cs" />
     <Compile Include="NHSpecificTest\NH2148\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH2188\AppDomainWithMultipleSearchPath.cs" />
     <Compile Include="NHSpecificTest\NH2224\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2224\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2245\Fixture.cs" />
