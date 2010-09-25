@@ -6,7 +6,7 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.LazyOneToOne
 {
-	[TestFixture, Ignore("Not supported.")]
+	[TestFixture]
 	public class LazyOneToOneTest : TestCase
 	{
 		protected override IList Mappings
@@ -19,15 +19,17 @@ namespace NHibernate.Test.LazyOneToOne
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			// this test work only with Field interception (NH-1618)
-			return FieldInterceptionHelper.IsInstrumented( new Person() );
-		}
+		//protected override bool AppliesTo(Dialect.Dialect dialect)
+		//{
+		//  // this test work only with Field interception (NH-1618)
+		//  return FieldInterceptionHelper.IsInstrumented( new Person() );
+		//}
 		protected override void Configure(Cfg.Configuration configuration)
 		{
-			cfg.SetProperty(Environment.MaxFetchDepth, "2");
-			cfg.SetProperty(Environment.UseSecondLevelCache, "false");
+			configuration.SetProperty(Environment.ProxyFactoryFactoryClass,
+										typeof(NHibernate.ByteCode.Castle.ProxyFactoryFactory).AssemblyQualifiedName);
+			configuration.SetProperty(Environment.MaxFetchDepth, "2");
+			configuration.SetProperty(Environment.UseSecondLevelCache, "false");
 		}
 
 		protected override string CacheConcurrencyStrategy
@@ -53,7 +55,7 @@ namespace NHibernate.Test.LazyOneToOne
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = s.CreateQuery("from Person where name='Gavin'").UniqueResult<Person>();
-			//Assert.That(!NHibernateUtil.IsPropertyInitialized(p, "Employee"));
+			Assert.That(!NHibernateUtil.IsPropertyInitialized(p, "Employee"));
 
 			Assert.That(p.Employee.Person, Is.SameAs(p));
 			Assert.That(NHibernateUtil.IsInitialized(p.Employee.Employments));
@@ -67,7 +69,7 @@ namespace NHibernate.Test.LazyOneToOne
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = s.Get<Person>("Gavin");
-			//Assert.That(!NHibernateUtil.IsPropertyInitialized(p, "Employee"));
+			Assert.That(!NHibernateUtil.IsPropertyInitialized(p, "Employee"));
 
 			Assert.That(p.Employee.Person, Is.SameAs(p));
 			Assert.That(NHibernateUtil.IsInitialized(p.Employee.Employments));
