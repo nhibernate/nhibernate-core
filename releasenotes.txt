@@ -1,6 +1,6 @@
 Build 3.0.0.Alpha3
 =============================
-** Known BREAKING CHANGES from NH2.1.1.GA to NH3.0.0.Alpha3
+** Known BREAKING CHANGES from NH2.1.1.GA to NH3.0.0
 	##### Run time #####
 		* [NH-2199] - null values in maps/dictionaries are no longer silenty ignored/deleted
 		* [NH-1894] - SybaseAnywhereDialect has been removed, and replaced with SybaseASA9Dialect.
@@ -8,6 +8,65 @@ Build 3.0.0.Alpha3
 
 	##### Possible Breaking Changes #####
 		* [NH-2251] - Signature change for GetLimitString in Dialect
+		* [NH-2284] - Obsolete members removed
+
+Build 3.0.0.Alpha3 (rev5226)
+=============================
+
+** Bug
+    * [NH-1927] - Criteria generates wrong sql when eager fetching one-to-many with filter
+    * [NH-1928] - SQL line comments swallow next line
+    * [NH-2024] - Max results parameter could not provided to subquery
+    * [NH-2061] - Merge operation causes null exception for null components that contain many-to-many relations
+    * [NH-2096] - IndexOutOfRangeException reading zero-length binary value from MySQL
+    * [NH-2112] - Update executed on the DB during a Session.Merge of an unmodified entity
+    * [NH-2138] - Entity name support in custom SQL is broken: sql-query/return/@entity-name attribute is ignored
+    * [NH-2147] - default_batch_fetch_size has no effect
+    * [NH-2188] - Exception occurs when configuration searches default config file and multiple search path were defined for current AppDomain.
+    * [NH-2202] - Unable to use ICriteria with projection property that references a composite key relationship
+    * [NH-2258] - Paging params in subquery breaks query execution.
+    * [NH-2265] - Any linq query using oracle fails when restricting the number of results returned
+    * [NH-2270] - NHibernatethrows MappingException on Linux/Mono 2.7
+    * [NH-2279] - PersistentIdentifierBag fails to maintain ID map in many cases
+    * [NH-2288] - The drop scripts from SchemaExport in SQL2005 dialect will not work for constraints when using DefaultSchema setting other than dbo
+    * [NH-2289] - Linq query fail when using contains from ICollection<T> or IList<T>
+    * [NH-2302] - MsSql Dialect, mapping an nvarchar(max) using string(10000) causes string truncation
+    * [NH-2303] - Regression bug: hibernate-mapping/subclass element can no longer extend hibernate-mapping/class//subclass element
+    * [NH-2322] - Performing updates in OnPostUpdate event causes enumeration error
+    * [NH-2339] - After rev 5139 (apply NH-2335) NHibernate does not work under Medium Trust
+    * [NH-2343] - NHibernate.Type.GenericBagType<T>.Wrap() incorrectly assumes collection implements IList<T>
+    * [NH-2344] - Coalesce expression does not work on linq provider
+
+** Improvement
+    * [NH-626] - Adding XmlDoc to NH types
+    * [NH-1618] - Lazy loading for one-to-one association
+    * [NH-1894] - New SQL Anywhere NHibernate dialect
+    * [NH-2135] - Compatible with Mono
+    * [NH-2292] - Set Initialize in AbstractLazyInitializer as virtual
+    * [NH-2301] - Castle Bytecode with last released 2.5
+    * [NH-2321] - Recommended method for xml intellisense
+    * [NH-2340] - Workaround, for some DataProviders, in AbstractCharType for char? 
+
+** New Feature
+    * [NH-866] - SQL Server 2005 XML Support
+    * [NH-2348] - Support polymorphism with Get and Load
+
+** Patch
+    * [NH-2006] - Additional test to use-many-to-one
+    * [NH-2111] - PersistentIdentifierBag has null reference exception when accessing SyncRoot on lazy loaded collection
+    * [NH-2278] - PersistentGenericIdentifierBag instantiates wrong list type
+    * [NH-2284] - Obsolete members can be removed
+    * [NH-2293] - When query has only a "from" throw QuerySyntaxException instead of InvalidCastException
+    * [NH-2307] - Fix ByteCode Framework Targets
+    * [NH-2332] - Update SybaseAnywhereMetaData.cs to support fetching the reserved words
+    * [NH-2335] - ReflectiveHttpContext support for different .NET versions
+    * [NH-2336] - Leading and trailing ansi trim emulation functions are reversed
+    * [NH-2346] - Dialect.TableTypeString is not used when creating schema.
+
+** Task
+    * [NH-2161] - Breaking change in naming strategy from 2.0 to 2.1
+    * [NH-2315] - Spring version does not match antlr version
+    * [NH-2338] - Upgrade to Castle.Core 2.5.1
 
 Build 3.0.0.Alpha2 (rev5159)
 =============================
