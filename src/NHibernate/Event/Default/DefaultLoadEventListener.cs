@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics;
-
+using System.Text;
 using NHibernate.Cache;
 using NHibernate.Cache.Access;
 using NHibernate.Cache.Entry;
@@ -36,7 +36,7 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
-				persister = source.Factory.GetEntityPersister(@event.EntityClassName);
+				persister = GetEntityPersister(source.Factory, @event.EntityClassName);
 			}
 
 			if (persister == null)
@@ -384,7 +384,7 @@ namespace NHibernate.Event.Default
 				}
 				if (options.IsAllowNulls)
 				{
-					IEntityPersister persister = @event.Session.Factory.GetEntityPersister(@event.EntityClassName);
+					IEntityPersister persister = GetEntityPersister(@event.Session.Factory, @event.EntityClassName);
 					if (!persister.IsInstance(old, @event.Session.EntityMode))
 					{
 						return InconsistentRTNClassMarker;
@@ -492,6 +492,33 @@ namespace NHibernate.Event.Default
 				listeners[i].OnPostLoad(postLoadEvent);
 			}
 			return result;
+		}
+
+		protected virtual IEntityPersister GetEntityPersister(ISessionFactoryImplementor factory, string entityName)
+		{
+			// Check for an exact match.
+			IEntityPersister persister = factory.TryGetEntityPersister(entityName);
+			if (persister != null)
+			{
+				return persister;
+			}
+
+			// Couldn't find persister through exact name, try finding a single implementing class.
+			string[] implementors = factory.GetImplementors(entityName);
+			if (implementors.Length > 1)
+			{
+				var messageBuilder = new StringBuilder(512);
+				messageBuilder.AppendLine(string.Format("Ambiguous persister for {0} implemented by more than one hierarchy: ",
+				                                        entityName));
+				Array.ForEach(implementors, s=> messageBuilder.AppendLine(s));
+
+				throw new HibernateException(messageBuilder.ToString());
+			}
+			if (implementors.Length == 0)
+			{
+				return null;
+			}
+			return factory.GetEntityPersister(implementors[0]);
 		}
 	}
 }
