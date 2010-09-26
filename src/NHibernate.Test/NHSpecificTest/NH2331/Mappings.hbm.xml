@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.NH2331" default-access="property"
+									 default-lazy="false">
+
+	<class name="NHibernate.Test.NHSpecificTest.NH2331.Forum">
+
+		<id name="Id">
+			<generator class="guid" />
+		</id>
+
+		<property name="Name" type="string" />
+		<property name="Dollars" type="double" />
+
+	</class>
+
+
+	<class name="NHibernate.Test.NHSpecificTest.NH2331.MemberGroup">
+
+		<id name="Id">
+			<generator class="guid" />
+		</id>
+
+		<property name="Name" type="System.String" />
+
+		<bag
+			name="Members"
+			table="Group2Members"
+		>
+			<key>
+				<column name="GroupId" />
+			</key>
+			<many-to-many
+				class="NHibernate.Test.NHSpecificTest.NH2331.Person">
+				<column name="PersonId" />
+			</many-to-many>
+		</bag>
+
+		<bag
+			name="Forums"
+			table="Group2Forums"
+		>
+			<key>
+				<column name="GroupId" />
+			</key>
+			<many-to-many
+				class="NHibernate.Test.NHSpecificTest.NH2331.Forum">
+				<column name="ForumId" />
+			</many-to-many>
+		</bag>
+
+	</class>
+
+
+	<class name="NHibernate.Test.NHSpecificTest.NH2331.Person">
+
+		<id name="Id">
+			<generator class="guid" />
+		</id>
+
+		<property name="Name" type="System.String" />
+
+	</class>
+
+</hibernate-mapping>
