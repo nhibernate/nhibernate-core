@@ -1,14 +1,14 @@
 using System;
+using System.Collections.Generic;
+	
 using NHibernate.SqlCommand;
+using NHibernate.Engine;
 using NHibernate.Type;
 
 namespace NHibernate.Criterion
 {
-	using System.Collections.Generic;
-	using Engine;
-
 	[Serializable]
-	public class AliasedProjection : IProjection
+	public class AliasedProjection : IEnhancedProjection
 	{
 		private readonly IProjection projection;
 		private readonly string alias;
@@ -36,9 +36,9 @@ namespace NHibernate.Criterion
 
 		public virtual IType[] GetTypes(String alias, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return this.alias.Equals(alias) ?
-			       GetTypes(criteria, criteriaQuery) :
-			       null;
+			return this.alias.Equals(alias)
+				? GetTypes(criteria, criteriaQuery)
+				: null;
 		}
 
 		public virtual string[] GetColumnAliases(int loc)
@@ -48,9 +48,23 @@ namespace NHibernate.Criterion
 
 		public virtual string[] GetColumnAliases(string alias, int loc)
 		{
-			return this.alias.Equals(alias) ?
-			       GetColumnAliases(loc) :
-			       null;
+			return this.alias.Equals(alias)
+				? GetColumnAliases(loc)
+				: null;
+		}
+		
+		public string[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			return projection is IEnhancedProjection
+				? ((IEnhancedProjection)projection).GetColumnAliases(position, criteria, criteriaQuery)
+				: this.GetColumnAliases(position);
+		}
+		
+		public string[] GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			return this.alias.Equals(alias)
+				? GetColumnAliases(position, criteria, criteriaQuery)
+				: null;
 		}
 
 		public virtual string[] Aliases

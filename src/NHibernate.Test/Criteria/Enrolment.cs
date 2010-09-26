@@ -6,14 +6,17 @@ namespace NHibernate.Test.Criteria
 	public class Enrolment
 	{
 		private Student student;
-
+		private Course course;
+		private long studentNumber;
+		private string courseCode = string.Empty;
+		private short year;
+		private short semester;
+		
 		public virtual Student Student
 		{
 			get { return student; }
 			set { student = value; }
 		}
-
-		private Course course;
 
 		public virtual Course Course
 		{
@@ -21,15 +24,11 @@ namespace NHibernate.Test.Criteria
 			set { course = value; }
 		}
 
-		private long studentNumber;
-
 		public virtual long StudentNumber
 		{
 			get { return studentNumber; }
 			set { studentNumber = value; }
 		}
-
-		private string courseCode = string.Empty;
 
 		public virtual string CourseCode
 		{
@@ -37,15 +36,11 @@ namespace NHibernate.Test.Criteria
 			set { courseCode = value; }
 		}
 
-		private short year;
-
 		public virtual short Year
 		{
 			get { return year; }
 			set { year = value; }
 		}
-
-		private short semester;
 
 		public virtual short Semester
 		{

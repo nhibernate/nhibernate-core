@@ -1,13 +1,12 @@
 using System;
+using System.Collections.Generic;
 using NHibernate.SqlCommand;
+using NHibernate.Engine;
+using NHibernate.Loader.Criteria;
 using NHibernate.Type;
 
 namespace NHibernate.Criterion
 {
-	using System.Collections.Generic;
-	using Engine;
-	using NHibernate.Loader.Criteria;
-
 	public interface IProjection
 	{
 		/// <summary>

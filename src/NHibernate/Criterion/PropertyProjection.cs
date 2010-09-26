@@ -1,11 +1,10 @@
 using System;
+using System.Collections.Generic;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Criterion
 {
-	using System.Collections.Generic;
-
 	/// <summary>
 	/// A property value, or grouped property value
 	/// </summary>
@@ -53,13 +52,18 @@ namespace NHibernate.Criterion
 
 		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			return new SqlString(new object[]
-			                     	{
-			                     		criteriaQuery.GetColumn(criteria, propertyName),
-			                     		" as y",
-			                     		loc.ToString(),
-			                     		"_"
-			                     	});
+			SqlStringBuilder s = new SqlStringBuilder();
+			string[] cols = criteriaQuery.GetColumnsUsingProjection(criteria, propertyName);
+			for (int i = 0; i < cols.Length; i++)
+			{
+				s.Add(cols[i]);
+				s.Add(" as y");
+				s.Add((loc + i).ToString());
+				s.Add("_");
+				if (i < cols.Length - 1)
+					s.Add(", ");
+			}
+			return s.ToSqlString();
 		}
 
 		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)

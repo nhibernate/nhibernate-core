@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
 	assembly="NHibernate.Test"
 	namespace="NHibernate.Test.Criteria">
 
@@ -8,19 +9,39 @@
 			<generator class="assigned"/>
 		</id>
 		<property name="Description"/>
+		<set name="CourseMeetings" inverse="true" cascade="all-delete-orphan">
+			<key column="CourseCode"/>
+			<one-to-many class="CourseMeeting"/>
+		</set>
+	</class>
+	
+	<class name="CourseMeeting">
+		<composite-id name="Id" class="CourseMeetingId">
+			<key-property name="CourseCode"/>
+			<key-property name="Day"/>
+			<key-property name="Period"/>
+			<key-property name="Location"/>
+		</composite-id>
+		<many-to-one name="Course" insert="false" update="false">
+			<column name="courseCode"/>
+		</many-to-one>
 	</class>
 	
 	<class name="Student">
 		<id name="StudentNumber">
-		    <column name="studentId"/>
+			<column name="studentId"/>
 			<generator class="assigned"/>
 		</id>
 		<property name="Name" not-null="true"/>
+		<component name="CityState">
+			<property name="City" column="address_city"/>
+			<property name="State" column="address_state"/>
+		</component>		
 		<set name="Enrolments" inverse="true" cascade="delete" fetch="subselect">
 			<key column="studentId"/>
 			<one-to-many class="Enrolment"/>
 		</set>
-        <many-to-one name="PreferredCourse" column="preferredCourseCode"/>
+		<many-to-one name="PreferredCourse" column="preferredCourseCode"/>
 	</class>
 	
 	<class name="Enrolment">

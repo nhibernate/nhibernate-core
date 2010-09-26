@@ -1,17 +1,16 @@
 using System;
+using System.Collections.Generic;
 using NHibernate.SqlCommand;
+using NHibernate.Engine;
 using NHibernate.Type;
 
 namespace NHibernate.Criterion
 {
-	using System.Collections.Generic;
-	using Engine;
-
 	/// <summary>
 	/// A single-column projection that may be aliased
 	/// </summary>
 	[Serializable]
-	public abstract class SimpleProjection : IProjection
+	public abstract class SimpleProjection : IEnhancedProjection
 	{
 		public IProjection As(string alias)
 		{
@@ -32,7 +31,24 @@ namespace NHibernate.Criterion
 		{
 			return new string[] {"y" + loc + "_"};
 		}
+		
+		public string[] GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			return GetColumnAliases(alias, position);
+		}
 
+		public String[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery) 
+		{
+			int numColumns = this.GetColumnCount(criteria, criteriaQuery);
+			string[] aliases = new string[numColumns];
+			for (int i = 0; i < numColumns; i++) 
+			{
+				aliases[i] = "y" + position + "_";
+				position++;
+			}
+			return aliases;
+		}
+		
 		public virtual string[] Aliases
 		{
 			get { return new String[1]; }
@@ -43,7 +59,6 @@ namespace NHibernate.Criterion
 		public abstract SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters);
 
 		public abstract bool IsAggregate { get; }
-
 
 		/// <summary>
 		/// Gets the typed values for parameters in this projection
@@ -59,5 +74,16 @@ namespace NHibernate.Criterion
 		public abstract SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters);
 
 		public abstract IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery);
+		
+		private int GetColumnCount(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			IType[] types = this.GetTypes(criteria, criteriaQuery);
+			int count = 0;
+			for (int i = 0; i < types.Length; i++) 
+			{
+				count += types[i].GetColumnSpan(criteriaQuery.Factory);
+			}
+			return count;
+		}
 	}
 }

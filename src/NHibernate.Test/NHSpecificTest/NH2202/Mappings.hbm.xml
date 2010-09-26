@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH2202">
+
+	<class name="Employee">
+		
+		<composite-id>
+			<key-property name="NationalId" />
+			<key-property name="EmployeeId" />
+		</composite-id>
+
+		<set name="Addresses" cascade="save-update">
+			<key>
+				<column name="NationalId" />
+				<column name="EmployeeId" />
+			</key>
+			<one-to-many class="EmployeeAddress"/>
+		</set>
+	
+	</class>
+
+	<class name="EmployeeAddress">
+		
+		<composite-id>
+			<key-many-to-one name="Employee" class="Employee">
+				<column name="NationalId" />
+				<column name="EmployeeId" />
+			</key-many-to-one>
+			<key-property name="Type" />
+		</composite-id>
+	
+  </class>
+
+</hibernate-mapping>

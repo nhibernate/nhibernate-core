@@ -164,7 +164,10 @@
     <Compile Include="ConventionsTestCase.cs" />
     <Compile Include="Criteria\AddNumberProjection.cs" />
     <Compile Include="Criteria\Animal.cs" />
+    <Compile Include="Criteria\CityState.cs" />
     <Compile Include="Criteria\Course.cs" />
+    <Compile Include="Criteria\CourseMeeting.cs" />
+    <Compile Include="Criteria\CourseMeetingId.cs" />
     <Compile Include="Criteria\CriteriaQueryTest.cs" />
     <Compile Include="Criteria\DetachedCriteriaSerializable.cs" />
     <Compile Include="Criteria\Enrolment.cs" />
@@ -474,6 +477,8 @@
     <Compile Include="NHSpecificTest\NH2148\BugFixture.cs" />
     <Compile Include="NHSpecificTest\NH2148\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2188\AppDomainWithMultipleSearchPath.cs" />
+    <Compile Include="NHSpecificTest\NH2202\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2202\Model.cs" />
     <Compile Include="NHSpecificTest\NH2224\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2224\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2245\Fixture.cs" />
@@ -1791,6 +1796,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH2322\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2278\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1136\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2202\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.ByteCode.Castle\NHibernate.ByteCode.Castle.csproj">
@@ -2644,6 +2650,7 @@
     <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="NHSpecificTest\NH2202" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

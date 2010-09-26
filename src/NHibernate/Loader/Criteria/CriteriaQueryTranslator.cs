@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Iesi.Collections.Generic;
-
 using NHibernate.Criterion;
 using NHibernate.Engine;
 using NHibernate.Hql.Util;
@@ -172,7 +171,12 @@ namespace NHibernate.Loader.Criteria
 
 		public string[] ProjectedColumnAliases
 		{
-			get { return rootCriteria.Projection.GetColumnAliases(0); }
+			get
+			{
+				return rootCriteria.Projection is IEnhancedProjection
+					? ((IEnhancedProjection)rootCriteria.Projection).GetColumnAliases(0, rootCriteria, this)
+					: rootCriteria.Projection.GetColumnAliases(0);
+			}
 		}
 
 		public string[] ProjectedAliases
@@ -402,7 +406,7 @@ namespace NHibernate.Loader.Criteria
 				IType type = lastEntity.ToType(componentPath);
 				if (type.IsAssociationType)
 				{
-					if(type.IsCollectionType) 
+					if(type.IsCollectionType)
 					{
 						// ignore joinables for composite collections
 						var collectionType = (CollectionType)type;
@@ -535,8 +539,7 @@ namespace NHibernate.Loader.Criteria
 		}
 
 		/// <summary>
-		/// Get the names of the columns constrained
-		/// by this criterion.
+		/// Get the names of the columns constrained by this criterion.
 		/// </summary>
 		public string[] GetColumnsUsingProjection(ICriteria subcriteria, string propertyName)
 		{

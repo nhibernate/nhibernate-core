@@ -1,14 +1,13 @@
 using System;
+using System.Collections.Generic;
+using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Criterion
 {
-	using System.Collections.Generic;
-	using Engine;
-
 	[Serializable]
-	public class Distinct : IProjection
+	public class Distinct : IEnhancedProjection
 	{
 		private readonly IProjection projection;
 
@@ -42,10 +41,24 @@ namespace NHibernate.Criterion
 		{
 			return projection.GetColumnAliases(loc);
 		}
+		
+		public virtual string[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			return projection is IEnhancedProjection
+				? ((IEnhancedProjection)projection).GetColumnAliases(position, criteria, criteriaQuery)
+				: GetColumnAliases(position);
+		}
 
 		public virtual string[] GetColumnAliases(string alias, int loc)
 		{
 			return projection.GetColumnAliases(alias, loc);
+		}
+		
+		public virtual string[] GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			return projection is IEnhancedProjection
+				? ((IEnhancedProjection)projection).GetColumnAliases(alias, position, criteria, criteriaQuery)
+				: GetColumnAliases(alias, position);
 		}
 
 		public virtual string[] Aliases

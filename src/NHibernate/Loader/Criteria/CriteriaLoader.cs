@@ -8,6 +8,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Loader.Criteria
 {
@@ -84,10 +85,21 @@ namespace NHibernate.Loader.Criteria
 				IType[] types = translator.ProjectedTypes;
 				result = new object[types.Length];
 				string[] columnAliases = translator.ProjectedColumnAliases;
-
-				for (int i = 0; i < result.Length; i++)
+				
+				for (int i = 0, position = 0; i < result.Length; i++)
 				{
-					result[i] = types[i].NullSafeGet(rs, columnAliases[i], session, null);
+					int numColumns = types[i].GetColumnSpan(session.Factory);
+					
+					if ( numColumns > 1 ) 
+					{
+						string[] typeColumnAliases = ArrayHelper.Slice(columnAliases, position, numColumns);
+						result[i] = types[i].NullSafeGet(rs, typeColumnAliases, session, null);
+					}
+					else
+					{
+						result[i] = types[i].NullSafeGet(rs, columnAliases[position], session, null);
+					}
+					position += numColumns;
 				}
 				aliases = translator.ProjectedAliases;
 			}

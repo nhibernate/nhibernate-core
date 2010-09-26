@@ -67,7 +67,7 @@ namespace NHibernate.Test.Criteria
 
 			using (ISession session = OpenSession())
 			{
-				// finds all courses which contain '%' as the first char in the description 
+				// finds all courses which contain '%' as the first char in the description
 				Course example = new Course();
 				example.Description = "&%%";
 				IList result =
@@ -237,7 +237,13 @@ namespace NHibernate.Test.Criteria
 			t.Commit();
 			session.Close();
 		}
-
+		
+		[Test]
+		[Ignore("To be implemented")]
+		public void SubselectWithComponent()
+		{
+		}
+		
 		[Test]
 		public void CloningCriteria()
 		{
@@ -255,7 +261,7 @@ namespace NHibernate.Test.Criteria
 		}
 
 		[Test]
-		public void CloningCriteria_AddCount_RemoveOrderring()
+		public void CloningCriteria_AddCount_RemoveOrdering()
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
@@ -353,7 +359,7 @@ namespace NHibernate.Test.Criteria
 
 		[Test]
 		public void SubqueryPagination()
-		{   
+		{
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
@@ -690,7 +696,7 @@ namespace NHibernate.Test.Criteria
 
 				Enrolment key = new Enrolment();
 				key.CourseCode = "HIB";
-				key.StudentNumber = 101;// xam 
+				key.StudentNumber = 101;// xam
 				//since we didn't load xam's entrollments before (skipped by orderring)
 				//it should not be already loaded
 				Enrolment shouldNotBeLoaded = (Enrolment)s.Load(typeof(Enrolment), key);
@@ -1228,6 +1234,7 @@ namespace NHibernate.Test.Criteria
 			object[] array = (object[])s.CreateCriteria(typeof(Enrolment))
 											.SetProjection(Projections.ProjectionList().Add(p1).Add(p2))
 											.UniqueResult();
+			
 			Assert.AreEqual(7, array.Length);
 
 			IList list = s.CreateCriteria(typeof(Enrolment))
@@ -1249,7 +1256,19 @@ namespace NHibernate.Test.Criteria
 			t.Commit();
 			s.Close();
 		}
+		
+		[Test]
+		[Ignore("To be implemented")]
+		public void DistinctProjectionsOfComponents()
+		{
+		}
 
+		[Test]
+		[Ignore("To be implemented")]
+		public void GroupByComponent()
+		{
+		}
+		
 		[Test]
 		public void CloningProjectionsUsingProperty()
 		{
@@ -1479,7 +1498,181 @@ namespace NHibernate.Test.Criteria
 			t.Rollback();
 			s.Close();
 		}
+		
+		[Test]
+		public void ProjectedEmbeddedCompositeId()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				Course course = new Course();
+				course.CourseCode = "HIB";
+				course.Description = "Hibernate Training";
+				s.Save(course);
+				
+				Student gavin = new Student();
+				gavin.Name = "Gavin King";
+				gavin.StudentNumber = 667;
+				s.Save(gavin);
+				
+				Student xam = new Student();
+				xam.Name = "Max Rydahl Andersen";
+				xam.StudentNumber = 101;
+				s.Save(xam);
+	
+				Enrolment enrolment = new Enrolment();
+				enrolment.Course = course;
+				enrolment.CourseCode = course.CourseCode;
+				enrolment.Semester = 1;
+				enrolment.Year = 1999;
+				enrolment.Student = xam;
+				enrolment.StudentNumber = xam.StudentNumber;
+				gavin.Enrolments.Add(enrolment);
+				s.Save(enrolment);
+				
+				enrolment = new Enrolment();
+				enrolment.Course = course;
+				enrolment.CourseCode = course.CourseCode;
+				enrolment.Semester = 3;
+				enrolment.Year = 1998;
+				enrolment.Student = gavin;
+				enrolment.StudentNumber = gavin.StudentNumber;
+				gavin.Enrolments.Add(enrolment);
+				s.Save(enrolment);
+	
+				s.Flush();
+				
+				IList enrolments = (IList)s.CreateCriteria<Enrolment>()
+					.SetProjection(Projections.Id())
+					.List();
+				
+				t.Rollback();
+			}
+		}
+		
+		[Test]
+		public void ProjectedListIncludesEmbeddedCompositeId()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				Course course = new Course();
+				course.CourseCode = "HIB";
+				course.Description = "Hibernate Training";
+				s.Save(course);
+				
+				Student gavin = new Student();
+				gavin.Name = "Gavin King";
+				gavin.StudentNumber = 667;
+				s.Save(gavin);
+				
+				Student xam = new Student();
+				xam.Name = "Max Rydahl Andersen";
+				xam.StudentNumber = 101;
+				s.Save(xam);
+	
+				Enrolment enrolment = new Enrolment();
+				enrolment.Course = course;
+				enrolment.CourseCode = course.CourseCode;
+				enrolment.Semester = 1;
+				enrolment.Year = 1999;
+				enrolment.Student = xam;
+				enrolment.StudentNumber = xam.StudentNumber;
+				gavin.Enrolments.Add(enrolment);
+				s.Save(enrolment);
+				
+				enrolment = new Enrolment();
+				enrolment.Course = course;
+				enrolment.CourseCode = course.CourseCode;
+				enrolment.Semester = 3;
+				enrolment.Year = 1998;
+				enrolment.Student = gavin;
+				enrolment.StudentNumber = gavin.StudentNumber;
+				gavin.Enrolments.Add(enrolment);
+				s.Save(enrolment);
+	
+				s.Flush();
+				
+				IList data = (IList)s.CreateCriteria<Enrolment>()
+					.SetProjection(Projections.ProjectionList()
+						.Add(Projections.Property("Semester"))
+						.Add(Projections.Property("Year"))
+						.Add(Projections.Id()))
+				.List();
+				
+				t.Rollback();
+			}
+		}
+		
+		[Test]
+		public void ProjectedCompositeId()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				Course course = new Course();
+				course.CourseCode = "HIB";
+				course.Description = "Hibernate Training";
+				course.CourseMeetings.Add(new CourseMeeting(course, "Monday", 1, "1313 Mockingbird Lane"));
+				s.Save(course);
+				s.Flush();
+		
+				IList data = (IList)s.CreateCriteria<CourseMeeting>().SetProjection(Projections.Id()).List();
 
+				t.Rollback();
+			}
+		}
+
+		[Test]
+		[Ignore("To be implemented")]
+		public void ProjectedCompositeIdWithAlias()
+		{
+		}
+	
+		[Test]
+		public void ProjectedComponent()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				Student gaith = new Student();
+				gaith.Name = "Gaith Bell";
+				gaith.StudentNumber = 123;
+				gaith.CityState = new CityState("Chicago", "Illinois");
+				s.Save(gaith);
+				s.Flush();
+		
+				IList cityStates = (IList)s.CreateCriteria<Student>()
+					.SetProjection(Projections.Property("CityState"))
+					.List();
+				
+				t.Rollback();
+			}
+		}
+
+		[Test]
+		public void ProjectedListIncludesComponent()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				Student gaith = new Student();
+				gaith.Name = "Gaith Bell";
+				gaith.StudentNumber = 123;
+				gaith.CityState = new CityState("Chicago", "Illinois");
+				s.Save(gaith);
+				s.Flush();
+	
+				IList data = (IList)s.CreateCriteria<Student>()
+					.SetProjection(Projections.ProjectionList()
+						.Add(Projections.Property("CityState"))
+						.Add(Projections.Property("Name")))
+						.List();
+				
+				t.Rollback();
+			}
+		}
+		
 		[Test]
 		public void CloningProjectedId()
 		{
@@ -1871,7 +2064,7 @@ namespace NHibernate.Test.Criteria
 				t.Commit();
 			}
 		}
-
+	
 		[Test]
 		public void TransformToRowCountTest()
 		{
@@ -1910,53 +2103,53 @@ namespace NHibernate.Test.Criteria
 		}
 
 		[Test]
-		public void OrderProjectionAliasedTest() 
-		{ 
-			ISession session = OpenSession(); 
-			ITransaction t = session.BeginTransaction(); 
+		public void OrderProjectionAliasedTest()
+		{
+			ISession session = OpenSession();
+			ITransaction t = session.BeginTransaction();
 
-			Course courseA = new Course(); 
-			courseA.CourseCode = "HIB-A"; 
-			courseA.Description = "Hibernate Training A"; 
-			session.Save(courseA); 
+			Course courseA = new Course();
+			courseA.CourseCode = "HIB-A";
+			courseA.Description = "Hibernate Training A";
+			session.Save(courseA);
 			
-			Student gavin = new Student(); 
-			gavin.Name = "Gavin King"; 
-			gavin.StudentNumber = 232; 
-			gavin.PreferredCourse = courseA; 
-			session.Save(gavin); 
+			Student gavin = new Student();
+			gavin.Name = "Gavin King";
+			gavin.StudentNumber = 232;
+			gavin.PreferredCourse = courseA;
+			session.Save(gavin);
 			
-			Student leonardo = new Student(); 
-			leonardo.Name = "Leonardo Quijano"; 
-			leonardo.StudentNumber = 233; 
-			leonardo.PreferredCourse = courseA; 
-			session.Save(leonardo); 
+			Student leonardo = new Student();
+			leonardo.Name = "Leonardo Quijano";
+			leonardo.StudentNumber = 233;
+			leonardo.PreferredCourse = courseA;
+			session.Save(leonardo);
 			
-			Student johnDoe = new Student(); 
-			johnDoe.Name = "John Doe"; 
-			johnDoe.StudentNumber = 235; 
-			johnDoe.PreferredCourse = null; 
-			session.Save(johnDoe); 
+			Student johnDoe = new Student();
+			johnDoe.Name = "John Doe";
+			johnDoe.StudentNumber = 235;
+			johnDoe.PreferredCourse = null;
+			session.Save(johnDoe);
 			
-			IProjection conditional = 
+			IProjection conditional =
 				Projections.Conditional(
-					Restrictions.Eq("Name", "Gavin King"), 
-					Projections.Constant("Name"), 
+					Restrictions.Eq("Name", "Gavin King"),
+					Projections.Constant("Name"),
 					Projections.Constant("AnotherName"));
 
-			ICriteria criteria = session.CreateCriteria(typeof(Student)); 
-			criteria.SetMaxResults(1); 
-			criteria.SetFirstResult(1); 
-			IList result = criteria.SetProjection(Projections.Alias(conditional, "CheckName")) 
-			.AddOrder(Order.Asc("CheckName")) 
-			.List(); 
+			ICriteria criteria = session.CreateCriteria(typeof(Student));
+			criteria.SetMaxResults(1);
+			criteria.SetFirstResult(1);
+			IList result = criteria.SetProjection(Projections.Alias(conditional, "CheckName"))
+			.AddOrder(Order.Asc("CheckName"))
+			.List();
 	
-			session.Delete(gavin); 	
-			session.Delete(leonardo); 
-			session.Delete(johnDoe); 
-			session.Delete(courseA); 
-			t.Commit(); 
-			session.Close(); 
+			session.Delete(gavin);
+			session.Delete(leonardo);
+			session.Delete(johnDoe);
+			session.Delete(courseA);
+			t.Commit();
+			session.Close();
 		}
 
 		[Test]

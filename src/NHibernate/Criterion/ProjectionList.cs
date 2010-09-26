@@ -1,16 +1,18 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+
+using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
-	using Engine;
-
 	[Serializable]
-	public class ProjectionList : IProjection
+	public class ProjectionList : IEnhancedProjection
 	{
 		private IList<IProjection> elements = new List<IProjection>();
 
@@ -60,8 +62,8 @@ namespace NHibernate.Criterion
 			for (int i = 0; i < Length; i++)
 			{
 				IProjection proj = this[i];
-				buf.Add(proj.ToSqlString(criteria, loc, criteriaQuery,enabledFilters));
-				loc += proj.GetColumnAliases(loc).Length;
+				buf.Add(proj.ToSqlString(criteria, loc, criteriaQuery, enabledFilters));
+				loc += GetColumnAliases(loc, criteria, criteriaQuery, proj).Length;
 				if (i < elements.Count - 1)
 				{
 					buf.Add(", ");
@@ -89,7 +91,7 @@ namespace NHibernate.Criterion
 			return buf.ToSqlString();
 		}
 
-		public String[] GetColumnAliases(int loc)
+		public string[] GetColumnAliases(int loc)
 		{
 			IList<string> aliases = new List<string>(Length);
 
@@ -105,7 +107,7 @@ namespace NHibernate.Criterion
 			return result;
 		}
 
-		public String[] GetColumnAliases(string alias, int loc)
+		public string[] GetColumnAliases(string alias, int loc)
 		{
 			for (int i = 0; i < Length; i++)
 			{
@@ -114,6 +116,43 @@ namespace NHibernate.Criterion
 				loc += this[i].GetColumnAliases(loc).Length;
 			}
 			return null;
+		}
+		
+		public string[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			IList result = new ArrayList(this.Length);
+			for (int i = 0; i < this.Length; i++)
+			{
+				string[] colAliases = ProjectionList.GetColumnAliases(position, criteria, criteriaQuery, this[i]);
+				ArrayHelper.AddAll(result, colAliases);
+				position += colAliases.Length;
+			}
+			return ArrayHelper.ToStringArray(result);
+		}
+		
+		public string[] GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			for (int i = 0; i < this.Length; i++)
+			{
+				string[] result = GetColumnAliases(alias, position, criteria, criteriaQuery, this[i]);
+				if (result != null) return result;
+				position += GetColumnAliases(position, criteria, criteriaQuery, this[i]).Length;
+			}
+			return null;
+		}
+		
+		private static string[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery, IProjection projection)
+		{
+			return projection is IEnhancedProjection
+				? ((IEnhancedProjection)projection).GetColumnAliases(position, criteria, criteriaQuery)
+				: projection.GetColumnAliases(position);
+		}
+
+		private static string[] GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery, IProjection projection)
+		{
+			return projection is IEnhancedProjection
+				? ((IEnhancedProjection)projection).GetColumnAliases(alias, position, criteria, criteriaQuery)
+				: projection.GetColumnAliases(alias, position);
 		}
 
 		public IType[] GetTypes(string alias, ICriteria criteria, ICriteriaQuery criteriaQuery)
