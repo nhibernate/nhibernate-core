@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -72,7 +73,7 @@ namespace NHibernate.Criterion
 			{
 				throw new InvalidOperationException("not a grouping projection");
 			}
-			return new SqlString(criteriaQuery.GetColumn(criteria, propertyName));
+			return new SqlString(StringHelper.Join(",", criteriaQuery.GetColumns(criteria, propertyName)));
 		}
 	}
 }

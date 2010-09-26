@@ -530,7 +530,7 @@ namespace NHibernate.Loader.Criteria
 
 		public string GetColumn(ICriteria criteria, string propertyName)
 		{
-			string[] cols = GetColumns(propertyName, criteria);
+			string[] cols = GetColumns(criteria, propertyName);
 			if (cols.Length != 1)
 			{
 				throw new QueryException("property does not map to a single column: " + propertyName);
@@ -546,7 +546,7 @@ namespace NHibernate.Loader.Criteria
 			// NH Different behavior: we don't use the projection alias for NH-1023
 			try
 			{
-				return GetColumns(propertyName, subcriteria);
+				return GetColumns(subcriteria, propertyName);
 			}
 			catch (HibernateException)
 			{
@@ -579,7 +579,7 @@ namespace NHibernate.Loader.Criteria
 			return new TypedValue(loadable.IdentifierType, value, EntityMode.Poco);
 		}
 
-		private string[] GetColumns(string propertyName, ICriteria subcriteria)
+		public string[] GetColumns(ICriteria subcriteria, string propertyName)
 		{
 			string entName = GetEntityName(subcriteria, propertyName);
 			if (entName == null)
@@ -795,7 +795,7 @@ namespace NHibernate.Loader.Criteria
 				//look for a property
 				try
 				{
-					return GetColumns(propertyName, subcriteria);
+					return GetColumns(subcriteria, propertyName);
 				}
 				catch (HibernateException)
 				{

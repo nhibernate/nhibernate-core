@@ -239,9 +239,170 @@ namespace NHibernate.Test.Criteria
 		}
 		
 		[Test]
-		[Ignore("To be implemented")]
 		public void SubselectWithComponent()
 		{
+			Course course = null;
+			Student gavin = null;
+			DetachedCriteria dc = null;
+			CityState odessaWa = null;
+			Enrolment enrolment2 = null;
+			
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
+			{
+				course = new Course();
+				course.CourseCode = "HIB";
+				course.Description = "Hibernate Training";
+				session.Save(course);
+				
+				odessaWa = new CityState("Odessa", "WA");
+	
+				gavin = new Student();
+				gavin.Name = "Gavin King";
+				gavin.StudentNumber = 232;
+				gavin.CityState = odessaWa;
+				session.Save(gavin);
+	
+				enrolment2 = new Enrolment();
+				enrolment2.Course = course;
+				enrolment2.CourseCode = course.CourseCode;
+				enrolment2.Semester = 3;
+				enrolment2.Year = 1998;
+				enrolment2.Student = gavin;
+				enrolment2.StudentNumber = gavin.StudentNumber;
+				gavin.Enrolments.Add(enrolment2);
+				
+				session.Persist(enrolment2);
+	
+				dc = DetachedCriteria.For<Student>()
+					.Add(Property.ForName("CityState").Eq(odessaWa))
+					.SetProjection(Property.ForName("CityState"));
+		
+				session.CreateCriteria<Student>()
+					.Add(Subqueries.Exists(dc))
+					.List();
+				
+				t.Commit();
+			}
+	
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
+			{
+				try
+				{
+					session.CreateCriteria<Student>()
+						.Add(Subqueries.PropertyEqAll("CityState", dc))
+						.List();
+					
+					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
+				}
+				catch (QueryException ex)
+				{
+					// expected
+				}
+				t.Rollback();
+			}
+			
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
+			{
+				try
+				{
+					session.CreateCriteria<Student>()
+						.Add(Property.ForName("CityState").EqAll(dc))
+						.List();
+	
+					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
+				}
+				catch (QueryException ex)
+				{
+					// expected
+				}
+				finally
+				{
+					t.Rollback();
+				}
+			}
+	
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
+			{
+				try
+				{
+					session.CreateCriteria<Student>()
+						.Add(Subqueries.In(odessaWa, dc))
+						.List();
+					
+					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
+				}
+				catch (NHibernate.Exceptions.GenericADOException ex)
+				{
+					// expected
+				}
+				finally
+				{
+					t.Rollback();
+				}
+			}
+	
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
+			{
+				DetachedCriteria dc2 = DetachedCriteria.For<Student>("st1")
+					.Add(Property.ForName("st1.CityState").EqProperty("st2.CityState"))
+					.SetProjection(Property.ForName("CityState"));
+				
+				try 
+				{
+					session.CreateCriteria<Student>("st2")
+						.Add( Subqueries.Eq(odessaWa, dc2))
+						.List();
+					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
+				}
+				catch (NHibernate.Exceptions.GenericADOException ex)
+				{
+					// expected
+				}
+				finally
+				{
+					t.Rollback();
+				}
+			}
+	
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
+			{
+				DetachedCriteria dc3 = DetachedCriteria.For<Student>("st")
+					.CreateCriteria("Enrolments")
+						.CreateCriteria("Course")
+							.Add(Property.ForName("Description").Eq("Hibernate Training"))
+							.SetProjection(Property.ForName("st.CityState"));
+				try
+				{
+					session.CreateCriteria<Enrolment>("e")
+						.Add(Subqueries.Eq(odessaWa, dc3))
+						.List();
+					
+					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
+				}
+				catch (NHibernate.Exceptions.GenericADOException ex)
+				{
+					// expected
+				}
+				finally
+				{
+					t.Rollback();
+				}
+			}
+	
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
+			{
+				session.Delete(enrolment2);
+				session.Delete(gavin);
+				session.Delete(course);
+				t.Commit();
+			}
 		}
 		
 		[Test]
@@ -1090,11 +1251,15 @@ namespace NHibernate.Test.Criteria
 			Course course = new Course();
 			course.CourseCode = "HIB";
 			course.Description = "Hibernate Training";
+			course.CourseMeetings.Add(new CourseMeeting(course, "Monday", 1, "1313 Mockingbird Lane"));
 			s.Save(course);
 
 			Student gavin = new Student();
 			gavin.Name = "Gavin King";
 			gavin.StudentNumber = 667;
+			CityState odessaWa = new CityState("Odessa", "WA");
+			gavin.CityState = odessaWa;
+			gavin.PreferredCourse = course;
 			s.Save(gavin);
 
 			Student xam = new Student();
@@ -1123,11 +1288,92 @@ namespace NHibernate.Test.Criteria
 			s.Save(enrolment);
 			s.Flush();
 
+			// Subtest #1
+			IList resultList = s.CreateCriteria<Enrolment>()
+				.SetProjection(Projections.ProjectionList()
+					.Add(Property.ForName("Student"), "student")
+					.Add(Property.ForName("Course"), "course")
+					.Add(Property.ForName("Semester"), "semester")
+					.Add(Property.ForName("Year"), "year")
+				).List();
+
+			Assert.That(resultList.Count, Is.EqualTo(2));
+			
+			foreach (object[] objects in resultList)
+			{
+				Assert.That(objects.Length, Is.EqualTo(4));
+				Assert.That(objects[0], Is.InstanceOf<Student>());
+				Assert.That(objects[1], Is.InstanceOf<Course>());
+				Assert.That(objects[2], Is.InstanceOf<short>());
+				Assert.That(objects[3], Is.InstanceOf<short>());
+			}
+
+			// Subtest #2
+			resultList = s.CreateCriteria<Student>()
+				.SetProjection(Projections.ProjectionList()
+					.Add(Projections.Id().As("StudentNumber"))
+					.Add(Property.ForName("Name"), "name")
+					.Add(Property.ForName("CityState"), "cityState")
+					.Add(Property.ForName("PreferredCourse"), "preferredCourse")
+				).List();
+			
+			Assert.That(resultList.Count, Is.EqualTo(2));
+			
+			foreach(object[] objects in resultList)
+			{
+				Assert.That(objects.Length, Is.EqualTo(4));
+				Assert.That(objects[0], Is.InstanceOf<long>());
+				Assert.That(objects[1], Is.InstanceOf<string>());
+				
+				if ("Gavin King".Equals(objects[1]))
+				{
+					Assert.That(objects[2], Is.InstanceOf<CityState>());
+					Assert.That(objects[3], Is.InstanceOf<Course>());
+				}
+				else
+				{
+					Assert.That(objects[2], Is.Null);
+					Assert.That(objects[3], Is.Null);
+				}
+			}
+			
+			// Subtest #3
+			resultList = s.CreateCriteria<Student>()
+				.Add(Restrictions.Eq("Name", "Gavin King"))
+				.SetProjection(Projections.ProjectionList()
+					.Add(Projections.Id().As("StudentNumber"))
+					.Add(Property.ForName("Name"), "name")
+					.Add(Property.ForName("CityState"), "cityState")
+					.Add(Property.ForName("PreferredCourse"), "preferredCourse")
+				).List();
+			
+			Assert.That(resultList.Count, Is.EqualTo(1));
+
+			// Subtest #4
+			object[] aResult = (object[])s.CreateCriteria<Student>()
+				.Add(Restrictions.IdEq(667L))
+				.SetProjection(Projections.ProjectionList()
+					.Add(Projections.Id().As("StudentNumber"))
+					.Add(Property.ForName("Name"), "name")
+					.Add(Property.ForName("CityState"), "cityState")
+					.Add(Property.ForName("PreferredCourse"), "preferredCourse")
+				).UniqueResult();
+			
+			Assert.That(aResult, Is.Not.Null);
+			Assert.That(aResult.Length, Is.EqualTo(4));
+			Assert.That(aResult[0], Is.InstanceOf<long>());
+			Assert.That(aResult[1], Is.InstanceOf<string>());
+			Assert.That(aResult[2], Is.InstanceOf<CityState>());
+			Assert.That(aResult[3], Is.InstanceOf<Course>());
+			
+			// Subtest #5
 			int count = (int)s.CreateCriteria(typeof(Enrolment))
 								.SetProjection(Property.ForName("StudentNumber").Count().SetDistinct())
 								.UniqueResult();
+			
 			Assert.AreEqual(2, count);
 
+			// Subtest #6
 			object obj = s.CreateCriteria(typeof(Enrolment))
 				.SetProjection(Projections.ProjectionList()
 								.Add(Property.ForName("StudentNumber").Count())
@@ -1136,6 +1382,7 @@ namespace NHibernate.Test.Criteria
 								.Add(Property.ForName("StudentNumber").Avg())
 				)
 				.UniqueResult();
+			
 			object[] result = (object[])obj;
 
 			Assert.AreEqual(2, result[0]);
@@ -1143,7 +1390,7 @@ namespace NHibernate.Test.Criteria
 			Assert.AreEqual(101L, result[2]);
 			Assert.AreEqual(384.0D, (double)result[3], 0.01D);
 
-
+			// Subtest #7
 			s.CreateCriteria(typeof(Enrolment))
 				.Add(Property.ForName("StudentNumber").Gt(665L))
 				.Add(Property.ForName("StudentNumber").Lt(668L))
@@ -1152,6 +1399,7 @@ namespace NHibernate.Test.Criteria
 				.AddOrder(Property.ForName("StudentNumber").Asc())
 				.UniqueResult();
 
+			// Subtest #8
 			IList resultWithMaps = s.CreateCriteria(typeof(Enrolment))
 				.SetProjection(Projections.ProjectionList()
 								.Add(Property.ForName("StudentNumber").As("stNumber"))
@@ -1164,11 +1412,12 @@ namespace NHibernate.Test.Criteria
 				.List();
 
 			Assert.AreEqual(1, resultWithMaps.Count);
+			
 			IDictionary m1 = (IDictionary)resultWithMaps[0];
-
 			Assert.AreEqual(667L, m1["stNumber"]);
 			Assert.AreEqual(course.CourseCode, m1["cCode"]);
 
+			// Subtest #9
 			resultWithMaps = s.CreateCriteria(typeof(Enrolment))
 				.SetProjection(Property.ForName("StudentNumber").As("stNumber"))
 				.AddOrder(Order.Desc("stNumber"))
@@ -1176,19 +1425,19 @@ namespace NHibernate.Test.Criteria
 				.List();
 
 			Assert.AreEqual(2, resultWithMaps.Count);
+
 			IDictionary m0 = (IDictionary)resultWithMaps[0];
 			m1 = (IDictionary)resultWithMaps[1];
-
 			Assert.AreEqual(101L, m1["stNumber"]);
 			Assert.AreEqual(667L, m0["stNumber"]);
 
-
+			// Subtest #10
 			IList resultWithAliasedBean = s.CreateCriteria(typeof(Enrolment))
 				.CreateAlias("Student", "st")
 				.CreateAlias("Course", "co")
 				.SetProjection(Projections.ProjectionList()
-								.Add(Property.ForName("st.Name").As("studentName"))
-								.Add(Property.ForName("co.Description").As("courseDescription"))
+					.Add(Property.ForName("st.Name").As("studentName"))
+					.Add(Property.ForName("co.Description").As("courseDescription"))
 				)
 				.AddOrder(Order.Desc("studentName"))
 				.SetResultTransformer(Transformers.AliasToBean(typeof(StudentDTO)))
@@ -1196,10 +1445,29 @@ namespace NHibernate.Test.Criteria
 
 			Assert.AreEqual(2, resultWithAliasedBean.Count);
 
+			// Subtest #11
 			StudentDTO dto = (StudentDTO)resultWithAliasedBean[0];
 			Assert.IsNotNull(dto.Description);
 			Assert.IsNotNull(dto.Name);
 
+			// Subtest #12
+			CourseMeeting courseMeetingDto = s.CreateCriteria<CourseMeeting>()
+				.SetProjection(Projections.ProjectionList()
+					.Add(Property.ForName("Id").As("id"))
+					.Add(Property.ForName("Course").As("course"))
+				)
+				.AddOrder(Order.Desc("id"))
+				.SetResultTransformer(Transformers.AliasToBean<CourseMeeting>())
+				.UniqueResult<CourseMeeting>();
+	
+			Assert.That(courseMeetingDto.Id, Is.Not.Null);
+			Assert.That(courseMeetingDto.Id.CourseCode, Is.EqualTo(course.CourseCode));
+			Assert.That(courseMeetingDto.Id.Day, Is.EqualTo("Monday"));
+			Assert.That(courseMeetingDto.Id.Location, Is.EqualTo("1313 Mockingbird Lane"));
+			Assert.That(courseMeetingDto.Id.Period, Is.EqualTo(1));
+			Assert.That(courseMeetingDto.Course.Description, Is.EqualTo(course.Description));
+
+			// Subtest #13
 			s.CreateCriteria(typeof(Student))
 				.Add(Expression.Like("Name", "Gavin", MatchMode.Start))
 				.AddOrder(Order.Asc("Name"))
@@ -1209,14 +1477,15 @@ namespace NHibernate.Test.Criteria
 				.CreateCriteria("Course", "c")
 				.AddOrder(Order.Asc("Description"))
 				.SetProjection(Projections.ProjectionList()
-								.Add(Property.ForName("this.Name"))
-								.Add(Property.ForName("e.Year"))
-								.Add(Property.ForName("e.Semester"))
-								.Add(Property.ForName("c.CourseCode"))
-								.Add(Property.ForName("c.Description"))
+					.Add(Property.ForName("this.Name"))
+					.Add(Property.ForName("e.Year"))
+					.Add(Property.ForName("e.Semester"))
+					.Add(Property.ForName("c.CourseCode"))
+					.Add(Property.ForName("c.Description"))
 				)
 				.UniqueResult();
 
+			// Subtest #14
 			ProjectionList p1 = Projections.ProjectionList()
 				.Add(Property.ForName("StudentNumber").Count())
 				.Add(Property.ForName("StudentNumber").Max())
@@ -1226,10 +1495,10 @@ namespace NHibernate.Test.Criteria
 				.Add(Property.ForName("StudentNumber").Min())
 				.Add(Property.ForName("StudentNumber").Avg())
 				.Add(Projections.SqlProjection(
-						"1 as constOne, count(*) as countStar",
-						new String[] { "constOne", "countStar" },
-						new IType[] { NHibernateUtil.Int32, NHibernateUtil.Int32 }
-						));
+					"1 as constOne, count(*) as countStar",
+					new String[] { "constOne", "countStar" },
+					new IType[] { NHibernateUtil.Int32, NHibernateUtil.Int32 }
+					));
 
 			object[] array = (object[])s.CreateCriteria(typeof(Enrolment))
 											.SetProjection(Projections.ProjectionList().Add(p1).Add(p2))
@@ -1237,17 +1506,48 @@ namespace NHibernate.Test.Criteria
 			
 			Assert.AreEqual(7, array.Length);
 
+			// Subtest #15
 			IList list = s.CreateCriteria(typeof(Enrolment))
 				.CreateAlias("Student", "st")
 				.CreateAlias("Course", "co")
 				.SetProjection(Projections.ProjectionList()
-								.Add(Property.ForName("co.CourseCode").Group())
-								.Add(Property.ForName("st.StudentNumber").Count().SetDistinct())
-								.Add(Property.ForName("Year").Group())
+					.Add(Property.ForName("co.CourseCode").Group())
+					.Add(Property.ForName("st.StudentNumber").Count().SetDistinct())
+					.Add(Property.ForName("Year").Group())
 				)
 				.List();
 
 			Assert.AreEqual(2, list.Count);
+
+			// Subtest #16
+			list = s.CreateCriteria<Enrolment>()
+						.CreateAlias("Student", "st")
+						.CreateAlias("Course", "co")
+						.SetProjection(Projections.ProjectionList()
+							.Add(Property.ForName("co.CourseCode").Group().As("courseCode"))
+							.Add(Property.ForName("st.StudentNumber").Count().SetDistinct().As("studentNumber"))
+							.Add(Property.ForName("Year").Group())
+				)
+				.AddOrder(Order.Asc("courseCode"))
+				.AddOrder(Order.Asc("studentNumber"))
+				.List();
+	
+			Assert.That(list.Count, Is.EqualTo(2));
+
+			// Subtest #17
+			list = s.CreateCriteria<Enrolment>()
+				.CreateAlias("Student", "st")
+				.CreateAlias("Course", "co")
+				.SetProjection(Projections.ProjectionList()
+					.Add(Property.ForName("co.CourseCode").Group().As("cCode"))
+					.Add(Property.ForName("st.StudentNumber").Count().SetDistinct().As("stNumber"))
+					.Add(Property.ForName("Year").Group())
+				)
+				.AddOrder(Order.Asc("cCode"))
+				.AddOrder(Order.Asc("stNumber"))
+				.List();
+	
+			Assert.That(list.Count, Is.EqualTo(2));
 
 			s.Delete(gavin);
 			s.Delete(xam);
@@ -1258,15 +1558,272 @@ namespace NHibernate.Test.Criteria
 		}
 		
 		[Test]
-		[Ignore("To be implemented")]
 		public void DistinctProjectionsOfComponents()
 		{
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			Course course = new Course();
+			course.CourseCode = "HIB";
+			course.Description = "Hibernate Training";
+			s.Save(course);
+
+			Student gavin = new Student();
+			gavin.Name = "Gavin King";
+			gavin.StudentNumber = 667;
+			gavin.CityState = new CityState("Odessa", "WA");;
+			s.Save(gavin);
+
+			Student xam = new Student();
+			xam.Name = "Max Rydahl Andersen";
+			xam.StudentNumber = 101;
+			xam.PreferredCourse = course;
+			xam.CityState = new CityState("Odessa", "WA");;
+			s.Save(xam);
+
+			Enrolment enrolment = new Enrolment();
+			enrolment.Course = course;
+			enrolment.CourseCode = course.CourseCode;
+			enrolment.Semester = 1;
+			enrolment.Year = 1999;
+			enrolment.Student = xam;
+			enrolment.StudentNumber = xam.StudentNumber;
+			xam.Enrolments.Add(enrolment);
+			s.Save(enrolment);
+
+			enrolment = new Enrolment();
+			enrolment.Course = course;
+			enrolment.CourseCode = course.CourseCode;
+			enrolment.Semester = 3;
+			enrolment.Year = 1998;
+			enrolment.Student = gavin;
+			enrolment.StudentNumber = gavin.StudentNumber;
+			gavin.Enrolments.Add(enrolment);
+			s.Save(enrolment);
+			s.Flush();
+			
+			object result = s.CreateCriteria<Student>()
+				.SetProjection(Projections.Distinct(Property.ForName("CityState")))
+				.UniqueResult();
+			
+			Assert.That(result, Is.InstanceOf<CityState>());
+			Assert.That(((CityState)result).City, Is.EqualTo("Odessa"));
+			Assert.That(((CityState)result).State, Is.EqualTo("WA"));
+	
+			result = s.CreateCriteria<Student>()
+				.SetProjection(Projections.Distinct(Property.ForName("CityState").As("cityState")))
+				.AddOrder(Order.Asc("cityState"))
+				.UniqueResult();
+			
+			Assert.That(result, Is.InstanceOf<CityState>());
+			Assert.That(((CityState)result).City, Is.EqualTo("Odessa"));
+			Assert.That(((CityState)result).State, Is.EqualTo("WA"));
+	
+			result = s.CreateCriteria<Student>()
+				.SetProjection(Projections.Count("CityState.City"))
+				.UniqueResult();
+			
+			Assert.That(result, Is.EqualTo(2));
+	
+			result = s.CreateCriteria<Student>()
+				.SetProjection(Projections.CountDistinct("CityState.City"))
+				.UniqueResult();
+			
+			Assert.That(result, Is.EqualTo(1));
+			
+			t.Commit();
+			s.Close();
+
+//			s = OpenSession();
+//			t = s.BeginTransaction();
+//			try
+//			{
+//				result = s.CreateCriteria<Student>()
+//					.SetProjection(Projections.Count("CityState"))
+//					.UniqueResult();
+//				
+//				if (!Dialect.SupportsTupleCounts)
+//				{
+//					fail( "expected SQLGrammarException" );
+//				}
+//				
+//				Assert.That((long)result, Is.EqualTo(1L));
+//			}
+//			catch (NHibernate.Exceptions.SQLGrammarException ex)
+//			{
+//				throw ex;
+//				if (!Dialect.SupportsTupleCounts)
+//				{
+//					// expected
+//				}
+//				else 
+//				{
+//					throw ex;
+//				}
+//			}
+//			finally
+//			{
+//				t.Rollback();
+//				s.Close();
+//			}
+
+//			s = OpenSession();
+//			t = s.BeginTransaction();
+//			try 
+//			{
+//				result = s.CreateCriteria<Student>()
+//					.SetProjection(Projections.CountDistinct("CityState"))
+//					.UniqueResult();
+//				
+//				if (!Dialect.SupportsTupleDistinctCounts)
+//				{
+//					fail("expected SQLGrammarException");
+//				}
+//				
+//				Assert.That((long)result, Is.EqualTo(1L));
+//			}
+//			catch (NHibernate.Exceptions.SQLGrammarException ex)
+//			{
+//				throw ex;
+//				if (Dialect.SupportsTupleDistinctCounts)
+//				{
+//					// expected
+//				}
+//				else 
+//				{
+//					throw ex;
+//				}
+//			}
+//			finally
+//			{
+//				t.Rollback();
+//				s.Close();
+//			}
+	
+			s = OpenSession();
+			t = s.BeginTransaction();
+			s.Delete(gavin);
+			s.Delete(xam);
+			s.Delete(course);
+	
+			t.Commit();
+			s.Close();
 		}
 
 		[Test]
-		[Ignore("To be implemented")]
 		public void GroupByComponent()
 		{
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			Course course = new Course();
+			course.CourseCode = "HIB";
+			course.Description = "Hibernate Training";
+			s.Save(course);
+
+			Student gavin = new Student();
+			gavin.Name = "Gavin King";
+			gavin.StudentNumber = 667;
+			gavin.CityState = new CityState("Odessa", "WA");;
+			s.Save(gavin);
+
+			Student xam = new Student();
+			xam.Name = "Max Rydahl Andersen";
+			xam.StudentNumber = 101;
+			xam.PreferredCourse = course;
+			xam.CityState = new CityState("Odessa", "WA");;
+			s.Save(xam);
+
+			Enrolment enrolment = new Enrolment();
+			enrolment.Course = course;
+			enrolment.CourseCode = course.CourseCode;
+			enrolment.Semester = 1;
+			enrolment.Year = 1999;
+			enrolment.Student = xam;
+			enrolment.StudentNumber = xam.StudentNumber;
+			xam.Enrolments.Add(enrolment);
+			s.Save(enrolment);
+
+			enrolment = new Enrolment();
+			enrolment.Course = course;
+			enrolment.CourseCode = course.CourseCode;
+			enrolment.Semester = 3;
+			enrolment.Year = 1998;
+			enrolment.Student = gavin;
+			enrolment.StudentNumber = gavin.StudentNumber;
+			gavin.Enrolments.Add(enrolment);
+			s.Save(enrolment);
+			s.Flush();
+	
+			object result = s.CreateCriteria<Student>()
+				.SetProjection(Projections.GroupProperty("CityState"))
+				.UniqueResult();
+			
+			Assert.That(result, Is.InstanceOf<CityState>());
+			Assert.That(((CityState)result).City, Is.EqualTo("Odessa"));
+			Assert.That(((CityState)result).State, Is.EqualTo("WA"));
+	
+			result = s.CreateCriteria<Student>("st")
+				.SetProjection(Projections.GroupProperty("st.CityState"))
+				.UniqueResult();
+
+			Assert.That(result, Is.InstanceOf<CityState>());
+			Assert.That(((CityState)result).City, Is.EqualTo("Odessa"));
+			Assert.That(((CityState)result).State, Is.EqualTo("WA"));
+	
+			result = s.CreateCriteria<Student>("st")
+				.SetProjection(Projections.GroupProperty("st.CityState"))
+				.AddOrder(Order.Asc("CityState"))
+				.UniqueResult();
+			
+			Assert.That(result, Is.InstanceOf<CityState>());
+			Assert.That(((CityState)result).City, Is.EqualTo("Odessa"));
+			Assert.That(((CityState)result).State, Is.EqualTo("WA"));
+	
+			result = s.CreateCriteria<Student>("st")
+				.SetProjection(Projections.GroupProperty("st.CityState").As("cityState"))
+				.AddOrder(Order.Asc("cityState"))
+				.UniqueResult();
+			
+			Assert.That(result, Is.InstanceOf<CityState>());
+			Assert.That(((CityState)result).City, Is.EqualTo("Odessa"));
+			Assert.That(((CityState)result).State, Is.EqualTo("WA"));
+	
+			result = s.CreateCriteria<Student>("st")
+				.SetProjection(Projections.GroupProperty("st.CityState").As("cityState"))
+				.AddOrder(Order.Asc("cityState"))
+				.UniqueResult();
+			
+			Assert.That(result, Is.InstanceOf<CityState>());
+			Assert.That(((CityState)result).City, Is.EqualTo("Odessa"));
+			Assert.That(((CityState)result).State, Is.EqualTo("WA"));
+	
+			result = s.CreateCriteria<Student>("st")
+				.SetProjection(Projections.GroupProperty("st.CityState").As("cityState"))
+				.Add(Restrictions.Eq("st.CityState", new CityState("Odessa", "WA")))
+				.AddOrder(Order.Asc("cityState"))
+				.UniqueResult();
+			
+			Assert.That(result, Is.InstanceOf<CityState>());
+			Assert.That(((CityState)result).City, Is.EqualTo("Odessa"));
+			Assert.That(((CityState)result).State, Is.EqualTo("WA"));
+	
+			IList list = s.CreateCriteria<Enrolment>()
+				.CreateAlias("Student", "st")
+				.CreateAlias("Course", "co")
+				.SetProjection(Projections.ProjectionList()
+					.Add(Property.ForName("co.CourseCode").Group())
+					.Add(Property.ForName("st.CityState").Group())
+					.Add(Property.ForName("Year").Group())
+				)
+				.List();
+	
+			s.Delete(gavin);
+			s.Delete(xam);
+			s.Delete(course);
+	
+			t.Commit();
+			s.Close();
 		}
 		
 		[Test]
@@ -1624,9 +2181,24 @@ namespace NHibernate.Test.Criteria
 		}
 
 		[Test]
-		[Ignore("To be implemented")]
 		public void ProjectedCompositeIdWithAlias()
 		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				Course course = new Course();
+				course.CourseCode = "HIB";
+				course.Description = "Hibernate Training";
+				course.CourseMeetings.Add(new CourseMeeting(course, "Monday", 1, "1313 Mockingbird Lane"));
+				s.Save(course);
+				s.Flush();
+		
+				IList data = (IList)s.CreateCriteria<CourseMeeting>()
+					.SetProjection(Projections.Id().As("id"))
+					.List();
+
+				t.Rollback();
+			}
 		}
 	
 		[Test]

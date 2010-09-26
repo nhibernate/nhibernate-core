@@ -13,8 +13,11 @@ namespace NHibernate.Criterion
 	{
 		ISessionFactoryImplementor Factory { get; }
 
-		/// <summary> Get the names of the columns mapped by a property path, ignoring projection aliases </summary>
+		/// <summary> Get the name of the column mapped by a property path, ignoring projection alias</summary>
 		string GetColumn(ICriteria criteria, string propertyPath);
+		
+		/// <summary> Get the names of the columns mapped by a property path, ignoring projection aliases</summary>
+		string[] GetColumns(ICriteria criteria, string propertyPath);
 
 		/// <summary> Get the type of a property path, ignoring projection aliases</summary>
 		IType GetType(ICriteria criteria, string propertyPath);
