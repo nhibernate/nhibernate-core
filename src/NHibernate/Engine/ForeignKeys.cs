@@ -9,7 +9,7 @@ namespace NHibernate.Engine
 	/// <summary> Algorithms related to foreign key constraint transparency </summary>
 	public static class ForeignKeys
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(ForeignKeys));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ForeignKeys));
 
 		public class Nullifier
 		{

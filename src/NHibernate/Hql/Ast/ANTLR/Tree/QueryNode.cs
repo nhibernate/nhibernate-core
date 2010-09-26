@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class QueryNode : AbstractRestrictableStatement, ISelectExpression
 	{
-		private static readonly ILogger Log = LoggerProvider.LoggerFor(typeof(QueryNode));
+		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(QueryNode));
 
 		private OrderByClause _orderByClause;
 
@@ -17,7 +17,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 		}
 
-		protected override ILogger GetLog()
+		protected override IInternalLogger GetLog()
 		{
 			return Log;
 		}

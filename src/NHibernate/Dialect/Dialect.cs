@@ -31,7 +31,7 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public abstract class Dialect
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(Dialect));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Dialect));
 
 		private readonly TypeNames typeNames = new TypeNames();
 		private readonly TypeNames hibernateTypeNames = new TypeNames();

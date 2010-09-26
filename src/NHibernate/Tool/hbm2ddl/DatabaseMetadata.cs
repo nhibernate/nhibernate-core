@@ -14,7 +14,7 @@ namespace NHibernate.Tool.hbm2ddl
 {
 	public class DatabaseMetadata
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (DatabaseMetadata));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (DatabaseMetadata));
 
 		private readonly IDictionary<string, ITableMetadata> tables = new Dictionary<string, ITableMetadata>();
 		private readonly ISet<string> sequences = new HashedSet<string>();

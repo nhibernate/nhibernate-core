@@ -13,7 +13,7 @@ namespace NHibernate.Bytecode.CodeDom
 	/// </summary>
 	public class BytecodeProviderImpl : AbstractBytecodeProvider
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (BytecodeProviderImpl));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (BytecodeProviderImpl));
 
 		#region IBytecodeProvider Members
 

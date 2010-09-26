@@ -11,7 +11,7 @@ namespace NHibernate.Id.Enhanced
 		public const string None = "none";
 		public const string Pool = "pooled";
 		private static readonly System.Type[] CtorSignature = new[] {typeof (System.Type), typeof (int)};
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (OptimizerFactory));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (OptimizerFactory));
 
 		public static IOptimizer BuildOptimizer(string type, System.Type returnClass, int incrementSize)
 		{

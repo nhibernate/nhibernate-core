@@ -7,7 +7,7 @@ namespace NHibernate.ByteCode.LinFu
 	public class ProxyFactory : AbstractProxyFactory
 	{
 		private static readonly global::LinFu.DynamicProxy.ProxyFactory factory = new global::LinFu.DynamicProxy.ProxyFactory();
-		protected static readonly ILogger log = LoggerProvider.LoggerFor(typeof (ProxyFactory));
+		protected static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (ProxyFactory));
 
 		#region IProxyFactory Members
 

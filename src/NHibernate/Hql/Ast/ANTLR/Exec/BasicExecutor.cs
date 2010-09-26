@@ -19,7 +19,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 	public class BasicExecutor : AbstractStatementExecutor
 	{
 		private readonly IQueryable persister;
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(BasicExecutor));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(BasicExecutor));
 		private readonly SqlString sql;
 
 		public BasicExecutor(IStatement statement, IQueryable persister)

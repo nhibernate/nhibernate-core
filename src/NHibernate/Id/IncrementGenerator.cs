@@ -27,7 +27,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class IncrementGenerator : IIdentifierGenerator, IConfigurable
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(IncrementGenerator));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(IncrementGenerator));
 
 		private long next;
 		private string sql;

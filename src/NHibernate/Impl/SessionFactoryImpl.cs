@@ -87,7 +87,7 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (SessionFactoryImpl));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (SessionFactoryImpl));
 		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
 
 		[NonSerialized] private readonly ThreadSafeDictionary<string, ICache> allCacheRegions =

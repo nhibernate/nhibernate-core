@@ -14,7 +14,7 @@ namespace NHibernate.Engine
 	/// </summary>
 	public abstract class CascadingAction
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(CascadingAction));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(CascadingAction));
 
 		#region The CascadingAction contract
 

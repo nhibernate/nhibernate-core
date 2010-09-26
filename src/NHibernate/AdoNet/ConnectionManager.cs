@@ -17,7 +17,7 @@ namespace NHibernate.AdoNet
 	[Serializable]
 	public class ConnectionManager : ISerializable, IDeserializationCallback
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(ConnectionManager));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ConnectionManager));
 
 		public interface Callback
 		{

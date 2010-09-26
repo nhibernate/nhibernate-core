@@ -20,7 +20,7 @@ namespace NHibernate.Collection
 	[DebuggerTypeProxy(typeof (CollectionProxy))]
 	public class PersistentArrayHolder : AbstractPersistentCollection, ICollection
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (PersistentArrayHolder));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (PersistentArrayHolder));
 
 		private Array array;
 

@@ -16,7 +16,7 @@ namespace NHibernate.Util
     /// </summary>
     public static class ReflectHelper
     {
-        private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(ReflectHelper));
+        private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ReflectHelper));
 
         public const BindingFlags AnyVisibilityInstance = BindingFlags.Instance | BindingFlags.Public |
                                                            BindingFlags.NonPublic;

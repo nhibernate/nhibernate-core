@@ -12,7 +12,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class UpdateStatement : AbstractRestrictableStatement
 	{
-		private static readonly ILogger Log = LoggerProvider.LoggerFor(typeof (UpdateStatement));
+		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof (UpdateStatement));
 
 		public UpdateStatement(IToken token) : base(token) {}
 
@@ -31,7 +31,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			get { return ASTUtil.FindTypeInChildren(this, HqlSqlWalker.SET); }
 		}
 
-		protected override ILogger GetLog()
+		protected override IInternalLogger GetLog()
 		{
 			return Log;
 		}

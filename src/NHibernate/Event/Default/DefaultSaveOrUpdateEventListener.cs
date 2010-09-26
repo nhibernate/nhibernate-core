@@ -14,7 +14,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultSaveOrUpdateEventListener : AbstractSaveEventListener, ISaveOrUpdateEventListener
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(DefaultSaveOrUpdateEventListener));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultSaveOrUpdateEventListener));
 
 		protected override CascadingAction CascadeAction
 		{

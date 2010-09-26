@@ -14,7 +14,7 @@ namespace NHibernate.Id.Enhanced
 	/// </summary>
 	public class SequenceStructure : IDatabaseStructure
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (SequenceStructure));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (SequenceStructure));
 		private readonly int incrementSize;
 		private readonly int initialValue;
 		private readonly string sequenceName;

@@ -11,7 +11,7 @@ namespace NHibernate.Connection
 	/// </summary>
 	public sealed class ConnectionProviderFactory
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(ConnectionProviderFactory));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ConnectionProviderFactory));
 
 		// cannot be instantiated
 		private ConnectionProviderFactory()

@@ -21,7 +21,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	[CLSCompliant(false)]
 	public partial class HqlSqlWalker
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(HqlSqlWalker));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HqlSqlWalker));
 
 		// Fields
 		private readonly string _collectionFilterRole;

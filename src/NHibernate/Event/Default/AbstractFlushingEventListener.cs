@@ -18,7 +18,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public abstract class AbstractFlushingEventListener
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (AbstractFlushingEventListener));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (AbstractFlushingEventListener));
 
 		protected virtual object Anything
 		{

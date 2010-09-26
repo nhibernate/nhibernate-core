@@ -163,7 +163,7 @@ namespace NHibernate.Persister.Collection
 		private readonly IDictionary<string, object> collectionPropertyColumnAliases = new Dictionary<string, object>();
 		private readonly IDictionary<string, object> collectionPropertyColumnNames = new Dictionary<string, object>();
 
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (ICollectionPersister));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (ICollectionPersister));
 
 		public AbstractCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, Configuration cfg,
 		                                   ISessionFactoryImplementor factory)

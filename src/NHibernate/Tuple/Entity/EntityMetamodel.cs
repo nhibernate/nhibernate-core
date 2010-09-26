@@ -14,7 +14,7 @@ namespace NHibernate.Tuple.Entity
 	[Serializable]
 	public class EntityMetamodel
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(EntityMetamodel));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(EntityMetamodel));
 
 		private const int NoVersionIndex = -66;
 

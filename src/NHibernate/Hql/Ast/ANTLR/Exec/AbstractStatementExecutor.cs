@@ -19,9 +19,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 	[CLSCompliant(false)]
 	public abstract class AbstractStatementExecutor : IStatementExecutor
 	{
-		private readonly ILogger log;
+		private readonly IInternalLogger log;
 
-		protected AbstractStatementExecutor(IStatement statement, ILogger log)
+		protected AbstractStatementExecutor(IStatement statement, IInternalLogger log)
 		{
 			Statement = statement;
 			Walker = statement.Walker;
@@ -209,10 +209,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		private class TmpIdTableCreationIsolatedWork : IIsolatedWork
 		{
 			private readonly IQueryable persister;
-			private readonly ILogger log;
+			private readonly IInternalLogger log;
 			private readonly ISessionImplementor session;
 
-			public TmpIdTableCreationIsolatedWork(IQueryable persister, ILogger log, ISessionImplementor session)
+			public TmpIdTableCreationIsolatedWork(IQueryable persister, IInternalLogger log, ISessionImplementor session)
 			{
 				this.persister = persister;
 				this.log = log;
@@ -252,7 +252,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 		private class TmpIdTableDropIsolatedWork : IIsolatedWork
 		{
-			public TmpIdTableDropIsolatedWork(IQueryable persister, ILogger log, ISessionImplementor session)
+			public TmpIdTableDropIsolatedWork(IQueryable persister, IInternalLogger log, ISessionImplementor session)
 			{
 				this.persister = persister;
 				this.log = log;
@@ -260,7 +260,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 
 			private readonly IQueryable persister;
-			private readonly ILogger log;
+			private readonly IInternalLogger log;
 			private readonly ISessionImplementor session;
 
 			public void DoWork(IDbConnection connection, IDbTransaction transaction)

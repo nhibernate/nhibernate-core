@@ -12,7 +12,7 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class SqlInsertBuilder : ISqlStringBuilder
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(SqlInsertBuilder));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SqlInsertBuilder));
 
 		private readonly ISessionFactoryImplementor factory;
 		private string tableName;

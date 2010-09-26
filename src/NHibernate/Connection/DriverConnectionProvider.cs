@@ -9,7 +9,7 @@ namespace NHibernate.Connection
 	/// </summary>
 	public class DriverConnectionProvider : ConnectionProvider
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(DriverConnectionProvider));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DriverConnectionProvider));
 
 		/// <summary>
 		/// Closes and Disposes of the <see cref="IDbConnection"/>.

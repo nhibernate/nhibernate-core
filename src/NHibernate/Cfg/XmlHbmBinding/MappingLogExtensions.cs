@@ -5,7 +5,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public static class MappingLogExtensions
 	{
-		public static void LogMapped(this Mapping.Property property, ILogger log)
+		public static void LogMapped(this Mapping.Property property, IInternalLogger log)
 		{
 			if (log.IsDebugEnabled)
 			{

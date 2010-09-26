@@ -9,7 +9,7 @@ namespace NHibernate.Id.Enhanced
 {
 	public class SequenceStyleGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(SequenceStyleGenerator));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SequenceStyleGenerator));
 
 		#region General purpose parameters
 

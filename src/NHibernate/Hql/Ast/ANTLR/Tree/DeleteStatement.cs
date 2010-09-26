@@ -11,7 +11,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class DeleteStatement : AbstractRestrictableStatement
 	{
-		private static readonly ILogger Log = LoggerProvider.LoggerFor(typeof(DeleteStatement));
+		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(DeleteStatement));
 
 		public DeleteStatement(IToken token) : base(token) {}
 
@@ -25,7 +25,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			get { return HqlSqlWalker.DELETE; }
 		}
 
-		protected override ILogger GetLog()
+		protected override IInternalLogger GetLog()
 		{
 			return Log;
 		}

@@ -227,7 +227,7 @@ namespace NHibernate.Hql.Classic
 
 		private IDictionary<string, IFilter> enabledFilters;
 
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(QueryTranslator));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(QueryTranslator));
 
 		/// <summary> Construct a query translator </summary>
 		/// <param name="queryIdentifier">

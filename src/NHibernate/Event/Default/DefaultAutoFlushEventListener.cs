@@ -11,7 +11,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultAutoFlushEventListener : AbstractFlushingEventListener, IAutoFlushEventListener
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(DefaultAutoFlushEventListener));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultAutoFlushEventListener));
 
 		#region IAutoFlushEventListener Members
 

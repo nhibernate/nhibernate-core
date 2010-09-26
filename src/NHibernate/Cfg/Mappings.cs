@@ -47,7 +47,7 @@ namespace NHibernate.Cfg
 
 		#endregion
 
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(Mappings));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Mappings));
 
 		private readonly IDictionary<string, PersistentClass> classes;
 		private readonly IDictionary<string, Mapping.Collection> collections;

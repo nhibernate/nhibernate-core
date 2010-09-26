@@ -19,7 +19,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class IndexNode : FromReferenceNode
 	{
-		private static readonly ILogger Log = LoggerProvider.LoggerFor(typeof(IndexNode));
+		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(IndexNode));
 
 		public IndexNode(IToken token) : base(token)
 		{

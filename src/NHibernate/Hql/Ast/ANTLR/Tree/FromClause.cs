@@ -16,7 +16,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class FromClause : HqlSqlWalkerNode, IDisplayableNode
 	{
-		private static readonly ILogger Log = LoggerProvider.LoggerFor(typeof(FromClause));
+		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(FromClause));
 		private const int RootLevel = 1;
 
 		private int _level = RootLevel;

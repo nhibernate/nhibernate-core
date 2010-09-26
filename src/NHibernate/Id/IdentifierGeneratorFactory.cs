@@ -79,7 +79,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public sealed class IdentifierGeneratorFactory
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (IdentifierGeneratorFactory));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (IdentifierGeneratorFactory));
 
 		/// <summary> Get the generated identifier when using identity columns</summary>
 		/// <param name="rs">The <see cref="IDataReader"/> to read the identifier value from.</param>

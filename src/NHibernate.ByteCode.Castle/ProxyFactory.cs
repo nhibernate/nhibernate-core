@@ -7,7 +7,7 @@ namespace NHibernate.ByteCode.Castle
 {
 	public class ProxyFactory : AbstractProxyFactory
 	{
-		protected static readonly ILogger log = LoggerProvider.LoggerFor(typeof (ProxyFactory));
+		protected static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (ProxyFactory));
 		private static readonly ProxyGenerator ProxyGenerator = new ProxyGenerator();
 
 		protected static ProxyGenerator DefaultProxyGenerator

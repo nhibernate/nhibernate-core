@@ -13,7 +13,7 @@ namespace NHibernate.Loader.Entity
 {
 	public class CollectionElementLoader : OuterJoinLoader
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (CollectionElementLoader));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (CollectionElementLoader));
 
 		private readonly IOuterJoinLoadable persister;
 		private readonly IType keyType;

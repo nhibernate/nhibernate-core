@@ -22,7 +22,7 @@ namespace NHibernate.Cfg
 	[Serializable]
 	public sealed class SettingsFactory
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(SettingsFactory));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SettingsFactory));
 		private static readonly string DefaultCacheProvider = typeof(NoCacheProvider).AssemblyQualifiedName;
 
 		public Settings BuildSettings(IDictionary<string, string> properties)

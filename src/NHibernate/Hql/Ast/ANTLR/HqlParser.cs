@@ -10,7 +10,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	[CLSCompliant(false)]
 	public partial class HqlParser
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(HqlParser));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HqlParser));
 
 		internal static readonly bool[] possibleIds;
 

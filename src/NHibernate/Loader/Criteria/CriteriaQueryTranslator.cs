@@ -44,7 +44,7 @@ namespace NHibernate.Loader.Criteria
 
 		private readonly ISessionFactoryImplementor sessionFactory;
 		private int indexForAlias = 0;
-		private static readonly ILogger logger = LoggerProvider.LoggerFor(typeof(CriteriaQueryTranslator));
+		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(CriteriaQueryTranslator));
 
 		private readonly List<TypedValue> usedTypedValues = new List<TypedValue>();
 		private SessionFactoryHelper helper;

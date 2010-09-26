@@ -17,7 +17,7 @@ namespace NHibernate.Engine
 			All = 2
 		}
 
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(Versioning));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Versioning));
 
 		/// <summary>
 		/// Increment the given version number

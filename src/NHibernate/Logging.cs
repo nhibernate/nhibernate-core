@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace NHibernate
 {
-	public interface ILogger
+	public interface IInternalLogger
 	{
 		bool IsErrorEnabled { get; }
 		bool IsFatalEnabled { get; }
@@ -35,8 +35,8 @@ namespace NHibernate
 
 	public interface ILoggerFactory
 	{
-		ILogger LoggerFor(string keyName);
-		ILogger LoggerFor(System.Type type);
+		IInternalLogger LoggerFor(string keyName);
+		IInternalLogger LoggerFor(System.Type type);
 	}
 
 	public class LoggerProvider
@@ -109,12 +109,12 @@ namespace NHibernate
 			this.loggerFactory = loggerFactory;
 		}
 
-		public static ILogger LoggerFor(string keyName)
+		public static IInternalLogger LoggerFor(string keyName)
 		{
 			return instance.loggerFactory.LoggerFor(keyName);
 		}
 
-		public static ILogger LoggerFor(System.Type type)
+		public static IInternalLogger LoggerFor(System.Type type)
 		{
 			return instance.loggerFactory.LoggerFor(type);
 		}
@@ -122,19 +122,19 @@ namespace NHibernate
 
 	public class NoLoggingLoggerFactory: ILoggerFactory
 	{
-		private static readonly ILogger Nologging = new NoLoggingLogger();
-		public ILogger LoggerFor(string keyName)
+		private static readonly IInternalLogger Nologging = new NoLoggingInternalLogger();
+		public IInternalLogger LoggerFor(string keyName)
 		{
 			return Nologging;
 		}
 
-		public ILogger LoggerFor(System.Type type)
+		public IInternalLogger LoggerFor(System.Type type)
 		{
 			return Nologging;
 		}
 	}
 
-	public class NoLoggingLogger: ILogger
+	public class NoLoggingInternalLogger: IInternalLogger
 	{
 		public bool IsErrorEnabled
 		{
@@ -228,12 +228,12 @@ namespace NHibernate
 			GetLoggerByNameDelegate = GetGetLoggerMethodCall<string>();
 			GetLoggerByTypeDelegate = GetGetLoggerMethodCall<System.Type>();
 		}
-		public ILogger LoggerFor(string keyName)
+		public IInternalLogger LoggerFor(string keyName)
 		{
 			return new Log4NetLogger(GetLoggerByNameDelegate(keyName));
 		}
 
-		public ILogger LoggerFor(System.Type type)
+		public IInternalLogger LoggerFor(System.Type type)
 		{
 			return new Log4NetLogger(GetLoggerByTypeDelegate(type));
 		}
@@ -248,7 +248,7 @@ namespace NHibernate
 		}
 	}
 
-	public class Log4NetLogger: ILogger
+	public class Log4NetLogger: IInternalLogger
 	{
 		private static readonly System.Type ILogType = System.Type.GetType("log4net.ILog, log4net");
 		private static readonly Func<object, bool> IsErrorEnabledDelegate;

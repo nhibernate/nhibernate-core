@@ -16,7 +16,7 @@ namespace NHibernate.Loader.Collection
 	/// <seealso cref="BasicCollectionLoader"/>
 	public class OneToManyLoader : CollectionLoader
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (OneToManyLoader));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (OneToManyLoader));
 
 		public OneToManyLoader(IQueryableCollection oneToManyPersister, ISessionFactoryImplementor session,
 		                       IDictionary<string, IFilter> enabledFilters)
