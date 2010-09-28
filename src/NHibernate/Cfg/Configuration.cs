@@ -1841,7 +1841,11 @@ namespace NHibernate.Cfg
 		protected virtual string GetDefaultConfigurationFilePath()
 		{
 			string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-			string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath.Split(';').First();
+
+			// Note RelativeSearchPath can be null even if the doc say something else; don't remove the check
+			var searchPath = AppDomain.CurrentDomain.RelativeSearchPath ?? string.Empty;
+
+			string relativeSearchPath = searchPath.Split(';').First();
 			string binPath = Path.Combine(baseDir, relativeSearchPath);
 			return Path.Combine(binPath, DefaultHibernateCfgFileName);
 		}
