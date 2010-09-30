@@ -468,6 +468,8 @@
     <Compile Include="NHSpecificTest\NH1836\Entity.cs" />
     <Compile Include="NHSpecificTest\NH1836\EntityDTO.cs" />
     <Compile Include="NHSpecificTest\NH1836\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1869\Entities.cs" />
+    <Compile Include="NHSpecificTest\NH1869\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2111\A.cs" />
     <Compile Include="NHSpecificTest\NH2111\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2112\Fixture.cs" />
@@ -1803,6 +1805,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH2278\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1136\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2202\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1869\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.ByteCode.Castle\NHibernate.ByteCode.Castle.csproj">
@@ -2658,6 +2661,7 @@
     <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="NHSpecificTest\NH1869" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

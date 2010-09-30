@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH1869">
+
+	<class name="Keyword" table="Keywords" lazy="true">
+		<id name="Id" column="id">
+			<generator class="native" />
+		</id>
+	</class>
+
+	<class name="NodeKeyword" table="NodeKeywords" lazy="true">
+		<composite-id>
+			<key-property name="NodeId" column="nodeId" />
+			<key-many-to-one name="Keyword" column="keywordId" />
+		</composite-id>
+	</class>
+
+</hibernate-mapping>
