@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.EntityNameAndCompositeId"
+				   assembly="NHibernate.Test">
+  <class entity-name="Person">
+    <composite-id name="OuterId">
+      <key-property name="InnerId" type="Int32" />
+    </composite-id>
+    <property name="Data" type="string"/>
+  </class>
+</hibernate-mapping>

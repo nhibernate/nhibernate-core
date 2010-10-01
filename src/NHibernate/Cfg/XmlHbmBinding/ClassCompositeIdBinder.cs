@@ -19,7 +19,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			compositeId = new Component(rootClass);
 			compositeId.IsKey = true;
-			
+
 			rootClass.Identifier = compositeId;
 
 			if (idSchema.name == null)
@@ -41,7 +41,16 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			compositeId.Table.SetIdentifierValue(compositeId);
 			compositeId.NullValue = idSchema.unsavedvalue.ToNullValue();
 
-			System.Type compIdClass = compositeId.ComponentClass;
+			if (!compositeId.IsDynamic)
+			{
+				CheckEqualsAndGetHashCodeOverride();
+			}
+			// Serializability check not ported
+		}
+
+		private void CheckEqualsAndGetHashCodeOverride()
+		{
+			var compIdClass = compositeId.ComponentClass;
 			if (!ReflectHelper.OverridesEquals(compIdClass))
 			{
 				throw new MappingException("composite-id class must override Equals(): " + compIdClass.FullName);
@@ -51,7 +60,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				throw new MappingException("composite-id class must override GetHashCode(): " + compIdClass.FullName);
 			}
-			// Serializability check not ported
 		}
 
 		private void BindComponent(System.Type reflectedClass, string path, HbmCompositeId idSchema)
@@ -70,8 +78,16 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			else
 			{
 				// an "embedded" component (ids only)
-				compositeId.ComponentClass = compositeId.Owner.MappedClass;
-				compositeId.IsEmbedded = true;
+				if (compositeId.Owner.HasPocoRepresentation)
+				{
+					compositeId.ComponentClass = compositeId.Owner.MappedClass;
+					compositeId.IsEmbedded = true;
+				}
+				else
+				{
+					// if not - treat compositeid as a dynamic-component
+					compositeId.IsDynamic = true;
+				}
 			}
 
 			foreach (object item in idSchema.Items ?? new object[0])

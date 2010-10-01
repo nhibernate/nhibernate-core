@@ -453,6 +453,7 @@
     <Compile Include="Linq\ReadonlyTestCase.cs" />
     <Compile Include="Logging\Log4NetLoggerTest.cs" />
     <Compile Include="Logging\LoggerProviderTest.cs" />
+    <Compile Include="NHSpecificTest\EntityNameAndCompositeId\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1136\Address.cs" />
     <Compile Include="NHSpecificTest\NH1136\FeeMatrixType.cs" />
     <Compile Include="NHSpecificTest\NH1136\Fixture.cs" />
@@ -2317,6 +2318,7 @@
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <EmbeddedResource Include="DriverTest\EntityForMs2008.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\EntityNameAndCompositeId\Mappings.hbm.xml" />
     <EmbeddedResource Include="PolymorphicGetAndLoad\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2331\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2324\Mappings.hbm.xml" />
@@ -2661,7 +2663,6 @@
     <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="NHSpecificTest\NH1869" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
