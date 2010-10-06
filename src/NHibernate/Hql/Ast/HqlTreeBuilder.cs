@@ -351,6 +351,11 @@ namespace NHibernate.Hql.Ast
             return new HqlMethodCall(_factory, methodName, parameters);
         }
 
+        public HqlBooleanMethodCall BooleanMethodCall(string methodName, IEnumerable<HqlExpression> parameters)
+        {
+            return new HqlBooleanMethodCall(_factory, methodName, parameters);
+        }
+
         public HqlDistinctHolder DistinctHolder(params HqlTreeNode[] children)
         {
             return new HqlDistinctHolder(_factory, children);

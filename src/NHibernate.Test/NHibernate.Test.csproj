@@ -404,6 +404,7 @@
     <Compile Include="Linq\AggregateTests.cs" />
     <Compile Include="Linq\BinaryBooleanExpressionTests.cs" />
     <Compile Include="Linq\BinaryExpressionOrdererTests.cs" />
+    <Compile Include="Linq\BooleanMethodExtensionExample.cs" />
     <Compile Include="Linq\CasingTest.cs" />
     <Compile Include="Linq\CollectionAssert.cs" />
     <Compile Include="Linq\CustomExtensionsExample.cs" />

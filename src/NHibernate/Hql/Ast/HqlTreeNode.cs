@@ -810,6 +810,16 @@ namespace NHibernate.Hql.Ast
         }
     }
 
+    public class HqlBooleanMethodCall : HqlBooleanExpression
+    {
+        public HqlBooleanMethodCall(IASTFactory factory, string methodName, IEnumerable<HqlExpression> parameters) 
+            : base(HqlSqlWalker.METHOD_CALL, "method", factory)
+        {
+            AddChild(new HqlIdent(factory, methodName));
+            AddChild(new HqlExpressionList(factory, parameters));
+        }
+    }
+
     public class HqlDistinctHolder : HqlExpression
     {
         public HqlDistinctHolder(IASTFactory factory, HqlTreeNode[] children) : base(int.MinValue, "distinct holder", factory, children)
