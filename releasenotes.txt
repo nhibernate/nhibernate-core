@@ -9,6 +9,7 @@ Build 3.0.0.Alpha3
 	##### Possible Breaking Changes #####
 		* [NH-2251] - Signature change for GetLimitString in Dialect
 		* [NH-2284] - Obsolete members removed
+		* Related to [NH-2358]: DateTimeOffset type now works as a DateTimeOffset instead a "surrogate" of DateTime
 
 Build 3.0.0.Alpha3 (rev5226)
 =============================

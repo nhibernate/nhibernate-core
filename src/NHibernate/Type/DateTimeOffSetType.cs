@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -10,7 +11,7 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.DateTimeOffset" /> Property to a <see cref="DbType.DateTimeOffset"/>
 	/// </summary>
 	[Serializable]
-	public class DateTimeOffsetType : DateTimeType
+	public class DateTimeOffsetType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
 	{
 		/// <summary></summary>
 		public DateTimeOffsetType()
@@ -33,7 +34,12 @@ namespace NHibernate.Type
 			get { return typeof (DateTimeOffset); }
 		}
 
-		public override IComparer Comparator
+		public override object DefaultValue
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public IComparer Comparator
 		{
 			get { return Comparer<DateTimeOffset>.Default; }
 		}
@@ -42,8 +48,7 @@ namespace NHibernate.Type
 		{
 			var dateValue = (DateTimeOffset) value;
 			((IDataParameter) st.Parameters[index]).Value =
-				new DateTimeOffset(dateValue.Year, dateValue.Month, dateValue.Day, dateValue.Hour, dateValue.Minute,
-				                   dateValue.Second, dateValue.Offset);
+				new DateTimeOffset(dateValue.Ticks, dateValue.Offset);
 		}
 
 		public override object Get(IDataReader rs, int index)
@@ -52,13 +57,27 @@ namespace NHibernate.Type
 			{
 				var dbValue = (DateTimeOffset) rs[index];
 				;
-				return new DateTimeOffset(dbValue.Year, dbValue.Month, dbValue.Day, dbValue.Hour, dbValue.Minute, dbValue.Second,
-				                          dbValue.Offset);
+				return new DateTimeOffset(dbValue.Ticks, dbValue.Offset);
 			}
 			catch (Exception ex)
 			{
 				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[index]), ex);
 			}
+		}
+
+		public override object Get(IDataReader rs, string name)
+		{
+			return Get(rs, rs.GetOrdinal(name));
+		}
+
+		public object Next(object current, ISessionImplementor session)
+		{
+			return Seed(session);
+		}
+
+		public object Seed(ISessionImplementor session)
+		{
+			return DateTimeOffset.Now;
 		}
 
 		public override bool IsEqual(object x, object y)
@@ -76,34 +95,12 @@ namespace NHibernate.Type
 			var date1 = (DateTimeOffset) x;
 			var date2 = (DateTimeOffset) y;
 
-			if (date1.Equals(date2))
-				return true;
-
-			return (date1.Year == date2.Year &&
-			        date1.Month == date2.Month &&
-			        date1.Day == date2.Day &&
-			        date1.Hour == date2.Hour &&
-			        date1.Minute == date2.Minute &&
-			        date1.Second == date2.Second &&
-			        date1.Offset == date2.Offset);
+			return date1.Equals(date2);
 		}
 
-		public override int GetHashCode(object x, EntityMode entityMode)
+		public object StringToObject(string xml)
 		{
-			// Custom hash code implementation because DateTimeType is only accurate
-			// up to seconds.
-			var date = (DateTimeOffset) x;
-			int hashCode = 1;
-			unchecked
-			{
-				hashCode = 31*hashCode + date.Second;
-				hashCode = 31*hashCode + date.Minute;
-				hashCode = 31*hashCode + date.Hour;
-				hashCode = 31*hashCode + date.Day;
-				hashCode = 31*hashCode + date.Month;
-				hashCode = 31*hashCode + date.Year;
-			}
-			return hashCode;
+			return string.IsNullOrEmpty(xml) ? null : FromStringValue(xml);
 		}
 
 		public override string ToString(object val)
