@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2">
+  <class entity-name="Animal">
+    <id type="int" column="Id">
+      <generator class="hilo"/>
+    </id>
+    <property name="Description" type="string"/>
+    <joined-subclass entity-name="Reptile">
+      <key column="Id"/>
+      <property name="Name" type="string"/>
+    </joined-subclass>
+  </class>
+</hibernate-mapping>
