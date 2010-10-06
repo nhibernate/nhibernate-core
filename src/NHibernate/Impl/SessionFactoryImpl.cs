@@ -600,6 +600,11 @@ namespace NHibernate.Impl
 				// and take the System.Type directly from the persister (className have high probability to be entityName)
 				if (entityPersisters.TryGetValue(className, out checkPersister))
 				{
+					if(!checkPersister.EntityMetamodel.HasPocoRepresentation)
+					{
+						// we found the persister but it is a dynamic entity without class
+						return new[] { className };
+					}
 					// NH : take care with this because we are forcing the Poco EntityMode
 					clazz = checkPersister.GetMappedClass(EntityMode.Poco);
 				}

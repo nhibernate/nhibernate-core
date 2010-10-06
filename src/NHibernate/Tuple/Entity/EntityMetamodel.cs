@@ -125,7 +125,7 @@ namespace NHibernate.Tuple.Entity
 			bool foundInsertGeneratedValue = false;
 			bool foundUpdateGeneratedValue = false;
 			bool foundNonIdentifierPropertyNamedId = false;
-
+			HasPocoRepresentation = persistentClass.HasPocoRepresentation;
 			foreach (Mapping.Property prop in persistentClass.PropertyClosureIterator)
 			{
 				// NH: A lazy property is a simple property marked with lazy=true or a relation (in this case many-to-one or one-to-one marked as "no-proxy")
@@ -300,6 +300,8 @@ namespace NHibernate.Tuple.Entity
 
 			tuplizerMapping = new EntityEntityModeToTuplizerMapping(persistentClass, this);
 		}
+
+		public bool HasPocoRepresentation { get; private set; }
 
 		private static void VerifyCanInterceptPropertiesForLazyOrGhostProperties(PersistentClass persistentClass)
 		{

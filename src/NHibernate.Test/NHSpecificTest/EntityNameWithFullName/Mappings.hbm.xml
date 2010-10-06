@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test">
+  <class entity-name="NHibernate.Test.NHSpecificTest.EntityNameWithFullName.Parent">
+    <id name="Id" type="Int32">
+      <generator class="native"/>
+    </id>
+    <property name="SomeData" type="string"/>
+  </class>
+
+  <!-- just a dummy mapping here to show the problem -->
+  <class entity-name="NHibernate.Test.NHSpecificTest.EntityNameWithFullName.Parent2">
+    <id name="Id" type="Int32">
+      <generator class="native"/>
+    </id>
+    <property name="SomeOtherData" type="string"/>
+  </class>
+         
+</hibernate-mapping>
