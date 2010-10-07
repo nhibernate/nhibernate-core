@@ -859,6 +859,7 @@
     <Compile Include="Type\DefaultCollectionTypeFactory.cs" />
     <Compile Include="Bytecode\ICollectionTypeFactory.cs" />
     <Compile Include="Type\LocalDateTimeType.cs" />
+    <Compile Include="Type\UriType.cs" />
     <Compile Include="Type\UtcDateTimeType.cs" />
     <Compile Include="Type\XmlDocType.cs" />
     <Compile Include="Util\ExpressionsHelper.cs" />

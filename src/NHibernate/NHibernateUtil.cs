@@ -283,6 +283,8 @@ namespace NHibernate
 
 		public static readonly NullableType XmlDoc = new XmlDocType();
 
+		public static readonly NullableType Uri = new UriType();
+
 		/// <summary>
 		/// A NHibernate persistent enum type
 		/// </summary>

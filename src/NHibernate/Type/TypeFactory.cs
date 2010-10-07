@@ -208,6 +208,8 @@ namespace NHibernate.Type
 			RegisterType(typeof (UInt64), NHibernateUtil.UInt64, new[] {"ulong"});
 
 			RegisterType(typeof (XmlDocument), NHibernateUtil.XmlDoc, new[] {"xmldoc", "xmldocument", "xml"});
+			
+			RegisterType(typeof (Uri), NHibernateUtil.Uri, new[] {"uri", "url"});
 
 			// object needs to have both class and serializable setup before it can
 			// be created.
