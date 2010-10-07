@@ -196,8 +196,8 @@ namespace NHibernate.Cfg
 
 			private PersistentClass GetPersistentClass(string className)
 			{
-				PersistentClass pc = configuration.classes[className];
-				if (pc == null)
+				PersistentClass pc;
+				if (!configuration.classes.TryGetValue(className, out pc))
 				{
 					throw new MappingException("persistent class not known: " + className);
 				}
