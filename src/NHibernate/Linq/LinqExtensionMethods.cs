@@ -40,7 +40,7 @@ namespace NHibernate.Linq
             return new NhQueryable<T>(query.Provider, callExpression);
         }
 
-        public static IEnumerable<T> ToFuture<T>(this IEnumerable<T> query)
+        public static IEnumerable<T> ToFuture<T>(this IQueryable<T> query)
         {
             var nhQueryable = query as NhQueryable<T>;
             if (nhQueryable == null)
@@ -51,7 +51,7 @@ namespace NHibernate.Linq
             return (IEnumerable<T>)future;
         }
 
-        public static IFutureValue<T> ToFutureValue<T>(this IEnumerable<T> query)
+        public static IFutureValue<T> ToFutureValue<T>(this IQueryable<T> query)
         {
             var nhQueryable = query as NhQueryable<T>;
             if (nhQueryable == null)
