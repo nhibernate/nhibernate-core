@@ -456,6 +456,7 @@
     <Compile Include="Logging\LoggerProviderTest.cs" />
     <Compile Include="NHSpecificTest\EntityNameAndCompositeId\Fixture.cs" />
     <Compile Include="NHSpecificTest\EntityNameWithFullName\Fixture.cs" />
+    <Compile Include="NHSpecificTest\Futures\LinqFutureFixture.cs" />
     <Compile Include="NHSpecificTest\NH1136\Address.cs" />
     <Compile Include="NHSpecificTest\NH1136\FeeMatrixType.cs" />
     <Compile Include="NHSpecificTest\NH1136\Fixture.cs" />

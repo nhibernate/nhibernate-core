@@ -9,6 +9,8 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		private int id;
 		private Person parent;
 
+        public virtual string Name { get; set; }
+
 		public virtual Person Parent
 		{
 			get { return parent; }

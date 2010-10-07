@@ -1,9 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace NHibernate.Impl
 {
-    internal class FutureValue<T> : IFutureValue<T>
+    internal class FutureValue<T> : IFutureValue<T>, IDelayedValue
     {
         public delegate IEnumerable<T> GetResult();
 
@@ -23,11 +24,24 @@ namespace NHibernate.Impl
 
 				if (!enumerator.MoveNext())
 				{
-                    return default(T);
-                }
+				    var defVal = default(T);
+                    if (ExecuteOnEval != null)
+                        defVal = (T)ExecuteOnEval.DynamicInvoke(defVal);
+				    return defVal;
+				}
 
-                return enumerator.Current;
+                var val = enumerator.Current;
+
+                if (ExecuteOnEval != null)
+                    val = (T)ExecuteOnEval.DynamicInvoke(val);
+				    
+                return val;
             }
+        }
+
+        public Delegate ExecuteOnEval
+        {
+            get; set;
         }
     }
 }

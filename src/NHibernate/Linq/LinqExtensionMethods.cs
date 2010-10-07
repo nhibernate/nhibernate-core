@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Impl;
 
 namespace NHibernate.Linq
 {
@@ -35,6 +38,31 @@ namespace NHibernate.Linq
             var callExpression = Expression.Call(method, query.Expression, Expression.Constant(region));
 
             return new NhQueryable<T>(query.Provider, callExpression);
+        }
+
+        public static IEnumerable<T> ToFuture<T>(this IEnumerable<T> query)
+        {
+            var nhQueryable = query as NhQueryable<T>;
+            if (nhQueryable == null)
+                throw new NotSupportedException("You can also use the AsFuture() method on NhQueryable");
+
+
+            var future = ((NhQueryProvider)nhQueryable.Provider).ExecuteFuture(nhQueryable.Expression);
+            return (IEnumerable<T>)future;
+        }
+
+        public static IFutureValue<T> ToFutureValue<T>(this IEnumerable<T> query)
+        {
+            var nhQueryable = query as NhQueryable<T>;
+            if (nhQueryable == null)
+                throw new NotSupportedException("You can also use the AsFuture() method on NhQueryable");
+
+            var future = ((NhQueryProvider)nhQueryable.Provider).ExecuteFuture(nhQueryable.Expression);
+            if(future is DelayedEnumerator<T>)
+            {
+                return new FutureValue<T>(() => ((IEnumerable<T>) future));
+            }
+            return (IFutureValue<T>)future;
         }
 	}
 }

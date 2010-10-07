@@ -1,13 +1,18 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace NHibernate.Impl
 {
-    internal class DelayedEnumerator<T> : IEnumerable<T>
+    internal class DelayedEnumerator<T> : IEnumerable<T>, IDelayedValue
     {
         public delegate IEnumerable<T> GetResult();
 
         private readonly GetResult result;
+
+
+        public Delegate ExecuteOnEval { get; set;}
+        
 
         public DelayedEnumerator(GetResult result)
         {
@@ -18,7 +23,10 @@ namespace NHibernate.Impl
         {
             get
             {
-                foreach (T item in result())
+                var value = result();
+                if(ExecuteOnEval != null)
+                    value = (IEnumerable<T>)ExecuteOnEval.DynamicInvoke(value);
+                foreach (T item in value)
                 {
                     yield return item;
                 }
@@ -38,5 +46,10 @@ namespace NHibernate.Impl
         }
 
         #endregion
+    }
+
+    internal interface IDelayedValue
+    {
+        Delegate ExecuteOnEval { get; set; }
     }
 }

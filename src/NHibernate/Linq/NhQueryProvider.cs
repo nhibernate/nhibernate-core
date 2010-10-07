@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,38 +20,84 @@ namespace NHibernate.Linq
 
 		public object Execute(Expression expression)
 		{
-			var nhLinqExpression = new NhLinqExpression(expression);
-
-			var query = _session.CreateQuery(nhLinqExpression);
-
-		    var nhQuery = query.As<ExpressionQueryImpl>().QueryExpression.As<NhLinqExpression>();
-
-			SetParameters(query, nhLinqExpression.ParameterValuesByName);
-		    SetResultTransformerAndAdditionalCriteria(query, nhQuery, nhLinqExpression.ParameterValuesByName);
-
-			var results = query.List();
-
-            if (nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
-            {
-                try
-                {
-                    return nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer.DynamicInvoke(results.AsQueryable());
-                }
-                catch (TargetInvocationException e)
-                {
-                    throw e.InnerException;
-                }
-            }
-
-            if (nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence)
-			{
-				return results.AsQueryable();
-			}
-
-			return results[0];
+		    IQuery query;
+		    NhLinqExpression nhQuery;
+		    NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query, out nhQuery);
+            
+			return ExecuteQuery(nhLinqExpression, query, nhQuery);
 		}
 
-		public TResult Execute<TResult>(Expression expression)
+        public object ExecuteFuture(Expression expression)
+        {
+            IQuery query;
+            NhLinqExpression nhQuery;
+            NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query, out nhQuery);
+            return ExecuteFutureQuery(nhLinqExpression, query, nhQuery); 
+        }
+
+	    private NhLinqExpression PrepareQuery(Expression expression, out IQuery query, out NhLinqExpression nhQuery)
+	    {
+	        var nhLinqExpression = new NhLinqExpression(expression);
+
+	        query = _session.CreateQuery(nhLinqExpression);
+
+	        nhQuery = query.As<ExpressionQueryImpl>().QueryExpression.As<NhLinqExpression>();
+
+	        SetParameters(query, nhLinqExpression.ParameterValuesByName);
+	        SetResultTransformerAndAdditionalCriteria(query, nhQuery, nhLinqExpression.ParameterValuesByName);
+	        return nhLinqExpression;
+	    }
+
+	    private object ExecuteFutureQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery)
+	    {
+	        MethodInfo method;
+            if (nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence)
+	        {
+	            method = typeof (IQuery).GetMethod("Future").MakeGenericMethod(nhQuery.Type);
+	        }
+            else
+            {
+                method = typeof(IQuery).GetMethod("FutureValue").MakeGenericMethod(nhQuery.Type);
+            }
+
+	        var result = method.Invoke(query, new object[0]);
+
+
+            
+	        if (nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
+	        {
+	            ((IDelayedValue) result).ExecuteOnEval = nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer;
+	        }
+
+	        return result;
+
+	    }
+
+	    private object ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery)
+	    {
+	        var results = query.List();
+
+	        if (nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
+	        {
+	            try
+	            {
+	                return nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer.DynamicInvoke(results.AsQueryable());
+	            }
+	            catch (TargetInvocationException e)
+	            {
+	                throw e.InnerException;
+	            }
+	        }
+
+	        if (nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence)
+	        {
+	            return results.AsQueryable();
+	        }
+
+	        return results[0];
+	    }
+
+	    public TResult Execute<TResult>(Expression expression)
 		{
 			return (TResult) Execute(expression);
 		}
