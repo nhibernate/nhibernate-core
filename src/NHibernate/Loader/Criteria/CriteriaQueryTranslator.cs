@@ -520,13 +520,13 @@ namespace NHibernate.Loader.Criteria
 			return alias;
 		}
 
-		public string GetEntityName(ICriteria criteria)
-		{
-			ICriteriaInfoProvider result;
-			if(criteriaInfoMap.TryGetValue(criteria, out result)==false)
-				throw new ArgumentException("Could not find a matching criteria info provider to: " + criteria);
-			return result.Name;
-		}
+        public string GetEntityName(ICriteria criteria)
+        {
+            ICriteriaInfoProvider result;
+            if (criteriaInfoMap.TryGetValue(criteria, out result) == false)
+                return null;
+            return result.Name;
+        }
 
 		public string GetColumn(ICriteria criteria, string propertyName)
 		{
