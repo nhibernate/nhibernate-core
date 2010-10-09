@@ -11,6 +11,33 @@ Build 3.0.0.Alpha3
 		* [NH-2284] - Obsolete members removed
 		* Related to [NH-2358]: DateTimeOffset type now works as a DateTimeOffset instead a "surrogate" of DateTime
 
+Build 3.0.0.Beta1 (rev5241)
+=============================
+
+** Bug
+    * [NH-2001] - Filter by  Null in Linq (hql ast version)  doesn't work  
+    * [NH-2077] - SQL Server Dialect: Nhibernate fails to execute native queries with parameters, separated with ';'
+    * [NH-2084] - Future + hql queries + same parameter name leads to "NHibernate.QueryException: The named parameter personId was used in more than one query. Either give unique names to your parameters, or use the multi query SetParameter() methods"
+    * [NH-2331] - ICriteria: Correlated query throws "Could not find a matching criteria info provider to", works in 2.1.0 broken in 2.1.2
+    * [NH-2352] - Null reference exception in GetDefaultConfigurationFilePath when AppDomain.CurrentDomain.RelativeSearchPath is null
+    * [NH-2358] - DateTimeOffsetType doesnt properly convert to-from database; milliseconds are lost.
+    * [NH-2364] - Dynamic entities with "full name" result in incorrect queries
+
+** Improvement
+    * [NH-1108] - Reference Data - Ability to load all rows from a table using an HBM file.
+    * [NH-2313] - Better logging when SessionFactory is being built
+    * [NH-2355] - Allow composite-id without class on dynamic entity
+
+** New Feature
+    * [NH-2309] - Add support for Future() with the new Linq provider
+    * [NH-2367] - Native support for System.Uri as string
+
+** Patch
+    * [NH-2073] - Missing QuerySequencesString override in FirebirdDialect
+    * [NH-2082] - AdoTransaction sometimes writes to log wrong information about IsolationLevel
+    * [NH-2357] - Support for custom boolean functions in the linq provider (as FREETEXT).
+
+
 Build 3.0.0.Alpha3 (rev5226)
 =============================
 
