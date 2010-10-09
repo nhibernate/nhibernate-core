@@ -1564,6 +1564,48 @@ namespace NHibernate.Test.Linq
 
 			ObjectDumper.Write(q);
 		}
+
+		[Category("WHERE")]
+		[Test(Description = "This sample uses WHERE to filter for orders with shipping date equals to null.")]
+		public void DLinq2B()
+		{
+			IQueryable<Order> q =
+				from o in db.Orders
+				where o.ShippingDate == null
+				select o;
+
+			AssertByIds(q,
+			            new[]
+			            	{
+			            		11008, 11019, 11039, 11040, 11045, 11051, 11054,
+			            		11058, 11059, 11061, 11062, 11065, 11068, 11070,
+			            		11071, 11072, 11073, 11074, 11075, 11076, 11077
+			            	},
+			            x => x.OrderId);
+		}
+
+		[Category("WHERE")]
+		[Test(Description = "This sample uses WHERE to filter for orders with shipping date not equals to null.")]
+		public void DLinq2C()
+		{
+			var q =
+				(from o in db.Orders
+				 where o.ShippingDate != null
+				 select o.OrderId).ToArray();
+
+
+			var withNullShippingDate =
+				new[]
+					{
+						11008, 11019, 11039, 11040, 11045, 11051, 11054,
+						11058, 11059, 11061, 11062, 11065, 11068, 11070,
+						11071, 11072, 11073, 11074, 11075, 11076, 11077
+					};
+
+			Assert.AreEqual(809, q.Length);
+
+			Assert.That(!q.Any(orderid => withNullShippingDate.Contains(orderid)));
+		}
     }
 
     public class ParentChildBatch<T, TKey, TSub>
