@@ -210,6 +210,78 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void IsType()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				var father1 = new Person() { Name = "Father 1" };
+				var father2 = new CustomPerson() { Name = "Father 2" };
+
+				var person1 = new Person() { Name = "Person 1", Father = father2 };
+				var person2 = new CustomPerson() { Name = "Person 2", Father = father1 };
+
+				s.Save(father1);
+				s.Save(father2);
+
+				s.Save(person1);
+				s.Save(person2);
+
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var actual =
+					s.QueryOver<Person>()
+						.Where(p => p is CustomPerson)
+						.And(p => p.Father != null)
+						.List();
+
+				Assert.That(actual.Count, Is.EqualTo(1));
+				Assert.That(actual[0].Name, Is.EqualTo("Person 2"));
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var actual =
+					s.QueryOver<Person>()
+						.Where(p => p.GetType() == typeof(CustomPerson))
+						.And(p => p.Father != null)
+						.List();
+
+				Assert.That(actual.Count, Is.EqualTo(1));
+				Assert.That(actual[0].Name, Is.EqualTo("Person 2"));
+			}
+
+			using (ISession s = OpenSession())
+			{
+				Person f = null;
+				var actual =
+					s.QueryOver<Person>()
+						.JoinAlias(p => p.Father, () => f)
+						.Where(() => f is CustomPerson)
+						.List();
+
+				Assert.That(actual.Count, Is.EqualTo(1));
+				Assert.That(actual[0].Name, Is.EqualTo("Person 1"));
+			}
+
+			using (ISession s = OpenSession())
+			{
+				Person f = null;
+				var actual =
+					s.QueryOver<Person>()
+						.JoinAlias(p => p.Father, () => f)
+						.Where(() => f.GetType() == typeof(CustomPerson))
+						.List();
+
+				Assert.That(actual.Count, Is.EqualTo(1));
+				Assert.That(actual[0].Name, Is.EqualTo("Person 1"));
+			}
+		}
+
+		[Test]
 		public void SubCriteria()
 		{
 			using (ISession s = OpenSession())

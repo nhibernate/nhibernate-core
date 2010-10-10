@@ -7,13 +7,16 @@
 		<id name="Id">
 			<generator class="native"/>
 		</id>
+		<discriminator type="string" />
 		<property name="Name" />
 		<property name="Age" />
 		<property name="Blood" />
+		<many-to-one name="Father" class="Person" />
 		<bag name="Children" inverse="true" cascade="all-delete-orphan">
 			<key column="Parent" />
 			<one-to-many class="Child" />
 		</bag>
+		<subclass name="CustomPerson" />
 	</class>
 
 	<class name="Child">

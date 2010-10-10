@@ -28,7 +28,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Add(Restrictions.Lt("Age", 50))
 					.Add(Restrictions.Le("Age", 49))
 					.Add(Restrictions.Eq("class", typeof(Person)))
-					.Add(Restrictions.Eq("class", typeof(Person)));
+					.Add(Restrictions.Eq("class", typeof(Person).FullName));
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
@@ -187,7 +187,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Add(Restrictions.Lt("personAlias.Age", 50))
 					.Add(Restrictions.Le("personAlias.Age", 49))
 					.Add(Restrictions.Eq("personAlias.class", typeof(Person)))
-					.Add(Restrictions.Eq("personAlias.class", typeof(Person)));
+					.Add(Restrictions.Eq("personAlias.class", typeof(Person).FullName));
 
 			Person personAlias = null;
 			IQueryOver<Person> actual =

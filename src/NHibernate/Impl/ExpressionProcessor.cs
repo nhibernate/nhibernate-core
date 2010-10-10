@@ -425,7 +425,7 @@ namespace NHibernate.Impl
 			if (expression is TypeBinaryExpression)
 			{
 				TypeBinaryExpression typeBinaryExpression = (TypeBinaryExpression)expression;
-				return Restrictions.Eq(ClassMember(typeBinaryExpression.Expression), typeBinaryExpression.TypeOperand);
+				return Restrictions.Eq(ClassMember(typeBinaryExpression.Expression), typeBinaryExpression.TypeOperand.FullName);
 			}
 
 			throw new Exception("Could not determine member type from " + expression.NodeType + ", " + expression.ToString() + ", " + expression.GetType());

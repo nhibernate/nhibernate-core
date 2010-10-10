@@ -519,6 +519,8 @@
     <Compile Include="NHSpecificTest\NH2324\CompositeUserType.cs" />
     <Compile Include="NHSpecificTest\NH2324\Entity.cs" />
     <Compile Include="NHSpecificTest\NH2324\BulkUpdateWithCustomCompositeType.cs" />
+    <Compile Include="NHSpecificTest\NH2328\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2328\Model.cs" />
     <Compile Include="NHSpecificTest\NH2331\Forum.cs" />
     <Compile Include="NHSpecificTest\NH2331\MemberGroup.cs" />
     <Compile Include="NHSpecificTest\NH2331\Nh2331Test.cs" />
@@ -2326,6 +2328,7 @@
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <EmbeddedResource Include="DriverTest\EntityForMs2008.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH2328\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2313\Mappings.hbm.xml" />
     <EmbeddedResource Include="TypesTest\UriClass.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\EntityNameWithFullName\Mappings.hbm.xml" />
