@@ -1,10 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Reflection;
 using System.Text;
 using NHibernate.AdoNet.Util;
+using NHibernate.Exceptions;
 
 namespace NHibernate.AdoNet
 {
@@ -126,7 +127,15 @@ namespace NHibernate.AdoNet
 				// this value is not a part of the ADO.NET API.
 				// It's and ODP implementation, so it is being set by reflection
 				SetObjectParam(currentBatch, "ArrayBindCount", arraySize);
-				int rowsAffected = currentBatch.ExecuteNonQuery();
+				int rowsAffected;
+				try
+				{
+					rowsAffected = currentBatch.ExecuteNonQuery();
+				}
+				catch (DbException e)
+				{
+					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+				}
 
 				Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
 

@@ -1,10 +1,8 @@
-using System;
-
 using NUnit.Framework;
-
 using NHibernate.Dialect;
 using NHibernate.Exceptions;
 using NHibernate.Test.ExceptionsTest;
+using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2020
 {
@@ -13,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2020
 	{
 		protected override void Configure(Cfg.Configuration configuration)
 		{
-			configuration.SetProperty(Cfg.Environment.BatchSize, "1");
+			configuration.SetProperty(Cfg.Environment.BatchSize, "10");
 
 			configuration.SetProperty(	Cfg.Environment.SqlExceptionConverter,
 										typeof (MSSQLExceptionConverterExample).AssemblyQualifiedName);
@@ -58,17 +56,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2020
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				var one = s.Load<One>(oneId);
-
-				try
-				{
-					s.Delete(one);
-					tx.Commit();
-					Assert.Fail("DELETE should have failed");
-				}
-				catch (Exception ex)
-				{
-					Assert.IsInstanceOf<ConstraintViolationException>(ex);
-				}
+				s.Delete(one);
+				tx.Executing(transaction => transaction.Commit()).Throws<ConstraintViolationException>();
 			}
 		}
 	}

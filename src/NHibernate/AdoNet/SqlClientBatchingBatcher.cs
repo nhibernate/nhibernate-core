@@ -1,6 +1,8 @@
 using System.Data;
+using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet.Util;
+using NHibernate.Exceptions;
 using NHibernate.Util;
 
 namespace NHibernate.AdoNet
@@ -82,8 +84,16 @@ namespace NHibernate.AdoNet
 				Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
 				currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
 			}
-			
-			int rowsAffected = currentBatch.ExecuteNonQuery();
+
+			int rowsAffected;
+			try
+			{
+				rowsAffected = currentBatch.ExecuteNonQuery();
+			}
+			catch (DbException e)
+			{
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+			}
 
 			Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
 
