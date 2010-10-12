@@ -194,13 +194,15 @@ namespace NHibernate.Dialect
 			var pagingBuilder = new SqlStringBuilder();
 			pagingBuilder.Add(querySqlString);
 			pagingBuilder.Add(" limit ");
-			pagingBuilder.Add(Parameter.WithIndex(limitParameterIndex.Value));
 
 			if (offset > 0)
 			{
-				pagingBuilder.Add(", ");
 				pagingBuilder.Add(Parameter.WithIndex(offsetParameterIndex.Value));
+				pagingBuilder.Add(", ");
 			}
+
+			pagingBuilder.Add(Parameter.WithIndex(limitParameterIndex.Value));
+
 			return pagingBuilder.ToSqlString();
 		}
 

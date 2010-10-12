@@ -31,15 +31,6 @@ namespace NHibernate.Dialect
 		//default:
 		//http://dev.mysql.com/doc/refman/5.0/en/data-type-defaults.html
 
-		public override bool SupportsVariableLimit
-		{
-			get
-			{
-				//note: why false?
-				return false;
-			}
-		}
-
 		public override bool SupportsSubSelects
 		{
 			get
