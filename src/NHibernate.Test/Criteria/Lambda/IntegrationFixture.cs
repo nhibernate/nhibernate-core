@@ -38,6 +38,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.CreateQuery("delete from Child").ExecuteUpdate();
+				s.CreateQuery("update Person p set p.Father = null").ExecuteUpdate();
 				s.CreateQuery("delete from Person").ExecuteUpdate();
 				s.CreateQuery("delete from JoinedChild").ExecuteUpdate();
 				s.CreateQuery("delete from Parent").ExecuteUpdate();
