@@ -39,29 +39,40 @@ namespace NHibernate.Id
 		/// </returns>
 		public object Generate(ISessionImplementor sessionImplementor, object obj)
 		{
-			ISession session = (ISession)sessionImplementor;
+			ISession session = (ISession) sessionImplementor;
 
-			object associatedObject = sessionImplementor.Factory
-				.GetClassMetadata(obj.GetType())
-				.GetPropertyValue(obj, propertyName, sessionImplementor.EntityMode);
+			var persister = sessionImplementor.Factory.GetEntityPersister(entityName);
+			object associatedObject = persister.GetPropertyValue(obj, propertyName, sessionImplementor.EntityMode);
 
 			if (associatedObject == null)
 			{
 				throw new IdentifierGenerationException("attempted to assign id from null one-to-one property: " + propertyName);
 			}
 
-			EntityType type = (EntityType)sessionImplementor.Factory.GetClassMetadata(obj.GetType()).GetPropertyType(propertyName);
+			EntityType foreignValueSourceType;
+			IType propertyType = persister.GetPropertyType(propertyName);
+			if (propertyType.IsEntityType)
+			{
+				foreignValueSourceType = (EntityType) propertyType;
+			}
+			else
+			{
+				// try identifier mapper
+				foreignValueSourceType = (EntityType) persister.GetPropertyType("_identifierMapper." + propertyName);
+			}
 
 			object id;
 			try
 			{
-				id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(type.GetAssociatedEntityName(), associatedObject, sessionImplementor);
+				id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(
+					foreignValueSourceType.GetAssociatedEntityName(),
+					associatedObject,
+					sessionImplementor);
 			}
 			catch (TransientObjectException)
 			{
-				id = session.Save(associatedObject);
+				id = session.Save(foreignValueSourceType.GetAssociatedEntityName(), associatedObject);
 			}
-
 
 			if (session.Contains(obj))
 			{
