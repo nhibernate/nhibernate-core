@@ -67,6 +67,9 @@
       <HintPath>..\..\lib\net\3.5\Remotion.Data.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ADOException.cs" />
@@ -861,6 +864,7 @@
     <Compile Include="Type\LocalDateTimeType.cs" />
     <Compile Include="Type\UriType.cs" />
     <Compile Include="Type\UtcDateTimeType.cs" />
+    <Compile Include="Type\XDocType.cs" />
     <Compile Include="Type\XmlDocType.cs" />
     <Compile Include="Util\ExpressionsHelper.cs" />
     <Compile Include="Util\NullableDictionary.cs" />

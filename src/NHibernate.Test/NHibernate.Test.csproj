@@ -80,6 +80,9 @@
     </Reference>
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ado\AlmostSimple.cs" />
@@ -538,6 +541,8 @@
     <Compile Include="TypesTest\UriClass.cs" />
     <Compile Include="TypesTest\UriTypeFixture.cs" />
     <Compile Include="TypesTest\UtcDateTimeTypeFixture.cs" />
+    <Compile Include="TypesTest\XDocClass.cs" />
+    <Compile Include="TypesTest\XDocTypeFixture.cs" />
     <Compile Include="TypesTest\XmlDocClass.cs" />
     <Compile Include="TypesTest\XmlDocTypeFixture.cs" />
     <Compile Include="UtilityTest\ReflectionHelperIsMethodOfTests.cs" />
@@ -2329,6 +2334,7 @@
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <EmbeddedResource Include="DriverTest\EntityForMs2008.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="TypesTest\XDocClass.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2374\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2328\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2313\Mappings.hbm.xml" />

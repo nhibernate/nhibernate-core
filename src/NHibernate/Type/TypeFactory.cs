@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Xml;
+using System.Xml.Linq;
 using NHibernate.Bytecode;
 using NHibernate.Classic;
 using NHibernate.Engine;
@@ -210,6 +211,8 @@ namespace NHibernate.Type
 			RegisterType(typeof (XmlDocument), NHibernateUtil.XmlDoc, new[] {"xmldoc", "xmldocument", "xml"});
 			
 			RegisterType(typeof (Uri), NHibernateUtil.Uri, new[] {"uri", "url"});
+
+      RegisterType(typeof(XDocument), NHibernateUtil.XDoc, new[] { "xdoc", "xdocument" });
 
 			// object needs to have both class and serializable setup before it can
 			// be created.
