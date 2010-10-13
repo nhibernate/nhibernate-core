@@ -626,23 +626,31 @@ namespace NHibernate.Event
 			return this;
 		}
 
-	    public void DestroyListeners()
-        {
-            try
-            {
-                foreach (object i in initializedListeners)
-                {
-                    IDestructible destructible = i as IDestructible;
-                    if (destructible != null)
-                    {
-                        destructible.Cleanup();
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                throw new HibernateException("could not destruct listeners", e);
-            }
-	    }
+		public void DestroyListeners()
+		{
+			try
+			{
+				foreach (object i in initializedListeners)
+				{
+					var destructible = i as IDestructible;
+					if (destructible != null)
+					{
+						destructible.Cleanup();
+					}
+					else
+					{
+						var disposable = i as IDisposable;
+						if (disposable != null)
+						{
+							disposable.Dispose();
+						}						
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				throw new HibernateException("could not destruct/dispose listeners", e);
+			}
+		}
 	}
 }
