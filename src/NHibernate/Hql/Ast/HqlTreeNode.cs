@@ -200,7 +200,10 @@ namespace NHibernate.Hql.Ast
 				case TypeCode.Boolean:
             		SetText("bool");
             		break;
-                case TypeCode.Int32:
+				case TypeCode.Int16:
+								SetText("short");
+								break;
+				case TypeCode.Int32:
                     SetText("integer");
                     break;
                 case TypeCode.Int64:

@@ -533,6 +533,9 @@
     <Compile Include="NHSpecificTest\NH2344\Model.cs" />
     <Compile Include="NHSpecificTest\NH2361\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2374\NH2374Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2378\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2378\TestEntity.cs" />
+    <Compile Include="NHSpecificTest\NH2378\TestEntityDto.cs" />
     <Compile Include="PolymorphicGetAndLoad\Domain.cs" />
     <Compile Include="PolymorphicGetAndLoad\PolymorphicGetAndLoadTest.cs" />
     <Compile Include="TypesTest\CharClass.cs" />
@@ -2335,6 +2338,7 @@
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <EmbeddedResource Include="DriverTest\EntityForMs2008.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH2378\Mappings.hbm.xml" />
     <EmbeddedResource Include="TypesTest\XDocClass.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2374\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2328\Mappings.hbm.xml" />
