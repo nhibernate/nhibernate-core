@@ -15,11 +15,11 @@ namespace NHibernate
 	/// <c>ISession.List()</c>;
 	/// <list>
 	///		<item>
-	///			A particulare page of the result set may be selected by calling 
+	///			A particular page of the result set may be selected by calling
 	///			<c>SetMaxResults()</c>, <c>SetFirstResult()</c>.  The generated sql
 	///			depends on the capabilities of the <see cref="Dialect.Dialect"/>.  Some
 	///			Dialects are for databases that have built in paging (LIMIT) and those capabilities
-	///			will be used to limit the number of records returned by the sql statement. 
+	///			will be used to limit the number of records returned by the sql statement.
 	///			If the database does not support LIMITs then all of the records will be returned,
 	///			but the objects created will be limited to the specific results requested.
 	///		</item>
@@ -58,7 +58,7 @@ namespace NHibernate
 		string QueryString { get; }
 
 		/// <summary>
-		/// The Hibernate types of the query result set.
+		/// The NHibernate types of the query result set.
 		/// </summary>
 		IType[] ReturnTypes { get; }
 
@@ -79,7 +79,7 @@ namespace NHibernate
 		/// <remarks>
 		/// <p>
 		/// Entities returned as results are initialized on demand. The first SQL query returns
-		/// identifiers only.  
+		/// identifiers only.
 		/// </p>
 		/// <p>
 		/// This is a good strategy to use if you expect a high number of the objects
@@ -132,7 +132,7 @@ namespace NHibernate
 		/// </summary>
 		T UniqueResult<T>();
 
-		/// <summary> 
+		/// <summary>
 		/// Execute the update or delete statement.
 		/// </summary>
 		/// <returns> The number of entities updated or deleted. </returns>
@@ -150,10 +150,10 @@ namespace NHibernate
 		/// <param name="firstResult">The first row to retreive.</param>
 		IQuery SetFirstResult(int firstResult);
 
-		/// <summary> 
-		/// Entities retrieved by this query will be loaded in 
-		/// a read-only mode where Hibernate will never dirty-check
-		/// them or make changes persistent. 
+		/// <summary>
+		/// Entities retrieved by this query will be loaded in
+		/// a read-only mode where NHibernate will never dirty-check
+		/// them or make changes persistent.
 		/// </summary>
 		IQuery SetReadOnly(bool readOnly);
 
@@ -205,7 +205,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">Position of the parameter in the query, numbered from <c>0</c></param>
 		/// <param name="val">The possibly null parameter value</param>
-		/// <param name="type">The Hibernate type</param>
+		/// <param name="type">The NHibernate type</param>
 		IQuery SetParameter(int position, object val, IType type);
 
 		/// <summary>
@@ -233,7 +233,7 @@ namespace NHibernate
 		IQuery SetParameter<T>(string name, T val);
 
 		/// <summary>
-		/// Bind a value to an indexed parameter, guessing the Hibernate type from
+		/// Bind a value to an indexed parameter, guessing the NHibernate type from
 		/// the class of the given object.
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query, numbered from <c>0</c></param>
@@ -254,11 +254,11 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="vals">A collection of values to list</param>
-		/// <param name="type">The Hibernate type of the values</param>
+		/// <param name="type">The NHibernate type of the values</param>
 		IQuery SetParameterList(string name, ICollection vals, IType type);
 
 		/// <summary>
-		/// Bind multiple values to a named query parameter, guessing the Hibernate
+		/// Bind multiple values to a named query parameter, guessing the NHibernate
 		/// type from the class of the first object in the collection. This is useful for binding a list
 		/// of values to an expression such as <c>foo.bar in (:value_list)</c>
 		/// </summary>
@@ -266,18 +266,18 @@ namespace NHibernate
 		/// <param name="vals">A collection of values to list</param>
 		IQuery SetParameterList(string name, ICollection vals);
 
-		/// <summary> 
+		/// <summary>
 		/// Bind multiple values to a named query parameter. This is useful for binding
 		/// a list of values to an expression such as <tt>foo.bar in (:value_list)</tt>.
 		/// </summary>
 		/// <param name="name">the name of the parameter </param>
 		/// <param name="vals">a collection of values to list </param>
-		/// <param name="type">the Hibernate type of the values </param>
+		/// <param name="type">the NHibernate type of the values </param>
 		IQuery SetParameterList(string name, object[] vals, IType type);
 
-		/// <summary> 
-		/// Bind multiple values to a named query parameter. The Hibernate type of the parameter is
-		/// first detected via the usage/position in the query and if not sufficient secondly 
+		/// <summary>
+		/// Bind multiple values to a named query parameter. The NHibernate type of the parameter is
+		/// first detected via the usage/position in the query and if not sufficient secondly
 		/// guessed from the class of the first object in the array. This is useful for binding a list of values
 		/// to an expression such as <tt>foo.bar in (:value_list)</tt>.
 		/// </summary>
@@ -288,7 +288,7 @@ namespace NHibernate
 		/// <summary>
 		/// Bind the property values of the given object to named parameters of the query,
 		/// matching property names with parameter names and mapping property types to
-		/// Hibernate types using heuristics.
+		/// NHibernate types using heuristics.
 		/// </summary>
 		/// <param name="obj">Any PONO</param>
 		IQuery SetProperties(object obj);
