@@ -27,67 +27,26 @@ namespace Eg
 {
     public class Cat
     {
-        private long id; // identifier
-        private string name;
-        private DateTime birthdate;
-        private Cat mate;
-        private ISet kittens
-        private Color color;
-        private char sex;
-        private float weight;
+        long id; // identifier
     
         public virtual long Id
         {
             get { return id; }
-            set { id = value; }
+            protected set { id = value; }
         }
-    
-        public virtual string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
-    
-        public virtual Cat Mate
-        {
-            get { return mate; }
-            set { mate = value; }
-        }
-    
-        public virtual DateTime Birthdate
-        {
-            get { return birthdate; }
-            set { birthdate = value; }
-        }
-    
-        public virtual float Weight
-        {
-            get { return weight; }
-            set { weight = value; }
-        }
-    
-        public virtual Color Color
-        {
-            get { return color; }
-            set { color = value; }
-        }
-    
-        public virtual ISet Kittens
-        {
-            get { return kittens; }
-            set { kittens = value; }
-        }
-    
+
+        public virtual string Name { get; set; } 
+        public virtual Cat Mate { get; set; } 
+        public virtual DateTime Birthdate { get; set; } 
+        public virtual float Weight { get; set; } 
+        public virtual Color Color { get; set; } 
+        public virtual ISet Kittens { get; set; } 
+        public virtual char Sex { get; set; } 
+
         // AddKitten not needed by NHibernate
         public virtual void AddKitten(Cat kitten)
         {
             kittens.Add(kitten);
-        }
-    
-        public virtual char Sex
-        {
-            get { return sex; }
-            set { sex = value; }
         }
     }
 }]]></programlisting>
@@ -98,10 +57,10 @@ namespace Eg
 
 
         <sect2 id="persistent-classes-poco-accessors">
-            <title>Declare accessors and mutators for persistent fields</title>
+            <title>Declare properties for persistent fields</title>
 
             <para>
-                <literal>Cat</literal> declares accessor methods for all its persistent fields.
+                <literal>Cat</literal> declares properties for all the persistent fields.
                 Many other ORM tools directly persist instance variables. We believe 
                 it is far better to decouple this implementation detail from the persistence 
                 mechanism. NHibernate persists properties, using their getter and setter methods.
@@ -111,6 +70,11 @@ namespace Eg
                 Properties need <emphasis>not</emphasis> be declared public - NHibernate can
                 persist a property with an <literal>internal</literal>, <literal>protected</literal>,
                 <literal>protected internal</literal> or <literal>private</literal> visibility.
+            </para>
+
+            <para>
+                As shown in the example, both automatic properties and properties with a
+                backing field are supported.
             </para>
         </sect2>
 
@@ -196,13 +160,7 @@ namespace Eg
 {
     public class DomesticCat : Cat
     {
-        private string name;
-
-        public virtual string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
+        public virtual string Name { get; set; }
     }
 }]]></programlisting>
     </sect1>
@@ -359,27 +317,26 @@ namespace Eg
             <literal>Dictionaries</literal> of <literal>Dictionaries</literal>:
         </para>
         
-        <programlisting><![CDATA[Session s = OpenSession();
-Transaction tx = s.BeginTransaction();
-ISession s = OpenSession();
+        <programlisting><![CDATA[using(ISession s = OpenSession())
+using(ITransaction tx = s.BeginTransaction())
+{
+    // Create a customer
+    var frank = new Dictionary<string, object>();
+    frank["name"] = "Frank";
 
-// Create a customer
-var frank = new Dictionary<string, object>();
-frank["name"] = "Frank";
+    // Create an organization
+    var foobar = new Dictionary<string, object>();
+    foobar["name"] = "Foobar Inc.";
 
-// Create an organization
-var foobar = new Dictionary<string, object>();
-foobar["name"] = "Foobar Inc.";
+    // Link both
+    frank["organization"] =  foobar;
 
-// Link both
-frank["organization"] =  foobar;
+    // Save both
+    s.Save("Customer", frank);
+    s.Save("Organization", foobar);
 
-// Save both
-s.Save("Customer", frank);
-s.Save("Organization", foobar);
-
-tx.Commit();
-s.Close();]]></programlisting>
+    tx.Commit();
+}]]></programlisting>
         
         <para>
             The advantages of a dynamic mapping are quick turnaround time for prototyping
@@ -394,16 +351,14 @@ s.Close();]]></programlisting>
             basis:
         </para>
         
-        <programlisting><![CDATA[Session dynamicSession = pocoSession.GetSession(EntityMode.Map);
-
-// Create a customer
-var frank = new Dictionary<string, object>();
-frank["name"] = "Frank";
-dynamicSession.Save("Customer", frank);
-...
-dynamicSession.Flush();
-dynamicSession.Close()
-...
+        <programlisting><![CDATA[using (ISession dynamicSession = pocoSession.GetSession(EntityMode.Map))
+{
+    // Create a customer
+    var frank = new Dictionary<string, object>();
+    frank["name"] = "Frank";
+    dynamicSession.Save("Customer", frank);
+    ...
+}
 // Continue on pocoSession
 ]]></programlisting>
         
@@ -465,20 +420,21 @@ dynamicSession.Close()
 </hibernate-mapping>
 
 
-public class CustomMapTuplizerImpl:
-        NHibernate.Tuple.Entity.DynamicMapEntityTuplizer {
+public class CustomMapTuplizerImpl : NHibernate.Tuple.Entity.DynamicMapEntityTuplizer
+{
     // override the BuildInstantiator() method to plug in our custom map...
-   protected override IInstantiator BuildInstantiator(
-            NHibernate.Mapping.PersistentClass mappingInfo) {
-        return new CustomMapInstantiator( mappingInfo );
+    protected override IInstantiator BuildInstantiator(NHibernate.Mapping.PersistentClass mappingInfo)
+    {
+        return new CustomMapInstantiator(mappingInfo);
     }
 
-    private static final class CustomMapInstantiator:
-            NHibernate.Tuple.DynamicMapInstantiator {
+    private sealed class CustomMapInstantiator : NHibernate.Tuple.DynamicMapInstantiator
+    {
         // override the generateMap() method to return our custom map...
-	    protected override IDictionary GenerateMap() {
-		    return new CustomMap();
-	    }
+        protected override IDictionary GenerateMap()
+        {
+            return new CustomMap();
+        }
     }
 }]]></programlisting>
         
