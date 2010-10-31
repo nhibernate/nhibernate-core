@@ -11,6 +11,24 @@ Build 3.0.0.Alpha3
 		* [NH-2284] - Obsolete members removed
 		* Related to [NH-2358]: DateTimeOffset type now works as a DateTimeOffset instead a "surrogate" of DateTime
 
+Build 3.0.0.Beta2 (rev5254)
+=============================
+
+** Bug
+    * [NH-1155] - SubselectFetch doesn't take into account paging
+    * [NH-2371] - Exception is thrown when using SetMaxResults on query using MySQL
+    * [NH-2374] - ForeignGenerator does not support EntityMode.Map
+
+** Improvement
+    * [NH-1799] - Change SQL Server dialect to support variable limits
+    * [NH-2376] - Allow IDisposable for event-listeners
+
+
+** Patch
+    * [NH-2342] - Added XDocument type
+    * [NH-2378] - Don't currently support idents of type Int16
+    * [NH-2391] - Updated Chapter 4
+
 Build 3.0.0.Beta1 (rev5241)
 =============================
 
