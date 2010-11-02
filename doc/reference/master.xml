@@ -16,6 +16,7 @@
 <!ENTITY batch                 SYSTEM "modules/batch.xml">
 <!ENTITY query-hql              SYSTEM "modules/query_hql.xml">
 <!ENTITY query-criteria         SYSTEM "modules/query_criteria.xml">
+<!ENTITY query-queryover        SYSTEM "modules/query_queryover.xml">
 <!ENTITY query-sql              SYSTEM "modules/query_sql.xml">
 <!ENTITY filters                SYSTEM "modules/filters.xml">
 <!ENTITY performance            SYSTEM "modules/performance.xml">
@@ -63,6 +64,7 @@
 	&batch;
 	&query-hql;
 	&query-criteria;
+	&query-queryover;
 	&query-sql;
 
 	&filters;
