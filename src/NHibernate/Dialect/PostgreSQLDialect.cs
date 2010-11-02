@@ -207,5 +207,10 @@ namespace NHibernate.Dialect
 				return "on commit drop";
 			}
 		}
+
+		public override string ToBooleanValueString(bool value)
+		{
+			return value ? "TRUE" : "FALSE";
+		}
 	}
 }
