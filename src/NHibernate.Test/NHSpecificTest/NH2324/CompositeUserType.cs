@@ -23,8 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2324
 			{
 				return true;
 			}
-			else if (x == null ||
-			         y == null)
+			else if (x == null || y == null)
 			{
 				return false;
 			}
@@ -42,11 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2324
 		{
 			get
 			{
-				return new[]
-				       	{
-				       		"DataA",
-				       		"DataB"
-				       	};
+				return new[] { "DataA", "DataB" };
 			}
 		}
 
@@ -59,10 +54,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2324
 			get
 			{
 				return new IType[]
-				       	{
-				       		NHibernateUtil.DateTime,
-				       		NHibernateUtil.DateTime
-				       	};
+							{
+								NHibernateUtil.DateTime,
+								NHibernateUtil.DateTime
+							};
 			}
 		}
 
@@ -141,19 +136,20 @@ namespace NHibernate.Test.NHSpecificTest.NH2324
 		/// <param name="cmd"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
+		/// <param name="settable"></param>
 		/// <param name="session"></param>
-		public void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		public void NullSafeSet(IDbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			if (value == null)
 			{
-				((IDataParameter) cmd.Parameters[index]).Value = DBNull.Value;
-				((IDataParameter) cmd.Parameters[index + 1]).Value = DBNull.Value;
+				if (settable[0]) ((IDataParameter) cmd.Parameters[index++]).Value = DBNull.Value;
+				if (settable[1]) ((IDataParameter) cmd.Parameters[index]).Value = DBNull.Value;
 			}
 			else
 			{
 				var data = (CompositeData) value;
-				NHibernateUtil.DateTime.Set(cmd, data.DataA, index);
-				NHibernateUtil.DateTime.Set(cmd, data.DataB, index + 1);
+				if (settable[0]) NHibernateUtil.DateTime.Set(cmd, data.DataA, index++);
+				if (settable[1]) NHibernateUtil.DateTime.Set(cmd, data.DataB, index);
 			}
 		}
 

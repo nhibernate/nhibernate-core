@@ -1,6 +1,6 @@
 using System;
 using System.Data;
-
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.UserTypes;
@@ -84,7 +84,7 @@ namespace NHibernate.DomainModel
 			return m;
 		}
 
-		public void NullSafeSet(IDbCommand st, Object value, int index, ISessionImplementor session)
+		public void NullSafeSet(IDbCommand st, Object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			Multiplicity o = (Multiplicity) value;
 			GlarchProxy g;
@@ -99,8 +99,8 @@ namespace NHibernate.DomainModel
 				g = o.glarch;
 				c = o.count;
 			}
-			NHibernateUtil.Int32.NullSafeSet(st, c, index, session);
-			NHibernateUtil.Entity(typeof(Glarch)).NullSafeSet(st, g, index + 1, session);
+			if (settable[0]) NHibernateUtil.Int32.NullSafeSet(st, c, index, session);
+			NHibernateUtil.Entity(typeof(Glarch)).NullSafeSet(st, g, index + 1, settable.Skip(1).ToArray(), session);
 		}
 
 		public object DeepCopy(object value)

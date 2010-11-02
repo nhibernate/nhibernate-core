@@ -58,12 +58,12 @@ namespace NHibernate.DomainModel
 		}
 
 
-		public void NullSafeSet(IDbCommand st, Object value, int index, ISessionImplementor session)
+		public void NullSafeSet(IDbCommand st, Object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			string[] strings = (value == null) ? new string[2] : (string[]) value;
 
-			NHibernateUtil.String.NullSafeSet(st, strings[0], index, session);
-			NHibernateUtil.String.NullSafeSet(st, strings[1], index + 1, session);
+			if (settable[0]) NHibernateUtil.String.NullSafeSet(st, strings[0], index++, session);
+			if (settable[1]) NHibernateUtil.String.NullSafeSet(st, strings[1], index, session);
 		}
 
 		public string[] PropertyNames

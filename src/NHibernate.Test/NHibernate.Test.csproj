@@ -536,6 +536,10 @@
     <Compile Include="NHSpecificTest\NH2378\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2378\TestEntity.cs" />
     <Compile Include="NHSpecificTest\NH2378\TestEntityDto.cs" />
+    <Compile Include="NHSpecificTest\NH2392\A.cs" />
+    <Compile Include="NHSpecificTest\NH2392\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2392\PhoneNumber.cs" />
+    <Compile Include="NHSpecificTest\NH2392\PhoneNumberUserType.cs" />
     <Compile Include="PolymorphicGetAndLoad\Domain.cs" />
     <Compile Include="PolymorphicGetAndLoad\PolymorphicGetAndLoadTest.cs" />
     <Compile Include="TypesTest\CharClass.cs" />
@@ -1827,6 +1831,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1136\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2202\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1869\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2392\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.ByteCode.Castle\NHibernate.ByteCode.Castle.csproj">
@@ -2691,6 +2696,7 @@
     <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="NHSpecificTest\NH2392" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -1,12 +1,10 @@
 using System;
+using System.Data;
 using NHibernate.Engine;
 using NHibernate.UserTypes;
 
 namespace NHibernate.Test.NHSpecificTest.NH1763
 {
-	/// <summary>
-	/// Summary description for EmptyStringUserType
-	/// </summary>
 	[Serializable]
 	public class EmptyStringUserType : ICompositeUserType
 	{
@@ -65,18 +63,20 @@ namespace NHibernate.Test.NHSpecificTest.NH1763
 			return NHibernateUtil.String.NullSafeGet(rs, names[0], session, owner);
 		}
 
-		public void NullSafeSet(System.Data.IDbCommand st, Object value, int index, NHibernate.Engine.ISessionImplementor session)
+		public void NullSafeSet(System.Data.IDbCommand st, Object value, int index, bool[] settable, NHibernate.Engine.ISessionImplementor session)
 		{
-			string str = null;
-			if (value != null) str = value.ToString().Trim();
-			if (str == String.Empty)
+			if (settable[0])
 			{
-				str = null;
-				NHibernateUtil.String.NullSafeSet(st, str, index, session);
+				string str = null;
+				if (value != null) str = value.ToString().Trim();
+				if (str == String.Empty)
+				{
+					str = null;
+					NHibernateUtil.String.NullSafeSet(st, str, index, session);
+				}
+				else
+					NHibernateUtil.String.NullSafeSet(st, value, index, session);
 			}
-			else
-				NHibernateUtil.String.NullSafeSet(st, value, index, session);
-
 		}
 
 		public Object GetPropertyValue(Object component, int property)
@@ -86,24 +86,19 @@ namespace NHibernate.Test.NHSpecificTest.NH1763
 
 		public void SetPropertyValue(Object object1, int i, Object object2)
 		{
-
 		}
 
-
 		#region ICompositeUserType Members
-
 
 		public int GetHashCode(object x)
 		{
 			return x == null ? typeof(string).GetHashCode() : x.GetHashCode();
-
 		}
 
 		public object Replace(object original, object target, ISessionImplementor session, object owner)
 		{
 			return DeepCopy(original);
 		}
-
 
 		#endregion
 	}

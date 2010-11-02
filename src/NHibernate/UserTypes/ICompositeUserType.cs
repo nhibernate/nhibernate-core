@@ -9,23 +9,23 @@ namespace NHibernate.UserTypes
 	/// A UserType that may be dereferenced in a query.
 	/// This interface allows a custom type to define "properties".
 	/// These need not necessarily correspond to physical .NET style properties.
-	/// 
-	/// A ICompositeUserType may be used in almost every way 
+	///
+	/// A ICompositeUserType may be used in almost every way
 	/// that a component may be used. It may even contain many-to-one
 	/// associations.
-	/// 
+	///
 	/// Implementors must be immutable and must declare a public
 	/// default constructor.
-	/// 
+	///
 	/// Unlike UserType, cacheability does not depend upon
-	/// serializability. Instead, Assemble() and 
+	/// serializability. Instead, Assemble() and
 	/// Disassemble() provide conversion to/from a cacheable
 	/// representation.
 	/// </summary>
 	public interface ICompositeUserType
 	{
 		/// <summary>
-		/// Get the "property names" that may be used in a query. 
+		/// Get the "property names" that may be used in a query.
 		/// </summary>
 		string[] PropertyNames { get; }
 
@@ -80,16 +80,18 @@ namespace NHibernate.UserTypes
 		/// <returns></returns>
 		object NullSafeGet(IDataReader dr, string[] names, ISessionImplementor session, object owner);
 
-		/// <summary>
-		/// Write an instance of the mapped class to a prepared statement.
-		/// Implementors should handle possibility of null values.
-		/// A multi-column type should be written to parameters starting from index.
-		/// </summary>
-		/// <param name="cmd"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
-		/// <param name="session"></param>
-		void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session);
+	    /// <summary>
+	    /// Write an instance of the mapped class to a prepared statement.
+	    /// Implementors should handle possibility of null values.
+	    /// A multi-column type should be written to parameters starting from index.
+	    /// If a property is not settable, skip it and don't increment the index.
+	    /// </summary>
+	    /// <param name="cmd"></param>
+	    /// <param name="value"></param>
+	    /// <param name="index"></param>
+	    /// <param name="settable"></param>
+	    /// <param name="session"></param>
+	    void NullSafeSet(IDbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session);
 
 		/// <summary>
 		/// Return a deep copy of the persistent state, stopping at entities and at collections.
@@ -128,7 +130,7 @@ namespace NHibernate.UserTypes
 		/// with a new (original) value from the detached entity we are merging. For immutable
 		/// objects, or null values, it is safe to simply return the first parameter. For
 		/// mutable objects, it is safe to return a copy of the first parameter. However, since
-		/// composite user types often define component values, it might make sense to recursively 
+		/// composite user types often define component values, it might make sense to recursively
 		/// replace component values in the target object.
 		/// </summary>
 		object Replace(object original, object target, ISessionImplementor session, object owner);

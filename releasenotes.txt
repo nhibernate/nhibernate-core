@@ -2,6 +2,9 @@ Build 3.0.0.CR1
 =============================
 ** Known BREAKING CHANGES from NH2.1.1.GA to NH3.0.0.CR1
 
+	##### Design time #####
+		* [NH-2392] - ICompositeUserType.NullSafeSet method signature changed
+
 	##### Run time #####
 		* [NH-2199] - null values in maps/dictionaries are no longer silenty ignored/deleted
 		* [NH-1894] - SybaseAnywhereDialect has been removed, and replaced with SybaseASA9Dialect.
@@ -15,6 +18,8 @@ Build 3.0.0.CR1
 Build 3.0.0.CR1
 =============================
 
+** Improvement
+	* [NH-2392] - ICompositeUserType support for cases where not all parameters should be set (such as dynamic-update)
 		
 Build 3.0.0.Beta2 (rev5254)
 =============================

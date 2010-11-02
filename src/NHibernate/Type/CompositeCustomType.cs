@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Linq;
 using System.Reflection;
 using System.Xml;
 
@@ -11,9 +12,6 @@ using System.Collections.Generic;
 
 namespace NHibernate.Type
 {
-	/// <summary>
-	/// Summary description for CompositeCustomType.
-	/// </summary>
 	[Serializable]
 	public class CompositeCustomType : AbstractType, IAbstractComponentType
 	{
@@ -51,24 +49,16 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary></summary>
 		public virtual IType[] Subtypes
 		{
 			get { return userType.PropertyTypes; }
 		}
 
-		/// <summary></summary>
 		public virtual string[] PropertyNames
 		{
 			get { return userType.PropertyNames; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="component"></param>
-		/// <param name="session"></param>
-		/// <returns></returns>
 		public virtual object[] GetPropertyValues(object component, ISessionImplementor session)
 		{
 			return GetPropertyValues(component, session.EntityMode);
@@ -101,11 +91,6 @@ namespace NHibernate.Type
 			return userType.GetPropertyValue(component, i);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
 		public virtual CascadeStyle GetCascadeStyle(int i)
 		{
 			return CascadeStyle.None;
@@ -121,21 +106,12 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		/// <summary></summary>
 		public override bool IsComponentType
 		{
 			get { return true; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cached"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
-		public override object Assemble(object cached, ISessionImplementor session,
-		                                object owner)
+		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
 			return userType.Assemble(cached, session, owner);
 		}
@@ -150,11 +126,6 @@ namespace NHibernate.Type
 			return userType.Disassemble(value, session);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="mapping"></param>
-		/// <returns></returns>
 		public override int GetColumnSpan(IMapping mapping)
 		{
 			IType[] types = userType.PropertyTypes;
@@ -166,45 +137,26 @@ namespace NHibernate.Type
 			return n;
 		}
 
-		/// <summary></summary>
 		public override string Name
 		{
 			get { return name; }
 		}
 
-		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{
 			get { return userType.ReturnedClass; }
 		}
 
-		/// <summary></summary>
 		public override bool IsMutable
 		{
 			get { return userType.IsMutable; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return userType.NullSafeGet(rs, new string[] {name}, session, owner);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="names"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
 		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return userType.NullSafeGet(rs, names, session, owner);
@@ -212,19 +164,15 @@ namespace NHibernate.Type
 
 		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
-			userType.NullSafeSet(st, value, index, session);
+			userType.NullSafeSet(st, value, index, settable, session);
 		}
 
 		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			userType.NullSafeSet(cmd, value, index, session);
+			bool[] settable = Enumerable.Repeat(true, GetColumnSpan(session.Factory)).ToArray();
+			userType.NullSafeSet(cmd, value, index, settable, session);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="mapping"></param>
-		/// <returns></returns>
 		public override SqlType[] SqlTypes(IMapping mapping)
 		{
 			IType[] types = userType.PropertyTypes;
@@ -241,12 +189,6 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="factory"></param>
-		/// <returns></returns>
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{
 			return value == null ? "null" : value.ToString();
@@ -277,8 +219,7 @@ namespace NHibernate.Type
 			get { return null; }
 		}
 
-		public override object Replace(object original, object current, ISessionImplementor session, object owner,
-		                               IDictionary copiedAlready)
+		public override object Replace(object original, object current, ISessionImplementor session, object owner, IDictionary copiedAlready)
 		{
 			return userType.Replace(original, current, session, owner);
 		}
