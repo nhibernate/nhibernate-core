@@ -1,6 +1,7 @@
-Build 3.0.0.Alpha3
+Build 3.0.0.CR1
 =============================
-** Known BREAKING CHANGES from NH2.1.1.GA to NH3.0.0
+** Known BREAKING CHANGES from NH2.1.1.GA to NH3.0.0.CR1
+
 	##### Run time #####
 		* [NH-2199] - null values in maps/dictionaries are no longer silenty ignored/deleted
 		* [NH-1894] - SybaseAnywhereDialect has been removed, and replaced with SybaseASA9Dialect.
@@ -11,6 +12,10 @@ Build 3.0.0.Alpha3
 		* [NH-2284] - Obsolete members removed
 		* Related to [NH-2358]: DateTimeOffset type now works as a DateTimeOffset instead a "surrogate" of DateTime
 
+Build 3.0.0.CR1
+=============================
+
+		
 Build 3.0.0.Beta2 (rev5254)
 =============================
 
@@ -22,7 +27,6 @@ Build 3.0.0.Beta2 (rev5254)
 ** Improvement
     * [NH-1799] - Change SQL Server dialect to support variable limits
     * [NH-2376] - Allow IDisposable for event-listeners
-
 
 ** Patch
     * [NH-2342] - Added XDocument type
