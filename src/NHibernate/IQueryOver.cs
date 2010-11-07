@@ -263,6 +263,11 @@ namespace NHibernate
 		IQueryOverOrderBuilder<TRoot,TSubType> OrderBy(Expression<Func<object>> path);
 
 		/// <summary>
+		/// Order by arbitrary IProjection (e.g., to allow protected member access)
+		/// </summary>
+		IQueryOverOrderBuilder<TRoot,TSubType> OrderBy(IProjection projection);
+
+		/// <summary>
 		/// Add order for an aliased projection expressed as a lambda expression
 		/// </summary>
 		/// <param name="path">Lambda expression</param>
@@ -282,6 +287,11 @@ namespace NHibernate
 		/// <param name="path">Lambda expression</param>
 		/// <returns>criteria instance</returns>
 		IQueryOverOrderBuilder<TRoot,TSubType> ThenBy(Expression<Func<object>> path);
+
+		/// <summary>
+		/// Order by arbitrary IProjection (e.g., to allow protected member access)
+		/// </summary>
+		IQueryOverOrderBuilder<TRoot,TSubType> ThenBy(IProjection projection);
 
 		/// <summary>
 		/// Add order for an aliased projection expressed as a lambda expression

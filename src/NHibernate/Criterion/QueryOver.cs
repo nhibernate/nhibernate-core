@@ -334,6 +334,11 @@ namespace NHibernate.Criterion
 			return new QueryOverOrderBuilder<TRoot,TSubType>(this, path, false);
 		}
 
+		public QueryOverOrderBuilder<TRoot,TSubType> OrderBy(IProjection projection)
+		{
+			return new QueryOverOrderBuilder<TRoot,TSubType>(this, projection);
+		}
+
 		public QueryOverOrderBuilder<TRoot,TSubType> OrderByAlias(Expression<Func<object>> path)
 		{
 			return new QueryOverOrderBuilder<TRoot,TSubType>(this, path, true);
@@ -347,6 +352,11 @@ namespace NHibernate.Criterion
 		public QueryOverOrderBuilder<TRoot,TSubType> ThenBy(Expression<Func<object>> path)
 		{
 			return new QueryOverOrderBuilder<TRoot,TSubType>(this, path, false);
+		}
+
+		public QueryOverOrderBuilder<TRoot,TSubType> ThenBy(IProjection projection)
+		{
+			return new QueryOverOrderBuilder<TRoot,TSubType>(this, projection);
 		}
 
 		public QueryOverOrderBuilder<TRoot,TSubType> ThenByAlias(Expression<Func<object>> path)
@@ -690,6 +700,9 @@ namespace NHibernate.Criterion
 		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.OrderBy(Expression<Func<object>> path)
 		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path, false); }
 
+		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.OrderBy(IProjection projection)
+		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, projection); }
+
 		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.OrderByAlias(Expression<Func<object>> path)
 		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path, true); }
 
@@ -698,6 +711,9 @@ namespace NHibernate.Criterion
 
 		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.ThenBy(Expression<Func<object>> path)
 		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path, false); }
+
+		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.ThenBy(IProjection projection)
+		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, projection); }
 
 		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.ThenByAlias(Expression<Func<object>> path)
 		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path, true); }

@@ -164,13 +164,15 @@ namespace NHibernate.Test.Criteria.Lambda
 				CreateTestCriteria(typeof(Person))
 					.SetProjection(Projections.Property("Name"))
 					.Add(Restrictions.Eq("Name", "test name"))
-					.Add(Restrictions.Not(Restrictions.Eq("Name", "not test name")));
+					.Add(Restrictions.Not(Restrictions.Eq("Name", "not test name")))
+					.AddOrder(Order.Desc(Projections.Property("Name")));
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
 					.Select(Projections.Property("Name"))
 					.Where(Restrictions.Eq("Name", "test name"))
-					.And(Restrictions.Not(Restrictions.Eq("Name", "not test name")));
+					.And(Restrictions.Not(Restrictions.Eq("Name", "not test name")))
+					.OrderBy(Projections.Property("Name")).Desc;
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
