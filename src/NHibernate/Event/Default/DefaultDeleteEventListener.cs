@@ -221,7 +221,7 @@ namespace NHibernate.Event.Default
 			//		TypeFactory.deepCopy( currentState, propTypes, persister.getPropertyUpdateability(), deletedState, session );
 			bool[] copyability = new bool[propTypes.Length];
 			ArrayHelper.Fill(copyability, true);
-			TypeFactory.DeepCopy(currentState, propTypes, copyability, deletedState, session);
+			TypeHelper.DeepCopy(currentState, propTypes, copyability, deletedState, session);
 			return deletedState;
 		}
 

@@ -83,7 +83,7 @@ namespace NHibernate.Cache
 				}
 				else
 				{
-					cacheable.Add(TypeFactory.Disassemble((object[]) result[i], returnTypes, null, session, null));
+					cacheable.Add(TypeHelper.Disassemble((object[]) result[i], returnTypes, null, session, null));
 				}
 			}
 			queryCache.Put(key, cacheable);
@@ -123,7 +123,7 @@ namespace NHibernate.Cache
 				}
 				else
 				{
-					TypeFactory.BeforeAssemble((object[])cacheable[i], returnTypes, session);
+					TypeHelper.BeforeAssemble((object[])cacheable[i], returnTypes, session);
 				}
 			}
 			IList result = new List<object>(cacheable.Count - 1);
@@ -137,7 +137,7 @@ namespace NHibernate.Cache
 					}
 					else
 					{
-						result.Add(TypeFactory.Assemble((object[])cacheable[i], returnTypes, session, null));
+						result.Add(TypeHelper.Assemble((object[])cacheable[i], returnTypes, session, null));
 					}
 				}
 				catch (UnresolvableObjectException)

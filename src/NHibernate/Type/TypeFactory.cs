@@ -8,10 +8,7 @@ using System.Xml.Linq;
 using NHibernate.Bytecode;
 using NHibernate.Classic;
 using NHibernate.Engine;
-using NHibernate.Intercept;
-using NHibernate.Properties;
 using NHibernate.SqlTypes;
-using NHibernate.Tuple;
 using NHibernate.UserTypes;
 using NHibernate.Util;
 using System.Runtime.CompilerServices;
@@ -24,7 +21,7 @@ namespace NHibernate.Type
 	/// <remarks>
 	/// Applications should use static methods and constants on NHibernate.NHibernateUtil if the default
 	/// IType is good enough.  For example, the TypeFactory should only be used when the String needs
-	/// to have a length of 300 instead of 255.  At this point NHibernate.String does not get you the 
+	/// to have a length of 300 instead of 255.  At this point NHibernate.String does not get you the
 	/// correct IType.  Instead use TypeFactory.GetString(300) and keep a local variable that holds
 	/// a reference to the IType.
 	/// </remarks>
@@ -44,11 +41,11 @@ namespace NHibernate.Type
 		private static readonly System.Type[] GenericCollectionSimpleSignature = new[] { typeof(string), typeof(string), typeof(bool) };
 
 		/*
-		 * Maps the string representation of the type to the IType.  The string 
+		 * Maps the string representation of the type to the IType.  The string
 		 * representation is how the type will appear in the mapping file and in
 		 * name of the IType.Name.  The list below provides a few examples of how
 		 * the Key/Value pair will be.
-		 * 
+		 *
 		 * key -> value
 		 * "System.DateTime" -> instance of DateTimeType
 		 * "System.DateTime, fully assembly name" -> instance of DateTimeType
@@ -86,7 +83,7 @@ namespace NHibernate.Type
 			RegisterType(nhibernateType, typeAliases);
 		}
 
-		private static void RegisterType(System.Type systemType, IType nhibernateType, 
+		private static void RegisterType(System.Type systemType, IType nhibernateType,
 			IEnumerable<string> aliases, GetNullableTypeWithLength ctorLength)
 		{
 			var typeAliases = new List<string>(aliases);
@@ -108,7 +105,7 @@ namespace NHibernate.Type
 		{
 			var typeAliases = new List<string>
 			                  	{
-			                  		systemType.FullName, 
+			                  		systemType.FullName,
 														systemType.AssemblyQualifiedName,
 			                  	};
 			if (systemType.IsValueType)
@@ -276,15 +273,15 @@ namespace NHibernate.Type
 		/// <returns>The Type of Classification</returns>
 		/// <remarks>
 		/// This parses through the string and makes the assumption that no class
-		/// name and no assembly name will contain the <c>"("</c>.  
+		/// name and no assembly name will contain the <c>"("</c>.
 		/// <para>
-		/// If it finds 
-		/// the <c>"("</c> and then finds a <c>","</c> afterwards then it is a 
-		/// <c>TypeClassification.PrecisionScale</c>.  
+		/// If it finds
+		/// the <c>"("</c> and then finds a <c>","</c> afterwards then it is a
+		/// <c>TypeClassification.PrecisionScale</c>.
 		/// </para>
 		/// <para>
 		/// If it finds the <c>"("</c>
-		/// and doesn't find a <c>","</c> afterwards, then it is a 
+		/// and doesn't find a <c>","</c> afterwards, then it is a
 		/// <c>TypeClassification.Length</c>.
 		/// </para>
 		/// <para>
@@ -320,7 +317,7 @@ namespace NHibernate.Type
 
 		/// <summary>
 		/// Given the name of a Hibernate type such as Decimal, Decimal(19,0)
-		/// , Int32, or even NHibernate.Type.DecimalType, NHibernate.Type.DecimalType(19,0), 
+		/// , Int32, or even NHibernate.Type.DecimalType, NHibernate.Type.DecimalType(19,0),
 		/// NHibernate.Type.Int32Type, then return an instance of NHibernate.Type.IType
 		/// </summary>
 		/// <param name="name">The name of the type.</param>
@@ -341,7 +338,7 @@ namespace NHibernate.Type
 			}
 
 			// if we get to here then the basic type with the length or precision/scale
-			// combination doesn't exists - so lets figure out which one we have and 
+			// combination doesn't exists - so lets figure out which one we have and
 			// invoke the appropriate delegate
 			TypeClassification typeClassification = GetTypeClassification(name);
 
@@ -430,8 +427,8 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Uses heuristics to deduce a NHibernate type given a string naming the 
-		/// type. 
+		/// Uses heuristics to deduce a NHibernate type given a string naming the
+		/// type.
 		/// </summary>
 		/// <param name="typeName"></param>
 		/// <returns>An instance of <c>NHibernate.Type.IType</c></returns>
@@ -439,9 +436,9 @@ namespace NHibernate.Type
 		/// When looking for the NHibernate type it will look in the cache of the Basic types first.
 		/// If it doesn't find it in the cache then it uses the typeName to get a reference to the
 		/// Class (Type in .NET).  Once we get the reference to the .NET class we check to see if it
-		/// implements IType, ICompositeUserType, IUserType, ILifecycle (Association), or 
+		/// implements IType, ICompositeUserType, IUserType, ILifecycle (Association), or
 		/// IPersistentEnum.  If none of those are implemented then we will serialize the Type to the
-		/// database using NHibernate.Type.SerializableType(typeName)  
+		/// database using NHibernate.Type.SerializableType(typeName)
 		/// </remarks>
 		public static IType HeuristicType(string typeName)
 		{
@@ -449,8 +446,8 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Uses heuristics to deduce a NHibernate type given a string naming the 
-		/// type. 
+		/// Uses heuristics to deduce a NHibernate type given a string naming the
+		/// type.
 		/// </summary>
 		/// <param name="typeName">the type name</param>
 		/// <param name="parameters">parameters for the type</param>
@@ -563,7 +560,7 @@ namespace NHibernate.Type
 		/// <returns>A BinaryType</returns>
 		/// <remarks>
 		/// In addition to returning the BinaryType it will also ensure that it has
-		/// been added to the basicNameMap with the keys <c>Byte[](length)</c> and 
+		/// been added to the basicNameMap with the keys <c>Byte[](length)</c> and
 		/// <c>NHibernate.Type.BinaryType(length)</c>.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.Synchronized)]
@@ -621,7 +618,7 @@ namespace NHibernate.Type
 		/// <para>
 		/// In addition to returning the SerializableType it will also ensure that it has
 		/// been added to the basicNameMap with the keys <c>Type.FullName</c> (the result
-		/// of <c>IType.Name</c> and <c>Type.AssemblyQualifiedName</c>.  This is different 
+		/// of <c>IType.Name</c> and <c>Type.AssemblyQualifiedName</c>.  This is different
 		/// from the other items put in the basicNameMap because it is uses the AQN and the
 		/// FQN as opposed to the short name used in the maps and the FQN.
 		/// </para>
@@ -874,284 +871,6 @@ namespace NHibernate.Type
 																																									 GenericCollectionSimpleSignature);
 
 			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, false });
-		}
-
-		/// <summary> Deep copy a series of values from one array to another... </summary>
-		/// <param name="values">The values to copy (the source) </param>
-		/// <param name="types">The value types </param>
-		/// <param name="copy">an array indicating which values to include in the copy </param>
-		/// <param name="target">The array into which to copy the values </param>
-		/// <param name="session">The originating session </param>
-		public static void DeepCopy(object[] values, IType[] types, bool[] copy, object[] target, ISessionImplementor session)
-		{
-			for (int i = 0; i < types.Length; i++)
-			{
-				if (copy[i])
-				{
-					if (values[i] == LazyPropertyInitializer.UnfetchedProperty || values[i] == BackrefPropertyAccessor.Unknown)
-					{
-						target[i] = values[i];
-					}
-					else
-					{
-						target[i] = types[i].DeepCopy(values[i], session.EntityMode, session.Factory);
-					}
-				}
-			}
-		}
-
-		/// <summary> Apply the <see cref="ICacheAssembler.BeforeAssemble"/> operation across a series of values. </summary>
-		/// <param name="row">The values </param>
-		/// <param name="types">The value types </param>
-		/// <param name="session">The originating session </param>
-		public static void BeforeAssemble(object[] row, ICacheAssembler[] types, ISessionImplementor session)
-		{
-			for (int i = 0; i < types.Length; i++)
-			{
-				if (row[i] != LazyPropertyInitializer.UnfetchedProperty && row[i] != BackrefPropertyAccessor.Unknown)
-				{
-					types[i].BeforeAssemble(row[i], session);
-				}
-			}
-		}
-		/// <summary>
-		/// Determine if any of the given field values are dirty,
-		/// returning an array containing indexes of
-		/// the dirty fields or null if no fields are dirty.
-		/// </summary>
-		public static int[] FindDirty(
-			StandardProperty[] properties,
-			object[] x,
-			object[] y,
-			bool[][] includeColumns,
-			bool anyUninitializedProperties,
-			ISessionImplementor session)
-		{
-			int[] results = null;
-			int count = 0;
-			int span = properties.Length;
-
-			for (int i = 0; i < span; i++)
-			{
-				bool dirty =
-					// TODO H3: x[ i ] != LazyPropertyInitializer.UnfetchedProperty && //x is the "current" state
-					properties[i].IsDirtyCheckable(anyUninitializedProperties)
-					&& properties[i].Type.IsDirty(y[i], x[i], includeColumns[i], session);
-
-				if (dirty)
-				{
-					if (results == null)
-					{
-						results = new int[span];
-					}
-					results[count++] = i;
-				}
-			}
-			if (count == 0)
-			{
-				return null;
-			}
-			else
-			{
-				int[] trimmed = new int[count];
-				System.Array.Copy(results, 0, trimmed, 0, count);
-				return trimmed;
-			}
-		}
-
-		/// <summary>
-		/// Determine if any of the given field values are modified,
-		/// returning an array containing indexes of
-		/// the dirty fields or null if no fields are modified.
-		/// </summary>
-		public static int[] FindModified(
-			StandardProperty[] properties,
-			object[] x,
-			object[] y,
-			bool[][] includeColumns,
-			bool anyUninitializedProperties,
-			ISessionImplementor session)
-		{
-			int[] results = null;
-			int count = 0;
-			int span = properties.Length;
-
-			for (int i = 0; i < span; i++)
-			{
-				bool dirty =
-					// TODO H3: x[ i ] != LazyPropertyInitializer.UnfetchedProperty && //x is the "current" state
-					properties[i].IsDirtyCheckable(anyUninitializedProperties)
-					&& properties[i].Type.IsModified(y[i], x[i], includeColumns[i], session);
-
-				if (dirty)
-				{
-					if (results == null)
-					{
-						results = new int[span];
-					}
-					results[count++] = i;
-				}
-			}
-			if (count == 0)
-			{
-				return null;
-			}
-			else
-			{
-				int[] trimmed = new int[count];
-				System.Array.Copy(results, 0, trimmed, 0, count);
-				return trimmed;
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="row"></param>
-		/// <param name="types"></param>
-		/// <param name="session"></param>
-		/// <param name="owner"></param>
-		/// <returns></returns>
-		public static object[] Assemble(object[] row, ICacheAssembler[] types, ISessionImplementor session, object owner)
-		{
-			object[] assembled = new object[row.Length];
-			for (int i = 0; i < row.Length; i++)
-			{
-				assembled[i] = types[i].Assemble(row[i], session, owner);
-			}
-			return assembled;
-		}
-
-		/// <summary> Apply the {@link Type#disassemble} operation across a series of values. </summary>
-		/// <param name="row">The values </param>
-		/// <param name="types">The value types </param>
-		/// <param name="nonCacheable">An array indicating which values to include in the disassembled state </param>
-		/// <param name="session">The originating session </param>
-		/// <param name="owner">The entity "owning" the values </param>
-		/// <returns> The disassembled state </returns>
-		public static object[] Disassemble(object[] row, ICacheAssembler[] types, bool[] nonCacheable, ISessionImplementor session, object owner)
-		{
-			object[] disassembled = new object[row.Length];
-			for (int i = 0; i < row.Length; i++)
-			{
-				if (nonCacheable != null && nonCacheable[i])
-				{
-					disassembled[i] = LazyPropertyInitializer.UnfetchedProperty;
-				}
-				else if (row[i] == LazyPropertyInitializer.UnfetchedProperty || row[i] == BackrefPropertyAccessor.Unknown)
-				{
-					disassembled[i] = row[i];
-				}
-				else
-				{
-					disassembled[i] = types[i].Disassemble(row[i], session, owner);
-				}
-			}
-			return disassembled;
-		}
-
-
-		/// <summary>
-		///  Apply the <see cref="IType.Replace(object, object, ISessionImplementor, object, IDictionary)"/> operation across a series of values.
-		/// </summary>
-		/// <param name="original">The source of the state </param>
-		/// <param name="target">The target into which to replace the source values. </param>
-		/// <param name="types">The value types </param>
-		/// <param name="session">The originating session </param>
-		/// <param name="owner">The entity "owning" the values </param>
-		/// <param name="copiedAlready">Represent a cache of already replaced state </param>
-		/// <returns> The replaced state </returns>
-		public static object[] Replace(object[] original, object[] target, IType[] types, ISessionImplementor session,
-																	 object owner, IDictionary copiedAlready)
-		{
-			object[] copied = new object[original.Length];
-			for (int i = 0; i < original.Length; i++)
-			{
-				copied[i] = types[i].Replace(original[i], target[i], session, owner, copiedAlready);
-			}
-			return copied;
-		}
-
-		/// <summary>
-		/// Apply the <see cref="IType.Replace(object, object, ISessionImplementor, object, IDictionary, ForeignKeyDirection)"/> 
-		/// operation across a series of values.
-		/// </summary>
-		/// <param name="original">The source of the state </param>
-		/// <param name="target">The target into which to replace the source values. </param>
-		/// <param name="types">The value types </param>
-		/// <param name="session">The originating session </param>
-		/// <param name="owner">The entity "owning" the values </param>
-		/// <param name="copyCache">A map representing a cache of already replaced state </param>
-		/// <param name="foreignKeyDirection">FK directionality to be applied to the replacement </param>
-		/// <returns> The replaced state </returns>
-		public static object[] Replace(object[] original, object[] target, IType[] types,
-			ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
-		{
-			object[] copied = new object[original.Length];
-			for (int i = 0; i < types.Length; i++)
-			{
-				if (original[i] == LazyPropertyInitializer.UnfetchedProperty || original[i] == BackrefPropertyAccessor.Unknown)
-				{
-					copied[i] = target[i];
-				}
-				else
-					copied[i] = types[i].Replace(original[i], target[i], session, owner, copyCache, foreignKeyDirection);
-			}
-			return copied;
-		}
-
-		/// <summary> 
-		/// Apply the <see cref="IType.Replace(object, object, ISessionImplementor, object, IDictionary, ForeignKeyDirection)"/> 
-		/// operation across a series of values, as
-		/// long as the corresponding <see cref="IType"/> is an association.
-		/// </summary>
-		/// <param name="original">The source of the state </param>
-		/// <param name="target">The target into which to replace the source values. </param>
-		/// <param name="types">The value types </param>
-		/// <param name="session">The originating session </param>
-		/// <param name="owner">The entity "owning" the values </param>
-		/// <param name="copyCache">A map representing a cache of already replaced state </param>
-		/// <param name="foreignKeyDirection">FK directionality to be applied to the replacement </param>
-		/// <returns> The replaced state </returns>
-		/// <remarks>
-		/// If the corresponding type is a component type, then apply <see cref="ReplaceAssociations"/>
-		/// across the component subtypes but do not replace the component value itself.
-		/// </remarks>
-		public static object[] ReplaceAssociations(object[] original, object[] target, IType[] types,
-			ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
-		{
-			object[] copied = new object[original.Length];
-			for (int i = 0; i < types.Length; i++)
-			{
-				if (original[i] == LazyPropertyInitializer.UnfetchedProperty || original[i] == BackrefPropertyAccessor.Unknown)
-				{
-					copied[i] = target[i];
-				}
-				else if (types[i].IsComponentType)
-				{
-					// need to extract the component values and check for subtype replacements...
-					IAbstractComponentType componentType = (IAbstractComponentType)types[i];
-					IType[] subtypes = componentType.Subtypes;
-					object[] origComponentValues = original[i] == null ? new object[subtypes.Length] : componentType.GetPropertyValues(original[i], session);
-					object[] targetComponentValues = target[i] == null ? new object[subtypes.Length] : componentType.GetPropertyValues(target[i], session);
-
-					object[] componentCopy = ReplaceAssociations(origComponentValues, targetComponentValues, subtypes, session, null, copyCache, foreignKeyDirection);
-					
-					if (!componentType.IsAnyType && target[i] != null)
-						componentType.SetPropertyValues(target[i], componentCopy, session.EntityMode);
-					
-					copied[i] = target[i];
-				}
-				else if (!types[i].IsAssociationType)
-				{
-					copied[i] = target[i];
-				}
-				else
-				{
-					copied[i] = types[i].Replace(original[i], target[i], session, owner, copyCache, foreignKeyDirection);
-				}
-			}
-			return copied;
 		}
 
 		public static CollectionType CustomCollection(string typeName, IDictionary<string, string> typeParameters,

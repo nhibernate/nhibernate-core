@@ -350,7 +350,7 @@ namespace NHibernate.Event.Default
 		protected virtual void CopyValues(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache)
 		{
 			object[] copiedValues =
-				TypeFactory.Replace(persister.GetPropertyValues(entity, source.EntityMode),
+				TypeHelper.Replace(persister.GetPropertyValues(entity, source.EntityMode),
 				                    persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes, source, target,
 				                    copyCache);
 
@@ -368,14 +368,14 @@ namespace NHibernate.Event.Default
 				// replacement to associations types (value types were already replaced
 				// during the first pass)
 				copiedValues =
-					TypeFactory.ReplaceAssociations(persister.GetPropertyValues(entity, source.EntityMode),
+					TypeHelper.ReplaceAssociations(persister.GetPropertyValues(entity, source.EntityMode),
 					                                persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes,
 					                                source, target, copyCache, foreignKeyDirection);
 			}
 			else
 			{
 				copiedValues =
-					TypeFactory.Replace(persister.GetPropertyValues(entity, source.EntityMode),
+					TypeHelper.Replace(persister.GetPropertyValues(entity, source.EntityMode),
 					                    persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes, source, target,
 					                    copyCache, foreignKeyDirection);
 			}

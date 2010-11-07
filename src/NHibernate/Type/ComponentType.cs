@@ -376,7 +376,7 @@ namespace NHibernate.Type
 			object result = target ?? Instantiate(owner, session);
 
 			EntityMode entityMode = session.EntityMode;
-			object[] values = TypeFactory.Replace(GetPropertyValues(original, entityMode), GetPropertyValues(result, entityMode), propertyTypes, session, owner, copiedAlready);
+			object[] values = TypeHelper.Replace(GetPropertyValues(original, entityMode), GetPropertyValues(result, entityMode), propertyTypes, session, owner, copiedAlready);
 
 			SetPropertyValues(result, values, entityMode);
 			return result;
@@ -390,7 +390,7 @@ namespace NHibernate.Type
 			object result = target ?? Instantiate(owner, session);
 
 			EntityMode entityMode = session.EntityMode;
-			object[] values = TypeFactory.Replace(GetPropertyValues(original, entityMode), GetPropertyValues(result, entityMode), propertyTypes, session, owner, copyCache, foreignKeyDirection);
+			object[] values = TypeHelper.Replace(GetPropertyValues(original, entityMode), GetPropertyValues(result, entityMode), propertyTypes, session, owner, copyCache, foreignKeyDirection);
 
 			SetPropertyValues(result, values, entityMode);
 			return result;

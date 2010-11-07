@@ -21,7 +21,7 @@ namespace NHibernate.Cache.Entry
 		public CacheEntry(object[] state, IEntityPersister persister, bool unfetched, object version, ISessionImplementor session, object owner)
 		{
 			//disassembled state gets put in a new array (we write to cache by value!)
-			disassembledState = TypeFactory.Disassemble(state, persister.PropertyTypes, null, session, owner);
+			disassembledState = TypeHelper.Disassemble(state, persister.PropertyTypes, null, session, owner);
 			subclass = persister.EntityName;
 			lazyPropertiesAreUnfetched = unfetched || !persister.IsLazyPropertiesCacheable;
 			this.version = version;
@@ -76,7 +76,7 @@ namespace NHibernate.Cache.Entry
 		                                 IInterceptor interceptor, ISessionImplementor session)
 		{
 			//assembled state gets put in a new array (we read from cache by value!)
-			object[] assembledProps = TypeFactory.Assemble(values, persister.PropertyTypes, session, result);
+			object[] assembledProps = TypeHelper.Assemble(values, persister.PropertyTypes, session, result);
 	
 			//from h3.2 TODO: reuse the PreLoadEvent
 			PreLoadEvent preLoadEvent = new PreLoadEvent((IEventSource) session);

@@ -128,7 +128,7 @@ namespace NHibernate.Engine
 			else
 			{
 				//take a snapshot
-				TypeFactory.DeepCopy(hydratedState, persister.PropertyTypes, persister.PropertyUpdateability, hydratedState, session);
+				TypeHelper.DeepCopy(hydratedState, persister.PropertyTypes, persister.PropertyUpdateability, hydratedState, session);
 				persistenceContext.SetEntryStatus(entityEntry, Status.Loaded);
 			}
 

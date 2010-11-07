@@ -245,7 +245,7 @@ namespace NHibernate.Event.Default
 				persister.SetPropertyValues(entity, values, source.EntityMode);
 			}
 
-			TypeFactory.DeepCopy(values, types, persister.PropertyUpdateability, values, source);
+			TypeHelper.DeepCopy(values, types, persister.PropertyUpdateability, values, source);
 
 			new ForeignKeys.Nullifier(entity, false, useIdentityColumn, source).NullifyTransientReferences(values, types);
 			new Nullability(source).CheckNullability(values, persister, false);

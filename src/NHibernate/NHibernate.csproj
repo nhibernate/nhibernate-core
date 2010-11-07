@@ -412,6 +412,7 @@
     <Compile Include="Type\TimeType.cs" />
     <Compile Include="Type\TrueFalseType.cs" />
     <Compile Include="Type\TypeFactory.cs" />
+    <Compile Include="Type\TypeHelper.cs" />
     <Compile Include="Type\TypeType.cs" />
     <Compile Include="Type\UInt16Type.cs" />
     <Compile Include="Type\UInt32Type.cs" />

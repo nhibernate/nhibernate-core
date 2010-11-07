@@ -463,7 +463,7 @@ namespace NHibernate.Event.Default
 
 			IType[] types = subclassPersister.PropertyTypes;
 			object[] values = entry.Assemble(result, id, subclassPersister, session.Interceptor, session); // intializes result by side-effect
-			TypeFactory.DeepCopy(values, types, subclassPersister.PropertyUpdateability, values, session);
+			TypeHelper.DeepCopy(values, types, subclassPersister.PropertyUpdateability, values, session);
 
 			object version = Versioning.GetVersion(values, subclassPersister);
 			if (log.IsDebugEnabled)

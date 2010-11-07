@@ -34,7 +34,7 @@ namespace NHibernate.Impl
 					}
 					else
 					{
-						singleQueryCached.Add(TypeFactory.Disassemble((object[]) objToCache, assemblers, null, session, null));
+						singleQueryCached.Add(TypeHelper.Disassemble((object[]) objToCache, assemblers, null, session, null));
 					}
 				}
 				cacheable.Add(singleQueryCached);
@@ -59,7 +59,7 @@ namespace NHibernate.Impl
 					}
 					else
 					{
-						queryResults.Add(TypeFactory.Assemble((object[]) fromCache, assemblers, session, owner));
+						queryResults.Add(TypeHelper.Assemble((object[]) fromCache, assemblers, session, owner));
 					}
 				}
 				result.Add(queryResults);

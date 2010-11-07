@@ -3515,7 +3515,7 @@ namespace NHibernate.Persister.Entity
 
 		public virtual int[] FindDirty(object[] currentState, object[] previousState, object entity, ISessionImplementor session)
 		{
-			int[] props = TypeFactory.FindDirty(
+			int[] props = TypeHelper.FindDirty(
 				entityMetamodel.Properties, currentState, previousState, propertyColumnUpdateable, HasUninitializedLazyProperties(entity, session.EntityMode), session);
 
 			if (props == null)
@@ -3531,7 +3531,7 @@ namespace NHibernate.Persister.Entity
 
 		public virtual int[] FindModified(object[] old, object[] current, object entity, ISessionImplementor session)
 		{
-			int[] props = TypeFactory.FindModified(
+			int[] props = TypeHelper.FindModified(
 				entityMetamodel.Properties, current, old, propertyColumnUpdateable, HasUninitializedLazyProperties(entity, session.EntityMode), session);
 			if (props == null)
 			{
