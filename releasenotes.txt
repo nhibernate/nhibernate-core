@@ -18,7 +18,7 @@ Build 3.0.0.CR1
 Build 3.0.0.CR1
 =============================
 
-** Improvement
+** Patch
 	* [NH-2392] - ICompositeUserType support for cases where not all parameters should be set (such as dynamic-update)
 		
 Build 3.0.0.Beta2 (rev5254)
