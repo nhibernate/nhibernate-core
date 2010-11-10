@@ -120,6 +120,40 @@ namespace NHibernate
 		/// </summary>
 		IQueryOver<TRoot,TRoot> Clone();
 
+		/// <summary>
+		/// Clear all orders from the query.
+		/// </summary>
+		IQueryOver<TRoot> ClearOrders();
+
+		/// <summary>
+		/// Set the first result to be retrieved
+		/// </summary>
+		/// <param name="firstResult"></param>
+		IQueryOver<TRoot> Skip(int firstResult);
+
+		/// <summary>
+		/// Set a limit upon the number of objects to be retrieved
+		/// </summary>
+		/// <param name="maxResults"></param>
+		IQueryOver<TRoot> Take(int maxResults);
+
+		/// <summary>
+		/// Enable caching of this query result set
+		/// </summary>
+		IQueryOver<TRoot> Cacheable();
+
+		/// <summary> Override the cache mode for this particular query. </summary>
+		/// <param name="cacheMode">The cache mode to use. </param>
+		/// <returns> this (for method chaining) </returns>
+		IQueryOver<TRoot> CacheMode(CacheMode cacheMode);
+
+		/// <summary>
+		/// Set the name of the cache region.
+		/// </summary>
+		/// <param name="cacheRegion">the name of a query cache region, or <see langword="null" />
+		/// for the default query cache</param>
+		IQueryOver<TRoot> CacheRegion(string cacheRegion);
+
 	}
 
 	/// <summary>
@@ -301,43 +335,9 @@ namespace NHibernate
 		IQueryOverOrderBuilder<TRoot,TSubType> ThenByAlias(Expression<Func<object>> path);
 
 		/// <summary>
-		/// Clear all orders from the query.
-		/// </summary>
-		IQueryOver<TRoot, TSubType> ClearOrders();
-
-		/// <summary>
 		/// Transform the results using the supplied IResultTransformer
 		/// </summary>
 		IQueryOver<TRoot,TSubType> TransformUsing(IResultTransformer resultTransformer);
-
-		/// <summary>
-		/// Set the first result to be retrieved
-		/// </summary>
-		/// <param name="firstResult"></param>
-		IQueryOver<TRoot,TSubType> Skip(int firstResult);
-
-		/// <summary>
-		/// Set a limit upon the number of objects to be retrieved
-		/// </summary>
-		/// <param name="maxResults"></param>
-		IQueryOver<TRoot,TSubType> Take(int maxResults);
-
-		/// <summary>
-		/// Enable caching of this query result set
-		/// </summary>
-		IQueryOver<TRoot,TSubType> Cacheable();
-
-		/// <summary> Override the cache mode for this particular query. </summary>
-		/// <param name="cacheMode">The cache mode to use. </param>
-		/// <returns> this (for method chaining) </returns>
-		IQueryOver<TRoot,TSubType> CacheMode(CacheMode cacheMode);
-
-		/// <summary>
-		/// Set the name of the cache region.
-		/// </summary>
-		/// <param name="cacheRegion">the name of a query cache region, or <see langword="null" />
-		/// for the default query cache</param>
-		IQueryOver<TRoot,TSubType> CacheRegion(string cacheRegion);
 
 		/// <summary>
 		/// Add a subquery expression

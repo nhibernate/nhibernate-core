@@ -116,12 +116,12 @@ namespace NHibernate.Criterion
 		/// <returns></returns>
 		public QueryOver<TRoot,TRoot> ToRowCountQuery()
 		{
-			return
+			return (QueryOver<TRoot,TRoot>)
 				Clone()
+					.Select(Projections.RowCount())
 					.ClearOrders()
 					.Skip(0)
-					.Take(RowSelection.NoValue)
-					.Select(Projections.RowCount());
+					.Take(RowSelection.NoValue);
 		}
 
 		/// <summary>
@@ -130,12 +130,12 @@ namespace NHibernate.Criterion
 		/// <returns></returns>
 		public QueryOver<TRoot,TRoot> ToRowCountInt64Query()
 		{
-			return
+			return (QueryOver<TRoot,TRoot>)
 				Clone()
+					.Select(Projections.RowCountInt64())
 					.ClearOrders()
 					.Skip(0)
-					.Take(RowSelection.NoValue)
-					.Select(Projections.RowCountInt64());
+					.Take(RowSelection.NoValue);
 		}
 
 		/// <summary>
@@ -144,6 +144,42 @@ namespace NHibernate.Criterion
 		public QueryOver<TRoot,TRoot> Clone()
 		{
 			return new QueryOver<TRoot,TRoot>((CriteriaImpl)criteria.Clone());
+		}
+
+		public QueryOver<TRoot> ClearOrders()
+		{
+			criteria.ClearOrders();
+			return this;
+		}
+
+		public QueryOver<TRoot> Skip(int firstResult)
+		{
+			criteria.SetFirstResult(firstResult);
+			return this;
+		}
+
+		public QueryOver<TRoot> Take(int maxResults)
+		{
+			criteria.SetMaxResults(maxResults);
+			return this;
+		}
+
+		public QueryOver<TRoot> Cacheable()
+		{
+			criteria.SetCacheable(true);
+			return this;
+		}
+
+		public QueryOver<TRoot> CacheMode(CacheMode cacheMode)
+		{
+			criteria.SetCacheMode(cacheMode);
+			return this;
+		}
+
+		public QueryOver<TRoot> CacheRegion(string cacheRegion)
+		{
+			criteria.SetCacheRegion(cacheRegion);
+			return this;
 		}
 
 		/// <summary>
@@ -196,6 +232,24 @@ namespace NHibernate.Criterion
 
 		IQueryOver<TRoot,TRoot> IQueryOver<TRoot>.Clone()
 		{ return Clone(); }
+
+		IQueryOver<TRoot> IQueryOver<TRoot>.ClearOrders()
+		{ return ClearOrders(); }
+
+		IQueryOver<TRoot> IQueryOver<TRoot>.Skip(int firstResult)
+		{ return Skip(firstResult); }
+
+		IQueryOver<TRoot> IQueryOver<TRoot>.Take(int maxResults)
+		{ return Take(maxResults); }
+
+		IQueryOver<TRoot> IQueryOver<TRoot>.Cacheable()
+		{ return Cacheable(); }
+
+		IQueryOver<TRoot> IQueryOver<TRoot>.CacheMode(CacheMode cacheMode)
+		{ return CacheMode(cacheMode); }
+
+		IQueryOver<TRoot> IQueryOver<TRoot>.CacheRegion(string cacheRegion)
+		{ return CacheRegion(cacheRegion); }
 
 	}
 
@@ -364,45 +418,9 @@ namespace NHibernate.Criterion
 			return new QueryOverOrderBuilder<TRoot,TSubType>(this, path, true);
 		}
 
-		public QueryOver<TRoot,TSubType> ClearOrders()
-		{
-			criteria.ClearOrders();
-			return this;
-		}
-
 		public QueryOver<TRoot,TSubType> TransformUsing(IResultTransformer resultTransformer)
 		{
 			criteria.SetResultTransformer(resultTransformer);
-			return this;
-		}
-
-		public QueryOver<TRoot,TSubType> Skip(int firstResult)
-		{
-			criteria.SetFirstResult(firstResult);
-			return this;
-		}
-
-		public QueryOver<TRoot,TSubType> Take(int maxResults)
-		{
-			criteria.SetMaxResults(maxResults);
-			return this;
-		}
-
-		public QueryOver<TRoot,TSubType> Cacheable()
-		{
-			criteria.SetCacheable(true);
-			return this;
-		}
-
-		public QueryOver<TRoot,TSubType> CacheMode(CacheMode cacheMode)
-		{
-			criteria.SetCacheMode(cacheMode);
-			return this;
-		}
-
-		public QueryOver<TRoot,TSubType> CacheRegion(string cacheRegion)
-		{
-			criteria.SetCacheRegion(cacheRegion);
 			return this;
 		}
 
@@ -718,26 +736,8 @@ namespace NHibernate.Criterion
 		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.ThenByAlias(Expression<Func<object>> path)
 		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path, true); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot, TSubType>.ClearOrders()
-		{ return ClearOrders(); }
-
 		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.TransformUsing(IResultTransformer resultTransformer)
 		{ return TransformUsing(resultTransformer); }
-
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Skip(int firstResult)
-		{ return Skip(firstResult); }
-
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Take(int maxResults)
-		{ return Take(maxResults); }
-
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Cacheable()
-		{ return Cacheable(); }
-
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.CacheMode(CacheMode cacheMode)
-		{ return CacheMode(cacheMode); }
-
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.CacheRegion(string cacheRegion)
-		{ return CacheRegion(cacheRegion); }
 
 		IQueryOverSubqueryBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.WithSubquery
 		{ get { return new IQueryOverSubqueryBuilder<TRoot,TSubType>(this); } }
