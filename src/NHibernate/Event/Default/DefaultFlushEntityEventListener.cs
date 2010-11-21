@@ -10,15 +10,15 @@ using NHibernate.Util;
 
 namespace NHibernate.Event.Default
 {
-	/// <summary> 
-	/// An event that occurs for each entity instance at flush time 
+	/// <summary>
+	/// An event that occurs for each entity instance at flush time
 	/// </summary>
 	[Serializable]
 	public class DefaultFlushEntityEventListener : IFlushEntityEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultFlushEntityEventListener));
 
-		/// <summary> 
+		/// <summary>
 		/// Flushes a single entity's state to the database, by scheduling an update action, if necessary
 		/// </summary>
 		public virtual void OnFlushEntity(FlushEntityEvent @event)
@@ -106,11 +106,12 @@ namespace NHibernate.Event.Default
 
 			if (persister.CanExtractIdOutOfEntity)
 			{
-				object oid = persister.GetIdentifier(obj, entityMode);
 				if (id == null)
 				{
 					throw new AssertionFailure("null id in " + persister.EntityName + " entry (don't flush the Session after an exception occurs)");
 				}
+
+				object oid = persister.GetIdentifier(obj, entityMode);
 				if (!persister.IdentifierType.IsEqual(id, oid, EntityMode.Poco))
 				{
 					throw new HibernateException("identifier of an instance of " + persister.EntityName + " was altered from " + id + " to " + oid);
@@ -147,7 +148,7 @@ namespace NHibernate.Event.Default
 						if (!types[prop].IsEqual(current[prop], loadedVal, entityMode))
 						{
 							throw new HibernateException("immutable natural identifier of an instance of " + persister.EntityName
-							                             + " was altered");
+														 + " was altered");
 						}
 					}
 				}
@@ -227,7 +228,7 @@ namespace NHibernate.Event.Default
 
 			if (!entry.IsBeingReplicated)
 			{
-				// give the Interceptor a chance to process property values, if the properties 
+				// give the Interceptor a chance to process property values, if the properties
 				// were modified by the Interceptor, we need to set them back to the object
 				intercepted = HandleInterception(@event);
 			}
@@ -259,8 +260,8 @@ namespace NHibernate.Event.Default
 			// schedule the update
 			// note that we intentionally do _not_ pass in currentPersistentState!
 			session.ActionQueue.AddAction(
-				new EntityUpdateAction(entry.Id, values, dirtyProperties, 
-				@event.HasDirtyCollection, entry.LoadedState, entry.Version, 
+				new EntityUpdateAction(entry.Id, values, dirtyProperties,
+				@event.HasDirtyCollection, entry.LoadedState, entry.Version,
 				nextVersion, entity, persister, session));
 
 			return intercepted;
@@ -328,8 +329,8 @@ namespace NHibernate.Event.Default
 
 					bool isVersionIncrementRequired = IsVersionIncrementRequired(@event, entry, persister, dirtyProperties);
 
-					object nextVersion = isVersionIncrementRequired ? 
-						Versioning.Increment(entry.Version, persister.VersionType, @event.Session) : 
+					object nextVersion = isVersionIncrementRequired ?
+						Versioning.Increment(entry.Version, persister.VersionType, @event.Session) :
 						entry.Version; //use the current version
 
 					Versioning.SetVersion(values, nextVersion, persister);
@@ -351,12 +352,12 @@ namespace NHibernate.Event.Default
 
 			bool isVersionIncrementRequired =
 				entry.Status != Status.Deleted && !persister.IsVersionPropertyGenerated &&
-				(dirtyProperties == null || 
+				(dirtyProperties == null ||
 					Versioning.IsVersionIncrementRequired(dirtyProperties, @event.HasDirtyCollection, persister.PropertyVersionability));
 			return isVersionIncrementRequired;
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Performs all necessary checking to determine if an entity needs an SQL update
 		/// to synchronize its state to the database. Modifies the event by side-effect!
 		/// Note: this method is quite slow, avoid calling if possible!
