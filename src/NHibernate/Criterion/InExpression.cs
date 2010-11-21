@@ -1,15 +1,15 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Collections.Generic;
 
 namespace NHibernate.Criterion
 {
 	/// <summary>
-	/// An <see cref="ICriterion"/> that constrains the property 
+	/// An <see cref="ICriterion"/> that constrains the property
 	/// to a specified list of values.
 	/// </summary>
 	/// <remarks>
@@ -27,17 +27,12 @@ namespace NHibernate.Criterion
 		/// </summary>
 		/// <param name="projection">The projection.</param>
 		/// <param name="_values">The _values.</param>
-		public InExpression(IProjection projection, object[] _values)
+		public InExpression(IProjection projection, object[] values)
 		{
 			_projection = projection;
-			this._values = _values;
+			_values = values;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="propertyName"></param>
-		/// <param name="values"></param>
 		public InExpression(string propertyName, object[] values)
 		{
 			_propertyName = propertyName;
@@ -46,15 +41,14 @@ namespace NHibernate.Criterion
 
 		public override IProjection[] GetProjections()
 		{
-			if(_projection != null)
+			if (_projection != null)
 			{
 				return new IProjection[] { _projection };
 			}
 			return null;
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery,
-		                                      IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			if (_projection == null)
 			{
@@ -75,7 +69,6 @@ namespace NHibernate.Criterion
 			// Generate SqlString of the form:
 			// columnName1 in (values) and columnName2 in (values) and ...
 
-			criteriaQuery.AddUsedTypedValues(GetTypedValues(criteria, criteriaQuery));
 			for (int columnIndex = 0; columnIndex < columnNames.Length; columnIndex++)
 			{
 				SqlString columnName = columnNames[columnIndex];
@@ -124,7 +117,7 @@ namespace NHibernate.Criterion
 			else
 			{
 				IType[] types = _projection.GetTypes(criteria, criteriaQuery);
-				if(types.Length!=1)
+				if (types.Length != 1)
 				{
 					throw new QueryException("Cannot use projections that return more than a single column with InExpression");
 				}
@@ -142,10 +135,8 @@ namespace NHibernate.Criterion
 					for (int j = 0; j < _values.Length; j++)
 					{
 						object subval = _values[j] == null
-						                	?
-						                		null
-						                	:
-						                		actype.GetPropertyValues(_values[j], EntityMode.Poco)[i];
+											? null
+											: actype.GetPropertyValues(_values[j], EntityMode.Poco)[i];
 						list.Add(new TypedValue(types[i], subval, EntityMode.Poco));
 					}
 				}
@@ -167,7 +158,6 @@ namespace NHibernate.Criterion
 			protected set { _values = value; }
 		}
 
-		/// <summary></summary>
 		public override string ToString()
 		{
 			return (_projection ?? (object)_propertyName) + " in (" + StringHelper.ToString(_values) + ')';

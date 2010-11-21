@@ -1,13 +1,12 @@
 using System;
+using System.Collections.Generic;
+using NHibernate.Engine;
+using NHibernate.Criterion;
+using NHibernate.SqlCommand;
+using NHibernate.Type;
 
 namespace NHibernate.Test.Criteria
 {
-	using System.Collections.Generic;
-	using Engine;
-	using Criterion;
-	using SqlCommand;
-	using Type;
-
 	public class AddNumberProjection : SimpleProjection
 	{
 		private readonly string propertyName;
@@ -27,7 +26,7 @@ namespace NHibernate.Test.Criteria
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			string[] projection = criteriaQuery.GetColumnsUsingProjection(criteria, propertyName);
-			criteriaQuery.AddUsedTypedValues(GetTypedValues(criteria, criteriaQuery));
+
 			return new SqlStringBuilder()
 				.Add("(")
 				.Add(projection[0])
@@ -54,8 +53,7 @@ namespace NHibernate.Test.Criteria
 			get { return false; }
 		}
 
-		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery,
-		                                           IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			throw new InvalidOperationException("not a grouping projection");
 		}

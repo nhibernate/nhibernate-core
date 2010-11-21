@@ -77,10 +77,15 @@ namespace NHibernate.Criterion
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			SqlString[] columnNames =
-				CriterionUtil.GetColumnNamesForSimpleExpression(propertyName, _projection, criteriaQuery, criteria, enabledFilters,
-				                                                 this, value);
+				CriterionUtil.GetColumnNamesForSimpleExpression(
+					propertyName, 
+					_projection, 
+					criteriaQuery, 
+					criteria, 
+					enabledFilters, 
+					this, 
+					value);
 
-			criteriaQuery.AddUsedTypedValues(GetTypedValues(criteria, criteriaQuery));
 			if (ignoreCase)
 			{
 				if (columnNames.Length != 1)
@@ -120,20 +125,29 @@ namespace NHibernate.Criterion
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
+			List<TypedValue> typedValues = new List<TypedValue>();
 			object icvalue = ignoreCase ? value.ToString().ToLower() : value;
-			return CriterionUtil.GetTypedValues(criteriaQuery, criteria, _projection,propertyName, icvalue);
+			
+			if (_projection != null)
+			{
+				typedValues.AddRange(_projection.GetTypedValues(criteria, criteriaQuery));
+				typedValues.AddRange(CriterionUtil.GetTypedValues(criteriaQuery, criteria, _projection, null, icvalue));
+			}
+			else
+				typedValues.Add(criteriaQuery.GetTypedValue(criteria, propertyName, icvalue));
+			
+			return typedValues.ToArray();
 		}
 
 		public override IProjection[] GetProjections()
 		{
-			if(_projection != null)
+			if (_projection != null)
 			{
 				return new IProjection[] { _projection };
 			}
 			return null;
 		}
 
-		/// <summary></summary>
 		public override string ToString()
 		{
 			return (_projection ?? (object)propertyName) + Op + value;

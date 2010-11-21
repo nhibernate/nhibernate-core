@@ -1,10 +1,10 @@
+using System;
+using System.Collections.Generic;
+using NHibernate.Engine;
+using NHibernate.SqlCommand;
+
 namespace NHibernate.Criterion
 {
-	using System;
-	using System.Collections.Generic;
-	using Engine;
-	using SqlCommand;
-
 	/// <summary>
 	/// An <see cref="ICriterion"/> that represents a "between" constraint.
 	/// </summary>
@@ -23,11 +23,11 @@ namespace NHibernate.Criterion
 		/// <param name="_projection">The _projection.</param>
 		/// <param name="_lo">The _lo.</param>
 		/// <param name="_hi">The _hi.</param>
-		public BetweenExpression(IProjection _projection, object _lo, object _hi)
+		public BetweenExpression(IProjection projection, object lo, object hi)
 		{
-			this._projection = _projection;
-			this._lo = _lo;
-			this._hi = _hi;
+			this._projection = projection;
+			this._lo = lo;
+			this._hi = hi;
 		}
 
 		/// <summary>
@@ -44,8 +44,7 @@ namespace NHibernate.Criterion
 			_hi = hi;
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery,
-		                                      IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			//TODO: add a default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
@@ -54,7 +53,6 @@ namespace NHibernate.Criterion
 			SqlString[] columnNames =
 				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria, enabledFilters);
 
-			criteriaQuery.AddUsedTypedValues(GetTypedValues(criteria, criteriaQuery));
 			if (columnNames.Length == 1)
 			{
 				sqlBuilder
@@ -107,7 +105,6 @@ namespace NHibernate.Criterion
 			return null;
 		}
 
-		/// <summary></summary>
 		public override string ToString()
 		{
 			return _propertyName + " between " + _lo + " and " + _hi;

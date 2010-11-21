@@ -30,7 +30,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-	<NoWarn>3001%3b3002%3b3003%3b3004%3b3005</NoWarn>
+    <NoWarn>3001%3b3002%3b3003%3b3004%3b3005</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -42,7 +42,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-	<NoWarn>3001%3b3002%3b3003%3b3004%3b3005</NoWarn>
+    <NoWarn>3001%3b3002%3b3003%3b3004%3b3005</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr3.Runtime, Version=3.1.0.39271, Culture=neutral, PublicKeyToken=3a9cab8f8d22bfb7, processorArchitecture=MSIL">
@@ -542,6 +542,11 @@
     <Compile Include="NHSpecificTest\NH2392\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2392\PhoneNumber.cs" />
     <Compile Include="NHSpecificTest\NH2392\PhoneNumberUserType.cs" />
+    <Compile Include="NHSpecificTest\NH2409\Contest.cs" />
+    <Compile Include="NHSpecificTest\NH2409\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2409\Message.cs" />
+    <Compile Include="NHSpecificTest\NH2409\MessageReading.cs" />
+    <Compile Include="NHSpecificTest\NH2409\User.cs" />
     <Compile Include="PolymorphicGetAndLoad\Domain.cs" />
     <Compile Include="PolymorphicGetAndLoad\PolymorphicGetAndLoadTest.cs" />
     <Compile Include="TypesTest\CharClass.cs" />
@@ -1834,6 +1839,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH2202\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1869\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2392\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2409\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.ByteCode.Castle\NHibernate.ByteCode.Castle.csproj">
@@ -2699,6 +2705,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="NHSpecificTest\NH2392" />
+    <Folder Include="NHSpecificTest\NH2409" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

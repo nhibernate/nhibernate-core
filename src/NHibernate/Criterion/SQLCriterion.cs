@@ -32,7 +32,6 @@ namespace NHibernate.Criterion
 
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			criteriaQuery.AddUsedTypedValues(GetTypedValues(criteria, criteriaQuery));
 			return _sql.Replace("{alias}", criteriaQuery.GetSQLAlias(criteria));
 		}
 
@@ -46,7 +45,6 @@ namespace NHibernate.Criterion
 			return null;
 		}
 
-		/// <summary></summary>
 		public override string ToString()
 		{
 			return _sql.ToString();

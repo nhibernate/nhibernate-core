@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using NHibernate.Engine;
+using NHibernate.Loader.Criteria;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.Loader.Criteria;
 
 namespace NHibernate.Loader
 {
@@ -13,16 +13,14 @@ namespace NHibernate.Loader
 		private readonly IOuterJoinLoadable persister;
 		private readonly string alias;
 
-		public AbstractEntityJoinWalker(IOuterJoinLoadable persister, ISessionFactoryImplementor factory,
-																		IDictionary<string, IFilter> enabledFilters)
+		public AbstractEntityJoinWalker(IOuterJoinLoadable persister, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters)
 		{
 			this.persister = persister;
 			alias = GenerateRootAlias(persister.EntityName);
 		}
 
-		public AbstractEntityJoinWalker(string rootSqlAlias, IOuterJoinLoadable persister, ISessionFactoryImplementor factory,
-																		IDictionary<string, IFilter> enabledFilters)
+		public AbstractEntityJoinWalker(string rootSqlAlias, IOuterJoinLoadable persister, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters)
 		{
 			this.persister = persister;
@@ -35,26 +33,17 @@ namespace NHibernate.Loader
 			IList<OuterJoinableAssociation> allAssociations = new List<OuterJoinableAssociation>(associations);
 			allAssociations.Add(
 				new OuterJoinableAssociation(persister.EntityType, null, null, alias, JoinType.LeftOuterJoin, null, Factory,
-				                             new CollectionHelper.EmptyMapClass<string, IFilter>()));
+											 new CollectionHelper.EmptyMapClass<string, IFilter>()));
 
 			InitPersisters(allAssociations, lockMode);
 			InitStatementString(whereString, orderByString, lockMode);
 		}
 
-		protected void InitProjection(CriteriaQueryTranslator translator, 
-			IDictionary<string, IFilter> enabledFilters, LockMode lockMode)
+		protected void InitProjection(SqlString projectionString, SqlString whereString, SqlString orderByString, SqlString groupByString, SqlString havingString, IDictionary<string, IFilter> enabledFilters, LockMode lockMode)
 		{
-			// the order of the calls here is important, as the join clauses can contain parameter bindings
-			SqlString projectionString = translator.GetSelect(enabledFilters);
 			WalkEntityTree(persister, Alias);
-			SqlString whereString = translator.GetWhereCondition(enabledFilters);
-			SqlString orderByString = translator.GetOrderBy();
-			SqlString groupByString = translator.GetGroupBy();
-			SqlString havingString = translator.GetHavingCondition(enabledFilters);
-			
 			Persisters = new ILoadable[0];
-			InitStatementString(projectionString, whereString, orderByString, groupByString.ToString(), 
-                havingString, lockMode);
+			InitStatementString(projectionString, whereString, orderByString, groupByString.ToString(), havingString, lockMode);
 		}
 
 		private void InitStatementString(SqlString condition, SqlString orderBy, LockMode lockMode)
@@ -62,16 +51,14 @@ namespace NHibernate.Loader
 			InitStatementString(null, condition, orderBy, string.Empty, null, lockMode);
 		}
 
-		private void InitStatementString(SqlString projection,SqlString condition,
-			SqlString orderBy,string groupBy, SqlString having, LockMode lockMode)
+		private void InitStatementString(SqlString projection,SqlString condition, SqlString orderBy, string groupBy, SqlString having, LockMode lockMode)
 		{
 			int joins = CountEntityPersisters(associations);
 			Suffixes = BasicLoader.GenerateSuffixes(joins + 1);
 			JoinFragment ojf = MergeOuterJoins(associations);
 
-			SqlString selectClause = projection
-			                         ??
-			                         new SqlString(persister.SelectFragment(alias, Suffixes[joins]) + SelectString(associations));
+			SqlString selectClause = 
+				projection ?? new SqlString(persister.SelectFragment(alias, Suffixes[joins]) + SelectString(associations));
 			
 			SqlSelectBuilder select = new SqlSelectBuilder(Factory)
 				.SetLockMode(lockMode)
@@ -92,8 +79,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// The superclass deliberately excludes collections
 		/// </summary>
-		protected override bool IsJoinedFetchEnabled(IAssociationType type, FetchMode config,
-		                                             CascadeStyle cascadeStyle)
+		protected override bool IsJoinedFetchEnabled(IAssociationType type, FetchMode config, CascadeStyle cascadeStyle)
 		{
 			return IsJoinedFetchEnabledInMapping(config, type);
 		}

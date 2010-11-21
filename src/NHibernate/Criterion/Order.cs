@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using NHibernate.Engine;
 using NHibernate.Criterion;
+using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Criterion
@@ -11,43 +11,36 @@ namespace NHibernate.Criterion
 	/// Represents an order imposed upon a <see cref="ICriteria"/>
 	/// result set.
 	/// </summary>
+	/// <remarks>
+	/// Should Order implement ICriteriaQuery?
+	/// </remarks>
 	[Serializable]
 	public class Order
 	{
 		protected bool ascending;
 		protected string propertyName;
 		protected IProjection projection;
-		/// <summary>
-		/// Constructor for Order.
-		/// </summary>
-		/// <param name="projection"></param>
-		/// <param name="ascending"></param>
+		
 		public Order(IProjection projection, bool ascending)
 		{
 			this.projection = projection;
 			this.ascending = ascending;
 		}
 
-		/// <summary>
-		/// Constructor for Order.
-		/// </summary>
-		/// <param name="propertyName"></param>
-		/// <param name="ascending"></param>
 		public Order(string propertyName, bool ascending)
 		{
 			this.propertyName = propertyName;
 			this.ascending = ascending;
 		}
 
-
 		/// <summary>
 		/// Render the SQL fragment
 		/// </summary>
 		public virtual SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			if(projection!=null)
+			if (projection!=null)
 			{
-				SqlString sb=new SqlString();
+				SqlString sb = new SqlString();
 				SqlString produced = this.projection.ToSqlString(criteria, 0, criteriaQuery, new Dictionary<string, IFilter>());
 				SqlString truncated = NHibernate.Util.StringHelper.RemoveAsAliasesFromSql(produced);
 				sb = sb.Append(truncated);
@@ -130,6 +123,14 @@ namespace NHibernate.Criterion
 		public static Order Desc(string propertyName)
 		{
 			return new Order(propertyName, false);
+		}
+		
+		public TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			if (projection != null)
+				return projection.GetTypedValues(criteria, criteriaQuery);
+			
+			return new TypedValue[0]; // not using parameters for ORDER BY columns
 		}
 	}
 }

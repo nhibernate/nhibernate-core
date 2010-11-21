@@ -62,7 +62,6 @@ namespace NHibernate.Criterion
 		{
 			if (_projection == null)
 			{
-				criteriaQuery.AddUsedTypedValues(GetTypedValues(criteria,criteriaQuery));
 				result.AddParameter();
 			}
 			else
@@ -74,6 +73,9 @@ namespace NHibernate.Criterion
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
+			if (_projection != null)
+				return _projection.GetTypedValues(criteria, criteriaQuery);
+			
 			return new TypedValue[] {criteriaQuery.GetTypedIdentifierValue(criteria, value)};
 		}
 

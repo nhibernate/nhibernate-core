@@ -1,11 +1,11 @@
+using System;
+using System.Collections.Generic;
+using NHibernate.Dialect;
+using NHibernate.Engine;
+using NHibernate.SqlCommand;
+
 namespace NHibernate.Criterion
 {
-	using System;
-	using System.Collections.Generic;
-	using Dialect;
-	using Engine;
-	using SqlCommand;
-
 	/// <summary>
 	/// An <see cref="ICriterion"/> that represents an "like" constraint
 	/// that is <b>not</b> case sensitive.
@@ -58,15 +58,13 @@ namespace NHibernate.Criterion
 		{
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery,
-		                                      IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 			SqlString[] columnNames =
 				CriterionUtil.GetColumnNames(propertyName, projection, criteriaQuery, criteria, enabledFilters);
 
-			criteriaQuery.AddUsedTypedValues(GetTypedValues(criteria,criteriaQuery));
 			if (columnNames.Length != 1)
 			{
 				throw new HibernateException("insensitive like may only be used with single-column properties");
@@ -93,23 +91,31 @@ namespace NHibernate.Criterion
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return CriterionUtil.GetTypedValues(criteriaQuery, criteria, projection, propertyName, value.ToString().ToLower());
+			List<TypedValue> typedValues = new List<TypedValue>();
+			
+			if (projection != null)
+			{
+				typedValues.AddRange(projection.GetTypedValues(criteria, criteriaQuery));
+				typedValues.AddRange(CriterionUtil.GetTypedValues(criteriaQuery, criteria, projection, null, value.ToString().ToLower()));
+			}
+			else
+				typedValues.Add(criteriaQuery.GetTypedValue(criteria, propertyName, value.ToString().ToLower()));
+			
+			return typedValues.ToArray();
 		}
 
 		public override IProjection[] GetProjections()
 		{
-			if(projection != null)
+			if (projection != null)
 			{
 				return new IProjection[] { projection };
 			}
 			return null;
 		}
 
-		/// <summary></summary>
 		public override string ToString()
 		{
 			return (projection ?? (object)propertyName) + " ilike " + value;
 		}
-
 	}
 }

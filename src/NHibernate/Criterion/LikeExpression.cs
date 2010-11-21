@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
-using System.Collections.Generic;
 using NHibernate.Util;
 
 namespace NHibernate.Criterion
@@ -10,7 +10,7 @@ namespace NHibernate.Criterion
 	/// An <see cref="ICriterion"/> that represents an "like" constraint.
 	/// </summary>
 	/// <remarks>
-	/// The case sensitivity depends on the database settings for string 
+	/// The case sensitivity depends on the database settings for string
 	/// comparisons.  Use <see cref="InsensitiveLikeExpression"/> if the
 	/// string comparison should not be case sensitive.
 	/// </remarks>
@@ -73,8 +73,6 @@ namespace NHibernate.Criterion
 			else
 				lhs.Add(columns[0]);
 
-			criteriaQuery.AddUsedTypedValues(GetTypedValues(criteria, criteriaQuery));
-
 			if (ignoreCase)
 			{
 				Dialect.Dialect dialect = criteriaQuery.Factory.Dialect;
@@ -89,14 +87,13 @@ namespace NHibernate.Criterion
 
 			if (escapeChar.HasValue)
 				lhs.Add(" escape '" + escapeChar + "'");
+			
 			return lhs.ToSqlString();
 		}
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[] {
-								new TypedValue(NHibernateUtil.String, value, EntityMode.Poco),
-			                        };
+			return new TypedValue[] { new TypedValue(NHibernateUtil.String, value, EntityMode.Poco) };
 		}
 
 		public override IProjection[] GetProjections()

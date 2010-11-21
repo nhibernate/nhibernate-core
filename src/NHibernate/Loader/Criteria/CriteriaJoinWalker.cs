@@ -42,7 +42,14 @@ namespace NHibernate.Loader.Criteria
 			{
 				resultTypes = translator.ProjectedTypes;
 
-                InitProjection(translator, enabledFilters, LockMode.None);
+				InitProjection(
+					translator.GetSelect(enabledFilters),
+					translator.GetWhereCondition(enabledFilters),
+					translator.GetOrderBy(),
+					translator.GetGroupBy(),
+					translator.GetHavingCondition(enabledFilters),
+					enabledFilters, 
+					LockMode.None);
 			}
 			else
 			{

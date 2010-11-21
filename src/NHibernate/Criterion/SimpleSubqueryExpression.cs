@@ -14,11 +14,9 @@ namespace NHibernate.Criterion
 
 		internal SimpleSubqueryExpression(Object value, String op, String quantifier, DetachedCriteria dc)
 			: base(op, quantifier, dc)
-
 		{
 			this.value = value;
 		}
-
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
@@ -31,7 +29,6 @@ namespace NHibernate.Criterion
 
 		protected override SqlString ToLeftSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			criteriaQuery.AddUsedTypedValues(GetTypedValues(criteria, criteriaQuery));
 			return SqlString.Parameter;
 		}
 	}

@@ -1,12 +1,12 @@
 using System;
+using System.Collections.Generic;
+using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Criterion
 {
-	using System.Collections.Generic;
-
 	/// <summary>
 	/// A property value, or grouped property value
 	/// </summary>
@@ -19,6 +19,7 @@ namespace NHibernate.Criterion
 		{
 			_subQuery = subquery;
 		}
+		
 		public override string ToString()
 		{
 			return _subQuery.ToString();
@@ -43,17 +44,17 @@ namespace NHibernate.Criterion
 		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			SqlString sqlStringSubquery = _subQuery.ToSqlString(criteria, criteriaQuery, enabledFilters);
-			return sqlStringSubquery.Append(new SqlString(new object[]
-									{
-			                     		" as y",
-			                     		loc.ToString(),
-			                     		"_"
-			                     	}));
+			return sqlStringSubquery.Append(new SqlString(new object[] { " as y", loc.ToString(), "_" } ));
 		}
 
 		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			throw new InvalidOperationException("not a grouping projection");
+		}
+		
+		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			return _subQuery.GetTypedValues(criteria, criteriaQuery);
 		}
 	}
 }

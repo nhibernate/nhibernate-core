@@ -1,11 +1,11 @@
+using System;
+using System.Collections.Generic;
+using NHibernate.Engine;
+using NHibernate.SqlCommand;
+using NHibernate.Type;
+
 namespace NHibernate.Criterion
 {
-	using System;
-	using System.Collections.Generic;
-	using Engine;
-	using SqlCommand;
-	using Type;
-
 	/// <summary>
 	/// This is useful if we want to send a value to the database
 	/// </summary>
@@ -14,16 +14,16 @@ namespace NHibernate.Criterion
 	{
 		private readonly object value;
 		private readonly IType type;
-		public ConstantProjection(object value):this(value,NHibernateUtil.GuessType(value.GetType()))
+		
+		public ConstantProjection(object value) : this(value, NHibernateUtil.GuessType(value.GetType()))
 		{
-			
 		}
-		public ConstantProjection(object value,IType type)
+
+		public ConstantProjection(object value, IType type)
 		{
 			this.value = value;
 			this.type = type;
 		}
-
 
 		public override bool IsAggregate
 		{
@@ -42,7 +42,6 @@ namespace NHibernate.Criterion
 
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			criteriaQuery.AddUsedTypedValues(new TypedValue[] { new TypedValue(type, value, EntityMode.Poco) });
 			return new SqlStringBuilder()
 				.AddParameter()
 				.Add(" as ")

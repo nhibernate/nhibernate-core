@@ -1,0 +1,38 @@
+<hibernate-mapping	xmlns="urn:nhibernate-mapping-2.2"
+					namespace="NHibernate.Test.NHSpecificTest.NH2409"
+					assembly="NHibernate.Test">
+	<class name="Contest" lazy="true">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+	</class>
+
+	<class name="Message" lazy="true">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+
+		<many-to-one name="Contest" class="Contest" column="ContestId"/>
+
+		<bag name="Readings" cascade="all" inverse="true">
+			<key column="MessageReadingId"/>
+			<one-to-many class="MessageReading"/>
+		</bag>
+	</class>
+
+	<class name="MessageReading" lazy="true">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+
+		<many-to-one name="User"
+			class="User" column="UserId"/>
+	</class>
+
+	<class name="User" lazy="true" table="`User`">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+	</class>
+	
+</hibernate-mapping>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Iesi.Collections.Generic;
 using NHibernate.Criterion;
@@ -8,7 +9,7 @@ using NHibernate.Engine;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
-using NHibernate.Persister.Entity;
+using NHibernate_Persister_Entity = NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -106,18 +107,6 @@ namespace NHibernate.Loader.Criteria
 
 		public QueryParameters GetQueryParameters()
 		{
-			ArrayList values = new ArrayList(usedTypedValues.Count);
-			List<IType> types = new List<IType>(usedTypedValues.Count);
-
-			foreach (TypedValue value in usedTypedValues)
-			{
-				values.Add(value.Value);
-				types.Add(value.Type);
-			}
-
-			object[] valueArray = values.ToArray();
-			IType[] typeArray = types.ToArray();
-
 			RowSelection selection = new RowSelection();
 			selection.FirstRow = rootCriteria.FirstResult;
 			selection.MaxRows = rootCriteria.MaxResults;
@@ -130,6 +119,14 @@ namespace NHibernate.Loader.Criteria
 				ICriteria subcriteria = GetAliasedCriteria(me.Key);
 				lockModes[GetSQLAlias(subcriteria)] = me.Value;
 			}
+			
+			List<TypedValue> typedValues = new List<TypedValue>();			
+			
+			// NH-specific: Get parameters for projections first
+			if (this.HasProjection)
+			{
+				typedValues.AddRange(rootCriteria.Projection.GetTypedValues(rootCriteria, this));
+			}
 
 			foreach (CriteriaImpl.Subcriteria subcriteria in rootCriteria.IterateSubcriteria())
 			{
@@ -138,13 +135,69 @@ namespace NHibernate.Loader.Criteria
 				{
 					lockModes[GetSQLAlias(subcriteria)] = lm;
 				}
+				// Get parameters that may be used in JOINs
+				if (subcriteria.WithClause != null)
+				{
+					typedValues.AddRange(subcriteria.WithClause.GetTypedValues(subcriteria, this));
+				}
 			}
+			
+			List<TypedValue> groupedTypedValues = new List<TypedValue>();
+			
+			// Type and value gathering for the WHERE clause needs to come AFTER lock mode gathering,
+			// because the lock mode gathering loop now contains join clauses which can contain
+			// parameter bindings (as in the HQL WITH clause).
+			foreach(CriteriaImpl.CriterionEntry ce in rootCriteria.IterateExpressionEntries())
+			{
+				bool criteriaContainsGroupedProjections = false;
+				IProjection[] projections = ce.Criterion.GetProjections();
 
+				if (projections != null)
+				{
+					foreach (IProjection projection in projections)
+					{
+						if (projection.IsGrouped)
+						{
+							criteriaContainsGroupedProjections = true;
+							break;
+						}
+					}
+				}
+				
+				if (criteriaContainsGroupedProjections)
+					// GROUP BY/HAVING parameters need to be added after WHERE parameters - so don't add them
+					// to typedValues yet
+					groupedTypedValues.AddRange(ce.Criterion.GetTypedValues(ce.Criteria, this));
+				else
+					typedValues.AddRange(ce.Criterion.GetTypedValues(ce.Criteria, this));
+			}
+			
+			// NH-specific: GROUP BY/HAVING parameters need to appear after WHERE parameters
+			if (groupedTypedValues.Count > 0)
+			{
+				typedValues.AddRange(groupedTypedValues);
+			}
+			
+			// NH-specific: To support expressions/projections used in ORDER BY
+			foreach(CriteriaImpl.OrderEntry oe in rootCriteria.IterateOrderings())
+			{
+				typedValues.AddRange(oe.Order.GetTypedValues(oe.Criteria, this));
+			}
+			
 			return
-				new QueryParameters(typeArray, valueArray, lockModes, selection, rootCriteria.Cacheable, rootCriteria.CacheRegion,
-									rootCriteria.Comment, rootCriteria.LookupByNaturalKey, rootCriteria.ResultTransformer, _tempPagingParameterIndexes);
+				new QueryParameters(
+					typedValues.Select(tv => tv.Type).ToArray(),
+					typedValues.Select(tv => tv.Value).ToArray(),
+					lockModes, 
+					selection, 
+					rootCriteria.Cacheable, 
+					rootCriteria.CacheRegion,
+					rootCriteria.Comment, 
+					rootCriteria.LookupByNaturalKey, 
+					rootCriteria.ResultTransformer, 
+					_tempPagingParameterIndexes);
 		}
-
+		
 		public SqlString GetGroupBy()
 		{
 			if (rootCriteria.Projection.IsGrouped)
@@ -366,7 +419,7 @@ namespace NHibernate.Loader.Criteria
 		private void CreateCriteriaEntityNameMap()
 		{
 			// initialize the rootProvider first
-			ICriteriaInfoProvider rootProvider = new EntityCriteriaInfoProvider((IQueryable)sessionFactory.GetEntityPersister(rootEntityName));
+			ICriteriaInfoProvider rootProvider = new EntityCriteriaInfoProvider((NHibernate_Persister_Entity.IQueryable)sessionFactory.GetEntityPersister(rootEntityName));
 			criteriaInfoMap.Add(rootCriteria, rootProvider);
 			nameCriteriaInfoMap.Add(rootProvider.Name, rootProvider);
 
@@ -384,7 +437,7 @@ namespace NHibernate.Loader.Criteria
 		{
 			foreach (KeyValuePair<string, ICriteria> me in associationPathCriteriaMap)
 			{
-				IJoinable joinable = GetPathJoinable(me.Key);
+				NHibernate_Persister_Entity.IJoinable joinable = GetPathJoinable(me.Key);
 				if (joinable != null && joinable.IsCollection)
 				{
 					criteriaCollectionPersisters.Add((ICollectionPersister)joinable);
@@ -392,10 +445,10 @@ namespace NHibernate.Loader.Criteria
 			}
 		}
 
-		private IJoinable GetPathJoinable(string path)
+		private Persister.Entity.IJoinable GetPathJoinable(string path)
 		{
-			IJoinable last = (IJoinable)Factory.GetEntityPersister(rootEntityName);
-			IPropertyMapping lastEntity = (IPropertyMapping)last;
+			NHibernate_Persister_Entity.IJoinable last = (NHibernate_Persister_Entity.IJoinable)Factory.GetEntityPersister(rootEntityName);
+			NHibernate_Persister_Entity.IPropertyMapping lastEntity = (NHibernate_Persister_Entity.IPropertyMapping)last;
 
 			string componentPath = "";
 
@@ -417,7 +470,7 @@ namespace NHibernate.Loader.Criteria
 					IAssociationType atype = (IAssociationType)type;
 					
 					last = atype.GetAssociatedJoinable(Factory);
-					lastEntity = (IPropertyMapping)Factory.GetEntityPersister(atype.GetAssociatedEntityName(Factory));
+					lastEntity = (NHibernate_Persister_Entity.IPropertyMapping)Factory.GetEntityPersister(atype.GetAssociatedEntityName(Factory));
 					componentPath = "";
 				}
 				else if (type.IsComponentType)
@@ -466,7 +519,7 @@ namespace NHibernate.Loader.Criteria
 					}
 					else
 					{
-						provider = new EntityCriteriaInfoProvider((IQueryable)sessionFactory.GetEntityPersister(
+						provider = new EntityCriteriaInfoProvider((NHibernate_Persister_Entity.IQueryable)sessionFactory.GetEntityPersister(
 																				   atype.GetAssociatedEntityName(
 																					   sessionFactory)
 																				   ));
@@ -564,18 +617,18 @@ namespace NHibernate.Loader.Criteria
 
 		public string[] GetIdentifierColumns(ICriteria subcriteria)
 		{
-			string[] idcols = ((ILoadable)GetPropertyMapping(GetEntityName(subcriteria))).IdentifierColumnNames;
+			string[] idcols = ((NHibernate_Persister_Entity.ILoadable)GetPropertyMapping(GetEntityName(subcriteria))).IdentifierColumnNames;
 			return StringHelper.Qualify(GetSQLAlias(subcriteria), idcols);
 		}
 
 		public IType GetIdentifierType(ICriteria subcriteria)
 		{
-			return ((ILoadable)GetPropertyMapping(GetEntityName(subcriteria))).IdentifierType;
+			return ((NHibernate_Persister_Entity.ILoadable)GetPropertyMapping(GetEntityName(subcriteria))).IdentifierType;
 		}
 
 		public TypedValue GetTypedIdentifierValue(ICriteria subcriteria, object value)
 		{
-			ILoadable loadable = (ILoadable)GetPropertyMapping(GetEntityName(subcriteria));
+			NHibernate_Persister_Entity.ILoadable loadable = (NHibernate_Persister_Entity.ILoadable)GetPropertyMapping(GetEntityName(subcriteria));
 			return new TypedValue(loadable.IdentifierType, value, EntityMode.Poco);
 		}
 
@@ -641,7 +694,7 @@ namespace NHibernate.Loader.Criteria
 			var entityClass = value as System.Type;
 			if (entityClass != null)
 			{
-				IQueryable q = helper.FindQueryableUsingImports(entityClass.FullName);
+				NHibernate_Persister_Entity.IQueryable q = helper.FindQueryableUsingImports(entityClass.FullName);
 
 				if (q != null && q.DiscriminatorValue != null)
 				{
@@ -653,7 +706,7 @@ namespace NHibernate.Loader.Criteria
 			return new TypedValue(GetTypeUsingProjection(subcriteria, propertyName), value, EntityMode.Poco);
 		}
 
-		private IPropertyMapping GetPropertyMapping(string entityName)
+		private Persister.Entity.IPropertyMapping GetPropertyMapping(string entityName)
 		{
 			ICriteriaInfoProvider info ;
 			if (nameCriteriaInfoMap.TryGetValue(entityName, out info)==false)
@@ -718,21 +771,6 @@ namespace NHibernate.Loader.Criteria
 		public int GetIndexForAlias()
 		{
 			return indexForAlias++;
-		}
-
-		public void AddUsedTypedValues(TypedValue[] values)
-		{
-			if (values != null)
-			{
-				if (outerQueryTranslator != null)
-				{
-					outerQueryTranslator.AddUsedTypedValues(values);
-				}
-				else
-				{
-					usedTypedValues.AddRange(values);
-				}
-			}
 		}
 
 		public int? CreatePagingParameter(int value)
