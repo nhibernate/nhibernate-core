@@ -20,7 +20,7 @@ namespace NHibernate.Test.Linq
                     IsActive = true,
                     Entity = new AnotherEntity()
                     {
-                        Output = "this is output..."
+                        Output = "output"
                     }
                 },
                 new Role()
@@ -142,6 +142,16 @@ namespace NHibernate.Test.Linq
 			animals[5].Mother = animals[4];
 
 			animals[1].Children = new[] { animals[5] }.ToList();
+
+			List<AnotherEntity> otherEntities = new List<AnotherEntity>();
+			// AnotherEntity with only Output set is created above.
+			otherEntities.Add(new AnotherEntity { Input = "input" });
+			otherEntities.Add(new AnotherEntity { Input = "i/o", Output = "i/o" });
+			otherEntities.Add(new AnotherEntity()); // Input and Output both null.
+			otherEntities.Add(new AnotherEntity { Input = "input", Output = "output" });
+
+			foreach (AnotherEntity otherEntity in otherEntities)
+				session.Save(otherEntity);
 
 			foreach (Role role in roles)
 				session.Save(role);

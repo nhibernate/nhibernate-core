@@ -77,7 +77,11 @@ namespace NHibernate.Linq.Visitors
 
 			if (_constantToParameterMap.TryGetValue(expression, out param))
 			{
-				_string.Append(param.Name);
+				// Nulls generate different query plans.  X = variable generates a different query depending on if variable is null or not.
+				if (param.Value == null)
+					_string.Append("NULL");
+				else
+					_string.Append(param.Name);
 			}
 			else
 			{

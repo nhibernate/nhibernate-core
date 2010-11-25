@@ -448,6 +448,7 @@
     <Compile Include="Linq\MethodCallTests.cs" />
     <Compile Include="Linq\MiscellaneousTextFixture.cs" />
     <Compile Include="Linq\NorthwindDbCreator.cs" />
+    <Compile Include="Linq\NullComparisonTests.cs" />
     <Compile Include="Linq\ObjectDumper.cs" />
     <Compile Include="Linq\OrderByTests.cs" />
     <Compile Include="Linq\PagingTests.cs" />
