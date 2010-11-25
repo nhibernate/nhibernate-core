@@ -52,7 +52,7 @@
 	<section id="mapping-attributes-new">
 		<title>What's new?</title>
 		<formalpara>
-			<title>NHibernate 1.2.0</title>
+			<title>NHibernate</title>
 			<para>introduces many new features, improvements and changes:</para>
 		</formalpara>
 		<orderedlist>

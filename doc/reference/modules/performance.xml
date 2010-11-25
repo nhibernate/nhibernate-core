@@ -12,7 +12,7 @@
         </para>
 
         <para>
-            NHibernate 1.2 defines the following fetching strategies:
+            NHibernate defines the following fetching strategies:
         </para>
 
         <itemizedlist>
@@ -128,7 +128,7 @@
             <title>Working with lazy associations</title>
             
             <para>
-                By default, NHibernate 1.2 uses lazy select fetching for collections and lazy proxy
+                By default, NHibernate uses lazy select fetching for collections and lazy proxy
                 fetching for single-valued associations. These defaults make sense for almost
                 all associations in almost all applications. 
             </para>
@@ -181,7 +181,7 @@ int accessLevel = (int) permissions["accounts"];  // Error!]]></programlisting>
             <para>
                 On the other hand, we often want to choose join fetching (which is non-lazy by 
                 nature) instead of select fetching in a particular transaction. We'll now see
-                how to customize the fetching strategy. In NHibernate 1.2, the mechanisms for
+                how to customize the fetching strategy. In NHibernate, the mechanisms for
                 choosing a fetch strategy are identical for single-valued associations and
                 collections.
             </para>
@@ -280,7 +280,7 @@ int accessLevel = (int) permissions["accounts"];  // Error!]]></programlisting>
             </para>
 
             <para>
-                By default, NHibernate 1.2 generates proxies (at startup) for all persistent classes
+                By default, NHibernate generates proxies (at startup) for all persistent classes
                 and uses them to enable lazy fetching of <literal>many-to-one</literal> and
                 <literal>one-to-one</literal> associations.
             </para>
@@ -1160,7 +1160,7 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
         <title>Batch updates</title>
         
         <para>
-            NHibernate 1.2 supports batching SQL update commands (<literal>INSERT</literal>,
+            NHibernate supports batching SQL update commands (<literal>INSERT</literal>,
             <literal>UPDATE</literal>, <literal>DELETE</literal>) with the following limitations:
         </para>
             

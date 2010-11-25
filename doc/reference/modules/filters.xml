@@ -2,7 +2,7 @@
     <title>Filtering data</title>
     
     <para>
-        NHibernate 1.2 provides an innovative new approach to handling data with "visibility" rules.
+        NHibernate provides an innovative new approach to handling data with "visibility" rules.
         A <emphasis>NHibernate filter</emphasis> is a global, named, parameterized filter that may be 
         enabled or disabled for a particular NHibernate session.
     </para>
@@ -11,7 +11,7 @@
         <title>NHibernate filters</title>
 
         <para>
-            NHibernate 1.2 adds the ability to pre-define filter criteria and attach those filters at both
+            NHibernate adds the ability to pre-define filter criteria and attach those filters at both
             a class and a collection level. A filter criteria is the ability to define a restriction clause
             very similiar to the existing "where" attribute available on the class and various collection
             elements. Except these filter conditions can be parameterized. The application can then make

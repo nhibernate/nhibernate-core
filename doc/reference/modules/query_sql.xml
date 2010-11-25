@@ -7,7 +7,7 @@
   also provides a clean migration path from a direct SQL/ADO.NET based
   application to NHibernate.</para>
 
-  <para>NHibernate 1.2 allows you to specify handwritten SQL (including stored
+  <para>NHibernate allows you to specify handwritten SQL (including stored
   procedures) for all create, update, delete, and load operations.</para>
 
   <sect1 id="querysql-creating" revision="4">
@@ -505,7 +505,7 @@ IList pusList = query.SetString("name", "Pus%").List();          ]]></programlis
     <sect2 id="sp_query" revision="1">
       <title>Using stored procedures for querying</title>
 
-      <para>NHibernate 1.2 introduces support for queries via stored procedures
+      <para>NHibernate introduces support for queries via stored procedures
       and functions. Most of the following documentation is equivalent for
       both. The stored procedure/function must return a resultset to be able to work
       with NHibernate. An example of such a stored function in MS SQL Server 2000 and
@@ -593,7 +593,7 @@ IList pusList = query.SetString("name", "Pus%").List();          ]]></programlis
   <sect1 id="querysql-cud">
     <title>Custom SQL for create, update and delete</title>
 
-    <para>NHibernate 1.2 can use custom SQL statements for create, update, and
+    <para>NHibernate can use custom SQL statements for create, update, and
     delete operations. The class and collection persisters in NHibernate
     already contain a set of configuration time generated strings (insertsql,
     deletesql, updatesql etc.). The mapping tags

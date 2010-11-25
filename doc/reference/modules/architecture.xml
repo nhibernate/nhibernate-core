@@ -234,7 +234,7 @@
             See the API documentation for the <literal>NHibernate.Context.ICurrentSessionContext</literal>
             interface for a detailed discussion of its contract.  It defines a single method,
             <literal>CurrentSession()</literal>, by which the implementation is responsible for
-            tracking the current contextual session.  Out-of-the-box, NHibernate 1.2.1 comes with several
+            tracking the current contextual session.  Out-of-the-box, NHibernate comes with several
             implementations of this interface:
         </para>
 

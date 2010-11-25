@@ -516,7 +516,7 @@ finally
             The legacy (1.0.x) behavior of NHibernate in regards to ADO.NET connection management
             was that a <literal>ISession</literal> would obtain a connection when it was first
             needed and then hold unto that connection until the session was closed.
-            NHibernate 1.2 introduced the notion of connection release modes to tell a session
+            NHibernate introduced the notion of connection release modes to tell a session
             how to handle its ADO.NET connections.  Note that the following discussion is pertinent
             only to connections provided through a configured <literal>IConnectionProvider</literal>;
             user-supplied connections are outside the breadth of this discussion.  The different
@@ -569,7 +569,7 @@ finally
         </itemizedlist>
 
         <para>
-            As of NHibernate 1.2.0, if your application manages transactions through .NET APIs such as <literal>
+            As of NHibernate, if your application manages transactions through .NET APIs such as <literal>
             System.Transactions</literal> library, <literal>ConnectionReleaseMode.AfterTransaction</literal> may cause
             NHibernate to open and close several connections during one transaction, leading to unnecessary overhead and
             transaction promotion from local to distributed. Specifying <literal>ConnectionReleaseMode.OnClose</literal>
