@@ -38,7 +38,7 @@
 	<bookinfo>
 		<title>NHibernate - Relational Persistence for Idiomatic .NET</title>
 		<subtitle>NHibernate Reference Documentation</subtitle>
-		<releaseinfo>2.1.0</releaseinfo>
+		<releaseinfo>3.0.0</releaseinfo>
 	</bookinfo>
 
 	<toc />

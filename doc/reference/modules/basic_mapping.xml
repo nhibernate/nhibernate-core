@@ -2201,7 +2201,7 @@
 
             <para>
                 An <emphasis>entity</emphasis> exists independently of any other objects holding
-                references to the entity. Contrast this with the usual Java model where an
+                references to the entity. Contrast this with the usual .NET model where an
                 unreferenced object is garbage collected. Entities must be explicitly saved and
                 deleted (except that saves and deletions may be <emphasis>cascaded</emphasis>
                 from a parent entity to its children). This is different from the ODMG model of

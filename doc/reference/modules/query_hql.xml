@@ -23,7 +23,7 @@
         
         <para>
             This manual uses lowercase HQL keywords. Some users find queries with uppercase keywords 
-            more readable, but we find this convention ugly when embedded in Java code.
+            more readable, but we find this convention ugly when embedded in C# code.
         </para>
         
     </sect1>
@@ -381,7 +381,7 @@ where account.Owner.id.Country = 'AU'
             
         <para>
             Likewise, the special property <literal>class</literal> accesses the discriminator value
-            of an instance in the case of polymorphic persistence. A Java class name embedded in the 
+            of an instance in the case of polymorphic persistence. A .Net class name embedded in the 
             where clause will be translated to its discriminator value.
         </para>
 
