@@ -1169,7 +1169,7 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
                 <para>.NET Framework 2.0 or above is required,</para>
             </listitem>
             <listitem>
-                <para>only Microsoft SQL Server is supported currently,</para>
+                <para>the Nhibernate's drive used for your RDBMS may not supports batching,</para>
             </listitem>
             <listitem>
                 <para>since the implementation uses reflection to access members and types
@@ -1184,7 +1184,7 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
         </itemizedlist>
 
         <para>
-            Update batching is enabled by setting <literal>hibernate.adonet.batch_size</literal>
+            Update batching is enabled by setting <literal>adonet.batch_size</literal>
             to a non-zero value.
         </para>
     </sect1>
