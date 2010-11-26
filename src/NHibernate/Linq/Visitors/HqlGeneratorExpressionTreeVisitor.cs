@@ -215,13 +215,13 @@ namespace NHibernate.Linq.Visitors
                     {
                         lhs =
                             _hqlTreeBuilder.Case(
-                                new [] { _hqlTreeBuilder.When(lhs, _hqlTreeBuilder.Constant(1)) },
-                                _hqlTreeBuilder.Constant(0));
+                                new [] { _hqlTreeBuilder.When(lhs, _hqlTreeBuilder.Constant(true)) },
+                                _hqlTreeBuilder.Constant(false));
 
                         rhs =
                             _hqlTreeBuilder.Case(
-                                new [] { _hqlTreeBuilder.When(rhs, _hqlTreeBuilder.Constant(1)) },
-                                _hqlTreeBuilder.Constant(0));
+                                new [] { _hqlTreeBuilder.When(rhs, _hqlTreeBuilder.Constant(true)) },
+                                _hqlTreeBuilder.Constant(false));
 
                         return _hqlTreeBuilder.Equality(lhs, rhs);
                     }
@@ -250,13 +250,13 @@ namespace NHibernate.Linq.Visitors
                     {
                         lhs =
                             _hqlTreeBuilder.Case(
-                                new [] { _hqlTreeBuilder.When(lhs, _hqlTreeBuilder.Constant(1)) },
-                                _hqlTreeBuilder.Constant(0));
+                                new [] { _hqlTreeBuilder.When(lhs, _hqlTreeBuilder.Constant(true)) },
+                                _hqlTreeBuilder.Constant(false));
 
                         rhs =
                             _hqlTreeBuilder.Case(
-                                new [] { _hqlTreeBuilder.When(rhs, _hqlTreeBuilder.Constant(1)) },
-                                _hqlTreeBuilder.Constant(0));
+                                new [] { _hqlTreeBuilder.When(rhs, _hqlTreeBuilder.Constant(true)) },
+                                _hqlTreeBuilder.Constant(false));
 
                         return _hqlTreeBuilder.Inequality(lhs, rhs);
 
@@ -377,7 +377,7 @@ namespace NHibernate.Linq.Visitors
                 if (namedParameter.Value is bool)
                 {
                     return _hqlTreeBuilder.Equality(_hqlTreeBuilder.Parameter(namedParameter.Name).AsExpression(),
-                                                    _hqlTreeBuilder.Constant(1));
+                                                    _hqlTreeBuilder.Constant(true));
                 }
 
                 return _hqlTreeBuilder.Parameter(namedParameter.Name).AsExpression();
