@@ -108,7 +108,7 @@ namespace NHibernate.Impl
 						throw new QueryException("Unset positional parameter at position: " + i, QueryString);
 					}
 				}
-				positionalValueSpan += ((IType)obj).GetColumnSpan(session.Factory);
+				positionalValueSpan++;
 			}
 
 			if (parameterMetadata.OrdinalParameterCount != positionalValueSpan)
