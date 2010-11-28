@@ -543,6 +543,11 @@
     <Compile Include="NHSpecificTest\NH2392\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2392\PhoneNumber.cs" />
     <Compile Include="NHSpecificTest\NH2392\PhoneNumberUserType.cs" />
+    <Compile Include="NHSpecificTest\NH2394\A.cs" />
+    <Compile Include="NHSpecificTest\NH2394\EnumStringUserType.cs" />
+    <Compile Include="NHSpecificTest\NH2394\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2394\PhoneNumber.cs" />
+    <Compile Include="NHSpecificTest\NH2394\PhoneNumberUserType.cs" />
     <Compile Include="NHSpecificTest\NH2409\Contest.cs" />
     <Compile Include="NHSpecificTest\NH2409\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2409\Message.cs" />
@@ -2329,6 +2334,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2394\Mappings.hbm.xml" />
     <EmbeddedResource Include="DynamicEntity\Interceptor\Customer.hbm.xml" />
     <EmbeddedResource Include="Any\Person.hbm.xml" />
     <EmbeddedResource Include="Any\Properties.hbm.xml" />

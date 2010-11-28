@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH2394">
+  <class name="A" table="a" lazy="false" optimistic-lock="dirty" dynamic-update="true">
+    <id name="Id" column="id" unsaved-value="null">
+      <generator class="native" />
+    </id>
+    <property name="Phone" type="NHibernate.Test.NHSpecificTest.NH2394.PhoneNumberUserType, NHibernate.Test">
+      <column name="PhoneCountryCode"/>
+      <column name="PhoneNumber"/>
+    </property>
+    <property name="Type" type="NHibernate.Test.NHSpecificTest.NH2394.EnumStringUserType, NHibernate.Test"/>
+    <property name="NullableType" type="NHibernate.Test.NHSpecificTest.NH2394.EnumStringUserType, NHibernate.Test"/>
+    <property name="IsNice" type="TrueFalse"/>
+  </class>
+</hibernate-mapping>

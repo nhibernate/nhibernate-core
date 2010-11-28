@@ -137,9 +137,13 @@ namespace NHibernate.Linq
                     {
                         query.SetParameterList(parameterName, (ICollection) param.First);
                     }
+                    else if (param.Second != null)
+                    {
+                        query.SetParameter(parameterName, param.First, param.Second);
+                    }
                     else
                     {
-                        query.SetParameter(parameterName, param.First);
+                    	query.SetParameter(parameterName, param.First);
                     }
                 }
 			}
