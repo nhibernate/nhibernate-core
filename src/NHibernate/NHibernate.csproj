@@ -241,6 +241,8 @@
     <Compile Include="ISessionFactory.cs" />
     <Compile Include="ITransaction.cs" />
     <Compile Include="LazyInitializationException.cs" />
+    <Compile Include="Linq\Visitors\ContextualNhExpressionTreeVisitor.cs" />
+    <Compile Include="Linq\Visitors\VisitorContext.cs" />
     <Compile Include="Loader\Loader.cs" />
     <Compile Include="Loader\OuterJoinLoader.cs" />
     <Compile Include="LockMode.cs" />
