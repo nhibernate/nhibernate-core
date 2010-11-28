@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2234
 		public virtual MyUsertype Relation { get; set; }
 	}
 
-	[TestFixture, Ignore("Not fixed yet.")]
+	[TestFixture]
 	public class Fixture: BugTestCase
 	{
 	  [Test]
