@@ -48,7 +48,7 @@ namespace NHibernate.Id
 
 			if (!parms.TryGetValue("tables", out tableList))
 				parms.TryGetValue(PersistentIdGeneratorParmsNames.Tables, out tableList);
-			string[] tables = StringHelper.Split(", ", tableList);
+			string[] tables = tableList.Split(", ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 			if (!parms.TryGetValue("column", out column))
 				parms.TryGetValue(PersistentIdGeneratorParmsNames.PK, out column);
 			returnClass = type.ReturnedClass;

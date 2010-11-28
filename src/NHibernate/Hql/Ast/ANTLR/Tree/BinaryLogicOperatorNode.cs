@@ -221,7 +221,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				{
 					nodeText = nodeText.Substring( 0, nodeText.Length - 1 );
 				}
-				String[] splits = StringHelper.Split( ", ", nodeText );
+				string[] splits = nodeText.Split(new[] { ", " }, StringSplitOptions.None);
 
 				if ( count != splits.Length ) 
 				{
