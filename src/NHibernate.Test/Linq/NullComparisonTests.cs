@@ -293,8 +293,8 @@ namespace NHibernate.Test.Linq
 
 		private void Expect(IQueryable<AnotherEntity> q, params AnotherEntity[] entities)
 		{
-			IList<AnotherEntity> results = q.ToList().OrderBy(Key).ToList();
-			IList<AnotherEntity> check = entities.OrderBy(Key).ToList();
+			IList<AnotherEntity> results = q.ToList().OrderBy(l=> Key(l)).ToList();
+			IList<AnotherEntity> check = entities.OrderBy(l => Key(l)).ToList();
 
 			Assert.AreEqual(check.Count, results.Count);
 			for(int i=0; i<check.Count; i++)
