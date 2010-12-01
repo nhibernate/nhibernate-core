@@ -42,6 +42,8 @@ namespace NHibernate.Transaction
 					{
 						using (new SessionIdLoggingContext(session.SessionId))
 						{
+							((DistributedTransactionContext)session.TransactionContext).IsInActiveTransaction = false;
+							
 							bool wasSuccessful = false;
 							try
 							{
@@ -134,7 +136,7 @@ namespace NHibernate.Transaction
 				using (new SessionIdLoggingContext(sessionImplementor.SessionId))
 				{
 					logger.Debug("committing DTC transaction");
-					// we have nothing to do here, since it is the actual 
+					// we have nothing to do here, since it is the actual
 					// DB connection that will commit the transaction
 					enlistment.Done();
 					IsInActiveTransaction = false;

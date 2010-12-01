@@ -556,6 +556,9 @@
     <Compile Include="NHSpecificTest\NH2409\Message.cs" />
     <Compile Include="NHSpecificTest\NH2409\MessageReading.cs" />
     <Compile Include="NHSpecificTest\NH2409\User.cs" />
+    <Compile Include="NHSpecificTest\NH2420\DummyEnlistment.cs" />
+    <Compile Include="NHSpecificTest\NH2420\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2420\MyTable.cs" />
     <Compile Include="PolymorphicGetAndLoad\Domain.cs" />
     <Compile Include="PolymorphicGetAndLoad\PolymorphicGetAndLoadTest.cs" />
     <Compile Include="TypesTest\CharClass.cs" />
@@ -1849,6 +1852,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1869\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2392\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2409\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2420\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.ByteCode.Castle\NHibernate.ByteCode.Castle.csproj">
@@ -2715,6 +2719,7 @@
     <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="NHSpecificTest\NH2420" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
