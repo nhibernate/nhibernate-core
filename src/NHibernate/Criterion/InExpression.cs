@@ -26,7 +26,7 @@ namespace NHibernate.Criterion
 		/// Initializes a new instance of the <see cref="InExpression"/> class.
 		/// </summary>
 		/// <param name="projection">The projection.</param>
-		/// <param name="_values">The _values.</param>
+		/// <param name="values">The _values.</param>
 		public InExpression(IProjection projection, object[] values)
 		{
 			_projection = projection;

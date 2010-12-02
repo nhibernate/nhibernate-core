@@ -20,12 +20,15 @@ namespace NHibernate.Loader.Criteria
 	{
 		public static readonly string RootSqlAlias = CriteriaSpecification.RootAlias + '_';
 
+		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(CriteriaQueryTranslator));
+		
+		private const int AliasCount = 0;
+		
 		private readonly ICriteriaQuery outerQueryTranslator;
-
 		private readonly CriteriaImpl rootCriteria;
 		private readonly string rootEntityName;
 		private readonly string rootSQLAlias;
-		private const int aliasCount = 0;
+		private int indexForAlias = 0;		
 		private int _tempPagingParameterIndex = -1;
 		private IDictionary<int, int> _tempPagingParameterIndexes = new Dictionary<int, int>();
 
@@ -36,18 +39,12 @@ namespace NHibernate.Loader.Criteria
 			new Dictionary<string, ICriteriaInfoProvider>();
 
 		private readonly ISet<ICollectionPersister> criteriaCollectionPersisters = new HashedSet<ICollectionPersister>();
-
 		private readonly IDictionary<ICriteria, string> criteriaSQLAliasMap = new Dictionary<ICriteria, string>();
 		private readonly IDictionary<string, ICriteria> aliasCriteriaMap = new Dictionary<string, ICriteria>();
 		private readonly IDictionary<string, ICriteria> associationPathCriteriaMap = new LinkedHashMap<string, ICriteria>();
 		private readonly IDictionary<string, JoinType> associationPathJoinTypesMap = new LinkedHashMap<string, JoinType>();
 		private readonly IDictionary<string, ICriterion> withClauseMap = new Dictionary<string, ICriterion>();
-
 		private readonly ISessionFactoryImplementor sessionFactory;
-		private int indexForAlias = 0;
-		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(CriteriaQueryTranslator));
-
-		private readonly List<TypedValue> usedTypedValues = new List<TypedValue>();
 		private SessionFactoryHelper helper;
 
 		public CriteriaQueryTranslator(ISessionFactoryImplementor factory, CriteriaImpl criteria, string rootEntityName,
@@ -282,7 +279,7 @@ namespace NHibernate.Loader.Criteria
 
 		public string GenerateSQLAlias()
 		{
-			return StringHelper.GenerateAlias(rootSQLAlias, aliasCount);
+			return StringHelper.GenerateAlias(rootSQLAlias, AliasCount);
 		}
 
 		private ICriteria GetAliasedCriteria(string alias)

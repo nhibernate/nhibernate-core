@@ -205,8 +205,8 @@ namespace NHibernate.Type
 	 	/// <para>If it is determined that no fields are dirty, null is returned.</para>
 		/// </summary>
 		/// <param name="properties">The property definitions</param>
-		/// <param name="x">The current state of the entity</param>
-		/// <param name="y">The baseline state of the entity</param>
+		/// <param name="currentState">The current state of the entity</param>
+		/// <param name="previousState">The baseline state of the entity</param>
 		/// <param name="includeColumns">Columns to be included in the dirty checking, per property</param>
 		/// <param name="anyUninitializedProperties">Does the entity currently hold any uninitialized property values?</param>
 		/// <param name="session">The session from which the dirty check request originated.</param>
@@ -256,8 +256,8 @@ namespace NHibernate.Type
 	 	/// <para>If it is determined that no fields are dirty, null is returned.</para>
 		/// </summary>
 		/// <param name="properties">The property definitions</param>
-		/// <param name="x">The current state of the entity</param>
-		/// <param name="y">The baseline state of the entity</param>
+		/// <param name="currentState">The current state of the entity</param>
+		/// <param name="previousState">The baseline state of the entity</param>
 		/// <param name="includeColumns">Columns to be included in the mod checking, per property</param>
 		/// <param name="anyUninitializedProperties">Does the entity currently hold any uninitialized property values?</param>
 		/// <param name="session">The session from which the dirty check request originated.</param>

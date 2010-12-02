@@ -20,9 +20,9 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BetweenExpression"/> class.
 		/// </summary>
-		/// <param name="_projection">The _projection.</param>
-		/// <param name="_lo">The _lo.</param>
-		/// <param name="_hi">The _hi.</param>
+		/// <param name="projection">The _projection.</param>
+		/// <param name="lo">The _lo.</param>
+		/// <param name="hi">The _hi.</param>
 		public BetweenExpression(IProjection projection, object lo, object hi)
 		{
 			this._projection = projection;

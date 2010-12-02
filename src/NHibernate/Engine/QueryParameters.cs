@@ -43,7 +43,6 @@ namespace NHibernate.Engine
 		private bool _readOnly;
 		private int? limitParameterIndex = null;
 		private int? offsetParameterIndex = null;
-		private int wildcardSubqueryLimitParameterIndex = -1;
 		private IDictionary<int, int> _adjustedParameterLocations;
 		private IDictionary<int, int> _tempPagingParameterIndexes;
 		private IDictionary<int, int> _pagingParameterIndexMap;
