@@ -181,7 +181,7 @@ namespace Eg
         </para>
 
         <para>
-            Even if both objecs <literal>a</literal> and <literal>b</literal> are the same database row
+            Even if both objects <literal>a</literal> and <literal>b</literal> are the same database row
             (they have the same primary key value as their identifier), we can't guarantee that they are
             the same object instance outside of a particular <literal>ISession</literal> context.
         </para>
