@@ -13,6 +13,32 @@
 		* [NH-2284] - Obsolete members removed
 		* Related to [NH-2358]: DateTimeOffset type now works as a DateTimeOffset instead a "surrogate" of DateTime
 
+Build 3.0.0.GA (rev5290)
+=============================
+
+** Bug
+    * [NH-2222] - Wrong type for constant/parameter value used
+    * [NH-2234] - Query on Property mapped with IUserType
+    * [NH-2244] - Linq provider does not has full supporting of components in queries.
+    * [NH-2370] - NHibernate.Linq simple where clause results in a table scan.
+    * [NH-2394] - Comparing an enum (stored as a string with a user type) to an enum literal fails
+    * [NH-2398] - Null equality uses non-boolean expression
+    * [NH-2402] - LINQ equality should map to SQL equality
+    * [NH-2403] - Linq boolean constants are of wrong type (integer)
+    * [NH-2409] - Using WithClause in Criteria API causes NH to mix up query parameters
+    * [NH-2416] - NHibernate.Linq does not support queries against <map> elements
+    * [NH-2417] - NHibernate fails to correctly load a child collection if the parent contains a many-to-one
+    * [NH-2420] - Cannot use distributed transactions while providing connection to the session
+    * [NH-2438] - LINQ 'in' query not fully interpreted
+
+** Improvement
+    * [NH-2423] - NHibernate.Linq queries against Dictionaries with ContainsKey
+
+
+** Patch
+    * [NH-2413] - Micro optimization in DefaultFlushEntityEventListener
+    * [NH-2437] - Typo
+
 Build 3.0.0.CR1 (rev5265)
 =============================
 
