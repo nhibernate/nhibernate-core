@@ -53,6 +53,12 @@
 			<index column="strm_idx" type="String(10)" length="10" />
 			<element column="str_val" type="String(50)"  length="50"/>
 		</map>
+    	
+		<map name="StringMapGeneric" table="bc_stmap" >
+			<key column="bc_id"/>
+			<index column="strm_idx" type="String(10)" length="10" />
+			<element column="str_val" type="String(50)"  length="50"/>
+		</map>
 		
 		<set name="StringSet" table="bc_stset">
 			<key column="bc_id" />

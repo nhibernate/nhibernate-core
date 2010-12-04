@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Iesi.Collections;
 using NHibernate.Criterion;
 using NHibernate.DomainModel.NHSpecific;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest
@@ -835,6 +838,64 @@ namespace NHibernate.Test.NHSpecificTest
 			s.Close();
 		}
 
+		[Test]
+		public void TestLinqWhereOnDictionaryProperty()
+		{
+			// TODO: Move to Linq test namespace
+			
+			InsertBasicClass(1);
+			
+			using (var session = OpenSession())
+			using (var trans = session.BeginTransaction())
+			{
+				IQueryable<BasicClass> bcs = null;
+				IList<BasicClass> bcsList = null;
+				
+				// IDictionary[]
+				bcs = session.Query<BasicClass>()
+					.Where(bc => (string)bc.StringMap["keyZero"] == "string zero");
+
+				Assert.That(bcs.Count(), Is.EqualTo(1));
+				bcsList = bcs.ToList<BasicClass>();
+				Assert.That(bcsList.All(f => f.StringMap != null), Is.True);
+				Assert.That(bcsList.All(f => f.StringMap.Count == 3), Is.True);
+				Assert.That(bcsList.All(f => ((f.StringMap.Contains("keyZero")) && ((string)f.StringMap["keyZero"] == "string zero"))), Is.True);
+				
+				// IDictionary<,>[]
+				bcs = session.Query<BasicClass>()
+					.Where(bc => bc.StringMapGeneric["keyOne"] == "string one");
+				
+				Assert.That(bcs.Count(), Is.EqualTo(1));
+				bcsList = bcs.ToList<BasicClass>();
+				Assert.That(bcsList.All(f => f.StringMapGeneric != null), Is.True);
+				Assert.That(bcsList.All(f => f.StringMapGeneric.Count == 3), Is.True);
+				Assert.That(bcsList.All(f => ((f.StringMapGeneric.ContainsKey("keyOne")) && (f.StringMapGeneric["keyOne"] == "string one"))), Is.True);
+				
+				// IDictionary.Contains
+				bcs = session.Query<BasicClass>()
+					.Where(bc => bc.StringMap.Contains("keyZero"));
+				
+				Assert.That(bcs.Count(), Is.EqualTo(1));
+				bcsList = bcs.ToList<BasicClass>();
+				Assert.That(bcsList.All(f => f.StringMap != null), Is.True);
+				Assert.That(bcsList.All(f => f.StringMap.Count == 3), Is.True);
+				Assert.That(bcsList.All(f => ((f.StringMap.Contains("keyZero")) && ((string)f.StringMap["keyZero"] == "string zero"))), Is.True);
+				
+				// IDictionary<,>.ContainsKey
+				bcs = session.Query<BasicClass>()
+					.Where(bc => bc.StringMapGeneric.ContainsKey("keyZero"));
+				
+				Assert.That(bcs.Count(), Is.EqualTo(1));
+				bcsList = bcs.ToList<BasicClass>();
+				Assert.That(bcsList.All(f => f.StringMapGeneric != null), Is.True);
+				Assert.That(bcsList.All(f => f.StringMapGeneric.Count == 3), Is.True);
+				Assert.That(bcsList.All(f => ((f.StringMapGeneric.ContainsKey("keyOne")) && (f.StringMapGeneric["keyOne"] == "string one"))), Is.True);
+				
+				session.Delete("from BasicClass");
+				trans.Commit();
+			}
+		}
+		
 		internal void AssertDelete(int id)
 		{
 			ISession s = OpenSession();

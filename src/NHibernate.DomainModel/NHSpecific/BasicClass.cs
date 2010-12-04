@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 
 using Iesi.Collections;
@@ -34,6 +35,7 @@ namespace NHibernate.DomainModel.NHSpecific
 		private IList _stringBag;
 		private IList _stringList;
 		private IDictionary _stringMap;
+		private IDictionary<string, string> _stringMapGeneric;
 		private ISet _stringSet;
 
 		public BasicClass()
@@ -119,7 +121,7 @@ namespace NHibernate.DomainModel.NHSpecific
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <remarks>
 		/// NHibernate knows nothing about this Property.  This Property
@@ -161,6 +163,12 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 			get { return _stringMap; }
 			set { _stringMap = value; }
+		}
+		
+		public IDictionary<string, string> StringMapGeneric
+		{
+			get { return _stringMapGeneric; }
+			set { _stringMapGeneric = value; }
 		}
 
 		public ISet StringSet

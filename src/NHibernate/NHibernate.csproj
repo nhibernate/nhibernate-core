@@ -42,7 +42,7 @@
     <DefineConstants>TRACE;NET_2_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-	<NoWarn>3001%3b3002%3b3003%3b3004%3b3005</NoWarn>
+    <NoWarn>3001%3b3002%3b3003%3b3004%3b3005</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -241,6 +241,7 @@
     <Compile Include="ISessionFactory.cs" />
     <Compile Include="ITransaction.cs" />
     <Compile Include="LazyInitializationException.cs" />
+    <Compile Include="Linq\Functions\DictionaryGenerator.cs" />
     <Compile Include="Loader\Loader.cs" />
     <Compile Include="Loader\OuterJoinLoader.cs" />
     <Compile Include="LockMode.cs" />
