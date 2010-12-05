@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using NHibernate.Test.Linq.Entities;
+using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -11,34 +11,29 @@ namespace NHibernate.Test.Linq
 		private Northwind _northwind;
 		private ISession _session;
 
-		protected override string MappingsAssembly
-		{
-			get { return "NHibernate.Test"; }
-		}
-
 		protected override IList Mappings
 		{
 			get
 			{
 				return new[]
-				       	{
-				       		"Linq.Mappings.Customer.hbm.xml",
-				       		"Linq.Mappings.Employee.hbm.xml",
-				       		"Linq.Mappings.Order.hbm.xml",
-				       		"Linq.Mappings.OrderLine.hbm.xml",
-				       		"Linq.Mappings.Product.hbm.xml",
-				       		"Linq.Mappings.ProductCategory.hbm.xml",
-				       		"Linq.Mappings.Region.hbm.xml",
-				       		"Linq.Mappings.Shipper.hbm.xml",
-				       		"Linq.Mappings.Supplier.hbm.xml",
-				       		"Linq.Mappings.Territory.hbm.xml",
-				       		"Linq.Mappings.AnotherEntity.hbm.xml",
-				       		"Linq.Mappings.Role.hbm.xml",
-				       		"Linq.Mappings.User.hbm.xml",
-				       		"Linq.Mappings.TimeSheet.hbm.xml",
-				       		"Linq.Mappings.Animal.hbm.xml",
-				       		"Linq.Mappings.Patient.hbm.xml"
-				       	};
+				{
+					"Northwind.Mappings.Customer.hbm.xml",
+					"Northwind.Mappings.Employee.hbm.xml",
+					"Northwind.Mappings.Order.hbm.xml",
+					"Northwind.Mappings.OrderLine.hbm.xml",
+					"Northwind.Mappings.Product.hbm.xml",
+					"Northwind.Mappings.ProductCategory.hbm.xml",
+					"Northwind.Mappings.Region.hbm.xml",
+					"Northwind.Mappings.Shipper.hbm.xml",
+					"Northwind.Mappings.Supplier.hbm.xml",
+					"Northwind.Mappings.Territory.hbm.xml",
+					"Northwind.Mappings.AnotherEntity.hbm.xml",
+					"Northwind.Mappings.Role.hbm.xml",
+					"Northwind.Mappings.User.hbm.xml",
+					"Northwind.Mappings.TimeSheet.hbm.xml",
+					"Northwind.Mappings.Animal.hbm.xml",
+					"Northwind.Mappings.Patient.hbm.xml"
+				};
 			}
 		}
 

@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using NHibernate.Linq;
-using NHibernate.Test.Linq.Entities;
+using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 using SharpTestsEx;
 

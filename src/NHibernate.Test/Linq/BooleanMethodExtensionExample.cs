@@ -10,7 +10,7 @@ using NHibernate.Hql.Ast;
 using NHibernate.Linq;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
-using NHibernate.Test.Linq.Entities;
+using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 using SharpTestsEx;
 

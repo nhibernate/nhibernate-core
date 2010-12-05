@@ -137,6 +137,27 @@
     <Compile Include="NHSpecific\SimpleComponent.cs" />
     <Compile Include="NHSpecific\Team.cs" />
     <Compile Include="NHSpecific\UnsavedType.cs" />
+    <Compile Include="Northwind\Entities\Address.cs" />
+    <Compile Include="Northwind\Entities\Animal.cs" />
+    <Compile Include="Northwind\Entities\AnotherEntity.cs" />
+    <Compile Include="Northwind\Entities\Customer.cs" />
+    <Compile Include="Northwind\Entities\Employee.cs" />
+    <Compile Include="Northwind\Entities\Entity.cs" />
+    <Compile Include="Northwind\Entities\Northwind.cs" />
+    <Compile Include="Northwind\Entities\Order.cs" />
+    <Compile Include="Northwind\Entities\OrderLine.cs" />
+    <Compile Include="Northwind\Entities\Patient.cs" />
+    <Compile Include="Northwind\Entities\Product.cs" />
+    <Compile Include="Northwind\Entities\ProductCategory.cs" />
+    <Compile Include="Northwind\Entities\Region.cs" />
+    <Compile Include="Northwind\Entities\Role.cs" />
+    <Compile Include="Northwind\Entities\Shipper.cs" />
+    <Compile Include="Northwind\Entities\Supplier.cs" />
+    <Compile Include="Northwind\Entities\Territory.cs" />
+    <Compile Include="Northwind\Entities\Timesheet.cs" />
+    <Compile Include="Northwind\Entities\User.cs" />
+    <Compile Include="Northwind\Entities\UserComponent.cs" />
+    <Compile Include="Northwind\Entities\UserDto.cs" />
     <Compile Include="NotMono.cs" />
     <Compile Include="One.cs" />
     <Compile Include="Outer.cs" />
@@ -223,6 +244,22 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="NHibernate.DomainModel.build" />
+    <EmbeddedResource Include="Northwind\Mappings\Animal.hbm.xml" />
+    <EmbeddedResource Include="Northwind\Mappings\AnotherEntity.hbm.xml" />
+    <EmbeddedResource Include="Northwind\Mappings\Customer.hbm.xml" />
+    <EmbeddedResource Include="Northwind\Mappings\Employee.hbm.xml" />
+    <EmbeddedResource Include="Northwind\Mappings\Order.hbm.xml" />
+    <EmbeddedResource Include="Northwind\Mappings\OrderLine.hbm.xml" />
+    <EmbeddedResource Include="Northwind\Mappings\Patient.hbm.xml" />
+    <EmbeddedResource Include="Northwind\Mappings\Product.hbm.xml" />
+    <EmbeddedResource Include="Northwind\Mappings\ProductCategory.hbm.xml" />
+    <EmbeddedResource Include="Northwind\Mappings\Region.hbm.xml" />
+    <EmbeddedResource Include="Northwind\Mappings\Role.hbm.xml" />
+    <EmbeddedResource Include="Northwind\Mappings\Shipper.hbm.xml" />
+    <EmbeddedResource Include="Northwind\Mappings\Supplier.hbm.xml" />
+    <EmbeddedResource Include="Northwind\Mappings\Territory.hbm.xml" />
+    <EmbeddedResource Include="Northwind\Mappings\TimeSheet.hbm.xml" />
+    <EmbeddedResource Include="Northwind\Mappings\User.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate\NHibernate.csproj">
@@ -241,6 +278,9 @@
     <Service Include="..\..\..\..\trunk\nhibernate\src\NHibernate.DomainModel\{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Northwind" />
+    <Folder Include="Northwind\Entities" />
+    <Folder Include="Northwind\Mappings" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

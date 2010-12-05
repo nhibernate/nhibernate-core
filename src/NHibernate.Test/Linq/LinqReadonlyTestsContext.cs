@@ -14,29 +14,37 @@ namespace NHibernate.Test.Linq
 	[SetUpFixture]
 	public class LinqReadonlyTestsContext
 	{
+		/// <summary>
+		/// Assembly to load mapping files from
+		/// </summary>
+		protected virtual string MappingsAssembly
+		{
+			get { return "NHibernate.DomainModel"; }
+		}
+		
 		private IEnumerable<string> Mappings
 		{
 			get
 			{
 				return new[]
-				       	{
-				       		"Linq.Mappings.Customer.hbm.xml",
-				       		"Linq.Mappings.Employee.hbm.xml",
-				       		"Linq.Mappings.Order.hbm.xml",
-				       		"Linq.Mappings.OrderLine.hbm.xml",
-				       		"Linq.Mappings.Product.hbm.xml",
-				       		"Linq.Mappings.ProductCategory.hbm.xml",
-				       		"Linq.Mappings.Region.hbm.xml",
-				       		"Linq.Mappings.Shipper.hbm.xml",
-				       		"Linq.Mappings.Supplier.hbm.xml",
-				       		"Linq.Mappings.Territory.hbm.xml",
-				       		"Linq.Mappings.AnotherEntity.hbm.xml",
-				       		"Linq.Mappings.Role.hbm.xml",
-				       		"Linq.Mappings.User.hbm.xml",
-				       		"Linq.Mappings.TimeSheet.hbm.xml",
-				       		"Linq.Mappings.Animal.hbm.xml",
-				       		"Linq.Mappings.Patient.hbm.xml"
-				       	};
+				{
+					"Northwind.Mappings.Customer.hbm.xml",
+					"Northwind.Mappings.Employee.hbm.xml",
+					"Northwind.Mappings.Order.hbm.xml",
+					"Northwind.Mappings.OrderLine.hbm.xml",
+					"Northwind.Mappings.Product.hbm.xml",
+					"Northwind.Mappings.ProductCategory.hbm.xml",
+					"Northwind.Mappings.Region.hbm.xml",
+					"Northwind.Mappings.Shipper.hbm.xml",
+					"Northwind.Mappings.Supplier.hbm.xml",
+					"Northwind.Mappings.Territory.hbm.xml",
+					"Northwind.Mappings.AnotherEntity.hbm.xml",
+					"Northwind.Mappings.Role.hbm.xml",
+					"Northwind.Mappings.User.hbm.xml",
+					"Northwind.Mappings.TimeSheet.hbm.xml",
+					"Northwind.Mappings.Animal.hbm.xml",
+					"Northwind.Mappings.Patient.hbm.xml"
+				};
 			}
 		}
 
@@ -106,10 +114,9 @@ namespace NHibernate.Test.Linq
 
 			configuration.SetProperty(Environment.ConnectionProvider, typeof (DriverConnectionProvider).AssemblyQualifiedName);
 
-			string assemblyName = "NHibernate.Test";
-			Assembly assembly = Assembly.Load(assemblyName);
+			Assembly assembly = Assembly.Load(MappingsAssembly);
 
-			foreach (string file in Mappings.Select(mf => assemblyName + "." + mf))
+			foreach (string file in Mappings.Select(mf => MappingsAssembly + "." + mf))
 			{
 				configuration.AddResource(file, assembly);
 			}

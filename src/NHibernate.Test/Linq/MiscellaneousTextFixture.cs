@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Linq;
-using NHibernate.Test.Linq.Entities;
+using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq

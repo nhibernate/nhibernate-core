@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using NHibernate.Test.Linq.Entities;
+using NHibernate.DomainModel.Northwind.Entities;
 
 namespace NHibernate.Test.Linq
 {
