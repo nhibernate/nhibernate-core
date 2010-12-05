@@ -1,5 +1,8 @@
 @echo off
-set NANT=%~dp0\Tools\nant\bin\NAnt.exe -t:net-3.5
+set OLD_CD=%CD%
+cd %~dp0
+
+set NANT=Tools\nant\bin\NAnt.exe -t:net-3.5
 
 echo --- SETUP ---
 echo A.  Set up for Visual Studio (creates AssemblyInfo.cs files).
@@ -86,4 +89,5 @@ goto end
 goto end
 
 :end
+cd %OLD_CD%
 pause
