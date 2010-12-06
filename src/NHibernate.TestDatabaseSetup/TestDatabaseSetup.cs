@@ -13,8 +13,6 @@ namespace NHibernate.TestDatabaseSetup
             var cfg = new Cfg.Configuration();
             var connStr = cfg.Properties["connection.connection_string"];
 
-            connStr = @"Server=.\SQLExpress;initial catalog=nhibernate;Integrated Security=SSPI";
-
             using (var conn = new SqlConnection(connStr))
             {
                 conn.Open();
