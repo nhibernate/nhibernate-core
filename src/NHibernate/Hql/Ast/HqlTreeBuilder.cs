@@ -165,7 +165,7 @@ namespace NHibernate.Hql.Ast
 				case TypeCode.DateTime:
 					return new HqlStringConstant(_factory, "\'" + (DateTime)value + "\'");
 				case TypeCode.Boolean:
-					return new HqlStringConstant(_factory, "\'" + ((bool)value ? "true" : "false") + "\'");
+					return (bool)value ? (HqlConstant)True() : (HqlConstant)False();
 				default:
 					throw new NotSupportedException(string.Format("The constant for '{0}' is not supported", value));
 			}
