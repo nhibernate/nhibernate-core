@@ -11,7 +11,7 @@ namespace NHibernate.Cfg
 		private readonly string name;
 		private readonly HbmMapping document;
 
-		public NamedXmlDocument(string name, XmlDocument document)
+		public NamedXmlDocument(string name, XmlDocument document, XmlSerializer mappingDocumentSerializer)
 		{
 			if (document == null)
 			{
@@ -24,7 +24,7 @@ namespace NHibernate.Cfg
 			}
 			using (var reader = new StringReader(document.DocumentElement.OuterXml))
 			{
-				this.document = (HbmMapping)new XmlSerializer(typeof(HbmMapping)).Deserialize(reader);
+				this.document = (HbmMapping)mappingDocumentSerializer.Deserialize(reader);
 			}
 		}
 

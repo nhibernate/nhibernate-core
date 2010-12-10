@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
+using System.Xml.Serialization;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
 
@@ -78,8 +79,9 @@ namespace NHibernate.Cfg
 
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Configuration));
 
-
 		protected internal SettingsFactory settingsFactory;
+
+		private readonly XmlSerializer mappingDocumentSerializer = new XmlSerializer(typeof(HbmMapping));
 
 		#region ISerializable Members
 		public Configuration(SerializationInfo info, StreamingContext context)
@@ -1771,7 +1773,7 @@ namespace NHibernate.Cfg
 				{
 					var hbmDocument = new XmlDocument();
 					hbmDocument.Load(reader);
-					return new NamedXmlDocument(name, hbmDocument);
+					return new NamedXmlDocument(name, hbmDocument, mappingDocumentSerializer);
 				}
 				catch (MappingException)
 				{
