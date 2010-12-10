@@ -140,15 +140,15 @@ namespace NHibernate.Impl
 			}
 		}
 
-        public override IList List(IQueryExpression queryExpression, QueryParameters parameters)
-        {
-            throw new System.NotImplementedException();
-        }
+		public override IList List(IQueryExpression queryExpression, QueryParameters parameters)
+		{
+			throw new System.NotImplementedException();
+		}
 
-        public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
-        {
-            throw new System.NotImplementedException();
-        }
+		public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
+		{
+			throw new System.NotImplementedException();
+		}
 
 		public override IList<T> List<T>(string query, QueryParameters queryParameters)
 		{
@@ -660,7 +660,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary> Retrieve a entity.
-		/// 
+		///
 		/// </summary>
 		/// <returns> a detached entity instance
 		/// </returns>
@@ -680,8 +680,8 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary> 
-		/// Retrieve a entity, obtaining the specified lock mode. 
+		/// <summary>
+		/// Retrieve a entity, obtaining the specified lock mode.
 		/// </summary>
 		/// <returns> a detached entity instance </returns>
 		public object Get(string entityName, object id, LockMode lockMode)
@@ -695,8 +695,8 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary> 
-		/// Retrieve a entity, obtaining the specified lock mode. 
+		/// <summary>
+		/// Retrieve a entity, obtaining the specified lock mode.
 		/// </summary>
 		/// <returns> a detached entity instance </returns>
 		public T Get<T>(object id, LockMode lockMode)
@@ -707,8 +707,8 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary> 
-		/// Refresh the entity instance state from the database. 
+		/// <summary>
+		/// Refresh the entity instance state from the database.
 		/// </summary>
 		/// <param name="entity">The entity to be refreshed. </param>
 		public void Refresh(object entity)
@@ -719,8 +719,8 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary> 
-		/// Refresh the entity instance state from the database. 
+		/// <summary>
+		/// Refresh the entity instance state from the database.
 		/// </summary>
 		/// <param name="entityName">The entityName for the entity to be refreshed. </param>
 		/// <param name="entity">The entity to be refreshed.</param>
@@ -732,8 +732,8 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary> 
-		/// Refresh the entity instance state from the database. 
+		/// <summary>
+		/// Refresh the entity instance state from the database.
 		/// </summary>
 		/// <param name="entity">The entity to be refreshed. </param>
 		/// <param name="lockMode">The LockMode to be applied.</param>
@@ -745,8 +745,8 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary> 
-		/// Refresh the entity instance state from the database. 
+		/// <summary>
+		/// Refresh the entity instance state from the database.
 		/// </summary>
 		/// <param name="entityName">The entityName for the entity to be refreshed. </param>
 		/// <param name="entity">The entity to be refreshed. </param>
@@ -794,7 +794,7 @@ namespace NHibernate.Impl
 
 		/// <summary>
 		/// Create a new <see cref="ICriteria"/> instance, for the given entity class,
-		/// or a superclass of an entity class. 
+		/// or a superclass of an entity class.
 		/// </summary>
 		/// <typeparam name="T">A class, which is persistent, or has persistent subclasses</typeparam>
 		/// <returns> The <see cref="ICriteria"/>. </returns>
@@ -809,7 +809,7 @@ namespace NHibernate.Impl
 
 		/// <summary>
 		/// Create a new <see cref="ICriteria"/> instance, for the given entity class,
-		/// or a superclass of an entity class, with the given alias. 
+		/// or a superclass of an entity class, with the given alias.
 		/// </summary>
 		/// <typeparam name="T">A class, which is persistent, or has persistent subclasses</typeparam>
 		/// <param name="alias">The alias of the entity</param>
@@ -841,7 +841,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Create a new <see cref="ICriteria"/> instance, for the given entity name.
 		/// </summary>
 		/// <param name="entityName">The entity name. </param>
@@ -856,9 +856,9 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Create a new <see cref="ICriteria"/> instance, for the given entity name,
-		/// with the given alias.  
+		/// with the given alias.
 		/// </summary>
 		/// <param name="entityName">The entity name. </param>
 		/// <param name="alias">The alias of the entity</param>
@@ -873,13 +873,26 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary> Begin a NHibernate transaction.</summary>
+		/// <summary>
+		/// Begin a NHibernate transaction
+		/// </summary>
+		/// <returns>A NHibernate transaction</returns>
 		public ITransaction BeginTransaction()
+		{
+			return BeginTransaction(IsolationLevel.Unspecified);
+		}
+
+		/// <summary>
+		/// Begin a NHibernate transaction with the specified isolation level
+		/// </summary>
+		/// <param name="isolationLevel">The isolation level</param>
+		/// <returns>A NHibernate transaction</returns>
+		public ITransaction BeginTransaction(IsolationLevel isolationLevel)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				return connectionManager.BeginTransaction();
+				return connectionManager.BeginTransaction(isolationLevel);
 			}
 		}
 
@@ -1011,8 +1024,7 @@ namespace NHibernate.Impl
 				}
 				else
 				{
-					return Factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory,
-																							 EntityMode.Poco);
+					return Factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory, EntityMode.Poco);
 				}
 			}
 		}
