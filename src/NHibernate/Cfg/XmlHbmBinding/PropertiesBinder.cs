@@ -83,6 +83,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				HbmNestedCompositeElement nestedCompositeElementMapping;
 				HbmKeyProperty keyPropertyMapping;
 				HbmKeyManyToOne keyManyToOneMapping;
+				HbmProperties propertiesMapping;
 
 				if ((propertyMapping = entityPropertyMapping as HbmProperty) != null)
 				{
@@ -103,6 +104,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 					property = CreateProperty(collectionMapping, className, collection, inheritedMetas);
 					BindCollectionProperty(collectionMapping, property);
+				}
+				else if ((propertiesMapping = entityPropertyMapping as HbmProperties) != null)
+				{
+					var subpath = propertyName == null ? null : StringHelper.Qualify(propertyBasePath, propertyName);
+					var value = CreateNewComponent(table);
+					BindComponent(propertiesMapping, value, null, entityName, subpath, componetDefaultNullable, inheritedMetas);
+					property = CreateProperty(entityPropertyMapping, className, value, inheritedMetas);
+					BindComponentProperty(propertiesMapping, property, value);
 				}
 				else if ((manyToOneMapping = entityPropertyMapping as HbmManyToOne) != null)
 				{
@@ -321,6 +330,16 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			property.IsUpdateable = dynamicComponentMapping.update;
 			property.IsInsertable = dynamicComponentMapping.insert;
 			if (dynamicComponentMapping.unique)
+			{
+				model.Owner.Table.CreateUniqueKey(model.ColumnIterator.OfType<Column>().ToList());
+			}
+		}
+
+		private void BindComponentProperty(HbmProperties propertiesMapping, Property property, Component model)
+		{
+			property.IsUpdateable = propertiesMapping.update;
+			property.IsInsertable = propertiesMapping.insert;
+			if (propertiesMapping.unique)
 			{
 				model.Owner.Table.CreateUniqueKey(model.ColumnIterator.OfType<Column>().ToList());
 			}

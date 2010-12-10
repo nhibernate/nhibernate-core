@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+          namespace="NHibernate.Test.NHSpecificTest.Properties"
+          assembly="NHibernate.Test">
+
+  <class entity-name="DynamicEntity">
+    <id name="Id" type="Int32">
+      <generator class="hilo"/>
+
+    </id>
+    <properties name="SomeProps">
+      <property name="Foo" type="string"/>
+      <property name="Bar" type="string"/>
+    </properties>
+  </class>
+
+  <class name="Person">
+    <id name="Id">
+      <generator class="hilo"/>
+    </id>
+    <property name="Name" length="100"/>
+    <one-to-one name="Address" property-ref="Person" cascade="all" fetch="join"/>
+    <set name="Accounts" inverse="true">
+      <key property-ref="UserIdAndDeleted">
+        <column name="userId"/>
+        <column name="userDeleted"/>
+      </key>
+      <one-to-many class="Account"/>
+    </set>
+    <properties name="UserIdAndDeleted" update="false" unique="true">
+      <property name="UserId" length="8"/>
+      <property name="Deleted"/>
+    </properties>
+  </class>
+
+  <class name="Address">
+    <id name="Id">
+      <generator class="hilo"/>
+
+    </id>
+    <property name="Addr" length="300"/>
+    <property name="Zip" length="5"/>
+    <property name="Country" length="25"/>
+    <many-to-one name="Person" unique="true" not-null="true"/>
+  </class>
+
+  <class name="Account" table="`Account`">
+    <id name="AccountId" length="32">
+      <generator class="uuid.hex"/>
+    </id>
+    <many-to-one name="User" property-ref="UserIdAndDeleted">
+      <column name="userId"/>
+      <column name="userDeleted"/>
+    </many-to-one>
+    <property name="Type" column="`type`" not-null="true"/>
+  </class>
+
+</hibernate-mapping>

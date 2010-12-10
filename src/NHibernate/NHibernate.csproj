@@ -530,6 +530,7 @@
     <Compile Include="Cfg\MappingSchema\HbmOneToMany.cs" />
     <Compile Include="Cfg\MappingSchema\HbmOneToOne.cs" />
     <Compile Include="Cfg\MappingSchema\HbmPrimitiveArray.cs" />
+    <Compile Include="Cfg\MappingSchema\HbmProperties.cs" />
     <Compile Include="Cfg\MappingSchema\HbmProperty.cs" />
     <Compile Include="Cfg\MappingSchema\HbmSet.cs" />
     <Compile Include="Cfg\MappingSchema\HbmSubclass.cs" />

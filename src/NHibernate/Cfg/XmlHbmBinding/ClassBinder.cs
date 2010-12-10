@@ -286,6 +286,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				model.IsEmbedded = false;
 				model.IsDynamic = true;
 			}
+
 			else if (reflectedClass != null)
 			{
 				model.ComponentClass = reflectedClass;
@@ -294,8 +295,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			else
 			{
 				// an "embedded" component (ids only)
-				model.ComponentClass = model.Owner.MappedClass;
 				model.IsEmbedded = true;
+				if (model.Owner.HasPocoRepresentation)
+				{
+					model.ComponentClass = model.Owner.MappedClass;
+				}
+				else
+				{
+					model.IsDynamic = true;
+				}
 			}
 
 			string nodeName = !string.IsNullOrEmpty(componentMapping.EmbeddedNode)

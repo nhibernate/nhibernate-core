@@ -910,9 +910,10 @@ namespace NHibernate.Mapping
 
 		private Property GetProperty(string propertyName, IEnumerable<Property> iter)
 		{
-			foreach (Property prop in iter)
+			var propName = StringHelper.Root(propertyName);
+			foreach (var prop in iter)
 			{
-				if (prop.Name.Equals(StringHelper.Root(propertyName)))
+				if (prop.Name.Equals(propName))
 				{
 					return prop;
 				}
