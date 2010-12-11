@@ -1128,9 +1128,14 @@ namespace NHibernate.Persister.Entity
 				}
 				if (IsVersioned)
 				{
-					tableUpdateNeeded[0] = tableUpdateNeeded[0] ||
-																 Versioning.IsVersionIncrementRequired(dirtyProperties, hasDirtyCollection,
-																																			 PropertyVersionability);
+					// NH-2386 when there isn't dirty-properties and the version is generated even in UPDATE
+					// we can't execute an UPDATE because there isn't something to UPDATE
+					if(!entityMetamodel.VersionProperty.IsUpdateGenerated)
+					{
+						tableUpdateNeeded[0] = tableUpdateNeeded[0] ||
+																	 Versioning.IsVersionIncrementRequired(dirtyProperties, hasDirtyCollection,
+																																				 PropertyVersionability);
+					}
 				}
 				return tableUpdateNeeded;
 			}

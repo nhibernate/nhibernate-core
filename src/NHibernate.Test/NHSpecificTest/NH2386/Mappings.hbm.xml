@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH2386">
+	<class name="Organisation" abstract ="false" table="tblTrnOrganisation">
+		<id name="OrganisationId">
+			<generator class="guid"></generator>
+		</id>
+		
+		<version name="RowVersion"  type="BinaryBlob" generated="always" unsaved-value="null">
+			<column name="RVersion" sql-type="timestamp"/>
+		</version>
+		
+		<set name="ResponsibleLegalPersons" table="tblTrnRtoResponsibleLegalPerson" cascade="all-delete-orphan"  fetch="join" lazy="false">
+			<key column="OrganisationId"></key>
+			<one-to-many class="ResponsibleLegalPerson"/>
+		</set>
+
+		<set name="TradingNames" table="tblTrnOrganisationTradingName" cascade="all-delete-orphan" lazy="true"  batch-size="10" inverse="true">
+			<key column="OrganisationId"></key>
+			<one-to-many class="TradingName"/>
+		</set>
+		
+		
+	</class>
+
+	<class name="TradingName" abstract="false" table="tblTrnOrganisationTradingName" dynamic-insert="true" dynamic-update="true">
+		<id name="TradingNameId" type="guid" column="TradingNameId">
+			<generator class="guid"></generator>
+		</id>
+		<many-to-one name="Organisation" column="OrganisationId" class="Organisation" not-null="true"/>
+		<property name="Name" column="TradingName" length="300" not-null="true"/>
+		<property name="StartDate" column="TradingNameStartDate"/>
+		<property name="EndDate" column="TradingNameEndDate"/>
+	</class>
+	
+	<class name="ResponsibleLegalPerson" table="tblTrnRtoResponsibleLegalPerson" dynamic-insert="true" dynamic-update="true" >
+		<id name="ResponsibleLegalPersonId" column="ResponsibleLegalPersonId">
+			<generator class="guid"></generator>
+		</id>
+
+		<many-to-one name="Organisation" column="OrganisationId" class="Organisation" not-null="true"/>
+		<property name="StartDate" column="ResponsibleLegalPersonStartDate" not-null="true"/>
+		<property name="EndDate" column="ResponsibleLegalPersonEndDate"/>
+		<property name="Name" column="ResponsibleLegalPersonName" not-null="true"/>
+		<property name="Abn" length="11"/>
+		<property name="Acn" length="9"/>
+	</class>
+	
+
+</hibernate-mapping>
+
