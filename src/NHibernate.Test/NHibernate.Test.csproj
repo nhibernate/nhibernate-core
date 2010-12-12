@@ -438,6 +438,7 @@
     <Compile Include="Linq\QueryCacheableTests.cs" />
     <Compile Include="Linq\QueryReuseTests.cs" />
     <Compile Include="Linq\ReadonlyTestCase.cs" />
+    <Compile Include="Linq\StatelessSessionQueringTest.cs" />
     <Compile Include="Logging\Log4NetLoggerTest.cs" />
     <Compile Include="Logging\LoggerProviderTest.cs" />
     <Compile Include="NHSpecificTest\EntityNameAndCompositeId\Fixture.cs" />

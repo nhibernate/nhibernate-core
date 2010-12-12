@@ -140,14 +140,35 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override IList List(IQueryExpression queryExpression, QueryParameters parameters)
-		{
-			throw new System.NotImplementedException();
-		}
-
 		public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
 		{
-			throw new System.NotImplementedException();
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				queryParameters.ValidateParameters();
+				var plan = GetHQLQueryPlan(queryExpression, false);
+
+				bool success = false;
+				try
+				{
+					plan.PerformList(queryParameters, this, results);
+					success = true;
+				}
+				catch (HibernateException)
+				{
+					// Do not call Convert on HibernateExceptions
+					throw;
+				}
+				catch (Exception e)
+				{
+					throw Convert(e, "Could not execute query");
+				}
+				finally
+				{
+					AfterOperation(success);
+				}
+				temporaryPersistenceContext.Clear();
+			}
 		}
 
 		public override IList<T> List<T>(string query, QueryParameters queryParameters)

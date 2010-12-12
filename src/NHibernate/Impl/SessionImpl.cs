@@ -625,17 +625,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-        public override IList List(IQueryExpression queryExpression, QueryParameters parameters)
-        {
-            IList results = (IList) typeof(List<>).MakeGenericType(queryExpression.Type)
-                                                  .GetConstructor(System.Type.EmptyTypes)
-                                                  .Invoke(null);
-
-            List(queryExpression, parameters, results);
-
-            return results;
-        }
-
         public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
         {
             using (new SessionIdLoggingContext(SessionId))
