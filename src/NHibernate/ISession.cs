@@ -663,13 +663,6 @@ namespace NHibernate
 		/// <param name="queryString">A hibernate query string</param>
 		/// <returns>The query</returns>
 		IQuery CreateQuery(string queryString);
-		
-        /// <summary>
-        /// Create a new instance of <c>Query</c> for the given query expression
-        /// <param name="queryExpression">A hibernate query expression</param>
-        /// <returns>The query</returns>
-        /// </summary>
-        IQuery CreateQuery(IQueryExpression queryExpression);
 
 		/// <summary>
 		/// Create a new instance of <c>Query</c> for the given collection and filter string

@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Engine;
 using Remotion.Data.Linq;
 
 namespace NHibernate.Linq
@@ -10,7 +11,7 @@ namespace NHibernate.Linq
     public class NhQueryable<T> : QueryableBase<T>
     {
         // This constructor is called by our users, create a new IQueryExecutor.
-        public NhQueryable(ISession session)
+        public NhQueryable(ISessionImplementor session)
             : base(new NhQueryProvider(session))
         {
         }
