@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+                   assembly="NHibernate.Test"	
+                   namespace="NHibernate.Test.NHSpecificTest.NH2341">
+
+  <class name="AbstractBA" abstract="true">
+    <id name="Id">
+      <generator class="increment" />
+    </id>
+    <union-subclass name="ConcreteBA">
+      <union-subclass name="ConcreteA" />
+      <union-subclass name="ConcreteB" />
+    </union-subclass>
+  </class>
+</hibernate-mapping>
