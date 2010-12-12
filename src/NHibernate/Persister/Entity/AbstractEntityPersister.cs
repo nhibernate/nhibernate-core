@@ -2772,6 +2772,15 @@ namespace NHibernate.Persister.Entity
 						return Check(session.Batcher.ExecuteNonQuery(statement), id, j, expectation, statement);
 					}
 				}
+				catch (StaleStateException e)
+				{
+					if (useBatch)
+					{
+						session.Batcher.AbortBatch(e);
+					}
+
+					throw new StaleObjectStateException(EntityName, id);
+				}
 				catch (Exception e)
 				{
 					if (useBatch)
