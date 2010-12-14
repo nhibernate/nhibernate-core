@@ -18,6 +18,12 @@ namespace NHibernate.Type
 		private readonly ICompositeUserType userType;
 		private readonly string name;
 
+		public ICompositeUserType UserType
+		{
+			// needed as public by ours Contrib projects
+			get { return userType; }
+		}
+
 		public CompositeCustomType(System.Type userTypeClass, IDictionary<string, string> parameters)
 		{
 			name = userTypeClass.FullName;

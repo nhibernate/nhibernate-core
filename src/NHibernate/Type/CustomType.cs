@@ -24,8 +24,9 @@ namespace NHibernate.Type
 		private readonly SqlType[] sqlTypes;
 
 		/// <summary></summary>
-		protected IUserType UserType
+		public IUserType UserType
 		{
+			// needed as public by ours Contrib projects
 			get { return userType; }
 		}
 
