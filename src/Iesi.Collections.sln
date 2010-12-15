@@ -1,5 +1,5 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iesi.Collections", "Iesi.Collections\Iesi.Collections.csproj", "{4C251E3E-6EA1-4A51-BBCB-F9C42AE55344}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iesi.Collections.Test", "Iesi.Collections.Test\Iesi.Collections.Test.csproj", "{58CE4584-31B9-4E74-A7FB-5D40BFAD0876}"
