@@ -21,6 +21,33 @@ namespace NHibernate.Util
 			return false;
 		}
 
+		public static object First(this IEnumerable source)
+		{
+			if (source == null)
+			{
+				throw new ArgumentNullException("source");
+			}
+			IList collection = source as IList;
+			if (collection != null)
+			{
+				if (collection.Count > 0)
+				{
+					return collection[0];
+				}
+			}
+			else
+			{
+				using (DisposableEnumerator enumerator = source.GetDisposableEnumerator())
+				{
+					if (enumerator.MoveNext())
+					{
+						return enumerator.Current;
+					}
+				}
+			}
+			throw new InvalidOperationException("Sequence contains no elements");
+		}
+
 		private static DisposableEnumerator GetDisposableEnumerator(this IEnumerable source)
 		{
 			return new DisposableEnumerator(source);
