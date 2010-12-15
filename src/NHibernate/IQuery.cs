@@ -255,7 +255,7 @@ namespace NHibernate
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="vals">A collection of values to list</param>
 		/// <param name="type">The NHibernate type of the values</param>
-		IQuery SetParameterList(string name, ICollection vals, IType type);
+		IQuery SetParameterList(string name, IEnumerable vals, IType type);
 
 		/// <summary>
 		/// Bind multiple values to a named query parameter, guessing the NHibernate
@@ -264,26 +264,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="vals">A collection of values to list</param>
-		IQuery SetParameterList(string name, ICollection vals);
-
-		/// <summary>
-		/// Bind multiple values to a named query parameter. This is useful for binding
-		/// a list of values to an expression such as <tt>foo.bar in (:value_list)</tt>.
-		/// </summary>
-		/// <param name="name">the name of the parameter </param>
-		/// <param name="vals">a collection of values to list </param>
-		/// <param name="type">the NHibernate type of the values </param>
-		IQuery SetParameterList(string name, object[] vals, IType type);
-
-		/// <summary>
-		/// Bind multiple values to a named query parameter. The NHibernate type of the parameter is
-		/// first detected via the usage/position in the query and if not sufficient secondly
-		/// guessed from the class of the first object in the array. This is useful for binding a list of values
-		/// to an expression such as <tt>foo.bar in (:value_list)</tt>.
-		/// </summary>
-		/// <param name="name">the name of the parameter </param>
-		/// <param name="vals">a collection of values to list </param>
-		IQuery SetParameterList(string name, object[] vals);
+		IQuery SetParameterList(string name, IEnumerable vals);
 
 		/// <summary>
 		/// Bind the property values of the given object to named parameters of the query,

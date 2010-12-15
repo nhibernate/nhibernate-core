@@ -1,3 +1,7 @@
+** Known BREAKING CHANGES from NH3.0.0.GA to NH3.0.1.GA
+	##### Possible Breaking Changes #####
+		* [NH-2461] - Signature change for IQuery.SetParameterList
+
 ** Known BREAKING CHANGES from NH2.1.1.GA to NH3.0.0.GA
 
 	##### Design time #####

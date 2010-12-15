@@ -648,7 +648,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IQuery SetParameterList(string name, ICollection vals, IType type)
+		public IQuery SetParameterList(string name, IEnumerable vals, IType type)
 		{
 			if (!parameterMetadata.NamedParameterNames.Contains(name))
 			{
@@ -661,7 +661,7 @@ namespace NHibernate.Impl
 			{
 				throw new ArgumentNullException("type","Can't determine the type of parameter-list elements.");
 			}
-			if(vals.Count == 0)
+			if(!vals.Any())
 			{
 				throw new QueryException(string.Format("An empty parameter-list generate wrong SQL; parameter name '{0}'", name));
 			}
@@ -669,7 +669,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IQuery SetParameterList(string name, ICollection vals)
+		public IQuery SetParameterList(string name, IEnumerable vals)
 		{
 			if (vals == null)
 			{
@@ -682,28 +682,9 @@ namespace NHibernate.Impl
 					return this;
 			}
 
-			if (vals.Count == 0)
-			{
-				SetParameterList(name, vals, GuessType(vals.GetCollectionElementType()));
-			}
-			else
-			{
-				IEnumerator iter = vals.GetEnumerator();
-				iter.MoveNext();
-				SetParameterList(name, vals, DetermineType(name, iter.Current));
-			}
+			SetParameterList(name, vals, !vals.Any() ? GuessType(vals.GetCollectionElementType()) : DetermineType(name, vals.First()));
 
 			return this;
-		}
-
-		public IQuery SetParameterList(string name, object[] vals, IType type)
-		{
-			return SetParameterList(name, vals as ICollection, type);
-		}
-
-		public IQuery SetParameterList(string name, object[] vals)
-		{
-			return SetParameterList(name, vals as ICollection);
 		}
 
 		#endregion
