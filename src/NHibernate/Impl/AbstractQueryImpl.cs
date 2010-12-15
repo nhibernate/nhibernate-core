@@ -682,7 +682,8 @@ namespace NHibernate.Impl
 					return this;
 			}
 
-			SetParameterList(name, vals, !vals.Any() ? GuessType(vals.GetCollectionElementType()) : DetermineType(name, vals.First()));
+			object firstValue = vals.FirstOrNull();
+			SetParameterList(name, vals, firstValue == null ? GuessType(vals.GetCollectionElementType()) : DetermineType(name, firstValue));
 
 			return this;
 		}

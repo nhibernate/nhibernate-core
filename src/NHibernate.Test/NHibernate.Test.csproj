@@ -582,6 +582,7 @@
     <Compile Include="TypesTest\XmlDocTypeFixture.cs" />
     <Compile Include="UtilityTest\EnumerableExtensionsTests\AnyExtensionTests.cs" />
     <Compile Include="UtilityTest\EnumerableExtensionsTests\FirstExtensionTests.cs" />
+    <Compile Include="UtilityTest\EnumerableExtensionsTests\FirstOrNullExtensionTests.cs" />
     <Compile Include="UtilityTest\ReflectionHelperIsMethodOfTests.cs" />
     <Compile Include="UtilityTest\ReflectionHelperTest.cs" />
     <Compile Include="Linq\RegresstionTests.cs" />
