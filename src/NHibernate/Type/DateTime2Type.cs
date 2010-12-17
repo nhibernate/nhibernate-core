@@ -51,5 +51,15 @@ namespace NHibernate.Type
 
 			return x.Equals(y);
 		}
+
+		public override object Next(object current, Engine.ISessionImplementor session)
+		{
+			return Seed(session);
+		}
+
+		public override object Seed(Engine.ISessionImplementor session)
+		{
+			return DateTime.Now;
+		}
 	}
 }
