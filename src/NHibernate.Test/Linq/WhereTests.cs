@@ -491,5 +491,25 @@ namespace NHibernate.Test.Linq
             Assert.AreEqual(3, query.Count);
         }
 
+        [Test]
+        public void OfTypeWithWhereAndProjection()
+        {
+            // NH-2375
+            (from a
+                in session.Query<Animal>().OfType<Cat>()
+             where a.Pregnant
+             select a.Id).FirstOrDefault();
+        }
+
+        [Test]
+        public void OfTypeWithWhere()
+        {
+            // NH-2375
+            (from a
+                in session.Query<Animal>().OfType<Cat>()
+             where a.Pregnant
+             select a).FirstOrDefault();
+        }
+
     }
 }

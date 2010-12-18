@@ -56,12 +56,32 @@ namespace NHibernate.Test.Linq
             Assert.IsTrue(NHibernateUtil.IsInitialized(x[0].Orders.First().OrderLines));
         }
 
-				[Test]
-				public void WhenFetchSuperclassCollectionThenNotThrows()
-				{
-					// NH-2277
-					session.Executing(s => s.Query<Lizard>().Fetch(x => x.Children).ToList()).NotThrows();
-					session.Close();
-				} 
+        [Test]
+        public void WhenFetchSuperclassCollectionThenNotThrows()
+        {
+            // NH-2277
+            session.Executing(s => s.Query<Lizard>().Fetch(x => x.Children).ToList()).NotThrows();
+            session.Close();
+        }
+
+        [Test]
+        public void FetchWithWhere()
+        {
+            // NH-2381
+            (from p
+                in session.Query<Product>().Fetch(a => a.Supplier)
+             where p.ProductId == 1
+             select p).ToList();
+        }
+
+        [Test]
+        public void FetchManyWithWhere()
+        {
+            // NH-2381
+            (from s
+                in session.Query<Supplier>().FetchMany(a => a.Products)
+             where s.SupplierId == 1
+             select s).ToList();
+        }
     }
 }
