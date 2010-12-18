@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+ assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH2037">
+
+			<class name="Country" table="Countries">
+			<id name="Id">
+						<generator class="identity"/>
+			</id>
+			<property name="Name" />
+		</class>
+
+		<class name="City" table="Cities">
+			<id name="Id">
+				<generator class="identity"/>
+			</id>
+			<natural-id>
+					<many-to-one name="Country" class="Country" />
+					<property name="CityCode" />
+			
+			</natural-id>
+			<property name="Name" />
+			</class>
+
+</hibernate-mapping>

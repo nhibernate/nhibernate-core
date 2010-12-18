@@ -4066,6 +4066,10 @@ namespace NHibernate.Persister.Entity
 					{
 						snapshot[i] =
 							extractionTypes[i].Hydrate(rs, GetPropertyAliases(string.Empty, naturalIdPropertyIndexes[i]), session, null);
+						if (extractionTypes[i].IsEntityType)
+						{
+							snapshot[i] = extractionTypes[i].ResolveIdentifier(snapshot[i], session, null);
+						}
 					}
 					return snapshot;
 				}
