@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace NHibernate.Test.Linq
 {
@@ -192,6 +193,21 @@ namespace NHibernate.Test.Linq
             Assert.IsTrue(query[1].Title.StartsWith("User rahien logged in at"));
             Assert.IsTrue(query[2].Title.StartsWith("User nhibernate logged in at"));
         }
+
+				[Test]
+				public void CanUseConstantStringInProjection()
+				{
+					var query = from user in db.Users
+											select new
+											{
+												user.Name,
+												Category = "something"
+											};
+
+					var firstUser = query.First();
+					Assert.IsNotNull(firstUser);
+					firstUser.Category.Should().Be("something");
+				}
 
         private string FormatName(string name, DateTime? lastLoginDate)
         {
