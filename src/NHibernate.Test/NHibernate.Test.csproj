@@ -480,6 +480,7 @@
     <Compile Include="NHSpecificTest\NH2111\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2112\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2112\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2118\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2138\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2147\DefaultBatchSize.cs" />
     <Compile Include="NHSpecificTest\NH2148\BugFixture.cs" />
@@ -2357,6 +2358,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2118\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2362\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2244\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2394\Mappings.hbm.xml" />
