@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Threading;
+using NHibernate.Engine;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace NHibernate.Test.Stateless
 {
@@ -174,6 +176,17 @@ namespace NHibernate.Test.Stateless
 					ss.Delete(paper);
 					tx.Commit();
 				}
+			}
+		}
+
+		[Test]
+		public void WhenSetTheBatchSizeThenSetTheBatchSizeOfTheBatcher()
+		{
+			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			{
+				ss.SetBatchSize(37);
+				var impl = (ISessionImplementor)ss;
+				impl.Batcher.BatchSize.Should().Be(37);
 			}
 		}
 	}

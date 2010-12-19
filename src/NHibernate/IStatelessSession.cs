@@ -210,5 +210,12 @@ namespace NHibernate
 		/// application should not close the connection.
 		/// </remarks>
 		IDbConnection Connection { get; }
+
+		/// <summary>
+		/// Sets the batch size of the session
+		/// </summary>
+		/// <param name="batchSize">The batch size.</param>
+		/// <returns>The same instance of the session for mthods chain.</returns>
+		IStatelessSession SetBatchSize(int batchSize);
 	}
 }

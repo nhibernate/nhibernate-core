@@ -490,6 +490,12 @@ namespace NHibernate.Impl
 			get { return connectionManager.GetConnection(); }
 		}
 
+		public IStatelessSession SetBatchSize(int batchSize)
+		{
+			Batcher.BatchSize = batchSize;
+			return this;
+		}
+
 		public override void Flush()
 		{
 			using (new SessionIdLoggingContext(SessionId))
