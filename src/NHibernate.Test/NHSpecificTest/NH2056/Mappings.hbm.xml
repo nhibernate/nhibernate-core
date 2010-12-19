@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.NH2056">
+
+  <class entity-name="Base" table="tbl_base">
+    <id name="ID" type="long">
+      <generator class="hilo" />
+    </id>
+    <property name="BaseF1"  type="string"/>
+    <property name="BaseF2"  type="string"/>
+  </class>
+  <joined-subclass entity-name="Address" extends="Base">
+    <key column="ID2"/>
+    <property name="AddressF1" type="string"/>
+    <property name="AddressF2"  type="string"/>
+  </joined-subclass>
+
+</hibernate-mapping>
