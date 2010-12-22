@@ -1,6 +1,8 @@
 using System;
 using System.Data;
 
+using NHibernate.Engine;
+
 namespace NHibernate
 {
 	/// <summary>
@@ -23,6 +25,18 @@ namespace NHibernate
 	{
 		/// <summary> Get the current Hibernate transaction.</summary>
 		ITransaction Transaction { get;}
+
+		/// <summary>
+		/// Gets the stateless session implementation.
+		/// </summary>
+		/// <remarks>
+		/// This method is provided in order to get the <b>NHibernate</b> implementation of the session from wrapper implementations.
+		/// Implementors of the <seealso cref="IStatelessSession"/> interface should return the NHibernate implementation of this method.
+		/// </remarks>
+		/// <returns>
+		/// An NHibernate implementation of the <seealso cref="ISessionImplementor"/> interface 
+		/// </returns>
+		ISessionImplementor GetSessionImplementation();
 
 		/// <summary> Close the stateless session and release the ADO.NET connection.</summary>
 		void Close();

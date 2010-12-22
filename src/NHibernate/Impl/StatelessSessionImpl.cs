@@ -543,6 +543,21 @@ namespace NHibernate.Impl
 			set { }
 		}
 
+		/// <summary>
+		/// Gets the stateless session implementation.
+		/// </summary>
+		/// <remarks>
+		/// This method is provided in order to get the <b>NHibernate</b> implementation of the session from wrapper implementations.
+		/// Implementors of the <seealso cref="IStatelessSession"/> interface should return the NHibernate implementation of this method.
+		/// </remarks>
+		/// <returns>
+		/// An NHibernate implementation of the <seealso cref="ISessionImplementor"/> interface 
+		/// </returns>
+		public ISessionImplementor GetSessionImplementation()
+		{
+			return this;
+		}
+
 		/// <summary> Close the stateless session and release the ADO.NET connection.</summary>
 		public void Close()
 		{

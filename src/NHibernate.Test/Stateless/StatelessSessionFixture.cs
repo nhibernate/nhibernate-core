@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Threading;
+using NHibernate.Criterion;
 using NHibernate.Engine;
 using NUnit.Framework;
 using SharpTestsEx;
@@ -187,6 +188,27 @@ namespace NHibernate.Test.Stateless
 				ss.SetBatchSize(37);
 				var impl = (ISessionImplementor)ss;
 				impl.Batcher.BatchSize.Should().Be(37);
+			}
+		}
+
+		[Test]
+		public void CanGetImplementor()
+		{
+			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			{
+				ss.GetSessionImplementation().Should().Be.SameInstanceAs(ss);
+			}
+		}
+
+		[Test]
+		public void HavingDetachedCriteriaThenCanGetExecutableCriteriaFromStatelessSession()
+		{
+			var dc = DetachedCriteria.For<Paper>();
+			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			{
+				ICriteria criteria = null;
+				Executing.This(()=> criteria = dc.GetExecutableCriteria(ss)).Should().NotThrow();
+				criteria.Executing(c => c.List()).NotThrows();
 			}
 		}
 	}

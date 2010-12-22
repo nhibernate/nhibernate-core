@@ -71,7 +71,7 @@ namespace NHibernate.Criterion
 		/// to actually run the query.</summary>
 		public ICriteria GetExecutableCriteria(IStatelessSession session)
 		{
-			impl.Session = (ISessionImplementor)session;
+			impl.Session = session.GetSessionImplementation();
 			return impl;
 		}
 
