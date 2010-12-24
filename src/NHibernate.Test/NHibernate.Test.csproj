@@ -574,6 +574,11 @@
     <Compile Include="NHSpecificTest\NH2420\MyTable.cs" />
     <Compile Include="NHSpecificTest\NH2441\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2441\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2470\Class1Class2Classes.cs" />
+    <Compile Include="NHSpecificTest\NH2470\Class1Class2DTOs.cs" />
+    <Compile Include="NHSpecificTest\NH2470\Class1Class2Tests.cs" />
+    <Compile Include="NHSpecificTest\NH2470\DomainObject.cs" />
+    <Compile Include="NHSpecificTest\NH2470\DTO.cs" />
     <Compile Include="NHSpecificTest\Properties\CompositePropertyRefTest.cs" />
     <Compile Include="NHSpecificTest\Properties\DynamicEntityTest.cs" />
     <Compile Include="NHSpecificTest\Properties\Model.cs" />
@@ -2363,6 +2368,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2470\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2056\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2043\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2037\Mappings.hbm.xml" />
