@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Reflection;
 using System.Text;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -196,9 +197,41 @@ namespace NHibernate.Util
 		// NH-specific
 		public static void AddAll(IList to, IList from)
 		{
+			System.Action addNull = null;
 			foreach (object obj in from)
 			{
-				to.Add(obj);
+				// There is bug in .NET, before version 4, where adding null to a List<Nullable<T>> through the non-generic IList interface throws an exception.
+				// TODO: Everything but the to.Add(obj) should should be conditionally compiled only for versions of .NET earlier than 4.
+				if (obj == null)
+				{
+					if (addNull == null)
+					{
+						if (to.GetType().IsGenericType &&
+							to.GetType().GetGenericTypeDefinition() == typeof(List<>) &&
+							to.GetType().GetGenericArguments()[0].IsGenericType &&
+							to.GetType().GetGenericArguments()[0].GetGenericTypeDefinition() == typeof(Nullable<>))
+						{
+							MethodInfo addMethod = to.GetType().GetMethod("Add");
+							System.Linq.Expressions.MethodCallExpression addMethodCall =
+								System.Linq.Expressions.Expression.Call(System.Linq.Expressions.Expression.Constant(to),
+																		addMethod,
+																		System.Linq.Expressions.Expression.Constant(null, to.GetType().GetGenericArguments()[0]));
+							System.Linq.Expressions.LambdaExpression addLambda =
+								System.Linq.Expressions.Expression.Lambda(addMethodCall);
+
+							addNull = (System.Action) addLambda.Compile();
+						}
+						else
+						{
+							addNull = () => to.Add(null);
+						}
+					}
+					addNull();
+				}
+				else
+				{
+					to.Add(obj);
+				}
 			}
 		}
 
