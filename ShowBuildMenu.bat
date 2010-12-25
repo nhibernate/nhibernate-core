@@ -17,7 +17,12 @@ echo E.  Build NHibernate (Debug)
 echo F.  Build NHibernate (Release)
 echo G.  Build Release Package (Also runs tests and creates documentation)
 echo.
-choice /C abcdefg
+
+if exist %SYSTEMROOT%\System32\choice.exe ( goto prompt-choice )
+goto prompt-set
+
+:prompt-choice
+choice /C:abcdefg
 
 if errorlevel 255 goto end
 if errorlevel 7 goto build-release-package
@@ -28,6 +33,18 @@ if errorlevel 3 goto help-larger-window
 if errorlevel 2 goto help-test-setup
 if errorlevel 1 goto build-visual-studio
 if errorlevel 0 goto end
+
+:prompt-set
+set /p OPT=[A, B, C, D, E, F, G]? 
+
+if /I "%OPT%"=="A" goto build-visual-studio
+if /I "%OPT%"=="B" goto help-test-setup
+if /I "%OPT%"=="C" goto help-larger-window
+if /I "%OPT%"=="D" goto build-test
+if /I "%OPT%"=="E" goto build-debug
+if /I "%OPT%"=="F" goto build-release
+if /I "%OPT%"=="G" goto build-release-package
+goto prompt-set
 
 :help-test-setup
 echo.
