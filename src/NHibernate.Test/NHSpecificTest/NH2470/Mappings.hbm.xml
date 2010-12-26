@@ -12,7 +12,7 @@
     <version name="EntityVersion"/>
 
     <!-- NH2470 - I used to have inverse="true" here -->
-    <idbag name="Class2List" table="Class1_Class2" access="field.camelcase-underscore">
+    <idbag name="Class2List" table="Class1_Class2" inverse="true" access="field.camelcase-underscore">
       <collection-id column="ID" type="Guid">
         <generator class="guid.comb" />
       </collection-id>
