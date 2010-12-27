@@ -457,6 +457,8 @@
     <Compile Include="Linq\SumTests.cs" />
     <Compile Include="Logging\Log4NetLoggerTest.cs" />
     <Compile Include="Logging\LoggerProviderTest.cs" />
+    <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
+    <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
     <Compile Include="NHSpecificTest\EntityNameAndCompositeId\Fixture.cs" />
     <Compile Include="NHSpecificTest\EntityNameWithFullName\Fixture.cs" />
     <Compile Include="NHSpecificTest\Futures\LinqFutureFixture.cs" />
@@ -2369,6 +2371,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\BagWithLazyExtraAndFilter\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2470\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2056\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2043\Mappings.hbm.xml" />
