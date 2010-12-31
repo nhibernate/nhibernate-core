@@ -1342,6 +1342,7 @@
 					<xs:element ref="one-to-one" />
 					<xs:element ref="component" />
 					<xs:element ref="dynamic-component" />
+					<xs:element ref="properties" />
 					<xs:element ref="any" />
 					<xs:element ref="map" />
 					<xs:element ref="set" />
