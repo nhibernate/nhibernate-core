@@ -378,5 +378,25 @@ namespace NHibernate.Util
 
 			return true;
 		}
+
+		public static bool ArrayEquals(byte[] a, byte[] b)
+		{
+			if (a.Length != b.Length)
+			{
+				return false;
+			}
+
+			int i = 0;
+			int len = a.Length;
+			while(i < len)
+			{
+				if (a[i] != b[i])
+				{
+					return false;
+				}
+				i++;
+			}
+			return true;
+		}
 	}
 }
