@@ -104,6 +104,39 @@ namespace NHibernate.Test.HQL.Ast
 			}
 		}
 
+		[Test]
+		public void MultipleParametersInCaseStatement()
+		{
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.Save(new Animal { BodyWeight = 12, Description = "Polliwog" });
+				s.Transaction.Commit();
+			}
+
+			try
+			{
+				using (ISession s = OpenSession())
+				{
+					var result = s.CreateQuery("select case when 'b' = ? then 2 when 'b' = ? then 1 else 0 end from Animal a")
+						.SetParameter(0, "a")
+						.SetParameter(1, "b")
+						.SetMaxResults(1)
+						.UniqueResult();
+					Assert.AreEqual(1, result);
+				}
+			}
+			finally
+			{
+				using (ISession s = OpenSession())
+				using (s.BeginTransaction())
+				{
+					s.CreateQuery("delete from Animal").ExecuteUpdate();
+					s.Transaction.Commit();
+				}
+			}
+		}
+
 		[Test, Ignore("Not fixed yet.")]
 		public void SumShouldReturnDouble()
 		{
