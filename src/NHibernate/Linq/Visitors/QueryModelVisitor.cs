@@ -45,6 +45,9 @@ namespace NHibernate.Linq.Visitors
             // Add left joins for references
 		    AddLeftJoinsReWriter.ReWrite(queryModel, parameters.SessionFactory);
 
+			// Move OrderBy clauses to end
+			MoveOrderByToEndRewriter.ReWrite(queryModel);
+
             // rewrite any operators that should be applied on the outer query
             // by flattening out the sub-queries that they are located in
 		    ResultOperatorRewriterResult result = ResultOperatorRewriter.Rewrite(queryModel);

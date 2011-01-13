@@ -496,6 +496,8 @@
     <Compile Include="NHSpecificTest\NH2188\AppDomainWithMultipleSearchPath.cs" />
     <Compile Include="NHSpecificTest\NH2202\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2202\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2203\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH2203\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2224\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2224\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2228\Domain.cs" />
@@ -2371,6 +2373,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2203\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\BagWithLazyExtraAndFilter\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2470\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2056\Mappings.hbm.xml" />
