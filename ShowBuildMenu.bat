@@ -1,6 +1,5 @@
 @echo off
-set OLD_CD=%CD%
-cd %~dp0
+pushd %~dp0
 
 set NANT=Tools\nant\bin\NAnt.exe -t:net-3.5
 
@@ -16,15 +15,17 @@ echo --- BUILD ---
 echo E.  Build NHibernate (Debug)
 echo F.  Build NHibernate (Release)
 echo G.  Build Release Package (Also runs tests and creates documentation)
+echo H.  Run Antlr on Hql.g to regenerate HqlParser.cs and HqlLexer.cs.
 echo.
 
 if exist %SYSTEMROOT%\System32\choice.exe ( goto prompt-choice )
 goto prompt-set
 
 :prompt-choice
-choice /C:abcdefg
+choice /C:abcdefgh
 
 if errorlevel 255 goto end
+if errorlevel 8 goto antlr-hql
 if errorlevel 7 goto build-release-package
 if errorlevel 6 goto build-release
 if errorlevel 5 goto build-debug
@@ -35,7 +36,7 @@ if errorlevel 1 goto build-visual-studio
 if errorlevel 0 goto end
 
 :prompt-set
-set /p OPT=[A, B, C, D, E, F, G]? 
+set /p OPT=[A, B, C, D, E, F, G, H]? 
 
 if /I "%OPT%"=="A" goto build-visual-studio
 if /I "%OPT%"=="B" goto help-test-setup
@@ -44,6 +45,7 @@ if /I "%OPT%"=="D" goto build-test
 if /I "%OPT%"=="E" goto build-debug
 if /I "%OPT%"=="F" goto build-release
 if /I "%OPT%"=="G" goto build-release-package
+if /I "%OPT%"=="H" goto antlr-hql
 goto prompt-set
 
 :help-test-setup
@@ -105,6 +107,11 @@ goto end
 %NANT% test
 goto end
 
+:antlr-hql
+rem NANT is 32-bit and refuses to run 64-bit Java, so we just use a batch file instead. :(
+call Tools\Antlr\AntlrHql.bat
+goto end
+
 :end
-cd %OLD_CD%
+popd
 pause
