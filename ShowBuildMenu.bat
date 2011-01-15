@@ -15,7 +15,9 @@ echo --- BUILD ---
 echo E.  Build NHibernate (Debug)
 echo F.  Build NHibernate (Release)
 echo G.  Build Release Package (Also runs tests and creates documentation)
-echo H.  Run Antlr on Hql.g to regenerate HqlParser.cs and HqlLexer.cs.
+echo.
+echo --- GRAMMAR ---
+echo H.  Grammar operations (related to Hql.g and HqlSqlWalker.g)
 echo.
 
 if exist %SYSTEMROOT%\System32\choice.exe ( goto prompt-choice )
@@ -25,7 +27,7 @@ goto prompt-set
 choice /C:abcdefgh
 
 if errorlevel 255 goto end
-if errorlevel 8 goto antlr-hql
+if errorlevel 8 goto grammar
 if errorlevel 7 goto build-release-package
 if errorlevel 6 goto build-release
 if errorlevel 5 goto build-debug
@@ -45,7 +47,7 @@ if /I "%OPT%"=="D" goto build-test
 if /I "%OPT%"=="E" goto build-debug
 if /I "%OPT%"=="F" goto build-release
 if /I "%OPT%"=="G" goto build-release-package
-if /I "%OPT%"=="H" goto antlr-hql
+if /I "%OPT%"=="H" goto grammar
 goto prompt-set
 
 :help-test-setup
@@ -107,9 +109,63 @@ goto end
 %NANT% test
 goto end
 
+:grammar
+echo.
+echo --- GRAMMAR ---
+echo A.  Regenerate HqlLexer.cs and HqlParser.cs from Hql.g.
+echo B.  Regenerate HqlSqlWalker.cs from HqlSqlWalker.g.
+echo C.  Regenerate Hql.g in debug mode.
+echo D.  Regenerate HqlSqlWalker.g in debug mode.
+echo E.  Quick instructions on using debug mode.
+echo.
+
+if exist %SYSTEMROOT%\System32\choice.exe ( goto grammar-prompt-choice )
+goto grammar-prompt-set
+
+:grammar-prompt-choice
+choice /C:abcde
+
+if errorlevel 255 goto end
+if errorlevel 5 goto antlr-debug
+if errorlevel 4 goto antlr-hqlsqlwalker-debug
+if errorlevel 3 goto antlr-hql-debug
+if errorlevel 2 goto antlr-hqlsqlwalker
+if errorlevel 1 goto antlr-hql
+if errorlevel 0 goto end
+
+:grammar-prompt-set
+set /p OPT=[A, B, C, D, E]? 
+
+if /I "%OPT%"=="A" goto antlr-hql
+if /I "%OPT%"=="B" goto antlr-hqlsqlwalker
+if /I "%OPT%"=="C" goto antlr-hql-debug
+if /I "%OPT%"=="D" goto antlr-hqlsqlwalker-debug
+if /I "%OPT%"=="E" goto antlr-debug
+goto grammar-prompt-set
+
 :antlr-hql
-rem NANT is 32-bit and refuses to run 64-bit Java, so we just use a batch file instead. :(
-call Tools\Antlr\AntlrHql.bat
+call src\NHibernate\Hql\Ast\ANTLR\AntlrHql.bat
+goto end
+
+:antlr-hqlsqlwalker
+call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalker.bat
+goto end
+
+:antlr-hql-debug
+call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlDebug.bat
+goto end
+
+:antlr-hqlsqlwalker-debug
+call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalkerDebug.bat
+goto end
+
+:antlr-debug
+echo To use the debug grammar:
+echo   1.  Create a unit test that runs the hql parser on the input you're interested in.
+echo   2.  Run the unit test.  It will appear to stall.
+echo   3.  Download and run AntlrWorks.
+echo   4.  Choose "Debug Remote" and allow the default ports.
+echo   5.  You should now be connected and able to step through your grammar.
 goto end
 
 :end
