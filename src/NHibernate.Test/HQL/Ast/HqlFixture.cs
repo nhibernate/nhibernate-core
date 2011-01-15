@@ -200,6 +200,36 @@ namespace NHibernate.Test.HQL.Ast
 			}
 		}
 
+		[Test]
+		public void SubselectAddition()
+		{
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.Save(new Animal { BodyWeight = 12, Description = "Polliwog" });
+				s.Transaction.Commit();
+			}
+
+			try
+			{
+				using (ISession s = OpenSession())
+				{
+					var result = s.CreateQuery("select count(a) from Animal a where (select count(a2) from Animal a2) + 1 > 1")
+						.UniqueResult();
+					Assert.AreEqual(1, result);
+				}
+			}
+			finally
+			{
+				using (ISession s = OpenSession())
+				using (s.BeginTransaction())
+				{
+					s.CreateQuery("delete from Animal").ExecuteUpdate();
+					s.Transaction.Commit();
+				}
+			}
+		}
+
 		[Test, Ignore("Not fixed yet.")]
 		public void SumShouldReturnDouble()
 		{

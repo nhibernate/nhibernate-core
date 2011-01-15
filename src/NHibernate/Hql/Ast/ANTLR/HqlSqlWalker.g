@@ -371,16 +371,16 @@ arithmeticExpr
 			PrepareArithmeticOperator( $arithmeticExpr.tree );
 		}
 	}
-	: ^(PLUS expr expr)
-	| ^(MINUS expr expr)
-	| ^(DIV expr expr)
-	| ^(STAR expr expr)
-	| ^(BNOT expr)
-	| ^(BAND expr expr)
-	| ^(BOR expr expr)
-	| ^(BXOR expr expr)
-//	| ^(CONCAT expr (expr)+ )
-	| ^(UNARY_MINUS expr)
+	: ^(PLUS exprOrSubquery exprOrSubquery)
+	| ^(MINUS exprOrSubquery exprOrSubquery)
+	| ^(DIV exprOrSubquery exprOrSubquery)
+	| ^(STAR exprOrSubquery exprOrSubquery)
+	| ^(BNOT exprOrSubquery)
+	| ^(BAND exprOrSubquery exprOrSubquery)
+	| ^(BOR exprOrSubquery exprOrSubquery)
+	| ^(BXOR exprOrSubquery exprOrSubquery)
+//	| ^(CONCAT exprOrSubquery (exprOrSubquery)+ )
+	| ^(UNARY_MINUS exprOrSubquery)
 	| c=caseExpr
 	;
 
