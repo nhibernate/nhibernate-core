@@ -423,6 +423,7 @@
     <Compile Include="LazyProperty\Book.cs" />
     <Compile Include="LazyProperty\LazyPropertyFixture.cs" />
     <Compile Include="Linq\AggregateTests.cs" />
+    <Compile Include="Linq\AnyTests.cs" />
     <Compile Include="Linq\BinaryBooleanExpressionTests.cs" />
     <Compile Include="Linq\BinaryExpressionOrdererTests.cs" />
     <Compile Include="Linq\BooleanMethodExtensionExample.cs" />
