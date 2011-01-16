@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 
-namespace NHibernate.Test.Linq
+namespace NHibernate.Test.Linq.ByMethod
 {
 	[TestFixture]
 	public class SumTests : LinqTestCase

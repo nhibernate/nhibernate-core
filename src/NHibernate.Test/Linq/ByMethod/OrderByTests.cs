@@ -1,7 +1,7 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace NHibernate.Test.Linq
+namespace NHibernate.Test.Linq.ByMethod
 {
     [TestFixture]
     public class OrderByTests : LinqTestCase
