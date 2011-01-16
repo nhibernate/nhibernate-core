@@ -4,10 +4,10 @@ using NHibernate.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.NH2362
 {
-	[Ignore("Not fixed yet.")]
 	public class Fixture : BugTestCase
 	{
 		[Test]
+		[Ignore("Not working yet.")]
 		public void CanParseMultipleGroupByAndSelect()
 		{
 			using (var session = OpenSession())

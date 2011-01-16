@@ -786,7 +786,7 @@ namespace NHibernate.Hql.Ast
 
 	public class HqlGroupBy : HqlStatement
 	{
-		public HqlGroupBy(IASTFactory factory, HqlExpression expression) : base(HqlSqlWalker.GROUP, "group by", factory, expression)
+		public HqlGroupBy(IASTFactory factory, params HqlExpression[] expressions) : base(HqlSqlWalker.GROUP, "group by", factory, expressions)
 		{
 		}
 	}
