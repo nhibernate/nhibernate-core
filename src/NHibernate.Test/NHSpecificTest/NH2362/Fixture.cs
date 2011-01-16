@@ -7,7 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2362
 	public class Fixture : BugTestCase
 	{
 		[Test]
-		[Ignore("Not working yet.")]
 		public void CanParseMultipleGroupByAndSelect()
 		{
 			using (var session = OpenSession())
