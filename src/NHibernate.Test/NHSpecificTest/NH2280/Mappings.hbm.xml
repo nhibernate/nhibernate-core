@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH2280">
+	<class name="Organisation" abstract="false" table="tblTrnOrganisation">
+		<id name="OrganisationId">
+			<generator class="guid"></generator>
+		</id>
+		<property name="LegalName" column="OrganisationLegalName"/>
+		<property name="Abn" />
+		<property name="Acn" />
+
+		<set name="Codes" table="tblTrnRtoCode" cascade="all-delete-orphan" inverse="true" >
+			<key column="OrganisationId"/>
+			<one-to-many class="OrganisationCode"/>
+		</set>
+	</class>
+
+	<class name="OrganisationCode" table="tblTrnRtoCode" dynamic-insert="true" dynamic-update="true">
+		<composite-id class="NHibernate.Test.NHSpecificTest.NH2280.OrganisationCodeKey, NHibernate.Test" name="Key" >
+			<key-many-to-one column="OrganisationId" class="Organisation" name="Organisation"/>
+			<key-property column="RtoCode" name="Code"/>
+			<key-property column="RtoCodeStartDate" name="StartDate"/>
+		</composite-id>
+		<property name="EndDate" column="RtoCodeEndDate"/>
+	</class>
+</hibernate-mapping>
+
