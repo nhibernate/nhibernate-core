@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Iesi.Collections;
 
@@ -286,6 +287,7 @@ namespace NHibernate.Engine
 			}
 		}
 
+		[Obsolete("Replaced by MergeCascadingAction")]
 		private class SaveUpdateCopyCascadingAction : CascadingAction
 		{
 			// for deprecated saveOrUpdateCopy()

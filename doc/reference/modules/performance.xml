@@ -481,7 +481,7 @@ ICat fritz = (ICat) iter.Current;]]></programlisting>
                 <listitem>
                     <para>
                         You may also attach a previously loaded object to a new <literal>ISession</literal>
-                        with <literal>SaveOrUpdateCopy()</literal> or <literal>Lock()</literal> before
+                        with <literal>Merge()</literal> or <literal>Lock()</literal> before
                         accessing uninitialized collections (or other proxies). No, NHibernate does not,
                         and certainly <emphasis>should</emphasis> not do this automatically, since it 
                         would introduce ad hoc transaction semantics!

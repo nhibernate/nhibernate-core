@@ -956,6 +956,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary> Cascade copy an entity instance</summary>
+		[Obsolete("Use Merge(string, object, IDictionary) instead")]
 		public void SaveOrUpdateCopy(string entityName, object obj, IDictionary copiedAlready)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -2103,11 +2104,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
+		[Obsolete("Use Merge(object) instead")]
 		public object SaveOrUpdateCopy(object obj)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -2116,6 +2113,7 @@ namespace NHibernate.Impl
 			}
 		}
 
+		[Obsolete("No direct replacement. Use Merge instead.")]
 		public object SaveOrUpdateCopy(object obj, object id)
 		{
 			using (new SessionIdLoggingContext(SessionId))

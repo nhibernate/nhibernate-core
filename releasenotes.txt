@@ -1,5 +1,8 @@
 ** Known BREAKING CHANGES from NH3.0.0.GA to NH3.0.1.GA
 
+	##### Design time #####
+		* [NH-2481] - Deprecated: ISession.SaveOrUpdateCopy methods - use ISession.Merge methods instead
+
 	##### Run time #####
 		* [NH-2481] - An exception will now be thrown when an entity references a transient entity and cascade="merge|all" is not configured on the association
 

@@ -420,7 +420,7 @@ namespace NHibernate
 		/// The semantics of this method are defined by JSR-220.
 		/// <param name="entityName">Name of the entity.</param>
 		/// <param name="obj">a detached instance with state to be copied </param>
-		/// 	<returns> an updated persistent instance </returns>
+		/// <returns> an updated persistent instance </returns>
 		/// </summary>
 		/// <returns></returns>
 		object Merge(string entityName, object obj);
@@ -452,6 +452,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="obj">a transient instance with state to be copied</param>
 		/// <returns>an updated persistent instance</returns>
+		[Obsolete("Use Merge(object) instead")]
 		object SaveOrUpdateCopy(object obj);
 
 		/// <summary>
@@ -465,6 +466,7 @@ namespace NHibernate
 		/// <param name="obj">a persistent or transient instance with state to be copied</param>
 		/// <param name="id">the identifier of the instance to copy to</param>
 		/// <returns>an updated persistent instance</returns>
+		[Obsolete("No direct replacement. Use Merge instead.")]
 		object SaveOrUpdateCopy(object obj, object id);
 
 		/// <summary>
