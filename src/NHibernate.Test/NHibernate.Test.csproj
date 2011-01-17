@@ -579,6 +579,9 @@
     <Compile Include="NHSpecificTest\NH2409\Message.cs" />
     <Compile Include="NHSpecificTest\NH2409\MessageReading.cs" />
     <Compile Include="NHSpecificTest\NH2409\User.cs" />
+    <Compile Include="NHSpecificTest\NH2412\Order.cs" />
+    <Compile Include="NHSpecificTest\NH2412\Customer.cs" />
+    <Compile Include="NHSpecificTest\NH2412\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2420\DummyEnlistment.cs" />
     <Compile Include="NHSpecificTest\NH2420\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2420\MyTable.cs" />
@@ -2378,6 +2381,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2412\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2280\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2203\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\BagWithLazyExtraAndFilter\Mappings.hbm.xml" />
