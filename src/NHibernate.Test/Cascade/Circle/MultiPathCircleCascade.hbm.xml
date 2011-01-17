@@ -1,0 +1,95 @@
+﻿<?xml version="1.0"?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.Cascade.Circle">
+
+	<class name="Route" table="HB_Route">
+
+		<id name="RouteId" type="long">
+			<generator class="native" />
+		</id>
+
+		<property name="Name" type="string" not-null="true" />
+
+		<set name="Nodes" inverse="true" cascade="persist,merge,refresh">
+			<key column="RouteId" />
+			<one-to-many class="Node" />
+		</set>
+	
+	</class>
+
+	<class name="Tour" table="HB_Tour">
+
+		<id name="TourId" type="long">
+			<generator class="native" />
+		</id>
+		
+		<property name="Name" type="string" not-null="true" />
+
+		<set name="Nodes" inverse="true" lazy="true" cascade="merge,refresh">
+			<key column="TourId" />
+			<one-to-many class="Node" />
+		</set>
+	
+	</class>
+	
+	<class name="Transport" table="HB_Transport">
+
+		<id name="TransportId" type="long">
+			<generator class="native" />
+		</id>
+		
+		<property name="Name" type="string" not-null="true" />
+
+		<many-to-one name="PickupNode"
+			column="PickupNodeId"
+			unique="true"
+			not-null="true"
+			cascade="merge,refresh"
+			lazy="false" />
+
+		<many-to-one name="DeliveryNode"
+			column="DeliveryNodeId"
+			unique="true"
+			not-null="true"
+			cascade="merge,refresh"
+			lazy="false" />
+	
+	</class>
+
+	<class name="Node" table="HB_Node">
+
+		<id name="NodeId" type="long">
+			<generator class="native" />
+		</id>
+
+		<property name="Name" type="string" not-null="true" />
+
+		 <set name="DeliveryTransports" inverse="true" lazy="true" cascade="merge,refresh">
+			<key column="DeliveryNodeId" />
+			<one-to-many class="Transport" />
+		</set>
+
+		<set name="PickupTransports" inverse="true" lazy="true" cascade="merge,refresh">
+			<key column="PickupNodeId" />
+			<one-to-many class="Transport" />
+		</set>
+
+		<many-to-one name="Route"
+			column="RouteId"
+			unique="false"
+			not-null="true"
+			cascade="none"
+			lazy="false" />
+
+		<many-to-one name="Tour"
+			column="TourId"
+			unique="false"
+			not-null="false"
+			cascade="merge,refresh"
+			lazy="false" />
+
+	</class>
+
+</hibernate-mapping>

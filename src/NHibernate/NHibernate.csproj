@@ -165,6 +165,7 @@
     <Compile Include="Engine\TypedValue.cs" />
     <Compile Include="Engine\UnsavedValueFactory.cs" />
     <Compile Include="Engine\Versioning.cs" />
+    <Compile Include="Event\Default\EventCache.cs" />
     <Compile Include="Exceptions\ADOExceptionHelper.cs" />
     <Compile Include="Criterion\AbstractCriterion.cs" />
     <Compile Include="Criterion\AndExpression.cs" />

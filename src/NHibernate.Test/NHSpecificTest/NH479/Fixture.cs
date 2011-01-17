@@ -24,6 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH479
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.Save(main);
+				s.Save(aggregate);
 				t.Commit();
 			}
 
