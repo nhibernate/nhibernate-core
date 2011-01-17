@@ -198,7 +198,13 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitTypeBinaryExpression(TypeBinaryExpression expression)
 		{
-			return base.VisitTypeBinaryExpression(expression);
+			_string.Append("IsType(");
+			VisitExpression(expression.Expression);
+			_string.Append(", ");
+			_string.Append(expression.TypeOperand.FullName);
+			_string.Append(")");
+
+			return expression;
 		}
 
 		protected override Expression VisitUnaryExpression(UnaryExpression expression)
