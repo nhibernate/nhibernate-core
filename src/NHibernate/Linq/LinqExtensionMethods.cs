@@ -14,10 +14,10 @@ namespace NHibernate.Linq
             return new NhQueryable<T>(session as ISessionImplementor);
         }
 
-				public static IQueryable<T> Query<T>(this IStatelessSession session)
-				{
-					return new NhQueryable<T>(session as ISessionImplementor);
-				}
+		public static IQueryable<T> Query<T>(this IStatelessSession session)
+		{
+			return new NhQueryable<T>(session as ISessionImplementor);
+		}
 
         public static IQueryable<T> Cacheable<T>(this IQueryable<T> query)
         {
