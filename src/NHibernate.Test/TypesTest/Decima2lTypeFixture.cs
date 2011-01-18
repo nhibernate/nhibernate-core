@@ -1,6 +1,7 @@
 using System;
 using NHibernate.Type;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -14,12 +15,10 @@ namespace NHibernate.Test.TypesTest
         public void Next()
         {
             DateTimeType type = (DateTimeType)NHibernateUtil.DateTime2;
-            object current = DateTime.Parse("2004-01-01");
+            object current = DateTime.Now.AddMilliseconds(-1);
             object next = type.Next(current, null);
 
-            Assert.IsTrue(next is DateTime, "Next should be DateTime");
-            Assert.IsTrue((DateTime)next > (DateTime)current,
-                          "next should be greater than current (could be equal depending on how quickly this occurs)");
+						next.Should().Be.OfType<DateTime>().And.Value.Should().Be.GreaterThan((DateTime)current);
         }
 
         [Test]
@@ -43,5 +42,15 @@ namespace NHibernate.Test.TypesTest
             value2 = ((DateTime)value2).AddHours(2);
             Assert.IsFalse(value1 == value2, "value2 was changed, value1 should not have changed also.");
         }
+
+				[Test]
+				public void EqualityShouldIgnoreKindAndNotIgnoreMillisecond()
+				{
+					var type = (DateTimeType)NHibernateUtil.DateTime;
+					var localTime = DateTime.Now;
+					var unspecifiedKid = new DateTime(localTime.Ticks, DateTimeKind.Unspecified);
+					type.Satisfy(t => t.IsEqual(localTime, unspecifiedKid));
+					type.Satisfy(t => t.IsEqual(localTime, unspecifiedKid, EntityMode.Poco));
+				}
     }
 }

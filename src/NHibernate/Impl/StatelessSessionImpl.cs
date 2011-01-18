@@ -140,14 +140,35 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override IList List(IQueryExpression queryExpression, QueryParameters parameters)
-		{
-			throw new System.NotImplementedException();
-		}
-
 		public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
 		{
-			throw new System.NotImplementedException();
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				queryParameters.ValidateParameters();
+				var plan = GetHQLQueryPlan(queryExpression, false);
+
+				bool success = false;
+				try
+				{
+					plan.PerformList(queryParameters, this, results);
+					success = true;
+				}
+				catch (HibernateException)
+				{
+					// Do not call Convert on HibernateExceptions
+					throw;
+				}
+				catch (Exception e)
+				{
+					throw Convert(e, "Could not execute query");
+				}
+				finally
+				{
+					AfterOperation(success);
+				}
+				temporaryPersistenceContext.Clear();
+			}
 		}
 
 		public override IList<T> List<T>(string query, QueryParameters queryParameters)
@@ -469,6 +490,12 @@ namespace NHibernate.Impl
 			get { return connectionManager.GetConnection(); }
 		}
 
+		public IStatelessSession SetBatchSize(int batchSize)
+		{
+			Batcher.BatchSize = batchSize;
+			return this;
+		}
+
 		public override void Flush()
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -514,6 +541,21 @@ namespace NHibernate.Impl
 		{
 			get { return null; }
 			set { }
+		}
+
+		/// <summary>
+		/// Gets the stateless session implementation.
+		/// </summary>
+		/// <remarks>
+		/// This method is provided in order to get the <b>NHibernate</b> implementation of the session from wrapper implementations.
+		/// Implementors of the <seealso cref="IStatelessSession"/> interface should return the NHibernate implementation of this method.
+		/// </remarks>
+		/// <returns>
+		/// An NHibernate implementation of the <seealso cref="ISessionImplementor"/> interface 
+		/// </returns>
+		public ISessionImplementor GetSessionImplementation()
+		{
+			return this;
 		}
 
 		/// <summary> Close the stateless session and release the ADO.NET connection.</summary>

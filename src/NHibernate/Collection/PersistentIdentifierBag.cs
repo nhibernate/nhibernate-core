@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Linq;
+using Iesi.Collections.Generic;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Id;
@@ -31,6 +33,48 @@ namespace NHibernate.Collection
 	[DebuggerTypeProxy(typeof (CollectionProxy))]
 	public class PersistentIdentifierBag : AbstractPersistentCollection, IList
 	{
+		[Serializable]
+		private class SnapshotElement : IEquatable<SnapshotElement>
+		{
+			public object Id { get; set; }
+			public object Value { get; set; }
+
+			public bool Equals(SnapshotElement other)
+			{
+				if (ReferenceEquals(null, other))
+				{
+					return false;
+				}
+				if (ReferenceEquals(this, other))
+				{
+					return true;
+				}
+				return Equals(other.Id, Id);
+			}
+
+			public override bool Equals(object obj)
+			{
+				if (ReferenceEquals(null, obj))
+				{
+					return false;
+				}
+				if (ReferenceEquals(this, obj))
+				{
+					return true;
+				}
+				if (obj.GetType() != typeof (SnapshotElement))
+				{
+					return false;
+				}
+				return Equals((SnapshotElement) obj);
+			}
+
+			public override int GetHashCode()
+			{
+				return (Id != null ? Id.GetHashCode() : 0);
+			}
+		}
+
 		protected IList values; //element
 		protected Dictionary<int, object> identifiers; //index -> id 
 
@@ -77,7 +121,7 @@ namespace NHibernate.Collection
 		private object GetIdentifier(int index)
 		{
 			// NH specific : To emulate IDictionary behavior but using Dictionary<int, object> (without boxing/unboxing for index)
-			object result = null;
+			object result;
 			identifiers.TryGetValue(index, out result);
 			return result;
 		}
@@ -131,7 +175,7 @@ namespace NHibernate.Collection
 		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
 			IType elementType = persister.ElementType;
-			IDictionary snap = (IDictionary) GetSnapshot();
+			var snap = (ISet<SnapshotElement>) GetSnapshot();
 			if (snap.Count != values.Count)
 			{
 				return false;
@@ -140,12 +184,7 @@ namespace NHibernate.Collection
 			{
 				object val = values[i];
 				object id = GetIdentifier(i);
-				if (id == null)
-				{
-					return false;
-				}
-
-				object old = snap[id];
+				object old = snap.Where(x=> Equals(x.Id, id)).Select(x=> x.Value).FirstOrDefault();
 				if (elementType.IsDirty(old, val, Session))
 				{
 					return false;
@@ -157,13 +196,13 @@ namespace NHibernate.Collection
 
 		public override bool IsSnapshotEmpty(object snapshot)
 		{
-			return ((IDictionary) snapshot).Count == 0;
+			return ((ICollection) snapshot).Count == 0;
 		}
 
 		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
-			IDictionary snap = (IDictionary) GetSnapshot();
-			ArrayList deletes = new ArrayList(snap.Keys);
+			var snap = (ISet<SnapshotElement>)GetSnapshot();
+			ArrayList deletes = new ArrayList(snap.Select(x=> x.Id).ToArray());
 			for (int i = 0; i < values.Count; i++)
 			{
 				if (values[i] != null)
@@ -186,17 +225,18 @@ namespace NHibernate.Collection
 
 		public override object GetSnapshotElement(object entry, int i)
 		{
-			IDictionary snap = (IDictionary) GetSnapshot();
+			var snap = (ISet<SnapshotElement>)GetSnapshot();
 			object id = GetIdentifier(i);
-			return snap[id];
+			return snap.Where(x => Equals(x.Id, id)).Select(x => x.Value).FirstOrDefault();
 		}
 
 		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
-			IDictionary snap = (IDictionary) GetSnapshot();
+			var snap = (ISet<SnapshotElement>)GetSnapshot();
 			object id = GetIdentifier(i);
+			object valueFound = snap.Where(x => Equals(x.Id, id)).Select(x => x.Value).FirstOrDefault();
 
-			return entry != null && (id == null || snap[id] == null);
+			return entry != null && (id == null || valueFound == null);
 		}
 
 		public override bool NeedsUpdating(object entry, int i, IType elemType)
@@ -205,7 +245,7 @@ namespace NHibernate.Collection
 			{
 				return false;
 			}
-			IDictionary snap = (IDictionary) GetSnapshot();
+			var snap = (ISet<SnapshotElement>)GetSnapshot();
 
 			object id = GetIdentifier(i);
 			if (id == null)
@@ -213,7 +253,7 @@ namespace NHibernate.Collection
 				return false;
 			}
 
-			object old = snap[id];
+			object old = snap.Where(x => Equals(x.Id, id)).Select(x => x.Value).FirstOrDefault();
 			return old != null && elemType.IsDirty(old, entry, Session);
 		}
 
@@ -235,26 +275,22 @@ namespace NHibernate.Collection
 		{
 			EntityMode entityMode = Session.EntityMode;
 
-			Hashtable map = new Hashtable(values.Count);
+			var map = new HashedSet<SnapshotElement>();
 			int i = 0;
 			foreach (object value in values)
 			{
-				// NH Different behavior : in Hb they use directly identifiers[i++]
-				// probably we have some different behavior in some other place because a Snapshot before save the collection
-				// when the identifiers dictionary is empty (in this case the Snapshot is unneeded before save)
 				object id;
-				if (identifiers.TryGetValue(i++, out id))
-				{
-					map[id] = persister.ElementType.DeepCopy(value, entityMode, persister.Factory);
-				}
+				identifiers.TryGetValue(i++, out id);
+				var valueCopy = persister.ElementType.DeepCopy(value, entityMode, persister.Factory);
+				map.Add(new SnapshotElement { Id = id, Value = valueCopy });
 			}
 			return map;
 		}
 
 		public override ICollection GetOrphans(object snapshot, string entityName)
 		{
-			IDictionary sn = (IDictionary) snapshot;
-			return GetOrphans(sn.Values, values, entityName, Session);
+			var sn = (ISet<SnapshotElement>)GetSnapshot();
+			return GetOrphans(sn.Select(x=> x.Value).ToArray(), values, entityName, Session);
 		}
 
 		public override void PreInsert(ICollectionPersister persister)

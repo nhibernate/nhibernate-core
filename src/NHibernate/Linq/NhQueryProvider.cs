@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Type;
 
@@ -11,9 +12,9 @@ namespace NHibernate.Linq
 {
 	public class NhQueryProvider : IQueryProvider
 	{
-		private readonly ISession _session;
+		private readonly ISessionImplementor _session;
 
-		public NhQueryProvider(ISession session)
+		public NhQueryProvider(ISessionImplementor session)
 		{
 			_session = session;
 		}

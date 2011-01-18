@@ -68,12 +68,12 @@ namespace NHibernate.Type
 
 		#region IVersionType Members
 
-		public object Next(object current, ISessionImplementor session)
+		public virtual object Next(object current, ISessionImplementor session)
 		{
 			return Seed(session);
 		}
 
-		public object Seed(ISessionImplementor session)
+		public virtual object Seed(ISessionImplementor session)
 		{
 			return TimestampType.Round(DateTime.Now, TimeSpan.TicksPerSecond);
 		}

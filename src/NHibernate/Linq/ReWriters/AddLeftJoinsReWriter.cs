@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq.Expressions;
+using NHibernate.Linq.Visitors;
 using Remotion.Data.Linq;
 using Remotion.Data.Linq.Clauses;
 
-namespace NHibernate.Linq.Visitors
+namespace NHibernate.Linq.ReWriters
 {
     public class AddLeftJoinsReWriter : QueryModelVisitorBase
     {
@@ -24,20 +24,37 @@ namespace NHibernate.Linq.Visitors
 
         public override void VisitSelectClause(SelectClause selectClause, QueryModel queryModel)
         {
-            var joins = LeftJoinDetector.Detect(selectClause.Selector, new NameGenerator(queryModel), _sessionFactory);
-
-            if (joins.Joins.Count > 0)
-            {
-                selectClause.Selector = joins.Selector;
-
-                queryModel.TransformExpressions(e => ExpressionSwapper.Swap(e, joins.ExpressionMap));
-
-                foreach (var join in joins.Joins)
-                {
-                    queryModel.BodyClauses.Add(join);
-                }
-            }
+			selectClause.Selector = JoinReplacer(queryModel, selectClause.Selector);
         }
+
+		public override void VisitOrderByClause(OrderByClause orderByClause, QueryModel queryModel, int index)
+		{
+			foreach (Ordering ordering in orderByClause.Orderings)
+			{
+				ordering.Expression = JoinReplacer(queryModel, ordering.Expression);
+			}
+		}
+
+		private Expression JoinReplacer(QueryModel queryModel, Expression expression)
+		{
+			var joins = LeftJoinDetector.Detect(expression, new NameGenerator(queryModel), _sessionFactory);
+
+			Expression result = expression;
+
+			if (joins.Joins.Count > 0)
+			{
+				result = joins.Selector;
+
+				queryModel.TransformExpressions(e => ExpressionSwapper.Swap(e, joins.ExpressionMap));
+
+				foreach (var join in joins.Joins)
+				{
+					queryModel.BodyClauses.Add(join);
+				}
+			}
+
+			return result;
+		}
     }
 
     public class ExpressionSwapper : NhExpressionTreeVisitor

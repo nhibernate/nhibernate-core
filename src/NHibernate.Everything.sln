@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{9BDB5C84-14EC-4384-B423-9E319675B3CA}"
 	ProjectSection(FolderStartupServices) = postProject
 		{B4F97281-0DBD-4835-9ED8-7DFB966E87FF} = {B4F97281-0DBD-4835-9ED8-7DFB966E87FF}
@@ -61,6 +61,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration Templates", "
 		{B4F97281-0DBD-4835-9ED8-7DFB966E87FF} = {B4F97281-0DBD-4835-9ED8-7DFB966E87FF}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ByteCode providers", "ByteCode providers", "{D2E4E87F-2531-4C7A-BBE9-FE8BFEDECECE}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate", "NHibernate\NHibernate.csproj", "{5909BFE7-93CF-4E5F-BE22-6293368AF01D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.DomainModel", "NHibernate.DomainModel\NHibernate.DomainModel.csproj", "{5C649B55-1B3F-4C38-9998-1B043E94A244}"
@@ -73,7 +75,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iesi.Collections.Test", "Ie
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "NHibernate.Example.Web", "NHibernate.Example.Web\", "{C5D6EE68-1760-4F97-AD31-42343593D8C1}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFramework = "3.5"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv3.5"
 		ProjectReferences = "{5909BFE7-93CF-4E5F-BE22-6293368AF01D}|NHibernate.dll;{8289D6AD-9714-42D3-A94D-D4D9814D1281}|NHibernate.ByteCode.LinFu.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/NHibernate.Example.Web"
 		Debug.AspNetCompiler.PhysicalPath = "NHibernate.Example.Web\"
@@ -94,8 +96,6 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "NHibernate.Example.Web", "N
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Tool.HbmXsd", "NHibernate.Tool.HbmXsd\NHibernate.Tool.HbmXsd.csproj", "{446E148D-A9D5-4D7D-A706-BEDD45B2BC7D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ByteCode providers", "ByteCode providers", "{D2E4E87F-2531-4C7A-BBE9-FE8BFEDECECE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.ByteCode.Castle", "NHibernate.ByteCode.Castle\NHibernate.ByteCode.Castle.csproj", "{31C3F0EA-0FED-4A2F-B68D-96CE29844487}"
 EndProject

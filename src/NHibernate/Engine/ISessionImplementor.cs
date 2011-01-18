@@ -89,6 +89,13 @@ namespace NHibernate.Engine
         /// <returns></returns>
         IList List(IQueryExpression queryExpression, QueryParameters parameters);
 
+		/// <summary>
+		/// Create a new instance of <c>Query</c> for the given query expression
+		/// <param name="queryExpression">A hibernate query expression</param>
+		/// <returns>The query</returns>
+		/// </summary>
+		IQuery CreateQuery(IQueryExpression queryExpression);
+
 		void List(string query, QueryParameters parameters, IList results);
 
 		/// <summary>

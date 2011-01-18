@@ -243,7 +243,6 @@ namespace NHibernate.Type
 			return value; //special case ... this is the leaf of the containment graph, even though not immutable
 		}
 
-		/// <summary></summary>
 		public override bool IsMutable
 		{
 			get { return false; }
@@ -251,8 +250,7 @@ namespace NHibernate.Type
 
 		public abstract bool IsOneToOne { get; }
 
-		public override object Replace(object original, object target, ISessionImplementor session, object owner,
-		                               IDictionary copyCache)
+		public override object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache)
 		{
 			if (original == null)
 			{
@@ -269,17 +267,26 @@ namespace NHibernate.Type
 				{
 					return target;
 				}
-				object id = GetIdentifier(original, session);
-				if (id == null)
+				if (session.GetContextEntityIdentifier(original) == null && ForeignKeys.IsTransient(associatedEntityName, original, false, session))
 				{
-					throw new AssertionFailure("cannot copy a reference to an object with a null id");
+					object copy = session.Factory.GetEntityPersister(associatedEntityName).Instantiate(null, session.EntityMode);
+					//TODO: should this be Session.instantiate(Persister, ...)?
+					copyCache.Add(original, copy);
+					return copy;
 				}
-				id = GetIdentifierOrUniqueKeyType(session.Factory).Replace(id, null, session, owner, copyCache);
-				return ResolveIdentifier(id, session, owner);
+				else
+				{
+					object id = GetIdentifier(original, session);
+					if (id == null)
+					{
+						throw new AssertionFailure("non-transient entity has a null id");
+					}
+					id = GetIdentifierOrUniqueKeyType(session.Factory).Replace(id, null, session, owner, copyCache);
+					return ResolveIdentifier(id, session, owner);
+				}
 			}
 		}
 
-		/// <summary></summary>
 		public override bool IsAssociationType
 		{
 			get { return true; }

@@ -38,7 +38,7 @@ namespace NHibernate
 		{
 			get
 			{
-				return base.Message +
+				return base.Message + " " +
 				       StringHelper.Qualify(entityName, propertyName);
 			}
 		}

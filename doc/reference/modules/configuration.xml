@@ -568,7 +568,32 @@ ISession session = sessions.OpenSession(conn);
                             </para>
                         </entry>
                     </row>
-                    <row>
+                  <row>
+                    <entry>
+                      <literal>hbm2ddl.keywords</literal>
+                    </entry>
+                    <entry>
+                      Automatically import <literal>reserved/keywords</literal> from the database when the
+                      <literal>ISessionFactory</literal> is created.
+                      <para>
+                        <emphasis role="strong">none :</emphasis>
+                        disable any operation regarding RDBMS KeyWords
+                      </para>
+                      <para>
+                        <emphasis role="strong">keywords :</emphasis>
+                        imports all RDBMS KeyWords where the <literal>Dialect</literal> can provide the implementation of <literal>IDataBaseSchema</literal>.
+                      </para>
+                      <para>
+                        <emphasis role="strong">auto-quote :</emphasis>
+                        imports all RDBMS KeyWords and auto-quote all table-names/column-names .
+                      </para>
+                      <para>
+                        <emphasis role="strong">eg.</emphasis>
+                        <literal>none</literal> | <literal>keywords</literal> | <literal>auto-quote</literal>
+                      </para>
+                    </entry>
+                  </row>
+                  <row>
                         <entry>
                             <literal>use_proxy_validator</literal>
                         </entry>

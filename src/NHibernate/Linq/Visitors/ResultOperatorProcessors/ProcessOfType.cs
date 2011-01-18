@@ -1,7 +1,6 @@
 ﻿using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
 using Remotion.Data.Linq.Clauses.ResultOperators;
-using Remotion.Data.Linq.Clauses.StreamedData;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
@@ -11,8 +10,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
 		public void Process(OfTypeResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
 		{
-			Expression source =
-				queryModelVisitor.CurrentEvaluationType.As<StreamedSequenceInfo>().ItemExpression;
+		    Expression source = queryModelVisitor.Model.SelectClause.GetOutputDataInfo().ItemExpression;
 
 			tree.AddWhereClause(tree.TreeBuilder.Equality(
 				tree.TreeBuilder.Dot(

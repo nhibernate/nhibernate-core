@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Criterion.Lambda;
 using NHibernate.Impl;
@@ -299,14 +300,14 @@ namespace NHibernate.Criterion
 		/// of <see cref="In(string, ICollection)" />, renamed to avoid ambiguity.
 		/// </summary>
 		/// <param name="propertyName">The name of the Property in the class.</param>
-		/// <param name="values">An <see cref="System.Collections.Generic.ICollection{T}" />
+		/// <param name="values">An <see cref="System.Collections.Generic.IEnumerable{T}" />
 		/// of values.</param>
 		/// <returns>An <see cref="InExpression" />.</returns>
-		public static AbstractCriterion InG<T>(string propertyName, ICollection<T> values)
+		public static AbstractCriterion InG<T>(string propertyName, IEnumerable<T> values)
 		{
-			object[] array = new object[values.Count];
-			int i = 0;
-			foreach (T item in values)
+			var array = new object[values.Count()];
+			var i = 0;
+			foreach (var item in values)
 			{
 				array[i] = item;
 				i++;
@@ -320,14 +321,14 @@ namespace NHibernate.Criterion
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="projection">The projection.</param>
-		/// <param name="values">An <see cref="System.Collections.Generic.ICollection{T}"/>
+		/// <param name="values">An <see cref="System.Collections.Generic.IEnumerable{T}"/>
 		/// of values.</param>
 		/// <returns>An <see cref="InExpression"/>.</returns>
-		public static AbstractCriterion InG<T>(IProjection projection, ICollection<T> values)
+		public static AbstractCriterion InG<T>(IProjection projection, IEnumerable<T> values)
 		{
-			object[] array = new object[values.Count];
-			int i = 0;
-			foreach (T item in values)
+			var array = new object[values.Count()];
+			var i = 0;
+			foreach (var item in values)
 			{
 				array[i] = item;
 				i++;

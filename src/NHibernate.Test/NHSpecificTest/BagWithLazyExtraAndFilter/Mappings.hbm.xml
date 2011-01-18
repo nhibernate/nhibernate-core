@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+					 namespace="NHibernate.Test.NHSpecificTest.BagWithLazyExtraAndFilter"
+					 assembly="NHibernate.Test">
+
+	<class name="Env" table="Envs" discriminator-value="null">
+		<id name="Id" type="Int64" unsaved-value="none">
+			<generator class="assigned"/>
+		</id>
+		<bag name="RequestsFailed" inverse="true" cascade="none" lazy="extra"
+				 optimistic-lock="false"
+				 where="MachineRequestCompletionStatusInt != 1">
+			<key column="EnvId"/>
+			<one-to-many class="MachineRequest"/>
+			<filter name="CurrentOnly"/>
+		</bag>
+
+	</class>
+
+
+	<class name="MachineRequest" table="MachineRequests" discriminator-value="null">
+		<id name="Id" type="Int64" unsaved-value="none">
+			<generator class="assigned"/>
+		</id>
+		<property name="EnvId"/>
+		<property name="MachineRequestCompletionStatusInt"/>
+	</class>
+
+	<filter-def name="CurrentOnly"  condition="1 = 0"/>
+</hibernate-mapping>

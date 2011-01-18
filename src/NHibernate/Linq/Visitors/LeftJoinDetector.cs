@@ -31,8 +31,9 @@ namespace NHibernate.Linq.Visitors
             if (expression.Type.IsNonPrimitive() && IsEntity(expression.Type))
             {
                 var newExpr = AddJoin(expression);
-                _expressionMap.Add(expression, newExpr);
-                return newExpr;
+				if (!_expressionMap.ContainsKey(expression) || !_expressionMap[expression].Equals(newExpr)) // Second clause is sanity check.
+					_expressionMap.Add(expression, newExpr);
+            	return newExpr;
             }
 
             return base.VisitMemberExpression(expression);

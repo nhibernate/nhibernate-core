@@ -82,8 +82,18 @@ namespace NHibernate.Impl
 		public abstract void CloseSessionFromDistributedTransaction();
 		public abstract IList List(string query, QueryParameters parameters);
 		public abstract void List(string query, QueryParameters parameters, IList results);
-        public abstract IList List(IQueryExpression queryExpression, QueryParameters parameters);
-        public abstract void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results);
+
+		public virtual IList List(IQueryExpression queryExpression, QueryParameters parameters)
+		{
+			IList results = (IList)typeof(List<>).MakeGenericType(queryExpression.Type)
+																			.GetConstructor(System.Type.EmptyTypes)
+																			.Invoke(null);
+
+			List(queryExpression, parameters, results);
+			return results;
+		}
+
+		public abstract void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results);
 		public abstract IList<T> List<T>(string query, QueryParameters queryParameters);
 		public abstract IList<T> List<T>(CriteriaImpl criteria);
 		public abstract void List(CriteriaImpl criteria, IList results);

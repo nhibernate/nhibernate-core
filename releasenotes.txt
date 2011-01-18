@@ -1,3 +1,14 @@
+** Known BREAKING CHANGES from NH3.0.0.GA to NH3.0.1.GA
+
+	##### Design time #####
+		* [NH-2481] - Deprecated: ISession.SaveOrUpdateCopy methods - use ISession.Merge methods instead
+
+	##### Run time #####
+		* [NH-2481] - An exception will now be thrown when an entity references a transient entity and cascade="merge|all" is not configured on the association
+
+	##### Possible Breaking Changes #####
+		* [NH-2461] - Signature change for IQuery.SetParameterList
+
 ** Known BREAKING CHANGES from NH2.1.1.GA to NH3.0.0.GA
 
 	##### Design time #####
@@ -6,7 +17,7 @@
 	##### Run time #####
 		* [NH-2199] - null values in maps/dictionaries are no longer silenty ignored/deleted
 		* [NH-1894] - SybaseAnywhereDialect has been removed, and replaced with SybaseASA9Dialect.
-					- Sybase Adaptive Server Enterprise (ASE) dialects removed.
+			    - Sybase Adaptive Server Enterprise (ASE) dialects removed.
 
 	##### Possible Breaking Changes #####
 		* [NH-2251] - Signature change for GetLimitString in Dialect

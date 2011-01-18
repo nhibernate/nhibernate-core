@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH2459">
+
+	<class  name="TrainingComponent" abstract="true" table="tblTrnNrt" discriminator-value="-1">
+		<id name ="Id" column="NrtId">
+			<generator class="guid"></generator>
+		</id>
+		<discriminator column="NrtObjectTypeId" type="int" />
+
+		<property name="Code" column="NationalCode" length="12"></property>
+		<property name="Title" column="NationalTitle" length="200"></property>
+		
+	</class>
+
+	<subclass name="SkillSet" discriminator-value="1" extends="TrainingComponent">
+		
+	</subclass>
+
+	<subclass name="Qualification" discriminator-value="2" extends="TrainingComponent">
+
+	</subclass>
+	
+</hibernate-mapping>
+

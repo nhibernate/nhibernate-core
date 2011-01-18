@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Engine;
 using NHibernate.Impl;
 
 namespace NHibernate.Linq
@@ -10,8 +11,13 @@ namespace NHibernate.Linq
 	{
         public static IQueryable<T> Query<T>(this ISession session)
         {
-            return new NhQueryable<T>(session);
+            return new NhQueryable<T>(session as ISessionImplementor);
         }
+
+		public static IQueryable<T> Query<T>(this IStatelessSession session)
+		{
+			return new NhQueryable<T>(session as ISessionImplementor);
+		}
 
         public static IQueryable<T> Cacheable<T>(this IQueryable<T> query)
         {

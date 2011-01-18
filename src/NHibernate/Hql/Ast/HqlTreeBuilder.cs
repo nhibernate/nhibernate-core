@@ -321,9 +321,9 @@ namespace NHibernate.Hql.Ast
 			return new HqlDirectionDescending(_factory);
 		}
 
-		public HqlGroupBy GroupBy(HqlExpression expression)
+		public HqlGroupBy GroupBy(params HqlExpression[] expressions)
 		{
-			return new HqlGroupBy(_factory, expression);
+			return new HqlGroupBy(_factory, expressions);
 		}
 
 		public HqlAll All()

@@ -499,7 +499,7 @@ unaryExpression
 	
 caseExpression
 	: CASE (whenClause)+ (elseClause)? END
-		-> ^(CASE whenClause elseClause?) 
+		-> ^(CASE whenClause+ elseClause?) 
 	| CASE unaryExpression (altWhenClause)+ (elseClause)? END
 		-> ^(CASE2 unaryExpression altWhenClause+ elseClause?)
 	;

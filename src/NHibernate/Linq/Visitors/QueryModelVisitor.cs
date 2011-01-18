@@ -45,10 +45,21 @@ namespace NHibernate.Linq.Visitors
             // Add left joins for references
 		    AddLeftJoinsReWriter.ReWrite(queryModel, parameters.SessionFactory);
 
-			var visitor = new QueryModelVisitor(parameters, root, queryModel);
-			visitor.Visit();
+			// Move OrderBy clauses to end
+			MoveOrderByToEndRewriter.ReWrite(queryModel);
 
-			return visitor._hqlTree.GetTranslation();
+            // rewrite any operators that should be applied on the outer query
+            // by flattening out the sub-queries that they are located in
+		    ResultOperatorRewriterResult result = ResultOperatorRewriter.Rewrite(queryModel);
+
+		    QueryModelVisitor visitor = new QueryModelVisitor(parameters, root, queryModel)
+		        {
+		            RewrittenOperatorResult = result
+		        };
+
+            visitor.Visit();
+
+            return visitor._hqlTree.GetTranslation();
 		}
 
         private readonly IntermediateHqlTree _hqlTree;
@@ -59,6 +70,7 @@ namespace NHibernate.Linq.Visitors
         public IStreamedDataInfo CurrentEvaluationType { get; private set; }
         public IStreamedDataInfo PreviousEvaluationType { get; private set; }
         public QueryModel Model { get; private set; }
+        public ResultOperatorRewriterResult RewrittenOperatorResult { get; private set; }
 
         static QueryModelVisitor()
         {
@@ -101,6 +113,16 @@ namespace NHibernate.Linq.Visitors
             _hqlTree.AddFromClause(_hqlTree.TreeBuilder.Range(
                                      HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters),
                                      _hqlTree.TreeBuilder.Alias(fromClause.ItemName)));
+
+            // apply any result operators that were rewritten
+            if (RewrittenOperatorResult != null)
+            {
+                CurrentEvaluationType = RewrittenOperatorResult.EvaluationType;
+                foreach (ResultOperatorBase rewrittenOperator in RewrittenOperatorResult.RewrittenOperators)
+                {
+                    this.VisitResultOperator(rewrittenOperator, queryModel, -1);
+                }
+            }
 
 			base.VisitMainFromClause(fromClause, queryModel);
 		}

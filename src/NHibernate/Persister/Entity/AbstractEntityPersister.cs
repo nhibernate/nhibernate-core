@@ -1128,9 +1128,14 @@ namespace NHibernate.Persister.Entity
 				}
 				if (IsVersioned)
 				{
-					tableUpdateNeeded[0] = tableUpdateNeeded[0] ||
-																 Versioning.IsVersionIncrementRequired(dirtyProperties, hasDirtyCollection,
-																																			 PropertyVersionability);
+					// NH-2386 when there isn't dirty-properties and the version is generated even in UPDATE
+					// we can't execute an UPDATE because there isn't something to UPDATE
+					if(!entityMetamodel.VersionProperty.IsUpdateGenerated)
+					{
+						tableUpdateNeeded[0] = tableUpdateNeeded[0] ||
+																	 Versioning.IsVersionIncrementRequired(dirtyProperties, hasDirtyCollection,
+																																				 PropertyVersionability);
+					}
 				}
 				return tableUpdateNeeded;
 			}
@@ -2767,6 +2772,15 @@ namespace NHibernate.Persister.Entity
 						return Check(session.Batcher.ExecuteNonQuery(statement), id, j, expectation, statement);
 					}
 				}
+				catch (StaleStateException e)
+				{
+					if (useBatch)
+					{
+						session.Batcher.AbortBatch(e);
+					}
+
+					throw new StaleObjectStateException(EntityName, id);
+				}
 				catch (Exception e)
 				{
 					if (useBatch)
@@ -4052,6 +4066,10 @@ namespace NHibernate.Persister.Entity
 					{
 						snapshot[i] =
 							extractionTypes[i].Hydrate(rs, GetPropertyAliases(string.Empty, naturalIdPropertyIndexes[i]), session, null);
+						if (extractionTypes[i].IsEntityType)
+						{
+							snapshot[i] = extractionTypes[i].ResolveIdentifier(snapshot[i], session, null);
+						}
 					}
 					return snapshot;
 				}

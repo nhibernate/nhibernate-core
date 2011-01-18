@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -12,12 +12,25 @@
     <AssemblyName>NHibernate.Test</AssemblyName>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
-    <OldToolsVersion>2.0</OldToolsVersion>
+    <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <TargetFrameworkSubset>
-    </TargetFrameworkSubset>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,6 +44,7 @@
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <NoWarn>3001%3b3002%3b3003%3b3004%3b3005</NoWarn>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -43,6 +57,7 @@
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <NoWarn>3001%3b3002%3b3003%3b3004%3b3005</NoWarn>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr3.Runtime, Version=3.1.0.39271, Culture=neutral, PublicKeyToken=3a9cab8f8d22bfb7, processorArchitecture=MSIL">
@@ -111,8 +126,19 @@
     <Compile Include="CacheTest\QueryCacheFixture.cs" />
     <Compile Include="CacheTest\QueryKeyFixture.cs" />
     <Compile Include="CacheTest\TimestamperFixture.cs" />
+    <Compile Include="Cascade\A.cs" />
+    <Compile Include="Cascade\Circle\CascadeMergeToChildBeforeParentTest.cs" />
+    <Compile Include="Cascade\Circle\MultiPathCircleCascadeTest.cs" />
+    <Compile Include="Cascade\Circle\Node.cs" />
+    <Compile Include="Cascade\Circle\Route.cs" />
+    <Compile Include="Cascade\Circle\Tour.cs" />
+    <Compile Include="Cascade\Circle\Transport.cs" />
+    <Compile Include="Cascade\Circle\Vehicle.cs" />
+    <Compile Include="Cascade\G.cs" />
+    <Compile Include="Cascade\H.cs" />
     <Compile Include="Cascade\Job.cs" />
     <Compile Include="Cascade\JobBatch.cs" />
+    <Compile Include="Cascade\MultiPathCascadeTest.cs" />
     <Compile Include="Cascade\RefreshFixture.cs" />
     <Compile Include="CfgTest\AccessorsSerializableTest.cs" />
     <Compile Include="CfgTest\ConfigurationAddMappingEvents.cs" />
@@ -408,9 +434,11 @@
     <Compile Include="LazyProperty\Book.cs" />
     <Compile Include="LazyProperty\LazyPropertyFixture.cs" />
     <Compile Include="Linq\AggregateTests.cs" />
+    <Compile Include="Linq\ByMethod\AnyTests.cs" />
     <Compile Include="Linq\BinaryBooleanExpressionTests.cs" />
     <Compile Include="Linq\BinaryExpressionOrdererTests.cs" />
     <Compile Include="Linq\BooleanMethodExtensionExample.cs" />
+    <Compile Include="Linq\ByMethod\GroupByTests.cs" />
     <Compile Include="Linq\CasingTest.cs" />
     <Compile Include="Linq\CollectionAssert.cs" />
     <Compile Include="Linq\CustomExtensionsExample.cs" />
@@ -429,7 +457,7 @@
     <Compile Include="Linq\NorthwindDbCreator.cs" />
     <Compile Include="Linq\NullComparisonTests.cs" />
     <Compile Include="Linq\ObjectDumper.cs" />
-    <Compile Include="Linq\OrderByTests.cs" />
+    <Compile Include="Linq\ByMethod\OrderByTests.cs" />
     <Compile Include="Linq\PagingTests.cs" />
     <Compile Include="Linq\ParameterisedQueries.cs" />
     <Compile Include="Linq\PatientTests.cs" />
@@ -438,8 +466,12 @@
     <Compile Include="Linq\QueryCacheableTests.cs" />
     <Compile Include="Linq\QueryReuseTests.cs" />
     <Compile Include="Linq\ReadonlyTestCase.cs" />
+    <Compile Include="Linq\StatelessSessionQueringTest.cs" />
+    <Compile Include="Linq\ByMethod\SumTests.cs" />
     <Compile Include="Logging\Log4NetLoggerTest.cs" />
     <Compile Include="Logging\LoggerProviderTest.cs" />
+    <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
+    <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
     <Compile Include="NHSpecificTest\EntityNameAndCompositeId\Fixture.cs" />
     <Compile Include="NHSpecificTest\EntityNameWithFullName\Fixture.cs" />
     <Compile Include="NHSpecificTest\Futures\LinqFutureFixture.cs" />
@@ -460,10 +492,16 @@
     <Compile Include="NHSpecificTest\NH1836\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1869\Entities.cs" />
     <Compile Include="NHSpecificTest\NH1869\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2037\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH2037\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2043\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH2043\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2056\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2111\A.cs" />
     <Compile Include="NHSpecificTest\NH2111\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2112\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2112\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2118\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2138\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2147\DefaultBatchSize.cs" />
     <Compile Include="NHSpecificTest\NH2148\BugFixture.cs" />
@@ -471,8 +509,12 @@
     <Compile Include="NHSpecificTest\NH2188\AppDomainWithMultipleSearchPath.cs" />
     <Compile Include="NHSpecificTest\NH2202\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2202\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2203\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH2203\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2224\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2224\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2228\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH2228\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2244\A.cs" />
     <Compile Include="NHSpecificTest\NH2244\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2244\PhoneNumber.cs" />
@@ -490,6 +532,9 @@
     <Compile Include="NHSpecificTest\NH2279\B.cs" />
     <Compile Include="NHSpecificTest\NH2279\C.cs" />
     <Compile Include="NHSpecificTest\NH2279\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2280\InvalidSqlTest.cs" />
+    <Compile Include="NHSpecificTest\NH2280\Organisation.cs" />
+    <Compile Include="NHSpecificTest\NH2280\OrganisationCode.cs" />
     <Compile Include="NHSpecificTest\NH2287\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2287\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2288\Fixture.cs" />
@@ -514,13 +559,23 @@
     <Compile Include="NHSpecificTest\NH2331\MemberGroup.cs" />
     <Compile Include="NHSpecificTest\NH2331\Nh2331Test.cs" />
     <Compile Include="NHSpecificTest\NH2331\Person.cs" />
+    <Compile Include="NHSpecificTest\NH2341\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH2341\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2344\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2344\Model.cs" />
     <Compile Include="NHSpecificTest\NH2361\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2362\Category.cs" />
+    <Compile Include="NHSpecificTest\NH2362\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2362\Product.cs" />
+    <Compile Include="NHSpecificTest\NH2362\Supplier.cs" />
     <Compile Include="NHSpecificTest\NH2374\NH2374Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2378\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2378\TestEntity.cs" />
     <Compile Include="NHSpecificTest\NH2378\TestEntityDto.cs" />
+    <Compile Include="NHSpecificTest\NH2386\Organisation.cs" />
+    <Compile Include="NHSpecificTest\NH2386\ResponsibleLegalPerson.cs" />
+    <Compile Include="NHSpecificTest\NH2386\Test.cs" />
+    <Compile Include="NHSpecificTest\NH2386\TradingName.cs" />
     <Compile Include="NHSpecificTest\NH2392\A.cs" />
     <Compile Include="NHSpecificTest\NH2392\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2392\PhoneNumber.cs" />
@@ -535,11 +590,21 @@
     <Compile Include="NHSpecificTest\NH2409\Message.cs" />
     <Compile Include="NHSpecificTest\NH2409\MessageReading.cs" />
     <Compile Include="NHSpecificTest\NH2409\User.cs" />
+    <Compile Include="NHSpecificTest\NH2412\Order.cs" />
+    <Compile Include="NHSpecificTest\NH2412\Customer.cs" />
+    <Compile Include="NHSpecificTest\NH2412\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2420\DummyEnlistment.cs" />
     <Compile Include="NHSpecificTest\NH2420\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2420\MyTable.cs" />
     <Compile Include="NHSpecificTest\NH2441\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2441\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2459\Test.cs" />
+    <Compile Include="NHSpecificTest\NH2459\TrainingComponent.cs" />
+    <Compile Include="NHSpecificTest\NH2470\Class1Class2Classes.cs" />
+    <Compile Include="NHSpecificTest\NH2470\Class1Class2DTOs.cs" />
+    <Compile Include="NHSpecificTest\NH2470\Class1Class2Tests.cs" />
+    <Compile Include="NHSpecificTest\NH2470\DomainObject.cs" />
+    <Compile Include="NHSpecificTest\NH2470\DTO.cs" />
     <Compile Include="NHSpecificTest\Properties\CompositePropertyRefTest.cs" />
     <Compile Include="NHSpecificTest\Properties\DynamicEntityTest.cs" />
     <Compile Include="NHSpecificTest\Properties\Model.cs" />
@@ -556,6 +621,9 @@
     <Compile Include="TypesTest\XDocTypeFixture.cs" />
     <Compile Include="TypesTest\XmlDocClass.cs" />
     <Compile Include="TypesTest\XmlDocTypeFixture.cs" />
+    <Compile Include="UtilityTest\EnumerableExtensionsTests\AnyExtensionTests.cs" />
+    <Compile Include="UtilityTest\EnumerableExtensionsTests\FirstExtensionTests.cs" />
+    <Compile Include="UtilityTest\EnumerableExtensionsTests\FirstOrNullExtensionTests.cs" />
     <Compile Include="UtilityTest\ReflectionHelperIsMethodOfTests.cs" />
     <Compile Include="UtilityTest\ReflectionHelperTest.cs" />
     <Compile Include="Linq\RegresstionTests.cs" />
@@ -1818,6 +1886,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <EmbeddedResource Include="Cascade\Circle\CascadeMergeToChildBeforeParent.hbm.xml" />
+    <EmbeddedResource Include="Cascade\Circle\MultiPathCircleCascade.hbm.xml" />
+    <EmbeddedResource Include="Cascade\MultiPathCascade.hbm.xml" />
     <None Include="NHibernate.Test.build" />
     <None Include="NHibernate.Test.nunit" />
     <None Include="DbScripts\MsSql2008DialectLinqReadonlyCreateScript.sql">
@@ -2326,6 +2397,17 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2459\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2412\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2280\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2203\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\BagWithLazyExtraAndFilter\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2470\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2056\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2043\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2037\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2118\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2362\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2244\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2394\Mappings.hbm.xml" />
     <EmbeddedResource Include="DynamicEntity\Interceptor\Customer.hbm.xml" />
@@ -2351,6 +2433,9 @@
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <EmbeddedResource Include="DriverTest\EntityForMs2008.hbm.xml" />
     <Content Include="DynamicEntity\package.html" />
+    <EmbeddedResource Include="NHSpecificTest\NH2341\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2228\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2386\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\Properties\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2378\Mappings.hbm.xml" />
     <EmbeddedResource Include="TypesTest\XDocClass.hbm.xml" />
@@ -2689,7 +2774,25 @@
     <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Cascade\Circle" />
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

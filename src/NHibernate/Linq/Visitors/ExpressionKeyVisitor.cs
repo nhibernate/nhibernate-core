@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace NHibernate.Linq.Visitors
@@ -42,7 +44,7 @@ namespace NHibernate.Linq.Visitors
 			{
 				_string.Append(expression.Method.DeclaringType.Name);
 				_string.Append(".");
-				_string.Append(expression.Method.Name);
+				VisitMethod(expression.Method);
 			}
 			else
 			{
@@ -85,7 +87,10 @@ namespace NHibernate.Linq.Visitors
 			}
 			else
 			{
-				_string.Append(expression.Value);
+				if (expression.Value == null)
+					_string.Append("NULL");
+				else
+					_string.Append(expression.Value);
 			}
 
 			return base.VisitConstantExpression(expression);
@@ -165,7 +170,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			VisitExpression(expression.Object);
 			_string.Append('.');
-			_string.Append(expression.Method.Name);
+			VisitMethod(expression.Method);
 			_string.Append('(');
 			VisitList(expression.Arguments, AppendCommas);
 			_string.Append(')');
@@ -198,7 +203,13 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitTypeBinaryExpression(TypeBinaryExpression expression)
 		{
-			return base.VisitTypeBinaryExpression(expression);
+			_string.Append("IsType(");
+			VisitExpression(expression.Expression);
+			_string.Append(", ");
+			_string.Append(expression.TypeOperand.FullName);
+			_string.Append(")");
+
+			return expression;
 		}
 
 		protected override Expression VisitUnaryExpression(UnaryExpression expression)
@@ -215,5 +226,16 @@ namespace NHibernate.Linq.Visitors
 		{
 			return base.VisitUnknownExpression(expression);
 		}
+
+        private void VisitMethod(MethodInfo methodInfo)
+        {
+            _string.Append(methodInfo.Name);
+            if (methodInfo.IsGenericMethod)
+            {
+                _string.Append('[');
+                _string.Append(string.Join(",", methodInfo.GetGenericArguments().Select(a => a.FullName).ToArray()));
+                _string.Append(']');
+            }
+        }
 	}
 }

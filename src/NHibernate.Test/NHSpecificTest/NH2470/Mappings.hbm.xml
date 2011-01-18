@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+  assembly="NHibernate.Test"
+  namespace="NHibernate.Test.NHSpecificTest.NH2470">
+
+  <class name="Class1">
+
+    <id name="ID">
+      <generator class="guid.comb"/>
+    </id>
+
+    <version name="EntityVersion"/>
+
+    <!-- NH2470 - I used to have inverse="true" here -->
+    <idbag name="Class2List" table="Class1_Class2" inverse="true" access="field.camelcase-underscore">
+      <collection-id column="ID" type="Guid">
+        <generator class="guid.comb" />
+      </collection-id>
+      <key column="Class1ID" foreign-key="FK_Class2_Class1" />
+      <many-to-many class="Class2" column="Class2ID" foreign-key="FK_Class1_Class2" />
+    </idbag>
+
+  </class>
+  <class name="Class2">
+
+    <id name="ID">
+      <generator class="guid.comb"/>
+    </id>
+
+    <version name="EntityVersion"/>
+
+    <idbag name="Class1List" table="Class1_Class2" access="field.camelcase-underscore">
+      <collection-id column="ID" type="Guid">
+        <generator class="guid.comb" />
+      </collection-id>
+      <key column="Class2ID" foreign-key="FK_Class1_Class2" />
+      <many-to-many class="Class1" column="Class1ID" foreign-key="FK_Class2_Class1" />
+    </idbag>
+
+  </class>
+
+</hibernate-mapping>

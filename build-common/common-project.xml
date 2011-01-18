@@ -108,6 +108,7 @@
 			output="${bin.dir}/${project::get-name()}.dll" 
 			doc="${bin.dir}/${project::get-name()}.xml"
 			if="${sign}"
+      optimize="${build.release}"
 		>
 			<nowarn>
 				<warning number="1591" /> <!-- No XML comment for publicly visible member -->
@@ -124,6 +125,7 @@
 			output="${bin.dir}/${project::get-name()}.dll" 
 			doc="${bin.dir}/${project::get-name()}.xml"
 			unless="${sign}"
+      optimize="${build.release}"
 		>
 			<nowarn>
 				<warning number="1591" /> <!-- No XML comment for publicly visible member -->

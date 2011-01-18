@@ -169,6 +169,42 @@ namespace NHibernate.Test.Linq
             }
         }
 
+        [Test]
+        public void Different_OfType_Returns_Different_Keys()
+        {
+            using (var session = OpenSession())
+            {
+                Expression<Func<IEnumerable>> ofType1 = () => (from a in session.Query<Animal>().OfType<Cat>() where a.Pregnant select a.Id);
+                Expression<Func<IEnumerable>> ofType2 = () => (from a in session.Query<Animal>().OfType<Dog>() where a.Pregnant select a.Id);
+
+                var nhOfType1 = new NhLinqExpression(ofType1.Body);
+                var nhOfType2 = new NhLinqExpression(ofType2.Body);
+
+                Assert.AreNotEqual(nhOfType1.Key, nhOfType2.Key);
+            }
+        }
+
+        [Test]
+        public void Different_Null_Returns_Different_Keys()
+        {
+            using (var session = OpenSession())
+            {
+                string nullVariable = null;
+                string notNullVariable = "Hello";
+
+                Expression<Func<IEnumerable>> null1 = () => (from a in session.Query<Animal>() where a.Description == null select a);
+                Expression<Func<IEnumerable>> null2 = () => (from a in session.Query<Animal>() where a.Description == nullVariable select a);
+                Expression<Func<IEnumerable>> notNull = () => (from a in session.Query<Animal>() where a.Description == notNullVariable select a);
+
+                var nhNull1 = new NhLinqExpression(null1.Body);
+                var nhNull2 = new NhLinqExpression(null2.Body);
+                var nhNotNull = new NhLinqExpression(notNull.Body);
+
+				Assert.AreNotEqual(nhNull1.Key, nhNotNull.Key);
+				Assert.AreNotEqual(nhNull2.Key, nhNotNull.Key);
+            }
+        }
+
         // TODO - different parameter names
 
         protected override IList Mappings

@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH2362">
+  
+  <class name="Category" table="Category">
+    <id name="Id" column="Id" type="int">
+      <generator class="identity" />
+    </id>
+    <property name="Name" column="Name" type="string" />
+  </class>
+  <class name="Product" table="Product">
+    <id name="Id" column="Id" type="int">
+      <generator class="identity" />
+    </id>
+    <property name="Name" column="Name" type="string" />
+    <property name="Price" column="Price" type="decimal" />
+    <many-to-one name="Category" column="CategoryId"/>
+    <many-to-one name="Supplier" column="SupplierId"/>
+  </class>
+  <class name="Supplier" table="Supplier">
+    <id name="Id" column="Id" type="int">
+      <generator class="identity" />
+    </id>
+    <property name="Name" column="Name" type="string" />
+  </class>
+
+</hibernate-mapping>

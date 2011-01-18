@@ -225,7 +225,7 @@
                     <callout arearefs="class2">
                         <para>
                             <literal>table</literal>(optional - defaults to the unqualified class name): The name of its database table.
-						</para>
+                        </para>
                     </callout>
                     <callout arearefs="class3">
                         <para>
@@ -1739,8 +1739,7 @@
         insert="true|false"
         upate="true|false"
         access="field|property|nosetter|ClassName"
-        optimistic-lock="true|false"
->
+        optimistic-lock="true|false">
         
         <property ...../>
         <many-to-one .... />
@@ -1805,6 +1804,113 @@
             
         </sect2>
 
+        <sect2 id="mapping-declaration-properties">
+          <title>properties</title>
+
+          <para>
+            The <literal>&lt;properties&gt;</literal> element allows the
+            definition of a named, logical grouping of the properties of a class.
+            The most important use of the construct is that it allows a combination
+            of properties to be the target of a <literal>property-ref</literal>. It
+            is also a convenient way to define a multi-column unique constraint. For
+            example:
+          </para>
+
+          <programlistingco>
+            <areaspec>
+              <area coords="2 60" id="properties1" />
+              <area coords="3 60" id="properties2" />
+              <area coords="4 60" id="properties3" />
+              <area coords="5 60" id="properties4" />
+              <area coords="6 60" id="properties5" />
+            </areaspec>
+
+            <programlisting><![CDATA[<properties
+      name="logicalName"
+      insert="true|false"
+      update="true|false"
+      optimistic-lock="true|false"
+      unique="true|false">
+
+      <property .../>
+      <many-to-one .../>
+      ........
+</properties>]]></programlisting>
+
+            <calloutlist>
+              <callout arearefs="properties1">
+                <para>
+                  <literal>name</literal>: the logical name of the grouping.
+                  It is <emphasis>not</emphasis> an actual property name.
+                </para>
+              </callout>
+
+              <callout arearefs="properties2">
+                <para>
+                  <literal>insert</literal>: do the mapped columns appear in
+                  SQL <literal>INSERTs</literal>?
+                </para>
+              </callout>
+
+              <callout arearefs="properties3">
+                <para>
+                  <literal>update</literal>: do the mapped columns appear in
+                  SQL <literal>UPDATEs</literal>?
+                </para>
+              </callout>
+
+              <callout arearefs="properties4">
+                <para>
+                  <literal>optimistic-lock</literal> (optional - defaults to
+                  <literal>true</literal>): specifies that updates to these
+                  properties either do or do not require acquisition of the
+                  optimistic lock. It determines if a version increment should occur
+                  when these properties are dirty.
+                </para>
+              </callout>
+
+              <callout arearefs="properties5">
+                <para>
+                  <literal>unique</literal> (optional - defaults to
+                  <literal>false</literal>): specifies that a unique constraint
+                  exists upon all mapped columns of the component.
+                </para>
+              </callout>
+            </calloutlist>
+          </programlistingco>
+
+          <para>
+            For example, if we have the following
+            <literal><![CDATA[<properties>]]></literal> mapping:
+          </para>
+
+          <programlisting role="XML"><![CDATA[<class name="Person">
+      <id name="personNumber" />
+      <properties name="name" unique="true" update="false">
+          <property name="firstName" />
+          <property name="lastName" />
+          <property name="initial" />
+      </properties>
+</class>]]></programlisting>
+
+          <para>
+            You might have some legacy data association that refers to this
+            unique key of the <literal>Person</literal> table, instead of to the
+            primary key:
+          </para>
+
+          <programlisting role="XML"><![CDATA[<many-to-one name="owner" class="Person" property-ref="name">
+        <column name="firstName" />
+        <column name="lastName" />
+        <column name="initial" />
+</many-to-one>]]></programlisting>
+
+          <para>
+            The use of this outside the context of mapping legacy data is not
+            recommended.
+          </para>
+        </sect2>
+
         <sect2 id="mapping-declaration-subclass">
             <title>subclass</title>
 
@@ -1830,6 +1936,7 @@
         dynamic-insert="true|false">
 
         <property .... />
+        <properties .... />
         .....
 </subclass>]]></programlisting>
                 <calloutlist>
@@ -1899,6 +2006,7 @@
         <key .... >
 
         <property .... />
+        <properties .... />
         .....
 </joined-subclass>]]></programlisting>
                 <calloutlist>
@@ -2003,6 +2111,7 @@
         node="element-name">
 
         <property .... />
+        <properties .... />
         .....
 </union-subclass>]]></programlisting>
                 <calloutlist>

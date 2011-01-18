@@ -633,14 +633,14 @@ secondSession.SaveOrUpdate(mate);  // save the new instance (mate has a null id)
             </itemizedlist>
 
             <para>
-                The last case can be avoided by using <literal>SaveOrUpdateCopy(Object o)</literal>. This method
+                The last case can be avoided by using <literal>Merge(Object o)</literal>. This method
                 copies the state of the given object onto the persistent object with the same identifier. If
                 there is no persistent instance currently associated with the session, it will be loaded.
                 The method returns the persistent instance. If the given instance is unsaved or does not
                 exist in the database, NHibernate will save it and return it as a newly persistent instance.
                 Otherwise, the given instance  does not become associated with the session. In most
                 applications with detached objects, you need both methods, <literal>SaveOrUpdate()</literal>
-                and <literal>SaveOrUpdateCopy()</literal>.
+                and <literal>Merge()</literal>.
              </para>
 
         </sect2>

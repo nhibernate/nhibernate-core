@@ -104,6 +104,132 @@ namespace NHibernate.Test.HQL.Ast
 			}
 		}
 
+		[Test]
+		public void MultipleParametersInCaseStatement()
+		{
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.Save(new Animal { BodyWeight = 12, Description = "Polliwog" });
+				s.Transaction.Commit();
+			}
+
+			try
+			{
+				using (ISession s = OpenSession())
+				{
+					var result = s.CreateQuery("select case when 'b' = ? then 2 when 'b' = ? then 1 else 0 end from Animal a")
+						.SetParameter(0, "a")
+						.SetParameter(1, "b")
+						.SetMaxResults(1)
+						.UniqueResult();
+					Assert.AreEqual(1, result);
+				}
+			}
+			finally
+			{
+				using (ISession s = OpenSession())
+				using (s.BeginTransaction())
+				{
+					s.CreateQuery("delete from Animal").ExecuteUpdate();
+					s.Transaction.Commit();
+				}
+			}
+		}
+
+		[Test]
+		public void ParameterInCaseThenClause()
+		{
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.Save(new Animal { BodyWeight = 12, Description = "Polliwog" });
+				s.Transaction.Commit();
+			}
+
+			try
+			{
+				using (ISession s = OpenSession())
+				{
+					var result = s.CreateQuery("select case when 2=2 then ? else 0 end from Animal a")
+						.SetParameter(0, 1)
+						.UniqueResult();
+					Assert.AreEqual(1, result);
+				}
+			}
+			finally
+			{
+				using (ISession s = OpenSession())
+				using (s.BeginTransaction())
+				{
+					s.CreateQuery("delete from Animal").ExecuteUpdate();
+					s.Transaction.Commit();
+				}
+			}
+		}
+
+		[Test]
+		public void ParameterInCaseThenAndElseClausesWithCast()
+		{
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.Save(new Animal { BodyWeight = 12, Description = "Polliwog" });
+				s.Transaction.Commit();
+			}
+
+			try
+			{
+				using (ISession s = OpenSession())
+				{
+					var result = s.CreateQuery("select case when 2=2 then cast(? as integer) else ? end from Animal a")
+						.SetParameter(0, 1)
+						.SetParameter(1, 0)
+						.UniqueResult();
+					Assert.AreEqual(1, result);
+				}
+			}
+			finally
+			{
+				using (ISession s = OpenSession())
+				using (s.BeginTransaction())
+				{
+					s.CreateQuery("delete from Animal").ExecuteUpdate();
+					s.Transaction.Commit();
+				}
+			}
+		}
+
+		[Test]
+		public void SubselectAddition()
+		{
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.Save(new Animal { BodyWeight = 12, Description = "Polliwog" });
+				s.Transaction.Commit();
+			}
+
+			try
+			{
+				using (ISession s = OpenSession())
+				{
+					var result = s.CreateQuery("select count(a) from Animal a where (select count(a2) from Animal a2) + 1 > 1")
+						.UniqueResult();
+					Assert.AreEqual(1, result);
+				}
+			}
+			finally
+			{
+				using (ISession s = OpenSession())
+				using (s.BeginTransaction())
+				{
+					s.CreateQuery("delete from Animal").ExecuteUpdate();
+					s.Transaction.Commit();
+				}
+			}
+		}
+
 		[Test, Ignore("Not fixed yet.")]
 		public void SumShouldReturnDouble()
 		{

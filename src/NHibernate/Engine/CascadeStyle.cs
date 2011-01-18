@@ -153,7 +153,7 @@ namespace NHibernate.Engine
 		{
 			public override bool DoCascade(CascadingAction action)
 			{
-				return action == CascadingAction.Merge;
+				return action == CascadingAction.Merge || action == CascadingAction.SaveUpdateCopy;
 			}
 		}
 

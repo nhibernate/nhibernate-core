@@ -42,7 +42,6 @@ namespace NHibernate.Persister.Collection
 		private readonly SqlCommandInfo sqlInsertRowString;
 		private readonly SqlCommandInfo sqlUpdateRowString;
 		private readonly SqlCommandInfo sqlDeleteRowString;
-		private readonly SqlString sqlSelectSizeString;
 		private readonly SqlString sqlSelectRowByIndexString;
 		private readonly SqlString sqlDetectRowByIndexString;
 		private readonly SqlString sqlDetectRowByElementString;
@@ -478,7 +477,7 @@ namespace NHibernate.Persister.Collection
 				deleteAllCheckStyle = ExecuteUpdateResultCheckStyle.None;
 			}
 
-			sqlSelectSizeString = GenerateSelectSizeString(collection.IsIndexed && !collection.IsMap);
+		    isCollectionIntegerIndex = collection.IsIndexed && !collection.IsMap;
 			sqlDetectRowByIndexString = GenerateDetectRowByIndexString();
 			sqlDetectRowByElementString = GenerateDetectRowByElementString();
 			sqlSelectRowByIndexString = GenerateSelectRowByIndexString();
@@ -840,21 +839,21 @@ namespace NHibernate.Persister.Collection
 		{
 			if (!hasWhere)
 				return sql;
-			var sqlStringBuilder = new SqlStringBuilder(sql);
-			sqlStringBuilder.Add(" and ").Add(sqlWhereString);
-			return sqlStringBuilder.ToSqlString();
+		    return sql.Append(" and ").Append(sqlWhereString);
 		}
-		private SqlString GenerateSelectSizeString(bool isIntegerIndexed)
+
+		private SqlString GenerateSelectSizeString(ISessionImplementor sessionImplementor)
 		{
-			string selectValue = isIntegerIndexed
+			string selectValue = isCollectionIntegerIndex
 			                     	? "max(" + IndexColumnNames[0] + ") + 1"
 			                     	: "count(" + ElementColumnNames[0] + ")"; //sets, maps, bags
-			
-			var sqlString=new SqlSimpleSelectBuilder(dialect, factory)
-				.SetTableName(TableName)
-				.AddWhereFragment(KeyColumnNames, KeyType, "=")
-				.AddColumn(selectValue).ToSqlString();
-			return AddWhereFragment(sqlString);
+
+		    return new SqlSimpleSelectBuilder(dialect, factory)
+		        .SetTableName(TableName)
+		        .AddWhereFragment(KeyColumnNames, KeyType, "=")
+		        .AddColumn(selectValue)
+		        .ToSqlString()
+		        .Append(FilterFragment(TableName, sessionImplementor.EnabledFilters));
 		}
 
 		private SqlString GenerateDetectRowByIndexString()
@@ -1507,7 +1506,12 @@ namespace NHibernate.Persister.Collection
 			using(new SessionIdLoggingContext(session.SessionId))
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sqlSelectSizeString, KeyType.SqlTypes(factory));
+                if(session.EnabledFilters.Count > 0)
+                {
+                    
+                }
+
+				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, GenerateSelectSizeString(session), KeyType.SqlTypes(factory));
 				IDataReader rs = null;
 				try
 				{
@@ -1524,7 +1528,7 @@ namespace NHibernate.Persister.Collection
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
 				                                 "could not retrieve collection size: "
-				                                 + MessageHelper.InfoString(this, key, Factory), sqlSelectSizeString);
+				                                 + MessageHelper.InfoString(this, key, Factory), GenerateSelectSizeString(session));
 			}
 		}
 
@@ -1575,7 +1579,7 @@ namespace NHibernate.Persister.Collection
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
 				                                 "could not check row existence: " + MessageHelper.InfoString(this, key, Factory),
-				                                 sqlSelectSizeString);
+				                                 GenerateSelectSizeString(session));
 			}
 		}
 
@@ -1618,7 +1622,7 @@ namespace NHibernate.Persister.Collection
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
 				                                 "could not read row: " + MessageHelper.InfoString(this, key, Factory),
-				                                 sqlSelectSizeString);
+				                                 GenerateSelectSizeString(session));
 			}
 		}
 
@@ -2006,8 +2010,9 @@ namespace NHibernate.Persister.Collection
 		#region IPostInsertIdentityPersister Members
 
 		private string identitySelectString;
+	    private bool isCollectionIntegerIndex;
 
-		public string IdentitySelectString
+	    public string IdentitySelectString
 		{
 			get
 			{
