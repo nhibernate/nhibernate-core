@@ -598,6 +598,8 @@
     <Compile Include="NHSpecificTest\NH2420\MyTable.cs" />
     <Compile Include="NHSpecificTest\NH2441\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2441\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2467\DomainClass.cs" />
+    <Compile Include="NHSpecificTest\NH2467\NH2467Test.cs" />
     <Compile Include="NHSpecificTest\NH2459\Test.cs" />
     <Compile Include="NHSpecificTest\NH2459\TrainingComponent.cs" />
     <Compile Include="NHSpecificTest\NH2470\Class1Class2Classes.cs" />
@@ -2397,6 +2399,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2467\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2459\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2412\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2280\Mappings.hbm.xml" />

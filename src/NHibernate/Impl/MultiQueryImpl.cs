@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using Iesi.Collections;
-
+using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -12,8 +13,6 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Transform;
 using NHibernate.Type;
-using Iesi.Collections.Generic;
-using System.Collections.Generic;
 
 namespace NHibernate.Impl
 {
@@ -653,18 +652,19 @@ namespace NHibernate.Impl
 			{
 				int limitParameterSpan = BindLimitParametersFirstIfNeccesary(command, queryIndex, colIndex);
 				colIndex = BindQueryParameters(command, queryIndex, colIndex + limitParameterSpan);
-				BindLimitParametersLastIfNeccesary(command, queryIndex, colIndex);
+				colIndex += BindLimitParametersLastIfNeccesary(command, queryIndex, colIndex);
 			}
 		}
 
-		private void BindLimitParametersLastIfNeccesary(IDbCommand command, int queryIndex, int colIndex)
+		private int BindLimitParametersLastIfNeccesary(IDbCommand command, int queryIndex, int colIndex)
 		{
 			QueryParameters parameter = parameters[queryIndex];
 			RowSelection selection = parameter.RowSelection;
 			if (Loader.Loader.UseLimit(selection, dialect) && !dialect.BindLimitParametersFirst)
 			{
-				Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
+				return Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
 			}
+			return 0;
 		}
 
 		private int BindQueryParameters(IDbCommand command, int queryIndex, int colIndex)
