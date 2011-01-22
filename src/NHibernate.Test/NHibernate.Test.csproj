@@ -473,6 +473,7 @@
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
     <Compile Include="NHSpecificTest\EntityNameAndCompositeId\Fixture.cs" />
+    <Compile Include="NHSpecificTest\EntityNameAndInheritance\Fixture.cs" />
     <Compile Include="NHSpecificTest\EntityNameWithFullName\Fixture.cs" />
     <Compile Include="NHSpecificTest\Futures\LinqFutureFixture.cs" />
     <Compile Include="NHSpecificTest\NH1136\Address.cs" />
@@ -2399,6 +2400,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\EntityNameAndInheritance\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2467\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2459\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2412\Mappings.hbm.xml" />
@@ -2777,7 +2779,6 @@
     <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Cascade\Circle" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
