@@ -1222,7 +1222,8 @@ namespace NHibernate.Loader
 
 		private int GetFirstLimitParameterCount(Dialect.Dialect dialect, bool useLimit, bool hasFirstRow, bool useOffset)
 		{
-			if (!useLimit) return 0;
+            if (!useLimit) return 0;
+			if (!dialect.SupportsVariableLimit) return 0;
 			if (!dialect.BindLimitParametersFirst) return 0;
 			return (hasFirstRow && useOffset) ? 2 : 1;
 		}
