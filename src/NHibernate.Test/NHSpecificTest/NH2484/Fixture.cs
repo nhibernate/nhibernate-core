@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Reflection;
 using NUnit.Framework;
 using NHibernate.Type;
 using NHibernate.SqlTypes;
@@ -17,7 +18,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2484
 		[Test]
 		public void TestPersistenceOfClassWithUnknownSerializableType()
 		{
-			var stream = this.GetType().Assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
+			Assembly assembly = Assembly.Load(MappingsAssembly);
+			var stream = assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
 			var image = Bitmap.FromStream(stream);
 			
 			var model = new ClassWithImage() { Image = image };
@@ -48,7 +50,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2484
 		[Test]
 		public void TestPersistenceOfClassWithSerializableType()
 		{
-			var stream = this.GetType().Assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
+			Assembly assembly = Assembly.Load(MappingsAssembly);
+			var stream = assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
 			var image = Bitmap.FromStream(stream);
 			
 			var model = new ClassWithSerializableType() { Image = image };
