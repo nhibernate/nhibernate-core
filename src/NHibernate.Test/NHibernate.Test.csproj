@@ -91,6 +91,7 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Linq.Dynamic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\3.5\System.Linq.Dynamic.dll</HintPath>
@@ -608,6 +609,8 @@
     <Compile Include="NHSpecificTest\NH2470\Class1Class2Tests.cs" />
     <Compile Include="NHSpecificTest\NH2470\DomainObject.cs" />
     <Compile Include="NHSpecificTest\NH2470\DTO.cs" />
+    <Compile Include="NHSpecificTest\NH2484\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2484\Model.cs" />
     <Compile Include="NHSpecificTest\Properties\CompositePropertyRefTest.cs" />
     <Compile Include="NHSpecificTest\Properties\DynamicEntityTest.cs" />
     <Compile Include="NHSpecificTest\Properties\Model.cs" />
@@ -1912,6 +1915,8 @@
     <EmbeddedResource Include="NHSpecificTest\NH2409\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2420\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2441\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2484\food-photo.jpg" />
+    <EmbeddedResource Include="NHSpecificTest\NH2484\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.ByteCode.Castle\NHibernate.ByteCode.Castle.csproj">
@@ -2779,6 +2784,7 @@
     <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="NHSpecificTest\NH2484" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>

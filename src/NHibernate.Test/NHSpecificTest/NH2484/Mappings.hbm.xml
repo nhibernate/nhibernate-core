@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH2484">
+
+	<class name="ClassWithImage">
+		
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		
+		<property name="Image" type="System.Drawing.Image, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+			<column name="Image" length="10000" not-null="false" />
+		</property>
+	
+	</class>
+
+	<class name="ClassWithSerializableType">
+		
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		
+		<property name="Image" type="Serializable(10000)">
+			<column name="Image" not-null="false" />
+		</property>
+	
+	</class>
+
+</hibernate-mapping>

@@ -21,7 +21,7 @@ namespace NHibernate.Type
 	/// <remarks>
 	/// Applications should use static methods and constants on NHibernate.NHibernateUtil if the default
 	/// IType is good enough.  For example, the TypeFactory should only be used when the String needs
-	/// to have a length of 300 instead of 255.  At this point NHibernate.String does not get you the
+	/// to have a length of 300 instead of 255.  At this point NHibernateUtil.String does not get you the
 	/// correct IType.  Instead use TypeFactory.GetString(300) and keep a local variable that holds
 	/// a reference to the IType.
 	/// </remarks>
@@ -33,8 +33,8 @@ namespace NHibernate.Type
 			Length,
 			PrecisionScale
 		}
+		
 		private static readonly string[] EmptyAliases= new string[0];
-
 		private static readonly char[] PrecisionScaleSplit = new[] { '(', ')', ',' };
 		private static readonly char[] LengthSplit = new[] { '(', ')' };
 		private static readonly TypeFactory Instance;
@@ -446,13 +446,24 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Uses heuristics to deduce a NHibernate type given a string naming the
-		/// type.
+		/// Uses heuristics to deduce a NHibernate type given a string naming the type.
 		/// </summary>
 		/// <param name="typeName">the type name</param>
 		/// <param name="parameters">parameters for the type</param>
 		/// <returns>An instance of <c>NHibernate.Type.IType</c></returns>
 		public static IType HeuristicType(string typeName, IDictionary<string, string> parameters)
+		{
+			return HeuristicType(typeName, parameters, null);
+		}
+		
+		/// <summary>
+		/// Uses heuristics to deduce a NHibernate type given a string naming the type.
+		/// </summary>
+		/// <param name="typeName">the type name</param>
+		/// <param name="parameters">parameters for the type</param>
+		/// <param name="length">optionally, the size of the type</param>
+		/// <returns></returns>
+		public static IType HeuristicType(string typeName, IDictionary<string, string> parameters, int? length)
 		{
 			IType type = Basic(typeName);
 
@@ -517,6 +528,10 @@ namespace NHibernate.Type
 						if (typeClassification == TypeClassification.Length)
 						{
 							type = GetSerializableType(typeClass, Int32.Parse(parsedTypeName[1]));
+						}
+						else if (length != null)
+						{
+							type = GetSerializableType(typeClass, length.Value);
 						}
 						else
 						{

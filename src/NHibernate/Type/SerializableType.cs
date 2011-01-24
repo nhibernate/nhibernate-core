@@ -14,8 +14,9 @@ namespace NHibernate.Type
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// The SerializableType should be used when you know that Bytes are 
-	/// not going to be greater than 8,000.
+	/// For performance reasons, the SerializableType should be used when you know that Bytes are 
+	/// not going to be greater than 8,000. Implementing a custom type is recommended for larger
+	/// types.
 	/// </para>
 	/// <para>
 	/// The base class is <see cref="MutableType"/> because the data is stored in 

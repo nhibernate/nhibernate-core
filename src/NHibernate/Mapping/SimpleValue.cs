@@ -247,18 +247,21 @@ namespace NHibernate.Mapping
 		{
 			// NH different behavior
 			// If the mapping has a type as "Double(10,5)" our SqlType will be created with all information
-			// including the rigth SqlType specification but when the length/presion/scale was specified
-			// trough attributes the SqlType is wrong (does not include length/presion/scale specification)
+			// including the right SqlType specification, but when the length/precision/scale was specified
+			// through attributes the SqlType is wrong (does not include length/precision/scale specification)
 
 			IType result = null;
 			if (ColumnSpan == 1 && !columns[0].IsFormula)
 			{
-				var col = (Column) columns[0];
-				if(col.IsLengthDefined())
+				var col = (Column)columns[0];
+				if (col.IsLengthDefined())
 				{
 					result = TypeFactory.BuiltInType(typeName, col.Length);
+					
+					if (result == null)
+						result = TypeFactory.HeuristicType(typeName, typeParameters, col.Length);
 				}
-				else if(col.IsPrecisionDefined())
+				else if (col.IsPrecisionDefined())
 				{
 					result = TypeFactory.BuiltInType(typeName, Convert.ToByte(col.Precision), Convert.ToByte(col.Scale));
 				}
