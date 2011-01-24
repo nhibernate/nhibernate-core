@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using NHibernate.Driver;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -11,9 +12,9 @@ namespace NHibernate.Dialect
 	{
 		public MsSql2005Dialect()
 		{
-			RegisterColumnType(DbType.String, 1073741823, "NVARCHAR(MAX)");
-			RegisterColumnType(DbType.AnsiString, 2147483647, "VARCHAR(MAX)");
-			RegisterColumnType(DbType.Binary, 2147483647, "VARBINARY(MAX)");
+			RegisterColumnType(DbType.String, SqlClientDriver.MaxSizeForClob, "NVARCHAR(MAX)");
+			RegisterColumnType(DbType.AnsiString, SqlClientDriver.MaxSizeForAnsiClob, "VARCHAR(MAX)");
+			RegisterColumnType(DbType.Binary, SqlClientDriver.MaxSizeForBlob, "VARBINARY(MAX)");
 			RegisterColumnType(DbType.Xml, "XML");
 		}
 
