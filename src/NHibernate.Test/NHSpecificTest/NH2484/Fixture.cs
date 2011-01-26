@@ -7,7 +7,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Test.NHSpecificTest.NH2484
 {
-[TestFixture]
+	[TestFixture]
 	public class Fixture : BugTestCase
 	{
 		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
@@ -16,7 +16,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2484
 		}
 
 		[Test]
-		[Ignore("Unable to locate embedded image resource on TeamCity")]
 		public void TestPersistenceOfClassWithUnknownSerializableType()
 		{
 			Assembly assembly = Assembly.Load(MappingsAssembly);
@@ -49,7 +48,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2484
 		}
 		
 		[Test]
-		[Ignore("Unable to locate embedded image resource on TeamCity")]
 		public void TestPersistenceOfClassWithSerializableType()
 		{
 			Assembly assembly = Assembly.Load(MappingsAssembly);
