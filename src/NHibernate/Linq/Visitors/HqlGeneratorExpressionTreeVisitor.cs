@@ -330,6 +330,7 @@ namespace NHibernate.Linq.Visitors
                 case ExpressionType.Not:
                     return _hqlTreeBuilder.BooleanNot(VisitExpression(expression.Operand).AsBooleanExpression());
                 case ExpressionType.Convert:
+                case ExpressionType.ConvertChecked:
                     return VisitExpression(expression.Operand);
             }
 
