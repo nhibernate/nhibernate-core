@@ -3898,29 +3898,19 @@ namespace NHibernate.Persister.Entity
 			{
 				return this;
 			}
-			else
+			// TODO : really need a way to do something like :
+			//      getTuplizer(entityMode).determineConcreteSubclassEntityName(instance)
+			var clazz = instance.GetType();
+			if (clazz == GetMappedClass(entityMode))
 			{
-				// TODO : really need a way to do something like :
-				//      getTuplizer(entityMode).determineConcreteSubclassEntityName(instance)
-				System.Type clazz = instance.GetType();
-				if (clazz == GetMappedClass(entityMode))
-				{
-					return this;
-				}
-				else
-				{
-					string subclassEntityName = GetSubclassEntityName(clazz);
-					if (subclassEntityName == null)
-					{
-						throw new HibernateException("instance not of expected entity type: " + clazz.FullName + " is not a: "
-																				 + EntityName);
-					}
-					else
-					{
-						return factory.GetEntityPersister(subclassEntityName);
-					}
-				}
+				return this;
 			}
+			var subclassEntityName = GetSubclassEntityName(clazz);
+			if (subclassEntityName == null || EntityName.Equals(subclassEntityName))
+			{
+				return this;
+			}
+			return factory.GetEntityPersister(subclassEntityName);
 		}
 
 		public virtual EntityMode? GuessEntityMode(object obj)

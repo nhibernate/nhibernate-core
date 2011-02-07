@@ -85,5 +85,34 @@ namespace NHibernate.Test.Linq
             Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(2));
             Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1));
         }
+
+        [Test]
+        public void CacheableBeforeOtherClauses()
+        {
+            Sfi.Statistics.Clear();
+            Sfi.QueryCache.Clear();
+
+            db.Customers.Cacheable().Where(c => c.ContactName != c.CompanyName).Take(1).ToList();
+            db.Customers.Where(c => c.ContactName != c.CompanyName).Take(1).ToList();
+
+            Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2));
+            Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1));
+            Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void CacheableRegionBeforeOtherClauses()
+        {
+            Sfi.Statistics.Clear();
+            Sfi.QueryCache.Clear();
+
+            db.Customers.Cacheable().CacheRegion("test").Where(c => c.ContactName != c.CompanyName).Take(1).ToList();
+            db.Customers.Cacheable().CacheRegion("test").Where(c => c.ContactName != c.CompanyName).Take(1).ToList();
+            db.Customers.Cacheable().CacheRegion("other").Where(c => c.ContactName != c.CompanyName).Take(1).ToList();
+
+            Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2));
+            Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(2));
+            Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1));
+        }
     }
 }

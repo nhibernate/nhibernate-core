@@ -553,12 +553,12 @@ namespace NHibernate.Engine
 				else
 				{
 					paramTypeList.Add(NHibernateUtil.Int32);
-					limitParameterIndex = totalSpan;
+					limitParameterIndex = startParameterIndex + totalSpan;
 					if (addOffset)
 					{
 						paramTypeList.Add(NHibernateUtil.Int32);
-						offsetParameterIndex = totalSpan;
-						limitParameterIndex = totalSpan + 1;
+						offsetParameterIndex = startParameterIndex + totalSpan;
+						limitParameterIndex = startParameterIndex + totalSpan + 1;
 					}
 				}
 

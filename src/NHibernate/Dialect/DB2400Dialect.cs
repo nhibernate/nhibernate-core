@@ -46,6 +46,12 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
+        public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit, int? offsetParameterIndex, int? limitParameterIndex)
+        {
+            // override the base-class's implementation that uses limit parameters
+            return GetLimitString(querySqlString, offset, limit);
+        }
+
 		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
 		{
 			return new SqlStringBuilder(querySqlString)

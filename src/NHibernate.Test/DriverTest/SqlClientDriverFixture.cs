@@ -29,10 +29,6 @@ namespace NHibernate.Test.DriverTest
 	[TestFixture]
 	public class SqlClientDriverFixture : TestCase
 	{
-		protected override void Configure(Configuration configuration)
-		{
-			configuration.SetProperty(Environment.PrepareSql, "true");
-		}
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
@@ -45,24 +41,28 @@ namespace NHibernate.Test.DriverTest
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return dialect is MsSql2000Dialect;
+			return dialect is MsSql2008Dialect;
 		}
 
 		[Test]
 		public void Crud()
 		{
-			// Should use default dimension for CRUD op and prepare_sql='true' because the mapping does not 
+			// Should use default dimension for CRUD op because the mapping does not 
 			// have dimensions specified.
 			object savedId;
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				savedId = s.Save(new MultiTypeEntity
-				                 	{
-				                 		StringProp = "a", StringClob = "a",BinaryBlob = new byte[]{1,2,3},
-														Binary = new byte[] { 4, 5, 6 }, Currency = 123.4m, Double = 123.5d,
-														Decimal = 789.5m
-				                 	});
+									{
+										StringProp = "a",
+										StringClob = "a",
+										BinaryBlob = new byte[]{1,2,3},
+										Binary = new byte[] { 4, 5, 6 },
+										Currency = 123.4m,
+										Double = 123.5d,
+										Decimal = 789.5m
+									});
 				t.Commit();
 			}
 
