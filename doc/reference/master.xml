@@ -13,13 +13,14 @@
 <!ENTITY manipulating-data      SYSTEM "modules/manipulating_data.xml">
 <!ENTITY transactions           SYSTEM "modules/transactions.xml">
 <!ENTITY events                 SYSTEM "modules/events.xml">
-<!ENTITY batch                 SYSTEM "modules/batch.xml">
+<!ENTITY batch                  SYSTEM "modules/batch.xml">
 <!ENTITY query-hql              SYSTEM "modules/query_hql.xml">
 <!ENTITY query-criteria         SYSTEM "modules/query_criteria.xml">
 <!ENTITY query-queryover        SYSTEM "modules/query_queryover.xml">
 <!ENTITY query-sql              SYSTEM "modules/query_sql.xml">
 <!ENTITY filters                SYSTEM "modules/filters.xml">
 <!ENTITY performance            SYSTEM "modules/performance.xml">
+<!ENTITY read-only              SYSTEM "modules/readonly.xml">
 <!ENTITY toolset-guide          SYSTEM "modules/toolset_guide.xml">
 <!ENTITY example-parentchild    SYSTEM "modules/example_parentchild.xml">
 <!ENTITY example-weblog         SYSTEM "modules/example_weblog.xml">
@@ -38,7 +39,7 @@
 	<bookinfo>
 		<title>NHibernate - Relational Persistence for Idiomatic .NET</title>
 		<subtitle>NHibernate Reference Documentation</subtitle>
-		<releaseinfo>3.0.0</releaseinfo>
+		<releaseinfo>3.0.1</releaseinfo>
 	</bookinfo>
 
 	<toc />
@@ -59,6 +60,7 @@
 	&inheritance-mapping;
 	
 	&manipulating-data;
+	&read-only;
 	&transactions;
 	&events;
 	&batch;
