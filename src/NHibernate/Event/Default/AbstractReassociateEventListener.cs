@@ -8,17 +8,17 @@ using Status=NHibernate.Engine.Status;
 
 namespace NHibernate.Event.Default
 {
-	/// <summary> 
+	/// <summary>
 	/// A convenience base class for listeners that respond to requests to reassociate an entity
-	/// to a session ( such as through lock() or update() ). 
+	/// to a session ( such as through lock() or update() ).
 	/// </summary>
 	[Serializable]
 	public class AbstractReassociateEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AbstractReassociateEventListener));
 
-		/// <summary> 
-		/// Associates a given entity (either transient or associated with another session) to the given session. 
+		/// <summary>
+		/// Associates a given entity (either transient or associated with another session) to the given session.
 		/// </summary>
 		/// <param name="event">The event triggering the re-association </param>
 		/// <param name="entity">The entity to be associated </param>
@@ -29,8 +29,7 @@ namespace NHibernate.Event.Default
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Reassociating transient instance: " + 
-					MessageHelper.InfoString(persister, id, @event.Session.Factory));
+				log.Debug("Reassociating transient instance: " + MessageHelper.InfoString(persister, id, @event.Session.Factory));
 			}
 
 			IEventSource source = @event.Session;
@@ -43,7 +42,17 @@ namespace NHibernate.Event.Default
 			TypeHelper.DeepCopy(values, persister.PropertyTypes, persister.PropertyUpdateability, values, source);
 			object version = Versioning.GetVersion(values, persister);
 
-			EntityEntry newEntry = source.PersistenceContext.AddEntity(entity, Status.Loaded, values, key, version, LockMode.None, true, persister, false, true);
+			EntityEntry newEntry = source.PersistenceContext.AddEntity(
+				entity,
+				persister.IsMutable ? Status.Loaded : Status.ReadOnly,
+				values,
+				key,
+				version,
+				LockMode.None,
+				true,
+				persister,
+				false,
+				true);
 
 			new OnLockVisitor(source, id, entity).Process(entity, persister);
 

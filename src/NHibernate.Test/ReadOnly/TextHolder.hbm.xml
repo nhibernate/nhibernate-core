@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	namespace="NHibernate.Test.ReadOnly"
+	assembly="NHibernate.Test">
+
+	<class name="TextHolder">
+		<id name="Id">
+			<generator class="increment" />
+		</id>
+		<property name="TheText">
+			<column name="TXT" sql-type="text" />
+		</property>
+	</class>
+
+</hibernate-mapping>

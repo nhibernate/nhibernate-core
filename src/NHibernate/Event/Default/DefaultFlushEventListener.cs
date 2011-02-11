@@ -13,7 +13,7 @@ namespace NHibernate.Event.Default
 		{
 			IEventSource source = @event.Session;
 
-			if (source.PersistenceContext.HasNonReadOnlyEntities)
+			if ((source.PersistenceContext.EntityEntries.Count > 0) || (source.PersistenceContext.CollectionEntries.Count > 0))
 			{
 				FlushEverythingToExecutions(@event);
 				PerformExecutions(source);

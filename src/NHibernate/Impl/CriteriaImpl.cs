@@ -34,6 +34,7 @@ namespace NHibernate.Impl
 		private string comment;
 		private FlushMode? flushMode;
 		private FlushMode? sessionFlushMode;
+		private bool? readOnly;
 
 		private readonly List<Subcriteria> subcriteriaList = new List<Subcriteria>();
 		private readonly string rootAlias;
@@ -47,7 +48,7 @@ namespace NHibernate.Impl
 		private ICriteria projectionCriteria;
 
 		public CriteriaImpl(System.Type persistentClass, ISessionImplementor session)
-			: this(persistentClass.FullName, CriteriaSpecification.RootAlias, session) 
+			: this(persistentClass.FullName, CriteriaSpecification.RootAlias, session)
 		{
 			this.persistentClass = persistentClass;
 		}
@@ -121,6 +122,22 @@ namespace NHibernate.Impl
 		public IProjection Projection
 		{
 			get { return projection; }
+		}
+		
+		public bool IsReadOnlyInitialized
+		{
+			get { return (readOnly != null); }
+		}
+		
+		public bool IsReadOnly
+		{
+			get
+			{
+				if (!IsReadOnlyInitialized && (Session == null))
+					throw new InvalidOperationException("cannot determine readOnly/modifiable setting when it is not initialized and is not initialized and Session == null");
+
+				return IsReadOnlyInitialized ? readOnly.Value : Session.PersistenceContext.DefaultReadOnly;
+			}
 		}
 
 		public FetchMode GetFetchMode(string path)
@@ -479,6 +496,12 @@ namespace NHibernate.Impl
 
 			return this;
 		}
+		
+		public ICriteria SetReadOnly(bool readOnly)
+		{
+			this.readOnly = readOnly;
+			return this;
+		}
 
 		/// <summary> Override the cache mode for this particular query. </summary>
 		/// <param name="cacheMode">The cache mode to use. </param>
@@ -548,7 +571,7 @@ namespace NHibernate.Impl
 
 		private void CloneSubcriteria(CriteriaImpl clone)
 		{
-			//we need to preserve the parent criteria, we rely on the ordering when creating the 
+			//we need to preserve the parent criteria, we rely on the ordering when creating the
 			//subcriterias initially here, so we don't need to make more than a single pass
 			Dictionary<ICriteria, ICriteria> newParents = new Dictionary<ICriteria, ICriteria>();
 			newParents[this] = clone;
@@ -590,7 +613,7 @@ namespace NHibernate.Impl
 				}
 
 				currentParent.Add(criterionEntry.Criterion);
-			}		
+			}
 		}
 
 		public ICriteria GetCriteriaByPath(string path)
@@ -680,6 +703,16 @@ namespace NHibernate.Impl
 				get { return lockMode; }
 			}
 
+			public bool IsReadOnlyInitialized
+			{
+				get { return root.IsReadOnlyInitialized; }
+			}
+			
+			public bool IsReadOnly
+			{
+				get { return root.IsReadOnly; }
+			}
+				
 			public ICriteria SetLockMode(LockMode lockMode)
 			{
 				this.lockMode = lockMode;
@@ -869,7 +902,13 @@ namespace NHibernate.Impl
 				root.SetProjection(projections);
 				return this;
 			}
-
+			
+			public ICriteria SetReadOnly(bool readOnly)
+			{
+				root.SetReadOnly(readOnly);
+				return this;
+			}
+			
 			public ICriteria GetCriteriaByPath(string path)
 			{
 				return root.GetCriteriaByPath(path);

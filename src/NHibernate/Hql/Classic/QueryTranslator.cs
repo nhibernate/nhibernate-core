@@ -8,9 +8,9 @@ using System.Text;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
 
-
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
+using NHibernate.Event;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
 using NHibernate.Loader;
@@ -1337,7 +1337,7 @@ namespace NHibernate.Hql.Classic
 			return List(session, queryParameters, QuerySpaces, actualReturnTypes);
 		}
 
-		public IEnumerable GetEnumerable(QueryParameters parameters, ISessionImplementor session)
+		public IEnumerable GetEnumerable(QueryParameters parameters, IEventSource session)
 		{
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
 
@@ -1354,7 +1354,7 @@ namespace NHibernate.Hql.Classic
 			HolderInstantiator hi =
 				HolderInstantiator.CreateClassicHolderInstantiator(holderConstructor, parameters.ResultTransformer);
 			IEnumerable result =
-				new EnumerableImpl(rs, cmd, session, ReturnTypes, ScalarColumnNames, parameters.RowSelection, hi);
+				new EnumerableImpl(rs, cmd, session, parameters.IsReadOnly(session), ReturnTypes, ScalarColumnNames, parameters.RowSelection, hi);
 			if (statsEnabled)
 			{
 				stopWath.Stop();

@@ -110,7 +110,17 @@ namespace NHibernate.Event.Default
 
 			new OnReplicateVisitor(source, id, entity, true).Process(entity, persister);
 
-			source.PersistenceContext.AddEntity(entity, Status.Loaded, null, new EntityKey(id, persister, source.EntityMode), version, LockMode.None, true, persister, true, false);
+			source.PersistenceContext.AddEntity(
+				entity, 
+				persister.IsMutable ? Status.Loaded : Status.ReadOnly,
+				null, 
+				new EntityKey(id, persister, source.EntityMode), 
+				version, 
+				LockMode.None, 
+				true, 
+				persister,
+				true, 
+				false);
 
 			CascadeAfterReplicate(entity, persister, replicationMode, source);
 		}

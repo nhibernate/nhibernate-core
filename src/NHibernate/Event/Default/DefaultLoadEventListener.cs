@@ -12,8 +12,8 @@ using NHibernate.Type;
 
 namespace NHibernate.Event.Default
 {
-	/// <summary> 
-	/// Defines the default load event listeners used by hibernate for loading entities
+	/// <summary>
+	/// Defines the default load event listeners used by NHibernate for loading entities
 	/// in response to generated load events.
 	/// </summary>
 	[Serializable]
@@ -121,9 +121,9 @@ namespace NHibernate.Event.Default
 			return entity;
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Based on configured options, will either return a pre-existing proxy,
-		/// generate a new proxy, or perform an actual load. 
+		/// generate a new proxy, or perform an actual load.
 		/// </summary>
 		/// <returns> The result of the proxy/load operation.</returns>
 		protected virtual object ProxyOrLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
@@ -163,7 +163,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Given that there is a pre-existing proxy.
 		/// Initialize it if necessary; narrow if necessary.
 		/// </summary>
@@ -194,7 +194,7 @@ namespace NHibernate.Event.Default
 			return persistenceContext.NarrowProxy(castedProxy, persister, keyToLoad, impl);
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Given that there is no pre-existing proxy.
 		/// Check if the entity is already loaded. If it is, return the entity,
 		/// otherwise create and return a proxy.
@@ -224,13 +224,16 @@ namespace NHibernate.Event.Default
 				object proxy = persister.CreateProxy(@event.EntityId, @event.Session);
 				persistenceContext.BatchFetchQueue.AddBatchLoadableEntityKey(keyToLoad);
 				persistenceContext.AddProxy(keyToLoad, (INHibernateProxy)proxy);
+				((INHibernateProxy)proxy)
+					.HibernateLazyInitializer
+					.ReadOnly = @event.Session.DefaultReadOnly || !persister.IsMutable;
 				return proxy;
 			}
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// If the class to be loaded has been configured with a cache, then lock
-		/// given id in that cache and then perform the load. 
+		/// given id in that cache and then perform the load.
 		/// </summary>
 		/// <returns> The loaded entity </returns>
 		protected virtual object LockAndLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, ISessionImplementor source)
@@ -264,11 +267,11 @@ namespace NHibernate.Event.Default
 
 			return proxy;
 		}
-		/// <summary> 
+		/// <summary>
 		/// Coordinates the efforts to load a given entity.  First, an attempt is
 		/// made to load the entity from the session-level cache.  If not found there,
 		/// an attempt is made to locate it in second-level cache.  Lastly, an
-		/// attempt is made to load it directly from the datasource. 
+		/// attempt is made to load it directly from the datasource.
 		/// </summary>
 		/// <param name="event">The load event </param>
 		/// <param name="persister">The persister for the entity being requested for load </param>
@@ -320,8 +323,8 @@ namespace NHibernate.Event.Default
 			return LoadFromDatasource(@event, persister, keyToLoad, options);
 		}
 
-		/// <summary> 
-		/// Performs the process of loading an entity from the configured underlying datasource. 
+		/// <summary>
+		/// Performs the process of loading an entity from the configured underlying datasource.
 		/// </summary>
 		/// <param name="event">The load event </param>
 		/// <param name="persister">The persister for the entity being requested for load </param>
@@ -350,8 +353,8 @@ namespace NHibernate.Event.Default
 			return entity;
 		}
 
-		/// <summary> 
-		/// Attempts to locate the entity in the session-level cache. 
+		/// <summary>
+		/// Attempts to locate the entity in the session-level cache.
 		/// </summary>
 		/// <param name="event">The load event </param>
 		/// <param name="keyToLoad">The EntityKey representing the entity to be loaded. </param>
@@ -459,7 +462,8 @@ namespace NHibernate.Event.Default
 			object result = optionalObject ?? session.Instantiate(subclassPersister, id);
 
 			// make it circular-reference safe
-			TwoPhaseLoad.AddUninitializedCachedEntity(new EntityKey(id, subclassPersister, session.EntityMode), result, subclassPersister, LockMode.None, entry.AreLazyPropertiesUnfetched, entry.Version, session);
+			EntityKey entityKey = new EntityKey(id, subclassPersister, session.EntityMode);
+			TwoPhaseLoad.AddUninitializedCachedEntity(entityKey, result, subclassPersister, LockMode.None, entry.AreLazyPropertiesUnfetched, entry.Version, session);
 
 			IType[] types = subclassPersister.PropertyTypes;
 			object[] values = entry.Assemble(result, id, subclassPersister, session.Interceptor, session); // intializes result by side-effect
@@ -472,8 +476,34 @@ namespace NHibernate.Event.Default
 			}
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;
+			bool isReadOnly = session.DefaultReadOnly;
+
+			if (persister.IsMutable)
+			{
+				object proxy = persistenceContext.GetProxy(entityKey);
+				if (proxy != null)
+				{
+					// this is already a proxy for this impl
+					// only set the status to read-only if the proxy is read-only
+					isReadOnly = ((INHibernateProxy)proxy).HibernateLazyInitializer.ReadOnly;
+				}
+			}
+			else
+				isReadOnly = true;
 			
-			persistenceContext.AddEntry(result, Status.Loaded, values, null, id, version, LockMode.None, true, subclassPersister, false, entry.AreLazyPropertiesUnfetched);
+			persistenceContext.AddEntry(
+				result,
+				isReadOnly ? Status.ReadOnly : Status.Loaded,
+				values,
+				null,
+				id,
+				version,
+				LockMode.None,
+				true,
+				subclassPersister,
+				false,
+				entry.AreLazyPropertiesUnfetched);
+			
 			subclassPersister.AfterInitialize(result, entry.AreLazyPropertiesUnfetched, session);
 			persistenceContext.InitializeNonLazyCollections();
 			// upgrade the lock if necessary:

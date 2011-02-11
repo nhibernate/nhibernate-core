@@ -39,9 +39,7 @@ namespace NHibernate.Persister.Entity
 	/// <remarks>
 	/// May be considered an immutable view of the mapping object
 	/// </remarks>
-	public abstract class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
-																									IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer,
-																									IPostInsertIdentityPersister, ILockable
+	public abstract class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata, IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable
 	{
 		#region InclusionChecker
 
@@ -2950,7 +2948,13 @@ namespace NHibernate.Persister.Entity
 			int span = TableSpan;
 			bool[] propsToUpdate;
 			SqlCommandInfo[] updateStrings;
+			EntityEntry entry = session.PersistenceContext.GetEntry(obj);
 
+			// Ensure that an immutable or non-modifiable entity is not being updated unless it is
+			// in the process of being deleted.
+			if (entry == null && !IsMutable)
+				throw new InvalidOperationException("Updating immutable entity that is not in session yet!");
+			
 			if (entityMetamodel.IsDynamicUpdate && dirtyFields != null)
 			{
 				// For the case of dynamic-update="true", we need to generate the UPDATE SQL
@@ -2962,6 +2966,25 @@ namespace NHibernate.Persister.Entity
 					updateStrings[j] = tableUpdateNeeded[j]
 															? GenerateUpdateString(propsToUpdate, j, oldFields, j == 0 && rowId != null)
 															: null;
+				}
+			}
+			else if (!IsModifiableEntity(entry))
+			{
+				// We need to generate UPDATE SQL when a non-modifiable entity (e.g., read-only or immutable)
+				// needs:
+				// - to have references to transient entities set to null before being deleted
+				// - to have version incremented do to a "dirty" association
+				// If dirtyFields == null, then that means that there are no dirty properties to
+				// to be updated; an empty array for the dirty fields needs to be passed to
+				// getPropertiesToUpdate() instead of null.
+				propsToUpdate = this.GetPropertiesToUpdate(
+					(dirtyFields == null ? ArrayHelper.EmptyIntArray : dirtyFields), hasDirtyCollection);
+				
+				// don't need to check laziness (dirty checking algorithm handles that)
+				updateStrings = new SqlCommandInfo[span];
+				for (int j = 0; j < span; j++)
+				{
+					updateStrings[j] = tableUpdateNeeded[j] ? GenerateUpdateString(propsToUpdate, j, oldFields, j == 0 && rowId != null) : null;
 				}
 			}
 			else
@@ -3692,6 +3715,11 @@ namespace NHibernate.Persister.Entity
 			}
 
 			return null;
+		}
+		
+		public virtual bool IsModifiableEntity(EntityEntry entry)
+		{
+			return (entry == null ? IsMutable : entry.IsModifiableEntity());
 		}
 
 		public virtual bool HasCollections

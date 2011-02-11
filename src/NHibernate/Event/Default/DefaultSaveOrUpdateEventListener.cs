@@ -212,57 +212,61 @@ namespace NHibernate.Event.Default
 		{
 			if (!persister.IsMutable)
 			{
-				log.Debug("immutable instance passed to doUpdate(), locking");
-				Reassociate(@event, entity, @event.RequestedId, persister);
+				log.Debug("immutable instance passed to PerformUpdate(), locking");
 			}
-			else
+
+			if (log.IsDebugEnabled)
 			{
-
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("updating " + MessageHelper.InfoString(persister, @event.RequestedId, @event.Session.Factory));
-				}
-
-				IEventSource source = @event.Session;
-
-				EntityKey key = new EntityKey(@event.RequestedId, persister, source.EntityMode);
-
-				source.PersistenceContext.CheckUniqueness(key, entity);
-
-				if (InvokeUpdateLifecycle(entity, persister, source))
-				{
-					Reassociate(@event, @event.Entity, @event.RequestedId, persister);
-					return;
-				}
-
-				// this is a transient object with existing persistent state not loaded by the session
-				new OnUpdateVisitor(source, @event.RequestedId, entity).Process(entity, persister);
-
-				//TODO: put this stuff back in to read snapshot from
-				//      the second-level cache (needs some extra work)
-				/*Object[] cachedState = null;
-				
-				if ( persister.hasCache() ) {
-				CacheEntry entry = (CacheEntry) persister.getCache()
-				.get( event.getRequestedId(), source.getTimestamp() );
-				cachedState = entry==null ? 
-				null : 
-				entry.getState(); //TODO: half-assemble this stuff
-				}*/
-
-				source.PersistenceContext.AddEntity(entity, Status.Loaded, null, key,
-				                                    persister.GetVersion(entity, source.EntityMode), LockMode.None, true, persister,
-				                                    false, true);
-
-				//persister.AfterReassociate(entity, source); TODO H3.2 not ported
-
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("updating " + MessageHelper.InfoString(persister, @event.RequestedId, source.Factory));
-				}
-
-				CascadeOnUpdate(@event, persister, entity);
+				log.Debug("updating " + MessageHelper.InfoString(persister, @event.RequestedId, @event.Session.Factory));
 			}
+
+			IEventSource source = @event.Session;
+
+			EntityKey key = new EntityKey(@event.RequestedId, persister, source.EntityMode);
+
+			source.PersistenceContext.CheckUniqueness(key, entity);
+
+			if (InvokeUpdateLifecycle(entity, persister, source))
+			{
+				Reassociate(@event, @event.Entity, @event.RequestedId, persister);
+				return;
+			}
+
+			// this is a transient object with existing persistent state not loaded by the session
+			new OnUpdateVisitor(source, @event.RequestedId, entity).Process(entity, persister);
+
+			//TODO: put this stuff back in to read snapshot from
+			//      the second-level cache (needs some extra work)
+			/*Object[] cachedState = null;
+			
+			if ( persister.hasCache() ) {
+			CacheEntry entry = (CacheEntry) persister.getCache()
+			.get( event.getRequestedId(), source.getTimestamp() );
+			cachedState = entry==null ? 
+			null : 
+			entry.getState(); //TODO: half-assemble this stuff
+			}*/
+
+			source.PersistenceContext.AddEntity(
+				entity, 
+				persister.IsMutable ? Status.Loaded : Status.ReadOnly,
+				null, 
+				key,
+				persister.GetVersion(entity, source.EntityMode), 
+				LockMode.None, 
+				true, 
+				persister,
+				false,
+				true);
+
+			//persister.AfterReassociate(entity, source); TODO H3.2 not ported
+
+			if (log.IsDebugEnabled)
+			{
+				log.Debug("updating " + MessageHelper.InfoString(persister, @event.RequestedId, source.Factory));
+			}
+
+			CascadeOnUpdate(@event, persister, entity);
 		}
 
 		protected virtual bool InvokeUpdateLifecycle(object entity, IEntityPersister persister, IEventSource source)

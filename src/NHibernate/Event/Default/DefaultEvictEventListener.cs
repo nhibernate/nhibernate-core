@@ -44,16 +44,15 @@ namespace NHibernate.Event.Default
 						DoEvict(entity, key, e.Persister, @event.Session);
 					}
 				}
-				li.Session = null;
+				li.UnsetSession();
 			}
 			else
 			{
 				EntityEntry e = persistenceContext.RemoveEntry(obj);
 				if (e != null)
 				{
-					EntityKey key = new EntityKey(e.Id, e.Persister, source.EntityMode);
-					persistenceContext.RemoveEntity(key);
-					DoEvict(obj, key, e.Persister, source);
+					persistenceContext.RemoveEntity(e.EntityKey);
+					DoEvict(obj, e.EntityKey, e.Persister, source);
 				}
 			}
 		}

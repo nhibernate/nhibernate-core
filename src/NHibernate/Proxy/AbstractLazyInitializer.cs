@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Engine;
+using NHibernate.Persister.Entity;
 
 namespace NHibernate.Proxy
 {
@@ -28,6 +29,8 @@ namespace NHibernate.Proxy
 		private ISessionImplementor _session;
 		private bool unwrap;
 		private readonly string _entityName;
+		private bool readOnly;
+		private bool? readOnlyBeforeAttachedToSession;
 
 		/// <summary>
 		/// Create a LazyInitializer to handle all of the Methods/Properties that are called
@@ -39,10 +42,60 @@ namespace NHibernate.Proxy
 		protected internal AbstractLazyInitializer(string entityName, object id, ISessionImplementor session)
 		{
 			_id = id;
-			_session = session;
 			_entityName = entityName;
+			
+			if (session == null)
+				UnsetSession();
+			else
+				SetSession(session);
 		}
 
+		public void SetSession(ISessionImplementor s)
+		{
+			if (s != _session)
+			{
+				// check for s == null first, since it is least expensive
+				if (s == null)
+				{
+					UnsetSession();
+				}
+				else if (IsConnectedToSession)
+				{
+					//TODO: perhaps this should be some other RuntimeException...
+					throw new HibernateException("illegally attempted to associate a proxy with two open Sessions");
+				}
+				else
+				{
+					// s != null
+					_session = s;
+					if (readOnlyBeforeAttachedToSession == null)
+					{
+						// use the default read-only/modifiable setting
+						IEntityPersister persister = s.Factory.GetEntityPersister(_entityName);
+						SetReadOnly(s.PersistenceContext.DefaultReadOnly || !persister.IsMutable);
+					}
+					else
+					{
+						// use the read-only/modifiable setting indicated during deserialization
+						SetReadOnly(readOnlyBeforeAttachedToSession.Value);
+						readOnlyBeforeAttachedToSession = null;
+					}
+				}
+			}
+		}
+		
+		public void UnsetSession()
+		{
+			_session = null;
+			readOnly = false;
+			readOnlyBeforeAttachedToSession = null;
+		}
+		
+		protected internal bool IsConnectedToSession
+		{
+			get { return GetProxyOrNull() != null; }
+		}
+		
 		/// <summary>
 		/// Perform an ImmediateLoad of the actual object for the Proxy.
 		/// </summary>
@@ -78,18 +131,6 @@ namespace NHibernate.Proxy
 			}
 		}
 
-		private void CheckTargetState()
-		{
-			if (!unwrap)
-			{
-				if (_target == null)
-				{
-					Session.Factory.EntityNotFoundDelegate.HandleEntityNotFound(_entityName, _id);
-				}
-			}
-		}
-
-		/// <summary></summary>
 		public object Identifier
 		{
 			get { return _id; }
@@ -109,7 +150,6 @@ namespace NHibernate.Proxy
 			set { unwrap = value; }
 		}
 
-		/// <summary></summary>
 		public ISessionImplementor Session
 		{
 			get { return _session; }
@@ -133,11 +173,6 @@ namespace NHibernate.Proxy
 		public string EntityName
 		{
 			get { return _entityName; }
-		}
-
-		protected internal bool IsConnectedToSession
-		{
-			get{return _session != null && _session.IsOpen && _session.PersistenceContext.ContainsProxy((this as INHibernateProxy));}
 		}
 
 		protected internal object Target
@@ -170,6 +205,90 @@ namespace NHibernate.Proxy
 		{
 			_target = target;
 			initialized = true;
+		}
+		
+		public bool IsReadOnlySettingAvailable
+		{
+			get { return (_session != null && !_session.IsClosed); }
+		}
+		
+		/// <inheritdoc />
+		public bool ReadOnly
+		{
+			get
+			{
+				ErrorIfReadOnlySettingNotAvailable();
+				return readOnly;
+			}
+			set
+			{
+				ErrorIfReadOnlySettingNotAvailable();
+			
+				// only update if setting is different from current setting
+				if (this.readOnly != value)
+				{
+					this.SetReadOnly(value);
+				}
+			}
+		}
+
+		private void ErrorIfReadOnlySettingNotAvailable()
+		{
+			if (_session == null)
+				throw new TransientObjectException("Proxy is detached (i.e, session is null). The read-only/modifiable setting is only accessible when the proxy is associated with an open session.");
+
+			if (_session.IsClosed)
+				throw new SessionException("Session is closed. The read-only/modifiable setting is only accessible when the proxy is associated with an open session.");
+		}
+		
+		private static EntityKey GenerateEntityKeyOrNull(object id, ISessionImplementor s, string entityName)
+		{
+			if (id == null || s == null || entityName == null)
+				return null;
+
+			return new EntityKey(id, s.Factory.GetEntityPersister(entityName), s.EntityMode);
+		}
+		
+		private void CheckTargetState()
+		{
+			if (!unwrap)
+			{
+				if (_target == null)
+				{
+					Session.Factory.EntityNotFoundDelegate.HandleEntityNotFound(_entityName, _id);
+				}
+			}
+		}
+		
+		private object GetProxyOrNull()
+		{
+			EntityKey entityKey = GenerateEntityKeyOrNull(_id, _session, _entityName);
+			if (entityKey != null && _session != null && _session.IsOpen)
+			{
+				return _session.PersistenceContext.GetProxy(entityKey);
+			}
+			return null;
+		}
+		
+		private void SetReadOnly(bool readOnly)
+		{
+			IEntityPersister persister = _session.Factory.GetEntityPersister(_entityName);
+
+			if (!persister.IsMutable && !readOnly)
+			{
+				throw new InvalidOperationException("cannot make proxies for immutable entities modifiable");
+			}
+			
+			this.readOnly = readOnly;
+		
+			if (initialized)
+			{
+				EntityKey key = GenerateEntityKeyOrNull(_id, _session, _entityName);
+				if (key != null && _session.PersistenceContext.ContainsEntity(key))
+				{
+					_session.PersistenceContext.SetReadOnly(_target, readOnly);
+				}
+			}
 		}
 	}
 }

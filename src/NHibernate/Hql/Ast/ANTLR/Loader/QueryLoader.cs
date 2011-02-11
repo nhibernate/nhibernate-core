@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+
 using NHibernate.Engine;
+using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Impl;
 using NHibernate.Loader;
@@ -400,7 +402,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 			get { return _queryReturnTypes; }
 		}
 
-		internal IEnumerable GetEnumerable(QueryParameters queryParameters, ISessionImplementor session)
+		internal IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session)
 		{
 			CheckQuery(queryParameters);
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
@@ -414,15 +416,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 			IDbCommand cmd = PrepareQueryCommand(queryParameters, false, session);
 
 			// This IDataReader is disposed of in EnumerableImpl.Dispose
-			IDataReader rs = GetResultSet(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection,
-			                              session);
+			IDataReader rs = GetResultSet(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection, session);
 
-			HolderInstantiator hi = HolderInstantiator.GetHolderInstantiator(_selectNewTransformer,
-			                                                                 queryParameters.ResultTransformer,
-			                                                                 _queryReturnAliases);
+			HolderInstantiator hi = 
+				HolderInstantiator.GetHolderInstantiator(_selectNewTransformer, queryParameters.ResultTransformer, _queryReturnAliases);
 
-			IEnumerable result = new EnumerableImpl(rs, cmd, session, _queryTranslator.ReturnTypes,
-			                                        _queryTranslator.GetColumnNames(), queryParameters.RowSelection, hi);
+			IEnumerable result = 
+				new EnumerableImpl(rs, cmd, session, queryParameters.IsReadOnly(session), _queryTranslator.ReturnTypes, _queryTranslator.GetColumnNames(), queryParameters.RowSelection, hi);
 
 			if (statsEnabled)
 			{

@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 
 using NHibernate.Engine;
+using NHibernate.Event;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.SqlCommand;
@@ -22,7 +23,7 @@ namespace NHibernate.Impl
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(EnumerableImpl));
 
 		private IDataReader _reader;
-		private ISessionImplementor _sess;
+		private IEventSource _session;
 		private IType[] _types;
 		private bool _single;
 		private object _currentResult;
@@ -30,6 +31,7 @@ namespace NHibernate.Impl
 		private bool _startedReading; // True if at least one MoveNext call was made.
 		private string[][] _names;
 		private IDbCommand _cmd;
+		private bool _readOnly;
 
 		// when we start enumerating through the DataReader we are positioned
 		// before the first record we need
@@ -42,7 +44,8 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="reader">The <see cref="IDataReader"/> to enumerate over.</param>
 		/// <param name="cmd">The <see cref="IDbCommand"/> used to create the <see cref="IDataReader"/>.</param>
-		/// <param name="sess">The <see cref="ISession"/> to use to load objects.</param>
+		/// <param name="session">The <see cref="ISession"/> to use to load objects.</param>
+		/// <param name="readOnly"></param>
 		/// <param name="types">The <see cref="IType"/>s contained in the <see cref="IDataReader"/>.</param>
 		/// <param name="columnNames">The names of the columns in the <see cref="IDataReader"/>.</param>
 		/// <param name="selection">The <see cref="RowSelection"/> that should be applied to the <see cref="IDataReader"/>.</param>
@@ -50,71 +53,25 @@ namespace NHibernate.Impl
 		/// <remarks>
 		/// The <see cref="IDataReader"/> should already be positioned on the first record in <see cref="RowSelection"/>.
 		/// </remarks>
-		public EnumerableImpl(IDataReader reader, IDbCommand cmd, ISessionImplementor sess, IType[] types,
-		                      string[][] columnNames, RowSelection selection,
-		                      HolderInstantiator holderInstantiator)
+		public EnumerableImpl(IDataReader reader,
+							  IDbCommand cmd,
+							  IEventSource session,
+							  bool readOnly,
+							  IType[] types,
+							  string[][] columnNames,
+							  RowSelection selection,
+							  HolderInstantiator holderInstantiator)
 		{
 			_reader = reader;
 			_cmd = cmd;
-			_sess = sess;
+			_session = session;
+			_readOnly = readOnly;
 			_types = types;
 			_names = columnNames;
 			_selection = selection;
 			_holderInstantiator = holderInstantiator;
 
 			_single = _types.Length == 1;
-		}
-
-		private void PostMoveNext(bool hasNext)
-		{
-			_startedReading = true;
-			_hasNext = hasNext;
-			_currentRow++;
-			if (_selection != null && _selection.MaxRows != RowSelection.NoValue)
-			{
-				_hasNext = _hasNext && (_currentRow < _selection.MaxRows);
-			}
-			// there are no more records in the DataReader so clean up
-			if (!_hasNext)
-			{
-				log.Debug("exhausted results");
-				_currentResult = null;
-				_sess.Batcher.CloseCommand(_cmd, _reader);
-			}
-			else
-			{
-				log.Debug("retrieving next results");
-				bool isHolder = _holderInstantiator.IsRequired;
-
-				if (_single && !isHolder)
-				{
-					_currentResult = _types[0].NullSafeGet(_reader, _names[0], _sess, null);
-				}
-				else
-				{
-					object[] currentResults = new object[_types.Length];
-
-					// move through each of the ITypes contained in the IDataReader and convert them
-					// to their objects.  
-					for (int i = 0; i < _types.Length; i++)
-					{
-						// The IType knows how to extract its value out of the IDataReader.  If the IType
-						// is a value type then the value will simply be pulled out of the IDataReader.  If
-						// the IType is an Entity type then the IType will extract the id from the IDataReader
-						// and use the ISession to load an instance of the object.
-						currentResults[i] = _types[i].NullSafeGet(_reader, _names[i], _sess, null);
-					}
-
-					if (isHolder)
-					{
-						_currentResult = _holderInstantiator.Instantiate(currentResults);
-					}
-					else
-					{
-						_currentResult = currentResults;
-					}
-				}
-			}
 		}
 
 		/// <summary>
@@ -162,14 +119,101 @@ namespace NHibernate.Impl
 			}
 			catch (DbException e)
 			{
-				throw ADOExceptionHelper.Convert(_sess.Factory.SQLExceptionConverter, e, "Error executing Enumerable() query",
-				                                 new SqlString(_cmd.CommandText));
+				throw ADOExceptionHelper.Convert(_session.Factory.SQLExceptionConverter, e, "Error executing Enumerable() query",
+												   new SqlString(_cmd.CommandText));
 			}
 			PostMoveNext(readResult);
 			return _hasNext;
 		}
+		
+		private void PostNext()
+		{
+			log.Debug("attempting to retrieve next results");
+			bool readResult;
+			try
+			{
+				readResult = _reader.Read();
+				if (!readResult)
+				{
+					log.Debug("exhausted results");
+					_currentResult = null;
+					_session.Batcher.CloseCommand(_cmd, _reader);
+				}
+				else
+					log.Debug("retrieved next results");
+			}
+			catch (DbException e)
+			{
+				throw ADOExceptionHelper.Convert(_session.Factory.SQLExceptionConverter, e, "Error executing Enumerable() query",
+												 new SqlString(_cmd.CommandText));
+			}
+		}
 
-		/// <summary></summary>
+		private void PostMoveNext(bool hasNext)
+		{
+			_startedReading = true;
+			_hasNext = hasNext;
+			_currentRow++;
+			
+			if (_selection != null && _selection.MaxRows != RowSelection.NoValue)
+			{
+				_hasNext = _hasNext && (_currentRow < _selection.MaxRows);
+			}
+			
+			bool sessionDefaultReadOnlyOrig = _session.DefaultReadOnly;
+			
+			_session.DefaultReadOnly = _readOnly;
+
+			try
+			{
+				if (!_hasNext)
+				{
+					// there are no more records in the DataReader so clean up
+					log.Debug("exhausted results");
+					_currentResult = null;
+					_session.Batcher.CloseCommand(_cmd, _reader);
+				}
+				else
+				{
+					log.Debug("retrieving next results");
+					bool isHolder = _holderInstantiator.IsRequired;
+	
+					if (_single && !isHolder)
+					{
+						_currentResult = _types[0].NullSafeGet(_reader, _names[0], _session, null);
+					}
+					else
+					{
+						object[] currentResults = new object[_types.Length];
+	
+						// move through each of the ITypes contained in the IDataReader and convert them
+						// to their objects.  
+						for (int i = 0; i < _types.Length; i++)
+						{
+							// The IType knows how to extract its value out of the IDataReader.  If the IType
+							// is a value type then the value will simply be pulled out of the IDataReader.  If
+							// the IType is an Entity type then the IType will extract the id from the IDataReader
+							// and use the ISession to load an instance of the object.
+							currentResults[i] = _types[i].NullSafeGet(_reader, _names[i], _session, null);
+						}
+	
+						if (isHolder)
+						{
+							_currentResult = _holderInstantiator.Instantiate(currentResults);
+						}
+						else
+						{
+							_currentResult = currentResults;
+						}
+					}
+				}
+			}
+			finally
+			{
+				_session.DefaultReadOnly = sessionDefaultReadOnlyOrig;
+			}
+		}		
+		
 		public void Reset()
 		{
 			//can't reset the reader...we are SOL
@@ -228,7 +272,7 @@ namespace NHibernate.Impl
 				if (_hasNext || !_startedReading)
 				{
 					_currentResult = null;
-					_sess.Batcher.CloseCommand(_cmd, _reader);
+					_session.Batcher.CloseCommand(_cmd, _reader);
 				}
 			}
 

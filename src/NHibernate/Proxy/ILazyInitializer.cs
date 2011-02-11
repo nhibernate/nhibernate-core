@@ -12,36 +12,99 @@ namespace NHibernate.Proxy
 		/// </exception>
 		void Initialize();
 
-		/// <summary></summary>
+		/// <summary>
+		/// The identifier value for the entity our owning proxy represents.
+		/// </summary>
 		object Identifier { get; set; }
 
-		/// <summary> Get the entity name</summary>
+		/// <summary>
+		/// The entity-name of the entity our owning proxy represents.
+		/// </summary>
 		string EntityName { get;}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Get the actual class of the entity.  Generally, <see cref="EntityName" /> should be used instead.
+		/// </summary>
 		System.Type PersistentClass { get; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// Is the proxy uninitialzed?
+		/// </summary>
 		bool IsUninitialized { get; }
 
 		bool Unwrap { get; set; }
 
-		/// <summary></summary>
+		/// <summary>
+		/// Get the session to which this proxy is associated, or null if it is not attached.
+		/// </summary>
 		ISessionImplementor Session { get; set; }
+		
+		/// <summary>
+		/// Is the proxy's read-only/modifiable setting available?
+		/// </summary>
+		bool IsReadOnlySettingAvailable { get; }
+		
+		/// <summary>
+		/// Read-only status
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// The read-only/modifiable setting is not available when the proxy is
+		/// detached or its associated session is closed.
+		/// </para>
+		/// <para>
+		/// If the proxy is currently initialized, its implementation will be set to
+		/// the same mode; otherwise, when the proxy is initialized, its implementation
+		/// will have the same read-only/modifiable setting as the proxy. In read-only
+		/// mode, no snapshot is maintained and the instance is never dirty checked.
+		/// </para>
+		/// <para>
+		/// If the associated proxy already has the specified read-only/modifiable
+		/// setting, then this method does nothing.
+		/// </para>
+		/// <para>
+		/// To check if the read-only/modifiable setting is available: <see cref="IsReadOnlySettingAvailable" />
+	 	/// </para>
+		/// </remarks>
+		bool ReadOnly { get; set; }
 
 		/// <summary>
-		/// Return the Underlying Persistent Object, initializing if necessary.
+		/// Return the underlying persistent object, initializing if necessary.
 		/// </summary>
-		/// <returns>The Persistent Object this proxy is Proxying.</returns>
+		/// <returns>The persistent object this proxy is proxying.</returns>
 		object GetImplementation();
 
 		/// <summary>
-		/// Return the Underlying Persistent Object in a given <see cref="ISession"/>, or null.
+		/// Return the underlying persistent object in a given <see cref="ISession"/>, or null.
 		/// </summary>
-		/// <param name="s">The Session to get the object from.</param>
-		/// <returns>The Persistent Object this proxy is Proxying, or <see langword="null" />.</returns>
+		/// <param name="s">The session to get the object from.</param>
+		/// <returns>The persistent object this proxy is proxying, or <see langword="null" />.</returns>
 		object GetImplementation(ISessionImplementor s);
 
+		/// <summary>
+		/// Initialize the proxy manually by injecting its target.
+		/// </summary>
+		/// <param name="target">The proxy target (the actual entity being proxied).</param>
 		void SetImplementation(object target);
+
+		/// <summary>
+		/// Associate the proxy with the given session.
+		///
+		/// Care should be given to make certain that the proxy is added to the session's persistence context as well
+		/// to maintain the symmetry of the association.  That must be done seperately as this method simply sets an
+		/// internal reference.  We do also check that if there is already an associated session that the proxy
+		/// reference was removed from that previous session's persistence context.
+		/// </summary>
+		/// <param name="s">The session</param>
+		void SetSession(ISessionImplementor s);
+		
+		/// <summary>
+		/// Unset this initializer's reference to session.  It is assumed that the caller is also taking care or
+		/// cleaning up the owning proxy's reference in the persistence context.
+		///
+		/// Generally speaking this is intended to be called only during <see cref="NHibernate.ISession.Evict" /> and
+		/// <see cref="NHibernate.ISession.Clear()" /> processing; most other use-cases should call <see cref="SetSession(ISessionImplementor)" /> instead.
+		/// </summary>
+		void UnsetSession();
 	}
 }

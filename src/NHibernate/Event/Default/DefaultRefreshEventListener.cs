@@ -28,8 +28,13 @@ namespace NHibernate.Event.Default
 		{
 			IEventSource source = @event.Session;
 
+			bool isTransient = !source.Contains(@event.Entity);
 			if (source.PersistenceContext.ReassociateIfUninitializedProxy(@event.Entity))
+			{
+				if (isTransient)
+					source.SetReadOnly(@event.Entity, source.DefaultReadOnly);
 				return;
+			}
 
 			object obj = source.PersistenceContext.UnproxyAndReassociate(@event.Entity);
 
@@ -102,8 +107,16 @@ namespace NHibernate.Event.Default
 			string previousFetchProfile = source.FetchProfile;
 			source.FetchProfile = "refresh";
 			object result = persister.Load(id, obj, @event.LockMode, source);
+			
+			if (result != null)
+				if (!persister.IsMutable)
+					source.SetReadOnly(result, true);
+				else
+					source.SetReadOnly(result, (e == null ? source.DefaultReadOnly : e.IsReadOnly));
+			
 			source.FetchProfile = previousFetchProfile;
-			// NH Different behavior : we are ignoring transient entities without throw any kind of exception 
+
+			// NH Different behavior : we are ignoring transient entities without throw any kind of exception
 			// because a transient entity is "self refreshed"
 			if (!ForeignKeys.IsTransient(persister.EntityName, obj, result == null, @event.Session))
 				UnresolvableObjectException.ThrowIfNull(result, id, persister.EntityName);

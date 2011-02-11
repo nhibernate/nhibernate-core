@@ -192,7 +192,7 @@ namespace NHibernate.Event.Default
 			{
 				EntityEntry entry = (EntityEntry) me.Value;
 				Status status = entry.Status;
-				if (status == Status.Loaded || status == Status.Saving)
+				if (status == Status.Loaded || status == Status.Saving || status == Status.ReadOnly)
 				{
 					CascadeOnFlush(session, entry.Persister, me.Key, Anything);
 				}

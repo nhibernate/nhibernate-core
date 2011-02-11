@@ -4792,7 +4792,7 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void Cache()
 		{
-			Immutable im = new Immutable();
+			NHibernate.DomainModel.Immutable im = new NHibernate.DomainModel.Immutable();
 
 			using (ISession s = OpenSession())
 			{
@@ -4809,9 +4809,9 @@ namespace NHibernate.Test.Legacy
 			{
 				s.Load(im, im.Id);
 
-				Immutable imFromFind =
-					(Immutable) s.CreateQuery("from im in class Immutable where im = ?").SetEntity(0, im).List()[0];
-				Immutable imFromLoad = (Immutable) s.Load(typeof(Immutable), im.Id);
+				NHibernate.DomainModel.Immutable imFromFind =
+					(NHibernate.DomainModel.Immutable) s.CreateQuery("from im in class Immutable where im = ?").SetEntity(0, im).List()[0];
+				NHibernate.DomainModel.Immutable imFromLoad = (NHibernate.DomainModel.Immutable) s.Load(typeof(NHibernate.DomainModel.Immutable), im.Id);
 
 				Assert.IsTrue(im == imFromFind, "cached object identity from Find ");
 				Assert.IsTrue(im == imFromLoad, "cached object identity from Load ");

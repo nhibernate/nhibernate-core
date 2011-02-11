@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
+using NHibernate.Event;
 using NHibernate.Type;
 
 namespace NHibernate.Hql
@@ -37,7 +38,7 @@ namespace NHibernate.Hql
 		/// <exception cref="NHibernate.HibernateException"></exception>
 		IList List(ISessionImplementor session, QueryParameters queryParameters);
 
-		IEnumerable GetEnumerable(QueryParameters queryParameters, ISessionImplementor session);
+		IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session);
 
 		// Not ported:
 		//IScrollableResults scroll(QueryParameters queryParameters, ISessionImplementor session);

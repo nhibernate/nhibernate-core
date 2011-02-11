@@ -17,15 +17,15 @@ namespace NHibernate
 	/// where there is a variable number of conditions to be placed upon the result set.
 	/// </para>
 	/// <para>
-	/// The Session is a factory for ICriteria. Expression instances are usually obtained via 
+	/// The Session is a factory for ICriteria. Expression instances are usually obtained via
 	/// the factory methods on <see cref="Expression" />. eg:
 	/// </para>
 	/// <code>
-	/// IList cats = session.CreateCriteria(typeof(Cat)) 
-	///     .Add( Expression.Like("name", "Iz%") ) 
-	///     .Add( Expression.Gt( "weight", minWeight ) ) 
-	///     .AddOrder( Order.Asc("age") ) 
-	///     .List(); 
+	/// IList cats = session.CreateCriteria(typeof(Cat))
+	///     .Add( Expression.Like("name", "Iz%") )
+	///     .Add( Expression.Gt( "weight", minWeight ) )
+	///     .AddOrder( Order.Asc("age") )
+	///     .List();
 	/// </code>
 	/// You may navigate associations using <see cref="CreateAlias(string,string)" /> or <see cref="CreateCriteria(string)" />.
 	/// <code>
@@ -47,7 +47,7 @@ namespace NHibernate
 	/// .Add( Projections.GroupProperty("color") )
 	/// )
 	/// .AddOrder( Order.Asc("color") )
-	/// .List();	
+	/// .List();
 	///	</code>
 	/// </para>
 	/// </remarks>
@@ -58,6 +58,29 @@ namespace NHibernate
 		/// </summary>
 		/// <value>The alias for the encapsulated entity.</value>
 		string Alias { get; }
+		
+		/// <summary>
+		/// Was the read-only/modifiable mode explicitly initialized?
+		/// </summary>
+		/// <seealso cref="SetReadOnly(bool)" />
+		/// <returns><c>true</c>, the read-only/modifiable mode was explicitly initialized; <c>false</c>, otherwise.</returns>
+		bool IsReadOnlyInitialized { get; }
+
+		/// <summary>
+		/// Should entities and proxies loaded by this Criteria be put in read-only mode? If the
+		/// read-only/modifiable setting was not initialized, then the default
+		/// read-only/modifiable setting for the persistence context is returned instead.
+		/// </summary>
+		/// <remarks>
+		/// The read-only/modifiable setting has no impact on entities/proxies returned by the
+		/// Criteria that existed in the session before the Criteria was executed.
+		/// </remarks>
+		/// <seealso cref="SetReadOnly(bool)" />
+		/// <seealso cref="NHibernate.Engine.IPersistenceContext.DefaultReadOnly" />
+		/// <returns>
+		/// <c>true</c>, entities and proxies loaded by the criteria will be put in read-only mode; <c>false</c>, entities and proxies loaded by the criteria will be put in modifiable mode
+		/// </returns>
+		bool IsReadOnly { get; }
 
 		/// <summary>
 		/// Used to specify that the query results will be a projection (scalar in
@@ -82,7 +105,7 @@ namespace NHibernate
 		ICriteria Add(ICriterion expression);
 
 		/// <summary>
-		/// An an Order to the result set 
+		/// An an Order to the result set
 		/// </summary>
 		/// <param name="order"></param>
 		ICriteria AddOrder(Order order);
@@ -148,7 +171,7 @@ namespace NHibernate
 		ICriteria CreateCriteria(string associationPath);
 
 		/// <summary>
-		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity, 
+		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity,
 		/// using the specified join type.
 		/// </summary>
 		/// <param name="associationPath">A dot-seperated property path</param>
@@ -284,7 +307,32 @@ namespace NHibernate
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
 		IFutureValue<T> FutureValue<T>();
-
+		
+		/// <summary>
+		/// Set the read-only/modifiable mode for entities and proxies
+		/// loaded by this Criteria. This setting overrides the default setting
+		/// for the persistence context.
+		/// </summary>
+		/// <remarks>
+		/// <para>Use <see cref="NHibernate.Engine.IPersistenceContext.DefaultReadOnly" /> or
+		/// <see cref="NHibernate.ISession.DefaultReadOnly" /> to set the default read-only/modifiable
+		/// setting used for entities and proxies that are loaded into the session.</para>
+		/// <para>Read-only entities are not dirty-checked and snapshots of persistent
+		/// state are not maintained. Read-only entities can be modified, but
+		/// changes are not persisted.</para>
+		/// <para>When a proxy is initialized, the loaded entity will have the same
+		/// read-only/modifiable setting as the uninitialized proxy has, regardless
+		/// of the session's current setting.</para>
+		/// <para>The read-only/modifiable setting has no impact on entities/proxies
+		/// returned by the criteria that existed in the session before the criteria was
+		/// executed.</para>
+		/// </remarks>
+		/// <param name="readOnly">
+		/// <c>true</c>, entities and proxies loaded by the criteria will be put in read-only mode; <c>false</c>, entities and proxies loaded by the criteria will be put in modifiable mode
+		/// </param>
+		/// <returns><c>this</c> (for method chaining)</returns>
+		ICriteria SetReadOnly(bool readOnly);
+	
 		#region NHibernate specific
 
 		/// <summary>
@@ -327,7 +375,7 @@ namespace NHibernate
 		/// Gets the root entity type if available, throws otherwise
 		/// </summary>
 		/// <remarks>
-		/// This is an NHibernate specific method, used by several dependent 
+		/// This is an NHibernate specific method, used by several dependent
 		/// frameworks for advance integration with NHibernate.
 		/// </remarks>
 		System.Type GetRootEntityTypeIfAvailable();

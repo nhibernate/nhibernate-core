@@ -29,13 +29,13 @@ using Iesi.Collections.Generic;
 namespace NHibernate.Impl
 {
 	/// <summary>
-	/// Concrete implementation of a Session, also the central, organizing component
-	/// of Hibernate's internal implementation.
+	/// Concrete implementation of an <see cref="NHibernate.ISession" />, also the central, organizing component
+	/// of NHibernate's internal implementation.
 	/// </summary>
 	/// <remarks>
-	/// Exposes two interfaces: ISession itself, to the application and ISessionImplementor
-	/// to other components of hibernate. This is where the hard stuff is...
-	/// NOT THREADSAFE
+	/// Exposes two interfaces: <see cref="NHibernate.ISession" /> itself, to the application and 
+	/// <see cref="ISessionImplementor" /> to other components of NHibernate. This is where the 
+	/// hard stuff is... This class is NOT THREADSAFE.
 	/// </remarks>
 	[Serializable]
 	public sealed class SessionImpl : AbstractSessionImpl, IEventSource, ISerializable, IDeserializationCallback
@@ -127,7 +127,7 @@ namespace NHibernate.Impl
 		/// <param name="context"></param>
 		/// <remarks>
 		/// The fields are marked with [NonSerializable] as just a point of reference.  This method
-		/// has complete control and what is serialized and those attributes are ignored.  However, 
+		/// has complete control and what is serialized and those attributes are ignored.  However,
 		/// this method should be in synch with the attributes for easy readability.
 		/// </remarks>
 		[SecurityPermission(SecurityAction.LinkDemand,
@@ -775,7 +775,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="queryString"></param>
@@ -1178,7 +1178,7 @@ namespace NHibernate.Impl
 		/// Load the data for the object with the specified id into a newly created object
 		/// using "for update", if supported. A new key will be assigned to the object.
 		/// This should return an existing proxy where appropriate.
-		/// 
+		///
 		/// If the object does not exist in the database, an exception is thrown.
 		/// </summary>
 		/// <param name="entityClass"></param>
@@ -1270,7 +1270,7 @@ namespace NHibernate.Impl
 		/// Load the data for the object with the specified id into a newly created object
 		/// using "for update", if supported. A new key will be assigned to the object.
 		/// This should return an existing proxy where appropriate.
-		/// 
+		///
 		/// If the object does not exist in the database, null is returned.
 		/// </summary>
 		/// <param name="clazz"></param>
@@ -1334,7 +1334,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Load the data for the object with the specified id into a newly created object.
 		/// This is only called when lazily initializing a proxy.
 		/// Do NOT return a proxy.
@@ -1434,7 +1434,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <remarks>
 		/// This can be called from commit() or at the start of a List() method.
@@ -1503,7 +1503,7 @@ namespace NHibernate.Impl
 				}
 			}
 		}
-
+	
 		/// <summary>
 		/// Not for internal use
 		/// </summary>
@@ -1668,7 +1668,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Takes care of freeing the managed and unmanaged resources that 
+		/// Takes care of freeing the managed and unmanaged resources that
 		/// this class is responsible for.
 		/// </summary>
 		/// <param name="isDisposing">Indicates if this Session is being Disposed of or Finalized.</param>
@@ -1959,7 +1959,7 @@ namespace NHibernate.Impl
 					else
 					{
 						//if it is initialized, see if the underlying
-						//instance is contained, since we need to 
+						//instance is contained, since we need to
 						//account for the fact that it might have been
 						//evicted
 						obj = li.GetImplementation();
@@ -2298,7 +2298,7 @@ namespace NHibernate.Impl
 			{
 				// This is explicitly removed to allow support
 				// for child sessions that want to flush during
-				// the parent session lifecycle. See NH-1714, 
+				// the parent session lifecycle. See NH-1714,
 				// and the suggested audit examples.
 				//
 				//if (this.entityMode.Equals(entityMode))
@@ -2384,7 +2384,8 @@ namespace NHibernate.Impl
 				fetchProfile = value;
 			}
 		}
-
+		
+		/// <inheritdoc />
 		public void SetReadOnly(object entity, bool readOnly)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -2392,6 +2393,21 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				persistenceContext.SetReadOnly(entity, readOnly);
 			}
+		}
+		
+		/// <inheritdoc />
+		public bool DefaultReadOnly
+		{
+			get { return persistenceContext.DefaultReadOnly; }
+			set { persistenceContext.DefaultReadOnly = value; }
+		}
+		
+		/// <inheritdoc />
+		public bool IsReadOnly(object entityOrProxy)
+		{
+			ErrorIfClosed();
+			// CheckTransactionSynchStatus();
+			return persistenceContext.IsReadOnly(entityOrProxy);
 		}
 
 		private void FireDelete(DeleteEvent @event)
@@ -2723,7 +2739,7 @@ namespace NHibernate.Impl
 						}
 						catch (HibernateException)
 						{
-							// we ignore this exception and re-throw the 
+							// we ignore this exception and re-throw the
 							// original one
 						}
 						throw;
