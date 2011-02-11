@@ -90,12 +90,6 @@ namespace NHibernate.Event.Default
 				version = entityEntry.Version;
 			}
 
-			if (!persister.IsMutable)
-			{
-				throw new HibernateException("Attempted to delete an object of immutable class: "
-				                             + MessageHelper.InfoString(persister));
-			}
-
 			if (InvokeDeleteLifecycle(source, entity, persister))
 			{
 				return;
