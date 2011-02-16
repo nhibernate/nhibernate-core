@@ -618,6 +618,8 @@
     <Compile Include="NHSpecificTest\Properties\Model.cs" />
     <Compile Include="PolymorphicGetAndLoad\Domain.cs" />
     <Compile Include="PolymorphicGetAndLoad\PolymorphicGetAndLoadTest.cs" />
+    <Compile Include="PropertyTest\FieldCamelCaseMUnderscoreFixture.cs" />
+    <Compile Include="PropertyTest\NoSetterCamelCaseMUnderscoreFixture.cs" />
     <Compile Include="TypesTest\CharClass.cs" />
     <Compile Include="TypesTest\CharClassFixture.cs" />
     <Compile Include="TypesTest\DateTimeClass.cs" />

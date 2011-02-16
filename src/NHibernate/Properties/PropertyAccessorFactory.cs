@@ -26,6 +26,7 @@ namespace NHibernate.Properties
 			accessors["readonly"] = new ReadOnlyAccessor();
 			accessors["field.camelcase"] = new FieldAccessor(new CamelCaseStrategy());
 			accessors["field.camelcase-underscore"] = new FieldAccessor(new CamelCaseUnderscoreStrategy());
+			accessors["field.camelcase-m-underscore"] = new FieldAccessor(new CamelCaseMUnderscoreStrategy());
 			accessors["field.lowercase"] = new FieldAccessor(new LowerCaseStrategy());
 			accessors["field.lowercase-underscore"] = new FieldAccessor(new LowerCaseUnderscoreStrategy());
 			accessors["field.pascalcase-underscore"] = new FieldAccessor(new PascalCaseUnderscoreStrategy());
@@ -33,6 +34,7 @@ namespace NHibernate.Properties
 			accessors["field.pascalcase-m"] = new FieldAccessor(new PascalCaseMStrategy());
 			accessors["nosetter.camelcase"] = new NoSetterAccessor(new CamelCaseStrategy());
 			accessors["nosetter.camelcase-underscore"] = new NoSetterAccessor(new CamelCaseUnderscoreStrategy());
+			accessors["nosetter.camelcase-m-underscore"] = new NoSetterAccessor(new CamelCaseMUnderscoreStrategy());
 			accessors["nosetter.lowercase"] = new NoSetterAccessor(new LowerCaseStrategy());
 			accessors["nosetter.lowercase-underscore"] = new NoSetterAccessor(new LowerCaseUnderscoreStrategy());
 			accessors["nosetter.pascalcase-underscore"] = new NoSetterAccessor(new PascalCaseUnderscoreStrategy());
@@ -116,7 +118,7 @@ namespace NHibernate.Properties
 		///			<term>camelcase</term>
 		///			<description>
 		///				The <c>name</c> attribute should be changed to CamelCase to find the field.
-		///				<c>&lt;property name="Foo" ... &gt;</c> finds a field <c>foo</c>.
+		///				<c>&lt;property name="FooBar" ... &gt;</c> finds a field <c>fooBar</c>.
 		///			</description>
 		///		</item>
 		///		<item>
@@ -124,7 +126,15 @@ namespace NHibernate.Properties
 		///			<description>
 		///				The <c>name</c> attribute should be changed to CamelCase and prefixed with
 		///				an underscore to find the field.
-		///				<c>&lt;property name="Foo" ... &gt;</c> finds a field <c>_foo</c>.
+		///				<c>&lt;property name="FooBar" ... &gt;</c> finds a field <c>_fooBar</c>.
+		///			</description>
+		///		</item>
+		///		<item>
+		///			<term>camelcase-m-underscore</term>
+		///			<description>
+		///				The <c>name</c> attribute should be changed to CamelCase and prefixed with
+		///				an 'm' and underscore to find the field.
+		///				<c>&lt;property name="FooBar" ... &gt;</c> finds a field <c>m_fooBar</c>.
 		///			</description>
 		///		</item>
 		///		<item>
@@ -132,7 +142,7 @@ namespace NHibernate.Properties
 		///			<description>
 		///				The <c>name</c> attribute should be prefixed with an underscore
 		///				to find the field.
-		///				<c>&lt;property name="Foo" ... &gt;</c> finds a field <c>_Foo</c>.
+		///				<c>&lt;property name="FooBar" ... &gt;</c> finds a field <c>_FooBar</c>.
 		///			</description>
 		///		</item>
 		///		<item>
@@ -140,14 +150,14 @@ namespace NHibernate.Properties
 		///			<description>
 		///				The <c>name</c> attribute should be prefixed with an 'm' and underscore
 		///				to find the field.
-		///				<c>&lt;property name="Foo" ... &gt;</c> finds a field <c>m_Foo</c>.
+		///				<c>&lt;property name="FooBar" ... &gt;</c> finds a field <c>m_FooBar</c>.
 		///			</description>
 		///		</item>
 		///		<item>
 		///			<term>pascalcase-m</term>
 		///			<description>
 		///				The <c>name</c> attribute should be prefixed with an 'm'.
-		///				<c>&lt;property name="Foo" ... &gt;</c> finds a field <c>mFoo</c>.
+		///				<c>&lt;property name="FooBar" ... &gt;</c> finds a field <c>mFooBar</c>.
 		///			</description>
 		///		</item>
 		///		<item>

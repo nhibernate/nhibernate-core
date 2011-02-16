@@ -307,6 +307,7 @@
     <Compile Include="ObjectNotFoundException.cs" />
     <Compile Include="PersistentObjectException.cs" />
     <Compile Include="Persister\PersisterFactory.cs" />
+    <Compile Include="Properties\CamelCaseMUnderscoreStrategy.cs" />
     <Compile Include="PropertyAccessException.cs" />
     <Compile Include="PropertyNotFoundException.cs" />
     <Compile Include="PropertyValueException.cs" />
