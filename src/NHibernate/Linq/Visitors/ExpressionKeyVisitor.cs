@@ -222,11 +222,6 @@ namespace NHibernate.Linq.Visitors
 			return expression;
 		}
 
-		protected override Expression VisitUnknownExpression(Expression expression)
-		{
-			return base.VisitUnknownExpression(expression);
-		}
-
         private void VisitMethod(MethodInfo methodInfo)
         {
             _string.Append(methodInfo.Name);
