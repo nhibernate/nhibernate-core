@@ -90,7 +90,7 @@ namespace NHibernate.Event.Default
 			if (original != null)
 			{
 				object entity;
-				if (original is INHibernateProxy)
+				if (original.IsProxy())
 				{
 					ILazyInitializer li = ((INHibernateProxy)original).HibernateLazyInitializer;
 					if (li.IsUninitialized)
@@ -521,7 +521,7 @@ namespace NHibernate.Event.Default
 			{
 				object entityCopy = copyCache[entity];
 				
-				if (entityCopy is INHibernateProxy)
+				if (entityCopy.IsProxy())
 					entityCopy = ((INHibernateProxy)entityCopy).HibernateLazyInitializer.GetImplementation();
 				
 				// NH-specific: Disregard entities that implement ILifecycle and manage their own state - they 

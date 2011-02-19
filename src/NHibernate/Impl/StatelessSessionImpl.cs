@@ -470,10 +470,10 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				INHibernateProxy proxy = entity as INHibernateProxy;
-				if (proxy != null)
+				if (entity.IsProxy())
 				{
-					entity = proxy.HibernateLazyInitializer.GetImplementation();
+                    INHibernateProxy proxy = entity as INHibernateProxy; 
+                    entity = proxy.HibernateLazyInitializer.GetImplementation();
 				}
 				return GuessEntityName(entity);
 			}

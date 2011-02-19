@@ -572,10 +572,11 @@ namespace NHibernate.Engine
 			//{
 			//  value = wrapper.Element;
 			//}
-			var proxy = value as INHibernateProxy;
-			if (proxy != null)
+			if (value.IsProxy())
 			{
-				if (log.IsDebugEnabled)
+                var proxy = value as INHibernateProxy; 
+                
+                if (log.IsDebugEnabled)
 				{
 					log.Debug("setting proxy identifier: " + id);
 				}
@@ -619,10 +620,11 @@ namespace NHibernate.Engine
 			//  maybeProxy = wrapper.Element;
 			//}
 
-			INHibernateProxy proxy = maybeProxy as INHibernateProxy;
-			if (proxy != null)
+			if (maybeProxy.IsProxy())
 			{
-				ILazyInitializer li = proxy.HibernateLazyInitializer;
+                INHibernateProxy proxy = maybeProxy as INHibernateProxy; 
+                
+                ILazyInitializer li = proxy.HibernateLazyInitializer;
 				if (li.IsUninitialized)
 					throw new PersistentObjectException("object was an uninitialized proxy for " + li.PersistentClass.FullName);
 
@@ -647,10 +649,11 @@ namespace NHibernate.Engine
 			//{
 			//  maybeProxy = wrapper.Element;
 			//}
-			var proxy = maybeProxy as INHibernateProxy;
-			if (proxy != null)
+			if (maybeProxy.IsProxy())
 			{
-				ILazyInitializer li = proxy.HibernateLazyInitializer;
+                var proxy = maybeProxy as INHibernateProxy; 
+                
+                ILazyInitializer li = proxy.HibernateLazyInitializer;
 				ReassociateProxy(li, proxy);
 				return li.GetImplementation(); //initialize + unwrap the object 
 			}

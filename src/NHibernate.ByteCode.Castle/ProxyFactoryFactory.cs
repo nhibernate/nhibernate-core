@@ -23,6 +23,11 @@ namespace NHibernate.ByteCode.Castle
 			return true;
 		}
 
-		#endregion
+	    public bool IsProxy(object entity)
+	    {
+	        return entity is INHibernateProxy;
+	    }
+
+	    #endregion
 	}
 }

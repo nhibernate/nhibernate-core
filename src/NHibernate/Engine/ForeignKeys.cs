@@ -102,10 +102,11 @@ namespace NHibernate.Engine
 				//if (obj == org.hibernate.intercept.LazyPropertyInitializer_Fields.UNFETCHED_PROPERTY)
 				//  return false; //this is kinda the best we can do...
 
-				INHibernateProxy proxy = obj as INHibernateProxy;
-				if (proxy != null)
+				if (obj.IsProxy())
 				{
-					// if its an uninitialized proxy it can't be transient
+                    INHibernateProxy proxy = obj as INHibernateProxy;
+                    
+                    // if its an uninitialized proxy it can't be transient
 					ILazyInitializer li = proxy.HibernateLazyInitializer;
 					if (li.GetImplementation(session) == null)
 					{
@@ -156,7 +157,7 @@ namespace NHibernate.Engine
 		/// </remarks>
 		public static bool IsNotTransient(string entityName, System.Object entity, bool? assumed, ISessionImplementor session)
 		{
-			if (entity is INHibernateProxy)
+			if (entity.IsProxy())
 				return true;
 			if (session.PersistenceContext.IsEntryFor(entity))
 				return true;

@@ -63,10 +63,11 @@ namespace NHibernate.Type
 			}
 
 			object xid;
-			INHibernateProxy proxy = x as INHibernateProxy;
-			if (proxy!=null)
+			
+			if (x.IsProxy())
 			{
-				xid = proxy.HibernateLazyInitializer.Identifier;
+                INHibernateProxy proxy = x as INHibernateProxy; 
+                xid = proxy.HibernateLazyInitializer.Identifier;
 			}
 			else
 			{
@@ -74,10 +75,11 @@ namespace NHibernate.Type
 			}
 
 			object yid;
-			proxy = y as INHibernateProxy;
-			if (proxy != null)
+			
+            if (y.IsProxy())
 			{
-				yid = proxy.HibernateLazyInitializer.Identifier;
+                INHibernateProxy proxy = y as INHibernateProxy; 
+                yid = proxy.HibernateLazyInitializer.Identifier;
 			}
 			else
 			{
@@ -139,11 +141,12 @@ namespace NHibernate.Type
 		/// <returns> The extracted identifier. </returns>
 		private static object GetIdentifier(object obj, IEntityPersister persister, EntityMode entityMode)
 		{
-			INHibernateProxy proxy = obj as INHibernateProxy;
-			if (proxy != null)
+			if (obj.IsProxy())
 			{
-				ILazyInitializer li = proxy.HibernateLazyInitializer;
-				return li.Identifier;
+                INHibernateProxy proxy = obj as INHibernateProxy; 
+                ILazyInitializer li = proxy.HibernateLazyInitializer;
+                
+                return li.Identifier;
 			}
 			else
 			{
@@ -392,10 +395,10 @@ namespace NHibernate.Type
 
 			object proxyOrEntity = session.InternalLoad(GetAssociatedEntityName(), id, eager, IsNullable && !isProxyUnwrapEnabled);
 
-			INHibernateProxy proxy = proxyOrEntity as INHibernateProxy;
-			if (proxy!=null)
+			if (proxyOrEntity.IsProxy())
 			{
-				proxy.HibernateLazyInitializer.Unwrap = isProxyUnwrapEnabled;
+                INHibernateProxy proxy = proxyOrEntity as INHibernateProxy; 
+                proxy.HibernateLazyInitializer.Unwrap = isProxyUnwrapEnabled;
 			}
 
 			return proxyOrEntity;
@@ -488,10 +491,11 @@ namespace NHibernate.Type
 			}
 
 			object id;
-			INHibernateProxy proxy = x as INHibernateProxy;
-			if (proxy!=null)
+			
+			if (x.IsProxy())
 			{
-				id = proxy.HibernateLazyInitializer.Identifier;
+                INHibernateProxy proxy = x as INHibernateProxy; 
+                id = proxy.HibernateLazyInitializer.Identifier;
 			}
 			else
 			{

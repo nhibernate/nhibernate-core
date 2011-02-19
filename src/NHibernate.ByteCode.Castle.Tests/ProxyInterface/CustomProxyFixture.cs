@@ -75,7 +75,12 @@ namespace NHibernate.ByteCode.Castle.Tests.ProxyInterface
 			return false;
 		}
 
-		#endregion
+	    public bool IsProxy(object entity)
+	    {
+	        return entity is INHibernateProxy;
+	    }
+
+	    #endregion
 	}
 
 	public class DataBindingProxyFactory : ProxyFactory

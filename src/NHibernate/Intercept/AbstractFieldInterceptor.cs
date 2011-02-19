@@ -114,10 +114,12 @@ namespace NHibernate.Intercept
 			{
 				return InitializeField(fieldName, target);
 			}
-			var nhproxy = value as INHibernateProxy;
-			if (nhproxy != null && unwrapProxyFieldNames != null && unwrapProxyFieldNames.Contains(fieldName))
+			
+			if (value.IsProxy() && unwrapProxyFieldNames != null && unwrapProxyFieldNames.Contains(fieldName))
 			{
-				return InitializeOrGetAssociation(nhproxy, fieldName);
+                var nhproxy = value as INHibernateProxy; 
+                
+                return InitializeOrGetAssociation(nhproxy, fieldName);
 			}
 			return InvokeImplementation;
 		}

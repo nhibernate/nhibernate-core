@@ -1,3 +1,4 @@
+using NHibernate.Cfg;
 using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
 
@@ -8,9 +9,9 @@ namespace NHibernate.Proxy
 	/// objects that might be instances of Classes or the Proxied version of 
 	/// the Class.
 	/// </summary>
-	public sealed class NHibernateProxyHelper
+	public static class NHibernateProxyHelper
 	{
-		private NHibernateProxyHelper()
+		static  NHibernateProxyHelper()
 		{
 			//can't instantiate
 		}
@@ -23,10 +24,11 @@ namespace NHibernate.Proxy
 		/// <returns>The Underlying Type for the object regardless of if it is a Proxy.</returns>
 		public static System.Type GetClassWithoutInitializingProxy(object obj)
 		{
-			INHibernateProxy proxy = obj as INHibernateProxy;
-			if (proxy != null)
+			if (obj.IsProxy())
 			{
-				return proxy.HibernateLazyInitializer.PersistentClass;
+                INHibernateProxy proxy = obj as INHibernateProxy; 
+                
+                return proxy.HibernateLazyInitializer.PersistentClass;
 			}
 			else
 			{
@@ -45,10 +47,10 @@ namespace NHibernate.Proxy
 		/// </remarks>
 		public static System.Type GuessClass(object entity)
 		{
-			var proxy = entity as INHibernateProxy;
-			if (proxy != null)
+			if (entity.IsProxy())
 			{
-				ILazyInitializer li = proxy.HibernateLazyInitializer;
+                var proxy = entity as INHibernateProxy; 
+                ILazyInitializer li = proxy.HibernateLazyInitializer;
 				if (li.IsUninitialized)
 				{
 					return li.PersistentClass;
@@ -63,5 +65,10 @@ namespace NHibernate.Proxy
 			}
 			return entity.GetType();
 		}
+
+        public static bool IsProxy(this object entity)
+        {
+            return Environment.BytecodeProvider.ProxyFactoryFactory.IsProxy(entity);
+        }
 	}
 }
