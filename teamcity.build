@@ -85,19 +85,27 @@
             [Function("StripTimings")]
             public static string StripTimings(string testResultFile, string outputFile)
             {
-							XmlDocument testResults = new XmlDocument();
-							testResults.Load(testResultFile);
+							try
+							{
+								XmlDocument testResults = new XmlDocument();
+								testResults.Load(testResultFile);
 
-							StripAttributes(testResults, "//@total");
-							StripAttributes(testResults, "//@date");
-							StripAttributes(testResults, "//@time");
-							StripAttributes(testResults, "//@machine-name");
-							StripAttributes(testResults, "//@user");
-							StripAttributes(testResults, "//@user-domain");
+								StripAttributes(testResults, "//@total");
+								StripAttributes(testResults, "//@date");
+								StripAttributes(testResults, "//@time");
+								StripAttributes(testResults, "//@machine-name");
+								StripAttributes(testResults, "//@user");
+								StripAttributes(testResults, "//@user-domain");
 							
-							outputFile = Path.GetDirectoryName(testResultFile) + "/" + outputFile;
-							testResults.Save(outputFile);
-							return outputFile;
+								outputFile = Path.GetDirectoryName(testResultFile) + "/" + outputFile;
+								testResults.Save(outputFile);
+								return outputFile;
+							}
+							catch(Exception e)
+							{
+								Console.WriteLine(e);
+								throw;
+							}
             }
 						
 						public class Result
@@ -137,97 +145,105 @@
 						[Function("CompareResults")]
 						public static string CompareResults(string currentResult, string lastResult)
 						{
-							string outputFile = Path.GetDirectoryName(currentResult) + "/Comparison.txt";
-							StringBuilder report = new StringBuilder();
+							try
+							{
+								string outputFile = Path.GetDirectoryName(currentResult) + "/Comparison.txt";
+								StringBuilder report = new StringBuilder();
 
-							report.AppendLine("Comparison Results");
-							report.AppendLine("==================");
+								report.AppendLine("Comparison Results");
+								report.AppendLine("==================");
 							
-							IList<Result> before = Result.ParseFile(lastResult);
-							IList<Result> after = Result.ParseFile(currentResult);
+								IList<Result> before = Result.ParseFile(lastResult);
+								IList<Result> after = Result.ParseFile(currentResult);
 							
-							IList<string> beforeTestNames = new List<string>();
-							IList<string> afterTestNames = new List<string>();
+								IList<string> beforeTestNames = new List<string>();
+								IList<string> afterTestNames = new List<string>();
 							
-							foreach(Result result in before) beforeTestNames.Add(result.Name);
-							foreach(Result result in after) afterTestNames.Add(result.Name);
+								foreach(Result result in before) beforeTestNames.Add(result.Name);
+								foreach(Result result in after) afterTestNames.Add(result.Name);
 							
-							IList<Result> afterExistingTests = new List<Result>();
-							foreach(Result result in after)
-								if (beforeTestNames.Contains(result.Name))
-									afterExistingTests.Add(result);
+								IList<Result> afterExistingTests = new List<Result>();
+								foreach(Result result in after)
+									if (beforeTestNames.Contains(result.Name))
+										afterExistingTests.Add(result);
 							
-							IList<Result> newTests = new List<Result>();
-							foreach(Result result in after)
-								if (!beforeTestNames.Contains(result.Name))
-									newTests.Add(result);
+								IList<Result> newTests = new List<Result>();
+								foreach(Result result in after)
+									if (!beforeTestNames.Contains(result.Name))
+										newTests.Add(result);
 									
-							report.AppendLine();
-							report.AppendLine("*** Tests new since last recorded results ***");
-							if (newTests.Count > 0)
-							{
-								foreach(Result result in newTests)
-									report.AppendLine((result.Success ? "PASS - " : "FAIL - ") + result.Name);
-							}
-							else
-								report.AppendLine("None");
+								report.AppendLine();
+								report.AppendLine("*** Tests new since last recorded results ***");
+								if (newTests.Count > 0)
+								{
+									foreach(Result result in newTests)
+										report.AppendLine((result.Success ? "PASS - " : "FAIL - ") + result.Name);
+								}
+								else
+									report.AppendLine("None");
 							
-							IList<Result> fixedTests = new List<Result>();
-							foreach(Result afterResult in afterExistingTests)
-								foreach(Result beforeResult in before)
-									if (beforeResult.Name == afterResult.Name)
-										if (!beforeResult.Success && afterResult.Success)
-											fixedTests.Add(afterResult);
+								IList<Result> fixedTests = new List<Result>();
+								foreach(Result afterResult in afterExistingTests)
+									foreach(Result beforeResult in before)
+										if (beforeResult.Name == afterResult.Name)
+											if (!beforeResult.Success && afterResult.Success)
+												fixedTests.Add(afterResult);
 							
-							report.AppendLine();
-							report.AppendLine("*** Tests fixed since last recorded results ***");
-							if (fixedTests.Count > 0)
-							{
-								foreach(Result result in fixedTests)
-									report.AppendLine((result.Success ? "PASS - " : "FAIL - ") + result.Name);
-							}
-							else
-								report.AppendLine("None");
+								report.AppendLine();
+								report.AppendLine("*** Tests fixed since last recorded results ***");
+								if (fixedTests.Count > 0)
+								{
+									foreach(Result result in fixedTests)
+										report.AppendLine((result.Success ? "PASS - " : "FAIL - ") + result.Name);
+								}
+								else
+									report.AppendLine("None");
 							
-							IList<Result> missingTests = new List<Result>();
-							foreach(Result result in before)
-								if (!afterTestNames.Contains(result.Name))
-									missingTests.Add(result);
+								IList<Result> missingTests = new List<Result>();
+								foreach(Result result in before)
+									if (!afterTestNames.Contains(result.Name))
+										missingTests.Add(result);
 
-							report.AppendLine();
-							report.AppendLine("*** Tests missing since last recorded results ***");
-							if (missingTests.Count > 0)
-							{
-								foreach(Result result in missingTests)
-									report.AppendLine((result.Success ? "PASS - " : "FAIL - ") + result.Name);
-							}
-							else
-								report.AppendLine("None");
+								report.AppendLine();
+								report.AppendLine("*** Tests missing since last recorded results ***");
+								if (missingTests.Count > 0)
+								{
+									foreach(Result result in missingTests)
+										report.AppendLine((result.Success ? "PASS - " : "FAIL - ") + result.Name);
+								}
+								else
+									report.AppendLine("None");
 
-							IList<Result> brokenTests = new List<Result>();
-							foreach(Result afterResult in afterExistingTests)
-								foreach(Result beforeResult in before)
-									if (beforeResult.Name == afterResult.Name)
-										if (beforeResult.Success && !afterResult.Success)
-											brokenTests.Add(afterResult);
+								IList<Result> brokenTests = new List<Result>();
+								foreach(Result afterResult in afterExistingTests)
+									foreach(Result beforeResult in before)
+										if (beforeResult.Name == afterResult.Name)
+											if (beforeResult.Success && !afterResult.Success)
+												brokenTests.Add(afterResult);
 
-							report.AppendLine();
-							report.AppendLine("*** Tests broken since last recorded results ***");
-							if (brokenTests.Count > 0)
-							{
-								foreach(Result result in brokenTests)
-									report.AppendLine((result.Success ? "PASS - " : "FAIL - ") + result.Name);
-							}
-							else
-								report.AppendLine("None");
+								report.AppendLine();
+								report.AppendLine("*** Tests broken since last recorded results ***");
+								if (brokenTests.Count > 0)
+								{
+									foreach(Result result in brokenTests)
+										report.AppendLine((result.Success ? "PASS - " : "FAIL - ") + result.Name);
+								}
+								else
+									report.AppendLine("None");
 
-							string output = report.ToString();
-							File.WriteAllText(outputFile, output);
+								string output = report.ToString();
+								File.WriteAllText(outputFile, output);
 							
-							if (brokenTests.Count > 0)
-								throw new Exception("Previously passing tests have been broken\n\n" + output);
+								if (brokenTests.Count > 0)
+									throw new Exception("Previously passing tests have been broken\n\n" + output);
 							
-							return output;
+								return output;
+							}
+							catch(Exception e)
+							{
+								Console.WriteLine(e);
+								throw;
+							}
 						}
 
             ]]>
