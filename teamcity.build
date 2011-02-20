@@ -1,17 +1,237 @@
 <?xml version="1.0" ?>
-<project name="NHibernate TeamCity Build" xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd" default="clean-configure-test">
+<project name="NHibernate TeamCity Build" xmlns="http://nant.sf.net/release/0.90/nant.xsd" default="clean-configure-test" xsi:schemaLocation="http://nant.sf.net/release/0.90/nant.xsd Tools\nant\schema\nant.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
 	<property name="root.dir" value="." />
+	<property name="config.teamcity" value="default"/>
+
 	<include buildfile="${root.dir}/default.build" />
+
 	<if test="${not property::exists('CCNetLabel') and not property::exists('build.number')}">
-		<fail>This build file is for use with CruiseControl.NET or TeamCity</fail>
+		<fail message="This build file is for use with CruiseControl.NET or TeamCity" />
 	</if>
-	
+
 	<property name="build.number" value="${CCNetLabel}" if="${property::exists('CCNetLabel')}" />
 
-	<target name="clean-configure-test" depends="cleanall init copy-teamcity-configuration binaries test binaries-zip">
+	<target name="clean-configure-test" depends="cleanall init copy-teamcity-configuration binaries test verify-test-results binaries-zip" />
 
-	</target>
 	<target name="copy-teamcity-configuration">
-		<copy file="build-common/teamcity-hibernate.cfg.xml" tofile="${bin.dir}/hibernate.cfg.xml"  />
+		<copy file="build-common/teamcity-hibernate.cfg.xml" tofile="${bin.dir}/hibernate.cfg.xml" />
+		<call target="setup-teamcity-${config.teamcity}"/>
 	</target>
+
+	<target name="verify-test-results">
+		<if test="${property::exists('NHibernate.Test.IgnoreFail')}">
+			<copy file="${teamcity.last.result}" todir="${testresults.dir}"  />
+			<property name="teamcity.current.result" value="${testResult::StripTimings(testresults.dir + '/NHibernate.Test.dll-results.xml', 'NHibernate.Test.current-results.xml')}" />
+			<property name="teamcity.report" value="${testResult::CompareResults(teamcity.current.result, teamcity.last.result)}" />
+		</if>
+	</target>
+
+	<target name="setup-teamcity-default">
+		<!-- default (SQL Server) does not require any additional settings/binaries -->
+	</target>
+
+	<target name="setup-teamcity-firebird32">
+		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.FirebirdClientDriver" />
+		<property name="nhibernate.dialect"												value="NHibernate.Dialect.FirebirdDialect" />
+		<property name="nhibernate.connection.connection_string"	value="Database=NHibernate.fdb;ServerType=1" />
+		<copy todir="${bin.dir}">
+			<fileset basedir="${root.dir}/lib/teamcity/firebird/x86">
+				<include name="*.dll"/>
+			</fileset>
+		</copy>
+		<property name="NHibernate.Test.IgnoreFail" value="true" />
+		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/firebird/NHibernate.Test.last-results.xml" />
+	</target>
+
+	<target name="setup-teamcity-firebird64">
+		<property name="nunit-console" value="${tools.dir}/NUnit/nunit-console.exe" />
+		<property name="nunit.found" value="true" />
+		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.FirebirdClientDriver" />
+		<property name="nhibernate.dialect"												value="NHibernate.Dialect.FirebirdDialect" />
+		<property name="nhibernate.connection.connection_string"	value="Database=NHibernate.fdb;ServerType=1" />
+		<copy todir="${bin.dir}">
+			<fileset basedir="${root.dir}/lib/teamcity/firebird/x64">
+				<include name="*.dll"/>
+			</fileset>
+		</copy>
+		<property name="NHibernate.Test.IgnoreFail" value="true" />
+		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/firebird/NHibernate.Test.last-results.xml" />
+	</target>
+
+	<script language="C#" prefix="testResult">
+		<references>
+			<include name="System.dll" />
+			<include name="System.Data.dll" />
+			<include name="System.Xml.dll" />
+		</references>
+		<imports>
+			<import namespace="System.Collections.Generic"/>
+			<import namespace="System.Data"/>
+			<import namespace="System.Data.Common"/>
+			<import namespace="System.Data.SqlClient"/>
+			<import namespace="System.IO"/>
+			<import namespace="System.Xml"/>
+		</imports>
+		<code>
+			<![CDATA[
+
+						public static void StripAttributes(XmlDocument source, string xpath)
+						{
+							foreach(XmlAttribute att in source.SelectNodes(xpath))
+								att.OwnerElement.RemoveAttribute(att.Name);
+						}
+						
+            [Function("StripTimings")]
+            public static string StripTimings(string testResultFile, string outputFile)
+            {
+							XmlDocument testResults = new XmlDocument();
+							testResults.Load(testResultFile);
+
+							StripAttributes(testResults, "//@total");
+							StripAttributes(testResults, "//@date");
+							StripAttributes(testResults, "//@time");
+							StripAttributes(testResults, "//@machine-name");
+							StripAttributes(testResults, "//@user");
+							StripAttributes(testResults, "//@user-domain");
+							
+							outputFile = Path.GetDirectoryName(testResultFile) + "/" + outputFile;
+							testResults.Save(outputFile);
+							return outputFile;
+            }
+						
+						public class Result
+						{
+							public string Name;
+							public bool Executed;
+							public bool Success;
+
+							private static Result Parse(XmlNode testCase)
+							{
+								Result result = new Result();
+
+								result.Name = testCase.Attributes["name"].Value;
+								result.Executed = bool.Parse(testCase.Attributes["executed"].Value);
+
+								if (result.Executed)
+									result.Success = bool.Parse(testCase.Attributes["success"].Value);
+
+								return result;
+							}
+
+							public static IList<Result> ParseFile(string file)
+							{
+								XmlDocument run1 = new XmlDocument();
+								run1.Load(file);
+
+								IList<Result> results = new List<Result>();
+								foreach (XmlNode testCase in run1.SelectNodes("//test-case"))
+								{
+									Result result = Result.Parse(testCase);
+									results.Add(result);
+								}
+								return results;
+							}
+						}
+
+						[Function("CompareResults")]
+						public static string CompareResults(string currentResult, string lastResult)
+						{
+							string outputFile = Path.GetDirectoryName(currentResult) + "/Comparison.txt";
+							StringBuilder report = new StringBuilder();
+
+							report.AppendLine("Comparison Results");
+							report.AppendLine("==================");
+							
+							IList<Result> before = Result.ParseFile(lastResult);
+							IList<Result> after = Result.ParseFile(currentResult);
+							
+							IList<string> beforeTestNames = new List<string>();
+							IList<string> afterTestNames = new List<string>();
+							
+							foreach(Result result in before) beforeTestNames.Add(result.Name);
+							foreach(Result result in after) afterTestNames.Add(result.Name);
+							
+							IList<Result> afterExistingTests = new List<Result>();
+							foreach(Result result in after)
+								if (beforeTestNames.Contains(result.Name))
+									afterExistingTests.Add(result);
+							
+							IList<Result> newTests = new List<Result>();
+							foreach(Result result in after)
+								if (!beforeTestNames.Contains(result.Name))
+									newTests.Add(result);
+									
+							report.AppendLine();
+							report.AppendLine("*** Tests new since last recorded results ***");
+							if (newTests.Count > 0)
+							{
+								foreach(Result result in newTests)
+									report.AppendLine((result.Success ? "PASS - " : "FAIL - ") + result.Name);
+							}
+							else
+								report.AppendLine("None");
+							
+							IList<Result> fixedTests = new List<Result>();
+							foreach(Result afterResult in afterExistingTests)
+								foreach(Result beforeResult in before)
+									if (beforeResult.Name == afterResult.Name)
+										if (!beforeResult.Success && afterResult.Success)
+											fixedTests.Add(afterResult);
+							
+							report.AppendLine();
+							report.AppendLine("*** Tests fixed since last recorded results ***");
+							if (fixedTests.Count > 0)
+							{
+								foreach(Result result in fixedTests)
+									report.AppendLine((result.Success ? "PASS - " : "FAIL - ") + result.Name);
+							}
+							else
+								report.AppendLine("None");
+							
+							IList<Result> missingTests = new List<Result>();
+							foreach(Result result in before)
+								if (!afterTestNames.Contains(result.Name))
+									missingTests.Add(result);
+
+							report.AppendLine();
+							report.AppendLine("*** Tests missing since last recorded results ***");
+							if (missingTests.Count > 0)
+							{
+								foreach(Result result in missingTests)
+									report.AppendLine((result.Success ? "PASS - " : "FAIL - ") + result.Name);
+							}
+							else
+								report.AppendLine("None");
+
+							IList<Result> brokenTests = new List<Result>();
+							foreach(Result afterResult in afterExistingTests)
+								foreach(Result beforeResult in before)
+									if (beforeResult.Name == afterResult.Name)
+										if (beforeResult.Success && !afterResult.Success)
+											brokenTests.Add(afterResult);
+
+							report.AppendLine();
+							report.AppendLine("*** Tests broken since last recorded results ***");
+							if (brokenTests.Count > 0)
+							{
+								foreach(Result result in brokenTests)
+									report.AppendLine((result.Success ? "PASS - " : "FAIL - ") + result.Name);
+							}
+							else
+								report.AppendLine("None");
+
+							string output = report.ToString();
+							File.WriteAllText(outputFile, output);
+							
+							if (brokenTests.Count > 0)
+								throw new Exception("Previously passing tests have been broken\n\n" + output);
+							
+							return output;
+						}
+
+            ]]>
+		</code>
+	</script>
+
 </project>
