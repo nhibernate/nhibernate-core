@@ -3713,7 +3713,7 @@ string right truncation]]></message>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Any" executed="True" result="Success" success="True" asserts="5" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.ArraysOfTimes" executed="True" result="Error" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#b1d576c3cef843b595637ff62c137a46][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#898c63af550a4a7d9cc1ea03dd89acf5][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -3734,7 +3734,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.AutoFlushCollections" executed="True" result="Error" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#6274d85bb86343c3ba99932c0021032a][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#5ad01145c5b44a3783e40642b1622585][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -3749,7 +3749,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Cache" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.CachedCollection" executed="True" result="Error" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#ca86759d443a48e3ba4260a98d84b3ed][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#fd37c6cf99504834b42f7ff013370cc6][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -3762,7 +3762,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.CascadeSave" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.CollectionCache" executed="True" result="Error" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#bbb09a30a23b435080c9174adcbd6b05][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#ab49aeca01d948eaa12a31c856f04044][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -3773,7 +3773,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.CollectionOfSelf" executed="True" result="Success" success="True" asserts="3" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.CollectionsInSelect" executed="True" result="Error" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#9c9026cdea8d4ff0ad8501613e09d598][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#04d8e8e2fd394496b3351f5fd64309f8][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -3819,7 +3819,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Limit" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.ListRemove" executed="True" result="Error" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.StringList#9fc44b3a999b46848c7d6e3f81bf419c][SQL: INSERT INTO string_list (id, "i", element) VALUES (@p0, @p1, @p2)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.StringList#746e6734dfe74f3e8a3b4a02f3c47e38][SQL: INSERT INTO string_list (id, "i", element) VALUES (@p0, @p1, @p2)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -3836,7 +3836,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.NamedParams" executed="True" result="Success" success="True" asserts="4" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.NewFlushing" executed="True" result="Error" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#1355c70032d84752989d17e464497307][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#2f60f52b76a44cb38a31bee04b108c3c][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -3855,7 +3855,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.ParameterInOrderByClause" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.PersistCollections" executed="True" result="Error" success="False" asserts="1">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#6288c3015485406b8597e3d91ce03cb4][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#a7508134c96e41f1bb31e0768306a6a8][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -3871,7 +3871,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.PSCache" executed="True" result="Success" success="True" asserts="7" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Query" executed="True" result="Error" success="False" asserts="41">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#b2264161dd85488eb58baa1c0daba74b][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#ec0aa7fd59214d008e640757d0a7d62b][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -3881,7 +3881,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.QueryCollectionOfValues" executed="True" result="Error" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#005285db62a04065a3f8cfc881593bb2][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#a624e9aa44474e799c63550e047a4b9d][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -3892,7 +3892,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.QueryLockMode" executed="True" result="Success" success="True" asserts="16" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Reachability" executed="True" result="Error" success="False" asserts="4">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.StringDateMap#70ee0816e00f442eb8943f94613dce8a][SQL: INSERT INTO StringDateMap (id_, map_key, map_value) VALUES (@p0, @p1, @p2)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.StringDateMap#50dfed24ede443a594ca4ebbcd725552][SQL: INSERT INTO StringDateMap (id_, map_key, map_value) VALUES (@p0, @p1, @p2)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -3905,7 +3905,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.RefreshTransient" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.RemoveContains" executed="True" result="Error" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#9e4ac767ec67476f886e444948d8e5cf][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#a96c38888fbc4212b100daaa7fb4c449][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -3915,7 +3915,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.ReuseDeletedCollection" executed="True" result="Error" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#778c40c293fa40dbb9a04645d98409e6][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#fca5573ed87f45908dab4db66ca6d0e0][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -3933,7 +3933,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.UpdateCollections" executed="True" result="Success" success="True" asserts="10" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.UpdateFromTransient" executed="True" result="Error" success="False" asserts="2">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not update: [NHibernate.DomainModel.Fee#f89f228c44984127837ea0270da4134f][SQL: UPDATE "the fees" SET Fi = ?, TheFee = ?, AnotherFee = ?, Qux = ?, count_ = ? WHERE id_ = ?]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not update: [NHibernate.DomainModel.Fee#88f12bc53b0849e38b9f86866cb3c995][SQL: UPDATE "the fees" SET Fi = ?, TheFee = ?, AnotherFee = ?, Qux = ?, count_ = ? WHERE id_ = ?]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -4082,7 +4082,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Legacy.ParentChildTest.CollectionQuery" executed="True" result="Success" success="True" asserts="12" />
                       <test-case name="NHibernate.Test.Legacy.ParentChildTest.ComplexCriteria" executed="True" result="Error" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#f2e4889b42d24dbabf4610f0735e8a8e][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.Cached#e9ecacb9989240d288f1179f52353a0f][SQL: INSERT INTO cached_set (baz, Foo, Bar) VALUES (@p0, @p1, @p2)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -6346,11 +6346,11 @@ string right truncation]]></message>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:159 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Name longer than database column size
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:159 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Name longer than database column size
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:159 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Name longer than database column size]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.BagWithLazyExtraAndFilter.Fixture.CanUseFilterForLazyExtra" executed="True" result="Failure" success="False" asserts="0">
@@ -6505,11 +6505,11 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table EMPLOYEES already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table EMPLOYEES already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table EMPLOYEES already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection.Fixture.CanQueryByCriteriaOnSetOfCompositeElement" executed="True" result="Failure" success="False" asserts="0">
@@ -6732,11 +6732,11 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table EMPLOYEES already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table EMPLOYEES already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table EMPLOYEES already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.Evicting.Fixture.Can_evict_entity_from_session" executed="True" result="Failure" success="False" asserts="0">
@@ -6898,11 +6898,11 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table EMPLOYEES already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table EMPLOYEES already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table EMPLOYEES already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.ListsWithHoles.Fixture.CanHandleHolesInList" executed="True" result="Failure" success="False" asserts="0">
@@ -6919,11 +6919,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table EMPLOYEES already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table EMPLOYEES already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table EMPLOYEES already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet.Fixture.CanHandleNullEntityInList" executed="True" result="Failure" success="False" asserts="0">
@@ -6985,11 +6985,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table EMPLOYEES already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table EMPLOYEES already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table EMPLOYEES already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1001.Fixture.Test" executed="True" result="Failure" success="False" asserts="0">
@@ -7006,11 +7006,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="NH1018Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table EMPLOYEES already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table EMPLOYEES already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table EMPLOYEES already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1018.NH1018Fixture.Test" executed="True" result="Failure" success="False" asserts="0">
@@ -7049,11 +7049,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ANIMAL already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ANIMAL already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table ANIMAL already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1033.Fixture.CanUseClassConstraint" executed="True" result="Failure" success="False" asserts="0">
@@ -7530,11 +7530,11 @@ Token unknown - line 1, column 145
                       <test-suite type="TestFixture" name="NH1280Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1280.NH1280Fixture.HavingOnEqProjection" executed="True" result="Failure" success="False" asserts="0">
@@ -7632,11 +7632,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="NH1291AnonExampleFixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1291AnonExample.NH1291AnonExampleFixture.CanCreateAnonExampleForInt" executed="True" result="Failure" success="False" asserts="0">
@@ -7709,11 +7709,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1324.Fixture.CanUseUniqueResultWithNullableType_ReturnNull_Criteria" executed="True" result="Failure" success="False" asserts="0">
@@ -7745,11 +7745,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1326.Fixture.ShouldThrowIfCallingDisconnectInsideTransaction" executed="True" result="Failure" success="False" asserts="0">
@@ -7817,11 +7817,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="FixtureWithBag" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1356.FixtureWithBag.Fixture.CanLoadWithGenericCompositeElement" executed="True" result="Failure" success="False" asserts="0">
@@ -7834,11 +7834,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="FixtureWithList" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1356.FixtureWithList.Fixture.CanLoadWithGenericCompositeElement" executed="True" result="Failure" success="False" asserts="0">
@@ -7851,11 +7851,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="FixtureWithSet" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1356.FixtureWithSet.Fixture.CanLoadWithGenericCompositeElement" executed="True" result="Failure" success="False" asserts="0">
@@ -7872,11 +7872,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1359.Fixture.CanGetSelectSubqueryWithSpecifiedParameter" executed="True" result="Failure" success="False" asserts="0">
@@ -7936,11 +7936,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ANIMAL already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ANIMAL already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table ANIMAL already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1391.Fixture.Can_discriminate_subclass_on_list_with_lazy_loading_when_used_get" executed="True" result="Failure" success="False" asserts="0">
@@ -7953,11 +7953,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture2" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ANIMAL already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ANIMAL already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table ANIMAL already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1391.Fixture2.Can_discriminate_subclass_on_list_with_lazy_loading_when_used_and_person_had_multiple_list" executed="True" result="Failure" success="False" asserts="0">
@@ -7974,11 +7974,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1393.Fixture.CanAvgProjectionOnSqlFunction" executed="True" result="Failure" success="False" asserts="0">
@@ -8010,11 +8010,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1394.Fixture.CanOrderByPropertyProjection" executed="True" result="Failure" success="False" asserts="0">
@@ -8069,11 +8069,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1403.Fixture.Bug" executed="True" result="Failure" success="False" asserts="0">
@@ -8195,11 +8195,11 @@ Value]]></message>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1447.Fixture.CanQueryByConstantProjectionWithType" executed="True" result="Failure" success="False" asserts="0">
@@ -8225,11 +8225,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1478.Fixture.TestIfColonInStringIsNotInterpretedAsParameterInHQL" executed="True" result="Failure" success="False" asserts="0">
@@ -8324,11 +8324,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1495.Fixture.CreateTest" executed="True" result="Failure" success="False" asserts="0">
@@ -8345,11 +8345,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1499.Fixture.CheckIfDetachedCriteriaCanBeUsedOnPropertyRestriction" executed="True" result="Failure" success="False" asserts="0">
@@ -8366,11 +8366,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1502.Fixture.OrderProjectionTest" executed="True" result="Failure" success="False" asserts="0">
@@ -8387,11 +8387,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ORDERS already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ORDERS already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table ORDERS already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1507.Fixture.ExplicitJoin" executed="True" result="Failure" success="False" asserts="0">
@@ -8413,11 +8413,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1508.Fixture.DoesntThrowExceptionWhenHqlQueryIsGiven" executed="True" result="Failure" success="False" asserts="0">
@@ -8492,11 +8492,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1533.Fixture.Can_query_using_two_orderby_and_limit_altogether" executed="True" result="Failure" success="False" asserts="0">
@@ -8964,11 +8964,11 @@ string right truncation]]></message>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table EMPLOYEES already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table EMPLOYEES already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table EMPLOYEES already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1643.Fixture.Test" executed="True" result="Failure" success="False" asserts="0">
@@ -9010,11 +9010,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1675.Fixture.ShouldWorkUsingDistinctAndLimits" executed="True" result="Failure" success="False" asserts="0">
@@ -9070,11 +9070,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:159 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Name longer than database column size
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:159 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Name longer than database column size
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:159 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Name longer than database column size]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1691.Fixture.ComplexNest" executed="True" result="Failure" success="False" asserts="0">
@@ -9456,11 +9456,11 @@ Value]]></message>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1773.Fixture.CustomHQLFunctionsShouldBeRecognizedByTheParser" executed="True" result="Failure" success="False" asserts="0">
@@ -9600,11 +9600,11 @@ Token unknown - line 1, column 114
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1794.Fixture.CanQueryOnCollectionThatAppearsOnlyInTheMapping" executed="True" result="Failure" success="False" asserts="0">
@@ -9654,11 +9654,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="AstBug" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1812.AstBug.AstBugBase.Test" executed="True" result="Failure" success="False" asserts="0">
@@ -9671,11 +9671,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="AstBugBase" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1812.AstBugBase.Test" executed="True" result="Failure" success="False" asserts="0">
@@ -9688,11 +9688,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="ItWorksWithClassicParser" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1812.ItWorksWithClassicParser.AstBugBase.Test" executed="True" result="Failure" success="False" asserts="0">
@@ -9945,11 +9945,11 @@ IDENTITY]]></message>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1877.Fixture.CanGroupByWithPropertyName" executed="True" result="Failure" success="False" asserts="0">
@@ -9972,7 +9972,7 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1891.Fixture.FormulaEscaping" executed="True" result="Error" success="False" asserts="0">
                             <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH1891.A#fe9575cc-35e3-4177-b8b9-9e9100f9653a][SQL: SELECT a0_.id as id1471_0_, a0_.FormulaConstraint as FormulaC2_1471_0_, (select count(*) from b where b."Name" = a0_.FormulaConstraint) as formula58_0_ FROM a a0_ WHERE a0_.id=?]
+                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH1891.A#bab66269-14eb-4313-81db-9e910169e017][SQL: SELECT a0_.id as id1471_0_, a0_.FormulaConstraint as FormulaC2_1471_0_, (select count(*) from b where b."Name" = a0_.FormulaConstraint) as formula58_0_ FROM a a0_ WHERE a0_.id=?]
   ----> FirebirdSql.Data.FirebirdClient.FbException : Dynamic SQL Error
 SQL error code = -206
 Column unknown
@@ -10115,11 +10115,11 @@ Value]]></message>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ORDERS already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ORDERS already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table ORDERS already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1908ThreadSafety.Fixture.UsingFiltersIsThreadSafe" executed="True" result="Failure" success="False" asserts="0">
@@ -10180,11 +10180,11 @@ Value]]></message>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table CUSTOMERS already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table CUSTOMERS already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table CUSTOMERS already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1920.Fixture.Can_Query_With_Collection_Size_Condition" executed="True" result="Failure" success="False" asserts="0">
@@ -10270,11 +10270,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1941.Fixture.CanOverrideStringEnumGetValue" executed="True" result="Failure" success="False" asserts="0">
@@ -10291,11 +10291,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1948.Fixture.CanUseDecimalScaleZero" executed="True" result="Failure" success="False" asserts="0">
@@ -10510,11 +10510,11 @@ Invalid expression in the select list (not contained in either an aggregate func
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ORDERS already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ORDERS already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table ORDERS already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2011.Fixture.Test" executed="True" result="Failure" success="False" asserts="0">
@@ -10638,11 +10638,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ADDRESS already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ADDRESS already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table ADDRESS already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2056.Fixture.CanUpdateInheritedClass" executed="True" result="Failure" success="False" asserts="0">
@@ -10659,11 +10659,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2057.Fixture.WillCloseWhenUsingDTC" executed="True" result="Failure" success="False" asserts="0">
@@ -10680,11 +10680,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ORDERS already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ORDERS already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table ORDERS already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2061.Fixture.merge_with_many_to_many_inside_component_that_is_null" executed="True" result="Failure" success="False" asserts="0">
@@ -10701,11 +10701,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2065.Fixture.GetGoodErrorForDirtyReassociatedCollection" executed="True" result="Failure" success="False" asserts="0">
@@ -10763,11 +10763,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2092.Fixture.ConstrainedLazyLoadedOneToOneUsingCastleProxy" executed="True" result="Failure" success="False" asserts="0">
@@ -10784,11 +10784,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2093.Fixture.CanUseFieldInterceptingProxyAsHQLArgument" executed="True" result="Failure" success="False" asserts="0">
@@ -10810,11 +10810,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2094.Fixture.CanAccessInitializedPropertiesOutsideOfSession" executed="True" result="Failure" success="False" asserts="0">
@@ -10841,11 +10841,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2102.Fixture.EntityWithConstrainedLazyLoadedOneToOneShouldNotGenerateFieldInterceptingProxy" executed="True" result="Failure" success="False" asserts="0">
@@ -10962,7 +10962,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2189.Fixture.FutureCriteriaEagerLoadUsesAlreadyLoadedEntity" executed="True" result="Error" success="False" asserts="0">
                             <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2189.TeamMember#2f22cdf3-9327-40f6-b20d-9e9100f97583][SQL: INSERT INTO TeamMember (Name, Id) VALUES (?, ?)]
+                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2189.TeamMember#b18baa65-74c4-4457-aac5-9e910169eb12][SQL: INSERT INTO TeamMember (Name, Id) VALUES (?, ?)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -10971,7 +10971,7 @@ string right truncation]]></message>
                           </test-case>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2189.Fixture.FutureCriteriaReturnsExistingProxy" executed="True" result="Error" success="False" asserts="0">
                             <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2189.TeamMember#fd8be508-049e-4d3a-9e80-9e9100f97590][SQL: INSERT INTO TeamMember (Name, Id) VALUES (?, ?)]
+                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2189.TeamMember#a86dcc5c-1eab-4920-b6c7-9e910169eb1e][SQL: INSERT INTO TeamMember (Name, Id) VALUES (?, ?)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -10980,7 +10980,7 @@ string right truncation]]></message>
                           </test-case>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2189.Fixture.FutureQueryEagerLoadUsesAlreadyLoadedEntity" executed="True" result="Error" success="False" asserts="0">
                             <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2189.TeamMember#7153039d-b8b6-497f-b129-9e9100f9759a][SQL: INSERT INTO TeamMember (Name, Id) VALUES (?, ?)]
+                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2189.TeamMember#fb6b17a0-4d4e-4f50-9c9c-9e910169eb28][SQL: INSERT INTO TeamMember (Name, Id) VALUES (?, ?)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -10989,7 +10989,7 @@ string right truncation]]></message>
                           </test-case>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2189.Fixture.FutureQueryReturnsExistingProxy" executed="True" result="Error" success="False" asserts="0">
                             <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2189.TeamMember#b88af60f-1bcf-497d-a0aa-9e9100f975a3][SQL: INSERT INTO TeamMember (Name, Id) VALUES (?, ?)]
+                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2189.TeamMember#70de31b4-fed4-4ecb-b8ef-9e910169eb35][SQL: INSERT INTO TeamMember (Name, Id) VALUES (?, ?)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : arithmetic exception, numeric overflow, or string truncation
 string right truncation
   ----> FirebirdSql.Data.Common.IscException : arithmetic exception, numeric overflow, or string truncation
@@ -11417,11 +11417,11 @@ Token unknown - line 1, column 170
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2322.Fixture.ShouldNotThrowWhenCommitingATransaction" executed="True" result="Failure" success="False" asserts="0">
@@ -11462,11 +11462,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Nh2331Test" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2331.Nh2331Test.DetachedCriteriaCorrelatedQueryExplodes" executed="True" result="Failure" success="False" asserts="0">
@@ -11497,11 +11497,11 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2344.Fixture.CoalesceShouldWork" executed="True" result="Failure" success="False" asserts="0">
@@ -11518,11 +11518,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ANIMAL already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ANIMAL already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table ANIMAL already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2361.Fixture.WhenDeleteMultiTableHierarchyThenNotThrows" executed="True" result="Failure" success="False" asserts="0">
@@ -11570,11 +11570,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2378.Fixture.ShortEntityCanBeQueryCorrectlyUsingLinqProvider" executed="True" result="Failure" success="False" asserts="0">
@@ -11592,7 +11592,7 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2386.Test.TheTest" executed="True" result="Error" success="False" asserts="0">
                             <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2386.Organisation#5d38118a-abe6-4df9-99a9-77b161fa5483][SQL: INSERT INTO tblTrnOrganisation (OrganisationId) VALUES (?)]
+                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2386.Organisation#26c85728-9157-49cf-a11d-1205b65a421b][SQL: INSERT INTO tblTrnOrganisation (OrganisationId) VALUES (?)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : validation error for column RVERSION, value "*** null ***"
   ----> FirebirdSql.Data.Common.IscException : validation error for column RVERSION, value "*** null ***"]]></message>
                             </failure>
@@ -11633,11 +11633,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table CUSTOMERS already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table CUSTOMERS already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table CUSTOMERS already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2412.Fixture.OrderByUsesLeftJoin" executed="True" result="Failure" success="False" asserts="0">
@@ -11770,11 +11770,11 @@ string right truncation]]></message>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ANIMAL already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ANIMAL already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table ANIMAL already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2507.Fixture.QueryEnumerationWithCheckedArithmeticOverflowTest" executed="True" result="Failure" success="False" asserts="0">
@@ -11945,11 +11945,11 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH315.Fixture.SaveClient" executed="True" result="Failure" success="False" asserts="0">
@@ -12663,11 +12663,11 @@ string right truncation]]></message>
                       <test-suite type="TestFixture" name="NH958Fixture" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH958.NH958Fixture.SaveOrUpdateCopyWithAny1" executed="True" result="Failure" success="False" asserts="0">
@@ -12746,11 +12746,11 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-suite type="TestFixture" name="CompositePropertyRefTest" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.Properties.CompositePropertyRefTest.AccountsOuterJoin" executed="True" result="Failure" success="False" asserts="0">
@@ -12783,11 +12783,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="DynamicEntityTest" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.Properties.DynamicEntityTest.CanFetchByProperty" executed="True" result="Failure" success="False" asserts="0">
@@ -13587,11 +13587,11 @@ string right truncation]]></message>
                           <test-suite type="TestFixture" name="FireBirdTest" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                             </failure>
                             <results>
                               <test-case name="NHibernate.Test.SqlTest.Custom.Firebird.FireBirdTest.CustomSQLSupportTest.HandSQL" executed="True" result="Failure" success="False" asserts="0">
@@ -13743,11 +13743,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                       <test-suite type="TestFixture" name="GeneralTest" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                         </failure>
                         <results>
                           <test-case name="NHibernate.Test.SqlTest.Query.GeneralTest.AutoDetectAliasing" executed="True" result="Failure" success="False" asserts="0">
@@ -13831,11 +13831,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                   <test-suite type="TestFixture" name="StatelessWithRelationsFixture" executed="True" result="Error" success="False" asserts="0">
                     <failure>
                       <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ANIMAL already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ANIMAL already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table ANIMAL already exists]]></message>
                     </failure>
                     <results>
                       <test-case name="NHibernate.Test.Stateless.StatelessWithRelationsFixture.ShouldWorkLoadingComplexEntities" executed="True" result="Failure" success="False" asserts="0">
@@ -14067,11 +14067,11 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                   <test-suite type="TestFixture" name="TypedManyToOneTest" executed="True" result="Error" success="False" asserts="0">
                     <failure>
                       <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ADDRESS already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table ADDRESS already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table ADDRESS already exists]]></message>
                     </failure>
                     <results>
                       <test-case name="NHibernate.Test.TypedManyToOne.TypedManyToOneTest.TestCreateQuery" executed="True" result="Failure" success="False" asserts="0">
@@ -14526,11 +14526,11 @@ Parameter name: typecode]]></message>
                   <test-suite type="TestFixture" name="UnconstrainedNoLazyTest" executed="True" result="Error" success="False" asserts="0">
                     <failure>
                       <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                     </failure>
                     <results>
                       <test-case name="NHibernate.Test.Unconstrained.UnconstrainedNoLazyTest.ManyToOneUpdateFalse" executed="True" result="Failure" success="False" asserts="0">
@@ -14558,11 +14558,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                   <test-suite type="TestFixture" name="UnconstrainedTest" executed="True" result="Error" success="False" asserts="0">
                     <failure>
                       <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                     </failure>
                     <results>
                       <test-case name="NHibernate.Test.Unconstrained.UnconstrainedTest.UnconstrainedNoLazyTest.ManyToOneUpdateFalse" executed="True" result="Failure" success="False" asserts="0">
@@ -14594,11 +14594,11 @@ can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\
                   <test-suite type="TestFixture" name="UnionSubclassFixture" executed="True" result="Error" success="False" asserts="0">
                     <failure>
                       <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table EMPLOYEES already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table EMPLOYEES already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table EMPLOYEES already exists]]></message>
                     </failure>
                     <results>
                       <test-case name="NHibernate.Test.Unionsubclass.UnionSubclassFixture.NestedUnionedSubclasses" executed="True" result="Failure" success="False" asserts="0">
@@ -15020,11 +15020,11 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                   <test-suite type="TestFixture" name="VersionFixture" executed="True" result="Error" success="False" asserts="0">
                     <failure>
                       <message><![CDATA[NHibernate.HibernateException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.FirebirdClient.FbException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found
+Table PERSON already exists
   ----> FirebirdSql.Data.Common.IscException : unsuccessful metadata update
-can't format message 8:132 -- message file C:\Work\svn\nhtrunk\nhibernate\build\NHibernate-3.0.1.GA-debug\bin\net-3.5\firebird.msg not found]]></message>
+Table PERSON already exists]]></message>
                     </failure>
                     <results>
                       <test-case name="NHibernate.Test.VersionTest.VersionFixture.CollectionNoVersion" executed="True" result="Failure" success="False" asserts="0">

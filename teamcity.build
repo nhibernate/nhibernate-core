@@ -40,6 +40,7 @@
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/firebird/x86">
 				<include name="*.dll"/>
+				<include name="*.msg"/>
 			</fileset>
 		</copy>
 		<property name="NHibernate.Test.IgnoreFail" value="true" />
@@ -55,6 +56,7 @@
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/firebird/x64">
 				<include name="*.dll"/>
+				<include name="*.msg"/>
 			</fileset>
 		</copy>
 		<property name="NHibernate.Test.IgnoreFail" value="true" />
