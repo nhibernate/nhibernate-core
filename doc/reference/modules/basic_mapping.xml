@@ -1295,7 +1295,7 @@
                                 <entry>
                                     <para>
                                         The <literal>name</literal> attribute is converted to camel case to find the field.
-                                        <literal>&lt;property name="Foo" ... &gt;</literal> uses the field <literal>foo</literal>.
+                                        <literal>&lt;property name="FooBar" ... &gt;</literal> uses the field <literal>fooBar</literal>.
                                     </para>
                                 </entry>
                             </row>
@@ -1305,10 +1305,20 @@
                                     <para>
                                         The <literal>name</literal> attribute is converted to camel case and prefixed with an
                                         underscore to find the field.
-                                        <literal>&lt;property name="Foo" ... &gt;</literal> uses the field <literal>_foo</literal>.
+                                        <literal>&lt;property name="FooBar" ... &gt;</literal> uses the field <literal>_fooBar</literal>.
                                     </para>
-                                </entry>	
+                                </entry>
                             </row>	
+                            <row>
+                                <entry><literal>camelcase-m-underscore</literal></entry>
+                                <entry>
+                                    <para>
+                                        The <literal>name</literal> attribute is converted to camel case and prefixed with
+                                        the character <literal>m</literal> and an underscore to find the field.
+                                        <literal>&lt;property name="FooBar" ... &gt;</literal> uses the field <literal>m_fooBar</literal>.
+                                    </para>
+                                </entry>
+                            </row>
                             <row>
                                 <entry><literal>lowercase</literal></entry>
                                 <entry>
@@ -1316,7 +1326,7 @@
                                         The <literal>name</literal> attribute is converted to lower case to find the Field.
                                         <literal>&lt;property name="FooBar" ... &gt;</literal> uses the field <literal>foobar</literal>.
                                     </para>
-                                </entry>	
+                                </entry>
                             </row>	
                             <row>
                                 <entry><literal>lowercase-underscore</literal></entry>
@@ -1333,7 +1343,7 @@
                                 <entry>
                                     <para>
                                         The <literal>name</literal> attribute is prefixed with an underscore to find the field.
-                                        <literal>&lt;property name="Foo" ... &gt;</literal> uses the field <literal>_Foo</literal>.
+                                        <literal>&lt;property name="FooBar" ... &gt;</literal> uses the field <literal>_FooBar</literal>.
                                     </para>
                                 </entry>
                             </row>
@@ -1343,7 +1353,7 @@
                                     <para>
                                         The <literal>name</literal> attribute is prefixed with the character
                                         <literal>m</literal> to find the field.
-                                        <literal>&lt;property name="Foo" ... &gt;</literal> uses the field <literal>mFoo</literal>.
+                                        <literal>&lt;property name="FooBar" ... &gt;</literal> uses the field <literal>mFooBar</literal>.
                                     </para>
                                 </entry>
                             </row>
@@ -1353,7 +1363,7 @@
                                     <para>
                                         The <literal>name</literal> attribute is prefixed with the character
                                         <literal>m</literal> and an underscore to find the field.
-                                        <literal>&lt;property name="Foo" ... &gt;</literal> uses the field <literal>m_Foo</literal>.
+                                        <literal>&lt;property name="FooBar" ... &gt;</literal> uses the field <literal>m_FooBar</literal>.
                                     </para>
                                 </entry>
                             </row>	

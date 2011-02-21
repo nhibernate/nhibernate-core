@@ -65,7 +65,7 @@ namespace NHibernate.Test.PropertyTest
 			Assert.IsNull(fieldGetter.PropertyName, "no Property Names for fields.");
 			Assert.AreEqual(Int64.MaxValue, fieldGetter.Get(obj), "Get() for Int64");
 		}
-
+		
 		[Test]
 		public void PascalCaseMUnderscoreNamingStrategy()
 		{
@@ -79,7 +79,21 @@ namespace NHibernate.Test.PropertyTest
 			Assert.IsNull(fieldGetter.PropertyName, "no Property Names for fields.");
 			Assert.AreEqual(new TimeSpan(DateTime.Parse("2001-01-01").Ticks), fieldGetter.Get(obj), "Get() for TimeSpan");
 		}
+		
+		[Test]
+		public void CamelCaseMUnderscoreNamingStrategy()
+		{
+			IGetter fieldGetter =
+				ReflectHelper.GetGetter(typeof(FieldGetterClass), "PropertyFive", "field.camelcase-m-underscore");
 
+			Assert.IsNotNull(fieldGetter, "should have found getter");
+			Assert.AreEqual(typeof(FieldAccessor.FieldGetter), fieldGetter.GetType(), "IGetter should be for a field.");
+			Assert.AreEqual(typeof(decimal), fieldGetter.ReturnType, "returns Decimal.");
+			Assert.IsNull(fieldGetter.Method, "no MethodInfo for fields.");
+			Assert.IsNull(fieldGetter.PropertyName, "no Property Names for fields.");
+			Assert.AreEqual(2.5m, fieldGetter.Get(obj), "Get() for Decimal");
+		}
+		
 		public class FieldGetterClass
 		{
 #pragma warning disable 414
@@ -88,6 +102,7 @@ namespace NHibernate.Test.PropertyTest
 			private bool _propertyTwo = true;
 			private TimeSpan m_PropertyThree = new TimeSpan(DateTime.Parse("2001-01-01").Ticks);
 			private long _propertyfour = Int64.MaxValue;
+			private decimal m_propertyFive = 2.5m;
 #pragma warning restore 414
 
 		}

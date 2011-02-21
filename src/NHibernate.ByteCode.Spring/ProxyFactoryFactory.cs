@@ -27,6 +27,11 @@ namespace NHibernate.ByteCode.Spring
 			return false;
 		}
 
+		public bool IsProxy(object entity)
+		{
+			return entity is INHibernateProxy;
+		}
+
 		#endregion
 	}
 }

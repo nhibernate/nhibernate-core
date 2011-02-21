@@ -19,14 +19,18 @@ echo.
 echo --- GRAMMAR ---
 echo H.  Grammar operations (related to Hql.g and HqlSqlWalker.g)
 echo.
+echo --- TeamCity (CI) build options
+echo I.  TeamCity build menu
+echo.
 
 if exist %SYSTEMROOT%\System32\choice.exe ( goto prompt-choice )
 goto prompt-set
 
 :prompt-choice
-choice /C:abcdefgh
+choice /C:abcdefghi
 
 if errorlevel 255 goto end
+if errorlevel 9 goto teamcity-menu
 if errorlevel 8 goto grammar
 if errorlevel 7 goto build-release-package
 if errorlevel 6 goto build-release
@@ -38,7 +42,7 @@ if errorlevel 1 goto build-visual-studio
 if errorlevel 0 goto end
 
 :prompt-set
-set /p OPT=[A, B, C, D, E, F, G, H]? 
+set /p OPT=[A, B, C, D, E, F, G, H, I]? 
 
 if /I "%OPT%"=="A" goto build-visual-studio
 if /I "%OPT%"=="B" goto help-test-setup
@@ -48,6 +52,7 @@ if /I "%OPT%"=="E" goto build-debug
 if /I "%OPT%"=="F" goto build-release
 if /I "%OPT%"=="G" goto build-release-package
 if /I "%OPT%"=="H" goto grammar
+if /I "%OPT%"=="I" goto teamcity-menu
 goto prompt-set
 
 :help-test-setup
@@ -166,6 +171,46 @@ echo   2.  Run the unit test.  It will appear to stall.
 echo   3.  Download and run AntlrWorks.
 echo   4.  Choose "Debug Remote" and allow the default ports.
 echo   5.  You should now be connected and able to step through your grammar.
+goto end
+
+:teamcity-menu
+echo.
+echo --- TeamCity (CI) build options
+echo A.  NHibernate Trunk (default SQL Server)
+echo B.  NHibernate Trunk - Firebird (32-bit)
+echo C.  NHibernate Trunk - Firebird (64-bit)
+echo.
+
+if exist %SYSTEMROOT%\System32\choice.exe ( goto teamcity-menu-prompt-choice )
+goto teamcity-menu-prompt-set
+
+:teamcity-menu-prompt-choice
+choice /C:abc
+
+if errorlevel 255 goto end
+if errorlevel 3 goto teamcity-firebird64
+if errorlevel 2 goto teamcity-firebird32
+if errorlevel 1 goto teamcity-trunk
+if errorlevel 0 goto end
+
+:teamcity-menu-prompt-set
+set /p OPT=[A, B, C]? 
+
+if /I "%OPT%"=="A" goto teamcity-trunk
+if /I "%OPT%"=="B" goto teamcity-firebird32
+if /I "%OPT%"=="C" goto teamcity-firebird64
+goto teamcity-menu-prompt-set
+
+:teamcity-trunk
+%NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1
+goto end
+
+:teamcity-firebird32
+%NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=firebird32
+goto end
+
+:teamcity-firebird64
+%NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=firebird64
 goto end
 
 :end

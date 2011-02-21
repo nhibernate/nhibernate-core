@@ -261,6 +261,7 @@
     <Compile Include="Linq\ReWriters\MoveOrderByToEndRewriter.cs" />
     <Compile Include="Linq\ReWriters\ResultOperatorRewriter.cs" />
     <Compile Include="Linq\ReWriters\ResultOperatorRewriterResult.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregateFromSeed.cs" />
     <Compile Include="Loader\Loader.cs" />
     <Compile Include="Loader\OuterJoinLoader.cs" />
     <Compile Include="LockMode.cs" />
@@ -307,6 +308,7 @@
     <Compile Include="ObjectNotFoundException.cs" />
     <Compile Include="PersistentObjectException.cs" />
     <Compile Include="Persister\PersisterFactory.cs" />
+    <Compile Include="Properties\CamelCaseMUnderscoreStrategy.cs" />
     <Compile Include="PropertyAccessException.cs" />
     <Compile Include="PropertyNotFoundException.cs" />
     <Compile Include="PropertyValueException.cs" />
@@ -681,7 +683,6 @@
     <Compile Include="Criterion\QueryOver.cs" />
     <Compile Include="Impl\ExpressionProcessor.cs" />
     <Compile Include="Impl\SessionIdLoggingContext.cs" />
-    <Compile Include="Linq\Expressions\AggregateExpressionNode.cs" />
     <Compile Include="Linq\EagerFetchingExtensionMethods.cs" />
     <Compile Include="Linq\Functions\ILinqToHqlGeneratorsRegistry.cs" />
     <Compile Include="Linq\Functions\IRuntimeMethodHqlGenerator.cs">
@@ -694,7 +695,6 @@
     <Compile Include="Linq\TypeHelperExtensionMethods.cs" />
     <Compile Include="Linq\Visitors\NameUnNamedParameters.cs" />
     <Compile Include="Linq\NhRelinqQueryParser.cs" />
-    <Compile Include="Linq\ResultOperators\AggregateResultOperator.cs" />
     <Compile Include="Linq\Expressions\NhAggregatedExpression.cs" />
     <Compile Include="Linq\Expressions\NhAverageExpression.cs" />
     <Compile Include="Linq\Expressions\NhCountExpression.cs" />

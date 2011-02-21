@@ -432,10 +432,11 @@ namespace NHibernate.Impl
 				{
 					throw new ArgumentNullException("obj", "null object passed to GetCurrentLockMode");
 				}
-				var proxy = obj as INHibernateProxy;
-				if (proxy != null)
+				
+				if (obj.IsProxy())
 				{
-					obj = proxy.HibernateLazyInitializer.GetImplementation(this);
+                    var proxy = obj as INHibernateProxy; 
+                    obj = proxy.HibernateLazyInitializer.GetImplementation(this);
 					if (obj == null)
 					{
 						return LockMode.None;
@@ -1040,10 +1041,10 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				INHibernateProxy proxy = entity as INHibernateProxy;
-				if (proxy != null)
+				if (entity.IsProxy())
 				{
-					ILazyInitializer initializer = proxy.HibernateLazyInitializer;
+                    INHibernateProxy proxy = entity as INHibernateProxy; 
+                    ILazyInitializer initializer = proxy.HibernateLazyInitializer;
 
 					// it is possible for this method to be called during flush processing,
 					// so make certain that we do not accidently initialize an uninitialized proxy
@@ -1292,10 +1293,12 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				var proxy = obj as INHibernateProxy;
-				if (proxy != null)
+				
+				if (obj.IsProxy())
 				{
-					if (!persistenceContext.ContainsProxy(proxy))
+                    var proxy = obj as INHibernateProxy; 
+                    
+                    if (!persistenceContext.ContainsProxy(proxy))
 					{
 						throw new TransientObjectException("proxy was not associated with the session");
 					}
@@ -1517,10 +1520,12 @@ namespace NHibernate.Impl
 				// Actually the case for proxies will probably work even with
 				// the session closed, but do the check here anyway, so that
 				// the behavior is uniform.
-				var proxy = obj as INHibernateProxy;
-				if (proxy != null)
+				
+				if (obj.IsProxy())
 				{
-					ILazyInitializer li = proxy.HibernateLazyInitializer;
+                    var proxy = obj as INHibernateProxy; 
+                    
+                    ILazyInitializer li = proxy.HibernateLazyInitializer;
 					if (li.Session != this)
 					{
 						throw new TransientObjectException("The proxy was not associated with this session");
@@ -1547,10 +1552,11 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				INHibernateProxy proxy = obj as INHibernateProxy;
-				if (proxy != null)
+				if (obj.IsProxy())
 				{
-					return proxy.HibernateLazyInitializer.Identifier;
+                    INHibernateProxy proxy = obj as INHibernateProxy; 
+                    
+                    return proxy.HibernateLazyInitializer.Identifier;
 				}
 				else
 				{
@@ -1942,10 +1948,12 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				var proxy = obj as INHibernateProxy;
-				if (proxy != null)
+				
+				if (obj.IsProxy())
 				{
-					//do not use proxiesByKey, since not all
+                    var proxy = obj as INHibernateProxy;
+                    
+                    //do not use proxiesByKey, since not all
 					//proxies that point to this session's
 					//instances are in that collection!
 					ILazyInitializer li = proxy.HibernateLazyInitializer;

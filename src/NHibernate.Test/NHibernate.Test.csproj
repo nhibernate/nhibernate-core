@@ -648,6 +648,8 @@
     <Compile Include="NHSpecificTest\Properties\Model.cs" />
     <Compile Include="PolymorphicGetAndLoad\Domain.cs" />
     <Compile Include="PolymorphicGetAndLoad\PolymorphicGetAndLoadTest.cs" />
+    <Compile Include="PropertyTest\FieldCamelCaseMUnderscoreFixture.cs" />
+    <Compile Include="PropertyTest\NoSetterCamelCaseMUnderscoreFixture.cs" />
     <Compile Include="ReadOnly\AbstractReadOnlyTest.cs" />
     <Compile Include="ReadOnly\Container.cs" />
     <Compile Include="ReadOnly\Course.cs" />

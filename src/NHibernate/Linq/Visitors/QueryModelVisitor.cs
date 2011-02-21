@@ -13,7 +13,6 @@ using Remotion.Data.Linq.Clauses.Expressions;
 using Remotion.Data.Linq.Clauses.ResultOperators;
 using Remotion.Data.Linq.Clauses.StreamedData;
 using Remotion.Data.Linq.EagerFetching;
-using AggregateResultOperator = NHibernate.Linq.ResultOperators.AggregateResultOperator;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -78,6 +77,7 @@ namespace NHibernate.Linq.Visitors
             ResultOperatorMap = new ResultOperatorMap();
 
             ResultOperatorMap.Add<AggregateResultOperator, ProcessAggregate>();
+			ResultOperatorMap.Add<AggregateFromSeedResultOperator, ProcessAggregateFromSeed>();
             ResultOperatorMap.Add<FirstResultOperator, ProcessFirst>();
             ResultOperatorMap.Add<TakeResultOperator, ProcessTake>();
             ResultOperatorMap.Add<SkipResultOperator, ProcessSkip>();

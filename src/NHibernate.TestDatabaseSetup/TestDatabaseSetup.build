@@ -7,12 +7,14 @@
 		<property name="assembly.description" value="Test Database Setup for NHibernate." />
 		<property name="assembly.is-cls-compliant" value="true" />
 		<property name="clover.instrument" value="false" />
+		<copy file="${root.dir}/lib/teamcity/firebird/FirebirdSql.Data.FirebirdClient.dll" todir="${bin.dir}" />
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
 			<include name="System.dll" />
 			<include name="System.Core.dll" />
 			<include name="System.Data.dll" />
 			<include name="NHibernate.dll" />
 			<include name="nunit.framework.dll" />
+			<include name="FirebirdSql.Data.FirebirdClient.dll" />
 		</assemblyfileset>
 	</target>
 	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />

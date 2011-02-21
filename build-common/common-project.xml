@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<project xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd">
+<project xmlns="http://nant.sf.net/release/0.90/nant.xsd"  xsi:schemaLocation="http://nant.sf.net/release/0.90/nant.xsd ..\Tools\nant\schema\nant.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
 	<description>
 		<![CDATA[
@@ -227,7 +227,8 @@
 	<target name="common.run-tests"
 		description="Run NUnit tests">
 		<call target="common.find-nunit" unless="${property::exists('nunit.found')}" />
-		<exec program="${nunit-console}">
+		<property name="common.run-tests.failonerror" value="${not property::exists(project::get-name() + '.IgnoreFail')}"/>
+		<exec program="${nunit-console}" failonerror="${common.run-tests.failonerror}">
 			<arg line="${bin.dir}/${project::get-name()}.dll /xml:${testresults.dir}/${project::get-name()}.dll-results.xml " />
 		</exec>
 

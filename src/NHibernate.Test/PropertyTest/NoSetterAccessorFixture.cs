@@ -20,6 +20,7 @@ namespace NHibernate.Test.PropertyTest
 		protected bool _expectedLowerUnderscoreFooGetterCalled = false;
 		protected bool _expectedLowerFooGetterCalled = false;
 		protected bool _expectedPascalUnderscoreFooGetterCalled = false;
+		protected bool _expectedCamelMUnderscoreGetterCalled = false;
 
 		/// <summary>
 		/// SetUp the local fields for the test cases.
@@ -41,13 +42,11 @@ namespace NHibernate.Test.PropertyTest
 
 			Assert.AreEqual(_expectedBlahGetterCalled, _instance.BlahGetterCalled, "pascalcase-m-underscore");
 			Assert.AreEqual(_expectedCamelBazGetterCalled, _instance.CamelBazGetterCalled, "camelcase");
-			Assert.AreEqual(_expectedCamelUnderscoreFooGetterCalled, _instance.CamelUnderscoreFooGetterCalled,
-			                "camelcase-underscore");
-			Assert.AreEqual(_expectedLowerUnderscoreFooGetterCalled, _instance.LowerUnderscoreFooGetterCalled,
-			                "lowercase-underscore");
+			Assert.AreEqual(_expectedCamelUnderscoreFooGetterCalled, _instance.CamelUnderscoreFooGetterCalled, "camelcase-underscore");
+			Assert.AreEqual(_expectedLowerUnderscoreFooGetterCalled, _instance.LowerUnderscoreFooGetterCalled, "lowercase-underscore");
 			Assert.AreEqual(_expectedLowerFooGetterCalled, _instance.LowerFooGetterCalled, "lowercase");
-			Assert.AreEqual(_expectedPascalUnderscoreFooGetterCalled, _instance.PascalUnderscoreFooCalled,
-			                "pascalcase-underscore");
+			Assert.AreEqual(_expectedPascalUnderscoreFooGetterCalled, _instance.PascalUnderscoreFooCalled, "pascalcase-underscore");
+			Assert.AreEqual(_expectedCamelMUnderscoreGetterCalled, _instance.CamelMUnderscoreGetterCalled, "camelcase-m-underscore");
 		}
 
 		[Test]

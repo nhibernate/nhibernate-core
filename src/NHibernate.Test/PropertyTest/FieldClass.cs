@@ -14,6 +14,7 @@ namespace NHibernate.Test.PropertyTest
 		private int _lowerunderscorefoo = 5;
 		private int lowerfoo = 6;
 		private int _PascalUnderscoreFoo = 7;
+		private int m_camelMUnderscore = 8;
 
 		public bool CamelUnderscoreFooGetterCalled = false;
 		public bool BlahGetterCalled = false;
@@ -21,6 +22,7 @@ namespace NHibernate.Test.PropertyTest
 		public bool LowerUnderscoreFooGetterCalled = false;
 		public bool LowerFooGetterCalled = false;
 		public bool PascalUnderscoreFooCalled = false;
+		public bool CamelMUnderscoreGetterCalled = false;
 
 		public FieldClass()
 		{
@@ -60,7 +62,12 @@ namespace NHibernate.Test.PropertyTest
 		{
 			_lowerunderscorefoo = value;
 		}
-
+		
+		public void InitCamelCaseMUnderscore(int value)
+		{
+			m_camelMUnderscore = value;
+		}
+		
 		public void Increment()
 		{
 			Id++;
@@ -70,6 +77,7 @@ namespace NHibernate.Test.PropertyTest
 			_lowerunderscorefoo++;
 			_PascalUnderscoreFoo++;
 			lowerfoo++;
+			m_camelMUnderscore++;
 		}
 
 		public int CamelUnderscoreFoo
@@ -124,6 +132,15 @@ namespace NHibernate.Test.PropertyTest
 			{
 				PascalUnderscoreFooCalled = true;
 				return _PascalUnderscoreFoo;
+			}
+		}
+		
+		public int CamelMUnderscore
+		{
+			get
+			{
+				CamelMUnderscoreGetterCalled = true;
+				return m_camelMUnderscore;
 			}
 		}
 	}

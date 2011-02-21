@@ -24,6 +24,11 @@ namespace NHibernate.ByteCode.LinFu
 			return false;
 		}
 
+        public bool IsProxy(object entity)
+        {
+            return entity is INHibernateProxy;
+        }
+
 		#endregion
 	}
 }
