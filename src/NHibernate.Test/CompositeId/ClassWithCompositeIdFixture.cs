@@ -26,6 +26,11 @@ namespace NHibernate.Test.CompositeId
 			get { return new string[] {"CompositeId.ClassWithCompositeId.hbm.xml"}; }
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is Dialect.FirebirdDialect); // Firebird has no CommandTimeout, and locks up during the tear-down of this fixture
+		}
+
 		protected override void OnSetUp()
 		{
 			id = new Id("stringKey", 3, firstDateTime);

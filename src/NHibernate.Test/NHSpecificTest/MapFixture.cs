@@ -30,6 +30,11 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is Dialect.FirebirdDialect); // Firebird has no CommandTimeout, and locks up during the tear-down of this fixture
+		}
+
 		protected override void OnTearDown()
 		{
 			using (ISession session = sessions.OpenSession())
