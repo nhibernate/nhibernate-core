@@ -439,20 +439,6 @@ namespace NHibernate.Impl
 			get { return false; }
 		}
 		
-		/// <inheritdoc />
-		public bool DefaultReadOnly
-		{
-			get 
-			{ 
-				return false; 
-			}
-			set
-			{
-				if (value)
-					throw new NotSupportedException("Stateless sessions cannot be read-only");
-			}
-		}
-		
 		public override object GetEntityUsingInterceptor(EntityKey key)
 		{
 			CheckAndUpdateSessionStatus();
@@ -486,8 +472,8 @@ namespace NHibernate.Impl
 			{
 				if (entity.IsProxy())
 				{
-                    INHibernateProxy proxy = entity as INHibernateProxy; 
-                    entity = proxy.HibernateLazyInitializer.GetImplementation();
+					INHibernateProxy proxy = entity as INHibernateProxy; 
+					entity = proxy.HibernateLazyInitializer.GetImplementation();
 				}
 				return GuessEntityName(entity);
 			}
