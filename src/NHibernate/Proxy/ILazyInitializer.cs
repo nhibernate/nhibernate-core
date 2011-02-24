@@ -40,7 +40,7 @@ namespace NHibernate.Proxy
 		ISessionImplementor Session { get; set; }
 		
 		/// <summary>
-		/// Is the proxy's read-only/modifiable setting available?
+		/// Is the read-only setting available?
 		/// </summary>
 		bool IsReadOnlySettingAvailable { get; }
 		
@@ -49,22 +49,15 @@ namespace NHibernate.Proxy
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// The read-only/modifiable setting is not available when the proxy is
-		/// detached or its associated session is closed.
+		/// Not available when the proxy is detached or its associated session is closed.
 		/// </para>
 		/// <para>
-		/// If the proxy is currently initialized, its implementation will be set to
-		/// the same mode; otherwise, when the proxy is initialized, its implementation
-		/// will have the same read-only/modifiable setting as the proxy. In read-only
-		/// mode, no snapshot is maintained and the instance is never dirty checked.
-		/// </para>
-		/// <para>
-		/// If the associated proxy already has the specified read-only/modifiable
-		/// setting, then this method does nothing.
-		/// </para>
-		/// <para>
-		/// To check if the read-only/modifiable setting is available: <see cref="IsReadOnlySettingAvailable" />
+		/// To check if the read-only setting is available, use <see cref="IsReadOnlySettingAvailable" />
 	 	/// </para>
+		/// <para>
+		/// The read-only status of the entity will be made to match the read-only status of the proxy
+		/// upon initialization.
+		/// </para>
 		/// </remarks>
 		bool ReadOnly { get; set; }
 

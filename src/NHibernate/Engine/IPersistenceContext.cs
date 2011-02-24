@@ -55,38 +55,21 @@ namespace NHibernate.Engine
 		bool Flushing { get; set;}
 		
 		/// <summary>
-		/// Change the default for entities and proxies loaded into this persistence
-		/// context from modifiable to read-only mode, or from modifiable to read-only
-		/// mode.
+		/// The read-only status for entities (and proxies) loaded into this persistence context.
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// Read-only entities are not dirty-checked and snapshots of persistent
-		/// state are not maintained. Read-only entities can be modified, but
-		/// changes are not persisted.
+		/// When a proxy is initialized, the loaded entity will have the same read-only
+		/// setting as the uninitialized proxy has, regardless of the persistence context's
+		/// current setting.
 		/// </para>
 		/// <para>
-		/// When a proxy is initialized, the loaded entity will have the same
-		/// read-only/modifiable setting as the uninitialized
-		/// proxy has, regardless of the persistence context's current setting.
-		/// </para>
-		/// <para>
-		/// To change the read-only/modifiable setting for a particular entity
-		/// or proxy that is already in this session:
-		/// <see cref="SetReadOnly(object, bool)" />
-		/// <see cref="ISession.SetReadOnly(object, bool)" />
-		/// </para>
-		/// <para>
-		/// To determine the read-only/modifiable setting for a particular entity or proxy:
-	 	/// <see cref="IsReadOnly(object)" />
-	 	/// <see cref="ISession.IsReadOnly(object)" />
-		/// </para>
-		/// <para>
-		/// To override this session's read-only/modifiable setting for entities
-		/// and proxies loaded by an IQuery:
-		/// <see cref="IQuery.SetReadOnly(bool)" />
+		/// To change the read-only setting for a particular entity or proxy that is already
+		/// in the current persistence context, use <see cref="IPersistenceContext.SetReadOnly(object, bool)" />.
 		/// </para>
 		/// </remarks>
+		/// <seealso cref="IPersistenceContext.IsReadOnly(object)" />
+		/// <seealso cref="IPersistenceContext.SetReadOnly(object, bool)" />
 		bool DefaultReadOnly { get; set; }
 
 		/// <summary> Add a collection which has no owner loaded</summary>
@@ -377,53 +360,36 @@ namespace NHibernate.Engine
 		bool IsPropertyNull(EntityKey ownerKey, string propertyName);
 
 		/// <summary>
-		/// Set the entity or proxy to read only and discard it's snapshot.
-		/// Set an unmodified persistent object to read-only mode, or a read-only
-		/// object to modifiable mode.
+		/// Change the read-only status of an entity (or proxy).
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// Read-only entities are not dirty-checked and snapshots of persistent
-		/// state are not maintained. Read-only entities can be modified, but
-		/// changes are not persisted.
+		/// Read-only entities can be modified, but changes are not persisted. They are not dirty-checked 
+		/// and snapshots of persistent state are not maintained. 
 		/// </para>
 		/// <para>
-		/// When a proxy is initialized, the loaded entity will have the same
-		/// read-only/modifiable setting as the uninitialized
-		/// proxy has, regardless of the session's current setting.
+		/// Immutable entities cannot be made read-only.
 		/// </para>
 		/// <para>
-		/// If the entity or proxy already has the specified read-only/modifiable
-		/// setting, then this method does nothing.
-		/// </para>
-		/// <para>
-		/// To set the default read-only/modifiable setting used for
-		/// entities and proxies that are loaded into this persistence context:
-		/// <see cref="IPersistenceContext.DefaultReadOnly" />
-		/// <see cref="ISession.DefaultReadOnly" />
-		/// </para>
-		/// <para>
-		/// To override this persistence context's read-only/modifiable setting
-		/// for entities and proxies loaded by a Query:
-		/// <see cref="IQuery.SetReadOnly(bool)" />
+		/// To set the <em>default</em> read-only setting for entities and proxies that are loaded 
+		/// into the persistence context, see <see cref="IPersistenceContext.DefaultReadOnly" />.
 		/// </para>
 		/// </remarks>
-		/// <param name="entity">An entity or INHibernateProxy</param>
-		/// <param name="readOnly">if <c>true</c>, the entity or proxy is made read-only; if <c>false</c>, the entity or proxy is made modifiable.</param>
-		/// <seealso cref="ISession.SetReadOnly(object, bool)" />
-		void SetReadOnly(object entity, bool readOnly);
+		/// <param name="entityOrProxy">An entity (or <see cref="NHibernate.Proxy.INHibernateProxy" />).</param>
+		/// <param name="readOnly">If <c>true</c>, the entity or proxy is made read-only; if <c>false</c>, it is made modifiable.</param>
+		/// <seealso cref="IPersistenceContext.DefaultReadOnly" />
+		/// <seealso cref="IPersistenceContext.IsReadOnly(object)" />
+		void SetReadOnly(object entityOrProxy, bool readOnly);
 
 		/// <summary>
-		/// Is the entity or proxy read-only?
+		/// Is the specified entity (or proxy) read-only?
 		/// </summary>
-		/// <remarks>
-		/// To get the default read-only/modifiable setting used for
-	 	/// entities and proxies that are loaded into the session:
-	 	/// <see cref="ISession.DefaultReadOnly" />
-		/// </remarks>
+		/// <param name="entityOrProxy">An entity (or <see cref="NHibernate.Proxy.INHibernateProxy" />)</param>
 		/// <returns>
-		/// <c>true</c>, the object is read-only; <c>false</c>, the object is modifiable.
+		/// <c>true</c> if the entity or proxy is read-only, otherwise <c>false</c>.
 		/// </returns>
+		/// <seealso cref="IPersistenceContext.DefaultReadOnly" />
+		/// <seealso cref="IPersistenceContext.SetReadOnly(object, bool)" />
 		bool IsReadOnly(object entityOrProxy);
 		
 		void ReplaceDelayedEntityIdentityInsertKeys(EntityKey oldKey, object generatedId);

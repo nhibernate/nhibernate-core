@@ -168,14 +168,6 @@ namespace NHibernate.Engine
 			set { _lockModes = value; }
 		}
 
-		/// <summary>
-		/// Has the read-only/modifiable mode been explicitly set?
-		/// </summary>
-		/// <value>
-		/// <c>true</c>, the read-only/modifiable mode was explicitly set; <c>false</c>, the read-only/modifiable mode was not explicitly set
-		/// </value>
-		/// <seealso cref="ReadOnly" />
-		/// <seealso cref="IsReadOnly(ISessionImplementor)" />
 		public bool IsReadOnlyInitialized
 		{
 			get { return _isReadOnlyInitialized; }
@@ -281,15 +273,6 @@ namespace NHibernate.Engine
 
 		public bool Callable { get; set; }
 		
-		/// <summary>
-		/// Should entities and proxies loaded by the query be put in read-only mode?
-		/// </summary>
-		/// <remarks>
-		/// The read-only/modifiable setting has no impact on entities/proxies returned by the
-		/// query that existed in the session before the query was executed.
-		/// </remarks>
-		/// <seealso cref="IsReadOnlyInitialized" />
-		/// <seealso cref="IsReadOnly(ISessionImplementor)" />
 		public bool ReadOnly
 		{
 			get
@@ -693,23 +676,6 @@ namespace NHibernate.Engine
 			return copy;
 		}
 		
-		/// <summary>
-		/// Should entities and proxies loaded by the query be put in read-only mode? If the
-		/// read-only/modifiable setting was not initialized
-		/// (i.e. <see cref="IsReadOnlyInitialized" /> == false), then the default
-		/// read-only/modifiable setting for the persistence context is returned instead.
-		/// </summary>
-		/// <remarks>
-		/// The read-only/modifiable setting has no impact on entities/proxies returned by the
-		/// query that existed in the session before the query was executed.
-		/// </remarks>
-		/// <seealso cref="IsReadOnlyInitialized" />
-		/// <seealso cref="ReadOnly" />
-		/// <seealso cref="IPersistenceContext.DefaultReadOnly" />
-		/// <param name="session"></param>
-		/// <returns>
-		/// <c>true</c>, entities and proxies loaded by the query will be put in read-only mode; <c>false</c>, entities and proxies loaded by the query will be put in modifiable mode
-		/// </returns>
 		public bool IsReadOnly(ISessionImplementor session)
 		{
 			return _isReadOnlyInitialized ? this.ReadOnly : session.PersistenceContext.DefaultReadOnly;

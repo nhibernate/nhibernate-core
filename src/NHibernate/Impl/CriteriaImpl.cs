@@ -124,11 +124,13 @@ namespace NHibernate.Impl
 			get { return projection; }
 		}
 		
+		/// <inheritdoc />
 		public bool IsReadOnlyInitialized
 		{
 			get { return (readOnly != null); }
 		}
 		
+		/// <inheritdoc />
 		public bool IsReadOnly
 		{
 			get
@@ -496,7 +498,8 @@ namespace NHibernate.Impl
 
 			return this;
 		}
-		
+
+		/// <inheritdoc />
 		public ICriteria SetReadOnly(bool readOnly)
 		{
 			this.readOnly = readOnly;
@@ -795,12 +798,12 @@ namespace NHibernate.Impl
 				return root.FutureValue<T>();
 			}
 
-		    public IEnumerable<T> Future<T>()
-		    {
-		        return root.Future<T>();
-		    }
+			public IEnumerable<T> Future<T>()
+			{
+				return root.Future<T>();
+			}
 
-		    public void List(IList results)
+			public void List(IList results)
 			{
 				root.List(results);
 			}

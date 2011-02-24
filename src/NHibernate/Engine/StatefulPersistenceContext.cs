@@ -1113,6 +1113,7 @@ namespace NHibernate.Engine
 			return nullAssociations.Contains(new AssociationKey(ownerKey, propertyName));
 		}
 
+		/// <inheritdoc />
 		public void SetReadOnly(object entityOrProxy, bool readOnly)
 		{
 			if (entityOrProxy == null)
@@ -1164,6 +1165,7 @@ namespace NHibernate.Engine
 			hasNonReadOnlyEntities |= !readOnly;
 		}
 		
+		/// <inheritdoc />
 		public bool IsReadOnly(object entityOrProxy)
 		{
 			if (entityOrProxy == null)

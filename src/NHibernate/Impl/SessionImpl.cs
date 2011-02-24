@@ -2394,12 +2394,12 @@ namespace NHibernate.Impl
 		}
 		
 		/// <inheritdoc />
-		public void SetReadOnly(object entity, bool readOnly)
+		public void SetReadOnly(object entityOrProxy, bool readOnly)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				persistenceContext.SetReadOnly(entity, readOnly);
+				persistenceContext.SetReadOnly(entityOrProxy, readOnly);
 			}
 		}
 		

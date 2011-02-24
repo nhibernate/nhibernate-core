@@ -16,7 +16,7 @@ using NHibernate.Type;
 namespace NHibernate.Engine
 {
 	/// <summary>
-	/// Defines the internal contract between the <c>Session</c> and other parts of Hibernate
+	/// Defines the internal contract between the <c>Session</c> and other parts of NHibernate
 	/// such as implementors of <c>Type</c> or <c>ClassPersister</c>
 	/// </summary>
 	public interface ISessionImplementor

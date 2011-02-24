@@ -67,7 +67,7 @@ namespace NHibernate
 		IType[] ReturnTypes { get; }
 
 		/// <summary> Return the HQL select clause aliases (if any)</summary>
-		/// <returns> an array of aliases as strings </returns>
+		/// <returns> An array of aliases as strings </returns>
 		string[] ReturnAliases { get; }
 
 		/// <summary>
@@ -77,19 +77,23 @@ namespace NHibernate
 		string[] NamedParameters { get; }
 		
 		/// <summary>
-	 	/// Should entities and proxies loaded by this query be put in read-only mode? If the
-	 	/// read-only/modifiable setting was not initialized, then the default
-	 	/// read-only/modifiable setting for the persistence context is returned instead.
+	 	/// Will entities (and proxies) returned by the query be loaded in read-only mode?
 		/// </summary>
 		/// <remarks>
-		/// The read-only/modifiable setting has no impact on entities/proxies returned by the
+		/// <para>
+		/// If the query's read-only setting is not initialized (with <see cref="SetReadOnly(bool)" />),
+		/// the value of the session's <see cref="ISession.DefaultReadOnly" /> property is
+		/// returned instead.
+		/// </para>
+		/// <para>
+		/// The value of this property has no effect on entities or proxies returned by the
 		/// query that existed in the session before the query was executed.
+		/// </para>
 		/// </remarks>
 		/// <returns>
-		/// <c>true</c>, entities and proxies loaded by the query will be put in read-only mode; <c>false</c>, entities and proxies loaded by the query will be put in modifiable mode
+		/// <c>true</c> if entities and proxies loaded by the query will be put in read-only mode, otherwise <c>false</c>.
 		/// </returns>
-	 	/// <seealso cref="SetReadOnly(bool)" />
-		/// <seealso cref="NHibernate.Engine.IPersistenceContext.DefaultReadOnly()" />
+	 	/// <seealso cref="IQuery.SetReadOnly(bool)" />
 		bool IsReadOnly { get; }
 
 		/// <summary>
@@ -171,13 +175,28 @@ namespace NHibernate
 		IQuery SetFirstResult(int firstResult);
 
 		/// <summary>
-		/// Entities retrieved by this query will be loaded in
-		/// a read-only mode where NHibernate will never dirty-check
-		/// them or make changes persistent.
+		/// Set the read-only mode for entities (and proxies) loaded by this query. This setting 
+		/// overrides the default setting for the session (see <see cref="ISession.DefaultReadOnly" />).
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Read-only entities can be modified, but changes are not persisted. They are not 
+		/// dirty-checked and snapshots of persistent state are not maintained.
+		/// </para>
+		/// <para>
+		/// When a proxy is initialized, the loaded entity will have the same read-only setting 
+		/// as the uninitialized proxy, regardless of the session's current setting.
+		/// </para>
+		/// <para>
+		/// The read-only setting has no impact on entities or proxies returned by the criteria
+		/// that existed in the session before the criteria was executed.
+		/// </para>
+		/// </remarks>
 		/// <param name="readOnly">
-		/// <c>true</c>, entities and proxies loaded by the query will be put in read-only mode; <c>false</c>, entities and proxies loaded by the query will be put in modifiable mode
+		/// If <c>true</c>, entities (and proxies) loaded by the query will be read-only.
 		/// </param>
+		/// <returns><c>this</c> (for method chaining)</returns>
+		/// <seealso cref="IsReadOnly" />
 		IQuery SetReadOnly(bool readOnly);
 
 		/// <summary>

@@ -50,6 +50,7 @@ namespace NHibernate.Proxy
 				SetSession(session);
 		}
 
+		/// <inheritdoc />
 		public void SetSession(ISessionImplementor s)
 		{
 			if (s != _session)
@@ -84,6 +85,7 @@ namespace NHibernate.Proxy
 			}
 		}
 		
+		/// <inheritdoc />
 		public void UnsetSession()
 		{
 			_session = null;
@@ -207,6 +209,7 @@ namespace NHibernate.Proxy
 			initialized = true;
 		}
 		
+		/// <inheritdoc />
 		public bool IsReadOnlySettingAvailable
 		{
 			get { return (_session != null && !_session.IsClosed); }
