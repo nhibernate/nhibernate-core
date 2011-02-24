@@ -74,7 +74,7 @@ namespace NHibernate
 	public interface ISession : IDisposable
 	{
 		/// <summary> The entity mode in effect for this session.</summary>
-		EntityMode ActiveEntityMode { get;} // NH different implementation: changend name to don't have conflicts
+		EntityMode ActiveEntityMode { get; } // NH different implementation: changed name to avoid conflicts
 
 		/// <summary>
 		/// Force the <c>ISession</c> to flush.
@@ -100,7 +100,7 @@ namespace NHibernate
 		/// Cache mode determines the manner in which this session can interact with
 		/// the second level cache.
 		/// </remarks>
-		CacheMode CacheMode { get;set;}
+		CacheMode CacheMode { get; set;}
 
 		/// <summary>
 		/// Get the <see cref="ISessionFactory" /> that created this instance.
@@ -177,7 +177,70 @@ namespace NHibernate
 		/// we flushed this session?
 		/// </summary>
 		bool IsDirty();
-
+		
+		/// <summary>
+		/// Is the specified entity (or proxy) read-only?
+		/// </summary>
+		/// <remarks>
+		/// Facade for <see cref="IPersistenceContext.IsReadOnly(object)" />.
+		/// </remarks>
+		/// <param name="entityOrProxy">An entity (or <see cref="NHibernate.Proxy.INHibernateProxy" />)</param>
+		/// <returns>
+		/// <c>true</c> if the entity (or proxy) is read-only, otherwise <c>false</c>.
+		/// </returns>
+		/// <seealso cref="ISession.DefaultReadOnly" />
+		/// <seealso cref="ISession.SetReadOnly(object, bool)" />
+		bool IsReadOnly(object entityOrProxy);
+		
+		/// <summary>
+		/// Change the read-only status of an entity (or proxy).
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Read-only entities can be modified, but changes are not persisted. They are not dirty-checked 
+		/// and snapshots of persistent state are not maintained. 
+		/// </para>
+		/// <para>
+		/// Immutable entities cannot be made read-only.
+		/// </para>
+		/// <para>
+		/// To set the <em>default</em> read-only setting for entities and proxies that are loaded 
+		/// into the session, see <see cref="ISession.DefaultReadOnly" />.
+		/// </para>
+		/// <para>
+		/// This method a facade for <see cref="IPersistenceContext.SetReadOnly(object, bool)" />.
+		/// </para>
+		/// </remarks>
+		/// <param name="entityOrProxy">An entity (or <see cref="NHibernate.Proxy.INHibernateProxy" />).</param>
+		/// <param name="readOnly">If <c>true</c>, the entity or proxy is made read-only; if <c>false</c>, it is made modifiable.</param>
+		/// <seealso cref="ISession.DefaultReadOnly" />
+		/// <seealso cref="ISession.IsReadOnly(object)" />
+		void SetReadOnly(object entityOrProxy, bool readOnly);
+	
+		/// <summary>
+		/// The read-only status for entities (and proxies) loaded into this Session.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// When a proxy is initialized, the loaded entity will have the same read-only setting
+		/// as the uninitialized proxy, regardless of the session's current setting.
+		/// </para>
+		/// <para>
+		/// To change the read-only setting for a particular entity or proxy that is already in 
+		/// this session, see <see cref="ISession.SetReadOnly(object, bool)" />.
+		/// </para>
+		/// <para>
+		/// To override this session's read-only setting for entities and proxies loaded by a query,
+		/// see <see cref="IQuery.SetReadOnly(bool)" />.
+		/// </para>
+		/// <para>
+		/// This method is a facade for <see cref="IPersistenceContext.DefaultReadOnly" />.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="ISession.IsReadOnly(object)" />
+		/// <seealso cref="ISession.SetReadOnly(object, bool)" />
+		bool DefaultReadOnly { get; set; }
+		
 		/// <summary>
 		/// Return the identifier of an entity instance cached by the <c>ISession</c>
 		/// </summary>

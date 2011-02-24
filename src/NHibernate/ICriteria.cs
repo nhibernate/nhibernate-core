@@ -59,6 +59,35 @@ namespace NHibernate
 		/// </summary>
 		/// <value>The alias for the encapsulated entity.</value>
 		string Alias { get; }
+		
+		/// <summary>
+		/// Was the read-only mode explicitly initialized?
+		/// </summary>
+		/// <returns><c>true</c> if the read-only mode was explicitly initialized, otherwise <c>false</c>.</returns>
+		/// <seealso cref="ICriteria.SetReadOnly(bool)" />
+		/// <seealso cref="ICriteria.IsReadOnly" />///
+		bool IsReadOnlyInitialized { get; }
+
+		/// <summary>
+		/// Will entities (and proxies) loaded by this Criteria be put in read-only mode?
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// If the read-only setting was not initialized, then the value of the session's
+		/// <see cref="ISession.DefaultReadOnly" /> property is returned instead.
+		/// </para>
+		/// <para>
+		/// The read-only setting has no impact on entities or proxies returned by the
+		/// Criteria that existed in the session before the Criteria was executed.
+		/// </para>
+		/// </remarks>
+		/// <returns>
+		/// <c>true</c> if entities and proxies loaded by the criteria will be put in read-only mode,
+		/// otherwise <c>false</c>.
+		/// </returns>
+		/// <seealso cref="ICriteria.SetReadOnly(bool)" />
+		/// <seealso cref="ICriteria.IsReadOnlyInitialized" />
+		bool IsReadOnly { get; }
 
 		/// <summary>
 		/// Used to specify that the query results will be a projection (scalar in
@@ -285,7 +314,37 @@ namespace NHibernate
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
 		IFutureValue<T> FutureValue<T>();
-
+		
+		/// <summary>
+		/// Set the read-only mode for entities (and proxies) loaded by this Criteria. This
+		/// setting overrides the default for the session (see <see cref="ISession.DefaultReadOnly" />).
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// To set the <em>default</em> read-only setting for entities and proxies that are loaded 
+		/// into the session, see <see cref="ISession.DefaultReadOnly" />.
+		/// </para>
+		/// <para>
+		/// Read-only entities can be modified, but changes are not persisted. They are not
+		/// dirty-checked and snapshots of persistent state are not maintained.
+		/// </para>
+		/// <para>
+		/// When a proxy is initialized, the loaded entity will have the same read-only setting
+		/// as the uninitialized proxy has, regardless of the session's current setting.
+		/// </para>
+		/// <para>
+		/// The read-only setting has no impact on entities or proxies returned by the criteria
+		/// that existed in the session before the criteria was executed.
+		/// </para>
+		/// </remarks>
+		/// <param name="readOnly">
+		/// If <c>true</c>, entities (and proxies) loaded by the criteria will be read-only.
+		/// </param>
+		/// <returns><c>this</c> (for method chaining)</returns>
+		/// <seealso cref="ICriteria.IsReadOnly" />
+		/// <seealso cref="ICriteria.IsReadOnlyInitialized" />
+		ICriteria SetReadOnly(bool readOnly);
+	
 		#region NHibernate specific
 
 		/// <summary>

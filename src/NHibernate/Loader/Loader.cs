@@ -224,22 +224,34 @@ namespace NHibernate.Loader
 		/// persister from each row of the <c>DataReader</c>. If an object is supplied, will attempt to
 		/// initialize that object. If a collection is supplied, attempt to initialize that collection.
 		/// </summary>
-		private IList DoQueryAndInitializeNonLazyCollections(ISessionImplementor session, QueryParameters queryParameters,
-		                                                     bool returnProxies)
+		private IList DoQueryAndInitializeNonLazyCollections(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies)
 		{
 			IPersistenceContext persistenceContext = session.PersistenceContext;
-
+			bool defaultReadOnlyOrig = persistenceContext.DefaultReadOnly;
+			
+			if (queryParameters.IsReadOnlyInitialized)
+				persistenceContext.DefaultReadOnly = queryParameters.ReadOnly;
+			else
+				queryParameters.ReadOnly = persistenceContext.DefaultReadOnly;
+			
 			persistenceContext.BeforeLoad();
 			IList result;
 			try
 			{
-				result = DoQuery(session, queryParameters, returnProxies);
+				try
+				{
+					result = DoQuery(session, queryParameters, returnProxies);
+				}
+				finally
+				{
+					persistenceContext.AfterLoad();
+				}
+				persistenceContext.InitializeNonLazyCollections();
 			}
 			finally
 			{
-				persistenceContext.AfterLoad();
+				persistenceContext.DefaultReadOnly = defaultReadOnlyOrig;
 			}
-			persistenceContext.InitializeNonLazyCollections();
 
 			return result;
 		}
@@ -278,7 +290,7 @@ namespace NHibernate.Loader
 				                                 queryParameters.NamedParameters);
 			}
 
-			InitializeEntitiesAndCollections(hydratedObjects, resultSet, session, queryParameters.ReadOnly);
+			InitializeEntitiesAndCollections(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session));
 			session.PersistenceContext.InitializeNonLazyCollections();
 			return result;
 		}
@@ -457,7 +469,7 @@ namespace NHibernate.Loader
 				session.Batcher.CloseCommand(st, rs);
 			}
 
-			InitializeEntitiesAndCollections(hydratedObjects, rs, session, queryParameters.ReadOnly);
+			InitializeEntitiesAndCollections(hydratedObjects, rs, session, queryParameters.IsReadOnly(session));
 
 			if (createSubselects)
 			{
@@ -544,8 +556,7 @@ namespace NHibernate.Loader
 			}
 		}
 
-		internal void InitializeEntitiesAndCollections(IList hydratedObjects, object resultSetId, ISessionImplementor session,
-		                                               bool readOnly)
+		internal void InitializeEntitiesAndCollections(IList hydratedObjects, object resultSetId, ISessionImplementor session, bool readOnly)
 		{
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
 			if (collectionPersisters != null)
@@ -1614,19 +1625,36 @@ namespace NHibernate.Loader
 		                                      QueryKey key)
 		{
 			IList result = null;
+		
 			if ((!queryParameters.ForceCacheRefresh) && (session.CacheMode & CacheMode.Get) == CacheMode.Get)
 			{
-				result = queryCache.Get(key, resultTypes, queryParameters.NaturalKeyLookup, querySpaces, session);
-				if (factory.Statistics.IsStatisticsEnabled)
+				IPersistenceContext persistenceContext = session.PersistenceContext;
+				
+				bool defaultReadOnlyOrig = persistenceContext.DefaultReadOnly;
+				
+				if (queryParameters.IsReadOnlyInitialized)
+					persistenceContext.DefaultReadOnly = queryParameters.ReadOnly;
+				else
+					queryParameters.ReadOnly = persistenceContext.DefaultReadOnly;
+				
+				try
 				{
-					if (result == null)
+					result = queryCache.Get(key, resultTypes, queryParameters.NaturalKeyLookup, querySpaces, session);
+					if (factory.Statistics.IsStatisticsEnabled)
 					{
-						factory.StatisticsImplementor.QueryCacheMiss(QueryIdentifier, queryCache.RegionName);
+						if (result == null)
+						{
+							factory.StatisticsImplementor.QueryCacheMiss(QueryIdentifier, queryCache.RegionName);
+						}
+						else
+						{
+							factory.StatisticsImplementor.QueryCacheHit(QueryIdentifier, queryCache.RegionName);
+						}
 					}
-					else
-					{
-						factory.StatisticsImplementor.QueryCacheHit(QueryIdentifier, queryCache.RegionName);
-					}
+				}
+				finally
+				{
+					persistenceContext.DefaultReadOnly = defaultReadOnlyOrig;
 				}
 			}
 			return result;

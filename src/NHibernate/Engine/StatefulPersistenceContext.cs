@@ -17,10 +17,10 @@ using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
-	/// <summary> 
+	/// <summary>
 	/// A <see cref="IPersistenceContext"/> represents the state of persistent "stuff" which
 	/// NHibernate is tracking.  This includes persistent entities, collections,
-	/// as well as proxies generated. 
+	/// as well as proxies generated.
 	/// </summary>
 	/// <remarks>
 	/// There is meant to be a one-to-one correspondence between a SessionImpl and
@@ -97,6 +97,8 @@ namespace NHibernate.Engine
 		[NonSerialized]
 		private BatchFetchQueue batchFetchQueue;
 
+		private bool defaultReadOnly;
+		
 		/// <summary> Constructs a PersistentContext, bound to the given session. </summary>
 		/// <param name="session">The session "owning" this context. </param>
 		public StatefulPersistenceContext(ISessionImplementor session)
@@ -132,15 +134,15 @@ namespace NHibernate.Engine
 			get { return false; }
 		}
 
-		/// <summary> 
-		/// Get the session to which this persistence context is bound. 
+		/// <summary>
+		/// Get the session to which this persistence context is bound.
 		/// </summary>
 		public ISessionImplementor Session
 		{
 			get { return session; }
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Retrieve this persistence context's managed load context.
 		/// </summary>
 		public LoadContexts LoadContexts
@@ -154,7 +156,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Get the <tt>BatchFetchQueue</tt>, instantiating one if necessary.
 		/// </summary>
 		public BatchFetchQueue BatchFetchQueue
@@ -221,7 +223,7 @@ namespace NHibernate.Engine
 			unownedCollections[key] = collection;
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Get and remove a collection whose owner is not yet loaded,
 		/// when its owner is being loaded
 		/// </summary>
@@ -245,7 +247,8 @@ namespace NHibernate.Engine
 		{
 			foreach (INHibernateProxy proxy in proxiesByKey.Values)
 			{
-				proxy.HibernateLazyInitializer.Session = null;
+				ILazyInitializer li = proxy.HibernateLazyInitializer;
+				li.UnsetSession();
 			}
 
 			ICollection collectionEntryArray = IdentityMap.ConcurrentEntries(collectionEntries);
@@ -283,6 +286,13 @@ namespace NHibernate.Engine
 		{
 			get { return hasNonReadOnlyEntities; }
 		}
+		
+		/// <inheritdoc />
+		public bool DefaultReadOnly
+		{
+			get { return defaultReadOnly; }
+			set { defaultReadOnly = value; }
+		}
 
 		private void SetHasNonReadOnlyEnties(Status value)
 		{
@@ -307,9 +317,9 @@ namespace NHibernate.Engine
 				entityEntry.LockMode = LockMode.None;
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Get the current state of the entity as known to the underlying
-		/// database, or null if there is no corresponding row 
+		/// database, or null if there is no corresponding row
 		/// </summary>
 		public object[] GetDatabaseSnapshot(object id, IEntityPersister persister)
 		{
@@ -327,7 +337,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Retrieve the cached database snapshot for the requested entity key.
 		/// </summary>
 		/// <param name="key">The entity key for which to retrieve the cached snapshot </param>
@@ -352,9 +362,9 @@ namespace NHibernate.Engine
 			return (object[])snapshot;
 		}
 
-		/// <summary> 
-		/// Get the values of the natural id fields as known to the underlying 
-		/// database, or null if the entity has no natural id or there is no 
+		/// <summary>
+		/// Get the values of the natural id fields as known to the underlying
+		/// database, or null if the entity has no natural id or there is no
 		/// corresponding row.
 		/// </summary>
 		public object[] GetNaturalIdSnapshot(object id, IEntityPersister persister)
@@ -408,7 +418,7 @@ namespace NHibernate.Engine
 			BatchFetchQueue.RemoveBatchLoadableEntityKey(key);
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Get the entity instance associated with the given <tt>EntityKey</tt>
 		/// </summary>
 		public object GetEntity(EntityKey key)
@@ -424,7 +434,7 @@ namespace NHibernate.Engine
 			return entitiesByKey.ContainsKey(key);
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Remove an entity from the session cache, also clear
 		/// up other state associated with the entity, all except
 		/// for the <tt>EntityEntry</tt>
@@ -465,8 +475,8 @@ namespace NHibernate.Engine
 			entitiesByUniqueKey[euk] = entity;
 		}
 
-		/// <summary> 
-		/// Retrieve the EntityEntry representation of the given entity. 
+		/// <summary>
+		/// Retrieve the EntityEntry representation of the given entity.
 		/// </summary>
 		/// <param name="entity">The entity for which to locate the EntityEntry. </param>
 		/// <returns> The EntityEntry for the given entity. </returns>
@@ -505,8 +515,8 @@ namespace NHibernate.Engine
 			return AddEntry(entity, status, loadedState, null, entityKey.Identifier, version, lockMode, existsInDatabase, persister, disableVersionIncrement, lazyPropertiesAreUnfetched);
 		}
 
-		/// <summary> 
-		/// Generates an appropriate EntityEntry instance and adds it 
+		/// <summary>
+		/// Generates an appropriate EntityEntry instance and adds it
 		/// to the event source's internal caches.
 		/// </summary>
 		public EntityEntry AddEntry(object entity, Status status, object[] loadedState, object rowId, object id,
@@ -534,8 +544,8 @@ namespace NHibernate.Engine
 			return proxiesByKey.ContainsValue(proxy);
 		}
 
-		/// <summary> 
-		/// Takes the given object and, if it represents a proxy, reassociates it with this event source. 
+		/// <summary>
+		/// Takes the given object and, if it represents a proxy, reassociates it with this event source.
 		/// </summary>
 		/// <param name="value">The possible proxy to be reassociated. </param>
 		/// <returns> Whether the passed value represented an actual proxy which got initialized. </returns>
@@ -560,9 +570,9 @@ namespace NHibernate.Engine
 			}
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// If a deleted entity instance is re-saved, and it has a proxy, we need to
-		/// reset the identifier of the proxy 
+		/// reset the identifier of the proxy
 		/// </summary>
 		public void ReassociateProxy(object value, object id)
 		{
@@ -586,7 +596,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Associate a proxy that was instantiated by another session with this session
 		/// </summary>
 		/// <param name="li">The proxy initializer. </param>
@@ -606,7 +616,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Get the entity instance underlying the given proxy, throwing
 		/// an exception if the proxy is uninitialized. If the given object
 		/// is not a proxy, simply return the argument.
@@ -628,7 +638,7 @@ namespace NHibernate.Engine
 				if (li.IsUninitialized)
 					throw new PersistentObjectException("object was an uninitialized proxy for " + li.PersistentClass.FullName);
 
-				return li.GetImplementation(); // unwrap the object 
+				return li.GetImplementation(); // unwrap the object
 			}
 			else
 			{
@@ -636,8 +646,8 @@ namespace NHibernate.Engine
 			}
 		}
 
-		/// <summary> 
-		/// Possibly unproxy the given reference and reassociate it with the current session. 
+		/// <summary>
+		/// Possibly unproxy the given reference and reassociate it with the current session.
 		/// </summary>
 		/// <param name="maybeProxy">The reference to be unproxied if it currently represents a proxy. </param>
 		/// <returns> The unproxied instance. </returns>
@@ -655,12 +665,12 @@ namespace NHibernate.Engine
                 
                 ILazyInitializer li = proxy.HibernateLazyInitializer;
 				ReassociateProxy(li, proxy);
-				return li.GetImplementation(); //initialize + unwrap the object 
+				return li.GetImplementation(); //initialize + unwrap the object
 			}
 			return maybeProxy;
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Attempts to check whether the given key represents an entity already loaded within the
 		/// current session.
 		/// </summary>
@@ -679,11 +689,11 @@ namespace NHibernate.Engine
 			}
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// If the existing proxy is insufficiently "narrow" (derived), instantiate a new proxy
 		/// and overwrite the registration of the old one. This breaks == and occurs only for
 		/// "class" proxies rather than "interface" proxies. Also init the proxy to point to
-		/// the given target implementation if necessary. 
+		/// the given target implementation if necessary.
 		/// </summary>
 		/// <param name="proxy">The proxy instance to be narrowed. </param>
 		/// <param name="persister">The persister for the proxied entity. </param>
@@ -709,7 +719,13 @@ namespace NHibernate.Engine
 				else
 				{
 					proxy = (INHibernateProxy)persister.CreateProxy(key.Identifier, session);
+					INHibernateProxy proxyOrig = proxiesByKey[key];
 					proxiesByKey[key] = proxy; //overwrite old proxy
+					if (proxyOrig != null)
+					{
+						bool readOnlyOrig = proxyOrig.HibernateLazyInitializer.ReadOnly;
+						proxy.HibernateLazyInitializer.ReadOnly = readOnlyOrig;
+					}
 					return proxy;
 				}
 			}
@@ -723,7 +739,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Return the existing proxy associated with the given <tt>EntityKey</tt>, or the
 		/// third argument (the entity associated with the key) if no proxy exists. Init
 		/// the proxy to the target implementation, if necessary.
@@ -744,7 +760,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Return the existing proxy associated with the given <tt>EntityKey</tt>, or the
 		/// argument (the entity associated with the key) if no proxy exists.
 		/// (slower than the form above)
@@ -764,7 +780,7 @@ namespace NHibernate.Engine
 
 		/// <summary> Get the entity that owned this persistent collection when it was loaded </summary>
 		/// <param name="collection">The persistent collection </param>
-		/// <returns> 
+		/// <returns>
 		/// The owner, if its entity ID is available from the collection's loaded key
 		/// and the owner entity is in the persistence context; otherwise, returns null
 		/// </returns>
@@ -822,7 +838,7 @@ namespace NHibernate.Engine
 			AddCollection(collection, ce, collection.Key);
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Add a new collection (ie. a newly created one, just instantiated by the
 		/// application, with no database state or snapshot)
 		/// </summary>
@@ -868,7 +884,7 @@ namespace NHibernate.Engine
 			collectionEntries[collection] = ce;
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// add an (initialized) collection that was created by another session and passed
 		/// into update() (ie. one with a snapshot and existing state on the database)
 		/// </summary>
@@ -906,7 +922,7 @@ namespace NHibernate.Engine
 				return null;
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Register a collection for non-lazy loading at the end of the two-phase load
 		/// </summary>
 		public void AddNonLazyCollection(IPersistentCollection collection)
@@ -914,7 +930,7 @@ namespace NHibernate.Engine
 			nonlazyCollections.Add(collection);
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Force initialization of all non-lazy collections encountered during
 		/// the current two-phase load (actually, this is a no-op, unless this
 		/// is the "outermost" load)
@@ -956,7 +972,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Register a <tt>PersistentCollection</tt> object for an array.
-		/// Associates a holder with an array - MUST be called after loading 
+		/// Associates a holder with an array - MUST be called after loading
 		/// array, since the array instance is not created until endLoad().
 		/// </summary>
 		public void AddCollectionHolder(IPersistentCollection holder)
@@ -965,7 +981,7 @@ namespace NHibernate.Engine
 			arrayHolders[holder.GetValue()] = holder;
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Remove the mapping of collection to holder during eviction of the owning entity
 		/// </summary>
 		public IPersistentCollection RemoveCollectionHolder(object array)
@@ -981,7 +997,7 @@ namespace NHibernate.Engine
 			return GetCollectionEntry(coll).Snapshot;
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Get the collection entry for a collection passed to filter,
 		/// which might be a collection wrapper, an array, or an unwrapped
 		/// collection. Return null if there is no entry.
@@ -1064,7 +1080,7 @@ namespace NHibernate.Engine
 			loadCounter--;
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Search the persistence context for an owner for the child object,
 		/// given a collection role
 		/// </summary>
@@ -1074,7 +1090,7 @@ namespace NHibernate.Engine
 			// TODO persistent context (BackrefPropertyAccessor)
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Search the persistence context for an index of the child object, given a collection role
 		/// </summary>
 		public object GetIndexInOwner(string entity, string property, object childObject, IDictionary mergeMap)
@@ -1083,7 +1099,7 @@ namespace NHibernate.Engine
 			// TODO persistent context (IndexPropertyAccessor)
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Record the fact that the association belonging to the keyed entity is null.
 		/// </summary>
 		public void AddNullProperty(EntityKey ownerKey, string propertyName)
@@ -1097,18 +1113,82 @@ namespace NHibernate.Engine
 			return nullAssociations.Contains(new AssociationKey(ownerKey, propertyName));
 		}
 
-		/// <summary> Set the object to read only and discard it's snapshot</summary>
-		public void SetReadOnly(object entity, bool readOnly)
+		/// <inheritdoc />
+		public void SetReadOnly(object entityOrProxy, bool readOnly)
+		{
+			if (entityOrProxy == null)
+				throw new ArgumentNullException("entityOrProxy");
+		
+			if (IsReadOnly(entityOrProxy) == readOnly)
+				return;
+	
+			if (entityOrProxy is INHibernateProxy)
+			{
+				INHibernateProxy proxy = (INHibernateProxy)entityOrProxy;
+				SetProxyReadOnly(proxy, readOnly);
+				if (NHibernateUtil.IsInitialized(proxy))
+				{
+					SetEntityReadOnly(proxy.HibernateLazyInitializer.GetImplementation(), readOnly);
+				}
+			}
+			else
+			{
+				SetEntityReadOnly(entityOrProxy, readOnly);
+				
+				// PersistenceContext.proxyFor( entity ) returns entity if there is no proxy for that entity
+				// so need to check the return value to be sure it is really a proxy
+				object maybeProxy = this.Session.PersistenceContext.ProxyFor(entityOrProxy);
+				if (maybeProxy is INHibernateProxy )
+				{
+					SetProxyReadOnly((INHibernateProxy)maybeProxy, readOnly);
+				}
+			}
+		}
+		
+		private void SetProxyReadOnly(INHibernateProxy proxy, bool readOnly)
+		{
+			if (proxy.HibernateLazyInitializer.Session != this.Session)
+			{
+				throw new AssertionFailure("Attempt to set a proxy to read-only that is associated with a different session");
+			}
+			proxy.HibernateLazyInitializer.ReadOnly = readOnly;
+		}
+
+		private void SetEntityReadOnly(object entity, bool readOnly)
 		{
 			EntityEntry entry = GetEntry(entity);
 			if (entry == null)
 			{
-				throw new TransientObjectException("Instance of" + entity.GetType() + " was not associated with the session");
+				throw new TransientObjectException("Instance was not associated with this persistence context");
 			}
 			entry.SetReadOnly(readOnly, entity);
 			hasNonReadOnlyEntities |= !readOnly;
 		}
-
+		
+		/// <inheritdoc />
+		public bool IsReadOnly(object entityOrProxy)
+		{
+			if (entityOrProxy == null)
+			{
+				throw new AssertionFailure("object must be non-null.");
+			}
+			bool isReadOnly;
+			if (entityOrProxy is INHibernateProxy)
+			{
+				isReadOnly = ((INHibernateProxy)entityOrProxy).HibernateLazyInitializer.ReadOnly;
+			}
+			else
+			{
+				EntityEntry ee = GetEntry(entityOrProxy);
+				if (ee == null)
+				{
+					throw new TransientObjectException("Instance was not associated with this persistence context" );
+				}
+				isReadOnly = ee.IsReadOnly;
+			}
+			return isReadOnly;
+		}
+		
 		public void ReplaceDelayedEntityIdentityInsertKeys(EntityKey oldKey, object generatedId)
 		{
 			object tempObject = entitiesByKey[oldKey];
@@ -1220,6 +1300,7 @@ namespace NHibernate.Engine
 			nullifiableEntityKeys = (HashedSet<EntityKey>)info.GetValue("context.nullifiableEntityKeys", typeof(HashedSet<EntityKey>));
 			unownedCollections = (Dictionary<CollectionKey, IPersistentCollection>)info.GetValue("context.unownedCollections", typeof(Dictionary<CollectionKey, IPersistentCollection>));
 			hasNonReadOnlyEntities = info.GetBoolean("context.hasNonReadOnlyEntities");
+			defaultReadOnly = info.GetBoolean("context.defaultReadOnly");
 			InitTransientState();
 		}
 
@@ -1239,6 +1320,7 @@ namespace NHibernate.Engine
 			info.AddValue("context.nullifiableEntityKeys", nullifiableEntityKeys, typeof(HashedSet<EntityKey>));
 			info.AddValue("context.unownedCollections", unownedCollections, typeof(Dictionary<CollectionKey, IPersistentCollection>));
 			info.AddValue("context.hasNonReadOnlyEntities", hasNonReadOnlyEntities);
+			info.AddValue("context.defaultReadOnly", defaultReadOnly);
 		}
 		#endregion
 	}

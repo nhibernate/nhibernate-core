@@ -6,12 +6,13 @@ using NHibernate.Event;
 using NHibernate.Impl;
 using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
+using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Properties;
 
 namespace NHibernate.Engine
 {
-	/// <summary> 
+	/// <summary>
 	/// Functionality relating to Hibernate's two-phase loading process,
 	/// that may be reused by persisters that do not use the Loader
 	/// framework
@@ -20,9 +21,9 @@ namespace NHibernate.Engine
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(TwoPhaseLoad));
 		
-		/// <summary> 
+		/// <summary>
 		/// Register the "hydrated" state of an entity instance, after the first step of 2-phase loading.
-		/// 
+		///
 		/// Add the "hydrated state" (an array) of an uninitialized entity to the session. We don't try
 		/// to resolve any associations yet, because there might be other entities waiting to be
 		/// read from the JDBC result set we are currently processing
@@ -39,8 +40,8 @@ namespace NHibernate.Engine
 			}
 		}
 		
-		/// <summary> 
-		/// Perform the second step of 2-phase load. Fully initialize the entity instance. 
+		/// <summary>
+		/// Perform the second step of 2-phase load. Fully initialize the entity instance.
 		/// After processing a JDBC result set, we "resolve" all the associations
 		/// between the entities which were instantiated and had their state
 		/// "hydrated" into an array
@@ -49,7 +50,7 @@ namespace NHibernate.Engine
 		{
 			//TODO: Should this be an InitializeEntityEventListener??? (watch out for performance!)
 
-      bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
+			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
 			var stopWath = new Stopwatch();
 			if (statsEnabled)
 			{
@@ -108,20 +109,37 @@ namespace NHibernate.Engine
 				CacheKey cacheKey = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, session.EntityMode, session.Factory);
 				bool put =
 					persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry), session.Timestamp, version,
-					                    persister.IsVersioned ? persister.VersionType.Comparator : null,
-					                    UseMinimalPuts(session, entityEntry));
+										persister.IsVersioned ? persister.VersionType.Comparator : null,
+										UseMinimalPuts(session, entityEntry));
 
 				if (put && factory.Statistics.IsStatisticsEnabled)
 				{
 					factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
 				}
 			}
-
-			if (readOnly || !persister.IsMutable)
+			
+			bool isReallyReadOnly = readOnly;
+			
+			if (!persister.IsMutable)
 			{
-				//no need to take a snapshot - this is a 
+				isReallyReadOnly = true;
+			}
+			else
+			{
+				object proxy = persistenceContext.GetProxy(entityEntry.EntityKey);
+				if (proxy != null)
+				{
+					// there is already a proxy for this impl
+					// only set the status to read-only if the proxy is read-only
+					isReallyReadOnly = ((INHibernateProxy)proxy).HibernateLazyInitializer.ReadOnly;
+				}
+			}
+
+			if (isReallyReadOnly)
+			{
+				//no need to take a snapshot - this is a
 				//performance optimization, but not really
-				//important, except for entities with huge 
+				//important, except for entities with huge
 				//mutable property values
 				persistenceContext.SetEntryStatus(entityEntry, Status.ReadOnly);
 			}
@@ -162,10 +180,10 @@ namespace NHibernate.Engine
 			|| (entityEntry.Persister.HasLazyProperties && entityEntry.LoadedWithLazyPropertiesUnfetched && entityEntry.Persister.IsLazyPropertiesCacheable);
 		}
 
-		/// <summary> 
-		/// Add an uninitialized instance of an entity class, as a placeholder to ensure object 
+		/// <summary>
+		/// Add an uninitialized instance of an entity class, as a placeholder to ensure object
 		/// identity. Must be called before <tt>postHydrate()</tt>.
-		///  Create a "temporary" entry for a newly instantiated entity. The entity is uninitialized,
+		/// Create a "temporary" entry for a newly instantiated entity. The entity is uninitialized,
 		/// but we need the mapping from id to instance in order to guarantee uniqueness.
 		/// </summary>
 		public static void AddUninitializedEntity(EntityKey key, object obj, IEntityPersister persister, LockMode lockMode, bool lazyPropertiesAreUnfetched, ISessionImplementor session)

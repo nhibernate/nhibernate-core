@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	namespace="NHibernate.Test.ReadOnly"
+	assembly="NHibernate.Test">
+
+	<class name="DataPoint" dynamic-update="true">
+		<!--rowid="rowid"--> <!-- remove this if not oracle -->
+		<id name="Id">
+			<generator class="increment" />
+		</id>
+		<property name="X">
+			<column name="xval" not-null="true" precision="25" scale="19" unique-key="xy" />
+		</property>
+		<property name="Y">
+			<column name="yval" not-null="true" precision="25" scale="19" unique-key="xy" />
+		</property>
+		<property name="Description" />
+	</class>
+	
+
+	<class name="Owner">
+		<id name="Id">
+			<generator class="increment" />
+		</id>
+		<property name="Name" unique="true" />
+	</class>
+	
+
+	<class name="Info">
+		<id name="Id">
+			<generator class="increment" />
+		</id>
+		<property name="Details" />
+	</class>
+	
+
+	<class name="Container">
+		<id name="Id">
+			<generator class="increment" />
+		</id>
+		<property name="Name" />
+		<!--many-to-one name="NoProxyOwner" class="Owner" column="no_proxy_owner_name" property-ref="Name" lazy="no-proxy" cascade="all" /-->
+		<many-to-one name="ProxyOwner" class="Owner" column="proxy_owner_name" property-ref="Name" lazy="proxy" cascade="all" />
+		<many-to-one name="NonLazyOwner" class="Owner" column="non_lazy_owner_name" property-ref="Name" lazy="false" cascade="all" />
+		<!--many-to-one name="NoProxyInfo" class="Info" column="no_proxy_info_id" lazy="no-proxy" cascade="all" /-->
+		<many-to-one name="ProxyInfo" class="Info" column="proxy_info_id" lazy="proxy" cascade="all" />
+		<many-to-one name="NonLazyInfo" class="Info" column="non_lazy_info_id" lazy="false" cascade="all" />
+		<set name="LazyDataPoints" lazy="true" inverse="false" cascade="all">
+			<key column="c_lazy_id" />
+			<one-to-many class="DataPoint" />
+		</set>
+		<set name="NonLazySelectDataPoints" lazy="false" inverse="false" cascade="all" fetch="select">
+			<key column="c_non_lazy_select_id" />
+			<one-to-many class="DataPoint" />
+		</set>
+		<set name="NonLazyJoinDataPoints" lazy="false" inverse="false" cascade="all" fetch="join">
+			<key column="c_non_lazy_join_id" />
+			<one-to-many class="DataPoint" />
+		</set>
+	</class>
+
+</hibernate-mapping>

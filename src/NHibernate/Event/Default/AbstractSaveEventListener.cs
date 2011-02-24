@@ -273,7 +273,16 @@ namespace NHibernate.Event.Default
 			}
 
 			object version = Versioning.GetVersion(values, persister);
-			source.PersistenceContext.AddEntity(entity, Status.Loaded, values, key, version, LockMode.Write, useIdentityColumn, persister, VersionIncrementDisabled, false);
+			source.PersistenceContext.AddEntity(
+				entity, 
+				persister.IsMutable ? Status.Loaded : Status.ReadOnly,
+				values, key, 
+				version, 
+				LockMode.Write, 
+				useIdentityColumn, 
+				persister, 
+				VersionIncrementDisabled, 
+				false);
 			//source.getPersistenceContext().removeNonExist( new EntityKey( id, persister, source.getEntityMode() ) );
 
 			if (!useIdentityColumn)

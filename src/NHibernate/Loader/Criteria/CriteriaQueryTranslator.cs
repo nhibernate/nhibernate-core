@@ -136,7 +136,7 @@ namespace NHibernate.Loader.Criteria
 				if (subcriteria.WithClause != null)
 				{
 					typedValues.AddRange(subcriteria.WithClause.GetTypedValues(subcriteria, this));
-				}
+			}
 			}
 			
 			List<TypedValue> groupedTypedValues = new List<TypedValue>();
@@ -185,13 +185,15 @@ namespace NHibernate.Loader.Criteria
 				new QueryParameters(
 					typedValues.Select(tv => tv.Type).ToArray(),
 					typedValues.Select(tv => tv.Value).ToArray(),
-					lockModes, 
-					selection, 
-					rootCriteria.Cacheable, 
+					lockModes,
+					selection,
+					rootCriteria.IsReadOnlyInitialized,
+					rootCriteria.IsReadOnlyInitialized ? rootCriteria.IsReadOnly : false,
+					rootCriteria.Cacheable,
 					rootCriteria.CacheRegion,
-					rootCriteria.Comment, 
-					rootCriteria.LookupByNaturalKey, 
-					rootCriteria.ResultTransformer, 
+					rootCriteria.Comment,
+					rootCriteria.LookupByNaturalKey,
+					rootCriteria.ResultTransformer,
 					_tempPagingParameterIndexes);
 		}
 		
@@ -570,13 +572,13 @@ namespace NHibernate.Loader.Criteria
 			return alias;
 		}
 
-        public string GetEntityName(ICriteria criteria)
-        {
-            ICriteriaInfoProvider result;
+		public string GetEntityName(ICriteria criteria)
+		{
+			ICriteriaInfoProvider result;
             if (criteriaInfoMap.TryGetValue(criteria, out result) == false)
                 return null;
-            return result.Name;
-        }
+			return result.Name;
+		}
 
 		public string GetColumn(ICriteria criteria, string propertyName)
 		{

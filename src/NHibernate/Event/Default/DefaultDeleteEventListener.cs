@@ -46,6 +46,7 @@ namespace NHibernate.Event.Default
 				log.Debug("entity was not persistent in delete processing");
 
 				persister = source.GetEntityPersister(@event.EntityName, entity);
+				
 				if (ForeignKeys.IsTransient(persister.EntityName, entity, null, source))
 				{
 					DeleteTransientEntity(source, entity, @event.CascadeDeleteEnabled, persister, transientEntities);
@@ -72,9 +73,17 @@ namespace NHibernate.Event.Default
 
 				version = persister.GetVersion(entity, source.EntityMode);
 
-				entityEntry =
-					persistenceContext.AddEntity(entity, Status.Loaded, persister.GetPropertyValues(entity, source.EntityMode), key,
-					                             version, LockMode.None, true, persister, false, false);
+				entityEntry = persistenceContext.AddEntity(
+					entity, 
+					persister.IsMutable ? Status.Loaded : Status.ReadOnly,
+					persister.GetPropertyValues(entity, source.EntityMode), 
+					key,
+					version, 
+					LockMode.None, 
+					true, 
+					persister, 
+					false, 
+					false);
 			}
 			else
 			{
@@ -90,16 +99,8 @@ namespace NHibernate.Event.Default
 				version = entityEntry.Version;
 			}
 
-			if (!persister.IsMutable)
-			{
-				throw new HibernateException("Attempted to delete an object of immutable class: "
-				                             + MessageHelper.InfoString(persister));
-			}
-
 			if (InvokeDeleteLifecycle(source, entity, persister))
-			{
 				return;
-			}
 
 			DeleteEntity(source, entity, entityEntry, @event.CascadeDeleteEnabled, persister, transientEntities);
 
@@ -110,6 +111,7 @@ namespace NHibernate.Event.Default
 		}
 
 		#endregion
+		
 		/// <summary> Called when we have recognized an attempt to delete a detached entity. </summary>
 		/// <param name="event">The event. </param>
 		/// <remarks>

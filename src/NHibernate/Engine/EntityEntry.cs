@@ -14,6 +14,7 @@ namespace NHibernate.Engine
 	{
 		private LockMode lockMode;
 		private Status status;
+		private Status? previousStatus;
 		private readonly object id;
 		private object[] loadedState;
 		private object[] deletedState;
@@ -21,10 +22,11 @@ namespace NHibernate.Engine
 		private object version;
 		
 		[NonSerialized]
-		private IEntityPersister persister;// for convenience to save some lookups
+		private IEntityPersister persister; // for convenience to save some lookups
 
 		private readonly EntityMode entityMode;
 		private readonly string entityName;
+		private EntityKey cachedEntityKey;
 		private readonly bool isBeingReplicated;
 		private readonly bool loadedWithLazyPropertiesUnfetched;
 
@@ -50,9 +52,11 @@ namespace NHibernate.Engine
 			bool disableVersionIncrement, bool lazyPropertiesAreUnfetched)
 		{
 			this.status = status;
-			this.loadedState = loadedState;
-			this.rowId = rowId;
+			this.previousStatus = null;
+			// only retain loaded state if the status is not Status.ReadOnly
+			if (status != Status.ReadOnly) { this.loadedState = loadedState; }
 			this.id = id;
+			this.rowId = rowId;
 			this.existsInDatabase = existsInDatabase;
 			this.version = version;
 			this.lockMode = lockMode;
@@ -74,7 +78,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary>
-		/// Gets or sets the <see cref="Status"/> of this Entity with respect to its 
+		/// Gets or sets the <see cref="Status"/> of this Entity with respect to its
 		/// persistence in the database.
 		/// </summary>
 		/// <value>The <see cref="Status"/> of this Entity.</value>
@@ -86,7 +90,11 @@ namespace NHibernate.Engine
 				if (value == Status.ReadOnly)
 					loadedState = null; //memory optimization
 
-				status = value;
+				if (this.status != value)
+				{
+					previousStatus = this.status;
+					this.status = value;
+				}
 			}
 		}
 
@@ -94,7 +102,7 @@ namespace NHibernate.Engine
 		/// Gets or sets the identifier of the Entity in the database.
 		/// </summary>
 		/// <value>The identifier of the Entity in the database if one has been assigned.</value>
-		/// <remarks>This might be <see langword="null" /> when the <see cref="EntityEntry.Status"/> is 
+		/// <remarks>This might be <see langword="null" /> when the <see cref="EntityEntry.Status"/> is
 		/// <see cref="Engine.Status.Saving"/> and the database generates the id.</remarks>
 		public object Id
 		{
@@ -129,7 +137,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <value><see langword="true" /> if it is already in the database.</value>
 		/// <remarks>
-		/// It can also be <see langword="true" /> if it does not exists in the database yet and the 
+		/// It can also be <see langword="true" /> if it does not exists in the database yet and the
 		/// <see cref="IEntityPersister.IsIdentifierAssignedByInsert"/> is <see langword="true" />.
 		/// </remarks>
 		public bool ExistsInDatabase
@@ -179,6 +187,24 @@ namespace NHibernate.Engine
 		{
 			get { return loadedWithLazyPropertiesUnfetched; }
 		}
+		
+		/// <summary>
+		/// Get the EntityKey based on this EntityEntry.
+		/// </summary>
+		public EntityKey EntityKey
+		{
+			get
+			{
+				if (cachedEntityKey == null)
+				{
+					if (id == null)
+						throw new InvalidOperationException("cannot generate an EntityKey when id is null.");
+
+					cachedEntityKey = new EntityKey(id, persister, entityMode);
+				}
+				return cachedEntityKey;
+			}
+		}
 
 		public object GetLoadedValue(string propertyName)
 		{
@@ -186,8 +212,8 @@ namespace NHibernate.Engine
 			return loadedState[propertyIndex];
 		}
 
-		/// <summary> 
-		/// After actually inserting a row, record the fact that the instance exists on the 
+		/// <summary>
+		/// After actually inserting a row, record the fact that the instance exists on the
 		/// database (needed for identity-column key generation)
 		/// </summary>
 		public void PostInsert()
@@ -213,12 +239,13 @@ namespace NHibernate.Engine
 			FieldInterceptionHelper.ClearDirty(entity);
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// After actually deleting a row, record the fact that the instance no longer
 		/// exists in the database
 		/// </summary>
 		public void PostDelete()
 		{
+			previousStatus = status;
 			status = Status.Gone;
 			existsInDatabase = false;
 		}
@@ -230,7 +257,7 @@ namespace NHibernate.Engine
 			LockMode = LockMode.Force;
 			persister.SetPropertyValue(entity, Persister.VersionProperty, nextVersion, entityMode);
 		}
-
+		
 		public bool IsNullifiable(bool earlyInsert, ISessionImplementor session)
 		{
 			return Status == Status.Saving || (earlyInsert ? !ExistsInDatabase : session.PersistenceContext.NullifiableEntityKeys.Contains(new EntityKey(Id, Persister, entityMode)));
@@ -238,21 +265,42 @@ namespace NHibernate.Engine
 
 		public bool RequiresDirtyCheck(object entity)
 		{
-			bool isMutableInstance = status != Status.ReadOnly && persister.IsMutable;
-
 			return
-				isMutableInstance
-				&&
-				(Persister.HasMutableProperties || !FieldInterceptionHelper.IsInstrumented(entity)
-				 || FieldInterceptionHelper.ExtractFieldInterceptor(entity).IsDirty);
+				IsModifiableEntity()
+				&& (Persister.HasMutableProperties || !FieldInterceptionHelper.IsInstrumented(entity)
+				|| FieldInterceptionHelper.ExtractFieldInterceptor(entity).IsDirty);
+		}
+		
+		/// <summary>
+		/// Can the entity be modified?
+		/// The entity is modifiable if all of the following are true:
+		/// - the entity class is mutable
+		/// - the entity is not read-only
+		/// - if the current status is Status.Deleted, then the entity was not read-only when it was deleted
+		/// </summary>
+		/// <returns>true, if the entity is modifiable; false, otherwise</returns>
+		public bool IsModifiableEntity()
+		{
+			return (status != Status.ReadOnly) && !(status == Status.Deleted && previousStatus == Status.ReadOnly) && Persister.IsMutable;
+		}
+		
+		public bool IsReadOnly
+		{
+			get
+			{
+				if (status != Status.Loaded && status != Status.ReadOnly)
+				{
+					throw new HibernateException("instance was not in a valid state");
+				}
+				return status == Status.ReadOnly;
+			}
 		}
 
 		public void SetReadOnly(bool readOnly, object entity)
 		{
-			if (status != Status.Loaded && status != Status.ReadOnly)
-			{
-				throw new HibernateException("instance was not in a valid state");
-			}
+			if (readOnly == IsReadOnly)
+				return; // simply return since the status is not being changed
+			
 			if (readOnly)
 			{
 				Status = Status.ReadOnly;
@@ -260,6 +308,9 @@ namespace NHibernate.Engine
 			}
 			else
 			{
+				if (!persister.IsMutable)
+					throw new InvalidOperationException("Cannot make an immutable entity modifiable.");
+
 				Status = Status.Loaded;
 				loadedState = Persister.GetPropertyValues(entity, entityMode);
 			}

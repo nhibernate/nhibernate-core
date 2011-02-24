@@ -148,7 +148,7 @@ namespace NHibernate.Event.Default
 						if (!types[prop].IsEqual(current[prop], loadedVal, entityMode))
 						{
 							throw new HibernateException("immutable natural identifier of an instance of " + persister.EntityName
-														 + " was altered");
+							                             + " was altered");
 						}
 					}
 				}
@@ -216,7 +216,18 @@ namespace NHibernate.Event.Default
 			{
 				if (status == Status.Deleted)
 				{
-					log.Debug("Updating deleted entity: " + MessageHelper.InfoString(persister, entry.Id, session.Factory));
+					if (!persister.IsMutable)
+					{
+						log.Debug("Updating immutable, deleted entity: " + MessageHelper.InfoString(persister, entry.Id, session.Factory));
+					}
+					else if (!entry.IsModifiableEntity())
+					{
+						log.Debug("Updating non-modifiable, deleted entity: " + MessageHelper.InfoString(persister, entry.Id, session.Factory));
+					}
+					else
+					{
+						log.Debug("Updating deleted entity: " + MessageHelper.InfoString(persister, entry.Id, session.Factory));
+					}
 				}
 				else
 				{
@@ -260,9 +271,17 @@ namespace NHibernate.Event.Default
 			// schedule the update
 			// note that we intentionally do _not_ pass in currentPersistentState!
 			session.ActionQueue.AddAction(
-				new EntityUpdateAction(entry.Id, values, dirtyProperties,
-				@event.HasDirtyCollection, entry.LoadedState, entry.Version,
-				nextVersion, entity, persister, session));
+				new EntityUpdateAction(
+					entry.Id, 
+					values, 
+					dirtyProperties,
+					@event.HasDirtyCollection, 
+					status == Status.Deleted && !entry.IsModifiableEntity() ? persister.GetPropertyValues(entity, entityMode) : entry.LoadedState,
+					entry.Version,
+					nextVersion, 
+					entity, 
+					persister, 
+					session));
 
 			return intercepted;
 		}
@@ -404,7 +423,7 @@ namespace NHibernate.Event.Default
 
 		private bool IsCollectionDirtyCheckNecessary(IEntityPersister persister, Status status)
 		{
-			return status == Status.Loaded && persister.IsVersioned && persister.HasCollections;
+			return (status == Status.Loaded || status == Status.ReadOnly) && persister.IsVersioned && persister.HasCollections;
 		}
 
 		/// <summary> Perform a dirty check, and attach the results to the event</summary>
@@ -435,6 +454,26 @@ namespace NHibernate.Event.Default
 				{
 					// dirty check against the usual snapshot of the entity
 					dirtyProperties = persister.FindDirty(values, loadedState, entity, session);
+				}
+				else if (entry.Status == Status.Deleted && !@event.EntityEntry.IsModifiableEntity())
+				{
+					// A non-modifiable (e.g., read-only or immutable) entity needs to be have
+					// references to transient entities set to null before being deleted. No other
+					// fields should be updated.
+					if (values != entry.DeletedState ) 
+					{
+						throw new InvalidOperationException("Entity has status Status.Deleted but values != entry.DeletedState");
+					}
+					// Even if loadedState == null, we can dirty-check by comparing currentState and
+					// entry.getDeletedState() because the only fields to be updated are those that
+					// refer to transient entities that are being set to null.
+					// - currentState contains the entity's current property values.
+					// - entry.getDeletedState() contains the entity's current property values with
+					//   references to transient entities set to null.
+					// - dirtyProperties will only contain properties that refer to transient entities
+					object[] currentState = persister.GetPropertyValues(@event.Entity, @event.Session.EntityMode);
+					dirtyProperties = persister.FindDirty(entry.DeletedState, currentState, entity, session);
+					cannotDirtyCheck = false;
 				}
 				else
 				{

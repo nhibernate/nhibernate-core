@@ -27,10 +27,10 @@ namespace NHibernate.Impl
 		private readonly ArrayList values = new ArrayList(4);
 		private readonly List<IType> types = new List<IType>(4);
 		private readonly Dictionary<string, TypedValue> namedParameters = new Dictionary<string, TypedValue>(4);
-	    protected readonly Dictionary<string, TypedValue> namedParameterLists = new Dictionary<string, TypedValue>(4);
+		protected readonly Dictionary<string, TypedValue> namedParameterLists = new Dictionary<string, TypedValue>(4);
 		private bool cacheable;
 		private string cacheRegion;
-		private bool readOnly;
+		private bool? readOnly;
 		private static readonly object UNSET_PARAMETER = new object();
 		private static readonly IType UNSET_TYPE = null;
 		private object optionalId;
@@ -76,8 +76,8 @@ namespace NHibernate.Impl
 			VerifyParameters(false);
 		}
 
-		/// <summary> 
-		/// Perform parameter validation.  Used prior to executing the encapsulated query. 
+		/// <summary>
+		/// Perform parameter validation.  Used prior to executing the encapsulated query.
 		/// </summary>
 		/// <param name="reserveFirstParameter">
 		/// if true, the first ? will not be verified since
@@ -222,7 +222,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Warning: adds new parameters to the argument by side-effect, as well as mutating the query string!
 		/// </summary>
 		protected internal virtual string ExpandParameterLists(IDictionary<string, TypedValue> namedParamsCopy)
@@ -234,7 +234,7 @@ namespace NHibernate.Impl
 			return query;
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Warning: adds new parameters to the argument by side-effect, as well as mutating the query string!
 		/// </summary>
 		private string ExpandParameterList(string query, string name, TypedValue typedList, IDictionary<string, TypedValue> namedParamsCopy)
@@ -347,8 +347,8 @@ namespace NHibernate.Impl
 																					"A type specific Set(name, val) should be called because the Type can not be guessed from a null value.");
 				}
 
-                SetParameter(name, val, type);
-            }
+				SetParameter(name, val, type);
+			}
 			else
 			{
 				SetParameter(name, val, DetermineType(name, val));
@@ -368,7 +368,7 @@ namespace NHibernate.Impl
 			{
 				SetParameter(position, val, DetermineType(position, val));
 			}
-			return this; 
+			return this;
 		}
 
 		public IQuery SetAnsiString(int position, string val)
@@ -727,13 +727,13 @@ namespace NHibernate.Impl
 		{
 			get { return session.Factory.GetReturnAliases(queryString); }
 		}
-
+		
 		// TODO: maybe call it RowSelection ?
 		public RowSelection Selection
 		{
 			get { return selection; }
 		}
-
+		
 		public IQuery SetMaxResults(int maxResults)
 		{
 			selection.MaxRows = maxResults;
@@ -797,6 +797,13 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		/// <inheritdoc />
+		public bool IsReadOnly
+		{
+			get { return readOnly == null ? Session.PersistenceContext.DefaultReadOnly : readOnly.Value; }
+		}
+
+		/// <inheritdoc />
 		public IQuery SetReadOnly(bool readOnly)
 		{
 			this.readOnly = readOnly;
@@ -836,29 +843,29 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-	    public IEnumerable<T> Future<T>()
-	    {
+		public IEnumerable<T> Future<T>()
+		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
 				return List<T>();
 			}
 
 			session.FutureQueryBatch.Add<T>(this);
-	        return session.FutureQueryBatch.GetEnumerator<T>();
-	    }
+			return session.FutureQueryBatch.GetEnumerator<T>();
+		}
 
-        public IFutureValue<T> FutureValue<T>()
-        {
+		public IFutureValue<T> FutureValue<T>()
+		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
 				return new FutureValue<T>(List<T>);
 			}
 			
 			session.FutureQueryBatch.Add<T>(this);
-            return session.FutureQueryBatch.GetFutureValue<T>();
-        }
+			return session.FutureQueryBatch.GetFutureValue<T>();
+		}
 
-	    /// <summary> Override the current session cache mode, just for this query.
+		/// <summary> Override the current session cache mode, just for this query.
 		/// </summary>
 		/// <param name="cacheMode">The cache mode to use. </param>
 		/// <returns> this (for method chaining) </returns>
@@ -946,7 +953,8 @@ namespace NHibernate.Impl
 					namedParams,
 					LockModes,
 					Selection,
-					readOnly,
+					true,
+					IsReadOnly,
 					cacheable,
 					cacheRegion,
 					comment,

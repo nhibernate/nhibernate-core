@@ -4,9 +4,9 @@ using NHibernate.Engine;
 
 namespace NHibernate.Event.Default
 {
-	/// <summary> 
-	/// Defines the default flush event listeners used by hibernate for 
-	/// flushing session state in response to generated auto-flush events. 
+	/// <summary>
+	/// Defines the default flush event listeners used by hibernate for
+	/// flushing session state in response to generated auto-flush events.
 	/// </summary>
 	[Serializable]
 	public class DefaultAutoFlushEventListener : AbstractFlushingEventListener, IAutoFlushEventListener
@@ -36,7 +36,7 @@ namespace NHibernate.Event.Default
 
 					PerformExecutions(source);
 					PostFlush(source);
-					// note: performExecutions() clears all collectionXxxxtion 
+					// note: performExecutions() clears all collectionXxxxtion
 					// collections (the collection actions) in the session
 
 					if (source.Factory.Statistics.IsStatisticsEnabled)
@@ -65,7 +65,10 @@ namespace NHibernate.Event.Default
 
 		private bool FlushMightBeNeeded(ISessionImplementor source)
 		{
-			return !(source.FlushMode < FlushMode.Auto) && source.DontFlushFromFind == 0 && source.PersistenceContext.HasNonReadOnlyEntities;
+			return
+				!(source.FlushMode < FlushMode.Auto)
+				&& source.DontFlushFromFind == 0
+				&& ((source.PersistenceContext.EntityEntries.Count > 0) || (source.PersistenceContext.CollectionEntries.Count > 0));
 		}
 	}
 }

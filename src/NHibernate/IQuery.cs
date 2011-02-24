@@ -67,7 +67,7 @@ namespace NHibernate
 		IType[] ReturnTypes { get; }
 
 		/// <summary> Return the HQL select clause aliases (if any)</summary>
-		/// <returns> an array of aliases as strings </returns>
+		/// <returns> An array of aliases as strings </returns>
 		string[] ReturnAliases { get; }
 
 		/// <summary>
@@ -75,6 +75,26 @@ namespace NHibernate
 		/// </summary>
 		/// <value>The parameter names, in no particular order</value>
 		string[] NamedParameters { get; }
+		
+		/// <summary>
+	 	/// Will entities (and proxies) returned by the query be loaded in read-only mode?
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// If the query's read-only setting is not initialized (with <see cref="SetReadOnly(bool)" />),
+		/// the value of the session's <see cref="ISession.DefaultReadOnly" /> property is
+		/// returned instead.
+		/// </para>
+		/// <para>
+		/// The value of this property has no effect on entities or proxies returned by the
+		/// query that existed in the session before the query was executed.
+		/// </para>
+		/// </remarks>
+		/// <returns>
+		/// <c>true</c> if entities and proxies loaded by the query will be put in read-only mode, otherwise <c>false</c>.
+		/// </returns>
+	 	/// <seealso cref="IQuery.SetReadOnly(bool)" />
+		bool IsReadOnly { get; }
 
 		/// <summary>
 		/// Return the query results as an <see cref="IEnumerable"/>. If the query contains multiple results
@@ -155,10 +175,28 @@ namespace NHibernate
 		IQuery SetFirstResult(int firstResult);
 
 		/// <summary>
-		/// Entities retrieved by this query will be loaded in
-		/// a read-only mode where NHibernate will never dirty-check
-		/// them or make changes persistent.
+		/// Set the read-only mode for entities (and proxies) loaded by this query. This setting 
+		/// overrides the default setting for the session (see <see cref="ISession.DefaultReadOnly" />).
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Read-only entities can be modified, but changes are not persisted. They are not 
+		/// dirty-checked and snapshots of persistent state are not maintained.
+		/// </para>
+		/// <para>
+		/// When a proxy is initialized, the loaded entity will have the same read-only setting 
+		/// as the uninitialized proxy, regardless of the session's current setting.
+		/// </para>
+		/// <para>
+		/// The read-only setting has no impact on entities or proxies returned by the criteria
+		/// that existed in the session before the criteria was executed.
+		/// </para>
+		/// </remarks>
+		/// <param name="readOnly">
+		/// If <c>true</c>, entities (and proxies) loaded by the query will be read-only.
+		/// </param>
+		/// <returns><c>this</c> (for method chaining)</returns>
+		/// <seealso cref="IsReadOnly" />
 		IQuery SetReadOnly(bool readOnly);
 
 		/// <summary>
