@@ -50,6 +50,11 @@ namespace NHibernate.Test.Cascade.Circle
 			configuration.SetProperty(NHibernate.Cfg.Environment.GenerateStatistics, "true");
 			configuration.SetProperty(NHibernate.Cfg.Environment.BatchSize, "0");
 		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is Dialect.FirebirdDialect); // Firebird has no CommandTimeout, and locks up during the tear-down of this fixture
+		}
 		
 		[Test]
 		public void MergeEntityWithNonNullableTransientEntity()

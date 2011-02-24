@@ -22,33 +22,34 @@ namespace NHibernate
 	/// </para>
 	/// <code>
 	/// IList cats = session.CreateCriteria(typeof(Cat))
-	///     .Add( Expression.Like("name", "Iz%") )
-	///     .Add( Expression.Gt( "weight", minWeight ) )
-	///     .AddOrder( Order.Asc("age") )
-	///     .List();
+	/// 	.Add(Expression.Like("name", "Iz%"))
+	/// 	.Add(Expression.Gt("weight", minWeight))
+	/// 	.AddOrder(Order.Asc("age"))
+	/// 	.List();
 	/// </code>
-	/// You may navigate associations using <see cref="CreateAlias(string,string)" /> or <see cref="CreateCriteria(string)" />.
+	/// You may navigate associations using <see cref="CreateAlias(string, string)" />
+	/// or <see cref="CreateCriteria(string)" />. eg:
 	/// <code>
-	/// IList cats = session.CreateCriteria(typeof(Cat))
-	///		.CreateCriteria("kittens")
-	///			.Add( Expression.like("name", "Iz%") )
-	///			.List();
-	///	</code>
+	/// 	IList&lt;Cat&gt; cats = session.CreateCriteria&lt;Cat&gt;
+	/// 		.CreateCriteria("kittens")
+	/// 		.Add(Expression.like("name", "Iz%"))
+	/// 		.List&lt;Cat&gt;();
+	/// </code>
 	/// <para>
-	/// You may specify projection and aggregation using <tt>Projection</tt>
-	/// instances obtained via the factory methods on <tt>Projections</tt>.
+	/// You may specify projection and aggregation using <c>Projection</c> instances obtained
+	/// via the factory methods on <c>Projections</c>. eg:
 	/// <code>
-	/// IList cats = session.CreateCriteria(typeof(Cat))
-	/// .setProjection( Projections.ProjectionList()
-	/// .Add( Projections.RowCount() )
-	/// .Add( Projections.Avg("weight") )
-	/// .Add( Projections.Max("weight") )
-	/// .Add( Projections.Min("weight") )
-	/// .Add( Projections.GroupProperty("color") )
-	/// )
-	/// .AddOrder( Order.Asc("color") )
-	/// .List();
-	///	</code>
+	/// 	IList&lt;Cat&gt; cats = session.CreateCriteria&lt;Cat&gt;
+	/// 		.SetProjection(
+	/// 			Projections.ProjectionList()
+	/// 				.Add(Projections.RowCount())
+	/// 				.Add(Projections.Avg("weight"))
+	/// 				.Add(Projections.Max("weight"))
+	/// 				.Add(Projections.Min("weight"))
+	/// 				.Add(Projections.GroupProperty("color")))
+	/// 		.AddOrder(Order.Asc("color"))
+	/// 		.List&lt;Cat&gt;();
+	/// </code>
 	/// </para>
 	/// </remarks>
 	public interface ICriteria : ICloneable

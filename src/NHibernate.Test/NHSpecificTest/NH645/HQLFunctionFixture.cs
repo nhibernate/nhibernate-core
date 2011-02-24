@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using Antlr.Runtime.Tree;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
@@ -74,7 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.NH645
 					}
 					else //Hql-Parser
 					{
-						if (ex is RewriteEmptyStreamException || ex is InvalidCastException)
+						if (ex.GetType().FullName == "Antlr.Runtime.Tree.RewriteEmptyStreamException" || ex is InvalidCastException)
 							Assert.Fail("The parser think that 'freetext' is a boolean function");
 					}
 				}

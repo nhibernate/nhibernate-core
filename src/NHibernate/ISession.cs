@@ -20,16 +20,16 @@ namespace NHibernate
 	/// <para>
 	/// The main function of the <c>ISession</c> is to offer create, find and delete operations
 	/// for instances of mapped entity classes. Instances may exist in one of two states:
-	/// <list>
-	///		<item>transient: not associated with any <c>ISession</c></item>
-	///		<item>persistent: associated with a <c>ISession</c></item>
+	/// <list type="bullet">
+	/// <item>transient: not associated with any <c>ISession</c></item>
+	/// <item>persistent: associated with a <c>ISession</c></item>
 	/// </list>
 	/// </para>
 	/// <para>
-	///	Transient instances may be made persistent by calling <c>Save()</c>, <c>Insert()</c>,
-	///	or <c>Update()</c>. Persistent instances may be made transient by calling <c>Delete()</c>.
-	///	Any instance returned by a <c>List()</c>, <c>Iterate()</c>, <c>Load()</c>, or <c>Create</c>
-	///	method is persistent.
+	/// Transient instances may be made persistent by calling <c>Save()</c>, <c>Insert()</c>,
+	/// or <c>Update()</c>. Persistent instances may be made transient by calling <c>Delete()</c>.
+	/// Any instance returned by a <c>List()</c>, <c>Enumerable()</c>, <c>Load()</c>, or <c>Create()</c>
+	/// method is persistent.
 	/// </para>
 	/// <para>
 	/// <c>Save()</c> results in an SQL <c>INSERT</c>, <c>Delete()</c>
@@ -46,26 +46,28 @@ namespace NHibernate
 	/// </para>
 	/// <para>
 	/// A typical transaction should use the following idiom:
-	///		<code>
-	///			ISession sess = factory.OpenSession();
-	///			ITransaction tx;
-	///			try {
-	///				tx = sess.BeginTransaction();
-	///				//do some work
+	/// <code>
+	///		using (ISession session = factory.OpenSession())
+	///		using (ITransaction tx = session.BeginTransaction())
+	///		{
+	///			try
+	///			{
+	///				// do some work
 	///				...
 	///				tx.Commit();
-	///			} catch (Exception e) {
+	///			}
+	///			catch (Exception e)
+	///			{
 	///				if (tx != null) tx.Rollback();
 	///				throw;
-	///			} finally {
-	///				sess.Close();
 	///			}
-	///		</code>
+	///		}
+	/// </code>
 	/// </para>
 	/// <para>
-	///	If the <c>ISession</c> throws an exception, the transaction must be rolled back and the session
-	///	discarded. The internal state of the <c>ISession</c> might not be consistent with the database
-	///	after the exception occurs.
+	/// If the <c>ISession</c> throws an exception, the transaction must be rolled back and the session
+	/// discarded. The internal state of the <c>ISession</c> might not be consistent with the database
+	/// after the exception occurs.
 	/// </para>
 	/// <seealso cref="ISessionFactory"/>
 	/// </remarks>
