@@ -10,39 +10,43 @@ namespace NHibernate
 	/// An object-oriented representation of a NHibernate query.
 	/// </summary>
 	/// <remarks>
-	/// An <c>IQuery</c> instance is obtained by calling <c>ISession.CreateQuery()</c>. This interface
-	/// exposes some extra functionality beyond that provided by <c>ISession.Iterate()</c> and
-	/// <c>ISession.List()</c>;
-	/// <list>
+	/// An <c>IQuery</c> instance is obtained by calling <see cref="ISession.CreateQuery(string)" />.
+	/// Key features of this interface include:
+	/// <list type="bullet">
 	///		<item>
-	///			A particular page of the result set may be selected by calling
-	///			<c>SetMaxResults()</c>, <c>SetFirstResult()</c>.  The generated sql
+	///			Paging: A particular page of the result set may be selected by calling
+	///			<see cref="SetMaxResults(int)" />, <see cref="SetFirstResult(int)" />.  The generated SQL
 	///			depends on the capabilities of the <see cref="Dialect.Dialect"/>.  Some
 	///			Dialects are for databases that have built in paging (LIMIT) and those capabilities
-	///			will be used to limit the number of records returned by the sql statement.
+	///			will be used to limit the number of records returned by the SQL statement.
 	///			If the database does not support LIMITs then all of the records will be returned,
 	///			but the objects created will be limited to the specific results requested.
 	///		</item>
-	///		<item>Named query parameters may be used</item>
+	///		<item>
+	///			Named parameters
+	///		</item>
+	///		<item>
+	///			Ability to return 'read-only' entities
+	///		</item>
 	/// </list>
 	/// <para>
-	/// Named query parameters are tokens of the form <c>:name</c> in the query string. A value is bound
-	/// to the <c>Int32</c> parameter <c>:foo</c> by calling
+	/// Named query parameters are tokens of the form <c>:name</c> in the query string. For example, a
+	/// value is bound to the <c>Int32</c> parameter <c>:foo</c> by calling:
 	/// <code>
-	///		SetParameter("foo", foo, NHibernateUtil.Int32);
+	/// SetParameter("foo", foo, NHibernateUtil.Int32);
 	/// </code>
-	/// for example. A name may appear multiple times in the query string.
+	/// A name may appear multiple times in the query string.
 	/// </para>
 	/// <para>
-	///	Unnamed parameters <c>?</c> are also supported. To bind a value to an unnamed
-	///	parameter use a Set method that accepts an <c>Int32</c> positional argument - numbered from
-	///	zero.
+	/// Unnamed parameters <c>?</c> are also supported. To bind a value to an unnamed
+	/// parameter use a Set method that accepts an <c>Int32</c> positional argument - numbered from
+	/// zero.
 	/// </para>
 	/// <para>
 	/// You may not mix and match unnamed parameters and named parameters in the same query.
 	/// </para>
 	/// <para>
-	/// Queries are executed by calling <c>List()</c> or <c>Iterate()</c>. A query
+	/// Queries are executed by calling <see cref="IQuery.List()" /> or <see cref="IQuery.Enumerable()" />. A query
 	/// may be re-executed by subsequent invocations. Its lifespan is, however, bounded by the lifespan
 	/// of the <c>ISession</c> that created it.
 	/// </para>

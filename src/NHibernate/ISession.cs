@@ -20,16 +20,16 @@ namespace NHibernate
 	/// <para>
 	/// The main function of the <c>ISession</c> is to offer create, find and delete operations
 	/// for instances of mapped entity classes. Instances may exist in one of two states:
-	/// <list>
-	///		<item>transient: not associated with any <c>ISession</c></item>
-	///		<item>persistent: associated with a <c>ISession</c></item>
+	/// <list type="bullet">
+	/// <item>transient: not associated with any <c>ISession</c></item>
+	/// <item>persistent: associated with a <c>ISession</c></item>
 	/// </list>
 	/// </para>
 	/// <para>
-	///	Transient instances may be made persistent by calling <c>Save()</c>, <c>Insert()</c>,
-	///	or <c>Update()</c>. Persistent instances may be made transient by calling <c>Delete()</c>.
-	///	Any instance returned by a <c>List()</c>, <c>Iterate()</c>, <c>Load()</c>, or <c>Create</c>
-	///	method is persistent.
+	/// Transient instances may be made persistent by calling <c>Save()</c>, <c>Insert()</c>,
+	/// or <c>Update()</c>. Persistent instances may be made transient by calling <c>Delete()</c>.
+	/// Any instance returned by a <c>List()</c>, <c>Enumerable()</c>, <c>Load()</c>, or <c>Create()</c>
+	/// method is persistent.
 	/// </para>
 	/// <para>
 	/// <c>Save()</c> results in an SQL <c>INSERT</c>, <c>Delete()</c>
@@ -46,26 +46,28 @@ namespace NHibernate
 	/// </para>
 	/// <para>
 	/// A typical transaction should use the following idiom:
-	///		<code>
-	///			ISession sess = factory.OpenSession();
-	///			ITransaction tx;
-	///			try {
-	///				tx = sess.BeginTransaction();
-	///				//do some work
+	/// <code>
+	///		using (ISession session = factory.OpenSession())
+	///		using (ITransaction tx = session.BeginTransaction())
+	///		{
+	///			try
+	///			{
+	///				// do some work
 	///				...
 	///				tx.Commit();
-	///			} catch (Exception e) {
+	///			}
+	///			catch (Exception e)
+	///			{
 	///				if (tx != null) tx.Rollback();
 	///				throw;
-	///			} finally {
-	///				sess.Close();
 	///			}
-	///		</code>
+	///		}
+	/// </code>
 	/// </para>
 	/// <para>
-	///	If the <c>ISession</c> throws an exception, the transaction must be rolled back and the session
-	///	discarded. The internal state of the <c>ISession</c> might not be consistent with the database
-	///	after the exception occurs.
+	/// If the <c>ISession</c> throws an exception, the transaction must be rolled back and the session
+	/// discarded. The internal state of the <c>ISession</c> might not be consistent with the database
+	/// after the exception occurs.
 	/// </para>
 	/// <seealso cref="ISessionFactory"/>
 	/// </remarks>
@@ -215,9 +217,9 @@ namespace NHibernate
 		/// <returns>the persistent instance</returns>
 		object Load(System.Type theType, object id, LockMode lockMode);
 
-		/// <summary> 
+		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier,
-		/// obtaining the specified lock mode, assuming the instance exists. 
+		/// obtaining the specified lock mode, assuming the instance exists.
 		/// </summary>
 		/// <param name="entityName">The entity-name of a persistent class</param>
 		/// <param name="id">a valid identifier of an existing persistent instance of the class </param>
@@ -263,7 +265,7 @@ namespace NHibernate
 		/// <returns>The persistent instance or proxy</returns>
 		T Load<T>(object id);
 
-		/// <summary> 
+		/// <summary>
 		/// Return the persistent instance of the given <paramref name="entityName"/> with the given identifier,
 		/// assuming that the instance exists.
 		/// </summary>
@@ -278,7 +280,7 @@ namespace NHibernate
 		object Load(string entityName, object id);
 
 		/// <summary>
-		/// Read the persistent state associated with the given identifier into the given transient 
+		/// Read the persistent state associated with the given identifier into the given transient
 		/// instance.
 		/// </summary>
 		/// <param name="obj">An "empty" instance of the persistent class</param>
@@ -286,17 +288,17 @@ namespace NHibernate
 		void Load(object obj, object id);
 
 		/// <summary>
-		/// Persist all reachable transient objects, reusing the current identifier 
+		/// Persist all reachable transient objects, reusing the current identifier
 		/// values. Note that this will not trigger the Interceptor of the Session.
 		/// </summary>
 		/// <param name="obj">a detached instance of a persistent class</param>
 		/// <param name="replicationMode"></param>
 		void Replicate(object obj, ReplicationMode replicationMode);
 
-		/// <summary> 
+		/// <summary>
 		/// Persist the state of the given detached instance, reusing the current
 		/// identifier value.  This operation cascades to associated instances if
-		/// the association is mapped with <tt>cascade="replicate"</tt>. 
+		/// the association is mapped with <tt>cascade="replicate"</tt>.
 		/// </summary>
 		/// <param name="entityName"></param>
 		/// <param name="obj">a detached instance of a persistent class </param>
@@ -331,7 +333,7 @@ namespace NHibernate
 		/// <returns> the generated identifier </returns>
 		/// <remarks>
 		/// This operation cascades to associated instances if the
-		/// association is mapped with <tt>cascade="save-update"</tt>. 
+		/// association is mapped with <tt>cascade="save-update"</tt>.
 		/// </remarks>
 		object Save(string entityName, object obj);
 
@@ -346,7 +348,7 @@ namespace NHibernate
 		/// <param name="obj">A transient instance containing new or updated state</param>
 		void SaveOrUpdate(object obj);
 
-		/// <summary> 
+		/// <summary>
 		/// Either <see cref="Save(String,Object)"/> or <see cref="Update(String,Object)"/>
 		/// the given instance, depending upon resolution of the unsaved-value checks
 		/// (see the manual for discussion of unsaved-value checking).
@@ -357,7 +359,7 @@ namespace NHibernate
 		/// <seealso cref="ISession.Update(String,Object)"/>
 		/// <remarks>
 		/// This operation cascades to associated instances if the association is mapped
-		/// with <tt>cascade="save-update"</tt>. 
+		/// with <tt>cascade="save-update"</tt>.
 		/// </remarks>
 		void SaveOrUpdate(string entityName, object obj);
 
@@ -382,20 +384,20 @@ namespace NHibernate
 		/// <param name="id">Identifier of persistent instance</param>
 		void Update(object obj, object id);
 
-		/// <summary> 
+		/// <summary>
 		/// Update the persistent instance with the identifier of the given detached
-		/// instance. 
+		/// instance.
 		/// </summary>
 		/// <param name="entityName">The Entity name.</param>
 		/// <param name="obj">a detached instance containing updated state </param>
 		/// <remarks>
 		/// If there is a persistent instance with the same identifier,
 		/// an exception is thrown. This operation cascades to associated instances
-		/// if the association is mapped with <tt>cascade="save-update"</tt>. 
+		/// if the association is mapped with <tt>cascade="save-update"</tt>.
 		/// </remarks>
 		void Update(string entityName, object obj);
 
-		/// <summary> 
+		/// <summary>
 		/// Copy the state of the given object onto the persistent object with the same
 		/// identifier. If there is no persistent instance currently associated with
 		/// the session, it will be loaded. Return the persistent instance. If the
@@ -403,7 +405,7 @@ namespace NHibernate
 		/// instance. The given instance does not become associated with the session.
 		/// This operation cascades to associated instances if the association is mapped
 		/// with <tt>cascade="merge"</tt>.<br/>
-		/// The semantics of this method are defined by JSR-220. 
+		/// The semantics of this method are defined by JSR-220.
 		/// </summary>
 		/// <param name="obj">a detached instance with state to be copied </param>
 		/// <returns> an updated persistent instance </returns>
@@ -425,10 +427,10 @@ namespace NHibernate
 		/// <returns></returns>
 		object Merge(string entityName, object obj);
 
-		/// <summary> 
+		/// <summary>
 		/// Make a transient instance persistent. This operation cascades to associated
 		/// instances if the association is mapped with <tt>cascade="persist"</tt>.<br/>
-		/// The semantics of this method are defined by JSR-220. 
+		/// The semantics of this method are defined by JSR-220.
 		/// </summary>
 		/// <param name="obj">a transient instance to be made persistent </param>
 		void Persist(object obj);
@@ -444,9 +446,9 @@ namespace NHibernate
 
 		/// <summary>
 		/// Copy the state of the given object onto the persistent object with the same
-		/// identifier. If there is no persistent instance currently associated with 
-		/// the session, it will be loaded. Return the persistent instance. If the 
-		/// given instance is unsaved or does not exist in the database, save it and 
+		/// identifier. If there is no persistent instance currently associated with
+		/// the session, it will be loaded. Return the persistent instance. If the
+		/// given instance is unsaved or does not exist in the database, save it and
 		/// return it as a newly persistent instance. Otherwise, the given instance
 		/// does not become associated with the session.
 		/// </summary>
@@ -456,8 +458,8 @@ namespace NHibernate
 		object SaveOrUpdateCopy(object obj);
 
 		/// <summary>
-		/// Copy the state of the given object onto the persistent object with the 
-		/// given identifier. If there is no persistent instance currently associated 
+		/// Copy the state of the given object onto the persistent object with the
+		/// given identifier. If there is no persistent instance currently associated
 		/// with the session, it will be loaded. Return the persistent instance. If
 		/// there is no database row with the given identifier, save the given instance
 		/// and return it as a newly persistent instance. Otherwise, the given instance
@@ -484,7 +486,7 @@ namespace NHibernate
 		/// an instance associated with the receiving <see cref="ISession"/> or a transient
 		/// instance with an identifier associated with existing persistent state.
 		/// This operation cascades to associated instances if the association is mapped
-		/// with <tt>cascade="delete"</tt>. 
+		/// with <tt>cascade="delete"</tt>.
 		/// </summary>
 		/// <param name="entityName">The entity name for the instance to be removed. </param>
 		/// <param name="obj">the instance to be removed </param>
@@ -522,8 +524,8 @@ namespace NHibernate
 		/// <param name="lockMode">The lock level</param>
 		void Lock(object obj, LockMode lockMode);
 
-		/// <summary> 
-		/// Obtain the specified lock level upon the given object. 
+		/// <summary>
+		/// Obtain the specified lock level upon the given object.
 		/// </summary>
 		/// <param name="entityName">The Entity name.</param>
 		/// <param name="obj">a persistent or transient instance </param>
@@ -629,8 +631,8 @@ namespace NHibernate
 		/// <returns>An ICriteria object</returns>
 		ICriteria CreateCriteria(System.Type persistentClass, string alias);
 
-		/// <summary> 
-		/// Create a new <c>Criteria</c> instance, for the given entity name. 
+		/// <summary>
+		/// Create a new <c>Criteria</c> instance, for the given entity name.
 		/// </summary>
 		/// <param name="entityName">The name of the entity to Query</param>
 		/// <returns>An ICriteria object</returns>
@@ -638,7 +640,7 @@ namespace NHibernate
 
 		/// <summary>
 		/// Create a new <c>Criteria</c> instance, for the given entity name,
-		/// with the given alias. 
+		/// with the given alias.
 		/// </summary>
 		/// <param name="entityName">The name of the entity to Query</param>
 		/// <param name="alias">The alias of the entity</param>
@@ -720,10 +722,10 @@ namespace NHibernate
 		/// <returns>a persistent instance or null</returns>
 		object Get(System.Type clazz, object id, LockMode lockMode);
 
-		/// <summary> 
+		/// <summary>
 		/// Return the persistent instance of the given named entity with the given identifier,
 		/// or null if there is no such persistent instance. (If the instance, or a proxy for the
-		/// instance, is already associated with the session, return that instance or proxy.) 
+		/// instance, is already associated with the session, return that instance or proxy.)
 		/// </summary>
 		/// <param name="entityName">the entity name </param>
 		/// <param name="id">an identifier </param>
@@ -740,7 +742,7 @@ namespace NHibernate
 		/// </summary>
 		T Get<T>(object id, LockMode lockMode);
 
-		/// <summary> 
+		/// <summary>
 		/// Return the entity name for a persistent entity
 		/// </summary>
 		/// <param name="obj">a persistent entity</param>
@@ -794,7 +796,7 @@ namespace NHibernate
 		/// Implementors of the <seealso cref="ISession"/> interface should return the NHibernate implementation of this method.
 		/// </remarks>
 		/// <returns>
-		/// An NHibernate implementation of the <seealso cref="ISessionImplementor"/> interface 
+		/// An NHibernate implementation of the <seealso cref="ISessionImplementor"/> interface
 		/// </returns>
 		ISessionImplementor GetSessionImplementation();
 

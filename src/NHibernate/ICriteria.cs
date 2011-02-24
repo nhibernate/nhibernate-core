@@ -17,38 +17,39 @@ namespace NHibernate
 	/// where there is a variable number of conditions to be placed upon the result set.
 	/// </para>
 	/// <para>
-	/// The Session is a factory for ICriteria. Expression instances are usually obtained via 
+	/// The Session is a factory for ICriteria. Expression instances are usually obtained via
 	/// the factory methods on <see cref="Expression" />. eg:
 	/// </para>
 	/// <code>
-	/// IList cats = session.CreateCriteria(typeof(Cat)) 
-	///     .Add( Expression.Like("name", "Iz%") ) 
-	///     .Add( Expression.Gt( "weight", minWeight ) ) 
-	///     .AddOrder( Order.Asc("age") ) 
-	///     .List(); 
+	/// IList cats = session.CreateCriteria(typeof(Cat))
+	/// 	.Add(Expression.Like("name", "Iz%"))
+	/// 	.Add(Expression.Gt("weight", minWeight))
+	/// 	.AddOrder(Order.Asc("age"))
+	/// 	.List();
 	/// </code>
-	/// You may navigate associations using <see cref="CreateAlias(string,string)" /> or <see cref="CreateCriteria(string)" />.
+	/// You may navigate associations using <see cref="CreateAlias(string, string)" />
+	/// or <see cref="CreateCriteria(string)" />. eg:
 	/// <code>
-	/// IList cats = session.CreateCriteria(typeof(Cat))
-	///		.CreateCriteria("kittens")
-	///			.Add( Expression.like("name", "Iz%") )
-	///			.List();
-	///	</code>
+	/// 	IList&lt;Cat&gt; cats = session.CreateCriteria&lt;Cat&gt;
+	/// 		.CreateCriteria("kittens")
+	/// 		.Add(Expression.like("name", "Iz%"))
+	/// 		.List&lt;Cat&gt;();
+	/// </code>
 	/// <para>
-	/// You may specify projection and aggregation using <tt>Projection</tt>
-	/// instances obtained via the factory methods on <tt>Projections</tt>.
+	/// You may specify projection and aggregation using <c>Projection</c> instances obtained
+	/// via the factory methods on <c>Projections</c>. eg:
 	/// <code>
-	/// IList cats = session.CreateCriteria(typeof(Cat))
-	/// .setProjection( Projections.ProjectionList()
-	/// .Add( Projections.RowCount() )
-	/// .Add( Projections.Avg("weight") )
-	/// .Add( Projections.Max("weight") )
-	/// .Add( Projections.Min("weight") )
-	/// .Add( Projections.GroupProperty("color") )
-	/// )
-	/// .AddOrder( Order.Asc("color") )
-	/// .List();	
-	///	</code>
+	/// 	IList&lt;Cat&gt; cats = session.CreateCriteria&lt;Cat&gt;
+	/// 		.SetProjection(
+	/// 			Projections.ProjectionList()
+	/// 				.Add(Projections.RowCount())
+	/// 				.Add(Projections.Avg("weight"))
+	/// 				.Add(Projections.Max("weight"))
+	/// 				.Add(Projections.Min("weight"))
+	/// 				.Add(Projections.GroupProperty("color")))
+	/// 		.AddOrder(Order.Asc("color"))
+	/// 		.List&lt;Cat&gt;();
+	/// </code>
 	/// </para>
 	/// </remarks>
 	public interface ICriteria : ICloneable
@@ -82,7 +83,7 @@ namespace NHibernate
 		ICriteria Add(ICriterion expression);
 
 		/// <summary>
-		/// An an Order to the result set 
+		/// An an Order to the result set
 		/// </summary>
 		/// <param name="order"></param>
 		ICriteria AddOrder(Order order);
@@ -148,7 +149,7 @@ namespace NHibernate
 		ICriteria CreateCriteria(string associationPath);
 
 		/// <summary>
-		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity, 
+		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity,
 		/// using the specified join type.
 		/// </summary>
 		/// <param name="associationPath">A dot-seperated property path</param>
@@ -327,7 +328,7 @@ namespace NHibernate
 		/// Gets the root entity type if available, throws otherwise
 		/// </summary>
 		/// <remarks>
-		/// This is an NHibernate specific method, used by several dependent 
+		/// This is an NHibernate specific method, used by several dependent
 		/// frameworks for advance integration with NHibernate.
 		/// </remarks>
 		System.Type GetRootEntityTypeIfAvailable();
