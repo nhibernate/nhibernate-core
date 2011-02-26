@@ -1,6 +1,6 @@
 using System;
 using System.Data;
-
+using System.Linq.Expressions;
 using NHibernate.Engine;
 
 namespace NHibernate
@@ -192,6 +192,20 @@ namespace NHibernate
 		/// <returns> The <see cref="ICriteria"/>. </returns>
 		/// <remarks>Entities returned by the query are detached.</remarks>
 		ICriteria CreateCriteria(string entityName, string alias);
+
+		/// <summary>
+		/// Creates a new <c>IQueryOver&lt;T&gt;</c> for the entity class.
+		/// </summary>
+		/// <typeparam name="T">The entity class</typeparam>
+		/// <returns>An ICriteria&lt;T&gt; object</returns>
+		IQueryOver<T,T> QueryOver<T>() where T : class;
+
+		/// <summary>
+		/// Creates a new <c>IQueryOver&lt;T&gt;</c> for the entity class.
+		/// </summary>
+		/// <typeparam name="T">The entity class</typeparam>
+		/// <returns>An ICriteria&lt;T&gt; object</returns>
+		IQueryOver<T,T> QueryOver<T>(Expression<Func<T>> alias) where T : class;
 
 		/// <summary>
 		/// Create a new instance of <see cref="ISQLQuery"/> for the given SQL query string.

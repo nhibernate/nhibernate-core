@@ -552,6 +552,34 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
+		[Test]
+		public void StatelessSession()
+		{
+			using (var ss = sessions.OpenStatelessSession())
+			{
+				using (var tx = ss.BeginTransaction())
+				{
+					var person = new Person() { Name = "test1" };
+					ss.Insert(person);
+
+					var statelessPerson1 =
+						ss.QueryOver<Person>()
+							.List()
+							[0];
+
+					Assert.That(statelessPerson1.Id, Is.EqualTo(person.Id));
+
+					var statelessPerson2 =
+						QueryOver.Of<Person>()
+							.GetExecutableQueryOver(ss)
+							.List()
+							[0];
+
+					Assert.That(statelessPerson2.Id, Is.EqualTo(person.Id));
+				}
+			}
+		}
+
 	}
 
 }

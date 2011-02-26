@@ -2,10 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-
+using System.Linq.Expressions;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
+using NHibernate.Criterion;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
@@ -912,6 +913,25 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				return new CriteriaImpl(entityName, alias, this);
+			}
+		}
+
+		public IQueryOver<T,T> QueryOver<T>() where T : class
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				return new QueryOver<T,T>(new CriteriaImpl(typeof(T), this));
+			}
+		}
+
+		public IQueryOver<T,T> QueryOver<T>(Expression<Func<T>> alias) where T : class
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				string aliasPath = ExpressionProcessor.FindMemberExpression(alias.Body);
+				return new QueryOver<T,T>(new CriteriaImpl(typeof(T), aliasPath, this));
 			}
 		}
 
