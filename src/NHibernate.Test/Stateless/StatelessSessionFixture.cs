@@ -211,5 +211,20 @@ namespace NHibernate.Test.Stateless
 				criteria.Executing(c => c.List()).NotThrows();
 			}
 		}
+		
+		[Test]
+		public void DisposingClosedStatelessSessionShouldNotCauseSessionException()
+		{
+			try
+			{
+				IStatelessSession ss = sessions.OpenStatelessSession();
+				ss.Close();
+				ss.Dispose();
+			}
+			catch (SessionException)
+			{
+				Assert.Fail();
+			}
+		}
 	}
 }

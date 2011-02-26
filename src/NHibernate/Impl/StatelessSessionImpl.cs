@@ -438,7 +438,7 @@ namespace NHibernate.Impl
 		{
 			get { return false; }
 		}
-		
+
 		public override object GetEntityUsingInterceptor(EntityKey key)
 		{
 			CheckAndUpdateSessionStatus();
@@ -472,7 +472,7 @@ namespace NHibernate.Impl
 			{
 				if (entity.IsProxy())
 				{
-					INHibernateProxy proxy = entity as INHibernateProxy; 
+					INHibernateProxy proxy = entity as INHibernateProxy;
 					entity = proxy.HibernateLazyInitializer.GetImplementation();
 				}
 				return GuessEntityName(entity);
@@ -551,7 +551,7 @@ namespace NHibernate.Impl
 		/// Implementors of the <seealso cref="IStatelessSession"/> interface should return the NHibernate implementation of this method.
 		/// </remarks>
 		/// <returns>
-		/// An NHibernate implementation of the <seealso cref="ISessionImplementor"/> interface 
+		/// An NHibernate implementation of the <seealso cref="ISessionImplementor"/> interface
 		/// </returns>
 		public ISessionImplementor GetSessionImplementation()
 		{
@@ -981,7 +981,7 @@ namespace NHibernate.Impl
 
 				// free managed resources that are being managed by the session if we
 				// know this call came through Dispose()
-				if (isDisposing)
+				if (isDisposing && !IsClosed)
 				{
 					Close();
 				}
