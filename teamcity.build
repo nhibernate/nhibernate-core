@@ -138,6 +138,13 @@
 
 								return result;
 							}
+							
+							public override string ToString()
+							{
+								string prefix = "IGNORED - ";
+								if (Executed) prefix = Success ? "PASS    - " : "FAIL    - ";
+								return prefix + Name;
+							}
 
 							public static IList<Result> ParseFile(string file)
 							{
@@ -189,7 +196,7 @@
 								if (newTests.Count > 0)
 								{
 									foreach(Result result in newTests)
-										report.AppendLine((result.Success ? "PASS - " : "FAIL - ") + result.Name);
+										report.AppendLine(result.ToString());
 								}
 								else
 									report.AppendLine("None");
@@ -206,7 +213,7 @@
 								if (fixedTests.Count > 0)
 								{
 									foreach(Result result in fixedTests)
-										report.AppendLine((result.Success ? "PASS - " : "FAIL - ") + result.Name);
+										report.AppendLine(result.ToString());
 								}
 								else
 									report.AppendLine("None");
@@ -221,7 +228,24 @@
 								if (missingTests.Count > 0)
 								{
 									foreach(Result result in missingTests)
-										report.AppendLine((result.Success ? "PASS - " : "FAIL - ") + result.Name);
+										report.AppendLine(result.ToString());
+								}
+								else
+									report.AppendLine("None");
+									
+								IList<Result> ignoredTests = new List<Result>();
+								foreach(Result afterResult in afterExistingTests)
+									foreach(Result beforeResult in before)
+										if (beforeResult.Name == afterResult.Name)
+											if (beforeResult.Executed && !afterResult.Executed)
+												ignoredTests.Add(afterResult);
+
+								report.AppendLine();
+								report.AppendLine("*** Tests ignored since last recorded results ***");
+								if (ignoredTests.Count > 0)
+								{
+									foreach(Result result in ignoredTests)
+										report.AppendLine(result.ToString());
 								}
 								else
 									report.AppendLine("None");
@@ -230,7 +254,7 @@
 								foreach(Result afterResult in afterExistingTests)
 									foreach(Result beforeResult in before)
 										if (beforeResult.Name == afterResult.Name)
-											if (beforeResult.Success && !afterResult.Success)
+											if (beforeResult.Success && afterResult.Executed && !afterResult.Success)
 												brokenTests.Add(afterResult);
 
 								report.AppendLine();
@@ -238,7 +262,7 @@
 								if (brokenTests.Count > 0)
 								{
 									foreach(Result result in brokenTests)
-										report.AppendLine((result.Success ? "PASS - " : "FAIL - ") + result.Name);
+										report.AppendLine(result.ToString());
 								}
 								else
 									report.AppendLine("None");
