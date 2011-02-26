@@ -14,7 +14,7 @@ namespace NHibernate
 	/// transactional write-behind or automatic dirty checking, nor do
 	/// operations cascade to associated instances. Collections are
 	/// ignored by a stateless session. Operations performed via a
-	/// stateless session bypass Hibernate's event model and
+	/// stateless session bypass NHibernate's event model and
 	/// interceptors. Stateless sessions are vulnerable to data
 	/// aliasing effects, due to the lack of a first-level cache.
 	/// <para/>
@@ -23,102 +23,122 @@ namespace NHibernate
 	/// </remarks>
 	public interface IStatelessSession : IDisposable
 	{
-		/// <summary> Get the current Hibernate transaction.</summary>
-		ITransaction Transaction { get;}
+		/// <summary>
+		/// Returns the current ADO.NET connection associated with this instance.
+		/// </summary>
+		/// <remarks>
+		/// If the session is using aggressive connection release (as in a
+		/// CMT environment), it is the application's responsibility to
+		/// close the connection returned by this call. Otherwise, the
+		/// application should not close the connection.
+		/// </remarks>
+		IDbConnection Connection { get; }
+		
+		/// <summary>Get the current NHibernate transaction.</summary>
+		ITransaction Transaction { get; }
+		
+		/// <summary>
+		/// Is the <c>IStatelessSession</c> still open?
+		/// </summary>
+		bool IsOpen { get; }
+
+		/// <summary>
+		/// Is the <c>IStatelessSession</c> currently connected?
+		/// </summary>
+		bool IsConnected { get; }
 
 		/// <summary>
 		/// Gets the stateless session implementation.
 		/// </summary>
 		/// <remarks>
 		/// This method is provided in order to get the <b>NHibernate</b> implementation of the session from wrapper implementations.
-		/// Implementors of the <seealso cref="IStatelessSession"/> interface should return the NHibernate implementation of this method.
+		/// Implementors of the <seealso cref="IStatelessSession "/> interface should return the NHibernate implementation of this method.
 		/// </remarks>
 		/// <returns>
-		/// An NHibernate implementation of the <seealso cref="ISessionImplementor"/> interface 
+		/// An NHibernate implementation of the <see cref="ISessionImplementor "/> interface
 		/// </returns>
 		ISessionImplementor GetSessionImplementation();
 
-		/// <summary> Close the stateless session and release the ADO.NET connection.</summary>
+		/// <summary>Close the stateless session and release the ADO.NET connection.</summary>
 		void Close();
 
-		/// <summary> Insert a entity.</summary>
-		/// <param name="entity">A new transient instance </param>
-		/// <returns> the identifier of the instance </returns>
+		/// <summary>Insert an entity.</summary>
+		/// <param name="entity">A new transient instance</param>
+		/// <returns>The identifier of the instance</returns>
 		object Insert(object entity);
 
-		/// <summary> Insert a row. </summary>
-		/// <param name="entityName">The entityName for the entity to be inserted </param>
-		/// <param name="entity">a new transient instance </param>
-		/// <returns> the identifier of the instance </returns>
+		/// <summary>Insert a row.</summary>
+		/// <param name="entityName">The name of the entity to be inserted</param>
+		/// <param name="entity">A new transient instance</param>
+		/// <returns>The identifier of the instance</returns>
 		object Insert(string entityName, object entity);
 
-		/// <summary> Update a entity.</summary>
-		/// <param name="entity">a detached entity instance </param>
+		/// <summary>Update an entity.</summary>
+		/// <param name="entity">A detached entity instance</param>
 		void Update(object entity);
 
-		/// <summary>Update a entity.</summary>
-		/// <param name="entityName">The entityName for the entity to be updated </param>
-		/// <param name="entity">a detached entity instance </param>
+		/// <summary>Update an entity.</summary>
+		/// <param name="entityName">The name of the entity to be updated</param>
+		/// <param name="entity">A detached entity instance</param>
 		void Update(string entityName, object entity);
 
-		/// <summary> Delete a entity. </summary>
-		/// <param name="entity">a detached entity instance </param>
+		/// <summary>Delete an entity.</summary>
+		/// <param name="entity">A detached entity instance</param>
 		void Delete(object entity);
 
-		/// <summary> Delete a entity. </summary>
-		/// <param name="entityName">The entityName for the entity to be deleted </param>
-		/// <param name="entity">a detached entity instance </param>
+		/// <summary>Delete an entity.</summary>
+		/// <param name="entityName">The name of the entity to be deleted</param>
+		/// <param name="entity">A detached entity instance</param>
 		void Delete(string entityName, object entity);
 
-		/// <summary> Retrieve a entity. </summary>
-		/// <returns> a detached entity instance </returns>
+		/// <summary>Retrieve a entity.</summary>
+		/// <returns>A detached entity instance</returns>
 		object Get(string entityName, object id);
 
-		/// <summary> Retrieve a entity.
-		///
+		/// <summary>
+		/// Retrieve an entity.
 		/// </summary>
-		/// <returns> a detached entity instance
-		/// </returns>
+		/// <returns>A detached entity instance</returns>
 		T Get<T>(object id);
 
 		/// <summary>
-		/// Retrieve a entity, obtaining the specified lock mode.
+		/// Retrieve an entity, obtaining the specified lock mode.
 		/// </summary>
-		/// <returns> a detached entity instance </returns>
+		/// <returns>A detached entity instance</returns>
 		object Get(string entityName, object id, LockMode lockMode);
 
 		/// <summary>
-		/// Retrieve a entity, obtaining the specified lock mode.
+		/// Retrieve an entity, obtaining the specified lock mode.
 		/// </summary>
-		/// <returns> a detached entity instance </returns>
+		/// <returns>A detached entity instance</returns>
 		T Get<T>(object id, LockMode lockMode);
 
 		/// <summary>
 		/// Refresh the entity instance state from the database.
 		/// </summary>
-		/// <param name="entity">The entity to be refreshed. </param>
+		/// <param name="entity">The entity to be refreshed.</param>
 		void Refresh(object entity);
 
 		/// <summary>
 		/// Refresh the entity instance state from the database.
 		/// </summary>
-		/// <param name="entityName">The entityName for the entity to be refreshed. </param>
+		/// <param name="entityName">The name of the entity to be refreshed.</param>
 		/// <param name="entity">The entity to be refreshed.</param>
 		void Refresh(string entityName, object entity);
 
 		/// <summary>
 		/// Refresh the entity instance state from the database.
 		/// </summary>
-		/// <param name="entity">The entity to be refreshed. </param>
+		/// <param name="entity">The entity to be refreshed.</param>
 		/// <param name="lockMode">The LockMode to be applied.</param>
 		void Refresh(object entity, LockMode lockMode);
 
 		/// <summary>
 		/// Refresh the entity instance state from the database.
 		/// </summary>
-		/// <param name="entityName">The entityName for the entity to be refreshed. </param>
-		/// <param name="entity">The entity to be refreshed. </param>
-		/// <param name="lockMode">The LockMode to be applied. </param>
+		/// <param name="entityName">The name of the entity to be refreshed.</param>
+		/// <param name="entity">The entity to be refreshed.</param>
+		/// <param name="lockMode">The LockMode to be applied.</param>
 		void Refresh(string entityName, object entity, LockMode lockMode);
 
 		/// <summary>
@@ -128,7 +148,7 @@ namespace NHibernate
 		IQuery CreateQuery(string queryString);
 
 		/// <summary>
-		/// Obtain an instance of <see cref="IQuery"/> for a named query string defined in
+		/// Obtain an instance of <see cref="IQuery "/> for a named query string defined in
 		/// the mapping file.
 		/// </summary>
 		/// <remarks>
@@ -138,58 +158,58 @@ namespace NHibernate
 		IQuery GetNamedQuery(string queryName);
 
 		/// <summary>
-		/// Create a new <see cref="ICriteria"/> instance, for the given entity class,
+		/// Create a new <see cref="ICriteria "/> instance, for the given entity class,
 		/// or a superclass of an entity class.
 		/// </summary>
 		/// <typeparam name="T">A class, which is persistent, or has persistent subclasses</typeparam>
-		/// <returns> The <see cref="ICriteria"/>. </returns>
+		/// <returns>The <see cref="ICriteria "/>.</returns>
 		/// <remarks>Entities returned by the query are detached.</remarks>
 		ICriteria CreateCriteria<T>() where T: class;
 
 		/// <summary>
-		/// Create a new <see cref="ICriteria"/> instance, for the given entity class,
+		/// Create a new <see cref="ICriteria "/> instance, for the given entity class,
 		/// or a superclass of an entity class, with the given alias.
 		/// </summary>
 		/// <typeparam name="T">A class, which is persistent, or has persistent subclasses</typeparam>
 		/// <param name="alias">The alias of the entity</param>
-		/// <returns> The <see cref="ICriteria"/>. </returns>
+		/// <returns>The <see cref="ICriteria "/>.</returns>
 		/// <remarks>Entities returned by the query are detached.</remarks>
 		ICriteria CreateCriteria<T>(string alias) where T : class;
 
 		/// <summary>
-		/// Create a new <see cref="ICriteria"/> instance, for the given entity class,
+		/// Create a new <see cref="ICriteria "/> instance, for the given entity class,
 		/// or a superclass of an entity class.
 		/// </summary>
 		/// <param name="entityType">A class, which is persistent, or has persistent subclasses</param>
-		/// <returns> The <see cref="ICriteria"/>. </returns>
+		/// <returns>The <see cref="ICriteria "/>.</returns>
 		/// <remarks>Entities returned by the query are detached.</remarks>
 		ICriteria CreateCriteria(System.Type entityType);
 
 		/// <summary>
-		/// Create a new <see cref="ICriteria"/> instance, for the given entity class,
+		/// Create a new <see cref="ICriteria "/> instance, for the given entity class,
 		/// or a superclass of an entity class, with the given alias.
 		/// </summary>
 		/// <param name="entityType">A class, which is persistent, or has persistent subclasses</param>
 		/// <param name="alias">The alias of the entity</param>
-		/// <returns> The <see cref="ICriteria"/>. </returns>
+		/// <returns>The <see cref="ICriteria "/>.</returns>
 		/// <remarks>Entities returned by the query are detached.</remarks>
 		ICriteria CreateCriteria(System.Type entityType, string alias);
 
 		/// <summary>
-		/// Create a new <see cref="ICriteria"/> instance, for the given entity name.
+		/// Create a new <see cref="ICriteria "/> instance, for the given entity name.
 		/// </summary>
-		/// <param name="entityName">The entity name. </param>
-		/// <returns> The <see cref="ICriteria"/>. </returns>
+		/// <param name="entityName">The entity name.</param>
+		/// <returns>The <see cref="ICriteria "/>.</returns>
 		/// <remarks>Entities returned by the query are detached.</remarks>
 		ICriteria CreateCriteria(string entityName);
 
 		/// <summary>
-		/// Create a new <see cref="ICriteria"/> instance, for the given entity name,
+		/// Create a new <see cref="ICriteria "/> instance, for the given entity name,
 		/// with the given alias.
 		/// </summary>
-		/// <param name="entityName">The entity name. </param>
+		/// <param name="entityName">The entity name.</param>
 		/// <param name="alias">The alias of the entity</param>
-		/// <returns> The <see cref="ICriteria"/>. </returns>
+		/// <returns>The <see cref="ICriteria "/>.</returns>
 		/// <remarks>Entities returned by the query are detached.</remarks>
 		ICriteria CreateCriteria(string entityName, string alias);
 
@@ -208,11 +228,11 @@ namespace NHibernate
 		IQueryOver<T,T> QueryOver<T>(Expression<Func<T>> alias) where T : class;
 
 		/// <summary>
-		/// Create a new instance of <see cref="ISQLQuery"/> for the given SQL query string.
+		/// Create a new instance of <see cref="ISQLQuery "/> for the given SQL query string.
 		/// Entities returned by the query are detached.
 		/// </summary>
-		/// <param name="queryString">a SQL query </param>
-		/// <returns> The <see cref="ISQLQuery"/> </returns>
+		/// <param name="queryString">A SQL query</param>
+		/// <returns>The <see cref="ISQLQuery "/></returns>
 		ISQLQuery CreateSQLQuery(string queryString);
 
 		/// <summary>
@@ -229,21 +249,10 @@ namespace NHibernate
 		ITransaction BeginTransaction(IsolationLevel isolationLevel);
 
 		/// <summary>
-		/// Returns the current ADO.NET connection associated with this instance.
-		/// </summary>
-		/// <remarks>
-		/// If the session is using aggressive connection release (as in a
-		/// CMT environment), it is the application's responsibility to
-		/// close the connection returned by this call. Otherwise, the
-		/// application should not close the connection.
-		/// </remarks>
-		IDbConnection Connection { get; }
-
-		/// <summary>
 		/// Sets the batch size of the session
 		/// </summary>
 		/// <param name="batchSize">The batch size.</param>
-		/// <returns>The same instance of the session for mthods chain.</returns>
+		/// <returns>The same instance of the session for methods chain.</returns>
 		IStatelessSession SetBatchSize(int batchSize);
 	}
 }
