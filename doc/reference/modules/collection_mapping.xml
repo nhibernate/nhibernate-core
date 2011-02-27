@@ -961,7 +961,7 @@ session.Update(category);                 // The relationship will be saved]]></
         <programlisting><![CDATA[<map name="Contracts" lazy="true">
     <key column="employer_id"/>
     <index-many-to-many column="employee_id" class="Employee"/>
-    <one-to-many column="contract_id" class="Contract"/>
+    <one-to-many class="Contract"/>
 </map>]]></programlisting>
             
             <programlisting><![CDATA[<map name="Connections" lazy="true">
