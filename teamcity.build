@@ -63,6 +63,34 @@
 		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/firebird/NHibernate.Test.last-results.xml" />
 	</target>
 
+	<target name="setup-teamcity-sqlite32">
+		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.SQLite20Driver" />
+		<property name="nhibernate.dialect"												value="NHibernate.Dialect.SQLiteDialect" />
+		<property name="nhibernate.connection.connection_string"	value="Data Source=NHibernate.db" />
+		<copy todir="${bin.dir}">
+			<fileset basedir="${root.dir}/lib/teamcity/sqlite/x86">
+				<include name="*.dll"/>
+			</fileset>
+		</copy>
+		<property name="NHibernate.Test.IgnoreFail" value="true" />
+		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlite/NHibernate.Test.last-results.xml" />
+	</target>
+
+	<target name="setup-teamcity-sqlite64">
+		<property name="nunit-console" value="${tools.dir}/NUnit/nunit-console.exe" />
+		<property name="nunit.found" value="true" />
+		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.SQLite20Driver" />
+		<property name="nhibernate.dialect"												value="NHibernate.Dialect.SQLiteDialect" />
+		<property name="nhibernate.connection.connection_string"	value="Data Source=NHibernate.db" />
+		<copy todir="${bin.dir}">
+			<fileset basedir="${root.dir}/lib/teamcity/sqlite/x64">
+				<include name="*.dll"/>
+			</fileset>
+		</copy>
+		<property name="NHibernate.Test.IgnoreFail" value="true" />
+		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlite/NHibernate.Test.last-results.xml" />
+	</target>
+
 	<script language="C#" prefix="testResult">
 		<references>
 			<include name="System.dll" />

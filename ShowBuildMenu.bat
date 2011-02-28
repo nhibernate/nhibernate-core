@@ -179,26 +179,32 @@ echo --- TeamCity (CI) build options
 echo A.  NHibernate Trunk (default SQL Server)
 echo B.  NHibernate Trunk - Firebird (32-bit)
 echo C.  NHibernate Trunk - Firebird (64-bit)
+echo D.  NHibernate Trunk - SQLite (32-bit)
+echo E.  NHibernate Trunk - SQLite (64-bit)
 echo.
 
 if exist %SYSTEMROOT%\System32\choice.exe ( goto teamcity-menu-prompt-choice )
 goto teamcity-menu-prompt-set
 
 :teamcity-menu-prompt-choice
-choice /C:abc
+choice /C:abcde
 
 if errorlevel 255 goto end
+if errorlevel 5 goto teamcity-sqlite64
+if errorlevel 4 goto teamcity-sqlite32
 if errorlevel 3 goto teamcity-firebird64
 if errorlevel 2 goto teamcity-firebird32
 if errorlevel 1 goto teamcity-trunk
 if errorlevel 0 goto end
 
 :teamcity-menu-prompt-set
-set /p OPT=[A, B, C]? 
+set /p OPT=[A, B, C, D, E]? 
 
 if /I "%OPT%"=="A" goto teamcity-trunk
 if /I "%OPT%"=="B" goto teamcity-firebird32
 if /I "%OPT%"=="C" goto teamcity-firebird64
+if /I "%OPT%"=="D" goto teamcity-sqlite32
+if /I "%OPT%"=="E" goto teamcity-sqlite64
 goto teamcity-menu-prompt-set
 
 :teamcity-trunk
@@ -211,6 +217,14 @@ goto end
 
 :teamcity-firebird64
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=firebird64
+goto end
+
+:teamcity-sqlite32
+%NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=sqlite32
+goto end
+
+:teamcity-sqlite64
+%NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=sqlite64
 goto end
 
 :end

@@ -16,6 +16,7 @@ namespace NHibernate.TestDatabaseSetup
 			SetupMethods = new Dictionary<string, Action<Cfg.Configuration>>();
 			SetupMethods.Add("NHibernate.Driver.SqlClientDriver", SetupSqlServer);
 			SetupMethods.Add("NHibernate.Driver.FirebirdClientDriver", SetupFirebird);
+			SetupMethods.Add("NHibernate.Driver.SQLite20Driver", SetupNoop);
 		}
 
 		[Test]
@@ -62,7 +63,11 @@ namespace NHibernate.TestDatabaseSetup
 		{
 			FbConnection.CreateDatabase("Database=NHibernate.fdb;ServerType=1");
 		}
-    }
+
+		private static void SetupNoop(Cfg.Configuration cfg)
+		{
+		}
+	}
 }
 
 
