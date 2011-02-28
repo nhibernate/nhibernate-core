@@ -705,7 +705,10 @@ namespace NHibernate.Test.NHSpecificTest
 			originalCount = basicClass.StringBag.Count;
 
 			ISession s = OpenSession();
-			ITransaction t = s.BeginTransaction();
+			// There used to be a transaction started on s and commited before the Close().
+			// This transaction was removed since it was causing a deadlock with SQLite.
+			// This is a theoretical improvement as well, since the transaction could
+			// be in a mode that would prevent non-repeatable reads, hence breaking the test.
 			
 			ISession s2 = OpenSession();
 			ITransaction t2 = s2.BeginTransaction();
@@ -721,7 +724,6 @@ namespace NHibernate.Test.NHSpecificTest
 			Assert.AreEqual(originalCount + 1, bc.StringBag.Count, "was refreshed correctly");
 
 			s.Delete(bc);
-			t.Commit();
 			s.Close();
 		}
 
