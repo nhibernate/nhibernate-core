@@ -96,7 +96,7 @@
 		<property name="nunit.found" value="true" />
 		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.NpgsqlDriver" />
 		<property name="nhibernate.dialect"												value="NHibernate.Dialect.PostgreSQL82Dialect" />
-		<property name="nhibernate.connection.connection_string"	value="Host=localhost;Port=5433;Database=nhibernate;Username=nhibernate;Password=nhdbpass" />
+		<property name="nhibernate.connection.connection_string"	value="Host=localhost;Port=5432;Database=nhibernate;Username=nhibernate;Password=nhibernate" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/postgresql">
 				<include name="*.dll"/>

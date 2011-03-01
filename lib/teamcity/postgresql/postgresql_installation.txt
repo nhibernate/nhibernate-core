@@ -1,0 +1,16 @@
+
+Installation steps for PostgreSQL for NH TeamCity:
+
+1.  Download PostgreSQL (postgresql-9.0.3-1-windows_x64.exe):  http://www.enterprisedb.com/products-services-training/pgdownload#windows;
+2.  Run the installer ... when prompted to make a password for the service account, make it 'password';
+3.  Leave the port number at the default (5432), and leave the default locale;
+4.  The setup should install PostgreSQL on the machine;
+5.  Untick the option to install stack-builder at the end (it's not required).
+
+Creating the NH user:
+
+a.  Open pgAdmin III (start -> programs -> PostgreSQL 9.0 -> pgAdmin III);
+b.  right-click the PostgreSQL 9.0 database, select connect, and enter the password from step 2 above;
+c.  right-clilck the Login Roles, and select "New Login Role ...";
+d.  create a login with "Role name=nhibernate", "Password=nhibernate", and select Superuser on the Role privileges tab.
+

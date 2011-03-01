@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
+using FirebirdSql.Data.FirebirdClient;
 using Npgsql;
 using NUnit.Framework;
-using FirebirdSql.Data.FirebirdClient;
 
 namespace NHibernate.TestDatabaseSetup
 {
@@ -51,8 +52,9 @@ namespace NHibernate.TestDatabaseSetup
                     {
                         cmd.ExecuteNonQuery();
                     }
-                    catch(Exception)
+                    catch(Exception e)
                     {
+						Console.WriteLine(e);
                     }
 
                     cmd.CommandText = "create database nhibernate";
@@ -63,6 +65,16 @@ namespace NHibernate.TestDatabaseSetup
 
 		private static void SetupFirebird(Cfg.Configuration cfg)
 		{
+			try
+			{
+				if (File.Exists("NHibernate.fdb"))
+					File.Delete("NHibernate.fdb");
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+			}
+
 			FbConnection.CreateDatabase("Database=NHibernate.fdb;ServerType=1");
 		}
 
@@ -82,8 +94,9 @@ namespace NHibernate.TestDatabaseSetup
 					{
 						cmd.ExecuteNonQuery();
 					}
-					catch (Exception)
+					catch (Exception e)
 					{
+						Console.WriteLine(e);
 					}
 
 					cmd.CommandText = "create database nhibernate";
