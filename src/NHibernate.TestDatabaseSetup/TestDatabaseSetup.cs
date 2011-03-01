@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using Npgsql;
 using NUnit.Framework;
 using FirebirdSql.Data.FirebirdClient;
 
@@ -17,6 +18,7 @@ namespace NHibernate.TestDatabaseSetup
 			SetupMethods.Add("NHibernate.Driver.SqlClientDriver", SetupSqlServer);
 			SetupMethods.Add("NHibernate.Driver.FirebirdClientDriver", SetupFirebird);
 			SetupMethods.Add("NHibernate.Driver.SQLite20Driver", SetupNoop);
+			SetupMethods.Add("NHibernate.Driver.NpgsqlDriver", SetupNpgsql);
 		}
 
 		[Test]
@@ -62,6 +64,32 @@ namespace NHibernate.TestDatabaseSetup
 		private static void SetupFirebird(Cfg.Configuration cfg)
 		{
 			FbConnection.CreateDatabase("Database=NHibernate.fdb;ServerType=1");
+		}
+
+		private static void SetupNpgsql(Cfg.Configuration cfg)
+		{
+			var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
+
+			using (var conn = new NpgsqlConnection(connStr.Replace("Database=nhibernate", "Database=postgres")))
+			{
+				conn.Open();
+
+				using (var cmd = conn.CreateCommand())
+				{
+					cmd.CommandText = "drop database nhibernate";
+
+					try
+					{
+						cmd.ExecuteNonQuery();
+					}
+					catch (Exception)
+					{
+					}
+
+					cmd.CommandText = "create database nhibernate";
+					cmd.ExecuteNonQuery();
+				}
+			}
 		}
 
 		private static void SetupNoop(Cfg.Configuration cfg)

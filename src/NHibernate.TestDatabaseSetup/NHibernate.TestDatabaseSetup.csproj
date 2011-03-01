@@ -57,6 +57,9 @@
     <Reference Include="FirebirdSql.Data.FirebirdClient">
       <HintPath>..\..\lib\teamcity\firebird\FirebirdSql.Data.FirebirdClient.dll</HintPath>
     </Reference>
+    <Reference Include="Npgsql">
+      <HintPath>..\..\lib\teamcity\postgresql\Npgsql.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.5.0.9122, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\3.5\nunit.framework.dll</HintPath>
