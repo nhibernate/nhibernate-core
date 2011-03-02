@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Linq;
 using NHibernate.Hql.Ast;
 using Remotion.Data.Linq.Clauses.ResultOperators;
 
@@ -18,7 +19,15 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
             if (source is HqlParameter)
             {
                 // This is an "in" style statement
-                tree.SetRoot(tree.TreeBuilder.In(itemExpression, source));
+                if (IsEmptyList((HqlParameter)source, queryModelVisitor.VisitorParameters))
+                {
+                    // if the list is empty the expression will always be false, so generate "1 = 0"
+                    tree.SetRoot(tree.TreeBuilder.Equality(tree.TreeBuilder.Constant(1), tree.TreeBuilder.Constant(0)));
+                }
+                else
+                {
+                    tree.SetRoot(tree.TreeBuilder.In(itemExpression, source));
+                }
             }
             else
             {
@@ -38,6 +47,13 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
         private static HqlAlias GetFromAlias(HqlTreeNode node)
         {
             return node.NodesPreOrder.Single(n => n is HqlRange).Children.Single(n => n is HqlAlias) as HqlAlias;
+        }
+
+        private static bool IsEmptyList(HqlParameter source, VisitorParameters parameters)
+        {
+            var parameterName = source.NodesPreOrder.Single(n => n is HqlIdent).AstNode.Text;
+            var parameterValue = parameters.ConstantToParameterMap.Single(p => p.Value.Name == parameterName).Key.Value;
+            return ((ICollection)parameterValue).Count == 0;
         }
     }
 }

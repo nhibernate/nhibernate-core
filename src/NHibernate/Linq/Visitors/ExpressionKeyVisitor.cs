@@ -1,5 +1,5 @@
+using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -82,6 +82,8 @@ namespace NHibernate.Linq.Visitors
 				// Nulls generate different query plans.  X = variable generates a different query depending on if variable is null or not.
 				if (param.Value == null)
 					_string.Append("NULL");
+				if (param.Value is ICollection && ((ICollection)param.Value).Count == 0)
+					_string.Append("EmptyList");
 				else
 					_string.Append(param.Name);
 			}

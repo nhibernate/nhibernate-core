@@ -327,6 +327,18 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void UsersWithEmptyList_NH2400()
+		{
+			var names = new List<string>();
+
+			var query = (from user in db.Users
+						where names.Contains(user.Name)
+						select user).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(0));
+		}
+
+		[Test]
 		public void WhenTheSourceOfConstantIsICollectionThenNoThrows()
 		{
 			ICollection<string> names = new List<string> {"ayende", "rahien"};
