@@ -17,6 +17,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		public Person()
 		{
 			Children = new List<Child>();
+			Blood = 'O';
 		}
 
 		public static string StaticName;
