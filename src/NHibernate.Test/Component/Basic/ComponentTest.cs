@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
@@ -18,12 +21,30 @@ namespace NHibernate.Test.Component.Basic
 
 		protected override System.Collections.IList Mappings
 		{
-			get { return new string[] { "Component.Basic.User.hbm.xml" }; }
+			get { return new string[] { }; }
 		}
 		
 		protected override void Configure(Configuration configuration)
 		{
-			configuration.SetProperty(NHibernate.Cfg.Environment.GenerateStatistics, "true");
+			if (Dialect.Functions.ContainsKey("year"))
+			{
+				using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("NHibernate.Test.Component.Basic.User.hbm.xml"))
+				{
+					using (StreamReader reader = new StreamReader(stream))
+					{
+						string mapping = reader.ReadToEnd();
+
+						IList args = new ArrayList();
+						args.Add("dob");
+						// We don't have a session factory yet... is there some way to get one sooner?
+						string replacement = Dialect.Functions["year"].Render(args, null).ToString();
+						mapping = mapping.Replace("year(dob)", replacement);
+
+						configuration.AddXml(mapping);
+						configuration.SetProperty(Cfg.Environment.GenerateStatistics, "true");
+					}
+				}
+			}
 		}
 	
 		protected override void OnTearDown()
