@@ -37,7 +37,7 @@ namespace NHibernate.Test.Component.Basic
 						IList args = new ArrayList();
 						args.Add("dob");
 						// We don't have a session factory yet... is there some way to get one sooner?
-						string replacement = Dialect.Functions["year"].Render(args, null).ToString();
+						string replacement = Dialect.Functions["year"].Render(args, null).ToString().Replace("\"", "&quot;");
 						mapping = mapping.Replace("year(dob)", replacement);
 
 						configuration.AddXml(mapping);
