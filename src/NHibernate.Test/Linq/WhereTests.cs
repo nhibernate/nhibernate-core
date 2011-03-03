@@ -339,6 +339,32 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void UsersWithEmptyEnumerable()
+		{
+			var allNames = new List<string> { "ayende", "rahien" };
+			var names = allNames.Where(n => n == "does not exist");
+
+			var query = (from user in db.Users
+						where names.Contains(user.Name)
+						select user).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(0));
+		}
+
+		[Test]
+		[Ignore("inline empty list expression does not evaluate correctly")]
+		public void UsersWithEmptyInlineEnumerable()
+		{
+			var allNames = new List<string> { "ayende", "rahien" };
+
+			var query = (from user in db.Users
+						where allNames.Where(n => n == "does not exist").Contains(user.Name)
+						select user).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(0));
+		}
+
+		[Test]
 		public void WhenTheSourceOfConstantIsICollectionThenNoThrows()
 		{
 			ICollection<string> names = new List<string> {"ayende", "rahien"};

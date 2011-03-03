@@ -82,7 +82,7 @@ namespace NHibernate.Linq.Visitors
 				// Nulls generate different query plans.  X = variable generates a different query depending on if variable is null or not.
 				if (param.Value == null)
 					_string.Append("NULL");
-				if (param.Value is ICollection && ((ICollection)param.Value).Count == 0)
+				if (param.Value is IEnumerable && !((IEnumerable)param.Value).Cast<object>().Any())
 					_string.Append("EmptyList");
 				else
 					_string.Append(param.Name);

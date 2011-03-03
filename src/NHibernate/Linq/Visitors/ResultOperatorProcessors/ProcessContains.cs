@@ -53,7 +53,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
         {
             var parameterName = source.NodesPreOrder.Single(n => n is HqlIdent).AstNode.Text;
             var parameterValue = parameters.ConstantToParameterMap.Single(p => p.Value.Name == parameterName).Key.Value;
-            return ((ICollection)parameterValue).Count == 0;
+            return !((IEnumerable)parameterValue).Cast<object>().Any();
         }
     }
 }
