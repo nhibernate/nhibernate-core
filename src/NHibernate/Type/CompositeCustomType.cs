@@ -51,7 +51,7 @@ namespace NHibernate.Type
 			TypeFactory.InjectParameters(userType, parameters);
 			if (!userType.ReturnedClass.IsSerializable)
 			{
-				LoggerProvider.LoggerFor(typeof(CustomType)).Warn("custom type is not Serializable: " + userTypeClass);
+				LoggerProvider.LoggerFor(typeof(CustomType)).WarnFormat("the custom composite class '{0}' handled by '{1}' is not Serializable: ", userType.ReturnedClass, userTypeClass);
 			}
 		}
 
