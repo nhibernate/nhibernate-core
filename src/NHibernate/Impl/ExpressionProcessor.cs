@@ -312,6 +312,9 @@ namespace NHibernate.Impl
 
 		private static ICriterion ProcessSimpleExpression(BinaryExpression be)
 		{
+			if (be.Left.NodeType == ExpressionType.Call && ((MethodCallExpression)be.Left).Method.Name == "CompareString")
+				return ProcessVisualBasicStringComparison(be);
+
 			string property = FindMemberExpression(be.Left);
 			System.Type propertyType = FindMemberType(be.Left);
 
@@ -327,6 +330,22 @@ namespace NHibernate.Impl
 			Func<string, object, ICriterion> simpleExpressionCreator = _simpleExpressionCreators[be.NodeType];
 			ICriterion criterion = simpleExpressionCreator(property, value);
 			return criterion;
+		}
+
+		private static ICriterion ProcessVisualBasicStringComparison(BinaryExpression be)
+		{
+			var methodCall = (MethodCallExpression)be.Left;
+			switch(be.NodeType)
+			{
+				case ExpressionType.Equal:
+					return ProcessSimpleExpression(Expression.Equal(methodCall.Arguments[0], methodCall.Arguments[1]));
+
+				case ExpressionType.NotEqual:
+					return ProcessSimpleExpression(Expression.NotEqual(methodCall.Arguments[0], methodCall.Arguments[1]));
+
+				default:
+					throw new Exception("Unhandled expression: " + be);
+			}
 		}
 
 		private static ICriterion ProcessSimpleNullExpression(string property, ExpressionType expressionType)

@@ -44,6 +44,28 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertCriteriaAreEqual(expected, actual);
 		}
 
+		public static int CompareString(string left, string right, bool textCompare)
+		{
+			// could consider calling Microsoft.VisualBasic.CompilerServices.Operators.CompareString
+			throw new Exception("This is just here to allow us to simulate the VB.Net LINQ expression tree");
+		}
+
+		[Test]
+		public void StringEqualityInVisualBasic()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.Add(Restrictions.Eq("Name", "test name"))
+					.Add(Restrictions.Not(Restrictions.Eq("Name", "test name")));
+
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>()
+					.And(p => CompareString(p.Name, "test name", true) == 0)
+					.And(p => CompareString(p.Name, "test name", true) != 0);
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
 		[Test]
 		public void PropertyCriterion_NoAlias()
 		{
