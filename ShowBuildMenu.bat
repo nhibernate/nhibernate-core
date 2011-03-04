@@ -97,7 +97,7 @@ echo.
 goto end
 
 :build-release
-%NANT% -D:project.config=release clean build
+%NANT% -D:project.config=release clean release
 echo.
 echo Assuming the build succeeded, your results will be in the build folder.
 echo.
