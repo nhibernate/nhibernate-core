@@ -4,10 +4,10 @@
                    default-lazy="false">
 
    <class name="DocumentType" table="documents_documenttype" batch-size="10">
-      <id name="oid" type="System.Guid" unsaved-value="00000000-0000-0000-0000-000000000000" access="field.camelcase">
+      <id name="oid" type="System.Guid" unsaved-value="00000000-0000-0000-0000-000000000000" access="field">
          <generator class="guid.comb" />
       </id>
-      <property name="SystemAction" access="field.camelcase"/>
+      <property name="systemAction" access="field"/>
    </class>
 
 </hibernate-mapping>

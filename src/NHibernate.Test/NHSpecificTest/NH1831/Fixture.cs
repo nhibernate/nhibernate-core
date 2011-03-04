@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1831
       {
          using (var s = OpenSession())
          {
-            const string hql = @"SELECT dt FROM DocumentType dt WHERE dt.SystemAction & :sysAct = :sysAct ";
+            const string hql = @"SELECT dt FROM DocumentType dt WHERE dt.systemAction & :sysAct = :sysAct ";
 
             s.CreateQuery(hql).SetParameter("sysAct", SystemAction.Denunciation).List();
          }

@@ -42,6 +42,11 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 		}
 
+		private int PrivateField
+		{
+			get { return _privateField; }
+		}
+
 		public int Id
 		{
 			get { return _id; }

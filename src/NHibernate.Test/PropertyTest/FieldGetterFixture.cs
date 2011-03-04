@@ -104,7 +104,30 @@ namespace NHibernate.Test.PropertyTest
 			private long _propertyfour = Int64.MaxValue;
 			private decimal m_propertyFive = 2.5m;
 #pragma warning restore 414
+			public DateTime PropertyOne
+			{
+				get { return propertyOne; }
+			}
 
+			public bool PropertyTwo
+			{
+				get { return _propertyTwo; }
+			}
+
+			public TimeSpan PropertyThree
+			{
+				get { return m_PropertyThree; }
+			}
+
+			public long PropertyFour
+			{
+				get { return _propertyfour; }
+			}
+
+			public decimal PropertyFive
+			{
+				get { return m_propertyFive; }
+			}
 		}
 	}
 }

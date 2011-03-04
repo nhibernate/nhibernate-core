@@ -4,7 +4,7 @@
 				   namespace="NHibernate.Test.NHSpecificTest.NH1507">
 	
   <class name="Employee">
-    <id column="EmployeeId" name="Id" access="field.camelcase-underscore">
+    <id column="EmployeeId" name="_id" access="field">
       <generator class="identity" />
     </id>
     <property name="LastName" length="20" not-null="true" />
@@ -31,7 +31,7 @@
   </class>
 
   <class name="Order" table="Orders">
-    <id column="OrderID" name="Id" access="field.camelcase-underscore">
+    <id column="OrderID" name="_id" access="field">
       <generator class="identity" />
     </id>
     <many-to-one name="Employee" lazy="false" column="EmployeeId"/>

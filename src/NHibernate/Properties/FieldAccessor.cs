@@ -3,6 +3,7 @@ using System.Collections;
 using System.Reflection;
 using System.Reflection.Emit;
 using NHibernate.Engine;
+using NHibernate.Util;
 
 namespace NHibernate.Properties
 {
@@ -63,6 +64,11 @@ namespace NHibernate.Properties
 		public IGetter GetGetter(System.Type theClass, string propertyName)
 		{
 			string fieldName = GetFieldName(propertyName);
+			if (!Equals(fieldName, propertyName) && !theClass.HasProperty(propertyName))
+			{
+				// it is a field access that imply the existence of the property
+				throw new PropertyNotFoundException(propertyName, fieldName, theClass);
+			}
 			return new FieldGetter(GetField(theClass, fieldName), theClass, fieldName);
 		}
 

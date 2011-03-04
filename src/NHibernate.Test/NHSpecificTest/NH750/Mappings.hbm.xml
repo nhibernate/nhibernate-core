@@ -5,7 +5,7 @@
 				   default-access="field.camelcase-underscore"
 				   default-lazy="false">
 	<class name="Device">
-		<id name="id" type="Int32">
+		<id name="_id" type="Int32" access="field">
 			<generator class="native"/>
 		</id>
 		<property name="Manifacturer"/>
@@ -16,7 +16,7 @@
 	</class>
 
 	<class name="Drive">
-		<id name="id" type="Int32">
+		<id name="_id" type="Int32" access="field">
 			<generator class="native"/>
 		</id>
 		<property name="ClassFullName"/>

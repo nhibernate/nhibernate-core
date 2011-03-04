@@ -1,4 +1,4 @@
-** Known BREAKING CHANGES from NH3.0.0.GA to NH3.0.1.GA
+** Known BREAKING CHANGES from NH3.0.0.GA to NH3.1.0.GA
 
 	##### Design time #####
 		* [NH-2481] - Deprecated: ISession.SaveOrUpdateCopy methods - use ISession.Merge methods instead
@@ -8,6 +8,7 @@
 
 	##### Possible Breaking Changes #####
 		* [NH-2461] - Signature change for IQuery.SetParameterList
+		* [NH-2556] - NH is too tolerante to incorrect naming when access="field.XXX" is used
 
 ** Known BREAKING CHANGES from NH2.1.1.GA to NH3.0.0.GA
 

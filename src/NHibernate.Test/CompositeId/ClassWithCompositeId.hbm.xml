@@ -8,7 +8,7 @@
 	>
 		<composite-id name="Id" class="NHibernate.Test.CompositeId.Id, NHibernate.Test" access="nosetter.camelcase-underscore">
 			<key-property name="KeyString" column="string_" type="String(20)" length="20" />
-			<key-property name="KeyShort" column="short_" access="field.camelcase-underscore"/>
+			<key-property name="_keyShort" column="short_" access="field"/>
 			<key-property name="KeyDateTime" column="date_" type="DateTime" access="nosetter.camelcase-underscore"/>
 		</composite-id>
 		

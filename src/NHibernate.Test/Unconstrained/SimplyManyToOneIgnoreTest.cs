@@ -26,7 +26,7 @@ namespace NHibernate.Test.Unconstrained
 			{
 				SimplyB sb = new SimplyB(100);
 				SimplyA sa = new SimplyA("ralph");
-				sa.B = sb;
+				sa.SimplyB = sb;
 				s.Save(sb);
 				s.Save(sa);
 				t.Commit();
@@ -47,7 +47,7 @@ namespace NHibernate.Test.Unconstrained
 				using (ITransaction t = s.BeginTransaction())
 				{
 					SimplyA sa = (SimplyA) s.Get(typeof(SimplyA), "ralph");
-					Assert.IsNull(sa.B);
+					Assert.IsNull(sa.SimplyB);
 					s.Delete(sa);
 					t.Commit();
 				}

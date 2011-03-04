@@ -659,5 +659,35 @@ namespace NHibernate.Util
 				}
 				return null;
 			}
+
+			/// <summary>
+			/// Try to find a property, that can be managed by NHibernate, from a given type.
+			/// </summary>
+			/// <param name="source">The given <see cref="System.Type"/>. </param>
+			/// <param name="propertyName">The name of the property to find.</param>
+			/// <returns>true if the property exists; otherwise false.</returns>
+			/// <remarks>
+			/// When the user defines a field.xxxxx access strategy should be because both the property and the field exists.
+			/// NHibernate can work even when the property does not exist but in this case the user should use the appropiate accessor.
+			/// </remarks>
+			public static bool HasProperty(this System.Type source, string propertyName)
+			{
+				if (source == typeof (object) || source == null)
+				{
+					return false;
+				}
+				if (string.IsNullOrEmpty(propertyName))
+				{
+					return false;
+				}
+
+				PropertyInfo property = source.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+
+				if (property != null)
+				{
+					return true;
+				}
+				return HasProperty(source.BaseType, propertyName) || source.GetInterfaces().Any(@interface => HasProperty(@interface, propertyName));
+			}
     }
 }

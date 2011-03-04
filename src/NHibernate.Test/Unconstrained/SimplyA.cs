@@ -23,7 +23,7 @@ namespace NHibernate.Test.Unconstrained
 			set { _name = value; }
 		}
 
-		public SimplyB B
+		public SimplyB SimplyB
 		{
 			get { return _simplyB; }
 			set { _simplyB = value; }

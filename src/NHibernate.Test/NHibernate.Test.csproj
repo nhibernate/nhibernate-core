@@ -501,6 +501,8 @@
     <Compile Include="Linq\ByMethod\SumTests.cs" />
     <Compile Include="Logging\Log4NetLoggerTest.cs" />
     <Compile Include="Logging\LoggerProviderTest.cs" />
+    <Compile Include="NHSpecificTest\AccessAndCorrectPropertyName\Fixture.cs" />
+    <Compile Include="NHSpecificTest\AccessAndCorrectPropertyName\Model.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
     <Compile Include="NHSpecificTest\EntityNameAndCompositeId\Fixture.cs" />
@@ -681,6 +683,7 @@
     <Compile Include="UtilityTest\EnumerableExtensionsTests\AnyExtensionTests.cs" />
     <Compile Include="UtilityTest\EnumerableExtensionsTests\FirstExtensionTests.cs" />
     <Compile Include="UtilityTest\EnumerableExtensionsTests\FirstOrNullExtensionTests.cs" />
+    <Compile Include="UtilityTest\ReflectHelperGetProperty.cs" />
     <Compile Include="UtilityTest\ReflectionHelperIsMethodOfTests.cs" />
     <Compile Include="UtilityTest\ReflectionHelperTest.cs" />
     <Compile Include="Linq\RegresstionTests.cs" />
@@ -2470,6 +2473,8 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\AccessAndCorrectPropertyName\DogMapping.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\AccessAndCorrectPropertyName\PersonMapping.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2507\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\EntityNameAndInheritance\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2467\Mappings.hbm.xml" />
