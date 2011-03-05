@@ -1,3 +1,6 @@
+Build 3.1.0.GA (rev5425)
+=============================
+
 ** Known BREAKING CHANGES from NH3.0.0.GA to NH3.1.0.GA
 
 	##### Design time #####
@@ -10,6 +13,87 @@
 		* [NH-2461] - Signature change for IQuery.SetParameterList
 		* [NH-2556] - NH is too tolerante to incorrect naming when access="field.XXX" is used
 
+** Sub-task
+    * [NH-2525] - Wrong parameter used for limit claues in MySQL
+
+** Bug
+    * [NH-1985] - NHibernate is allowing deletion of immutable objects
+    * [NH-2037] - Reattaching an entity with many-to-one inside a natural-id
+    * [NH-2130] - Reporting query containing sum crashes when there are no rows
+    * [NH-2179] - String constants are not useable in Linq query projection
+    * [NH-2203] - problem with orderby in linq query
+    * [NH-2280] - LINQ Query on Composite key creates invalid SQL
+    * [NH-2311] - .Any() extension method does not work in most cases
+    * [NH-2362] - GroupBy with multiple fields fails with exception
+    * [NH-2375] - OfType with a where clause fails with a NotSupportedException
+    * [NH-2381] - Fetch clause fails with a NotSupportedException
+    * [NH-2386] - Unecessary update / invalid SQL generated when collection updated with a versioned (generated) parent entity
+    * [NH-2400] - Linq query fail when using contains from an empty Collection
+    * [NH-2407] - Linq provider doesn't support enums in VB.NET
+    * [NH-2412] - OrderBy generates an inner join instead a left join
+    * [NH-2433] - When using extensions methods with generic parameters the provider uses the first use even if the generic parameter is different.
+    * [NH-2441] - Logical bool values are not mapped properly (query execution returns incorrect result with SQLite)
+    * [NH-2443] - Error compiling NH with ShowBuildMenu.bat -> Cannot run Tests
+    * [NH-2450] - Multi Query in MySQL no longer working in 3.0 (was in 2.1)
+    * [NH-2459] - LINQ provider query plan cache issue with use of type check expression .Where(o=>o is SomeType)
+    * [NH-2460] - version generator is not working with DateTime2 data type.
+    * [NH-2464] - NHibernate DLLs not built with optimization in 'release' mode.
+    * [NH-2467] - Futures in 3.0.0.GA go bananas when using PostgreSQL
+    * [NH-2470] - PersistentIdentifierBag not creating snapshot correctly for new collections.
+    * [NH-2482] - SerializationException when writing object to viewstate
+    * [NH-2484] - Regression - Binary Blob SerializationException - MSSQL 2k8 / varbinary(max) 
+    * [NH-2499] - Case statement does not handle multiple when clauses
+    * [NH-2501] - Case statement does not allow a parameter in the first then clause
+    * [NH-2503] - HQL subselect with addition fails
+    * [NH-2507] - LINQ queries tha compare enumeration values with /checked+ compiler option throw NotSupportedException
+    * [NH-2512] - QueryOver with Where clause and Take crashes
+    * [NH-2524] - Linq converts enums to integers prematurely
+    * [NH-2529] - Linq on Informix using take gives an exception
+    * [NH-2536] - Second call to OfType don't change the query
+    * [NH-2543] - IQueryOver support is not implemented for IStatelessSession
+    * [NH-2549] - Disposing an Stateless Session that has already been closed causes a SessionException
+    * [NH-2555] - Linq with Contains doesn't work with read only collections
+    * [NH-2556] - NH is too tolerante to incorrect naming when access="field.XXX" is used
+
+** Improvement
+    * [NH-1342] - Very slow inserts for large BLOB
+    * [NH-2023] - Batch operations - introduce SetBatchSize for IStatelessSession
+    * [NH-2098] - Support for transaction isolation levels in stateless sessions.
+    * [NH-2211] - Stateless Session Linq Support
+    * [NH-2228] - Cascading StaleStateException doesn't show which Entity caused the problem
+    * [NH-2425] - Cache the XmlSerializer for HbmMapping class
+    * [NH-2449] - Add IStatelessSession.BeginTransaction(IsolationLevel) Method
+    * [NH-2454] - Add auto-quote settings to main documentation
+    * [NH-2455] - Centralization of proxy check to IProxyFactoryFactory (better support for static proxy)
+    * [NH-2457] - Ability to use DetachedCriteria from stateless session
+    * [NH-2461] - Allow parameter list as ienumerable and simplify IQuery
+    * [NH-2471] - ShowBuildMenu.bat and Windows XP
+    * [NH-2481] - Merge can fail when there is a transient entity reachable by multiple paths and at least one path does not cascade on merge
+    * [NH-2502] - Fetch/Cacheable Should be Allowed to be Called Anywhere
+    * [NH-2508] - Deprecate the ISession.SaveAndUpdateCopy API
+    * [NH-2522] - ILMerge Antlr and ReLinq
+    * [NH-2537] - Implement camelcase-m-underscore naming strategy
+    * [NH-2557] - Improves log message, of CustomType not serializable, by adding additional data
+
+** New Feature
+    * [NH-908] - Implement read-only entities
+    * [NH-2410] - Port <properties> from Hibernate
+
+** Patch
+    * [NH-2153] - Unused parameter in SetCommandTimeout method in DriverBase
+    * [NH-2172] - Unrecognised method call in expression when using QueryOver queries in VB.Net
+    * [NH-2445] - Add IStatelessSession.IsOpen and IStatelessSession.IsConnected
+    * [NH-2473] - EntityName + inheritance doesn't work
+    * [NH-2474] - Xsd for <properties> on subclass missing
+    * [NH-2478] - Docs for <properties>
+    * [NH-2513] - SetMaxResults issue with DB2400Dialect
+
+** Task
+    * [NH-2506] - Fix first example of ternary association in documentation
+    * [NH-2541] - Upgrade ReLinq to 1.13.93
+
+Build 3.0.0.GA (rev5290)
+=============================
 ** Known BREAKING CHANGES from NH2.1.1.GA to NH3.0.0.GA
 
 	##### Design time #####
@@ -24,9 +108,6 @@
 		* [NH-2251] - Signature change for GetLimitString in Dialect
 		* [NH-2284] - Obsolete members removed
 		* Related to [NH-2358]: DateTimeOffset type now works as a DateTimeOffset instead a "surrogate" of DateTime
-
-Build 3.0.0.GA (rev5290)
-=============================
 
 ** Bug
     * [NH-2222] - Wrong type for constant/parameter value used
