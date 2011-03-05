@@ -18,7 +18,7 @@ namespace NHibernate.TestDatabaseSetup
 			SetupMethods = new Dictionary<string, Action<Cfg.Configuration>>();
 			SetupMethods.Add("NHibernate.Driver.SqlClientDriver", SetupSqlServer);
 			SetupMethods.Add("NHibernate.Driver.FirebirdClientDriver", SetupFirebird);
-			SetupMethods.Add("NHibernate.Driver.SQLite20Driver", SetupNoop);
+			SetupMethods.Add("NHibernate.Driver.SQLite20Driver", SetupSQLite);
 			SetupMethods.Add("NHibernate.Driver.NpgsqlDriver", SetupNpgsql);
 		}
 
@@ -105,8 +105,10 @@ namespace NHibernate.TestDatabaseSetup
 			}
 		}
 
-		private static void SetupNoop(Cfg.Configuration cfg)
+		private static void SetupSQLite(Cfg.Configuration cfg)
 		{
+			if (File.Exists("NHibernate.db"))
+				File.Delete("NHibernate.db");
 		}
 	}
 }
