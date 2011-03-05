@@ -51,7 +51,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void StringEqualityInVisualBasic()
+		public void VisualBasicStringComparison()
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
@@ -60,7 +60,13 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Add(Restrictions.Gt("Name", "test name"))
 					.Add(Restrictions.Ge("Name", "test name"))
 					.Add(Restrictions.Lt("Name", "test name"))
-					.Add(Restrictions.Le("Name", "test name"));
+					.Add(Restrictions.Le("Name", "test name"))
+					.Add(Restrictions.EqProperty("Name", "Name"))
+					.Add(Restrictions.Not(Restrictions.EqProperty("Name", "Name")))
+					.Add(Restrictions.GtProperty("Name", "Name"))
+					.Add(Restrictions.GeProperty("Name", "Name"))
+					.Add(Restrictions.LtProperty("Name", "Name"))
+					.Add(Restrictions.LeProperty("Name", "Name"));
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
@@ -69,7 +75,13 @@ namespace NHibernate.Test.Criteria.Lambda
 					.And(p => CompareString(p.Name, "test name", true) > 0)
 					.And(p => CompareString(p.Name, "test name", true) >= 0)
 					.And(p => CompareString(p.Name, "test name", true) < 0)
-					.And(p => CompareString(p.Name, "test name", true) <= 0);
+					.And(p => CompareString(p.Name, "test name", true) <= 0)
+					.And(p => CompareString(p.Name, p.Name, true) == 0)
+					.And(p => CompareString(p.Name, p.Name, true) != 0)
+					.And(p => CompareString(p.Name, p.Name, true) > 0)
+					.And(p => CompareString(p.Name, p.Name, true) >= 0)
+					.And(p => CompareString(p.Name, p.Name, true) < 0)
+					.And(p => CompareString(p.Name, p.Name, true) <= 0);
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
