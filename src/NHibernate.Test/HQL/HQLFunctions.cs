@@ -22,7 +22,7 @@ namespace NHibernate.Test.Hql
 			notSupportedStandardFunction.Add("bit_length",
 								new[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect), typeof(Oracle8iDialect), typeof(Oracle9iDialect), typeof(Oracle10gDialect) });
 			notSupportedStandardFunction.Add("extract",
-                new[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect) });
+                new[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect), typeof(SQLiteDialect) });
 			notSupportedStandardFunction.Add("nullif",
 								new[] { typeof(Oracle8iDialect)});
 		}
