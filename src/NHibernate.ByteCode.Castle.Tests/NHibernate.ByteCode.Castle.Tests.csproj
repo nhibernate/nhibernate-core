@@ -70,6 +70,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\3.5\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="SharpTestsEx.NUnit">
+      <HintPath>..\..\lib\net\3.5\SharpTestsEx.NUnit.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -80,6 +83,7 @@
   <ItemGroup>
     <Compile Include="DebugConnectionProvider.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="LazyFieldInterceptorSerializable.cs" />
     <Compile Include="ProxyInterface\CastleProxy.cs" />
     <Compile Include="ProxyInterface\CastleProxyFixture.cs" />
     <Compile Include="ProxyInterface\CastleProxyImpl.cs" />

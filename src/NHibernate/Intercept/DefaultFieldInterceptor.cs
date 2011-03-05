@@ -1,8 +1,10 @@
-﻿using Iesi.Collections.Generic;
+﻿using System;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 
 namespace NHibernate.Intercept
 {
+	[Serializable]
 	public class DefaultFieldInterceptor : AbstractFieldInterceptor
 	{
 		public DefaultFieldInterceptor(ISessionImplementor session, ISet<string> uninitializedFields, ISet<string> unwrapProxyFieldNames, string entityName, System.Type mappedClass)

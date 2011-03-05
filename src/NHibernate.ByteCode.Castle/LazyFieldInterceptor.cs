@@ -1,9 +1,11 @@
+using System;
 using Castle.DynamicProxy;
 using NHibernate.Intercept;
 using NHibernate.Util;
 
 namespace NHibernate.ByteCode.Castle
 {
+	[Serializable]
 	public class LazyFieldInterceptor : IFieldInterceptorAccessor, global::Castle.DynamicProxy.IInterceptor
 	{
 		public IFieldInterceptor FieldInterceptor
