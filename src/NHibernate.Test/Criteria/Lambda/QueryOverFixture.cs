@@ -56,12 +56,20 @@ namespace NHibernate.Test.Criteria.Lambda
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
 					.Add(Restrictions.Eq("Name", "test name"))
-					.Add(Restrictions.Not(Restrictions.Eq("Name", "test name")));
+					.Add(Restrictions.Not(Restrictions.Eq("Name", "test name")))
+					.Add(Restrictions.Gt("Name", "test name"))
+					.Add(Restrictions.Ge("Name", "test name"))
+					.Add(Restrictions.Lt("Name", "test name"))
+					.Add(Restrictions.Le("Name", "test name"));
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
 					.And(p => CompareString(p.Name, "test name", true) == 0)
-					.And(p => CompareString(p.Name, "test name", true) != 0);
+					.And(p => CompareString(p.Name, "test name", true) != 0)
+					.And(p => CompareString(p.Name, "test name", true) > 0)
+					.And(p => CompareString(p.Name, "test name", true) >= 0)
+					.And(p => CompareString(p.Name, "test name", true) < 0)
+					.And(p => CompareString(p.Name, "test name", true) <= 0);
 
 			AssertCriteriaAreEqual(expected, actual);
 		}

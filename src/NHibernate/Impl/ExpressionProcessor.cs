@@ -315,19 +315,24 @@ namespace NHibernate.Impl
 			if (be.Left.NodeType == ExpressionType.Call && ((MethodCallExpression)be.Left).Method.Name == "CompareString")
 				return ProcessVisualBasicStringComparison(be);
 
-			string property = FindMemberExpression(be.Left);
-			System.Type propertyType = FindMemberType(be.Left);
+			return ProcessSimpleExpression(be.Left, be.Right, be.NodeType);
+		}
 
-			object value = FindValue(be.Right);
+		public static ICriterion ProcessSimpleExpression(Expression left, Expression right, ExpressionType nodeType)
+		{
+			string property = FindMemberExpression(left);
+			System.Type propertyType = FindMemberType(left);
+
+			object value = FindValue(right);
 			value = ConvertType(value, propertyType);
 
 			if (value == null)
-				return ProcessSimpleNullExpression(property, be.NodeType);
+				return ProcessSimpleNullExpression(property, nodeType);
 
-			if (!_simpleExpressionCreators.ContainsKey(be.NodeType))
-				throw new Exception("Unhandled simple expression type: " + be.NodeType);
+			if (!_simpleExpressionCreators.ContainsKey(nodeType))
+				throw new Exception("Unhandled simple expression type: " + nodeType);
 
-			Func<string, object, ICriterion> simpleExpressionCreator = _simpleExpressionCreators[be.NodeType];
+			Func<string, object, ICriterion> simpleExpressionCreator = _simpleExpressionCreators[nodeType];
 			ICriterion criterion = simpleExpressionCreator(property, value);
 			return criterion;
 		}
@@ -335,17 +340,7 @@ namespace NHibernate.Impl
 		private static ICriterion ProcessVisualBasicStringComparison(BinaryExpression be)
 		{
 			var methodCall = (MethodCallExpression)be.Left;
-			switch(be.NodeType)
-			{
-				case ExpressionType.Equal:
-					return ProcessSimpleExpression(Expression.Equal(methodCall.Arguments[0], methodCall.Arguments[1]));
-
-				case ExpressionType.NotEqual:
-					return ProcessSimpleExpression(Expression.NotEqual(methodCall.Arguments[0], methodCall.Arguments[1]));
-
-				default:
-					throw new Exception("Unhandled expression: " + be);
-			}
+			return ProcessSimpleExpression(methodCall.Arguments[0], methodCall.Arguments[1], be.NodeType);
 		}
 
 		private static ICriterion ProcessSimpleNullExpression(string property, ExpressionType expressionType)
