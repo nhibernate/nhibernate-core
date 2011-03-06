@@ -23,6 +23,11 @@ namespace NHibernate.Test.Linq
             get { return NHibernate.Dialect.Dialect.GetDialect(_cfg.Properties); }
         }
 
+    	protected TestDialect TestDialect
+    	{
+			get { return TestDialect.GetTestDialect(Dialect); }
+    	}
+
         /// <summary>
         /// To use in in-line test
         /// </summary>

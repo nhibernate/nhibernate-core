@@ -45,6 +45,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void CharIndexFunction()
 		{
+			if (!TestDialect.SupportsLocate)
+				Assert.Ignore("Locate function not supported.");
+
 			var query = from e in db.Employees
                         where e.FirstName.IndexOf('A') == 1
 						select e.FirstName;
@@ -55,6 +58,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void IndexOfFunctionExpression()
 		{
+			if (!TestDialect.SupportsLocate)
+				Assert.Ignore("Locate function not supported.");
+
 			var query = from e in db.Employees
 						where e.FirstName.IndexOf("An") == 1
 						select e.FirstName;
@@ -75,7 +81,10 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void TwoFunctionExpression()
 		{
-		    var query = from e in db.Employees
+			if (!TestDialect.SupportsLocate)
+				Assert.Ignore("Locate function not supported.");
+
+			var query = from e in db.Employees
 		                where e.FirstName.IndexOf("A") == e.BirthDate.Value.Month 
 		    			select e.FirstName;
 
