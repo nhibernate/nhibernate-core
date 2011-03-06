@@ -245,7 +245,7 @@ namespace NHibernate.Dialect
 
 		public override string SelectGUIDString
 		{
-			get { return "randomblob(16)"; }
+			get { return "select randomblob(16)"; }
 		}
 	}
 }
