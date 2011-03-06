@@ -67,6 +67,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("substring", new AnsiSubstringFunction());
 			RegisterFunction("replace", new StandardSQLFunction("replace", NHibernateUtil.String));
 
+			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
+
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.NpgsqlDriver";
 		}
 

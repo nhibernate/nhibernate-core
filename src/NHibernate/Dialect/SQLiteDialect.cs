@@ -53,12 +53,13 @@ namespace NHibernate.Dialect
 			RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%d', ?1)"));
 			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%m', ?1)"));
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%Y', ?1)"));
-
 			// Uses local time like MSSQL and PostgreSQL.
 			RegisterFunction("current_timestamp", new SQLFunctionTemplate(NHibernateUtil.DateTime, "datetime(current_timestamp, 'localtime')"));
 
 			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
+
+			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
 		}
 
 		public override Schema.IDataBaseSchema GetDataBaseSchema(DbConnection connection)
@@ -238,6 +239,11 @@ namespace NHibernate.Dialect
 		public override bool DropTemporaryTableAfterUse()
 		{
 			return true;
+		}
+
+		public override string SelectGUIDString
+		{
+			get { return "randomblob(16)"; }
 		}
 	}
 }
