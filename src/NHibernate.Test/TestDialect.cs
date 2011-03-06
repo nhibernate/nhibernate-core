@@ -22,5 +22,6 @@ namespace NHibernate.Test
 		}
 
 		public virtual bool SupportsOperatorAll { get { return true; } }
+		public virtual bool SupportsOperatorSome { get { return true; } }
 	}
 }

@@ -510,7 +510,7 @@ namespace NHibernate.Test.Legacy
 			foo.TheFoo.TheFoo = foo;
 			foo.String = "fizard";
 
-			if (Dialect.SupportsSubSelects)
+			if (Dialect.SupportsSubSelects && TestDialect.SupportsOperatorSome)
 			{
 				if (!(Dialect is FirebirdDialect))
 				{

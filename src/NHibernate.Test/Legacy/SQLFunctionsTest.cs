@@ -478,7 +478,7 @@ namespace NHibernate.Test.Legacy
 
 				s.Save(min, (long) 30);
 
-				if (Dialect.SupportsSubSelects)
+				if (Dialect.SupportsSubSelects && TestDialect.SupportsOperatorSome)
 				{
 					Assert.AreEqual(2,
 					                s.CreateQuery(
