@@ -53,6 +53,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%d', ?1)"));
 			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%m', ?1)"));
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%Y', ?1)"));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.DateTime, false));
 			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 		}
