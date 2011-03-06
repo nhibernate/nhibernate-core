@@ -47,13 +47,14 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Boolean, "INTEGER");
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
 
-			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.String, "strftime(\"%S\", ?1)"));
-			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.String, "strftime(\"%M\", ?1)"));
-			RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.String, "strftime(\"%H\", ?1)"));
-			RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.String, "strftime(\"%d\", ?1)"));
-			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.String, "strftime(\"%m\", ?1)"));
-			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.String, "strftime(\"%Y\", ?1)"));
+			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%S', ?1)"));
+			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%M', ?1)"));
+			RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%H', ?1)"));
+			RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%d', ?1)"));
+			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%m', ?1)"));
+			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%Y', ?1)"));
 			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
+			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 		}
 
 		public override Schema.IDataBaseSchema GetDataBaseSchema(DbConnection connection)
