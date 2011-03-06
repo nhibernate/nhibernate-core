@@ -53,7 +53,10 @@ namespace NHibernate.Dialect
 			RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%d', ?1)"));
 			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%m', ?1)"));
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%Y', ?1)"));
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.DateTime, false));
+
+			// Uses local time like MSSQL and PostgreSQL.
+			RegisterFunction("current_timestamp", new SQLFunctionTemplate(NHibernateUtil.DateTime, "datetime(current_timestamp, 'localtime')"));
+
 			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 		}
