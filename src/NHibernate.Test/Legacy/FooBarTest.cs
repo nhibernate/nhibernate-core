@@ -2737,7 +2737,7 @@ namespace NHibernate.Test.Legacy
 			IList list;
 
 			// disable this for dbs with no subselects
-			if (Dialect.SupportsSubSelects)
+			if (Dialect.SupportsSubSelects && TestDialect.SupportsOperatorAll)
 			{
 				if (IsClassicParser)
 				{

@@ -44,6 +44,9 @@ namespace NHibernate.Test.ExceptionsTest
 		[Test]
 		public void IntegrityViolation()
 		{
+			if (Dialect is SQLiteDialect)
+				Assert.Ignore("Example exception converter not implemented.");
+
 			//ISQLExceptionConverter converter = Dialect.BuildSQLExceptionConverter();
 			ISQLExceptionConverter converter = sessions.Settings.SqlExceptionConverter;
 
@@ -107,6 +110,9 @@ namespace NHibernate.Test.ExceptionsTest
 		[Test]
 		public void BadGrammar()
 		{
+			if (Dialect is SQLiteDialect)
+				Assert.Ignore("Example exception converter not implemented.");
+
 			//ISQLExceptionConverter converter = Dialect.BuildSQLExceptionConverter();
 			ISQLExceptionConverter converter = sessions.Settings.SqlExceptionConverter;
 
