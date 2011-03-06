@@ -121,7 +121,7 @@ namespace NHibernate.Test.Criteria
 					.SetProjection(Property.ForName("Name"));
 
 				session.CreateCriteria(typeof(Student))
-					.Add(Subqueries.PropertyEqAll("Name", dc))
+					.Add(Subqueries.PropertyEq("Name", dc))
 					.List();
 			}
 		}
@@ -183,17 +183,23 @@ namespace NHibernate.Test.Criteria
 				.Add(Property.ForName("StudentNumber").Eq(232L))
 				.SetProjection(Property.ForName("Name"));
 
-			session.CreateCriteria(typeof(Student))
-				.Add(Subqueries.PropertyEqAll("Name", dc))
-				.List();
+			if (TestDialect.SupportsOperatorAll)
+			{
+				session.CreateCriteria(typeof (Student))
+					.Add(Subqueries.PropertyEqAll("Name", dc))
+					.List();
+			}
 
 			session.CreateCriteria(typeof(Student))
 				.Add(Subqueries.Exists(dc))
 				.List();
 
-			session.CreateCriteria(typeof(Student))
-				.Add(Property.ForName("Name").EqAll(dc))
-				.List();
+			if (TestDialect.SupportsOperatorAll)
+			{
+				session.CreateCriteria(typeof (Student))
+					.Add(Property.ForName("Name").EqAll(dc))
+					.List();
+			}
 
 			session.CreateCriteria(typeof(Student))
 				.Add(Subqueries.In("Gavin King", dc))
@@ -284,46 +290,52 @@ namespace NHibernate.Test.Criteria
 				
 				t.Commit();
 			}
-	
-			using (ISession session = OpenSession())
-			using (ITransaction t = session.BeginTransaction())
+
+			if (TestDialect.SupportsOperatorAll)
 			{
-				try
+				using (ISession session = OpenSession())
+				using (ITransaction t = session.BeginTransaction())
 				{
-					session.CreateCriteria<Student>()
-						.Add(Subqueries.PropertyEqAll("CityState", dc))
-						.List();
-					
-					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
-				}
-				catch (QueryException ex)
-				{
-					// expected
-				}
-				t.Rollback();
-			}
-			
-			using (ISession session = OpenSession())
-			using (ITransaction t = session.BeginTransaction())
-			{
-				try
-				{
-					session.CreateCriteria<Student>()
-						.Add(Property.ForName("CityState").EqAll(dc))
-						.List();
-	
-					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
-				}
-				catch (QueryException ex)
-				{
-					// expected
-				}
-				finally
-				{
+					try
+					{
+						session.CreateCriteria<Student>()
+							.Add(Subqueries.PropertyEqAll("CityState", dc))
+							.List();
+
+						Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
+					}
+					catch (QueryException ex)
+					{
+						// expected
+					}
 					t.Rollback();
 				}
 			}
-	
+
+			if (TestDialect.SupportsOperatorAll)
+			{
+				using (ISession session = OpenSession())
+				using (ITransaction t = session.BeginTransaction())
+				{
+					try
+					{
+						session.CreateCriteria<Student>()
+							.Add(Property.ForName("CityState").EqAll(dc))
+							.List();
+
+						Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
+					}
+					catch (QueryException ex)
+					{
+						// expected
+					}
+					finally
+					{
+						t.Rollback();
+					}
+				}
+			}
+
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
