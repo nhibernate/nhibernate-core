@@ -45,7 +45,7 @@
 				<property name="Salary"/>
 				<many-to-one name="Manager"/>
 				<bag name="Meetings" cascade="all" inverse="true" access="property">
-					<key column="person_id" on-delete="cascade"/>
+					<key column="person_id"/>
 					<one-to-many class="Meeting"/>
 				</bag>
 			</join>

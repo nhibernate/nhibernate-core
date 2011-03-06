@@ -133,7 +133,7 @@ namespace NHibernate.Test.Join
 				s.Clear();
 
 				// Remove the optional row from the join table and requery the User obj
-				ExecuteStatement("delete from t_user");
+				ExecuteStatement(s, tx, "delete from t_user");
 				s.Clear();
 
 				// Clean up the test data
@@ -171,7 +171,7 @@ namespace NHibernate.Test.Join
 			}
 		}
 
-		private Person PreparePersonWithInverseJoin(ISession s, string name, string stuffName)
+		private Person PreparePersonWithInverseJoin(ISession s, ITransaction tx, string name, string stuffName)
 		{
 			Person p = CreatePerson(name);
 
@@ -181,7 +181,7 @@ namespace NHibernate.Test.Join
 
 			if (stuffName != null)
 			{
-				int count = ExecuteStatement(
+				int count = ExecuteStatement(s, tx,
 					string.Format("insert into inversed_stuff (stuff_id, StuffName) values ({0}, '{1}')",
 					              p.Id, stuffName));
 				Assert.AreEqual(1, count, "Insert statement failed.");
@@ -197,11 +197,13 @@ namespace NHibernate.Test.Join
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				string stuffName = "name of the stuff";
-				Person p = PreparePersonWithInverseJoin(s, "John", stuffName);
+				Person p = PreparePersonWithInverseJoin(s, tx, "John", stuffName);
 
 				Person result = (Person) s.Get(typeof (Person), p.Id);
 				Assert.IsNotNull(result);
 				Assert.AreEqual(stuffName, result.StuffName);
+
+				ExecuteStatement(s, tx, "delete from inversed_stuff");
 
 				tx.Commit();
 			}
@@ -215,7 +217,7 @@ namespace NHibernate.Test.Join
 			{
 				string stuffName = "name of the stuff";
 
-				Person p = PreparePersonWithInverseJoin(s, "John", stuffName);
+				Person p = PreparePersonWithInverseJoin(s, tx, "John", stuffName);
 
 				Person personToUpdate = (Person) s.Get(typeof (Person), p.Id);
 				Assert.IsNotNull(personToUpdate);
@@ -226,6 +228,8 @@ namespace NHibernate.Test.Join
 
 				Person loaded = (Person) s.Get(typeof (Person), p.Id);
 				Assert.AreEqual(stuffName, loaded.StuffName, "StuffName should not have been updated");
+
+				ExecuteStatement(s, tx, "delete from inversed_stuff");
 
 				tx.Commit();
 			}
@@ -259,7 +263,7 @@ namespace NHibernate.Test.Join
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				string stuffName = "stuff not deleted";
-				Person p = PreparePersonWithInverseJoin(s, "John", stuffName);
+				Person p = PreparePersonWithInverseJoin(s, tx, "John", stuffName);
 
 				long personId = p.Id;
 				s.Delete(p);
@@ -281,6 +285,8 @@ namespace NHibernate.Test.Join
 				cmd2.CommandType = CommandType.Text;
 				string retrievedStuffName = (string) cmd2.ExecuteScalar();
 				Assert.AreEqual(stuffName, retrievedStuffName, "Retrieved inverse <join> does not match");
+
+				ExecuteStatement(s, tx, "delete from inversed_stuff");
 
 				tx.Commit();
 			}

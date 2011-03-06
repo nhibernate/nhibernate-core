@@ -285,6 +285,17 @@ namespace NHibernate.Test
 			}
 		}
 
+		public int ExecuteStatement(ISession session, ITransaction transaction, string sql)
+		{
+			using (IDbCommand cmd = session.Connection.CreateCommand())
+			{
+				cmd.CommandText = sql;
+				if (transaction != null)
+					transaction.Enlist(cmd);
+				return cmd.ExecuteNonQuery();
+			}
+		}
+
 		protected ISessionFactoryImplementor Sfi
 		{
 			get { return sessions; }
