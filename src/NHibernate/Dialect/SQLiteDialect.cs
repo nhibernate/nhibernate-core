@@ -55,6 +55,11 @@ namespace NHibernate.Dialect
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%Y', ?1)"));
 			// Uses local time like MSSQL and PostgreSQL.
 			RegisterFunction("current_timestamp", new SQLFunctionTemplate(NHibernateUtil.DateTime, "datetime(current_timestamp, 'localtime')"));
+			// The System.Data.SQLite driver stores both Date and DateTime as 'YYYY-MM-DD HH:MM:SS'
+			// The SQLite date() function returns YYYY-MM-DD, which unfortunately SQLite does not consider
+			// as equal to 'YYYY-MM-DD 00:00:00'.  Because of this, it is best to return the
+			// 'YYYY-MM-DD 00:00:00' format for the date function.
+			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "datetime(date(?1))"));
 
 			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
