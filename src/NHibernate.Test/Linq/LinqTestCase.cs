@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace NHibernate.Test.Linq
 {
@@ -63,15 +65,9 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-		public void AssertByIds<T, K>(IEnumerable<T> q, K[] ids, Converter<T, K> getId)
+		public void AssertByIds<TEntity, TId>(IEnumerable<TEntity> entities, TId[] expectedIds, Converter<TEntity, TId> entityIdGetter)
 		{
-			int current = 0;
-			foreach (T customer in q)
-			{
-				Assert.AreEqual(ids[current], getId(customer));
-				current += 1;
-			}
-			Assert.AreEqual(current, ids.Length);
+			entities.Select(x => entityIdGetter(x)).Should().Have.SameValuesAs(expectedIds);
 		}
 	}
 }
