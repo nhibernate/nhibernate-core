@@ -103,6 +103,8 @@ namespace NHibernate.Test
 			}
 			catch (Exception e)
 			{
+                // This line just added as a test, since there is no logged output on build server.
+                Console.WriteLine("Text Fixture Setup Exception: " + e);
 				log.Error("Error while setting up the test fixture", e);
 				throw;
 			}
