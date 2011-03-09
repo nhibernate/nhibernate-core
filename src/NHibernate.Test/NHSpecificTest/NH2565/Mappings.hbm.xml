@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH2565">
+
+  <class name="Task">
+    <id name="Id">
+      <generator class="guid" />
+    </id>
+    <property name="Description"/>
+    <many-to-one name="Activity" class="TaskActivity" cascade="all" lazy="no-proxy"/>
+  </class>
+  <class name="TaskActivity">
+    <id name="Id">
+      <generator class="guid" />
+    </id>
+    <property name="Name"/>
+  </class>
+</hibernate-mapping>

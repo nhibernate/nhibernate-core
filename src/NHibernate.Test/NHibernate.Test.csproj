@@ -645,6 +645,8 @@
     <Compile Include="NHSpecificTest\NH2484\Model.cs" />
     <Compile Include="NHSpecificTest\NH2507\Animal.cs" />
     <Compile Include="NHSpecificTest\NH2507\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2565\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH2565\Fixture.cs" />
     <Compile Include="NHSpecificTest\Properties\CompositePropertyRefTest.cs" />
     <Compile Include="NHSpecificTest\Properties\DynamicEntityTest.cs" />
     <Compile Include="NHSpecificTest\Properties\Model.cs" />
@@ -2475,6 +2477,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2565\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\AccessAndCorrectPropertyName\DogMapping.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\AccessAndCorrectPropertyName\PersonMapping.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2507\Mappings.hbm.xml" />

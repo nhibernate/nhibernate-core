@@ -15,6 +15,7 @@ using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
 using NHibernate.Hql;
+using NHibernate.Intercept;
 using NHibernate.Loader.Criteria;
 using NHibernate.Loader.Custom;
 using NHibernate.Loader.Custom.Sql;
@@ -1043,8 +1044,8 @@ namespace NHibernate.Impl
 			{
 				if (entity.IsProxy())
 				{
-                    INHibernateProxy proxy = entity as INHibernateProxy; 
-                    ILazyInitializer initializer = proxy.HibernateLazyInitializer;
+					INHibernateProxy proxy = entity as INHibernateProxy;
+					ILazyInitializer initializer = proxy.HibernateLazyInitializer;
 
 					// it is possible for this method to be called during flush processing,
 					// so make certain that we do not accidently initialize an uninitialized proxy
@@ -1053,6 +1054,12 @@ namespace NHibernate.Impl
 						return initializer.PersistentClass.FullName;
 					}
 					entity = initializer.GetImplementation();
+				}
+				if (FieldInterceptionHelper.IsInstrumented(entity))
+				{
+					// NH: support of field-interceptor-proxy
+					IFieldInterceptor interceptor = FieldInterceptionHelper.ExtractFieldInterceptor(entity);
+					return interceptor.EntityName;
 				}
 				EntityEntry entry = persistenceContext.GetEntry(entity);
 				if (entry == null)

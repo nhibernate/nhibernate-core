@@ -83,6 +83,15 @@ namespace NHibernate.Event.Default
 
 			//TODO: check that entry.getIdentifier().equals(requestedId)
 			object entity = source.PersistenceContext.Unproxy(@event.Entity);
+			/* NH-2565: the UnProxy may return a "field interceptor proxy". When EntityName is null the session.GetEntityPersister will try to guess it.
+			 * Instead change a session's method I'll try to guess the EntityName here.
+			 * Because I'm using a session's method perhaps could be better if each session's method, which implementation forward to a method having the EntityName as parameter,
+			 * use the BestGuessEntityName directly instead do "70 turns" before call it.
+			*/
+			if (@event.EntityName == null)
+			{
+				@event.EntityName = source.BestGuessEntityName(entity);
+			}
 			IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
 
 			object tempObject;
