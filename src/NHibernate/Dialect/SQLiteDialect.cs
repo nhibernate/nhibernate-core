@@ -67,13 +67,6 @@ namespace NHibernate.Dialect
 			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
 
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
-
-            // Casting in SQLite is unnecessary since SQLite is essentially typeless.
-            // String operators can be performed on integers, integer ops on strings, etc.
-            // For some reason, doing cast('2001-02-03 04:05:06' as datetime) returns 2001.
-            // In fact, casting to even a type named as a string of garbage returns the same thing.
-            // Therefore, it's better to avoid the cast function entirely.
-            RegisterFunction("cast", new SQLFunctionTemplate(null, "(?1)"));
 		}
 
 		public override Schema.IDataBaseSchema GetDataBaseSchema(DbConnection connection)
