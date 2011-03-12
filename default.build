@@ -381,6 +381,7 @@
   <fileset id="nuspecfiles.all" basedir="src">
     <include name="Iesi.Collections/Iesi.Collections.build" />
     <include name="NHibernate/NHibernate.build" />
+    <include name="NHibernate.ByteCode.Castle/ByteCode.build" />
   </fileset>
 
   <target name="nuspec" description="Create nuspec files">

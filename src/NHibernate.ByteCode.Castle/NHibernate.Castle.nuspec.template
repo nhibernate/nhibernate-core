@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<package>
+  <metadata>
+    <id>NHibernate.Castle</id>
+    <version>x.y.z</version>
+    <authors>NHibernate community, Hibernate community</authors>
+    <description>
+      NHibernate is a mature, open source object-relational mapper for the .NET framework. It's actively developed , fully featured and used in thousands of successful projects.
+      
+    </description>
+    <language>en-US</language>
+    <tags>ORM, DataBase, DAL, Object Relational Mapping</tags>
+    <dependencies>
+      <dependency id="NHibernate" version="x.y.z" />
+      <dependency id="Castle.Core" version="2.5.2" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\bin\net-3.5\NHibernate.ByteCode.Castle.dll" target="lib\Net35" />
+    <file src="..\bin\net-3.5\NHibernate.ByteCode.Castle.xml" target="lib\Net35" />
+  </files>
+</package>

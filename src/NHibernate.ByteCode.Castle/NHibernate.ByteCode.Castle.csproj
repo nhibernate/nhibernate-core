@@ -82,6 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ByteCode.build" />
+    <None Include="NHibernate.Castle.nuspec.template" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
