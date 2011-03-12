@@ -34,7 +34,7 @@
 	<target name="build" depends="init generate-assemblyinfo common.compile-dll" description="Build Castle ByteCode" />
 
   <target name="nuspec" depends="init" description="Create nuspec for NHibernate.ByteCode.Castle">
-    <property name="nuspec.destination.file" value="${build.dir}/nuspec.destination.filename" />
+    <property name="nuspec.destination.file" value="${build.dir}/${nuspec.destination.filename}" />
     <copy file="NHibernate.Castle.nuspec.template" tofile="${nuspec.destination.file}"/>
     <xmlpoke file="${nuspec.destination.file}"
              xpath="/package/metadata/dependencies/dependency[@id = 'NHibernate']/@version"

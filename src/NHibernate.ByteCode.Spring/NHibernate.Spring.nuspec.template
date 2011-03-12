@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <package>
   <metadata>
-    <id>NHibernate.LinFu</id>
+    <id>NHibernate.Spring</id>
     <version>x.y.z</version>
     <authors>NHibernate community, Hibernate community</authors>
     <summary>NHibernate with lazy-loading enabled.</summary>
     <description>
       NHibernate is a mature, open source object-relational mapper for the .NET framework.
-      This package enables the ability to use lazy-loading with LinFu dynamic-proxy.
+      This package enables the ability to use lazy-loading with Spring.NET AOP.
     </description>
     <language>en-US</language>
     <tags>ORM, DataBase, DAL, Object Relational Mapping</tags>
@@ -16,8 +16,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\net-3.5\NHibernate.ByteCode.LinFu.dll" target="lib\Net35" />
-    <file src="bin\net-3.5\NHibernate.ByteCode.LinFu.xml" target="lib\Net35" />
-    <file src="bin\net-3.5\LinFu*.*" target="lib\Net35" />
+    <file src="bin\net-3.5\NHibernate.ByteCode.Spring.dll" target="lib\Net35" />
+    <file src="bin\net-3.5\NHibernate.ByteCode.Spring.xml" target="lib\Net35" />
+    <file src="bin\net-3.5\Spring*.*" target="lib\Net35" />
   </files>
 </package>

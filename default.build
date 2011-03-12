@@ -383,6 +383,7 @@
     <include name="NHibernate/NHibernate.build" />
     <include name="NHibernate.ByteCode.Castle/ByteCode.build" />
     <include name="NHibernate.ByteCode.LinFu/ByteCode.build" />
+    <include name="NHibernate.ByteCode.Spring/ByteCode.build" />
   </fileset>
 
   <target name="nuspec" depends="init" description="Create nuspec files">

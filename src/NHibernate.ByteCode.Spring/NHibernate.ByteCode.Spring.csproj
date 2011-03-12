@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ByteCode.build" />
+    <None Include="NHibernate.Spring.nuspec.template" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
