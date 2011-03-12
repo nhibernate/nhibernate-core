@@ -278,7 +278,7 @@
 		
 		<copy file="releasenotes.txt" todir="${bin-pack.tmpdir}"/>
 		<copy file="readme.html" todir="${bin-pack.tmpdir}"/>
-		<copy file="lgpl.txt" todir="${bin-pack.tmpdir}"/>
+		<copy file="lgpl.txt" todir="${bin-pack.tmpdir}/NHibernate.license.txt"/>
 		<copy file="gfdl.txt" todir="${bin-pack.tmpdir}"/>
 		<copy file="HowInstall.txt" todir="${bin-pack.tmpdir}"/>
 
@@ -394,7 +394,19 @@
   
   <target name="nuget" depends="init binaries nuspec" 
           description="Creates files for the release on nuget gallery.">
-    
+    <property name="nuget.conf-template" value="${build.dir}/NHibernateXmlConfigurationTemplates" />
+
+    <copy file="releasenotes.txt" tofile="${build.dir}/NHibernate.releasenotes.txt"/>
+    <copy file="readme.html" tofile="${build.dir}/NHibernate.readme.html"/>
+    <copy file="lgpl.txt" tofile="${build.dir}/NHibernate.license.txt"/>
+
+    <!--Configuration templates-->
+    <copy todir="${nuget.conf-template}">
+      <fileset basedir="src/NHibernate.Config.Templates">
+        <include name="*"/>
+      </fileset>
+    </copy>
+
     <property name="nugetdeploy.subdir" value="nuget_gallery" />
     <mkdir dir="${build.dir}/${nugetdeploy.subdir}" />
     

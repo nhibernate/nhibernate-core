@@ -19,5 +19,9 @@
   </metadata>
   <files>
     <file src="bin\net-3.5\NHibernate.dll" target="lib\Net35" />
+    <file src="NHibernate.releasenotes.txt" target="lib\Net35" />
+    <file src="NHibernate.readme.html" target="lib\Net35" />
+    <file src="NHibernate.license.txt" target="lib\Net35" />
+    <file src="NHibernateXmlConfigurationTemplates\*" target="lib\Net35\NHibernateXmlConfigurationTemplates" />
   </files>
 </package>
