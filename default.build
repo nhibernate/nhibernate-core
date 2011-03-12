@@ -378,4 +378,14 @@
 		
 	</target>
 
+  <fileset id="nuspecfiles.all" basedir="src">
+    <include name="Iesi.Collections/Iesi.Collections.build" />
+  </fileset>
+
+  <target name="nuspec" description="Create nuspec files">
+    <nant target="nuspec">
+      <buildfiles refid="nuspecfiles.all" />
+    </nant>
+  </target>
+
 </project>

@@ -34,4 +34,11 @@
 	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
 	<target name="build" depends="init generate-assemblyinfo common.compile-dll" description="Build Iesi.Collections" />
 
+  <target name="nuspec" depends="init" description="Create nuspec for Iesi.Collections">
+    <property name="nuspec.destination.file" value="${build.dir}/Iesi.Collections.nuspec" />
+    <copy file="Iesi.Collections.nuspec.template" tofile="${nuspec.destination.file}"/>
+    <xmlpoke file="${nuspec.destination.file}"
+             xpath="/package/metadata/version"
+             value="${project.version.numeric}" />
+  </target>
 </project>
