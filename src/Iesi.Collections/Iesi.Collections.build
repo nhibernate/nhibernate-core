@@ -6,7 +6,8 @@
 	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
 >
 
-	<property name="root.dir" value="../.." />
+  <property name="nuspec.destination.filename" value="Iesi.Collections.nuspec" />
+  <property name="root.dir" value="../.." />
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
 	<target name="init" depends="common.init">
@@ -35,10 +36,19 @@
 	<target name="build" depends="init generate-assemblyinfo common.compile-dll" description="Build Iesi.Collections" />
 
   <target name="nuspec" depends="init" description="Create nuspec for Iesi.Collections">
-    <property name="nuspec.destination.file" value="${build.dir}/Iesi.Collections.nuspec" />
+    <property name="nuspec.destination.file" value="${build.dir}/${nuspec.destination.filename}" />
     <copy file="Iesi.Collections.nuspec.template" tofile="${nuspec.destination.file}"/>
     <xmlpoke file="${nuspec.destination.file}"
              xpath="/package/metadata/version"
              value="${project.version.numeric}" />
   </target>
+  
+  <target name="nuget" depends="init nuspec">
+    <exec basedir="${tools.dir}" workingdir="${build.dir}" program="NuGet.exe">
+      <arg value="pack" />
+      <arg value="${nuspec.destination.filename}" />
+      <arg line="-o ${nugetdeploy.subdir}" />
+    </exec>
+  </target>
+
 </project>

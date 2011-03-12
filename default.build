@@ -378,15 +378,26 @@
 		
 	</target>
 
-  <fileset id="nuspecfiles.all" basedir="src">
+  <fileset id="nugetfiles.all" basedir="src">
     <include name="Iesi.Collections/Iesi.Collections.build" />
     <include name="NHibernate/NHibernate.build" />
     <include name="NHibernate.ByteCode.Castle/ByteCode.build" />
   </fileset>
 
-  <target name="nuspec" description="Create nuspec files">
+  <target name="nuspec" depends="init" description="Create nuspec files">
     <nant target="nuspec">
-      <buildfiles refid="nuspecfiles.all" />
+      <buildfiles refid="nugetfiles.all" />
+    </nant>
+  </target>
+  
+  <target name="nuget" depends="init binaries nuspec" 
+          description="Creates files for the release on nuget gallery.">
+    
+    <property name="nugetdeploy.subdir" value="nuget_gallery" />
+    <mkdir dir="${build.dir}/${nugetdeploy.subdir}" />
+    
+    <nant target="nuget">
+      <buildfiles refid="nugetfiles.all" />
     </nant>
   </target>
 
