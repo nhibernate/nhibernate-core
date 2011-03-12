@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
-<project xmlns="http://nant.sf.net/release/0.90/nant.xsd"  xsi:schemaLocation="http://nant.sf.net/release/0.90/nant.xsd ..\Tools\nant\schema\nant.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd">
 
-	<description>
+  <description>
 		<![CDATA[
 		This file contains common tasks tailored specifically for the NHibernate
 		build process. The goal was to define all the actions in this file, so
