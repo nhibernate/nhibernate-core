@@ -6,7 +6,7 @@
     <authors>NHibernate community, Hibernate community</authors>
     <description>
       NHibernate is a mature, open source object-relational mapper for the .NET framework. It's actively developed , fully featured and used in thousands of successful projects.
-      
+      This package enables the ability to use lazy-loading with Castle dynamic-proxy.
     </description>
     <language>en-US</language>
     <tags>ORM, DataBase, DAL, Object Relational Mapping</tags>
