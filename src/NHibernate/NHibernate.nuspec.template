@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<package>
+  <metadata>
+    <id>NHibernate</id>
+    <version>x.y.z</version>
+    <authors>NHibernate community, Hibernate community</authors>
+    <description>
+      DONT INSTALL IT DIRECTLY
+      Only as reference for others frameworks.
+      
+      NHibernate is a mature, open source object-relational mapper for the .NET framework. It's actively developed , fully featured and used in thousands of successful projects.
+    </description>
+    <language>en-US</language>
+    <tags>ORM, DataBase, DAL, Object Relational Mapping</tags>
+    <dependencies>
+      <dependency id="Iesi.Collections" version="x.y.z" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\bin\net-3.5\NHibernate.dll" target="lib\Net35" />
+  </files>
+</package>

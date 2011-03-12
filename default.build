@@ -380,6 +380,7 @@
 
   <fileset id="nuspecfiles.all" basedir="src">
     <include name="Iesi.Collections/Iesi.Collections.build" />
+    <include name="NHibernate/NHibernate.build" />
   </fileset>
 
   <target name="nuspec" description="Create nuspec files">

@@ -76,4 +76,15 @@
 		<copy file="${bin.dir}/NHibernate.dll" tofile="${root.dir}/${lib.framework.dir}/NHibernate.dll"/>
 	</target>
 
+  <target name="nuspec" depends="init" description="Create nuspec for Iesi.Collections">
+    <property name="nuspec.destination.file" value="${build.dir}/NHibernate.nuspec" />
+    <copy file="NHibernate.nuspec.template" tofile="${nuspec.destination.file}"/>
+    <xmlpoke file="${nuspec.destination.file}"
+             xpath="/package/metadata/dependencies/dependency[@id = 'Iesi.Collections']/@version"
+             value="${project.version.numeric}" />
+    <xmlpoke file="${nuspec.destination.file}"
+             xpath="/package/metadata/version"
+             value="${project.version.numeric}" />
+  </target>
+
 </project>

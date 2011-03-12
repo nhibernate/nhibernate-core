@@ -1577,6 +1577,7 @@
     <None Include="Hql\Ast\ANTLR\HqlSqlWalker.g" />
     <None Include="Hql\Ast\ANTLR\SqlGenerator.g" />
     <None Include="NHibernate.build" />
+    <None Include="NHibernate.nuspec.template" />
     <None Include="Type\IType.cs.xmldoc" />
   </ItemGroup>
   <ItemGroup>
