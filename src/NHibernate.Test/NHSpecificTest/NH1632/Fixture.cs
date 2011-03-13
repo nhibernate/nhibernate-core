@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			using (var session = sessions.OpenSession())
 			using (var command = session.Connection.CreateCommand())
 			{
-				command.CommandText = "select next_hi from hibernate_unique_key with (updlock, rowlock)";
+				command.CommandText = "select next_hi from hibernate_unique_key";
 				scalar1 = command.ExecuteScalar();
 			}
 
@@ -52,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			using (var session = sessions.OpenSession())
 			using (var command = session.Connection.CreateCommand())
 			{
-				command.CommandText = "select next_hi from hibernate_unique_key with (updlock, rowlock)";
+				command.CommandText = "select next_hi from hibernate_unique_key";
 				scalar2 = command.ExecuteScalar();
 			}
 
@@ -174,6 +174,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 		[Test]
 		public void When_using_two_sessions_with_explicit_flush()
 		{
+			if (!TestDialect.SupportsConcurrentTransactions)
+				Assert.Ignore(Dialect.GetType().Name + " does not support concurrent transactions.");
+
 			object id1, id2;
 			using (var tx = new TransactionScope())
 			{
@@ -209,6 +212,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 		[Test]
 		public void When_using_two_sessions()
 		{
+			if (!TestDialect.SupportsConcurrentTransactions)
+				Assert.Ignore(Dialect.GetType().Name + " does not support concurrent transactions.");
+
 			object id1, id2;
 			using (var tx = new TransactionScope())
 			{

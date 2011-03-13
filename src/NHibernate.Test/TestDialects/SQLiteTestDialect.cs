@@ -21,5 +21,15 @@ namespace NHibernate.Test.TestDialects
 		{
 			get { return false; }
 		}
+
+		public override bool SupportsDistributedTransactions
+		{
+			get { return false; }
+		}
+
+		public override bool SupportsConcurrentTransactions
+		{
+			get { return false; }
+		}
 	}
 }

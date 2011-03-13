@@ -23,6 +23,11 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			get { return "NHibernate.Test"; }
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.GetTestDialect(dialect).SupportsDistributedTransactions;
+		}
+
 		[Test]
 		public void WillNotCrashOnDtcPrepareFailure()
 		{

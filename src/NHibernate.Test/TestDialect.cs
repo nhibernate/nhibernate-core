@@ -24,5 +24,14 @@ namespace NHibernate.Test
 		public virtual bool SupportsOperatorAll { get { return true; } }
 		public virtual bool SupportsOperatorSome { get { return true; } }
 		public virtual bool SupportsLocate { get { return true; } }
+
+		public virtual bool SupportsDistributedTransactions { get { return true; } }
+
+		/// <summary>
+		/// Whether two transactions can be run at the same time.  For example, with SQLite
+		/// the database is locked when one transaction is run, so running a second transaction
+		/// will cause a "database is locked" error message.
+		/// </summary>
+		public virtual bool SupportsConcurrentTransactions { get { return true; } }
 	}
 }
