@@ -62,7 +62,8 @@ namespace NHibernate.Test.Linq
                 {
                     InvalidLoginAttempts = 6,
                     LastLoginDate = DateTime.Now.AddDays(-1),
-                    Enum1 = EnumStoredAsString.Medium
+                    Enum1 = EnumStoredAsString.Medium,
+					Features = FeatureSet.HasAll
                 }
         	};
 
