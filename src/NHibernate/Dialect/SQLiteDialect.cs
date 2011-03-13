@@ -67,6 +67,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
 
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
+
+			RegisterFunction("cast", new SQLiteCastFunction());
 		}
 
 		public override Schema.IDataBaseSchema GetDataBaseSchema(DbConnection connection)
@@ -251,6 +253,17 @@ namespace NHibernate.Dialect
 		public override string SelectGUIDString
 		{
 			get { return "select randomblob(16)"; }
+		}
+
+		protected class SQLiteCastFunction : CastFunction
+		{
+			protected override bool CastingIsRequired(string sqlType)
+			{
+				// SQLite doesn't support casting to datetime types.  It assumes you want an integer and destroys the date string.
+				if (sqlType.ToLowerInvariant().Contains("date") || sqlType.ToLowerInvariant().Contains("time"))
+					return false;
+				return true;
+			}
 		}
 	}
 }

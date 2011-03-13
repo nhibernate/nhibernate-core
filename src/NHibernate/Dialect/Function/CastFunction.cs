@@ -71,16 +71,33 @@ namespace NHibernate.Dialect.Function
 			{
 				throw new QueryException(string.Format("invalid Hibernate type for cast(): type {0} not found", typeName));
 			}
-			return new SqlStringBuilder()
-				.Add("cast(")
-				.AddObject(args[0])
-				.Add(" as ")
-				.Add(sqlType)
-				.Add(")")
-				.ToSqlString();
+
+			if (CastingIsRequired(sqlType))
+			{
+				return new SqlStringBuilder()
+					.Add("cast(")
+					.AddObject(args[0])
+					.Add(" as ")
+					.Add(sqlType)
+					.Add(")")
+					.ToSqlString();
+			}
+			else
+			{
+				return new SqlStringBuilder()
+					.Add("(")
+					.AddObject(args[0])
+					.Add(")")
+					.ToSqlString();
+			}
 		}
 
 		#endregion
+
+		protected virtual bool CastingIsRequired(string sqlType)
+		{
+			return true;
+		}
 
 		#region IFunctionGrammar Members
 
