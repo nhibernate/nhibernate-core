@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Text;
@@ -255,6 +256,7 @@ namespace NHibernate.Dialect
 			get { return "select randomblob(16)"; }
 		}
 
+		[Serializable]
 		protected class SQLiteCastFunction : CastFunction
 		{
 			protected override bool CastingIsRequired(string sqlType)
