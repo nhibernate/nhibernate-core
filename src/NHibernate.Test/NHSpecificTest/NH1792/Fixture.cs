@@ -79,9 +79,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1792
 		{
 			using (ISession session = OpenSession())
 			{
+				string top = "";
+				if (Dialect.GetType().Name.StartsWith("Mssql"))
+					top = "top 5";
+
 				IList<Product> results =
 					session.CreateCriteria<Product>().Add(
-						Expression.Sql("{alias}.Id in (Select p.Id from Product p order by Name)")).Add(Restrictions.Gt("Id", 0)).
+						Expression.Sql("{alias}.Id in (Select " + top + " p.Id from Product p order by Name)")).Add(Restrictions.Gt("Id", 0)).
 						SetMaxResults(3).List<Product>();
 
 				Assert.AreEqual(3, results.Count);
