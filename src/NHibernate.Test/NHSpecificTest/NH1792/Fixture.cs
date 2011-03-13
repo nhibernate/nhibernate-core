@@ -80,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1792
 			using (ISession session = OpenSession())
 			{
 				string top = "";
-				if (Dialect.GetType().Name.StartsWith("Mssql"))
+				if (Dialect.GetType().Name.StartsWith("MsSql"))
 					top = "top 5";
 
 				IList<Product> results =
