@@ -394,12 +394,11 @@
   
   <target name="nuget" depends="init binaries nuspec" 
           description="Creates files for the release on nuget gallery.">
+    
     <property name="nuget.conf-template" value="${build.dir}/NHibernateXmlConfigurationTemplates" />
-
     <copy file="releasenotes.txt" tofile="${build.dir}/NHibernate.releasenotes.txt"/>
     <copy file="readme.html" tofile="${build.dir}/NHibernate.readme.html"/>
     <copy file="lgpl.txt" tofile="${build.dir}/NHibernate.license.txt"/>
-
     <!--Configuration templates-->
     <copy todir="${nuget.conf-template}">
       <fileset basedir="src/NHibernate.Config.Templates">
@@ -413,6 +412,22 @@
     <nant target="nuget">
       <buildfiles refid="nugetfiles.all" />
     </nant>
+
+    <!--Create NuGet push bat -->
+    <copy file="${tools.dir}/NuGet.exe" todir="${build.dir}/${nugetdeploy.subdir}"/>
+    <property name="nugetdeploy.pushbatfile" value="${build.dir}/${nugetdeploy.subdir}/NuGetPush.bat" />
+
+    <echo message="rem The parameter is your NuGet access key ${environment::newline()}" file="${nugetdeploy.pushbatfile}" append="false"/>
+    <foreach item="File" property="filename">
+      <in>
+        <items>
+          <include name="${build.dir}/${nugetdeploy.subdir}/*.nupkg"/>
+        </items>
+      </in>
+      <do>
+        <echo message="nuget push -source http://packages.nuget.org/v1/ ${filename} %1 ${environment::newline()}" file="${nugetdeploy.pushbatfile}" append="true"/>
+      </do>
+    </foreach>
   </target>
 
 </project>
