@@ -66,6 +66,7 @@ namespace NHibernate.Dialect
 			
 			RegisterFunction("substring", new AnsiSubstringFunction());
 			RegisterFunction("replace", new StandardSQLFunction("replace", NHibernateUtil.String));
+			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1,1,?2)"));
 
 			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
 

@@ -63,6 +63,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "datetime(date(?1))"));
 
 			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
+			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1,1,?2)"));
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 
 			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
