@@ -1,10 +1,31 @@
-﻿using NUnit.Framework;
+﻿using System.Data;
+using NHibernate.Mapping;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2302
 {
     [TestFixture]
     public class Fixture : BugTestCase
     {
+		protected override void Configure(Cfg.Configuration configuration)
+		{
+			foreach (var cls in configuration.ClassMappings)
+			{
+				foreach (var prop in cls.PropertyIterator)
+				{
+					foreach (var col in prop.ColumnIterator)
+					{
+						if (col is Column)
+						{
+							var column = col as Column;
+							if (column.SqlType == "nvarchar(max)")
+								column.SqlType = Dialect.GetLongestTypeName(DbType.String);
+						}
+					}
+				}
+			}
+		}
+
         protected override void OnTearDown()
         {
             CleanUp();
