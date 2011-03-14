@@ -93,6 +93,23 @@ namespace NHibernate.Dialect
 			return Replace(Get(typecode), size, precision, scale);
 		}
 
+		/// <summary>
+		/// For types with a simple length, this method returns the definition
+		/// for the longest registered type.
+		/// </summary>
+		/// <param name="typecode"></param>
+		/// <returns></returns>
+		public string GetLongest(DbType typecode)
+		{
+			SortedList<int, string> map;
+			weighted.TryGetValue(typecode, out map);
+
+			if (map != null && map.Count > 0)
+				return Replace(map.Values[map.Count - 1], map.Keys[map.Count - 1], 0, 0);
+
+			return Get(typecode);
+		}
+
 		private static string Replace(string type, int size, int precision, int scale)
 		{
 			type = StringHelper.ReplaceOnce(type, LengthPlaceHolder, size.ToString());

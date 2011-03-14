@@ -449,6 +449,16 @@ namespace NHibernate.Dialect
 			return result;
 		}
 
+		/// <summary>
+		/// Gets the name of the longest registered type for a particular DbType.
+		/// </summary>
+		/// <param name="dbType"></param>
+		/// <returns></returns>
+		public virtual string GetLongestTypeName(DbType dbType)
+		{
+			return typeNames.GetLongest(dbType);
+		}
+
 		/// <summary> 
 		/// Get the name of the database type appropriate for casting operations
 		/// (via the CAST() SQL function) for the given <see cref="SqlType"/> typecode.
