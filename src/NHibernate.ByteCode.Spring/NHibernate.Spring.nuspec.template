@@ -16,8 +16,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\net-3.5\NHibernate.ByteCode.Spring.dll" target="lib\Net35" />
-    <file src="bin\net-3.5\NHibernate.ByteCode.Spring.xml" target="lib\Net35" />
-    <file src="bin\net-3.5\Spring*.*" target="lib\Net35" />
+    <file src="NHibernate.ByteCode.Spring.dll" target="lib\Net35" />
+    <file src="NHibernate.ByteCode.Spring.xml" target="lib\Net35" />
+    <file src="Spring*.*" target="lib\Net35" />
   </files>
 </package>

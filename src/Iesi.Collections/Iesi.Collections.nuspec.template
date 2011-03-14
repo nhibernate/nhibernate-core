@@ -13,8 +13,6 @@
     <tags>Collections</tags>
   </metadata>
   <files>
-    <file src="bin\net-3.5\Iesi.Collections.dll" target="lib\Net35" />
-    <file src="bin\net-3.5\Iesi.Collections.pdb" target="lib\Net35" />
-    <file src="bin\net-3.5\Iesi.Collections.license.txt" target="lib\Net35" />
+    <file src="Iesi.Collections.*" target="lib\Net35" />
   </files>
 </package>

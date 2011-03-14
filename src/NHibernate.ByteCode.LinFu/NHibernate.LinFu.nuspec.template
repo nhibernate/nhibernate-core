@@ -16,8 +16,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\net-3.5\NHibernate.ByteCode.LinFu.dll" target="lib\Net35" />
-    <file src="bin\net-3.5\NHibernate.ByteCode.LinFu.xml" target="lib\Net35" />
-    <file src="bin\net-3.5\LinFu*.*" target="lib\Net35" />
+    <file src="NHibernate.ByteCode.LinFu.dll" target="lib\Net35" />
+    <file src="NHibernate.ByteCode.LinFu.xml" target="lib\Net35" />
+    <file src="LinFu*.*" target="lib\Net35" />
   </files>
 </package>

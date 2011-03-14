@@ -37,8 +37,8 @@
 	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
 	<target name="build" depends="init generate-assemblyinfo common.compile-dll" description="Build Spring ByteCode" />
 
-  <target name="nuspec" depends="init" description="Create nuspec for NHibernate.ByteCode.Spring">
-    <property name="nuspec.destination.file" value="${build.dir}/${nuspec.destination.filename}" />
+  <target name="nuspec" depends="init nuget.set-properties" description="Create nuspec for NHibernate.ByteCode.Spring">
+    <property name="nuspec.destination.file" value="${nuget.workingdir}/${nuspec.destination.filename}" />
     <copy file="NHibernate.Spring.nuspec.template" tofile="${nuspec.destination.file}"/>
     <xmlpoke file="${nuspec.destination.file}"
              xpath="/package/metadata/dependencies/dependency[@id = 'NHibernate']/@version"
@@ -47,11 +47,20 @@
              xpath="/package/metadata/version"
              value="${project.version.numeric}" />
   </target>
-  <target name="nuget" depends="init nuspec">
-    <exec basedir="${tools.dir}" workingdir="${build.dir}" program="NuGet.exe">
+
+  <target name="nuget" depends="init nuget.set-properties nuspec">
+    <!-- Prepare working dir with file needed by NHibernate.Spring.nuspec -->
+    <copy file="${bin.dir}/NHibernate.ByteCode.Spring.dll" todir="${nuget.workingdir}"/>
+    <copy file="${bin.dir}/NHibernate.ByteCode.Spring.xml" todir="${nuget.workingdir}"/>
+    <copy todir="${nuget.workingdir}">
+      <fileset basedir="${bin.dir}">
+        <include name="Spring*.*" />
+      </fileset>
+    </copy>
+
+    <exec basedir="${tools.dir}" workingdir="${nuget.workingdir}" program="NuGet.exe">
       <arg value="pack" />
       <arg value="${nuspec.destination.filename}" />
-      <arg line="-o ${nugetdeploy.subdir}" />
     </exec>
   </target>
 

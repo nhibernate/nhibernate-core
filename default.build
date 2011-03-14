@@ -386,46 +386,60 @@
     <include name="NHibernate.ByteCode.Spring/ByteCode.build" />
   </fileset>
 
-  <target name="nuspec" depends="init" description="Create nuspec files">
+  <target name="nuspec" depends="init nuget.set-properties" description="Create nuspec files">
     <nant target="nuspec">
       <buildfiles refid="nugetfiles.all" />
     </nant>
   </target>
   
-  <target name="nuget" depends="init binaries nuspec" 
+  <target name="nuget" depends="init binaries nuget.set-properties nuspec" 
           description="Creates files for the release on nuget gallery.">
-    
-    <property name="nuget.conf-template" value="${build.dir}/NHibernateXmlConfigurationTemplates" />
-    <copy file="releasenotes.txt" tofile="${build.dir}/NHibernate.releasenotes.txt"/>
-    <copy file="readme.html" tofile="${build.dir}/NHibernate.readme.html"/>
-    <copy file="lgpl.txt" tofile="${build.dir}/NHibernate.license.txt"/>
-    <!--Configuration templates-->
-    <copy todir="${nuget.conf-template}">
-      <fileset basedir="src/NHibernate.Config.Templates">
-        <include name="*"/>
-      </fileset>
-    </copy>
-
-    <property name="nugetdeploy.subdir" value="nuget_gallery" />
-    <mkdir dir="${build.dir}/${nugetdeploy.subdir}" />
-    
+ 
     <nant target="nuget">
       <buildfiles refid="nugetfiles.all" />
     </nant>
 
-    <!--Create NuGet push bat -->
-    <copy file="${tools.dir}/NuGet.exe" todir="${build.dir}/${nugetdeploy.subdir}"/>
-    <property name="nugetdeploy.pushbatfile" value="${build.dir}/${nugetdeploy.subdir}/NuGetPush.bat" />
+    <mkdir dir="${nuget.nupackages.dir}" />
+    <move todir="${nuget.nupackages.dir}">
+      <fileset basedir="${nuget.workingdir}">
+        <include name="*.nupkg" />
+      </fileset>
+    </move>
+  </target>
+  
+  <target name="nugetpushbat" depends="init binaries nuget.set-properties nuspec nuget"
+          description="Creates files for the release on nuget gallery.">
 
-    <echo message="rem The parameter is your NuGet access key ${environment::newline()}" file="${nugetdeploy.pushbatfile}" append="false"/>
+    <copy file="${tools.dir}/NuGet.exe" todir="${nuget.nupackages.dir}"/>
+
+    <echo message="rem In order to use this bat you have to be sure you have executed 'nuget SetApiKey' ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="false"/>
     <foreach item="File" property="filename">
       <in>
         <items>
-          <include name="${build.dir}/${nugetdeploy.subdir}/*.nupkg"/>
+          <include name="${nuget.nupackages.dir}/*.nupkg"/>
         </items>
       </in>
       <do>
-        <echo message="nuget push -source http://packages.nuget.org/v1/ ${filename} %1 ${environment::newline()}" file="${nugetdeploy.pushbatfile}" append="true"/>
+        <echo message="nuget push -source http://packages.nuget.org/v1/ ${filename} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
+      </do>
+    </foreach>
+  </target>
+  
+  <target name="nugetpush" depends="init binaries nuget.set-properties nuspec nuget"
+          description="Push packages on nuget gallery.">
+    <!-- In order to use this task you have to be sure you have executed 'nuget SetApiKey' -->
+    <foreach item="File" property="filename">
+      <in>
+        <items>
+          <include name="${nuget.nupackages.dir}/*.nupkg"/>
+        </items>
+      </in>
+      <do>
+        <exec basedir="${tools.dir}" workingdir="${nuget.nupackages.dir}" program="NuGet.exe">
+          <arg value="push" />
+          <arg line="-source http://packages.nuget.org/v1/"/>
+          <arg value="${filename}" />
+        </exec>
       </do>
     </foreach>
   </target>

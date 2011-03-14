@@ -77,8 +77,8 @@
 		<copy file="${bin.dir}/NHibernate.dll" tofile="${root.dir}/${lib.framework.dir}/NHibernate.dll"/>
 	</target>
 
-  <target name="nuspec" depends="init" description="Create nuspec for Iesi.Collections">
-    <property name="nuspec.destination.file" value="${build.dir}/${nuspec.destination.filename}" />
+  <target name="nuspec" depends="init nuget.set-properties" description="Create nuspec for NHibernate">
+    <property name="nuspec.destination.file" value="${nuget.workingdir}/${nuspec.destination.filename}" />
     <copy file="NHibernate.nuspec.template" tofile="${nuspec.destination.file}"/>
     <xmlpoke file="${nuspec.destination.file}"
              xpath="/package/metadata/dependencies/dependency[@id = 'Iesi.Collections']/@version"
@@ -88,11 +88,27 @@
              value="${project.version.numeric}" />
   </target>
 
-  <target name="nuget" depends="init nuspec">
-    <exec basedir="${tools.dir}" workingdir="${build.dir}" program="NuGet.exe">
+  <target name="nuget" depends="init nuget.set-properties nuspec">
+    <!-- Prepare working dir with file needed by NHibernate.nuspec -->
+    <copy file="${bin.dir}/NHibernate.dll" todir="${nuget.workingdir}"/>
+    <copy file="${bin.dir}/NHibernate.xml" todir="${nuget.workingdir}"/>
+    <copy file="${root.dir}/releasenotes.txt" tofile="${nuget.workingdir}/NHibernate.releasenotes.txt"/>
+    <copy file="${root.dir}/readme.html" tofile="${nuget.workingdir}/NHibernate.readme.html"/>
+    <copy file="${root.dir}/lgpl.txt" tofile="${nuget.workingdir}/NHibernate.license.txt"/>
+    <copy todir="${nuget.workingdir}">
+      <fileset basedir="${root.dir}/src/NHibernate">
+        <include name="*.xsd" />
+      </fileset>
+    </copy>
+    <copy todir="${nuget.workingdir}/NHibernateXmlConfigurationTemplates">
+      <fileset basedir="../NHibernate.Config.Templates">
+        <include name="*"/>
+      </fileset>
+    </copy>
+
+    <exec basedir="${tools.dir}" workingdir="${nuget.workingdir}" program="NuGet.exe">
       <arg value="pack" />
       <arg value="${nuspec.destination.filename}" />
-      <arg line="-o ${nugetdeploy.subdir}" />
     </exec>
   </target>
 
