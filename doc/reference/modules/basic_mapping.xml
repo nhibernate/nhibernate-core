@@ -319,7 +319,7 @@
                     </callout>
                 </calloutlist>
             </programlistingco>
-           
+            
             <para>
                 It is perfectly acceptable for the named persistent class to be an interface. You would then
                 declare implementing classes of that interface using the <literal>&lt;subclass&gt;</literal>
@@ -327,10 +327,10 @@
                 class name using the standard form ie. <literal>Eg.Foo+Bar, Eg</literal>.
                 Due to an HQL parser limitation inner classes can not be used in queries in NHibernate 1.0.
             </para>
-
+            
             <para>
-                Immutable classes, <literal>mutable="false"</literal>, may not be updated or deleted by the 
-                application. This allows NHibernate to make some minor performance optimizations.
+                Changes to immutable classes, <literal>mutable="false"</literal>, will not be
+                persisted. This allows NHibernate to make some minor performance optimizations.
             </para>
             
             <para>
