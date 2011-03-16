@@ -42,6 +42,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1857
 			}
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.GetTestDialect(dialect).SupportsFullJoin;
+		}
+
 		[Test]
 		public void TestFullJoin()
 		{

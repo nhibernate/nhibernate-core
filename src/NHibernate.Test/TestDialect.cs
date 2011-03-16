@@ -33,5 +33,7 @@ namespace NHibernate.Test
 		/// will cause a "database is locked" error message.
 		/// </summary>
 		public virtual bool SupportsConcurrentTransactions { get { return true; } }
+
+		public virtual bool SupportsFullJoin { get { return true; } }
 	}
 }
