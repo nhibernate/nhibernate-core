@@ -50,12 +50,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Information", "Information"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration Templates", "Configuration Templates", "{936E50BD-4027-4864-ADE9-423C3FBF7FFB}"
 	ProjectSection(SolutionItems) = preProject
-		NHibernate.Config.Templates\FireBird.cfg.xml.tmpl = NHibernate.Config.Templates\FireBird.cfg.xml.tmpl
-		NHibernate.Config.Templates\MSSQL.cfg.xml.tmpl = NHibernate.Config.Templates\MSSQL.cfg.xml.tmpl
-		NHibernate.Config.Templates\MySql.cfg.xml.tmpl = NHibernate.Config.Templates\MySql.cfg.xml.tmpl
-		NHibernate.Config.Templates\Oracle.cfg.xml.tmpl = NHibernate.Config.Templates\Oracle.cfg.xml.tmpl
-		NHibernate.Config.Templates\PostgreSQL.cfg.xml.tmpl = NHibernate.Config.Templates\PostgreSQL.cfg.xml.tmpl
-		NHibernate.Config.Templates\SQLite.cfg.xml.tmpl = NHibernate.Config.Templates\SQLite.cfg.xml.tmpl
+		NHibernate.Config.Templates\FireBird.cfg.xml = NHibernate.Config.Templates\FireBird.cfg.xml
+		NHibernate.Config.Templates\MSSQL.cfg.xml = NHibernate.Config.Templates\MSSQL.cfg.xml
+		NHibernate.Config.Templates\MySql.cfg.xml = NHibernate.Config.Templates\MySql.cfg.xml
+		NHibernate.Config.Templates\Oracle.cfg.xml = NHibernate.Config.Templates\Oracle.cfg.xml
+		NHibernate.Config.Templates\PostgreSQL.cfg.xml = NHibernate.Config.Templates\PostgreSQL.cfg.xml
+		NHibernate.Config.Templates\SQLite.cfg.xml = NHibernate.Config.Templates\SQLite.cfg.xml
 	EndProjectSection
 	ProjectSection(FolderStartupServices) = postProject
 		{B4F97281-0DBD-4835-9ED8-7DFB966E87FF} = {B4F97281-0DBD-4835-9ED8-7DFB966E87FF}
