@@ -24,7 +24,7 @@ namespace NHibernate.Proxy.Map
 			return new MapProxy(new MapLazyInitializer(entityName, id, session));
 		}
 
-		public object GetFieldInterceptionProxy()
+		public object GetFieldInterceptionProxy(object getInstance)
 		{
 			throw new NotSupportedException();
 		}

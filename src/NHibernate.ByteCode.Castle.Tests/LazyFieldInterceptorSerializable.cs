@@ -26,7 +26,7 @@ namespace NHibernate.ByteCode.Castle.Tests
 			var pf = new ProxyFactory();
 			var propertyInfo = typeof(MyClass).GetProperty("Id");
 			pf.PostInstantiate("MyClass", typeof(MyClass), new HashedSet<System.Type>(), propertyInfo.GetGetMethod(), propertyInfo.GetSetMethod(), null);
-			var fieldInterceptionProxy = (IFieldInterceptorAccessor)pf.GetFieldInterceptionProxy();
+			var fieldInterceptionProxy = (IFieldInterceptorAccessor)pf.GetFieldInterceptionProxy(new MyClass());
 			fieldInterceptionProxy.FieldInterceptor = new DefaultFieldInterceptor(null, null, null, "MyClass", typeof(MyClass));
 
 			fieldInterceptionProxy.Should().Be.BinarySerializable();

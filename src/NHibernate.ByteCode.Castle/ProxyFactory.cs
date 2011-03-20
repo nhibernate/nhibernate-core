@@ -44,7 +44,7 @@ namespace NHibernate.ByteCode.Castle
 		}
 
 
-		public override object GetFieldInterceptionProxy()
+		public override object GetFieldInterceptionProxy(object instanceToWrap)
 		{
 			var proxyGenerationOptions = new ProxyGenerationOptions();
 			var interceptor = new LazyFieldInterceptor();

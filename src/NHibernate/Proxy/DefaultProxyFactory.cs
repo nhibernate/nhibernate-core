@@ -30,10 +30,9 @@ namespace NHibernate.Proxy
 			}
 		}
 
-		public override object GetFieldInterceptionProxy()
+		public override object GetFieldInterceptionProxy(object instanceToWrap)
 		{
-			object targetInstance = Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(PersistentClass, true);
-			var interceptor = new DefaultDynamicLazyFieldInterceptor(targetInstance);
+			var interceptor = new DefaultDynamicLazyFieldInterceptor(instanceToWrap);
 			return factory.CreateProxy(PersistentClass, interceptor, new[] { typeof(IFieldInterceptorAccessor) });
 		}
 	}

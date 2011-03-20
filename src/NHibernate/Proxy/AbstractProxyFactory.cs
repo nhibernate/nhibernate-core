@@ -44,7 +44,7 @@ namespace NHibernate.Proxy
 
 		public abstract INHibernateProxy GetProxy(object id, ISessionImplementor session);
 
-		public virtual object GetFieldInterceptionProxy()
+		public virtual object GetFieldInterceptionProxy(object instanceToWrap)
 		{
 			throw new NotSupportedException();
 		}

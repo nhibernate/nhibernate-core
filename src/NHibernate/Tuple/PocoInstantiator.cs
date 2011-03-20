@@ -90,8 +90,13 @@ namespace NHibernate.Tuple
 			}
 			if (generateFieldInterceptionProxy)
 			{
-				return proxyFactory.GetFieldInterceptionProxy();
+				return proxyFactory.GetFieldInterceptionProxy(GetInstance());
 			}
+			return GetInstance();
+		}
+
+		private object GetInstance()
+		{
 			if (optimizer != null)
 			{
 				return optimizer.CreateInstance();
