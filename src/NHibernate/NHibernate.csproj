@@ -91,6 +91,7 @@
     <Compile Include="ADOException.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AssertionFailure.cs" />
+    <Compile Include="Bytecode\DefaultProxyFactoryFactory.cs" />
     <Compile Include="Cache\Access\ISoftLock.cs" />
     <Compile Include="Cache\CachedItem.cs" />
     <Compile Include="Cache\CacheException.cs" />
@@ -252,6 +253,7 @@
     <Compile Include="Impl\SqlQueryImpl.cs" />
     <Compile Include="Engine\Status.cs" />
     <Compile Include="InstantiationException.cs" />
+    <Compile Include="Intercept\DefaultDynamicLazyFieldInterceptor.cs" />
     <Compile Include="IQuery.cs" />
     <Compile Include="ISession.cs" />
     <Compile Include="ISessionFactory.cs" />
@@ -326,6 +328,8 @@
     <Compile Include="Properties\PascalCaseMUnderscoreStrategy.cs" />
     <Compile Include="Properties\PascalCaseUnderscoreStrategy.cs" />
     <Compile Include="Properties\PropertyAccessorFactory.cs" />
+    <Compile Include="Proxy\DefaultLazyInitializer.cs" />
+    <Compile Include="Proxy\DefaultProxyFactory.cs" />
     <Compile Include="Proxy\DynamicProxy\DefaultArgumentHandler.cs" />
     <Compile Include="Proxy\DynamicProxy\DefaultMethodEmitter.cs" />
     <Compile Include="Proxy\DynamicProxy\DefaultProxyMethodBuilder.cs" />
