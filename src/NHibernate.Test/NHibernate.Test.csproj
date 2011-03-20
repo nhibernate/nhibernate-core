@@ -221,6 +221,7 @@
     <Compile Include="DynamicProxyTests\InterfaceProxySerializationTests\MyProxyImpl.cs" />
     <Compile Include="DynamicProxyTests\InterfaceProxySerializationTests\ProxyFixture.cs" />
     <Compile Include="DynamicProxyTests\InterfaceWithEqualsGethashcodeTests.cs" />
+    <Compile Include="DynamicProxyTests\LazyFieldInterceptorSerializable.cs" />
     <Compile Include="EngineTest\CallableParserFixture.cs" />
     <Compile Include="EngineTest\NativeSQLQueryNonScalarReturnTest.cs" />
     <Compile Include="EngineTest\NativeSQLQueryScalarReturnTest.cs" />
