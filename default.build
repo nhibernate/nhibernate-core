@@ -24,12 +24,6 @@
 		<include name="Iesi.Collections.Test/Iesi.Collections.Test.build" />
 		<include name="NHibernate/NHibernate.build" />
     <include name="NHibernate.TestDatabaseSetup/TestDatabaseSetup.build" />
-		<include name="NHibernate.ByteCode.LinFu/ByteCode.build" />
-		<include name="NHibernate.ByteCode.LinFu.Tests/ByteCode.Test.build" />
-		<include name="NHibernate.ByteCode.Castle/ByteCode.build" />
-		<include name="NHibernate.ByteCode.Castle.Tests/ByteCode.Test.build" />
-		<include name="NHibernate.ByteCode.Spring/ByteCode.build" />
-		<include name="NHibernate.ByteCode.Spring.Tests/ByteCode.Test.build" />
 		<include name="NHibernate.DomainModel/NHibernate.DomainModel.build" />
 		<include name="NHibernate.Test/NHibernate.Test.build" />
 		<include name="NHibernate.Tool.HbmXsd/NHibernate.Tool.HbmXsd.build" />
@@ -38,9 +32,6 @@
 	<fileset id="buildfiles.tests" basedir="src">
     <include name="NHibernate.TestDatabaseSetup/TestDatabaseSetup.build" />
 		<include name="Iesi.Collections.Test/Iesi.Collections.Test.build" />
-		<include name="NHibernate.ByteCode.LinFu.Tests/ByteCode.Test.build" />
-		<include name="NHibernate.ByteCode.Castle.Tests/ByteCode.Test.build" />
-		<include name="NHibernate.ByteCode.Spring.Tests/ByteCode.Test.build" />
 		<include name="NHibernate.Test/NHibernate.Test.build" />
 	</fileset>
 
@@ -89,12 +80,6 @@
 				-->
 				<exclude name="Iesi.Collections.dll" />
 				<exclude name="Iesi.Collections.xml" />
-				<exclude name="NHibernate.ByteCode.LinFu.dll" />
-				<exclude name="NHibernate.ByteCode.LinFu.xml" />
-				<exclude name="NHibernate.ByteCode.Castle.dll" />
-				<exclude name="NHibernate.ByteCode.Castle.xml" />
-				<exclude name="NHibernate.ByteCode.Spring.dll" />
-				<exclude name="NHibernate.ByteCode.Spring.xml" />
 				<include name="*.dll" />
 				<include name="*.xml" />
 				<include name="*.license.txt" />
@@ -273,7 +258,6 @@
 		<property name="bin-pack.tmpdir" value="${build.dir}/tmp-bin" />
 		<property name="bin-pack.conf-template" value="${bin-pack.tmpdir}/Configuration_Templates" />
 		<property name="bin-pack.required" value="${bin-pack.tmpdir}/Required_Bins" />
-		<property name="bin-pack.requiredlazy" value="${bin-pack.tmpdir}/Required_For_LazyLoading" />
 		<property name="bin-pack.tests" value="${bin-pack.tmpdir}/Tests" />
 		
 		<copy file="releasenotes.txt" todir="${bin-pack.tmpdir}"/>
@@ -302,27 +286,6 @@
 			</fileset>
 		</copy>
 		<!--Required Bins for lazy loading NHibernate.ByteCode.Castle.dll-->
-		<copy file="Choose_Only_One.txt" todir="${bin-pack.requiredlazy}"/>
-		<copy todir="${bin-pack.requiredlazy}/Castle">
-			<fileset basedir="${bin.dir}">
-				<include name="Castle.*" />
-				<include name="NHibernate.ByteCode.Castle.???" />
-			</fileset>
-		</copy>
-		<copy todir="${bin-pack.requiredlazy}/LinFu">
-			<fileset basedir="${bin.dir}">
-				<include name="LinFu.*" />
-				<include name="NHibernate.ByteCode.LinFu.???" />
-			</fileset>
-		</copy>
-		<copy todir="${bin-pack.requiredlazy}/Spring">
-			<fileset basedir="${bin.dir}">
-				<include name="antlr.runtime.dll" />
-				<include name="Common.Logging.dll" />
-				<include name="Spring.*" />
-				<include name="NHibernate.ByteCode.Spring.???" />
-			</fileset>
-		</copy>
 		<!-- Tests -->
 		<copy file="${bin.dir}/TestEnbeddedConfig.cfg.xml" todir="${bin-pack.tests}"/>
 		<copy file="${bin.dir}/ABC.hbm.xml" todir="${bin-pack.tests}"/>
@@ -381,9 +344,6 @@
   <fileset id="nugetfiles.all" basedir="src">
     <include name="Iesi.Collections/Iesi.Collections.build" />
     <include name="NHibernate/NHibernate.build" />
-    <include name="NHibernate.ByteCode.Castle/ByteCode.build" />
-    <include name="NHibernate.ByteCode.LinFu/ByteCode.build" />
-    <include name="NHibernate.ByteCode.Spring/ByteCode.build" />
   </fileset>
 
   <target name="nuspec" depends="init nuget.set-properties" description="Create nuspec files">
