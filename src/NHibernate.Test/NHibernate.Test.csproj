@@ -68,10 +68,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\3.5\Iesi.Collections.dll</HintPath>
     </Reference>
-    <Reference Include="LinFu.DynamicProxy, Version=1.0.3.14911, Culture=neutral, PublicKeyToken=62a6874124340d6e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\3.5\LinFu.DynamicProxy.dll</HintPath>
-    </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\3.5\log4net.dll</HintPath>
@@ -221,6 +217,7 @@
     <Compile Include="DriverTest\Sql2008DateTime2Test.cs" />
     <Compile Include="DriverTest\SqlClientDriverFixture.cs" />
     <Compile Include="DriverTest\SqlServerCeDriverFixture.cs" />
+    <Compile Include="DynamicProxyTests\InterfaceWithEqualsGethashcodeTests.cs" />
     <Compile Include="EngineTest\CallableParserFixture.cs" />
     <Compile Include="EngineTest\NativeSQLQueryNonScalarReturnTest.cs" />
     <Compile Include="EngineTest\NativeSQLQueryScalarReturnTest.cs" />
@@ -1994,10 +1991,6 @@
     <ProjectReference Include="..\NHibernate.ByteCode.Castle\NHibernate.ByteCode.Castle.csproj">
       <Project>{31C3F0EA-0FED-4A2F-B68D-96CE29844487}</Project>
       <Name>NHibernate.ByteCode.Castle</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NHibernate.ByteCode.LinFu\NHibernate.ByteCode.LinFu.csproj">
-      <Project>{8289D6AD-9714-42D3-A94D-D4D9814D1281}</Project>
-      <Name>NHibernate.ByteCode.LinFu</Name>
     </ProjectReference>
     <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel.csproj">
       <Project>{5C649B55-1B3F-4C38-9998-1B043E94A244}</Project>

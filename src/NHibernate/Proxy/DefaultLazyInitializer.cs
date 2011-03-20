@@ -7,8 +7,10 @@ using NHibernate.Type;
 
 namespace NHibernate.Proxy
 {
+	[Serializable]
 	public class DefaultLazyInitializer : BasicLazyInitializer, DynamicProxy.IInterceptor
 	{
+		[NonSerialized]
 		private static readonly MethodInfo exceptionInternalPreserveStackTrace =
 			typeof (Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic);
 

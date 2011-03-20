@@ -4,6 +4,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Intercept
 {
+	[Serializable]
 	public class DefaultDynamicLazyFieldInterceptor : IFieldInterceptorAccessor, Proxy.DynamicProxy.IInterceptor
 	{
 		public DefaultDynamicLazyFieldInterceptor(object targetInstance)

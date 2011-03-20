@@ -1,4 +1,5 @@
 using NHibernate.AdoNet;
+using NHibernate.Bytecode;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
@@ -36,7 +37,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			configure.Proxy(p =>
 												{
 													p.Validation = false;
-													p.ProxyFactoryFactory<ByteCode.LinFu.ProxyFactoryFactory>();
+													p.ProxyFactoryFactory<DefaultProxyFactoryFactory>();
 												});
 			configure.Mappings(m=>
 			                   	{
@@ -75,7 +76,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 									Is.EqualTo(typeof(DefaultCollectionTypeFactory).AssemblyQualifiedName));
 			Assert.That(configure.Properties[Environment.UseProxyValidator], Is.EqualTo("false"));
 			Assert.That(configure.Properties[Environment.ProxyFactoryFactoryClass],
-						Is.EqualTo(typeof(ByteCode.LinFu.ProxyFactoryFactory).AssemblyQualifiedName));
+						Is.EqualTo(typeof(DefaultProxyFactoryFactory).AssemblyQualifiedName));
 			Assert.That(configure.Properties[Environment.QueryTranslator],
 						Is.EqualTo(typeof(ClassicQueryTranslatorFactory).AssemblyQualifiedName));
 			Assert.That(configure.Properties[Environment.DefaultCatalog], Is.EqualTo("MyCatalog"));

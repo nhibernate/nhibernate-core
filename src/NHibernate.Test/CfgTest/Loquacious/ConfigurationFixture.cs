@@ -1,7 +1,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using NHibernate.AdoNet;
-using NHibernate.ByteCode.LinFu;
+using NHibernate.Bytecode;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Cfg.Loquacious;
@@ -35,7 +35,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 					.Through<DefaultCollectionTypeFactory>()
 				.Proxy
 					.DisableValidation()
-					.Through<ProxyFactoryFactory>()
+					.Through<DefaultProxyFactoryFactory>()
 				.ParsingHqlThrough<ClassicQueryTranslatorFactory>()
 				.Mapping
 					.UsingDefaultCatalog("MyCatalog")
@@ -75,7 +75,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 									Is.EqualTo(typeof(DefaultCollectionTypeFactory).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.UseProxyValidator], Is.EqualTo("false"));
 			Assert.That(cfg.Properties[Environment.ProxyFactoryFactoryClass],
-						Is.EqualTo(typeof(ProxyFactoryFactory).AssemblyQualifiedName));
+						Is.EqualTo(typeof(DefaultProxyFactoryFactory).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.QueryTranslator],
 						Is.EqualTo(typeof(ClassicQueryTranslatorFactory).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.DefaultCatalog], Is.EqualTo("MyCatalog"));
@@ -112,7 +112,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			// The place where put default properties values is the Dialect itself.
 			var cfg = new Configuration();
 			cfg.SessionFactory()
-				.Proxy.Through<ProxyFactoryFactory>()
+				.Proxy.Through<DefaultProxyFactoryFactory>()
 				.Integrate
 					.Using<MsSql2005Dialect>()
 					.Connected
@@ -124,7 +124,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 						       	});
 
 			Assert.That(cfg.Properties[Environment.ProxyFactoryFactoryClass],
-			            Is.EqualTo(typeof (ProxyFactoryFactory).AssemblyQualifiedName));
+									Is.EqualTo(typeof(DefaultProxyFactoryFactory).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.Dialect],
 									Is.EqualTo(typeof(MsSql2005Dialect).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.ConnectionString],

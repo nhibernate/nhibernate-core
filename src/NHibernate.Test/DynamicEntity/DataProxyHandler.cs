@@ -1,9 +1,9 @@
 using System.Collections;
-using LinFu.DynamicProxy;
+using NHibernate.Proxy.DynamicProxy;
 
 namespace NHibernate.Test.DynamicEntity
 {
-	public sealed class DataProxyHandler : LinFu.DynamicProxy.IInterceptor
+	public sealed class DataProxyHandler : Proxy.DynamicProxy.IInterceptor
 	{
 		private readonly Hashtable data = new Hashtable();
 		private readonly string entityName;

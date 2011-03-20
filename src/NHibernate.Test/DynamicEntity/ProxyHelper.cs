@@ -1,4 +1,4 @@
-using LinFu.DynamicProxy;
+using NHibernate.Proxy.DynamicProxy;
 
 namespace NHibernate.Test.DynamicEntity
 {
@@ -8,7 +8,7 @@ namespace NHibernate.Test.DynamicEntity
 
 		private static T NewProxy<T>(object id)
 		{
-			return proxyGenerator.CreateProxy<T>(new DataProxyHandler(typeof (T).FullName, id),
+			return (T)proxyGenerator.CreateProxy(typeof(T), new DataProxyHandler(typeof (T).FullName, id),
 			                                     new[] {typeof (IProxyMarker), typeof (T)});
 
 		}
