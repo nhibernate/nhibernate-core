@@ -83,7 +83,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="NamespaceSummary.xml" />
-    <None Include="Iesi.Collections.nuspec.template" />
+    <None Include="Iesi.Collections.nuspec.template">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
