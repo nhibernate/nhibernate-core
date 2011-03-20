@@ -43,6 +43,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Information", "Information"
 		..\readme.html = ..\readme.html
 		..\releasenotes.txt = ..\releasenotes.txt
 		..\sample build commands.txt = ..\sample build commands.txt
+		..\ShowBuildMenu.bat = ..\ShowBuildMenu.bat
 	EndProjectSection
 	ProjectSection(FolderStartupServices) = postProject
 		{B4F97281-0DBD-4835-9ED8-7DFB966E87FF} = {B4F97281-0DBD-4835-9ED8-7DFB966E87FF}
