@@ -1988,10 +1988,6 @@
     <EmbeddedResource Include="ReadOnly\VersionedNode.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NHibernate.ByteCode.Castle\NHibernate.ByteCode.Castle.csproj">
-      <Project>{31C3F0EA-0FED-4A2F-B68D-96CE29844487}</Project>
-      <Name>NHibernate.ByteCode.Castle</Name>
-    </ProjectReference>
     <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel.csproj">
       <Project>{5C649B55-1B3F-4C38-9998-1B043E94A244}</Project>
       <Name>NHibernate.DomainModel</Name>

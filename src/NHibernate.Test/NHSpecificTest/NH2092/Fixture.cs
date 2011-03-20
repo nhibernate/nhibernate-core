@@ -1,5 +1,3 @@
-using NHibernate.ByteCode.Castle;
-using NHibernate.Cfg;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2092
@@ -7,12 +5,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2092
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		protected override void Configure(Configuration configuration)
-		{
-			configuration.SetProperty(Environment.ProxyFactoryFactoryClass,
-										typeof(ProxyFactoryFactory).AssemblyQualifiedName);
-		}
-
 		[Test]
 		public void ConstrainedLazyLoadedOneToOneUsingCastleProxy()
 		{

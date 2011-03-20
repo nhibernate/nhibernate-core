@@ -1,6 +1,3 @@
-using System.Linq;
-using NHibernate.ByteCode.Castle;
-using NHibernate.Cfg;
 using NHibernate.Proxy;
 using NUnit.Framework;
  
@@ -9,12 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2093
   [TestFixture]
   public class Fixture : BugTestCase
   {
-    protected override void Configure(Configuration configuration)
-    {
-      configuration.SetProperty(Environment.ProxyFactoryFactoryClass,
-                    typeof(ProxyFactoryFactory).AssemblyQualifiedName);
-    }
-
     [Test]
     public void NHibernateProxyHelperReturnsCorrectType()
     {

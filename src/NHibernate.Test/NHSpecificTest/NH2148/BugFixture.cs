@@ -1,16 +1,9 @@
-using NHibernate.ByteCode.Castle;
-using NHibernate.Cfg;
 using NUnit.Framework;
+
 namespace NHibernate.Test.NHSpecificTest.NH2148
 {
 	public class BugFixture : BugTestCase
 	{
-		protected override void Configure(NHibernate.Cfg.Configuration configuration)
-		{
-			configuration.SetProperty(Environment.ProxyFactoryFactoryClass,
-										typeof(ProxyFactoryFactory).AssemblyQualifiedName);
-		}
-
 		protected override void OnSetUp()
 		{
 			using (var s = OpenSession())

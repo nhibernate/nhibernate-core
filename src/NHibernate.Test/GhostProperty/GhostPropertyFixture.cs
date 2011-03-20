@@ -1,6 +1,4 @@
 ﻿using System.Collections;
-using NHibernate.ByteCode.Castle;
-using NHibernate.Cfg;
 using NHibernate.Tuple.Entity;
 using NUnit.Framework;
 
@@ -19,12 +17,6 @@ namespace NHibernate.Test.GhostProperty
 		protected override IList Mappings
 		{
 			get { return new[] { "GhostProperty.Mappings.hbm.xml" }; }
-		}
-
-		protected override void Configure(NHibernate.Cfg.Configuration configuration)
-		{
-			configuration.SetProperty(Environment.ProxyFactoryFactoryClass,
-									  typeof(ProxyFactoryFactory).AssemblyQualifiedName);
 		}
 
 		protected override void OnSetUp()

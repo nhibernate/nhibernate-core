@@ -1,5 +1,3 @@
-using NHibernate.ByteCode.Castle;
-using NHibernate.Cfg;
 using NUnit.Framework;
 using SharpTestsEx;
 
@@ -8,12 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2094
   [TestFixture]
   public class Fixture : BugTestCase
   {
-    protected override void Configure(Configuration configuration)
-    {
-      configuration.SetProperty(Environment.ProxyFactoryFactoryClass,
-                    typeof(ProxyFactoryFactory).AssemblyQualifiedName);
-    }
- 
     [Test]
     public void CanAccessInitializedPropertiesOutsideOfSession()
     {

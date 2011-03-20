@@ -26,8 +26,6 @@ namespace NHibernate.Test.LazyOneToOne
 		//}
 		protected override void Configure(Cfg.Configuration configuration)
 		{
-			configuration.SetProperty(Environment.ProxyFactoryFactoryClass,
-										typeof(NHibernate.ByteCode.Castle.ProxyFactoryFactory).AssemblyQualifiedName);
 			configuration.SetProperty(Environment.MaxFetchDepth, "2");
 			configuration.SetProperty(Environment.UseSecondLevelCache, "false");
 		}

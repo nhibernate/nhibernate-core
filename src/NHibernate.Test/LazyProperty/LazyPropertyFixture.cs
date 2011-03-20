@@ -1,7 +1,4 @@
 ﻿using System.Collections;
-using log4net.Core;
-using NHibernate.ByteCode.Castle;
-using NHibernate.Cfg;
 using NHibernate.Tuple.Entity;
 using NUnit.Framework;
 
@@ -20,12 +17,6 @@ namespace NHibernate.Test.LazyProperty
 		protected override IList Mappings
 		{
 			get { return new[] { "LazyProperty.Mappings.hbm.xml" }; }
-		}
-
-		protected override void Configure(NHibernate.Cfg.Configuration configuration)
-		{
-			configuration.SetProperty(Environment.ProxyFactoryFactoryClass,
-									  typeof(ProxyFactoryFactory).AssemblyQualifiedName);
 		}
 
 		protected override void BuildSessionFactory()

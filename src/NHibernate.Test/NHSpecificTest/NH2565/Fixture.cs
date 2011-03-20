@@ -41,12 +41,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2565
 			}
 		}
 
-		protected override void Configure(Cfg.Configuration configuration)
-		{
-			configuration.SetProperty(Cfg.Environment.ProxyFactoryFactoryClass,
-										typeof(ByteCode.Castle.ProxyFactoryFactory).AssemblyQualifiedName);
-		}
-
 		[Test]
 		public void WhenUseLoadThenCanUsePersistToModify()
 		{

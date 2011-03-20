@@ -20,7 +20,6 @@
 			<include name="System.Data.OracleClient.dll" />
 			<include name="Iesi.Collections.dll" />
 			<include name="log4net.dll" />
-			<include name="NHibernate.ByteCode.Castle.dll"/>
 			<include name="NHibernate.DomainModel.dll" />
 			<include name="NHibernate.dll" />
 			<include name="nunit.framework.dll" />

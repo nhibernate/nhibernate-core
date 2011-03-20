@@ -1,4 +1,3 @@
-using NHibernate.Cfg;
 using NUnit.Framework;
 using SharpTestsEx;
 
@@ -7,12 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2102
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		protected override void Configure(Configuration configuration)
-		{
-			configuration.SetProperty(Environment.ProxyFactoryFactoryClass,
-										typeof(ByteCode.Castle.ProxyFactoryFactory).AssemblyQualifiedName);
-		}
-
 		[Test]
 		public void EntityWithConstrainedLazyLoadedOneToOneShouldNotGenerateFieldInterceptingProxy()
 		{
