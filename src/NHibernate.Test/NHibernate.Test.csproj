@@ -217,6 +217,9 @@
     <Compile Include="DriverTest\Sql2008DateTime2Test.cs" />
     <Compile Include="DriverTest\SqlClientDriverFixture.cs" />
     <Compile Include="DriverTest\SqlServerCeDriverFixture.cs" />
+    <Compile Include="DynamicProxyTests\InterfaceProxySerializationTests\IMyProxy.cs" />
+    <Compile Include="DynamicProxyTests\InterfaceProxySerializationTests\MyProxyImpl.cs" />
+    <Compile Include="DynamicProxyTests\InterfaceProxySerializationTests\ProxyFixture.cs" />
     <Compile Include="DynamicProxyTests\InterfaceWithEqualsGethashcodeTests.cs" />
     <Compile Include="EngineTest\CallableParserFixture.cs" />
     <Compile Include="EngineTest\NativeSQLQueryNonScalarReturnTest.cs" />
@@ -2466,6 +2469,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="DynamicProxyTests\InterfaceProxySerializationTests\ProxyImpl.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2565\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\AccessAndCorrectPropertyName\DogMapping.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\AccessAndCorrectPropertyName\PersonMapping.hbm.xml" />
