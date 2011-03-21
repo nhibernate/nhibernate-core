@@ -116,5 +116,19 @@ namespace NHibernate.Test.LazyProperty
 			}
 		}
 
+		[Test]
+		public void CanLoadAndSaveObjectInDifferentSessions()
+		{
+			Book book;
+			using (ISession s = OpenSession())
+			{
+				book = s.Get<Book>(1);
+			}
+
+			using (ISession s = OpenSession())
+			{
+				s.Merge(book);
+			}
+		}
 	}
 }

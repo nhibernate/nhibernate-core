@@ -124,6 +124,10 @@ namespace NHibernate.Event.Default
 					
 					@event.Entity = entity;
 					EntityState entityState = EntityState.Undefined;
+					if (ReferenceEquals(null, @event.EntityName))
+					{
+						@event.EntityName = source.BestGuessEntityName(entity);
+					}
 
 					// Check the persistence context for an entry relating to this
 					// entity to be merged...
