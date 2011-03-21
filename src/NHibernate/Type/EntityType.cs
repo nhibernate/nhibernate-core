@@ -389,16 +389,17 @@ namespace NHibernate.Type
 		/// </summary>
 		protected object ResolveIdentifier(object id, ISessionImplementor session)
 		{
+			string entityName = GetAssociatedEntityName();
 			bool isProxyUnwrapEnabled = unwrapProxy && session.Factory
-				.GetEntityPersister(GetAssociatedEntityName())
+				.GetEntityPersister(entityName)
 				.IsInstrumented(session.EntityMode);
 
-			object proxyOrEntity = session.InternalLoad(GetAssociatedEntityName(), id, eager, IsNullable && !isProxyUnwrapEnabled);
+			object proxyOrEntity = session.InternalLoad(entityName, id, eager, IsNullable && !isProxyUnwrapEnabled);
 
 			if (proxyOrEntity.IsProxy())
 			{
-                INHibernateProxy proxy = proxyOrEntity as INHibernateProxy; 
-                proxy.HibernateLazyInitializer.Unwrap = isProxyUnwrapEnabled;
+				INHibernateProxy proxy = (INHibernateProxy) proxyOrEntity;
+				proxy.HibernateLazyInitializer.Unwrap = isProxyUnwrapEnabled;
 			}
 
 			return proxyOrEntity;
