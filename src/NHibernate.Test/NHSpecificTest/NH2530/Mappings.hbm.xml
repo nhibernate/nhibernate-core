@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<!-- Mapping extracted from ConfORM usage example (ConfOrm.UsageExamples.HighLowPerEntity) -->
+<hibernate-mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                   namespace="NHibernate.Test.NHSpecificTest.NH2530" 
+                   assembly="NHibernate.Test" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="Product" abstract="true">
+    <id name="Id" type="Int32">
+      <generator class="hilo">
+        <param name="table">NextHighVaues</param>
+        <param name="column">NextHigh</param>
+        <param name="max_lo">100</param>
+        <param name="where">Entity = 'Product'</param>
+      </generator>
+    </id>
+    <discriminator />
+    <property name="Title" />
+  </class>
+  <class name="Customer">
+    <id name="Id" type="Int32">
+      <generator class="hilo">
+        <param name="table">NextHighVaues</param>
+        <param name="column">NextHigh</param>
+        <param name="max_lo">100</param>
+        <param name="where">Entity = 'Customer'</param>
+      </generator>
+    </id>
+    <property name="Name" />
+  </class>
+</hibernate-mapping>

@@ -231,7 +231,15 @@ namespace NHibernate.Id
 					rs = qps.ExecuteReader();
 					if (!rs.Read())
 					{
-						string err = "could not read a hi value - you need to populate the table: " + tableName;
+						string err;
+						if (string.IsNullOrEmpty(whereClause))
+						{
+							err = "could not read a hi value - you need to populate the table: " + tableName;
+						}
+						else
+						{
+							err = string.Format("could not read a hi value from table '{0}' using the where clause ({1})- you need to populate the table.", tableName, whereClause);
+						}
 						log.Error(err);
 						throw new IdentifierGenerationException(err);
 					}
