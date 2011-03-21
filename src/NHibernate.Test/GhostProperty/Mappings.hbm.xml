@@ -8,7 +8,10 @@
 			<generator class="assigned" />
 		</id>
 		<many-to-one name="Payment" lazy="no-proxy"/>
-	</class>
+
+    <property name="ALazyProperty" lazy="true"/>
+    <property name="NoLazyProperty"/>
+  </class>
 
 
 	<class name="Payment" abstract="true">

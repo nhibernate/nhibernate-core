@@ -26,7 +26,7 @@ namespace NHibernate.Intercept
 		{
 			this.session = session;
 			this.uninitializedFields = uninitializedFields;
-			this.unwrapProxyFieldNames = unwrapProxyFieldNames;
+			this.unwrapProxyFieldNames = unwrapProxyFieldNames ?? new HashedSet<string>();
 			this.entityName = entityName;
 			this.mappedClass = mappedClass;
 		}
@@ -50,11 +50,7 @@ namespace NHibernate.Intercept
 
 		public bool IsInitializedField(string field)
 		{
-			if (unwrapProxyFieldNames != null && unwrapProxyFieldNames.Contains(field))
-			{
-				return loadedUnwrapProxyFieldNames.Contains(field);
-			}
-			return uninitializedFields == null || !uninitializedFields.Contains(field);
+			return !IsUninitializedProperty(field) && !IsUninitializedAssociation(field);
 		}
 
 		public void MarkDirty()
@@ -89,14 +85,16 @@ namespace NHibernate.Intercept
 			get { return initializing; }
 		}
 
-		// NH Specific: Hibernate only deals with lazy properties here, we deal with 
-		// both lazy properties and with no-proxy. 
 		public object Intercept(object target, string fieldName, object value)
 		{
+			// NH Specific: Hibernate only deals with lazy properties here, we deal with 
+			// both lazy properties and with no-proxy. 
 			if (initializing)
+			{
 				return InvokeImplementation;
+			}
 
-			if (!IsUninitializedProperty(fieldName))
+			if (IsInitializedField(fieldName))
 			{
 				return value;
 			}
@@ -114,14 +112,18 @@ namespace NHibernate.Intercept
 			{
 				return InitializeField(fieldName, target);
 			}
-			
-			if (value.IsProxy() && unwrapProxyFieldNames != null && unwrapProxyFieldNames.Contains(fieldName))
+
+			if (value.IsProxy() && IsUninitializedAssociation(fieldName))
 			{
-                var nhproxy = value as INHibernateProxy; 
-                
-                return InitializeOrGetAssociation(nhproxy, fieldName);
+				var nhproxy = value as INHibernateProxy;
+				return InitializeOrGetAssociation(nhproxy, fieldName);
 			}
 			return InvokeImplementation;
+		}
+
+		private bool IsUninitializedAssociation(string fieldName)
+		{
+			return unwrapProxyFieldNames.Contains(fieldName) && !loadedUnwrapProxyFieldNames.Contains(fieldName);
 		}
 
 		private bool IsUninitializedProperty(string fieldName)

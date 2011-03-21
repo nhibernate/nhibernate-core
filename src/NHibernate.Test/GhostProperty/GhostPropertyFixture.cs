@@ -1,6 +1,8 @@
 ﻿using System.Collections;
+using NHibernate.Cfg.Loquacious;
 using NHibernate.Tuple.Entity;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace NHibernate.Test.GhostProperty
 {
@@ -17,6 +19,11 @@ namespace NHibernate.Test.GhostProperty
 		protected override IList Mappings
 		{
 			get { return new[] { "GhostProperty.Mappings.hbm.xml" }; }
+		}
+
+		protected override void Configure(Cfg.Configuration configuration)
+		{
+			configuration.DataBaseIntegration(x=> x.LogFormatedSql = false);
 		}
 
 		protected override void OnSetUp()
@@ -109,6 +116,51 @@ namespace NHibernate.Test.GhostProperty
 			}
 		}
 
+		[Test]
+		public void WillLoadGhostAssociationOnAccess()
+		{
+			// NH-2498
+			using (ISession s = OpenSession())
+			{
+				Order order;
+				using (var ls = new SqlLogSpy())
+				{
+					order = s.Get<Order>(1);
+					var logMessage = ls.GetWholeLog();
+					logMessage.Should().Not.Contain("FROM Payment");
+				}
+				order.Satisfy(o => !NHibernateUtil.IsPropertyInitialized(o, "Payment"));
 
+				// trigger on-access lazy load 
+				var x = order.Payment;
+				order.Satisfy(o => NHibernateUtil.IsPropertyInitialized(o, "Payment"));
+			}
+		}
+
+		[Test]
+		public void WhenGetThenLoadOnlyNoLazyPlainProperties()
+		{
+			using (ISession s = OpenSession())
+			{
+				Order order;
+				using (var ls = new SqlLogSpy())
+				{
+					order = s.Get<Order>(1);
+					var logMessage = ls.GetWholeLog();
+					logMessage.Should().Not.Contain("ALazyProperty");
+					logMessage.Should().Contain("NoLazyProperty");
+				}
+				order.Satisfy(o => NHibernateUtil.IsPropertyInitialized(o, "NoLazyProperty"));
+				order.Satisfy(o => !NHibernateUtil.IsPropertyInitialized(o, "ALazyProperty"));
+
+				using (var ls = new SqlLogSpy())
+				{
+					var x = order.ALazyProperty;
+					var logMessage = ls.GetWholeLog();
+					logMessage.Should().Contain("ALazyProperty");
+				}
+				order.Satisfy(o => NHibernateUtil.IsPropertyInitialized(o, "ALazyProperty"));
+			}
+		} 
 	}
 }

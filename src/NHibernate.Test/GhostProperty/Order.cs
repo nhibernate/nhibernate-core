@@ -10,6 +10,9 @@
 			get { return payment; }
 			set { payment = value; }
 		}
+
+		public virtual string ALazyProperty { get; set; }
+		public virtual string NoLazyProperty { get; set; }
 	}
 
 	public abstract class Payment

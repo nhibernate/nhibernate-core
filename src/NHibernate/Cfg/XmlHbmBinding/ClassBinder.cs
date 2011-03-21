@@ -439,8 +439,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			// Note : fetch="join" overrides default laziness
 			bool isLazyTrue = !laziness.HasValue
 													? defaultLazy && fetchable.IsLazy
-													: laziness == HbmLaziness.Proxy;
+													: (laziness == HbmLaziness.Proxy || laziness == HbmLaziness.NoProxy);
 			fetchable.IsLazy = isLazyTrue;
+			fetchable.UnwrapProxy = laziness == HbmLaziness.NoProxy;
 		}
 
 		protected void InitOuterJoinFetchSetting(HbmManyToMany manyToMany, IFetchable model)
