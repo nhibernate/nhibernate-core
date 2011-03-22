@@ -658,10 +658,7 @@ namespace NHibernate.Impl
 				root.subcriteriaList.Add(this);
 
 				root.subcriteriaByPath[path] = this;
-				if (alias != null)
-				{
-					root.subcriteriaByAlias[alias] = this;
-				}
+				SetAlias(alias);
 			}
 
 			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, string alias, JoinType joinType)
@@ -693,12 +690,7 @@ namespace NHibernate.Impl
 			public string Alias
 			{
 				get { return alias; }
-				set
-				{
-					root.subcriteriaByAlias.Remove(alias);
-					alias = value;
-					root.subcriteriaByAlias[alias] = this;
-				}
+				set { SetAlias(value); }
 			}
 
 			public LockMode LockMode
@@ -935,6 +927,19 @@ namespace NHibernate.Impl
 			{
 				// implemented only for compatibility with CriteriaTransformer
 				return root.Clone();
+			}
+
+			private void SetAlias(string newAlias)
+			{
+				if (alias != null)
+				{
+					root.subcriteriaByAlias.Remove(alias);
+				}
+				if (newAlias != null)
+				{
+					root.subcriteriaByAlias[newAlias] = this;
+				}
+				alias = newAlias;
 			}
 		}
 
