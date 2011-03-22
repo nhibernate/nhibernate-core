@@ -129,11 +129,18 @@ namespace NHibernate.AdoNet.Util
 
 		private static string GetBufferAsHexString(byte[] buffer)
 		{
-			var sb = new StringBuilder(buffer.Length * 2 + 2);
+			const int maxBytes = 128;
+			int bufferLength = buffer.Length;
+
+			var sb = new StringBuilder(maxBytes * 2 + 8);
 			sb.Append("0x");
-			foreach (var b in buffer)
+			for (int i = 0; i < bufferLength && i < maxBytes; i++)
 			{
-				sb.Append(b.ToString("X2"));
+				sb.Append(buffer[i].ToString("X2"));
+			}
+			if(bufferLength > maxBytes)
+			{
+				sb.Append("...");
 			}
 			return sb.ToString();
 		}
