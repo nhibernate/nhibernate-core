@@ -10,8 +10,7 @@ namespace NHibernate.Intercept
 		bool IsDirty { get;}
 
 		/// <summary> Use to associate the entity to which we are bound to the given session. </summary>
-		/// <param name="session">The session to which we are now associated. </param>
-		void SetSession(ISessionImplementor session);
+		ISessionImplementor Session { get; set; }
 
 		/// <summary> Is the entity to which we are bound completely initialized? </summary>
 		bool IsInitialized { get;}

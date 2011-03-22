@@ -3648,7 +3648,7 @@ namespace NHibernate.Persister.Entity
 				IFieldInterceptor interceptor = FieldInterceptionHelper.ExtractFieldInterceptor(entity);
 				if (interceptor != null)
 				{
-					interceptor.SetSession(session);
+					interceptor.Session = session;
 				}
 				else
 				{

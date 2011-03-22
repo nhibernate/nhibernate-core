@@ -38,9 +38,10 @@ namespace NHibernate.Intercept
 			get { return isDirty; }
 		}
 
-		public void SetSession(ISessionImplementor session)
+		public ISessionImplementor Session
 		{
-			this.session = session;
+			get { return session; }
+			set { session = value; }
 		}
 
 		public bool IsInitialized
