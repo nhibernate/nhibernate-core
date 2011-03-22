@@ -207,6 +207,18 @@ namespace NHibernate.Cfg.Loquacious
 			return dbc;
 		}
 
+		public IBatcherConfiguration OrderingInserts()
+		{
+			dbc.Configuration.SetProperty(Environment.OrderInserts, true.ToString().ToLowerInvariant());
+			return this;
+		}
+
+		public IBatcherConfiguration DisablingInsertsOrdering()
+		{
+			dbc.Configuration.SetProperty(Environment.OrderInserts, false.ToString().ToLowerInvariant());
+			return this;
+		}
+
 		#endregion
 	}
 
@@ -335,6 +347,11 @@ namespace NHibernate.Cfg.Loquacious
 		public short BatchSize
 		{
 			set { configuration.SetProperty(Environment.BatchSize, value.ToString()); }
+		}
+
+		public bool OrderInserts
+		{
+			set { configuration.SetProperty(Environment.OrderInserts, value.ToString().ToLowerInvariant()); }
 		}
 
 		public void TransactionFactory<TFactory>() where TFactory : ITransactionFactory

@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	namespace="NHibernate.Test.Insertordering"
+	assembly="NHibernate.Test">
+
+  <class name="User" table="INS_ORD_USR">
+    <id name="Id">
+      <generator class="increment"/>
+    </id>
+    <property name="UserName" column="USR_NM" />
+    <set name="Memberships" inverse="true" cascade="all" access="field.camelcase">
+      <key column="USR_ID"/>
+      <one-to-many class="Membership"/>
+    </set>
+  </class>
+
+  <class name="Group" table="INS_ORD_GRP">
+    <id name="Id">
+      <generator class="increment"/>
+    </id>
+    <property name="Name"/>
+  </class>
+
+  <class name="Membership" table="INS_ORD_MEM">
+    <id name="Id">
+      <generator class="increment" />
+    </id>
+    <many-to-one name="User" class="User" column="USR_ID" cascade="all"/>
+    <many-to-one name="Group" class="Group" column="GRP_ID" cascade="all"/>
+    <property name="ActivationDate" type="timestamp" column="JN_DT"/>
+  </class>
+</hibernate-mapping>

@@ -229,6 +229,10 @@ namespace NHibernate.Cfg
 
 			// TODO: Environment.BatchVersionedData
 			settings.AdoBatchSize = PropertiesHelper.GetInt32(Environment.BatchSize, properties, 0);
+			bool orderInserts = PropertiesHelper.GetBoolean(Environment.OrderInserts, properties, (settings.AdoBatchSize > 0));
+			log.Info("Order SQL inserts for batching: " + EnabledDisabled(orderInserts));
+			settings.IsOrderInsertsEnabled = orderInserts;
+
 			bool wrapResultSets = PropertiesHelper.GetBoolean(Environment.WrapResultSets, properties, false);
 			log.Debug("Wrap result sets: " + EnabledDisabled(wrapResultSets));
 			settings.IsWrapResultSetsEnabled = wrapResultSets;

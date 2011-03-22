@@ -5,5 +5,7 @@ namespace NHibernate.Cfg.Loquacious
 	{
 		IBatcherConfiguration Through<TBatcher>() where TBatcher : IBatcherFactory;
 		IDbIntegrationConfiguration Each(short batchSize);
+		IBatcherConfiguration OrderingInserts();
+		IBatcherConfiguration DisablingInsertsOrdering();
 	}
 }

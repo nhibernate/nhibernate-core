@@ -47,6 +47,7 @@ namespace NHibernate.Cfg.Loquacious
 
 		void Batcher<TBatcher>() where TBatcher : IBatcherFactory;
 		short BatchSize { set; }
+		bool OrderInserts { set; }
 
 		void TransactionFactory<TFactory>() where TFactory : ITransactionFactory;
 

@@ -162,6 +162,9 @@ namespace NHibernate.Cfg
 		
 		public const string LinqToHqlGeneratorsRegistry = "linqtohql.generatorsregistry";
 
+		/// <summary> Enable ordering of insert statements for the purpose of more effecient batching.</summary>
+		public const string OrderInserts = "order_inserts";
+
 		private static readonly Dictionary<string, string> GlobalProperties;
 
 		private static IBytecodeProvider BytecodeProviderInstance;

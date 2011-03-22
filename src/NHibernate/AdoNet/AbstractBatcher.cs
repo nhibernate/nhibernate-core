@@ -122,7 +122,7 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		public IDbCommand PrepareBatchCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
+		public virtual IDbCommand PrepareBatchCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
 		{
 			/* NH:
 			 * The code inside this block was added for a strange behaviour
