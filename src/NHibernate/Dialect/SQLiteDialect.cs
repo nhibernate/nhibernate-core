@@ -72,6 +72,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 
 			RegisterFunction("cast", new SQLiteCastFunction());
+
+
+            RegisterKeyword("int"); // Used in our function templates.
 		}
 
 		public override Schema.IDataBaseSchema GetDataBaseSchema(DbConnection connection)
