@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   namespace="NHibernate.Test.NHSpecificTest.NH2491" 
+                   assembly="NHibernate.Test">
+
+  <class name="BaseClass" >
+    <id name="Id">
+      <generator class="hilo" />
+    </id>
+
+    <many-to-one name="Another" column="BaseClass_FK" />
+
+    <joined-subclass name="SubClass" >
+      <!-- use a column name already used in the base class-->
+      <key column="BaseClass_FK"/>
+    </joined-subclass>
+  </class>
+
+  <class name="ReferencingClass" >
+    <id name="Id">
+      <generator class="hilo" />
+    </id>
+    <many-to-one name="SubClass" column="SubClass_FK" />
+  </class>
+
+</hibernate-mapping>

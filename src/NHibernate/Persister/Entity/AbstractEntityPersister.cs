@@ -1821,9 +1821,11 @@ namespace NHibernate.Persister.Entity
 		{
 			int propertyIndex = Array.IndexOf(SubclassColumnClosure, column);
 
-			if (propertyIndex < 0)
+			// The check for KeyColumnNames was added to fix NH-2491
+			if (propertyIndex < 0 || Array.IndexOf(KeyColumnNames, column) >= 0)
+			{
 				return rootAlias;
-
+			}
 			return GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[propertyIndex]);
 		}
 
