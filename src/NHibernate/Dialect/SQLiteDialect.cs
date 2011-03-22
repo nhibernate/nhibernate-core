@@ -48,12 +48,13 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Boolean, "INTEGER");
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
 
-			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%S', ?1)"));
-			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%M', ?1)"));
-			RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%H', ?1)"));
-			RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%d', ?1)"));
-			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%m', ?1)"));
-			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.String, "strftime('%Y', ?1)"));
+            // Using strftime returns 0-padded strings.  '07' <> 7, so it is better to convert to an integer.
+			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%S', ?1) as int)"));
+            RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%M', ?1) as int)"));
+            RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%H', ?1) as int)"));
+            RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%d', ?1) as int)"));
+            RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%m', ?1) as int)"));
+            RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%Y', ?1) as int)"));
 			// Uses local time like MSSQL and PostgreSQL.
 			RegisterFunction("current_timestamp", new SQLFunctionTemplate(NHibernateUtil.DateTime, "datetime(current_timestamp, 'localtime')"));
 			// The System.Data.SQLite driver stores both Date and DateTime as 'YYYY-MM-DD HH:MM:SS'
