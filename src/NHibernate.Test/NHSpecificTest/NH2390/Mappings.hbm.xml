@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	namespace="NHibernate.Test.NHSpecificTest.NH2390"
+	assembly="NHibernate.Test"
+	default-access="property"
+  default-lazy="false">
+
+  <class name="Class1">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" />
+    <property name="Property1"/>
+    <property name="Property2"/>
+    <property name="Property3"/>
+    <property name="Property4"/>
+    <property name="Property5"/>
+  </class>
+</hibernate-mapping>

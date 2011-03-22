@@ -615,6 +615,8 @@
     <Compile Include="NHSpecificTest\NH2386\ResponsibleLegalPerson.cs" />
     <Compile Include="NHSpecificTest\NH2386\Test.cs" />
     <Compile Include="NHSpecificTest\NH2386\TradingName.cs" />
+    <Compile Include="NHSpecificTest\NH2390\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH2390\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2392\A.cs" />
     <Compile Include="NHSpecificTest\NH2392\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2392\PhoneNumber.cs" />
@@ -2477,6 +2479,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2390\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2491\Mappings.hbm.xml" />
     <EmbeddedResource Include="Insertordering\Mapping.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2530\Mappings.hbm.xml" />
