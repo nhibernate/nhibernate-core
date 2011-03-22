@@ -46,9 +46,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 					e1.ToNode = n2;
 					
 					n1.FromEdges.Add(e1);
-					n1.ToEdges.Add(e1);
-
-					n2.FromEdges.Add(e1);
 					n2.ToEdges.Add(e1);
 					
 					s.Save(r);
